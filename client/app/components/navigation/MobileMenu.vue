@@ -102,7 +102,7 @@ const mainNav = [
   { label: "Tìm kiếm", icon: "i-ph-magnifying-glass", to: "#" },
   { label: "Các trang", icon: "i-ph-flag", to: "#" },
   { label: "Sản phẩm của tôi", icon: "i-ph-package", to: "#" },
-  { label: "Thị trường", icon: "i-ph-storefront", to: "#" },
+  { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
   { label: "Blog", icon: "i-ph-newspaper", to: "#" },
   { label: "Bài báo của tôi", icon: "i-ph-article", to: "#" },
   { label: "Phim", icon: "i-ph-film-strip", to: "#" },
