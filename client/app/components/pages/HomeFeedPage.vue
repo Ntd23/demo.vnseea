@@ -1,28 +1,7 @@
 <template>
-  <div class="space-y-4 sm:space-y-5">
-    <section class="overflow-hidden rounded-[1.5rem] border border-[#dbe3f2] bg-white p-4 shadow-[0_14px_32px_rgba(13,38,76,0.04)] sm:rounded-[1.85rem] sm:p-5">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div class="min-w-0">
-          <p class="text-[11px] font-extrabold uppercase tracking-[0.32em] text-[#0000ff]">{{ greetingLabel }}</p>
-          <h1 class="mt-1 text-[1.4rem] font-black tracking-[-0.06em] text-[#243b63] sm:text-[1.65rem]">Bảng tin của bạn</h1>
-        </div>
-        <div class="flex w-fit items-center gap-1.5 rounded-full border border-[#dbe3f2] bg-[#f8faff] p-1 shadow-[0_4px_16px_rgba(13,38,76,0.04)]">
-          <button v-for="ord in orderings" :key="ord.value" class="rounded-full px-3 py-1.5 text-[12px] font-bold transition duration-150" :class="ordering === ord.value ? 'bg-[linear-gradient(180deg,#2749ff_0%,#0000ff_100%)] text-white shadow-[0_6px_16px_rgba(0,0,255,0.18)]' : 'text-slate-500 hover:text-[#0000ff]'" type="button" @click="ordering = ord.value">
-            {{ ord.label }}
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <div class="px-0">
+  <div class="space-y-5 sm:space-y-6">
+    <div class="pt-3 sm:pt-4">
       <FeedStoryCarousel />
-    </div>
-
-    <div class="flex gap-2 overflow-x-auto pb-0.5 scrollbar-hide">
-      <button v-for="f in filters" :key="f.value" class="flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-[13px] font-semibold transition duration-150" :class="activeFilter === f.value ? 'border-[#0000ff] bg-[#0000ff]/8 text-[#0000ff]' : 'border-[#dbe3f2] bg-white text-slate-500 hover:border-[#0000ff]/25 hover:text-[#0000ff]'" type="button" @click="activeFilter = f.value">
-        <Icon :name="f.icon" class="h-3.5 w-3.5" />
-        {{ f.label }}
-      </button>
     </div>
 
     <div class="rounded-[1.5rem] border border-[#dbe3f2] bg-white p-3 shadow-[0_10px_26px_rgba(13,38,76,0.04)] sm:rounded-[1.85rem] sm:p-4">
@@ -58,9 +37,13 @@ const { posts } = useMockSocialData()
 useSeoMeta({ title: 'Bảng tin | VNSEEA', description: 'Bảng tin cộng đồng VNSEEA — chia sẻ, kết nối và khám phá.' })
 const greetingLabel = computed(() => { const h = new Date().getHours(); if (h < 12) return '☀️ Chào buổi sáng'; if (h < 18) return '🌤️ Chào buổi chiều'; return '🌙 Chào buổi tối' })
 const ordering = ref('all')
-const orderings = [{ label: 'Tất cả', value: 'all' }, { label: 'Đang theo dõi', value: 'following' }]
-const activeFilter = ref('all')
-const filters = [{ label: 'Tất cả', value: 'all', icon: 'i-ph-squares-four' }, { label: 'Bài viết', value: 'text', icon: 'i-ph-article' }, { label: 'Ảnh', value: 'photo', icon: 'i-ph-image' }, { label: 'Video', value: 'video', icon: 'i-ph-video' }, { label: 'Nhạc', value: 'music', icon: 'i-ph-music-note' }]
+const mobileTabs = [
+  { label: 'Home', icon: 'i-ph-house-fill', active: true },
+  { label: 'Photos', icon: 'i-ph-image-fill', active: false },
+  { label: 'People', icon: 'i-ph-users-fill', active: false },
+  { label: 'Video', icon: 'i-ph-video-camera-fill', active: false },
+  { label: 'Music', icon: 'i-ph-music-note-fill', active: false },
+]
 const newPostsCount = ref(0)
 let newPostTimer: ReturnType<typeof setTimeout>
 onMounted(() => { newPostTimer = setTimeout(() => { newPostsCount.value = 3 }, 8000) })
