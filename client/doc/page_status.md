@@ -20,7 +20,7 @@
 - `[~]` `P-07` `/reels` — Short Videos
 - `[ ]` `P-08` `/story-content` — Xem Stories
 - `[ ]` `P-09` `/status/create` — Tạo Story
-- `[ ]` `P-10` `/products` — Marketplace
+- `[x]` `P-10` `/products` — Marketplace
 - `[ ]` `P-11` `/new-product` — Tạo sản phẩm
 - `[ ]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
 - `[ ]` `P-13` `/my-products` — Sản phẩm của tôi
@@ -74,6 +74,7 @@
 - `home`
 - `@username` / `ProfilePage`
 - `messages` — đã hoàn thiện UI/responsive
+- `products` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt

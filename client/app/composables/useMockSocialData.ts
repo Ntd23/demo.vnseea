@@ -118,7 +118,7 @@ export const useMockSocialData = () => {
 
   const sidebarNavMore: SidebarNavItem[] = [
     { label: "Blog", icon: "i-ph-newspaper", to: "/blog" },
-    { label: "Thị trường", icon: "i-ph-storefront", to: "/marketplace" },
+    { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
     { label: "Danh mục", icon: "i-ph-squares-four", to: "/categories" },
     { label: "Sự kiện", icon: "i-ph-calendar-dots", to: "/events" },
     { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "/forum" },
