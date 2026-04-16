@@ -1,0 +1,67 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+@import "./tokens.css";
+
+/* ──────────────────────────────────────────────────────────── 
+   Global base styles — dùng tokens từ tokens.css
+   ──────────────────────────────────────────────────────────── */
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  min-height: 100vh;
+  background: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Guest layout helpers */
+.guest-hero-panel {
+  background:
+    radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.15), transparent 26%),
+    radial-gradient(circle at 100% 0%, rgba(245, 158, 11, 0.2), transparent 28%),
+    linear-gradient(180deg, #0d1b5e 0%, #1430c2 55%, #1f39d7 100%);
+}
+
+.soft-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.hero-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-glow::after {
+  content: "";
+  position: absolute;
+  inset: auto -15% -30% auto;
+  width: 340px;
+  height: 340px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.35), transparent 64%);
+  pointer-events: none;
+}
+
+/* Mock media / image placeholder */
+.mock-media {
+  background:
+    linear-gradient(140deg, rgba(20, 48, 194, 0.95), rgba(15, 27, 94, 0.92)),
+    linear-gradient(40deg, rgba(245, 158, 11, 0.22), transparent);
+}
+
+.mock-image {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.28), transparent 24%),
+    linear-gradient(180deg, rgba(0, 0, 255, 0.08) 0%, #f0f4ff 50%, #e8eeff 100%);
+}
