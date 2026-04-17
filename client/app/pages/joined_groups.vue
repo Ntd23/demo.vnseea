@@ -1,5 +1,5 @@
 <template>
-  <PagesGroupsPage mode="mine" />
+  <PagesGroupsPage mode="joined" />
 </template>
 
 <script setup lang="ts">

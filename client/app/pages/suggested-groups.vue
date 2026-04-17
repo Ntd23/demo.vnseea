@@ -1,5 +1,5 @@
 <template>
-  <PagesGroupsPage mode="mine" />
+  <PagesGroupsPage mode="suggested" />
 </template>
 
 <script setup lang="ts">

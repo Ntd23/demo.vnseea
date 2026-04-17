@@ -101,6 +101,12 @@ export const communityGroupTabs: Array<{ label: string; value: CommunityGroupTab
   { label: "Các nhóm đã tham gia", value: "joined" },
 ]
 
+export const communityGroupRouteMap: Record<CommunityGroupTab, string> = {
+  mine: "/groups",
+  suggested: "/suggested-groups",
+  joined: "/joined_groups",
+}
+
 export const communityGroupDirectory: CommunityGroupRecord[] = [
   {
     id: 1,

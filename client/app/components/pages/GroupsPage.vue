@@ -12,10 +12,10 @@
               Community Hub
             </p>
             <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63]">
-              Các nhóm
+              {{ pageTitle }}
             </h1>
             <p class="mt-2 max-w-[720px] text-[14px] leading-7 text-slate-500">
-              Quản lý nhóm bạn đang theo dõi, xem đề xuất theo sở thích và mở nhanh flow tạo cộng đồng mới ngay trong cùng một khu vực.
+              {{ pageDescription }}
             </p>
           </div>
         </div>
@@ -50,9 +50,9 @@
     </section>
 
     <CommunityGroupsFilterBar
-      v-model:active-tab="activeTab"
       v-model:search="search"
       :tabs="tabItems"
+      :active-tab="mode"
       create-to="/create-group"
     />
 
@@ -78,7 +78,7 @@
     </section>
 
     <section
-      v-if="activeTab === 'mine' && visibleGroups.length === 0"
+      v-if="mode === 'mine' && visibleGroups.length === 0"
       class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16"
     >
       <div class="mx-auto max-w-xl">
@@ -118,7 +118,7 @@
         v-for="group in visibleGroups"
         :key="group.id"
         :group="group"
-        :action-label="activeTab === 'suggested' ? 'Khám phá nhóm' : 'Xem cập nhật'"
+        :action-label="mode === 'suggested' ? 'Khám phá nhóm' : 'Xem cập nhật'"
       />
     </div>
   </div>
@@ -127,17 +127,37 @@
 <script setup lang="ts">
 import {
   communityGroupDirectory,
+  communityGroupRouteMap,
   communityGroupTabs,
 } from "../../../types/community"
 import type { CommunityGroupTab } from "../../../types/community"
 
-useSeoMeta({
-  title: "Các nhóm | VNSEEA",
-  description: "Khám phá, quản lý và tạo nhóm cộng đồng trên VNSEEA.",
+const props = withDefaults(defineProps<{
+  mode?: CommunityGroupTab
+}>(), {
+  mode: "mine",
 })
 
-const activeTab = ref<CommunityGroupTab>("mine")
+const mode = computed(() => props.mode)
 const search = ref("")
+
+const pageTitle = computed(() => {
+  if (props.mode === "suggested") return "Các nhóm đề xuất"
+  if (props.mode === "joined") return "Các nhóm đã tham gia"
+  return "Các nhóm"
+})
+
+const pageDescription = computed(() => {
+  if (props.mode === "suggested") {
+    return "Khám phá những community được gợi ý theo sở thích, danh mục bạn quan tâm và hoạt động gần đây trong hệ sinh thái VNSEEA."
+  }
+
+  if (props.mode === "joined") {
+    return "Quay lại các nhóm bạn đã tham gia để theo dõi cập nhật mới, sự kiện sắp tới và những cuộc thảo luận đang diễn ra."
+  }
+
+  return "Quản lý nhóm bạn đang theo dõi, xem đề xuất theo sở thích và mở nhanh flow tạo cộng đồng mới ngay trong cùng một khu vực."
+})
 
 const suggestedCount = computed(() =>
   communityGroupDirectory.filter(group => group.segment === "suggested").length,
@@ -150,6 +170,7 @@ const joinedCount = computed(() =>
 const tabItems = computed(() =>
   communityGroupTabs.map(tab => ({
     ...tab,
+    to: communityGroupRouteMap[tab.value],
     count:
       tab.value === "mine"
         ? 0
@@ -159,9 +180,9 @@ const tabItems = computed(() =>
 
 const visibleGroups = computed(() => {
   const groups =
-    activeTab.value === "mine"
+    props.mode === "mine"
       ? []
-      : communityGroupDirectory.filter(group => group.segment === activeTab.value)
+      : communityGroupDirectory.filter(group => group.segment === props.mode)
 
   const keyword = search.value.trim().toLowerCase()
   if (!keyword) return groups
@@ -178,24 +199,29 @@ const visibleGroups = computed(() => {
 })
 
 const activeTabLabel = computed(() =>
-  communityGroupTabs.find(tab => tab.value === activeTab.value)?.label ?? "Nhóm",
+  communityGroupTabs.find(tab => tab.value === props.mode)?.label ?? "Nhóm",
 )
 
 const activeTabDescription = computed(() => {
-  if (activeTab.value === "mine") return "Chưa có nhóm nào"
-  if (activeTab.value === "suggested") return `${suggestedCount.value} community đang chờ bạn khám phá`
+  if (props.mode === "mine") return "Chưa có nhóm nào"
+  if (props.mode === "suggested") return `${suggestedCount.value} community đang chờ bạn khám phá`
   return `${joinedCount.value} community đang hoạt động`
 })
 
 const activeTabHint = computed(() => {
-  if (activeTab.value === "mine") {
+  if (props.mode === "mine") {
     return "Danh sách này sẽ hiện các nhóm bạn tạo hoặc đang quản trị. Hiện tại tài khoản chưa có community nào."
   }
 
-  if (activeTab.value === "suggested") {
+  if (props.mode === "suggested") {
     return "Các nhóm được gợi ý dựa trên danh mục bạn quan tâm, hoạt động gần đây và mạng lưới hiện có."
   }
 
   return "Đây là các community bạn đã tham gia, hữu ích để quay lại theo dõi nội dung và cập nhật mới."
+})
+
+useSeoMeta({
+  title: computed(() => `${pageTitle.value} | VNSEEA`),
+  description: pageDescription,
 })
 </script>
