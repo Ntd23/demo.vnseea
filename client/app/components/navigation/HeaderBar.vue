@@ -66,11 +66,22 @@ const route = useRoute()
 const search = ref('')
 const showSearch = ref(false)
 
+const isMarketplaceRoute = computed(() =>
+  route.path === '/products'
+  || route.path === '/new-product'
+  || route.path === '/my-products'
+  || route.path.startsWith('/edit-product/')
+  || route.path.startsWith('/order/')
+  || route.path.startsWith('/customer_order/')
+  || route.path === '/checkout'
+  || route.path === '/orders',
+)
+
 const centerNavItems = computed(() => [
   { label: 'Home', to: '/', icon: 'i-ph-house-fill', active: route.path === '/' },
   { label: 'Photos', to: '/home', icon: 'i-ph-image-fill', active: route.path === '/home' },
   { label: 'People', to: '/messages', icon: 'i-ph-users-fill', active: route.path === '/messages' },
-  { label: 'Shop', to: '/products', icon: 'i-ph-storefront-fill', active: route.path === '/products' },
+  { label: 'Shop', to: '/products', icon: 'i-ph-storefront-fill', active: isMarketplaceRoute.value },
   { label: 'Profile', to: '/@me', icon: 'i-ph-user-circle-fill', active: route.path.includes('/@') },
 ])
 
@@ -86,7 +97,7 @@ const mobileNavItemsLeft = [
 ]
 
 const mobileNavItemsRight = [
-  { label: 'Shop', to: '/products', icon: 'i-ph-storefront-fill', active: route.path === '/products' },
+  { label: 'Shop', to: '/products', icon: 'i-ph-storefront-fill', active: isMarketplaceRoute.value },
   { label: 'Profile', to: '/@me', icon: 'i-ph-user-circle-fill', active: route.path.includes('/@'), badge: 3 },
 ]
 </script>

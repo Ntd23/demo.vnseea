@@ -69,5 +69,19 @@ const route = useRoute()
 const { sidebarNav, sidebarNavMore } = useMockSocialData()
 const expanded = ref(false)
 
-const isActive = (to: string) => route.path === to.split("#")[0]
+const isMarketplaceRoute = () =>
+  route.path === "/products"
+  || route.path === "/new-product"
+  || route.path === "/my-products"
+  || route.path.startsWith("/edit-product/")
+  || route.path.startsWith("/order/")
+  || route.path.startsWith("/customer_order/")
+  || route.path === "/checkout"
+  || route.path === "/orders"
+
+const isActive = (to: string) => {
+  const normalized = to.split("#")[0]
+  if (normalized === "/products") return isMarketplaceRoute()
+  return route.path === normalized
+}
 </script>
