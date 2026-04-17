@@ -129,7 +129,7 @@ const mainNav = [
 ]
 
 const settingsNav = [
-  { label: "Cài đặt", icon: "i-ph-gear", to: "#" },
+  { label: "Cài đặt", icon: "i-ph-gear", to: "/setting" },
   { label: "Đăng ký", icon: "i-ph-clipboard-text", to: "#" },
   { label: "Khu vực quản trị", icon: "i-ph-shield-check", to: "#" },
   { label: "Đăng xuất", icon: "i-ph-sign-out", to: "/welcome" },

@@ -44,7 +44,7 @@
 - `[x]` `P-31` `/funding` + `/create_funding` + `/show_fund/{id}` — Crowdfunding
 - `[x]` `P-32` `/live` — Live Streaming
 - `[x]` `P-33` `/watch` — Xem Video
-- `[ ]` `P-34` `/setting` — Cài đặt
+- `[x]` `P-34` `/setting` — Cài đặt
 
 ---
 
@@ -88,6 +88,7 @@
 - `funding` / `create_funding` / `show_fund/{id}` — đã hoàn thiện UI crowdfunding, search/filter, tạo campaign, chi tiết progress, donate mock, donors list và owner actions
 - `live` — đã hoàn thiện UI live streaming, Go Live mock, live player, stream list, like/mute/viewer state và live chat mock
 - `watch` — đã hoàn thiện UI xem video, player mock/Plyr-ready, search/filter, video info, comments, related videos và like/share mock
+- `setting` / `setting/{page}` — đã hoàn thiện UI cài đặt dạng 22 sub-pages, form fields, toggles, lists, danger zone và mock save actions
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
