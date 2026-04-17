@@ -18,7 +18,7 @@
             {{ item.name }}
           </p>
           <p class="mt-1 text-[13px] leading-6 text-slate-500">
-            Đặt từ shop {{ seller }} • Đơn giá {{ formatOrderCurrency(item.price) }}
+            {{ detailMetaText }}
           </p>
         </div>
 
@@ -75,16 +75,25 @@
 <script setup lang="ts">
 import { orderItemFallbackBackground } from "../../composables/useOrderPresentation"
 import { formatOrderCurrency } from "../../../types/orders"
-import type { BuyerOrderItem } from "../../../types/orders"
+import type { OrderItem } from "../../../types/orders"
 
-withDefaults(defineProps<{
-  item: BuyerOrderItem
+const props = withDefaults(defineProps<{
+  item: OrderItem
   seller?: string
   paymentMethod?: string
+  metaText?: string
   variant?: "compact" | "detail"
 }>(), {
   seller: "",
   paymentMethod: "",
+  metaText: "",
   variant: "compact",
 })
+
+const detailMetaText = computed(() =>
+  props.metaText
+    || (props.seller
+      ? `Đặt từ shop ${props.seller} • Đơn giá ${formatOrderCurrency(props.item.price)}`
+      : `Đơn giá ${formatOrderCurrency(props.item.price)}`),
+)
 </script>

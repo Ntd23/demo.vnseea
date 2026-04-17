@@ -4,7 +4,7 @@ export type BuyerOrderFilter = "all" | BuyerOrderStatus
 
 export type BuyerOrderPaymentStatus = "paid" | "refunded"
 
-export interface BuyerOrderItem {
+export interface OrderItem {
   id: string
   name: string
   quantity: number
@@ -12,15 +12,33 @@ export interface BuyerOrderItem {
   imageStyle?: string
 }
 
-export interface BuyerOrder {
+export interface OrderTimelineEntry {
+  key: string
+  label: string
+  time: string
+  description: string
+  done: boolean
+}
+
+export interface OrderPresentationShape {
+  status: BuyerOrderStatus
+  paymentStatus: BuyerOrderPaymentStatus
+  shippingFee: number
+  total: number
+  items: OrderItem[]
+}
+
+export interface BuyerOrderItem extends OrderItem {}
+
+export interface BuyerOrderTimelineEntry extends OrderTimelineEntry {}
+
+export interface BuyerOrder extends OrderPresentationShape {
   id: string
   orderNumber: string
   seller: string
   placedAt: string
-  status: BuyerOrderStatus
   deliveryWindow: string
   paymentMethod: string
-  paymentStatus: BuyerOrderPaymentStatus
   paymentReference: string
   shippingAddress: string
   recipientName: string
@@ -28,18 +46,40 @@ export interface BuyerOrder {
   shippingProvider: string
   trackingCode: string
   note?: string
-  shippingFee: number
-  total: number
   items: BuyerOrderItem[]
   timeline: BuyerOrderTimelineEntry[]
 }
 
-export interface BuyerOrderTimelineEntry {
+export type SellerOrderPayoutStatus = "queued" | "processing" | "released" | "reversed"
+
+export interface SellerOrderTask {
   key: string
   label: string
-  time: string
   description: string
   done: boolean
+}
+
+export interface SellerOrder extends OrderPresentationShape {
+  id: string
+  orderNumber: string
+  storeName: string
+  buyerName: string
+  buyerPhone: string
+  buyerAddress: string
+  placedAt: string
+  deliveryWindow: string
+  paymentMethod: string
+  paymentReference: string
+  shippingProvider: string
+  trackingCode: string
+  buyerNote?: string
+  sellerNote?: string
+  timeline: OrderTimelineEntry[]
+  tasks: SellerOrderTask[]
+  payoutStatus: SellerOrderPayoutStatus
+  payoutAmount: number
+  payoutReference: string
+  payoutWindow: string
 }
 
 export interface OrdersFilterOption {
@@ -117,6 +157,38 @@ export const buyerOrderPaymentStatusMeta: Record<BuyerOrderPaymentStatus, {
   refunded: {
     label: "Đã hoàn tiền",
     badgeClass: "border-[#fecdd3] bg-[#fff1f3] text-[#be123c]",
+  },
+}
+
+export const sellerOrderPayoutStatusMeta: Record<SellerOrderPayoutStatus, {
+  label: string
+  badgeClass: string
+  panelClass: string
+  description: string
+}> = {
+  queued: {
+    label: "Chờ đối soát",
+    badgeClass: "border-[#fde7b2] bg-[#fff6dd] text-[#9a5b00]",
+    panelClass: "bg-[#fff8ea] text-[#9a5b00]",
+    description: "Khoản thanh toán đang chờ đơn được xử lý và đủ điều kiện đối soát.",
+  },
+  processing: {
+    label: "Đang đối soát",
+    badgeClass: "border-[#cfe0ff] bg-[#eef4ff] text-[#1d4ed8]",
+    panelClass: "bg-[#eef4ff] text-[#1d4ed8]",
+    description: "Hệ thống đang ghi nhận trạng thái giao nhận và chuẩn bị chuyển tiền.",
+  },
+  released: {
+    label: "Đã ghi có",
+    badgeClass: "border-[#c7ebd0] bg-[#effaf3] text-[#1f7a38]",
+    panelClass: "bg-[#effaf3] text-[#1f7a38]",
+    description: "Khoản thanh toán đã được ghi nhận thành công vào ví/ngân quỹ của shop.",
+  },
+  reversed: {
+    label: "Hoàn tác đối soát",
+    badgeClass: "border-[#fecdd3] bg-[#fff1f3] text-[#be123c]",
+    panelClass: "bg-[#fff1f3] text-[#be123c]",
+    description: "Đơn bị hủy hoặc hoàn tiền nên không tiếp tục đối soát cho người bán.",
   },
 }
 

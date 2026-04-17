@@ -37,9 +37,9 @@
 </template>
 
 <script setup lang="ts">
-import type { BuyerOrderTimelineEntry } from "../../../types/orders"
+import type { OrderTimelineEntry } from "../../../types/orders"
 
 defineProps<{
-  events: BuyerOrderTimelineEntry[]
+  events: OrderTimelineEntry[]
 }>()
 </script>

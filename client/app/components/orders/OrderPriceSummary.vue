@@ -43,10 +43,10 @@
 <script setup lang="ts">
 import { useOrderPresentation } from "../../composables/useOrderPresentation"
 import { formatOrderCurrency } from "../../../types/orders"
-import type { BuyerOrder } from "../../../types/orders"
+import type { OrderPresentationShape } from "../../../types/orders"
 
 const props = withDefaults(defineProps<{
-  order: BuyerOrder
+  order: OrderPresentationShape
   cardClass?: string
 }>(), {
   cardClass: "rounded-[22px] bg-white/85 px-4 py-4 shadow-[0_8px_18px_rgba(15,35,110,0.04)]",

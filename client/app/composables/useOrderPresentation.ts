@@ -4,8 +4,8 @@ import {
   buyerOrderStatusMeta,
 } from "../../types/orders"
 import type {
-  BuyerOrder,
   BuyerOrderStatus,
+  OrderPresentationShape,
 } from "../../types/orders"
 import type { MaybeRefOrGetter } from "vue"
 
@@ -15,13 +15,13 @@ export const orderItemFallbackBackground = [
   "linear-gradient(150deg, #243b63 0%, #f1959b 42%, #f8c184 100%)",
 ].join(", ")
 
-export function getOrderSubtotal(order?: BuyerOrder | null) {
+export function getOrderSubtotal(order?: OrderPresentationShape | null) {
   return order
     ? order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
     : 0
 }
 
-export function getOrderTotalItems(order?: BuyerOrder | null) {
+export function getOrderTotalItems(order?: OrderPresentationShape | null) {
   return order
     ? order.items.reduce((sum, item) => sum + item.quantity, 0)
     : 0
@@ -42,7 +42,7 @@ export function getRepeatOrderActionLabel(status?: BuyerOrderStatus | null) {
 }
 
 export function useOrderPresentation(
-  order: MaybeRefOrGetter<BuyerOrder | null | undefined>,
+  order: MaybeRefOrGetter<OrderPresentationShape | null | undefined>,
 ) {
   const currentOrder = computed(() => toValue(order))
 
