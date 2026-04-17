@@ -301,13 +301,13 @@ Khong lam full he thong ngay. Dung 3 page mau nay de kiem tra bo component da du
 
 ### P2. Event UI
 
-- [ ] `EventsTabsUI`
-- [ ] `EventCard`
-- [ ] `CreateEventFormUI`
-- [ ] `EventHero`
-- [ ] `EventDetailsBlock`
-- [ ] `EventActionBar`
-- [ ] `AttendeeList`
+- [x] `EventsTabsUI`
+- [x] `EventCard`
+- [x] `CreateEventFormUI`
+- [x] `EventHero`
+- [x] `EventDetailsBlock`
+- [x] `EventActionBar`
+- [x] `AttendeeList`
 
 ---
 
@@ -410,9 +410,9 @@ Danh sach nay chi la lap page bang component da co, chua can nghiep vu.
 - [ ] `/create-page`
 - [ ] `/p/{page_name}`
 - [ ] `/page-setting/{page}`
-- [ ] `/events`
-- [ ] `/events/create-event`
-- [ ] `/events/{id}`
+- [x] `/events`
+- [x] `/events/create-event`
+- [x] `/events/{id}`
 
 ### P2. Commerce pages
 
