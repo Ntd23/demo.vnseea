@@ -22,18 +22,18 @@
 - `[x]` `P-09` `/status/create` — Tạo Story
 - `[x]` `P-10` `/products` — Marketplace
 - `[x]` `P-11` `/new-product` — Tạo sản phẩm
-- `[ ]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
+- `[x]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
 - `[x]` `P-13` `/my-products` — Sản phẩm của tôi
-- `[ ]` `P-14` `/checkout` — Thanh toán
-- `[ ]` `P-15` `/orders` — Đơn hàng (người mua)
-- `[ ]` `P-16` `/order/{id}` — Chi tiết đơn hàng
-- `[ ]` `P-17` `/customer_order/{id}` — Đơn hàng (người bán)
-- `[ ]` `P-18` `/create-group` — Tạo nhóm
-- `[ ]` `P-19` `/g/{group_name}` — Trang nhóm
-- `[ ]` `P-20` `/group-setting/{group}` — Cài đặt nhóm
-- `[ ]` `P-21` `/create-page` — Tạo trang
-- `[ ]` `P-22` `/p/{page_name}` — Trang fanpage
-- `[ ]` `P-23` `/page-setting/{page}` — Cài đặt page
+- `[x]` `P-14` `/checkout` — Thanh toán
+- `[x]` `P-15` `/orders` — Đơn hàng (người mua)
+- `[x]` `P-16` `/order/{id}` — Chi tiết đơn hàng
+- `[x]` `P-17` `/customer_order/{id}` — Đơn hàng (người bán)
+- `[x]` `P-18` `/create-group` — Tạo nhóm
+- `[x]` `P-19` `/g/{group_name}` — Trang nhóm
+- `[x]` `P-20` `/group-setting/{group}` — Cài đặt nhóm
+- `[x]` `P-21` `/create-page` — Tạo trang
+- `[x]` `P-22` `/p/{page_name}` — Trang fanpage
+- `[x]` `P-23` `/page-setting/{page}` — Cài đặt page
 - `[ ]` `P-24` `/blogs` — Danh sách blogs
 - `[ ]` `P-25` `/create-blog` — Viết blog
 - `[ ]` `P-26` `/read-blog/{slug}` — Đọc blog
@@ -77,7 +77,9 @@
 - `status/create` — đã hoàn thiện UI/responsive
 - `products` — đã hoàn thiện UI/responsive
 - `new-product` — đã hoàn thiện UI/responsive
+- `edit-product` — đã hoàn thiện UI/responsive
 - `my-products` — đã hoàn thiện UI/responsive
+- `checkout` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
