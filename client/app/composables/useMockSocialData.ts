@@ -189,6 +189,7 @@ export const useMockSocialData = () => {
     { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
     { label: "Danh mục", icon: "i-ph-squares-four", to: "/categories" },
     { label: "Sự kiện", icon: "i-ph-calendar-dots", to: "/events" },
+    { label: "Live", icon: "i-ph-broadcast", to: "/live" },
     { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "/forum" },
     { label: "Phim", icon: "i-ph-popcorn", to: "/movies" },
     { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },

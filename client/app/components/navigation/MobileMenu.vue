@@ -109,6 +109,7 @@ const mainNav = [
   { label: "Phim", icon: "i-ph-film-strip", to: "#" },
   { label: "Sự kiện", icon: "i-ph-calendar-blank", to: "/events" },
   { label: "Tạo sự kiện", icon: "i-ph-calendar-plus", to: "/events/create-event" },
+  { label: "Live", icon: "i-ph-broadcast", to: "/live" },
   { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "#" },
   { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "#" },
   { label: "Quảng cáo", icon: "i-ph-megaphone", to: "#" },
