@@ -30,7 +30,7 @@
 - `[ ]` `P-17` `/customer_order/{id}` — Đơn hàng (người bán)
 - `[x]` `P-18` `/create-group` — Tạo nhóm
 - `[x]` `P-19` `/g/{group_name}` — Trang nhóm
-- `[ ]` `P-20` `/group-setting/{group}` — Cài đặt nhóm
+- `[x]` `P-20` `/group-setting/{group}` — Cài đặt nhóm
 - `[ ]` `P-21` `/create-page` — Tạo trang
 - `[ ]` `P-22` `/p/{page_name}` — Trang fanpage
 - `[ ]` `P-23` `/page-setting/{page}` — Cài đặt page

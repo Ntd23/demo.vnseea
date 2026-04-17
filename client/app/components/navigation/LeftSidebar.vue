@@ -85,6 +85,7 @@ const isGroupsRoute = () =>
   || route.path === "/joined_groups"
   || route.path === "/create-group"
   || route.path.startsWith("/g/")
+  || route.path.startsWith("/group-setting/")
 
 const isActive = (to: string) => {
   const normalized = to.split("#")[0]

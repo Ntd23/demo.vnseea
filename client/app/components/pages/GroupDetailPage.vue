@@ -51,7 +51,10 @@
           :member-count-label="memberCountLabel"
         />
 
-        <CommunityGroupAdminCard v-if="group.canManage" />
+        <CommunityGroupAdminCard
+          v-if="group.canManage"
+          :slug="group.slug"
+        />
       </aside>
     </div>
   </div>

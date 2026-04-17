@@ -60,14 +60,14 @@
               {{ group.inviteLabel || "Mời thành viên" }}
             </button>
 
-            <button
+            <NuxtLink
               v-if="group.canManage"
+              :to="settingsPath"
               class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
-              type="button"
             >
               <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
               Cài đặt nhóm
-            </button>
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -78,6 +78,7 @@
 <script setup lang="ts">
 import {
   getCommunityInitials,
+  getCommunityGroupSettingsPath,
 } from "../../../types/community"
 import type { CommunityGroupRecord } from "../../../types/community"
 
@@ -91,5 +92,9 @@ const props = defineProps<{
 
 const avatarLabel = computed(() =>
   getCommunityInitials(props.group.name),
+)
+
+const settingsPath = computed(() =>
+  getCommunityGroupSettingsPath(props.group.slug),
 )
 </script>

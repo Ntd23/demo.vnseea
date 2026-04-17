@@ -49,6 +49,23 @@ export interface CommunityGroupMember {
   online?: boolean
 }
 
+export interface CommunityGroupSettingsDraft {
+  name: string
+  slug: string
+  summary: string
+  website: string
+  locationLabel: string
+  privacy: CommunityPrivacy
+  category: string
+  tags: string
+  guidelines: string
+  joinApproval: boolean
+  postApproval: boolean
+  allowMemberInvites: boolean
+  showMemberDirectory: boolean
+  welcomePostEnabled: boolean
+}
+
 export const communityUrlPrefix = "https://vnseea.vn/"
 
 export const communityPrivacyOptions: CommunityOption[] = [
@@ -343,6 +360,10 @@ export function getCommunityGroupPath(slug: string) {
   return `/g/${slug}`
 }
 
+export function getCommunityGroupSettingsPath(slug: string) {
+  return `/group-setting/${slug}`
+}
+
 export function getCommunityGroupBySlug(slug: string) {
   return communityGroupDirectory.find(group => group.slug === slug)
 }
@@ -359,4 +380,25 @@ export function createCommunitySlug(value: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 50)
+}
+
+export function createCommunityGroupSettingsDraft(
+  group?: CommunityGroupRecord,
+): CommunityGroupSettingsDraft {
+  return {
+    name: group?.name ?? "",
+    slug: group?.slug ?? "",
+    summary: group?.summary ?? "",
+    website: group?.website ?? "",
+    locationLabel: group?.locationLabel ?? "",
+    privacy: group?.privacy ?? "public",
+    category: group?.category ?? communityCategoryOptions[0]?.value ?? "auto",
+    tags: group?.tags.join(", ") ?? "",
+    guidelines: group?.guidelines?.join("\n") ?? "",
+    joinApproval: group?.privacy !== "public",
+    postApproval: group?.privacy === "private" || group?.privacy === "secret",
+    allowMemberInvites: true,
+    showMemberDirectory: true,
+    welcomePostEnabled: true,
+  }
 }
