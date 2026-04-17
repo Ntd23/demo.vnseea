@@ -360,10 +360,10 @@ Khong lam full he thong ngay. Dung 3 page mau nay de kiem tra bo component da du
 
 ### P2. Blogs / watch / jobs
 
-- [ ] `BlogCard`
-- [ ] `BlogEditorUI`
-- [ ] `BlogReaderLayout`
-- [ ] `RelatedBlogsList`
+- [x] `BlogCard`
+- [x] `BlogEditorUI`
+- [x] `BlogReaderLayout`
+- [x] `RelatedBlogsList`
 - [ ] `VideoWatchLayout`
 - [ ] `RelatedVideoList`
 - [ ] `JobCard`
@@ -434,9 +434,9 @@ Danh sach nay chi la lap page bang component da co, chua can nghiep vu.
 - [ ] `/status/create`
 - [ ] `/reels`
 - [ ] `/live`
-- [ ] `/blogs`
-- [ ] `/create-blog`
-- [ ] `/read-blog/{slug}`
+- [x] `/blogs`
+- [x] `/create-blog`
+- [x] `/read-blog/{slug}`
 - [ ] `/watch`
 - [ ] `/jobs`
 - [ ] `/forum`

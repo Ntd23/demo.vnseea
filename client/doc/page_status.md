@@ -34,9 +34,9 @@
 - `[ ]` `P-21` `/create-page` — Tạo trang
 - `[ ]` `P-22` `/p/{page_name}` — Trang fanpage
 - `[ ]` `P-23` `/page-setting/{page}` — Cài đặt page
-- `[ ]` `P-24` `/blogs` — Danh sách blogs
-- `[ ]` `P-25` `/create-blog` — Viết blog
-- `[ ]` `P-26` `/read-blog/{slug}` — Đọc blog
+- `[x]` `P-24` `/blogs` — Danh sách blogs
+- `[x]` `P-25` `/create-blog` — Viết blog
+- `[x]` `P-26` `/read-blog/{slug}` — Đọc blog
 - `[ ]` `P-27` `/events` — Sự kiện
 - `[ ]` `P-28` `/events/create-event` — Tạo sự kiện
 - `[ ]` `P-29` `/events/{id}` — Chi tiết sự kiện
@@ -78,6 +78,9 @@
 - `products` — đã hoàn thiện UI/responsive
 - `new-product` — đã hoàn thiện UI/responsive
 - `my-products` — đã hoàn thiện UI/responsive
+- `blogs` — đã hoàn thiện UI danh sách, bộ lọc và pagination
+- `create-blog` — đã hoàn thiện UI form viết blog, tags, thumbnail và preview
+- `read-blog/{slug}` — đã hoàn thiện UI đọc blog, author/meta, react/share, comments và related blogs
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt

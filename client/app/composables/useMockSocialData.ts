@@ -185,7 +185,7 @@ export const useMockSocialData = () => {
   ]
 
   const sidebarNavMore: SidebarNavItem[] = [
-    { label: "Blog", icon: "i-ph-newspaper", to: "/blog" },
+    { label: "Blog", icon: "i-ph-newspaper", to: "/blogs" },
     { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
     { label: "Danh mục", icon: "i-ph-squares-four", to: "/categories" },
     { label: "Sự kiện", icon: "i-ph-calendar-dots", to: "/events" },
