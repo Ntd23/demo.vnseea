@@ -51,7 +51,6 @@
 import CheckoutLayout from "../checkout/CheckoutLayout.vue"
 import { buyerOrderFilterLabels } from "../../../types/orders"
 import type {
-  BuyerOrder,
   BuyerOrderFilter,
   OrdersFilterOption,
   OrdersOverviewCard,
@@ -62,125 +61,7 @@ useSeoMeta({
   description: "Theo dõi đơn mua, trạng thái giao hàng và tổng quan các đơn marketplace của bạn trên VNSEEA.",
 })
 
-const orders = ref<BuyerOrder[]>([
-  {
-    id: "ord-240417-118",
-    orderNumber: "ORD-240417-118",
-    seller: "Studio Mộc",
-    placedAt: "17/04/2026 · 09:20",
-    status: "pending",
-    deliveryWindow: "Shop dự kiến xác nhận trong 2 giờ",
-    paymentMethod: "Ví VNSEEA",
-    shippingAddress: "Tầng 8, 18 Nguyễn Chí Thanh, Đống Đa, Hà Nội",
-    shippingFee: 0,
-    total: 1780000,
-    items: [
-      {
-        id: "i-1",
-        name: "Loa bluetooth mini",
-        quantity: 1,
-        price: 890000,
-        imageStyle: [
-          "radial-gradient(circle at 78% 12%, rgba(255,214,182,0.42), transparent 18%)",
-          "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.24), transparent 22%)",
-          "linear-gradient(150deg, #111827 0%, #4f46e5 42%, #c4b5fd 100%)",
-        ].join(", "),
-      },
-      {
-        id: "i-2",
-        name: "Tai nghe chống ồn",
-        quantity: 1,
-        price: 890000,
-        imageStyle: [
-          "radial-gradient(circle at 75% 16%, rgba(255,255,255,0.26), transparent 20%)",
-          "linear-gradient(140deg, #243b63 0%, #6c8de2 44%, #dbeafe 100%)",
-        ].join(", "),
-      },
-    ],
-  },
-  {
-    id: "ord-240416-083",
-    orderNumber: "ORD-240416-083",
-    seller: "Nông trại Bơ",
-    placedAt: "16/04/2026 · 15:40",
-    status: "shipping",
-    deliveryWindow: "Dự kiến giao hôm nay trước 17:30",
-    paymentMethod: "Ví VNSEEA",
-    shippingAddress: "12 Trần Hưng Đạo, Hải Châu, Đà Nẵng",
-    shippingFee: 15000,
-    total: 435000,
-    items: [
-      {
-        id: "i-3",
-        name: "Hạt điều rang muối 500g",
-        quantity: 1,
-        price: 210000,
-        imageStyle: [
-          "radial-gradient(circle at 78% 12%, rgba(255,214,182,0.36), transparent 18%)",
-          "linear-gradient(150deg, #7c2d12 0%, #ea580c 40%, #fdba74 100%)",
-        ].join(", "),
-      },
-      {
-        id: "i-4",
-        name: "Mật ong rừng nguyên chất",
-        quantity: 1,
-        price: 210000,
-        imageStyle: [
-          "radial-gradient(circle at 24% 18%, rgba(255,255,255,0.28), transparent 18%)",
-          "linear-gradient(140deg, #713f12 0%, #f59e0b 48%, #fde68a 100%)",
-        ].join(", "),
-      },
-    ],
-  },
-  {
-    id: "ord-240411-051",
-    orderNumber: "ORD-240411-051",
-    seller: "Hoàng An Decor",
-    placedAt: "11/04/2026 · 11:05",
-    status: "delivered",
-    deliveryWindow: "Đã giao thành công ngày 13/04/2026",
-    paymentMethod: "Ví VNSEEA",
-    shippingAddress: "36 Xuân Diệu, Tây Hồ, Hà Nội",
-    shippingFee: 0,
-    total: 1850000,
-    items: [
-      {
-        id: "i-5",
-        name: "Bàn trà gỗ sồi",
-        quantity: 1,
-        price: 1850000,
-        imageStyle: [
-          "radial-gradient(circle at 76% 10%, rgba(255,255,255,0.22), transparent 18%)",
-          "linear-gradient(150deg, #78350f 0%, #b45309 38%, #f59e0b 100%)",
-        ].join(", "),
-      },
-    ],
-  },
-  {
-    id: "ord-240406-019",
-    orderNumber: "ORD-240406-019",
-    seller: "Beauty Lab",
-    placedAt: "06/04/2026 · 08:50",
-    status: "cancelled",
-    deliveryWindow: "Đơn đã hủy theo yêu cầu của người mua",
-    paymentMethod: "Hoàn về ví VNSEEA",
-    shippingAddress: "92 Lê Lợi, Ninh Kiều, Cần Thơ",
-    shippingFee: 0,
-    total: 520000,
-    items: [
-      {
-        id: "i-6",
-        name: "Combo dưỡng tóc Yaskey",
-        quantity: 1,
-        price: 520000,
-        imageStyle: [
-          "radial-gradient(circle at 24% 18%, rgba(255,255,255,0.3), transparent 18%)",
-          "linear-gradient(140deg, #0f766e 0%, #14b8a6 45%, #99f6e4 100%)",
-        ].join(", "),
-      },
-    ],
-  },
-])
+const { orders } = useBuyerOrders()
 
 const search = ref("")
 const activeFilter = ref<BuyerOrderFilter>("all")

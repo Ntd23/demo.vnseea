@@ -2,6 +2,8 @@ export type BuyerOrderStatus = "pending" | "shipping" | "delivered" | "cancelled
 
 export type BuyerOrderFilter = "all" | BuyerOrderStatus
 
+export type BuyerOrderPaymentStatus = "paid" | "refunded"
+
 export interface BuyerOrderItem {
   id: string
   name: string
@@ -18,10 +20,26 @@ export interface BuyerOrder {
   status: BuyerOrderStatus
   deliveryWindow: string
   paymentMethod: string
+  paymentStatus: BuyerOrderPaymentStatus
+  paymentReference: string
   shippingAddress: string
+  recipientName: string
+  recipientPhone: string
+  shippingProvider: string
+  trackingCode: string
+  note?: string
   shippingFee: number
   total: number
   items: BuyerOrderItem[]
+  timeline: BuyerOrderTimelineEntry[]
+}
+
+export interface BuyerOrderTimelineEntry {
+  key: string
+  label: string
+  time: string
+  description: string
+  done: boolean
 }
 
 export interface OrdersFilterOption {
@@ -85,6 +103,20 @@ export const buyerOrderStatusMeta: Record<BuyerOrderStatus, {
     icon: "i-ph-x-circle-fill",
     progress: 0,
     description: "Đơn hàng đã bị hủy và không tiếp tục xử lý.",
+  },
+}
+
+export const buyerOrderPaymentStatusMeta: Record<BuyerOrderPaymentStatus, {
+  label: string
+  badgeClass: string
+}> = {
+  paid: {
+    label: "Đã thanh toán",
+    badgeClass: "border-[#c7ebd0] bg-[#effaf3] text-[#1f7a38]",
+  },
+  refunded: {
+    label: "Đã hoàn tiền",
+    badgeClass: "border-[#fecdd3] bg-[#fff1f3] text-[#be123c]",
   },
 }
 

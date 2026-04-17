@@ -49,36 +49,11 @@
           </div>
 
           <div class="mt-4 space-y-3">
-            <div
+            <OrdersOrderItemCard
               v-for="item in order.items"
               :key="item.id"
-              class="flex gap-3 rounded-[20px] border border-[#e8edf7] bg-white p-3 shadow-[0_8px_20px_rgba(15,35,110,0.04)]"
-            >
-              <div class="relative h-20 w-20 shrink-0 overflow-hidden rounded-[18px] border border-[#dbe3f2] bg-[#eef1f7]">
-                <div
-                  class="absolute inset-0"
-                  :style="{ background: item.imageStyle || fallbackBackground }"
-                />
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.26),transparent_28%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.12)_100%)]" />
-              </div>
-
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-start justify-between gap-3">
-                  <div class="min-w-0">
-                    <p class="truncate text-[15px] font-black text-[#243b63]">
-                      {{ item.name }}
-                    </p>
-                    <p class="mt-1 text-[13px] text-slate-500">
-                      Qty {{ item.quantity }}
-                    </p>
-                  </div>
-
-                  <p class="text-[14px] font-black text-[#16a34a]">
-                    {{ formatOrderCurrency(item.price * item.quantity) }}
-                  </p>
-                </div>
-              </div>
-            </div>
+              :item="item"
+            />
           </div>
         </section>
 
@@ -93,41 +68,10 @@
       </div>
 
       <aside class="space-y-3">
-        <section class="rounded-[24px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-4">
-          <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-            Tổng thanh toán
-          </p>
-
-          <div class="mt-4 space-y-3 text-[13px] text-slate-500">
-            <div class="flex items-center justify-between gap-3">
-              <span>Tạm tính</span>
-              <span class="font-semibold text-[#243b63]">{{ formatOrderCurrency(subtotal) }}</span>
-            </div>
-            <div class="flex items-center justify-between gap-3">
-              <span>Phí giao hàng</span>
-              <span class="font-semibold text-[#243b63]">
-                {{ order.shippingFee > 0 ? formatOrderCurrency(order.shippingFee) : "Miễn phí" }}
-              </span>
-            </div>
-          </div>
-
-          <div class="mt-4 h-px bg-[#e8edf7]" />
-
-          <div class="mt-4 flex items-end justify-between gap-3">
-            <div>
-              <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-                Tổng đơn
-              </p>
-              <p class="mt-1 text-[1.7rem] font-black tracking-[-0.05em] text-[#2f3542]">
-                {{ formatOrderCurrency(order.total) }}
-              </p>
-            </div>
-
-            <div :class="statusMeta.panelClass" class="rounded-full px-3 py-1.5 text-[11px] font-bold">
-              {{ statusMeta.label }}
-            </div>
-          </div>
-        </section>
+        <OrdersOrderPriceSummary
+          :order="order"
+          card-class="rounded-[24px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-4"
+        />
 
         <section class="rounded-[24px] border border-[#eef2f8] bg-white p-4">
           <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
@@ -182,28 +126,17 @@
 </template>
 
 <script setup lang="ts">
-import { buyerOrderStatusMeta, formatOrderCurrency } from "../../../types/orders"
+import {
+  getRepeatOrderActionLabel,
+  useOrderPresentation,
+} from "../../composables/useOrderPresentation"
 import type { BuyerOrder } from "../../../types/orders"
 
 const props = defineProps<{
   order: BuyerOrder
 }>()
 
-const fallbackBackground = [
-  "radial-gradient(circle at 78% 12%, rgba(255,214,182,0.5), transparent 18%)",
-  "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.26), transparent 22%)",
-  "linear-gradient(150deg, #243b63 0%, #f1959b 42%, #f8c184 100%)",
-].join(", ")
-
-const statusMeta = computed(() => buyerOrderStatusMeta[props.order.status])
-
-const subtotal = computed(() =>
-  props.order.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-)
-
-const totalItems = computed(() =>
-  props.order.items.reduce((sum, item) => sum + item.quantity, 0),
-)
+const { statusMeta, totalItems, activeProgressStep } = useOrderPresentation(computed(() => props.order))
 
 const progressSteps = [
   {
@@ -224,14 +157,5 @@ const progressSteps = [
   },
 ] as const
 
-const activeProgressStep = computed(() => {
-  if (props.order.status === "cancelled") return 0
-  return buyerOrderStatusMeta[props.order.status].progress
-})
-
-const repeatActionLabel = computed(() => {
-  if (props.order.status === "delivered") return "Mua lại sản phẩm tương tự"
-  if (props.order.status === "cancelled") return "Chọn sản phẩm khác"
-  return "Xem thêm sản phẩm"
-})
+const repeatActionLabel = computed(() => getRepeatOrderActionLabel(props.order.status))
 </script>
