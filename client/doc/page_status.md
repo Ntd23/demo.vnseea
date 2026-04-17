@@ -43,7 +43,7 @@
 - `[x]` `P-30` `/jobs` — Việc làm
 - `[x]` `P-31` `/funding` + `/create_funding` + `/show_fund/{id}` — Crowdfunding
 - `[x]` `P-32` `/live` — Live Streaming
-- `[ ]` `P-33` `/watch` — Xem Video
+- `[x]` `P-33` `/watch` — Xem Video
 - `[ ]` `P-34` `/setting` — Cài đặt
 
 ---
@@ -87,6 +87,7 @@
 - `jobs` — đã hoàn thiện UI danh sách việc làm, filter ngành/địa điểm/loại hình, chi tiết job, apply form và đăng job mới
 - `funding` / `create_funding` / `show_fund/{id}` — đã hoàn thiện UI crowdfunding, search/filter, tạo campaign, chi tiết progress, donate mock, donors list và owner actions
 - `live` — đã hoàn thiện UI live streaming, Go Live mock, live player, stream list, like/mute/viewer state và live chat mock
+- `watch` — đã hoàn thiện UI xem video, player mock/Plyr-ready, search/filter, video info, comments, related videos và like/share mock
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
