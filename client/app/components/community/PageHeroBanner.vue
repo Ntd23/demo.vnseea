@@ -60,14 +60,14 @@
               Chia sẻ trang
             </button>
 
-            <button
+            <NuxtLink
               v-if="page.canManage"
+              :to="pageSettingsPath"
               class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
-              type="button"
             >
               <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
               Cài đặt trang
-            </button>
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -76,7 +76,11 @@
 </template>
 
 <script setup lang="ts">
-import { getCommunityInitials } from "../../../types/community"
+import {
+  appendCommunityQuery,
+  getCommunityInitials,
+  getCommunityPageSettingsPath,
+} from "../../../types/community"
 import type { CommunityPageRecord } from "../../../types/community"
 
 const props = defineProps<{
@@ -86,7 +90,13 @@ const props = defineProps<{
   likeCountLabel: string
 }>()
 
+const route = useRoute()
+
 const avatarLabel = computed(() =>
   getCommunityInitials(props.page.name),
+)
+
+const pageSettingsPath = computed(() =>
+  appendCommunityQuery(getCommunityPageSettingsPath(props.page.slug), route.query),
 )
 </script>

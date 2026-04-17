@@ -44,23 +44,33 @@
       <p class="mt-1 text-[12px] leading-5 text-slate-500">
         Ở bước tiếp theo bạn có thể chỉnh CTA, thông tin liên hệ, cover và các thiết lập hiển thị của trang.
       </p>
-      <button
+      <NuxtLink
         class="mt-3 inline-flex h-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[12px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-        type="button"
+        :to="pageSettingsPath"
       >
         <Icon name="i-ph-gear-six-bold" class="mr-1.5 h-4 w-4" />
         Cài đặt trang
-      </button>
+      </NuxtLink>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import {
+  appendCommunityQuery,
+  getCommunityPageSettingsPath,
+} from "../../../types/community"
 import type { CommunityPageRecord } from "../../../types/community"
 
-defineProps<{
+const props = defineProps<{
   page: CommunityPageRecord
   followerCountLabel: string
   likeCountLabel: string
 }>()
+
+const route = useRoute()
+
+const pageSettingsPath = computed(() =>
+  appendCommunityQuery(getCommunityPageSettingsPath(props.page.slug), route.query),
+)
 </script>

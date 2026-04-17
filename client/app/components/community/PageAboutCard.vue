@@ -28,24 +28,31 @@
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Tương tác</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ page.responseLabel }}</p>
-        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ followerCountLabel }} · {{ likeCountLabel }}</p>
+        <p class="mt-1 text-[12px] leading-5 text-slate-500">
+          {{
+            [
+              showFollowerCount ? followerCountLabel : "",
+              showLikeCount ? likeCountLabel : "",
+            ].filter(Boolean).join(" · ") || "Đã ẩn chỉ số công khai"
+          }}
+        </p>
       </div>
     </div>
 
     <div class="mt-4 space-y-2 text-[13px] text-slate-500">
-      <div class="flex items-start gap-2">
+      <div v-if="page.locationLabel" class="flex items-start gap-2">
         <Icon name="i-ph-map-pin-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
         <span>{{ page.locationLabel }}</span>
       </div>
-      <div class="flex items-start gap-2">
+      <div v-if="page.website" class="flex items-start gap-2">
         <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
         <span>{{ page.website }}</span>
       </div>
-      <div class="flex items-start gap-2">
+      <div v-if="page.foundedLabel" class="flex items-start gap-2">
         <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
         <span>{{ page.foundedLabel }}</span>
       </div>
-      <div class="flex items-start gap-2">
+      <div v-if="showFollowerCount" class="flex items-start gap-2">
         <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
         <span>{{ followerCountLabel }}</span>
       </div>
@@ -77,7 +84,11 @@ withDefaults(defineProps<{
   followerCountLabel: string
   likeCountLabel: string
   compact?: boolean
+  showFollowerCount?: boolean
+  showLikeCount?: boolean
 }>(), {
   compact: false,
+  showFollowerCount: true,
+  showLikeCount: true,
 })
 </script>

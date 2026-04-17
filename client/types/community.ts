@@ -86,6 +86,24 @@ export interface CommunityGroupSettingsDraft {
   welcomePostEnabled: boolean
 }
 
+export interface CommunityPageSettingsDraft {
+  name: string
+  slug: string
+  summary: string
+  website: string
+  locationLabel: string
+  category: string
+  ctaLabel: string
+  responseLabel: string
+  ownerLabel: string
+  tags: string
+  allowMessages: boolean
+  showFollowerCount: boolean
+  showLikeCount: boolean
+  showWebsite: boolean
+  recommendRelatedPages: boolean
+}
+
 export const communityUrlPrefix = "https://vnseea.vn/"
 export const communityPageUrlPrefix = "https://vnseea.vn/p/"
 
@@ -185,6 +203,39 @@ export const communityPageCategoryOptions: CommunityOption[] = [
     value: "service",
     description: "Phù hợp với agency, freelancer, studio dịch vụ và đội ngũ tư vấn.",
     icon: "i-ph-briefcase-fill",
+  },
+]
+
+export const communityPageCtaOptions: CommunityOption[] = [
+  {
+    label: "Nhắn tin",
+    value: "message",
+    description: "Phù hợp khi bạn muốn kéo người xem sang inbox để tư vấn trực tiếp.",
+    icon: "i-ph-chat-circle-dots-fill",
+  },
+  {
+    label: "Theo dõi",
+    value: "follow",
+    description: "Tốt cho fanpage nội dung, thương hiệu hoặc kênh cập nhật định kỳ.",
+    icon: "i-ph-bell-simple-ringing-fill",
+  },
+  {
+    label: "Xem sản phẩm",
+    value: "catalog",
+    description: "Dùng cho trang có danh mục sản phẩm, dịch vụ hoặc bộ sưu tập nổi bật.",
+    icon: "i-ph-storefront-fill",
+  },
+  {
+    label: "Đặt lịch",
+    value: "booking",
+    description: "Hợp với studio, chuyên gia, lớp học hoặc dịch vụ cần chốt khung giờ.",
+    icon: "i-ph-calendar-check-fill",
+  },
+  {
+    label: "Gọi ngay",
+    value: "call",
+    description: "Phù hợp với doanh nghiệp địa phương hoặc đội ngũ cần phản hồi nhanh.",
+    icon: "i-ph-phone-call-fill",
   },
 ]
 
@@ -508,6 +559,25 @@ export function getCommunityPageBySlug(slug: string) {
   return communityPageDirectory.find(page => page.slug === slug)
 }
 
+export function appendCommunityQuery(path: string, query: Record<string, unknown>) {
+  const search = new URLSearchParams()
+
+  Object.entries(query).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      value.forEach(item => search.append(key, String(item)))
+      return
+    }
+
+    if (value !== undefined && value !== null && String(value).trim()) {
+      search.append(key, String(value))
+    }
+  })
+
+  const queryString = search.toString()
+
+  return `${path}${queryString ? `?${queryString}` : ""}`
+}
+
 export function getCommunityGroupMembers(slug: string) {
   return communityGroupMembers[slug] ?? []
 }
@@ -540,6 +610,28 @@ export function createCommunityGroupSettingsDraft(
     allowMemberInvites: true,
     showMemberDirectory: true,
     welcomePostEnabled: true,
+  }
+}
+
+export function createCommunityPageSettingsDraft(
+  page?: CommunityPageRecord,
+): CommunityPageSettingsDraft {
+  return {
+    name: page?.name ?? "",
+    slug: page?.slug ?? "",
+    summary: page?.summary ?? "",
+    website: page?.website ?? "",
+    locationLabel: page?.locationLabel ?? "",
+    category: page?.category ?? communityPageCategoryOptions[0]?.value ?? "local-business",
+    ctaLabel: page?.ctaLabel ?? "Theo dõi",
+    responseLabel: page?.responseLabel ?? "Phản hồi trong ngày làm việc",
+    ownerLabel: page?.ownerLabel ?? "Fanpage công khai",
+    tags: page?.tags.join(", ") ?? "",
+    allowMessages: true,
+    showFollowerCount: true,
+    showLikeCount: true,
+    showWebsite: true,
+    recommendRelatedPages: true,
   }
 }
 
