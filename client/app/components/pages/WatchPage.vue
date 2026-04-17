@@ -1,0 +1,187 @@
+<template>
+  <div class="space-y-5 pb-10">
+    <WatchHero :stats="heroStats" />
+
+    <WatchFilters
+      v-model:search="search"
+      v-model:selected-category="selectedCategory"
+      :categories="categories"
+    />
+
+    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <main class="space-y-5">
+        <WatchPlayer
+          :elapsed="elapsed"
+          :playing="playing"
+          :progress="progress"
+          :video="selectedVideo"
+          @toggle-play="togglePlay"
+        />
+
+        <WatchVideoInfo
+          :liked="likedById[selectedVideo.id] ?? false"
+          :local-likes="localLikesById[selectedVideo.id] ?? 0"
+          :share-message="shareMessage"
+          :video="selectedVideo"
+          @like="toggleLike"
+          @share="shareVideo"
+        />
+
+        <WatchComments
+          :comments="activeComments"
+          @send="sendComment"
+        />
+      </main>
+
+      <WatchRelatedVideos
+        :selected-id="selectedVideoId"
+        :videos="filteredVideos"
+        @select="selectVideo"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import type { WatchCategoryKey, WatchComment, WatchVideo } from "~/composables/useMockWatchData"
+import { formatWatchNumber } from "~/composables/useMockWatchData"
+
+const { categories, videos } = useMockWatchData()
+
+useSeoMeta({
+  title: "Watch | VNSEEA",
+  description: "Xem video, bình luận, like/share và chọn video liên quan trong VNSEEA.",
+})
+
+const search = ref("")
+const selectedCategory = ref<WatchCategoryKey>("all")
+const selectedVideoId = ref(videos[0]?.id ?? "")
+const playing = ref(false)
+const progress = ref(28)
+const localLikesById = ref<Record<string, number>>({})
+const likedById = ref<Record<string, boolean>>({})
+const localCommentsById = ref<Record<string, WatchComment[]>>({})
+const shareMessage = ref("")
+
+const filteredVideos = computed(() => {
+  const keyword = search.value.trim().toLowerCase()
+
+  return videos.filter((video) => {
+    const matchesKeyword = keyword.length === 0 || [
+      video.title,
+      video.author,
+      video.categoryLabel,
+      video.description,
+      ...video.tags,
+    ].some(field => field.toLowerCase().includes(keyword))
+
+    const matchesCategory = selectedCategory.value === "all" || video.category === selectedCategory.value
+    return matchesKeyword && matchesCategory
+  })
+})
+
+watch(filteredVideos, (items) => {
+  if (!items.some(video => video.id === selectedVideoId.value)) {
+    selectedVideoId.value = items[0]?.id ?? videos[0]!.id
+  }
+})
+
+const selectedVideo = computed<WatchVideo>(() => videos.find(video => video.id === selectedVideoId.value) ?? videos[0]!)
+
+const activeComments = computed(() => [
+  ...selectedVideo.value.comments,
+  ...(localCommentsById.value[selectedVideo.value.id] ?? []),
+])
+
+const elapsed = computed(() => {
+  const totalSeconds = parseDuration(selectedVideo.value.duration)
+  const current = Math.round(totalSeconds * progress.value / 100)
+  const minutes = Math.floor(current / 60).toString().padStart(2, "0")
+  const seconds = (current % 60).toString().padStart(2, "0")
+  return `${minutes}:${seconds}`
+})
+
+const heroStats = computed(() => [
+  {
+    label: "Video",
+    value: videos.length,
+    description: "Dữ liệu mock từ posts.php.",
+  },
+  {
+    label: "Lượt xem",
+    value: formatWatchNumber(videos.reduce((sum, video) => sum + video.views, 0)),
+    description: "Tổng views hiển thị.",
+  },
+  {
+    label: "Bình luận",
+    value: Object.values(localCommentsById.value).reduce((sum, comments) => sum + comments.length, 0),
+    description: "Comment gửi trong phiên này.",
+  },
+])
+
+let progressTimer: ReturnType<typeof setInterval> | undefined
+
+watch(playing, (isPlaying) => {
+  if (progressTimer) {
+    clearInterval(progressTimer)
+    progressTimer = undefined
+  }
+
+  if (isPlaying) {
+    progressTimer = setInterval(() => {
+      progress.value = progress.value >= 98 ? 8 : progress.value + 1
+    }, 900)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (progressTimer) clearInterval(progressTimer)
+})
+
+const parseDuration = (duration: string) => {
+  const [minutes = "0", seconds = "0"] = duration.split(":")
+  return Number(minutes) * 60 + Number(seconds)
+}
+
+const selectVideo = (id: string) => {
+  selectedVideoId.value = id
+  playing.value = false
+  progress.value = 8
+  shareMessage.value = ""
+}
+
+const togglePlay = () => {
+  playing.value = !playing.value
+}
+
+const toggleLike = () => {
+  const id = selectedVideo.value.id
+  const liked = likedById.value[id] ?? false
+  likedById.value = { ...likedById.value, [id]: !liked }
+  localLikesById.value = {
+    ...localLikesById.value,
+    [id]: Math.max(0, (localLikesById.value[id] ?? 0) + (liked ? -1 : 1)),
+  }
+}
+
+const shareVideo = () => {
+  shareMessage.value = "Đã mô phỏng chia sẻ video. Chưa gọi API post-actions.php."
+}
+
+const sendComment = (message: string) => {
+  const id = selectedVideo.value.id
+  const comment: WatchComment = {
+    id: Date.now(),
+    author: "Bạn",
+    initials: "B",
+    role: "Viewer",
+    message,
+    time: "Vừa xong",
+  }
+
+  localCommentsById.value = {
+    ...localCommentsById.value,
+    [id]: [...(localCommentsById.value[id] ?? []), comment],
+  }
+}
+</script>

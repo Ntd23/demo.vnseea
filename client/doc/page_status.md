@@ -24,6 +24,17 @@
 - `[x]` `P-11` `/new-product` — Tạo sản phẩm
 - `[x]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
 - `[x]` `P-13` `/my-products` — Sản phẩm của tôi
+- `[x]` `P-24` `/blogs` — Danh sách blogs
+- `[x]` `P-25` `/create-blog` — Viết blog
+- `[x]` `P-26` `/read-blog/{slug}` — Đọc blog
+- `[x]` `P-27` `/events` — Sự kiện
+- `[x]` `P-28` `/events/create-event` — Tạo sự kiện
+- `[x]` `P-29` `/events/{id}` — Chi tiết sự kiện
+- `[x]` `P-30` `/jobs` — Việc làm
+- `[x]` `P-31` `/funding` + `/create_funding` + `/show_fund/{id}` — Crowdfunding
+- `[x]` `P-32` `/live` — Live Streaming
+- `[x]` `P-33` `/watch` — Xem Video
+- `[x]` `P-34` `/setting` — Cài đặt
 - `[x]` `P-14` `/checkout` — Thanh toán
 - `[x]` `P-15` `/orders` — Đơn hàng (người mua)
 - `[x]` `P-16` `/order/{id}` — Chi tiết đơn hàng
@@ -34,19 +45,6 @@
 - `[x]` `P-21` `/create-page` — Tạo trang
 - `[x]` `P-22` `/p/{page_name}` — Trang fanpage
 - `[x]` `P-23` `/page-setting/{page}` — Cài đặt page
-- `[ ]` `P-24` `/blogs` — Danh sách blogs
-- `[ ]` `P-25` `/create-blog` — Viết blog
-- `[ ]` `P-26` `/read-blog/{slug}` — Đọc blog
-- `[ ]` `P-27` `/events` — Sự kiện
-- `[ ]` `P-28` `/events/create-event` — Tạo sự kiện
-- `[ ]` `P-29` `/events/{id}` — Chi tiết sự kiện
-- `[ ]` `P-30` `/jobs` — Việc làm
-- `[ ]` `P-31` `/funding` + `/create_funding` + `/show_fund/{id}` — Crowdfunding
-- `[ ]` `P-32` `/live` — Live Streaming
-- `[ ]` `P-33` `/watch` — Xem Video
-- `[ ]` `P-34` `/setting` — Cài đặt
-
----
 
 ## Các page phụ
 
@@ -79,6 +77,17 @@
 - `new-product` — đã hoàn thiện UI/responsive
 - `edit-product` — đã hoàn thiện UI/responsive
 - `my-products` — đã hoàn thiện UI/responsive
+- `blogs` — đã hoàn thiện UI danh sách, bộ lọc và pagination
+- `create-blog` — đã hoàn thiện UI form viết blog, tags, thumbnail và preview
+- `read-blog/{slug}` — đã hoàn thiện UI đọc blog, author/meta, react/share, comments và related blogs
+- `events` — đã hoàn thiện UI danh sách sự kiện, tabs, bộ lọc và RSVP mock
+- `events/create-event` — đã hoàn thiện UI form tạo sự kiện, thời gian, địa điểm, ảnh bìa và preview
+- `events/{id}` — đã hoàn thiện UI chi tiết sự kiện, action bar, invite friends, attendees và owner actions
+- `jobs` — đã hoàn thiện UI danh sách việc làm, filter ngành/địa điểm/loại hình, chi tiết job, apply form và đăng job mới
+- `funding` / `create_funding` / `show_fund/{id}` — đã hoàn thiện UI crowdfunding, search/filter, tạo campaign, chi tiết progress, donate mock, donors list và owner actions
+- `live` — đã hoàn thiện UI live streaming, Go Live mock, live player, stream list, like/mute/viewer state và live chat mock
+- `watch` — đã hoàn thiện UI xem video, player mock/Plyr-ready, search/filter, video info, comments, related videos và like/share mock
+- `setting` / `setting/{page}` — đã hoàn thiện UI cài đặt dạng 22 sub-pages, form fields, toggles, lists, danger zone và mock save actions
 - `checkout` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại

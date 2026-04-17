@@ -185,17 +185,18 @@ export const useMockSocialData = () => {
   ]
 
   const sidebarNavMore: SidebarNavItem[] = [
-    { label: "Blog", icon: "i-ph-newspaper", to: "/blog" },
+    { label: "Blog", icon: "i-ph-newspaper", to: "/blogs" },
     { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
     { label: "Danh mục", icon: "i-ph-squares-four", to: "/categories" },
     { label: "Sự kiện", icon: "i-ph-calendar-dots", to: "/events" },
+    { label: "Live", icon: "i-ph-broadcast", to: "/live" },
     { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "/forum" },
     { label: "Phim", icon: "i-ph-popcorn", to: "/movies" },
     { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
     { label: "Ưu đãi", icon: "i-ph-tag", to: "/deals" },
     { label: "Tìm bạn", icon: "i-ph-user-plus", to: "/find-friends" },
     { label: "Trending", icon: "i-ph-trend-up", to: "/trending" },
-    { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/fundraisers" },
+    { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
   ]
 
   const contacts: Contact[] = [

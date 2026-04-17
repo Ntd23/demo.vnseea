@@ -29,10 +29,16 @@
           v-for="item in sidebarNavMore"
           :key="item.label"
           :to="item.to"
-          class="group flex min-w-0 items-center gap-2.5 rounded-[12px] px-2.5 py-2 text-slate-600 transition duration-150 hover:bg-[#0000ff]/5 hover:text-[#0000ff]"
+          class="group flex min-w-0 items-center gap-2.5 rounded-[12px] px-2.5 py-2 transition duration-150"
+          :class="isActive(item.to)
+            ? 'bg-[#0000ff]/8 text-[#0000ff]'
+            : 'text-slate-600 hover:bg-[#0000ff]/5 hover:text-[#0000ff]'"
         >
           <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[#0000ff]/6 text-[#0000ff]/60 transition duration-150 group-hover:bg-[#0000ff]/10 group-hover:text-[#0000ff]"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] transition duration-150"
+            :class="isActive(item.to)
+              ? 'bg-[#0000ff] text-white shadow-[0_4px_10px_rgba(0,0,255,0.22)]'
+              : 'bg-[#0000ff]/6 text-[#0000ff]/60 group-hover:bg-[#0000ff]/10 group-hover:text-[#0000ff]'"
           >
             <Icon :name="item.icon" class="h-4 w-4" />
           </span>
@@ -79,6 +85,9 @@ const isMarketplaceRoute = () =>
   || route.path === "/checkout"
   || route.path === "/orders"
 
+const isEventsRoute = () =>
+  route.path === "/events"
+  || route.path.startsWith("/events/")
 const isGroupsRoute = () =>
   route.path === "/groups"
   || route.path === "/suggested-groups"
@@ -98,6 +107,7 @@ const isPagesRoute = () =>
 const isActive = (to: string) => {
   const normalized = to.split("#")[0]
   if (normalized === "/products") return isMarketplaceRoute()
+  if (normalized === "/events") return isEventsRoute()
   if (normalized === "/groups") return isGroupsRoute()
   if (normalized === "/pages") return isPagesRoute()
   return route.path === normalized

@@ -41,9 +41,9 @@ const items = computed(() => [
   },
   {
     label: 'Video',
-    to: '/reels',
+    to: '/watch',
     icon: 'i-ph-video-camera-fill',
-    active: route.path === '/reels',
+    active: route.path === '/watch' || route.path === '/reels',
   },
   {
     label: 'Music',
