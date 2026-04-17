@@ -24,7 +24,7 @@
 - `[x]` `P-11` `/new-product` — Tạo sản phẩm
 - `[x]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
 - `[x]` `P-13` `/my-products` — Sản phẩm của tôi
-- `[ ]` `P-14` `/checkout` — Thanh toán
+- `[x]` `P-14` `/checkout` — Thanh toán
 - `[ ]` `P-15` `/orders` — Đơn hàng (người mua)
 - `[ ]` `P-16` `/order/{id}` — Chi tiết đơn hàng
 - `[ ]` `P-17` `/customer_order/{id}` — Đơn hàng (người bán)
@@ -79,6 +79,7 @@
 - `new-product` — đã hoàn thiện UI/responsive
 - `edit-product` — đã hoàn thiện UI/responsive
 - `my-products` — đã hoàn thiện UI/responsive
+- `checkout` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
