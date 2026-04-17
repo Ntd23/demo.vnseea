@@ -22,7 +22,7 @@
 - `[x]` `P-09` `/status/create` — Tạo Story
 - `[x]` `P-10` `/products` — Marketplace
 - `[x]` `P-11` `/new-product` — Tạo sản phẩm
-- `[ ]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
+- `[x]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
 - `[x]` `P-13` `/my-products` — Sản phẩm của tôi
 - `[ ]` `P-14` `/checkout` — Thanh toán
 - `[ ]` `P-15` `/orders` — Đơn hàng (người mua)
@@ -77,6 +77,7 @@
 - `status/create` — đã hoàn thiện UI/responsive
 - `products` — đã hoàn thiện UI/responsive
 - `new-product` — đã hoàn thiện UI/responsive
+- `edit-product` — đã hoàn thiện UI/responsive
 - `my-products` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại
