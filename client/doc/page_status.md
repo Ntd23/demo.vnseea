@@ -32,7 +32,7 @@
 - `[x]` `P-19` `/g/{group_name}` — Trang nhóm
 - `[x]` `P-20` `/group-setting/{group}` — Cài đặt nhóm
 - `[x]` `P-21` `/create-page` — Tạo trang
-- `[ ]` `P-22` `/p/{page_name}` — Trang fanpage
+- `[x]` `P-22` `/p/{page_name}` — Trang fanpage
 - `[ ]` `P-23` `/page-setting/{page}` — Cài đặt page
 - `[ ]` `P-24` `/blogs` — Danh sách blogs
 - `[ ]` `P-25` `/create-blog` — Viết blog

@@ -480,6 +480,10 @@ export function formatCommunityFollowerCount(count: number) {
   return `${count.toLocaleString("vi-VN")} người theo dõi`
 }
 
+export function formatCommunityLikeCount(count: number) {
+  return `${count.toLocaleString("vi-VN")} lượt thích`
+}
+
 export function getCommunityGroupPath(slug: string) {
   return `/g/${slug}`
 }

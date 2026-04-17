@@ -24,6 +24,7 @@
       back-label="Quay lại trang chủ"
       back-to="/home"
       submit-label="Tạo trang"
+      :submit-to="submitTo"
       identity-section-label="Định danh fanpage"
       identity-section-title="Tên trang gọn, dễ nhớ và đúng nhận diện"
       identity-section-badge="Dùng tốt cho tìm kiếm, chia sẻ và hồ sơ công khai"
@@ -44,7 +45,9 @@
 import {
   communityPageCategoryOptions,
   communityPageUrlPrefix,
+  createCommunitySlug,
   createCommunityPageDraft,
+  getCommunityPagePath,
 } from "../../../types/community"
 import type { CommunityDraft } from "../../../types/community"
 
@@ -54,6 +57,31 @@ useSeoMeta({
 })
 
 const draft = ref<CommunityDraft>(createCommunityPageDraft())
+
+const submitTo = computed(() => {
+  const resolvedSlug =
+    draft.value.slug.trim()
+    || createCommunitySlug(draft.value.name)
+    || "fanpage-moi"
+
+  const query = new URLSearchParams()
+
+  if (draft.value.name.trim()) {
+    query.set("name", draft.value.name.trim())
+  }
+
+  if (draft.value.description.trim()) {
+    query.set("description", draft.value.description.trim())
+  }
+
+  if (draft.value.category) {
+    query.set("category", draft.value.category)
+  }
+
+  const queryString = query.toString()
+
+  return `${getCommunityPagePath(resolvedSlug)}${queryString ? `?${queryString}` : ""}`
+})
 
 const nextSteps = [
   {
