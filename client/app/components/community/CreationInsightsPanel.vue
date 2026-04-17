@@ -8,7 +8,7 @@
         <div class="mt-4 rounded-[24px] border border-white/10 bg-white/10 p-4 backdrop-blur-[10px]">
           <div class="flex items-start gap-3">
             <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0000ff] shadow-[0_10px_24px_rgba(15,23,42,0.16)]">
-              <Icon name="i-ph-users-three-fill" class="h-6 w-6" />
+              <Icon :name="previewIcon" class="h-6 w-6" />
             </div>
 
             <div class="min-w-0">
@@ -102,7 +102,7 @@
           </p>
           <div class="mt-3 space-y-3">
             <div
-              v-for="step in nextSteps"
+              v-for="step in resolvedNextSteps"
               :key="step.title"
               class="rounded-[18px] bg-[#f8fbff] px-4 py-3"
             >
@@ -128,6 +128,8 @@ const props = withDefaults(defineProps<{
   privacyDescription?: string
   categoryLabel: string
   showPrivacy?: boolean
+  previewIcon?: string
+  nextSteps?: Array<{ title: string; description: string }>
   nameReady?: boolean
   urlReady?: boolean
   descriptionReady?: boolean
@@ -137,6 +139,8 @@ const props = withDefaults(defineProps<{
   privacyLabel: "Chưa chọn hiển thị",
   privacyDescription: "Hãy chọn quyền hiển thị để kiểm soát ai có thể tìm thấy và xem nội dung nhóm.",
   showPrivacy: true,
+  previewIcon: "i-ph-users-three-fill",
+  nextSteps: () => [],
   nameReady: false,
   urlReady: false,
   descriptionReady: false,
@@ -145,33 +149,35 @@ const props = withDefaults(defineProps<{
 })
 
 const readinessItems = computed(() => {
+  const entityLabel = props.entityLabel.toLowerCase()
+
   const items = [
     {
-      label: "Tên nhóm rõ ràng",
-      description: "Tên ngắn gọn giúp thành viên nhận ra chủ đề ngay.",
+      label: `Tên ${entityLabel} rõ ràng`,
+      description: `Tên ngắn gọn giúp người xem nhận ra chủ đề của ${entityLabel} ngay.`,
       done: props.nameReady,
     },
     {
       label: "URL tùy chỉnh",
-      description: "Đường dẫn gọn giúp chia sẻ nhóm dễ hơn.",
+      description: `Đường dẫn gọn giúp chia sẻ ${entityLabel} dễ hơn.`,
       done: props.urlReady,
     },
     {
       label: "Mô tả đủ ý",
-      description: "Giải thích nhóm dành cho ai và nội dung sẽ tập trung vào đâu.",
+      description: `Giải thích ${entityLabel} dành cho ai và nội dung sẽ tập trung vào đâu.`,
       done: props.descriptionReady,
     },
     {
       label: "Phân loại đúng chủ đề",
-      description: "Category chuẩn giúp group xuất hiện đúng ngữ cảnh.",
+      description: `${entityLabel.charAt(0).toUpperCase()}${entityLabel.slice(1)} sẽ xuất hiện đúng ngữ cảnh hơn khi chọn đúng category.`,
       done: props.categoryReady,
     },
   ]
 
   if (props.showPrivacy) {
     items.splice(3, 0, {
-      label: "Quyền riêng tư đã chọn",
-      description: "Thiết lập này ảnh hưởng trực tiếp tới khả năng tham gia và xem nội dung.",
+      label: "Loại hiển thị đã chọn",
+      description: `Thiết lập này ảnh hưởng trực tiếp tới việc ai có thể tìm thấy và xem ${entityLabel}.`,
       done: props.privacyReady,
     })
   }
@@ -179,18 +185,26 @@ const readinessItems = computed(() => {
   return items
 })
 
-const nextSteps = computed(() => [
-  {
-    title: `Hoàn thiện trang ${props.entityLabel}`,
-    description: `Bạn có thể thêm cover, avatar và nội quy ngay sau khi tạo ${props.entityLabel}.`,
-  },
-  {
-    title: "Mời thành viên đầu tiên",
-    description: "Bắt đầu với một nhóm nhỏ để kiểm tra cách hoạt động và nội dung khởi đầu.",
-  },
-  {
-    title: "Mở rộng qua bài ghim",
-    description: "Đăng một bài giới thiệu hoặc quy tắc tham gia để giữ trải nghiệm rõ ràng từ đầu.",
-  },
-])
+const resolvedNextSteps = computed(() => {
+  if (props.nextSteps.length > 0) {
+    return props.nextSteps
+  }
+
+  return [
+    {
+      title: `Hoàn thiện ${props.entityLabel}`,
+      description: `Bạn có thể thêm cover, avatar và thông tin nổi bật ngay sau khi tạo ${props.entityLabel}.`,
+    },
+    {
+      title: "Mời những người đầu tiên",
+      description: props.showPrivacy
+        ? "Bắt đầu với một nhóm nhỏ để kiểm tra nhịp thảo luận và nội dung khởi đầu."
+        : "Kéo lượt theo dõi đầu tiên từ khách hàng, bạn bè hoặc cộng đồng sẵn có của bạn.",
+    },
+    {
+      title: "Đăng bài giới thiệu",
+      description: "Ghim một bài mở đầu để người mới biết bạn đang chia sẻ gì và nên bắt đầu từ đâu.",
+    },
+  ]
+})
 </script>

@@ -15,6 +15,26 @@ export interface CommunityDraft {
   category: string
 }
 
+export interface CommunityPageRecord {
+  id: number
+  name: string
+  slug: string
+  summary: string
+  category: string
+  banner: string
+  accent: string
+  followers: number
+  likes: number
+  ownerLabel: string
+  responseLabel: string
+  website?: string
+  locationLabel?: string
+  foundedLabel?: string
+  ctaLabel?: string
+  canManage?: boolean
+  tags: string[]
+}
+
 export type CommunityGroupTab = "mine" | "suggested" | "joined"
 
 export interface CommunityGroupRecord {
@@ -67,6 +87,7 @@ export interface CommunityGroupSettingsDraft {
 }
 
 export const communityUrlPrefix = "https://vnseea.vn/"
+export const communityPageUrlPrefix = "https://vnseea.vn/p/"
 
 export const communityPrivacyOptions: CommunityOption[] = [
   {
@@ -125,6 +146,45 @@ export const communityCategoryOptions: CommunityOption[] = [
     value: "marketplace",
     description: "Hợp với nhóm trao đổi sản phẩm, ưu đãi và nhu cầu mua chung.",
     icon: "i-ph-storefront-fill",
+  },
+]
+
+export const communityPageCategoryOptions: CommunityOption[] = [
+  {
+    label: "Doanh nghiệp địa phương",
+    value: "local-business",
+    description: "Phù hợp cho cửa hàng, studio, quán ăn và các thương hiệu vận hành tại địa phương.",
+    icon: "i-ph-storefront-fill",
+  },
+  {
+    label: "Creator & Chuyên gia",
+    value: "creator",
+    description: "Dùng cho KOL, chuyên gia, huấn luyện viên hoặc người xây dựng thương hiệu cá nhân.",
+    icon: "i-ph-microphone-stage-fill",
+  },
+  {
+    label: "Thương hiệu & Sản phẩm",
+    value: "brand",
+    description: "Dành cho fanpage giới thiệu sản phẩm, chiến dịch, ưu đãi và cập nhật thương hiệu.",
+    icon: "i-ph-megaphone-simple-fill",
+  },
+  {
+    label: "Giáo dục & Đào tạo",
+    value: "education",
+    description: "Phù hợp với lớp học, trung tâm, mentor, khóa học và kênh chia sẻ kiến thức.",
+    icon: "i-ph-graduation-cap-fill",
+  },
+  {
+    label: "Tổ chức & Cộng đồng",
+    value: "organization",
+    description: "Dành cho tổ chức, câu lạc bộ, dự án xã hội và các chương trình cộng đồng.",
+    icon: "i-ph-buildings-fill",
+  },
+  {
+    label: "Dịch vụ chuyên nghiệp",
+    value: "service",
+    description: "Phù hợp với agency, freelancer, studio dịch vụ và đội ngũ tư vấn.",
+    icon: "i-ph-briefcase-fill",
   },
 ]
 
@@ -273,6 +333,66 @@ export const communityGroupDirectory: CommunityGroupRecord[] = [
   },
 ]
 
+export const communityPageDirectory: CommunityPageRecord[] = [
+  {
+    id: 1,
+    name: "Mộc Mây Studio",
+    slug: "moc-may-studio",
+    summary: "Fanpage giới thiệu nội thất gỗ, concept trang trí nhà ở và các dự án thi công theo phong cách tối giản hiện đại.",
+    category: "local-business",
+    banner: "linear-gradient(135deg,#1f2937_0%,#92400e_42%,#fde68a_100%)",
+    accent: "#92400e",
+    followers: 18240,
+    likes: 21480,
+    ownerLabel: "Trang doanh nghiệp được xác minh",
+    responseLabel: "Thường phản hồi trong 30 phút",
+    website: "vnseea.vn/p/moc-may-studio",
+    locationLabel: "Đà Nẵng · Giao hàng toàn quốc",
+    foundedLabel: "Hoạt động từ tháng 2/2022",
+    ctaLabel: "Nhắn tin",
+    canManage: true,
+    tags: ["noi-that", "thi-cong", "go-tu-nhien"],
+  },
+  {
+    id: 2,
+    name: "VNSEEA Mobility Lab",
+    slug: "vnseea-mobility-lab",
+    summary: "Trang cập nhật nghiên cứu, sự kiện và insight về giao thông điện hóa, trạm sạc và hạ tầng di chuyển xanh.",
+    category: "brand",
+    banner: "linear-gradient(135deg,#0f172a_0%,#1d4ed8_46%,#67e8f9_100%)",
+    accent: "#1d4ed8",
+    followers: 9640,
+    likes: 12110,
+    ownerLabel: "Fanpage thương hiệu nội dung",
+    responseLabel: "Phản hồi trong ngày làm việc",
+    website: "vnseea.vn/p/vnseea-mobility-lab",
+    locationLabel: "Hà Nội · TP.HCM · Online",
+    foundedLabel: "Khởi chạy từ tháng 5/2024",
+    ctaLabel: "Theo dõi",
+    canManage: true,
+    tags: ["mobility", "xe-dien", "research"],
+  },
+  {
+    id: 3,
+    name: "Học Nhanh Mỗi Ngày",
+    slug: "hoc-nhanh-moi-ngay",
+    summary: "Fanpage chia sẻ note học tập, lịch workshop và tài liệu ngắn dành cho người đi làm muốn cập nhật kỹ năng liên tục.",
+    category: "education",
+    banner: "linear-gradient(135deg,#164e63_0%,#0f766e_48%,#bef264_100%)",
+    accent: "#0f766e",
+    followers: 27890,
+    likes: 30420,
+    ownerLabel: "Trang giáo dục & đào tạo",
+    responseLabel: "Có đội ngũ admin hỗ trợ đều đặn",
+    website: "vnseea.vn/p/hoc-nhanh-moi-ngay",
+    locationLabel: "Online-first",
+    foundedLabel: "Khởi tạo từ tháng 9/2021",
+    ctaLabel: "Xem khóa học",
+    canManage: false,
+    tags: ["learning", "workshop", "career"],
+  },
+]
+
 export const communityGroupMembers: Record<string, CommunityGroupMember[]> = {
   "cong-dong-xe-dien-viet": [
     { id: 1, name: "Hoàng Minh", initials: "HM", role: "Quản trị viên", meta: "Điều hành cộng đồng", online: true },
@@ -356,6 +476,10 @@ export function formatCommunityMemberCount(count: number) {
   return `${count.toLocaleString("vi-VN")} thành viên`
 }
 
+export function formatCommunityFollowerCount(count: number) {
+  return `${count.toLocaleString("vi-VN")} người theo dõi`
+}
+
 export function getCommunityGroupPath(slug: string) {
   return `/g/${slug}`
 }
@@ -364,8 +488,20 @@ export function getCommunityGroupSettingsPath(slug: string) {
   return `/group-setting/${slug}`
 }
 
+export function getCommunityPagePath(slug: string) {
+  return `/p/${slug}`
+}
+
+export function getCommunityPageSettingsPath(slug: string) {
+  return `/page-setting/${slug}`
+}
+
 export function getCommunityGroupBySlug(slug: string) {
   return communityGroupDirectory.find(group => group.slug === slug)
+}
+
+export function getCommunityPageBySlug(slug: string) {
+  return communityPageDirectory.find(page => page.slug === slug)
 }
 
 export function getCommunityGroupMembers(slug: string) {
@@ -400,5 +536,15 @@ export function createCommunityGroupSettingsDraft(
     allowMemberInvites: true,
     showMemberDirectory: true,
     welcomePostEnabled: true,
+  }
+}
+
+export function createCommunityPageDraft(page?: CommunityPageRecord): CommunityDraft {
+  return {
+    name: page?.name ?? "",
+    slug: page?.slug ?? "",
+    description: page?.summary ?? "",
+    privacy: "public",
+    category: page?.category ?? communityPageCategoryOptions[0]?.value ?? "local-business",
   }
 }

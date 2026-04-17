@@ -31,7 +31,7 @@
 - `[x]` `P-18` `/create-group` — Tạo nhóm
 - `[x]` `P-19` `/g/{group_name}` — Trang nhóm
 - `[x]` `P-20` `/group-setting/{group}` — Cài đặt nhóm
-- `[ ]` `P-21` `/create-page` — Tạo trang
+- `[x]` `P-21` `/create-page` — Tạo trang
 - `[ ]` `P-22` `/p/{page_name}` — Trang fanpage
 - `[ ]` `P-23` `/page-setting/{page}` — Cài đặt page
 - `[ ]` `P-24` `/blogs` — Danh sách blogs

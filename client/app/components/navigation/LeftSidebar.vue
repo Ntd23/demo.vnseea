@@ -87,10 +87,17 @@ const isGroupsRoute = () =>
   || route.path.startsWith("/g/")
   || route.path.startsWith("/group-setting/")
 
+const isPagesRoute = () =>
+  route.path === "/pages"
+  || route.path === "/create-page"
+  || route.path.startsWith("/p/")
+  || route.path.startsWith("/page-setting/")
+
 const isActive = (to: string) => {
   const normalized = to.split("#")[0]
   if (normalized === "/products") return isMarketplaceRoute()
   if (normalized === "/groups") return isGroupsRoute()
+  if (normalized === "/pages") return isPagesRoute()
   return route.path === normalized
 }
 </script>

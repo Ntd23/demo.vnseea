@@ -25,15 +25,15 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-                Định danh nhóm
+                {{ identitySectionLabelText }}
               </p>
               <p class="mt-1 text-[15px] font-black text-[#243b63]">
-                Tên ngắn gọn và URL dễ nhớ
+                {{ identitySectionTitleText }}
               </p>
             </div>
 
             <div class="inline-flex items-center rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-              Hiển thị đẹp trên tìm kiếm và chia sẻ
+              {{ identitySectionBadgeText }}
             </div>
           </div>
 
@@ -50,13 +50,13 @@
               >
               <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
                 <span class="rounded-full bg-white px-3 py-1.5 shadow-[0_6px_14px_rgba(15,35,110,0.04)]">
-                  Dễ nhớ, ngắn và đúng chủ đề
+                  {{ identityHintText }}
                 </span>
                 <span
                   v-if="isNameReady"
                   class="rounded-full bg-[#effaf3] px-3 py-1.5 font-semibold text-[#1f7a38]"
                 >
-                  Tên đã đủ rõ
+                  {{ identityReadyLabelText }}
                 </span>
               </div>
             </label>
@@ -102,10 +102,10 @@
 
         <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            Giới thiệu nhóm
+            {{ descriptionSectionLabelText }}
           </p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">
-            Mô tả rõ mục tiêu và đối tượng thành viên
+            {{ descriptionSectionTitleText }}
           </p>
 
           <label class="mt-5 block">
@@ -121,7 +121,7 @@
 
           <div class="mt-3 flex flex-col gap-2 rounded-[18px] bg-white px-4 py-3 text-[12px] text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)] sm:flex-row sm:items-center sm:justify-between">
             <p>
-              Gợi ý: nói rõ nhóm dành cho ai, nội dung chính là gì và quy tắc tham gia cơ bản.
+              {{ descriptionHintText }}
             </p>
             <span class="font-semibold text-[#243b63]">
               {{ descriptionLength }} ký tự
@@ -131,10 +131,10 @@
 
         <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            Cấu hình hiển thị
+            {{ configurationSectionLabelText }}
           </p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">
-            Chọn phạm vi tiếp cận và nhóm nội dung phù hợp
+            {{ configurationSectionTitleText }}
           </p>
 
           <div
@@ -196,7 +196,7 @@
                 Hành động
               </p>
               <p class="mt-1 text-[14px] leading-6 text-slate-500">
-                Khi hoàn tất, bạn vẫn có thể quay lại chỉnh ảnh cover, mô tả và quyền quản trị.
+                {{ actionDescriptionText }}
               </p>
             </div>
 
@@ -240,6 +240,8 @@
         :privacy-description="selectedPrivacyDescription"
         :category-label="selectedCategoryLabel"
         :show-privacy="showPrivacy"
+        :preview-icon="previewIcon"
+        :next-steps="nextSteps"
         :name-ready="isNameReady"
         :url-ready="isUrlReady"
         :description-ready="isDescriptionReady"
@@ -282,6 +284,19 @@ const props = withDefaults(defineProps<{
   categoryLabel?: string
   privacyLabel?: string
   urlPrefix?: string
+  identitySectionLabel?: string
+  identitySectionTitle?: string
+  identitySectionBadge?: string
+  identityHint?: string
+  identityReadyLabel?: string
+  descriptionSectionLabel?: string
+  descriptionSectionTitle?: string
+  descriptionHint?: string
+  configurationSectionLabel?: string
+  configurationSectionTitle?: string
+  actionDescription?: string
+  previewIcon?: string
+  nextSteps?: Array<{ title: string; description: string }>
 }>(), {
   privacyOptions: () => [],
   showPrivacy: true,
@@ -297,6 +312,19 @@ const props = withDefaults(defineProps<{
   categoryLabel: "Loại",
   privacyLabel: "Loại hiển thị",
   urlPrefix: communityUrlPrefix,
+  identitySectionLabel: "",
+  identitySectionTitle: "",
+  identitySectionBadge: "",
+  identityHint: "",
+  identityReadyLabel: "",
+  descriptionSectionLabel: "",
+  descriptionSectionTitle: "",
+  descriptionHint: "",
+  configurationSectionLabel: "",
+  configurationSectionTitle: "",
+  actionDescription: "",
+  previewIcon: "i-ph-users-three-fill",
+  nextSteps: () => [],
 })
 
 const completionCount = computed(() =>
@@ -316,7 +344,7 @@ const selectedPrivacyLabel = computed(() =>
 
 const selectedPrivacyDescription = computed(() =>
   props.privacyOptions.find(option => option.value === model.value.privacy)?.description
-    ?? "Thiết lập này quyết định ai sẽ tìm thấy và xem được nội dung trong nhóm.",
+    ?? `Thiết lập này quyết định ai sẽ tìm thấy và xem được nội dung trong ${props.entityLabel}.`,
 )
 
 const selectedCategoryLabel = computed(() =>
@@ -325,7 +353,57 @@ const selectedCategoryLabel = computed(() =>
 
 const selectedCategoryDescription = computed(() =>
   props.categoryOptions.find(option => option.value === model.value.category)?.description
-    ?? "Hãy chọn một category gần nhất với chủ đề chính của nhóm.",
+    ?? `Hãy chọn một category gần nhất với chủ đề chính của ${props.entityLabel}.`,
+)
+
+const identitySectionLabelText = computed(() =>
+  props.identitySectionLabel || `Định danh ${props.entityLabel}`,
+)
+
+const identitySectionTitleText = computed(() =>
+  props.identitySectionTitle || "Tên ngắn gọn và URL dễ nhớ",
+)
+
+const identitySectionBadgeText = computed(() =>
+  props.identitySectionBadge || "Hiển thị đẹp trên tìm kiếm và chia sẻ",
+)
+
+const identityHintText = computed(() =>
+  props.identityHint || "Dễ nhớ, ngắn và đúng chủ đề",
+)
+
+const identityReadyLabelText = computed(() =>
+  props.identityReadyLabel || "Tên đã đủ rõ",
+)
+
+const descriptionSectionLabelText = computed(() =>
+  props.descriptionSectionLabel || `Giới thiệu ${props.entityLabel}`,
+)
+
+const descriptionSectionTitleText = computed(() =>
+  props.descriptionSectionTitle
+    || `Mô tả rõ mục tiêu và đối tượng ${props.showPrivacy ? "thành viên" : "người theo dõi"}`,
+)
+
+const descriptionHintText = computed(() =>
+  props.descriptionHint
+    || `Gợi ý: nói rõ ${props.entityLabel} dành cho ai, nội dung chính là gì và điểm khác biệt nổi bật nhất.`,
+)
+
+const configurationSectionLabelText = computed(() =>
+  props.configurationSectionLabel || (props.showPrivacy ? "Cấu hình hiển thị" : "Phân loại nội dung"),
+)
+
+const configurationSectionTitleText = computed(() =>
+  props.configurationSectionTitle
+    || (props.showPrivacy
+      ? "Chọn phạm vi tiếp cận và nhóm nội dung phù hợp"
+      : "Chọn danh mục gần nhất với nội dung chính của trang"),
+)
+
+const actionDescriptionText = computed(() =>
+  props.actionDescription
+    || `Khi hoàn tất, bạn vẫn có thể quay lại chỉnh ảnh cover, mô tả và ${props.showPrivacy ? "quyền quản trị" : "thông tin liên hệ"}.`,
 )
 
 const previewTitle = computed(() =>
