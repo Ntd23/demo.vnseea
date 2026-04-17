@@ -1,60 +1,9 @@
 <template>
   <div class="space-y-5 pb-10">
-    <section class="relative overflow-hidden rounded-[30px] bg-[linear-gradient(135deg,#27345f_0%,var(--color-primary-600)_52%,var(--color-accent-500)_128%)] px-5 pb-10 pt-7 text-white shadow-[var(--shadow-xl)] sm:px-7 lg:px-8">
-      <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:42px_42px] opacity-25" />
-      <div class="pointer-events-none absolute right-[-7%] top-[-24%] h-[280px] w-[280px] rounded-full bg-white/12 blur-3xl" />
-      <div class="pointer-events-none absolute bottom-[-22%] left-[-8%] h-[240px] w-[240px] rounded-full bg-[#fde7b2]/22 blur-3xl" />
-
-      <div class="relative z-10 flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
-        <div class="max-w-[760px]">
-          <p class="text-label-secondary text-white/72">
-            P-25 · Viết blog
-          </p>
-          <h1 class="mt-4 text-display text-[2.2rem] leading-[0.95] text-white sm:text-[2.85rem]">
-            Tạo bài báo mới
-          </h1>
-          <p class="mt-4 max-w-[620px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-            Soạn tiêu đề, nội dung, chủ đề, hashtags và ảnh đại diện trước khi đăng vào luồng Blogs.
-          </p>
-
-          <div class="mt-7 flex flex-wrap gap-3">
-            <NuxtLink
-              to="/blogs"
-              class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] border border-white/20 bg-white/10 px-5 text-[14px] font-bold text-white transition hover:bg-white/15"
-            >
-              <Icon name="i-ph-arrow-left" class="mr-2 h-4 w-4" />
-              Quay lại Blogs
-            </NuxtLink>
-
-            <button
-              class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] bg-[#fde7b2] px-5 text-[14px] font-extrabold text-[#27345f] shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
-              type="button"
-              @click="quickFillDemo"
-            >
-              Điền nhanh dữ liệu mẫu
-            </button>
-          </div>
-        </div>
-
-        <div class="grid gap-3 sm:grid-cols-3 xl:w-[430px] xl:grid-cols-1">
-          <div
-            v-for="item in heroStats"
-            :key="item.label"
-            class="rounded-[var(--radius-xl)] border border-white/15 bg-white/10 p-4 backdrop-blur-[6px]"
-          >
-            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
-              {{ item.label }}
-            </p>
-            <p class="mt-2 text-[1.55rem] font-black leading-none text-white">
-              {{ item.value }}
-            </p>
-            <p class="mt-1 text-[13px] leading-5 text-white/74">
-              {{ item.description }}
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <BlogsCreateBlogHero
+      :stats="heroStats"
+      @quick-fill="quickFillDemo"
+    />
 
     <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.05fr)_360px]">
       <section class="space-y-5">
@@ -232,63 +181,15 @@
         </section>
       </section>
 
-      <aside class="space-y-5">
-        <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
-          <div class="relative aspect-[16/10] overflow-hidden">
-            <div class="absolute inset-0" :style="{ background: thumbnailBackground }" />
-            <div class="absolute inset-0 bg-[linear-gradient(180deg,transparent_25%,rgba(15,23,42,0.58)_100%)]" />
-            <div class="absolute left-4 top-4 rounded-[10px] bg-[#101828]/82 px-2.5 py-1 text-[11px] font-bold text-white">
-              {{ selectedCategoryLabel }}
-            </div>
-          </div>
-
-          <div class="p-4">
-            <p class="text-caption-secondary">
-              {{ readMinutes }} phút đọc · {{ tagList.length }} tags
-            </p>
-            <h3 class="mt-2 text-[1.25rem] font-black leading-tight tracking-[-0.04em] text-[var(--text-primary)]">
-              {{ title || "Tiêu đề bài báo của bạn" }}
-            </h3>
-            <p class="mt-3 min-h-[96px] text-[13px] leading-6 text-[var(--text-secondary)]">
-              {{ previewExcerpt }}
-            </p>
-            <div class="mt-4 flex flex-wrap gap-1.5">
-              <span
-                v-for="tag in tagList"
-                :key="tag"
-                class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2.5 py-1 text-[11px] font-bold text-[var(--color-primary-600)]"
-              >
-                #{{ tag }}
-              </span>
-            </div>
-          </div>
-        </section>
-
-        <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
-            Checklist
-          </p>
-          <div class="mt-4 space-y-3">
-            <div
-              v-for="item in checklistItems"
-              :key="item.label"
-              class="flex items-start gap-3 rounded-[18px] border px-3.5 py-3"
-              :class="item.done ? 'border-[#b8f0c9] bg-[#f2fcf5]' : 'border-[var(--border-default)] bg-[var(--bg-surface-hover)]'"
-            >
-              <span
-                class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-                :class="item.done ? 'bg-[var(--color-success)] text-white' : 'border border-[var(--border-default)] bg-white text-[var(--text-tertiary)]'"
-              >
-                <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-dot-outline'" class="h-3.5 w-3.5" />
-              </span>
-              <span>
-                <span class="block text-[13px] font-bold text-[var(--text-primary)]">{{ item.label }}</span>
-                <span class="mt-1 block text-[12px] leading-5 text-[var(--text-secondary)]">{{ item.description }}</span>
-              </span>
-            </div>
-          </div>
-        </section>
-      </aside>
+      <BlogsCreateBlogSidebar
+        :title="title"
+        :thumbnail-background="thumbnailBackground"
+        :selected-category-label="selectedCategoryLabel"
+        :read-minutes="readMinutes"
+        :tag-list="tagList"
+        :preview-excerpt="previewExcerpt"
+        :checklist-items="checklistItems"
+      />
     </div>
   </div>
 </template>
@@ -297,16 +198,12 @@
 type BlogCategoryValue =
   | "business"
   | "education"
-  | "entertainment"
   | "movies"
   | "gaming"
   | "history"
   | "lifestyle"
-  | "nature"
-  | "politics"
   | "people"
   | "pets"
-  | "places"
   | "science"
   | "sports"
   | "travel"
@@ -328,16 +225,12 @@ const submitMessage = ref("")
 const categoryOptions = [
   { label: "Kinh tế và Thương mại", value: "business" },
   { label: "Giáo dục", value: "education" },
-  { label: "Giải trí", value: "entertainment" },
   { label: "Phim & Hoạt hình", value: "movies" },
   { label: "Chơi game", value: "gaming" },
-  { label: "Lịch sử và sự kiện", value: "history" },
+  { label: "Lịch sử và Sự kiện", value: "history" },
   { label: "Cách sống", value: "lifestyle" },
-  { label: "Thiên nhiên", value: "nature" },
-  { label: "Tin tức và Chính trị", value: "politics" },
   { label: "Con người và Quốc gia", value: "people" },
   { label: "Thú cưng và Động vật", value: "pets" },
-  { label: "Địa điểm và Khu vực", value: "places" },
   { label: "Khoa học và Công nghệ", value: "science" },
   { label: "Thể thao", value: "sports" },
   { label: "Du lịch và Sự kiện", value: "travel" },

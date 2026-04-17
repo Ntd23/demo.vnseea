@@ -1,17 +1,18 @@
 <template>
   <div class="space-y-5 pb-10">
-    <EventsEventsHero
+    <EventsHero
       :my-events-active="activeTab === 'my'"
       :total-events="events.length"
       :stats="heroStats"
       @show-my-events="activeTab = 'my'"
     />
 
-    <EventsEventsFilters
+    <EventsFilters
       v-model:search="search"
       v-model:active-tab="activeTab"
       v-model:selected-category="selectedCategory"
       v-model:selected-city="selectedCity"
+      v-model:selected-sort="selectedSort"
       :tabs="eventTabs"
       :tab-counts="tabCounts"
       :categories="eventCategories"
@@ -34,6 +35,13 @@
           </div>
 
           <div class="flex flex-wrap gap-2">
+            <NuxtLink
+              to="/events/create-event"
+              class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary-500)] px-3 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
+            >
+              <Icon name="i-ph-calendar-plus-fill" class="h-4 w-4" />
+              Tạo sự kiện
+            </NuxtLink>
             <div class="inline-flex h-11 items-center gap-2 rounded-[18px] bg-[var(--color-primary-50)] px-3 text-[13px] font-bold text-[var(--color-primary-600)]">
               <Icon name="i-ph-funnel-fill" class="h-4 w-4" />
               {{ activeFiltersLabel }}
@@ -78,7 +86,7 @@
         </section>
       </section>
 
-      <EventsEventsSidebar
+      <EventsSidebar
         :next-event="nextEvent"
         :categories="eventCategories"
         :selected-category="selectedCategory"
@@ -104,6 +112,7 @@ const search = ref("")
 const activeTab = ref<EventTabKey>("upcoming")
 const selectedCategory = ref("all")
 const selectedCity = ref("all")
+const selectedSort = ref<"soonest" | "going" | "interested">("soonest")
 const rsvpById = ref<Record<string, EventRsvpState>>(
   Object.fromEntries(events.map((event) => [event.id, event.userState])),
 )
@@ -133,7 +142,7 @@ const tabCounts = computed<Record<EventTabKey, number>>(() => ({
 const visibleEvents = computed(() => {
   const keyword = search.value.trim().toLowerCase()
 
-  return events
+  const filteredEvents = events
     .filter((event) => matchesTab(event, activeTab.value))
     .filter((event) => selectedCategory.value === "all" || event.category === selectedCategory.value)
     .filter((event) => selectedCity.value === "all" || event.city === selectedCity.value)
@@ -149,7 +158,16 @@ const visibleEvents = computed(() => {
         ...event.tags,
       ].join(" ").toLowerCase().includes(keyword)
     })
-    .sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
+
+  if (selectedSort.value === "going") {
+    return filteredEvents.sort((a, b) => b.stats.going - a.stats.going)
+  }
+
+  if (selectedSort.value === "interested") {
+    return filteredEvents.sort((a, b) => b.stats.interested - a.stats.interested)
+  }
+
+  return filteredEvents.sort((a, b) => new Date(a.startsAt).getTime() - new Date(b.startsAt).getTime())
 })
 
 const heroStats = computed(() => [
@@ -180,7 +198,13 @@ const resultHeading = computed(() => {
 const activeFiltersLabel = computed(() => {
   const category = eventCategories.find((item) => item.value === selectedCategory.value)?.label || "Tất cả"
   const city = eventCities.find((item) => item.value === selectedCity.value)?.label || "Mọi địa điểm"
-  return `${category} · ${city}`
+  const sort = selectedSort.value === "going"
+    ? "Nhiều người đi"
+    : selectedSort.value === "interested"
+      ? "Được quan tâm"
+      : "Gần nhất"
+
+  return `${category} · ${city} · ${sort}`
 })
 
 const nextEvent = computed(() => events.find((event) => event.tabKeys.includes("upcoming")))
@@ -199,5 +223,6 @@ const resetFilters = () => {
   activeTab.value = "upcoming"
   selectedCategory.value = "all"
   selectedCity.value = "all"
+  selectedSort.value = "soonest"
 }
 </script>
