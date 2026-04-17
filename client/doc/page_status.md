@@ -19,11 +19,11 @@
 - `[x]` `P-06` `/messages` — Tin nhắn (Full page)
 - `[~]` `P-07` `/reels` — Short Videos
 - `[ ]` `P-08` `/story-content` — Xem Stories
-- `[ ]` `P-09` `/status/create` — Tạo Story
+- `[x]` `P-09` `/status/create` — Tạo Story
 - `[x]` `P-10` `/products` — Marketplace
-- `[ ]` `P-11` `/new-product` — Tạo sản phẩm
+- `[x]` `P-11` `/new-product` — Tạo sản phẩm
 - `[ ]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
-- `[ ]` `P-13` `/my-products` — Sản phẩm của tôi
+- `[x]` `P-13` `/my-products` — Sản phẩm của tôi
 - `[ ]` `P-14` `/checkout` — Thanh toán
 - `[ ]` `P-15` `/orders` — Đơn hàng (người mua)
 - `[ ]` `P-16` `/order/{id}` — Chi tiết đơn hàng
@@ -74,7 +74,10 @@
 - `home`
 - `@username` / `ProfilePage`
 - `messages` — đã hoàn thiện UI/responsive
+- `status/create` — đã hoàn thiện UI/responsive
 - `products` — đã hoàn thiện UI/responsive
+- `new-product` — đã hoàn thiện UI/responsive
+- `my-products` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt

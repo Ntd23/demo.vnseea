@@ -60,13 +60,31 @@ defineEmits<{ 'toggle-menu': [] }>()
 const route = useRoute()
 const search = ref('')
 
-const isHome = computed(() => route.path === '/' || route.path === '/home')
+const isMarketplaceRoute = computed(() =>
+  route.path === '/products'
+  || route.path === '/new-product'
+  || route.path === '/my-products'
+  || route.path.startsWith('/edit-product/')
+  || route.path.startsWith('/order/')
+  || route.path.startsWith('/customer_order/')
+  || route.path === '/checkout'
+  || route.path === '/orders',
+)
+
+const centerNavItems = computed(() => [
+  { label: 'Home', to: '/', icon: 'i-ph-house-fill', active: route.path === '/' },
+  { label: 'Photos', to: '/home', icon: 'i-ph-image-fill', active: route.path === '/home' },
+  { label: 'People', to: '/messages', icon: 'i-ph-users-fill', active: route.path === '/messages' },
+  { label: 'Shop', to: '/products', icon: 'i-ph-storefront-fill', active: isMarketplaceRoute.value },
+  { label: 'Profile', to: '/@me', icon: 'i-ph-user-circle-fill', active: route.path.includes('/@') },
+])
 
 const desktopActions = [
   { label: 'Yêu cầu kết bạn', icon: 'i-ph-user-plus-fill', badge: 1 },
   { label: 'Tin nhắn', icon: 'i-ph-chat-circle-dots-fill', badge: 2 },
   { label: 'Thông báo', icon: 'i-ph-bell-fill', badge: 3 },
 ]
+
 
 const mobileIconItems = computed(() => [
   { label: 'Home', to: '/home', icon: 'i-ph-house-fill', active: route.path === '/' || route.path === '/home' },

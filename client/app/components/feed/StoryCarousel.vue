@@ -5,13 +5,17 @@
       class="flex gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide sm:gap-4"
       style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;"
     >
-      <button class="flex shrink-0 flex-col items-center gap-1.5" type="button">
+      <!-- Create story (me) -->
+      <NuxtLink
+        to="/status/create"
+        class="flex shrink-0 flex-col items-center gap-1.5"
+      >
         <div class="relative flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#0000ff]/10 sm:h-[68px] sm:w-[68px]">
           <Icon name="i-ph-plus-bold" class="h-5 w-5 text-[#0000ff]" />
           <div class="absolute inset-0 rounded-full ring-2 ring-[#0000ff]/30" />
         </div>
         <span class="text-[11px] font-semibold text-slate-600">Tạo tin</span>
-      </button>
+      </NuxtLink>
 
       <button
         v-for="story in visibleStories"

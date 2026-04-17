@@ -19,16 +19,21 @@
           </p>
 
           <div class="mt-6 flex flex-wrap items-center gap-3">
-            <button
-              class="inline-flex h-12 items-center justify-center rounded-full px-5 text-[14px] font-extrabold transition duration-150"
-              :class="showMine
-                ? 'bg-[#243b63] text-white shadow-[0_10px_24px_rgba(36,59,99,0.24)]'
-                : 'bg-[#fde7b2] text-[#c85c3f] shadow-[0_10px_26px_rgba(253,231,178,0.24)] hover:-translate-y-0.5'"
-              type="button"
-              @click="showMine = !showMine"
+            <NuxtLink
+              to="/new-product"
+              class="inline-flex h-12 items-center justify-center rounded-full bg-[#243b63] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_24px_rgba(36,59,99,0.24)] transition hover:-translate-y-0.5"
             >
-              {{ showMine ? "Đang lọc sản phẩm của tôi" : "Sản phẩm của tôi" }}
-            </button>
+              <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />
+              Đăng tin mới
+            </NuxtLink>
+
+            <NuxtLink
+              to="/my-products"
+              class="inline-flex h-12 items-center justify-center rounded-full bg-[#fde7b2] px-5 text-[14px] font-extrabold text-[#c85c3f] shadow-[0_10px_26px_rgba(253,231,178,0.24)] transition hover:-translate-y-0.5"
+            >
+              <Icon name="i-ph-package-fill" class="mr-2 h-4 w-4" />
+              Sản phẩm của tôi
+            </NuxtLink>
 
             <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-medium text-white/90">
               <Icon name="i-ph-map-pin-fill" class="h-4 w-4 text-[#fde7b2]" />
@@ -330,7 +335,6 @@ const sortBy = ref<SortValue>("featured")
 const selectedCategory = ref<ProductCategory>("all")
 const selectedDistance = ref<DistanceValue>("all")
 const nearbyOnly = ref(false)
-const showMine = ref(false)
 
 const sortOptions = [
   { label: "Sắp xếp theo", value: "featured" },
@@ -548,14 +552,11 @@ const activeFiltersLabel = computed(() => {
   }
 
   if (nearbyOnly.value) labels.push("Lân cận")
-  if (showMine.value) labels.push("Sản phẩm của tôi")
 
   return labels.length > 0 ? labels.join(" • ") : "Tất cả sản phẩm"
 })
 
-const resultHeading = computed(() =>
-  showMine.value ? "Sản phẩm của tôi" : "Danh sách sản phẩm đang được quan tâm",
-)
+const resultHeading = computed(() => "Danh sách sản phẩm đang được quan tâm")
 
 const visibleProducts = computed(() => {
   const keyword = search.value.trim().toLowerCase()
@@ -576,9 +577,8 @@ const visibleProducts = computed(() => {
       selectedDistance.value === "all" || product.distanceKm <= Number(selectedDistance.value)
 
     const matchesNearby = !nearbyOnly.value || product.distanceKm <= 5
-    const matchesMine = !showMine.value || product.mine
 
-    return matchesKeyword && matchesCategory && matchesDistance && matchesNearby && matchesMine
+    return matchesKeyword && matchesCategory && matchesDistance && matchesNearby
   })
 
   return filtered.slice().sort((left, right) => {
@@ -621,6 +621,5 @@ const resetFilters = () => {
   selectedCategory.value = "all"
   selectedDistance.value = "all"
   nearbyOnly.value = false
-  showMine.value = false
 }
 </script>
