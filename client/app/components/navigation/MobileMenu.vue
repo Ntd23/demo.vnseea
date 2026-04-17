@@ -100,7 +100,7 @@ defineEmits<{ close: [] }>()
 
 const mainNav = [
   { label: "Tìm kiếm", icon: "i-ph-magnifying-glass", to: "#" },
-  { label: "Các trang", icon: "i-ph-flag", to: "#" },
+  { label: "Các trang", icon: "i-ph-flag", to: "/pages" },
   { label: "Sản phẩm của tôi", icon: "i-ph-package", to: "/my-products" },
   { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
   { label: "Blog", icon: "i-ph-newspaper", to: "#" },

@@ -1,5 +1,5 @@
 <template>
-  <PagesDirectoryPage />
+  <PagesDirectoryPage mode="suggested" />
 </template>
 
 <script setup lang="ts">

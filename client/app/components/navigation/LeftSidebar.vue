@@ -89,6 +89,8 @@ const isGroupsRoute = () =>
 
 const isPagesRoute = () =>
   route.path === "/pages"
+  || route.path === "/suggested-pages"
+  || route.path === "/liked-pages"
   || route.path === "/create-page"
   || route.path.startsWith("/p/")
   || route.path.startsWith("/page-setting/")

@@ -32,10 +32,12 @@ export interface CommunityPageRecord {
   foundedLabel?: string
   ctaLabel?: string
   canManage?: boolean
+  directoryTabs?: Exclude<CommunityPageTab, "mine">[]
   tags: string[]
 }
 
 export type CommunityGroupTab = "mine" | "suggested" | "joined"
+export type CommunityPageTab = "mine" | "suggested" | "favorite"
 
 export interface CommunityGroupRecord {
   id: number
@@ -245,6 +247,18 @@ export const communityGroupTabs: Array<{ label: string; value: CommunityGroupTab
   { label: "Các nhóm đã tham gia", value: "joined" },
 ]
 
+export const communityPageTabs: Array<{ label: string; value: CommunityPageTab }> = [
+  { label: "Trang của tôi", value: "mine" },
+  { label: "Các trang được đề xuất", value: "suggested" },
+  { label: "Các trang được yêu thích", value: "favorite" },
+]
+
+export const communityPageRouteMap: Record<CommunityPageTab, string> = {
+  mine: "/pages",
+  suggested: "/suggested-pages",
+  favorite: "/liked-pages",
+}
+
 export const communityGroupRouteMap: Record<CommunityGroupTab, string> = {
   mine: "/groups",
   suggested: "/suggested-groups",
@@ -402,6 +416,7 @@ export const communityPageDirectory: CommunityPageRecord[] = [
     foundedLabel: "Hoạt động từ tháng 2/2022",
     ctaLabel: "Nhắn tin",
     canManage: true,
+    directoryTabs: ["suggested", "favorite"],
     tags: ["noi-that", "thi-cong", "go-tu-nhien"],
   },
   {
@@ -421,6 +436,7 @@ export const communityPageDirectory: CommunityPageRecord[] = [
     foundedLabel: "Khởi chạy từ tháng 5/2024",
     ctaLabel: "Theo dõi",
     canManage: true,
+    directoryTabs: ["suggested"],
     tags: ["mobility", "xe-dien", "research"],
   },
   {
@@ -440,6 +456,7 @@ export const communityPageDirectory: CommunityPageRecord[] = [
     foundedLabel: "Khởi tạo từ tháng 9/2021",
     ctaLabel: "Xem khóa học",
     canManage: false,
+    directoryTabs: ["favorite"],
     tags: ["learning", "workshop", "career"],
   },
 ]

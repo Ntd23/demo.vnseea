@@ -1,5 +1,5 @@
 <template>
-  <PagesDirectoryPage />
+  <PagesDirectoryPage mode="favorite" />
 </template>
 
 <script setup lang="ts">
