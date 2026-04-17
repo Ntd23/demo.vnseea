@@ -120,7 +120,7 @@ const mainNav = [
   { label: "Khám phá", icon: "i-ph-compass", to: "#" },
   { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "#" },
   { label: "Tìm bạn", icon: "i-ph-user-plus", to: "#" },
-  { label: "Việc làm", icon: "i-ph-briefcase", to: "#" },
+  { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
   { label: "Kinh phí", icon: "i-ph-hand-heart", to: "#" },
   { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "#" },

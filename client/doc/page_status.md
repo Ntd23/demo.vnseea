@@ -40,7 +40,7 @@
 - `[x]` `P-27` `/events` — Sự kiện
 - `[x]` `P-28` `/events/create-event` — Tạo sự kiện
 - `[x]` `P-29` `/events/{id}` — Chi tiết sự kiện
-- `[ ]` `P-30` `/jobs` — Việc làm
+- `[x]` `P-30` `/jobs` — Việc làm
 - `[ ]` `P-31` `/funding` + `/create_funding` + `/show_fund/{id}` — Crowdfunding
 - `[ ]` `P-32` `/live` — Live Streaming
 - `[ ]` `P-33` `/watch` — Xem Video
@@ -84,6 +84,7 @@
 - `events` — đã hoàn thiện UI danh sách sự kiện, tabs, bộ lọc và RSVP mock
 - `events/create-event` — đã hoàn thiện UI form tạo sự kiện, thời gian, địa điểm, ảnh bìa và preview
 - `events/{id}` — đã hoàn thiện UI chi tiết sự kiện, action bar, invite friends, attendees và owner actions
+- `jobs` — đã hoàn thiện UI danh sách việc làm, filter ngành/địa điểm/loại hình, chi tiết job, apply form và đăng job mới
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
