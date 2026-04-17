@@ -17,6 +17,10 @@ type Story = {
   avatar: string
   gradient: string
   isMe?: boolean
+  title?: string
+  caption?: string
+  media?: string
+  meta?: string
 }
 
 type Contact = {
@@ -94,13 +98,77 @@ export const useMockSocialData = () => {
   ]
 
   const stories: Story[] = [
-    { id: 0, author: "Tạo tin", avatar: "VN", gradient: "linear-gradient(135deg,#0000ff 0%,#6666ff 100%)", isMe: true },
-    { id: 1, author: "Thu Ha", avatar: "TH", gradient: "linear-gradient(135deg,#0000cc 0%,#3333ff 100%)" },
-    { id: 2, author: "Bao Tran", avatar: "BT", gradient: "linear-gradient(135deg,#1a1aff 0%,#8080ff 100%)" },
-    { id: 3, author: "Nam Pham", avatar: "NP", gradient: "linear-gradient(135deg,#0000ee 0%,#4444ff 100%)" },
-    { id: 4, author: "Linh Dao", avatar: "LD", gradient: "linear-gradient(135deg,#0000dd 0%,#5555ff 100%)" },
-    { id: 5, author: "Quynh Le", avatar: "QL", gradient: "linear-gradient(135deg,#0000bb 0%,#2222ff 100%)" },
-    { id: 6, author: "Xu Nguyen", avatar: "XN", gradient: "linear-gradient(135deg,#111199 0%,#4444dd 100%)" },
+    {
+      id: 0,
+      author: "Tạo tin",
+      avatar: "VN",
+      gradient: "linear-gradient(135deg,#0000ff 0%,#6666ff 100%)",
+      isMe: true,
+      title: "Tạo story mới",
+      caption: "Chia sẻ khoảnh khắc của bạn",
+      meta: "Story · của bạn",
+      media: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+    },
+    {
+      id: 1,
+      author: "Thu Ha",
+      avatar: "TH",
+      gradient: "linear-gradient(135deg,#0000cc 0%,#3333ff 100%)",
+      title: "Một buổi sáng yên tĩnh để lên ý tưởng",
+      caption: "Story viewer theo style dự án, giữ cảm giác gần Facebook nhưng vẫn bám palette và spacing của VNSEEA.",
+      meta: "Story · 2 phút trước",
+      media: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
+    },
+    {
+      id: 2,
+      author: "Bao Tran",
+      avatar: "BT",
+      gradient: "linear-gradient(135deg,#1a1aff 0%,#8080ff 100%)",
+      title: "Đoạn chill ngắn cho một ngày dài",
+      caption: "Vuốt trái/phải để chuyển story, bấm nút để điều hướng nhanh hơn trên desktop.",
+      meta: "Story · 15 phút trước",
+      media: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1200&q=80",
+    },
+    {
+      id: 3,
+      author: "Nam Pham",
+      avatar: "NP",
+      gradient: "linear-gradient(135deg,#0000ee 0%,#4444ff 100%)",
+      title: "Mẫu story full-screen cho mobile-first",
+      caption: "Phù hợp cả ảnh và video, sau này có thể nối API story thật từ backend.",
+      meta: "Story · 1 giờ trước",
+      media: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80",
+    },
+    {
+      id: 4,
+      author: "Linh Dao",
+      avatar: "LD",
+      gradient: "linear-gradient(135deg,#0000dd 0%,#5555ff 100%)",
+      title: "Story hướng dẫn nội bộ",
+      caption: "Cách dùng story để highlight thông báo và nội dung nhanh.",
+      meta: "Story · 3 giờ trước",
+      media: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
+    },
+    {
+      id: 5,
+      author: "Quynh Le",
+      avatar: "QL",
+      gradient: "linear-gradient(135deg,#0000bb 0%,#2222ff 100%)",
+      title: "Story du lịch",
+      caption: "Một góc ảnh nhẹ nhàng, hợp style Facebook nhưng vẫn rất VNSEEA.",
+      meta: "Story · 5 giờ trước",
+      media: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+    },
+    {
+      id: 6,
+      author: "Xu Nguyen",
+      avatar: "XN",
+      gradient: "linear-gradient(135deg,#111199 0%,#4444dd 100%)",
+      title: "Story về sản phẩm",
+      caption: "Tập trung vào một thông điệp ngắn, rõ, đẹp.",
+      meta: "Story · 7 giờ trước",
+      media: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80",
+    },
   ]
 
   const sidebarNav: SidebarNavItem[] = [
