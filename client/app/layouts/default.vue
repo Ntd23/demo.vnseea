@@ -51,9 +51,16 @@ const chatOpen = ref(false)
 const route = useRoute()
 const isReelsPage = computed(() => route.path === '/reels')
 const isCheckoutPage = computed(() => route.path === '/checkout')
+const isCommunityComposerPage = computed(() =>
+  route.path === '/create-group' || route.path === '/create-page',
+)
 const showLeftSidebar = computed(() => !route.path.startsWith('/@') && !isCheckoutPage.value)
 const showRightSidebar = computed(() => !isReelsPage.value)
-const showHeaderIconNav = computed(() => !isReelsPage.value && !isCheckoutPage.value)
+const showHeaderIconNav = computed(() =>
+  !isReelsPage.value
+  && !isCheckoutPage.value
+  && !isCommunityComposerPage.value,
+)
 
 const shellClass = computed(() => {
   if (isReelsPage.value) {
@@ -76,6 +83,10 @@ const mainClass = computed(() => {
 
   if (isCheckoutPage.value) {
     return 'pb-6'
+  }
+
+  if (isCommunityComposerPage.value) {
+    return 'pb-8'
   }
 
   return 'xl:sticky xl:top-[74px]'
