@@ -21,7 +21,8 @@
       description-placeholder="Mô tả ngắn gọn chủ đề của nhóm, đối tượng phù hợp và nội dung mọi người sẽ cùng thảo luận."
       privacy-label="Loại nhóm"
       category-label="Loại"
-      back-to="/home"
+      back-to="/groups"
+      submit-to="/groups"
       submit-label="Tạo ra"
     />
   </div>

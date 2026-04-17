@@ -209,7 +209,16 @@
                 {{ backLabel }}
               </NuxtLink>
 
+              <NuxtLink
+                v-if="submitTo"
+                :to="submitTo"
+                class="inline-flex h-14 min-w-[210px] items-center justify-center rounded-[18px] bg-[#0000ff] px-6 text-[1.02rem] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e6]"
+              >
+                {{ submitLabel }}
+              </NuxtLink>
+
               <button
+                v-else
                 class="inline-flex h-14 min-w-[210px] items-center justify-center rounded-[18px] bg-[#0000ff] px-6 text-[1.02rem] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e6]"
                 type="button"
               >
@@ -261,6 +270,7 @@ const props = withDefaults(defineProps<{
   privacyOptions?: CommunityOption[]
   showPrivacy?: boolean
   submitLabel?: string
+  submitTo?: string
   backLabel?: string
   backTo?: string
   nameLabel?: string

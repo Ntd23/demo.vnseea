@@ -107,7 +107,7 @@ const mainNav = [
   { label: "Bài báo của tôi", icon: "i-ph-article", to: "#" },
   { label: "Phim", icon: "i-ph-film-strip", to: "#" },
   { label: "Sự kiện", icon: "i-ph-calendar-blank", to: "#" },
-  { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "#" },
+  { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "/groups" },
   { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "#" },
   { label: "Quảng cáo", icon: "i-ph-megaphone", to: "#" },
   { label: "Tập ảnh", icon: "i-ph-images", to: "#" },
