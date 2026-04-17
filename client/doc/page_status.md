@@ -25,7 +25,7 @@
 - `[x]` `P-12` `/edit-product/{id}` — Sửa sản phẩm
 - `[x]` `P-13` `/my-products` — Sản phẩm của tôi
 - `[x]` `P-14` `/checkout` — Thanh toán
-- `[ ]` `P-15` `/orders` — Đơn hàng (người mua)
+- `[x]` `P-15` `/orders` — Đơn hàng (người mua)
 - `[ ]` `P-16` `/order/{id}` — Chi tiết đơn hàng
 - `[ ]` `P-17` `/customer_order/{id}` — Đơn hàng (người bán)
 - `[ ]` `P-18` `/create-group` — Tạo nhóm
