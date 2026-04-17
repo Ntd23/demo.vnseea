@@ -100,7 +100,7 @@ defineEmits<{ close: [] }>()
 
 const mainNav = [
   { label: "Tìm kiếm", icon: "i-ph-magnifying-glass", to: "#" },
-  { label: "Các trang", icon: "i-ph-flag", to: "#" },
+  { label: "Các trang", icon: "i-ph-flag", to: "/pages" },
   { label: "Sản phẩm của tôi", icon: "i-ph-package", to: "/my-products" },
   { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
   { label: "Blog", icon: "i-ph-newspaper", to: "/blogs" },
@@ -111,6 +111,8 @@ const mainNav = [
   { label: "Tạo sự kiện", icon: "i-ph-calendar-plus", to: "/events/create-event" },
   { label: "Live", icon: "i-ph-broadcast", to: "/live" },
   { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "#" },
+  { label: "Sự kiện", icon: "i-ph-calendar-blank", to: "#" },
+  { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "/groups" },
   { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "#" },
   { label: "Quảng cáo", icon: "i-ph-megaphone", to: "#" },
   { label: "Tập ảnh", icon: "i-ph-images", to: "#" },

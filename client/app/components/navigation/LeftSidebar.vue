@@ -88,11 +88,28 @@ const isMarketplaceRoute = () =>
 const isEventsRoute = () =>
   route.path === "/events"
   || route.path.startsWith("/events/")
+const isGroupsRoute = () =>
+  route.path === "/groups"
+  || route.path === "/suggested-groups"
+  || route.path === "/joined_groups"
+  || route.path === "/create-group"
+  || route.path.startsWith("/g/")
+  || route.path.startsWith("/group-setting/")
+
+const isPagesRoute = () =>
+  route.path === "/pages"
+  || route.path === "/suggested-pages"
+  || route.path === "/liked-pages"
+  || route.path === "/create-page"
+  || route.path.startsWith("/p/")
+  || route.path.startsWith("/page-setting/")
 
 const isActive = (to: string) => {
   const normalized = to.split("#")[0]
   if (normalized === "/products") return isMarketplaceRoute()
   if (normalized === "/events") return isEventsRoute()
+  if (normalized === "/groups") return isGroupsRoute()
+  if (normalized === "/pages") return isPagesRoute()
   return route.path === normalized
 }
 </script>
