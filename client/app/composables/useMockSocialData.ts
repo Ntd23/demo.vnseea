@@ -195,7 +195,7 @@ export const useMockSocialData = () => {
     { label: "Ưu đãi", icon: "i-ph-tag", to: "/deals" },
     { label: "Tìm bạn", icon: "i-ph-user-plus", to: "/find-friends" },
     { label: "Trending", icon: "i-ph-trend-up", to: "/trending" },
-    { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/fundraisers" },
+    { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
   ]
 
   const contacts: Contact[] = [

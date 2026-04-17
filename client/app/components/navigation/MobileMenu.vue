@@ -122,7 +122,7 @@ const mainNav = [
   { label: "Tìm bạn", icon: "i-ph-user-plus", to: "#" },
   { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
-  { label: "Kinh phí", icon: "i-ph-hand-heart", to: "#" },
+  { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
   { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "#" },
   { label: "Ưu đãi", icon: "i-ph-tag", to: "#" },
 ]
