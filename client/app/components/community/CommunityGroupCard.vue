@@ -7,9 +7,12 @@
           <span class="inline-flex items-center rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
             {{ privacyLabel }}
           </span>
-          <h3 class="mt-4 text-[1.35rem] font-black tracking-[-0.04em] text-white">
+          <NuxtLink
+            :to="groupTo"
+            class="mt-4 block text-[1.35rem] font-black tracking-[-0.04em] text-white transition hover:text-white/85"
+          >
             {{ group.name }}
-          </h3>
+          </NuxtLink>
           <p class="mt-2 max-w-[28rem] text-[13px] leading-6 text-white/82">
             {{ group.summary }}
           </p>
@@ -66,13 +69,13 @@
           <span>{{ privacyDescription }}</span>
         </div>
 
-        <button
+        <NuxtLink
+          :to="groupTo"
           class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)] transition hover:-translate-y-0.5"
           :style="{ background: primaryButtonBackground }"
-          type="button"
         >
           {{ actionLabel }}
-        </button>
+        </NuxtLink>
       </div>
     </div>
   </article>
@@ -80,6 +83,8 @@
 
 <script setup lang="ts">
 import {
+  formatCommunityMemberCount,
+  getCommunityGroupPath,
   communityCategoryOptions,
   communityPrivacyOptions,
   getCommunityOptionDescription,
@@ -95,7 +100,7 @@ const props = withDefaults(defineProps<{
 })
 
 const memberLabel = computed(() =>
-  `${props.group.members.toLocaleString("vi-VN")} thành viên`,
+  formatCommunityMemberCount(props.group.members),
 )
 
 const privacyLabel = computed(() =>
@@ -112,5 +117,9 @@ const categoryLabel = computed(() =>
 
 const primaryButtonBackground = computed(() =>
   `linear-gradient(135deg, ${props.group.accent} 0%, #0000ff 100%)`,
+)
+
+const groupTo = computed(() =>
+  getCommunityGroupPath(props.group.slug),
 )
 </script>
