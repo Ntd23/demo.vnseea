@@ -118,7 +118,7 @@ const mainNav = [
   { label: "Tập ảnh", icon: "i-ph-images", to: "#" },
   { label: "Xem", icon: "i-ph-play-circle", to: "/watch" },
   { label: "Cuộn phim", icon: "i-ph-film-reel", to: "#" },
-  { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "#" },
+  { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
   { label: "Chọc", icon: "i-ph-hand-waving", to: "#" },
   { label: "Khám phá", icon: "i-ph-compass", to: "/explore" },
   { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "#" },
