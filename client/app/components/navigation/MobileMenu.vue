@@ -113,7 +113,7 @@ const mainNav = [
   { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "#" },
   { label: "Sự kiện", icon: "i-ph-calendar-blank", to: "#" },
   { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "/groups" },
-  { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "#" },
+  { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "/forum" },
   { label: "Quảng cáo", icon: "i-ph-megaphone", to: "#" },
   { label: "Tập ảnh", icon: "i-ph-images", to: "#" },
   { label: "Xem", icon: "i-ph-play-circle", to: "/watch" },

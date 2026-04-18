@@ -56,7 +56,7 @@
 - `[ ]` `P-40` `/memories` — Memories
 - `[x]` `P-41` `/games` — Games
 - `[x]` `P-42` `/go-pro` — Go Pro
-- `[ ]` `P-43` `/forum` — Forum
+- `[x]` `P-43` `/forum` — Forum
 - `[ ]` `P-44` `/directory` — Directory
 - `[ ]` `P-45` `/wallet` — Wallet
 - `[ ]` `P-46` `/withdrawal` — Withdrawal
@@ -90,6 +90,7 @@
 - `setting` / `setting/{page}` — đã hoàn thiện UI cài đặt dạng 22 sub-pages, form fields, toggles, lists, danger zone và mock save actions
 - `games` — đã hoàn thiện UI danh sách game, tab game của tôi/mới/phổ biến, search/filter, play game mock, score session, leaderboard và achievements
 - `go-pro` — đã hoàn thiện UI so sánh packages, billing monthly/yearly, chọn plan, thanh toán mock, feature matrix và subscription history
+- `forum` — đã hoàn thiện UI sections list, threads, search/filter, thread detail, post reply mock và tạo thread mock
 - `checkout` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại
