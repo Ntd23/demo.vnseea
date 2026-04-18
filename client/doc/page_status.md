@@ -59,7 +59,7 @@
 - `[x]` `P-43` `/forum` — Forum
 - `[x]` `P-44` `/directory` — Directory
 - `[x]` `P-45` `/wallet` — Wallet
-- `[ ]` `P-46` `/withdrawal` — Withdrawal
+- `[x]` `P-46` `/withdrawal` — Withdrawal
 
 ---
 
@@ -93,6 +93,7 @@
 - `forum` — đã hoàn thiện UI sections list, threads, search/filter, thread detail, post reply mock và tạo thread mock
 - `directory` — đã hoàn thiện UI 12 sub-categories, search/filter, category sidebar, featured shortcuts và route nhanh tới từng module
 - `wallet` — đã hoàn thiện UI xem số dư, nạp tiền, gửi tiền, validation số dư và lịch sử giao dịch mock
+- `withdrawal` — đã hoàn thiện UI yêu cầu rút tiền, payment info, validation số dư/tối thiểu và lịch sử withdrawal mock
 - `checkout` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại

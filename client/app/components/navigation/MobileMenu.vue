@@ -131,6 +131,7 @@ const mainNav = [
   { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
   { label: "Go Pro", icon: "i-ph-crown-simple", to: "/go-pro" },
   { label: "Ví VNSEEA", icon: "i-ph-wallet", to: "/wallet" },
+  { label: "Rút tiền", icon: "i-ph-money-wavy", to: "/withdrawal" },
   { label: "Danh mục", icon: "i-ph-squares-four", to: "/directory" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
   { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
