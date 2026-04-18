@@ -49,7 +49,7 @@
 ## Các page phụ
 
 - `[x]` `P-35` `/search` — Tìm kiếm
-- `[ ]` `P-36` `/hashtag/{tag}` — Hashtag
+- `[x]` `P-36` `/hashtag/{tag}` — Hashtag
 - `[ ]` `P-37` `/explore` — Khám phá
 - `[ ]` `P-38` `/saved-posts` — Bài đã lưu
 - `[ ]` `P-39` `/poke` — Poke
@@ -90,6 +90,7 @@
 - `setting` / `setting/{page}` — đã hoàn thiện UI cài đặt dạng 22 sub-pages, form fields, toggles, lists, danger zone và mock save actions
 - `checkout` — đã hoàn thiện UI/responsive
 - `search` — đã hoàn thiện UI tìm kiếm tổng hợp users/pages/groups/posts, filter theo loại, sort mock, empty state và header search link tới route `/search`
+- `hashtag/{tag}` — đã hoàn thiện UI feed hashtag, lọc bài viết theo tag từ mock social data, empty state, hashtag liên quan/gợi ý và link trực tiếp từ tag chip trong post
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
