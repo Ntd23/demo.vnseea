@@ -54,7 +54,7 @@
 - `[ ]` `P-38` `/saved-posts` — Bài đã lưu
 - `[ ]` `P-39` `/poke` — Poke
 - `[ ]` `P-40` `/memories` — Memories
-- `[ ]` `P-41` `/games` — Games
+- `[x]` `P-41` `/games` — Games
 - `[ ]` `P-42` `/go-pro` — Go Pro
 - `[ ]` `P-43` `/forum` — Forum
 - `[ ]` `P-44` `/directory` — Directory
@@ -88,6 +88,7 @@
 - `live` — đã hoàn thiện UI live streaming, Go Live mock, live player, stream list, like/mute/viewer state và live chat mock
 - `watch` — đã hoàn thiện UI xem video, player mock/Plyr-ready, search/filter, video info, comments, related videos và like/share mock
 - `setting` / `setting/{page}` — đã hoàn thiện UI cài đặt dạng 22 sub-pages, form fields, toggles, lists, danger zone và mock save actions
+- `games` — đã hoàn thiện UI danh sách game, tab game của tôi/mới/phổ biến, search/filter, play game mock, score session, leaderboard và achievements
 - `checkout` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại

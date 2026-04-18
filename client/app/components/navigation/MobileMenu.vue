@@ -123,6 +123,7 @@ const mainNav = [
   { label: "Khám phá", icon: "i-ph-compass", to: "#" },
   { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "#" },
   { label: "Tìm bạn", icon: "i-ph-user-plus", to: "#" },
+  { label: "Trò chơi", icon: "i-ph-game-controller", to: "/games" },
   { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
   { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },

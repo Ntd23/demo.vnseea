@@ -195,6 +195,7 @@ export const useMockSocialData = () => {
     { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
     { label: "Ưu đãi", icon: "i-ph-tag", to: "/deals" },
     { label: "Tìm bạn", icon: "i-ph-user-plus", to: "/find-friends" },
+    { label: "Trò chơi", icon: "i-ph-game-controller", to: "/games" },
     { label: "Trending", icon: "i-ph-trend-up", to: "/trending" },
     { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
   ]
