@@ -15,6 +15,10 @@
           </button>
         </div>
 
+        <div class="min-w-0 flex-1 max-w-[640px]">
+          <NavigationHeaderSearchInput />
+        </div>
+
         <div class="ml-auto flex shrink-0 items-center gap-2">
           <button v-for="action in desktopActions" :key="action.label" class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f5f8ff] text-[#33496d] transition hover:border-[#c8d6f2] hover:text-[#0000ff]" type="button" :aria-label="action.label">
             <Icon :name="action.icon" class="h-5 w-5" />
@@ -58,7 +62,7 @@
 defineEmits<{ 'toggle-menu': [] }>()
 
 const route = useRoute()
-const search = ref('')
+const isHome = computed(() => route.path === '/' || route.path === '/home')
 
 const isMarketplaceRoute = computed(() =>
   route.path === '/products'
@@ -89,7 +93,7 @@ const desktopActions = [
 const mobileIconItems = computed(() => [
   { label: 'Home', to: '/home', icon: 'i-ph-house-fill', active: route.path === '/' || route.path === '/home' },
   { label: 'Create', to: '/home', icon: 'i-ph-plus-bold', active: false },
-  { label: 'Search', to: '/home', icon: 'i-ph-magnifying-glass-bold', active: false },
+  { label: 'Search', to: '/search', icon: 'i-ph-magnifying-glass-bold', active: route.path === '/search' },
   { label: 'People', to: '/messages', icon: 'i-ph-user-plus-fill', active: route.path === '/messages' },
   { label: 'Messages', to: '/messages', icon: 'i-ph-chat-circle-dots-fill', active: route.path === '/messages', badge: 1 },
   { label: 'Notifications', to: '/home', icon: 'i-ph-bell-fill', active: false },

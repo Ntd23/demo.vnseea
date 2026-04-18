@@ -48,7 +48,7 @@
 
 ## Các page phụ
 
-- `[ ]` `P-35` `/search` — Tìm kiếm
+- `[x]` `P-35` `/search` — Tìm kiếm
 - `[ ]` `P-36` `/hashtag/{tag}` — Hashtag
 - `[ ]` `P-37` `/explore` — Khám phá
 - `[ ]` `P-38` `/saved-posts` — Bài đã lưu
@@ -89,6 +89,7 @@
 - `watch` — đã hoàn thiện UI xem video, player mock/Plyr-ready, search/filter, video info, comments, related videos và like/share mock
 - `setting` / `setting/{page}` — đã hoàn thiện UI cài đặt dạng 22 sub-pages, form fields, toggles, lists, danger zone và mock save actions
 - `checkout` — đã hoàn thiện UI/responsive
+- `search` — đã hoàn thiện UI tìm kiếm tổng hợp users/pages/groups/posts, filter theo loại, sort mock, empty state và header search link tới route `/search`
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
