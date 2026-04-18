@@ -5,13 +5,19 @@
         v-for="item in items"
         :key="item.label"
         :to="item.to"
-        class="flex h-11 w-11 items-center justify-center rounded-full border-4 transition"
+        class="relative flex h-11 w-11 items-center justify-center rounded-full border-4 transition"
         :class="item.active
           ? 'border-[#0000ff] bg-[#0000ff]/8 text-[#0000ff]'
           : 'border-slate-200 bg-white text-slate-500 hover:border-[#0000ff]/30 hover:text-[#0000ff]'"
         :aria-label="item.label"
       >
         <Icon :name="item.icon" class="h-5 w-5" />
+        <span
+          v-if="item.logoBadge"
+          class="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full border border-white bg-[#0000ff] px-1 text-[9px] font-black text-white shadow-[0_6px_12px_rgba(0,0,255,0.22)]"
+        >
+          {{ item.logoBadge }}
+        </span>
       </NuxtLink>
     </div>
   </nav>
@@ -34,16 +40,17 @@ const items = computed(() => [
     active: false,
   },
   {
-    label: 'People',
-    to: '/messages',
-    icon: 'i-ph-users-fill',
-    active: false,
+    label: 'Reels',
+    to: '/reels',
+    icon: 'i-ph-film-strip-fill',
+    active: route.path === '/reels',
+    logoBadge: 'V',
   },
   {
     label: 'Video',
     to: '/watch',
     icon: 'i-ph-video-camera-fill',
-    active: route.path === '/watch' || route.path === '/reels',
+    active: route.path === '/watch',
   },
   {
     label: 'Music',

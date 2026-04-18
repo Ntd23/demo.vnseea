@@ -6,9 +6,14 @@
       <div class="mt-4">
         <p class="text-[14px] leading-7 text-slate-700">{{ post.text }}</p>
         <div class="mt-3 flex flex-wrap gap-2">
-          <span v-for="tag in post.tags" :key="tag" class="rounded-full bg-[#0000ff]/6 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0000ff]">
-            {{ tag }}
-          </span>
+          <NuxtLink
+            v-for="tag in post.tags"
+            :key="tag"
+            :to="createHashtagPath(tag)"
+            class="rounded-full bg-[#0000ff]/6 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#0000ff] transition hover:bg-[#0000ff] hover:text-white"
+          >
+            {{ formatHashtagLabel(tag) }}
+          </NuxtLink>
         </div>
       </div>
 
@@ -95,6 +100,8 @@
 </template>
 
 <script setup lang="ts">
+import { createHashtagPath, formatHashtagLabel } from "~/composables/useMockHashtagData"
+
 const props = defineProps<{
   post: {
     author: string

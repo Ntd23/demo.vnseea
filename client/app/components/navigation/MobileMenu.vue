@@ -103,7 +103,7 @@ defineProps<{ open: boolean }>()
 defineEmits<{ close: [] }>()
 
 const mainNav = [
-  { label: "Tìm kiếm", icon: "i-ph-magnifying-glass", to: "#" },
+  { label: "Tìm kiếm", icon: "i-ph-magnifying-glass", to: "/search" },
   { label: "Các trang", icon: "i-ph-flag", to: "/pages" },
   { label: "Sản phẩm của tôi", icon: "i-ph-package", to: "/my-products" },
   { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
@@ -122,9 +122,9 @@ const mainNav = [
   { label: "Tập ảnh", icon: "i-ph-images", to: "#" },
   { label: "Xem", icon: "i-ph-play-circle", to: "/watch" },
   { label: "Cuộn phim", icon: "i-ph-film-reel", to: "#" },
-  { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "#" },
-  { label: "Chọc", icon: "i-ph-hand-waving", to: "#" },
-  { label: "Khám phá", icon: "i-ph-compass", to: "#" },
+  { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
+  { label: "Chọc", icon: "i-ph-hand-waving", to: "/poke" },
+  { label: "Khám phá", icon: "i-ph-compass", to: "/explore" },
   { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "#" },
   { label: "Tìm bạn", icon: "i-ph-user-plus", to: "#" },
   { label: "Trò chơi", icon: "i-ph-game-controller", to: "/games" },
@@ -135,7 +135,7 @@ const mainNav = [
   { label: "Danh mục", icon: "i-ph-squares-four", to: "/directory" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
   { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
-  { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "#" },
+  { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "/memories" },
   { label: "Ưu đãi", icon: "i-ph-tag", to: "#" },
 ]
 

@@ -176,10 +176,10 @@ export const useMockSocialData = () => {
     { label: "Tập ảnh", icon: "i-ph-images", to: "/photos" },
     { label: "Xem", icon: "i-ph-play-circle", to: "/watch" },
     { label: "Cuộn phim", icon: "i-ph-film-strip", to: "/reels" },
-    { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "/saved" },
+    { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
     { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "/popular" },
     { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "/memories" },
-    { label: "Chọc", icon: "i-ph-hand-waving", to: "/pokes" },
+    { label: "Chọc", icon: "i-ph-hand-waving", to: "/poke" },
     { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "/groups" },
     { label: "Trang của tôi", icon: "i-ph-file-text", to: "/pages" },
   ]
