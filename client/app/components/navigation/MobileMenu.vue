@@ -126,6 +126,7 @@ const mainNav = [
   { label: "Trò chơi", icon: "i-ph-game-controller", to: "/games" },
   { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
   { label: "Go Pro", icon: "i-ph-crown-simple", to: "/go-pro" },
+  { label: "Danh mục", icon: "i-ph-squares-four", to: "/directory" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
   { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
   { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "#" },
