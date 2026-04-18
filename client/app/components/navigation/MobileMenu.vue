@@ -99,7 +99,7 @@ defineProps<{ open: boolean }>()
 defineEmits<{ close: [] }>()
 
 const mainNav = [
-  { label: "Tìm kiếm", icon: "i-ph-magnifying-glass", to: "#" },
+  { label: "Tìm kiếm", icon: "i-ph-magnifying-glass", to: "/search" },
   { label: "Các trang", icon: "i-ph-flag", to: "/pages" },
   { label: "Sản phẩm của tôi", icon: "i-ph-package", to: "/my-products" },
   { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
@@ -120,7 +120,7 @@ const mainNav = [
   { label: "Cuộn phim", icon: "i-ph-film-reel", to: "#" },
   { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "#" },
   { label: "Chọc", icon: "i-ph-hand-waving", to: "#" },
-  { label: "Khám phá", icon: "i-ph-compass", to: "#" },
+  { label: "Khám phá", icon: "i-ph-compass", to: "/explore" },
   { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "#" },
   { label: "Tìm bạn", icon: "i-ph-user-plus", to: "#" },
   { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },

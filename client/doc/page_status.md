@@ -50,7 +50,7 @@
 
 - `[x]` `P-35` `/search` — Tìm kiếm
 - `[x]` `P-36` `/hashtag/{tag}` — Hashtag
-- `[ ]` `P-37` `/explore` — Khám phá
+- `[x]` `P-37` `/explore` — Khám phá
 - `[ ]` `P-38` `/saved-posts` — Bài đã lưu
 - `[ ]` `P-39` `/poke` — Poke
 - `[ ]` `P-40` `/memories` — Memories
@@ -91,6 +91,7 @@
 - `checkout` — đã hoàn thiện UI/responsive
 - `search` — đã hoàn thiện UI tìm kiếm tổng hợp users/pages/groups/posts, filter theo loại, sort mock, empty state và header search link tới route `/search`
 - `hashtag/{tag}` — đã hoàn thiện UI feed hashtag, lọc bài viết theo tag từ mock social data, empty state, hashtag liên quan/gợi ý và link trực tiếp từ tag chip trong post
+- `explore` — đã hoàn thiện UI khám phá với recommended posts/users/pages, bộ lọc theo loại nội dung, hashtag trending và nối route từ mobile menu
 
 ### Đang làm / cần chốt lại
 - `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
