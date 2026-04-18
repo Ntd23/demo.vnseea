@@ -119,14 +119,14 @@ const mainNav = [
   { label: "Xem", icon: "i-ph-play-circle", to: "/watch" },
   { label: "Cuộn phim", icon: "i-ph-film-reel", to: "#" },
   { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
-  { label: "Chọc", icon: "i-ph-hand-waving", to: "#" },
+  { label: "Chọc", icon: "i-ph-hand-waving", to: "/poke" },
   { label: "Khám phá", icon: "i-ph-compass", to: "/explore" },
   { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "#" },
   { label: "Tìm bạn", icon: "i-ph-user-plus", to: "#" },
   { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
   { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
-  { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "#" },
+  { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "/memories" },
   { label: "Ưu đãi", icon: "i-ph-tag", to: "#" },
 ]
 
