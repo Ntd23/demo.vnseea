@@ -31,10 +31,14 @@
             <span class="text-xl">🤝</span>
           </div>
           <div class="mt-2 space-y-1">
-            <div class="flex items-center gap-2 text-[13px] text-slate-500">
+            <NuxtLink
+              to="/wallet"
+              class="flex items-center gap-2 rounded-lg text-[13px] text-slate-500 transition hover:text-[var(--color-primary-600)]"
+              @click="$emit('close')"
+            >
               <Icon name="i-ph-wallet" class="h-4 w-4" />
               <span>Cái ví: VND9.999.999.999</span>
-            </div>
+            </NuxtLink>
             <div class="flex items-center gap-2 text-[13px] text-slate-500">
               <Icon name="i-ph-coin" class="h-4 w-4" />
               <span>Điểm: 50</span>
@@ -126,6 +130,7 @@ const mainNav = [
   { label: "Trò chơi", icon: "i-ph-game-controller", to: "/games" },
   { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
   { label: "Go Pro", icon: "i-ph-crown-simple", to: "/go-pro" },
+  { label: "Ví VNSEEA", icon: "i-ph-wallet", to: "/wallet" },
   { label: "Danh mục", icon: "i-ph-squares-four", to: "/directory" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
   { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },

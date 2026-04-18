@@ -197,6 +197,7 @@ export const useMockSocialData = () => {
     { label: "Tìm bạn", icon: "i-ph-user-plus", to: "/find-friends" },
     { label: "Trò chơi", icon: "i-ph-game-controller", to: "/games" },
     { label: "Go Pro", icon: "i-ph-crown-simple", to: "/go-pro" },
+    { label: "Ví VNSEEA", icon: "i-ph-wallet", to: "/wallet" },
     { label: "Trending", icon: "i-ph-trend-up", to: "/trending" },
     { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
   ]

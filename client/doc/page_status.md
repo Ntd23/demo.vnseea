@@ -58,7 +58,7 @@
 - `[x]` `P-42` `/go-pro` — Go Pro
 - `[x]` `P-43` `/forum` — Forum
 - `[x]` `P-44` `/directory` — Directory
-- `[ ]` `P-45` `/wallet` — Wallet
+- `[x]` `P-45` `/wallet` — Wallet
 - `[ ]` `P-46` `/withdrawal` — Withdrawal
 
 ---
@@ -92,6 +92,7 @@
 - `go-pro` — đã hoàn thiện UI so sánh packages, billing monthly/yearly, chọn plan, thanh toán mock, feature matrix và subscription history
 - `forum` — đã hoàn thiện UI sections list, threads, search/filter, thread detail, post reply mock và tạo thread mock
 - `directory` — đã hoàn thiện UI 12 sub-categories, search/filter, category sidebar, featured shortcuts và route nhanh tới từng module
+- `wallet` — đã hoàn thiện UI xem số dư, nạp tiền, gửi tiền, validation số dư và lịch sử giao dịch mock
 - `checkout` — đã hoàn thiện UI/responsive
 
 ### Đang làm / cần chốt lại
