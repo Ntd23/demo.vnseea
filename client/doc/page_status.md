@@ -54,12 +54,13 @@
 - `[x]` `P-38` `/saved-posts` — Bài đã lưu
 - `[x]` `P-39` `/poke` — Poke
 - `[x]` `P-40` `/memories` — Memories
-- `[ ]` `P-41` `/games` — Games
-- `[ ]` `P-42` `/go-pro` — Go Pro
-- `[ ]` `P-43` `/forum` — Forum
-- `[ ]` `P-44` `/directory` — Directory
-- `[ ]` `P-45` `/wallet` — Wallet
-- `[ ]` `P-46` `/withdrawal` — Withdrawal
+- `[x]` `P-41` `/games` — Games
+- `[x]` `P-42` `/go-pro` — Go Pro
+- `[x]` `P-43` `/forum` — Forum
+- `[x]` `P-44` `/directory` — Directory
+- `[x]` `P-45` `/wallet` — Wallet
+- `[x]` `P-46` `/withdrawal` — Withdrawal
+
 
 ---
 
@@ -88,6 +89,12 @@
 - `live` — đã hoàn thiện UI live streaming, Go Live mock, live player, stream list, like/mute/viewer state và live chat mock
 - `watch` — đã hoàn thiện UI xem video, player mock/Plyr-ready, search/filter, video info, comments, related videos và like/share mock
 - `setting` / `setting/{page}` — đã hoàn thiện UI cài đặt dạng 22 sub-pages, form fields, toggles, lists, danger zone và mock save actions
+- `games` — đã hoàn thiện UI danh sách game, tab game của tôi/mới/phổ biến, search/filter, play game mock, score session, leaderboard và achievements
+- `go-pro` — đã hoàn thiện UI so sánh packages, billing monthly/yearly, chọn plan, thanh toán mock, feature matrix và subscription history
+- `forum` — đã hoàn thiện UI sections list, threads, search/filter, thread detail, post reply mock và tạo thread mock
+- `directory` — đã hoàn thiện UI 12 sub-categories, search/filter, category sidebar, featured shortcuts và route nhanh tới từng module
+- `wallet` — đã hoàn thiện UI xem số dư, nạp tiền, gửi tiền, validation số dư và lịch sử giao dịch mock
+- `withdrawal` — đã hoàn thiện UI yêu cầu rút tiền, payment info, validation số dư/tối thiểu và lịch sử withdrawal mock
 - `checkout` — đã hoàn thiện UI/responsive
 - `search` — đã hoàn thiện UI tìm kiếm tổng hợp users/pages/groups/posts, filter theo loại, sort mock, empty state và header search link tới route `/search`
 - `hashtag/{tag}` — đã hoàn thiện UI feed hashtag, lọc bài viết theo tag từ mock social data, empty state, hashtag liên quan/gợi ý và link trực tiếp từ tag chip trong post

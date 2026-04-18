@@ -31,10 +31,14 @@
             <span class="text-xl">🤝</span>
           </div>
           <div class="mt-2 space-y-1">
-            <div class="flex items-center gap-2 text-[13px] text-slate-500">
+            <NuxtLink
+              to="/wallet"
+              class="flex items-center gap-2 rounded-lg text-[13px] text-slate-500 transition hover:text-[var(--color-primary-600)]"
+              @click="$emit('close')"
+            >
               <Icon name="i-ph-wallet" class="h-4 w-4" />
               <span>Cái ví: VND9.999.999.999</span>
-            </div>
+            </NuxtLink>
             <div class="flex items-center gap-2 text-[13px] text-slate-500">
               <Icon name="i-ph-coin" class="h-4 w-4" />
               <span>Điểm: 50</span>
@@ -113,7 +117,7 @@ const mainNav = [
   { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "#" },
   { label: "Sự kiện", icon: "i-ph-calendar-blank", to: "#" },
   { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "/groups" },
-  { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "#" },
+  { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "/forum" },
   { label: "Quảng cáo", icon: "i-ph-megaphone", to: "#" },
   { label: "Tập ảnh", icon: "i-ph-images", to: "#" },
   { label: "Xem", icon: "i-ph-play-circle", to: "/watch" },
@@ -123,7 +127,12 @@ const mainNav = [
   { label: "Khám phá", icon: "i-ph-compass", to: "/explore" },
   { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "#" },
   { label: "Tìm bạn", icon: "i-ph-user-plus", to: "#" },
+  { label: "Trò chơi", icon: "i-ph-game-controller", to: "/games" },
   { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
+  { label: "Go Pro", icon: "i-ph-crown-simple", to: "/go-pro" },
+  { label: "Ví VNSEEA", icon: "i-ph-wallet", to: "/wallet" },
+  { label: "Rút tiền", icon: "i-ph-money-wavy", to: "/withdrawal" },
+  { label: "Danh mục", icon: "i-ph-squares-four", to: "/directory" },
   { label: "Những điều phổ biến", icon: "i-ph-trend-up", to: "#" },
   { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
   { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "/memories" },
