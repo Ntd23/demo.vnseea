@@ -44,7 +44,7 @@
       <div class="grid gap-3 sm:grid-cols-2">
         <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            Tín hiệu
+            {{ t("pages.explorePage.signalLabel") }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
             {{ user.meta }}
@@ -53,7 +53,7 @@
 
         <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            Trạng thái
+            {{ t("pages.explorePage.statusLabel") }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
             {{ profileLabel }}
@@ -78,14 +78,14 @@
           type="button"
           @click="connected = !connected"
         >
-          {{ connected ? "Đã gửi lời mời" : "Kết nối ngay" }}
+          {{ connected ? t("pages.explorePage.inviteSent") : t("pages.explorePage.connectNow") }}
         </button>
 
         <NuxtLink
           :to="user.href"
           class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
         >
-          Xem hồ sơ
+          {{ t("pages.explorePage.viewProfile") }}
         </NuxtLink>
       </div>
     </div>
@@ -99,6 +99,7 @@ const props = defineProps<{
   user: ExploreUserSpotlight
 }>()
 
+const { t } = useI18n()
 const connected = ref(false)
 
 const accentBackground = computed(() =>
@@ -106,6 +107,6 @@ const accentBackground = computed(() =>
 )
 
 const profileLabel = computed(() =>
-  props.user.online ? "Đang hoạt động" : "Có thể kết nối",
+  props.user.online ? t("pages.explorePage.activeNow") : t("pages.explorePage.connectable"),
 )
 </script>

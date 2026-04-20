@@ -8,14 +8,13 @@
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-[780px]">
               <p class="text-[12px] font-black uppercase tracking-[0.22em] text-[#0000ff]/60">
-                Saved Feed
+                {{ t("pages.savedPostsPage.heroEyebrow") }}
               </p>
               <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[2.35rem]">
-                Bài viết đã lưu để xem lại sau
+                {{ t("pages.savedPostsPage.heroTitle") }}
               </h1>
               <p class="mt-3 text-[14px] leading-7 text-slate-500">
-                Trang này gom lại các bài đã bookmark trong phiên mock hiện tại. Bạn có thể mở lại bài viết,
-                theo dõi nguồn lưu và bỏ lưu trực tiếp khỏi danh sách.
+                {{ t("pages.savedPostsPage.heroDescription") }}
               </p>
             </div>
 
@@ -25,7 +24,7 @@
                 class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
               >
                 <Icon name="i-ph-house-line-fill" class="mr-2 h-4 w-4" />
-                Quay lại bảng tin
+                {{ t("pages.savedPostsPage.backToFeed") }}
               </NuxtLink>
 
               <button
@@ -35,7 +34,7 @@
                 @click="removeAll"
               >
                 <Icon name="i-ph-trash-bold" class="mr-2 h-4 w-4" />
-                Bỏ lưu tất cả
+                {{ t("pages.savedPostsPage.removeAll") }}
               </button>
             </div>
           </div>
@@ -68,8 +67,8 @@
       <div class="mx-auto max-w-2xl text-center">
         <FoundationEmptyState
           icon="i-ph-bookmark-simple"
-          title="Bạn chưa giữ lại bài viết nào"
-          description="Danh sách bài đã lưu đang trống. Hãy quay lại bảng tin, search hoặc explore để lưu những nội dung cần xem lại sau."
+          :title="t('pages.savedPostsPage.emptyTitle')"
+          :description="t('pages.savedPostsPage.emptyDescription')"
         />
 
         <div class="mt-6 flex flex-wrap justify-center gap-3">
@@ -78,14 +77,14 @@
             type="button"
             @click="restoreMockData"
           >
-            Khôi phục danh sách mock
+            {{ t("pages.savedPostsPage.restoreMock") }}
           </button>
 
           <NuxtLink
             to="/explore"
             class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
           >
-            Đi tới khám phá
+            {{ t("pages.savedPostsPage.goToExplore") }}
           </NuxtLink>
         </div>
       </div>
@@ -98,13 +97,13 @@
       <div class="flex flex-col gap-3 border-b border-[#eef2fb] pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-            Danh sách đang hiển thị
+            {{ t("pages.savedPostsPage.listEyebrow") }}
           </p>
           <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.04em] text-[#243b63]">
-            {{ visibleSavedPosts.length }} bài viết còn được giữ lại
+            {{ t("pages.savedPostsPage.listTitle", { count: visibleSavedPosts.length }) }}
           </h2>
           <p class="mt-2 text-[14px] leading-6 text-slate-500">
-            Mỗi bài có thể bỏ lưu độc lập. Khi xóa hết, trang sẽ chuyển sang empty state để bạn test lại flow restore.
+            {{ t("pages.savedPostsPage.listDescription") }}
           </p>
         </div>
 
@@ -113,7 +112,7 @@
           class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
         >
           <Icon name="i-ph-magnifying-glass-bold" class="mr-2 h-4 w-4" />
-          Tìm thêm nội dung
+          {{ t("pages.savedPostsPage.findMore") }}
         </NuxtLink>
       </div>
 
@@ -131,12 +130,16 @@
 
 <script setup lang="ts">
 const { savedPosts } = useMockSavedPostsData()
+const { t, locale } = useI18n()
 
 const removedIds = ref<string[]>([])
 
 const visibleSavedPosts = computed(() =>
-  savedPosts.filter(item => !removedIds.value.includes(item.id)),
+  savedPosts.value.filter(item => !removedIds.value.includes(item.id)),
 )
+
+const formatCount = (value: number) =>
+  value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US")
 
 const summaryCards = computed(() => {
   const authors = new Set(visibleSavedPosts.value.map(item => item.post.author))
@@ -148,24 +151,24 @@ const summaryCards = computed(() => {
 
   return [
     {
-      label: "Đã lưu",
-      value: visibleSavedPosts.value.length.toLocaleString("vi-VN"),
-      description: "Số bài đang còn xuất hiện trong danh sách bookmark mock.",
+      label: t("pages.savedPostsPage.statSaved"),
+      value: formatCount(visibleSavedPosts.value.length),
+      description: t("pages.savedPostsPage.statSavedDescription"),
     },
     {
-      label: "Tác giả",
-      value: authors.size.toLocaleString("vi-VN"),
-      description: "Số người đã đăng các bài viết bạn đang giữ lại.",
+      label: t("pages.savedPostsPage.statAuthors"),
+      value: formatCount(authors.size),
+      description: t("pages.savedPostsPage.statAuthorsDescription"),
     },
     {
-      label: "Bộ sưu tập",
-      value: collections.size.toLocaleString("vi-VN"),
-      description: "Nhóm lưu nhanh để bạn tách bài theo mục đích tham chiếu.",
+      label: t("pages.savedPostsPage.statCollections"),
+      value: formatCount(collections.size),
+      description: t("pages.savedPostsPage.statCollectionsDescription"),
     },
     {
-      label: "Tương tác",
-      value: interactionCount.toLocaleString("vi-VN"),
-      description: "Tổng like, bình luận và chia sẻ của các bài còn được lưu.",
+      label: t("pages.savedPostsPage.statInteractions"),
+      value: formatCount(interactionCount),
+      description: t("pages.savedPostsPage.statInteractionsDescription"),
     },
   ]
 })
@@ -176,7 +179,7 @@ function removeSavedPost(id: string) {
 }
 
 function removeAll() {
-  removedIds.value = savedPosts.map(item => item.id)
+  removedIds.value = savedPosts.value.map(item => item.id)
 }
 
 function restoreMockData() {
@@ -184,7 +187,7 @@ function restoreMockData() {
 }
 
 useSeoMeta({
-  title: "Bài viết đã lưu | VNSEEA",
-  description: "Xem lại danh sách bài viết đã lưu và bỏ lưu trực tiếp trên VNSEEA.",
+  title: () => t("pages.savedPostsPage.seoTitle"),
+  description: () => t("pages.savedPostsPage.seoDescription"),
 })
 </script>

@@ -166,8 +166,8 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/pages.vue`
 - [ ] `client/app/pages/page-setting/[page].vue`
 - [ ] `client/app/pages/search.vue`
-- [ ] `client/app/pages/explore.vue`
-- [ ] `client/app/pages/saved-posts.vue`
+- [x] `client/app/pages/explore.vue`
+- [x] `client/app/pages/saved-posts.vue`
 - [x] `client/app/pages/poke.vue`
 - [x] `client/app/pages/memories.vue`
 - [x] `client/app/pages/go-pro.vue`
@@ -382,10 +382,10 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/pages/SearchPage.vue`
 - [ ] `client/app/components/search/FiltersPanel.vue`
 - [ ] `client/app/components/search/ResultCard.vue`
-- [ ] `client/app/components/pages/ExplorePage.vue`
-- [ ] `client/app/components/explore/UserSpotlightCard.vue`
-- [ ] `client/app/components/pages/SavedPostsPage.vue`
-- [ ] `client/app/components/saved/PostCard.vue`
+- [x] `client/app/components/pages/ExplorePage.vue`
+- [x] `client/app/components/explore/UserSpotlightCard.vue`
+- [x] `client/app/components/pages/SavedPostsPage.vue`
+- [x] `client/app/components/saved/PostCard.vue`
 - [x] `client/app/components/pages/PokePage.vue`
 - [x] `client/app/components/poke/RequestCard.vue`
 - [x] `client/app/components/pages/MemoriesPage.vue`

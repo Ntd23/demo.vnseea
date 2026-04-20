@@ -1,4 +1,5 @@
 import { useMockSocialData } from "./useMockSocialData"
+import { computed } from "vue"
 
 type SocialPost = ReturnType<typeof useMockSocialData>["posts"][number]
 
@@ -27,24 +28,25 @@ function createSavedPostEntry(
 }
 
 export function useMockSavedPostsData() {
+  const { t } = useI18n()
   const { posts } = useMockSocialData()
 
-  const savedPosts = [
+  const savedPosts = computed<MockSavedPostEntry[]>(() => [
     createSavedPostEntry("saved-post-1", posts[0], {
-      savedAtLabel: "Đã lưu 14 phút trước",
-      sourceLabel: "Lưu từ bảng tin",
+      savedAtLabel: t("pages.savedPostsPage.savedAtFirst"),
+      sourceLabel: t("pages.savedPostsPage.sourceFeed"),
       sourceTo: "/home",
-      collectionLabel: "Ưu tiên tuần này",
-      note: "Giữ lại để tham chiếu khi hoàn thiện luồng page phụ và các shared component cho social feed.",
+      collectionLabel: t("pages.savedPostsPage.collectionPriority"),
+      note: t("pages.savedPostsPage.noteFirst"),
     }),
     createSavedPostEntry("saved-post-2", posts[1], {
-      savedAtLabel: "Đã lưu hôm nay",
-      sourceLabel: "Lưu từ khám phá",
+      savedAtLabel: t("pages.savedPostsPage.savedAtSecond"),
+      sourceLabel: t("pages.savedPostsPage.sourceExplore"),
       sourceTo: "/explore?view=posts",
-      collectionLabel: "Brand & Profile",
-      note: "Dùng làm cảm hứng cho các block hero và nhịp nội dung mang thiên hướng thương hiệu cộng đồng.",
+      collectionLabel: t("pages.savedPostsPage.collectionBrandProfile"),
+      note: t("pages.savedPostsPage.noteSecond"),
     }),
-  ].filter((item): item is MockSavedPostEntry => item !== null)
+  ].filter((item): item is MockSavedPostEntry => item !== null))
 
   return {
     savedPosts,
