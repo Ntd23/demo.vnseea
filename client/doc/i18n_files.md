@@ -134,9 +134,9 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/pages/home.vue`
 - [x] `client/app/pages/welcome.vue`
 - [x] `client/app/pages/register.vue`
-- [ ] `client/app/pages/forgot-password.vue`
-- [ ] `client/app/pages/messages.vue`
-- [ ] `client/app/pages/reels.vue`
+- [x] `client/app/pages/forgot-password.vue`
+- [x] `client/app/pages/messages.vue`
+- [x] `client/app/pages/reels.vue`
 - [ ] `client/app/pages/products.vue`
 - [ ] `client/app/pages/new-product.vue`
 - [ ] `client/app/pages/edit-product/[id].vue`

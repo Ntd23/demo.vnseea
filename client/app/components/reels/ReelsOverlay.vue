@@ -18,25 +18,25 @@
     </div>
 
     <div class="flex w-[76px] flex-col items-center justify-end gap-2 pb-1 sm:w-[82px] sm:gap-3">
-      <button class="fb-action-button text-[#ff4d5a]" type="button" aria-label="Thích">
+      <button class="fb-action-button text-[#ff4d5a]" type="button" :aria-label="$t('pages.reelsPage.like')">
         <Icon name="i-ph-heart-fill" class="h-6 w-6" />
       </button>
       <span class="fb-action-count">{{ reel.likes }}</span>
 
-      <button class="fb-action-button" type="button" aria-label="Bình luận">
+      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.comment')">
         <Icon name="i-ph-chat-circle-text-fill" class="h-6 w-6" />
       </button>
       <span class="fb-action-count">{{ reel.comments }}</span>
 
-      <button class="fb-action-button" type="button" aria-label="Chia sẻ">
+      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.share')">
         <Icon name="i-ph-share-network-fill" class="h-6 w-6" />
       </button>
-      <span class="fb-action-count">Chia sẻ</span>
+      <span class="fb-action-count">{{ $t('pages.reelsPage.share') }}</span>
 
-      <button class="fb-action-button" type="button" aria-label="Lưu">
+      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.save')">
         <Icon name="i-ph-bookmark-simple-fill" class="h-6 w-6" />
       </button>
-      <span class="fb-action-count">Lưu</span>
+      <span class="fb-action-count">{{ $t('pages.reelsPage.save') }}</span>
     </div>
   </div>
 </template>

@@ -27,10 +27,10 @@
 
         <button class="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-white backdrop-blur-sm sm:left-5 sm:top-5" type="button">
           <span class="h-2 w-2 rounded-full bg-[#10b981]" />
-          <span class="text-[0.78rem] font-semibold">Đang phát</span>
+          <span class="text-[0.78rem] font-semibold">{{ $t('pages.reelsPage.playing') }}</span>
         </button>
 
-        <button class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/50 sm:right-5 sm:top-5" type="button" aria-label="Thêm">
+        <button class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/50 sm:right-5 sm:top-5" type="button" :aria-label="$t('pages.reelsPage.more')">
           <Icon name="i-ph-dots-three-outline-fill" class="h-5 w-5" />
         </button>
 
@@ -39,7 +39,7 @@
     </Transition>
 
     <div class="pointer-events-none absolute bottom-4 left-1/2 hidden -translate-x-1/2 gap-2 text-[0.72rem] font-semibold text-white/65 md:flex">
-      <span class="rounded-full bg-white/10 px-3 py-1 backdrop-blur-sm">Vuốt lên/xuống để đổi reel</span>
+      <span class="rounded-full bg-white/10 px-3 py-1 backdrop-blur-sm">{{ $t('pages.reelsPage.swipeHint') }}</span>
     </div>
   </div>
 </template>
