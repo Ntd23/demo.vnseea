@@ -840,6 +840,37 @@
         "privacyLabel": "Group type",
         "categoryLabel": "Category"
       },
+      "page": {
+        "eyebrow": "P-21 · Fanpage",
+        "title": "Create new page",
+        "description": "Create a fanpage for your brand, store, professional, or content project to start posting, receiving followers, and building a public presence.",
+        "highlights": ["Public from the start", "Brand URL", "Ready for fanpage profile"],
+        "nameLabel": "Page name",
+        "namePlaceholder": "Example: Moc May Furniture Studio",
+        "slugPlaceholder": "moc-may-furniture-studio",
+        "categoryLabel": "Page type",
+        "submitLabel": "Create page",
+        "identitySectionLabel": "Fanpage identity",
+        "identitySectionTitle": "Short, easy to remember, and identifiable page name",
+        "identitySectionBadge": "Good for search, sharing, and public profile",
+        "identityHint": "Name should match the brand, service, or main persona",
+        "descriptionSectionLabel": "Fanpage introduction",
+        "descriptionSectionTitle": "Let followers know what you are offering",
+        "descriptionHint": "Tip: specify who the brand is, what target group it serves, and what main content you will post.",
+        "configurationSectionLabel": "Fanpage classification",
+        "configurationSectionTitle": "Choose a category for the system to target the right audience",
+        "actionDescription": "Once completed, you can add a cover, avatar, CTA, contact info, and your first fanpage welcome post.",
+        "nextSteps": {
+          "step1Title": "Complete fanpage profile",
+          "step1Desc": "Add a cover, avatar, featured intro, and contact information to make the page look more trustworthy.",
+          "step2Title": "Choose the right CTA",
+          "step2Desc": "Depending on your goal, you can enable the message, call, view store, or follow button.",
+          "step3Title": "Post first introduction",
+          "step3Desc": "Pin an initial post to let newcomers know what you offer and how to interact with the fanpage."
+        },
+        "seoTitle": "Create new page",
+        "seoDesc": "Create a new fanpage on VNSEEA with a name, URL, description, and category, ready for the public page flow."
+      },
       "common": {
         "entityLabelGroup": "group",
         "entityLabelPage": "page",

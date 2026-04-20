@@ -840,6 +840,37 @@
         "privacyLabel": "Loại nhóm",
         "categoryLabel": "Loại"
       },
+      "page": {
+        "eyebrow": "P-21 · Fanpage",
+        "title": "Tạo trang mới",
+        "description": "Khởi tạo một fanpage cho thương hiệu, cửa hàng, chuyên gia hoặc dự án nội dung để bắt đầu đăng bài, nhận theo dõi và xây dựng hiện diện công khai.",
+        "highlights": ["Công khai ngay từ đầu", "URL thương hiệu", "Sẵn sàng cho hồ sơ fanpage"],
+        "nameLabel": "Tên trang",
+        "namePlaceholder": "Ví dụ: Studio Nội thất Mộc Mây",
+        "slugPlaceholder": "studio-noi-that-moc-may",
+        "categoryLabel": "Loại trang",
+        "submitLabel": "Tạo trang",
+        "identitySectionLabel": "Định danh fanpage",
+        "identitySectionTitle": "Tên trang gọn, dễ nhớ và đúng nhận diện",
+        "identitySectionBadge": "Dùng tốt cho tìm kiếm, chia sẻ và hồ sơ công khai",
+        "identityHint": "Tên nên khớp với thương hiệu, dịch vụ hoặc persona chính",
+        "descriptionSectionLabel": "Giới thiệu fanpage",
+        "descriptionSectionTitle": "Cho người theo dõi biết bạn đang cung cấp điều gì",
+        "descriptionHint": "Gợi ý: nói rõ thương hiệu là ai, phục vụ nhóm người nào và nội dung chính bạn sẽ đăng tải.",
+        "configurationSectionLabel": "Phân loại fanpage",
+        "configurationSectionTitle": "Chọn danh mục để hệ thống đề xuất đúng đối tượng",
+        "actionDescription": "Sau khi hoàn tất, bạn có thể thêm cover, avatar, CTA, thông tin liên hệ và bài giới thiệu đầu tiên của fanpage.",
+        "nextSteps": {
+          "step1Title": "Hoàn thiện hồ sơ fanpage",
+          "step1Desc": "Thêm cover, avatar, giới thiệu nổi bật và thông tin liên hệ để trang nhìn đáng tin hơn.",
+          "step2Title": "Chọn CTA phù hợp",
+          "step2Desc": "Tùy mục tiêu, bạn có thể bật nút nhắn tin, gọi điện, xem cửa hàng hoặc theo dõi.",
+          "step3Title": "Đăng bài giới thiệu đầu tiên",
+          "step3Desc": "Ghim một bài mở đầu để người mới biết bạn cung cấp gì và nên tương tác thế nào với fanpage."
+        },
+        "seoTitle": "Tạo trang mới",
+        "seoDesc": "Tạo fanpage mới trên VNSEEA với tên, URL, mô tả và category để sẵn sàng cho flow trang công khai."
+      },
       "common": {
         "entityLabelGroup": "nhóm",
         "entityLabelPage": "trang",
