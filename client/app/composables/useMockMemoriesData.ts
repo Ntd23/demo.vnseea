@@ -1,4 +1,5 @@
 import { useMockSocialData } from "./useMockSocialData"
+import { computed } from "vue"
 
 type SocialPost = ReturnType<typeof useMockSocialData>["posts"][number]
 
@@ -26,22 +27,23 @@ function createMemoryEntry(
 }
 
 export function useMockMemoriesData() {
+  const { t } = useI18n()
   const { posts } = useMockSocialData()
 
-  const memoryEntries = [
+  const memoryEntries = computed(() => [
     createMemoryEntry("memory-1", posts[0], {
-      happenedOnLabel: "Ngày 18 tháng 4 năm 2025",
-      memoryLabel: "1 năm trước",
+      happenedOnLabel: t("pages.memoriesPage.memoryOneDate"),
+      memoryLabel: t("pages.memoriesPage.memoryOneLabel"),
       yearOffset: 1,
-      reflection: "Khoảnh khắc cả team vừa chốt lại hướng component hóa để tăng tốc các page phụ.",
+      reflection: t("pages.memoriesPage.memoryOneReflection"),
     }),
     createMemoryEntry("memory-2", posts[1], {
-      happenedOnLabel: "Ngày 18 tháng 4 năm 2024",
-      memoryLabel: "2 năm trước",
+      happenedOnLabel: t("pages.memoriesPage.memoryTwoDate"),
+      memoryLabel: t("pages.memoriesPage.memoryTwoLabel"),
       yearOffset: 2,
-      reflection: "Bài đăng gợi lại giai đoạn định hình visual cho profile và business page đầu tiên.",
+      reflection: t("pages.memoriesPage.memoryTwoReflection"),
     }),
-  ].filter((item): item is MockMemoryEntry => item !== null)
+  ].filter((item): item is MockMemoryEntry => item !== null))
 
   return {
     memoryEntries,

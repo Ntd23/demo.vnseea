@@ -8,14 +8,13 @@
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-[780px]">
               <p class="text-[12px] font-black uppercase tracking-[0.22em] text-[#0000ff]/60">
-                Poke Board
+                {{ t("pages.pokePage.heroEyebrow") }}
               </p>
               <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[2.35rem]">
-                Những người vừa chọc bạn
+                {{ t("pages.pokePage.heroTitle") }}
               </h1>
               <p class="mt-3 text-[14px] leading-7 text-slate-500">
-                Trang <span class="font-semibold text-[#243b63]">/poke</span> giữ luồng đơn giản theo audit:
-                danh sách poke hiện có và nút chọc lại ngay trên từng người.
+                {{ t("pages.pokePage.heroDescription") }}
               </p>
             </div>
 
@@ -25,7 +24,7 @@
                 class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
               >
                 <Icon name="i-ph-chat-circle-dots-bold" class="mr-2 h-4 w-4" />
-                Mở tin nhắn
+                {{ t("pages.pokePage.openMessages") }}
               </NuxtLink>
 
               <button
@@ -35,7 +34,7 @@
                 @click="resetPokedBack"
               >
                 <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-4 w-4" />
-                Khôi phục trạng thái
+                {{ t("pages.pokePage.resetStatus") }}
               </button>
             </div>
           </div>
@@ -65,13 +64,13 @@
       <div class="flex flex-col gap-3 border-b border-[#eef2fb] pb-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-            Danh sách poke
+            {{ t("pages.pokePage.listEyebrow") }}
           </p>
           <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.04em] text-[#243b63]">
-            {{ pokeRecords.length }} người đang chờ phản hồi
+            {{ t("pages.pokePage.listTitle", { count: pokeRecords.length }) }}
           </h2>
           <p class="mt-2 text-[14px] leading-6 text-slate-500">
-            Đây là luồng nhẹ, thiên về tái kết nối nhanh. Bạn có thể chọc lại từng người hoặc mở hồ sơ trước khi phản hồi.
+            {{ t("pages.pokePage.listDescription") }}
           </p>
         </div>
       </div>
@@ -91,32 +90,35 @@
 
 <script setup lang="ts">
 const { pokeRecords } = useMockPokeData()
+const { t, locale } = useI18n()
 
 const pokedBackIds = ref<string[]>([])
 
 const pokedBackCount = computed(() => pokedBackIds.value.length)
-const pendingPokeCount = computed(() => pokeRecords.length - pokedBackCount.value)
+const pendingPokeCount = computed(() => pokeRecords.value.length - pokedBackCount.value)
+const formatCount = (value: number) =>
+  value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US")
 
 const summaryCards = computed(() => [
   {
-    label: "Poke mới",
-    value: pokeRecords.length.toLocaleString("vi-VN"),
-    description: "Số lần chạm nhẹ đang hiện trong mock list.",
+    label: t("pages.pokePage.statNewPokes"),
+    value: formatCount(pokeRecords.value.length),
+    description: t("pages.pokePage.statNewPokesDescription"),
   },
   {
-    label: "Đã chọc lại",
-    value: pokedBackCount.value.toLocaleString("vi-VN"),
-    description: "Những kết nối bạn đã phản hồi ngay trong phiên này.",
+    label: t("pages.pokePage.statPokedBack"),
+    value: formatCount(pokedBackCount.value),
+    description: t("pages.pokePage.statPokedBackDescription"),
   },
   {
-    label: "Đang online",
-    value: pokeRecords.filter(item => item.online).length.toLocaleString("vi-VN"),
-    description: "Những người có thể tiếp tục trò chuyện ngay sau khi chọc lại.",
+    label: t("pages.pokePage.statOnline"),
+    value: formatCount(pokeRecords.value.filter(item => item.online).length),
+    description: t("pages.pokePage.statOnlineDescription"),
   },
   {
-    label: "Chờ phản hồi",
-    value: pendingPokeCount.value.toLocaleString("vi-VN"),
-    description: "Số poke chưa được bạn chọc lại trong phiên hiện tại.",
+    label: t("pages.pokePage.statPending"),
+    value: formatCount(pendingPokeCount.value),
+    description: t("pages.pokePage.statPendingDescription"),
   },
 ])
 
@@ -130,7 +132,7 @@ function resetPokedBack() {
 }
 
 useSeoMeta({
-  title: "Poke | VNSEEA",
-  description: "Xem danh sách poke và chọc lại nhanh các kết nối trên VNSEEA.",
+  title: () => t("pages.pokePage.seoTitle"),
+  description: () => t("pages.pokePage.seoDescription"),
 })
 </script>

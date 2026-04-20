@@ -168,9 +168,9 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/search.vue`
 - [ ] `client/app/pages/explore.vue`
 - [ ] `client/app/pages/saved-posts.vue`
-- [ ] `client/app/pages/poke.vue`
-- [ ] `client/app/pages/memories.vue`
-- [ ] `client/app/pages/go-pro.vue`
+- [x] `client/app/pages/poke.vue`
+- [x] `client/app/pages/memories.vue`
+- [x] `client/app/pages/go-pro.vue`
 - [x] `client/app/pages/forum/index.vue`
 - [x] `client/app/pages/directory/index.vue`
 - [x] `client/app/pages/wallet.vue`
@@ -386,10 +386,10 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/explore/UserSpotlightCard.vue`
 - [ ] `client/app/components/pages/SavedPostsPage.vue`
 - [ ] `client/app/components/saved/PostCard.vue`
-- [ ] `client/app/components/pages/PokePage.vue`
-- [ ] `client/app/components/poke/RequestCard.vue`
-- [ ] `client/app/components/pages/MemoriesPage.vue`
-- [ ] `client/app/components/memories/MemoryCard.vue`
+- [x] `client/app/components/pages/PokePage.vue`
+- [x] `client/app/components/poke/RequestCard.vue`
+- [x] `client/app/components/pages/MemoriesPage.vue`
+- [x] `client/app/components/memories/MemoryCard.vue`
 - [x] `client/app/components/pages/DirectoryIndexPage.vue`
 - [x] `client/app/components/directory/DirectoryHero.vue`
 - [x] `client/app/components/directory/DirectoryFilters.vue`
@@ -401,12 +401,12 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/games/GamesSidebar.vue`
 - [ ] `client/app/components/games/GameCard.vue`
 - [ ] `client/app/components/games/GamePlayModal.vue`
-- [ ] `client/app/components/go-pro/GoProHero.vue`
-- [ ] `client/app/components/go-pro/BillingToggle.vue`
-- [ ] `client/app/components/go-pro/ComparisonTable.vue`
-- [ ] `client/app/components/go-pro/GoProSidebar.vue`
-- [ ] `client/app/components/go-pro/PlanCard.vue`
-- [ ] `client/app/components/go-pro/CheckoutModal.vue`
+- [x] `client/app/components/go-pro/GoProHero.vue`
+- [x] `client/app/components/go-pro/BillingToggle.vue`
+- [x] `client/app/components/go-pro/ComparisonTable.vue`
+- [x] `client/app/components/go-pro/GoProSidebar.vue`
+- [x] `client/app/components/go-pro/PlanCard.vue`
+- [x] `client/app/components/go-pro/CheckoutModal.vue`
 - [x] `client/app/components/pages/ForumPage.vue`
 - [x] `client/app/components/forum/ForumHero.vue`
 - [x] `client/app/components/forum/ForumFilters.vue`
