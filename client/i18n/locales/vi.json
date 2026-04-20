@@ -828,6 +828,24 @@
     }
   },
   "community": {
+    "pagesDirectory": {
+      "title": "Các trang",
+      "desc": "Quản lý fanpage bạn theo dõi, xem gợi ý phù hợp và mở nhanh flow tạo page mới trong cùng một khu vực.",
+      "emptyMineTitle": "Không có trang nào để hiển thị",
+      "emptyMineDesc": "Bạn chưa tạo fanpage nào trong tài khoản này. Bắt đầu bằng một page mới để giới thiệu thương hiệu, dịch vụ hoặc kênh nội dung của bạn.",
+      "createFirst": "Tạo page đầu tiên",
+      "emptyOtherTitle": "Không có fanpage phù hợp",
+      "emptyOtherDesc": "Tab này hiện chưa có dữ liệu mock. Bạn có thể chuyển sang tab khác hoặc tạo mới một page để bắt đầu.",
+      "actionSuggested": "Khám phá fanpage",
+      "actionFavorite": "Xem cập nhật",
+      "actionMine": "Xem fanpage",
+      "seoSuggestedTitle": "Các trang được đề xuất",
+      "seoFavoriteTitle": "Các trang được yêu thích",
+      "seoMineTitle": "Các trang",
+      "seoSuggestedDesc": "Danh sách fanpage được đề xuất trên VNSEEA.",
+      "seoFavoriteDesc": "Danh sách fanpage được yêu thích trên VNSEEA.",
+      "seoMineDesc": "Danh bạ fanpage trên VNSEEA với khu vực trang của tôi, page được đề xuất và page được yêu thích."
+    },
     "creation": {
       "group": {
         "eyebrow": "P-18 · Cộng đồng",

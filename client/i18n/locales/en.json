@@ -828,6 +828,24 @@
     }
   },
   "community": {
+    "pagesDirectory": {
+      "title": "Pages",
+      "desc": "Manage your followed fanpages, see suitable suggestions, and quickly open the new page creation flow in the same area.",
+      "emptyMineTitle": "No pages to display",
+      "emptyMineDesc": "You haven't created any fanpages on this account yet. Start with a new page to introduce your brand, service, or content channel.",
+      "createFirst": "Create your first page",
+      "emptyOtherTitle": "No matching fanpages",
+      "emptyOtherDesc": "This tab currently has no mock data. You can switch to another tab or create a new page to get started.",
+      "actionSuggested": "Explore fanpage",
+      "actionFavorite": "View updates",
+      "actionMine": "View fanpage",
+      "seoSuggestedTitle": "Suggested pages",
+      "seoFavoriteTitle": "Favorite pages",
+      "seoMineTitle": "Pages",
+      "seoSuggestedDesc": "List of suggested fanpages on VNSEEA.",
+      "seoFavoriteDesc": "List of favorite fanpages on VNSEEA.",
+      "seoMineDesc": "Fanpage directory on VNSEEA with my pages, suggested pages, and favorite pages."
+    },
     "creation": {
       "group": {
         "eyebrow": "P-18 · Community",
