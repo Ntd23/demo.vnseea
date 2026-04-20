@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-5 pb-10">
     <CheckoutLayout
-      eyebrow="P-17 · Đơn khách đặt"
+      :eyebrow="$t('orders.page.customerEyebrow')"
       :title="pageTitle"
-      description="Theo dõi một đơn bán cụ thể, kiểm tra thông tin người mua và chuẩn bị các bước cập nhật shipped/completed cho seller flow."
+      :description="$t('orders.page.customerDescription')"
     >
       <template #left>
         <div v-if="order" class="space-y-5">
@@ -19,21 +19,21 @@
                     :class="statusMeta.badgeClass"
                   >
                     <Icon :name="statusMeta.icon" class="h-3.5 w-3.5" />
-                    {{ statusMeta.label }}
+                    {{ $t(statusMeta.label) }}
                   </span>
                   <span
                     class="inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-bold"
                     :class="payoutMeta.badgeClass"
                   >
-                    {{ payoutMeta.label }}
+                    {{ $t(payoutMeta.label) }}
                   </span>
                 </div>
 
                 <h2 class="mt-2 text-[1.55rem] font-black tracking-[-0.05em] text-[#243b63]">
-                  Đơn từ khách {{ order.buyerName }}
+                  {{ $t("orders.card.contactBuyer", { buyer: order.buyerName }) }}
                 </h2>
                 <p class="mt-2 max-w-[720px] text-[14px] leading-7 text-slate-500">
-                  {{ statusMeta.description }}
+                  {{ $t(statusMeta.description) }}
                 </p>
               </div>
 
@@ -42,7 +42,7 @@
                   {{ order.placedAt }}
                 </div>
                 <div class="rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
-                  {{ totalItems }} sản phẩm
+                  {{ $t("orders.card.items", { count: totalItems }) }}
                 </div>
                 <div class="rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
                   {{ order.storeName }}
@@ -53,7 +53,7 @@
             <div class="mt-5 grid gap-3 md:grid-cols-3">
               <div class="rounded-[20px] border border-[#eef2f8] bg-[#fbfcff] p-4">
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Người mua
+                  {{ $t("orders.detail.buyer") }}
                 </p>
                 <p class="mt-2 text-[15px] font-black text-[#243b63]">
                   {{ order.buyerName }}
@@ -65,25 +65,25 @@
 
               <div class="rounded-[20px] border border-[#eef2f8] bg-[#fbfcff] p-4">
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Đơn vị giao
+                  {{ $t("orders.detail.shippingProvider") }}
                 </p>
                 <p class="mt-2 text-[15px] font-black text-[#243b63]">
                   {{ order.shippingProvider }}
                 </p>
-                <p class="mt-1 text-[13px] text-slate-500">
-                  {{ order.trackingCode }}
+                <p class="mt-2 text-[12px] text-slate-500">
+                  {{ $t("orders.detail.trackingCodeLabel", { code: $t(order.trackingCode) }) }}
                 </p>
               </div>
 
               <div class="rounded-[20px] border border-[#eef2f8] bg-[#fbfcff] p-4">
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Đối soát
+                  {{ $t("orders.detail.payout") }}
                 </p>
                 <p class="mt-2 text-[15px] font-black text-[#243b63]">
                   {{ formatOrderCurrency(order.payoutAmount) }}
                 </p>
                 <p class="mt-1 text-[13px] text-slate-500">
-                  {{ order.payoutWindow }}
+                  {{ $t(order.payoutWindow) }}
                 </p>
               </div>
             </div>
@@ -93,15 +93,15 @@
             <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-                  Sản phẩm khách đã đặt
+                  {{ $t("orders.card.customerProducts") }}
                 </p>
-                <h2 class="mt-1 text-[1.3rem] font-black tracking-[-0.05em] text-[#243b63]">
-                  {{ totalItems }} sản phẩm cần xử lý
+                <h2 class="mt-1 text-[1.3rem] font-black tracking-[-0.04em] text-[#243b63]">
+                  {{ $t("orders.card.productsRemaining", { count: totalItems }) }}
                 </h2>
               </div>
 
               <div class="rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
-                Tổng đơn {{ formatOrderCurrency(order.total) }}
+                {{ $t("orders.card.total", { total: formatOrderCurrency(order.total) }) }}
               </div>
             </div>
 
@@ -109,10 +109,10 @@
               <OrdersOrderItemCard
                 v-for="item in order.items"
                 :key="item.id"
-                :item="item"
-                :meta-text="`Thuộc gian hàng ${order.storeName} • Đơn giá ${formatOrderCurrency(item.price)}`"
-                :payment-method="order.paymentMethod"
-                variant="detail"
+                 :item="item"
+                 :meta-text="$t('orders.card.belongsToStore', { store: order.storeName, price: formatOrderCurrency(item.price) })"
+                 :payment-method="order.paymentMethod"
+                 variant="detail"
               />
             </div>
           </section>
@@ -120,13 +120,13 @@
           <div class="grid gap-5 xl:grid-cols-2">
             <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-6">
               <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-                Người mua & ghi chú
+                {{ $t("orders.detail.buyerAndNotes") }}
               </p>
 
               <div class="mt-5 grid gap-4">
                 <div class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
                   <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                    Địa chỉ giao hàng
+                    {{ $t("orders.card.shippingAddress") }}
                   </p>
                   <p class="mt-2 text-[14px] leading-7 text-slate-600">
                     {{ order.buyerAddress }}
@@ -136,10 +136,10 @@
                 <div class="grid gap-4 md:grid-cols-2">
                   <div class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
                     <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                      Thanh toán
+                      {{ $t("orders.summary.totalPayment") }}
                     </p>
                     <p class="mt-2 text-[14px] font-black text-[#243b63]">
-                      {{ order.paymentMethod }}
+                    {{ $t(order.paymentMethod) }}
                     </p>
                     <p class="mt-2 text-[13px] text-slate-500">
                       {{ order.paymentReference }}
@@ -148,38 +148,38 @@
                       class="mt-3 inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-bold"
                       :class="paymentMeta.badgeClass"
                     >
-                      {{ paymentMeta.label }}
+                      {{ $t(paymentMeta.label) }}
                     </span>
                   </div>
 
                   <div class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
                     <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                      Khung giao dự kiến
+                      {{ $t("orders.detail.estimatedWindow") }}
                     </p>
                     <p class="mt-2 text-[14px] font-black text-[#243b63]">
-                      {{ order.deliveryWindow }}
+                      {{ $t(order.deliveryWindow) }}
                     </p>
                     <p class="mt-2 text-[13px] text-slate-500">
-                      Người mua: {{ order.buyerPhone }}
+                      {{ $t("orders.detail.buyer") }}: {{ order.buyerPhone }}
                     </p>
                   </div>
                 </div>
 
                 <div class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
                   <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                    Ghi chú từ khách
+                    {{ $t("orders.detail.buyerNote") }}
                   </p>
                   <p class="mt-2 text-[14px] leading-7 text-slate-600">
-                    {{ order.buyerNote || "Khách không để lại ghi chú bổ sung." }}
+                    {{ order.buyerNote || $t("orders.detail.noBuyerNote") }}
                   </p>
                 </div>
 
                 <div class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
                   <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                    Ghi chú nội bộ
+                    {{ $t("orders.detail.internalNote") }}
                   </p>
                   <p class="mt-2 text-[14px] leading-7 text-slate-600">
-                    {{ order.sellerNote || "Chưa có ghi chú nội bộ cho đơn này." }}
+                    {{ order.sellerNote || $t("orders.detail.noInternalNote") }}
                   </p>
                 </div>
               </div>
@@ -194,8 +194,8 @@
         <FoundationEmptyState
           v-else
           icon="i-ph-package-fill"
-          title="Không tìm thấy đơn bán"
-          description="Mã đơn này không tồn tại trong dữ liệu seller mock hiện tại. Hãy quay lại sản phẩm của bạn để mở một đơn khác."
+          :title="$t('orders.detail.sellerNotFound')"
+          :description="$t('orders.detail.sellerNotFoundDesc')"
         />
       </template>
 
@@ -210,16 +210,16 @@
           class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]"
         >
           <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-            Tác vụ
+            {{ $t("orders.sidebar.tasks") }}
           </p>
           <p class="mt-3 text-[14px] leading-7 text-slate-500">
-            Quay lại khu vực người bán để mở đúng đơn khách đặt mà bạn muốn xử lý.
+            {{ $t("orders.sidebar.sellerTasksAction") }}
           </p>
           <NuxtLink
             to="/my-products"
             class="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-[#243b63] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(36,59,99,0.18)] transition hover:-translate-y-0.5"
           >
-            Về sản phẩm của tôi
+            {{ $t("orders.sidebar.backToProducts") }}
           </NuxtLink>
         </section>
       </template>
@@ -251,7 +251,16 @@ const payoutMeta = computed(() =>
     : sellerOrderPayoutStatusMeta.queued,
 )
 
+const { t } = useI18n()
+
+useSeoMeta({
+  title: t("orders.page.title"),
+  description: t("orders.page.description"),
+})
+
 const pageTitle = computed(() =>
-  order.value ? `Đơn bán ${order.value.orderNumber}` : "Chi tiết đơn bán",
+  order.value
+    ? t("orders.page.customerTitle", { id: order.value.orderNumber })
+    : t("orders.page.customerFallbackTitle"),
 )
 </script>

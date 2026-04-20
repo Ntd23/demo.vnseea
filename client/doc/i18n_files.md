@@ -156,9 +156,9 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/setting/index.vue`
 - [x] `client/app/pages/setting/[page].vue`
 - [x] `client/app/pages/checkout.vue`
-- [ ] `client/app/pages/orders.vue`
-- [ ] `client/app/pages/order/[id].vue`
-- [ ] `client/app/pages/customer_order/[id].vue`
+- [x] `client/app/pages/orders.vue`
+- [x] `client/app/pages/order/[id].vue`
+- [x] `client/app/pages/customer-order/[id].vue`
 - [ ] `client/app/pages/create-group.vue`
 - [ ] `client/app/pages/groups.vue`
 - [ ] `client/app/pages/group-setting/[group].vue`
@@ -311,23 +311,23 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/product/EditMediaManager.vue`
 - [ ] `client/app/components/product/ChecklistCard.vue`
 - [ ] `client/app/components/product/TipsCard.vue`
-- [ ] `client/app/components/checkout/CheckoutLayout.vue`
-- [ ] `client/app/components/checkout/CheckoutSummary.vue`
-- [ ] `client/app/components/checkout/ShippingAddressFormUI.vue`
-- [ ] `client/app/components/pages/CheckoutPage.vue`
-- [ ] `client/app/components/pages/OrdersPage.vue`
-- [ ] `client/app/components/pages/OrderDetailPage.vue`
-- [ ] `client/app/components/pages/CustomerOrderPage.vue`
-- [ ] `client/app/components/orders/FilterBar.vue`
-- [ ] `client/app/components/orders/OverviewSidebar.vue`
-- [ ] `client/app/components/orders/DetailSidebar.vue`
-- [ ] `client/app/components/orders/DetailTimelineCard.vue`
-- [ ] `client/app/components/orders/OrderItemCard.vue`
-- [ ] `client/app/components/orders/OrderPriceSummary.vue`
-- [ ] `client/app/components/orders/BuyerOrderCard.vue`
-- [ ] `client/app/components/orders/SellerOrderCard.vue`
-- [ ] `client/app/components/orders/SellerOrderSidebar.vue`
-- [ ] `client/app/components/orders/SellerOrderChecklistCard.vue`
+- [x] `client/app/components/checkout/CheckoutLayout.vue`
+- [x] `client/app/components/checkout/CheckoutSummary.vue`
+- [x] `client/app/components/checkout/ShippingAddressFormUI.vue`
+- [x] `client/app/components/pages/CheckoutPage.vue`
+- [x] `client/app/components/pages/OrdersPage.vue`
+- [x] `client/app/components/pages/OrderDetailPage.vue`
+- [x] `client/app/components/pages/CustomerOrderPage.vue`
+- [x] `client/app/components/orders/FilterBar.vue`
+- [x] `client/app/components/orders/OverviewSidebar.vue`
+- [x] `client/app/components/orders/DetailSidebar.vue`
+- [x] `client/app/components/orders/DetailTimelineCard.vue`
+- [x] `client/app/components/orders/OrderItemCard.vue`
+- [x] `client/app/components/orders/OrderPriceSummary.vue`
+- [x] `client/app/components/orders/BuyerOrderCard.vue`
+- [x] `client/app/components/orders/SellerOrderCard.vue`
+- [x] `client/app/components/orders/SellerOrderSidebar.vue`
+- [x] `client/app/components/orders/SellerOrderChecklistCard.vue`
 - [ ] `client/app/components/wallet/WalletHero.vue`
 - [ ] `client/app/components/wallet/WalletTransactions.vue`
 - [ ] `client/app/components/wallet/WalletSendForm.vue`

@@ -36,9 +36,9 @@ export function getActiveOrderProgressStep(status?: BuyerOrderStatus | null) {
 }
 
 export function getRepeatOrderActionLabel(status?: BuyerOrderStatus | null) {
-  if (status === "delivered") return "Mua lại sản phẩm tương tự"
-  if (status === "cancelled") return "Chọn sản phẩm khác"
-  return "Xem thêm sản phẩm"
+  if (status === "delivered") return "orders.card.buyAgain"
+  if (status === "cancelled") return "orders.card.chooseOther"
+  return "orders.card.viewMore"
 }
 
 export function useOrderPresentation(

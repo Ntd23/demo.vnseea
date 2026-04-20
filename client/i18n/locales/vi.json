@@ -586,5 +586,232 @@
       "mockWarning": "Đơn hàng sẽ dùng đúng thông tin bạn lưu tại đây. Đây là mock UI nên chưa gửi dữ liệu thật tới API `address.php`.",
       "saveAddress": "Lưu địa chỉ"
     }
+  },
+  "orders": {
+    "page": {
+      "title": "Đơn hàng của tôi | VNSEEA",
+      "description": "Theo dõi đơn mua, trạng thái giao hàng và tổng quan các đơn marketplace của bạn trên VNSEEA.",
+      "layoutTitle": "Đơn hàng của tôi",
+      "layoutDescription": "Theo dõi các đơn mua trong marketplace, kiểm tra trạng thái giao hàng và mở lại chi tiết đơn khi cần.",
+      "eyebrow": "P-15 · Đơn hàng",
+      "detailEyebrow": "P-16 · Chi tiết đơn",
+      "detailTitle": "Chi tiết đơn #{id}",
+      "detailFallbackTitle": "Chi tiết đơn hàng",
+      "detailDescription": "Theo dõi trạng thái đơn, kiểm tra thông tin giao hàng và xem lại toàn bộ sản phẩm trong giao dịch.",
+      "customerEyebrow": "P-17 · Đơn khách đặt",
+      "customerTitle": "Đơn bán #{id}",
+      "customerFallbackTitle": "Chi tiết đơn bán",
+      "customerDescription": "Theo dõi một đơn bán cụ thể, kiểm tra thông tin người mua và chuẩn bị các bước cập nhật vận chuyển."
+    },
+    "status": {
+      "pending": {
+        "label": "Chờ xác nhận",
+        "description": "Các đơn vừa đặt, đang chờ shop xác nhận và chuẩn bị."
+      },
+      "shipping": {
+        "label": "Đang giao",
+        "description": "Đơn đã rời kho và đang trên hành trình đến tay bạn."
+      },
+      "delivered": {
+        "label": "Hoàn tất",
+        "description": "Đơn đã giao thành công và có thể xem lại để mua tiếp."
+      },
+      "cancelled": {
+        "label": "Đã hủy",
+        "description": "Các đơn bị hủy hoặc đã hoàn tiền về ví nội bộ."
+      }
+    },
+    "sidebar": {
+      "overview": "Tổng quan",
+      "trackRecent": "Theo dõi gần đây",
+      "viewStatus": "Xem trạng thái",
+      "noRecent": "Không có đơn mới cần theo dõi.",
+      "currentFilter": "Bộ lọc hiện tại",
+      "filterHint": "Hiển thị {count} đơn hàng.",
+      "flowHintReal": "Dữ liệu được cập nhật từ hệ thống marketplace VNSEEA.",
+      "flowHintMarketplace": "Hệ thống tự động đồng bộ trạng thái vận chuyển từ đối tác.",
+      "continueShopping": "Tiếp tục mua sắm",
+      "filter": "Bộ lọc hiện tại",
+      "timeline": "Hành trình đơn",
+      "help": "Cần hỗ trợ?",
+      "helpAction": "Hãy liên hệ trung tâm hỗ trợ người mua VNSEEA.",
+      "tasks": "Tác vụ",
+      "tasksAction": "Quay lại danh sách đơn hàng để mở đúng đơn bạn muốn theo dõi.",
+      "sellerTasksAction": "Quay lại khu vực người bán để mở đúng đơn khách đặt mà bạn muốn xử lý.",
+      "backToOrders": "Về danh sách đơn",
+      "backToProducts": "Về SP của tôi",
+      "coordination": "Điều phối đơn bán",
+      "payoutShop": "Đối soát shop",
+      "confirmOrder": "Xác nhận & tạo vận đơn",
+      "markDelivered": "Đánh dấu giao thành công",
+      "viewPayout": "Xem đối soát đơn",
+      "viewCancelled": "Xem hồ sơ đơn hủy"
+    },
+    "steps": {
+      "placed": {
+        "label": "Đã đặt hàng",
+        "description": "Bạn đã gửi yêu cầu mua hàng thành công."
+      },
+      "processing": {
+        "label": "Shop xử lý",
+        "description": "Người bán chuẩn bị và xác nhận đơn của bạn."
+      },
+      "shipping": {
+        "label": "Đang giao",
+        "description": "Đơn hàng đã bàn giao cho đơn vị vận chuyển."
+      },
+      "completed": {
+        "label": "Hoàn tất",
+        "description": "Bạn đã nhận hàng và đơn được đóng thành công."
+      }
+    },
+    "card": {
+      "items": "{count} vật phẩm",
+      "itemLabel": "Sản phẩm",
+      "qty": "Số lượng: {count}",
+      "qtyCompact": "x{count}",
+      "total": "Tổng đơn {total}",
+      "orderProgress": "Tiến độ đơn hàng",
+      "viewDetail": "Xem chi tiết",
+      "contactShop": "Liên hệ shop",
+      "viewMore": "Xem thêm",
+      "chooseOther": "Chọn đơn khác",
+      "contactBuyer": "Liên hệ người mua",
+      "shippingAddress": "Địa chỉ nhận hàng",
+      "orderedFrom": "Đơn từ {seller} • {price}",
+      "productsSummary": "{count} sản phẩm đã đặt",
+      "productsInOrder": "Sản phẩm trong đơn",
+      "customerProducts": "Sản phẩm khách đã đặt",
+      "productsRemaining": "{count} sản phẩm cần xử lý",
+      "belongsToStore": "Thuộc gian hàng {store} • Đơn giá {price}",
+      "contactBuyer": "Đơn từ khách {buyer}"
+    },
+    "filter": {
+      "title": "Lọc đơn hàng",
+      "placeholder": "Tìm mã đơn, shop...",
+      "matched": "{count} Đơn phù hợp",
+      "current": "Đang hiển thị các đơn {label}",
+      "all": "Tất cả"
+    },
+    "summary": {
+      "shippingFee": "Phí vận chuyển",
+      "free": "Miễn phí",
+      "subtotal": "Tạm tính",
+      "discount": "Giảm giá",
+      "total": "Tổng cộng",
+      "totalOrder": "Tổng đơn hàng",
+      "totalPayment": "Thanh toán"
+    },
+    "detail": {
+      "recipient": "Người nhận",
+      "shippingProvider": "Đơn vị giao",
+      "trackingCodeLabel": "Mã theo dõi: {code}",
+      "estimatedProcess": "Dự kiến xử lý",
+      "deliveryAndNotes": "Giao nhận và ghi chú",
+      "orderNote": "Ghi chú đơn hàng",
+      "noNote": "Đơn hàng này không có ghi chú bổ sung.",
+      "notFound": "Không tìm thấy đơn hàng",
+      "notFoundDesc": "Mã đơn này không tồn tại trong dữ liệu mock hiện tại. Hãy quay lại danh sách đơn để chọn một đơn khác.",
+      "sellerNotFound": "Không tìm thấy đơn bán",
+      "sellerNotFoundDesc": "Mã đơn này không tồn tại trong dữ liệu seller mock hiện tại. Hãy quay lại sản phẩm của bạn để mở một đơn khác.",
+      "buyer": "Người mua",
+      "payout": "Đối soát",
+      "buyerAndNotes": "Người mua & ghi chú",
+      "estimatedWindow": "Khung giao dự kiến",
+      "buyerNote": "Ghi chú từ khách",
+      "noBuyerNote": "Khách không để lại ghi chú bổ sung.",
+      "internalNote": "Ghi chú nội bộ",
+      "noInternalNote": "Chưa có ghi chú nội bộ cho đơn này.",
+      "operating": "Vận hành đơn bán",
+      "checklist": "Checklist xử lý & cập nhật trạng thái",
+      "taskStatus": {
+        "done": "Đã xong",
+        "pending": "Đang chờ"
+      },
+      "cancelledWarning": "Đơn đã bị hủy nên không thể tiếp tục cập nhật `Shipped` hoặc `Completed`. Hãy lưu ghi chú và đóng hồ sơ hoàn tiền.",
+      "shippedLabel": "Shipped",
+      "shippedTitle": "Đã bàn giao vận chuyển",
+      "shippedDesc": "Dùng khi đơn đã được in nhãn và giao cho đơn vị vận chuyển.",
+      "completedLabel": "Completed",
+      "completedTitle": "Đã giao thành công",
+      "completedDesc": "Dùng khi khách đã nhận đủ hàng và đơn được đóng thành công."
+    },
+    "payment": {
+      "paid": "Đã thanh toán",
+      "wallet": "Ví VNSEEA",
+      "refunded": "Hoàn về ví VNSEEA",
+      "reference": "Mã tham chiếu: {ref}"
+    },
+    "payout": {
+      "queued": {
+        "label": "Đang chờ",
+        "description": "Khoản tiền đang tạm giữ cho đến khi đơn hoàn tất."
+      },
+      "processing": {
+        "label": "Đang xử lý",
+        "description": "Đang trong quá trình đối soát và chuyển về ví shop."
+      },
+      "completed": {
+        "label": "Đã xong",
+        "description": "Tiền đã được cộng vào số dư khả dụng của shop."
+      },
+      "cancelled": {
+        "label": "Đã hủy",
+        "description": "Khoản đối soát đã bị hủy bỏ do đơn lỗi/hoàn."
+      }
+    },
+    "empty": {
+      "noMatchedTitle": "Không tìm thấy đơn phù hợp",
+      "noMatchedDesc": "Hãy thử đổi bộ lọc hoặc từ khóa tìm kiếm. Khi bạn mua sản phẩm mới, đơn hàng sẽ xuất hiện tại đây."
+    },
+    "mock": {
+      "timeline": {
+        "waiting": "Đang chờ",
+        "ongoing": "Đang diễn ra",
+        "notApplicable": "Không áp dụng",
+        "notCompleted": "Chưa hoàn tất",
+        "created": { "label": "Đã tạo đơn", "description": "Đơn hàng được ghi nhận và chờ shop xác nhận." },
+        "confirmed": { "label": "Shop xác nhận", "description": "Shop sẽ kiểm tra tồn kho và chuẩn bị đơn của bạn." },
+        "shipping": { "label": "Bàn giao vận chuyển", "description": "Đơn sẽ được chuyển sang đơn vị giao hàng sau khi xác nhận." },
+        "delivered": { "label": "Giao thành công", "description": "Bạn sẽ nhận được thông báo khi đơn hoàn tất." },
+        "shipping_active": { "label": "Đang vận chuyển", "description": "Đơn đang trên xe giao và sẽ đến trong hôm nay." },
+        "cancelled": { "label": "Yêu cầu hủy đơn", "description": "Người mua gửi yêu cầu hủy trước khi đơn được xác nhận." },
+        "refunded": { "label": "Hoàn tiền & đóng đơn", "description": "Tiền đã được hoàn về ví nội bộ VNSEEA." }
+      },
+      "tasks": {
+        "payment": { "label": "Xác thực thanh toán", "description": "Ví nội bộ đã ghi nhận thành công hoặc tiền đã về hệ thống." },
+        "stock": { "label": "Kiểm tra tồn kho", "description": "Đảm bảo hàng đủ số lượng, phụ kiện và tình trạng đóng gói." },
+        "packing": { "label": "Đóng gói & In đơn", "description": "Cần hoàn tất trước khi bàn giao cho đơn vị vận chuyển." },
+        "handoff": { "label": "Bàn giao shipper", "description": "Hệ thống sẽ mở đối soát sau khi đơn rời kho." }
+      },
+      "delivery": {
+        "expected2h": "Shop dự kiến xác nhận trong 2 giờ",
+        "expectedToday": "Dự kiến giao hôm nay trước 17:30",
+        "deliveredDate": "Đã giao thành công ngày 13/04/2026",
+        "cancelledRequest": "Đơn đã hủy theo yêu cầu của người mua",
+        "confirmBefore1pm": "Cần xác nhận đơn trước 13:00 hôm nay",
+        "leftWarehouse": "Đơn đã rời kho, dự kiến giao trong ngày",
+        "receivedDate": "Khách đã nhận đơn ngày 13/04/2026",
+        "cancelledBeforeHandoff": "Đơn đã hủy trước khi bàn giao vận chuyển"
+      },
+      "payout": {
+        "confirm24h": "Đối soát sau khi khách xác nhận nhận hàng 24 giờ",
+        "window24h": "Đối soát trong 24-48 giờ sau khi giao thành công",
+        "depositedDate": "Đã ghi có vào ngân quỹ cửa hàng ngày 14/04/2026",
+        "noPayoutCancelled": "Không đối soát do giao dịch đã hoàn tiền"
+      },
+      "items": {
+        "speaker": "Loa bluetooth mini",
+        "headphones": "Tai nghe chống ồn",
+        "cashews": "Hạt điều rang muối 500g",
+        "honey": "Mật ong rừng nguyên chất",
+        "table": "Bàn trà gỗ sồi",
+        "haircare": "Combo dưỡng tóc Yaskey",
+        "consoleTable": "Bàn console gỗ sồi",
+        "wallMount": "Bộ phụ kiện treo tường",
+        "chargerCombo": "Combo phụ kiện sạc nhanh",
+        "workshopLeadership": "Bộ tài liệu workshop leadership"
+      }
+    }
   }
 }

@@ -586,5 +586,232 @@
       "mockWarning": "The order will use the exact information you save here. This is a mock UI so it hasn't sent real data to API `address.php`.",
       "saveAddress": "Save address"
     }
+  },
+  "orders": {
+    "page": {
+      "title": "My Orders | VNSEEA",
+      "description": "Track your purchases, shipping status, and overview of your marketplace orders on VNSEEA.",
+      "layoutTitle": "My Orders",
+      "layoutDescription": "Track marketplace purchases, check delivery status, and reopen order details when needed.",
+      "eyebrow": "P-15 · Orders",
+      "detailEyebrow": "P-16 · Order Details",
+      "detailTitle": "Order Details #{id}",
+      "detailFallbackTitle": "Order Details",
+      "detailDescription": "Track order status, check delivery information, and review all products in the transaction.",
+      "customerEyebrow": "P-17 · Customer Orders",
+      "customerTitle": "Customer Order #{id}",
+      "customerFallbackTitle": "Customer Order Details",
+      "customerDescription": "Follow a specific sale, check buyer information, and prepare shipment update steps."
+    },
+    "status": {
+      "pending": {
+        "label": "Pending",
+        "description": "The order has just been placed and is waiting for shop confirmation."
+      },
+      "shipping": {
+        "label": "Shipping",
+        "description": "The order has left the warehouse and is on its way to you."
+      },
+      "delivered": {
+        "label": "Completed",
+        "description": "The order has been delivered successfully and can be reviewed."
+      },
+      "cancelled": {
+        "label": "Cancelled",
+        "description": "Orders that were cancelled or refunded to your internal wallet."
+      }
+    },
+    "sidebar": {
+      "overview": "Overview",
+      "trackRecent": "Track Recent",
+      "viewStatus": "View Status",
+      "noRecent": "No recent orders to track.",
+      "currentFilter": "Current Filter",
+      "filterHint": "Showing {count} orders.",
+      "flowHintReal": "Data updated from VNSEEA marketplace system.",
+      "flowHintMarketplace": "System automatically syncs shipping status from partners.",
+      "continueShopping": "Continue Shopping",
+      "filter": "Current Filter",
+      "timeline": "Order Timeline",
+      "help": "Need help?",
+      "helpAction": "Please contact VNSEEA buyer support center.",
+      "tasks": "Tasks",
+      "tasksAction": "Go back to the order list to open the order you want to track.",
+      "sellerTasksAction": "Go back to the seller area to open the customer order you want to process.",
+      "backToOrders": "Back to orders",
+      "backToProducts": "Back to my products",
+      "coordination": "Sales Coordination",
+      "payoutShop": "Payout Shop",
+      "confirmOrder": "Confirm & Create Label",
+      "markDelivered": "Mark as Delivered",
+      "viewPayout": "View Order Payout",
+      "viewCancelled": "View Cancelled Record"
+    },
+    "steps": {
+      "placed": {
+        "label": "Placed",
+        "description": "You have successfully submitted the purchase request."
+      },
+      "processing": {
+        "label": "Shop Processing",
+        "description": "The seller is preparing and confirming your order."
+      },
+      "shipping": {
+        "label": "Shipping",
+        "description": "The order has been handed over to the shipping unit."
+      },
+      "completed": {
+        "label": "Completed",
+        "description": "You have received the goods and the order is successfully closed."
+      }
+    },
+    "card": {
+      "items": "{count} items",
+      "itemLabel": "Item",
+      "qty": "Quantity: {count}",
+      "qtyCompact": "x{count}",
+      "total": "Total {total}",
+      "orderProgress": "Order Progress",
+      "viewDetail": "View Detail",
+      "contactShop": "Contact Shop",
+      "viewMore": "View More",
+      "chooseOther": "Choose Other",
+      "contactBuyer": "Contact Buyer",
+      "shippingAddress": "Shipping Address",
+      "orderedFrom": "Order from {seller} • {price}",
+      "productsSummary": "{count} products ordered",
+      "productsInOrder": "Products in Order",
+      "customerProducts": "Customer Products",
+      "productsRemaining": "{count} products to process",
+      "belongsToStore": "From store {store} • Unit price {price}",
+      "contactBuyer": "Order from buyer {buyer}"
+    },
+    "filter": {
+      "title": "Filter Orders",
+      "placeholder": "Search order ID, shop...",
+      "matched": "{count} matched orders",
+      "current": "Showing {label} orders",
+      "all": "All"
+    },
+    "summary": {
+      "shippingFee": "Shipping Fee",
+      "free": "Free",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "total": "Total",
+      "totalOrder": "Total Order",
+      "totalPayment": "Payment"
+    },
+    "detail": {
+      "recipient": "Recipient",
+      "shippingProvider": "Shipping Provider",
+      "trackingCodeLabel": "Tracking Code: {code}",
+      "estimatedProcess": "Estimated Processing",
+      "deliveryAndNotes": "Delivery & Notes",
+      "orderNote": "Order Note",
+      "noNote": "This order has no additional notes.",
+      "notFound": "Order not found",
+      "notFoundDesc": "This order code does not exist in the current mock data. Please go back to the order list to select another one.",
+      "sellerNotFound": "Customer order not found",
+      "sellerNotFoundDesc": "This order ID does not exist in current seller mock data. Go back to products to open another.",
+      "buyer": "Buyer",
+      "payout": "Payout",
+      "buyerAndNotes": "Buyer & Notes",
+      "estimatedWindow": "Estimated Window",
+      "buyerNote": "Buyer Note",
+      "noBuyerNote": "The customer left no additional notes.",
+      "internalNote": "Internal Note",
+      "noInternalNote": "No internal notes for this order yet.",
+      "operating": "Sales Operations",
+      "checklist": "Checklist processing & status update",
+      "taskStatus": {
+        "done": "Done",
+        "pending": "Pending"
+      },
+      "cancelledWarning": "The order was cancelled so you cannot continue to update `Shipped` or `Completed`. Please save notes and close the refund file.",
+      "shippedLabel": "Shipped",
+      "shippedTitle": "Handed over to shipping",
+      "shippedDesc": "Use when the order has been labeled and handed over to the shipping unit.",
+      "completedLabel": "Completed",
+      "completedTitle": "Successfully delivered",
+      "completedDesc": "Use when the customer has received all goods and the order is eligible for payout closing."
+    },
+    "payment": {
+      "paid": "Paid",
+      "wallet": "VNSEEA Wallet",
+      "refunded": "Refunded to VNSEEA Wallet",
+      "reference": "Reference: {ref}"
+    },
+    "payout": {
+      "queued": {
+        "label": "Queued",
+        "description": "Funds are on hold until the order is completed."
+      },
+      "processing": {
+        "label": "Processing",
+        "description": "Payout is being processed and transferred to shop wallet."
+      },
+      "completed": {
+        "label": "Completed",
+        "description": "Funds have been added to the shop's available balance."
+      },
+      "cancelled": {
+        "label": "Cancelled",
+        "description": "The payout has been cancelled due to order error/return."
+      }
+    },
+    "empty": {
+      "noMatchedTitle": "No matching orders found",
+      "noMatchedDesc": "Try changing filters or search keywords. When you buy a new product, orders will appear here."
+    },
+    "mock": {
+      "timeline": {
+        "waiting": "Waiting",
+        "ongoing": "Ongoing",
+        "notApplicable": "N/A",
+        "notCompleted": "Wait for completion",
+        "created": { "label": "Order created", "description": "The order has been recorded and is waiting for shop confirmation." },
+        "confirmed": { "label": "Shop confirmed", "description": "The shop will check inventory and prepare your order." },
+        "shipping": { "label": "Handed over to shipping", "description": "The order will be handed over to the shipping unit after confirmation." },
+        "delivered": { "label": "Delivered successfully", "description": "You will receive a notification when the order is completed." },
+        "shipping_active": { "label": "Shipping", "description": "The order is on the delivery truck and will arrive today." },
+        "cancelled": { "label": "Cancellation request", "description": "The buyer submitted a cancellation request before confirmation." },
+        "refunded": { "label": "Refunded & closed", "description": "The funds have been refunded to the internal VNSEEA wallet." }
+      },
+      "tasks": {
+        "payment": { "label": "Verify payment", "description": "Internal wallet has recorded success or funds have reached the system." },
+        "stock": { "label": "Check inventory", "description": "Ensure sufficient quantity, accessories, and packaging condition." },
+        "packing": { "label": "Pack & Print label", "description": "Must be completed before handing over to the shipping unit." },
+        "handoff": { "label": "Handover to shipper", "description": "The system will open payout after the order leaves the warehouse." }
+      },
+      "delivery": {
+        "expected2h": "Shop expected to confirm in 2 hours",
+        "expectedToday": "Expected delivery today before 17:30",
+        "deliveredDate": "Successfully delivered on 13/04/2026",
+        "cancelledRequest": "Order cancelled at buyer's request",
+        "confirmBefore1pm": "Need to confirm before 1:00 PM today",
+        "leftWarehouse": "Left warehouse, expected delivery today",
+        "receivedDate": "Customer received on 13/04/2026",
+        "cancelledBeforeHandoff": "Cancelled before handing over to shipping"
+      },
+      "payout": {
+        "confirm24h": "Payout 24h after customer confirmation",
+        "window24h": "Payout in 24-48 hours after successful delivery",
+        "depositedDate": "Credited to shop funds on 14/04/2026",
+        "noPayoutCancelled": "No payout due to refund/cancellation"
+      },
+      "items": {
+        "speaker": "Mini bluetooth speaker",
+        "headphones": "Noise cancelling headphones",
+        "cashews": "Roasted salted cashews 500g",
+        "honey": "Pure wild honey",
+        "table": "Oak coffee table",
+        "haircare": "Yaskey hair care combo",
+        "consoleTable": "Oak console table",
+        "wallMount": "Wall mount accessory kit",
+        "chargerCombo": "Fast charging accessory combo",
+        "workshopLeadership": "Leadership workshop documentation"
+      }
+    }
   }
 }

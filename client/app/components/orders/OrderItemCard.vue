@@ -7,7 +7,7 @@
       <div class="absolute inset-0" :style="{ background: item.imageStyle || orderItemFallbackBackground }" />
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.26),transparent_28%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.12)_100%)]" />
       <div class="absolute left-3 top-3 rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white backdrop-blur-[4px]">
-        Item
+        {{ variant === 'detail' ? $t('orders.card.itemLabel') : $t('orders.card.qtyCompact', { count: item.quantity }) }}
       </div>
     </div>
 
@@ -15,7 +15,7 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div class="min-w-0">
           <p class="text-[16px] font-black text-[#243b63]">
-            {{ item.name }}
+            {{ $t(item.name) }}
           </p>
           <p class="mt-1 text-[13px] leading-6 text-slate-500">
             {{ detailMetaText }}
@@ -29,13 +29,13 @@
 
       <div class="mt-4 flex flex-wrap gap-2">
         <div class="rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-500">
-          Số lượng {{ item.quantity }}
+          {{ $t("orders.card.qty", { count: item.quantity }) }}
         </div>
         <div
           v-if="paymentMethod"
           class="rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-500"
         >
-          {{ paymentMethod }}
+          {{ $t(paymentMethod) }}
         </div>
       </div>
     </div>
@@ -57,10 +57,10 @@
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="min-w-0">
           <p class="truncate text-[15px] font-black text-[#243b63]">
-            {{ item.name }}
+            {{ $t(item.name) }}
           </p>
           <p class="mt-1 text-[13px] text-slate-500">
-            Qty {{ item.quantity }}
+            {{ $t("orders.card.qtyCompact", { count: item.quantity }) }}
           </p>
         </div>
 
@@ -90,10 +90,17 @@ const props = withDefaults(defineProps<{
   variant: "compact",
 })
 
+const { t } = useI18n()
+
 const detailMetaText = computed(() =>
   props.metaText
     || (props.seller
-      ? `Đặt từ shop ${props.seller} • Đơn giá ${formatOrderCurrency(props.item.price)}`
-      : `Đơn giá ${formatOrderCurrency(props.item.price)}`),
+      ? t("orders.card.orderedFrom", {
+          seller: props.seller,
+          price: formatOrderCurrency(props.item.price),
+        })
+      : t("orders.card.unitPrice", {
+          price: formatOrderCurrency(props.item.price),
+        })),
 )
 </script>
