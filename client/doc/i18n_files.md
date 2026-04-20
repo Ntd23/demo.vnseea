@@ -205,10 +205,27 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/navigation/RightSidebar.vue`
 - [ ] `client/app/components/navigation/ChatWidget.vue`
 - [ ] `client/app/components/navigation/HeaderSearchInput.vue`
+- [ ] `client/app/components/navigation/HeaderLogo.vue`
 - [ ] `client/app/components/navigation/SidebarMenuItem.vue`
 - [ ] `client/app/components/navigation/WidgetCard.vue`
 - [x] `client/app/layouts/default.vue`
 - [ ] `client/app/layouts/guest.vue`
+- [x] `client/app/layouts/messages.vue`
+
+### Auth / onboarding
+- [x] `client/app/components/pages/WelcomePage.vue`
+- [x] `client/app/components/pages/RegisterPage.vue`
+- [x] `client/app/components/pages/ForgotPasswordPage.vue`
+- [x] `client/app/components/auth/AuthSplitShell.vue`
+- [ ] `client/app/components/auth/AuthHeroPanel.vue`
+
+### Messages / reels
+- [x] `client/app/components/pages/MessagesPage.vue`
+- [x] `client/app/components/messages/ConversationList.vue`
+- [ ] `client/app/components/messages/MessagePane.vue`
+- [x] `client/app/components/pages/ReelsPage.vue`
+- [x] `client/app/components/reels/ReelsPlayer.vue`
+- [x] `client/app/components/reels/ReelsOverlay.vue`
 
 ### Profile / community
 - [ ] `client/app/components/pages/ProfilePage.vue`
@@ -245,21 +262,21 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/community/CreationForm.vue`
 
 ### Blogs
-- [ ] `client/app/components/pages/BlogsPage.vue`
-- [ ] `client/app/components/blogs/BlogsHero.vue`
-- [ ] `client/app/components/blogs/BlogsFilters.vue`
-- [ ] `client/app/components/blogs/BlogsResultsHeader.vue`
-- [ ] `client/app/components/blogs/BlogsPagination.vue`
-- [ ] `client/app/components/blogs/BlogsSidebar.vue`
-- [ ] `client/app/components/blogs/BlogsEmptyState.vue`
-- [ ] `client/app/components/blogs/CreateBlogPage.vue`
-- [ ] `client/app/components/blogs/CreateBlogHero.vue`
-- [ ] `client/app/components/blogs/CreateBlogSidebar.vue`
-- [ ] `client/app/components/blogs/ReadBlogPage.vue`
+- [x] `client/app/components/pages/BlogsPage.vue`
+- [x] `client/app/components/blogs/BlogsHero.vue`
+- [x] `client/app/components/blogs/BlogsFilters.vue`
+- [x] `client/app/components/blogs/BlogsResultsHeader.vue`
+- [x] `client/app/components/blogs/BlogsPagination.vue`
+- [x] `client/app/components/blogs/BlogsSidebar.vue`
+- [x] `client/app/components/blogs/BlogsEmptyState.vue`
+- [x] `client/app/components/pages/CreateBlogPage.vue`
+- [x] `client/app/components/blogs/CreateBlogHero.vue`
+- [x] `client/app/components/blogs/CreateBlogSidebar.vue`
+- [ ] `client/app/components/pages/ReadBlogPage.vue`
 - [ ] `client/app/components/blogs/ReadBlogHero.vue`
 - [ ] `client/app/components/blogs/ReadBlogMain.vue`
 - [ ] `client/app/components/blogs/ReadBlogSidebar.vue`
-- [ ] `client/app/components/blogs/BlogArticleCard.vue`
+- [x] `client/app/components/blogs/BlogArticleCard.vue`
 
 ### Events / jobs / funding / live / watch
 - [ ] `client/app/components/pages/EventsPage.vue`
@@ -306,14 +323,18 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/watch/RelatedVideos.vue`
 
 ### Marketplace / checkout / orders / wallet / withdrawal
-- [ ] `client/app/components/pages/ProductsPage.vue`
-- [ ] `client/app/components/product/HeroBanner.vue`
-- [ ] `client/app/components/product/PreviewCard.vue`
-- [ ] `client/app/components/product/EditorFields.vue`
-- [ ] `client/app/components/product/CreateMediaField.vue`
-- [ ] `client/app/components/product/EditMediaManager.vue`
-- [ ] `client/app/components/product/ChecklistCard.vue`
-- [ ] `client/app/components/product/TipsCard.vue`
+- [x] `client/app/components/pages/NewProductPage.vue`
+- [x] `client/app/components/pages/EditProductPage.vue`
+- [x] `client/app/components/pages/MyProductsPage.vue`
+- [x] `client/app/components/pages/ProductsPage.vue`
+- [x] `client/app/components/product/HeroBanner.vue`
+- [x] `client/app/components/product/PreviewCard.vue`
+- [x] `client/app/components/product/EditorFields.vue`
+- [x] `client/app/components/product/CreateMediaField.vue`
+- [x] `client/app/components/product/EditMediaManager.vue`
+- [x] `client/app/components/product/ChecklistCard.vue`
+- [x] `client/app/components/product/TipsCard.vue`
+- [ ] `client/app/components/forms/SubmitBar.vue`
 - [ ] `client/app/components/checkout/CheckoutLayout.vue`
 - [ ] `client/app/components/checkout/CheckoutSummary.vue`
 - [ ] `client/app/components/checkout/ShippingAddressFormUI.vue`
