@@ -2,10 +2,10 @@
   <div class="space-y-5 pb-10">
     <ProductHeroBanner
       variant="create"
-      badge="P-11 · Tạo sản phẩm"
-      title="Đăng sản phẩm mới"
-      description="Biểu mẫu đã được rút lại theo đúng flow marketplace: tên, giá bán, mô tả, loại, loại hình, địa điểm, tiền tệ, tồn kho và hình ảnh."
-      secondary-action-label="Điền nhanh dữ liệu mẫu"
+      :badge="$t('pages.newProductPage.badge')"
+      :title="$t('pages.newProductPage.title')"
+      :description="$t('pages.newProductPage.description')"
+      :secondary-action-label="$t('pages.newProductPage.quickFill')"
       :stats="heroStats"
       @secondary-action="quickFillDemo"
     />
@@ -16,14 +16,13 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-                Biên tập
+                {{ $t("pages.productEditor.editSectionEyebrow") }}
               </p>
               <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
-                Thông tin sản phẩm
+                {{ $t("pages.newProductPage.sectionTitle") }}
               </h2>
               <p class="mt-1 text-[14px] leading-6 text-slate-500">
-                Form được căn lại theo thiết kế mới, tập trung vào các trường
-                cốt lõi của tin đăng.
+                {{ $t("pages.newProductPage.sectionDescription") }}
               </p>
             </div>
 
@@ -43,7 +42,7 @@
           v-model:location="location"
           v-model:currency="currency"
           v-model:stock="stock"
-          description-label="Sự mô tả"
+          :description-label="$t('pages.productEditor.descriptionLabel')"
           :category-options="categoryOptions"
           :condition-options="conditionOptions"
           :currency-options="currencyOptions"
@@ -59,8 +58,8 @@
         </ProductEditorFields>
 
         <FormsSubmitBar
-          hint="Mock state: form hiện chỉ mô phỏng UI theo design, chưa submit thật."
-          cta="Đăng sản phẩm"
+          :hint="$t('pages.newProductPage.submitHint')"
+          :cta="$t('pages.newProductPage.submitCta')"
         />
       </section>
 
@@ -72,7 +71,7 @@
           :condition-label="previewConditionLabel"
           :currency-label="previewCurrencyLabel"
           :title="title"
-          empty-title="Tên sản phẩm của bạn sẽ hiển thị ở đây"
+          :empty-title="$t('pages.newProductPage.emptyTitle')"
           :description="previewDescription"
           :price="previewPrice"
           :stock-label="stockLabel"
@@ -80,13 +79,13 @@
           :image-count="imageCount"
           leading-icon="i-ph-chat-circle-text-fill"
           trailing-icon="i-ph-shopping-cart-simple-fill"
-          status-label="Sẵn sàng"
+          :status-label="$t('pages.newProductPage.statusReady')"
         />
 
         <ProductChecklistCard :items="checklistItems" />
 
         <ProductTipsCard
-          title="Gợi ý điền form"
+          :title="$t('pages.newProductPage.tipsTitle')"
           :items="sellingTips"
         />
       </aside>
@@ -104,9 +103,11 @@ import type {
   ProductTipItem,
 } from "~/types/product-editor"
 
+const { t } = useI18n()
+
 useSeoMeta({
-  title: "Tạo sản phẩm | VNSEEA",
-  description: "Tạo tin đăng sản phẩm mới trong marketplace VNSEEA với bộ trường được rút gọn theo thiết kế.",
+  title: () => t("pages.newProductPage.seoTitle"),
+  description: () => t("pages.newProductPage.seoDescription"),
 })
 
 const {
@@ -149,99 +150,101 @@ const completionCount = computed(() =>
   ].filter(Boolean).length,
 )
 
-const completionText = computed(() => `${completionCount.value}/8 trường chính đã hoàn thiện`)
+const completionText = computed(() => t("pages.productEditor.completionText", { count: completionCount.value }))
 
 const heroStats = computed<ProductHeroStat[]>(() => [
   {
-    label: "Mục đã điền",
+    label: t("pages.newProductPage.statFilled"),
     value: `${completionCount.value}/8`,
-    description: "Theo dõi mức hoàn thiện biểu mẫu trước khi đăng.",
+    description: t("pages.newProductPage.statFilledDescription"),
   },
   {
-    label: "Hình ảnh mock",
+    label: t("pages.newProductPage.statImages"),
     value: String(imageCount.value),
-    description: "Bấm ô camera để thay đổi số lượng ảnh hiển thị thử.",
+    description: t("pages.newProductPage.statImagesDescription"),
   },
   {
-    label: "Tiền tệ",
+    label: t("pages.newProductPage.statCurrency"),
     value: currency.value,
-    description: "Loại tiền đang dùng cho giá bán và preview bên phải.",
+    description: t("pages.newProductPage.statCurrencyDescription"),
   },
 ])
 
-const previewBackground = computed(() => categoryMeta[category.value].background)
-const previewIcon = computed(() => categoryMeta[category.value].icon)
-const previewCategoryLabel = computed(() => categoryMeta[category.value].label)
-const previewConditionLabel = computed(() => conditionMap[condition.value])
+const previewBackground = computed(() => categoryMeta.value[category.value].background)
+const previewIcon = computed(() => categoryMeta.value[category.value].icon)
+const previewCategoryLabel = computed(() => categoryMeta.value[category.value].label)
+const previewConditionLabel = computed(() => conditionMap.value[condition.value])
 const previewCurrencyLabel = computed(() => currencyMeta[currency.value].label)
 const previewDescription = computed(() =>
   description.value.trim()
-    || "Mô tả sản phẩm sẽ xuất hiện ở đây để bạn kiểm tra nội dung trước khi đăng.",
+    || t("pages.newProductPage.previewDescription"),
 )
 
 const previewPrice = computed(() => formatProductPrice(price.value, currency.value))
 const stockLabel = computed(() => formatProductStockLabel(stock.value))
 
 const mediaSummary = computed(() =>
-  imageCount.value === 1 ? "1 ảnh mẫu" : `${imageCount.value} ảnh mẫu`,
+  imageCount.value === 1
+    ? t("pages.newProductPage.oneSampleImage")
+    : t("pages.newProductPage.sampleImages", { count: imageCount.value }),
 )
 
 const imageButtonLabel = computed(() =>
-  imageCount.value >= 10 ? "Đã đủ 10 ảnh" : "Thêm ảnh",
+  imageCount.value >= 10 ? t("pages.newProductPage.maxImages") : t("pages.newProductPage.addImage"),
 )
 
 const checklistItems = computed<ProductChecklistItem[]>(() => [
   {
-    label: "Tên và giá bán",
-    description: "Điền đủ tên sản phẩm và giá bán để card hiển thị đầy đủ.",
+    label: t("pages.newProductPage.checkNamePrice"),
+    description: t("pages.newProductPage.checkNamePriceDescription"),
     done: title.value.trim().length > 0 && Number(price.value) > 0,
   },
   {
-    label: "Mô tả rõ ràng",
-    description: "Nội dung nên đủ dài để người mua hiểu nhanh sản phẩm.",
+    label: t("pages.newProductPage.checkDescription"),
+    description: t("pages.newProductPage.checkDescriptionDescription"),
     done: description.value.trim().length >= 20,
   },
   {
-    label: "Phân loại",
-    description: "Chọn loại, loại hình và tiền tệ đúng với tin đăng.",
+    label: t("pages.newProductPage.checkCategory"),
+    description: t("pages.newProductPage.checkCategoryDescription"),
     done: Boolean(category.value && condition.value && currency.value),
   },
   {
-    label: "Địa điểm, tồn kho và ảnh",
-    description: "Hoàn thiện khu vực, số lượng còn lại và ít nhất một ảnh mẫu.",
+    label: t("pages.newProductPage.checkLocation"),
+    description: t("pages.newProductPage.checkLocationDescription"),
     done: location.value.trim().length > 0 && Number(stock.value) > 0 && imageCount.value > 0,
   },
 ])
 
-const sellingTips: ProductTipItem[] = [
+const sellingTips = computed<ProductTipItem[]>(() => [
   {
-    title: "Tên sản phẩm ngắn gọn",
-    description: "Đặt tên theo đúng món hàng để card marketplace dễ đọc và dễ tìm hơn.",
+    title: t("pages.newProductPage.tipName"),
+    description: t("pages.newProductPage.tipNameDescription"),
     icon: "i-ph-text-t-fill",
   },
   {
-    title: "Giá và tiền tệ phải nhất quán",
-    description: "Nếu bạn dùng USD ở form, preview và card bên phải sẽ đồng bộ ngay lập tức.",
+    title: t("pages.newProductPage.tipPrice"),
+    description: t("pages.newProductPage.tipPriceDescription"),
     icon: "i-ph-currency-circle-dollar-fill",
   },
   {
-    title: "Ảnh đầu tiên nên rõ sản phẩm",
-    description: "Mock uploader đang mô phỏng tile camera, nhưng bố cục đã sẵn cho flow nhiều ảnh.",
+    title: t("pages.newProductPage.tipImage"),
+    description: t("pages.newProductPage.tipImageDescription"),
     icon: "i-ph-image-square-fill",
   },
-]
+])
 
 const cycleImageCount = () => {
   imageCount.value = imageCount.value >= 10 ? 1 : imageCount.value + 1
 }
 
 const quickFillDemo = () => {
-  title.value = "Honda Vision 2024"
+  title.value = t("pages.newProductPage.demoTitle")
   price.value = "1250"
-  description.value = "Xe đi ít, giấy tờ đầy đủ, máy êm và ngoại hình còn mới. Phù hợp đi lại hằng ngày hoặc mua cho sinh viên."
+  description.value = t("pages.newProductPage.demoDescription")
   category.value = "vehicles"
   condition.value = "new"
-  location.value = "Đà Nẵng"
+  location.value = t("pages.newProductPage.demoLocation")
   currency.value = "USD"
   stock.value = "2"
   imageCount.value = 4

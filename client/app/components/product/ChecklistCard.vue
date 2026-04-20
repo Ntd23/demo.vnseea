@@ -1,7 +1,7 @@
 <template>
   <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
     <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-      {{ title }}
+      {{ title || $t("pages.productEditor.checklist") }}
     </p>
     <div class="mt-4 space-y-3">
       <div
@@ -32,6 +32,6 @@ withDefaults(defineProps<{
   title?: string
   items: ProductChecklistItem[]
 }>(), {
-  title: "Checklist",
+  title: undefined,
 })
 </script>

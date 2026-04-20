@@ -8,14 +8,13 @@
       <div class="relative z-10 flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
         <div class="max-w-[720px]">
           <p class="text-[12px] font-extrabold uppercase tracking-[0.32em] text-white/70">
-            P-10 · Marketplace
+            {{ $t("pages.productsPage.eyebrow") }}
           </p>
           <h1 class="mt-3 text-display text-[2.2rem] leading-[0.92] text-white sm:text-[2.8rem]">
-            Thị trường
+            {{ $t("pages.productsPage.title") }}
           </h1>
           <p class="mt-3 max-w-[560px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-            Mua và bán sản phẩm dễ dàng tại VNSEEA. Khám phá gian hàng gần bạn,
-            lọc theo nhu cầu và theo dõi những món đang được quan tâm nhất.
+            {{ $t("pages.productsPage.description") }}
           </p>
 
           <div class="mt-6 flex flex-wrap items-center gap-3">
@@ -24,7 +23,7 @@
               class="inline-flex h-12 items-center justify-center rounded-full bg-[#243b63] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_24px_rgba(36,59,99,0.24)] transition hover:-translate-y-0.5"
             >
               <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />
-              Đăng tin mới
+              {{ $t("pages.productsPage.newListing") }}
             </NuxtLink>
 
             <NuxtLink
@@ -32,12 +31,12 @@
               class="inline-flex h-12 items-center justify-center rounded-full bg-[#fde7b2] px-5 text-[14px] font-extrabold text-[#c85c3f] shadow-[0_10px_26px_rgba(253,231,178,0.24)] transition hover:-translate-y-0.5"
             >
               <Icon name="i-ph-package-fill" class="mr-2 h-4 w-4" />
-              Sản phẩm của tôi
+              {{ $t("pages.productsPage.myProducts") }}
             </NuxtLink>
 
             <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-medium text-white/90">
               <Icon name="i-ph-map-pin-fill" class="h-4 w-4 text-[#fde7b2]" />
-              {{ nearbyCount }} gian hàng trong bán kính 5km
+              {{ $t("pages.productsPage.nearbyStores", { count: nearbyCount }) }}
             </div>
           </div>
         </div>
@@ -71,14 +70,14 @@
         <input
           v-model="search"
           class="h-14 w-full rounded-[20px] border border-[#dbe3f2] bg-[#f7f7f8] pl-12 pr-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#c5caff] focus:bg-white focus:ring-4 focus:ring-[#edf1ff]"
-          placeholder="Tìm kiếm sản phẩm"
+          :placeholder="$t('pages.productsPage.searchPlaceholder')"
           type="search"
         >
       </label>
 
       <div class="mt-3 grid gap-3 xl:grid-cols-[1fr_1fr_1.15fr_auto]">
         <label class="block">
-          <span class="sr-only">Sắp xếp theo</span>
+          <span class="sr-only">{{ $t("pages.productsPage.sortSr") }}</span>
           <select
             v-model="sortBy"
             class="h-12 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] font-semibold text-slate-700 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#edf1ff]"
@@ -94,7 +93,7 @@
         </label>
 
         <label class="block">
-          <span class="sr-only">Thể loại</span>
+          <span class="sr-only">{{ $t("pages.productsPage.categorySr") }}</span>
           <select
             v-model="selectedCategory"
             class="h-12 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] font-semibold text-slate-700 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#edf1ff]"
@@ -110,7 +109,7 @@
         </label>
 
         <label class="block">
-          <span class="sr-only">Khoảng cách vị trí</span>
+          <span class="sr-only">{{ $t("pages.productsPage.distanceSr") }}</span>
           <select
             v-model="selectedDistance"
             class="h-12 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] font-semibold text-slate-700 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#edf1ff]"
@@ -133,7 +132,7 @@
           type="button"
           @click="nearbyOnly = !nearbyOnly"
         >
-          {{ nearbyOnly ? "Đang lọc cửa hàng lân cận" : "Cửa hàng lân cận" }}
+          {{ nearbyOnly ? $t("pages.productsPage.nearbyOn") : $t("pages.productsPage.nearbyOff") }}
         </button>
       </div>
     </section>
@@ -157,14 +156,13 @@
     <div class="flex flex-col gap-3 rounded-[24px] border border-[#dbe3f2] bg-white/90 px-4 py-4 shadow-[0_6px_22px_rgba(15,35,110,0.05)] sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-          Kết quả
+          {{ $t("pages.productsPage.results") }}
         </p>
         <h2 class="mt-1 text-[1.25rem] font-black tracking-[-0.05em] text-[#243b63]">
           {{ resultHeading }}
         </h2>
         <p class="mt-1 text-[14px] text-slate-500">
-          {{ visibleProducts.length }} sản phẩm phù hợp • Sắp xếp theo
-          {{ currentSortLabel }}
+          {{ $t("pages.productsPage.matchingProducts", { count: visibleProducts.length, sort: currentSortLabel }) }}
         </p>
       </div>
 
@@ -179,7 +177,7 @@
           @click="resetFilters"
         >
           <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-          Đặt lại bộ lọc
+          {{ $t("pages.productsPage.resetFilters") }}
         </button>
       </div>
     </div>
@@ -226,14 +224,14 @@
             <button
               class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f7ff] text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.12)] transition hover:bg-white hover:text-[#243b63]"
               type="button"
-              aria-label="Nhắn người bán"
+              :aria-label="$t('pages.productsPage.messageSeller')"
             >
               <Icon name="i-ph-chat-circle-text-fill" class="h-5 w-5" />
             </button>
             <button
               class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#0000ff] text-white shadow-[0_10px_22px_rgba(0,0,255,0.24)] transition hover:scale-[1.03]"
               type="button"
-              aria-label="Thêm vào giỏ"
+              :aria-label="$t('pages.productsPage.addToCart')"
             >
               <Icon name="i-ph-shopping-cart-simple-fill" class="h-5 w-5" />
             </button>
@@ -255,7 +253,7 @@
           <div class="mt-4 flex items-end justify-between gap-3">
             <div>
               <p class="text-[12px] font-semibold text-slate-400">
-                Giá bán
+                {{ $t("pages.productsPage.priceLabel") }}
               </p>
               <p class="text-[1.2rem] font-black text-[#16a34a]">
                 {{ formatCurrency(product.price) }}
@@ -284,10 +282,10 @@
         <Icon name="i-ph-storefront-fill" class="h-7 w-7" />
       </div>
       <h3 class="mt-4 text-[1.35rem] font-black tracking-[-0.04em] text-[#243b63]">
-        Chưa có sản phẩm phù hợp
+        {{ $t("pages.productsPage.emptyTitle") }}
       </h3>
       <p class="mt-2 text-[14px] leading-6 text-slate-500">
-        Hãy thử đổi từ khóa tìm kiếm hoặc nới rộng bộ lọc khoảng cách.
+        {{ $t("pages.productsPage.emptyDescription") }}
       </p>
       <button
         class="mt-5 inline-flex items-center gap-2 rounded-full bg-[#0000ff] px-5 py-3 text-[14px] font-bold text-white shadow-[0_10px_24px_rgba(0,0,255,0.18)] transition hover:-translate-y-0.5"
@@ -295,7 +293,7 @@
         @click="resetFilters"
       >
         <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-        Đặt lại để xem tất cả
+        {{ $t("pages.productsPage.resetAll") }}
       </button>
     </div>
   </div>
@@ -325,9 +323,11 @@ type ProductItem = {
   mine?: boolean
 }
 
+const { t, locale } = useI18n()
+
 useSeoMeta({
-  title: "Thị trường | VNSEEA",
-  description: "Khám phá sản phẩm, gian hàng gần bạn và quản lý tin đăng trong khu vực marketplace của VNSEEA.",
+  title: () => t("pages.productsPage.seoTitle"),
+  description: () => t("pages.productsPage.seoDescription"),
 })
 
 const search = ref("")
@@ -336,204 +336,204 @@ const selectedCategory = ref<ProductCategory>("all")
 const selectedDistance = ref<DistanceValue>("all")
 const nearbyOnly = ref(false)
 
-const sortOptions = [
-  { label: "Sắp xếp theo", value: "featured" },
-  { label: "Mới nhất", value: "latest" },
-  { label: "Giá tăng dần", value: "price-asc" },
-  { label: "Giá giảm dần", value: "price-desc" },
-  { label: "Gần nhất", value: "nearest" },
-  { label: "Đánh giá cao", value: "rating" },
-] satisfies { label: string; value: SortValue }[]
+const sortOptions = computed(() => [
+  { label: t("pages.productsPage.sortFeatured"), value: "featured" },
+  { label: t("pages.productsPage.sortLatest"), value: "latest" },
+  { label: t("pages.productsPage.sortPriceAsc"), value: "price-asc" },
+  { label: t("pages.productsPage.sortPriceDesc"), value: "price-desc" },
+  { label: t("pages.productsPage.sortNearest"), value: "nearest" },
+  { label: t("pages.productsPage.sortRating"), value: "rating" },
+] satisfies { label: string; value: SortValue }[])
 
-const categoryOptions = [
-  { label: "Thể loại", value: "all" },
-  { label: "Ô tô & Xe cộ", value: "vehicles" },
-  { label: "Nhà cửa", value: "home" },
-  { label: "Làm đẹp", value: "beauty" },
-  { label: "Sách & Tài liệu", value: "books" },
-  { label: "Thiết bị số", value: "tech" },
-  { label: "Đặc sản", value: "food" },
-] satisfies { label: string; value: ProductCategory }[]
+const categoryOptions = computed(() => [
+  { label: t("pages.productsPage.category"), value: "all" },
+  { label: t("pages.productsPage.categoryVehicles"), value: "vehicles" },
+  { label: t("pages.productsPage.categoryHome"), value: "home" },
+  { label: t("pages.productsPage.categoryBeauty"), value: "beauty" },
+  { label: t("pages.productsPage.categoryBooks"), value: "books" },
+  { label: t("pages.productsPage.categoryTech"), value: "tech" },
+  { label: t("pages.productsPage.categoryFood"), value: "food" },
+] satisfies { label: string; value: ProductCategory }[])
 
-const distanceOptions = [
-  { label: "Khoảng cách vị trí", value: "all" },
-  { label: "Trong 5 km", value: "5" },
-  { label: "Trong 10 km", value: "10" },
-  { label: "Trong 25 km", value: "25" },
-] satisfies { label: string; value: DistanceValue }[]
+const distanceOptions = computed(() => [
+  { label: t("pages.productsPage.distanceAll"), value: "all" },
+  { label: t("pages.productsPage.distance5"), value: "5" },
+  { label: t("pages.productsPage.distance10"), value: "10" },
+  { label: t("pages.productsPage.distance25"), value: "25" },
+] satisfies { label: string; value: DistanceValue }[])
 
-const quickCategoryChips = [
-  { label: "Tất cả", value: "all", icon: "i-ph-squares-four" },
-  { label: "Ô tô & Xe cộ", value: "vehicles", icon: "i-ph-car-profile" },
-  { label: "Nhà cửa", value: "home", icon: "i-ph-armchair" },
-  { label: "Làm đẹp", value: "beauty", icon: "i-ph-drop" },
-  { label: "Sách", value: "books", icon: "i-ph-book-open-text" },
-  { label: "Thiết bị số", value: "tech", icon: "i-ph-device-mobile-camera" },
-] satisfies { label: string; value: ProductCategory; icon: string }[]
+const quickCategoryChips = computed(() => [
+  { label: t("pages.productsPage.categoryAll"), value: "all", icon: "i-ph-squares-four" },
+  { label: t("pages.productsPage.categoryVehicles"), value: "vehicles", icon: "i-ph-car-profile" },
+  { label: t("pages.productsPage.categoryHome"), value: "home", icon: "i-ph-armchair" },
+  { label: t("pages.productsPage.categoryBeauty"), value: "beauty", icon: "i-ph-drop" },
+  { label: t("pages.productsPage.categoryBooksShort"), value: "books", icon: "i-ph-book-open-text" },
+  { label: t("pages.productsPage.categoryTech"), value: "tech", icon: "i-ph-device-mobile-camera" },
+] satisfies { label: string; value: ProductCategory; icon: string }[])
 
-const products = [
+const products = computed(() => [
   {
     id: 1,
-    title: "Xe đạp gấp đô thị",
-    seller: "Bạn",
+    title: t("pages.productsPage.product1Title"),
+    seller: t("pages.productsPage.sellerYou"),
     price: 4200000,
     location: "Cầu Giấy, Hà Nội",
     distanceKm: 1.8,
     category: "vehicles",
-    categoryLabel: "Ô tô & Xe cộ",
-    condition: "Như mới",
-    description: "Khung nhôm gọn nhẹ, phanh đĩa và đầy đủ phụ kiện cho việc đi lại hằng ngày.",
+    categoryLabel: t("pages.productsPage.categoryVehicles"),
+    condition: t("pages.productsPage.conditionLikeNew"),
+    description: t("pages.productsPage.product1Description"),
     background: "linear-gradient(135deg,#172554 0%,#1d4ed8 48%,#7dd3fc 100%)",
     icon: "i-ph-bicycle",
     postedHoursAgo: 2,
-    postedLabel: "2 giờ trước",
+    postedLabel: t("pages.productsPage.postedHoursAgo", { count: 2 }),
     rating: 4.9,
     mine: true,
   },
   {
     id: 2,
-    title: "Bàn trà gỗ sồi",
+    title: t("pages.productsPage.product2Title"),
     seller: "Hoàng An",
     price: 1850000,
     location: "Nam Từ Liêm, Hà Nội",
     distanceKm: 4.2,
     category: "home",
-    categoryLabel: "Nhà cửa",
-    condition: "Đang giảm",
-    description: "Mặt bàn chống xước, kiểu dáng tối giản phù hợp phòng khách hoặc studio nhỏ.",
+    categoryLabel: t("pages.productsPage.categoryHome"),
+    condition: t("pages.productsPage.conditionDiscount"),
+    description: t("pages.productsPage.product2Description"),
     background: "linear-gradient(135deg,#78350f 0%,#b45309 38%,#f59e0b 100%)",
     icon: "i-ph-armchair",
     postedHoursAgo: 6,
-    postedLabel: "6 giờ trước",
+    postedLabel: t("pages.productsPage.postedHoursAgo", { count: 6 }),
     rating: 4.8,
   },
   {
     id: 3,
-    title: "Combo dưỡng tóc Yaskey",
+    title: t("pages.productsPage.product3Title"),
     seller: "Hải Dương",
     price: 520000,
     location: "Hai Bà Trưng, Hà Nội",
     distanceKm: 3.1,
     category: "beauty",
-    categoryLabel: "Làm đẹp",
-    condition: "Bán chạy",
-    description: "Bộ chăm sóc tóc gồm serum, mask và xịt dưỡng phục hồi sau tạo kiểu.",
+    categoryLabel: t("pages.productsPage.categoryBeauty"),
+    condition: t("pages.productsPage.conditionBestSeller"),
+    description: t("pages.productsPage.product3Description"),
     background: "linear-gradient(135deg,#0f766e 0%,#14b8a6 45%,#99f6e4 100%)",
     icon: "i-ph-drop-fill",
     postedHoursAgo: 4,
-    postedLabel: "4 giờ trước",
+    postedLabel: t("pages.productsPage.postedHoursAgo", { count: 4 }),
     rating: 4.9,
   },
   {
     id: 4,
-    title: "Sách kinh tế tư duy",
+    title: t("pages.productsPage.product4Title"),
     seller: "Minh Châu",
     price: 145000,
     location: "Hoàn Kiếm, Hà Nội",
     distanceKm: 8.4,
     category: "books",
-    categoryLabel: "Sách & Tài liệu",
-    condition: "Mới đăng",
-    description: "Bản in đẹp, còn mới 95%, phù hợp cho người thích đọc nhanh và ghi chú nhiều.",
+    categoryLabel: t("pages.productsPage.categoryBooks"),
+    condition: t("pages.productsPage.conditionNewPost"),
+    description: t("pages.productsPage.product4Description"),
     background: "linear-gradient(135deg,#14532d 0%,#16a34a 38%,#bbf7d0 100%)",
     icon: "i-ph-book-open-text-fill",
     postedHoursAgo: 1,
-    postedLabel: "1 giờ trước",
+    postedLabel: t("pages.productsPage.postedOneHourAgo"),
     rating: 4.7,
   },
   {
     id: 5,
-    title: "Loa bluetooth mini",
+    title: t("pages.productsPage.product5Title"),
     seller: "Tú Anh",
     price: 890000,
     location: "Thanh Xuân, Hà Nội",
     distanceKm: 5.6,
     category: "tech",
-    categoryLabel: "Thiết bị số",
-    condition: "Free ship",
-    description: "Âm bass chắc, pin 12 giờ, chống nước nhẹ và sạc USB-C thuận tiện.",
+    categoryLabel: t("pages.productsPage.categoryTech"),
+    condition: t("pages.productsPage.conditionFreeShip"),
+    description: t("pages.productsPage.product5Description"),
     background: "linear-gradient(135deg,#111827 0%,#4f46e5 42%,#c4b5fd 100%)",
     icon: "i-ph-speaker-high-fill",
     postedHoursAgo: 12,
-    postedLabel: "12 giờ trước",
+    postedLabel: t("pages.productsPage.postedHoursAgo", { count: 12 }),
     rating: 4.6,
   },
   {
     id: 6,
-    title: "Hạt điều rang muối",
+    title: t("pages.productsPage.product6Title"),
     seller: "Nông trại Bơ",
     price: 210000,
     location: "Đống Đa, Hà Nội",
     distanceKm: 2.7,
     category: "food",
-    categoryLabel: "Đặc sản",
-    condition: "Mới rang",
-    description: "Hạt đều, giòn và ít muối. Gói 500g phù hợp làm quà tặng hoặc dùng tại văn phòng.",
+    categoryLabel: t("pages.productsPage.categoryFood"),
+    condition: t("pages.productsPage.conditionFreshRoast"),
+    description: t("pages.productsPage.product6Description"),
     background: "linear-gradient(135deg,#7c2d12 0%,#ea580c 40%,#fdba74 100%)",
     icon: "i-ph-bowl-food-fill",
     postedHoursAgo: 8,
-    postedLabel: "8 giờ trước",
+    postedLabel: t("pages.productsPage.postedHoursAgo", { count: 8 }),
     rating: 4.8,
   },
   {
     id: 7,
-    title: "Đèn bàn vintage",
-    seller: "Bạn",
+    title: t("pages.productsPage.product7Title"),
+    seller: t("pages.productsPage.sellerYou"),
     price: 760000,
     location: "Tây Hồ, Hà Nội",
     distanceKm: 9.8,
     category: "home",
-    categoryLabel: "Nhà cửa",
-    condition: "Có sẵn",
-    description: "Ánh sáng ấm, chân đồng xước nhẹ theo thời gian, hợp không gian làm việc tại nhà.",
+    categoryLabel: t("pages.productsPage.categoryHome"),
+    condition: t("pages.productsPage.conditionAvailable"),
+    description: t("pages.productsPage.product7Description"),
     background: "linear-gradient(135deg,#3f3cbb 0%,#5b86e5 48%,#c2e9fb 100%)",
     icon: "i-ph-lamp-fill",
     postedHoursAgo: 18,
-    postedLabel: "18 giờ trước",
+    postedLabel: t("pages.productsPage.postedHoursAgo", { count: 18 }),
     rating: 4.5,
     mine: true,
   },
   {
     id: 8,
-    title: "Máy ảnh mirrorless cũ",
+    title: t("pages.productsPage.product8Title"),
     seller: "Studio Mộc",
     price: 12800000,
     location: "Long Biên, Hà Nội",
     distanceKm: 14.2,
     category: "tech",
-    categoryLabel: "Thiết bị số",
-    condition: "Uy tín",
-    description: "Body gọn, chụp chân dung đẹp, tặng kèm pin phụ và túi chống sốc.",
+    categoryLabel: t("pages.productsPage.categoryTech"),
+    condition: t("pages.productsPage.conditionTrusted"),
+    description: t("pages.productsPage.product8Description"),
     background: "linear-gradient(135deg,#1f2937 0%,#475569 36%,#dbeafe 100%)",
     icon: "i-ph-camera-fill",
     postedHoursAgo: 24,
-    postedLabel: "Hôm qua",
+    postedLabel: t("pages.productsPage.postedYesterday"),
     rating: 4.9,
   },
-] satisfies ProductItem[]
+] satisfies ProductItem[])
 
 const heroStats = computed(() => [
   {
-    label: "Gian hàng hoạt động",
+    label: t("pages.productsPage.statActiveStores"),
     value: "128",
-    description: "Các người bán đang cập nhật sản phẩm mới mỗi ngày.",
+    description: t("pages.productsPage.statActiveStoresDescription"),
   },
   {
-    label: "Tin nổi bật",
-    value: String(products.filter(item => item.postedHoursAgo <= 8).length),
-    description: "Sản phẩm mới đăng và có tương tác tốt trong hôm nay.",
+    label: t("pages.productsPage.statFeatured"),
+    value: String(products.value.filter(item => item.postedHoursAgo <= 8).length),
+    description: t("pages.productsPage.statFeaturedDescription"),
   },
   {
-    label: "Của bạn",
-    value: String(products.filter(item => item.mine).length),
-    description: "Tin đăng cá nhân bạn có thể xem lại và tiếp tục chỉnh sửa.",
+    label: t("pages.productsPage.statMine"),
+    value: String(products.value.filter(item => item.mine).length),
+    description: t("pages.productsPage.statMineDescription"),
   },
 ])
 
-const nearbyCount = computed(() => products.filter(item => item.distanceKm <= 5).length)
+const nearbyCount = computed(() => products.value.filter(item => item.distanceKm <= 5).length)
 
 const currentSortLabel = computed(
-  () => sortOptions.find(option => option.value === sortBy.value)?.label ?? "Sắp xếp theo",
+  () => sortOptions.value.find(option => option.value === sortBy.value)?.label ?? t("pages.productsPage.sortFeatured"),
 )
 
 const activeFiltersLabel = computed(() => {
@@ -541,27 +541,27 @@ const activeFiltersLabel = computed(() => {
 
   if (selectedCategory.value !== "all") {
     labels.push(
-      categoryOptions.find(option => option.value === selectedCategory.value)?.label ?? "",
+      categoryOptions.value.find(option => option.value === selectedCategory.value)?.label ?? "",
     )
   }
 
   if (selectedDistance.value !== "all") {
     labels.push(
-      distanceOptions.find(option => option.value === selectedDistance.value)?.label ?? "",
+      distanceOptions.value.find(option => option.value === selectedDistance.value)?.label ?? "",
     )
   }
 
-  if (nearbyOnly.value) labels.push("Lân cận")
+  if (nearbyOnly.value) labels.push(t("pages.productsPage.nearbyFilter"))
 
-  return labels.length > 0 ? labels.join(" • ") : "Tất cả sản phẩm"
+  return labels.length > 0 ? labels.join(" • ") : t("pages.productsPage.allProducts")
 })
 
-const resultHeading = computed(() => "Danh sách sản phẩm đang được quan tâm")
+const resultHeading = computed(() => t("pages.productsPage.resultHeading"))
 
 const visibleProducts = computed(() => {
   const keyword = search.value.trim().toLowerCase()
 
-  const filtered = products.filter((product) => {
+  const filtered = products.value.filter((product) => {
     const matchesKeyword = keyword.length === 0 || [
       product.title,
       product.description,
@@ -613,7 +613,9 @@ const currencyFormatter = new Intl.NumberFormat("vi-VN", {
 const formatCurrency = (value: number) => currencyFormatter.format(value)
 
 const formatDistance = (value: number) =>
-  `${value.toLocaleString("vi-VN", { maximumFractionDigits: 1 })} km`
+  t("pages.productsPage.distanceKm", {
+    value: value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US", { maximumFractionDigits: 1 }),
+  })
 
 const resetFilters = () => {
   search.value = ""

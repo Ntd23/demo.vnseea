@@ -2,9 +2,9 @@
   <div class="space-y-8">
     <div class="space-y-3">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-[1.02rem] font-black text-[#2f3542]">Ảnh hiện tại</p>
+        <p class="text-[1.02rem] font-black text-[#2f3542]">{{ $t("pages.productEditor.currentImages") }}</p>
         <div class="rounded-full bg-[#fff7ed] px-3 py-1.5 text-[12px] font-semibold text-[#c2410c]">
-          {{ removedCount }} ảnh sẽ bị xóa
+          {{ $t("pages.productEditor.removedImages", { count: removedCount }) }}
         </div>
       </div>
 
@@ -30,13 +30,13 @@
           v-else
           class="flex min-h-[72px] flex-1 items-center justify-center rounded-[20px] border border-dashed border-[#cbd5e1] bg-white px-4 text-center text-[13px] font-medium text-slate-400"
         >
-          Không còn ảnh cũ nào được giữ lại.
+          {{ $t("pages.productEditor.noOldImages") }}
         </div>
       </div>
     </div>
 
     <div class="space-y-3">
-      <p class="text-[1.02rem] font-black text-[#2f3542]">Ảnh mới</p>
+      <p class="text-[1.02rem] font-black text-[#2f3542]">{{ $t("pages.productEditor.newImages") }}</p>
       <div class="flex flex-wrap items-end gap-4">
         <button
           type="button"
@@ -71,7 +71,7 @@
         </div>
       </div>
       <p class="text-[13px] leading-6 text-slate-500">
-        Mock UI: ảnh cũ có thể bỏ khỏi tin đăng, còn ảnh mới đang mô phỏng bằng tile để kiểm tra flow chỉnh sửa.
+        {{ $t("pages.productEditor.editMediaHelp") }}
       </p>
     </div>
   </div>

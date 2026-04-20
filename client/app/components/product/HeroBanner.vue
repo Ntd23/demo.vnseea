@@ -22,7 +22,7 @@
             class="inline-flex h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 text-[14px] font-bold text-white transition hover:bg-white/15"
           >
             <Icon name="i-ph-arrow-left" class="mr-2 h-4 w-4" />
-            Quay lại sản phẩm của tôi
+            {{ $t("pages.productEditor.backToMyProducts") }}
           </NuxtLink>
 
           <button
