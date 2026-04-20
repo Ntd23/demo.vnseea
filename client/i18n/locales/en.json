@@ -1213,6 +1213,559 @@
       "stream3StartedAt": "7:30 PM today",
       "stream3Duration": "Starting soon",
       "stream3Description": "A livestream about building green study corners and making implementation costs transparent."
+    },
+    "watchPage": {
+      "seoTitle": "Watch | VNSEEA",
+      "seoDescription": "Watch videos, comment, like, and share content in the VNSEEA community.",
+      "heroEyebrow": "P-33 · Watch video",
+      "heroTitle": "Watch",
+      "heroDescription": "Watch videos with a mock player, video details, comments, like/share actions, and a related video list.",
+      "searchPlaceholder": "Search videos, creators, hashtags...",
+      "playerReady": "Mock player · ready to swap with Plyr",
+      "share": "Share",
+      "creatorMeta": "Creator · posts.php",
+      "commentsEyebrow": "comments.php",
+      "commentsTitle": "Comments",
+      "commentPlaceholder": "Write a comment...",
+      "relatedEyebrow": "posts.php",
+      "relatedTitle": "Related videos",
+      "viewsCount": "{count} views",
+      "statVideos": "Videos",
+      "statVideosDescription": "Mock data loaded from posts.php.",
+      "statViews": "Views",
+      "statViewsDescription": "Total displayed views.",
+      "statComments": "Comments",
+      "statCommentsDescription": "Comments sent in this session.",
+      "shareSuccess": "Mock shared the video. No post-actions.php API call yet.",
+      "you": "You",
+      "youInitials": "Y",
+      "viewerRole": "Viewer",
+      "justNow": "Just now",
+      "categories": [
+        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Community", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Education", "value": "education", "icon": "i-ph-graduation-cap-fill" },
+        { "label": "Business", "value": "business", "icon": "i-ph-briefcase-fill" },
+        { "label": "Events", "value": "events", "icon": "i-ph-calendar-dots-fill" },
+        { "label": "Technology", "value": "technology", "icon": "i-ph-cpu-fill" }
+      ],
+      "videos": [
+        {
+          "id": "vnseea-product-demo",
+          "title": "VNSEEA Product Demo: community UI updates",
+          "category": "technology",
+          "categoryLabel": "Technology",
+          "author": "Justin",
+          "authorInitials": "JT",
+          "authorGradient": "linear-gradient(135deg,var(--color-primary-500),var(--color-info))",
+          "date": "17/04/2026",
+          "duration": "18:42",
+          "views": 18400,
+          "likes": 1240,
+          "shares": 218,
+          "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
+          "description": "A full demo of the latest UI changes, component organization, and the checklist before connecting posts.php for video.",
+          "tags": ["#product", "#ui", "#nuxt"],
+          "comments": [
+            { "id": 1, "author": "Hoangne", "initials": "HN", "role": "Member", "message": "The player looks clear and the related list is easy to use.", "time": "5 minutes ago" },
+            { "id": 2, "author": "Dung1", "initials": "D1", "role": "Creator", "message": "We should keep this layout for desktop.", "time": "12 minutes ago" }
+          ]
+        },
+        {
+          "id": "founder-breakfast-recap",
+          "title": "Founder Breakfast recap: the best questions",
+          "category": "business",
+          "categoryLabel": "Business",
+          "author": "Hanoi Startup Circle",
+          "authorInitials": "HS",
+          "authorGradient": "linear-gradient(135deg,var(--color-accent-500),var(--color-primary-600))",
+          "date": "16/04/2026",
+          "duration": "12:06",
+          "views": 12600,
+          "likes": 842,
+          "shares": 96,
+          "cover": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=80",
+          "description": "A recap of the founder meetup covering first customers, pricing, and pitch deck questions.",
+          "tags": ["#startup", "#founder", "#business"],
+          "comments": [
+            { "id": 3, "author": "Ngoc Tokyo", "initials": "NT", "role": "Founder", "message": "The pricing section is worth saving.", "time": "1 hour ago" }
+          ]
+        },
+        {
+          "id": "green-classroom-story",
+          "title": "A story from a green classroom on the outskirts",
+          "category": "education",
+          "categoryLabel": "Education",
+          "author": "Learning Guild",
+          "authorInitials": "LG",
+          "authorGradient": "linear-gradient(135deg,var(--color-success),var(--color-primary-500))",
+          "date": "15/04/2026",
+          "duration": "09:34",
+          "views": 9300,
+          "likes": 712,
+          "shares": 144,
+          "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
+          "description": "A short video about building a green learning corner, a mini library, and a transparent report for the community.",
+          "tags": ["#education", "#funding", "#community"],
+          "comments": [
+            { "id": 4, "author": "Quynh Lan", "initials": "QL", "role": "Donor", "message": "The content is clear and builds trust.", "time": "2 hours ago" }
+          ]
+        },
+        {
+          "id": "event-highlight-summit",
+          "title": "Highlight VNSEEA Tech Community Summit",
+          "category": "events",
+          "categoryLabel": "Events",
+          "author": "VNSEEA Community",
+          "authorInitials": "VC",
+          "authorGradient": "linear-gradient(135deg,var(--color-primary-700),var(--color-accent-500))",
+          "date": "14/04/2026",
+          "duration": "07:18",
+          "views": 21800,
+          "likes": 1680,
+          "shares": 302,
+          "cover": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=80",
+          "description": "Highlights from the summit: keynote, workshop sessions, and the networking closeout.",
+          "tags": ["#event", "#summit", "#tech"],
+          "comments": []
+        }
+      ]
+    },
+    "settingsPage": {
+      "defaultSeoTitle": "Settings | VNSEEA",
+      "seoTitle": "{page} | VNSEEA Settings",
+      "heroEyebrow": "P-34 · Settings",
+      "heroTitle": "Settings",
+      "heroDescription": "Manage your account, privacy, security, notifications, payments, and professional profile.",
+      "sidebarCount": "{count} sub-pages",
+      "sidebarTitle": "Settings menu",
+      "statsSubpages": "Sub-pages",
+      "statsSubpagesDescription": "Settings groups based on the audit.",
+      "statsFeatures": "Features",
+      "statsFeaturesDescription": "Fields, toggles, lists, and actions.",
+      "statsApi": "API",
+      "statsApiValue": "Mock",
+      "statsApiDescription": "No settings backend call yet.",
+      "kindForm": "Form",
+      "kindToggles": "Toggles",
+      "kindList": "List",
+      "kindDanger": "Danger",
+      "kindSummary": "Summary",
+      "saveChanges": "Save changes",
+      "saveSuccess": "Mock saved the settings. No settings API call yet.",
+      "dangerDescription": "Danger zone. This action is only simulated and does not call the account deletion API yet.",
+      "deleteAccountAction": "Delete account",
+      "pages": [
+        {
+          "slug": "general",
+          "label": "General",
+          "icon": "i-ph-user-circle-fill",
+          "description": "Username, email, phone number, and basic account details.",
+          "sections": [
+            {
+              "title": "Account information",
+              "description": "Update the main identity details for your account.",
+              "kind": "form",
+              "fields": [
+                { "label": "Username", "key": "username", "type": "text", "value": "justin", "placeholder": "username" },
+                { "label": "Email", "key": "email", "type": "email", "value": "justin.vnseea.test" },
+                { "label": "Phone", "key": "phone", "type": "tel", "value": "+84 900 000 000" },
+                { "label": "Birthday", "key": "birthday", "type": "date", "value": "1995-04-17" },
+                { "label": "Gender", "key": "gender", "type": "select", "value": "Male", "options": ["Male", "Female", "Other"] },
+                { "label": "Country", "key": "country", "type": "select", "value": "Vietnam", "options": ["Vietnam", "Singapore", "Thailand", "United States"] },
+                { "label": "Website", "key": "website", "type": "url", "value": "https://vnseea.test" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "profile",
+          "label": "Profile",
+          "icon": "i-ph-identification-card-fill",
+          "description": "Bio, workplace, school, and location details.",
+          "sections": [
+            {
+              "title": "Public profile",
+              "description": "These fields appear on your public profile.",
+              "kind": "form",
+              "fields": [
+                { "label": "Bio", "key": "bio", "type": "textarea", "value": "Community builder at VNSEEA." },
+                { "label": "Workplace", "key": "workplace", "type": "text", "value": "VNSEEA" },
+                { "label": "School", "key": "school", "type": "text", "value": "University of Economics" },
+                { "label": "Relationship", "key": "relationship", "type": "select", "value": "Hidden", "options": ["Hidden", "Single", "Dating", "Married"] },
+                { "label": "City", "key": "city", "type": "text", "value": "Ho Chi Minh City" },
+                { "label": "Hometown", "key": "hometown", "type": "text", "value": "Hanoi" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "privacy",
+          "label": "Privacy",
+          "icon": "i-ph-lock-key-fill",
+          "description": "Control who can see posts, follow you, and view your online status.",
+          "sections": [
+            {
+              "title": "Privacy controls",
+              "description": "Mock privacy options before connecting the settings API.",
+              "kind": "form",
+              "fields": [
+                { "label": "Who can see posts", "key": "posts", "type": "select", "value": "Friends", "options": ["Public", "Friends", "Only me"] },
+                { "label": "Who can follow", "key": "follow", "type": "select", "value": "Public", "options": ["Public", "Friends"] },
+                { "label": "Search visibility", "key": "search", "type": "select", "value": "Allow", "options": ["Allow", "Hide from search"] },
+                { "label": "Who can see friends", "key": "friends", "type": "select", "value": "Friends", "options": ["Public", "Friends", "Only me"] },
+                { "label": "Who can see birthday", "key": "birthdayPrivacy", "type": "select", "value": "Friends", "options": ["Public", "Friends", "Only me"] },
+                { "label": "Online/offline status", "key": "onlineStatus", "type": "select", "value": "Show online", "options": ["Show online", "Always offline"] }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "avatar",
+          "label": "Avatar",
+          "icon": "i-ph-image-square-fill",
+          "description": "Upload and crop your avatar.",
+          "sections": [
+            {
+              "title": "Upload & crop avatar",
+              "description": "Choose a new image and simulate the crop area.",
+              "kind": "form",
+              "fields": [
+                { "label": "Avatar image", "key": "avatar", "type": "file", "value": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "design",
+          "label": "Appearance",
+          "icon": "i-ph-palette-fill",
+          "description": "Night mode and theme color settings.",
+          "sections": [
+            {
+              "title": "Customize appearance",
+              "description": "Configure how the interface looks on your device.",
+              "kind": "form",
+              "fields": [
+                { "label": "Night mode", "key": "nightMode", "type": "select", "value": "System", "options": ["On", "Off", "System"] },
+                { "label": "Theme color", "key": "themeColor", "type": "select", "value": "VNSEEA Blue", "options": ["VNSEEA Blue", "Emerald", "Amber", "Slate"] }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "password",
+          "label": "Password",
+          "icon": "i-ph-key-fill",
+          "description": "Change your login password.",
+          "sections": [
+            {
+              "title": "Change password",
+              "description": "Enter your current password and a new one.",
+              "kind": "form",
+              "fields": [
+                { "label": "Current password", "key": "currentPassword", "type": "password", "value": "" },
+                { "label": "New password", "key": "newPassword", "type": "password", "value": "" },
+                { "label": "Confirm password", "key": "confirmPassword", "type": "password", "value": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "two-factor",
+          "label": "2FA",
+          "icon": "i-ph-shield-check-fill",
+          "description": "Authenticator, QR code, and backup codes.",
+          "sections": [
+            {
+              "title": "Two-Factor Authentication",
+              "description": "Enable two-step security and scan the QR code with an authenticator app.",
+              "kind": "summary",
+              "items": [
+                { "title": "Enable/disable 2FA", "description": "Current status: disabled.", "action": "Enable 2FA" },
+                { "title": "Authenticator QR code", "description": "Mock QR placeholder for the authenticator app.", "meta": "VNSEEA-2FA-2026" },
+                { "title": "Backup codes", "description": "8 backup codes have not been generated yet.", "action": "Generate new codes" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "notifications",
+          "label": "Notifications",
+          "icon": "i-ph-bell-ringing-fill",
+          "description": "Enable or disable notifications by type.",
+          "sections": [
+            {
+              "title": "In-app notifications",
+              "description": "Likes, comments, follows, messages, mentions, and other updates.",
+              "kind": "toggles",
+              "toggles": [
+                { "label": "Likes", "description": "Receive like notifications.", "enabled": true },
+                { "label": "Comments", "description": "Receive comment notifications.", "enabled": true },
+                { "label": "Follows", "description": "Receive follow notifications.", "enabled": true },
+                { "label": "Messages", "description": "Receive message notifications.", "enabled": true },
+                { "label": "Mentions", "description": "Receive mention notifications.", "enabled": true },
+                { "label": "Shares", "description": "Receive share notifications.", "enabled": true },
+                { "label": "Events", "description": "Receive event notifications.", "enabled": true },
+                { "label": "Groups", "description": "Receive group notifications.", "enabled": true },
+                { "label": "Pages", "description": "Receive page notifications.", "enabled": true },
+                { "label": "Marketplace", "description": "Receive marketplace notifications.", "enabled": true },
+                { "label": "Jobs", "description": "Receive jobs notifications.", "enabled": false },
+                { "label": "Funding", "description": "Receive funding notifications.", "enabled": false },
+                { "label": "Live", "description": "Receive live notifications.", "enabled": false },
+                { "label": "Watch", "description": "Receive watch notifications.", "enabled": false },
+                { "label": "Security", "description": "Receive security notifications.", "enabled": false }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "email-notifications",
+          "label": "Email",
+          "icon": "i-ph-envelope-simple-fill",
+          "description": "Notification settings for email delivery.",
+          "sections": [
+            {
+              "title": "Email notifications",
+              "description": "Choose which system emails are allowed.",
+              "kind": "toggles",
+              "toggles": [
+                { "label": "New message email", "description": "Email when a new message arrives.", "enabled": true },
+                { "label": "Mention email", "description": "Email when someone mentions you.", "enabled": true },
+                { "label": "Weekly digest", "description": "Weekly activity summary.", "enabled": false },
+                { "label": "Security email", "description": "Login and security alerts.", "enabled": true }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "social-links",
+          "label": "Social links",
+          "icon": "i-ph-link-simple-fill",
+          "description": "Facebook, Twitter, LinkedIn, Instagram, and YouTube.",
+          "sections": [
+            {
+              "title": "Social links",
+              "description": "URLs shown on your profile.",
+              "kind": "form",
+              "fields": [
+                { "label": "Facebook URL", "key": "facebook", "type": "url", "value": "", "placeholder": "https://facebook.com/username" },
+                { "label": "Twitter URL", "key": "twitter", "type": "url", "value": "", "placeholder": "https://twitter.com/username" },
+                { "label": "LinkedIn URL", "key": "linkedin", "type": "url", "value": "", "placeholder": "https://linkedin.com/username" },
+                { "label": "Instagram URL", "key": "instagram", "type": "url", "value": "", "placeholder": "https://instagram.com/username" },
+                { "label": "YouTube URL", "key": "youtube", "type": "url", "value": "", "placeholder": "https://youtube.com/username" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "blocked-users",
+          "label": "Blocked users",
+          "icon": "i-ph-user-minus-fill",
+          "description": "Blocked list and unblock controls.",
+          "sections": [
+            {
+              "title": "Blocked users",
+              "description": "Manage the users you have blocked.",
+              "kind": "list",
+              "items": [
+                { "title": "spam-account", "description": "Blocked 2 days ago", "action": "Unblock" },
+                { "title": "old-bot", "description": "Blocked 1 month ago", "action": "Unblock" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "sessions",
+          "label": "Sessions",
+          "icon": "i-ph-devices-fill",
+          "description": "Active sessions and terminate controls.",
+          "sections": [
+            {
+              "title": "Active sessions",
+              "description": "Review devices that are currently signed in.",
+              "kind": "list",
+              "items": [
+                { "title": "Chrome · Windows", "description": "127.0.0.1 · current", "meta": "Active now", "action": "Keep session" },
+                { "title": "Safari · iPhone", "description": "Ho Chi Minh City · 2 days ago", "meta": "Mobile", "action": "Terminate" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "verification",
+          "label": "Verification",
+          "icon": "i-ph-seal-check-fill",
+          "description": "Upload documents and submit a verification request.",
+          "sections": [
+            {
+              "title": "Verification request",
+              "description": "Upload documents and describe why you want verification.",
+              "kind": "form",
+              "fields": [
+                { "label": "Document upload", "key": "documents", "type": "file", "value": "" },
+                { "label": "Request note", "key": "verificationNote", "type": "textarea", "value": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "delete-account",
+          "label": "Delete account",
+          "icon": "i-ph-trash-fill",
+          "description": "Confirm your password and delete the account.",
+          "sections": [
+            {
+              "title": "Delete account",
+              "description": "A dangerous action that is currently simulated only.",
+              "kind": "danger",
+              "fields": [
+                { "label": "Confirm password", "key": "deletePassword", "type": "password", "value": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "payments",
+          "label": "Payments",
+          "icon": "i-ph-credit-card-fill",
+          "description": "Payment methods management.",
+          "sections": [
+            {
+              "title": "Payment methods",
+              "description": "Manage cards and payment wallets.",
+              "kind": "list",
+              "items": [
+                { "title": "Visa ending 4242", "description": "Default payment method", "meta": "Default", "action": "Edit" },
+                { "title": "VNSEEA Wallet", "description": "Mock balance: VND 9,999,999", "meta": "Wallet", "action": "Manage" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "monetization",
+          "label": "Monetization",
+          "icon": "i-ph-currency-circle-dollar-fill",
+          "description": "Plan, price, and enable/disable controls.",
+          "sections": [
+            {
+              "title": "Monetization plan",
+              "description": "Create a paid content plan.",
+              "kind": "form",
+              "fields": [
+                { "label": "Plan name", "key": "planName", "type": "text", "value": "Creator Plus" },
+                { "label": "Price", "key": "price", "type": "number", "value": 99000 },
+                { "label": "Enable/disable", "key": "enabled", "type": "select", "value": "Enable", "options": ["Enable", "Disable"] }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "invitation-links",
+          "label": "Invitations",
+          "icon": "i-ph-ticket-fill",
+          "description": "Generate invite links, copy links, and track invitees.",
+          "sections": [
+            {
+              "title": "Invitation links",
+              "description": "Create and monitor invite links.",
+              "kind": "list",
+              "items": [
+                { "title": "https://vnseea.test/invite/JUSTIN2026", "description": "12 people joined", "meta": "Active", "action": "Copy link" },
+                { "title": "Invitees", "description": "Hoangne, Dung1, Nicolas", "action": "View list" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "affiliates",
+          "label": "Affiliates",
+          "icon": "i-ph-handshake-fill",
+          "description": "Referral links and earnings dashboard.",
+          "sections": [
+            {
+              "title": "Affiliate dashboard",
+              "description": "Track referrals and earnings.",
+              "kind": "summary",
+              "items": [
+                { "title": "Referral link", "description": "https://vnseea.test/ref/justin", "action": "Copy" },
+                { "title": "Earnings", "description": "VND 12,400,000", "meta": "This month" },
+                { "title": "Referrals", "description": "42 signups", "meta": "2026" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "my-info",
+          "label": "My data",
+          "icon": "i-ph-download-simple-fill",
+          "description": "Download your personal data.",
+          "sections": [
+            {
+              "title": "My info",
+              "description": "Download personal data as an archive.",
+              "kind": "summary",
+              "items": [
+                { "title": "Download personal data", "description": "Includes profile, posts, media, and message metadata.", "action": "Request archive" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "my-points",
+          "label": "My points",
+          "icon": "i-ph-coin-fill",
+          "description": "Points balance and history.",
+          "sections": [
+            {
+              "title": "My points",
+              "description": "Points collected from community activity.",
+              "kind": "list",
+              "items": [
+                { "title": "50 points", "description": "Current balance", "meta": "Balance" },
+                { "title": "+10", "description": "Helpful comment", "meta": "Today" },
+                { "title": "+25", "description": "Joined an event", "meta": "This week" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "addresses",
+          "label": "Addresses",
+          "icon": "i-ph-map-pin-fill",
+          "description": "Add and edit shipping addresses.",
+          "sections": [
+            {
+              "title": "Shipping addresses",
+              "description": "Shipping addresses for marketplace orders.",
+              "kind": "form",
+              "fields": [
+                { "label": "Full name", "key": "addressName", "type": "text", "value": "Justin" },
+                { "label": "Phone", "key": "addressPhone", "type": "tel", "value": "+84 900 000 000" },
+                { "label": "Address", "key": "addressLine", "type": "textarea", "value": "District 1, Ho Chi Minh City" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "career",
+          "label": "LinkedIn mode",
+          "icon": "i-ph-briefcase-fill",
+          "description": "Experience, certifications, and projects.",
+          "sections": [
+            {
+              "title": "Experience + Certifications + Projects",
+              "description": "Expand your professional profile.",
+              "kind": "list",
+              "items": [
+                { "title": "Work experience", "description": "Community Manager · VNSEEA", "action": "Add work experience" },
+                { "title": "Certifications", "description": "Product Growth Certificate", "action": "Add certification" },
+                { "title": "Projects", "description": "VNSEEA migration UI", "action": "Add project" }
+              ]
+            }
+          ]
+        }
+      ]
     }
   },
   "feed": {

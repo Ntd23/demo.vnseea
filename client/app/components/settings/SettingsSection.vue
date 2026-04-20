@@ -2,7 +2,7 @@
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ section.kind }}</p>
+        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ kindLabel }}</p>
         <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ section.title }}</h2>
         <p class="mt-1 max-w-2xl text-body-secondary">{{ section.description }}</p>
       </div>
@@ -12,7 +12,7 @@
         type="button"
         @click="saved = true"
       >
-        Lưu thay đổi
+        {{ t("pages.settingsPage.saveChanges") }}
       </button>
     </div>
 
@@ -70,19 +70,19 @@
     </div>
 
     <div v-if="section.kind === 'danger'" class="mt-5 rounded-[22px] border border-[var(--color-error)]/20 bg-[var(--color-error)]/5 p-4">
-      <p class="text-[13px] font-bold leading-6 text-[var(--color-error)]">Khu vực nguy hiểm. Hành động này chỉ đang mô phỏng, chưa gọi API xoá tài khoản.</p>
+      <p class="text-[13px] font-bold leading-6 text-[var(--color-error)]">{{ t("pages.settingsPage.dangerDescription") }}</p>
       <button
         class="mt-4 inline-flex h-11 items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-error)] px-5 text-[13px] font-extrabold text-white"
         type="button"
         @click="saved = true"
       >
         <Icon name="i-ph-trash-fill" class="h-4 w-4" />
-        Delete account
+        {{ t("pages.settingsPage.deleteAccountAction") }}
       </button>
     </div>
 
     <div v-if="saved" class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]">
-      Đã mô phỏng lưu cài đặt. Chưa gọi API setting.
+      {{ t("pages.settingsPage.saveSuccess") }}
     </div>
   </section>
 </template>
@@ -90,10 +90,28 @@
 <script setup lang="ts">
 import type { SettingSection } from "~/composables/useMockSettingsData"
 
-defineProps<{ section: SettingSection }>()
+const props = defineProps<{ section: SettingSection }>()
+const { t } = useI18n()
 
 const saved = ref(false)
 const toggleState = reactive<Record<string, boolean>>({})
 
 const currentToggle = (label: string, fallback: boolean) => toggleState[label] ?? fallback
+
+const kindLabel = computed(() => {
+  switch (props.section.kind) {
+    case "form":
+      return t("pages.settingsPage.kindForm")
+    case "toggles":
+      return t("pages.settingsPage.kindToggles")
+    case "list":
+      return t("pages.settingsPage.kindList")
+    case "danger":
+      return t("pages.settingsPage.kindDanger")
+    case "summary":
+      return t("pages.settingsPage.kindSummary")
+    default:
+      return props.section.kind
+  }
+})
 </script>

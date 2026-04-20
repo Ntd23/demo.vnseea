@@ -6,7 +6,7 @@
         <input
           :value="search"
           class="h-12 w-full rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-12 pr-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white"
-          placeholder="Tìm video, tác giả, hashtag..."
+          :placeholder="$t('pages.watchPage.searchPlaceholder')"
           @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
         >
       </label>

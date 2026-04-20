@@ -27,7 +27,7 @@
         </div>
         <div class="mt-3 flex items-center justify-between gap-3 text-[12px] font-bold text-white/78">
           <span>{{ elapsed }}</span>
-          <span>Player mock · sẵn sàng thay bằng Plyr</span>
+          <span>{{ $t("pages.watchPage.playerReady") }}</span>
           <span>{{ video.duration }}</span>
         </div>
       </div>

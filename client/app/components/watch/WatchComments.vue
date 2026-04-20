@@ -2,8 +2,8 @@
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">comments.php</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">Bình luận</h2>
+        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t("pages.watchPage.commentsEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.watchPage.commentsTitle") }}</h2>
       </div>
       <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">
         {{ comments.length }}
@@ -14,7 +14,7 @@
       <input
         v-model="message"
         class="h-12 min-w-0 flex-1 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white"
-        placeholder="Viết bình luận..."
+        :placeholder="$t('pages.watchPage.commentPlaceholder')"
       >
       <button
         class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)] disabled:opacity-50"

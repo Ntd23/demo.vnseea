@@ -1213,6 +1213,559 @@
       "stream3StartedAt": "19:30 hôm nay",
       "stream3Duration": "Sắp phát",
       "stream3Description": "Livestream chia sẻ cách tổ chức góc học tập xanh và minh bạch chi phí triển khai."
+    },
+    "watchPage": {
+      "seoTitle": "Watch | VNSEEA",
+      "seoDescription": "Xem video, bình luận, like và chia sẻ video trong cộng đồng VNSEEA.",
+      "heroEyebrow": "P-33 · Xem video",
+      "heroTitle": "Watch",
+      "heroDescription": "Xem video với player mock, thông tin video, bình luận, like/share và danh sách video liên quan.",
+      "searchPlaceholder": "Tìm video, tác giả, hashtag...",
+      "playerReady": "Player mock · sẵn sàng thay bằng Plyr",
+      "share": "Chia sẻ",
+      "creatorMeta": "Creator · posts.php",
+      "commentsEyebrow": "comments.php",
+      "commentsTitle": "Bình luận",
+      "commentPlaceholder": "Viết bình luận...",
+      "relatedEyebrow": "posts.php",
+      "relatedTitle": "Video liên quan",
+      "viewsCount": "{count} lượt xem",
+      "statVideos": "Video",
+      "statVideosDescription": "Dữ liệu mock từ posts.php.",
+      "statViews": "Lượt xem",
+      "statViewsDescription": "Tổng views hiển thị.",
+      "statComments": "Bình luận",
+      "statCommentsDescription": "Comment gửi trong phiên này.",
+      "shareSuccess": "Đã mô phỏng chia sẻ video. Chưa gọi API post-actions.php.",
+      "you": "Bạn",
+      "youInitials": "B",
+      "viewerRole": "Viewer",
+      "justNow": "Vừa xong",
+      "categories": [
+        { "label": "Tất cả", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Cộng đồng", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Giáo dục", "value": "education", "icon": "i-ph-graduation-cap-fill" },
+        { "label": "Kinh doanh", "value": "business", "icon": "i-ph-briefcase-fill" },
+        { "label": "Sự kiện", "value": "events", "icon": "i-ph-calendar-dots-fill" },
+        { "label": "Công nghệ", "value": "technology", "icon": "i-ph-cpu-fill" }
+      ],
+      "videos": [
+        {
+          "id": "vnseea-product-demo",
+          "title": "VNSEEA Product Demo: cập nhật giao diện cộng đồng",
+          "category": "technology",
+          "categoryLabel": "Công nghệ",
+          "author": "Justin",
+          "authorInitials": "JT",
+          "authorGradient": "linear-gradient(135deg,var(--color-primary-500),var(--color-info))",
+          "date": "17/04/2026",
+          "duration": "18:42",
+          "views": 18400,
+          "likes": 1240,
+          "shares": 218,
+          "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
+          "description": "Bản demo tổng hợp các thay đổi UI mới, cách tổ chức component và checklist trước khi nối API posts.php cho video.",
+          "tags": ["#product", "#ui", "#nuxt"],
+          "comments": [
+            { "id": 1, "author": "Hoangne", "initials": "HN", "role": "Thành viên", "message": "Player nhìn rõ, phần related video dễ chọn.", "time": "5 phút trước" },
+            { "id": 2, "author": "Dung1", "initials": "D1", "role": "Creator", "message": "Nên giữ layout này cho desktop.", "time": "12 phút trước" }
+          ]
+        },
+        {
+          "id": "founder-breakfast-recap",
+          "title": "Founder Breakfast recap: những câu hỏi hay nhất",
+          "category": "business",
+          "categoryLabel": "Kinh doanh",
+          "author": "Hanoi Startup Circle",
+          "authorInitials": "HS",
+          "authorGradient": "linear-gradient(135deg,var(--color-accent-500),var(--color-primary-600))",
+          "date": "16/04/2026",
+          "duration": "12:06",
+          "views": 12600,
+          "likes": 842,
+          "shares": 96,
+          "cover": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=80",
+          "description": "Tóm tắt buổi gặp founder với các câu hỏi về khách hàng đầu tiên, pricing và pitch deck.",
+          "tags": ["#startup", "#founder", "#business"],
+          "comments": [
+            { "id": 3, "author": "Ngọc Tokyo", "initials": "NT", "role": "Founder", "message": "Đoạn pricing rất đáng lưu lại.", "time": "1 giờ trước" }
+          ]
+        },
+        {
+          "id": "green-classroom-story",
+          "title": "Câu chuyện lớp học xanh vùng ven",
+          "category": "education",
+          "categoryLabel": "Giáo dục",
+          "author": "Learning Guild",
+          "authorInitials": "LG",
+          "authorGradient": "linear-gradient(135deg,var(--color-success),var(--color-primary-500))",
+          "date": "15/04/2026",
+          "duration": "09:34",
+          "views": 9300,
+          "likes": 712,
+          "shares": 144,
+          "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
+          "description": "Một video ngắn về quá trình chuẩn bị góc học tập xanh, thư viện nhỏ và báo cáo minh bạch cho cộng đồng.",
+          "tags": ["#education", "#funding", "#community"],
+          "comments": [
+            { "id": 4, "author": "Quỳnh Lan", "initials": "QL", "role": "Nhà tài trợ", "message": "Nội dung rõ ràng và tạo niềm tin.", "time": "2 giờ trước" }
+          ]
+        },
+        {
+          "id": "event-highlight-summit",
+          "title": "Highlight VNSEEA Tech Community Summit",
+          "category": "events",
+          "categoryLabel": "Sự kiện",
+          "author": "VNSEEA Community",
+          "authorInitials": "VC",
+          "authorGradient": "linear-gradient(135deg,var(--color-primary-700),var(--color-accent-500))",
+          "date": "14/04/2026",
+          "duration": "07:18",
+          "views": 21800,
+          "likes": 1680,
+          "shares": 302,
+          "cover": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=80",
+          "description": "Các khoảnh khắc nổi bật từ summit: keynote, workshop và phần networking cuối ngày.",
+          "tags": ["#event", "#summit", "#tech"],
+          "comments": []
+        }
+      ]
+    },
+    "settingsPage": {
+      "defaultSeoTitle": "Cài đặt | VNSEEA",
+      "seoTitle": "{page} | Cài đặt VNSEEA",
+      "heroEyebrow": "P-34 · Cài đặt",
+      "heroTitle": "Settings",
+      "heroDescription": "Quản lý tài khoản, quyền riêng tư, bảo mật, thông báo, thanh toán và hồ sơ nghề nghiệp.",
+      "sidebarCount": "{count} mục",
+      "sidebarTitle": "Menu cài đặt",
+      "statsSubpages": "Sub-pages",
+      "statsSubpagesDescription": "Nhóm cài đặt theo audit.",
+      "statsFeatures": "Chức năng",
+      "statsFeaturesDescription": "Field, toggle, list và action.",
+      "statsApi": "API",
+      "statsApiValue": "Mock",
+      "statsApiDescription": "Chưa gọi backend setting.",
+      "kindForm": "Biểu mẫu",
+      "kindToggles": "Bật/tắt",
+      "kindList": "Danh sách",
+      "kindDanger": "Nguy hiểm",
+      "kindSummary": "Tóm tắt",
+      "saveChanges": "Lưu thay đổi",
+      "saveSuccess": "Đã mô phỏng lưu cài đặt. Chưa gọi API setting.",
+      "dangerDescription": "Khu vực nguy hiểm. Hành động này chỉ đang mô phỏng, chưa gọi API xoá tài khoản.",
+      "deleteAccountAction": "Xóa tài khoản",
+      "pages": [
+        {
+          "slug": "general",
+          "label": "Chung",
+          "icon": "i-ph-user-circle-fill",
+          "description": "Username, email, số điện thoại và thông tin cơ bản.",
+          "sections": [
+            {
+              "title": "Thông tin tài khoản",
+              "description": "Cập nhật các thông tin nhận diện chính của tài khoản.",
+              "kind": "form",
+              "fields": [
+                { "label": "Username", "key": "username", "type": "text", "value": "justin", "placeholder": "username" },
+                { "label": "Email", "key": "email", "type": "email", "value": "justin.vnseea.test" },
+                { "label": "Số điện thoại", "key": "phone", "type": "tel", "value": "+84 900 000 000" },
+                { "label": "Ngày sinh", "key": "birthday", "type": "date", "value": "1995-04-17" },
+                { "label": "Giới tính", "key": "gender", "type": "select", "value": "Nam", "options": ["Nam", "Nữ", "Khác"] },
+                { "label": "Quốc gia", "key": "country", "type": "select", "value": "Việt Nam", "options": ["Việt Nam", "Singapore", "Thailand", "United States"] },
+                { "label": "Website", "key": "website", "type": "url", "value": "https://vnseea.test" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "profile",
+          "label": "Hồ sơ",
+          "icon": "i-ph-identification-card-fill",
+          "description": "Bio, công việc, trường học và nơi ở.",
+          "sections": [
+            {
+              "title": "Hồ sơ công khai",
+              "description": "Các trường này xuất hiện trong trang cá nhân.",
+              "kind": "form",
+              "fields": [
+                { "label": "Bio", "key": "bio", "type": "textarea", "value": "Community builder tại VNSEEA." },
+                { "label": "Nơi làm việc", "key": "workplace", "type": "text", "value": "VNSEEA" },
+                { "label": "Trường học", "key": "school", "type": "text", "value": "Đại học Kinh tế" },
+                { "label": "Tình trạng quan hệ", "key": "relationship", "type": "select", "value": "Không hiển thị", "options": ["Không hiển thị", "Độc thân", "Đang hẹn hò", "Đã kết hôn"] },
+                { "label": "Thành phố", "key": "city", "type": "text", "value": "TP. Hồ Chí Minh" },
+                { "label": "Quê quán", "key": "hometown", "type": "text", "value": "Hà Nội" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "privacy",
+          "label": "Riêng tư",
+          "icon": "i-ph-lock-key-fill",
+          "description": "Kiểm soát ai có thể xem bài viết, theo dõi và trạng thái online.",
+          "sections": [
+            {
+              "title": "Quyền riêng tư",
+              "description": "Mock các lựa chọn privacy trước khi nối API setting.",
+              "kind": "form",
+              "fields": [
+                { "label": "Ai có thể xem bài viết", "key": "posts", "type": "select", "value": "Bạn bè", "options": ["Công khai", "Bạn bè", "Chỉ mình tôi"] },
+                { "label": "Ai có thể theo dõi", "key": "follow", "type": "select", "value": "Công khai", "options": ["Công khai", "Bạn bè"] },
+                { "label": "Hiển thị trong tìm kiếm", "key": "search", "type": "select", "value": "Cho phép", "options": ["Cho phép", "Ẩn khỏi tìm kiếm"] },
+                { "label": "Ai có thể xem bạn bè", "key": "friends", "type": "select", "value": "Bạn bè", "options": ["Công khai", "Bạn bè", "Chỉ mình tôi"] },
+                { "label": "Ai có thể xem ngày sinh", "key": "birthdayPrivacy", "type": "select", "value": "Bạn bè", "options": ["Công khai", "Bạn bè", "Chỉ mình tôi"] },
+                { "label": "Trạng thái online/offline", "key": "onlineStatus", "type": "select", "value": "Hiển thị online", "options": ["Hiển thị online", "Luôn offline"] }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "avatar",
+          "label": "Ảnh đại diện",
+          "icon": "i-ph-image-square-fill",
+          "description": "Upload và crop avatar.",
+          "sections": [
+            {
+              "title": "Upload & crop avatar",
+              "description": "Chọn ảnh mới và mô phỏng vùng crop.",
+              "kind": "form",
+              "fields": [
+                { "label": "Ảnh avatar", "key": "avatar", "type": "file", "value": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "design",
+          "label": "Giao diện",
+          "icon": "i-ph-palette-fill",
+          "description": "Night mode và màu theme.",
+          "sections": [
+            {
+              "title": "Tuỳ chỉnh giao diện",
+              "description": "Thiết lập giao diện hiển thị trên thiết bị của bạn.",
+              "kind": "form",
+              "fields": [
+                { "label": "Night mode", "key": "nightMode", "type": "select", "value": "Theo hệ thống", "options": ["Bật", "Tắt", "Theo hệ thống"] },
+                { "label": "Màu chủ đạo", "key": "themeColor", "type": "select", "value": "VNSEEA Blue", "options": ["VNSEEA Blue", "Emerald", "Amber", "Slate"] }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "password",
+          "label": "Mật khẩu",
+          "icon": "i-ph-key-fill",
+          "description": "Đổi mật khẩu đăng nhập.",
+          "sections": [
+            {
+              "title": "Đổi mật khẩu",
+              "description": "Nhập mật khẩu hiện tại và mật khẩu mới.",
+              "kind": "form",
+              "fields": [
+                { "label": "Mật khẩu hiện tại", "key": "currentPassword", "type": "password", "value": "" },
+                { "label": "Mật khẩu mới", "key": "newPassword", "type": "password", "value": "" },
+                { "label": "Xác nhận mật khẩu", "key": "confirmPassword", "type": "password", "value": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "two-factor",
+          "label": "2FA",
+          "icon": "i-ph-shield-check-fill",
+          "description": "Authenticator, QR code và mã dự phòng.",
+          "sections": [
+            {
+              "title": "Two-Factor Authentication",
+              "description": "Bật bảo mật hai lớp và quét QR bằng ứng dụng authenticator.",
+              "kind": "summary",
+              "items": [
+                { "title": "Bật/tắt 2FA", "description": "Trạng thái hiện tại: chưa bật.", "action": "Bật 2FA" },
+                { "title": "QR code authenticator", "description": "Mock QR placeholder cho ứng dụng xác thực.", "meta": "VNSEEA-2FA-2026" },
+                { "title": "Backup codes", "description": "8 mã dự phòng chưa được tạo.", "action": "Tạo mã mới" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "notifications",
+          "label": "Thông báo",
+          "icon": "i-ph-bell-ringing-fill",
+          "description": "Bật tắt thông báo theo từng loại.",
+          "sections": [
+            {
+              "title": "Thông báo trong app",
+              "description": "Likes, comments, follows, messages, mentions và các sự kiện khác.",
+              "kind": "toggles",
+              "toggles": [
+                { "label": "Likes", "description": "Nhận thông báo likes.", "enabled": true },
+                { "label": "Comments", "description": "Nhận thông báo comments.", "enabled": true },
+                { "label": "Follows", "description": "Nhận thông báo follows.", "enabled": true },
+                { "label": "Messages", "description": "Nhận thông báo messages.", "enabled": true },
+                { "label": "Mentions", "description": "Nhận thông báo mentions.", "enabled": true },
+                { "label": "Shares", "description": "Nhận thông báo shares.", "enabled": true },
+                { "label": "Events", "description": "Nhận thông báo events.", "enabled": true },
+                { "label": "Groups", "description": "Nhận thông báo groups.", "enabled": true },
+                { "label": "Pages", "description": "Nhận thông báo pages.", "enabled": true },
+                { "label": "Marketplace", "description": "Nhận thông báo marketplace.", "enabled": true },
+                { "label": "Jobs", "description": "Nhận thông báo jobs.", "enabled": false },
+                { "label": "Funding", "description": "Nhận thông báo funding.", "enabled": false },
+                { "label": "Live", "description": "Nhận thông báo live.", "enabled": false },
+                { "label": "Watch", "description": "Nhận thông báo watch.", "enabled": false },
+                { "label": "Security", "description": "Nhận thông báo security.", "enabled": false }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "email-notifications",
+          "label": "Email",
+          "icon": "i-ph-envelope-simple-fill",
+          "description": "Thông báo qua email.",
+          "sections": [
+            {
+              "title": "Email notifications",
+              "description": "Chọn loại email hệ thống được phép gửi.",
+              "kind": "toggles",
+              "toggles": [
+                { "label": "Email tin nhắn mới", "description": "Email khi có tin nhắn mới.", "enabled": true },
+                { "label": "Email nhắc tên", "description": "Email khi được nhắc tên.", "enabled": true },
+                { "label": "Weekly digest", "description": "Tóm tắt hoạt động hàng tuần.", "enabled": false },
+                { "label": "Email bảo mật", "description": "Cảnh báo đăng nhập và bảo mật.", "enabled": true }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "social-links",
+          "label": "Liên kết xã hội",
+          "icon": "i-ph-link-simple-fill",
+          "description": "Facebook, Twitter, LinkedIn, Instagram, YouTube.",
+          "sections": [
+            {
+              "title": "Social links",
+              "description": "Các URL hiển thị trên hồ sơ.",
+              "kind": "form",
+              "fields": [
+                { "label": "Facebook URL", "key": "facebook", "type": "url", "value": "", "placeholder": "https://facebook.com/username" },
+                { "label": "Twitter URL", "key": "twitter", "type": "url", "value": "", "placeholder": "https://twitter.com/username" },
+                { "label": "LinkedIn URL", "key": "linkedin", "type": "url", "value": "", "placeholder": "https://linkedin.com/username" },
+                { "label": "Instagram URL", "key": "instagram", "type": "url", "value": "", "placeholder": "https://instagram.com/username" },
+                { "label": "YouTube URL", "key": "youtube", "type": "url", "value": "", "placeholder": "https://youtube.com/username" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "blocked-users",
+          "label": "Đã chặn",
+          "icon": "i-ph-user-minus-fill",
+          "description": "Danh sách blocked và unblock.",
+          "sections": [
+            {
+              "title": "Blocked users",
+              "description": "Quản lý người dùng đã chặn.",
+              "kind": "list",
+              "items": [
+                { "title": "spam-account", "description": "Đã chặn 2 ngày trước", "action": "Bỏ chặn" },
+                { "title": "old-bot", "description": "Đã chặn 1 tháng trước", "action": "Bỏ chặn" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "sessions",
+          "label": "Phiên đăng nhập",
+          "icon": "i-ph-devices-fill",
+          "description": "Active sessions và terminate.",
+          "sections": [
+            {
+              "title": "Active sessions",
+              "description": "Kiểm tra các thiết bị đang đăng nhập.",
+              "kind": "list",
+              "items": [
+                { "title": "Chrome · Windows", "description": "127.0.0.1 · hiện tại", "meta": "Active now", "action": "Giữ phiên" },
+                { "title": "Safari · iPhone", "description": "TP. Hồ Chí Minh · 2 ngày trước", "meta": "Mobile", "action": "Terminate" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "verification",
+          "label": "Xác minh",
+          "icon": "i-ph-seal-check-fill",
+          "description": "Upload documents và gửi request xác minh.",
+          "sections": [
+            {
+              "title": "Verification request",
+              "description": "Tải giấy tờ và mô tả lý do xác minh.",
+              "kind": "form",
+              "fields": [
+                { "label": "Tải giấy tờ", "key": "documents", "type": "file", "value": "" },
+                { "label": "Ghi chú yêu cầu", "key": "verificationNote", "type": "textarea", "value": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "delete-account",
+          "label": "Xóa tài khoản",
+          "icon": "i-ph-trash-fill",
+          "description": "Xác nhận mật khẩu và xóa tài khoản.",
+          "sections": [
+            {
+              "title": "Delete account",
+              "description": "Hành động nguy hiểm, hiện chỉ mô phỏng.",
+              "kind": "danger",
+              "fields": [
+                { "label": "Xác nhận mật khẩu", "key": "deletePassword", "type": "password", "value": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "payments",
+          "label": "Thanh toán",
+          "icon": "i-ph-credit-card-fill",
+          "description": "Payment methods management.",
+          "sections": [
+            {
+              "title": "Payment methods",
+              "description": "Quản lý thẻ và ví thanh toán.",
+              "kind": "list",
+              "items": [
+                { "title": "Visa ending 4242", "description": "Phương thức mặc định", "meta": "Default", "action": "Chỉnh sửa" },
+                { "title": "VNSEEA Wallet", "description": "Số dư mock: VND 9.999.999", "meta": "Wallet", "action": "Quản lý" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "monetization",
+          "label": "Kiếm tiền",
+          "icon": "i-ph-currency-circle-dollar-fill",
+          "description": "Plan, price và enable/disable.",
+          "sections": [
+            {
+              "title": "Monetization plan",
+              "description": "Tạo gói nội dung trả phí.",
+              "kind": "form",
+              "fields": [
+                { "label": "Tên gói", "key": "planName", "type": "text", "value": "Creator Plus" },
+                { "label": "Giá", "key": "price", "type": "number", "value": 99000 },
+                { "label": "Bật/tắt", "key": "enabled", "type": "select", "value": "Bật", "options": ["Bật", "Tắt"] }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "invitation-links",
+          "label": "Lời mời",
+          "icon": "i-ph-ticket-fill",
+          "description": "Generate invite link, copy link và invitees.",
+          "sections": [
+            {
+              "title": "Invitation links",
+              "description": "Tạo và theo dõi link mời.",
+              "kind": "list",
+              "items": [
+                { "title": "https://vnseea.test/invite/JUSTIN2026", "description": "12 người đã tham gia", "meta": "Active", "action": "Copy link" },
+                { "title": "Invitees", "description": "Hoangne, Dung1, Nicolas", "action": "Xem danh sách" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "affiliates",
+          "label": "Affiliates",
+          "icon": "i-ph-handshake-fill",
+          "description": "Referral link và earnings dashboard.",
+          "sections": [
+            {
+              "title": "Affiliate dashboard",
+              "description": "Theo dõi referral và thu nhập.",
+              "kind": "summary",
+              "items": [
+                { "title": "Referral link", "description": "https://vnseea.test/ref/justin", "action": "Copy" },
+                { "title": "Earnings", "description": "VND 12.400.000", "meta": "Tháng này" },
+                { "title": "Referrals", "description": "42 lượt đăng ký", "meta": "2026" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "my-info",
+          "label": "Dữ liệu của tôi",
+          "icon": "i-ph-download-simple-fill",
+          "description": "Download personal data.",
+          "sections": [
+            {
+              "title": "My info",
+              "description": "Tải dữ liệu cá nhân dạng archive.",
+              "kind": "summary",
+              "items": [
+                { "title": "Tải dữ liệu cá nhân", "description": "Bao gồm profile, posts, media, messages metadata.", "action": "Yêu cầu archive" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "my-points",
+          "label": "Điểm của tôi",
+          "icon": "i-ph-coin-fill",
+          "description": "Points balance và history.",
+          "sections": [
+            {
+              "title": "My points",
+              "description": "Điểm tích lũy từ hoạt động cộng đồng.",
+              "kind": "list",
+              "items": [
+                { "title": "50 điểm", "description": "Số dư hiện tại", "meta": "Balance" },
+                { "title": "+10", "description": "Bình luận hữu ích", "meta": "Hôm nay" },
+                { "title": "+25", "description": "Tham gia event", "meta": "Tuần này" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "addresses",
+          "label": "Địa chỉ",
+          "icon": "i-ph-map-pin-fill",
+          "description": "Add/edit shipping addresses.",
+          "sections": [
+            {
+              "title": "Shipping addresses",
+              "description": "Địa chỉ giao hàng cho marketplace.",
+              "kind": "form",
+              "fields": [
+                { "label": "Họ và tên", "key": "addressName", "type": "text", "value": "Justin" },
+                { "label": "Số điện thoại", "key": "addressPhone", "type": "tel", "value": "+84 900 000 000" },
+                { "label": "Địa chỉ", "key": "addressLine", "type": "textarea", "value": "Quận 1, TP. Hồ Chí Minh" }
+              ]
+            }
+          ]
+        },
+        {
+          "slug": "career",
+          "label": "LinkedIn mode",
+          "icon": "i-ph-briefcase-fill",
+          "description": "Experience, certifications và projects.",
+          "sections": [
+            {
+              "title": "Experience + Certifications + Projects",
+              "description": "Bổ sung hồ sơ nghề nghiệp.",
+              "kind": "list",
+              "items": [
+                { "title": "Kinh nghiệm làm việc", "description": "Community Manager · VNSEEA", "action": "Thêm kinh nghiệm" },
+                { "title": "Chứng chỉ", "description": "Product Growth Certificate", "action": "Thêm chứng chỉ" },
+                { "title": "Dự án", "description": "VNSEEA migration UI", "action": "Thêm dự án" }
+              ]
+            }
+          ]
+        }
+      ]
     }
   },
   "feed": {
