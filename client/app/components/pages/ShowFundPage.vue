@@ -27,15 +27,15 @@
     <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[22px] bg-[var(--color-soft)] text-[var(--color-primary)]">
       <Icon name="i-ph-hand-heart-fill" class="h-8 w-8" />
     </div>
-    <h1 class="mt-4 text-2xl font-black text-[var(--color-text)]">Không tìm thấy chiến dịch</h1>
+    <h1 class="mt-4 text-2xl font-black text-[var(--color-text)]">{{ $t("pages.showFundPage.notFoundTitle") }}</h1>
     <p class="mx-auto mt-2 max-w-lg text-sm font-semibold leading-6 text-[var(--color-muted)]">
-      Chiến dịch có thể đã bị xóa hoặc đường dẫn chưa đúng.
+      {{ $t("pages.showFundPage.notFoundDescription") }}
     </p>
     <NuxtLink
       to="/funding"
       class="mt-6 inline-flex items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary)] px-5 py-3 text-sm font-extrabold text-white"
     >
-      Về danh sách funding
+      {{ $t("pages.showFundPage.backToFunding") }}
       <Icon name="i-ph-arrow-right-bold" class="h-4 w-4" />
     </NuxtLink>
   </div>
@@ -45,6 +45,7 @@
 import type { DonationPayload, MockFundingCampaign } from "~/composables/useMockFundingData"
 
 const route = useRoute()
+const { t } = useI18n()
 const { findCampaignById } = useMockFundingData()
 
 const donations = ref<DonationPayload[]>([])
@@ -56,8 +57,8 @@ const campaign = computed(() => {
 })
 
 useSeoMeta({
-  title: () => campaign.value ? `${campaign.value.title} | VNSEEA` : "Chiến dịch gây quỹ | VNSEEA",
-  description: () => campaign.value?.summary ?? "Chi tiết chiến dịch crowdfunding trên VNSEEA.",
+  title: () => campaign.value ? `${campaign.value.title} | VNSEEA` : t("pages.showFundPage.seoTitle"),
+  description: () => campaign.value?.summary ?? t("pages.showFundPage.seoDescription"),
 })
 
 const openDonate = (selected: MockFundingCampaign) => {

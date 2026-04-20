@@ -3,12 +3,12 @@
     <div class="border-b border-[var(--border-default)] p-4">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <p class="text-label-secondary text-[var(--text-tertiary)]">Realtime comments</p>
-          <h2 class="mt-1 text-heading text-[var(--text-primary)]">Live chat</h2>
+          <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t("pages.livePage.chatEyebrow") }}</p>
+          <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.livePage.chatTitle") }}</h2>
         </div>
         <span class="inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">
           <span class="h-2 w-2 rounded-full bg-[var(--color-success)]" />
-          {{ comments.length }} tin
+          {{ $t("pages.livePage.commentCount", { count: comments.length }) }}
         </span>
       </div>
     </div>
@@ -25,7 +25,7 @@
         <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-center gap-2">
             <p class="text-[13px] font-extrabold text-[var(--text-primary)]">{{ comment.author }}</p>
-            <span v-if="comment.isHost" class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2 py-0.5 text-[10px] font-black uppercase text-[var(--color-primary-600)]">Host</span>
+            <span v-if="comment.isHost" class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2 py-0.5 text-[10px] font-black uppercase text-[var(--color-primary-600)]">{{ $t("pages.livePage.hostBadge") }}</span>
             <span class="text-[11px] font-semibold text-[var(--text-tertiary)]">{{ comment.time }}</span>
           </div>
           <p class="mt-1 text-[13px] font-semibold leading-5 text-[var(--text-secondary)]">{{ comment.message }}</p>
@@ -34,13 +34,13 @@
     </div>
 
     <form class="border-t border-[var(--border-default)] p-4" @submit.prevent="submit">
-      <label class="sr-only" for="live-message">Gửi bình luận live</label>
+      <label class="sr-only" for="live-message">{{ $t("pages.livePage.chatInputLabel") }}</label>
       <div class="flex gap-2">
         <input
           id="live-message"
           v-model="message"
           class="h-12 min-w-0 flex-1 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white"
-          placeholder="Viết bình luận..."
+          :placeholder="$t('pages.livePage.chatPlaceholder')"
         >
         <button
           class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)] disabled:opacity-50"
@@ -50,7 +50,7 @@
           <Icon name="i-ph-paper-plane-tilt-fill" class="h-5 w-5" />
         </button>
       </div>
-      <p class="mt-2 text-[11px] font-semibold text-[var(--text-tertiary)]">Mock comment, chưa gọi API `live.php`.</p>
+      <p class="mt-2 text-[11px] font-semibold text-[var(--text-tertiary)]">{{ $t("pages.livePage.chatHint") }}</p>
     </form>
   </section>
 </template>

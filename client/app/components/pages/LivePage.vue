@@ -20,9 +20,9 @@
         <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-label-secondary text-[var(--text-tertiary)]">Live setup</p>
-              <h2 class="mt-1 text-heading text-[var(--text-primary)]">Provider readiness</h2>
-              <p class="mt-1 text-body-secondary">Agora, LiveKit hoặc Millicast sẽ thay phần player mock khi nối backend.</p>
+              <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t("pages.livePage.setupEyebrow") }}</p>
+              <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.livePage.setupTitle") }}</h2>
+              <p class="mt-1 text-body-secondary">{{ $t("pages.livePage.setupDescription") }}</p>
             </div>
             <button
               class="inline-flex h-11 items-center justify-center gap-2 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[13px] font-extrabold text-[var(--color-primary-600)] transition hover:bg-[var(--color-primary-50)]"
@@ -30,7 +30,7 @@
               @click="goLiveOpen = true"
             >
               <Icon name="i-ph-video-camera-fill" class="h-4 w-4" />
-              Tạo live mới
+              {{ $t("pages.livePage.goLive") }}
             </button>
           </div>
 
@@ -70,11 +70,12 @@
 <script setup lang="ts">
 import type { GoLivePayload, MockLiveComment, MockLiveStream } from "~/composables/useMockLiveData"
 
+const { t } = useI18n()
 const { categories, streams } = useMockLiveData()
 
 useSeoMeta({
-  title: "Live | VNSEEA",
-  description: "Tạo livestream, xem live player và chat realtime mock trong cộng đồng VNSEEA.",
+  title: () => t("pages.livePage.seoTitle"),
+  description: () => t("pages.livePage.seoDescription"),
 })
 
 const selectedStreamId = ref(streams[0]?.id ?? "")
@@ -96,39 +97,39 @@ const activeComments = computed(() => [
 
 const heroStats = computed(() => [
   {
-    label: "Đang live",
+    label: t("pages.livePage.statLive"),
     value: allStreams.value.filter(stream => stream.status === "live").length,
-    description: "Kênh đang phát trong mock data.",
+    description: t("pages.livePage.statLiveDescription"),
   },
   {
-    label: "Người xem",
+    label: t("pages.livePage.statViewers"),
     value: allStreams.value.reduce((sum, stream) => sum + stream.viewers, 0) + joinedViewers.value,
-    description: "Tổng viewer đang hoạt động.",
+    description: t("pages.livePage.statViewersDescription"),
   },
   {
-    label: "Comment",
+    label: t("pages.livePage.statComments"),
     value: Object.values(localCommentsById.value).reduce((sum, comments) => sum + comments.length, 0),
-    description: "Tin nhắn gửi trong phiên này.",
+    description: t("pages.livePage.statCommentsDescription"),
   },
 ])
 
-const readiness = [
+const readiness = computed(() => [
   {
-    label: "Tạo live stream",
+    label: t("pages.livePage.readinessCreate"),
     icon: "i-ph-video-camera-fill",
-    description: "Form Go Live mô phỏng payload gửi về live.php.",
+    description: t("pages.livePage.readinessCreateDescription"),
   },
   {
-    label: "Live video player",
+    label: t("pages.livePage.readinessPlayer"),
     icon: "i-ph-play-circle-fill",
-    description: "Player có trạng thái live, mute, like và viewer count.",
+    description: t("pages.livePage.readinessPlayerDescription"),
   },
   {
-    label: "Live chat",
+    label: t("pages.livePage.readinessChat"),
     icon: "i-ph-chat-circle-dots-fill",
-    description: "Comment realtime mock, sẵn sàng thay bằng socket/API.",
+    description: t("pages.livePage.readinessChatDescription"),
   },
-]
+])
 
 const selectStream = (id: string) => {
   selectedStreamId.value = id
@@ -146,10 +147,10 @@ const sendComment = (message: string) => {
   const id = selectedStream.value.id
   const comment: MockLiveComment = {
     id: Date.now(),
-    author: "Bạn",
-    initials: "B",
+    author: t("pages.livePage.you"),
+    initials: t("pages.livePage.youInitials"),
     message,
-    time: "Vừa xong",
+    time: t("pages.livePage.justNow"),
   }
 
   localCommentsById.value = {
@@ -166,24 +167,28 @@ const createStream = (payload: GoLivePayload) => {
     category: payload.category,
     cover: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
     host: {
-      name: "Bạn",
-      initials: "B",
-      role: payload.privacy === "public" ? "Public host" : "Private host",
+      name: t("pages.livePage.you"),
+      initials: t("pages.livePage.youInitials"),
+      role: payload.privacy === "public"
+        ? t("pages.livePage.hostRolePublic")
+        : payload.privacy === "members"
+          ? t("pages.livePage.hostRoleMembers")
+          : t("pages.livePage.hostRolePrivate"),
       gradient: "linear-gradient(135deg,var(--color-primary-500),var(--color-accent-500))",
     },
     viewers: 1,
     likes: 0,
-    startedAt: "Đang live · vừa bắt đầu",
+    startedAt: t("pages.livePage.startedJustNow"),
     duration: "00:01",
-    description: payload.description || "Livestream mới được tạo trong phiên mock.",
+    description: payload.description || t("pages.livePage.newStreamDescription"),
     tags: ["#live", "#vnseea", `#${payload.category.toLowerCase().replace(/\s+/g, "")}`],
     comments: [
       {
         id: Date.now() + 1,
-        author: "Hệ thống",
+        author: t("pages.livePage.systemAuthor"),
         initials: "VN",
-        message: "Live stream đã được mô phỏng. Chưa gọi API live.php.",
-        time: "Vừa xong",
+        message: t("pages.livePage.systemMessage"),
+        time: t("pages.livePage.justNow"),
         isHost: true,
       },
     ],

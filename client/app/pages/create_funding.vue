@@ -7,7 +7,9 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: "Tạo gây quỹ | VNSEEA",
+  title: () => t("pages.createFundingPage.seoTitle"),
 })
 </script>
