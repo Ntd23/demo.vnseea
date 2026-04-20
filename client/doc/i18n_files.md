@@ -130,10 +130,10 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 
 
 ## Ưu tiên cao: page / route có `useSeoMeta({ title: ... })` hoặc heading chính hardcode
-- [ ] `client/app/pages/index.vue`
-- [ ] `client/app/pages/home.vue`
-- [ ] `client/app/pages/welcome.vue`
-- [ ] `client/app/pages/register.vue`
+- [x] `client/app/pages/index.vue`
+- [x] `client/app/pages/home.vue`
+- [x] `client/app/pages/welcome.vue`
+- [x] `client/app/pages/register.vue`
 - [ ] `client/app/pages/forgot-password.vue`
 - [ ] `client/app/pages/messages.vue`
 - [ ] `client/app/pages/reels.vue`

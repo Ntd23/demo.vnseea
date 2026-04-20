@@ -1,4 +1,48 @@
 {
+  "pages": {
+    "welcomePage": {
+      "eyebrow": "WELCOME BACK",
+      "title": "Welcome back!",
+      "subtitle": "Create your VNSEEA account!",
+      "loginLabel": "Username (Email address / Phone number)",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "hidePassword": "Hide password",
+      "showPassword": "Show password",
+      "loggingIn": "Signing in...",
+      "login": "Sign in",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up",
+      "seoTitle": "Sign in | VNSEEA"
+    },
+    "registerPage": {
+      "eyebrow": "JOIN NOW",
+      "title": "Create account",
+      "heroTitle": "Create account!",
+      "subtitle": "Sign up to connect with friends on VNSEEA.",
+      "firstName": "First name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Doe",
+      "emailOrPhone": "Email or phone number",
+      "newPassword": "New password",
+      "hidePassword": "Hide password",
+      "showPassword": "Show password",
+      "birthday": "Birthday",
+      "day": "Day",
+      "month": "Month",
+      "monthShort": "Month {month}",
+      "year": "Year",
+      "gender": "Gender",
+      "female": "Female",
+      "male": "Male",
+      "custom": "Custom",
+      "submit": "Sign up",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in",
+      "seoTitle": "Sign up | VNSEEA"
+    }
+  },
   "feed": {
     "commentComposer": {
       "placeholder": "Write a constructive comment...",

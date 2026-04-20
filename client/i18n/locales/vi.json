@@ -1,4 +1,48 @@
 {
+  "pages": {
+    "welcomePage": {
+      "eyebrow": "WELCOME BACK",
+      "title": "Chào mừng trở lại!",
+      "subtitle": "Tạo tài khoản VNSEEA của bạn!",
+      "loginLabel": "Tên đăng nhập (Địa chỉ email / Số điện thoại)",
+      "passwordLabel": "Mật khẩu",
+      "forgotPassword": "Quên mật khẩu?",
+      "hidePassword": "Ẩn mật khẩu",
+      "showPassword": "Hiện mật khẩu",
+      "loggingIn": "Đang đăng nhập...",
+      "login": "Đăng nhập",
+      "noAccount": "Không có tài khoản?",
+      "register": "Đăng ký",
+      "seoTitle": "Đăng nhập | VNSEEA"
+    },
+    "registerPage": {
+      "eyebrow": "THAM GIA NGAY",
+      "title": "Tạo tài khoản",
+      "heroTitle": "Tạo tài khoản!",
+      "subtitle": "Đăng ký để kết nối với bạn bè trên VNSEEA.",
+      "firstName": "Họ",
+      "firstNamePlaceholder": "Nguyễn",
+      "lastName": "Tên",
+      "lastNamePlaceholder": "Văn A",
+      "emailOrPhone": "Email hoặc số điện thoại",
+      "newPassword": "Mật khẩu mới",
+      "hidePassword": "Ẩn mật khẩu",
+      "showPassword": "Hiện mật khẩu",
+      "birthday": "Ngày sinh",
+      "day": "Ngày",
+      "month": "Tháng",
+      "monthShort": "Thg {month}",
+      "year": "Năm",
+      "gender": "Giới tính",
+      "female": "Nữ",
+      "male": "Nam",
+      "custom": "Tùy chỉnh",
+      "submit": "Đăng ký",
+      "hasAccount": "Đã có tài khoản?",
+      "login": "Đăng nhập",
+      "seoTitle": "Đăng ký | VNSEEA"
+    }
+  },
   "feed": {
     "commentComposer": {
       "placeholder": "Viết bình luận mang tính xây dựng...",
