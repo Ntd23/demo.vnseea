@@ -60,24 +60,24 @@ const featureCount = computed(() =>
 
 const stats = computed(() => [
   {
-    label: t("settings.hero.stats.subPages.label"),
+    label: t("pages.settingsPage.statsSubpages"),
     value: pages.value.length,
-    description: t("settings.hero.stats.subPages.description"),
+    description: t("pages.settingsPage.statsSubpagesDescription"),
   },
   {
-    label: t("settings.hero.stats.features.label"),
+    label: t("pages.settingsPage.statsFeatures"),
     value: featureCount.value,
-    description: t("settings.hero.stats.features.description"),
+    description: t("pages.settingsPage.statsFeaturesDescription"),
   },
   {
-    label: t("settings.hero.stats.api.label"),
-    value: t("settings.hero.stats.api.value"),
-    description: t("settings.hero.stats.api.description"),
+    label: t("pages.settingsPage.statsApi"),
+    value: t("pages.settingsPage.statsApiValue"),
+    description: t("pages.settingsPage.statsApiDescription"),
   },
 ])
 
 useSeoMeta({
-  title: () => `${activePage.value.label} | ${t("settings.seo.titleSuffix")}`,
+  title: () => t("pages.settingsPage.seoTitle", { page: activePage.value.label }),
   description: () => activePage.value.description,
 })
 </script>

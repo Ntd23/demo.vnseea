@@ -7,7 +7,8 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
 useHead({
-  title: "Blogs | VNSEEA",
+  title: () => t("pages.blogsPage.seoTitle"),
 })
 </script>

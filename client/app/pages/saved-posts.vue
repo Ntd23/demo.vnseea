@@ -3,11 +3,13 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 definePageMeta({
   layout: "default",
 })
 
 useHead({
-  title: "Bài viết đã lưu | VNSEEA",
+  title: () => t("pages.savedPostsPage.seoTitle"),
 })
 </script>

@@ -1,15 +1,15 @@
 <template>
   <section class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
     <div class="border-b border-[var(--border-default)] p-5">
-      <p class="text-label-secondary text-[var(--text-tertiary)]">So sánh packages</p>
-      <h2 class="mt-1 text-heading text-[var(--text-primary)]">Feature matrix</h2>
-      <p class="mt-1 text-body-secondary">Các quyền lợi chính của từng gói Pro.</p>
+      <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.goProPage.comparisonEyebrow") }}</p>
+      <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.goProPage.comparisonTitle") }}</h2>
+      <p class="mt-1 text-body-secondary">{{ t("pages.goProPage.comparisonDescription") }}</p>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full min-w-[720px] text-left">
         <thead class="bg-[var(--bg-surface-hover)]">
           <tr>
-            <th class="px-5 py-4 text-[12px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">Tính năng</th>
+            <th class="px-5 py-4 text-[12px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">{{ t("pages.goProPage.featureColumn") }}</th>
             <th v-for="plan in plans" :key="plan.id" class="px-5 py-4 text-[12px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">{{ plan.name }}</th>
           </tr>
         </thead>
@@ -37,4 +37,6 @@ defineProps<{
   plans: ReadonlyArray<ProPlan>
   rows: ReadonlyArray<{ label: string; starter: boolean; creator: boolean; business: boolean }>
 }>()
+
+const { t } = useI18n()
 </script>

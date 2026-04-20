@@ -6,7 +6,7 @@
         <input
           :value="search"
           class="h-12 w-full rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-12 pr-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white"
-          placeholder="Tìm thread, tác giả, hashtag..."
+          :placeholder="t('pages.forumPage.searchPlaceholder')"
           @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
         >
       </label>
@@ -20,8 +20,8 @@
           type="button"
           @click="$emit('update:selectedSection', section.value)"
         >
-          <Icon :name="section.icon" class="h-4 w-4" />
-          {{ section.label }}
+          <Icon :name="messageText(section.icon)" class="h-4 w-4" />
+          {{ messageText(section.label) }}
         </button>
       </div>
     </div>
@@ -30,6 +30,8 @@
 
 <script setup lang="ts">
 import type { ForumSection, ForumSectionKey } from "~/composables/useMockForumData"
+
+const { t, rt } = useI18n()
 
 defineProps<{
   search: string
@@ -41,4 +43,7 @@ defineEmits<{
   "update:search": [value: string]
   "update:selectedSection": [value: ForumSectionKey]
 }>()
+
+const messageText = (value: unknown) =>
+  typeof value === "string" ? value : rt(value as never)
 </script>

@@ -4,13 +4,13 @@
       <div class="p-5 sm:p-7 lg:p-8">
         <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-4 py-2 text-[12px] font-extrabold uppercase tracking-[0.14em] text-[var(--color-primary-600)]">
           <span class="h-2 w-2 rounded-full bg-[var(--color-error)]" />
-          P-32 · Live Streaming
+          {{ $t("pages.livePage.heroEyebrow") }}
         </div>
         <h1 class="mt-5 text-display text-[2.2rem] leading-[1.02] text-[var(--text-primary)] sm:text-[3rem]">
-          Phát trực tiếp cùng cộng đồng
+          {{ $t("pages.livePage.heroTitle") }}
         </h1>
         <p class="mt-4 max-w-[680px] text-[15px] font-semibold leading-7 text-[var(--text-secondary)]">
-          Tạo livestream, xem player, chat realtime mock và chuẩn bị luồng kết nối `live.php` với Agora, LiveKit hoặc Millicast.
+          {{ $t("pages.livePage.heroDescription") }}
         </p>
         <div class="mt-6 flex flex-col gap-3 sm:flex-row">
           <button
@@ -19,7 +19,7 @@
             @click="$emit('goLive')"
           >
             <Icon name="i-ph-video-camera-fill" class="h-5 w-5" />
-            Go Live
+            {{ $t("pages.livePage.goLive") }}
           </button>
           <button
             class="inline-flex h-12 items-center justify-center gap-2 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-6 text-[14px] font-extrabold text-[var(--color-primary-600)] transition hover:border-[var(--border-strong)] hover:bg-[var(--color-primary-50)]"
@@ -27,7 +27,7 @@
             @click="$emit('focusChat')"
           >
             <Icon name="i-ph-chat-circle-dots-fill" class="h-5 w-5" />
-            Mở chat
+            {{ $t("pages.livePage.openChat") }}
           </button>
         </div>
       </div>

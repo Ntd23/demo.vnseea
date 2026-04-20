@@ -2,10 +2,10 @@
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-lg)] sm:p-7">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        <p class="text-label-secondary text-[var(--color-primary-600)]">{{ $t("settings.hero.auditLabel") }}</p>
-        <h1 class="mt-2 text-display text-[2.1rem] leading-tight text-[var(--text-primary)] sm:text-[3rem]">{{ $t("settings.hero.title") }}</h1>
+        <p class="text-label-secondary text-[var(--color-primary-600)]">{{ $t("pages.settingsPage.heroEyebrow") }}</p>
+        <h1 class="mt-2 text-display text-[2.1rem] leading-tight text-[var(--text-primary)] sm:text-[3rem]">{{ $t("pages.settingsPage.heroTitle") }}</h1>
         <p class="mt-3 max-w-2xl text-[15px] font-semibold leading-7 text-[var(--text-secondary)]">
-          {{ $t("settings.hero.description") }}
+          {{ $t("pages.settingsPage.heroDescription") }}
         </p>
       </div>
       <div class="grid gap-2 sm:grid-cols-3 lg:w-[460px]">

@@ -4,10 +4,10 @@
       <div class="flex items-center justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--color-primary-600)]">
-            Lịch gần nhất
+            {{ $t("pages.eventsPage.latestSchedule") }}
           </p>
           <h2 class="mt-1 text-title-primary">
-            {{ nextEvent?.title || "Không có lịch" }}
+            {{ nextEvent?.title || $t("pages.eventsPage.noSchedule") }}
           </h2>
         </div>
         <div class="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]">
@@ -22,13 +22,13 @@
         :to="`/events/${nextEvent.id}`"
         class="mt-4 inline-flex h-11 w-full items-center justify-center rounded-[18px] bg-[var(--color-primary-500)] text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
       >
-        Xem chi tiết
+        {{ $t("pages.eventsPage.viewDetail") }}
       </NuxtLink>
     </section>
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Danh mục nổi bật
+        {{ $t("pages.eventsPage.featuredCategories") }}
       </p>
       <div class="mt-4 space-y-2">
         <button
@@ -54,7 +54,7 @@
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Người tham gia gần đây
+        {{ $t("pages.eventsPage.recentAttendees") }}
       </p>
       <div class="mt-4 space-y-3">
         <div

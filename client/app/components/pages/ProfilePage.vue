@@ -12,26 +12,29 @@
       <ProfileSidebar
         :highlight-photos="highlightPhotos"
         :mutual-friends="mutualFriends"
-        :products="products"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const { posts } = useMockSocialData()
-const checklist = ['Ảnh đại diện', 'Ảnh bìa', 'Giới thiệu', 'Bài đăng', 'Bạn bè']
-const mutualFriends = [
-  { initials: 'TH', name: 'Thu Hà', meta: '8 bạn chung' },
-  { initials: 'BT', name: 'Bảo Trân', meta: '12 bạn chung' },
-  { initials: 'NP', name: 'Nam Phạm', meta: '5 bạn chung' },
-  { initials: 'LD', name: 'Linh Đào', meta: '9 bạn chung' },
-]
-const highlightPhotos = Array.from({ length: 4 }, (_, i) => i)
-const products = [
-  { title: 'Áo hoodie', price: '299k' },
-  { title: 'Sticker set', price: '49k' },
-  { title: 'Tách cà phê', price: '129k' },
-  { title: 'Notebook', price: '89k' },
-]
+
+const checklist = computed(() => [
+  t("pages.profilePage.checklistAvatar"),
+  t("pages.profilePage.checklistCover"),
+  t("pages.profilePage.checklistIntro"),
+  t("pages.profilePage.checklistPosts"),
+  t("pages.profilePage.checklistFriends"),
+])
+
+const mutualFriends = computed(() => [
+  { initials: "TH", name: "Thu Hà", meta: t("pages.profilePage.mutualFriendsMeta", { count: 8 }) },
+  { initials: "BT", name: "Bảo Trân", meta: t("pages.profilePage.mutualFriendsMeta", { count: 12 }) },
+  { initials: "NP", name: "Nam Phạm", meta: t("pages.profilePage.mutualFriendsMeta", { count: 5 }) },
+  { initials: "LD", name: "Linh Đào", meta: t("pages.profilePage.mutualFriendsMeta", { count: 9 }) },
+])
+
+const highlightPhotos = Array.from({ length: 4 }, (_, index) => index)
 </script>

@@ -6,4 +6,10 @@
 definePageMeta({
   layout: "default",
 })
+
+const { t } = useI18n()
+
+useHead({
+  title: () => t("pages.showFundPage.seoTitle"),
+})
 </script>

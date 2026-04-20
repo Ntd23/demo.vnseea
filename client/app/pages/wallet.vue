@@ -6,8 +6,4 @@
 definePageMeta({
   layout: "default",
 })
-
-useHead({
-  title: "Wallet | VNSEEA",
-})
 </script>

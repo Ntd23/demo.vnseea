@@ -1,5 +1,6 @@
 import { createCommunitySlug } from "../../types/community"
 import { useMockSocialData } from "./useMockSocialData"
+import { computed } from "vue"
 
 export interface MockPokeRecord {
   id: string
@@ -28,19 +29,20 @@ const accentPalette = [
 ]
 
 export function useMockPokeData() {
+  const { t } = useI18n()
   const { contacts, suggestedUsers } = useMockSocialData()
 
-  const pokeRecords: MockPokeRecord[] = [
+  const pokeRecords = computed<MockPokeRecord[]>(() => [
     ...suggestedUsers.slice(0, 3).map((user, index) => ({
       id: `suggested-poke-${user.id}`,
       name: user.name,
       initials: user.avatar,
       href: createProfilePath(user.name),
       role: user.role,
-      timeLabel: index === 0 ? "Vừa xong" : `${index + 1} giờ trước`,
-      mutualLabel: `${user.mutual} bạn chung`,
-      contextLabel: "Đề xuất từ mạng lưới kết nối",
-      note: "Người này vừa ghé profile và gửi một cú chọc nhẹ để mở lại cuộc trò chuyện.",
+      timeLabel: index === 0 ? t("pages.pokePage.justNow") : t("pages.pokePage.hoursAgo", { count: index + 1 }),
+      mutualLabel: t("pages.pokePage.mutualFriends", { count: user.mutual }),
+      contextLabel: t("pages.pokePage.suggestionContext"),
+      note: t("pages.pokePage.suggestionNote"),
       accent: accentPalette[index % accentPalette.length],
       online: index % 2 === 0,
     })),
@@ -52,15 +54,15 @@ export function useMockPokeData() {
         name: contact.name,
         initials: contact.avatar,
         href: createProfilePath(contact.name),
-        role: "Đang hoạt động",
-        timeLabel: `${index + 3} giờ trước`,
-        mutualLabel: `${index + 2} bạn chung`,
-        contextLabel: "Có mặt trong danh sách chat online",
-        note: "Một cách chạm nhẹ để nhắc lại kết nối mà không cần mở thread nhắn tin ngay.",
+        role: t("pages.pokePage.activeNow"),
+        timeLabel: t("pages.pokePage.hoursAgo", { count: index + 3 }),
+        mutualLabel: t("pages.pokePage.mutualFriends", { count: index + 2 }),
+        contextLabel: t("pages.pokePage.onlineChatContext"),
+        note: t("pages.pokePage.onlineChatNote"),
         accent: accentPalette[(suggestedUsers.length + index) % accentPalette.length],
         online: true,
       })),
-  ]
+  ])
 
   return {
     pokeRecords,

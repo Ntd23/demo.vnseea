@@ -1,8 +1,8 @@
 <template>
   <aside class="w-full overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white p-3 shadow-[var(--shadow-md)] xl:w-[330px] xl:max-w-[330px] xl:shrink-0">
     <div class="p-2">
-      <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t("settings.sidebar.subPages", { count: pages.length }) }}</p>
-      <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("settings.sidebar.title") }}</h2>
+      <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.settingsPage.sidebarCount", { count: pages.length }) }}</p>
+      <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.settingsPage.sidebarTitle") }}</h2>
     </div>
 
     <nav class="mt-3 grid max-h-[720px] gap-1 overflow-y-auto pr-1">
@@ -25,6 +25,8 @@
 
 <script setup lang="ts">
 import type { SettingPage } from "~/composables/useMockSettingsData"
+
+const { t } = useI18n()
 
 defineProps<{
   pages: ReadonlyArray<SettingPage>

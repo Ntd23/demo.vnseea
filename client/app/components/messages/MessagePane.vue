@@ -8,8 +8,8 @@
             <span class="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
           </div>
           <div class="min-w-0">
-            <h3 class="truncate text-[0.98rem] font-bold leading-tight text-[#243b63]">Thanh Hà</h3>
-            <p class="mt-0.5 text-[0.82rem] text-slate-500">Đang hoạt động</p>
+            <h3 class="truncate text-[0.98rem] font-bold leading-tight text-[#243b63]">{{ $t('pages.messagesPage.contactName') }}</h3>
+            <p class="mt-0.5 text-[0.82rem] text-slate-500">{{ $t('pages.messagesPage.activeNow') }}</p>
           </div>
         </div>
 
@@ -30,7 +30,7 @@
     <div class="flex-1 min-h-0 overflow-y-auto bg-[#f8fbff] px-4 py-5 scrollbar-hide">
       <div class="flex justify-center pb-2">
         <button class="rounded-full border border-[#dbe3f2] bg-white px-4 py-2 text-[0.8rem] font-semibold text-slate-500 shadow-[0_6px_20px_rgba(15,23,42,0.04)] transition hover:border-[#c7d3ea] hover:text-[#0000ff]" type="button">
-          Tải tin nhắn cũ hơn
+          {{ $t('pages.messagesPage.loadOlder') }}
         </button>
       </div>
 
@@ -94,13 +94,14 @@
 </template>
 
 <script setup lang="ts">
-const messages = [
-  { text: 'Helo cậu!', isMine: false, time: 'T4 10:20', showTime: true, isLast: false },
-  { text: 'Hôm nay làm bài xong chưa?', isMine: false, isLast: true },
-  { text: 'Cũng gần xong rồi á', isMine: true, isLast: false },
-  { text: 'Còn phần UI trang Messages này thôi\nđang ráng làm cho xong hihi', isMine: true, isLast: true },
-  { text: 'Oke cố lên nhaa', isMine: false, time: '11:30', showTime: true, isLast: false },
-  { text: 'Chừng nào xong rủ đi ăn uống bữa cho vui', isMine: false, isLast: true },
-  { text: 'Oh ye sure', isMine: true, time: '11:35', showTime: true, isLast: true },
-]
+const { t } = useI18n()
+const messages = computed(() => [
+  { text: t('pages.messagesPage.messageOne'), isMine: false, time: 'T4 10:20', showTime: true, isLast: false },
+  { text: t('pages.messagesPage.messageTwo'), isMine: false, isLast: true },
+  { text: t('pages.messagesPage.messageThree'), isMine: true, isLast: false },
+  { text: t('pages.messagesPage.messageFour'), isMine: true, isLast: true },
+  { text: t('pages.messagesPage.messageFive'), isMine: false, time: '11:30', showTime: true, isLast: false },
+  { text: t('pages.messagesPage.messageSix'), isMine: false, isLast: true },
+  { text: t('pages.messagesPage.messageSeven'), isMine: true, time: '11:35', showTime: true, isLast: true },
+])
 </script>

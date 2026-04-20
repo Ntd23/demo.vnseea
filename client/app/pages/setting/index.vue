@@ -7,7 +7,9 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: "Cài đặt | VNSEEA",
+  title: () => t("pages.settingsPage.defaultSeoTitle"),
 })
 </script>

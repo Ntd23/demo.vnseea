@@ -46,16 +46,17 @@
 import type { WatchCategoryKey, WatchComment, WatchVideo } from "~/composables/useMockWatchData"
 import { formatWatchNumber } from "~/composables/useMockWatchData"
 
+const { t, locale } = useI18n()
 const { categories, videos } = useMockWatchData()
 
 useSeoMeta({
-  title: "Watch | VNSEEA",
-  description: "Xem video, bình luận, like/share và chọn video liên quan trong VNSEEA.",
+  title: () => t("pages.watchPage.seoTitle"),
+  description: () => t("pages.watchPage.seoDescription"),
 })
 
 const search = ref("")
 const selectedCategory = ref<WatchCategoryKey>("all")
-const selectedVideoId = ref(videos[0]?.id ?? "")
+const selectedVideoId = ref(videos.value[0]?.id ?? "")
 const playing = ref(false)
 const progress = ref(28)
 const localLikesById = ref<Record<string, number>>({})
@@ -66,7 +67,7 @@ const shareMessage = ref("")
 const filteredVideos = computed(() => {
   const keyword = search.value.trim().toLowerCase()
 
-  return videos.filter((video) => {
+  return videos.value.filter((video) => {
     const matchesKeyword = keyword.length === 0 || [
       video.title,
       video.author,
@@ -82,11 +83,11 @@ const filteredVideos = computed(() => {
 
 watch(filteredVideos, (items) => {
   if (!items.some(video => video.id === selectedVideoId.value)) {
-    selectedVideoId.value = items[0]?.id ?? videos[0]!.id
+    selectedVideoId.value = items[0]?.id ?? videos.value[0]!.id
   }
 })
 
-const selectedVideo = computed<WatchVideo>(() => videos.find(video => video.id === selectedVideoId.value) ?? videos[0]!)
+const selectedVideo = computed<WatchVideo>(() => videos.value.find(video => video.id === selectedVideoId.value) ?? videos.value[0]!)
 
 const activeComments = computed(() => [
   ...selectedVideo.value.comments,
@@ -103,19 +104,19 @@ const elapsed = computed(() => {
 
 const heroStats = computed(() => [
   {
-    label: "Video",
-    value: videos.length,
-    description: "Dữ liệu mock từ posts.php.",
+    label: t("pages.watchPage.statVideos"),
+    value: videos.value.length,
+    description: t("pages.watchPage.statVideosDescription"),
   },
   {
-    label: "Lượt xem",
-    value: formatWatchNumber(videos.reduce((sum, video) => sum + video.views, 0)),
-    description: "Tổng views hiển thị.",
+    label: t("pages.watchPage.statViews"),
+    value: formatWatchNumber(videos.value.reduce((sum, video) => sum + video.views, 0), locale.value),
+    description: t("pages.watchPage.statViewsDescription"),
   },
   {
-    label: "Bình luận",
+    label: t("pages.watchPage.statComments"),
     value: Object.values(localCommentsById.value).reduce((sum, comments) => sum + comments.length, 0),
-    description: "Comment gửi trong phiên này.",
+    description: t("pages.watchPage.statCommentsDescription"),
   },
 ])
 
@@ -165,18 +166,18 @@ const toggleLike = () => {
 }
 
 const shareVideo = () => {
-  shareMessage.value = "Đã mô phỏng chia sẻ video. Chưa gọi API post-actions.php."
+  shareMessage.value = t("pages.watchPage.shareSuccess")
 }
 
 const sendComment = (message: string) => {
   const id = selectedVideo.value.id
   const comment: WatchComment = {
     id: Date.now(),
-    author: "Bạn",
-    initials: "B",
-    role: "Viewer",
+    author: t("pages.watchPage.you"),
+    initials: t("pages.watchPage.youInitials"),
+    role: t("pages.watchPage.viewerRole"),
     message,
-    time: "Vừa xong",
+    time: t("pages.watchPage.justNow"),
   }
 
   localCommentsById.value = {

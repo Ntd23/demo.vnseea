@@ -29,32 +29,32 @@
           <span>{{ post.stats.likes }}</span>
         </div>
         <div class="flex items-center gap-3 text-[12px] text-slate-400">
-          <span>{{ post.stats.comments }} bình luận</span>
-          <span>{{ post.stats.shares }} chia sẻ</span>
+          <span>{{ t("feed.postCard.commentsCount", { count: post.stats.comments }) }}</span>
+          <span>{{ t("feed.postCard.sharesCount", { count: post.stats.shares }) }}</span>
         </div>
       </div>
 
       <div class="mt-3 grid grid-cols-3 gap-2">
         <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[13px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button" @click="toggleLike">
           <Icon name="i-lucide-thumbs-up" class="h-4 w-4" />
-          {{ liked ? 'Đã thích' : 'Thích' }}
+          {{ liked ? t("feed.postCard.likeActive") : t("feed.postCard.like") }}
         </button>
         <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[13px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button" @click="showComments = !showComments">
           <Icon name="i-lucide-message-circle" class="h-4 w-4" />
-          Bình luận
+          {{ t("feed.postCard.comment") }}
         </button>
         <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[13px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button" @click="showShare = true">
           <Icon name="i-lucide-share-2" class="h-4 w-4" />
-          Chia sẻ
+          {{ t("feed.postCard.share") }}
         </button>
       </div>
 
       <div class="mt-3 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-400">
-        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">Ẩn bài</button>
-        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">Báo cáo</button>
-        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">Lưu bài</button>
-        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">Sao chép link</button>
-        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">Dịch bài</button>
+        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">{{ t("feed.postCard.hidePost") }}</button>
+        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">{{ t("feed.postCard.reportPost") }}</button>
+        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">{{ t("feed.postCard.savePost") }}</button>
+        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">{{ t("feed.postCard.copyLink") }}</button>
+        <button class="rounded-full bg-slate-50 px-2.5 py-1 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button">{{ t("feed.postCard.translatePost") }}</button>
       </div>
 
       <div v-if="post.comments.length && !showComments" class="mt-3 border-t border-[#0000ff]/8 pt-3">
@@ -68,7 +68,7 @@
           </div>
         </div>
         <button v-if="post.comments.length > 1" class="ml-9 mt-1.5 text-[12px] font-semibold text-[#0000ff]/60 hover:text-[#0000ff]" type="button" @click="showComments = true">
-          Xem thêm {{ post.comments.length - 1 }} bình luận
+          {{ t("feed.postCard.viewMoreComments", { count: post.comments.length - 1 }) }}
         </button>
       </div>
 
@@ -85,7 +85,7 @@
       :open="lightboxOpen"
       :items="mediaItems"
       :current-index="currentMediaIndex"
-      title="Ảnh bài viết"
+      :title="t('feed.postCard.lightboxTitle')"
       :description="post.author"
       :author="post.author"
       :caption="post.text"
@@ -101,6 +101,8 @@
 
 <script setup lang="ts">
 import { createHashtagPath, formatHashtagLabel } from "~/composables/useMockHashtagData"
+
+const { t } = useI18n()
 
 const props = defineProps<{
   post: {

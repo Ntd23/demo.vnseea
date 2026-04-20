@@ -4,9 +4,9 @@
       <form class="w-full max-w-[620px] rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-xl)]" @submit.prevent="submit">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-label-secondary text-[var(--color-primary-600)]">Go Live</p>
-            <h2 class="mt-1 text-heading text-[var(--text-primary)]">Tạo live stream</h2>
-            <p class="mt-1 text-body-secondary">Mock form cho `live.php`, sẵn sàng nối provider realtime.</p>
+            <p class="text-label-secondary text-[var(--color-primary-600)]">{{ $t("pages.livePage.modalEyebrow") }}</p>
+            <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.livePage.modalTitle") }}</h2>
+            <p class="mt-1 text-body-secondary">{{ $t("pages.livePage.modalDescription") }}</p>
           </div>
           <button
             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] bg-[var(--bg-surface-hover)] text-[var(--text-secondary)]"
@@ -19,39 +19,39 @@
 
         <div class="mt-5 grid gap-4 sm:grid-cols-2">
           <label class="block sm:col-span-2">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Tiêu đề live</span>
-            <input v-model="form.title" class="live-input mt-2" required placeholder="Ví dụ: Q&A cộng đồng tối nay">
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.livePage.modalTitleLabel") }}</span>
+            <input v-model="form.title" class="live-input mt-2" required :placeholder="$t('pages.livePage.modalTitlePlaceholder')">
           </label>
 
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Danh mục</span>
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.livePage.modalCategoryLabel") }}</span>
             <select v-model="form.category" class="live-input mt-2">
               <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
             </select>
           </label>
 
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Quyền xem</span>
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.livePage.modalPrivacyLabel") }}</span>
             <select v-model="form.privacy" class="live-input mt-2">
-              <option value="public">Công khai</option>
-              <option value="members">Thành viên</option>
-              <option value="private">Riêng tư</option>
+              <option value="public">{{ $t("pages.livePage.privacyPublic") }}</option>
+              <option value="members">{{ $t("pages.livePage.privacyMembers") }}</option>
+              <option value="private">{{ $t("pages.livePage.privacyPrivate") }}</option>
             </select>
           </label>
 
           <label class="block sm:col-span-2">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Mô tả</span>
-            <textarea v-model="form.description" class="live-input mt-2 min-h-[130px] resize-y py-3" placeholder="Nội dung chính của buổi live, khách mời, agenda..." />
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.livePage.modalDescriptionLabel") }}</span>
+            <textarea v-model="form.description" class="live-input mt-2 min-h-[130px] resize-y py-3" :placeholder="$t('pages.livePage.modalDescriptionPlaceholder')" />
           </label>
         </div>
 
         <div v-if="submitted" class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]">
-          Đã mô phỏng tạo live stream. Chưa gọi API live.php.
+          {{ $t("pages.livePage.modalSuccess") }}
         </div>
 
         <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button class="h-11 rounded-[18px] border border-[var(--border-default)] bg-white px-5 text-[13px] font-bold text-[var(--text-secondary)]" type="button" @click="$emit('close')">Đóng</button>
-          <button class="h-11 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="submit">Bắt đầu live</button>
+          <button class="h-11 rounded-[18px] border border-[var(--border-default)] bg-white px-5 text-[13px] font-bold text-[var(--text-secondary)]" type="button" @click="$emit('close')">{{ $t("pages.livePage.close") }}</button>
+          <button class="h-11 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="submit">{{ $t("pages.livePage.startLive") }}</button>
         </div>
       </form>
     </div>
@@ -67,11 +67,12 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{ close: []; create: [payload: GoLivePayload] }>()
+const { t } = useI18n()
 
 const submitted = ref(false)
 const form = reactive<GoLivePayload>({
   title: "",
-  category: props.categories[0] ?? "Cộng đồng",
+  category: props.categories[0] ?? t("pages.livePage.categoryCommunity"),
   privacy: "public",
   description: "",
 })

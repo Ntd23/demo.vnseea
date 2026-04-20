@@ -19,11 +19,13 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 defineProps<{ modelValue: "posts" | "about" }>()
 defineEmits<{ "update:modelValue": [value: "posts" | "about"] }>()
 
-const tabs = [
-  { key: "posts", label: "Bài viết", icon: "i-ph-newspaper-clipping-bold" },
-  { key: "about", label: "Giới thiệu", icon: "i-ph-info-bold" },
-] as const
+const tabs = computed(() => [
+  { key: "posts", label: t("pages.groupDetailPage.tabPosts"), icon: "i-ph-newspaper-clipping-bold" },
+  { key: "about", label: t("pages.groupDetailPage.tabAbout"), icon: "i-ph-info-bold" },
+] as const)
 </script>

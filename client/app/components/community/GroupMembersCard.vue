@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between gap-3">
       <div>
         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-          {{ $t('community.settings.sidebar.members') }}
+          {{ t("pages.groupDetailPage.membersEyebrow") }}
         </p>
         <h3 class="mt-2 text-[1.15rem] font-black tracking-[-0.04em] text-[#243b63]">
           {{ $t('community.groups.format.members', { count: memberCountLabel }) }}
@@ -15,7 +15,7 @@
         type="button"
       >
         <Icon name="i-ph-user-circle-plus-bold" class="mr-1.5 h-4 w-4" />
-        {{ $t('community.settings.sidebar.inviteMore') }}
+        {{ t("pages.groupDetailPage.inviteMore") }}
       </button>
     </div>
 
@@ -47,6 +47,8 @@
 
 <script setup lang="ts">
 import type { CommunityGroupMember } from "../../../types/community"
+
+const { t } = useI18n()
 
 defineProps<{
   members: CommunityGroupMember[]

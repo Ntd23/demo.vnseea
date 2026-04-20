@@ -6,8 +6,4 @@
 definePageMeta({
   layout: "default",
 })
-
-useHead({
-  title: "Withdrawal | VNSEEA",
-})
 </script>

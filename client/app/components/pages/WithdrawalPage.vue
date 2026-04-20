@@ -26,6 +26,8 @@
 import type { WithdrawalHistoryItem, WithdrawalRequestPayload } from "~/composables/useMockWithdrawalData"
 import { formatWithdrawalCurrency } from "~/composables/useMockWithdrawalData"
 
+const { t, locale } = useI18n()
+
 const {
   availableBalance,
   pendingAmount,
@@ -36,38 +38,38 @@ const {
 } = useMockWithdrawalData()
 
 useSeoMeta({
-  title: "Withdrawal | VNSEEA",
-  description: "Tạo yêu cầu rút tiền, quản lý thông tin thanh toán và lịch sử withdrawal.",
+  title: () => t("pages.withdrawalPage.seoTitle"),
+  description: () => t("pages.withdrawalPage.seoDescription"),
 })
 
 const availableBalanceState = ref(availableBalance)
 const pendingAmountState = ref(pendingAmount)
 const localHistory = ref<WithdrawalHistoryItem[]>([])
 
-const allHistory = computed(() => [...localHistory.value, ...history])
+const allHistory = computed(() => [...localHistory.value, ...history.value])
 
 const withdrawalStats = computed(() => [
   {
-    label: "Đang chờ",
-    value: formatWithdrawalCurrency(pendingAmountState.value),
+    label: t("pages.withdrawalPage.statPending"),
+    value: formatWithdrawalCurrency(pendingAmountState.value, locale.value),
   },
   {
-    label: "Yêu cầu",
+    label: t("pages.withdrawalPage.statRequests"),
     value: allHistory.value.length,
   },
 ])
 
 const handleRequest = (payload: WithdrawalRequestPayload) => {
-  const method = methods.find(item => item.value === payload.method)
+  const method = methods.value.find(item => item.value === payload.method)
   availableBalanceState.value -= payload.amount
   pendingAmountState.value += payload.amount
   localHistory.value = [
     {
       id: `wd-${Date.now()}`,
       amount: payload.amount,
-      method: method?.label ?? "Withdrawal",
+      method: method?.label ?? t("pages.withdrawalPage.fallbackMethod"),
       account: payload.accountNumber,
-      time: "Vừa gửi",
+      time: t("pages.withdrawalPage.submittedNow"),
       status: "pending",
     },
     ...localHistory.value,

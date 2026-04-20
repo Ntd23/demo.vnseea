@@ -4,7 +4,7 @@
       <div class="min-w-0">
         <h2 class="text-2xl font-black leading-tight text-[var(--text-primary)] sm:text-3xl">{{ video.title }}</h2>
         <p class="mt-2 text-[14px] font-semibold text-[var(--text-secondary)]">
-          {{ formatWatchNumber(video.views) }} lượt xem · {{ video.date }}
+          {{ t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }} · {{ video.date }}
         </p>
       </div>
 
@@ -24,7 +24,7 @@
           @click="$emit('share')"
         >
           <Icon name="i-ph-share-network-fill" class="h-4 w-4" />
-          Chia sẻ
+          {{ t("pages.watchPage.share") }}
         </button>
       </div>
     </div>
@@ -35,7 +35,7 @@
       </div>
       <div class="min-w-0">
         <p class="truncate text-[15px] font-extrabold text-[var(--text-primary)]">{{ video.author }}</p>
-        <p class="text-[12px] font-semibold text-[var(--text-tertiary)]">Creator · posts.php</p>
+        <p class="text-[12px] font-semibold text-[var(--text-tertiary)]">{{ t("pages.watchPage.creatorMeta") }}</p>
       </div>
     </div>
 
@@ -55,6 +55,8 @@
 <script setup lang="ts">
 import type { WatchVideo } from "~/composables/useMockWatchData"
 import { formatWatchNumber } from "~/composables/useMockWatchData"
+
+const { t, locale } = useI18n()
 
 defineProps<{
   video: WatchVideo

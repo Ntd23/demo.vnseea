@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-3">
-    <p class="text-[1.02rem] font-black text-[#2f3542]">Hình ảnh</p>
+    <p class="text-[1.02rem] font-black text-[#2f3542]">{{ $t("pages.productEditor.imagesLabel") }}</p>
     <div class="flex flex-wrap items-end gap-4">
       <button
         type="button"
@@ -28,7 +28,7 @@
       </div>
     </div>
     <p class="text-[13px] leading-6 text-slate-500">
-      Mock UI: nhấn ô camera để thay đổi số lượng ảnh mẫu, tối đa 10 ảnh.
+      {{ $t("pages.productEditor.createMediaHelp") }}
     </p>
   </div>
 </template>

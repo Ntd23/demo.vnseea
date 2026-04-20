@@ -15,18 +15,19 @@
 <script setup lang="ts">
 import ReelsPlayer from '~/components/reels/ReelsPlayer.vue'
 
+const { t } = useI18n()
 useSeoMeta({
-  title: 'Reels | VNSEEA',
-  description: 'Khám phá video ngắn trên VNSEEA.',
+  title: () => t('pages.reelsPage.seoTitle'),
+  description: () => t('pages.reelsPage.seoDescription'),
 })
 
-const reels = [
+const reels = computed(() => [
   {
     id: 1,
-    title: 'Cách mình dựng UI nhanh hơn với Vue + Nuxt',
+    title: t('pages.reelsPage.reelOneTitle'),
     author: 'Thanh Hà',
-    subtitle: 'Creator · 12 phút trước',
-    description: 'Khung reels tối giản theo đúng ảnh tham chiếu: nền đen, video nằm giữa, cụm action dọc bên phải và điều hướng lên/xuống ở mép phải.',
+    subtitle: t('pages.reelsPage.reelOneSubtitle'),
+    description: t('pages.reelsPage.reelOneDescription'),
     likes: 120,
     comments: 18,
     views: 2,
@@ -35,10 +36,10 @@ const reels = [
   },
   {
     id: 2,
-    title: 'Reels travel: một góc yên tĩnh để tập trung',
+    title: t('pages.reelsPage.reelTwoTitle'),
     author: 'Minh Anh',
-    subtitle: 'Community · 1 giờ trước',
-    description: 'Bạn có thể nối dữ liệu thật vào đây sau, còn hiện tại UI đã bám sát bố cục trong design reels.png.',
+    subtitle: t('pages.reelsPage.reelTwoSubtitle'),
+    description: t('pages.reelsPage.reelTwoDescription'),
     likes: 218,
     comments: 44,
     views: 128,
@@ -47,26 +48,26 @@ const reels = [
   },
   {
     id: 3,
-    title: 'Tối ưu một màn hình reels cho mobile-first',
+    title: t('pages.reelsPage.reelThreeTitle'),
     author: 'Hà My',
-    subtitle: 'Design · 2 giờ trước',
-    description: 'Swipe lên hoặc xuống để chuyển reel trên cả mobile lẫn desktop.',
+    subtitle: t('pages.reelsPage.reelThreeSubtitle'),
+    description: t('pages.reelsPage.reelThreeDescription'),
     likes: 95,
     comments: 12,
     views: 64,
     cover: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80',
     avatar: 'https://i.pravatar.cc/150?u=reel-3',
   },
-]
+])
 
 const activeIndex = ref(0)
-const activeReel = computed(() => reels[activeIndex.value])
+const activeReel = computed(() => reels.value[activeIndex.value])
 
 const nextReel = () => {
-  activeIndex.value = (activeIndex.value + 1) % reels.length
+  activeIndex.value = (activeIndex.value + 1) % reels.value.length
 }
 
 const prevReel = () => {
-  activeIndex.value = (activeIndex.value - 1 + reels.length) % reels.length
+  activeIndex.value = (activeIndex.value - 1 + reels.value.length) % reels.value.length
 }
 </script>

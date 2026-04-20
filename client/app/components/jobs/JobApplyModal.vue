@@ -12,7 +12,7 @@
         <div class="flex items-start justify-between gap-4">
           <div>
             <p class="text-label-secondary text-[var(--color-primary-600)]">
-              Ứng tuyển
+              {{ $t("pages.jobsPage.applyEyebrow") }}
             </p>
             <h2 class="mt-1 text-heading text-[var(--text-primary)]">
               {{ job.title }}
@@ -32,33 +32,33 @@
 
         <div class="mt-5 grid gap-4 sm:grid-cols-2">
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Họ tên</span>
-            <input v-model="form.name" required class="job-input mt-2" placeholder="Nguyễn Văn A">
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.fullName") }}</span>
+            <input v-model="form.name" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.fullNamePlaceholder')">
           </label>
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Email</span>
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.email") }}</span>
             <input v-model="form.email" required class="job-input mt-2" placeholder="email@example.com" type="email">
           </label>
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Số điện thoại</span>
-            <input v-model="form.phone" required class="job-input mt-2" placeholder="090..." type="tel">
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.phone") }}</span>
+            <input v-model="form.phone" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.phonePlaceholder')" type="tel">
           </label>
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">CV upload</span>
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.cvUpload") }}</span>
             <input class="job-input mt-2 file:mr-3 file:rounded-[12px] file:border-0 file:bg-[var(--color-primary-50)] file:px-3 file:py-2 file:text-[12px] file:font-bold file:text-[var(--color-primary-600)]" type="file" accept=".pdf,.doc,.docx" @change="setCvName">
           </label>
         </div>
 
         <label class="mt-4 block">
-          <span class="text-[12px] font-bold text-[var(--text-secondary)]">Lời nhắn</span>
-          <textarea v-model="form.message" required class="job-input mt-2 min-h-[130px] resize-y py-3" placeholder="Tóm tắt kinh nghiệm, thời gian có thể bắt đầu và lý do phù hợp." />
+          <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.message") }}</span>
+          <textarea v-model="form.message" required class="job-input mt-2 min-h-[130px] resize-y py-3" :placeholder="$t('pages.jobsPage.messagePlaceholder')" />
         </label>
 
         <div
           v-if="submitted"
           class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]"
         >
-          Đã mô phỏng gửi hồ sơ. Chưa gọi API job.php.
+          {{ $t("pages.jobsPage.applySuccess") }}
         </div>
 
         <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
@@ -67,14 +67,14 @@
             type="button"
             @click="$emit('close')"
           >
-            Đóng
+            {{ $t("pages.jobsPage.close") }}
           </button>
           <button
             class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
             type="submit"
           >
             <Icon name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
-            Gửi hồ sơ
+            {{ $t("pages.jobsPage.submitApplication") }}
           </button>
         </div>
       </form>

@@ -2,8 +2,8 @@
   <aside class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">posts.php</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">Video liên quan</h2>
+        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.watchPage.relatedEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.watchPage.relatedTitle") }}</h2>
       </div>
       <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">
         {{ videos.length }}
@@ -29,7 +29,7 @@
           <div class="min-w-0">
             <h3 class="line-clamp-2 text-[14px] font-extrabold leading-5 text-[var(--text-primary)]">{{ video.title }}</h3>
             <p class="mt-1 text-[12px] font-semibold text-[var(--text-secondary)]">{{ video.author }}</p>
-            <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ formatWatchNumber(video.views) }} lượt xem · {{ video.date }}</p>
+            <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }} · {{ video.date }}</p>
             <div class="mt-2 flex flex-wrap gap-1.5">
               <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2 py-1 text-[10px] font-black text-[var(--color-primary-600)]">{{ video.categoryLabel }}</span>
             </div>
@@ -43,6 +43,8 @@
 <script setup lang="ts">
 import type { WatchVideo } from "~/composables/useMockWatchData"
 import { formatWatchNumber } from "~/composables/useMockWatchData"
+
+const { t, locale } = useI18n()
 
 defineProps<{
   videos: ReadonlyArray<WatchVideo>

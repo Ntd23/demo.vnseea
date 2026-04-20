@@ -1,7 +1,7 @@
 <template>
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-    <p class="text-label-secondary text-[var(--text-tertiary)]">Sections</p>
-    <h2 class="mt-1 text-heading text-[var(--text-primary)]">Khu vực nổi bật</h2>
+    <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.forumPage.sectionsEyebrow") }}</p>
+    <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.forumPage.sectionsTitle") }}</h2>
     <div class="mt-4 space-y-2">
       <button
         v-for="section in sections"
@@ -11,10 +11,10 @@
         @click="$emit('selectSection', section.value)"
       >
         <span class="flex min-w-0 items-center gap-3">
-          <Icon :name="section.icon" class="h-5 w-5 shrink-0 text-[var(--color-primary-600)]" />
+          <Icon :name="messageText(section.icon)" class="h-5 w-5 shrink-0 text-[var(--color-primary-600)]" />
           <span class="min-w-0">
-            <span class="block truncate text-[13px] font-extrabold text-[var(--text-primary)]">{{ section.label }}</span>
-            <span class="block truncate text-[11px] font-semibold text-[var(--text-secondary)]">{{ section.description }}</span>
+            <span class="block truncate text-[13px] font-extrabold text-[var(--text-primary)]">{{ messageText(section.label) }}</span>
+            <span class="block truncate text-[11px] font-semibold text-[var(--text-secondary)]">{{ messageText(section.description) }}</span>
           </span>
         </span>
         <span class="text-[12px] font-black text-[var(--color-primary-600)]">{{ counts[section.value] ?? 0 }}</span>
@@ -26,10 +26,15 @@
 <script setup lang="ts">
 import type { ForumSection, ForumSectionKey } from "~/composables/useMockForumData"
 
+const { t, rt } = useI18n()
+
 defineProps<{
   sections: ReadonlyArray<ForumSection>
   counts: Record<string, number>
 }>()
 
 defineEmits<{ selectSection: [value: ForumSectionKey] }>()
+
+const messageText = (value: unknown) =>
+  typeof value === "string" ? value : rt(value as never)
 </script>

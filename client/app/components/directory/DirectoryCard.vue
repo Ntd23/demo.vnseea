@@ -20,11 +20,11 @@
     <div class="p-4">
       <div class="grid grid-cols-2 gap-2">
         <div class="rounded-[18px] bg-[var(--bg-surface-hover)] p-3">
-          <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">Meta</p>
+          <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.directoryPage.metaLabel") }}</p>
           <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ item.meta }}</p>
         </div>
         <div class="rounded-[18px] bg-[var(--bg-surface-hover)] p-3">
-          <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">Activity</p>
+          <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.directoryPage.activityLabel") }}</p>
           <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ item.count }}</p>
         </div>
       </div>
@@ -37,6 +37,8 @@
 
 <script setup lang="ts">
 import type { DirectoryItem } from "~/composables/useMockDirectoryData"
+
+const { t } = useI18n()
 
 defineProps<{ item: DirectoryItem }>()
 </script>

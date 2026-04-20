@@ -7,17 +7,17 @@
       <div class="relative z-10 flex min-h-[360px] flex-col justify-end p-5 text-white sm:min-h-[430px] sm:p-7">
         <div class="flex flex-wrap gap-2">
           <span class="rounded-[10px] bg-white/18 px-3 py-1 text-[12px] font-bold backdrop-blur">{{ campaign.categoryLabel }}</span>
-          <span v-if="campaign.isOwner" class="rounded-[10px] bg-white/18 px-3 py-1 text-[12px] font-bold backdrop-blur">Của tôi</span>
+          <span v-if="campaign.isOwner" class="rounded-[10px] bg-white/18 px-3 py-1 text-[12px] font-bold backdrop-blur">{{ $t("pages.fundingPage.ownerBadge") }}</span>
         </div>
         <h1 class="mt-4 max-w-[820px] text-[2rem] font-black leading-tight tracking-[-0.05em] sm:text-[3rem]">{{ campaign.title }}</h1>
         <p class="mt-3 max-w-[680px] text-[15px] leading-7 text-white/84">{{ campaign.summary }}</p>
         <div class="mt-5 flex flex-wrap items-center gap-3">
           <button class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] bg-white px-5 text-[14px] font-extrabold text-[var(--color-primary-600)] shadow-[var(--shadow-lg)]" type="button" @click="$emit('donate', campaign)">
             <Icon name="i-ph-hand-heart-fill" class="mr-2 h-4 w-4" />
-            Ủng hộ ngay
+            {{ $t("pages.showFundPage.donateNow") }}
           </button>
           <NuxtLink to="/funding" class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] bg-white/14 px-5 text-[14px] font-extrabold text-white backdrop-blur">
-            Quay lại Funding
+            {{ $t("pages.showFundPage.backToFundingShort") }}
           </NuxtLink>
         </div>
       </div>

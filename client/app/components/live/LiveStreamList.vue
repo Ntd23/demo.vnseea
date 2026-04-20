@@ -2,8 +2,8 @@
   <aside class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">Đang phát</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">Kênh live</h2>
+        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t("pages.livePage.streamsEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.livePage.streamsTitle") }}</h2>
       </div>
       <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">
         {{ streams.length }}
@@ -23,7 +23,7 @@
           <img :alt="stream.title" class="h-full w-full object-cover" :src="stream.cover">
           <div class="absolute inset-0 bg-black/28" />
           <span class="absolute left-2 top-2 rounded-[var(--radius-full)] px-2.5 py-1 text-[11px] font-extrabold text-white" :class="stream.status === 'live' ? 'bg-[var(--color-error)]' : 'bg-black/50'">
-            {{ stream.status === "live" ? "LIVE" : "SẮP PHÁT" }}
+            {{ stream.status === "live" ? $t("pages.livePage.statusLiveUpper") : stream.status === "scheduled" ? $t("pages.livePage.statusScheduledUpper") : $t("pages.livePage.statusEndedUpper") }}
           </span>
           <span class="absolute bottom-2 right-2 rounded-[var(--radius-full)] bg-black/52 px-2.5 py-1 text-[11px] font-bold text-white">
             {{ stream.duration }}
@@ -35,7 +35,7 @@
           </div>
           <div class="min-w-0">
             <h3 class="line-clamp-2 text-[14px] font-extrabold leading-5 text-[var(--text-primary)]">{{ stream.title }}</h3>
-            <p class="mt-1 truncate text-[12px] font-semibold text-[var(--text-secondary)]">{{ stream.host.name }} · {{ stream.viewers }} xem</p>
+            <p class="mt-1 truncate text-[12px] font-semibold text-[var(--text-secondary)]">{{ stream.host.name }} · {{ $t("pages.livePage.viewerCountShort", { count: stream.viewers }) }}</p>
           </div>
         </div>
       </button>

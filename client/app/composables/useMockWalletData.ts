@@ -1,3 +1,6 @@
+import { computed } from "vue"
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
+
 export type WalletTransactionType = "topup" | "send" | "receive" | "payment" | "refund"
 
 export type WalletTransaction = {
@@ -22,52 +25,24 @@ export type WalletSendPayload = {
 }
 
 export const useMockWalletData = () => {
+  const { tm, rt } = useI18n()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
+
   const initialBalance = 9999999
 
-  const topupMethods = [
-    { label: "Chuyển khoản", value: "bank" as const, icon: "i-ph-bank-fill" },
-    { label: "Thẻ thanh toán", value: "card" as const, icon: "i-ph-credit-card-fill" },
-    { label: "Ví MoMo", value: "momo" as const, icon: "i-ph-device-mobile-fill" },
-  ]
+  const topupMethods = computed(() =>
+    localized<Array<{ label: string; value: WalletTopupPayload["method"]; icon: string }>>("pages.walletPage.methods"),
+  )
 
-  const transactions: WalletTransaction[] = [
-    {
-      id: "txn-refund-order",
-      type: "refund",
-      title: "Hoàn tiền đơn hàng",
-      description: "Hoàn về ví VNSEEA từ đơn marketplace.",
-      amount: 250000,
-      time: "2 giờ trước",
-      status: "completed",
-    },
-    {
-      id: "txn-funding-donate",
-      type: "payment",
-      title: "Donate chiến dịch lớp học xanh",
-      description: "Thanh toán qua wallet.php / funding.php.",
-      amount: -300000,
-      time: "Hôm qua",
-      status: "completed",
-    },
-    {
-      id: "txn-topup-bank",
-      type: "topup",
-      title: "Nạp tiền qua chuyển khoản",
-      description: "Mã giao dịch: VNSEEA-2026-042",
-      amount: 1000000,
-      time: "3 ngày trước",
-      status: "completed",
-    },
-    {
-      id: "txn-send-member",
-      type: "send",
-      title: "Gửi tiền cho Hoangne",
-      description: "Chia chi phí meetup.",
-      amount: -150000,
-      time: "5 ngày trước",
-      status: "completed",
-    },
-  ]
+  const transactions = computed(() =>
+    localized<Array<Omit<WalletTransaction, "amount"> & { amount: number | string }>>("pages.walletPage.transactions").map(
+      transaction => ({
+        ...transaction,
+        amount: Number(transaction.amount),
+      }),
+    ),
+  )
 
   return {
     initialBalance,
@@ -76,8 +51,8 @@ export const useMockWalletData = () => {
   }
 }
 
-export const formatWalletCurrency = (value: number) =>
-  new Intl.NumberFormat("vi-VN", {
+export const formatWalletCurrency = (value: number, locale = "vi") =>
+  new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US", {
     style: "currency",
     currency: "VND",
     maximumFractionDigits: 0,

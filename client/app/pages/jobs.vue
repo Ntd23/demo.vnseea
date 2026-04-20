@@ -7,7 +7,9 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: "Việc làm | VNSEEA",
+  title: () => t("pages.jobsPage.seoTitle"),
 })
 </script>

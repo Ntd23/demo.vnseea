@@ -26,6 +26,7 @@
 import type { EventRsvpState } from "~/composables/useMockEventsData"
 
 const route = useRoute()
+const { t } = useI18n()
 const { events, findEventById } = useMockEventsData()
 
 const routeId = computed(() => String(route.params.id || ""))
@@ -34,8 +35,8 @@ const event = computed(() => foundEvent.value || events[0])
 const isMissing = computed(() => !foundEvent.value)
 
 useSeoMeta({
-  title: () => `${event.value?.title || "Chi tiết sự kiện"} | VNSEEA`,
-  description: () => event.value?.summary || "Chi tiết sự kiện cộng đồng trên VNSEEA.",
+  title: () => `${event.value?.title || t("pages.eventDetailPage.seoTitle")} | VNSEEA`,
+  description: () => event.value?.summary || t("pages.eventDetailPage.seoDescription"),
 })
 
 const rsvpState = ref<EventRsvpState>("none")
@@ -51,11 +52,11 @@ watch(
 )
 
 const rsvpLabel = computed(() => {
-  if (rsvpState.value === "going") return "Sẽ tham gia"
-  if (rsvpState.value === "interested") return "Đang quan tâm"
-  if (rsvpState.value === "invited") return "Được mời"
-  if (rsvpState.value === "not_interested") return "Không quan tâm"
-  return "Chưa phản hồi"
+  if (rsvpState.value === "going") return t("pages.eventsPage.rsvpGoing")
+  if (rsvpState.value === "interested") return t("pages.eventsPage.rsvpInterested")
+  if (rsvpState.value === "invited") return t("pages.eventsPage.rsvpInvited")
+  if (rsvpState.value === "not_interested") return t("pages.eventsPage.rsvpSkipped")
+  return t("pages.eventDetailPage.rsvpPending")
 })
 
 const relatedEvents = computed(() => {

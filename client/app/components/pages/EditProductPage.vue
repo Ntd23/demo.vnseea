@@ -2,10 +2,10 @@
   <div class="space-y-5 pb-10">
     <ProductHeroBanner
       variant="edit"
-      badge="P-12 · Chỉnh sửa sản phẩm"
-      :title="`Sửa sản phẩm #${productId}`"
-      description="Giao diện chỉnh sửa dùng cùng visual system với trang tạo sản phẩm, nhưng được pre-fill dữ liệu cũ và hỗ trợ xóa ảnh hiện tại trước khi lưu."
-      secondary-action-label="Khôi phục dữ liệu gốc"
+      :badge="$t('pages.editProductPage.badge')"
+      :title="$t('pages.editProductPage.title', { id: productId })"
+      :description="$t('pages.editProductPage.description')"
+      :secondary-action-label="$t('pages.editProductPage.restore')"
       :stats="heroStats"
       @secondary-action="restoreOriginal"
     />
@@ -16,13 +16,13 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-                Biên tập
+                {{ $t("pages.productEditor.editSectionEyebrow") }}
               </p>
               <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
-                Cập nhật thông tin sản phẩm
+                {{ $t("pages.editProductPage.sectionTitle") }}
               </h2>
               <p class="mt-1 text-[14px] leading-6 text-slate-500">
-                Dữ liệu đang được nạp sẵn theo mã sản phẩm để bạn chỉnh nhanh rồi lưu thay đổi.
+                {{ $t("pages.editProductPage.sectionDescription") }}
               </p>
             </div>
 
@@ -61,8 +61,8 @@
         </ProductEditorFields>
 
         <FormsSubmitBar
-          hint="Mock state: giao diện sửa sản phẩm đã có pre-fill dữ liệu cũ và xóa ảnh cũ, chưa submit thật tới edit-product.php."
-          cta="Lưu thay đổi"
+          :hint="$t('pages.editProductPage.submitHint')"
+          :cta="$t('pages.editProductPage.submitCta')"
         />
       </section>
 
@@ -74,7 +74,7 @@
           :condition-label="previewConditionLabel"
           :currency-label="previewCurrencyLabel"
           :title="title"
-          empty-title="Tên sản phẩm sẽ hiển thị ở đây"
+          :empty-title="$t('pages.editProductPage.emptyTitle')"
           :description="previewDescription"
           :price="previewPrice"
           :stock-label="stockLabel"
@@ -82,13 +82,13 @@
           :image-count="totalImageCount"
           leading-icon="i-ph-pencil-simple-fill"
           trailing-icon="i-ph-floppy-disk-back-fill"
-          status-label="Cập nhật"
+          :status-label="$t('pages.editProductPage.statusUpdated')"
         />
 
         <ProductChecklistCard :items="checklistItems" />
 
         <ProductTipsCard
-          title="Gợi ý chỉnh sửa"
+          :title="$t('pages.editProductPage.tipsTitle')"
           :items="editingTips"
         />
       </aside>
@@ -125,6 +125,8 @@ const props = defineProps<{
   productId: string
 }>()
 
+const { t } = useI18n()
+
 const {
   categoryOptions,
   conditionOptions,
@@ -138,42 +140,42 @@ const {
 
 const mockProducts: Record<string, MockProduct> = {
   "101": {
-    title: "Honda Vision 2024",
+    title: t("pages.editProductPage.product101Title"),
     price: "1250",
-    description: "Xe đi ít, giấy tờ đầy đủ, máy êm và ngoại hình còn mới. Phù hợp đi lại hằng ngày hoặc mua cho sinh viên.",
+    description: t("pages.editProductPage.product101Description"),
     category: "vehicles",
     condition: "like-new",
-    location: "Đà Nẵng",
+    location: t("pages.editProductPage.product101Location"),
     currency: "USD",
     stock: "2",
     oldImages: [{ id: "old-1" }, { id: "old-2" }, { id: "old-3" }],
-    updatedAt: "Cập nhật 2 giờ trước",
+    updatedAt: t("pages.editProductPage.updatedTwoHoursAgo"),
   },
   "202": {
-    title: "Bộ nồi chiên không dầu 6L",
+    title: t("pages.editProductPage.product202Title"),
     price: "185",
-    description: "Bộ nồi chiên còn đẹp, hoạt động ổn định, đầy đủ khay và phụ kiện. Phù hợp gia đình nhỏ và căn hộ.",
+    description: t("pages.editProductPage.product202Description"),
     category: "home",
     condition: "used",
-    location: "TP. Hồ Chí Minh",
+    location: t("pages.editProductPage.product202Location"),
     currency: "USD",
     stock: "5",
     oldImages: [{ id: "old-1" }, { id: "old-2" }],
-    updatedAt: "Cập nhật hôm qua",
+    updatedAt: t("pages.editProductPage.updatedYesterday"),
   },
 }
 
 const fallbackProduct: MockProduct = {
-  title: "Sản phẩm demo đang chỉnh sửa",
+  title: t("pages.editProductPage.demoTitle"),
   price: "89",
-  description: "Đây là dữ liệu mẫu để kiểm tra flow sửa sản phẩm trong marketplace.",
+  description: t("pages.editProductPage.demoDescription"),
   category: "tech",
   condition: "new",
-  location: "Hà Nội",
+  location: t("pages.editProductPage.demoLocation"),
   currency: "USD",
   stock: "3",
   oldImages: [{ id: "old-1" }, { id: "old-2" }],
-  updatedAt: "Cập nhật gần đây",
+  updatedAt: t("pages.editProductPage.updatedRecently"),
 }
 
 const title = ref("")
@@ -227,44 +229,46 @@ const completionCount = computed(() =>
   ].filter(Boolean).length,
 )
 
-const completionText = computed(() => `${completionCount.value}/8 trường chính đã hoàn thiện`)
+const completionText = computed(() => t("pages.productEditor.completionText", { count: completionCount.value }))
 
 const mediaSummary = computed(() => {
-  if (totalImageCount.value === 0) return "Không còn ảnh"
-  return totalImageCount.value === 1 ? "1 ảnh đang giữ" : `${totalImageCount.value} ảnh đang giữ`
+  if (totalImageCount.value === 0) return t("pages.editProductPage.noImages")
+  return totalImageCount.value === 1
+    ? t("pages.editProductPage.oneKeptImage")
+    : t("pages.editProductPage.keptImages", { count: totalImageCount.value })
 })
 
 const newImageTiles = computed(() => newImages.value)
 
 const imageButtonLabel = computed(() =>
-  newImages.value.length >= 6 ? "Đã đủ 6 ảnh mới" : "Thêm ảnh mới",
+  newImages.value.length >= 6 ? t("pages.editProductPage.maxNewImages") : t("pages.editProductPage.addNewImage"),
 )
 
 const heroStats = computed<ProductHeroStat[]>(() => [
   {
-    label: "Mức hoàn thiện",
+    label: t("pages.editProductPage.statCompletion"),
     value: `${completionCount.value}/8`,
-    description: "Theo dõi nhanh các trường chính trước khi lưu cập nhật.",
+    description: t("pages.editProductPage.statCompletionDescription"),
   },
   {
-    label: "Ảnh còn lại",
+    label: t("pages.editProductPage.statImagesLeft"),
     value: String(currentImages.value.length),
-    description: "Ảnh cũ vẫn giữ trên tin sau khi loại bỏ các ảnh không cần.",
+    description: t("pages.editProductPage.statImagesLeftDescription"),
   },
   {
-    label: "Trạng thái",
+    label: t("pages.editProductPage.statStatus"),
     value: activeProduct.value.updatedAt,
-    description: "Mốc dữ liệu mock được nạp sẵn cho trang chỉnh sửa này.",
+    description: t("pages.editProductPage.statStatusDescription"),
   },
 ])
 
-const previewBackground = computed(() => categoryMeta[category.value].background)
-const previewIcon = computed(() => categoryMeta[category.value].icon)
-const previewCategoryLabel = computed(() => categoryMeta[category.value].label)
-const previewConditionLabel = computed(() => conditionMap[condition.value])
+const previewBackground = computed(() => categoryMeta.value[category.value].background)
+const previewIcon = computed(() => categoryMeta.value[category.value].icon)
+const previewCategoryLabel = computed(() => categoryMeta.value[category.value].label)
+const previewConditionLabel = computed(() => conditionMap.value[condition.value])
 const previewCurrencyLabel = computed(() => currencyMeta[currency.value].label)
 const previewDescription = computed(() =>
-  description.value.trim() || "Mô tả cập nhật sẽ hiển thị ở đây để bạn kiểm tra trước khi lưu.",
+  description.value.trim() || t("pages.editProductPage.previewDescription"),
 )
 
 const previewPrice = computed(() => formatProductPrice(price.value, currency.value))
@@ -272,44 +276,44 @@ const stockLabel = computed(() => formatProductStockLabel(stock.value))
 
 const checklistItems = computed<ProductChecklistItem[]>(() => [
   {
-    label: "Pre-fill dữ liệu cũ",
-    description: "Tên, giá bán, mô tả và phân loại đã được nạp sẵn theo mã sản phẩm.",
+    label: t("pages.editProductPage.checkPrefill"),
+    description: t("pages.editProductPage.checkPrefillDescription"),
     done: true,
   },
   {
-    label: "Cập nhật nội dung chính",
-    description: "Điền đủ tên sản phẩm, giá bán và mô tả để card hiển thị chuẩn.",
+    label: t("pages.editProductPage.checkMainContent"),
+    description: t("pages.editProductPage.checkMainContentDescription"),
     done: title.value.trim().length > 0 && Number(price.value) > 0 && description.value.trim().length >= 20,
   },
   {
-    label: "Xử lý ảnh cũ",
-    description: "Bạn có thể bỏ bớt ảnh hiện tại trước khi lưu thay đổi.",
+    label: t("pages.editProductPage.checkOldImages"),
+    description: t("pages.editProductPage.checkOldImagesDescription"),
     done: removedImages.value.length >= 0,
   },
   {
-    label: "Sẵn sàng lưu",
-    description: "Ít nhất một ảnh còn lại hoặc có ảnh mới và đủ dữ liệu cốt lõi.",
+    label: t("pages.editProductPage.checkReady"),
+    description: t("pages.editProductPage.checkReadyDescription"),
     done: totalImageCount.value > 0 && completionCount.value >= 7,
   },
 ])
 
-const editingTips: ProductTipItem[] = [
+const editingTips = computed<ProductTipItem[]>(() => [
   {
-    title: "Không đổi quá nhiều cùng lúc",
-    description: "Nếu chỉ cập nhật giá hoặc tồn kho, hãy giữ nguyên các trường còn lại để tránh sai lệch tin đăng.",
+    title: t("pages.editProductPage.tipSmallChanges"),
+    description: t("pages.editProductPage.tipSmallChangesDescription"),
     icon: "i-ph-pencil-line-fill",
   },
   {
-    title: "Loại bỏ ảnh đã lỗi thời",
-    description: "Ảnh cũ không còn đúng tình trạng sản phẩm nên được bỏ khỏi tin trước khi cập nhật.",
+    title: t("pages.editProductPage.tipRemoveOld"),
+    description: t("pages.editProductPage.tipRemoveOldDescription"),
     icon: "i-ph-trash-fill",
   },
   {
-    title: "Kiểm tra lại preview",
-    description: "Khung xem trước bên phải giúp bạn chắc rằng nội dung sau khi sửa vẫn đọc tốt trên card marketplace.",
+    title: t("pages.editProductPage.tipPreview"),
+    description: t("pages.editProductPage.tipPreviewDescription"),
     icon: "i-ph-eye-fill",
   },
-]
+])
 
 const addNewImage = () => {
   if (newImages.value.length >= 6) return

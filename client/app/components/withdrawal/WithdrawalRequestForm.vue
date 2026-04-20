@@ -2,14 +2,14 @@
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">Yêu cầu</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">Tạo yêu cầu rút tiền</h2>
+        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.withdrawalPage.requestEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.withdrawalPage.requestTitle") }}</h2>
         <p class="mt-1 text-body-secondary">
-          Tối thiểu {{ formatWithdrawalCurrency(minimumAmount) }} cho mỗi lần rút.
+          {{ t("pages.withdrawalPage.requestDescription", { amount: formatWithdrawalCurrency(minimumAmount, locale) }) }}
         </p>
       </div>
       <p class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-4 py-2 text-[12px] font-extrabold text-[var(--color-primary-600)]">
-        Khả dụng {{ formatWithdrawalCurrency(availableBalance) }}
+        {{ t("pages.withdrawalPage.availableBadge", { amount: formatWithdrawalCurrency(availableBalance, locale) }) }}
       </p>
     </div>
 
@@ -24,28 +24,28 @@
         type="button"
         @click="form.method = method.value"
       >
-        <Icon :name="method.icon" class="h-6 w-6" />
-        <p class="mt-3 text-[13px] font-extrabold">{{ method.label }}</p>
-        <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ method.description }}</p>
+        <Icon :name="messageText(method.icon)" class="h-6 w-6" />
+        <p class="mt-3 text-[13px] font-extrabold">{{ messageText(method.label) }}</p>
+        <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ messageText(method.description) }}</p>
       </button>
     </div>
 
     <div class="mt-5 grid gap-4 md:grid-cols-2">
       <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">Số tiền</span>
+        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.withdrawalPage.amountLabel") }}</span>
         <input v-model.number="form.amount" class="withdrawal-input mt-2" min="100000" type="number">
       </label>
       <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">Tên chủ tài khoản</span>
-        <input v-model="form.accountName" class="withdrawal-input mt-2" placeholder="Tên trùng với hồ sơ xác minh">
+        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.withdrawalPage.accountNameLabel") }}</span>
+        <input v-model="form.accountName" class="withdrawal-input mt-2" :placeholder="t('pages.withdrawalPage.accountNamePlaceholder')">
       </label>
       <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">Số tài khoản / Email ví</span>
-        <input v-model="form.accountNumber" class="withdrawal-input mt-2" placeholder="Nhập thông tin nhận tiền">
+        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.withdrawalPage.accountNumberLabel") }}</span>
+        <input v-model="form.accountNumber" class="withdrawal-input mt-2" :placeholder="t('pages.withdrawalPage.accountNumberPlaceholder')">
       </label>
       <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">Ghi chú</span>
-        <input v-model="form.note" class="withdrawal-input mt-2" placeholder="Nội dung đối soát">
+        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.withdrawalPage.noteLabel") }}</span>
+        <input v-model="form.note" class="withdrawal-input mt-2" :placeholder="t('pages.withdrawalPage.notePlaceholder')">
       </label>
     </div>
 
@@ -58,7 +58,7 @@
       type="button"
       @click="submit"
     >
-      Gửi yêu cầu rút tiền
+      {{ t("pages.withdrawalPage.submit") }}
     </button>
   </section>
 </template>
@@ -66,6 +66,8 @@
 <script setup lang="ts">
 import type { WithdrawalMethod, WithdrawalRequestPayload } from "~/composables/useMockWithdrawalData"
 import { formatWithdrawalCurrency } from "~/composables/useMockWithdrawalData"
+
+const { t, rt, locale } = useI18n()
 
 const props = defineProps<{
   availableBalance: number
@@ -84,21 +86,26 @@ const form = reactive<WithdrawalRequestPayload>({
   note: "",
 })
 
+const messageText = (value: unknown) =>
+  typeof value === "string" ? value : rt(value as never)
+
 const submit = () => {
   errorMessage.value = ""
 
   if (form.amount < props.minimumAmount) {
-    errorMessage.value = `Số tiền rút tối thiểu là ${formatWithdrawalCurrency(props.minimumAmount)}.`
+    errorMessage.value = t("pages.withdrawalPage.errorMinimum", {
+      amount: formatWithdrawalCurrency(props.minimumAmount, locale.value),
+    })
     return
   }
 
   if (form.amount > props.availableBalance) {
-    errorMessage.value = "Số tiền rút không được vượt quá số dư khả dụng."
+    errorMessage.value = t("pages.withdrawalPage.errorMaximum")
     return
   }
 
   if (!form.accountName.trim() || !form.accountNumber.trim()) {
-    errorMessage.value = "Vui lòng nhập đủ tên chủ tài khoản và thông tin nhận tiền."
+    errorMessage.value = t("pages.withdrawalPage.errorMissingFields")
     return
   }
 

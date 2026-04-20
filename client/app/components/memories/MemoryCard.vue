@@ -25,7 +25,7 @@
           @click="$emit('share', entry.id)"
         >
           <Icon :name="shared ? 'i-ph-check-bold' : 'i-ph-share-network-bold'" class="mr-2 h-4 w-4" />
-          {{ shared ? "Đã chia sẻ lại" : "Chia sẻ lại" }}
+          {{ shared ? t("pages.memoriesPage.sharedAction") : t("pages.memoriesPage.shareAction") }}
         </button>
       </div>
     </div>
@@ -43,6 +43,8 @@ defineProps<{
   entry: MockMemoryEntry
   shared: boolean
 }>()
+
+const { t } = useI18n()
 
 defineEmits<{
   share: [id: string]

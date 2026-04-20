@@ -45,7 +45,7 @@
               @click="$emit('toggleMute')"
             >
               <Icon :name="muted ? 'i-ph-speaker-x-fill' : 'i-ph-speaker-high-fill'" class="h-5 w-5" />
-              {{ muted ? "Bật tiếng" : "Tắt tiếng" }}
+              {{ muted ? $t("pages.livePage.unmute") : $t("pages.livePage.mute") }}
             </button>
             <button
               class="inline-flex h-12 min-w-[110px] items-center justify-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-4 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)]"
@@ -76,11 +76,11 @@
       </div>
       <div class="flex items-center gap-2 border-b border-white/10 px-5 py-4 text-[14px] font-bold text-white/78 sm:border-b-0 sm:border-r">
         <Icon name="i-ph-eye-fill" class="h-5 w-5 text-white" />
-        {{ stream.viewers + joinedViewers }} người đang xem
+        {{ $t("pages.livePage.currentViewers", { count: stream.viewers + joinedViewers }) }}
       </div>
       <div class="flex items-center gap-2 px-5 py-4 text-[14px] font-bold text-white/78">
         <Icon name="i-ph-broadcast-fill" class="h-5 w-5 text-[var(--color-error)]" />
-        Player mock, sẵn sàng nối live provider
+        {{ $t("pages.livePage.playerReady") }}
       </div>
     </div>
   </section>
@@ -98,10 +98,12 @@ const props = defineProps<{
 
 defineEmits<{ toggleMute: []; like: [] }>()
 
+const { t } = useI18n()
+
 const statusLabel = computed(() => {
-  if (props.stream.status === "live") return "Live"
-  if (props.stream.status === "scheduled") return "Sắp phát"
-  return "Đã kết thúc"
+  if (props.stream.status === "live") return t("pages.livePage.statusLive")
+  if (props.stream.status === "scheduled") return t("pages.livePage.statusScheduled")
+  return t("pages.livePage.statusEnded")
 })
 
 const statusClasses = computed(() => {
