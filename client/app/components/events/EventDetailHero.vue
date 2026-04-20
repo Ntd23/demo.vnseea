@@ -4,7 +4,7 @@
       v-if="isMissing"
       class="rounded-[var(--radius-xl)] border border-[#f59e0b]/25 bg-[#fff7ed] p-4 text-[13px] font-semibold text-[#92400e] shadow-[var(--shadow-sm)]"
     >
-      Không tìm thấy sự kiện theo đường dẫn hiện tại. Trang đang hiển thị sự kiện mẫu đầu tiên để bạn vẫn test được layout chi tiết.
+      {{ $t("pages.eventDetailPage.missingNotice") }}
     </section>
 
     <section class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]">
@@ -36,7 +36,7 @@
               v-if="event.isOwner"
               class="rounded-[10px] bg-[#fde7b2] px-2.5 py-1 text-[11px] font-black text-[#27345f]"
             >
-              Bạn quản lý
+              {{ $t("pages.eventDetailPage.ownerBadge") }}
             </span>
             <span class="rounded-[10px] bg-[#101828]/74 px-2.5 py-1 text-[11px] font-bold text-white">
               {{ rsvpLabel }}
@@ -73,7 +73,7 @@
               {{ event.host }}
             </p>
             <p class="mt-1 text-caption-secondary">
-              {{ event.hostRole }} · {{ event.stats.going }} người sẽ tham gia
+              {{ $t("pages.eventDetailPage.hostAttendance", { role: event.hostRole, count: event.stats.going }) }}
             </p>
           </div>
         </div>
@@ -87,7 +87,7 @@
             type="button"
             @click="$emit('setRsvp', 'going')"
           >
-            Sẽ đi
+            {{ $t("pages.eventsPage.rsvpGoing") }}
           </button>
           <button
             class="inline-flex h-11 items-center justify-center rounded-[18px] px-4 text-[13px] font-extrabold transition"
@@ -97,21 +97,21 @@
             type="button"
             @click="$emit('setRsvp', 'interested')"
           >
-            Quan tâm
+            {{ $t("pages.eventsPage.rsvpInterested") }}
           </button>
           <button
             class="inline-flex h-11 items-center justify-center rounded-[18px] border border-[var(--border-default)] bg-white px-4 text-[13px] font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
             type="button"
             @click="$emit('setRsvp', 'not_interested')"
           >
-            Bỏ qua
+            {{ $t("pages.eventDetailPage.actionSkip") }}
           </button>
           <button
             class="inline-flex h-11 items-center justify-center rounded-[18px] border border-[var(--border-default)] bg-white px-4 text-[13px] font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
             type="button"
             @click="$emit('toggleInvite')"
           >
-            Mời bạn bè
+            {{ $t("pages.eventDetailPage.actionInvite") }}
           </button>
         </div>
       </div>

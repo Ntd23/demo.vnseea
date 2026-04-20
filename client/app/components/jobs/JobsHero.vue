@@ -6,13 +6,13 @@
     <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-[780px]">
         <p class="text-label-secondary text-white/72">
-          P-30 · Việc làm
+          {{ $t("pages.jobsPage.heroEyebrow") }}
         </p>
         <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
-          Cơ hội nghề nghiệp cho cộng đồng VNSEEA
+          {{ $t("pages.jobsPage.heroTitle") }}
         </h1>
         <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-          Khám phá vị trí đang tuyển, xem chi tiết công việc, nộp hồ sơ và đăng tin tuyển dụng mới.
+          {{ $t("pages.jobsPage.heroDescription") }}
         </p>
 
         <div class="mt-7 flex flex-wrap items-center gap-3">
@@ -22,7 +22,7 @@
             @click="$emit('openPost')"
           >
             <Icon name="i-ph-briefcase-fill" class="mr-2 h-4 w-4" />
-            Đăng việc mới
+            {{ $t("pages.jobsPage.postJob") }}
           </button>
 
           <button
@@ -32,12 +32,12 @@
             @click="$emit('toggleSaved')"
           >
             <Icon name="i-ph-bookmark-simple-fill" class="mr-2 h-4 w-4" />
-            Việc đã lưu
+            {{ $t("pages.jobsPage.savedJobs") }}
           </button>
 
           <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90">
             <Icon name="i-ph-list-magnifying-glass-fill" class="h-4 w-4 text-[var(--color-accent-100)]" />
-            {{ jobCount }} tin tuyển dụng
+            {{ $t("pages.jobsPage.jobCount", { count: jobCount }) }}
           </div>
         </div>
       </div>

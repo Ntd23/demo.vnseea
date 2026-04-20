@@ -84,11 +84,12 @@ import type { JobApplicationPayload, JobCategoryKey, JobLocationKey, JobPostPayl
 type CategoryFilter = "all" | JobCategoryKey
 type SortKey = "latest" | "salary" | "applicants"
 
+const { t, locale } = useI18n()
 const { jobs, jobCategories, jobLocations, jobTypes } = useMockJobsData()
 
 useSeoMeta({
-  title: "Việc làm | VNSEEA",
-  description: "Tìm việc, lọc theo ngành nghề, địa điểm, xem chi tiết và ứng tuyển các job trong cộng đồng VNSEEA.",
+  title: () => t("pages.jobsPage.seoTitle"),
+  description: () => t("pages.jobsPage.seoDescription"),
 })
 
 const search = ref("")
@@ -146,26 +147,26 @@ watch(filteredJobs, (value) => {
 
 const heroStats = computed(() => [
   {
-    label: "Đang tuyển",
+    label: t("pages.jobsPage.statHiring"),
     value: allJobs.value.length,
-    description: "Tin tuyển dụng trong mock data.",
+    description: t("pages.jobsPage.statHiringDescription"),
   },
   {
-    label: "Remote",
+    label: t("pages.jobsPage.statRemote"),
     value: allJobs.value.filter(job => job.isRemote).length,
-    description: "Vị trí hỗ trợ làm từ xa.",
+    description: t("pages.jobsPage.statRemoteDescription"),
   },
   {
-    label: "Ứng tuyển",
+    label: t("pages.jobsPage.statApplied"),
     value: applications.value.length,
-    description: "Hồ sơ đã gửi trong phiên này.",
+    description: t("pages.jobsPage.statAppliedDescription"),
   },
 ])
 
 const sidebarStats = computed(() => [
-  { label: "Tin nổi bật", value: allJobs.value.filter(job => job.isFeatured).length },
-  { label: "Việc đã lưu", value: allJobs.value.filter(job => savedById.value[job.id] ?? job.isSaved).length },
-  { label: "Nhà tuyển dụng", value: new Set(allJobs.value.map(job => job.company)).size },
+  { label: t("pages.jobsPage.sidebarFeatured"), value: allJobs.value.filter(job => job.isFeatured).length },
+  { label: t("pages.jobsPage.sidebarSaved"), value: allJobs.value.filter(job => savedById.value[job.id] ?? job.isSaved).length },
+  { label: t("pages.jobsPage.sidebarEmployers"), value: new Set(allJobs.value.map(job => job.company)).size },
 ])
 
 const categoryBreakdown = computed(() =>
@@ -176,21 +177,21 @@ const categoryBreakdown = computed(() =>
       count: allJobs.value.filter(job => job.category === category.value).length,
     }))
     .filter(category => category.count > 0)
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, "vi")),
+    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, locale.value)),
 )
 
 const currentSortLabel = computed(() => {
-  if (sortBy.value === "salary") return "Lương tốt"
-  if (sortBy.value === "applicants") return "Nhiều ứng viên"
-  return "Mới nhất"
+  if (sortBy.value === "salary") return t("pages.jobsPage.sortSalary")
+  if (sortBy.value === "applicants") return t("pages.jobsPage.sortApplicants")
+  return t("pages.jobsPage.sortLatest")
 })
 
 const resultHeading = computed(() => {
-  if (savedOnly.value) return "Việc làm đã lưu"
+  if (savedOnly.value) return t("pages.jobsPage.savedHeading")
   if (selectedCategory.value !== "all") {
-    return jobCategories.find(category => category.value === selectedCategory.value)?.label ?? "Việc làm phù hợp"
+    return jobCategories.find(category => category.value === selectedCategory.value)?.label ?? t("pages.jobsPage.defaultHeading")
   }
-  return "Danh sách việc làm đang tuyển"
+  return t("pages.jobsPage.defaultHeading")
 })
 
 const salaryRank = (salary: string) => {
@@ -236,20 +237,20 @@ const createJob = (payload: JobPostPayload) => {
     companyInitials,
     companyGradient: "linear-gradient(135deg,var(--color-primary-500),var(--color-accent-500))",
     category: payload.category,
-    categoryLabel: category?.label ?? "Kỹ thuật",
+    categoryLabel: category?.label ?? t("pages.jobsPage.categoryEngineering"),
     locationKey: payload.locationKey,
     location: payload.location,
     type: payload.type,
-    typeLabel: type?.label ?? "Toàn thời gian",
+    typeLabel: type?.label ?? t("pages.jobsPage.typeFullTime"),
     salary: payload.salary,
-    postedAt: "Vừa đăng",
+    postedAt: t("pages.jobsPage.postedJustNow"),
     deadline: "30/06/2026",
-    experience: "Theo mô tả",
+    experience: t("pages.jobsPage.experiencePerDescription"),
     applicants: 0,
     views: 0,
     description: payload.description,
-    requirements: ["Thông tin yêu cầu sẽ được cập nhật khi nối API job.php."],
-    benefits: ["Nhà tuyển dụng sẽ bổ sung quyền lợi chi tiết."],
+    requirements: [t("pages.jobsPage.defaultRequirement")],
+    benefits: [t("pages.jobsPage.defaultBenefit")],
     skills: ["Hiring", "VNSEEA"],
     isRemote: payload.locationKey === "remote",
     isFeatured: false,

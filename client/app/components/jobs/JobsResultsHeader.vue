@@ -2,13 +2,13 @@
   <div class="flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white/95 px-4 py-4 shadow-[var(--shadow-md)] sm:flex-row sm:items-center sm:justify-between">
     <div>
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Kết quả
+        {{ $t("pages.jobsPage.results") }}
       </p>
       <h2 class="mt-1 text-heading text-[var(--text-primary)]">
         {{ heading }}
       </h2>
       <p class="mt-1 text-body-secondary">
-        {{ count }} việc làm phù hợp · {{ sortLabel }}
+        {{ $t("pages.jobsPage.resultsMeta", { count, sort: sortLabel }) }}
       </p>
     </div>
 
@@ -19,7 +19,7 @@
         @click="$emit('openPost')"
       >
         <Icon name="i-ph-plus-circle-fill" class="h-4 w-4" />
-        Đăng job
+        {{ $t("pages.jobsPage.postJob") }}
       </button>
       <button
         class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] border border-[var(--border-default)] bg-white px-3 text-[13px] font-semibold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
@@ -27,7 +27,7 @@
         @click="$emit('reset')"
       >
         <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-        Đặt lại
+        {{ $t("pages.jobsPage.reset") }}
       </button>
     </div>
   </div>

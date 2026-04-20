@@ -12,13 +12,13 @@
         <div class="flex items-start justify-between gap-4">
           <div>
             <p class="text-label-secondary text-[var(--color-primary-600)]">
-              Nhà tuyển dụng
+              {{ $t("pages.jobsPage.postEyebrow") }}
             </p>
             <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-              Đăng job mới
+              {{ $t("pages.jobsPage.postTitle") }}
             </h2>
             <p class="mt-1 text-body-secondary">
-              Tạo tin tuyển dụng mẫu để kiểm tra luồng job.php.
+              {{ $t("pages.jobsPage.postDescription") }}
             </p>
           </div>
           <button
@@ -32,15 +32,15 @@
 
         <div class="mt-5 grid gap-4 sm:grid-cols-2">
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Chức danh</span>
-            <input v-model="form.title" required class="job-input mt-2" placeholder="Senior Backend Engineer">
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.roleTitle") }}</span>
+            <input v-model="form.title" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.roleTitlePlaceholder')">
           </label>
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Công ty</span>
-            <input v-model="form.company" required class="job-input mt-2" placeholder="VNSEEA Labs">
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.company") }}</span>
+            <input v-model="form.company" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.companyPlaceholder')">
           </label>
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Ngành nghề</span>
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.category") }}</span>
             <select v-model="form.category" class="job-input mt-2">
               <option
                 v-for="category in categories.filter(item => item.value !== 'all')"
@@ -52,7 +52,7 @@
             </select>
           </label>
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Loại hình</span>
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.type") }}</span>
             <select v-model="form.type" class="job-input mt-2">
               <option
                 v-for="type in types.filter(item => item.value !== 'all')"
@@ -64,7 +64,7 @@
             </select>
           </label>
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Địa điểm</span>
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.location") }}</span>
             <select v-model="form.locationKey" class="job-input mt-2">
               <option
                 v-for="location in locations.filter(item => item.value !== 'all')"
@@ -76,25 +76,25 @@
             </select>
           </label>
           <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Địa chỉ hiển thị</span>
-            <input v-model="form.location" required class="job-input mt-2" placeholder="Quận 1, TP. Hồ Chí Minh">
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.displayLocation") }}</span>
+            <input v-model="form.location" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.displayLocationPlaceholder')">
           </label>
           <label class="block sm:col-span-2">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">Mức lương</span>
-            <input v-model="form.salary" required class="job-input mt-2" placeholder="25 - 40 triệu">
+            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.salary") }}</span>
+            <input v-model="form.salary" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.salaryPlaceholder')">
           </label>
         </div>
 
         <label class="mt-4 block">
-          <span class="text-[12px] font-bold text-[var(--text-secondary)]">Mô tả công việc</span>
-          <textarea v-model="form.description" required class="job-input mt-2 min-h-[140px] resize-y py-3" placeholder="Mô tả nhiệm vụ chính, yêu cầu và quyền lợi." />
+          <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.jobDescription") }}</span>
+          <textarea v-model="form.description" required class="job-input mt-2 min-h-[140px] resize-y py-3" :placeholder="$t('pages.jobsPage.jobDescriptionPlaceholder')" />
         </label>
 
         <div
           v-if="created"
           class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]"
         >
-          Đã thêm job mới vào danh sách mock. Chưa gọi API job.php.
+          {{ $t("pages.jobsPage.postSuccess") }}
         </div>
 
         <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
@@ -103,14 +103,14 @@
             type="button"
             @click="$emit('close')"
           >
-            Đóng
+            {{ $t("pages.jobsPage.close") }}
           </button>
           <button
             class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
             type="submit"
           >
             <Icon name="i-ph-briefcase-fill" class="h-4 w-4" />
-            Đăng job
+            {{ $t("pages.jobsPage.postJob") }}
           </button>
         </div>
       </form>

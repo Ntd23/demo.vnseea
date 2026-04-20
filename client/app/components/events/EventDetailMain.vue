@@ -4,10 +4,10 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p class="text-label-secondary text-[var(--color-primary-600)]">
-            Thông tin
+            {{ $t("pages.eventDetailPage.infoEyebrow") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-            Về sự kiện này
+            {{ $t("pages.eventDetailPage.infoTitle") }}
           </h2>
         </div>
         <button
@@ -16,7 +16,7 @@
           @click="shareOpen = !shareOpen"
         >
           <Icon name="i-ph-share-network-fill" class="h-4 w-4" />
-          Chia sẻ
+          {{ $t("pages.eventDetailPage.share") }}
         </button>
       </div>
 
@@ -44,7 +44,7 @@
         class="mt-4 rounded-[20px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4"
       >
         <p class="text-[13px] font-bold text-[var(--text-primary)]">
-          Link chia sẻ
+          {{ $t("pages.eventDetailPage.shareLink") }}
         </p>
         <div class="mt-2 flex flex-col gap-2 sm:flex-row">
           <input
@@ -55,9 +55,9 @@
           <button
             class="inline-flex h-11 items-center justify-center rounded-[16px] bg-[var(--color-primary-500)] px-4 text-[13px] font-extrabold text-white"
             type="button"
-            @click="shareMessage = 'Đã mô phỏng copy link sự kiện.'"
+            @click="shareMessage = t('pages.eventDetailPage.copyMessage')"
           >
-            Copy
+            {{ $t("pages.eventDetailPage.copy") }}
           </button>
         </div>
         <p v-if="shareMessage" class="mt-2 text-[12px] font-semibold text-[var(--color-primary-600)]">
@@ -68,10 +68,10 @@
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)] sm:p-6">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Lịch trình
+        {{ $t("pages.eventDetailPage.agendaEyebrow") }}
       </p>
       <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-        Nội dung chính
+        {{ $t("pages.eventDetailPage.agendaTitle") }}
       </h2>
 
       <div class="mt-5 space-y-4">
@@ -99,14 +99,14 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-label-secondary text-[var(--color-primary-600)]">
-            Người tham dự
+            {{ $t("pages.eventDetailPage.attendeesEyebrow") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-            Danh sách attendees
+            {{ $t("pages.eventDetailPage.attendeesTitle") }}
           </h2>
         </div>
         <div class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-2 text-[12px] font-bold text-[var(--color-primary-600)]">
-          {{ event.attendees.length }} người mẫu
+          {{ $t("pages.eventDetailPage.attendeeCount", { count: event.attendees.length }) }}
         </div>
       </div>
 
@@ -143,20 +143,21 @@ const props = defineProps<{
   event: MockEvent
 }>()
 
+const { t } = useI18n()
 const shareOpen = ref(false)
 const shareMessage = ref("")
 
 const detailStats = computed(() => [
-  { label: "Sẽ đi", value: props.event.stats.going },
-  { label: "Quan tâm", value: props.event.stats.interested },
-  { label: "Được mời", value: props.event.stats.invited },
+  { label: t("pages.eventsPage.rsvpGoing"), value: props.event.stats.going },
+  { label: t("pages.eventsPage.rsvpInterested"), value: props.event.stats.interested },
+  { label: t("pages.eventsPage.rsvpInvited"), value: props.event.stats.invited },
 ])
 
 const shareUrl = computed(() => `/events/${props.event.id}`)
 
 const attendeeStatusLabel = (status: EventAttendee["status"]) => {
-  if (status === "going") return "Sẽ đi"
-  if (status === "interested") return "Quan tâm"
-  return "Được mời"
+  if (status === "going") return t("pages.eventsPage.rsvpGoing")
+  if (status === "interested") return t("pages.eventsPage.rsvpInterested")
+  return t("pages.eventsPage.rsvpInvited")
 }
 </script>

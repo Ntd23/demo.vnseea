@@ -7,10 +7,10 @@
       <div class="flex items-center justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--color-primary-600)]">
-            Mời bạn bè
+            {{ $t("pages.eventDetailPage.inviteEyebrow") }}
           </p>
           <h2 class="mt-1 text-title-primary">
-            Chọn người nhận lời mời
+            {{ $t("pages.eventDetailPage.inviteTitle") }}
           </h2>
         </div>
         <button
@@ -30,7 +30,7 @@
         <input
           v-model="inviteSearch"
           class="h-11 w-full rounded-[16px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-10 pr-3 text-[13px] text-[var(--text-primary)] outline-none transition focus:border-[var(--color-primary-500)] focus:bg-white"
-          placeholder="Tìm bạn bè"
+          :placeholder="$t('pages.eventDetailPage.inviteSearchPlaceholder')"
           type="search"
         >
       </label>
@@ -65,7 +65,7 @@
         type="button"
         @click="sendInvites"
       >
-        Gửi lời mời
+        {{ $t("pages.eventDetailPage.sendInvite") }}
       </button>
       <p v-if="inviteMessage" class="mt-2 text-[12px] font-semibold text-[var(--color-primary-600)]">
         {{ inviteMessage }}
@@ -74,7 +74,7 @@
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Địa điểm
+        {{ $t("pages.eventDetailPage.locationEyebrow") }}
       </p>
       <h2 class="mt-1 text-title-primary">
         {{ event.location }}
@@ -83,7 +83,7 @@
         <div>
           <Icon name="i-ph-map-trifold-fill" class="mx-auto h-10 w-10 text-[var(--color-primary-600)]" />
           <p class="mt-3 text-[13px] font-semibold text-[var(--text-secondary)]">
-            Map placeholder cho UI chi tiết sự kiện.
+            {{ $t("pages.eventDetailPage.mapPlaceholder") }}
           </p>
         </div>
       </div>
@@ -94,22 +94,22 @@
       class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]"
     >
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Quản lý
+        {{ $t("pages.eventDetailPage.managementEyebrow") }}
       </p>
       <div class="mt-4 grid gap-2">
         <button
           class="inline-flex h-11 items-center justify-center rounded-[18px] border border-[var(--border-default)] bg-white text-[13px] font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
           type="button"
-          @click="ownerMessage = 'Đã mô phỏng mở form chỉnh sửa sự kiện.'"
+          @click="ownerMessage = t('pages.eventDetailPage.editMockMessage')"
         >
-          Chỉnh sửa
+          {{ $t("pages.eventDetailPage.editEvent") }}
         </button>
         <button
           class="inline-flex h-11 items-center justify-center rounded-[18px] bg-[#fee2e2] text-[13px] font-bold text-[#b91c1c] transition hover:bg-[#fecaca]"
           type="button"
-          @click="ownerMessage = 'Đã mô phỏng xoá sự kiện. Chưa gọi API events.php.'"
+          @click="ownerMessage = t('pages.eventDetailPage.deleteMockMessage')"
         >
-          Xoá sự kiện
+          {{ $t("pages.eventDetailPage.deleteEvent") }}
         </button>
       </div>
       <p v-if="ownerMessage" class="mt-2 text-[12px] font-semibold text-[var(--color-primary-600)]">
@@ -119,7 +119,7 @@
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Sự kiện liên quan
+        {{ $t("pages.eventDetailPage.relatedEvents") }}
       </p>
       <div class="mt-4 space-y-3">
         <NuxtLink
@@ -165,6 +165,7 @@ defineEmits<{
   closeInvite: []
 }>()
 
+const { t } = useI18n()
 const inviteSearch = ref("")
 const selectedInviteIds = ref<number[]>([])
 const inviteMessage = ref("")
@@ -200,11 +201,13 @@ const filteredInviteCandidates = computed(() => {
 
 const sendInvites = () => {
   if (selectedInviteIds.value.length === 0) {
-    inviteMessage.value = "Chọn ít nhất một người để mô phỏng gửi lời mời."
+    inviteMessage.value = t("pages.eventDetailPage.inviteSelectMessage")
     return
   }
 
-  inviteMessage.value = `Đã mô phỏng gửi ${selectedInviteIds.value.length} lời mời.`
+  inviteMessage.value = t("pages.eventDetailPage.inviteSentMessage", {
+    count: selectedInviteIds.value.length,
+  })
 }
 
 const handleImageError = (event: Event) => {

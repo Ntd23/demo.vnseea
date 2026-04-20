@@ -3,13 +3,13 @@
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <p class="text-label-secondary text-[var(--color-primary-600)]">
-          Bộ lọc
+          {{ $t("pages.jobsPage.filtersEyebrow") }}
         </p>
         <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-          Tìm việc phù hợp
+          {{ $t("pages.jobsPage.filtersTitle") }}
         </h2>
         <p class="mt-1 max-w-[620px] text-body-secondary">
-          Tìm theo vị trí, công ty, kỹ năng; lọc theo ngành, địa điểm và loại hình làm việc.
+          {{ $t("pages.jobsPage.filtersDescription") }}
         </p>
       </div>
 
@@ -19,7 +19,7 @@
         @click="$emit('openPost')"
       >
         <Icon name="i-ph-plus-circle-fill" class="h-5 w-5" />
-        Đăng job
+        {{ $t("pages.jobsPage.postJob") }}
       </button>
     </div>
 
@@ -31,7 +31,7 @@
       <input
         :value="search"
         class="h-16 w-full rounded-[22px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-14 pr-5 text-[15px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:font-medium placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-200)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-        placeholder="Tìm kiếm chức danh, công ty, kỹ năng hoặc mô tả công việc"
+        :placeholder="$t('pages.jobsPage.searchPlaceholder')"
         type="search"
         @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
       >
@@ -41,10 +41,10 @@
       <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3">
         <div class="flex items-center justify-between gap-3 px-1">
           <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            Ngành nghề
+            {{ $t("pages.jobsPage.category") }}
           </p>
           <span class="text-[12px] font-bold text-[var(--text-tertiary)]">
-            {{ categories.length }} lựa chọn
+            {{ $t("pages.jobsPage.optionCount", { count: categories.length }) }}
           </span>
         </div>
 
@@ -70,7 +70,7 @@
       <div class="space-y-4">
         <div>
           <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            Địa điểm
+            {{ $t("pages.jobsPage.location") }}
           </p>
           <div class="mt-3 flex flex-wrap gap-2">
             <button
@@ -91,7 +91,7 @@
 
         <div>
           <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            Loại hình
+            {{ $t("pages.jobsPage.type") }}
           </p>
           <div class="mt-3 flex flex-wrap gap-2">
             <button
@@ -115,10 +115,10 @@
     <div class="mt-5 flex flex-col gap-3 rounded-[24px] border border-[var(--border-default)] bg-white px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
       <div>
         <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-          Sắp xếp
+          {{ $t("pages.jobsPage.sort") }}
         </p>
         <p class="mt-1 text-[13px] font-semibold text-[var(--text-secondary)]">
-          {{ resultCount }} công việc phù hợp · {{ activeSummary }}
+          {{ $t("pages.jobsPage.resultSummary", { count: resultCount, summary: activeSummary }) }}
         </p>
       </div>
 
@@ -165,16 +165,18 @@ defineEmits<{
   openPost: []
 }>()
 
-const sortOptions: { value: SortKey; label: string; icon: string }[] = [
-  { value: "latest", label: "Mới nhất", icon: "i-ph-clock-countdown-fill" },
-  { value: "salary", label: "Lương tốt", icon: "i-ph-money-fill" },
-  { value: "applicants", label: "Nhiều ứng viên", icon: "i-ph-users-three-fill" },
-]
+const { t } = useI18n()
+
+const sortOptions = computed<{ value: SortKey; label: string; icon: string }[]>(() => [
+  { value: "latest", label: t("pages.jobsPage.sortLatest"), icon: "i-ph-clock-countdown-fill" },
+  { value: "salary", label: t("pages.jobsPage.sortSalary"), icon: "i-ph-money-fill" },
+  { value: "applicants", label: t("pages.jobsPage.sortApplicants"), icon: "i-ph-users-three-fill" },
+])
 
 const activeSummary = computed(() => {
-  const category = props.categories.find(item => item.value === props.selectedCategory)?.label ?? "Tất cả"
-  const location = props.locations.find(item => item.value === props.selectedLocation)?.label ?? "Mọi địa điểm"
-  const type = props.types.find(item => item.value === props.selectedType)?.label ?? "Tất cả loại hình"
+  const category = props.categories.find(item => item.value === props.selectedCategory)?.label ?? t("pages.jobsPage.categoryAll")
+  const location = props.locations.find(item => item.value === props.selectedLocation)?.label ?? t("pages.jobsPage.locationAll")
+  const type = props.types.find(item => item.value === props.selectedType)?.label ?? t("pages.jobsPage.typeAll")
 
   return `${category} · ${location} · ${type}`
 })
