@@ -55,9 +55,11 @@ const props = withDefaults(defineProps<{
   highlights: () => [],
 })
 
+const { t } = useI18n()
+
 const normalizedHighlights = computed(() =>
   props.highlights.length > 0
     ? props.highlights
-    : ["Điền trong 1 phút", "Có thể chỉnh sửa sau"],
+    : [t("community.creation.common.quickFill"), t("community.creation.common.editLater")],
 )
 </script>

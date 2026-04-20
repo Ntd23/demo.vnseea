@@ -813,5 +813,128 @@
         "workshopLeadership": "Bộ tài liệu workshop leadership"
       }
     }
+  },
+  "community": {
+    "creation": {
+      "group": {
+        "eyebrow": "P-18 · Cộng đồng",
+        "title": "Tạo nhóm mới",
+        "description": "Thiết lập một cộng đồng mới cho thành viên cùng trao đổi, chia sẻ nội dung và kết nối quanh một chủ đề chung.",
+        "highlights": ["URL tùy chỉnh", "Kiểm soát quyền riêng tư", "Sẵn sàng mời thành viên"],
+        "nameLabel": "Tên nhóm",
+        "namePlaceholder": "Ví dụ: Cộng đồng Ô tô miền Trung",
+        "slugPlaceholder": "cong-dong-o-to-mien-trung",
+        "privacyLabel": "Loại nhóm",
+        "categoryLabel": "Loại"
+      },
+      "common": {
+        "entityLabelGroup": "nhóm",
+        "entityLabelPage": "trang",
+        "basicSetup": "Thiết lập cơ bản",
+        "fillInfo": "Điền thông tin {entity}",
+        "fillDesc": "Hoàn thiện tên, URL, mô tả và phân loại để {entity} mới của bạn sẵn sàng xuất hiện trên VNSEEA.",
+        "completionStatus": "{count}/{total} mục chính đã sẵn sàng",
+        "urlSuggested": "Gợi ý URL",
+        "urlDefault": "ten-cua-ban",
+        "useSuggestion": "Dùng gợi ý",
+        "charCount": "{count} ký tự",
+        "action": "Hành động",
+        "create": "Tạo nhóm",
+        "back": "Quay lại",
+        "identitySection": "Định danh {entity}",
+        "identityTitle": "Tên ngắn gọn và URL dễ nhớ",
+        "identityBadge": "Hiển thị đẹp trên tìm kiếm và chia sẻ",
+        "identityHint": "Dễ nhớ, ngắn và đúng chủ đề",
+        "identityReady": "Tên đã đủ rõ",
+        "introSection": "Giới thiệu {entity}",
+        "introTitleGroup": "Mô tả rõ mục tiêu và đối tượng thành viên",
+        "introTitlePage": "Mô tả rõ mục tiêu và đối tượng người theo dõi",
+        "introHint": "Gợi ý: nói rõ {entity} dành cho ai, nội dung chính là gì và điểm khác biệt nổi bật nhất.",
+        "configLabelDisplay": "Cấu hình hiển thị",
+        "configLabelContent": "Phân loại nội dung",
+        "configTitleGroup": "Chọn phạm vi tiếp cận và nhóm nội dung phù hợp",
+        "configTitlePage": "Chọn danh mục gần nhất với nội dung chính của trang",
+        "finishHint": "Khi hoàn tất, bạn vẫn có thể quay lại chỉnh ảnh cover, mô tả và {extra}.",
+        "finishExtraGroup": "quyền quản trị",
+        "finishExtraPage": "thông tin liên hệ",
+        "previewTitle": "Tên {entity} sẽ hiển thị ở đây",
+        "previewUrlDefault": "duong-dan-cua-ban",
+        "previewDescDefault": "{entity} mới của bạn sẽ có phần mô tả ngắn để người khác hiểu rõ mục tiêu, chủ đề và cách tham gia.",
+        "noPrivacy": "Chưa chọn hiển thị",
+        "privacyDescDefault": "Thiết lập này quyết định ai sẽ tìm thấy và xem được nội dung trong {entity}.",
+        "noCategory": "Chưa chọn loại",
+        "categoryDescDefault": "Hãy chọn một category gần nhất với chủ đề chính của {entity}.",
+        "quickFill": "Điền trong 1 phút",
+        "editLater": "Có thể chỉnh sửa sau",
+        "urlLabel": "Đường dẫn URL",
+        "descriptionLabel": "Mô tả",
+        "categoryLabel": "Danh mục"
+      },
+      "insights": {
+        "preview": "Xem trước",
+        "readiness": "Mức sẵn sàng",
+        "completionStatus": "{count}/{total} mục đã hoàn thành",
+        "privacy": "Quyền hiển thị",
+        "afterCreation": "Sau khi tạo",
+        "noPrivacy": "Chưa chọn hiển thị",
+        "privacyDescDefault": "Hãy chọn quyền hiển thị để kiểm soát ai có thể tìm thấy và xem nội dung nhóm.",
+        "finishTitle": "Hoàn thiện {entity}",
+        "finishDesc": "Bạn có thể thêm cover, avatar và thông tin nổi bật ngay sau khi tạo {entity}.",
+        "inviteTitle": "Mời những người đầu tiên",
+        "inviteDescGroup": "Bắt đầu với một nhóm nhỏ để kiểm tra nhịp thảo luận và nội dung khởi đầu.",
+        "inviteDescPage": "Kéo lượt theo dõi đầu tiên từ khách hàng, bạn bè hoặc cộng đồng sẵn có của bạn.",
+        "introPostTitle": "Đăng bài giới thiệu",
+        "introPostDesc": "Ghim một bài mở đầu để người mới biết bạn đang chia sẻ gì và nên bắt đầu từ đâu."
+      },
+      "readiness": {
+        "nameLabel": "Tên {entity} rõ ràng",
+        "nameDesc": "Tên ngắn gọn giúp người xem nhận ra chủ đề của {entity} ngay.",
+        "urlLabel": "URL tùy chỉnh",
+        "urlDesc": "Đường dẫn gọn giúp chia sẻ {entity} dễ hơn.",
+        "descLabel": "Mô tả đủ ý",
+        "descDesc": "Giải thích {entity} dành cho ai và nội dung sẽ tập trung vào đâu.",
+        "categoryLabel": "Phân loại đúng chủ đề",
+        "categoryDesc": "{entity} sẽ xuất hiện đúng ngữ cảnh hơn khi chọn đúng danh mục.",
+        "privacyLabel": "Loại hiển thị đã chọn",
+        "privacyDesc": "Thiết lập này ảnh hưởng trực tiếp tới việc ai có thể tìm thấy và xem {entity}."
+      }
+    },
+    "cta": {
+      "message": { "label": "Nhắn tin", "description": "Phù hợp khi bạn muốn kéo người xem sang inbox để tư vấn trực tiếp." },
+      "follow": { "label": "Theo dõi", "description": "Tốt cho fanpage nội dung, thương hiệu hoặc kênh cập nhật định kỳ." },
+      "catalog": { "label": "Xem sản phẩm", "description": "Dùng cho trang có danh mục sản phẩm, dịch vụ hoặc bộ sưu tập nổi bật." },
+      "booking": { "label": "Đặt lịch", "description": "Hợp với studio, chuyên gia, lớp học hoặc dịch vụ cần chốt khung giờ." },
+      "call": { "label": "Gọi ngay", "description": "Phù hợp với doanh nghiệp địa phương hoặc đội ngũ cần phản hồi nhanh." }
+    },
+    "tabs": {
+      "groups": {
+        "mine": "Nhóm của tôi",
+        "suggested": "Các nhóm được đề xuất",
+        "joined": "Các nhóm đã tham gia"
+      },
+      "pages": {
+        "mine": "Trang của tôi",
+        "suggested": "Các trang được đề xuất",
+        "favorite": "Các trang được yêu thích"
+      }
+    },
+    "privacy": {
+      "public": { "label": "Công cộng", "description": "Ai cũng có thể tìm thấy nhóm và xem nội dung cơ bản." },
+      "private": { "label": "Riêng tư", "description": "Nhóm hiển thị công khai nhưng chỉ thành viên mới xem được bài đăng." },
+      "secret": { "label": "Bí mật", "description": "Chỉ người được mời mới nhìn thấy và tham gia được nhóm." }
+    },
+    "categories": {
+      "auto": { "label": "Ô tô và Xe cộ", "description": "Dành cho thảo luận xe mới, bảo dưỡng, review và phụ kiện." },
+      "business": { "label": "Kinh doanh", "description": "Tập trung vào hợp tác, bán hàng, quản trị và phát triển doanh nghiệp." },
+      "technology": { "label": "Công nghệ", "description": "Phù hợp cho cộng đồng yêu thích phần mềm, AI, thiết bị và lập trình." },
+      "education": { "label": "Giáo dục", "description": "Chia sẻ kiến thức, tài liệu học tập, workshop và mentoring." },
+      "travel": { "label": "Du lịch", "description": "Dùng để tổ chức chuyến đi, chia sẻ lịch trình và kinh nghiệm thực tế." },
+      "marketplace": { "label": "Mua bán", "description": "Hợp với nhóm trao đổi sản phẩm, ưu đãi và nhu cầu mua chung." },
+      "local-business": { "label": "Doanh nghiệp địa phương", "description": "Phù hợp cho cửa hàng, studio, quán ăn và các thương hiệu vận hành tại địa phương." },
+      "creator": { "label": "Creator & Chuyên gia", "description": "Dùng cho KOL, chuyên gia, huấn luyện viên hoặc người xây dựng thương hiệu cá nhân." },
+      "brand": { "label": "Thương hiệu & Sản phẩm", "description": "Dành cho fanpage giới thiệu sản phẩm, chiến dịch, ưu đãi và cập nhật thương hiệu." },
+      "organization": { "label": "Tổ chức & Cộng đồng", "description": "Dành cho tổ chức, câu lạc bộ, dự án xã hội và các chương trình cộng đồng." },
+      "service": { "label": "Dịch vụ chuyên nghiệp", "description": "Phù hợp với agency, freelancer, studio dịch vụ và đội ngũ tư vấn." }
+    }
   }
 }

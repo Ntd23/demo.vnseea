@@ -813,5 +813,128 @@
         "workshopLeadership": "Leadership workshop documentation"
       }
     }
+  },
+  "community": {
+    "creation": {
+      "group": {
+        "eyebrow": "P-18 · Community",
+        "title": "Create new group",
+        "description": "Set up a new community for members to exchange, share content, and connect around a common topic.",
+        "highlights": ["Custom URL", "Privacy control", "Ready to invite members"],
+        "nameLabel": "Group name",
+        "namePlaceholder": "Example: Central Auto Community",
+        "slugPlaceholder": "central-auto-community",
+        "privacyLabel": "Group type",
+        "categoryLabel": "Category"
+      },
+      "common": {
+        "entityLabelGroup": "group",
+        "entityLabelPage": "page",
+        "basicSetup": "Basic setup",
+        "fillInfo": "Fill in {entity} information",
+        "fillDesc": "Complete the name, URL, description, and category to get your new {entity} ready to appear on VNSEEA.",
+        "completionStatus": "{count}/{total} key items ready",
+        "urlSuggested": "URL suggestion",
+        "urlDefault": "your-name",
+        "useSuggestion": "Use suggestion",
+        "charCount": "{count} characters",
+        "action": "Actions",
+        "create": "Create",
+        "back": "Back",
+        "identitySection": "{entity} Identity",
+        "identityTitle": "Concise name and memorable URL",
+        "identityBadge": "Displays beautifully in search and sharing",
+        "identityHint": "Memorable, short, and on topic",
+        "identityReady": "Name is clear enough",
+        "introSection": "Introduction {entity}",
+        "introTitleGroup": "Clearly describe the goal and target members",
+        "introTitlePage": "Clearly describe the goal and target followers",
+        "introHint": "Tip: specify who the {entity} is for, what the main content is, and the most prominent difference.",
+        "configLabelDisplay": "Display configuration",
+        "configLabelContent": "Content classification",
+        "configTitleGroup": "Choose reach and appropriate content group",
+        "configTitlePage": "Choose the category closest to the page main content",
+        "finishHint": "When finished, you can still go back to edit the cover image, description, and {extra}.",
+        "finishExtraGroup": "admin rights",
+        "finishExtraPage": "contact information",
+        "previewTitle": "{entity} name will appear here",
+        "previewUrlDefault": "your-slug-path",
+        "previewDescDefault": "Your new {entity} will have a short description so others can understand the goal, topic, and how to participate.",
+        "noPrivacy": "No display selected",
+        "privacyDescDefault": "This setting determines who can find and view content in the {entity}.",
+        "noCategory": "No category selected",
+        "categoryDescDefault": "Please choose the category closest to the main topic of the {entity}.",
+        "quickFill": "Fill in 1 minute",
+        "editLater": "Can be edited later",
+        "urlLabel": "URL Path",
+        "descriptionLabel": "Description",
+        "categoryLabel": "Category"
+      },
+      "insights": {
+        "preview": "Preview",
+        "readiness": "Readiness",
+        "completionStatus": "{count}/{total} items completed",
+        "privacy": "Visibility rights",
+        "afterCreation": "After creation",
+        "noPrivacy": "No display selected",
+        "privacyDescDefault": "Please choose visibility rights to control who can find and view group content.",
+        "finishTitle": "Complete {entity}",
+        "finishDesc": "You can add a cover, avatar, and featured information right after creating {entity}.",
+        "inviteTitle": "Invite first people",
+        "inviteDescGroup": "Start with a small group to test the discussion rhythm and initial content.",
+        "inviteDescPage": "Pull the first follows from your customers, friends, or existing community.",
+        "introPostTitle": "Post introductory message",
+        "introPostDesc": "Pin an opening post so newcomers know what you're sharing and where to start."
+      },
+      "readiness": {
+        "nameLabel": "Clear {entity} name",
+        "nameDesc": "A concise name helps viewers recognize the {entity} theme immediately.",
+        "urlLabel": "Custom URL",
+        "urlDesc": "A clean path makes sharing {entity} easier.",
+        "descLabel": "Detailed description",
+        "descDesc": "Explain who {entity} is for and what the content will focus on.",
+        "categoryLabel": "Appropriate category",
+        "categoryDesc": "{entity} will appear in a better context when the right category is chosen.",
+        "privacyLabel": "Display type selected",
+        "privacyDesc": "This setting directly affects who can find and view {entity}."
+      }
+    },
+    "cta": {
+      "message": { "label": "Message", "description": "Suitable when you want to draw viewers to inbox for direct consultation." },
+      "follow": { "label": "Follow", "description": "Good for content fanpages, brands, or periodic update channels." },
+      "catalog": { "label": "View catalog", "description": "Used for pages with product catalogs, services, or featured collections." },
+      "booking": { "label": "Book now", "description": "Suitable for studios, experts, classes, or services that need to close scheduled slots." },
+      "call": { "label": "Call now", "description": "Suitable for local businesses or teams that need quick responses." }
+    },
+    "tabs": {
+      "groups": {
+        "mine": "My groups",
+        "suggested": "Suggested groups",
+        "joined": "Joined groups"
+      },
+      "pages": {
+        "mine": "My pages",
+        "suggested": "Suggested pages",
+        "favorite": "Favorite pages"
+      }
+    },
+    "privacy": {
+      "public": { "label": "Public", "description": "Anyone can find the group and view basic content." },
+      "private": { "label": "Private", "description": "Group is publicly visible but only members can view posts." },
+      "secret": { "label": "Secret", "description": "Only invited people can see and join the group." }
+    },
+    "categories": {
+      "auto": { "label": "Auto & Vehicles", "description": "For discussions on new cars, maintenance, reviews, and accessories." },
+      "business": { "label": "Business", "description": "Focus on collaboration, sales, management, and business development." },
+      "technology": { "label": "Technology", "description": "Suitable for communities interested in software, AI, devices, and programming." },
+      "education": { "label": "Education", "description": "Share knowledge, study materials, workshops, and mentoring." },
+      "travel": { "label": "Travel", "description": "Used to organize trips, share schedules, and practical experiences." },
+      "marketplace": { "label": "Marketplace", "description": "Suitable for groups exchanging products, deals, and group buying needs." },
+      "local-business": { "label": "Local Business", "description": "Suitable for shops, studios, eateries, and brands operating locally." },
+      "creator": { "label": "Creator & Professional", "description": "For KOLs, experts, coaches, or people building personal brands." },
+      "brand": { "label": "Brand & Product", "description": "For fanpages introduced products, campaigns, deals, and brand updates." },
+      "organization": { "label": "Organization & Community", "description": "For organizations, clubs, social projects, and community programs." },
+      "service": { "label": "Professional Service", "description": "Suitable for agencies, freelancers, service studios, and consulting teams." }
+    }
   }
 }

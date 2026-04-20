@@ -111,146 +111,146 @@ export const communityPageUrlPrefix = "https://vnseea.vn/p/"
 
 export const communityPrivacyOptions: CommunityOption[] = [
   {
-    label: "Công cộng",
+    label: "community.privacy.public.label",
     value: "public",
-    description: "Ai cũng có thể tìm thấy nhóm và xem nội dung cơ bản.",
+    description: "community.privacy.public.description",
     icon: "i-ph-globe-hemisphere-west-fill",
   },
   {
-    label: "Riêng tư",
+    label: "community.privacy.private.label",
     value: "private",
-    description: "Nhóm hiển thị công khai nhưng chỉ thành viên mới xem được bài đăng.",
+    description: "community.privacy.private.description",
     icon: "i-ph-lock-key-fill",
   },
   {
-    label: "Bí mật",
+    label: "community.privacy.secret.label",
     value: "secret",
-    description: "Chỉ người được mời mới nhìn thấy và tham gia được nhóm.",
+    description: "community.privacy.secret.description",
     icon: "i-ph-eye-slash-fill",
   },
 ]
 
 export const communityCategoryOptions: CommunityOption[] = [
   {
-    label: "Ô tô và Xe cộ",
+    label: "community.categories.auto.label",
     value: "auto",
-    description: "Dành cho thảo luận xe mới, bảo dưỡng, review và phụ kiện.",
+    description: "community.categories.auto.description",
     icon: "i-ph-car-profile-fill",
   },
   {
-    label: "Kinh doanh",
+    label: "community.categories.business.label",
     value: "business",
-    description: "Tập trung vào hợp tác, bán hàng, quản trị và phát triển doanh nghiệp.",
+    description: "community.categories.business.description",
     icon: "i-ph-briefcase-fill",
   },
   {
-    label: "Công nghệ",
+    label: "community.categories.technology.label",
     value: "technology",
-    description: "Phù hợp cho cộng đồng yêu thích phần mềm, AI, thiết bị và lập trình.",
+    description: "community.categories.technology.description",
     icon: "i-ph-cpu-fill",
   },
   {
-    label: "Giáo dục",
+    label: "community.categories.education.label",
     value: "education",
-    description: "Chia sẻ kiến thức, tài liệu học tập, workshop và mentoring.",
+    description: "community.categories.education.description",
     icon: "i-ph-graduation-cap-fill",
   },
   {
-    label: "Du lịch",
+    label: "community.categories.travel.label",
     value: "travel",
-    description: "Dùng để tổ chức chuyến đi, chia sẻ lịch trình và kinh nghiệm thực tế.",
+    description: "community.categories.travel.description",
     icon: "i-ph-airplane-tilt-fill",
   },
   {
-    label: "Mua bán",
+    label: "community.categories.marketplace.label",
     value: "marketplace",
-    description: "Hợp với nhóm trao đổi sản phẩm, ưu đãi và nhu cầu mua chung.",
+    description: "community.categories.marketplace.description",
     icon: "i-ph-storefront-fill",
   },
 ]
 
 export const communityPageCategoryOptions: CommunityOption[] = [
   {
-    label: "Doanh nghiệp địa phương",
+    label: "community.categories.local-business.label",
     value: "local-business",
-    description: "Phù hợp cho cửa hàng, studio, quán ăn và các thương hiệu vận hành tại địa phương.",
+    description: "community.categories.local-business.description",
     icon: "i-ph-storefront-fill",
   },
   {
-    label: "Creator & Chuyên gia",
+    label: "community.categories.creator.label",
     value: "creator",
-    description: "Dùng cho KOL, chuyên gia, huấn luyện viên hoặc người xây dựng thương hiệu cá nhân.",
+    description: "community.categories.creator.description",
     icon: "i-ph-microphone-stage-fill",
   },
   {
-    label: "Thương hiệu & Sản phẩm",
+    label: "community.categories.brand.label",
     value: "brand",
-    description: "Dành cho fanpage giới thiệu sản phẩm, chiến dịch, ưu đãi và cập nhật thương hiệu.",
+    description: "community.categories.brand.description",
     icon: "i-ph-megaphone-simple-fill",
   },
   {
-    label: "Giáo dục & Đào tạo",
+    label: "community.categories.education.label",
     value: "education",
-    description: "Phù hợp với lớp học, trung tâm, mentor, khóa học và kênh chia sẻ kiến thức.",
+    description: "community.categories.education.description",
     icon: "i-ph-graduation-cap-fill",
   },
   {
-    label: "Tổ chức & Cộng đồng",
+    label: "community.categories.organization.label",
     value: "organization",
-    description: "Dành cho tổ chức, câu lạc bộ, dự án xã hội và các chương trình cộng đồng.",
+    description: "community.categories.organization.description",
     icon: "i-ph-buildings-fill",
   },
   {
-    label: "Dịch vụ chuyên nghiệp",
+    label: "community.categories.service.label",
     value: "service",
-    description: "Phù hợp với agency, freelancer, studio dịch vụ và đội ngũ tư vấn.",
+    description: "community.categories.service.description",
     icon: "i-ph-briefcase-fill",
   },
 ]
 
 export const communityPageCtaOptions: CommunityOption[] = [
   {
-    label: "Nhắn tin",
+    label: "community.cta.message.label",
     value: "message",
-    description: "Phù hợp khi bạn muốn kéo người xem sang inbox để tư vấn trực tiếp.",
+    description: "community.cta.message.description",
     icon: "i-ph-chat-circle-dots-fill",
   },
   {
-    label: "Theo dõi",
+    label: "community.cta.follow.label",
     value: "follow",
-    description: "Tốt cho fanpage nội dung, thương hiệu hoặc kênh cập nhật định kỳ.",
+    description: "community.cta.follow.description",
     icon: "i-ph-bell-simple-ringing-fill",
   },
   {
-    label: "Xem sản phẩm",
+    label: "community.cta.catalog.label",
     value: "catalog",
-    description: "Dùng cho trang có danh mục sản phẩm, dịch vụ hoặc bộ sưu tập nổi bật.",
+    description: "community.cta.catalog.description",
     icon: "i-ph-storefront-fill",
   },
   {
-    label: "Đặt lịch",
+    label: "community.cta.booking.label",
     value: "booking",
-    description: "Hợp với studio, chuyên gia, lớp học hoặc dịch vụ cần chốt khung giờ.",
+    description: "community.cta.booking.description",
     icon: "i-ph-calendar-check-fill",
   },
   {
-    label: "Gọi ngay",
+    label: "community.cta.call.label",
     value: "call",
-    description: "Phù hợp với doanh nghiệp địa phương hoặc đội ngũ cần phản hồi nhanh.",
+    description: "community.cta.call.description",
     icon: "i-ph-phone-call-fill",
   },
 ]
 
 export const communityGroupTabs: Array<{ label: string; value: CommunityGroupTab }> = [
-  { label: "Nhóm của tôi", value: "mine" },
-  { label: "Các nhóm được đề xuất", value: "suggested" },
-  { label: "Các nhóm đã tham gia", value: "joined" },
+  { label: "community.tabs.groups.mine", value: "mine" },
+  { label: "community.tabs.groups.suggested", value: "suggested" },
+  { label: "community.tabs.groups.joined", value: "joined" },
 ]
 
 export const communityPageTabs: Array<{ label: string; value: CommunityPageTab }> = [
-  { label: "Trang của tôi", value: "mine" },
-  { label: "Các trang được đề xuất", value: "suggested" },
-  { label: "Các trang được yêu thích", value: "favorite" },
+  { label: "community.tabs.pages.mine", value: "mine" },
+  { label: "community.tabs.pages.suggested", value: "suggested" },
+  { label: "community.tabs.pages.favorite", value: "favorite" },
 ]
 
 export const communityPageRouteMap: Record<CommunityPageTab, string> = {
