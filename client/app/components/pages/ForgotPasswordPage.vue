@@ -1,42 +1,39 @@
 <template>
-  <AuthSplitShell>
-    <div class="mx-auto w-full max-w-[420px]">
-      <section class="flex flex-col gap-2">
-        <p class="text-[13px] font-extrabold tracking-[0.32em] text-[#0000ff]">KHÔI PHỤC TÀI KHOẢN</p>
-        <h1 class="text-[2.35rem] font-black leading-[0.95] tracking-[-0.08em] text-[#0000ff] sm:text-[2.7rem]">Quên mật khẩu?</h1>
-        <p class="text-[1rem] leading-7 text-slate-500">Nhập email hoặc số điện thoại để nhận liên kết đặt lại mật khẩu.</p>
-      </section>
+  <AuthSplitShell :hero-props="heroProps">
+    <template #right>
+      <div class="w-full max-w-[420px]">
+        <h2 class="text-[34px] font-extrabold tracking-[-0.06em] text-[#0000ff] sm:text-[38px] lg:text-[42px]">Quên mật khẩu?</h2>
 
-      <section class="mt-7 flex flex-col gap-4">
-        <div class="flex flex-col gap-2">
-          <label for="reset-email" class="text-[0.95rem] font-semibold text-[#243b63]">E-mail</label>
-          <input id="reset-email" v-model="email" type="email" autocomplete="email" class="h-[3.6rem] w-full rounded-[1.15rem] border border-[#dbe3f2] bg-white px-5 text-[1rem] text-slate-900 outline-none transition placeholder:text-slate-400 sm:h-[3.85rem] sm:rounded-[1.45rem]">
-        </div>
+        <div class="mt-6 space-y-4 sm:mt-7">
+          <div>
+            <label for="reset-email" class="mb-2 block text-[14px] font-medium text-slate-600">E-mail</label>
+            <input id="reset-email" v-model="email" type="email" autocomplete="email" class="h-[40px] w-full rounded-[10px] border border-[#d5e4f0] bg-white px-4 text-[15px] text-slate-900 outline-none transition focus:border-[#0000ff] focus:shadow-[0_0_0_4px_rgba(0,0,255,0.08)]">
+          </div>
 
-        <div class="rounded-[1.15rem] border border-[#dbe3f2] bg-white p-4 sm:rounded-[1.45rem] sm:p-5">
-          <div class="flex items-center justify-between gap-4">
-            <label class="flex items-center gap-3 text-[0.95rem] text-[#243b63]">
-              <input type="checkbox" class="h-5 w-5 rounded border-slate-300 text-[#0000ff] focus:ring-[#0000ff]">
-              <span>Tôi không phải robot</span>
-            </label>
-            <div class="flex flex-col items-center justify-center text-[10px] leading-none text-slate-500">
-              <div class="h-7 w-7 rounded-sm border border-[#d7e3ef] bg-[#f7fbff]"></div>
-              <span class="mt-1">reCAPTCHA</span>
+          <div class="w-fit rounded-[2px] border border-slate-300 bg-white p-1 shadow-sm">
+            <div class="flex h-[58px] w-[214px] items-center justify-between gap-3 px-2">
+              <label class="flex items-center gap-2 text-[12px] text-slate-700"><input type="checkbox" class="h-[18px] w-[18px] rounded border-slate-400 text-[#0000ff] focus:ring-[#0000ff]"><span>I’m not a robot</span></label>
+              <div class="flex flex-col items-center justify-center text-[10px] leading-none text-slate-500"><div class="h-6 w-6 rounded-sm border border-[#d7e3ef] bg-[#f7fbff]"></div><span class="mt-1">reCAPTCHA</span></div>
             </div>
           </div>
+
+          <button class="h-[40px] w-full rounded-[10px] bg-[#0000ff] text-[16px] font-semibold text-white transition hover:bg-[#0000dd]" type="button">Hồi phục</button>
+
+          <p class="pt-1 text-center text-[13px] text-slate-500">
+            Bạn có sẵn sàng để tạo một tài khoản?
+            <NuxtLink to="/welcome" class="text-slate-700 underline-offset-2 hover:underline">Đăng nhập</NuxtLink>
+          </p>
         </div>
-
-        <button class="h-[3.7rem] w-full rounded-[1.2rem] bg-[linear-gradient(180deg,#2749ff_0%,#0000ff_100%)] text-[1.05rem] font-black text-white shadow-[0_14px_32px_rgba(0,0,255,0.18)] transition hover:brightness-105 sm:h-[3.95rem] sm:rounded-[1.45rem] sm:text-[1.15rem]" type="button">Hồi phục</button>
-
-        <p class="text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
-          Bạn đã nhớ mật khẩu?
-          <NuxtLink to="/welcome" class="font-extrabold text-[#0000ff]">Đăng nhập</NuxtLink>
-        </p>
-      </section>
-    </div>
+      </div>
+    </template>
   </AuthSplitShell>
 </template>
 
 <script setup lang="ts">
 const email = ref('')
+const heroProps = {
+  title: 'Kết nối với bạn bè!',
+  subtitle: 'Chia sẻ những điều mới và những khoảnh khắc trong cuộc sống với bạn bè của bạn.',
+}
+useSeoMeta({ title: 'Quên mật khẩu | VNSEEA' })
 </script>
