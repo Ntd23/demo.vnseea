@@ -14,10 +14,19 @@
         </div>
 
         <div class="ml-auto flex shrink-0 items-center gap-2">
-          <button v-for="action in desktopActions" :key="action.label" class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f5f8ff] text-[#33496d] transition hover:border-[#c8d6f2] hover:text-[#0000ff]" type="button" :aria-label="action.label">
+          <component
+            :is="action.to ? NuxtLink : 'button'"
+            v-for="action in desktopActions"
+            :key="action.label"
+            :to="action.to"
+            class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f5f8ff] text-[#33496d] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+            :class="action.to === route.path ? 'border-[#0000ff] bg-[#eef2ff] text-[#0000ff]' : ''"
+            :type="action.to ? undefined : 'button'"
+            :aria-label="action.label"
+          >
             <Icon :name="action.icon" class="h-5 w-5" />
             <span v-if="action.badge" class="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0000ff] px-1 text-[9px] font-bold text-white">{{ action.badge }}</span>
-          </button>
+          </component>
           <button class="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[#dce4ff] bg-[linear-gradient(145deg,#1f34ff_0%,#0000ff_60%,#4d63ff_100%)] text-white shadow-[0_8px_18px_rgba(0,0,255,0.16)]" type="button" aria-label="Tài khoản" @click="$emit('toggle-menu')">
             <Icon name="i-lucide-circle-user-round" class="h-5 w-5" />
           </button>
@@ -54,6 +63,8 @@
 </template>
 
 <script setup lang="ts">
+import { NuxtLink } from '#components'
+
 defineEmits<{ 'toggle-menu': [] }>()
 
 const route = useRoute()
@@ -61,6 +72,7 @@ const isHome = computed(() => route.path === '/' || route.path === '/home')
 
 const desktopActions = [
   { label: 'Yêu cầu kết bạn', icon: 'i-ph-user-plus-fill', badge: 1 },
+  { label: 'Tin nhắn', icon: 'i-ph-chat-circle-dots-fill', to: '/messages' },
   { label: 'Thông báo', icon: 'i-ph-bell-fill', badge: 3 },
 ]
 
