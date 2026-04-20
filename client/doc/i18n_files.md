@@ -188,23 +188,26 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/feed/PostCard.vue`
 - [ ] `client/app/components/feed/PostHeader.vue`
 - [ ] `client/app/components/feed/CommentItem.vue`
+- [ ] `client/app/components/feed/CommentList.vue`
 - [x] `client/app/components/feed/CommentComposer.vue` ← **ví dụ mẫu, xem hướng dẫn phần trên**
 - [ ] `client/app/components/feed/ShareModal.vue`
 - [ ] `client/app/components/feed/StoryCarousel.vue`
 - [ ] `client/app/components/feed/PublisherBox.vue`
+- [ ] `client/app/components/feed/PostMediaGrid.vue`
 - [ ] `client/app/components/feed/LightboxViewer.vue`
-- [ ] `client/app/components/feed/LightboxModal.vue`
+- [ ] `client/app/components/lightbox/LightboxModal.vue`
 
 ### Navigation / layout
 - [ ] `client/app/components/navigation/HeaderBar.vue`
 - [ ] `client/app/components/navigation/HeaderIconNav.vue`
 - [ ] `client/app/components/navigation/MobileMenu.vue`
 - [ ] `client/app/components/navigation/LeftSidebar.vue`
-- [ ] `client/app/components/navigation/RightSidebar.vue`
+- [x] `client/app/components/navigation/RightSidebar.vue`
+- [ ] `client/app/components/navigation/ChatWidget.vue`
 - [ ] `client/app/components/navigation/HeaderSearchInput.vue`
 - [ ] `client/app/components/navigation/SidebarMenuItem.vue`
 - [ ] `client/app/components/navigation/WidgetCard.vue`
-- [ ] `client/app/layouts/default.vue`
+- [x] `client/app/layouts/default.vue`
 - [ ] `client/app/layouts/guest.vue`
 
 ### Profile / community
