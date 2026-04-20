@@ -1,4 +1,5 @@
 import { computed } from "vue"
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
 
 export type ForumSectionKey = "all" | "announcements" | "support" | "marketplace" | "events" | "jobs" | "showcase"
 
@@ -43,11 +44,13 @@ export type ForumThreadPayload = {
 }
 
 export const useMockForumData = () => {
-  const { tm } = useI18n()
+  const { tm, rt } = useI18n()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
 
-  const sections = computed(() => tm("pages.forumPage.sections") as ForumSection[])
+  const sections = computed(() => localized<ForumSection[]>("pages.forumPage.sections"))
 
-  const threads = computed(() => tm("pages.forumPage.threads") as ForumThread[])
+  const threads = computed(() => localized<ForumThread[]>("pages.forumPage.threads"))
 
   return {
     sections,

@@ -24,9 +24,9 @@
         type="button"
         @click="form.method = method.value"
       >
-        <Icon :name="method.icon" class="h-6 w-6" />
-        <p class="mt-3 text-[13px] font-extrabold">{{ method.label }}</p>
-        <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ method.description }}</p>
+        <Icon :name="messageText(method.icon)" class="h-6 w-6" />
+        <p class="mt-3 text-[13px] font-extrabold">{{ messageText(method.label) }}</p>
+        <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ messageText(method.description) }}</p>
       </button>
     </div>
 
@@ -67,7 +67,7 @@
 import type { WithdrawalMethod, WithdrawalRequestPayload } from "~/composables/useMockWithdrawalData"
 import { formatWithdrawalCurrency } from "~/composables/useMockWithdrawalData"
 
-const { t, locale } = useI18n()
+const { t, rt, locale } = useI18n()
 
 const props = defineProps<{
   availableBalance: number
@@ -85,6 +85,9 @@ const form = reactive<WithdrawalRequestPayload>({
   accountNumber: "",
   note: "",
 })
+
+const messageText = (value: unknown) =>
+  typeof value === "string" ? value : rt(value as never)
 
 const submit = () => {
   errorMessage.value = ""

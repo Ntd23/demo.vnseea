@@ -1,4 +1,5 @@
 import { computed } from "vue"
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
 
 export type WithdrawalMethodKey = "bank" | "momo" | "paypal"
 
@@ -27,20 +28,22 @@ export type WithdrawalHistoryItem = {
 }
 
 export const useMockWithdrawalData = () => {
-  const { tm } = useI18n()
+  const { tm, rt } = useI18n()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
 
   const availableBalance = 9999999
   const pendingAmount = 1250000
   const minimumWithdrawal = 100000
 
-  const methods = computed(() => tm("pages.withdrawalPage.methods") as WithdrawalMethod[])
+  const methods = computed(() => localized<WithdrawalMethod[]>("pages.withdrawalPage.methods"))
 
   const paymentProfiles = computed(() =>
-    tm("pages.withdrawalPage.paymentProfiles") as Array<{ label: string; value: string }>,
+    localized<Array<{ label: string; value: string }>>("pages.withdrawalPage.paymentProfiles"),
   )
 
   const history = computed(() =>
-    tm("pages.withdrawalPage.history") as WithdrawalHistoryItem[],
+    localized<WithdrawalHistoryItem[]>("pages.withdrawalPage.history"),
   )
 
   return {

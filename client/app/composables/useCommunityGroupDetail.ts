@@ -1,4 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
 import { useMockSocialData } from "./useMockSocialData"
 import {
   getCommunityGroupBySlug,
@@ -11,19 +12,21 @@ function formatLocalizedCount(value: number, locale: string) {
 }
 
 export function useCommunityGroupDetail(slugSource: MaybeRefOrGetter<string>) {
-  const { t, tm, locale } = useI18n()
+  const { t, tm, rt, locale } = useI18n()
   const { posts } = useMockSocialData()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
 
   const slug = computed(() => String(toValue(slugSource) || ""))
   const rawGroup = computed(() => getCommunityGroupBySlug(slug.value))
   const rawMembers = computed(() => getCommunityGroupMembers(slug.value))
 
   const groupDictionary = computed(() =>
-    tm("pages.groupDetailPage.groups") as Record<string, Partial<CommunityGroupRecord> & { guidelines?: string[] }>,
+    localized<Record<string, Partial<CommunityGroupRecord> & { guidelines?: string[] }>>("pages.groupDetailPage.groups"),
   )
 
   const memberDictionary = computed(() =>
-    tm("pages.groupDetailPage.members") as Record<string, Array<{ role: string; meta: string }>>,
+    localized<Record<string, Array<{ role: string; meta: string }>>>("pages.groupDetailPage.members"),
   )
 
   const group = computed<CommunityGroupRecord | null>(() => {

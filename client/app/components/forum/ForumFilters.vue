@@ -20,8 +20,8 @@
           type="button"
           @click="$emit('update:selectedSection', section.value)"
         >
-          <Icon :name="section.icon" class="h-4 w-4" />
-          {{ section.label }}
+          <Icon :name="messageText(section.icon)" class="h-4 w-4" />
+          {{ messageText(section.label) }}
         </button>
       </div>
     </div>
@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import type { ForumSection, ForumSectionKey } from "~/composables/useMockForumData"
 
-const { t } = useI18n()
+const { t, rt } = useI18n()
 
 defineProps<{
   search: string
@@ -43,4 +43,7 @@ defineEmits<{
   "update:search": [value: string]
   "update:selectedSection": [value: ForumSectionKey]
 }>()
+
+const messageText = (value: unknown) =>
+  typeof value === "string" ? value : rt(value as never)
 </script>

@@ -1,4 +1,5 @@
 import { computed } from "vue"
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
 
 export type WalletTransactionType = "topup" | "send" | "receive" | "payment" | "refund"
 
@@ -24,16 +25,18 @@ export type WalletSendPayload = {
 }
 
 export const useMockWalletData = () => {
-  const { tm } = useI18n()
+  const { tm, rt } = useI18n()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
 
   const initialBalance = 9999999
 
   const topupMethods = computed(() =>
-    tm("pages.walletPage.methods") as Array<{ label: string; value: WalletTopupPayload["method"]; icon: string }>,
+    localized<Array<{ label: string; value: WalletTopupPayload["method"]; icon: string }>>("pages.walletPage.methods"),
   )
 
   const transactions = computed(() =>
-    (tm("pages.walletPage.transactions") as Array<Omit<WalletTransaction, "amount"> & { amount: number | string }>).map(
+    localized<Array<Omit<WalletTransaction, "amount"> & { amount: number | string }>>("pages.walletPage.transactions").map(
       transaction => ({
         ...transaction,
         amount: Number(transaction.amount),

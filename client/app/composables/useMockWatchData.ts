@@ -1,3 +1,5 @@
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
+
 export type WatchCategoryKey = "all" | "community" | "education" | "business" | "events" | "technology"
 
 export type WatchComment = {
@@ -29,10 +31,14 @@ export type WatchVideo = {
 }
 
 export const useMockWatchData = () => {
-  const { tm } = useI18n()
+  const { tm, rt } = useI18n()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
 
-  const categories = computed(() => tm("pages.watchPage.categories") as { label: string; value: WatchCategoryKey; icon: string }[])
-  const videos = computed(() => tm("pages.watchPage.videos") as WatchVideo[])
+  const categories = computed(() =>
+    localized<{ label: string; value: WatchCategoryKey; icon: string }[]>("pages.watchPage.categories"),
+  )
+  const videos = computed(() => localized<WatchVideo[]>("pages.watchPage.videos"))
 
   return {
     categories,

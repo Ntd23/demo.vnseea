@@ -1,3 +1,5 @@
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
+
 export type SettingFieldType = "text" | "email" | "tel" | "date" | "select" | "textarea" | "password" | "file" | "number" | "url"
 export type SettingSectionKind = "form" | "toggles" | "list" | "danger" | "summary"
 
@@ -42,9 +44,12 @@ export type SettingPage = {
 }
 
 export const useMockSettingsData = () => {
-  const { tm } = useI18n()
+  const { tm, rt } = useI18n()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
+
   const pages = computed(() => {
-    const localizedPages = structuredClone(tm("pages.settingsPage.pages") as SettingPage[])
+    const localizedPages = structuredClone(localized<SettingPage[]>("pages.settingsPage.pages"))
     const emailField = localizedPages
       .find(page => page.slug === "general")
       ?.sections[0]

@@ -1,4 +1,5 @@
 import { computed } from "vue"
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
 
 export type DirectoryCategoryKey =
   | "all"
@@ -37,11 +38,13 @@ export type DirectoryItem = {
 }
 
 export const useMockDirectoryData = () => {
-  const { tm } = useI18n()
+  const { tm, rt } = useI18n()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
 
-  const categories = computed(() => tm("pages.directoryPage.categories") as DirectoryCategory[])
+  const categories = computed(() => localized<DirectoryCategory[]>("pages.directoryPage.categories"))
 
-  const items = computed(() => tm("pages.directoryPage.items") as DirectoryItem[])
+  const items = computed(() => localized<DirectoryItem[]>("pages.directoryPage.items"))
 
   return { categories, items }
 }

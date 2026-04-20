@@ -1,4 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
 import { useMockSocialData } from "./useMockSocialData"
 import {
   createCommunitySlug,
@@ -27,8 +28,10 @@ export function useCommunityPageDetail(
   slugSource: MaybeRefOrGetter<string>,
   querySource?: MaybeRefOrGetter<Record<string, unknown>>,
 ) {
-  const { t, tm, locale } = useI18n()
+  const { t, tm, rt, locale } = useI18n()
   const { posts } = useMockSocialData()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
 
   const slug = computed(() => String(toValue(slugSource) || "").trim())
   const query = computed(() =>
@@ -36,7 +39,7 @@ export function useCommunityPageDetail(
   )
 
   const pageDictionary = computed(() =>
-    tm("pages.pageDetailPage.pages") as Record<string, Partial<CommunityPageRecord>>,
+    localized<Record<string, Partial<CommunityPageRecord>>>("pages.pageDetailPage.pages"),
   )
 
   const page = computed<CommunityPageRecord | null>(() => {
