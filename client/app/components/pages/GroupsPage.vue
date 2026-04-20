@@ -9,7 +9,7 @@
 
           <div>
             <p class="text-[12px] font-bold uppercase tracking-[0.22em] text-[#0000ff]/65">
-              Community Hub
+              {{ $t('community.groups.hub') }}
             </p>
             <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63]">
               {{ pageTitle }}
@@ -23,7 +23,7 @@
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
             <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              Nhóm gợi ý
+              {{ $t('community.groups.stats.suggested') }}
             </p>
             <p class="mt-1 text-[1.25rem] font-black text-[#243b63]">
               {{ suggestedCount }}
@@ -31,7 +31,7 @@
           </div>
           <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
             <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              Đã tham gia
+              {{ $t('community.groups.stats.joined') }}
             </p>
             <p class="mt-1 text-[1.25rem] font-black text-[#243b63]">
               {{ joinedCount }}
@@ -39,7 +39,7 @@
           </div>
           <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
             <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              Trạng thái
+              {{ $t('community.groups.stats.status') }}
             </p>
             <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
               {{ activeTabDescription }}
@@ -72,7 +72,7 @@
           class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8faff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
         >
           <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-          Tạo nhóm mới
+          {{ $t('community.groups.action.createNew') }}
         </NuxtLink>
       </div>
     </section>
@@ -84,8 +84,8 @@
       <div class="mx-auto max-w-xl">
         <FoundationEmptyState
           icon="i-ph-users-three-fill"
-          title="Không có nhóm nào để hiển thị"
-          description="Bạn chưa tạo hoặc chưa theo dõi nhóm nào trong tài khoản này. Tạo nhóm mới để bắt đầu gom thành viên, bài đăng và hoạt động cộng đồng."
+          :title="$t('community.groups.empty.mineTitle')"
+          :description="$t('community.groups.empty.mineDesc')"
         />
 
         <div class="mt-6 flex justify-center">
@@ -94,7 +94,7 @@
             class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
           >
             <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-            Tạo nhóm đầu tiên
+            {{ $t('community.groups.action.createFirst') }}
           </NuxtLink>
         </div>
       </div>
@@ -107,8 +107,8 @@
       <div class="mx-auto max-w-xl">
         <FoundationEmptyState
           icon="i-ph-magnifying-glass"
-          title="Không tìm thấy nhóm phù hợp"
-          description="Thử đổi từ khóa tìm kiếm hoặc chuyển sang một tab khác để xem thêm community phù hợp hơn."
+          :title="$t('community.groups.empty.noMatchTitle')"
+          :description="$t('community.groups.empty.noMatchDesc')"
         />
       </div>
     </section>
@@ -118,7 +118,7 @@
         v-for="group in visibleGroups"
         :key="group.id"
         :group="group"
-        :action-label="mode === 'suggested' ? 'Khám phá nhóm' : 'Xem cập nhật'"
+        :action-label="mode === 'suggested' ? 'community.groups.action.explore' : 'community.groups.action.viewUpdates'"
       />
     </div>
   </div>
@@ -132,6 +132,8 @@ import {
 } from "../../../types/community"
 import type { CommunityGroupTab } from "../../../types/community"
 
+const { t } = useI18n()
+
 const props = withDefaults(defineProps<{
   mode?: CommunityGroupTab
 }>(), {
@@ -142,21 +144,15 @@ const mode = computed(() => props.mode)
 const search = ref("")
 
 const pageTitle = computed(() => {
-  if (props.mode === "suggested") return "Các nhóm đề xuất"
-  if (props.mode === "joined") return "Các nhóm đã tham gia"
-  return "Các nhóm"
+  if (props.mode === "suggested") return t("community.groups.titleSuggested")
+  if (props.mode === "joined") return t("community.groups.titleJoined")
+  return t("community.groups.title")
 })
 
 const pageDescription = computed(() => {
-  if (props.mode === "suggested") {
-    return "Khám phá những community được gợi ý theo sở thích, danh mục bạn quan tâm và hoạt động gần đây trong hệ sinh thái VNSEEA."
-  }
-
-  if (props.mode === "joined") {
-    return "Quay lại các nhóm bạn đã tham gia để theo dõi cập nhật mới, sự kiện sắp tới và những cuộc thảo luận đang diễn ra."
-  }
-
-  return "Quản lý nhóm bạn đang theo dõi, xem đề xuất theo sở thích và mở nhanh flow tạo cộng đồng mới ngay trong cùng một khu vực."
+  if (props.mode === "suggested") return t("community.groups.descSuggested")
+  if (props.mode === "joined") return t("community.groups.descJoined")
+  return t("community.groups.descDefault")
 })
 
 const suggestedCount = computed(() =>
@@ -198,26 +194,21 @@ const visibleGroups = computed(() => {
   )
 })
 
-const activeTabLabel = computed(() =>
-  communityGroupTabs.find(tab => tab.value === props.mode)?.label ?? "Nhóm",
-)
+const activeTabLabel = computed(() => {
+  const tab = communityGroupTabs.find(tab => tab.value === props.mode)
+  return tab ? t(tab.label) : t("community.groups.card.privacyFallback")
+})
 
 const activeTabDescription = computed(() => {
-  if (props.mode === "mine") return "Chưa có nhóm nào"
-  if (props.mode === "suggested") return `${suggestedCount.value} community đang chờ bạn khám phá`
-  return `${joinedCount.value} community đang hoạt động`
+  if (props.mode === "mine") return t("community.groups.status.none")
+  if (props.mode === "suggested") return t("community.groups.status.suggestedCount", { count: suggestedCount.value })
+  return t("community.groups.status.joinedCount", { count: joinedCount.value })
 })
 
 const activeTabHint = computed(() => {
-  if (props.mode === "mine") {
-    return "Danh sách này sẽ hiện các nhóm bạn tạo hoặc đang quản trị. Hiện tại tài khoản chưa có community nào."
-  }
-
-  if (props.mode === "suggested") {
-    return "Các nhóm được gợi ý dựa trên danh mục bạn quan tâm, hoạt động gần đây và mạng lưới hiện có."
-  }
-
-  return "Đây là các community bạn đã tham gia, hữu ích để quay lại theo dõi nội dung và cập nhật mới."
+  if (props.mode === "mine") return t("community.groups.hint.mine")
+  if (props.mode === "suggested") return t("community.groups.hint.suggested")
+  return t("community.groups.hint.joined")
 })
 
 useSeoMeta({

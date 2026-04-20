@@ -935,6 +935,135 @@
       "brand": { "label": "Brand & Product", "description": "For fanpages introduced products, campaigns, deals, and brand updates." },
       "organization": { "label": "Organization & Community", "description": "For organizations, clubs, social projects, and community programs." },
       "service": { "label": "Professional Service", "description": "Suitable for agencies, freelancers, service studios, and consulting teams." }
+    },
+    "groups": {
+      "hub": "Community Hub",
+      "title": "Groups",
+      "titleSuggested": "Suggested Groups",
+      "titleJoined": "Joined Groups",
+      "descDefault": "Manage the groups you follow, see suggestions based on your interests, and quickly start a new community creation flow in the same area.",
+      "descSuggested": "Discover communities suggested based on your interests, categories you care about, and recent activity in the VNSEEA ecosystem.",
+      "descJoined": "Return to the groups you have joined to follow new updates, upcoming events, and ongoing discussions.",
+      "stats": {
+        "suggested": "Suggested",
+        "joined": "Joined",
+        "status": "Status"
+      },
+      "filter": {
+        "search": "Search groups, topics, or URL...",
+        "create": "Create"
+      },
+      "action": {
+        "createNew": "Create new group",
+        "createFirst": "Create first group",
+        "explore": "Explore group",
+        "viewUpdates": "View updates",
+        "viewGroup": "View group"
+      },
+      "empty": {
+        "mineTitle": "No groups to display",
+        "mineDesc": "You haven't created or followed any groups in this account yet. Create a new group to start gathering members, posts, and community activities.",
+        "noMatchTitle": "No matching groups found",
+        "noMatchDesc": "Try changing the search keyword or switching to another tab to see more suitable communities."
+      },
+      "status": {
+        "none": "No groups yet",
+        "suggestedCount": "{count} communities waiting for you to discover",
+        "joinedCount": "{count} active communities"
+      },
+      "hint": {
+        "mine": "This list shows groups you created or manage. Currently, this account has no communities.",
+        "suggested": "Groups suggested based on your interests, recent activity, and existing network.",
+        "joined": "These are the communities you have joined, useful for returning to follow content and new updates."
+      },
+      "card": {
+        "activity": "Activity",
+        "context": "Context",
+        "privacyFallback": "Group",
+        "privacyHint": "Privacy settings currently applied to this group.",
+        "noCategory": "Uncategorized"
+      },
+      "format": {
+        "members": "{count} members",
+        "followers": "{count} followers",
+        "likes": "{count} likes"
+      }
+    },
+    "mock": {
+      "groups": {
+        "electric": {
+          "name": "Vietnam EV Community",
+          "summary": "EV reviews, charging stations, maintenance experience, and sharing real-life vehicle journeys.",
+          "activity": "128 new posts this week",
+          "owner": "Managed by Studio Mobility",
+          "location": "Nationwide activity",
+          "founded": "Established from March 2024",
+          "tags": ["ev", "charging", "review"],
+          "guidelines": [
+            "Prioritize real reviews with images or data when sharing experiences.",
+            "Do not post direct sales outside of EV and related accessories topics.",
+            "Keep discussions respectful, focused on solutions and useful knowledge."
+          ]
+        },
+        "founder": {
+          "name": "Founder Circle Vietnam",
+          "summary": "Space for exchanging operation, growth, and strategy problems for founders, C-levels, and builders.",
+          "activity": "24 ongoing discussions",
+          "owner": "Curated by VNSEEA Business",
+          "location": "Hanoi · HCMC · Online",
+          "founded": "Established from August 2023",
+          "tags": ["founder", "growth", "networking"],
+          "joinLabel": "Request to join",
+          "inviteLabel": "Invite partners",
+          "guidelines": [
+            "Share concisely, go straight to the problem and context needing advice.",
+            "Do not post job recruitments or excessive service offers in the main feed.",
+            "Respect privacy principles regarding internal data shared within the group."
+          ]
+        },
+        "ai": {
+          "name": "AI Product Builders",
+          "summary": "Focus on AI product, automation, dataset, prompt engineering, and new product demos every week.",
+          "activity": "6 online events this month",
+          "owner": "You joined since February",
+          "location": "Remote-first community",
+          "founded": "Established from January 2024",
+          "tags": ["AI", "product", "automation"],
+          "guidelines": [
+            "Prioritize demos with images, videos, or prototype links for quick feedback.",
+            "Clearly tag goals: research, case study, prompt, automation, or launch.",
+            "Avoid sharing sensitive customer data and company secret information."
+          ]
+        },
+        "learning": {
+          "name": "Travel & Learn",
+          "summary": "Group sharing workshops, courses, study materials, and meetup schedules for working professionals.",
+          "activity": "18 new documents shared",
+          "owner": "You are following 4 sub-topics",
+          "location": "Vietnam learning community",
+          "founded": "Established from November 2023",
+          "tags": ["workshop", "learning", "mentoring"],
+          "guidelines": [
+            "Documents posted need to site sources so others can verify and continue learning.",
+            "Encourage sharing short notes, summarizing key insights after each workshop.",
+            "No spamming course links or unrelated affiliate content."
+          ]
+        },
+        "weekend": {
+          "name": "Weekend Escape Club",
+          "summary": "Plan short trips, share concise schedules, homestays, and ticket hunting experience.",
+          "activity": "9 new itineraries this weekend",
+          "owner": "Suggested based on travel interests",
+          "location": "Domestic & Southeast Asia destinations",
+          "founded": "Established from June 2024",
+          "tags": ["travel", "weekend", "homestay"],
+          "guidelines": [
+            "When reviewing locations, include cost, travel time, and practical notes.",
+            "Respect the local environment, avoid promoting activities that affect nature.",
+            "Do not post tour hunting information with low credibility or unknown origin."
+          ]
+        }
+      }
     }
   }
 }
