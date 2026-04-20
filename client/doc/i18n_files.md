@@ -155,7 +155,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/watch.vue`
 - [ ] `client/app/pages/setting/index.vue`
 - [x] `client/app/pages/setting/[page].vue`
-- [ ] `client/app/pages/checkout.vue`
+- [x] `client/app/pages/checkout.vue`
 - [ ] `client/app/pages/orders.vue`
 - [ ] `client/app/pages/order/[id].vue`
 - [ ] `client/app/pages/customer_order/[id].vue`

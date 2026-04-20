@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <section class="px-1 pt-1">
       <p class="text-[12px] font-extrabold uppercase tracking-[0.28em] text-[#0000ff]/65">
-        {{ eyebrow }}
+        {{ eyebrow || $t("checkout.page.eyebrow") }}
       </p>
       <h1 class="mt-2 text-display text-[2rem] text-[#2f3542] sm:text-[2.3rem]">
         {{ title }}
@@ -34,7 +34,7 @@ withDefaults(defineProps<{
   eyebrow?: string
   description?: string
 }>(), {
-  eyebrow: "P-14 · Thanh toán",
+  eyebrow: "",
   description: "",
 })
 </script>

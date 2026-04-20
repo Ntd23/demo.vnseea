@@ -521,5 +521,70 @@
         }
       }
     }
+  },
+  "checkout": {
+    "page": {
+      "title": "Checkout | VNSEEA",
+      "description": "Complete your marketplace checkout with the shipping address form, cart, wallet balance, and total payment.",
+      "layoutTitle": "Checkout Procedure",
+      "layoutDescription": "Fill in the delivery address, verify the cart, and choose a payment method before confirming your order.",
+      "eyebrow": "P-14 · Checkout"
+    },
+    "summary": {
+      "title": "Shopping Cart",
+      "items": "{count} item",
+      "itemsPlural": "{count} different items",
+      "backToStore": "Back to store",
+      "insufficientBalance": "You do not have enough balance to make a purchase, please top up your wallet before continuing with this method.",
+      "subtotal": "Subtotal",
+      "shippingFee": "Shipping Fee",
+      "free": "Free",
+      "totalPayment": "Total Payment",
+      "walletBalance": "Wallet has {balance}. You need to top up {amount} more to continue the purchase.",
+      "walletHint": "Current wallet balance is {balance}. This UI follows the internal mock checkout using the internal wallet.",
+      "addFunds": "Top up wallet",
+      "buy": "Buy",
+      "emptyCart": "Your cart is empty",
+      "emptyCartHint": "Please go back to the marketplace to select more products before continuing checkout.",
+      "backToMarketplace": "Back to marketplace",
+      "qty": "Qty",
+      "marketplace": "Marketplace"
+    },
+    "shippingForm": {
+      "shippingAddress": "Shipping Address",
+      "savedAddressTitle": "Saved address ready",
+      "noAddressTitle": "No shipping address yet",
+      "savedAddressDesc": "The order will prioritize this address, you can still modify the form below.",
+      "noAddressDesc": "Quickly fill in the form below so the system has enough delivery information for this order.",
+      "recipient": "Recipient",
+      "postalCodePrefix": "Code",
+      "addAddressHint": "Please add a new address below to continue.",
+      "quickTip": "Quick Tip",
+      "fieldsRemaining": "Fill in all {count} fields to enable the save address button.",
+      "shippingInfoPersist": "Shipping information will be kept for further checkout steps.",
+      "formTitle": "Delivery Form",
+      "addAddressTitle": "Add new address",
+      "formDesc": "The form has been grouped by info clusters for faster desktop operation while remaining compact on mobile.",
+      "fieldsCount": "{filled}/{total} fields filled",
+      "recipientInfo": "Recipient Information",
+      "recipientInfoDesc": "Enter name and phone number for easier courier contact.",
+      "fullName": "Name",
+      "fullNamePlaceholder": "Enter recipient name",
+      "phone": "Phone",
+      "phonePlaceholder": "Phone number",
+      "region": "Shipping Region",
+      "regionDesc": "Fill in location for precise delivery point aggregation.",
+      "country": "Country",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "pointDetail": "Detail Delivery Point",
+      "pointDetailDesc": "Clearly state house number, street name, ward/commune to avoid failed delivery.",
+      "streetAddress": "Street Address",
+      "streetAddressPlaceholder": "House number, street name, ward/commune...",
+      "quickPreview": "Quick Preview",
+      "noRecipientPreview": "No recipient name yet",
+      "mockWarning": "The order will use the exact information you save here. This is a mock UI so it hasn't sent real data to API `address.php`.",
+      "saveAddress": "Save address"
+    }
   }
 }
