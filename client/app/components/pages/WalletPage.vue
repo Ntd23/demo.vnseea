@@ -26,39 +26,41 @@
 <script setup lang="ts">
 import type { WalletSendPayload, WalletTopupPayload, WalletTransaction } from "~/composables/useMockWalletData"
 
+const { t } = useI18n()
 const { initialBalance, topupMethods, transactions } = useMockWalletData()
 
 useSeoMeta({
-  title: "Wallet | VNSEEA",
-  description: "Xem số dư, nạp tiền và gửi tiền bằng ví VNSEEA.",
+  title: t("pages.walletPage.seoTitle"),
+  description: t("pages.walletPage.seoDescription"),
 })
 
 const balance = ref(initialBalance)
 const localTransactions = ref<WalletTransaction[]>([])
 
-const allTransactions = computed(() => [...localTransactions.value, ...transactions])
+const allTransactions = computed(() => [...localTransactions.value, ...transactions.value])
 
 const walletStats = computed(() => [
   {
-    label: "Giao dịch",
+    label: t("pages.walletPage.statTransactions"),
     value: allTransactions.value.length,
   },
   {
-    label: "Nạp trong phiên",
+    label: t("pages.walletPage.statTopups"),
     value: localTransactions.value.filter(item => item.type === "topup").length,
   },
 ])
 
 const handleTopup = (payload: WalletTopupPayload) => {
+  const methodLabel = topupMethods.value.find(item => item.value === payload.method)?.label ?? payload.method
   balance.value += payload.amount
   localTransactions.value = [
     {
       id: `topup-${Date.now()}`,
       type: "topup",
-      title: "Nạp tiền vào ví",
-      description: `Mock nạp tiền bằng ${payload.method}. Chưa gọi wallet.php.`,
+      title: t("pages.walletPage.topupTransactionTitle"),
+      description: t("pages.walletPage.topupTransactionDescription", { method: methodLabel }),
       amount: payload.amount,
-      time: "Vừa xong",
+      time: t("pages.walletPage.justNow"),
       status: "completed",
     },
     ...localTransactions.value,
@@ -71,10 +73,10 @@ const handleSend = (payload: WalletSendPayload) => {
     {
       id: `send-${Date.now()}`,
       type: "send",
-      title: `Gửi tiền cho ${payload.recipient}`,
-      description: payload.note || "Mock gửi tiền. Chưa gọi wallet.php.",
+      title: t("pages.walletPage.sendTransactionTitle", { recipient: payload.recipient }),
+      description: payload.note || t("pages.walletPage.sendTransactionDescription"),
       amount: -payload.amount,
-      time: "Vừa xong",
+      time: t("pages.walletPage.justNow"),
       status: "completed",
     },
     ...localTransactions.value,

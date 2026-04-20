@@ -1,8 +1,8 @@
 <template>
   <aside class="space-y-4">
     <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-      <p class="text-label-secondary text-[var(--text-tertiary)]">12 sub-categories</p>
-      <h2 class="mt-1 text-heading text-[var(--text-primary)]">Danh mục</h2>
+      <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.sidebarCategoriesEyebrow") }}</p>
+      <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.directoryPage.sidebarCategoriesTitle") }}</h2>
       <div class="mt-4 space-y-2">
         <button
           v-for="category in categories"
@@ -25,8 +25,8 @@
     </section>
 
     <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-      <p class="text-label-secondary text-[var(--text-tertiary)]">Nổi bật</p>
-      <h2 class="mt-1 text-heading text-[var(--text-primary)]">Đi nhanh</h2>
+      <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.sidebarFeaturedEyebrow") }}</p>
+      <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.directoryPage.sidebarFeaturedTitle") }}</h2>
       <div class="mt-4 space-y-2">
         <NuxtLink
           v-for="item in featured"
@@ -44,6 +44,8 @@
 
 <script setup lang="ts">
 import type { DirectoryCategory, DirectoryCategoryKey, DirectoryItem } from "~/composables/useMockDirectoryData"
+
+const { t } = useI18n()
 
 defineProps<{
   categories: ReadonlyArray<DirectoryCategory>

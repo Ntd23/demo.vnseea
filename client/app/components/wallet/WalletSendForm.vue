@@ -1,21 +1,21 @@
 <template>
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <p class="text-label-secondary text-[var(--text-tertiary)]">Gửi tiền</p>
-    <h2 class="mt-1 text-heading text-[var(--text-primary)]">Chuyển tiền cho thành viên</h2>
-    <p class="mt-1 text-body-secondary">Số dư hiện tại: {{ formatWalletCurrency(balance) }}</p>
+    <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.walletPage.sendEyebrow") }}</p>
+    <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.sendTitle") }}</h2>
+    <p class="mt-1 text-body-secondary">{{ t("pages.walletPage.currentBalance", { amount: formatWalletCurrency(balance, locale.value) }) }}</p>
 
     <div class="mt-5 grid gap-4">
       <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">Người nhận</span>
-        <input v-model="form.recipient" class="wallet-input mt-2" placeholder="Tên người nhận hoặc username">
+        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.walletPage.recipientLabel") }}</span>
+        <input v-model="form.recipient" class="wallet-input mt-2" :placeholder="t('pages.walletPage.recipientPlaceholder')">
       </label>
       <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">Số tiền</span>
+        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.walletPage.amountLabel") }}</span>
         <input v-model.number="form.amount" class="wallet-input mt-2" min="10000" type="number">
       </label>
       <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">Ghi chú</span>
-        <textarea v-model="form.note" class="wallet-input mt-2 min-h-[110px] resize-y py-3" placeholder="Nội dung chuyển tiền" />
+        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.walletPage.noteLabel") }}</span>
+        <textarea v-model="form.note" class="wallet-input mt-2 min-h-[110px] resize-y py-3" :placeholder="t('pages.walletPage.notePlaceholder')" />
       </label>
     </div>
 
@@ -24,7 +24,7 @@
     </div>
 
     <button class="mt-5 h-12 w-full rounded-[var(--radius-full)] bg-[var(--color-primary-500)] text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="button" @click="submit">
-      Gửi tiền
+      {{ t("pages.walletPage.sendSubmit") }}
     </button>
   </section>
 </template>
@@ -36,6 +36,7 @@ import { formatWalletCurrency } from "~/composables/useMockWalletData"
 const props = defineProps<{ balance: number }>()
 const emit = defineEmits<{ send: [payload: WalletSendPayload] }>()
 
+const { t, locale } = useI18n()
 const error = ref("")
 const form = reactive<WalletSendPayload>({
   recipient: "",
@@ -46,11 +47,11 @@ const form = reactive<WalletSendPayload>({
 const submit = () => {
   error.value = ""
   if (!form.recipient.trim()) {
-    error.value = "Vui lòng nhập người nhận."
+    error.value = t("pages.walletPage.errorRecipient")
     return
   }
   if (form.amount <= 0 || form.amount > props.balance) {
-    error.value = "Số tiền gửi không hợp lệ hoặc vượt quá số dư."
+    error.value = t("pages.walletPage.errorAmount")
     return
   }
   emit("send", { ...form })

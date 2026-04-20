@@ -16,9 +16,9 @@
         <div class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-label-secondary text-[var(--text-tertiary)]">Threads</p>
+              <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.forumPage.resultsEyebrow") }}</p>
               <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ resultHeading }}</h2>
-              <p class="mt-1 text-body-secondary">{{ filteredThreads.length }} thread phù hợp</p>
+              <p class="mt-1 text-body-secondary">{{ t("pages.forumPage.matchingThreads", { count: filteredThreads.length }) }}</p>
             </div>
             <button
               class="inline-flex h-11 items-center justify-center gap-2 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[13px] font-extrabold text-[var(--color-primary-600)]"
@@ -26,7 +26,7 @@
               @click="createOpen = true"
             >
               <Icon name="i-ph-plus-circle-fill" class="h-4 w-4" />
-              Thread mới
+              {{ t("pages.forumPage.createThreadButton") }}
             </button>
           </div>
         </div>
@@ -42,8 +42,8 @@
 
         <div v-if="filteredThreads.length === 0" class="rounded-[30px] border border-dashed border-[var(--border-default)] bg-white p-8 text-center shadow-[var(--shadow-md)]">
           <Icon name="i-ph-chats-circle-fill" class="mx-auto h-12 w-12 text-[var(--color-primary-600)]" />
-          <h3 class="mt-3 text-xl font-black text-[var(--text-primary)]">Không tìm thấy thread</h3>
-          <p class="mt-2 text-body-secondary">Thử đổi section hoặc từ khóa tìm kiếm.</p>
+          <h3 class="mt-3 text-xl font-black text-[var(--text-primary)]">{{ t("pages.forumPage.emptyTitle") }}</h3>
+          <p class="mt-2 text-body-secondary">{{ t("pages.forumPage.emptyDescription") }}</p>
         </div>
       </main>
 
@@ -74,21 +74,22 @@
 import type { ForumReply, ForumSectionKey, ForumThread, ForumThreadPayload } from "~/composables/useMockForumData"
 import { formatForumNumber } from "~/composables/useMockForumData"
 
+const { t, locale } = useI18n()
 const { sections, threads } = useMockForumData()
 
 useSeoMeta({
-  title: "Forum | VNSEEA",
-  description: "Danh sách sections, threads, post reply và search forum trong VNSEEA.",
+  title: t("pages.forumPage.seoTitle"),
+  description: t("pages.forumPage.seoDescription"),
 })
 
 const search = ref("")
 const selectedSection = ref<ForumSectionKey>("all")
-const selectedThreadId = ref(threads[0]?.id ?? "")
+const selectedThreadId = ref(threads.value[0]?.id ?? "")
 const createOpen = ref(false)
 const createdThreads = ref<ForumThread[]>([])
 const localRepliesById = ref<Record<string, ForumReply[]>>({})
 
-const allThreads = computed(() => [...createdThreads.value, ...threads])
+const allThreads = computed(() => [...createdThreads.value, ...threads.value])
 
 const filteredThreads = computed(() => {
   const keyword = search.value.trim().toLowerCase()
@@ -124,7 +125,7 @@ const activeReplies = computed(() => [
 
 const sectionCounts = computed(() => {
   const counts: Record<string, number> = { all: allThreads.value.length }
-  for (const section of sections) {
+  for (const section of sections.value) {
     if (section.value === "all") continue
     counts[section.value] = allThreads.value.filter(thread => thread.section === section.value).length
   }
@@ -133,36 +134,36 @@ const sectionCounts = computed(() => {
 
 const heroStats = computed(() => [
   {
-    label: "Sections",
-    value: sections.length - 1,
-    description: "Khu vực thảo luận.",
+    label: t("pages.forumPage.statSections"),
+    value: sections.value.length - 1,
+    description: t("pages.forumPage.statSectionsDescription"),
   },
   {
-    label: "Threads",
+    label: t("pages.forumPage.statThreads"),
     value: allThreads.value.length,
-    description: "Thread đang hiển thị.",
+    description: t("pages.forumPage.statThreadsDescription"),
   },
   {
-    label: "Views",
-    value: formatForumNumber(allThreads.value.reduce((sum, thread) => sum + thread.views, 0)),
-    description: "Tổng lượt xem mock.",
+    label: t("pages.forumPage.statViews"),
+    value: formatForumNumber(allThreads.value.reduce((sum, thread) => sum + thread.views, 0), locale.value),
+    description: t("pages.forumPage.statViewsDescription"),
   },
 ])
 
 const resultHeading = computed(() => {
-  if (selectedSection.value === "all") return "Tất cả thảo luận"
-  return sections.find(section => section.value === selectedSection.value)?.label ?? "Threads"
+  if (selectedSection.value === "all") return t("pages.forumPage.allThreads")
+  return sections.value.find(section => section.value === selectedSection.value)?.label ?? t("pages.forumPage.resultsEyebrow")
 })
 
 const sendReply = (message: string) => {
   const id = selectedThread.value.id
   const reply: ForumReply = {
     id: Date.now(),
-    author: "Bạn",
-    initials: "B",
-    role: "Member",
+    author: t("pages.forumPage.replyAuthor"),
+    initials: t("pages.forumPage.replyInitials"),
+    role: t("pages.forumPage.replyRole"),
     message,
-    time: "Vừa xong",
+    time: t("pages.forumPage.justNow"),
   }
 
   localRepliesById.value = {
@@ -172,17 +173,17 @@ const sendReply = (message: string) => {
 }
 
 const createThread = (payload: ForumThreadPayload) => {
-  const section = sections.find(item => item.value === payload.section)
+  const section = sections.value.find(item => item.value === payload.section)
   const thread: ForumThread = {
     id: `${payload.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "thread"}-${Date.now()}`,
     title: payload.title,
     section: payload.section,
-    sectionLabel: section?.label ?? "Hỗ trợ",
-    author: "Bạn",
-    authorInitials: "B",
-    authorRole: "Member",
+    sectionLabel: section?.label ?? t("pages.forumPage.supportFallback"),
+    author: t("pages.forumPage.replyAuthor"),
+    authorInitials: t("pages.forumPage.replyInitials"),
+    authorRole: t("pages.forumPage.replyRole"),
     status: "open",
-    createdAt: "Vừa xong",
+    createdAt: t("pages.forumPage.justNow"),
     views: 1,
     repliesCount: 0,
     excerpt: payload.message,

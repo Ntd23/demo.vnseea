@@ -16,11 +16,11 @@
 
         <div class="grid min-w-[160px] grid-cols-2 gap-2">
           <div class="rounded-[18px] bg-[var(--bg-surface-hover)] p-3">
-            <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">Views</p>
-            <p class="mt-1 text-[15px] font-black text-[var(--text-primary)]">{{ formatForumNumber(thread.views) }}</p>
+            <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.forumPage.viewsLabel") }}</p>
+            <p class="mt-1 text-[15px] font-black text-[var(--text-primary)]">{{ formatForumNumber(thread.views, locale.value) }}</p>
           </div>
           <div class="rounded-[18px] bg-[var(--bg-surface-hover)] p-3">
-            <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">Replies</p>
+            <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.forumPage.repliesLabel") }}</p>
             <p class="mt-1 text-[15px] font-black text-[var(--text-primary)]">{{ thread.repliesCount + localReplyCount }}</p>
           </div>
         </div>
@@ -54,10 +54,12 @@ const props = defineProps<{
 
 defineEmits<{ select: [id: string] }>()
 
+const { t, locale } = useI18n()
+
 const statusLabel = computed(() => {
-  if (props.thread.status === "pinned") return "Ghim"
-  if (props.thread.status === "solved") return "Đã giải quyết"
-  return "Đang mở"
+  if (props.thread.status === "pinned") return t("pages.forumPage.statusPinned")
+  if (props.thread.status === "solved") return t("pages.forumPage.statusSolved")
+  return t("pages.forumPage.statusOpen")
 })
 
 const statusClass = computed(() => {

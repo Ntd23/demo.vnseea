@@ -171,9 +171,9 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/poke.vue`
 - [ ] `client/app/pages/memories.vue`
 - [ ] `client/app/pages/go-pro.vue`
-- [ ] `client/app/pages/forum/index.vue`
-- [ ] `client/app/pages/directory/index.vue`
-- [ ] `client/app/pages/wallet.vue`
+- [x] `client/app/pages/forum/index.vue`
+- [x] `client/app/pages/directory/index.vue`
+- [x] `client/app/pages/wallet.vue`
 - [x] `client/app/pages/withdrawal.vue`
 - [x] `client/app/pages/g/[name].vue`
 - [x] `client/app/pages/p/[name].vue`
@@ -342,6 +342,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/pages/EditProductPage.vue`
 - [x] `client/app/components/pages/MyProductsPage.vue`
 - [x] `client/app/components/pages/ProductsPage.vue`
+- [x] `client/app/components/pages/WalletPage.vue`
 - [x] `client/app/components/pages/WithdrawalPage.vue`
 - [x] `client/app/components/product/HeroBanner.vue`
 - [x] `client/app/components/product/PreviewCard.vue`
@@ -368,10 +369,10 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/orders/SellerOrderCard.vue`
 - [ ] `client/app/components/orders/SellerOrderSidebar.vue`
 - [ ] `client/app/components/orders/SellerOrderChecklistCard.vue`
-- [ ] `client/app/components/wallet/WalletHero.vue`
-- [ ] `client/app/components/wallet/WalletTransactions.vue`
-- [ ] `client/app/components/wallet/WalletSendForm.vue`
-- [ ] `client/app/components/wallet/WalletTopupForm.vue`
+- [x] `client/app/components/wallet/WalletHero.vue`
+- [x] `client/app/components/wallet/WalletTransactions.vue`
+- [x] `client/app/components/wallet/WalletSendForm.vue`
+- [x] `client/app/components/wallet/WalletTopupForm.vue`
 - [x] `client/app/components/withdrawal/WithdrawalHero.vue`
 - [x] `client/app/components/withdrawal/WithdrawalRequestForm.vue`
 - [x] `client/app/components/withdrawal/WithdrawalPaymentInfo.vue`
@@ -389,11 +390,11 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/poke/RequestCard.vue`
 - [ ] `client/app/components/pages/MemoriesPage.vue`
 - [ ] `client/app/components/memories/MemoryCard.vue`
-- [ ] `client/app/components/pages/DirectoryIndexPage.vue`
-- [ ] `client/app/components/directory/DirectoryHero.vue`
-- [ ] `client/app/components/directory/DirectoryFilters.vue`
-- [ ] `client/app/components/directory/DirectorySidebar.vue`
-- [ ] `client/app/components/directory/DirectoryCard.vue`
+- [x] `client/app/components/pages/DirectoryIndexPage.vue`
+- [x] `client/app/components/directory/DirectoryHero.vue`
+- [x] `client/app/components/directory/DirectoryFilters.vue`
+- [x] `client/app/components/directory/DirectorySidebar.vue`
+- [x] `client/app/components/directory/DirectoryCard.vue`
 - [ ] `client/app/components/pages/GamesPage.vue`
 - [ ] `client/app/components/games/GamesHero.vue`
 - [ ] `client/app/components/games/GamesFilters.vue`
@@ -406,13 +407,13 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/go-pro/GoProSidebar.vue`
 - [ ] `client/app/components/go-pro/PlanCard.vue`
 - [ ] `client/app/components/go-pro/CheckoutModal.vue`
-- [ ] `client/app/components/pages/ForumPage.vue`
-- [ ] `client/app/components/forum/ForumHero.vue`
-- [ ] `client/app/components/forum/ForumFilters.vue`
-- [ ] `client/app/components/forum/ForumStatsSidebar.vue`
-- [ ] `client/app/components/forum/ForumThreadCard.vue`
-- [ ] `client/app/components/forum/ForumThreadDetail.vue`
-- [ ] `client/app/components/forum/CreateThreadModal.vue`
+- [x] `client/app/components/pages/ForumPage.vue`
+- [x] `client/app/components/forum/ForumHero.vue`
+- [x] `client/app/components/forum/ForumFilters.vue`
+- [x] `client/app/components/forum/ForumStatsSidebar.vue`
+- [x] `client/app/components/forum/ForumThreadCard.vue`
+- [x] `client/app/components/forum/ForumThreadDetail.vue`
+- [x] `client/app/components/forum/CreateThreadModal.vue`
 - [x] `client/app/components/pages/SettingsPage.vue`
 - [x] `client/app/components/settings/SettingsHero.vue`
 - [x] `client/app/components/settings/SettingsSidebar.vue`

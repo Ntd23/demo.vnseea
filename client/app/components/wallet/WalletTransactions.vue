@@ -2,8 +2,8 @@
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
     <div class="flex items-center justify-between gap-3">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">Lịch sử</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">Giao dịch ví</h2>
+        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.walletPage.historyEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.historyTitle") }}</h2>
       </div>
       <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">{{ transactions.length }}</span>
     </div>
@@ -17,11 +17,11 @@
           <div class="min-w-0">
             <p class="truncate text-[14px] font-extrabold text-[var(--text-primary)]">{{ transaction.title }}</p>
             <p class="mt-1 truncate text-[12px] font-semibold text-[var(--text-secondary)]">{{ transaction.description }}</p>
-            <p class="mt-1 text-[11px] font-semibold text-[var(--text-tertiary)]">{{ transaction.time }} · {{ transaction.status }}</p>
+            <p class="mt-1 text-[11px] font-semibold text-[var(--text-tertiary)]">{{ transaction.time }} · {{ statusLabel(transaction.status) }}</p>
           </div>
         </div>
         <p class="shrink-0 text-[14px] font-black" :class="transaction.amount >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-error)]'">
-          {{ transaction.amount >= 0 ? "+" : "-" }}{{ formatWalletCurrency(Math.abs(transaction.amount)) }}
+          {{ transaction.amount >= 0 ? "+" : "-" }}{{ formatWalletCurrency(Math.abs(transaction.amount), locale.value) }}
         </p>
       </div>
     </div>
@@ -34,12 +34,20 @@ import { formatWalletCurrency } from "~/composables/useMockWalletData"
 
 defineProps<{ transactions: ReadonlyArray<WalletTransaction> }>()
 
+const { t, locale } = useI18n()
+
 const iconName = (type: WalletTransactionType) => {
   if (type === "topup") return "i-ph-arrow-down-left-bold"
   if (type === "send") return "i-ph-arrow-up-right-bold"
   if (type === "receive") return "i-ph-arrow-down-bold"
   if (type === "refund") return "i-ph-arrow-counter-clockwise-bold"
   return "i-ph-receipt-fill"
+}
+
+const statusLabel = (status: WalletTransaction["status"]) => {
+  if (status === "completed") return t("pages.walletPage.statusCompleted")
+  if (status === "pending") return t("pages.walletPage.statusPending")
+  return t("pages.walletPage.statusFailed")
 }
 
 const iconClass = (amount: number) =>

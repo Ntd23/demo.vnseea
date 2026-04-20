@@ -1,7 +1,7 @@
 <template>
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-    <p class="text-label-secondary text-[var(--text-tertiary)]">Sections</p>
-    <h2 class="mt-1 text-heading text-[var(--text-primary)]">Khu vực nổi bật</h2>
+    <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.forumPage.sectionsEyebrow") }}</p>
+    <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.forumPage.sectionsTitle") }}</h2>
     <div class="mt-4 space-y-2">
       <button
         v-for="section in sections"
@@ -25,6 +25,8 @@
 
 <script setup lang="ts">
 import type { ForumSection, ForumSectionKey } from "~/composables/useMockForumData"
+
+const { t } = useI18n()
 
 defineProps<{
   sections: ReadonlyArray<ForumSection>
