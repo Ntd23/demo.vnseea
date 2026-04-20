@@ -42,10 +42,10 @@
           {{ idleMonogram }}
         </div>
         <p class="mt-5 text-[1.35rem] font-medium text-[#4b5f82]">
-          Bạn đang tìm gì vậy?
+          {{ $t('community.search.emptyState.title') }}
         </p>
         <p class="mt-2 max-w-xl text-[14px] leading-7 text-slate-500">
-          Nhập một từ khóa phía trên để tìm người dùng, fanpage, nhóm hoặc bài đăng. Bạn cũng có thể bắt đầu bằng các gợi ý nhanh đang xuất hiện trong bộ lọc.
+          {{ $t('community.search.emptyState.desc') }}
         </p>
       </div>
     </section>
@@ -57,8 +57,8 @@
       <div class="mx-auto max-w-2xl text-center">
         <FoundationEmptyState
           icon="i-ph-magnifying-glass"
-          title="Không tìm thấy kết quả phù hợp"
-          :description="`Không có mục nào khớp với từ khóa “${searchText.trim()}”. Thử đổi loại kết quả, đổi cách viết hoặc chọn một gợi ý khác.`"
+          :title="$t('community.search.emptyValue.title')"
+          :description="$t('community.search.emptyValue.desc', { keyword: searchText.trim() })"
         />
 
         <div class="mt-6 flex flex-wrap justify-center gap-3">
@@ -67,7 +67,7 @@
             type="button"
             @click="clearFilters"
           >
-            Xóa bộ lọc
+            {{ $t('community.search.clearFilters') }}
           </button>
 
           <button
@@ -77,7 +77,7 @@
             type="button"
             @click="applyQuickKeyword(item)"
           >
-            Thử {{ item }}
+            {{ $t('community.search.tryKeyword', { keyword: item }) }}
           </button>
         </div>
       </div>
@@ -88,7 +88,7 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-              Kết quả
+              {{ $t('community.search.results.label') }}
             </p>
             <h2 class="mt-2 text-[1.55rem] font-black tracking-[-0.05em] text-[#243b63]">
               {{ resultHeading }}
@@ -104,7 +104,7 @@
             type="button"
             @click="showAllResults"
           >
-            Hiện tất cả loại kết quả
+            {{ $t('community.search.results.showAllTypes') }}
           </button>
         </div>
       </section>
@@ -117,10 +117,10 @@
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-              {{ section.label }}
+              {{ $t(`community.search.tabs.${section.kind}.label`) }}
             </p>
             <p class="mt-1 text-[14px] leading-6 text-slate-500">
-              {{ section.description }}
+              {{ $t(`community.search.tabs.${section.kind}.desc`) }}
             </p>
           </div>
 
@@ -130,7 +130,7 @@
             type="button"
             @click="selectOnlyType(section.kind)"
           >
-            Xem tất cả {{ section.items.length }} kết quả
+            {{ $t('community.search.results.viewAllOfSpecific', { count: section.items.length }) }}
           </button>
         </div>
 
@@ -154,7 +154,7 @@
             :to="link.to || '/home'"
             class="transition hover:text-[#0000ff]"
           >
-            {{ link.label }}
+            {{ $t(link.label) }}
           </NuxtLink>
           <button
             v-for="link in secondaryFooterLinks"
@@ -162,13 +162,13 @@
             class="transition hover:text-[#0000ff]"
             type="button"
           >
-            {{ link.label }}
+            {{ $t(link.label) }}
           </button>
         </div>
 
         <button class="inline-flex items-center gap-2 font-semibold text-[#4b5f82] transition hover:text-[#0000ff]" type="button">
           <Icon name="i-ph-globe-hemisphere-west-fill" class="h-4 w-4" />
-          Ngôn ngữ
+          {{ $t('community.search.footer.language') }}
         </button>
       </div>
     </footer>
@@ -204,13 +204,13 @@ function normalizeKeyword(value: string) {
 }
 
 const footerLinks = [
-  { label: "Trang chủ", to: "/home" },
-  { label: "Về", to: undefined },
-  { label: "Liên hệ chúng tôi", to: undefined },
-  { label: "Chính sách bảo mật", to: undefined },
-  { label: "Điều khoản sử dụng", to: undefined },
-  { label: "Blog", to: "/blogs" },
-  { label: "Nhà phát triển", to: undefined },
+  { label: "community.search.footer.home", to: "/home" },
+  { label: "community.search.footer.about", to: undefined },
+  { label: "community.search.footer.contact", to: undefined },
+  { label: "community.search.footer.privacy", to: undefined },
+  { label: "community.search.footer.terms", to: undefined },
+  { label: "community.search.footer.blog", to: "/blogs" },
+  { label: "community.search.footer.developers", to: undefined },
 ]
 
 const primaryFooterLinks = footerLinks.filter(link => link.to)
@@ -226,6 +226,8 @@ const {
   searchSortOptions,
   resultsByType,
 } = useMockSearchData()
+
+const { t } = useI18n()
 
 const collectionKinds: SearchCollectionType[] = ["users", "pages", "groups", "posts"]
 
@@ -335,10 +337,10 @@ function sortItems(items: SearchResultItem[]) {
 }
 
 const filteredResults = computed<Record<SearchCollectionType, SearchResultItem[]>>(() => ({
-  users: sortItems(resultsByType.users.filter(matchesKeyword)),
-  pages: sortItems(resultsByType.pages.filter(matchesKeyword)),
-  groups: sortItems(resultsByType.groups.filter(matchesKeyword)),
-  posts: sortItems(resultsByType.posts.filter(matchesKeyword)),
+  users: sortItems(resultsByType.value.users.filter(matchesKeyword)),
+  pages: sortItems(resultsByType.value.pages.filter(matchesKeyword)),
+  groups: sortItems(resultsByType.value.groups.filter(matchesKeyword)),
+  posts: sortItems(resultsByType.value.posts.filter(matchesKeyword)),
 }))
 
 const tabItems = computed(() =>
@@ -359,31 +361,33 @@ const totalResults = computed(() =>
 )
 
 const currentTypeLabel = computed(() =>
-  searchTypeOptions.find(option => option.value === selectedType.value)?.label ?? "Tất cả kết quả",
+  searchTypeOptions.find(option => option.value === selectedType.value)
+    ? t(`community.search.types.${selectedType.value}`)
+    : t('community.search.types.all')
 )
 
 const summaryCards = computed(() => [
   {
-    label: "Tổng kết quả",
+    label: t('community.search.summary.total.label'),
     value: totalResults.value,
     description: hasKeyword.value
-      ? `Kết quả đang khớp với từ khóa “${searchText.value.trim()}”.`
-      : "Số lượng mục đang có trong mock data.",
+      ? t('community.search.summary.total.descQuery', { keyword: searchText.value.trim() })
+      : t('community.search.summary.total.descEmpty'),
   },
   {
-    label: "Người dùng",
+    label: t('community.search.summary.users.label'),
     value: filteredResults.value.users.length,
-    description: "Liên hệ, gợi ý kết nối và thành viên cộng đồng.",
+    description: t('community.search.summary.users.desc'),
   },
   {
-    label: "Cộng đồng",
+    label: t('community.search.summary.communities.label'),
     value: filteredResults.value.pages.length + filteredResults.value.groups.length,
-    description: "Tổng fanpage và nhóm đang khớp với bộ lọc hiện tại.",
+    description: t('community.search.summary.communities.desc'),
   },
   {
-    label: "Bài đăng",
+    label: t('community.search.summary.posts.label'),
     value: filteredResults.value.posts.length,
-    description: "Những thảo luận và nội dung có liên quan tới từ khóa.",
+    description: t('community.search.summary.posts.desc'),
   },
 ])
 
@@ -410,19 +414,19 @@ const visibleSections = computed<SearchSection[]>(() => {
 
 const resultHeading = computed(() =>
   totalResults.value === 1
-    ? `1 kết quả trong mục ${currentTypeLabel.value.toLowerCase()}`
-    : `${totalResults.value} kết quả trong mục ${currentTypeLabel.value.toLowerCase()}`,
+    ? t('community.search.results.headingSingle', { type: currentTypeLabel.value.toLowerCase() })
+    : t('community.search.results.headingMultiple', { count: totalResults.value, type: currentTypeLabel.value.toLowerCase() })
 )
 
 const resultDescription = computed(() => {
   const keyword = searchText.value.trim()
-  if (!keyword) return "Kết quả sẽ xuất hiện tại đây khi bạn nhập từ khóa."
+  if (!keyword) return t('community.search.results.descEmpty')
 
   if (selectedType.value === "all") {
-    return `Bạn đang xem tổng hợp tất cả loại kết quả cho “${keyword}”. Chọn từng tab nếu muốn đi sâu vào một tập dữ liệu cụ thể.`
+    return t('community.search.results.descAll', { keyword })
   }
 
-  return `Danh sách dưới đây đã được lọc trong phạm vi ${currentTypeLabel.value.toLowerCase()} cho từ khóa “${keyword}”.`
+  return t('community.search.results.descSpecific', { type: currentTypeLabel.value.toLowerCase(), keyword })
 })
 
 function applyQuickKeyword(keyword: string) {
@@ -450,13 +454,13 @@ function showAllResults() {
 useSeoMeta({
   title: computed(() => {
     const keyword = searchText.value.trim()
-    return keyword ? `Tìm kiếm "${keyword}" | VNSEEA` : "Tìm kiếm | VNSEEA"
+    return keyword ? t('community.search.seoTitleQuery', { query: keyword }) : t('community.search.seoTitle')
   }),
   description: computed(() => {
     const keyword = searchText.value.trim()
     return keyword
-      ? `Tra cứu người dùng, fanpage, nhóm và bài đăng liên quan tới ${keyword} trên VNSEEA.`
-      : "Trang tìm kiếm tổng hợp người dùng, fanpage, nhóm và bài đăng trong VNSEEA."
+      ? t('community.search.seoDescQuery', { query: keyword })
+      : t('community.search.seoDesc')
   }),
 })
 </script>

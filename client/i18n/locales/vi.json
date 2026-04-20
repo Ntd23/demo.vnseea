@@ -1,4 +1,17 @@
 {
+  "common": {
+    "header": {
+      "home": "Trang chủ",
+      "friendRequests": "Yêu cầu kết bạn",
+      "messages": "Tin nhắn",
+      "notifications": "Thông báo",
+      "account": "Tài khoản",
+      "search": "Tìm kiếm",
+      "reels": "Reels",
+      "video": "Video",
+      "profile": "Trang cá nhân"
+    }
+  },
   "feed": {
     "commentComposer": {
       "placeholder": "Viết bình luận mang tính xây dựng...",
@@ -8,6 +21,1511 @@
       "tooltipGif": "GIF",
       "tooltipSticker": "Sticker",
       "tooltipMention": "Nhắc đến"
+    }
+  },
+  "settings": {
+    "seo": {
+      "titleSuffix": "Cài đặt VNSEEA"
+    },
+    "hero": {
+      "auditLabel": "P-34 · Cài đặt",
+      "title": "Cài đặt",
+      "description": "Quản lý tài khoản, quyền riêng tư, bảo mật, thông báo, thanh toán và hồ sơ nghề nghiệp.",
+      "stats": {
+        "subPages": {
+          "label": "Sub-pages",
+          "description": "Nhóm cài đặt theo audit."
+        },
+        "features": {
+          "label": "Chức năng",
+          "description": "Field, toggle, list và action."
+        },
+        "api": {
+          "label": "API",
+          "value": "Mock",
+          "description": "Chưa gọi backend setting."
+        }
+      }
+    },
+    "sidebar": {
+      "subPages": "{count} mục",
+      "title": "Menu cài đặt"
+    },
+    "section": {
+      "kind": {
+        "form": "Biểu mẫu",
+        "toggles": "Công tắc",
+        "list": "Danh sách",
+        "danger": "Nguy hiểm",
+        "summary": "Tổng quan"
+      },
+      "saveChanges": "Lưu thay đổi",
+      "dangerMessage": "Khu vực nguy hiểm. Hành động này chỉ đang mô phỏng, chưa gọi API xóa tài khoản.",
+      "deleteAccount": "Xóa tài khoản",
+      "savedState": "Đã mô phỏng lưu cài đặt. Chưa gọi API setting."
+    },
+    "data": {
+      "options": {
+        "male": "Nam",
+        "female": "Nữ",
+        "other": "Khác",
+        "countryVietnam": "Việt Nam",
+        "countrySingapore": "Singapore",
+        "countryThailand": "Thailand",
+        "countryUnitedStates": "United States",
+        "public": "Công khai",
+        "friends": "Bạn bè",
+        "onlyMe": "Chỉ mình tôi",
+        "allow": "Cho phép",
+        "hideFromSearch": "Ẩn khỏi tìm kiếm",
+        "showOnline": "Hiển thị online",
+        "alwaysOffline": "Luôn offline",
+        "hidden": "Không hiển thị",
+        "single": "Độc thân",
+        "dating": "Đang hẹn hò",
+        "married": "Đã kết hôn",
+        "on": "Bật",
+        "off": "Tắt",
+        "system": "Theo hệ thống",
+        "themeBlue": "VNSEEA Blue",
+        "themeEmerald": "Emerald",
+        "themeAmber": "Amber",
+        "themeSlate": "Slate",
+        "enable": "Bật",
+        "disable": "Tắt"
+      },
+      "pages": {
+        "general": {
+          "label": "Chung",
+          "description": "Username, email, số điện thoại và thông tin cơ bản.",
+          "sections": {
+            "account": {
+              "title": "Thông tin tài khoản",
+              "description": "Cập nhật các thông tin nhận diện chính của tài khoản.",
+              "fields": {
+                "username": "Tên đăng nhập",
+                "email": "Email",
+                "phone": "Số điện thoại",
+                "birthday": "Ngày sinh",
+                "gender": "Giới tính",
+                "country": "Quốc gia",
+                "website": "Trang web"
+              },
+              "placeholders": {
+                "username": "nhập tên đăng nhập"
+              }
+            }
+          }
+        },
+        "profile": {
+          "label": "Hồ sơ",
+          "description": "Bio, công việc, trường học và nơi ở.",
+          "sections": {
+            "publicProfile": {
+              "title": "Hồ sơ công khai",
+              "description": "Các trường này xuất hiện trong trang cá nhân.",
+              "fields": {
+                "bio": "Tiểu sử",
+                "workplace": "Nơi làm việc",
+                "school": "Trường học",
+                "relationship": "Tình trạng quan hệ",
+                "city": "Thành phố",
+                "hometown": "Quê quán"
+              },
+              "values": {
+                "bio": "Community builder tại VNSEEA.",
+                "school": "Đại học Kinh tế",
+                "city": "TP. Hồ Chí Minh",
+                "hometown": "Hà Nội"
+              }
+            }
+          }
+        },
+        "privacy": {
+          "label": "Riêng tư",
+          "description": "Kiểm soát ai có thể xem bài viết, theo dõi và trạng thái online.",
+          "sections": {
+            "privacyControls": {
+              "title": "Quyền riêng tư",
+              "description": "Thiết lập quyền xem bài viết, theo dõi và trạng thái hoạt động của tài khoản.",
+              "fields": {
+                "posts": "Ai xem được bài viết",
+                "follow": "Ai có thể theo dõi",
+                "search": "Hiển thị trong tìm kiếm",
+                "friends": "Ai xem được bạn bè",
+                "birthdayPrivacy": "Ai xem được ngày sinh",
+                "onlineStatus": "Trạng thái online/offline"
+              }
+            }
+          }
+        },
+        "avatar": {
+          "label": "Ảnh đại diện",
+          "description": "Upload và crop avatar.",
+          "sections": {
+            "uploadAvatar": {
+              "title": "Upload & crop avatar",
+              "description": "Chọn ảnh mới và mô phỏng vùng crop.",
+              "fields": {
+                "avatar": "Hình ảnh đại diện"
+              }
+            }
+          }
+        },
+        "design": {
+          "label": "Giao diện",
+          "description": "Night mode và màu theme.",
+          "sections": {
+            "appearance": {
+              "title": "Tuỳ chỉnh giao diện",
+              "description": "Thiết lập giao diện hiển thị trên thiết bị của bạn.",
+              "fields": {
+                "nightMode": "Night mode",
+                "themeColor": "Theme color"
+              }
+            }
+          }
+        },
+        "password": {
+          "label": "Mật khẩu",
+          "description": "Đổi mật khẩu đăng nhập.",
+          "sections": {
+            "changePassword": {
+              "title": "Đổi mật khẩu",
+              "description": "Nhập mật khẩu hiện tại và mật khẩu mới.",
+              "fields": {
+                "currentPassword": "Mật khẩu hiện tại",
+                "newPassword": "Mật khẩu mới",
+                "confirmPassword": "Xác nhận mật khẩu"
+              }
+            }
+          }
+        },
+        "twoFactor": {
+          "label": "Bảo mật 2 lớp",
+          "description": "Xác thực qua ứng dụng, mã QR và mã dự phòng.",
+          "sections": {
+            "authenticator": {
+              "title": "Xác thực hai yếu tố (2FA)",
+              "description": "Bật bảo mật hai lớp và quét mã QR bằng ứng dụng xác thực (như Google Authenticator).",
+              "items": {
+                "enable": {
+                  "title": "Bật/Tắt 2FA",
+                  "description": "Trạng thái hiện tại: chưa kích hoạt.",
+                  "action": "Kích hoạt 2FA"
+                },
+                "qr": {
+                  "title": "Mã QR xác thực",
+                  "description": "Sử dụng ứng dụng xác thực để quét mã QR bên dưới."
+                },
+                "backup": {
+                  "title": "Mã dự phòng",
+                  "description": "8 mã dự phòng chưa được tạo. Dùng khi bạn mất quyền truy cập vào ứng dụng xác thực.",
+                  "action": "Tạo mã mới"
+                }
+              }
+            }
+          }
+        },
+        "notifications": {
+          "label": "Thông báo",
+          "description": "Bật tắt thông báo theo từng loại hoạt động.",
+          "sections": {
+            "inApp": {
+              "title": "Thông báo trong ứng dụng",
+              "description": "Lượt thích, bình luận, theo dõi, tin nhắn và các sự kiện khác.",
+              "toggles": {
+                "likes": { "label": "Lượt thích", "description": "Thông báo khi có người thích bài viết của bạn." },
+                "comments": { "label": "Bình luận", "description": "Thông báo khi có người bình luận bài viết của bạn." },
+                "follows": { "label": "Người theo dõi", "description": "Thông báo khi có người theo dõi bạn." },
+                "messages": { "label": "Tin nhắn", "description": "Thông báo khi có tin nhắn mới." },
+                "mentions": { "label": "Nhắc đến", "description": "Thông báo khi bạn được nhắc đến trong bài viết hoặc bình luận." },
+                "shares": { "label": "Chia sẻ", "description": "Thông báo khi có người chia sẻ bài viết của bạn." },
+                "events": { "label": "Sự kiện", "description": "Thông báo về các sự kiện bạn tham gia hoặc được mời." },
+                "groups": { "label": "Nhóm", "description": "Thông báo về hoạt động trong các nhóm bạn tham gia." },
+                "pages": { "label": "Trang", "description": "Thông báo về các trang bạn theo dõi hoặc quản lý." },
+                "marketplace": { "label": "Chợ", "description": "Thông báo về các sản phẩm bạn quan tâm hoặc đăng bán." },
+                "jobs": { "label": "Việc làm", "description": "Thông báo về các tin tuyển dụng phù hợp." },
+                "funding": { "label": "Gây quỹ", "description": "Thông báo về các chiến dịch gây quỹ." },
+                "live": { "label": "Trực tiếp", "description": "Thông báo khi bạn bè hoặc trang bạn theo dõi phát trực tiếp." },
+                "watch": { "label": "Video", "description": "Thông báo về các video mới." },
+                "security": { "label": "Bảo mật", "description": "Thông báo về các vấn đề bảo mật tài khoản." }
+              }
+            }
+          }
+        },
+        "emailNotifications": {
+          "label": "Thông báo Email",
+          "description": "Quản lý các loại thông báo gửi qua email.",
+          "sections": {
+            "email": {
+              "title": "Thông báo qua Email",
+              "description": "Chọn loại email hệ thống được phép gửi tới bạn.",
+              "toggles": {
+                "newMessage": { "label": "Email tin nhắn mới", "description": "Gửi email khi bạn nhận được tin nhắn mới." },
+                "mention": { "label": "Email nhắc đến", "description": "Gửi email khi bạn được nhắc đến." },
+                "weeklyDigest": { "label": "Tóm tắt hàng tuần", "description": "Email tóm tắt các hoạt động nổi bật trong tuần." },
+                "security": { "label": "Email bảo mật", "description": "Cảnh báo đăng nhập lạ và các thay đổi bảo mật quan trọng." }
+              }
+            }
+          }
+        },
+        "socialLinks": {
+          "label": "Mạng xã hội",
+          "description": "Cập nhật liên kết Facebook, Twitter, LinkedIn, Instagram, YouTube.",
+          "sections": {
+            "socialLinks": {
+              "title": "Liên kết mạng xã hội",
+              "description": "Các đường dẫn này sẽ hiển thị trên hồ sơ công khai của bạn.",
+              "fields": {
+                "facebook": "Link Facebook",
+                "twitter": "Link Twitter",
+                "linkedin": "Link LinkedIn",
+                "instagram": "Link Instagram",
+                "youtube": "Link YouTube"
+              },
+              "placeholders": {
+                "facebook": "https://facebook.com/username",
+                "twitter": "https://twitter.com/username",
+                "linkedin": "https://linkedin.com/username",
+                "instagram": "https://instagram.com/username",
+                "youtube": "https://youtube.com/username"
+              }
+            }
+          }
+        },
+        "blockedUsers": {
+          "label": "Người dùng đã chặn",
+          "description": "Danh sách người dùng bạn đã chặn.",
+          "sections": {
+            "blockedUsers": {
+              "title": "Quản lý chặn",
+              "description": "Những người trong danh sách này sẽ không thể tương tác với bạn.",
+              "items": {
+                "spamAccount": { "description": "Đã chặn 2 ngày trước", "action": "Bỏ chặn" },
+                "oldBot": { "description": "Đã chặn 1 tháng trước", "action": "Bỏ chặn" }
+              }
+            }
+          }
+        },
+        "sessions": {
+          "label": "Phiên đăng nhập",
+          "description": "Danh sách các thiết bị và trình duyệt đang đăng nhập tài khoản của bạn.",
+          "sections": {
+            "activeSessions": {
+              "title": "Các phiên hoạt động",
+              "description": "Kiểm tra và đăng xuất khỏi các thiết bị lạ.",
+              "items": {
+                "chrome": {
+                  "title": "Chrome · Windows",
+                  "description": "127.0.0.1 · hiện tại",
+                  "meta": "Đang hoạt động",
+                  "action": "Giữ lại"
+                },
+                "safari": {
+                  "title": "Safari · iPhone",
+                  "description": "TP. Hồ Chí Minh · 2 ngày trước",
+                  "meta": "Di động",
+                  "action": "Đăng xuất"
+                }
+              }
+            }
+          }
+        },
+        "verification": {
+          "label": "Xác minh tài khoản",
+          "description": "Gửi yêu cầu để nhận dấu tích xác minh (verified badge).",
+          "sections": {
+            "request": {
+              "title": "Yêu cầu xác minh",
+              "description": "Vui lòng tải lên giấy tờ tùy thân và mô tả lý do bạn cần xác minh.",
+              "fields": {
+                "documents": "Tải lên tài liệu",
+                "note": "Lý do xác minh"
+              }
+            }
+          }
+        },
+        "deleteAccount": {
+          "label": "Xóa tài khoản",
+          "description": "Xác nhận và xóa vĩnh viễn tài khoản của bạn.",
+          "sections": {
+            "deleteAccount": {
+              "title": "Vùng nguy hiểm",
+              "description": "Hành động này sẽ xóa toàn bộ dữ liệu của bạn và không thể khôi phục.",
+              "fields": {
+                "passwordConfirm": "Xác nhận mật khẩu"
+              },
+              "action": "Xác nhận xóa tài khoản"
+            }
+          }
+        },
+        "payments": {
+          "label": "Thanh toán",
+          "description": "Quản lý phương thức thanh toán và ví của bạn.",
+          "sections": {
+            "paymentMethods": {
+              "title": "Phương thức thanh toán",
+              "description": "Thêm hoặc xóa các thẻ và ví dùng để giao dịch.",
+              "items": {
+                "visa": {
+                  "title": "Visa đuôi 4242",
+                  "description": "Phương thức mặc định",
+                  "meta": "Mặc định",
+                  "action": "Chỉnh sửa"
+                },
+                "wallet": {
+                  "title": "Ví VNSEEA",
+                  "description": "Số dư: 9.999.999 VND",
+                  "meta": "Ví",
+                  "action": "Quản lý"
+                }
+              }
+            }
+          }
+        },
+        "monetization": {
+          "label": "Kiếm tiền",
+          "description": "Thiết lập các gói nội dung trả phí cho người theo dõi.",
+          "sections": {
+            "plan": {
+              "title": "Gói kiếm tiền",
+              "description": "Tạo gói nội dung độc quyền dành cho những người đăng ký.",
+              "fields": {
+                "planName": "Tên gói",
+                "price": "Giá tiền",
+                "enabled": "Trạng thái"
+              }
+            }
+          }
+        },
+        "invitationLinks": {
+          "label": "Lời mời",
+          "description": "Tạo link mời bạn bè gia nhập VNSEEA.",
+          "sections": {
+            "links": {
+              "title": "Liên kết mời",
+              "description": "Theo dõi số lượng người đã dùng link của bạn.",
+              "items": {
+                "link": {
+                  "description": "12 người đã tham gia",
+                  "meta": "Đang hoạt động",
+                  "action": "Sao chép link"
+                },
+                "invitees": {
+                  "title": "Người đã mời",
+                  "description": "Hoàng, Dũng, Nicolas...",
+                  "action": "Xem danh sách"
+                }
+              }
+            }
+          }
+        },
+        "affiliates": {
+          "label": "Tiếp thị liên kết",
+          "description": "Xem thống kê thu nhập từ chương trình cộng tác viên.",
+          "sections": {
+            "dashboard": {
+              "title": "Bảng điều khiển Affiliate",
+              "description": "Theo dõi lượt giới thiệu và thu nhập hàng tháng.",
+              "items": {
+                "referralLink": {
+                  "title": "Link giới thiệu",
+                  "action": "Sao chép"
+                },
+                "earnings": {
+                  "title": "Thu nhập",
+                  "meta": "Tháng này"
+                },
+                "referrals": {
+                  "title": "Lượt giới thiệu",
+                  "description": "42 lượt đăng ký thành công"
+                }
+              }
+            }
+          }
+        },
+        "myInfo": {
+          "label": "Dữ liệu của tôi",
+          "description": "Yêu cầu và tải xuống toàn bộ dữ liệu cá nhân của bạn.",
+          "sections": {
+            "myInfo": {
+              "title": "Thông tin cá nhân",
+              "description": "Nhận bản sao dữ liệu của bạn dưới dạng file nén.",
+              "items": {
+                "download": {
+                  "title": "Tải dữ liệu cá nhân",
+                  "description": "Bao gồm ảnh, bài viết, tin nhắn và thông tin cá nhân khác.",
+                  "action": "Yêu cầu bản sao"
+                }
+              }
+            }
+          }
+        },
+        "myPoints": {
+          "label": "Điểm thưởng",
+          "description": "Kiểm tra số dư điểm tích lũy và lịch sử nhận điểm.",
+          "sections": {
+            "myPoints": {
+              "title": "Điểm VNSEEA",
+              "description": "Điểm bạn tích được từ các hoạt động đóng góp cho cộng đồng.",
+              "items": {
+                "balance": {
+                  "title": "50 điểm",
+                  "description": "Số dư khả dụng",
+                  "meta": "Số dư"
+                },
+                "comment": {
+                  "description": "Đóng góp bình luận chất lượng",
+                  "meta": "Hôm nay"
+                },
+                "event": {
+                  "description": "Tham gia sự kiện cộng đồng",
+                  "meta": "Tuần này"
+                }
+              }
+            }
+          }
+        },
+        "addresses": {
+          "label": "Địa chỉ nhận hàng",
+          "description": "Quản lý địa chỉ giao hàng cho các đơn hàng Marketplace.",
+          "sections": {
+            "shippingAddresses": {
+              "title": "Địa chỉ giao hàng",
+              "description": "Thông tin liên hệ và vị trí nhận hàng của bạn.",
+              "fields": {
+                "fullName": "Họ và tên",
+                "phone": "Số điện thoại",
+                "address": "Địa chỉ chi tiết"
+              },
+              "values": {
+                "address": "Quận 1, TP. Hồ Chí Minh"
+              }
+            }
+          }
+        },
+        "career": {
+          "label": "Chế độ sự nghiệp",
+          "description": "Quản lý kinh nghiệm làm việc, chứng chỉ và các dự án chuyên nghiệp.",
+          "sections": {
+            "profile": {
+              "title": "Kinh nghiệm - Chứng chỉ - Dự án",
+              "description": "Xây dựng thương hiệu cá nhân và hồ sơ năng lực chuyên môn.",
+              "items": {
+                "workExperience": {
+                  "title": "Kinh nghiệm làm việc",
+                  "description": "Quản lý cộng đồng · VNSEEA",
+                  "action": "Thêm kinh nghiệm"
+                },
+                "certifications": {
+                  "title": "Chứng chỉ & Bằng cấp",
+                  "description": "Chứng chỉ Phát triển sản phẩm",
+                  "action": "Thêm chứng chỉ"
+                },
+                "projects": {
+                  "title": "Dự án tiêu biểu",
+                  "description": "Dự án di chuyển UI VNSEEA",
+                  "action": "Thêm dự án"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "checkout": {
+    "page": {
+      "title": "Thanh toán | VNSEEA",
+      "description": "Hoàn tất checkout marketplace với form địa chỉ, giỏ hàng, số dư ví và tổng thanh toán.",
+      "layoutTitle": "Thủ tục thanh toán",
+      "layoutDescription": "Điền địa chỉ nhận hàng, kiểm tra giỏ hàng và chọn phương thức thanh toán trước khi xác nhận đơn.",
+      "eyebrow": "P-14 · Thanh toán"
+    },
+    "summary": {
+      "title": "Giỏ hàng",
+      "items": "{count} vật phẩm",
+      "itemsPlural": "{count} vật phẩm khác nhau",
+      "backToStore": "Quay trở lại cửa hàng",
+      "insufficientBalance": "Bạn không có đủ số dư để mua hàng, vui lòng nạp thêm vào ví trước khi tiếp tục bằng phương thức này.",
+      "subtotal": "Tạm tính",
+      "shippingFee": "Phí giao hàng",
+      "free": "Miễn phí",
+      "totalPayment": "Tổng thanh toán",
+      "walletBalance": "Ví hiện có {balance}. Bạn cần nạp thêm {amount} để tiếp tục mua hàng.",
+      "walletHint": "Số dư ví hiện tại là {balance}. Giao diện này đang bám theo mock checkout dùng ví nội bộ.",
+      "addFunds": "Nạp thêm vào ví",
+      "buy": "Mua",
+      "emptyCart": "Giỏ hàng đang trống",
+      "emptyCartHint": "Hãy quay lại marketplace để chọn thêm sản phẩm trước khi tiếp tục thanh toán.",
+      "backToMarketplace": "Quay lại marketplace",
+      "qty": "Qty",
+      "marketplace": "Marketplace"
+    },
+    "shippingForm": {
+      "shippingAddress": "Địa chỉ giao hàng",
+      "savedAddressTitle": "Địa chỉ đã lưu sẵn sàng",
+      "noAddressTitle": "Chưa có địa chỉ nhận hàng",
+      "savedAddressDesc": "Đơn hàng sẽ ưu tiên dùng địa chỉ này, bạn vẫn có thể chỉnh lại biểu mẫu bên dưới.",
+      "noAddressDesc": "Điền nhanh biểu mẫu bên dưới để hệ thống có đủ thông tin giao hàng cho đơn này.",
+      "recipient": "Người nhận",
+      "postalCodePrefix": "Mã",
+      "addAddressHint": "Vui lòng thêm địa chỉ mới bên dưới để tiếp tục.",
+      "quickTip": "Mẹo nhập nhanh",
+      "fieldsRemaining": "Điền đủ {count} trường để bật nút lưu địa chỉ.",
+      "shippingInfoPersist": "Thông tin giao hàng sẽ được giữ lại cho các bước thanh toán tiếp theo.",
+      "formTitle": "Biểu mẫu nhận hàng",
+      "addAddressTitle": "Thêm địa chỉ mới",
+      "formDesc": "Form đã được gom theo cụm thông tin để thao tác nhanh hơn trên desktop mà vẫn gọn trên mobile.",
+      "fieldsCount": "{filled}/{total} trường đã điền",
+      "recipientInfo": "Thông tin người nhận",
+      "recipientInfoDesc": "Nhập tên và số điện thoại để shipper liên hệ dễ hơn.",
+      "fullName": "Tên",
+      "fullNamePlaceholder": "Nhập tên người nhận",
+      "phone": "Điện thoại",
+      "phonePlaceholder": "Số điện thoại",
+      "region": "Khu vực giao hàng",
+      "regionDesc": "Điền vị trí để hệ thống tổng hợp điểm giao hàng chính xác.",
+      "country": "Quốc gia",
+      "city": "Thành phố",
+      "postalCode": "Mã Bưu Chính",
+      "pointDetail": "Điểm nhận chi tiết",
+      "pointDetailDesc": "Ghi rõ số nhà, tên đường, phường/xã để tránh giao thất bại.",
+      "streetAddress": "Địa chỉ nhà",
+      "streetAddressPlaceholder": "Số nhà, tên đường, phường/xã...",
+      "quickPreview": "Xem trước nhanh",
+      "noRecipientPreview": "Chưa có tên người nhận",
+      "mockWarning": "Đơn hàng sẽ dùng đúng thông tin bạn lưu tại đây. Đây là mock UI nên chưa gửi dữ liệu thật tới API `address.php`.",
+      "saveAddress": "Lưu địa chỉ"
+    }
+  },
+  "orders": {
+    "page": {
+      "title": "Đơn hàng của tôi | VNSEEA",
+      "description": "Theo dõi đơn mua, trạng thái giao hàng và tổng quan các đơn marketplace của bạn trên VNSEEA.",
+      "layoutTitle": "Đơn hàng của tôi",
+      "layoutDescription": "Theo dõi các đơn mua trong marketplace, kiểm tra trạng thái giao hàng và mở lại chi tiết đơn khi cần.",
+      "eyebrow": "P-15 · Đơn hàng",
+      "detailEyebrow": "P-16 · Chi tiết đơn",
+      "detailTitle": "Chi tiết đơn #{id}",
+      "detailFallbackTitle": "Chi tiết đơn hàng",
+      "detailDescription": "Theo dõi trạng thái đơn, kiểm tra thông tin giao hàng và xem lại toàn bộ sản phẩm trong giao dịch.",
+      "customerEyebrow": "P-17 · Đơn khách đặt",
+      "customerTitle": "Đơn bán #{id}",
+      "customerFallbackTitle": "Chi tiết đơn bán",
+      "customerDescription": "Theo dõi một đơn bán cụ thể, kiểm tra thông tin người mua và chuẩn bị các bước cập nhật vận chuyển."
+    },
+    "status": {
+      "pending": {
+        "label": "Chờ xác nhận",
+        "description": "Các đơn vừa đặt, đang chờ shop xác nhận và chuẩn bị."
+      },
+      "shipping": {
+        "label": "Đang giao",
+        "description": "Đơn đã rời kho và đang trên hành trình đến tay bạn."
+      },
+      "delivered": {
+        "label": "Hoàn tất",
+        "description": "Đơn đã giao thành công và có thể xem lại để mua tiếp."
+      },
+      "cancelled": {
+        "label": "Đã hủy",
+        "description": "Các đơn bị hủy hoặc đã hoàn tiền về ví nội bộ."
+      }
+    },
+    "sidebar": {
+      "overview": "Tổng quan",
+      "trackRecent": "Theo dõi gần đây",
+      "viewStatus": "Xem trạng thái",
+      "noRecent": "Không có đơn mới cần theo dõi.",
+      "currentFilter": "Bộ lọc hiện tại",
+      "filterHint": "Hiển thị {count} đơn hàng.",
+      "flowHintReal": "Dữ liệu được cập nhật từ hệ thống marketplace VNSEEA.",
+      "flowHintMarketplace": "Hệ thống tự động đồng bộ trạng thái vận chuyển từ đối tác.",
+      "continueShopping": "Tiếp tục mua sắm",
+      "filter": "Bộ lọc hiện tại",
+      "timeline": "Hành trình đơn",
+      "help": "Cần hỗ trợ?",
+      "helpAction": "Hãy liên hệ trung tâm hỗ trợ người mua VNSEEA.",
+      "tasks": "Tác vụ",
+      "tasksAction": "Quay lại danh sách đơn hàng để mở đúng đơn bạn muốn theo dõi.",
+      "sellerTasksAction": "Quay lại khu vực người bán để mở đúng đơn khách đặt mà bạn muốn xử lý.",
+      "backToOrders": "Về danh sách đơn",
+      "backToProducts": "Về SP của tôi",
+      "coordination": "Điều phối đơn bán",
+      "payoutShop": "Đối soát shop",
+      "confirmOrder": "Xác nhận & tạo vận đơn",
+      "markDelivered": "Đánh dấu giao thành công",
+      "viewPayout": "Xem đối soát đơn",
+      "viewCancelled": "Xem hồ sơ đơn hủy"
+    },
+    "steps": {
+      "placed": {
+        "label": "Đã đặt hàng",
+        "description": "Bạn đã gửi yêu cầu mua hàng thành công."
+      },
+      "processing": {
+        "label": "Shop xử lý",
+        "description": "Người bán chuẩn bị và xác nhận đơn của bạn."
+      },
+      "shipping": {
+        "label": "Đang giao",
+        "description": "Đơn hàng đã bàn giao cho đơn vị vận chuyển."
+      },
+      "completed": {
+        "label": "Hoàn tất",
+        "description": "Bạn đã nhận hàng và đơn được đóng thành công."
+      }
+    },
+    "card": {
+      "items": "{count} vật phẩm",
+      "itemLabel": "Sản phẩm",
+      "qty": "Số lượng: {count}",
+      "qtyCompact": "x{count}",
+      "total": "Tổng đơn {total}",
+      "orderProgress": "Tiến độ đơn hàng",
+      "viewDetail": "Xem chi tiết",
+      "contactShop": "Liên hệ shop",
+      "viewMore": "Xem thêm",
+      "chooseOther": "Chọn đơn khác",
+      "contactBuyer": "Liên hệ người mua",
+      "shippingAddress": "Địa chỉ nhận hàng",
+      "orderedFrom": "Đơn từ {seller} • {price}",
+      "productsSummary": "{count} sản phẩm đã đặt",
+      "productsInOrder": "Sản phẩm trong đơn",
+      "customerProducts": "Sản phẩm khách đã đặt",
+      "productsRemaining": "{count} sản phẩm cần xử lý",
+      "belongsToStore": "Thuộc gian hàng {store} • Đơn giá {price}",
+      "contactBuyer": "Đơn từ khách {buyer}"
+    },
+    "filter": {
+      "title": "Lọc đơn hàng",
+      "placeholder": "Tìm mã đơn, shop...",
+      "matched": "{count} Đơn phù hợp",
+      "current": "Đang hiển thị các đơn {label}",
+      "all": "Tất cả"
+    },
+    "summary": {
+      "shippingFee": "Phí vận chuyển",
+      "free": "Miễn phí",
+      "subtotal": "Tạm tính",
+      "discount": "Giảm giá",
+      "total": "Tổng cộng",
+      "totalOrder": "Tổng đơn hàng",
+      "totalPayment": "Thanh toán"
+    },
+    "detail": {
+      "recipient": "Người nhận",
+      "shippingProvider": "Đơn vị giao",
+      "trackingCodeLabel": "Mã theo dõi: {code}",
+      "estimatedProcess": "Dự kiến xử lý",
+      "deliveryAndNotes": "Giao nhận và ghi chú",
+      "orderNote": "Ghi chú đơn hàng",
+      "noNote": "Đơn hàng này không có ghi chú bổ sung.",
+      "notFound": "Không tìm thấy đơn hàng",
+      "notFoundDesc": "Mã đơn này không tồn tại trong dữ liệu mock hiện tại. Hãy quay lại danh sách đơn để chọn một đơn khác.",
+      "sellerNotFound": "Không tìm thấy đơn bán",
+      "sellerNotFoundDesc": "Mã đơn này không tồn tại trong dữ liệu seller mock hiện tại. Hãy quay lại sản phẩm của bạn để mở một đơn khác.",
+      "buyer": "Người mua",
+      "payout": "Đối soát",
+      "buyerAndNotes": "Người mua & ghi chú",
+      "estimatedWindow": "Khung giao dự kiến",
+      "buyerNote": "Ghi chú từ khách",
+      "noBuyerNote": "Khách không để lại ghi chú bổ sung.",
+      "internalNote": "Ghi chú nội bộ",
+      "noInternalNote": "Chưa có ghi chú nội bộ cho đơn này.",
+      "operating": "Vận hành đơn bán",
+      "checklist": "Checklist xử lý & cập nhật trạng thái",
+      "taskStatus": {
+        "done": "Đã xong",
+        "pending": "Đang chờ"
+      },
+      "cancelledWarning": "Đơn đã bị hủy nên không thể tiếp tục cập nhật `Shipped` hoặc `Completed`. Hãy lưu ghi chú và đóng hồ sơ hoàn tiền.",
+      "shippedLabel": "Shipped",
+      "shippedTitle": "Đã bàn giao vận chuyển",
+      "shippedDesc": "Dùng khi đơn đã được in nhãn và giao cho đơn vị vận chuyển.",
+      "completedLabel": "Completed",
+      "completedTitle": "Đã giao thành công",
+      "completedDesc": "Dùng khi khách đã nhận đủ hàng và đơn được đóng thành công."
+    },
+    "payment": {
+      "paid": "Đã thanh toán",
+      "wallet": "Ví VNSEEA",
+      "refunded": "Hoàn về ví VNSEEA",
+      "reference": "Mã tham chiếu: {ref}"
+    },
+    "payout": {
+      "queued": {
+        "label": "Đang chờ",
+        "description": "Khoản tiền đang tạm giữ cho đến khi đơn hoàn tất."
+      },
+      "processing": {
+        "label": "Đang xử lý",
+        "description": "Đang trong quá trình đối soát và chuyển về ví shop."
+      },
+      "completed": {
+        "label": "Đã xong",
+        "description": "Tiền đã được cộng vào số dư khả dụng của shop."
+      },
+      "cancelled": {
+        "label": "Đã hủy",
+        "description": "Khoản đối soát đã bị hủy bỏ do đơn lỗi/hoàn."
+      }
+    },
+    "empty": {
+      "noMatchedTitle": "Không tìm thấy đơn phù hợp",
+      "noMatchedDesc": "Hãy thử đổi bộ lọc hoặc từ khóa tìm kiếm. Khi bạn mua sản phẩm mới, đơn hàng sẽ xuất hiện tại đây."
+    },
+    "mock": {
+      "timeline": {
+        "waiting": "Đang chờ",
+        "ongoing": "Đang diễn ra",
+        "notApplicable": "Không áp dụng",
+        "notCompleted": "Chưa hoàn tất",
+        "created": { "label": "Đã tạo đơn", "description": "Đơn hàng được ghi nhận và chờ shop xác nhận." },
+        "confirmed": { "label": "Shop xác nhận", "description": "Shop sẽ kiểm tra tồn kho và chuẩn bị đơn của bạn." },
+        "shipping": { "label": "Bàn giao vận chuyển", "description": "Đơn sẽ được chuyển sang đơn vị giao hàng sau khi xác nhận." },
+        "delivered": { "label": "Giao thành công", "description": "Bạn sẽ nhận được thông báo khi đơn hoàn tất." },
+        "shipping_active": { "label": "Đang vận chuyển", "description": "Đơn đang trên xe giao và sẽ đến trong hôm nay." },
+        "cancelled": { "label": "Yêu cầu hủy đơn", "description": "Người mua gửi yêu cầu hủy trước khi đơn được xác nhận." },
+        "refunded": { "label": "Hoàn tiền & đóng đơn", "description": "Tiền đã được hoàn về ví nội bộ VNSEEA." }
+      },
+      "tasks": {
+        "payment": { "label": "Xác thực thanh toán", "description": "Ví nội bộ đã ghi nhận thành công hoặc tiền đã về hệ thống." },
+        "stock": { "label": "Kiểm tra tồn kho", "description": "Đảm bảo hàng đủ số lượng, phụ kiện và tình trạng đóng gói." },
+        "packing": { "label": "Đóng gói & In đơn", "description": "Cần hoàn tất trước khi bàn giao cho đơn vị vận chuyển." },
+        "handoff": { "label": "Bàn giao shipper", "description": "Hệ thống sẽ mở đối soát sau khi đơn rời kho." }
+      },
+      "delivery": {
+        "expected2h": "Shop dự kiến xác nhận trong 2 giờ",
+        "expectedToday": "Dự kiến giao hôm nay trước 17:30",
+        "deliveredDate": "Đã giao thành công ngày 13/04/2026",
+        "cancelledRequest": "Đơn đã hủy theo yêu cầu của người mua",
+        "confirmBefore1pm": "Cần xác nhận đơn trước 13:00 hôm nay",
+        "leftWarehouse": "Đơn đã rời kho, dự kiến giao trong ngày",
+        "receivedDate": "Khách đã nhận đơn ngày 13/04/2026",
+        "cancelledBeforeHandoff": "Đơn đã hủy trước khi bàn giao vận chuyển"
+      },
+      "payout": {
+        "confirm24h": "Đối soát sau khi khách xác nhận nhận hàng 24 giờ",
+        "window24h": "Đối soát trong 24-48 giờ sau khi giao thành công",
+        "depositedDate": "Đã ghi có vào ngân quỹ cửa hàng ngày 14/04/2026",
+        "noPayoutCancelled": "Không đối soát do giao dịch đã hoàn tiền"
+      },
+      "items": {
+        "speaker": "Loa bluetooth mini",
+        "headphones": "Tai nghe chống ồn",
+        "cashews": "Hạt điều rang muối 500g",
+        "honey": "Mật ong rừng nguyên chất",
+        "table": "Bàn trà gỗ sồi",
+        "haircare": "Combo dưỡng tóc Yaskey",
+        "consoleTable": "Bàn console gỗ sồi",
+        "wallMount": "Bộ phụ kiện treo tường",
+        "chargerCombo": "Combo phụ kiện sạc nhanh",
+        "workshopLeadership": "Bộ tài liệu workshop leadership"
+      }
+    }
+  },
+  "community": {
+    "pagesDirectory": {
+      "title": "Các trang",
+      "desc": "Quản lý fanpage bạn theo dõi, xem gợi ý phù hợp và mở nhanh flow tạo page mới trong cùng một khu vực.",
+      "emptyMineTitle": "Không có trang nào để hiển thị",
+      "emptyMineDesc": "Bạn chưa tạo fanpage nào trong tài khoản này. Bắt đầu bằng một page mới để giới thiệu thương hiệu, dịch vụ hoặc kênh nội dung của bạn.",
+      "createFirst": "Tạo page đầu tiên",
+      "emptyOtherTitle": "Không có fanpage phù hợp",
+      "emptyOtherDesc": "Tab này hiện chưa có dữ liệu mock. Bạn có thể chuyển sang tab khác hoặc tạo mới một page để bắt đầu.",
+      "actionSuggested": "Khám phá fanpage",
+      "actionFavorite": "Xem cập nhật",
+      "actionMine": "Xem fanpage",
+      "seoSuggestedTitle": "Các trang được đề xuất",
+      "seoFavoriteTitle": "Các trang được yêu thích",
+      "seoMineTitle": "Các trang",
+      "seoSuggestedDesc": "Danh sách fanpage được đề xuất trên VNSEEA.",
+      "seoFavoriteDesc": "Danh sách fanpage được yêu thích trên VNSEEA.",
+      "seoMineDesc": "Danh bạ fanpage trên VNSEEA với khu vực trang của tôi, page được đề xuất và page được yêu thích."
+    },
+    "creation": {
+      "group": {
+        "eyebrow": "P-18 · Cộng đồng",
+        "title": "Tạo nhóm mới",
+        "description": "Thiết lập một cộng đồng mới cho thành viên cùng trao đổi, chia sẻ nội dung và kết nối quanh một chủ đề chung.",
+        "highlights": ["URL tùy chỉnh", "Kiểm soát quyền riêng tư", "Sẵn sàng mời thành viên"],
+        "nameLabel": "Tên nhóm",
+        "namePlaceholder": "Ví dụ: Cộng đồng Ô tô miền Trung",
+        "slugPlaceholder": "cong-dong-o-to-mien-trung",
+        "privacyLabel": "Loại nhóm",
+        "categoryLabel": "Loại"
+      },
+      "page": {
+        "eyebrow": "P-21 · Fanpage",
+        "title": "Tạo trang mới",
+        "description": "Khởi tạo một fanpage cho thương hiệu, cửa hàng, chuyên gia hoặc dự án nội dung để bắt đầu đăng bài, nhận theo dõi và xây dựng hiện diện công khai.",
+        "highlights": ["Công khai ngay từ đầu", "URL thương hiệu", "Sẵn sàng cho hồ sơ fanpage"],
+        "nameLabel": "Tên trang",
+        "namePlaceholder": "Ví dụ: Studio Nội thất Mộc Mây",
+        "slugPlaceholder": "studio-noi-that-moc-may",
+        "categoryLabel": "Loại trang",
+        "submitLabel": "Tạo trang",
+        "identitySectionLabel": "Định danh fanpage",
+        "identitySectionTitle": "Tên trang gọn, dễ nhớ và đúng nhận diện",
+        "identitySectionBadge": "Dùng tốt cho tìm kiếm, chia sẻ và hồ sơ công khai",
+        "identityHint": "Tên nên khớp với thương hiệu, dịch vụ hoặc persona chính",
+        "descriptionSectionLabel": "Giới thiệu fanpage",
+        "descriptionSectionTitle": "Cho người theo dõi biết bạn đang cung cấp điều gì",
+        "descriptionHint": "Gợi ý: nói rõ thương hiệu là ai, phục vụ nhóm người nào và nội dung chính bạn sẽ đăng tải.",
+        "configurationSectionLabel": "Phân loại fanpage",
+        "configurationSectionTitle": "Chọn danh mục để hệ thống đề xuất đúng đối tượng",
+        "actionDescription": "Sau khi hoàn tất, bạn có thể thêm cover, avatar, CTA, thông tin liên hệ và bài giới thiệu đầu tiên của fanpage.",
+        "nextSteps": {
+          "step1Title": "Hoàn thiện hồ sơ fanpage",
+          "step1Desc": "Thêm cover, avatar, giới thiệu nổi bật và thông tin liên hệ để trang nhìn đáng tin hơn.",
+          "step2Title": "Chọn CTA phù hợp",
+          "step2Desc": "Tùy mục tiêu, bạn có thể bật nút nhắn tin, gọi điện, xem cửa hàng hoặc theo dõi.",
+          "step3Title": "Đăng bài giới thiệu đầu tiên",
+          "step3Desc": "Ghim một bài mở đầu để người mới biết bạn cung cấp gì và nên tương tác thế nào với fanpage."
+        },
+        "seoTitle": "Tạo trang mới",
+        "seoDesc": "Tạo fanpage mới trên VNSEEA với tên, URL, mô tả và category để sẵn sàng cho flow trang công khai."
+      },
+      "common": {
+        "entityLabelGroup": "nhóm",
+        "entityLabelPage": "trang",
+        "basicSetup": "Thiết lập cơ bản",
+        "fillInfo": "Điền thông tin {entity}",
+        "fillDesc": "Hoàn thiện tên, URL, mô tả và phân loại để {entity} mới của bạn sẵn sàng xuất hiện trên VNSEEA.",
+        "completionStatus": "{count}/{total} mục chính đã sẵn sàng",
+        "urlSuggested": "Gợi ý URL",
+        "urlDefault": "ten-cua-ban",
+        "useSuggestion": "Dùng gợi ý",
+        "charCount": "{count} ký tự",
+        "action": "Hành động",
+        "create": "Tạo nhóm",
+        "back": "Quay lại",
+        "identitySection": "Định danh {entity}",
+        "identityTitle": "Tên ngắn gọn và URL dễ nhớ",
+        "identityBadge": "Hiển thị đẹp trên tìm kiếm và chia sẻ",
+        "identityHint": "Dễ nhớ, ngắn và đúng chủ đề",
+        "identityReady": "Tên đã đủ rõ",
+        "introSection": "Giới thiệu {entity}",
+        "introTitleGroup": "Mô tả rõ mục tiêu và đối tượng thành viên",
+        "introTitlePage": "Mô tả rõ mục tiêu và đối tượng người theo dõi",
+        "introHint": "Gợi ý: nói rõ {entity} dành cho ai, nội dung chính là gì và điểm khác biệt nổi bật nhất.",
+        "configLabelDisplay": "Cấu hình hiển thị",
+        "configLabelContent": "Phân loại nội dung",
+        "configTitleGroup": "Chọn phạm vi tiếp cận và nhóm nội dung phù hợp",
+        "configTitlePage": "Chọn danh mục gần nhất với nội dung chính của trang",
+        "finishHint": "Khi hoàn tất, bạn vẫn có thể quay lại chỉnh ảnh cover, mô tả và {extra}.",
+        "finishExtraGroup": "quyền quản trị",
+        "finishExtraPage": "thông tin liên hệ",
+        "previewTitle": "Tên {entity} sẽ hiển thị ở đây",
+        "previewUrlDefault": "duong-dan-cua-ban",
+        "previewDescDefault": "{entity} mới của bạn sẽ có phần mô tả ngắn để người khác hiểu rõ mục tiêu, chủ đề và cách tham gia.",
+        "noPrivacy": "Chưa chọn hiển thị",
+        "privacyDescDefault": "Thiết lập này quyết định ai sẽ tìm thấy và xem được nội dung trong {entity}.",
+        "noCategory": "Chưa chọn loại",
+        "categoryDescDefault": "Hãy chọn một category gần nhất với chủ đề chính của {entity}.",
+        "quickFill": "Điền trong 1 phút",
+        "editLater": "Có thể chỉnh sửa sau",
+        "urlLabel": "Đường dẫn URL",
+        "descriptionLabel": "Mô tả",
+        "categoryLabel": "Danh mục"
+      },
+      "insights": {
+        "preview": "Xem trước",
+        "readiness": "Mức sẵn sàng",
+        "completionStatus": "{count}/{total} mục đã hoàn thành",
+        "privacy": "Quyền hiển thị",
+        "afterCreation": "Sau khi tạo",
+        "noPrivacy": "Chưa chọn hiển thị",
+        "privacyDescDefault": "Hãy chọn quyền hiển thị để kiểm soát ai có thể tìm thấy và xem nội dung nhóm.",
+        "finishTitle": "Hoàn thiện {entity}",
+        "finishDesc": "Bạn có thể thêm cover, avatar và thông tin nổi bật ngay sau khi tạo {entity}.",
+        "inviteTitle": "Mời những người đầu tiên",
+        "inviteDescGroup": "Bắt đầu với một nhóm nhỏ để kiểm tra nhịp thảo luận và nội dung khởi đầu.",
+        "inviteDescPage": "Kéo lượt theo dõi đầu tiên từ khách hàng, bạn bè hoặc cộng đồng sẵn có của bạn.",
+        "introPostTitle": "Đăng bài giới thiệu",
+        "introPostDesc": "Ghim một bài mở đầu để người mới biết bạn đang chia sẻ gì và nên bắt đầu từ đâu."
+      },
+      "readiness": {
+        "nameLabel": "Tên {entity} rõ ràng",
+        "nameDesc": "Tên ngắn gọn giúp người xem nhận ra chủ đề của {entity} ngay.",
+        "urlLabel": "URL tùy chỉnh",
+        "urlDesc": "Đường dẫn gọn giúp chia sẻ {entity} dễ hơn.",
+        "descLabel": "Mô tả đủ ý",
+        "descDesc": "Giải thích {entity} dành cho ai và nội dung sẽ tập trung vào đâu.",
+        "categoryLabel": "Phân loại đúng chủ đề",
+        "categoryDesc": "{entity} sẽ xuất hiện đúng ngữ cảnh hơn khi chọn đúng danh mục.",
+        "privacyLabel": "Loại hiển thị đã chọn",
+        "privacyDesc": "Thiết lập này ảnh hưởng trực tiếp tới việc ai có thể tìm thấy và xem {entity}."
+      }
+    },
+    "cta": {
+      "message": { "label": "Nhắn tin", "description": "Phù hợp khi bạn muốn kéo người xem sang inbox để tư vấn trực tiếp." },
+      "follow": { "label": "Theo dõi", "description": "Tốt cho fanpage nội dung, thương hiệu hoặc kênh cập nhật định kỳ." },
+      "catalog": { "label": "Xem sản phẩm", "description": "Dùng cho trang có danh mục sản phẩm, dịch vụ hoặc bộ sưu tập nổi bật." },
+      "booking": { "label": "Đặt lịch", "description": "Hợp với studio, chuyên gia, lớp học hoặc dịch vụ cần chốt khung giờ." },
+      "call": { "label": "Gọi ngay", "description": "Phù hợp với doanh nghiệp địa phương hoặc đội ngũ cần phản hồi nhanh." }
+    },
+    "tabs": {
+      "groups": {
+        "mine": "Nhóm của tôi",
+        "suggested": "Các nhóm được đề xuất",
+        "joined": "Các nhóm đã tham gia"
+      },
+      "pages": {
+        "mine": "Trang của tôi",
+        "suggested": "Các trang được đề xuất",
+        "favorite": "Các trang được yêu thích"
+      }
+    },
+    "privacy": {
+      "public": { "label": "Công cộng", "description": "Ai cũng có thể tìm thấy nhóm và xem nội dung cơ bản." },
+      "private": { "label": "Riêng tư", "description": "Nhóm hiển thị công khai nhưng chỉ thành viên mới xem được bài đăng." },
+      "secret": { "label": "Bí mật", "description": "Chỉ người được mời mới nhìn thấy và tham gia được nhóm." }
+    },
+    "categories": {
+      "auto": { "label": "Ô tô và Xe cộ", "description": "Dành cho thảo luận xe mới, bảo dưỡng, review và phụ kiện." },
+      "business": { "label": "Kinh doanh", "description": "Tập trung vào hợp tác, bán hàng, quản trị và phát triển doanh nghiệp." },
+      "technology": { "label": "Công nghệ", "description": "Phù hợp cho cộng đồng yêu thích phần mềm, AI, thiết bị và lập trình." },
+      "education": { "label": "Giáo dục", "description": "Chia sẻ kiến thức, tài liệu học tập, workshop và mentoring." },
+      "travel": { "label": "Du lịch", "description": "Dùng để tổ chức chuyến đi, chia sẻ lịch trình và kinh nghiệm thực tế." },
+      "marketplace": { "label": "Mua bán", "description": "Hợp với nhóm trao đổi sản phẩm, ưu đãi và nhu cầu mua chung." },
+      "local-business": { "label": "Doanh nghiệp địa phương", "description": "Phù hợp cho cửa hàng, studio, quán ăn và các thương hiệu vận hành tại địa phương." },
+      "creator": { "label": "Creator & Chuyên gia", "description": "Dùng cho KOL, chuyên gia, huấn luyện viên hoặc người xây dựng thương hiệu cá nhân." },
+      "brand": { "label": "Thương hiệu & Sản phẩm", "description": "Dành cho fanpage giới thiệu sản phẩm, chiến dịch, ưu đãi và cập nhật thương hiệu." },
+      "organization": { "label": "Tổ chức & Cộng đồng", "description": "Dành cho tổ chức, câu lạc bộ, dự án xã hội và các chương trình cộng đồng." },
+      "service": { "label": "Dịch vụ chuyên nghiệp", "description": "Phù hợp với agency, freelancer, studio dịch vụ và đội ngũ tư vấn." }
+    },
+    "groups": {
+      "hub": "Trung tâm Cộng đồng",
+      "title": "Các nhóm",
+      "titleSuggested": "Các nhóm đề xuất",
+      "titleJoined": "Các nhóm đã tham gia",
+      "descDefault": "Quản lý nhóm bạn đang theo dõi, xem đề xuất theo sở thích và mở nhanh flow tạo cộng đồng mới ngay trong cùng một khu vực.",
+      "descSuggested": "Khám phá những community được gợi ý theo sở thích, danh mục bạn quan tâm và hoạt động gần đây trong hệ sinh thái VNSEEA.",
+      "descJoined": "Quay lại các nhóm bạn đã tham gia để theo dõi cập nhật mới, sự kiện sắp tới và những cuộc thảo luận đang diễn ra.",
+      "stats": {
+        "suggested": "Nhóm gợi ý",
+        "joined": "Đã tham gia",
+        "status": "Trạng thái"
+      },
+      "filter": {
+        "search": "Tìm nhóm, chủ đề hoặc URL...",
+        "create": "Tạo ra"
+      },
+      "action": {
+        "createNew": "Tạo nhóm mới",
+        "createFirst": "Tạo nhóm đầu tiên",
+        "explore": "Khám phá nhóm",
+        "viewUpdates": "Xem cập nhật",
+        "viewGroup": "Xem nhóm"
+      },
+      "empty": {
+        "mineTitle": "Không có nhóm nào để hiển thị",
+        "mineDesc": "Bạn chưa tạo hoặc chưa theo dõi nhóm nào trong tài khoản này. Tạo nhóm mới để bắt đầu gom thành viên, bài đăng và hoạt động cộng đồng.",
+        "noMatchTitle": "Không tìm thấy nhóm phù hợp",
+        "noMatchDesc": "Thử đổi từ khóa tìm kiếm hoặc chuyển sang một tab khác để xem thêm community phù hợp hơn."
+      },
+      "status": {
+        "none": "Chưa có nhóm nào",
+        "suggestedCount": "{count} community đang chờ bạn khám phá",
+        "joinedCount": "{count} community đang hoạt động"
+      },
+      "hint": {
+        "mine": "Danh sách này sẽ hiện các nhóm bạn tạo hoặc đang quản trị. Hiện tại tài khoản chưa có community nào.",
+        "suggested": "Các nhóm được gợi ý dựa trên danh mục bạn quan tâm, hoạt động gần đây và mạng lưới hiện có.",
+        "joined": "Đây là các community bạn đã tham gia, hữu ích để quay lại theo dõi nội dung và cập nhật mới."
+      },
+      "card": {
+        "activity": "Hoạt động",
+        "context": "Ngữ cảnh",
+        "privacyFallback": "Nhóm",
+        "privacyHint": "Cài đặt quyền riêng tư đang được áp dụng cho nhóm này.",
+        "noCategory": "Chưa phân loại"
+      },
+      "format": {
+        "members": "{count} thành viên",
+        "followers": "{count} người theo dõi",
+        "likes": "{count} lượt thích",
+        "online": "{count} người đang online"
+      },
+      "post": {
+        "role": "{group} · {role}",
+        "time": {
+          "minutes": "{count} phút trước",
+          "hours": "{count} giờ trước"
+        },
+        "text": {
+          "pinned": "Trong {group}, mọi người đang thảo luận rất sôi về chủ đề {topic}. Đây là bài ghim nhắc nhanh những câu hỏi nên kèm ngữ cảnh thật để nhận góp ý chất lượng hơn.",
+          "summary": "Tổng hợp nhanh cho tuần này của {group}: {activity}. Thành viên mới có thể đọc thread này để nắm chủ đề nóng và nội quy trước khi đăng bài đầu tiên.",
+          "detail": "Một chủ đề đang được quan tâm trong {group}: kinh nghiệm thực tế, bài học rút ra và các nguồn tham khảo tốt nhất cho tag #{topic}."
+        }
+      }
+    },
+    "pages": {
+      "format": {
+        "followers": "{count} người theo dõi",
+        "likes": "{count} lượt thích"
+      }
+    },
+    "search": {
+      "seoTitle": "Tìm kiếm | VNSEEA",
+      "seoTitleQuery": "Tìm kiếm \"{query}\" | VNSEEA",
+      "seoDesc": "Trang tìm kiếm tổng hợp người dùng, fanpage, nhóm và bài đăng trong VNSEEA.",
+      "seoDescQuery": "Tra cứu người dùng, fanpage, nhóm và bài đăng liên quan tới {query} trên VNSEEA.",
+      "emptyValue": {
+        "title": "Không tìm thấy kết quả phù hợp",
+        "desc": "Không có mục nào khớp với từ khóa \"{keyword}\". Thử đổi loại kết quả, đổi cách viết hoặc chọn một gợi ý khác."
+      },
+      "emptyState": {
+        "title": "Bạn đang tìm gì vậy?",
+        "desc": "Nhập một từ khóa phía trên để tìm người dùng, fanpage, nhóm hoặc bài đăng. Bạn cũng có thể bắt đầu bằng các gợi ý nhanh đang xuất hiện trong bộ lọc."
+      },
+      "clearFilters": "Xóa bộ lọc",
+      "tryKeyword": "Thử {keyword}",
+      "controls": {
+        "eyebrow": "Search Hub",
+        "title": "Khám phá người, trang, nhóm và bài đăng",
+        "desc": "Tìm kiếm theo từ khóa, lọc theo loại kết quả và chuyển nhanh giữa những tập dữ liệu đang có sẵn trong mock social graph của VNSEEA.",
+        "keywordParams": {
+          "label": "Từ khóa",
+          "placeholder": "Tìm kiếm người, trang, nhóm, bài đăng hoặc #hashtags"
+        },
+        "typeLabel": "Loại kết quả",
+        "sortLabel": "Sắp xếp",
+        "submit": "Tìm kiếm",
+        "quickSuggestions": "Gợi ý nhanh"
+      },
+      "results": {
+        "label": "Kết quả",
+        "headingSingle": "1 kết quả trong mục {type}",
+        "headingMultiple": "{count} kết quả trong mục {type}",
+        "descEmpty": "Kết quả sẽ xuất hiện tại đây khi bạn nhập từ khóa.",
+        "descAll": "Bạn đang xem tổng hợp tất cả loại kết quả cho \"{keyword}\". Chọn từng tab nếu muốn đi sâu vào một tập dữ liệu cụ thể.",
+        "descSpecific": "Danh sách dưới đây đã được lọc trong phạm vi {type} cho từ khóa \"{keyword}\".",
+        "showAllTypes": "Hiện tất cả loại kết quả",
+        "viewAllOfSpecific": "Xem tất cả {count} kết quả"
+      },
+      "summary": {
+        "total": {
+          "label": "Tổng kết quả",
+          "descEmpty": "Số lượng mục đang có trong mock data.",
+          "descQuery": "Kết quả đang khớp với từ khóa \"{keyword}\"."
+        },
+        "users": {
+          "label": "Người dùng",
+          "desc": "Liên hệ, gợi ý kết nối và thành viên cộng đồng."
+        },
+        "communities": {
+          "label": "Cộng đồng",
+          "desc": "Tổng fanpage và nhóm đang khớp với bộ lọc hiện tại."
+        },
+        "posts": {
+          "label": "Bài đăng",
+          "desc": "Những thảo luận và nội dung có liên quan tới từ khóa."
+        }
+      },
+      "tabs": {
+        "all": {
+          "label": "Tất cả",
+          "desc": "Gộp người dùng, trang, nhóm và bài đăng."
+        },
+        "users": {
+          "label": "Người dùng",
+          "desc": "Tìm thành viên, liên hệ và đề xuất kết nối."
+        },
+        "pages": {
+          "label": "Các trang",
+          "desc": "Tìm fanpage, thương hiệu và cộng đồng nội dung."
+        },
+        "groups": {
+          "label": "Các nhóm",
+          "desc": "Khám phá cộng đồng đang hoạt động trong hệ sinh thái."
+        },
+        "posts": {
+          "label": "Bài đăng",
+          "desc": "Tìm thảo luận, recap và cập nhật mới nhất."
+        }
+      },
+      "types": {
+        "all": "Tất cả kết quả",
+        "users": "Người dùng",
+        "pages": "Các trang",
+        "groups": "Các nhóm",
+        "posts": "Bài đăng"
+      },
+      "sorts": {
+        "relevance": "Phù hợp nhất",
+        "popular": "Phổ biến",
+        "recent": "Mới cập nhật"
+      },
+      "footer": {
+        "home": "Trang chủ",
+        "about": "Về",
+        "contact": "Liên hệ chúng tôi",
+        "privacy": "Chính sách bảo mật",
+        "terms": "Điều khoản sử dụng",
+        "blog": "Blog",
+        "developers": "Nhà phát triển",
+        "language": "Ngôn ngữ"
+      },
+      "mock": {
+        "badge": {
+          "online": "Online",
+          "suggested": "Gợi ý",
+          "joined": "Đã tham gia",
+          "managed": "Bạn quản lý",
+          "member": "Trong nhóm",
+          "public": "Công cộng",
+          "private": "Riêng tư"
+        },
+        "metrics": {
+          "canChat": "Có thể trò chuyện ngay",
+          "inContacts": "Có trong danh bạ của bạn",
+          "mutualFriends": "{count} bạn chung",
+          "quickResponse": "Phản hồi nhanh qua chat",
+          "recentContact": "Liên hệ gần đây",
+          "activeInGroup": "Đang hoạt động trong nhóm",
+          "followers": "{count} người theo dõi",
+          "members": "{count} thành viên",
+          "likes": "{count} lượt thích",
+          "comments": "{count} bình luận",
+          "shares": "{count} chia sẻ"
+        },
+        "users": {
+          "contactSubtitle": "{'@'}{handle} · Liên hệ trong mạng lưới",
+          "contactDescOnline": "Đang hoạt động và có thể mở cuộc trò chuyện ngay từ chat widget.",
+          "contactDescOffline": "Đã xuất hiện trong danh bạ gần đây và có thể mời vào hội thoại mới.",
+          "suggestedSubtitle": "{'@'}{handle} · {role}",
+          "suggestedDesc": "{mutual} bạn chung trong hệ sinh thái VNSEEA. Đây là kết nối phù hợp để mở rộng network hoặc trao đổi công việc.",
+          "memberSubtitle": "{'@'}{handle} · {role}",
+          "memberDesc": "{meta}. Thành viên của {group}, phù hợp nếu bạn đang tìm người cùng chủ đề {topic}."
+        },
+        "pages": {
+          "subtitle": "{category} · /p/{slug}"
+        },
+        "groups": {
+          "subtitle": "{privacy} · {category}"
+        },
+        "posts": {
+          "subtitle": "Bài đăng · {time}"
+        }
+      }
+    },
+    "settings": {
+      "eyebrow": "Cài đặt nhóm",
+      "defaultEyebrow": "Thiết lập",
+      "title": "Cài đặt {name}",
+      "desc": "Điều chỉnh hồ sơ hiển thị, quyền tham gia và một số chính sách vận hành chính của community này.",
+      "basics": {
+        "eyebrow": "Thông tin cốt lõi",
+        "title": "Hồ sơ hiển thị của nhóm",
+        "desc": "Cập nhật tên, URL, mô tả và nội dung nền để trang nhóm rõ ràng hơn khi thành viên ghé thăm.",
+        "fields": {
+          "name": "Tên nhóm",
+          "namePlaceholder": "Nhập tên nhóm",
+          "url": "URL nhóm",
+          "urlPlaceholder": "ten-nhom",
+          "suggested": "Gợi ý: {slug}",
+          "useSuggested": "Dùng slug gợi ý",
+          "desc": "Mô tả nhóm",
+          "descPlaceholder": "Mô tả nhóm này dành cho ai, nội dung chính là gì và cách tham gia hiệu quả.",
+          "category": "Danh mục",
+          "location": "Khu vực hoạt động",
+          "locationPlaceholder": "Ví dụ: Hoạt động toàn quốc",
+          "website": "Website hoặc link giới thiệu",
+          "websitePlaceholder": "vnseea.vn/g/ten-nhom",
+          "tags": "Thẻ chủ đề",
+          "tagsPlaceholder": "xe điện, trạm sạc, review",
+          "guidelines": "Nội quy hiển thị trên trang nhóm",
+          "guidelinesPlaceholder": "Mỗi dòng là một nguyên tắc. Ví dụ: Ưu tiên bài chia sẻ có ngữ cảnh thực tế."
+        },
+        "stats": {
+          "descLength": "Độ dài mô tả",
+          "tagCount": "Tag hiện có",
+          "guidelinesCount": "Nội quy",
+          "charCount": "{count} ký tự",
+          "topicCount": "{count} chủ đề",
+          "itemCount": "{count} mục"
+        },
+        "viewGroup": "Xem nhóm"
+      },
+      "controls": {
+        "eyebrow": "Kiểm soát truy cập",
+        "title": "Quyền riêng tư và luồng quản trị",
+        "desc": "Thiết lập cách thành viên nhìn thấy nhóm, gửi yêu cầu tham gia và đăng nội dung trong community.",
+        "logic": "Logic đang áp dụng",
+        "privacyFallback": "Quyền riêng tư",
+        "noPrivacy": "Chưa chọn quyền riêng tư cho nhóm.",
+        "toggles": {
+          "join": {
+            "label": "Phê duyệt thành viên mới",
+            "desc": "Quản trị viên xét yêu cầu tham gia trước khi vào nhóm."
+          },
+          "post": {
+            "label": "Duyệt bài đăng trước khi hiển thị",
+            "desc": "Bài viết mới cần moderator kiểm tra trước khi lên feed."
+          },
+          "invite": {
+            "label": "Cho phép thành viên mời thêm người",
+            "desc": "Thành viên hiện tại có thể gửi lời mời trực tiếp cho bạn bè."
+          },
+          "directory": {
+            "label": "Hiển thị danh sách thành viên",
+            "desc": "Member list vẫn xuất hiện ở sidebar và trang giới thiệu của nhóm."
+          },
+          "welcome": {
+            "label": "Hiển thị bài chào mừng",
+            "desc": "Thành viên mới sẽ thấy một bài ghim giới thiệu nội quy và tài nguyên khởi động."
+          }
+        }
+      },
+      "finish": {
+        "eyebrow": "Hoàn tất",
+        "title": "Hành động nhanh",
+        "desc": "Flow settings này đang là UI mock. Bạn có thể quay lại trang nhóm hoặc tiếp tục tinh chỉnh trước khi nối API.",
+        "status": "{enabled}/{total} chính sách đang bật. Quyền hiển thị hiện tại là {privacy}.",
+        "back": "Quay lại nhóm",
+        "save": "Lưu thay đổi"
+      },
+      "sidebar": {
+        "preview": "Xem trước sau khi lưu",
+        "notes": "Lưu ý quản trị",
+        "tip1Title": "Giữ mô tả đủ rõ",
+        "tip1Desc": "Thành viên mới thường quyết định tham gia trong 1-2 câu đầu tiên của phần giới thiệu.",
+        "tip2Title": "Quy tắc nên ngắn và cụ thể",
+        "tip2Desc": "Nội quy càng rõ thì moderator càng dễ xử lý bài viết và yêu cầu gia nhập.",
+        "summary": "Tóm tắt",
+        "aboutGroup": "Giới thiệu nhóm",
+        "quickInfo": "Thông tin nhanh",
+        "privacy": "Quyền riêng tư",
+        "category": "Danh mục",
+        "members": "Thành viên",
+        "inviteMore": "Mời thêm"
+      },
+      "empty": {
+        "title": "Không tìm thấy nhóm để cài đặt",
+        "desc": "Slug nhóm này chưa có trong dữ liệu mock hiện tại. Hãy quay lại danh sách hoặc flow tạo nhóm để dựng một cộng đồng hợp lệ.",
+        "back": "Quay lại nhóm"
+      }
+    },
+    "pageSettings": {
+      "eyebrow": "Page settings",
+      "title": "Cài đặt {name}",
+      "desc": "Điều chỉnh hồ sơ fanpage, CTA chính và một số tín hiệu hiển thị trước khi nối API quản trị thật.",
+      "basics": {
+        "eyebrow": "Thông tin công khai",
+        "title": "Hồ sơ fanpage",
+        "desc": "Cập nhật tên, URL, mô tả và những tín hiệu nhận diện chính để fanpage nhìn rõ ràng hơn khi khách ghé thăm.",
+        "viewPage": "Xem fanpage",
+        "fields": {
+          "name": "Tên trang",
+          "namePlaceholder": "Nhập tên fanpage",
+          "url": "Page URL",
+          "urlSuggested": "Gợi ý: {slug}",
+          "urlUseSuggestion": "Dùng slug gợi ý",
+          "summary": "Giới thiệu ngắn",
+          "summaryPlaceholder": "Tóm tắt thương hiệu, dịch vụ hoặc loại nội dung mà fanpage này đang chia sẻ.",
+          "category": "Loại trang",
+          "location": "Khu vực hiển thị",
+          "locationPlaceholder": "Ví dụ: Đà Nẵng · Giao hàng toàn quốc",
+          "website": "Website hoặc landing page",
+          "websitePlaceholder": "vnseea.vn/p/ten-fanpage",
+          "ownerLabel": "Nhãn thương hiệu",
+          "ownerPlaceholder": "Ví dụ: Fanpage thương hiệu nội dung",
+          "responseLabel": "Cam kết phản hồi",
+          "responsePlaceholder": "Ví dụ: Phản hồi trong ngày làm việc",
+          "ctaLabel": "CTA chính",
+          "ctaPlaceholder": "Ví dụ: Nhắn tin",
+          "tags": "Chủ đề chính",
+          "tagsPlaceholder": "noi-that, thi-cong, go-tu-nhien"
+        },
+        "stats": {
+          "summaryLength": "{count} ký tự",
+          "tagCount": "{count} thẻ",
+          "ctaFallback": "Chưa chọn",
+          "websiteYes": "Đã có",
+          "websiteNo": "Chưa có"
+        }
+      },
+      "controls": {
+        "eyebrow": "Tương tác & hiển thị",
+        "title": "CTA và các tín hiệu công khai",
+        "desc": "Tinh chỉnh hành động chính và quyết định phần thông tin nào sẽ được đẩy ra giao diện fanpage.",
+        "preset": "Preset CTA",
+        "logic": "Logic đang áp dụng",
+        "logicDesc": "CTA hiện tại là **{cta}**. Bạn có thể kết hợp với hiển thị website, nút nhắn tin và chỉ số tương tác để page nhìn rõ mục tiêu hơn.",
+        "toggles": {
+          "messagesLabel": "Bật nút nhắn tin",
+          "messagesDesc": "Cho phép khách chuyển nhanh sang inbox từ banner và action card.",
+          "followersLabel": "Hiển thị số người theo dõi",
+          "followersDesc": "Giữ follower count trên phần giới thiệu và preview page.",
+          "likesLabel": "Hiển thị số lượt thích",
+          "likesDesc": "Giữ like count như một tín hiệu xã hội ở sidebar và khu vực about.",
+          "websiteLabel": "Hiển thị website công khai",
+          "websiteDesc": "Ẩn hoặc hiện link landing page/website trong phần thông tin fanpage.",
+          "relatedLabel": "Gợi ý fanpage liên quan",
+          "relatedDesc": "Cho phép hệ thống chèn các đề xuất tương tự ở vùng khám phá sau này."
+        }
+      },
+      "finish": {
+        "eyebrow": "Hoàn tất",
+        "title": "Hành động nhanh",
+        "desc": "Flow page settings này hiện là UI mock. Bạn có thể quay lại fanpage để so sánh hoặc tiếp tục tinh chỉnh trước khi nối API.",
+        "status": "{enabled}/{total} tín hiệu đang bật. CTA chính hiện tại là **{cta}**.",
+        "back": "Quay lại fanpage",
+        "save": "Lưu thay đổi"
+      },
+      "sidebar": {
+        "preview": "Xem trước sau khi lưu",
+        "signals": "Tín hiệu bật",
+        "followers": "Theo dõi",
+        "likes": "Yêu thích",
+        "hidden": "Đang ẩn",
+        "tips": "Gợi ý tối ưu",
+        "ctaFocus": "CTA đang ưu tiên",
+        "ctaWithMessages": "đã được hỗ trợ bởi inbox trực tiếp.",
+        "ctaWithoutMessages": "đang ở chế độ một chiều, chưa bật inbox.",
+        "discovery": "Khối khám phá liên quan",
+        "discoveryOn": "Hệ thống có thể chèn fanpage tương tự để tăng khám phá.",
+        "discoveryOff": "Bạn đang tắt gợi ý fanpage liên quan trên giao diện."
+      },
+      "empty": {
+        "title": "Không tìm thấy fanpage để cài đặt",
+        "desc": "Slug page này chưa có trong dữ liệu mock hiện tại. Hãy quay lại danh sách hoặc flow tạo trang để dựng một fanpage hợp lệ.",
+        "back": "Quay lại fanpage"
+      },
+      "seoTitle": "Cài đặt {name} | VNSEEA",
+      "seoTitleFallback": "Cài đặt page | VNSEEA",
+      "seoDescFallback": "Quản lý thiết lập fanpage trên VNSEEA."
+    },
+    "mock": {
+      "groups": {
+        "electric": {
+          "name": "Cộng đồng Xe điện Việt",
+          "summary": "Review xe điện, trạm sạc, kinh nghiệm bảo dưỡng và chia sẻ hành trình dùng xe thực tế.",
+          "activity": "128 bài mới tuần này",
+          "owner": "Quản trị bởi Studio Mobility",
+          "location": "Hoạt động toàn quốc",
+          "founded": "Thành lập từ tháng 3/2024",
+          "tags": ["xe điện", "trạm sạc", "review"],
+          "guidelines": {
+            "0": "Ưu tiên review thực tế, có hình ảnh hoặc số liệu khi chia sẻ trải nghiệm.",
+            "1": "Không đăng bán hàng trực tiếp ngoài chủ đề xe điện và phụ kiện liên quan.",
+            "2": "Giữ thảo luận tôn trọng, tập trung vào giải pháp và kiến thức hữu ích."
+          }
+        },
+        "founder": {
+          "name": "Founder Circle Vietnam",
+          "summary": "Không gian trao đổi bài toán vận hành, tăng trưởng và chiến lược cho founder, C-level và builder.",
+          "activity": "24 thảo luận đang mở",
+          "owner": "Được tuyển chọn bởi VNSEEA Business",
+          "location": "Hà Nội · TP.HCM · Online",
+          "founded": "Thành lập từ tháng 8/2023",
+          "tags": ["founder", "growth", "networking"],
+          "joinLabel": "Gửi yêu cầu tham gia",
+          "inviteLabel": "Mời cộng sự",
+          "guidelines": {
+            "0": "Chia sẻ ngắn gọn, đi thẳng vào bài toán và bối cảnh cần góp ý.",
+            "1": "Không đăng bài tuyển dụng hoặc chào bán dịch vụ tràn lan trong feed chính.",
+            "2": "Tôn trọng nguyên tắc riêng tư với các số liệu nội bộ được chia sẻ trong nhóm."
+          }
+        },
+        "ai": {
+          "name": "AI Product Builders",
+          "summary": "Tập trung vào AI product, automation, dataset, prompt engineering và demo sản phẩm mới mỗi tuần.",
+          "activity": "6 sự kiện trực tuyến tháng này",
+          "owner": "Bạn đã tham gia từ tháng 2",
+          "location": "Remote-first community",
+          "founded": "Thành lập từ tháng 1/2024",
+          "tags": ["AI", "product", "automation"],
+          "guidelines": {
+            "0": "Ưu tiên demo có hình, video hoặc link prototype để mọi người góp ý nhanh.",
+            "1": "Gắn tag rõ mục tiêu: nghiên cứu, case study, prompt, automation hoặc launch.",
+            "2": "Tránh chia sẻ dữ liệu nhạy cảm của khách hàng và thông tin bí mật công ty."
+          }
+        },
+        "learning": {
+          "name": "Đi và Học",
+          "summary": "Nhóm chia sẻ workshop, khóa học, tài liệu ôn tập và lịch meetup dành cho người đi làm.",
+          "activity": "18 tài liệu mới được chia sẻ",
+          "owner": "Bạn đang theo dõi 4 chủ đề con",
+          "location": "Cộng đồng học tập Việt Nam",
+          "founded": "Thành lập từ tháng 11/2023",
+          "tags": ["workshop", "learning", "mentoring"],
+          "guidelines": {
+            "0": "Tài liệu đăng lên cần ghi nguồn để người sau có thể kiểm chứng và học tiếp.",
+            "1": "Khuyến khích chia sẻ note ngắn, tóm tắt key insight sau mỗi workshop.",
+            "2": "Không spam link khóa học hoặc affiliate không liên quan đến nội dung học tập."
+          }
+        },
+        "weekend": {
+          "name": "Weekend Escape Club",
+          "summary": "Lên kế hoạch cho các chuyến đi ngắn ngày, chia sẻ lịch trình gọn, homestay và kinh nghiệm săn vé.",
+          "activity": "9 hành trình mới cuối tuần này",
+          "owner": "Được đề xuất theo sở thích du lịch",
+          "location": "Điểm đến nội địa & Đông Nam Á",
+          "founded": "Thành lập từ tháng 6/2024",
+          "tags": {
+            "0": "du lịch",
+            "1": "cuối tuần",
+            "2": "homestay"
+          },
+          "joinLabel": "Tham gia ngay",
+          "inviteLabel": "Rủ bạn bè",
+          "guidelines": {
+            "0": "Khi review địa điểm nên ghi chi phí, thời gian đi và lưu ý thực tế.",
+            "1": "Tôn trọng môi trường địa phương, tránh cổ vũ hoạt động ảnh hưởng thiên nhiên.",
+            "2": "Không đăng thông tin săn tour kém uy tín hoặc không rõ nguồn gốc."
+          }
+        }
+      },
+      "pages": {
+        "mocmay": {
+          "name": "Mộc Mây Studio",
+          "summary": "Fanpage giới thiệu nội thất gỗ, concept trang trí nhà ở và các dự án thi công theo phong cách tối giản hiện đại.",
+          "owner": "Trang doanh nghiệp được xác minh",
+          "response": "Thường phản hồi trong 30 phút",
+          "location": "Đà Nẵng · Giao hàng toàn quốc",
+          "founded": "Hoạt động từ tháng 2/2022",
+          "cta": "Nhắn tin",
+          "tags": {
+            "0": "nội thất",
+            "1": "thi công",
+            "2": "gỗ tự nhiên"
+          }
+        },
+        "mobility": {
+          "name": "VNSEEA Mobility Lab",
+          "summary": "Trang cập nhật nghiên cứu, sự kiện và insight về giao thông điện hóa, trạm sạc và hạ tầng di chuyển xanh.",
+          "owner": "Fanpage thương hiệu nội dung",
+          "response": "Phản hồi trong ngày làm việc",
+          "location": "Hà Nội · TP.HCM · Online",
+          "founded": "Khởi chạy từ tháng 5/2024",
+          "cta": "Theo dõi",
+          "tags": {
+            "0": "di động",
+            "1": "xe điện",
+            "2": "nghiên cứu"
+          }
+        },
+        "learning": {
+          "name": "Học Nhanh Mỗi Ngày",
+          "summary": "Fanpage chia sẻ note học tập, lịch workshop và tài liệu ngắn dành cho người đi làm muốn cập nhật kỹ năng liên tục.",
+          "owner": "Trang giáo dục & đào tạo",
+          "response": "Có đội ngũ admin hỗ trợ đều đặn",
+          "location": "Online-first",
+          "founded": "Khởi tạo từ tháng 9/2021",
+          "cta": "Xem khóa học",
+          "tags": {
+            "0": "học tập",
+            "1": "workshop",
+            "2": "sự nghiệp"
+          }
+        }
+      }
     }
   }
 }

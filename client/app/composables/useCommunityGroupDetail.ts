@@ -1,9 +1,9 @@
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
+import { useI18n } from "vue-i18n"
 import { useMockSocialData } from "./useMockSocialData"
 import {
   communityCategoryOptions,
   communityPrivacyOptions,
-  formatCommunityMemberCount,
   getCommunityGroupBySlug,
   getCommunityGroupMembers,
   getCommunityOptionDescription,
@@ -11,6 +11,7 @@ import {
 } from "../../types/community"
 
 export function useCommunityGroupDetail(slugSource: MaybeRefOrGetter<string>) {
+  const { t } = useI18n()
   const { posts } = useMockSocialData()
 
   const slug = computed(() => String(toValue(slugSource) || ""))
@@ -19,30 +20,28 @@ export function useCommunityGroupDetail(slugSource: MaybeRefOrGetter<string>) {
 
   const privacyLabel = computed(() =>
     group.value
-      ? getCommunityOptionLabel(communityPrivacyOptions, group.value.privacy, "Nhóm")
-      : "Nhóm",
+      ? getCommunityOptionLabel(communityPrivacyOptions, group.value.privacy, "community.settings.controls.privacyFallback")
+      : "community.settings.controls.privacyFallback",
   )
 
   const privacyDescription = computed(() =>
     group.value
-      ? getCommunityOptionDescription(communityPrivacyOptions, group.value.privacy, "Cài đặt quyền riêng tư của nhóm.")
-      : "Cài đặt quyền riêng tư của nhóm.",
+      ? getCommunityOptionDescription(communityPrivacyOptions, group.value.privacy, "community.settings.controls.noPrivacy")
+      : "community.settings.controls.noPrivacy",
   )
 
   const categoryLabel = computed(() =>
     group.value
-      ? getCommunityOptionLabel(communityCategoryOptions, group.value.category, "Chưa phân loại")
-      : "Chưa phân loại",
+      ? getCommunityOptionLabel(communityCategoryOptions, group.value.category, "community.groups.card.noCategory")
+      : "community.groups.card.noCategory",
   )
 
   const memberCountLabel = computed(() =>
-    group.value
-      ? formatCommunityMemberCount(group.value.members)
-      : formatCommunityMemberCount(0),
+    t("community.groups.format.members", { count: group.value?.members || 0 }),
   )
 
   const onlineCountLabel = computed(() =>
-    `${members.value.filter(member => member.online).length} người đang online`,
+    t("community.groups.format.online", { count: members.value.filter(member => member.online).length }),
   )
 
   const groupPosts = computed(() => {
@@ -51,20 +50,25 @@ export function useCommunityGroupDetail(slugSource: MaybeRefOrGetter<string>) {
     return posts.slice(0, 3).map((post, index) => {
       const member = members.value[index % Math.max(members.value.length, 1)]
       const topic = group.value?.tags[index % Math.max(group.value.tags.length, 1)] || "community"
+      const groupName = t(group.value?.name || "")
 
       return {
         ...post,
-        id: group.value.id * 100 + index,
+        id: (group.value?.id || 0) * 100 + index,
         author: member?.name || post.author,
-        role: `${group.value.name} · ${member?.role || "Thành viên"}`,
-        audience: group.value.name,
-        time: index === 0 ? "5 phút trước" : index === 1 ? "37 phút trước" : "2 giờ trước",
-        text: index === 0
-          ? `Trong ${group.value.name}, mọi người đang thảo luận rất sôi về chủ đề ${topic}. Đây là bài ghim nhắc nhanh những câu hỏi nên kèm ngữ cảnh thật để nhận góp ý chất lượng hơn.`
+        role: t("community.groups.post.role", { group: groupName, role: member?.role || "Thành viên" }),
+        audience: groupName,
+        time: index === 0
+          ? t("community.groups.post.time.minutes", { count: 5 })
           : index === 1
-            ? `Tổng hợp nhanh cho tuần này của ${group.value.name}: ${group.value.activityLabel.toLowerCase()}. Thành viên mới có thể đọc thread này để nắm chủ đề nóng và nội quy trước khi đăng bài đầu tiên.`
-            : `Một chủ đề đang được quan tâm trong ${group.value.name}: kinh nghiệm thực tế, bài học rút ra và các nguồn tham khảo tốt nhất cho tag #${topic}.`,
-        tags: Array.from(new Set([`#${topic}`, ...group.value.tags.map(tag => `#${tag}`), ...post.tags])).slice(0, 4),
+            ? t("community.groups.post.time.minutes", { count: 37 })
+            : t("community.groups.post.time.hours", { count: 2 }),
+        text: index === 0
+          ? t("community.groups.post.text.pinned", { group: groupName, topic })
+          : index === 1
+            ? t("community.groups.post.text.summary", { group: groupName, activity: t(group.value?.activityLabel || "").toLowerCase() })
+            : t("community.groups.post.text.detail", { group: groupName, topic }),
+        tags: Array.from(new Set([`#${topic}`, ...(group.value?.tags.map(tag => `#${tag}`) || []), ...post.tags])).slice(0, 4),
       }
     })
   })

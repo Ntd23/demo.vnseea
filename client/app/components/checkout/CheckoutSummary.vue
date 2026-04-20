@@ -12,7 +12,7 @@
 
           <div>
             <h2 class="text-[2rem] font-black tracking-[-0.05em] text-[#2f3542]">
-              Giỏ hàng
+              {{ $t("checkout.summary.title") }}
             </h2>
             <p class="text-[15px] text-slate-500">
               {{ itemLabel }}
@@ -25,7 +25,7 @@
           class="inline-flex items-center gap-2 self-start text-[15px] font-medium text-slate-500 transition hover:text-[#243b63]"
         >
           <Icon name="i-ph-arrow-left" class="h-4 w-4" />
-          Quay trở lại cửa hàng
+          {{ $t("checkout.summary.backToStore") }}
         </NuxtLink>
       </div>
 
@@ -44,7 +44,7 @@
               <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_28%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.2)_100%)]" />
 
               <div class="absolute left-3 top-3 rounded-full bg-black/45 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-[5px]">
-                Marketplace
+                {{ $t("checkout.summary.marketplace") }}
               </div>
 
               <button
@@ -66,7 +66,7 @@
               </h3>
 
               <div class="flex items-center gap-3 text-[1rem] font-black text-[#2f3542]">
-                <span>Qty</span>
+                <span>{{ $t("checkout.summary.qty") }}</span>
 
                 <button
                   class="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#eef0f3] text-[#2f3542] transition hover:bg-[#e5e7eb]"
@@ -101,7 +101,7 @@
           <div class="flex items-start gap-3">
             <Icon name="i-ph-warning-circle-fill" class="mt-0.5 h-5 w-5 shrink-0" />
             <p class="text-[14px] font-semibold leading-6">
-              Bạn không có đủ số dư để mua hàng, vui lòng nạp thêm vào ví trước khi tiếp tục bằng phương thức này.
+              {{ $t("checkout.summary.insufficientBalance") }}
             </p>
           </div>
         </div>
@@ -114,7 +114,7 @@
             <div class="grid gap-3 text-[13px] text-slate-500 sm:grid-cols-2">
               <div class="rounded-[18px] bg-white/80 px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Tạm tính
+                  {{ $t("checkout.summary.subtotal") }}
                 </p>
                 <p class="mt-1 text-[18px] font-black text-[#243b63]">
                   {{ formatVnd(subtotal) }}
@@ -123,10 +123,10 @@
 
               <div class="rounded-[18px] bg-white/80 px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Phí giao hàng
+                  {{ $t("checkout.summary.shippingFee") }}
                 </p>
                 <p class="mt-1 text-[18px] font-black text-[#243b63]">
-                  {{ shippingFee > 0 ? formatVnd(shippingFee) : "Miễn phí" }}
+                  {{ shippingFee > 0 ? formatVnd(shippingFee) : $t("checkout.summary.free") }}
                 </p>
               </div>
             </div>
@@ -134,7 +134,7 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">
-                  Tổng thanh toán
+                  {{ $t("checkout.summary.totalPayment") }}
                 </p>
                 <p class="mt-2 text-[2.8rem] font-black tracking-[-0.06em] text-[#2f3542]">
                   {{ formatVnd(total) }}
@@ -166,16 +166,16 @@
           <Icon name="i-ph-shopping-cart-simple" class="h-8 w-8" />
         </div>
         <h3 class="mt-5 text-[1.35rem] font-black tracking-[-0.04em] text-[#243b63]">
-          Giỏ hàng đang trống
+          {{ $t("checkout.summary.emptyCart") }}
         </h3>
         <p class="mt-2 text-[14px] leading-7 text-slate-500">
-          Hãy quay lại marketplace để chọn thêm sản phẩm trước khi tiếp tục thanh toán.
+          {{ $t("checkout.summary.emptyCartHint") }}
         </p>
         <NuxtLink
           to="/products"
           class="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5"
         >
-          Quay lại marketplace
+          {{ $t("checkout.summary.backToMarketplace") }}
         </NuxtLink>
       </div>
     </div>
@@ -199,6 +199,8 @@ const emit = defineEmits<{
   removeItem: [itemId: string]
 }>()
 
+const { t } = useI18n()
+
 const defaultCardBackground = [
   "radial-gradient(circle at 78% 12%, rgba(255,214,182,0.5), transparent 18%)",
   "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.26), transparent 22%)",
@@ -211,26 +213,32 @@ const subtotal = computed(() =>
 
 const total = computed(() => subtotal.value + props.shippingFee)
 
-const itemLabel = computed(() =>
-  `${props.items.length} ${props.items.length === 1 ? "vật phẩm" : "vật phẩm khác nhau"}`,
-)
+const itemLabel = computed(() => {
+  const count = props.items.length
+  return t(count === 1 ? "checkout.summary.items" : "checkout.summary.itemsPlural", { count })
+})
 
 const walletShortage = computed(() => Math.max(total.value - props.walletBalance, 0))
 
 const ctaLabel = computed(() => {
   if (walletShortage.value > 0) {
-    return "Nạp thêm vào ví"
+    return t("checkout.summary.addFunds")
   }
 
-  return "Mua"
+  return t("checkout.summary.buy")
 })
 
 const paymentHint = computed(() => {
   if (walletShortage.value > 0) {
-    return `Ví hiện có ${formatVnd(props.walletBalance)}. Bạn cần nạp thêm ${formatVnd(walletShortage.value)} để tiếp tục mua hàng.`
+    return t("checkout.summary.walletBalance", {
+      balance: formatVnd(props.walletBalance),
+      amount: formatVnd(walletShortage.value),
+    })
   }
 
-  return `Số dư ví hiện tại là ${formatVnd(props.walletBalance)}. Giao diện này đang bám theo mock checkout dùng ví nội bộ.`
+  return t("checkout.summary.walletHint", {
+    balance: formatVnd(props.walletBalance),
+  })
 })
 
 function formatVnd(value: number) {

@@ -11,7 +11,7 @@
             :class="statusMeta.badgeClass"
           >
             <Icon :name="statusMeta.icon" class="h-3.5 w-3.5" />
-            {{ statusMeta.label }}
+            {{ $t(statusMeta.label) }}
           </span>
         </div>
 
@@ -19,7 +19,7 @@
           {{ order.seller }}
         </h3>
         <p class="mt-2 max-w-[640px] text-[14px] leading-6 text-slate-500">
-          {{ statusMeta.description }}
+          {{ $t(statusMeta.description) }}
         </p>
       </div>
 
@@ -28,10 +28,10 @@
           {{ order.placedAt }}
         </div>
         <div class="rounded-full bg-[#f7f9ff] px-3 py-2">
-          {{ totalItems }} sản phẩm
+          {{ $t("orders.card.items", { count: totalItems }) }}
         </div>
         <div class="rounded-full bg-[#f7f9ff] px-3 py-2">
-          {{ order.paymentMethod }}
+          {{ $t(order.paymentMethod) }}
         </div>
       </div>
     </div>
@@ -41,10 +41,10 @@
         <section class="rounded-[24px] border border-[#eef2f8] bg-[#fbfcff] p-4">
           <div class="flex items-center justify-between gap-3">
             <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-              Sản phẩm trong đơn
+              {{ $t("orders.card.productsInOrder") }}
             </p>
             <p class="text-[12px] font-semibold text-slate-500">
-              {{ order.deliveryWindow }}
+              {{ $t(order.deliveryWindow) }}
             </p>
           </div>
 
@@ -59,7 +59,7 @@
 
         <section class="rounded-[24px] border border-[#eef2f8] bg-[#fbfcff] p-4">
           <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-            Địa chỉ giao hàng
+            {{ $t("orders.card.shippingAddress") }}
           </p>
           <p class="mt-3 text-[14px] leading-7 text-slate-600">
             {{ order.shippingAddress }}
@@ -75,7 +75,7 @@
 
         <section class="rounded-[24px] border border-[#eef2f8] bg-white p-4">
           <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-            Tiến trình đơn hàng
+            {{ $t("orders.card.orderProgress") }}
           </p>
 
           <div class="mt-4 grid gap-3">
@@ -91,8 +91,8 @@
                 {{ index + 1 }}
               </div>
               <div>
-                <p class="text-[13px] font-semibold text-[#243b63]">{{ step.label }}</p>
-                <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ step.description }}</p>
+                <p class="text-[13px] font-semibold text-[#243b63]">{{ $t(step.label) }}</p>
+                <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ $t(step.description) }}</p>
               </div>
             </div>
           </div>
@@ -105,21 +105,21 @@
         :to="`/order/${order.id}`"
         class="inline-flex h-11 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(0,0,255,0.18)] transition hover:-translate-y-0.5"
       >
-        Xem chi tiết đơn
+        {{ $t("orders.card.viewDetail") }}
       </NuxtLink>
 
       <button
         class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-5 text-[14px] font-semibold text-slate-600 transition hover:border-[#c5caff] hover:text-[#243b63]"
         type="button"
       >
-        Liên hệ shop
+        {{ $t("orders.card.contactShop") }}
       </button>
 
       <NuxtLink
         to="/products"
         class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f7f9ff] px-5 text-[14px] font-semibold text-[#243b63] transition hover:border-[#c5caff]"
       >
-        {{ repeatActionLabel }}
+        {{ $t(repeatActionLabel) }}
       </NuxtLink>
     </div>
   </article>
@@ -140,20 +140,20 @@ const { statusMeta, totalItems, activeProgressStep } = useOrderPresentation(comp
 
 const progressSteps = [
   {
-    label: "Đã đặt hàng",
-    description: "Đơn đã được ghi nhận vào hệ thống mua hàng.",
+    label: "orders.steps.placed.label",
+    description: "orders.steps.placed.description",
   },
   {
-    label: "Shop xử lý",
-    description: "Người bán chuẩn bị và xác nhận đơn của bạn.",
+    label: "orders.steps.processing.label",
+    description: "orders.steps.processing.description",
   },
   {
-    label: "Đang giao",
-    description: "Đơn hàng đã bàn giao cho đơn vị vận chuyển.",
+    label: "orders.steps.shipping.label",
+    description: "orders.steps.shipping.description",
   },
   {
-    label: "Hoàn tất",
-    description: "Bạn đã nhận hàng và đơn được đóng thành công.",
+    label: "orders.steps.completed.label",
+    description: "orders.steps.completed.description",
   },
 ] as const
 

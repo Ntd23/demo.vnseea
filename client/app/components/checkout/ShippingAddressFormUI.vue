@@ -9,15 +9,15 @@
 
           <div class="min-w-0 flex-1">
             <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-[#0000ff]/70">
-              Địa chỉ giao hàng
+              {{ $t("checkout.shippingForm.shippingAddress") }}
             </p>
             <h2 class="mt-1 text-[1.25rem] font-black tracking-[-0.04em] text-[#243b63]">
-              {{ initialAddress ? "Địa chỉ đã lưu sẵn sàng" : "Chưa có địa chỉ nhận hàng" }}
+              {{ initialAddress ? $t("checkout.shippingForm.savedAddressTitle") : $t("checkout.shippingForm.noAddressTitle") }}
             </h2>
             <p class="mt-2 text-[14px] leading-6 text-slate-500">
               {{ initialAddress
-                ? "Đơn hàng sẽ ưu tiên dùng địa chỉ này, bạn vẫn có thể chỉnh lại biểu mẫu bên dưới."
-                : "Điền nhanh biểu mẫu bên dưới để hệ thống có đủ thông tin giao hàng cho đơn này." }}
+                ? $t("checkout.shippingForm.savedAddressDesc")
+                : $t("checkout.shippingForm.noAddressDesc") }}
             </p>
           </div>
         </div>
@@ -26,7 +26,7 @@
           <template v-if="initialAddress">
             <div class="flex flex-wrap items-center gap-2">
               <span class="rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-[#0000ff] shadow-[0_8px_18px_rgba(0,0,255,0.06)]">
-                Người nhận
+                {{ $t("checkout.shippingForm.recipient") }}
               </span>
               <p class="text-[15px] font-black text-[#243b63]">
                 {{ initialAddress.fullName }}
@@ -49,27 +49,27 @@
                 {{ initialAddress.country }}
               </div>
               <div class="rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-500">
-                Mã {{ initialAddress.postalCode }}
+                {{ $t("checkout.shippingForm.postalCodePrefix") }} {{ initialAddress.postalCode }}
               </div>
             </div>
           </template>
 
           <p v-else class="text-[15px] font-medium leading-7 text-slate-700">
-            Vui lòng thêm địa chỉ mới bên dưới để tiếp tục.
+            {{ $t("checkout.shippingForm.addAddressHint") }}
           </p>
         </div>
       </section>
 
       <aside class="rounded-[26px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f7f9ff_100%)] p-5 shadow-[0_14px_32px_rgba(15,35,110,0.05)]">
         <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-          Mẹo nhập nhanh
+          {{ $t("checkout.shippingForm.quickTip") }}
         </p>
         <div class="mt-4 space-y-3">
           <div class="rounded-[18px] bg-[#eef0ff] px-4 py-3 text-[13px] font-semibold leading-6 text-[#243b63]">
-            Điền đủ {{ totalFieldCount }} trường để bật nút lưu địa chỉ.
+            {{ $t("checkout.shippingForm.fieldsRemaining", { count: totalFieldCount }) }}
           </div>
           <div class="rounded-[18px] bg-[#f8fafc] px-4 py-3 text-[13px] leading-6 text-slate-500">
-            Thông tin giao hàng sẽ được giữ lại cho các bước thanh toán tiếp theo.
+            {{ $t("checkout.shippingForm.shippingInfoPersist") }}
           </div>
         </div>
       </aside>
@@ -82,19 +82,19 @@
       <div class="flex flex-col gap-4 border-b border-[#eef2f8] pb-5 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-[#0000ff]/70">
-            Biểu mẫu nhận hàng
+            {{ $t("checkout.shippingForm.formTitle") }}
           </p>
           <h2 class="mt-1 text-[1.25rem] font-black tracking-[-0.04em] text-[#243b63]">
-            Thêm địa chỉ mới
+            {{ $t("checkout.shippingForm.addAddressTitle") }}
           </h2>
           <p class="mt-2 max-w-[520px] text-[14px] leading-6 text-slate-500">
-            Form đã được gom theo cụm thông tin để thao tác nhanh hơn trên desktop mà vẫn gọn trên mobile.
+            {{ $t("checkout.shippingForm.formDesc") }}
           </p>
         </div>
 
         <div class="inline-flex items-center gap-2 self-start rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
           <Icon name="i-ph-check-circle-fill" class="h-4 w-4 text-[#0000ff]" />
-          {{ filledFieldsCount }}/{{ totalFieldCount }} trường đã điền
+          {{ $t("checkout.shippingForm.fieldsCount", { filled: filledFieldsCount, total: totalFieldCount }) }}
         </div>
       </div>
 
@@ -107,34 +107,34 @@
               </div>
               <div>
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Thông tin người nhận
+                  {{ $t("checkout.shippingForm.recipientInfo") }}
                 </p>
                 <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
-                  Nhập tên và số điện thoại để shipper liên hệ dễ hơn.
+                  {{ $t("checkout.shippingForm.recipientInfoDesc") }}
                 </p>
               </div>
             </div>
 
             <div class="mt-4 grid gap-4 md:grid-cols-2">
               <label class="block space-y-2.5">
-                <span class="text-[0.98rem] font-black text-[#2f3542]">Tên</span>
+                <span class="text-[0.98rem] font-black text-[#2f3542]">{{ $t("checkout.shippingForm.fullName") }}</span>
                 <input
                   v-model="form.fullName"
                   :class="fieldClass"
                   autocomplete="name"
-                  placeholder="Nhập tên người nhận"
+                  :placeholder="$t('checkout.shippingForm.fullNamePlaceholder')"
                   required
                   type="text"
                 >
               </label>
 
               <label class="block space-y-2.5">
-                <span class="text-[0.98rem] font-black text-[#2f3542]">Điện thoại</span>
+                <span class="text-[0.98rem] font-black text-[#2f3542]">{{ $t("checkout.shippingForm.phone") }}</span>
                 <input
                   v-model="form.phone"
                   :class="fieldClass"
                   autocomplete="tel"
-                  placeholder="Số điện thoại"
+                  :placeholder="$t('checkout.shippingForm.phonePlaceholder')"
                   required
                   type="tel"
                 >
@@ -149,46 +149,46 @@
               </div>
               <div>
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Khu vực giao hàng
+                  {{ $t("checkout.shippingForm.region") }}
                 </p>
                 <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
-                  Điền vị trí để hệ thống tổng hợp điểm giao hàng chính xác.
+                  {{ $t("checkout.shippingForm.regionDesc") }}
                 </p>
               </div>
             </div>
 
             <div class="mt-4 grid gap-4 md:grid-cols-2">
               <label class="block space-y-2.5">
-                <span class="text-[0.98rem] font-black text-[#2f3542]">Quốc gia</span>
+                <span class="text-[0.98rem] font-black text-[#2f3542]">{{ $t("checkout.shippingForm.country") }}</span>
                 <input
                   v-model="form.country"
                   :class="fieldClass"
                   autocomplete="country-name"
-                  placeholder="Quốc gia"
+                  :placeholder="$t('checkout.shippingForm.country')"
                   required
                   type="text"
                 >
               </label>
 
               <label class="block space-y-2.5">
-                <span class="text-[0.98rem] font-black text-[#2f3542]">Thành phố</span>
+                <span class="text-[0.98rem] font-black text-[#2f3542]">{{ $t("checkout.shippingForm.city") }}</span>
                 <input
                   v-model="form.city"
                   :class="fieldClass"
                   autocomplete="address-level2"
-                  placeholder="Thành phố"
+                  :placeholder="$t('checkout.shippingForm.city')"
                   required
                   type="text"
                 >
               </label>
 
               <label class="block space-y-2.5 md:col-span-2">
-                <span class="text-[0.98rem] font-black text-[#2f3542]">Mã Bưu Chính</span>
+                <span class="text-[0.98rem] font-black text-[#2f3542]">{{ $t("checkout.shippingForm.postalCode") }}</span>
                 <input
                   v-model="form.postalCode"
                   :class="fieldClass"
                   autocomplete="postal-code"
-                  placeholder="Mã Bưu Chính"
+                  :placeholder="$t('checkout.shippingForm.postalCode')"
                   required
                   type="text"
                 >
@@ -203,21 +203,21 @@
               </div>
               <div>
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Điểm nhận chi tiết
+                  {{ $t("checkout.shippingForm.pointDetail") }}
                 </p>
                 <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
-                  Ghi rõ số nhà, tên đường, phường/xã để tránh giao thất bại.
+                  {{ $t("checkout.shippingForm.pointDetailDesc") }}
                 </p>
               </div>
             </div>
 
             <label class="mt-4 block space-y-2.5">
-              <span class="text-[0.98rem] font-black text-[#2f3542]">Địa chỉ nhà</span>
+              <span class="text-[0.98rem] font-black text-[#2f3542]">{{ $t("checkout.shippingForm.streetAddress") }}</span>
               <textarea
                 v-model="form.streetAddress"
                 :class="textareaClass"
                 autocomplete="street-address"
-                placeholder="Số nhà, tên đường, phường/xã..."
+                :placeholder="$t('checkout.shippingForm.streetAddressPlaceholder')"
                 required
                 rows="3"
               />
@@ -233,7 +233,7 @@
               </div>
               <div>
                 <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
-                  Xem trước nhanh
+                  {{ $t("checkout.shippingForm.quickPreview") }}
                 </p>
                 <p class="mt-1 text-[15px] font-black text-[#243b63]">
                   {{ previewRecipient }}
@@ -246,7 +246,7 @@
             </p>
 
             <div class="mt-4 rounded-[18px] border border-[#eef2f8] bg-[#f7f9ff] px-4 py-3 text-[13px] leading-6 text-slate-500">
-              Đơn hàng sẽ dùng đúng thông tin bạn lưu tại đây. Đây là mock UI nên chưa gửi dữ liệu thật tới API `address.php`.
+              {{ $t("checkout.shippingForm.mockWarning") }}
             </div>
 
             <button
@@ -255,7 +255,7 @@
               class="mt-4"
               type="submit"
             >
-              Lưu địa chỉ
+              {{ $t("checkout.shippingForm.saveAddress") }}
             </button>
           </section>
         </aside>
@@ -276,6 +276,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   submit: [address: SavedShippingAddress]
 }>()
+
+const { t } = useI18n()
 
 const form = reactive<ShippingAddressForm>({
   fullName: "",
@@ -311,7 +313,7 @@ const addressSummary = computed(() => {
 })
 
 const previewRecipient = computed(() => {
-  const fullName = form.fullName.trim() || "Chưa có tên người nhận"
+  const fullName = form.fullName.trim() || t("checkout.shippingForm.noRecipientPreview")
   const phone = form.phone.trim()
 
   return phone ? `${fullName} · ${phone}` : fullName
@@ -319,15 +321,15 @@ const previewRecipient = computed(() => {
 
 const previewAddress = computed(() => {
   const parts = [
-    form.streetAddress.trim() || "Địa chỉ nhà",
-    form.city.trim() || "Thành phố",
-    form.country.trim() || "Quốc gia",
+    form.streetAddress.trim() || t("checkout.shippingForm.streetAddress"),
+    form.city.trim() || t("checkout.shippingForm.city"),
+    form.country.trim() || t("checkout.shippingForm.country"),
   ]
 
   const postalCode = form.postalCode.trim()
 
   return postalCode
-    ? `${parts.join(", ")} · Mã ${postalCode}`
+    ? `${parts.join(", ")} · ${t("checkout.shippingForm.postalCodePrefix")} ${postalCode}`
     : parts.join(", ")
 })
 

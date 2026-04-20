@@ -3,10 +3,10 @@
     <div class="flex items-start justify-between gap-3">
       <div>
         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-          {{ compact ? "Tóm tắt" : "Giới thiệu nhóm" }}
+          {{ compact ? $t('community.settings.sidebar.summary') : $t('community.settings.sidebar.aboutGroup') }}
         </p>
         <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
-          {{ compact ? "Thông tin nhanh" : group.name }}
+          {{ compact ? $t('community.settings.sidebar.quickInfo') : $t(group.name) }}
         </h3>
       </div>
 
@@ -16,26 +16,26 @@
     </div>
 
     <p class="mt-4 text-[14px] leading-7 text-slate-600">
-      {{ group.summary }}
+      {{ $t(group.summary) }}
     </p>
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Quyền riêng tư</p>
-        <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ privacyLabel }}</p>
-        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ privacyDescription }}</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.settings.sidebar.privacy') }}</p>
+        <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ $t(privacyLabel) }}</p>
+        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ $t(privacyDescription) }}</p>
       </div>
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Danh mục</p>
-        <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ categoryLabel }}</p>
-        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ group.locationLabel }}</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.settings.sidebar.category') }}</p>
+        <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ $t(categoryLabel) }}</p>
+        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ $t(group.locationLabel) }}</p>
       </div>
     </div>
 
     <div class="mt-4 space-y-2 text-[13px] text-slate-500">
       <div class="flex items-start gap-2">
         <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
-        <span>{{ group.foundedLabel }}</span>
+        <span>{{ $t(group.foundedLabel) }}</span>
       </div>
       <div class="flex items-start gap-2">
         <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
@@ -43,13 +43,13 @@
       </div>
       <div class="flex items-start gap-2">
         <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
-        <span>{{ memberCountLabel }}</span>
+        <span>{{ $t('community.groups.format.members', { count: memberCountLabel }) }}</span>
       </div>
     </div>
 
     <div v-if="!compact && group.guidelines?.length" class="mt-5">
       <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-        Nội quy
+        {{ $t('community.settings.basics.fields.guidelines') }}
       </p>
       <div class="mt-3 space-y-2.5">
         <div
@@ -57,7 +57,7 @@
           :key="rule"
           class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-600"
         >
-          {{ rule }}
+          {{ $t(rule) }}
         </div>
       </div>
     </div>

@@ -8,10 +8,10 @@
 
         <div>
           <h1 class="text-[2rem] font-black tracking-[-0.05em] text-[#243b63]">
-            Các trang
+            {{ $t('community.pagesDirectory.title') }}
           </h1>
           <p class="mt-1 text-[14px] leading-6 text-slate-500">
-            Quản lý fanpage bạn theo dõi, xem gợi ý phù hợp và mở nhanh flow tạo page mới trong cùng một khu vực.
+            {{ $t('community.pagesDirectory.desc') }}
           </p>
         </div>
       </div>
@@ -30,8 +30,8 @@
       <div class="flex h-full flex-col items-center justify-center text-center">
         <FoundationEmptyState
           icon="i-ph-flag-fill"
-          title="Không có trang nào để hiển thị"
-          description="Bạn chưa tạo fanpage nào trong tài khoản này. Bắt đầu bằng một page mới để giới thiệu thương hiệu, dịch vụ hoặc kênh nội dung của bạn."
+          :title="$t('community.pagesDirectory.emptyMineTitle')"
+          :description="$t('community.pagesDirectory.emptyMineDesc')"
         />
 
         <div class="mt-6 flex justify-center">
@@ -40,7 +40,7 @@
             class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
           >
             <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-            Tạo page đầu tiên
+            {{ $t('community.pagesDirectory.createFirst') }}
           </NuxtLink>
         </div>
       </div>
@@ -53,8 +53,8 @@
       <div class="mx-auto max-w-xl">
         <FoundationEmptyState
           icon="i-ph-magnifying-glass"
-          title="Không có fanpage phù hợp"
-          description="Tab này hiện chưa có dữ liệu mock. Bạn có thể chuyển sang tab khác hoặc tạo mới một page để bắt đầu."
+          :title="$t('community.pagesDirectory.emptyOtherTitle')"
+          :description="$t('community.pagesDirectory.emptyOtherDesc')"
         />
       </div>
     </section>
@@ -84,6 +84,8 @@ const props = withDefaults(defineProps<{
   mode: "mine",
 })
 
+const { t } = useI18n()
+
 const visiblePages = computed<CommunityPageRecord[]>(() => {
   if (props.mode === "mine") return []
 
@@ -95,32 +97,33 @@ const visiblePages = computed<CommunityPageRecord[]>(() => {
 const tabItems = computed(() =>
   communityPageTabs.map(tab => ({
     ...tab,
+    label: t(tab.label),
     to: communityPageRouteMap[tab.value],
   })),
 )
 
 const actionLabel = computed(() => {
-  if (props.mode === "suggested") return "Khám phá fanpage"
-  if (props.mode === "favorite") return "Xem cập nhật"
-  return "Xem fanpage"
+  if (props.mode === "suggested") return t("community.pagesDirectory.actionSuggested")
+  if (props.mode === "favorite") return t("community.pagesDirectory.actionFavorite")
+  return t("community.pagesDirectory.actionMine")
 })
 
 useSeoMeta({
   title: computed(() => {
-    if (props.mode === "suggested") return "Các trang được đề xuất | VNSEEA"
-    if (props.mode === "favorite") return "Các trang được yêu thích | VNSEEA"
-    return "Các trang | VNSEEA"
+    if (props.mode === "suggested") return `${t("community.pagesDirectory.seoSuggestedTitle")} | VNSEEA`
+    if (props.mode === "favorite") return `${t("community.pagesDirectory.seoFavoriteTitle")} | VNSEEA`
+    return `${t("community.pagesDirectory.seoMineTitle")} | VNSEEA`
   }),
   description: computed(() => {
     if (props.mode === "suggested") {
-      return "Danh sách fanpage được đề xuất trên VNSEEA."
+      return t("community.pagesDirectory.seoSuggestedDesc")
     }
 
     if (props.mode === "favorite") {
-      return "Danh sách fanpage được yêu thích trên VNSEEA."
+      return t("community.pagesDirectory.seoFavoriteDesc")
     }
 
-    return "Danh bạ fanpage trên VNSEEA với khu vực trang của tôi, page được đề xuất và page được yêu thích."
+    return t("community.pagesDirectory.seoMineDesc")
   }),
 })
 </script>

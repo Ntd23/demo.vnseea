@@ -154,18 +154,18 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/live.vue`
 - [ ] `client/app/pages/watch.vue`
 - [ ] `client/app/pages/setting/index.vue`
-- [ ] `client/app/pages/setting/[page].vue`
-- [ ] `client/app/pages/checkout.vue`
-- [ ] `client/app/pages/orders.vue`
-- [ ] `client/app/pages/order/[id].vue`
-- [ ] `client/app/pages/customer_order/[id].vue`
-- [ ] `client/app/pages/create-group.vue`
-- [ ] `client/app/pages/groups.vue`
-- [ ] `client/app/pages/group-setting/[group].vue`
-- [ ] `client/app/pages/create-page.vue`
-- [ ] `client/app/pages/pages.vue`
-- [ ] `client/app/pages/page-setting/[page].vue`
-- [ ] `client/app/pages/search.vue`
+- [x] `client/app/pages/setting/[page].vue`
+- [x] `client/app/pages/checkout.vue`
+- [x] `client/app/pages/orders.vue`
+- [x] `client/app/pages/order/[id].vue`
+- [x] `client/app/pages/customer-order/[id].vue`
+- [x] `client/app/pages/create-group.vue`
+- [x] `client/app/pages/groups.vue` (đã dịch toàn bộ)
+- [x] `client/app/pages/group-setting/[group].vue`
+- [x] `client/app/pages/create-page.vue`
+- [x] `client/app/pages/pages.vue`
+- [x] `client/app/pages/page-setting/[page].vue`
+- [x] `client/app/pages/search.vue` (đã dịch toàn bộ)
 - [ ] `client/app/pages/explore.vue`
 - [ ] `client/app/pages/saved-posts.vue`
 - [ ] `client/app/pages/poke.vue`
@@ -311,23 +311,23 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/product/EditMediaManager.vue`
 - [ ] `client/app/components/product/ChecklistCard.vue`
 - [ ] `client/app/components/product/TipsCard.vue`
-- [ ] `client/app/components/checkout/CheckoutLayout.vue`
-- [ ] `client/app/components/checkout/CheckoutSummary.vue`
-- [ ] `client/app/components/checkout/ShippingAddressFormUI.vue`
-- [ ] `client/app/components/pages/CheckoutPage.vue`
-- [ ] `client/app/components/pages/OrdersPage.vue`
-- [ ] `client/app/components/pages/OrderDetailPage.vue`
-- [ ] `client/app/components/pages/CustomerOrderPage.vue`
-- [ ] `client/app/components/orders/FilterBar.vue`
-- [ ] `client/app/components/orders/OverviewSidebar.vue`
-- [ ] `client/app/components/orders/DetailSidebar.vue`
-- [ ] `client/app/components/orders/DetailTimelineCard.vue`
-- [ ] `client/app/components/orders/OrderItemCard.vue`
-- [ ] `client/app/components/orders/OrderPriceSummary.vue`
-- [ ] `client/app/components/orders/BuyerOrderCard.vue`
-- [ ] `client/app/components/orders/SellerOrderCard.vue`
-- [ ] `client/app/components/orders/SellerOrderSidebar.vue`
-- [ ] `client/app/components/orders/SellerOrderChecklistCard.vue`
+- [x] `client/app/components/checkout/CheckoutLayout.vue`
+- [x] `client/app/components/checkout/CheckoutSummary.vue`
+- [x] `client/app/components/checkout/ShippingAddressFormUI.vue`
+- [x] `client/app/components/pages/CheckoutPage.vue`
+- [x] `client/app/components/pages/OrdersPage.vue`
+- [x] `client/app/components/pages/OrderDetailPage.vue`
+- [x] `client/app/components/pages/CustomerOrderPage.vue`
+- [x] `client/app/components/orders/FilterBar.vue`
+- [x] `client/app/components/orders/OverviewSidebar.vue`
+- [x] `client/app/components/orders/DetailSidebar.vue`
+- [x] `client/app/components/orders/DetailTimelineCard.vue`
+- [x] `client/app/components/orders/OrderItemCard.vue`
+- [x] `client/app/components/orders/OrderPriceSummary.vue`
+- [x] `client/app/components/orders/BuyerOrderCard.vue`
+- [x] `client/app/components/orders/SellerOrderCard.vue`
+- [x] `client/app/components/orders/SellerOrderSidebar.vue`
+- [x] `client/app/components/orders/SellerOrderChecklistCard.vue`
 - [ ] `client/app/components/wallet/WalletHero.vue`
 - [ ] `client/app/components/wallet/WalletTransactions.vue`
 - [ ] `client/app/components/wallet/WalletSendForm.vue`
@@ -373,10 +373,10 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/forum/ForumThreadCard.vue`
 - [ ] `client/app/components/forum/ForumThreadDetail.vue`
 - [ ] `client/app/components/forum/CreateThreadModal.vue`
-- [ ] `client/app/components/pages/SettingsPage.vue`
-- [ ] `client/app/components/settings/SettingsHero.vue`
-- [ ] `client/app/components/settings/SettingsSidebar.vue`
-- [ ] `client/app/components/settings/SettingsSection.vue`
+- [x] `client/app/components/pages/SettingsPage.vue`
+- [x] `client/app/components/settings/SettingsHero.vue`
+- [x] `client/app/components/settings/SettingsSidebar.vue`
+- [x] `client/app/components/settings/SettingsSection.vue`
 - [ ] `client/app/components/settings/SettingsField.vue`
 
 ## Note nhanh
