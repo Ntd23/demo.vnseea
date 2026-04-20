@@ -154,7 +154,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/live.vue`
 - [ ] `client/app/pages/watch.vue`
 - [ ] `client/app/pages/setting/index.vue`
-- [ ] `client/app/pages/setting/[page].vue`
+- [x] `client/app/pages/setting/[page].vue`
 - [ ] `client/app/pages/checkout.vue`
 - [ ] `client/app/pages/orders.vue`
 - [ ] `client/app/pages/order/[id].vue`
@@ -373,10 +373,10 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/forum/ForumThreadCard.vue`
 - [ ] `client/app/components/forum/ForumThreadDetail.vue`
 - [ ] `client/app/components/forum/CreateThreadModal.vue`
-- [ ] `client/app/components/pages/SettingsPage.vue`
-- [ ] `client/app/components/settings/SettingsHero.vue`
-- [ ] `client/app/components/settings/SettingsSidebar.vue`
-- [ ] `client/app/components/settings/SettingsSection.vue`
+- [x] `client/app/components/pages/SettingsPage.vue`
+- [x] `client/app/components/settings/SettingsHero.vue`
+- [x] `client/app/components/settings/SettingsSidebar.vue`
+- [x] `client/app/components/settings/SettingsSection.vue`
 - [ ] `client/app/components/settings/SettingsField.vue`
 
 ## Note nhanh

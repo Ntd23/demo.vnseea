@@ -40,6 +40,7 @@ const props = defineProps<{
   pageSlug?: string
 }>()
 
+const { t } = useI18n()
 const { pages, defaultSlug, findPageBySlug } = useMockSettingsData()
 
 const activePage = computed<SettingPage>(() =>
@@ -60,24 +61,24 @@ const featureCount = computed(() =>
 
 const stats = computed(() => [
   {
-    label: "Sub-pages",
+    label: t("settings.hero.stats.subPages.label"),
     value: pages.length,
-    description: "Nhóm cài đặt theo audit.",
+    description: t("settings.hero.stats.subPages.description"),
   },
   {
-    label: "Chức năng",
+    label: t("settings.hero.stats.features.label"),
     value: featureCount.value,
-    description: "Field, toggle, list và action.",
+    description: t("settings.hero.stats.features.description"),
   },
   {
-    label: "API",
-    value: "Mock",
-    description: "Chưa gọi backend setting.",
+    label: t("settings.hero.stats.api.label"),
+    value: t("settings.hero.stats.api.value"),
+    description: t("settings.hero.stats.api.description"),
   },
 ])
 
 useSeoMeta({
-  title: () => `${activePage.value.label} | Cài đặt VNSEEA`,
+  title: () => `${activePage.value.label} | ${t("settings.seo.titleSuffix")}`,
   description: () => activePage.value.description,
 })
 </script>

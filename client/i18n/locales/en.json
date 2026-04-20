@@ -9,5 +9,517 @@
       "tooltipSticker": "Sticker",
       "tooltipMention": "Mention"
     }
+  },
+  "settings": {
+    "seo": {
+      "titleSuffix": "VNSEEA Settings"
+    },
+    "hero": {
+      "auditLabel": "P-34 · Settings",
+      "title": "Settings",
+      "description": "Manage your account, privacy, security, notifications, billing, and professional profile.",
+      "stats": {
+        "subPages": {
+          "label": "Sub-pages",
+          "description": "Settings groups from the audit."
+        },
+        "features": {
+          "label": "Features",
+          "description": "Fields, toggles, lists, and actions."
+        },
+        "api": {
+          "label": "API",
+          "value": "Mock",
+          "description": "Backend settings API not connected yet."
+        }
+      }
+    },
+    "sidebar": {
+      "subPages": "{count} sub-pages",
+      "title": "Settings menu"
+    },
+    "section": {
+      "kind": {
+        "form": "Form",
+        "toggles": "Toggles",
+        "list": "List",
+        "danger": "Danger",
+        "summary": "Summary"
+      },
+      "saveChanges": "Save changes",
+      "dangerMessage": "Danger zone. This action is still mocked and does not call the delete account API yet.",
+      "deleteAccount": "Delete account",
+      "savedState": "Settings save was mocked. No settings API call yet."
+    },
+    "data": {
+      "options": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "countryVietnam": "Vietnam",
+        "countrySingapore": "Singapore",
+        "countryThailand": "Thailand",
+        "countryUnitedStates": "United States",
+        "public": "Public",
+        "friends": "Friends",
+        "onlyMe": "Only me",
+        "allow": "Allow",
+        "hideFromSearch": "Hide from search",
+        "showOnline": "Show online",
+        "alwaysOffline": "Always offline",
+        "hidden": "Hidden",
+        "single": "Single",
+        "dating": "Dating",
+        "married": "Married",
+        "on": "On",
+        "off": "Off",
+        "system": "System default",
+        "themeBlue": "VNSEEA Blue",
+        "themeEmerald": "Emerald",
+        "themeAmber": "Amber",
+        "themeSlate": "Slate",
+        "enable": "Enable",
+        "disable": "Disable"
+      },
+      "pages": {
+        "general": {
+          "label": "General",
+          "description": "Username, email, phone number, and basic account info.",
+          "sections": {
+            "account": {
+              "title": "Account information",
+              "description": "Update the main identity details of your account.",
+              "fields": {
+                "username": "Username",
+                "email": "Email",
+                "phone": "Phone",
+                "birthday": "Birthday",
+                "gender": "Gender",
+                "country": "Country",
+                "website": "Website"
+              },
+              "placeholders": {
+                "username": "username"
+              }
+            }
+          }
+        },
+        "profile": {
+          "label": "Profile",
+          "description": "Bio, work, school, and location.",
+          "sections": {
+            "publicProfile": {
+              "title": "Public profile",
+              "description": "These fields appear on your public profile.",
+              "fields": {
+                "bio": "Bio",
+                "workplace": "Workplace",
+                "school": "School",
+                "relationship": "Relationship",
+                "city": "City",
+                "hometown": "Hometown"
+              },
+              "values": {
+                "bio": "Community builder at VNSEEA.",
+                "school": "University of Economics",
+                "city": "Ho Chi Minh City",
+                "hometown": "Hanoi"
+              }
+            }
+          }
+        },
+        "privacy": {
+          "label": "Privacy",
+          "description": "Control who can see your posts, follow you, and view your online status.",
+          "sections": {
+            "privacyControls": {
+              "title": "Privacy controls",
+              "description": "Mock privacy options before wiring the settings API.",
+              "fields": {
+                "posts": "Who sees posts",
+                "follow": "Who can follow",
+                "search": "Search visibility",
+                "friends": "Who sees friends",
+                "birthdayPrivacy": "Who sees birthday",
+                "onlineStatus": "Online/offline status"
+              }
+            }
+          }
+        },
+        "avatar": {
+          "label": "Avatar",
+          "description": "Upload and crop your avatar.",
+          "sections": {
+            "uploadAvatar": {
+              "title": "Upload & crop avatar",
+              "description": "Choose a new image and mock the crop area.",
+              "fields": {
+                "avatar": "Avatar image"
+              }
+            }
+          }
+        },
+        "design": {
+          "label": "Appearance",
+          "description": "Night mode and theme color.",
+          "sections": {
+            "appearance": {
+              "title": "Appearance settings",
+              "description": "Adjust how the interface appears on your device.",
+              "fields": {
+                "nightMode": "Night mode",
+                "themeColor": "Theme color"
+              }
+            }
+          }
+        },
+        "password": {
+          "label": "Password",
+          "description": "Change your sign-in password.",
+          "sections": {
+            "changePassword": {
+              "title": "Change password",
+              "description": "Enter your current password and new password.",
+              "fields": {
+                "currentPassword": "Current password",
+                "newPassword": "New password",
+                "confirmPassword": "Confirm password"
+              }
+            }
+          }
+        },
+        "twoFactor": {
+          "label": "2FA",
+          "description": "Authenticator, QR code, and backup codes.",
+          "sections": {
+            "authenticator": {
+              "title": "Two-factor authentication",
+              "description": "Enable two-layer security and scan the QR code with an authenticator app.",
+              "items": {
+                "enable": {
+                  "title": "Enable/disable 2FA",
+                  "description": "Current status: disabled.",
+                  "action": "Enable 2FA"
+                },
+                "qr": {
+                  "title": "Authenticator QR code",
+                  "description": "Mock QR placeholder for the authenticator app."
+                },
+                "backup": {
+                  "title": "Backup codes",
+                  "description": "8 backup codes have not been generated yet.",
+                  "action": "Generate new codes"
+                }
+              }
+            }
+          }
+        },
+        "notifications": {
+          "label": "Notifications",
+          "description": "Turn notification types on or off.",
+          "sections": {
+            "inApp": {
+              "title": "In-app notifications",
+              "description": "Likes, comments, follows, messages, mentions, and more.",
+              "toggles": {
+                "likes": { "label": "Likes", "description": "Receive like notifications." },
+                "comments": { "label": "Comments", "description": "Receive comment notifications." },
+                "follows": { "label": "Follows", "description": "Receive follow notifications." },
+                "messages": { "label": "Messages", "description": "Receive message notifications." },
+                "mentions": { "label": "Mentions", "description": "Receive mention notifications." },
+                "shares": { "label": "Shares", "description": "Receive share notifications." },
+                "events": { "label": "Events", "description": "Receive event notifications." },
+                "groups": { "label": "Groups", "description": "Receive group notifications." },
+                "pages": { "label": "Pages", "description": "Receive page notifications." },
+                "marketplace": { "label": "Marketplace", "description": "Receive marketplace notifications." },
+                "jobs": { "label": "Jobs", "description": "Receive job notifications." },
+                "funding": { "label": "Funding", "description": "Receive funding notifications." },
+                "live": { "label": "Live", "description": "Receive live notifications." },
+                "watch": { "label": "Watch", "description": "Receive watch notifications." },
+                "security": { "label": "Security", "description": "Receive security notifications." }
+              }
+            }
+          }
+        },
+        "emailNotifications": {
+          "label": "Email",
+          "description": "Email notification settings.",
+          "sections": {
+            "email": {
+              "title": "Email notifications",
+              "description": "Choose which system emails are allowed.",
+              "toggles": {
+                "newMessage": { "label": "New message email", "description": "Email when a new message arrives." },
+                "mention": { "label": "Mention email", "description": "Email when someone mentions you." },
+                "weeklyDigest": { "label": "Weekly digest", "description": "Weekly activity summary." },
+                "security": { "label": "Security email", "description": "Sign-in and security alerts." }
+              }
+            }
+          }
+        },
+        "socialLinks": {
+          "label": "Social links",
+          "description": "Facebook, Twitter, LinkedIn, Instagram, and YouTube.",
+          "sections": {
+            "socialLinks": {
+              "title": "Social links",
+              "description": "The URLs displayed on your profile.",
+              "fields": {
+                "facebook": "Facebook URL",
+                "twitter": "Twitter URL",
+                "linkedin": "LinkedIn URL",
+                "instagram": "Instagram URL",
+                "youtube": "YouTube URL"
+              },
+              "placeholders": {
+                "facebook": "https://facebook.com/username",
+                "twitter": "https://twitter.com/username",
+                "linkedin": "https://linkedin.com/username",
+                "instagram": "https://instagram.com/username",
+                "youtube": "https://youtube.com/username"
+              }
+            }
+          }
+        },
+        "blockedUsers": {
+          "label": "Blocked users",
+          "description": "Blocked list and unblock actions.",
+          "sections": {
+            "blockedUsers": {
+              "title": "Blocked users",
+              "description": "Manage blocked users.",
+              "items": {
+                "spamAccount": { "description": "Blocked 2 days ago", "action": "Unblock" },
+                "oldBot": { "description": "Blocked 1 month ago", "action": "Unblock" }
+              }
+            }
+          }
+        },
+        "sessions": {
+          "label": "Sessions",
+          "description": "Active sessions and termination controls.",
+          "sections": {
+            "activeSessions": {
+              "title": "Active sessions",
+              "description": "Review devices currently signed in.",
+              "items": {
+                "chrome": {
+                  "title": "Chrome · Windows",
+                  "description": "127.0.0.1 · current",
+                  "meta": "Active now",
+                  "action": "Keep session"
+                },
+                "safari": {
+                  "title": "Safari · iPhone",
+                  "description": "Ho Chi Minh City · 2 days ago",
+                  "meta": "Mobile",
+                  "action": "Terminate"
+                }
+              }
+            }
+          }
+        },
+        "verification": {
+          "label": "Verification",
+          "description": "Upload documents and send a verification request.",
+          "sections": {
+            "request": {
+              "title": "Verification request",
+              "description": "Upload documents and explain why you need verification.",
+              "fields": {
+                "documents": "Document upload",
+                "note": "Request note"
+              }
+            }
+          }
+        },
+        "deleteAccount": {
+          "label": "Delete account",
+          "description": "Confirm your password and delete the account.",
+          "sections": {
+            "deleteAccount": {
+              "title": "Delete account",
+              "description": "A dangerous action, currently mocked only.",
+              "fields": {
+                "passwordConfirm": "Password confirm"
+              },
+              "action": "Delete account"
+            }
+          }
+        },
+        "payments": {
+          "label": "Payments",
+          "description": "Payment methods management.",
+          "sections": {
+            "paymentMethods": {
+              "title": "Payment methods",
+              "description": "Manage your cards and wallet payment methods.",
+              "items": {
+                "visa": {
+                  "title": "Visa ending 4242",
+                  "description": "Default payment method",
+                  "meta": "Default",
+                  "action": "Edit"
+                },
+                "wallet": {
+                  "title": "VNSEEA Wallet",
+                  "description": "Mock balance: VND 9,999,999",
+                  "meta": "Wallet",
+                  "action": "Manage"
+                }
+              }
+            }
+          }
+        },
+        "monetization": {
+          "label": "Monetization",
+          "description": "Plan, price, and enable or disable state.",
+          "sections": {
+            "plan": {
+              "title": "Monetization plan",
+              "description": "Create a paid content plan.",
+              "fields": {
+                "planName": "Plan name",
+                "price": "Price",
+                "enabled": "Enable/disable"
+              }
+            }
+          }
+        },
+        "invitationLinks": {
+          "label": "Invitations",
+          "description": "Generate invite links, copy links, and review invitees.",
+          "sections": {
+            "links": {
+              "title": "Invitation links",
+              "description": "Create and monitor invite links.",
+              "items": {
+                "link": {
+                  "description": "12 people joined",
+                  "meta": "Active",
+                  "action": "Copy link"
+                },
+                "invitees": {
+                  "title": "Invitees",
+                  "description": "Hoangne, Dung1, Nicolas",
+                  "action": "View invitees"
+                }
+              }
+            }
+          }
+        },
+        "affiliates": {
+          "label": "Affiliates",
+          "description": "Referral link and earnings dashboard.",
+          "sections": {
+            "dashboard": {
+              "title": "Affiliate dashboard",
+              "description": "Track referrals and revenue.",
+              "items": {
+                "referralLink": {
+                  "title": "Referral link",
+                  "action": "Copy"
+                },
+                "earnings": {
+                  "title": "Earnings",
+                  "meta": "This month"
+                },
+                "referrals": {
+                  "title": "Referrals",
+                  "description": "42 signups"
+                }
+              }
+            }
+          }
+        },
+        "myInfo": {
+          "label": "My data",
+          "description": "Download personal data.",
+          "sections": {
+            "myInfo": {
+              "title": "My info",
+              "description": "Download personal data as an archive.",
+              "items": {
+                "download": {
+                  "title": "Download personal data",
+                  "description": "Includes profile, posts, media, and message metadata.",
+                  "action": "Request archive"
+                }
+              }
+            }
+          }
+        },
+        "myPoints": {
+          "label": "My points",
+          "description": "Points balance and history.",
+          "sections": {
+            "myPoints": {
+              "title": "My points",
+              "description": "Points earned from community activity.",
+              "items": {
+                "balance": {
+                  "title": "50 points",
+                  "description": "Current balance",
+                  "meta": "Balance"
+                },
+                "comment": {
+                  "description": "Helpful comment",
+                  "meta": "Today"
+                },
+                "event": {
+                  "description": "Joined an event",
+                  "meta": "This week"
+                }
+              }
+            }
+          }
+        },
+        "addresses": {
+          "label": "Addresses",
+          "description": "Add or edit shipping addresses.",
+          "sections": {
+            "shippingAddresses": {
+              "title": "Shipping addresses",
+              "description": "Delivery addresses for the marketplace.",
+              "fields": {
+                "fullName": "Full name",
+                "phone": "Phone",
+                "address": "Address"
+              },
+              "values": {
+                "address": "District 1, Ho Chi Minh City"
+              }
+            }
+          }
+        },
+        "career": {
+          "label": "LinkedIn mode",
+          "description": "Experience, certifications, and projects.",
+          "sections": {
+            "profile": {
+              "title": "Experience + Certifications + Projects",
+              "description": "Expand your professional profile.",
+              "items": {
+                "workExperience": {
+                  "title": "Work experience",
+                  "description": "Community Manager · VNSEEA",
+                  "action": "Add work experience"
+                },
+                "certifications": {
+                  "title": "Certifications",
+                  "description": "Product Growth Certificate",
+                  "action": "Add certification"
+                },
+                "projects": {
+                  "title": "Projects",
+                  "description": "VNSEEA UI migration",
+                  "action": "Add project"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
