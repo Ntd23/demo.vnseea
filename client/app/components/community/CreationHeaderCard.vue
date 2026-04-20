@@ -14,16 +14,16 @@
             v-if="eyebrow"
             class="text-[11px] font-bold uppercase tracking-[0.24em] text-[#0000ff]/60"
           >
-            {{ eyebrow }}
+            {{ $t(eyebrow) }}
           </p>
           <h1 class="text-[1.9rem] font-black tracking-[-0.05em] text-[#141414] sm:text-[2.15rem]">
-            {{ title }}
+            {{ $t(title) }}
           </h1>
           <p
             v-if="description"
             class="mt-1 text-[14px] leading-6 text-slate-500"
           >
-            {{ description }}
+            {{ $t(description) }}
           </p>
         </div>
       </div>
@@ -34,7 +34,7 @@
           :key="highlight"
           class="inline-flex items-center rounded-full border border-[#dbe3f2] bg-white/85 px-3.5 py-2 text-[12px] font-semibold text-slate-600 shadow-[0_8px_18px_rgba(15,35,110,0.04)] backdrop-blur-[8px]"
         >
-          {{ highlight }}
+          {{ $t(highlight) }}
         </div>
       </div>
     </div>

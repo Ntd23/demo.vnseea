@@ -1,4 +1,17 @@
 {
+  "common": {
+    "header": {
+      "home": "Home",
+      "friendRequests": "Friend requests",
+      "messages": "Messages",
+      "notifications": "Notifications",
+      "account": "Account",
+      "search": "Search",
+      "reels": "Reels",
+      "video": "Video",
+      "profile": "Profile"
+    }
+  },
   "feed": {
     "commentComposer": {
       "placeholder": "Write a constructive comment...",
@@ -986,7 +999,117 @@
       "format": {
         "members": "{count} members",
         "followers": "{count} followers",
-        "likes": "{count} likes"
+        "likes": "{count} likes",
+        "online": "{count} online"
+      },
+      "post": {
+        "role": "{group} · {role}",
+        "time": {
+          "minutes": "{count}m ago",
+          "hours": "{count}h ago"
+        },
+        "text": {
+          "pinned": "In {group}, everyone is discussing the topic {topic} very actively. This is a pinned post to quickly remind you to include real context for better quality feedback.",
+          "summary": "Quick summary for this week of {group}: {activity}. New members can read this thread to understand hot topics and rules before posting for the first time.",
+          "detail": "A topic of interest in {group}: practical experience, lessons learned, and the best references for tag #{topic}."
+        }
+      }
+    },
+    "settings": {
+      "eyebrow": "Group settings",
+      "defaultEyebrow": "Settings",
+      "title": "Settings for {name}",
+      "desc": "Adjust the display profile, participation rights, and key operating policies of this community.",
+      "basics": {
+        "eyebrow": "Core Information",
+        "title": "Group Display Profile",
+        "desc": "Update name, URL, description, and background content to make the group page clearer when members visit.",
+        "fields": {
+          "name": "Group Name",
+          "namePlaceholder": "Enter group name",
+          "url": "Group URL",
+          "urlPlaceholder": "group-name",
+          "suggested": "Suggested: {slug}",
+          "useSuggested": "Use suggested slug",
+          "desc": "Group Description",
+          "descPlaceholder": "Describe who this group is for, the main content, and how to participate effectively.",
+          "category": "Category",
+          "location": "Activity Area",
+          "locationPlaceholder": "Example: Nationwide activity",
+          "website": "Website or Introduction Link",
+          "websitePlaceholder": "vnseea.vn/g/group-name",
+          "tags": "Subject Tags",
+          "tagsPlaceholder": "ev, charging, review",
+          "guidelines": "Guidelines displayed on the group page",
+          "guidelinesPlaceholder": "Each line is a principle. Example: Prioritize posts sharing practical context."
+        },
+        "stats": {
+          "descLength": "Description length",
+          "tagCount": "Existing tags",
+          "guidelinesCount": "Rules",
+          "charCount": "{count} characters",
+          "topicCount": "{count} topics",
+          "itemCount": "{count} items"
+        },
+        "viewGroup": "View Group"
+      },
+      "controls": {
+        "eyebrow": "Access Control",
+        "title": "Privacy and Admin Flow",
+        "desc": "Set how members see the group, send requests to join, and post content in the community.",
+        "logic": "Applied Logic",
+        "privacyFallback": "Privacy",
+        "noPrivacy": "No privacy chosen for the group.",
+        "toggles": {
+          "join": {
+            "label": "New Member Approval",
+            "desc": "Admin reviews join requests before entering the group."
+          },
+          "post": {
+            "label": "Review Posts Before Displaying",
+            "desc": "New posts need moderator check before going on the feed."
+          },
+          "invite": {
+            "label": "Allow Members to Invite Others",
+            "desc": "Current members can send direct invitations to friends."
+          },
+          "directory": {
+            "label": "Display Member Directory",
+            "desc": "Member list still appears in sidebar and group about page."
+          },
+          "welcome": {
+            "label": "Display Welcome Post",
+            "desc": "New members will see a pinned post introducing rules and startup resources."
+          }
+        }
+      },
+      "finish": {
+        "eyebrow": "Finish",
+        "title": "Quick Actions",
+        "desc": "This settings flow is a UI mock. You can go back to the group page or continue tweaking before connecting the API.",
+        "status": "{enabled}/{total} policies enabled. Current visibility is {privacy}.",
+        "back": "Back to group",
+        "save": "Save changes"
+      },
+      "sidebar": {
+        "preview": "Preview after saving",
+        "notes": "Admin Notes",
+        "tip1Title": "Keep description clear",
+        "tip1Desc": "New members often decide to join in the first 1-2 sentences of the introduction.",
+        "tip2Title": "Rules should be short and specific",
+        "tip2Desc": "Clearer rules make it easier for moderators to handle posts and join requests.",
+        "summary": "Summary",
+        "aboutGroup": "About Group",
+        "quickInfo": "Quick Info",
+        "privacy": "Privacy",
+        "category": "Category",
+        "members": "Members",
+        "inviteMore": "Invite more"
+      },
+      "empty": {
+        "title": "Group to set up not found",
+        "desc": "This group slug is not in the current mock data. Please go back to the group list and select a valid community.",
+        "back": "Back to group list"
       }
     },
     "mock": {
@@ -999,11 +1122,11 @@
           "location": "Nationwide activity",
           "founded": "Established from March 2024",
           "tags": ["ev", "charging", "review"],
-          "guidelines": [
-            "Prioritize real reviews with images or data when sharing experiences.",
-            "Do not post direct sales outside of EV and related accessories topics.",
-            "Keep discussions respectful, focused on solutions and useful knowledge."
-          ]
+          "guidelines": {
+            "0": "Prioritize real reviews with images or data when sharing experiences.",
+            "1": "Do not post direct sales outside of EV and related accessories topics.",
+            "2": "Keep discussions respectful, focused on solutions and useful knowledge."
+          }
         },
         "founder": {
           "name": "Founder Circle Vietnam",
@@ -1015,11 +1138,11 @@
           "tags": ["founder", "growth", "networking"],
           "joinLabel": "Request to join",
           "inviteLabel": "Invite partners",
-          "guidelines": [
-            "Share concisely, go straight to the problem and context needing advice.",
-            "Do not post job recruitments or excessive service offers in the main feed.",
-            "Respect privacy principles regarding internal data shared within the group."
-          ]
+          "guidelines": {
+            "0": "Share concisely, go straight to the problem and context needing advice.",
+            "1": "Do not post job recruitments or excessive service offers in the main feed.",
+            "2": "Respect privacy principles regarding internal data shared within the group."
+          }
         },
         "ai": {
           "name": "AI Product Builders",
@@ -1029,11 +1152,11 @@
           "location": "Remote-first community",
           "founded": "Established from January 2024",
           "tags": ["AI", "product", "automation"],
-          "guidelines": [
-            "Prioritize demos with images, videos, or prototype links for quick feedback.",
-            "Clearly tag goals: research, case study, prompt, automation, or launch.",
-            "Avoid sharing sensitive customer data and company secret information."
-          ]
+          "guidelines": {
+            "0": "Prioritize demos with images, videos, or prototype links for quick feedback.",
+            "1": "Clearly tag goals: research, case study, prompt, automation, or launch.",
+            "2": "Avoid sharing sensitive customer data and company secret information."
+          }
         },
         "learning": {
           "name": "Travel & Learn",
@@ -1043,11 +1166,11 @@
           "location": "Vietnam learning community",
           "founded": "Established from November 2023",
           "tags": ["workshop", "learning", "mentoring"],
-          "guidelines": [
-            "Documents posted need to site sources so others can verify and continue learning.",
-            "Encourage sharing short notes, summarizing key insights after each workshop.",
-            "No spamming course links or unrelated affiliate content."
-          ]
+          "guidelines": {
+            "0": "Documents posted need to site sources so others can verify and continue learning.",
+            "1": "Encourage sharing short notes, summarizing key insights after each workshop.",
+            "2": "No spamming course links or unrelated affiliate content."
+          }
         },
         "weekend": {
           "name": "Weekend Escape Club",
@@ -1056,12 +1179,60 @@
           "owner": "Suggested based on travel interests",
           "location": "Domestic & Southeast Asia destinations",
           "founded": "Established from June 2024",
-          "tags": ["travel", "weekend", "homestay"],
-          "guidelines": [
-            "When reviewing locations, include cost, travel time, and practical notes.",
-            "Respect the local environment, avoid promoting activities that affect nature.",
-            "Do not post tour hunting information with low credibility or unknown origin."
-          ]
+          "tags": {
+            "0": "travel",
+            "1": "weekend",
+            "2": "homestay"
+          },
+          "guidelines": {
+            "0": "When reviewing locations, include cost, travel time, and practical notes.",
+            "1": "Respect the local environment, avoid promoting activities that affect nature.",
+            "2": "Do not post tour hunting information with low credibility or unknown origin."
+          }
+        }
+      },
+      "pages": {
+        "mocmay": {
+          "name": "Moc May Studio",
+          "summary": "Fanpage introducing wood furniture, home decoration concepts, and construction projects in modern minimalist style.",
+          "owner": "Verified business page",
+          "response": "Usually responds within 30 minutes",
+          "location": "Da Nang · Nationwide shipping",
+          "founded": "Active from February 2022",
+          "cta": "Message",
+          "tags": {
+            "0": "furniture",
+            "1": "construction",
+            "2": "natural wood"
+          }
+        },
+        "mobility": {
+          "name": "VNSEEA Mobility Lab",
+          "summary": "Page updating research, events, and insights on electrified transport, charging stations, and green mobility infrastructure.",
+          "owner": "Content brand page",
+          "response": "Responds during business days",
+          "location": "Hanoi · HCMC · Online",
+          "founded": "Launched from May 2024",
+          "cta": "Follow",
+          "tags": {
+            "0": "mobility",
+            "1": "ev",
+            "2": "research"
+          }
+        },
+        "learning": {
+          "name": "Quick Learn Every Day",
+          "summary": "Fanpage sharing study notes, workshop schedules, and short documents for professionals wanting continuous skill updates.",
+          "owner": "Education & training page",
+          "response": "Has regular admin team support",
+          "location": "Online-first",
+          "founded": "Created from September 2021",
+          "cta": "View course",
+          "tags": {
+            "0": "learning",
+            "1": "workshop",
+            "2": "career"
+          }
         }
       }
     }

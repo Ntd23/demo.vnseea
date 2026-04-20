@@ -1,4 +1,17 @@
 {
+  "common": {
+    "header": {
+      "home": "Trang chủ",
+      "friendRequests": "Yêu cầu kết bạn",
+      "messages": "Tin nhắn",
+      "notifications": "Thông báo",
+      "account": "Tài khoản",
+      "search": "Tìm kiếm",
+      "reels": "Reels",
+      "video": "Video",
+      "profile": "Trang cá nhân"
+    }
+  },
   "feed": {
     "commentComposer": {
       "placeholder": "Viết bình luận mang tính xây dựng...",
@@ -986,7 +999,117 @@
       "format": {
         "members": "{count} thành viên",
         "followers": "{count} người theo dõi",
-        "likes": "{count} lượt thích"
+        "likes": "{count} lượt thích",
+        "online": "{count} người đang online"
+      },
+      "post": {
+        "role": "{group} · {role}",
+        "time": {
+          "minutes": "{count} phút trước",
+          "hours": "{count} giờ trước"
+        },
+        "text": {
+          "pinned": "Trong {group}, mọi người đang thảo luận rất sôi về chủ đề {topic}. Đây là bài ghim nhắc nhanh những câu hỏi nên kèm ngữ cảnh thật để nhận góp ý chất lượng hơn.",
+          "summary": "Tổng hợp nhanh cho tuần này của {group}: {activity}. Thành viên mới có thể đọc thread này để nắm chủ đề nóng và nội quy trước khi đăng bài đầu tiên.",
+          "detail": "Một chủ đề đang được quan tâm trong {group}: kinh nghiệm thực tế, bài học rút ra và các nguồn tham khảo tốt nhất cho tag #{topic}."
+        }
+      }
+    },
+    "settings": {
+      "eyebrow": "Cài đặt nhóm",
+      "defaultEyebrow": "Thiết lập",
+      "title": "Cài đặt {name}",
+      "desc": "Điều chỉnh hồ sơ hiển thị, quyền tham gia và một số chính sách vận hành chính của community này.",
+      "basics": {
+        "eyebrow": "Thông tin cốt lõi",
+        "title": "Hồ sơ hiển thị của nhóm",
+        "desc": "Cập nhật tên, URL, mô tả và nội dung nền để trang nhóm rõ ràng hơn khi thành viên ghé thăm.",
+        "fields": {
+          "name": "Tên nhóm",
+          "namePlaceholder": "Nhập tên nhóm",
+          "url": "URL nhóm",
+          "urlPlaceholder": "ten-nhom",
+          "suggested": "Gợi ý: {slug}",
+          "useSuggested": "Dùng slug gợi ý",
+          "desc": "Mô tả nhóm",
+          "descPlaceholder": "Mô tả nhóm này dành cho ai, nội dung chính là gì và cách tham gia hiệu quả.",
+          "category": "Danh mục",
+          "location": "Khu vực hoạt động",
+          "locationPlaceholder": "Ví dụ: Hoạt động toàn quốc",
+          "website": "Website hoặc link giới thiệu",
+          "websitePlaceholder": "vnseea.vn/g/ten-nhom",
+          "tags": "Thẻ chủ đề",
+          "tagsPlaceholder": "xe điện, trạm sạc, review",
+          "guidelines": "Nội quy hiển thị trên trang nhóm",
+          "guidelinesPlaceholder": "Mỗi dòng là một nguyên tắc. Ví dụ: Ưu tiên bài chia sẻ có ngữ cảnh thực tế."
+        },
+        "stats": {
+          "descLength": "Độ dài mô tả",
+          "tagCount": "Tag hiện có",
+          "guidelinesCount": "Nội quy",
+          "charCount": "{count} ký tự",
+          "topicCount": "{count} chủ đề",
+          "itemCount": "{count} mục"
+        },
+        "viewGroup": "Xem nhóm"
+      },
+      "controls": {
+        "eyebrow": "Kiểm soát truy cập",
+        "title": "Quyền riêng tư và luồng quản trị",
+        "desc": "Thiết lập cách thành viên nhìn thấy nhóm, gửi yêu cầu tham gia và đăng nội dung trong community.",
+        "logic": "Logic đang áp dụng",
+        "privacyFallback": "Quyền riêng tư",
+        "noPrivacy": "Chưa chọn quyền riêng tư cho nhóm.",
+        "toggles": {
+          "join": {
+            "label": "Phê duyệt thành viên mới",
+            "desc": "Quản trị viên xét yêu cầu tham gia trước khi vào nhóm."
+          },
+          "post": {
+            "label": "Duyệt bài đăng trước khi hiển thị",
+            "desc": "Bài viết mới cần moderator kiểm tra trước khi lên feed."
+          },
+          "invite": {
+            "label": "Cho phép thành viên mời thêm người",
+            "desc": "Thành viên hiện tại có thể gửi lời mời trực tiếp cho bạn bè."
+          },
+          "directory": {
+            "label": "Hiển thị danh sách thành viên",
+            "desc": "Member list vẫn xuất hiện ở sidebar và trang giới thiệu của nhóm."
+          },
+          "welcome": {
+            "label": "Hiển thị bài chào mừng",
+            "desc": "Thành viên mới sẽ thấy một bài ghim giới thiệu nội quy và tài nguyên khởi động."
+          }
+        }
+      },
+      "finish": {
+        "eyebrow": "Hoàn tất",
+        "title": "Hành động nhanh",
+        "desc": "Flow settings này đang là UI mock. Bạn có thể quay lại trang nhóm hoặc tiếp tục tinh chỉnh trước khi nối API.",
+        "status": "{enabled}/{total} chính sách đang bật. Quyền hiển thị hiện tại là {privacy}.",
+        "back": "Quay lại nhóm",
+        "save": "Lưu thay đổi"
+      },
+      "sidebar": {
+        "preview": "Xem trước sau khi lưu",
+        "notes": "Lưu ý quản trị",
+        "tip1Title": "Giữ mô tả đủ rõ",
+        "tip1Desc": "Thành viên mới thường quyết định tham gia trong 1-2 câu đầu tiên của phần giới thiệu.",
+        "tip2Title": "Quy tắc nên ngắn và cụ thể",
+        "tip2Desc": "Nội quy càng rõ thì moderator càng dễ xử lý bài viết và yêu cầu gia nhập.",
+        "summary": "Tóm tắt",
+        "aboutGroup": "Giới thiệu nhóm",
+        "quickInfo": "Thông tin nhanh",
+        "privacy": "Quyền riêng tư",
+        "category": "Danh mục",
+        "members": "Thành viên",
+        "inviteMore": "Mời thêm"
+      },
+      "empty": {
+        "title": "Không tìm thấy nhóm để cài đặt",
+        "desc": "Slug nhóm này chưa có trong dữ liệu mock hiện tại. Hãy quay lại danh sách nhóm và chọn một community hợp lệ.",
+        "back": "Quay lại danh sách nhóm"
       }
     },
     "mock": {
@@ -999,11 +1122,11 @@
           "location": "Hoạt động toàn quốc",
           "founded": "Thành lập từ tháng 3/2024",
           "tags": ["xe điện", "trạm sạc", "review"],
-          "guidelines": [
-            "Ưu tiên review thực tế, có hình ảnh hoặc số liệu khi chia sẻ trải nghiệm.",
-            "Không đăng bán hàng trực tiếp ngoài chủ đề xe điện và phụ kiện liên quan.",
-            "Giữ thảo luận tôn trọng, tập trung vào giải pháp và kiến thức hữu ích."
-          ]
+          "guidelines": {
+            "0": "Ưu tiên review thực tế, có hình ảnh hoặc số liệu khi chia sẻ trải nghiệm.",
+            "1": "Không đăng bán hàng trực tiếp ngoài chủ đề xe điện và phụ kiện liên quan.",
+            "2": "Giữ thảo luận tôn trọng, tập trung vào giải pháp và kiến thức hữu ích."
+          }
         },
         "founder": {
           "name": "Founder Circle Vietnam",
@@ -1015,11 +1138,11 @@
           "tags": ["founder", "growth", "networking"],
           "joinLabel": "Gửi yêu cầu tham gia",
           "inviteLabel": "Mời cộng sự",
-          "guidelines": [
-            "Chia sẻ ngắn gọn, đi thẳng vào bài toán và bối cảnh cần góp ý.",
-            "Không đăng bài tuyển dụng hoặc chào bán dịch vụ tràn lan trong feed chính.",
-            "Tôn trọng nguyên tắc riêng tư với các số liệu nội bộ được chia sẻ trong nhóm."
-          ]
+          "guidelines": {
+            "0": "Chia sẻ ngắn gọn, đi thẳng vào bài toán và bối cảnh cần góp ý.",
+            "1": "Không đăng bài tuyển dụng hoặc chào bán dịch vụ tràn lan trong feed chính.",
+            "2": "Tôn trọng nguyên tắc riêng tư với các số liệu nội bộ được chia sẻ trong nhóm."
+          }
         },
         "ai": {
           "name": "AI Product Builders",
@@ -1029,11 +1152,11 @@
           "location": "Remote-first community",
           "founded": "Thành lập từ tháng 1/2024",
           "tags": ["AI", "product", "automation"],
-          "guidelines": [
-            "Ưu tiên demo có hình, video hoặc link prototype để mọi người góp ý nhanh.",
-            "Gắn tag rõ mục tiêu: nghiên cứu, case study, prompt, automation hoặc launch.",
-            "Tránh chia sẻ dữ liệu nhạy cảm của khách hàng và thông tin bí mật công ty."
-          ]
+          "guidelines": {
+            "0": "Ưu tiên demo có hình, video hoặc link prototype để mọi người góp ý nhanh.",
+            "1": "Gắn tag rõ mục tiêu: nghiên cứu, case study, prompt, automation hoặc launch.",
+            "2": "Tránh chia sẻ dữ liệu nhạy cảm của khách hàng và thông tin bí mật công ty."
+          }
         },
         "learning": {
           "name": "Đi và Học",
@@ -1043,11 +1166,11 @@
           "location": "Cộng đồng học tập Việt Nam",
           "founded": "Thành lập từ tháng 11/2023",
           "tags": ["workshop", "learning", "mentoring"],
-          "guidelines": [
-            "Tài liệu đăng lên cần ghi nguồn để người sau có thể kiểm chứng và học tiếp.",
-            "Khuyến khích chia sẻ note ngắn, tóm tắt key insight sau mỗi workshop.",
-            "Không spam link khóa học hoặc affiliate không liên quan đến nội dung học tập."
-          ]
+          "guidelines": {
+            "0": "Tài liệu đăng lên cần ghi nguồn để người sau có thể kiểm chứng và học tiếp.",
+            "1": "Khuyến khích chia sẻ note ngắn, tóm tắt key insight sau mỗi workshop.",
+            "2": "Không spam link khóa học hoặc affiliate không liên quan đến nội dung học tập."
+          }
         },
         "weekend": {
           "name": "Weekend Escape Club",
@@ -1056,12 +1179,62 @@
           "owner": "Được đề xuất theo sở thích du lịch",
           "location": "Điểm đến nội địa & Đông Nam Á",
           "founded": "Thành lập từ tháng 6/2024",
-          "tags": ["du lịch", "cuối tuần", "homestay"],
-          "guidelines": [
-            "Khi review địa điểm nên ghi chi phí, thời gian đi và lưu ý thực tế.",
-            "Tôn trọng môi trường địa phương, tránh cổ vũ hoạt động ảnh hưởng thiên nhiên.",
-            "Không đăng thông tin săn tour kém uy tín hoặc không rõ nguồn gốc."
-          ]
+          "tags": {
+            "0": "du lịch",
+            "1": "cuối tuần",
+            "2": "homestay"
+          },
+          "joinLabel": "Tham gia ngay",
+          "inviteLabel": "Rủ bạn bè",
+          "guidelines": {
+            "0": "Khi review địa điểm nên ghi chi phí, thời gian đi và lưu ý thực tế.",
+            "1": "Tôn trọng môi trường địa phương, tránh cổ vũ hoạt động ảnh hưởng thiên nhiên.",
+            "2": "Không đăng thông tin săn tour kém uy tín hoặc không rõ nguồn gốc."
+          }
+        }
+      },
+      "pages": {
+        "mocmay": {
+          "name": "Mộc Mây Studio",
+          "summary": "Fanpage giới thiệu nội thất gỗ, concept trang trí nhà ở và các dự án thi công theo phong cách tối giản hiện đại.",
+          "owner": "Trang doanh nghiệp được xác minh",
+          "response": "Thường phản hồi trong 30 phút",
+          "location": "Đà Nẵng · Giao hàng toàn quốc",
+          "founded": "Hoạt động từ tháng 2/2022",
+          "cta": "Nhắn tin",
+          "tags": {
+            "0": "nội thất",
+            "1": "thi công",
+            "2": "gỗ tự nhiên"
+          }
+        },
+        "mobility": {
+          "name": "VNSEEA Mobility Lab",
+          "summary": "Trang cập nhật nghiên cứu, sự kiện và insight về giao thông điện hóa, trạm sạc và hạ tầng di chuyển xanh.",
+          "owner": "Fanpage thương hiệu nội dung",
+          "response": "Phản hồi trong ngày làm việc",
+          "location": "Hà Nội · TP.HCM · Online",
+          "founded": "Khởi chạy từ tháng 5/2024",
+          "cta": "Theo dõi",
+          "tags": {
+            "0": "di động",
+            "1": "xe điện",
+            "2": "nghiên cứu"
+          }
+        },
+        "learning": {
+          "name": "Học Nhanh Mỗi Ngày",
+          "summary": "Fanpage chia sẻ note học tập, lịch workshop và tài liệu ngắn dành cho người đi làm muốn cập nhật kỹ năng liên tục.",
+          "owner": "Trang giáo dục & đào tạo",
+          "response": "Có đội ngũ admin hỗ trợ đều đặn",
+          "location": "Online-first",
+          "founded": "Khởi tạo từ tháng 9/2021",
+          "cta": "Xem khóa học",
+          "tags": {
+            "0": "học tập",
+            "1": "workshop",
+            "2": "sự nghiệp"
+          }
         }
       }
     }

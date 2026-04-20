@@ -279,7 +279,11 @@ export const communityGroupDirectory: CommunityGroupRecord[] = [
     segment: "suggested",
     activityLabel: "community.mock.groups.electric.activity",
     ownerLabel: "community.mock.groups.electric.owner",
-    tags: ["xe điện", "trạm sạc", "review"],
+    tags: [
+      "community.mock.groups.electric.tags.0",
+      "community.mock.groups.electric.tags.1",
+      "community.mock.groups.electric.tags.2",
+    ],
     website: "vnseea.vn/g/cong-dong-xe-dien-viet",
     locationLabel: "community.mock.groups.electric.location",
     foundedLabel: "community.mock.groups.electric.founded",
@@ -305,7 +309,11 @@ export const communityGroupDirectory: CommunityGroupRecord[] = [
     segment: "suggested",
     activityLabel: "community.mock.groups.founder.activity",
     ownerLabel: "community.mock.groups.founder.owner",
-    tags: ["founder", "growth", "networking"],
+    tags: [
+      "community.mock.groups.founder.tags.0",
+      "community.mock.groups.founder.tags.1",
+      "community.mock.groups.founder.tags.2",
+    ],
     website: "vnseea.vn/g/founder-circle-vietnam",
     locationLabel: "community.mock.groups.founder.location",
     foundedLabel: "community.mock.groups.founder.founded",
@@ -331,7 +339,11 @@ export const communityGroupDirectory: CommunityGroupRecord[] = [
     segment: "joined",
     activityLabel: "community.mock.groups.ai.activity",
     ownerLabel: "community.mock.groups.ai.owner",
-    tags: ["AI", "product", "automation"],
+    tags: [
+      "community.mock.groups.ai.tags.0",
+      "community.mock.groups.ai.tags.1",
+      "community.mock.groups.ai.tags.2",
+    ],
     website: "vnseea.vn/g/ai-product-builders",
     locationLabel: "community.mock.groups.ai.location",
     foundedLabel: "community.mock.groups.ai.founded",
@@ -357,7 +369,11 @@ export const communityGroupDirectory: CommunityGroupRecord[] = [
     segment: "joined",
     activityLabel: "community.mock.groups.learning.activity",
     ownerLabel: "community.mock.groups.learning.owner",
-    tags: ["workshop", "learning", "mentoring"],
+    tags: [
+      "community.mock.groups.learning.tags.0",
+      "community.mock.groups.learning.tags.1",
+      "community.mock.groups.learning.tags.2",
+    ],
     website: "vnseea.vn/g/di-va-hoc",
     locationLabel: "community.mock.groups.learning.location",
     foundedLabel: "community.mock.groups.learning.founded",
@@ -383,7 +399,11 @@ export const communityGroupDirectory: CommunityGroupRecord[] = [
     segment: "suggested",
     activityLabel: "community.mock.groups.weekend.activity",
     ownerLabel: "community.mock.groups.weekend.owner",
-    tags: ["du lịch", "cuối tuần", "homestay"],
+    tags: [
+      "community.mock.groups.weekend.tags.0",
+      "community.mock.groups.weekend.tags.1",
+      "community.mock.groups.weekend.tags.2",
+    ],
     website: "vnseea.vn/g/weekend-escape-club",
     locationLabel: "community.mock.groups.weekend.location",
     foundedLabel: "community.mock.groups.weekend.founded",
@@ -401,63 +421,75 @@ export const communityGroupDirectory: CommunityGroupRecord[] = [
 export const communityPageDirectory: CommunityPageRecord[] = [
   {
     id: 1,
-    name: "Mộc Mây Studio",
+    name: "community.mock.pages.mocmay.name",
     slug: "moc-may-studio",
-    summary: "Fanpage giới thiệu nội thất gỗ, concept trang trí nhà ở và các dự án thi công theo phong cách tối giản hiện đại.",
+    summary: "community.mock.pages.mocmay.summary",
     category: "local-business",
     banner: "linear-gradient(135deg,#1f2937_0%,#92400e_42%,#fde68a_100%)",
     accent: "#92400e",
     followers: 18240,
     likes: 21480,
-    ownerLabel: "Trang doanh nghiệp được xác minh",
-    responseLabel: "Thường phản hồi trong 30 phút",
+    ownerLabel: "community.mock.pages.mocmay.owner",
+    responseLabel: "community.mock.pages.mocmay.response",
     website: "vnseea.vn/p/moc-may-studio",
-    locationLabel: "Đà Nẵng · Giao hàng toàn quốc",
-    foundedLabel: "Hoạt động từ tháng 2/2022",
-    ctaLabel: "Nhắn tin",
+    locationLabel: "community.mock.pages.mocmay.location",
+    foundedLabel: "community.mock.pages.mocmay.founded",
+    ctaLabel: "community.mock.pages.mocmay.cta",
     canManage: true,
     directoryTabs: ["suggested", "favorite"],
-    tags: ["noi-that", "thi-cong", "go-tu-nhien"],
+    tags: [
+      "community.mock.pages.mocmay.tags.0",
+      "community.mock.pages.mocmay.tags.1",
+      "community.mock.pages.mocmay.tags.2",
+    ],
   },
   {
     id: 2,
-    name: "VNSEEA Mobility Lab",
+    name: "community.mock.pages.mobility.name",
     slug: "vnseea-mobility-lab",
-    summary: "Trang cập nhật nghiên cứu, sự kiện và insight về giao thông điện hóa, trạm sạc và hạ tầng di chuyển xanh.",
+    summary: "community.mock.pages.mobility.summary",
     category: "brand",
     banner: "linear-gradient(135deg,#0f172a_0%,#1d4ed8_46%,#67e8f9_100%)",
     accent: "#1d4ed8",
     followers: 9640,
     likes: 12110,
-    ownerLabel: "Fanpage thương hiệu nội dung",
-    responseLabel: "Phản hồi trong ngày làm việc",
+    ownerLabel: "community.mock.pages.mobility.owner",
+    responseLabel: "community.mock.pages.mobility.response",
     website: "vnseea.vn/p/vnseea-mobility-lab",
-    locationLabel: "Hà Nội · TP.HCM · Online",
-    foundedLabel: "Khởi chạy từ tháng 5/2024",
-    ctaLabel: "Theo dõi",
+    locationLabel: "community.mock.pages.mobility.location",
+    foundedLabel: "community.mock.pages.mobility.founded",
+    ctaLabel: "community.mock.pages.mobility.cta",
     canManage: true,
     directoryTabs: ["suggested"],
-    tags: ["mobility", "xe-dien", "research"],
+    tags: [
+      "community.mock.pages.mobility.tags.0",
+      "community.mock.pages.mobility.tags.1",
+      "community.mock.pages.mobility.tags.2",
+    ],
   },
   {
     id: 3,
-    name: "Học Nhanh Mỗi Ngày",
+    name: "community.mock.pages.learning.name",
     slug: "hoc-nhanh-moi-ngay",
-    summary: "Fanpage chia sẻ note học tập, lịch workshop và tài liệu ngắn dành cho người đi làm muốn cập nhật kỹ năng liên tục.",
+    summary: "community.mock.pages.learning.summary",
     category: "education",
     banner: "linear-gradient(135deg,#164e63_0%,#0f766e_48%,#bef264_100%)",
     accent: "#0f766e",
     followers: 27890,
     likes: 30420,
-    ownerLabel: "Trang giáo dục & đào tạo",
-    responseLabel: "Có đội ngũ admin hỗ trợ đều đặn",
+    ownerLabel: "community.mock.pages.learning.owner",
+    responseLabel: "community.mock.pages.learning.response",
     website: "vnseea.vn/p/hoc-nhanh-moi-ngay",
-    locationLabel: "Online-first",
-    foundedLabel: "Khởi tạo từ tháng 9/2021",
-    ctaLabel: "Xem khóa học",
+    locationLabel: "community.mock.pages.learning.location",
+    foundedLabel: "community.mock.pages.learning.founded",
+    ctaLabel: "community.mock.pages.learning.cta",
     canManage: false,
     directoryTabs: ["favorite"],
-    tags: ["learning", "workshop", "career"],
+    tags: [
+      "community.mock.pages.learning.tags.0",
+      "community.mock.pages.learning.tags.1",
+      "community.mock.pages.learning.tags.2",
+    ],
   },
 ]
 
@@ -541,15 +573,15 @@ export function getCommunityInitials(name: string, limit = 2) {
 }
 
 export function formatCommunityMemberCount(count: number) {
-  return `${count.toLocaleString("vi-VN")} thành viên`
+  return "community.groups.format.members"
 }
 
 export function formatCommunityFollowerCount(count: number) {
-  return `${count.toLocaleString("vi-VN")} người theo dõi`
+  return "community.pages.format.followers"
 }
 
 export function formatCommunityLikeCount(count: number) {
-  return `${count.toLocaleString("vi-VN")} lượt thích`
+  return "community.pages.format.likes"
 }
 
 export function getCommunityGroupPath(slug: string) {
@@ -603,6 +635,7 @@ export function createCommunitySlug(value: string) {
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "d")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
