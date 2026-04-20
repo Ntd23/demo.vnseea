@@ -11,7 +11,7 @@
             ? 'bg-[#eef2ff] text-[#0000ff] shadow-[0_10px_22px_rgba(0,0,255,0.08)]'
             : 'text-slate-500 hover:bg-[#f8fbff] hover:text-[#243b63]'"
         >
-          {{ tab.label }}
+          {{ $t(tab.label) }}
           <span class="ml-2 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-black text-[#243b63]">
             {{ tab.count }}
           </span>
@@ -20,7 +20,7 @@
 
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div class="w-full sm:w-[280px]">
-          <FormsSearchInput v-model="search" placeholder="Tìm nhóm, chủ đề hoặc URL..." />
+          <FormsSearchInput v-model="search" :placeholder="$t('community.groups.filter.search')" />
         </div>
 
         <NuxtLink
@@ -28,7 +28,7 @@
           class="inline-flex h-12 shrink-0 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
         >
           <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-          Tạo ra
+          {{ $t('community.groups.filter.create') }}
         </NuxtLink>
       </div>
     </div>

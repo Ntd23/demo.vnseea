@@ -2948,5 +2948,1508 @@
       "actionShare": "Share image",
       "defaultTitle": "Lightbox"
     }
+  },
+  "settings": {
+    "seo": {
+      "titleSuffix": "VNSEEA Settings"
+    },
+    "hero": {
+      "auditLabel": "P-34 · Settings",
+      "title": "Settings",
+      "description": "Manage your account, privacy, security, notifications, billing, and professional profile.",
+      "stats": {
+        "subPages": {
+          "label": "Sub-pages",
+          "description": "Settings groups from the audit."
+        },
+        "features": {
+          "label": "Features",
+          "description": "Fields, toggles, lists, and actions."
+        },
+        "api": {
+          "label": "API",
+          "value": "Mock",
+          "description": "Backend settings API not connected yet."
+        }
+      }
+    },
+    "sidebar": {
+      "subPages": "{count} sub-pages",
+      "title": "Settings menu"
+    },
+    "section": {
+      "kind": {
+        "form": "Form",
+        "toggles": "Toggles",
+        "list": "List",
+        "danger": "Danger",
+        "summary": "Summary"
+      },
+      "saveChanges": "Save changes",
+      "dangerMessage": "Danger zone. This action is still mocked and does not call the delete account API yet.",
+      "deleteAccount": "Delete account",
+      "savedState": "Settings save was mocked. No settings API call yet."
+    },
+    "data": {
+      "options": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "countryVietnam": "Vietnam",
+        "countrySingapore": "Singapore",
+        "countryThailand": "Thailand",
+        "countryUnitedStates": "United States",
+        "public": "Public",
+        "friends": "Friends",
+        "onlyMe": "Only me",
+        "allow": "Allow",
+        "hideFromSearch": "Hide from search",
+        "showOnline": "Show online",
+        "alwaysOffline": "Always offline",
+        "hidden": "Hidden",
+        "single": "Single",
+        "dating": "Dating",
+        "married": "Married",
+        "on": "On",
+        "off": "Off",
+        "system": "System default",
+        "themeBlue": "VNSEEA Blue",
+        "themeEmerald": "Emerald",
+        "themeAmber": "Amber",
+        "themeSlate": "Slate",
+        "enable": "Enable",
+        "disable": "Disable"
+      },
+      "pages": {
+        "general": {
+          "label": "General",
+          "description": "Username, email, phone number, and basic account info.",
+          "sections": {
+            "account": {
+              "title": "Account information",
+              "description": "Update the main identity details of your account.",
+              "fields": {
+                "username": "Username",
+                "email": "Email",
+                "phone": "Phone",
+                "birthday": "Birthday",
+                "gender": "Gender",
+                "country": "Country",
+                "website": "Website"
+              },
+              "placeholders": {
+                "username": "username"
+              }
+            }
+          }
+        },
+        "profile": {
+          "label": "Profile",
+          "description": "Bio, work, school, and location.",
+          "sections": {
+            "publicProfile": {
+              "title": "Public profile",
+              "description": "These fields appear on your public profile.",
+              "fields": {
+                "bio": "Bio",
+                "workplace": "Workplace",
+                "school": "School",
+                "relationship": "Relationship",
+                "city": "City",
+                "hometown": "Hometown"
+              },
+              "values": {
+                "bio": "Community builder at VNSEEA.",
+                "school": "University of Economics",
+                "city": "Ho Chi Minh City",
+                "hometown": "Hanoi"
+              }
+            }
+          }
+        },
+        "privacy": {
+          "label": "Privacy",
+          "description": "Control who can see your posts, follow you, and view your online status.",
+          "sections": {
+            "privacyControls": {
+              "title": "Privacy controls",
+              "description": "Mock privacy options before wiring the settings API.",
+              "fields": {
+                "posts": "Who sees posts",
+                "follow": "Who can follow",
+                "search": "Search visibility",
+                "friends": "Who sees friends",
+                "birthdayPrivacy": "Who sees birthday",
+                "onlineStatus": "Online/offline status"
+              }
+            }
+          }
+        },
+        "avatar": {
+          "label": "Avatar",
+          "description": "Upload and crop your avatar.",
+          "sections": {
+            "uploadAvatar": {
+              "title": "Upload & crop avatar",
+              "description": "Choose a new image and mock the crop area.",
+              "fields": {
+                "avatar": "Avatar image"
+              }
+            }
+          }
+        },
+        "design": {
+          "label": "Appearance",
+          "description": "Night mode and theme color.",
+          "sections": {
+            "appearance": {
+              "title": "Appearance settings",
+              "description": "Adjust how the interface appears on your device.",
+              "fields": {
+                "nightMode": "Night mode",
+                "themeColor": "Theme color"
+              }
+            }
+          }
+        },
+        "password": {
+          "label": "Password",
+          "description": "Change your sign-in password.",
+          "sections": {
+            "changePassword": {
+              "title": "Change password",
+              "description": "Enter your current password and new password.",
+              "fields": {
+                "currentPassword": "Current password",
+                "newPassword": "New password",
+                "confirmPassword": "Confirm password"
+              }
+            }
+          }
+        },
+        "twoFactor": {
+          "label": "2FA",
+          "description": "Authenticator, QR code, and backup codes.",
+          "sections": {
+            "authenticator": {
+              "title": "Two-factor authentication",
+              "description": "Enable two-layer security and scan the QR code with an authenticator app.",
+              "items": {
+                "enable": {
+                  "title": "Enable/disable 2FA",
+                  "description": "Current status: disabled.",
+                  "action": "Enable 2FA"
+                },
+                "qr": {
+                  "title": "Authenticator QR code",
+                  "description": "Mock QR placeholder for the authenticator app."
+                },
+                "backup": {
+                  "title": "Backup codes",
+                  "description": "8 backup codes have not been generated yet.",
+                  "action": "Generate new codes"
+                }
+              }
+            }
+          }
+        },
+        "notifications": {
+          "label": "Notifications",
+          "description": "Turn notification types on or off.",
+          "sections": {
+            "inApp": {
+              "title": "In-app notifications",
+              "description": "Likes, comments, follows, messages, mentions, and more.",
+              "toggles": {
+                "likes": { "label": "Likes", "description": "Receive like notifications." },
+                "comments": { "label": "Comments", "description": "Receive comment notifications." },
+                "follows": { "label": "Follows", "description": "Receive follow notifications." },
+                "messages": { "label": "Messages", "description": "Receive message notifications." },
+                "mentions": { "label": "Mentions", "description": "Receive mention notifications." },
+                "shares": { "label": "Shares", "description": "Receive share notifications." },
+                "events": { "label": "Events", "description": "Receive event notifications." },
+                "groups": { "label": "Groups", "description": "Receive group notifications." },
+                "pages": { "label": "Pages", "description": "Receive page notifications." },
+                "marketplace": { "label": "Marketplace", "description": "Receive marketplace notifications." },
+                "jobs": { "label": "Jobs", "description": "Receive job notifications." },
+                "funding": { "label": "Funding", "description": "Receive funding notifications." },
+                "live": { "label": "Live", "description": "Receive live notifications." },
+                "watch": { "label": "Watch", "description": "Receive watch notifications." },
+                "security": { "label": "Security", "description": "Receive security notifications." }
+              }
+            }
+          }
+        },
+        "emailNotifications": {
+          "label": "Email",
+          "description": "Email notification settings.",
+          "sections": {
+            "email": {
+              "title": "Email notifications",
+              "description": "Choose which system emails are allowed.",
+              "toggles": {
+                "newMessage": { "label": "New message email", "description": "Email when a new message arrives." },
+                "mention": { "label": "Mention email", "description": "Email when someone mentions you." },
+                "weeklyDigest": { "label": "Weekly digest", "description": "Weekly activity summary." },
+                "security": { "label": "Security email", "description": "Sign-in and security alerts." }
+              }
+            }
+          }
+        },
+        "socialLinks": {
+          "label": "Social links",
+          "description": "Facebook, Twitter, LinkedIn, Instagram, and YouTube.",
+          "sections": {
+            "socialLinks": {
+              "title": "Social links",
+              "description": "The URLs displayed on your profile.",
+              "fields": {
+                "facebook": "Facebook URL",
+                "twitter": "Twitter URL",
+                "linkedin": "LinkedIn URL",
+                "instagram": "Instagram URL",
+                "youtube": "YouTube URL"
+              },
+              "placeholders": {
+                "facebook": "https://facebook.com/username",
+                "twitter": "https://twitter.com/username",
+                "linkedin": "https://linkedin.com/username",
+                "instagram": "https://instagram.com/username",
+                "youtube": "https://youtube.com/username"
+              }
+            }
+          }
+        },
+        "blockedUsers": {
+          "label": "Blocked users",
+          "description": "Blocked list and unblock actions.",
+          "sections": {
+            "blockedUsers": {
+              "title": "Blocked users",
+              "description": "Manage blocked users.",
+              "items": {
+                "spamAccount": { "description": "Blocked 2 days ago", "action": "Unblock" },
+                "oldBot": { "description": "Blocked 1 month ago", "action": "Unblock" }
+              }
+            }
+          }
+        },
+        "sessions": {
+          "label": "Sessions",
+          "description": "Active sessions and termination controls.",
+          "sections": {
+            "activeSessions": {
+              "title": "Active sessions",
+              "description": "Review devices currently signed in.",
+              "items": {
+                "chrome": {
+                  "title": "Chrome · Windows",
+                  "description": "127.0.0.1 · current",
+                  "meta": "Active now",
+                  "action": "Keep session"
+                },
+                "safari": {
+                  "title": "Safari · iPhone",
+                  "description": "Ho Chi Minh City · 2 days ago",
+                  "meta": "Mobile",
+                  "action": "Terminate"
+                }
+              }
+            }
+          }
+        },
+        "verification": {
+          "label": "Verification",
+          "description": "Upload documents and send a verification request.",
+          "sections": {
+            "request": {
+              "title": "Verification request",
+              "description": "Upload documents and explain why you need verification.",
+              "fields": {
+                "documents": "Document upload",
+                "note": "Request note"
+              }
+            }
+          }
+        },
+        "deleteAccount": {
+          "label": "Delete account",
+          "description": "Confirm your password and delete the account.",
+          "sections": {
+            "deleteAccount": {
+              "title": "Delete account",
+              "description": "A dangerous action, currently mocked only.",
+              "fields": {
+                "passwordConfirm": "Password confirm"
+              },
+              "action": "Delete account"
+            }
+          }
+        },
+        "payments": {
+          "label": "Payments",
+          "description": "Payment methods management.",
+          "sections": {
+            "paymentMethods": {
+              "title": "Payment methods",
+              "description": "Manage your cards and wallet payment methods.",
+              "items": {
+                "visa": {
+                  "title": "Visa ending 4242",
+                  "description": "Default payment method",
+                  "meta": "Default",
+                  "action": "Edit"
+                },
+                "wallet": {
+                  "title": "VNSEEA Wallet",
+                  "description": "Mock balance: VND 9,999,999",
+                  "meta": "Wallet",
+                  "action": "Manage"
+                }
+              }
+            }
+          }
+        },
+        "monetization": {
+          "label": "Monetization",
+          "description": "Plan, price, and enable or disable state.",
+          "sections": {
+            "plan": {
+              "title": "Monetization plan",
+              "description": "Create a paid content plan.",
+              "fields": {
+                "planName": "Plan name",
+                "price": "Price",
+                "enabled": "Enable/disable"
+              }
+            }
+          }
+        },
+        "invitationLinks": {
+          "label": "Invitations",
+          "description": "Generate invite links, copy links, and review invitees.",
+          "sections": {
+            "links": {
+              "title": "Invitation links",
+              "description": "Create and monitor invite links.",
+              "items": {
+                "link": {
+                  "description": "12 people joined",
+                  "meta": "Active",
+                  "action": "Copy link"
+                },
+                "invitees": {
+                  "title": "Invitees",
+                  "description": "Hoangne, Dung1, Nicolas",
+                  "action": "View invitees"
+                }
+              }
+            }
+          }
+        },
+        "affiliates": {
+          "label": "Affiliates",
+          "description": "Referral link and earnings dashboard.",
+          "sections": {
+            "dashboard": {
+              "title": "Affiliate dashboard",
+              "description": "Track referrals and revenue.",
+              "items": {
+                "referralLink": {
+                  "title": "Referral link",
+                  "action": "Copy"
+                },
+                "earnings": {
+                  "title": "Earnings",
+                  "meta": "This month"
+                },
+                "referrals": {
+                  "title": "Referrals",
+                  "description": "42 signups"
+                }
+              }
+            }
+          }
+        },
+        "myInfo": {
+          "label": "My data",
+          "description": "Download personal data.",
+          "sections": {
+            "myInfo": {
+              "title": "My info",
+              "description": "Download personal data as an archive.",
+              "items": {
+                "download": {
+                  "title": "Download personal data",
+                  "description": "Includes profile, posts, media, and message metadata.",
+                  "action": "Request archive"
+                }
+              }
+            }
+          }
+        },
+        "myPoints": {
+          "label": "My points",
+          "description": "Points balance and history.",
+          "sections": {
+            "myPoints": {
+              "title": "My points",
+              "description": "Points earned from community activity.",
+              "items": {
+                "balance": {
+                  "title": "50 points",
+                  "description": "Current balance",
+                  "meta": "Balance"
+                },
+                "comment": {
+                  "description": "Helpful comment",
+                  "meta": "Today"
+                },
+                "event": {
+                  "description": "Joined an event",
+                  "meta": "This week"
+                }
+              }
+            }
+          }
+        },
+        "addresses": {
+          "label": "Addresses",
+          "description": "Add or edit shipping addresses.",
+          "sections": {
+            "shippingAddresses": {
+              "title": "Shipping addresses",
+              "description": "Delivery addresses for the marketplace.",
+              "fields": {
+                "fullName": "Full name",
+                "phone": "Phone",
+                "address": "Address"
+              },
+              "values": {
+                "address": "District 1, Ho Chi Minh City"
+              }
+            }
+          }
+        },
+        "career": {
+          "label": "LinkedIn mode",
+          "description": "Experience, certifications, and projects.",
+          "sections": {
+            "profile": {
+              "title": "Experience + Certifications + Projects",
+              "description": "Expand your professional profile.",
+              "items": {
+                "workExperience": {
+                  "title": "Work experience",
+                  "description": "Community Manager · VNSEEA",
+                  "action": "Add work experience"
+                },
+                "certifications": {
+                  "title": "Certifications",
+                  "description": "Product Growth Certificate",
+                  "action": "Add certification"
+                },
+                "projects": {
+                  "title": "Projects",
+                  "description": "VNSEEA UI migration",
+                  "action": "Add project"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "checkout": {
+    "page": {
+      "title": "Checkout | VNSEEA",
+      "description": "Complete your marketplace checkout with the shipping address form, cart, wallet balance, and total payment.",
+      "layoutTitle": "Checkout Procedure",
+      "layoutDescription": "Fill in the delivery address, verify the cart, and choose a payment method before confirming your order.",
+      "eyebrow": "P-14 · Checkout"
+    },
+    "summary": {
+      "title": "Shopping Cart",
+      "items": "{count} item",
+      "itemsPlural": "{count} different items",
+      "backToStore": "Back to store",
+      "insufficientBalance": "You do not have enough balance to make a purchase, please top up your wallet before continuing with this method.",
+      "subtotal": "Subtotal",
+      "shippingFee": "Shipping Fee",
+      "free": "Free",
+      "totalPayment": "Total Payment",
+      "walletBalance": "Wallet has {balance}. You need to top up {amount} more to continue the purchase.",
+      "walletHint": "Current wallet balance is {balance}. This UI follows the internal mock checkout using the internal wallet.",
+      "addFunds": "Top up wallet",
+      "buy": "Buy",
+      "emptyCart": "Your cart is empty",
+      "emptyCartHint": "Please go back to the marketplace to select more products before continuing checkout.",
+      "backToMarketplace": "Back to marketplace",
+      "qty": "Qty",
+      "marketplace": "Marketplace"
+    },
+    "shippingForm": {
+      "shippingAddress": "Shipping Address",
+      "savedAddressTitle": "Saved address ready",
+      "noAddressTitle": "No shipping address yet",
+      "savedAddressDesc": "The order will prioritize this address, you can still modify the form below.",
+      "noAddressDesc": "Quickly fill in the form below so the system has enough delivery information for this order.",
+      "recipient": "Recipient",
+      "postalCodePrefix": "Code",
+      "addAddressHint": "Please add a new address below to continue.",
+      "quickTip": "Quick Tip",
+      "fieldsRemaining": "Fill in all {count} fields to enable the save address button.",
+      "shippingInfoPersist": "Shipping information will be kept for further checkout steps.",
+      "formTitle": "Delivery Form",
+      "addAddressTitle": "Add new address",
+      "formDesc": "The form has been grouped by info clusters for faster desktop operation while remaining compact on mobile.",
+      "fieldsCount": "{filled}/{total} fields filled",
+      "recipientInfo": "Recipient Information",
+      "recipientInfoDesc": "Enter name and phone number for easier courier contact.",
+      "fullName": "Name",
+      "fullNamePlaceholder": "Enter recipient name",
+      "phone": "Phone",
+      "phonePlaceholder": "Phone number",
+      "region": "Shipping Region",
+      "regionDesc": "Fill in location for precise delivery point aggregation.",
+      "country": "Country",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "pointDetail": "Detail Delivery Point",
+      "pointDetailDesc": "Clearly state house number, street name, ward/commune to avoid failed delivery.",
+      "streetAddress": "Street Address",
+      "streetAddressPlaceholder": "House number, street name, ward/commune...",
+      "quickPreview": "Quick Preview",
+      "noRecipientPreview": "No recipient name yet",
+      "mockWarning": "The order will use the exact information you save here. This is a mock UI so it hasn't sent real data to API `address.php`.",
+      "saveAddress": "Save address"
+    }
+  },
+  "orders": {
+    "page": {
+      "title": "My Orders | VNSEEA",
+      "description": "Track your purchases, shipping status, and overview of your marketplace orders on VNSEEA.",
+      "layoutTitle": "My Orders",
+      "layoutDescription": "Track marketplace purchases, check delivery status, and reopen order details when needed.",
+      "eyebrow": "P-15 · Orders",
+      "detailEyebrow": "P-16 · Order Details",
+      "detailTitle": "Order Details #{id}",
+      "detailFallbackTitle": "Order Details",
+      "detailDescription": "Track order status, check delivery information, and review all products in the transaction.",
+      "customerEyebrow": "P-17 · Customer Orders",
+      "customerTitle": "Customer Order #{id}",
+      "customerFallbackTitle": "Customer Order Details",
+      "customerDescription": "Follow a specific sale, check buyer information, and prepare shipment update steps."
+    },
+    "status": {
+      "pending": {
+        "label": "Pending",
+        "description": "The order has just been placed and is waiting for shop confirmation."
+      },
+      "shipping": {
+        "label": "Shipping",
+        "description": "The order has left the warehouse and is on its way to you."
+      },
+      "delivered": {
+        "label": "Completed",
+        "description": "The order has been delivered successfully and can be reviewed."
+      },
+      "cancelled": {
+        "label": "Cancelled",
+        "description": "Orders that were cancelled or refunded to your internal wallet."
+      }
+    },
+    "sidebar": {
+      "overview": "Overview",
+      "trackRecent": "Track Recent",
+      "viewStatus": "View Status",
+      "noRecent": "No recent orders to track.",
+      "currentFilter": "Current Filter",
+      "filterHint": "Showing {count} orders.",
+      "flowHintReal": "Data updated from VNSEEA marketplace system.",
+      "flowHintMarketplace": "System automatically syncs shipping status from partners.",
+      "continueShopping": "Continue Shopping",
+      "filter": "Current Filter",
+      "timeline": "Order Timeline",
+      "help": "Need help?",
+      "helpAction": "Please contact VNSEEA buyer support center.",
+      "tasks": "Tasks",
+      "tasksAction": "Go back to the order list to open the order you want to track.",
+      "sellerTasksAction": "Go back to the seller area to open the customer order you want to process.",
+      "backToOrders": "Back to orders",
+      "backToProducts": "Back to my products",
+      "coordination": "Sales Coordination",
+      "payoutShop": "Payout Shop",
+      "confirmOrder": "Confirm & Create Label",
+      "markDelivered": "Mark as Delivered",
+      "viewPayout": "View Order Payout",
+      "viewCancelled": "View Cancelled Record"
+    },
+    "steps": {
+      "placed": {
+        "label": "Placed",
+        "description": "You have successfully submitted the purchase request."
+      },
+      "processing": {
+        "label": "Shop Processing",
+        "description": "The seller is preparing and confirming your order."
+      },
+      "shipping": {
+        "label": "Shipping",
+        "description": "The order has been handed over to the shipping unit."
+      },
+      "completed": {
+        "label": "Completed",
+        "description": "You have received the goods and the order is successfully closed."
+      }
+    },
+    "card": {
+      "items": "{count} items",
+      "itemLabel": "Item",
+      "qty": "Quantity: {count}",
+      "qtyCompact": "x{count}",
+      "total": "Total {total}",
+      "orderProgress": "Order Progress",
+      "viewDetail": "View Detail",
+      "contactShop": "Contact Shop",
+      "viewMore": "View More",
+      "chooseOther": "Choose Other",
+      "contactBuyer": "Contact Buyer",
+      "shippingAddress": "Shipping Address",
+      "orderedFrom": "Order from {seller} • {price}",
+      "productsSummary": "{count} products ordered",
+      "productsInOrder": "Products in Order",
+      "customerProducts": "Customer Products",
+      "productsRemaining": "{count} products to process",
+      "belongsToStore": "From store {store} • Unit price {price}",
+      "contactBuyer": "Order from buyer {buyer}"
+    },
+    "filter": {
+      "title": "Filter Orders",
+      "placeholder": "Search order ID, shop...",
+      "matched": "{count} matched orders",
+      "current": "Showing {label} orders",
+      "all": "All"
+    },
+    "summary": {
+      "shippingFee": "Shipping Fee",
+      "free": "Free",
+      "subtotal": "Subtotal",
+      "discount": "Discount",
+      "total": "Total",
+      "totalOrder": "Total Order",
+      "totalPayment": "Payment"
+    },
+    "detail": {
+      "recipient": "Recipient",
+      "shippingProvider": "Shipping Provider",
+      "trackingCodeLabel": "Tracking Code: {code}",
+      "estimatedProcess": "Estimated Processing",
+      "deliveryAndNotes": "Delivery & Notes",
+      "orderNote": "Order Note",
+      "noNote": "This order has no additional notes.",
+      "notFound": "Order not found",
+      "notFoundDesc": "This order code does not exist in the current mock data. Please go back to the order list to select another one.",
+      "sellerNotFound": "Customer order not found",
+      "sellerNotFoundDesc": "This order ID does not exist in current seller mock data. Go back to products to open another.",
+      "buyer": "Buyer",
+      "payout": "Payout",
+      "buyerAndNotes": "Buyer & Notes",
+      "estimatedWindow": "Estimated Window",
+      "buyerNote": "Buyer Note",
+      "noBuyerNote": "The customer left no additional notes.",
+      "internalNote": "Internal Note",
+      "noInternalNote": "No internal notes for this order yet.",
+      "operating": "Sales Operations",
+      "checklist": "Checklist processing & status update",
+      "taskStatus": {
+        "done": "Done",
+        "pending": "Pending"
+      },
+      "cancelledWarning": "The order was cancelled so you cannot continue to update `Shipped` or `Completed`. Please save notes and close the refund file.",
+      "shippedLabel": "Shipped",
+      "shippedTitle": "Handed over to shipping",
+      "shippedDesc": "Use when the order has been labeled and handed over to the shipping unit.",
+      "completedLabel": "Completed",
+      "completedTitle": "Successfully delivered",
+      "completedDesc": "Use when the customer has received all goods and the order is eligible for payout closing."
+    },
+    "payment": {
+      "paid": "Paid",
+      "wallet": "VNSEEA Wallet",
+      "refunded": "Refunded to VNSEEA Wallet",
+      "reference": "Reference: {ref}"
+    },
+    "payout": {
+      "queued": {
+        "label": "Queued",
+        "description": "Funds are on hold until the order is completed."
+      },
+      "processing": {
+        "label": "Processing",
+        "description": "Payout is being processed and transferred to shop wallet."
+      },
+      "completed": {
+        "label": "Completed",
+        "description": "Funds have been added to the shop's available balance."
+      },
+      "cancelled": {
+        "label": "Cancelled",
+        "description": "The payout has been cancelled due to order error/return."
+      }
+    },
+    "empty": {
+      "noMatchedTitle": "No matching orders found",
+      "noMatchedDesc": "Try changing filters or search keywords. When you buy a new product, orders will appear here."
+    },
+    "mock": {
+      "timeline": {
+        "waiting": "Waiting",
+        "ongoing": "Ongoing",
+        "notApplicable": "N/A",
+        "notCompleted": "Wait for completion",
+        "created": { "label": "Order created", "description": "The order has been recorded and is waiting for shop confirmation." },
+        "confirmed": { "label": "Shop confirmed", "description": "The shop will check inventory and prepare your order." },
+        "shipping": { "label": "Handed over to shipping", "description": "The order will be handed over to the shipping unit after confirmation." },
+        "delivered": { "label": "Delivered successfully", "description": "You will receive a notification when the order is completed." },
+        "shipping_active": { "label": "Shipping", "description": "The order is on the delivery truck and will arrive today." },
+        "cancelled": { "label": "Cancellation request", "description": "The buyer submitted a cancellation request before confirmation." },
+        "refunded": { "label": "Refunded & closed", "description": "The funds have been refunded to the internal VNSEEA wallet." }
+      },
+      "tasks": {
+        "payment": { "label": "Verify payment", "description": "Internal wallet has recorded success or funds have reached the system." },
+        "stock": { "label": "Check inventory", "description": "Ensure sufficient quantity, accessories, and packaging condition." },
+        "packing": { "label": "Pack & Print label", "description": "Must be completed before handing over to the shipping unit." },
+        "handoff": { "label": "Handover to shipper", "description": "The system will open payout after the order leaves the warehouse." }
+      },
+      "delivery": {
+        "expected2h": "Shop expected to confirm in 2 hours",
+        "expectedToday": "Expected delivery today before 17:30",
+        "deliveredDate": "Successfully delivered on 13/04/2026",
+        "cancelledRequest": "Order cancelled at buyer's request",
+        "confirmBefore1pm": "Need to confirm before 1:00 PM today",
+        "leftWarehouse": "Left warehouse, expected delivery today",
+        "receivedDate": "Customer received on 13/04/2026",
+        "cancelledBeforeHandoff": "Cancelled before handing over to shipping"
+      },
+      "payout": {
+        "confirm24h": "Payout 24h after customer confirmation",
+        "window24h": "Payout in 24-48 hours after successful delivery",
+        "depositedDate": "Credited to shop funds on 14/04/2026",
+        "noPayoutCancelled": "No payout due to refund/cancellation"
+      },
+      "items": {
+        "speaker": "Mini bluetooth speaker",
+        "headphones": "Noise cancelling headphones",
+        "cashews": "Roasted salted cashews 500g",
+        "honey": "Pure wild honey",
+        "table": "Oak coffee table",
+        "haircare": "Yaskey hair care combo",
+        "consoleTable": "Oak console table",
+        "wallMount": "Wall mount accessory kit",
+        "chargerCombo": "Fast charging accessory combo",
+        "workshopLeadership": "Leadership workshop documentation"
+      }
+    }
+  },
+  "community": {
+    "pagesDirectory": {
+      "title": "Pages",
+      "desc": "Manage your followed fanpages, see suitable suggestions, and quickly open the new page creation flow in the same area.",
+      "emptyMineTitle": "No pages to display",
+      "emptyMineDesc": "You haven't created any fanpages on this account yet. Start with a new page to introduce your brand, service, or content channel.",
+      "createFirst": "Create your first page",
+      "emptyOtherTitle": "No matching fanpages",
+      "emptyOtherDesc": "This tab currently has no mock data. You can switch to another tab or create a new page to get started.",
+      "actionSuggested": "Explore fanpage",
+      "actionFavorite": "View updates",
+      "actionMine": "View fanpage",
+      "seoSuggestedTitle": "Suggested pages",
+      "seoFavoriteTitle": "Favorite pages",
+      "seoMineTitle": "Pages",
+      "seoSuggestedDesc": "List of suggested fanpages on VNSEEA.",
+      "seoFavoriteDesc": "List of favorite fanpages on VNSEEA.",
+      "seoMineDesc": "Fanpage directory on VNSEEA with my pages, suggested pages, and favorite pages."
+    },
+    "creation": {
+      "group": {
+        "eyebrow": "P-18 · Community",
+        "title": "Create new group",
+        "description": "Set up a new community for members to exchange, share content, and connect around a common topic.",
+        "highlights": ["Custom URL", "Privacy control", "Ready to invite members"],
+        "nameLabel": "Group name",
+        "namePlaceholder": "Example: Central Auto Community",
+        "slugPlaceholder": "central-auto-community",
+        "privacyLabel": "Group type",
+        "categoryLabel": "Category"
+      },
+      "page": {
+        "eyebrow": "P-21 · Fanpage",
+        "title": "Create new page",
+        "description": "Create a fanpage for your brand, store, professional, or content project to start posting, receiving followers, and building a public presence.",
+        "highlights": ["Public from the start", "Brand URL", "Ready for fanpage profile"],
+        "nameLabel": "Page name",
+        "namePlaceholder": "Example: Moc May Furniture Studio",
+        "slugPlaceholder": "moc-may-furniture-studio",
+        "categoryLabel": "Page type",
+        "submitLabel": "Create page",
+        "identitySectionLabel": "Fanpage identity",
+        "identitySectionTitle": "Short, easy to remember, and identifiable page name",
+        "identitySectionBadge": "Good for search, sharing, and public profile",
+        "identityHint": "Name should match the brand, service, or main persona",
+        "descriptionSectionLabel": "Fanpage introduction",
+        "descriptionSectionTitle": "Let followers know what you are offering",
+        "descriptionHint": "Tip: specify who the brand is, what target group it serves, and what main content you will post.",
+        "configurationSectionLabel": "Fanpage classification",
+        "configurationSectionTitle": "Choose a category for the system to target the right audience",
+        "actionDescription": "Once completed, you can add a cover, avatar, CTA, contact info, and your first fanpage welcome post.",
+        "nextSteps": {
+          "step1Title": "Complete fanpage profile",
+          "step1Desc": "Add a cover, avatar, featured intro, and contact information to make the page look more trustworthy.",
+          "step2Title": "Choose the right CTA",
+          "step2Desc": "Depending on your goal, you can enable the message, call, view store, or follow button.",
+          "step3Title": "Post first introduction",
+          "step3Desc": "Pin an initial post to let newcomers know what you offer and how to interact with the fanpage."
+        },
+        "seoTitle": "Create new page",
+        "seoDesc": "Create a new fanpage on VNSEEA with a name, URL, description, and category, ready for the public page flow."
+      },
+      "common": {
+        "entityLabelGroup": "group",
+        "entityLabelPage": "page",
+        "basicSetup": "Basic setup",
+        "fillInfo": "Fill in {entity} information",
+        "fillDesc": "Complete the name, URL, description, and category to get your new {entity} ready to appear on VNSEEA.",
+        "completionStatus": "{count}/{total} key items ready",
+        "urlSuggested": "URL suggestion",
+        "urlDefault": "your-name",
+        "useSuggestion": "Use suggestion",
+        "charCount": "{count} characters",
+        "action": "Actions",
+        "create": "Create",
+        "back": "Back",
+        "identitySection": "{entity} Identity",
+        "identityTitle": "Concise name and memorable URL",
+        "identityBadge": "Displays beautifully in search and sharing",
+        "identityHint": "Memorable, short, and on topic",
+        "identityReady": "Name is clear enough",
+        "introSection": "Introduction {entity}",
+        "introTitleGroup": "Clearly describe the goal and target members",
+        "introTitlePage": "Clearly describe the goal and target followers",
+        "introHint": "Tip: specify who the {entity} is for, what the main content is, and the most prominent difference.",
+        "configLabelDisplay": "Display configuration",
+        "configLabelContent": "Content classification",
+        "configTitleGroup": "Choose reach and appropriate content group",
+        "configTitlePage": "Choose the category closest to the page main content",
+        "finishHint": "When finished, you can still go back to edit the cover image, description, and {extra}.",
+        "finishExtraGroup": "admin rights",
+        "finishExtraPage": "contact information",
+        "previewTitle": "{entity} name will appear here",
+        "previewUrlDefault": "your-slug-path",
+        "previewDescDefault": "Your new {entity} will have a short description so others can understand the goal, topic, and how to participate.",
+        "noPrivacy": "No display selected",
+        "privacyDescDefault": "This setting determines who can find and view content in the {entity}.",
+        "noCategory": "No category selected",
+        "categoryDescDefault": "Please choose the category closest to the main topic of the {entity}.",
+        "quickFill": "Fill in 1 minute",
+        "editLater": "Can be edited later",
+        "urlLabel": "URL Path",
+        "descriptionLabel": "Description",
+        "categoryLabel": "Category"
+      },
+      "insights": {
+        "preview": "Preview",
+        "readiness": "Readiness",
+        "completionStatus": "{count}/{total} items completed",
+        "privacy": "Visibility rights",
+        "afterCreation": "After creation",
+        "noPrivacy": "No display selected",
+        "privacyDescDefault": "Please choose visibility rights to control who can find and view group content.",
+        "finishTitle": "Complete {entity}",
+        "finishDesc": "You can add a cover, avatar, and featured information right after creating {entity}.",
+        "inviteTitle": "Invite first people",
+        "inviteDescGroup": "Start with a small group to test the discussion rhythm and initial content.",
+        "inviteDescPage": "Pull the first follows from your customers, friends, or existing community.",
+        "introPostTitle": "Post introductory message",
+        "introPostDesc": "Pin an opening post so newcomers know what you're sharing and where to start."
+      },
+      "readiness": {
+        "nameLabel": "Clear {entity} name",
+        "nameDesc": "A concise name helps viewers recognize the {entity} theme immediately.",
+        "urlLabel": "Custom URL",
+        "urlDesc": "A clean path makes sharing {entity} easier.",
+        "descLabel": "Detailed description",
+        "descDesc": "Explain who {entity} is for and what the content will focus on.",
+        "categoryLabel": "Appropriate category",
+        "categoryDesc": "{entity} will appear in a better context when the right category is chosen.",
+        "privacyLabel": "Display type selected",
+        "privacyDesc": "This setting directly affects who can find and view {entity}."
+      }
+    },
+    "cta": {
+      "message": { "label": "Message", "description": "Suitable when you want to draw viewers to inbox for direct consultation." },
+      "follow": { "label": "Follow", "description": "Good for content fanpages, brands, or periodic update channels." },
+      "catalog": { "label": "View catalog", "description": "Used for pages with product catalogs, services, or featured collections." },
+      "booking": { "label": "Book now", "description": "Suitable for studios, experts, classes, or services that need to close scheduled slots." },
+      "call": { "label": "Call now", "description": "Suitable for local businesses or teams that need quick responses." }
+    },
+    "tabs": {
+      "groups": {
+        "mine": "My groups",
+        "suggested": "Suggested groups",
+        "joined": "Joined groups"
+      },
+      "pages": {
+        "mine": "My pages",
+        "suggested": "Suggested pages",
+        "favorite": "Favorite pages"
+      }
+    },
+    "privacy": {
+      "public": { "label": "Public", "description": "Anyone can find the group and view basic content." },
+      "private": { "label": "Private", "description": "Group is publicly visible but only members can view posts." },
+      "secret": { "label": "Secret", "description": "Only invited people can see and join the group." }
+    },
+    "categories": {
+      "auto": { "label": "Auto & Vehicles", "description": "For discussions on new cars, maintenance, reviews, and accessories." },
+      "business": { "label": "Business", "description": "Focus on collaboration, sales, management, and business development." },
+      "technology": { "label": "Technology", "description": "Suitable for communities interested in software, AI, devices, and programming." },
+      "education": { "label": "Education", "description": "Share knowledge, study materials, workshops, and mentoring." },
+      "travel": { "label": "Travel", "description": "Used to organize trips, share schedules, and practical experiences." },
+      "marketplace": { "label": "Marketplace", "description": "Suitable for groups exchanging products, deals, and group buying needs." },
+      "local-business": { "label": "Local Business", "description": "Suitable for shops, studios, eateries, and brands operating locally." },
+      "creator": { "label": "Creator & Professional", "description": "For KOLs, experts, coaches, or people building personal brands." },
+      "brand": { "label": "Brand & Product", "description": "For fanpages introduced products, campaigns, deals, and brand updates." },
+      "organization": { "label": "Organization & Community", "description": "For organizations, clubs, social projects, and community programs." },
+      "service": { "label": "Professional Service", "description": "Suitable for agencies, freelancers, service studios, and consulting teams." }
+    },
+    "groups": {
+      "hub": "Community Hub",
+      "title": "Groups",
+      "titleSuggested": "Suggested Groups",
+      "titleJoined": "Joined Groups",
+      "descDefault": "Manage the groups you follow, see suggestions based on your interests, and quickly start a new community creation flow in the same area.",
+      "descSuggested": "Discover communities suggested based on your interests, categories you care about, and recent activity in the VNSEEA ecosystem.",
+      "descJoined": "Return to the groups you have joined to follow new updates, upcoming events, and ongoing discussions.",
+      "stats": {
+        "suggested": "Suggested",
+        "joined": "Joined",
+        "status": "Status"
+      },
+      "filter": {
+        "search": "Search groups, topics, or URL...",
+        "create": "Create"
+      },
+      "action": {
+        "createNew": "Create new group",
+        "createFirst": "Create first group",
+        "explore": "Explore group",
+        "viewUpdates": "View updates",
+        "viewGroup": "View group"
+      },
+      "empty": {
+        "mineTitle": "No groups to display",
+        "mineDesc": "You haven't created or followed any groups in this account yet. Create a new group to start gathering members, posts, and community activities.",
+        "noMatchTitle": "No matching groups found",
+        "noMatchDesc": "Try changing the search keyword or switching to another tab to see more suitable communities."
+      },
+      "status": {
+        "none": "No groups yet",
+        "suggestedCount": "{count} communities waiting for you to discover",
+        "joinedCount": "{count} active communities"
+      },
+      "hint": {
+        "mine": "This list shows groups you created or manage. Currently, this account has no communities.",
+        "suggested": "Groups suggested based on your interests, recent activity, and existing network.",
+        "joined": "These are the communities you have joined, useful for returning to follow content and new updates."
+      },
+      "card": {
+        "activity": "Activity",
+        "context": "Context",
+        "privacyFallback": "Group",
+        "privacyHint": "Privacy settings currently applied to this group.",
+        "noCategory": "Uncategorized"
+      },
+      "format": {
+        "members": "{count} members",
+        "followers": "{count} followers",
+        "likes": "{count} likes",
+        "online": "{count} online"
+      },
+      "post": {
+        "role": "{group} · {role}",
+        "time": {
+          "minutes": "{count}m ago",
+          "hours": "{count}h ago"
+        },
+        "text": {
+          "pinned": "In {group}, everyone is discussing the topic {topic} very actively. This is a pinned post to quickly remind you to include real context for better quality feedback.",
+          "summary": "Quick summary for this week of {group}: {activity}. New members can read this thread to understand hot topics and rules before posting for the first time.",
+          "detail": "A topic of interest in {group}: practical experience, lessons learned, and the best references for tag #{topic}."
+        }
+      }
+    },
+    "pages": {
+      "format": {
+        "followers": "{count} followers",
+        "likes": "{count} likes"
+      }
+    },
+    "search": {
+      "seoTitle": "Search | VNSEEA",
+      "seoTitleQuery": "Search \"{query}\" | VNSEEA",
+      "seoDesc": "Search aggregate page for users, pages, groups and posts on VNSEEA.",
+      "seoDescQuery": "Look up users, pages, groups and posts related to {query} on VNSEEA.",
+      "emptyValue": {
+        "title": "No matching results found",
+        "desc": "No items match the keyword \"{keyword}\". Try changing the result type, rewriting, or selecting another suggestion."
+      },
+      "emptyState": {
+        "title": "What are you looking for?",
+        "desc": "Enter a keyword above to find users, pages, groups, or posts. You can also start with the quick suggestions appearing in the filter."
+      },
+      "clearFilters": "Clear filters",
+      "tryKeyword": "Try {keyword}",
+      "controls": {
+        "eyebrow": "Search Hub",
+        "title": "Discover users, pages, groups, and posts",
+        "desc": "Search by keyword, filter by result type, and quickly switch between datasets mathematically available in VNSEEA's mock social graph.",
+        "keywordParams": {
+          "label": "Keyword",
+          "placeholder": "Search for users, pages, groups, posts, or #hashtags"
+        },
+        "typeLabel": "Result type",
+        "sortLabel": "Sort by",
+        "submit": "Search",
+        "quickSuggestions": "Quick suggestions"
+      },
+      "results": {
+        "label": "Results",
+        "headingSingle": "1 result in {type}",
+        "headingMultiple": "{count} results in {type}",
+        "descEmpty": "Results will appear here when you enter a keyword.",
+        "descAll": "You are viewing an aggregate of all result types for \"{keyword}\". Select individual tabs if you want to dive into a specific dataset.",
+        "descSpecific": "The list below has been filtered within {type} for the keyword \"{keyword}\".",
+        "showAllTypes": "Show all result types",
+        "viewAllOfSpecific": "View all {count} results"
+      },
+      "summary": {
+        "total": {
+          "label": "Total Results",
+          "descEmpty": "Number of items currently in mock data.",
+          "descQuery": "Results matching the keyword \"{keyword}\"."
+        },
+        "users": {
+          "label": "Users",
+          "desc": "Contacts, connection suggestions, and community members."
+        },
+        "communities": {
+          "label": "Communities",
+          "desc": "Total pages and groups matching the current filter."
+        },
+        "posts": {
+          "label": "Posts",
+          "desc": "Discussions and content related to the keyword."
+        }
+      },
+      "tabs": {
+        "all": {
+          "label": "All",
+          "desc": "Combine users, pages, groups, and posts."
+        },
+        "users": {
+          "label": "Users",
+          "desc": "Find members, contacts, and connection suggestions."
+        },
+        "pages": {
+          "label": "Pages",
+          "desc": "Find fanpages, brands, and content communities."
+        },
+        "groups": {
+          "label": "Groups",
+          "desc": "Discover active communities in the ecosystem."
+        },
+        "posts": {
+          "label": "Posts",
+          "desc": "Find discussions, recaps, and latest updates."
+        }
+      },
+      "types": {
+        "all": "All results",
+        "users": "Users",
+        "pages": "Pages",
+        "groups": "Groups",
+        "posts": "Posts"
+      },
+      "sorts": {
+        "relevance": "Most relevant",
+        "popular": "Popular",
+        "recent": "Recently updated"
+      },
+      "footer": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact Us",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Use",
+        "blog": "Blog",
+        "developers": "Developers",
+        "language": "Language"
+      },
+      "mock": {
+        "badge": {
+          "online": "Online",
+          "suggested": "Suggested",
+          "joined": "Joined",
+          "managed": "Managed by you",
+          "member": "In group",
+          "public": "Public",
+          "private": "Private"
+        },
+        "metrics": {
+          "canChat": "Available to chat now",
+          "inContacts": "In your contacts",
+          "mutualFriends": "{count} mutual friends",
+          "quickResponse": "Quick response via chat",
+          "recentContact": "Recent contact",
+          "activeInGroup": "Active in group",
+          "followers": "{count} followers",
+          "members": "{count} members",
+          "likes": "{count} likes",
+          "comments": "{count} comments",
+          "shares": "{count} shares"
+        },
+        "users": {
+          "contactSubtitle": "{'@'}{handle} · Contact in network",
+          "contactDescOnline": "Currently active and can start a conversation immediately from the chat widget.",
+          "contactDescOffline": "Appeared in contacts recently and can be invited to a new conversation.",
+          "suggestedSubtitle": "{'@'}{handle} · {role}",
+          "suggestedDesc": "{mutual} mutual friends in the VNSEEA ecosystem. This is a suitable connection to expand your network or exchange work.",
+          "memberSubtitle": "{'@'}{handle} · {role}",
+          "memberDesc": "{meta}. Member of {group}, suitable if you are looking for people with the same topic {topic}."
+        },
+        "pages": {
+          "subtitle": "{category} · /p/{slug}"
+        },
+        "groups": {
+          "subtitle": "{privacy} · {category}"
+        },
+        "posts": {
+          "subtitle": "Post · {time}"
+        }
+      }
+    },
+    "settings": {
+      "eyebrow": "Group settings",
+      "defaultEyebrow": "Settings",
+      "title": "Settings for {name}",
+      "desc": "Adjust the display profile, participation rights, and key operating policies of this community.",
+      "basics": {
+        "eyebrow": "Core Information",
+        "title": "Group Display Profile",
+        "desc": "Update name, URL, description, and background content to make the group page clearer when members visit.",
+        "fields": {
+          "name": "Group Name",
+          "namePlaceholder": "Enter group name",
+          "url": "Group URL",
+          "urlPlaceholder": "group-name",
+          "suggested": "Suggested: {slug}",
+          "useSuggested": "Use suggested slug",
+          "desc": "Group Description",
+          "descPlaceholder": "Describe who this group is for, the main content, and how to participate effectively.",
+          "category": "Category",
+          "location": "Activity Area",
+          "locationPlaceholder": "Example: Nationwide activity",
+          "website": "Website or Introduction Link",
+          "websitePlaceholder": "vnseea.vn/g/group-name",
+          "tags": "Subject Tags",
+          "tagsPlaceholder": "ev, charging, review",
+          "guidelines": "Guidelines displayed on the group page",
+          "guidelinesPlaceholder": "Each line is a principle. Example: Prioritize posts sharing practical context."
+        },
+        "stats": {
+          "descLength": "Description length",
+          "tagCount": "Existing tags",
+          "guidelinesCount": "Rules",
+          "charCount": "{count} characters",
+          "topicCount": "{count} topics",
+          "itemCount": "{count} items"
+        },
+        "viewGroup": "View Group"
+      },
+      "controls": {
+        "eyebrow": "Access Control",
+        "title": "Privacy and Admin Flow",
+        "desc": "Set how members see the group, send requests to join, and post content in the community.",
+        "logic": "Applied Logic",
+        "privacyFallback": "Privacy",
+        "noPrivacy": "No privacy chosen for the group.",
+        "toggles": {
+          "join": {
+            "label": "New Member Approval",
+            "desc": "Admin reviews join requests before entering the group."
+          },
+          "post": {
+            "label": "Review Posts Before Displaying",
+            "desc": "New posts need moderator check before going on the feed."
+          },
+          "invite": {
+            "label": "Allow Members to Invite Others",
+            "desc": "Current members can send direct invitations to friends."
+          },
+          "directory": {
+            "label": "Display Member Directory",
+            "desc": "Member list still appears in sidebar and group about page."
+          },
+          "welcome": {
+            "label": "Display Welcome Post",
+            "desc": "New members will see a pinned post introducing rules and startup resources."
+          }
+        }
+      },
+      "finish": {
+        "eyebrow": "Finish",
+        "title": "Quick Actions",
+        "desc": "This settings flow is a UI mock. You can go back to the group page or continue tweaking before connecting the API.",
+        "status": "{enabled}/{total} policies enabled. Current visibility is {privacy}.",
+        "back": "Back to group",
+        "save": "Save changes"
+      },
+      "sidebar": {
+        "preview": "Preview after saving",
+        "notes": "Admin Notes",
+        "tip1Title": "Keep description clear",
+        "tip1Desc": "New members often decide to join in the first 1-2 sentences of the introduction.",
+        "tip2Title": "Rules should be short and specific",
+        "tip2Desc": "Clearer rules make it easier for moderators to handle posts and join requests.",
+        "summary": "Summary",
+        "aboutGroup": "About Group",
+        "quickInfo": "Quick Info",
+        "privacy": "Privacy",
+        "category": "Category",
+        "members": "Members",
+        "inviteMore": "Invite more"
+      },
+      "empty": {
+        "title": "Group to set up not found",
+        "desc": "This group slug is not in the current mock data. Please go back to the group list and select a valid community.",
+        "back": "Back to group list"
+      }
+    },
+    "pageSettings": {
+      "eyebrow": "Page settings",
+      "title": "{name} Settings",
+      "desc": "Adjust fanpage profile, main CTA, and some visibility signals before connecting the real admin API.",
+      "basics": {
+        "eyebrow": "Public Information",
+        "title": "Fanpage Profile",
+        "desc": "Update name, URL, description, and main identity signals to make the fanpage look clearer when visitors drop by.",
+        "viewPage": "View fanpage",
+        "fields": {
+          "name": "Page name",
+          "namePlaceholder": "Enter fanpage name",
+          "url": "Page URL",
+          "urlSuggested": "Suggestion: {slug}",
+          "urlUseSuggestion": "Use suggested slug",
+          "summary": "Short introduction",
+          "summaryPlaceholder": "Summarize the brand, service, or type of content this fanpage shares.",
+          "category": "Page category",
+          "location": "Display area",
+          "locationPlaceholder": "Example: Da Nang · Nationwide Delivery",
+          "website": "Website or landing page",
+          "websitePlaceholder": "vnseea.vn/p/fanpage-name",
+          "ownerLabel": "Brand label",
+          "ownerPlaceholder": "Example: Content Brand Fanpage",
+          "responseLabel": "Response commitment",
+          "responsePlaceholder": "Example: Responds within a working day",
+          "ctaLabel": "Main CTA",
+          "ctaPlaceholder": "Example: Send Message",
+          "tags": "Main topics",
+          "tagsPlaceholder": "furniture, construction, natural-wood"
+        },
+        "stats": {
+          "summaryLength": "{count} characters",
+          "tagCount": "{count} tags",
+          "ctaFallback": "Not selected",
+          "websiteYes": "Available",
+          "websiteNo": "Not available"
+        }
+      },
+      "controls": {
+        "eyebrow": "Interaction & Visibility",
+        "title": "CTA and Public Signals",
+        "desc": "Tweak the primary action and decide what info will be pushed to the fanpage interface.",
+        "preset": "Preset CTA",
+        "logic": "Applied Logic",
+        "logicDesc": "Current CTA is **{cta}**. You can combine it with website display, message button, and engagement metrics to make the page's goal clearer.",
+        "toggles": {
+          "messagesLabel": "Enable message button",
+          "messagesDesc": "Allow visitors to quickly switch to inbox from the banner and action card.",
+          "followersLabel": "Show follower count",
+          "followersDesc": "Keep follower count on the intro section and preview page.",
+          "likesLabel": "Show like count",
+          "likesDesc": "Keep like count as a social signal on the sidebar and about area.",
+          "websiteLabel": "Show public website",
+          "websiteDesc": "Hide or show the landing page/website link in the fanpage info section.",
+          "relatedLabel": "Suggest related fanpages",
+          "relatedDesc": "Allow the system to insert similar suggestions in the discovery area later."
+        }
+      },
+      "finish": {
+        "eyebrow": "Finish",
+        "title": "Quick Actions",
+        "desc": "This page settings flow is currently a UI mock. You can go back to the fanpage to compare or continue tweaking before connecting the API.",
+        "status": "{enabled}/{total} signals enabled. Current main CTA is **{cta}**.",
+        "back": "Back to fanpage",
+        "save": "Save changes"
+      },
+      "sidebar": {
+        "preview": "Preview after saving",
+        "signals": "Signals on",
+        "followers": "Followers",
+        "likes": "Likes",
+        "hidden": "Hidden",
+        "tips": "Optimization Tips",
+        "ctaFocus": "Prioritized CTA",
+        "ctaWithMessages": "is supported by direct inbox.",
+        "ctaWithoutMessages": "is one-way, inbox not enabled.",
+        "discovery": "Related Discovery Block",
+        "discoveryOn": "The system may insert similar fanpages to boost discovery.",
+        "discoveryOff": "You are turning off related fanpage suggestions on the UI."
+      },
+      "empty": {
+        "title": "Fanpage to setup not found",
+        "desc": "This page slug does not exist in the current mock data. Go back to the list or creation flow to build a valid fanpage.",
+        "back": "Back to fanpage"
+      },
+      "seoTitle": "{name} Settings | VNSEEA",
+      "seoTitleFallback": "Page Settings | VNSEEA",
+      "seoDescFallback": "Manage fanpage configurations on VNSEEA."
+    },
+    "mock": {
+      "groups": {
+        "electric": {
+          "name": "Vietnam EV Community",
+          "summary": "EV reviews, charging stations, maintenance experience, and sharing real-life vehicle journeys.",
+          "activity": "128 new posts this week",
+          "owner": "Managed by Studio Mobility",
+          "location": "Nationwide activity",
+          "founded": "Established from March 2024",
+          "tags": ["ev", "charging", "review"],
+          "guidelines": {
+            "0": "Prioritize real reviews with images or data when sharing experiences.",
+            "1": "Do not post direct sales outside of EV and related accessories topics.",
+            "2": "Keep discussions respectful, focused on solutions and useful knowledge."
+          }
+        },
+        "founder": {
+          "name": "Founder Circle Vietnam",
+          "summary": "Space for exchanging operation, growth, and strategy problems for founders, C-levels, and builders.",
+          "activity": "24 ongoing discussions",
+          "owner": "Curated by VNSEEA Business",
+          "location": "Hanoi · HCMC · Online",
+          "founded": "Established from August 2023",
+          "tags": ["founder", "growth", "networking"],
+          "joinLabel": "Request to join",
+          "inviteLabel": "Invite partners",
+          "guidelines": {
+            "0": "Share concisely, go straight to the problem and context needing advice.",
+            "1": "Do not post job recruitments or excessive service offers in the main feed.",
+            "2": "Respect privacy principles regarding internal data shared within the group."
+          }
+        },
+        "ai": {
+          "name": "AI Product Builders",
+          "summary": "Focus on AI product, automation, dataset, prompt engineering, and new product demos every week.",
+          "activity": "6 online events this month",
+          "owner": "You joined since February",
+          "location": "Remote-first community",
+          "founded": "Established from January 2024",
+          "tags": ["AI", "product", "automation"],
+          "guidelines": {
+            "0": "Prioritize demos with images, videos, or prototype links for quick feedback.",
+            "1": "Clearly tag goals: research, case study, prompt, automation, or launch.",
+            "2": "Avoid sharing sensitive customer data and company secret information."
+          }
+        },
+        "learning": {
+          "name": "Travel & Learn",
+          "summary": "Group sharing workshops, courses, study materials, and meetup schedules for working professionals.",
+          "activity": "18 new documents shared",
+          "owner": "You are following 4 sub-topics",
+          "location": "Vietnam learning community",
+          "founded": "Established from November 2023",
+          "tags": ["workshop", "learning", "mentoring"],
+          "guidelines": {
+            "0": "Documents posted need to site sources so others can verify and continue learning.",
+            "1": "Encourage sharing short notes, summarizing key insights after each workshop.",
+            "2": "No spamming course links or unrelated affiliate content."
+          }
+        },
+        "weekend": {
+          "name": "Weekend Escape Club",
+          "summary": "Plan short trips, share concise schedules, homestays, and ticket hunting experience.",
+          "activity": "9 new itineraries this weekend",
+          "owner": "Suggested based on travel interests",
+          "location": "Domestic & Southeast Asia destinations",
+          "founded": "Established from June 2024",
+          "tags": {
+            "0": "travel",
+            "1": "weekend",
+            "2": "homestay"
+          },
+          "guidelines": {
+            "0": "When reviewing locations, include cost, travel time, and practical notes.",
+            "1": "Respect the local environment, avoid promoting activities that affect nature.",
+            "2": "Do not post tour hunting information with low credibility or unknown origin."
+          }
+        }
+      },
+      "pages": {
+        "mocmay": {
+          "name": "Moc May Studio",
+          "summary": "Fanpage introducing wood furniture, home decoration concepts, and construction projects in modern minimalist style.",
+          "owner": "Verified business page",
+          "response": "Usually responds within 30 minutes",
+          "location": "Da Nang · Nationwide shipping",
+          "founded": "Active from February 2022",
+          "cta": "Message",
+          "tags": {
+            "0": "furniture",
+            "1": "construction",
+            "2": "natural wood"
+          }
+        },
+        "mobility": {
+          "name": "VNSEEA Mobility Lab",
+          "summary": "Page updating research, events, and insights on electrified transport, charging stations, and green mobility infrastructure.",
+          "owner": "Content brand page",
+          "response": "Responds during business days",
+          "location": "Hanoi · HCMC · Online",
+          "founded": "Launched from May 2024",
+          "cta": "Follow",
+          "tags": {
+            "0": "mobility",
+            "1": "ev",
+            "2": "research"
+          }
+        },
+        "learning": {
+          "name": "Quick Learn Every Day",
+          "summary": "Fanpage sharing study notes, workshop schedules, and short documents for professionals wanting continuous skill updates.",
+          "owner": "Education & training page",
+          "response": "Has regular admin team support",
+          "location": "Online-first",
+          "founded": "Created from September 2021",
+          "cta": "View course",
+          "tags": {
+            "0": "learning",
+            "1": "workshop",
+            "2": "career"
+          }
+        }
+      }
+    }
   }
 }

@@ -7,7 +7,7 @@
 
         <div class="relative">
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/72">
-            Xem trước sau khi lưu
+            {{ $t('community.pageSettings.sidebar.preview') }}
           </p>
 
           <div class="mt-4 flex items-start gap-3">
@@ -21,7 +21,7 @@
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2 text-[12px] font-semibold">
-            <span class="rounded-full bg-white/14 px-3 py-1.5">{{ categoryLabel }}</span>
+            <span class="rounded-full bg-white/14 px-3 py-1.5">{{ $t(categoryLabel) }}</span>
             <span class="rounded-full bg-white/14 px-3 py-1.5">{{ selectedCtaLabel }}</span>
           </div>
 
@@ -33,15 +33,15 @@
 
       <div class="grid gap-px border-t border-white/10 bg-[#edf2fb] sm:grid-cols-3">
         <div class="bg-white px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Tín hiệu bật</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.pageSettings.sidebar.signals') }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ enabledPolicies }}/{{ totalPolicies }}</p>
         </div>
         <div class="bg-white px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Theo dõi</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.pageSettings.sidebar.followers') }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ followerPreview }}</p>
         </div>
         <div class="bg-white px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Yêu thích</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.pageSettings.sidebar.likes') }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ likePreview }}</p>
         </div>
       </div>
@@ -59,21 +59,21 @@
 
     <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
       <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-        Gợi ý tối ưu
+        {{ $t('community.pageSettings.sidebar.tips') }}
       </p>
 
       <div class="mt-4 space-y-3">
         <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-          <p class="text-[13px] font-semibold text-[#243b63]">CTA đang ưu tiên</p>
+          <p class="text-[13px] font-semibold text-[#243b63]">{{ $t('community.pageSettings.sidebar.ctaFocus') }}</p>
           <p class="mt-1 text-[12px] leading-5 text-slate-500">
-            {{ selectedCtaLabel }} {{ allowMessages ? "đã được hỗ trợ bởi inbox trực tiếp." : "đang ở chế độ một chiều, chưa bật inbox." }}
+            {{ selectedCtaLabel }} {{ allowMessages ? $t('community.pageSettings.sidebar.ctaWithMessages') : $t('community.pageSettings.sidebar.ctaWithoutMessages') }}
           </p>
         </div>
 
         <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-          <p class="text-[13px] font-semibold text-[#243b63]">Khối khám phá liên quan</p>
+          <p class="text-[13px] font-semibold text-[#243b63]">{{ $t('community.pageSettings.sidebar.discovery') }}</p>
           <p class="mt-1 text-[12px] leading-5 text-slate-500">
-            {{ recommendRelatedPages ? "Hệ thống có thể chèn fanpage tương tự để tăng khám phá." : "Bạn đang tắt gợi ý fanpage liên quan trên giao diện." }}
+            {{ recommendRelatedPages ? $t('community.pageSettings.sidebar.discoveryOn') : $t('community.pageSettings.sidebar.discoveryOff') }}
           </p>
         </div>
       </div>
@@ -99,15 +99,17 @@ const props = defineProps<{
   recommendRelatedPages: boolean
 }>()
 
+const { t } = useI18n()
+
 const initials = computed(() =>
   getCommunityInitials(props.page.name),
 )
 
 const followerPreview = computed(() =>
-  props.showFollowerCount ? props.followerCountLabel : "Đang ẩn",
+  props.showFollowerCount ? props.followerCountLabel : t("community.pageSettings.sidebar.hidden"),
 )
 
 const likePreview = computed(() =>
-  props.showLikeCount ? props.likeCountLabel : "Đang ẩn",
+  props.showLikeCount ? props.likeCountLabel : t("community.pageSettings.sidebar.hidden"),
 )
 </script>

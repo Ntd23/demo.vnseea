@@ -130,6 +130,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 
 
 ## Ưu tiên cao: page / route có `useSeoMeta({ title: ... })` hoặc heading chính hardcode
+
 - [x] `client/app/pages/index.vue`
 - [x] `client/app/pages/home.vue`
 - [x] `client/app/pages/welcome.vue`
@@ -154,18 +155,6 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/pages/live.vue`
 - [x] `client/app/pages/watch.vue`
 - [x] `client/app/pages/setting/index.vue`
-- [ ] `client/app/pages/setting/[page].vue`
-- [ ] `client/app/pages/checkout.vue`
-- [ ] `client/app/pages/orders.vue`
-- [ ] `client/app/pages/order/[id].vue`
-- [ ] `client/app/pages/customer_order/[id].vue`
-- [ ] `client/app/pages/create-group.vue`
-- [ ] `client/app/pages/groups.vue`
-- [ ] `client/app/pages/group-setting/[group].vue`
-- [ ] `client/app/pages/create-page.vue`
-- [ ] `client/app/pages/pages.vue`
-- [ ] `client/app/pages/page-setting/[page].vue`
-- [ ] `client/app/pages/search.vue`
 - [x] `client/app/pages/explore.vue`
 - [x] `client/app/pages/saved-posts.vue`
 - [x] `client/app/pages/poke.vue`
@@ -180,6 +169,19 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/pages/@[username].vue`
 - [x] `client/app/pages/[username].vue`
 - [x] `client/app/pages/hashtag/[tag].vue`
+- [x] `client/app/pages/setting/[page].vue`
+- [x] `client/app/pages/checkout.vue`
+- [x] `client/app/pages/orders.vue`
+- [x] `client/app/pages/order/[id].vue`
+- [x] `client/app/pages/customer-order/[id].vue`
+- [x] `client/app/pages/create-group.vue`
+- [x] `client/app/pages/groups.vue` (đã dịch toàn bộ)
+- [x] `client/app/pages/group-setting/[group].vue`
+- [x] `client/app/pages/create-page.vue`
+- [x] `client/app/pages/pages.vue`
+- [x] `client/app/pages/page-setting/[page].vue`
+- [x] `client/app/pages/search.vue` (đã dịch toàn bộ)
+
 
 ## Components có title/heading/CTA hardcode cần i18n
 ### Feed / home
@@ -338,6 +340,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/watch/RelatedVideos.vue`
 
 ### Marketplace / checkout / orders / wallet / withdrawal
+
 - [x] `client/app/components/pages/NewProductPage.vue`
 - [x] `client/app/components/pages/EditProductPage.vue`
 - [x] `client/app/components/pages/MyProductsPage.vue`
@@ -351,24 +354,6 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/product/EditMediaManager.vue`
 - [x] `client/app/components/product/ChecklistCard.vue`
 - [x] `client/app/components/product/TipsCard.vue`
-- [ ] `client/app/components/forms/SubmitBar.vue`
-- [ ] `client/app/components/checkout/CheckoutLayout.vue`
-- [ ] `client/app/components/checkout/CheckoutSummary.vue`
-- [ ] `client/app/components/checkout/ShippingAddressFormUI.vue`
-- [ ] `client/app/components/pages/CheckoutPage.vue`
-- [ ] `client/app/components/pages/OrdersPage.vue`
-- [ ] `client/app/components/pages/OrderDetailPage.vue`
-- [ ] `client/app/components/pages/CustomerOrderPage.vue`
-- [ ] `client/app/components/orders/FilterBar.vue`
-- [ ] `client/app/components/orders/OverviewSidebar.vue`
-- [ ] `client/app/components/orders/DetailSidebar.vue`
-- [ ] `client/app/components/orders/DetailTimelineCard.vue`
-- [ ] `client/app/components/orders/OrderItemCard.vue`
-- [ ] `client/app/components/orders/OrderPriceSummary.vue`
-- [ ] `client/app/components/orders/BuyerOrderCard.vue`
-- [ ] `client/app/components/orders/SellerOrderCard.vue`
-- [ ] `client/app/components/orders/SellerOrderSidebar.vue`
-- [ ] `client/app/components/orders/SellerOrderChecklistCard.vue`
 - [x] `client/app/components/wallet/WalletHero.vue`
 - [x] `client/app/components/wallet/WalletTransactions.vue`
 - [x] `client/app/components/wallet/WalletSendForm.vue`
@@ -377,6 +362,24 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/withdrawal/WithdrawalRequestForm.vue`
 - [x] `client/app/components/withdrawal/WithdrawalPaymentInfo.vue`
 - [x] `client/app/components/withdrawal/WithdrawalHistory.vue`
+- [x] `client/app/components/checkout/CheckoutLayout.vue`
+- [x] `client/app/components/checkout/CheckoutSummary.vue`
+- [x] `client/app/components/checkout/ShippingAddressFormUI.vue`
+- [x] `client/app/components/pages/CheckoutPage.vue`
+- [x] `client/app/components/pages/OrdersPage.vue`
+- [x] `client/app/components/pages/OrderDetailPage.vue`
+- [x] `client/app/components/pages/CustomerOrderPage.vue`
+- [x] `client/app/components/orders/FilterBar.vue`
+- [x] `client/app/components/orders/OverviewSidebar.vue`
+- [x] `client/app/components/orders/DetailSidebar.vue`
+- [x] `client/app/components/orders/DetailTimelineCard.vue`
+- [x] `client/app/components/orders/OrderItemCard.vue`
+- [x] `client/app/components/orders/OrderPriceSummary.vue`
+- [x] `client/app/components/orders/BuyerOrderCard.vue`
+- [x] `client/app/components/orders/SellerOrderCard.vue`
+- [x] `client/app/components/orders/SellerOrderSidebar.vue`
+- [x] `client/app/components/orders/SellerOrderChecklistCard.vue`
+
 
 ### Search / explore / saved / poke / memories / directory / games / go-pro / forum / settings
 - [ ] `client/app/components/pages/SearchPage.vue`
@@ -401,6 +404,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/games/GamesSidebar.vue`
 - [ ] `client/app/components/games/GameCard.vue`
 - [ ] `client/app/components/games/GamePlayModal.vue`
+
 - [x] `client/app/components/go-pro/GoProHero.vue`
 - [x] `client/app/components/go-pro/BillingToggle.vue`
 - [x] `client/app/components/go-pro/ComparisonTable.vue`
@@ -419,6 +423,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/settings/SettingsSidebar.vue`
 - [x] `client/app/components/settings/SettingsSection.vue`
 - [x] `client/app/components/settings/SettingsField.vue`
+
 
 ## Note nhanh
 Danh sách trên là những file có khả năng chứa UI text hardcode cao nhất. Khi bắt đầu i18n thật, nên ưu tiên:

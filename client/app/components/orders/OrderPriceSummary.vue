@@ -1,18 +1,18 @@
 <template>
   <div :class="cardClass">
     <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-      Tổng thanh toán
+      {{ $t("orders.summary.totalPayment") }}
     </p>
 
     <div class="mt-4 space-y-3 text-[13px] text-slate-500">
       <div class="flex items-center justify-between gap-3">
-        <span>Tạm tính</span>
+        <span>{{ $t("orders.summary.subtotal") }}</span>
         <span class="font-semibold text-[#243b63]">{{ formatOrderCurrency(subtotal) }}</span>
       </div>
       <div class="flex items-center justify-between gap-3">
-        <span>Phí giao hàng</span>
+        <span>{{ $t("orders.summary.shippingFee") }}</span>
         <span class="font-semibold text-[#243b63]">
-          {{ order.shippingFee > 0 ? formatOrderCurrency(order.shippingFee) : "Miễn phí" }}
+          {{ order.shippingFee > 0 ? formatOrderCurrency(order.shippingFee) : $t("orders.summary.free") }}
         </span>
       </div>
     </div>
@@ -22,7 +22,7 @@
     <div class="mt-4 flex items-end justify-between gap-3">
       <div>
         <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-          Tổng đơn
+          {{ $t("orders.summary.totalOrder") }}
         </p>
         <p class="mt-1 text-[1.7rem] font-black tracking-[-0.05em] text-[#2f3542]">
           {{ formatOrderCurrency(order.total) }}
@@ -34,7 +34,7 @@
         :class="statusMeta.panelClass"
         class="rounded-full px-3 py-1.5 text-[11px] font-bold"
       >
-        {{ statusMeta.label }}
+        {{ $t(statusMeta.label) }}
       </div>
     </div>
   </div>

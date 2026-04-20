@@ -17,7 +17,7 @@
     </div>
 
     <div v-if="section.fields?.length" class="mt-5 grid gap-4 md:grid-cols-2">
-      <SettingsSettingsField
+      <SettingsField
         v-for="field in section.fields"
         :key="field.key"
         :field="field"

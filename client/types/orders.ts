@@ -97,11 +97,11 @@ export interface OrdersOverviewCard {
 }
 
 export const buyerOrderFilterLabels: Record<BuyerOrderFilter, string> = {
-  all: "Tất cả đơn",
-  pending: "Chờ xác nhận",
-  shipping: "Đang giao",
-  delivered: "Hoàn tất",
-  cancelled: "Đã hủy",
+  all: "orders.filter.all",
+  pending: "orders.status.pending.label",
+  shipping: "orders.status.shipping.label",
+  delivered: "orders.status.delivered.label",
+  cancelled: "orders.status.cancelled.label",
 }
 
 export const buyerOrderStatusMeta: Record<BuyerOrderStatus, {
@@ -113,36 +113,36 @@ export const buyerOrderStatusMeta: Record<BuyerOrderStatus, {
   description: string
 }> = {
   pending: {
-    label: "Chờ xác nhận",
+    label: "orders.status.pending.label",
     badgeClass: "border-[#fde7b2] bg-[#fff6dd] text-[#9a5b00]",
     panelClass: "bg-[#fff8ea] text-[#9a5b00]",
     icon: "i-ph-hourglass-medium-fill",
     progress: 1,
-    description: "Shop đang chuẩn bị xác nhận đơn hàng của bạn.",
+    description: "orders.status.pending.description",
   },
   shipping: {
-    label: "Đang giao",
+    label: "orders.status.shipping.label",
     badgeClass: "border-[#cfe0ff] bg-[#eef4ff] text-[#1d4ed8]",
     panelClass: "bg-[#eef4ff] text-[#1d4ed8]",
     icon: "i-ph-truck-fill",
     progress: 2,
-    description: "Đơn hàng đã rời kho và đang trên đường giao.",
+    description: "orders.status.shipping.description",
   },
   delivered: {
-    label: "Hoàn tất",
+    label: "orders.status.delivered.label",
     badgeClass: "border-[#c7ebd0] bg-[#effaf3] text-[#1f7a38]",
     panelClass: "bg-[#effaf3] text-[#1f7a38]",
     icon: "i-ph-check-circle-fill",
     progress: 3,
-    description: "Đơn hàng đã giao thành công và hoàn tất thanh toán.",
+    description: "orders.status.delivered.description",
   },
   cancelled: {
-    label: "Đã hủy",
+    label: "orders.status.cancelled.label",
     badgeClass: "border-[#fecdd3] bg-[#fff1f3] text-[#be123c]",
     panelClass: "bg-[#fff1f3] text-[#be123c]",
     icon: "i-ph-x-circle-fill",
     progress: 0,
-    description: "Đơn hàng đã bị hủy và không tiếp tục xử lý.",
+    description: "orders.status.cancelled.description",
   },
 }
 
@@ -151,11 +151,11 @@ export const buyerOrderPaymentStatusMeta: Record<BuyerOrderPaymentStatus, {
   badgeClass: string
 }> = {
   paid: {
-    label: "Đã thanh toán",
+    label: "orders.payment.paid",
     badgeClass: "border-[#c7ebd0] bg-[#effaf3] text-[#1f7a38]",
   },
   refunded: {
-    label: "Đã hoàn tiền",
+    label: "orders.payment.refunded",
     badgeClass: "border-[#fecdd3] bg-[#fff1f3] text-[#be123c]",
   },
 }
@@ -167,28 +167,28 @@ export const sellerOrderPayoutStatusMeta: Record<SellerOrderPayoutStatus, {
   description: string
 }> = {
   queued: {
-    label: "Chờ đối soát",
+    label: "orders.payout.queued.label",
     badgeClass: "border-[#fde7b2] bg-[#fff6dd] text-[#9a5b00]",
     panelClass: "bg-[#fff8ea] text-[#9a5b00]",
-    description: "Khoản thanh toán đang chờ đơn được xử lý và đủ điều kiện đối soát.",
+    description: "orders.payout.queued.description",
   },
   processing: {
-    label: "Đang đối soát",
+    label: "orders.payout.processing.label",
     badgeClass: "border-[#cfe0ff] bg-[#eef4ff] text-[#1d4ed8]",
     panelClass: "bg-[#eef4ff] text-[#1d4ed8]",
-    description: "Hệ thống đang ghi nhận trạng thái giao nhận và chuẩn bị chuyển tiền.",
+    description: "orders.payout.processing.description",
   },
   released: {
-    label: "Đã ghi có",
+    label: "orders.payout.released.label",
     badgeClass: "border-[#c7ebd0] bg-[#effaf3] text-[#1f7a38]",
     panelClass: "bg-[#effaf3] text-[#1f7a38]",
-    description: "Khoản thanh toán đã được ghi nhận thành công vào ví/ngân quỹ của shop.",
+    description: "orders.payout.released.description",
   },
   reversed: {
-    label: "Hoàn tác đối soát",
+    label: "orders.payout.reversed.label",
     badgeClass: "border-[#fecdd3] bg-[#fff1f3] text-[#be123c]",
     panelClass: "bg-[#fff1f3] text-[#be123c]",
-    description: "Đơn bị hủy hoặc hoàn tiền nên không tiếp tục đối soát cho người bán.",
+    description: "orders.payout.reversed.description",
   },
 }
 

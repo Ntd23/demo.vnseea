@@ -3,7 +3,7 @@
     <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
       <div class="bg-[linear-gradient(140deg,#0f172a_0%,#243b63_34%,#0000ff_100%)] p-5 text-white">
         <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-white/70">
-          Xem trước
+          {{ $t("community.creation.insights.preview") }}
         </p>
         <div class="mt-4 rounded-[24px] border border-white/10 bg-white/10 p-4 backdrop-blur-[10px]">
           <div class="flex items-start gap-3">
@@ -36,7 +36,7 @@
           </div>
 
           <p class="mt-4 text-[13px] leading-6 text-white/82">
-            {{ previewDescription }}
+            {{ resolvedPreviewDescription }}
           </p>
         </div>
       </div>
@@ -46,10 +46,10 @@
           <div class="flex items-center justify-between gap-3">
             <div>
               <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-                Mức sẵn sàng
+                {{ $t("community.creation.insights.readiness") }}
               </p>
               <p class="mt-1 text-[15px] font-black text-[#243b63]">
-                {{ completionCount }}/{{ completionTotal }} mục đã hoàn thành
+                {{ $t("community.creation.insights.completionStatus", { count: completionCount, total: completionTotal }) }}
               </p>
             </div>
             <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.06)]">
@@ -86,7 +86,7 @@
           class="rounded-[22px] border border-[#eef2f8] bg-white p-4"
         >
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            Quyền hiển thị
+            {{ $t("community.creation.insights.privacy") }}
           </p>
           <p class="mt-2 text-[14px] font-black text-[#243b63]">
             {{ privacyLabel }}
@@ -98,7 +98,7 @@
 
         <div class="rounded-[22px] border border-[#eef2f8] bg-white p-4">
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            Sau khi tạo
+            {{ $t("community.creation.insights.afterCreation") }}
           </p>
           <div class="mt-3 space-y-3">
             <div
@@ -117,6 +117,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const props = withDefaults(defineProps<{
   entityLabel: string
   completionCount: number
@@ -136,8 +138,8 @@ const props = withDefaults(defineProps<{
   privacyReady?: boolean
   categoryReady?: boolean
 }>(), {
-  privacyLabel: "Chưa chọn hiển thị",
-  privacyDescription: "Hãy chọn quyền hiển thị để kiểm soát ai có thể tìm thấy và xem nội dung nhóm.",
+  privacyLabel: "",
+  privacyDescription: "",
   showPrivacy: true,
   previewIcon: "i-ph-users-three-fill",
   nextSteps: () => [],
@@ -148,36 +150,43 @@ const props = withDefaults(defineProps<{
   categoryReady: false,
 })
 
+const resolvedPreviewDescription = computed(() => {
+  const entity = t(props.entityLabel)
+  const capitalizedEntity = entity.charAt(0).toUpperCase() + entity.slice(1)
+  return props.previewDescription.trim()
+    || t("community.creation.common.previewDescDefault", { entity: capitalizedEntity })
+})
+
 const readinessItems = computed(() => {
-  const entityLabel = props.entityLabel.toLowerCase()
+  const entity = t(props.entityLabel)
 
   const items = [
     {
-      label: `Tên ${entityLabel} rõ ràng`,
-      description: `Tên ngắn gọn giúp người xem nhận ra chủ đề của ${entityLabel} ngay.`,
+      label: t("community.creation.readiness.nameLabel", { entity }),
+      description: t("community.creation.readiness.nameDesc", { entity }),
       done: props.nameReady,
     },
     {
-      label: "URL tùy chỉnh",
-      description: `Đường dẫn gọn giúp chia sẻ ${entityLabel} dễ hơn.`,
+      label: t("community.creation.readiness.urlLabel"),
+      description: t("community.creation.readiness.urlDesc", { entity }),
       done: props.urlReady,
     },
     {
-      label: "Mô tả đủ ý",
-      description: `Giải thích ${entityLabel} dành cho ai và nội dung sẽ tập trung vào đâu.`,
+      label: t("community.creation.readiness.descLabel"),
+      description: t("community.creation.readiness.descDesc", { entity }),
       done: props.descriptionReady,
     },
     {
-      label: "Phân loại đúng chủ đề",
-      description: `${entityLabel.charAt(0).toUpperCase()}${entityLabel.slice(1)} sẽ xuất hiện đúng ngữ cảnh hơn khi chọn đúng category.`,
+      label: t("community.creation.readiness.categoryLabel"),
+      description: t("community.creation.readiness.categoryDesc", { entity }),
       done: props.categoryReady,
     },
   ]
 
   if (props.showPrivacy) {
     items.splice(3, 0, {
-      label: "Loại hiển thị đã chọn",
-      description: `Thiết lập này ảnh hưởng trực tiếp tới việc ai có thể tìm thấy và xem ${entityLabel}.`,
+      label: t("community.creation.readiness.privacyLabel"),
+      description: t("community.creation.readiness.privacyDesc", { entity }),
       done: props.privacyReady,
     })
   }
@@ -190,20 +199,22 @@ const resolvedNextSteps = computed(() => {
     return props.nextSteps
   }
 
+  const entity = t(props.entityLabel)
+
   return [
     {
-      title: `Hoàn thiện ${props.entityLabel}`,
-      description: `Bạn có thể thêm cover, avatar và thông tin nổi bật ngay sau khi tạo ${props.entityLabel}.`,
+      title: t("community.creation.insights.finishTitle", { entity }),
+      description: t("community.creation.insights.finishDesc", { entity }),
     },
     {
-      title: "Mời những người đầu tiên",
+      title: t("community.creation.insights.inviteTitle"),
       description: props.showPrivacy
-        ? "Bắt đầu với một nhóm nhỏ để kiểm tra nhịp thảo luận và nội dung khởi đầu."
-        : "Kéo lượt theo dõi đầu tiên từ khách hàng, bạn bè hoặc cộng đồng sẵn có của bạn.",
+        ? t("community.creation.insights.inviteDescGroup")
+        : t("community.creation.insights.inviteDescPage"),
     },
     {
-      title: "Đăng bài giới thiệu",
-      description: "Ghim một bài mở đầu để người mới biết bạn đang chia sẻ gì và nên bắt đầu từ đâu.",
+      title: t("community.creation.insights.introPostTitle"),
+      description: t("community.creation.insights.introPostDesc"),
     },
   ]
 })

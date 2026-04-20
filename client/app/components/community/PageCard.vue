@@ -6,7 +6,7 @@
       <div class="relative flex items-start justify-between gap-3">
         <div class="min-w-0">
           <span class="inline-flex items-center rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
-            {{ categoryLabel }}
+            {{ $t(categoryLabel) }}
           </span>
 
           <NuxtLink
@@ -31,10 +31,10 @@
       <div class="flex flex-wrap items-center gap-2 text-[12px] font-semibold">
         <span class="inline-flex items-center rounded-full bg-[#eef3ff] px-3 py-1.5 text-[#243b63]">
           <Icon name="i-ph-users-three" class="mr-1.5 h-4 w-4 text-[#0000ff]" />
-          {{ followerCountLabel }}
+          {{ $t('community.pages.format.followers', { count: followerCountLabel }) }}
         </span>
         <span class="inline-flex items-center rounded-full bg-[#f8fafc] px-3 py-1.5 text-slate-500">
-          {{ likeCountLabel }}
+          {{ $t('community.pages.format.likes', { count: likeCountLabel }) }}
         </span>
         <span
           v-for="tag in page.tags.slice(0, 2)"

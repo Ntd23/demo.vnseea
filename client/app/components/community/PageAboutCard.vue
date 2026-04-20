@@ -54,7 +54,7 @@
       </div>
       <div v-if="showFollowerCount" class="flex items-start gap-2">
         <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
-        <span>{{ followerCountLabel }}</span>
+        <span>{{ $t('community.pages.format.followers', { count: followerCountLabel }) }}</span>
       </div>
     </div>
 

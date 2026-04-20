@@ -16,7 +16,6 @@
               <Icon :name="activePage.icon" class="h-7 w-7" />
             </div>
             <div>
-              <p class="text-label-secondary text-[var(--text-tertiary)]">/setting/{{ activePage.slug === defaultSlug ? "" : activePage.slug }}</p>
               <h1 class="mt-1 text-2xl font-black text-[var(--text-primary)]">{{ activePage.label }}</h1>
               <p class="mt-1 text-body-secondary">{{ activePage.description }}</p>
             </div>

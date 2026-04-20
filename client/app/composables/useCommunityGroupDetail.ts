@@ -79,10 +79,11 @@ export function useCommunityGroupDetail(slugSource: MaybeRefOrGetter<string>) {
     return posts.slice(0, 3).map((post, index) => {
       const member = members.value[index % Math.max(members.value.length, 1)]
       const topic = group.value?.tags[index % Math.max(group.value.tags.length, 1)] || "community"
+      const groupName = t(group.value?.name || "")
 
       return {
         ...post,
-        id: group.value.id * 100 + index,
+        id: (group.value?.id || 0) * 100 + index,
         author: member?.name || post.author,
         role: t("pages.groupDetailPage.postRole", {
           group: group.value.name,

@@ -16,7 +16,7 @@
     </div>
 
     <p class="mt-4 text-[14px] leading-7 text-slate-600">
-      {{ group.summary }}
+      {{ $t(group.summary) }}
     </p>
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
@@ -35,7 +35,7 @@
     <div class="mt-4 space-y-2 text-[13px] text-slate-500">
       <div class="flex items-start gap-2">
         <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
-        <span>{{ group.foundedLabel }}</span>
+        <span>{{ $t(group.foundedLabel) }}</span>
       </div>
       <div class="flex items-start gap-2">
         <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
@@ -43,7 +43,7 @@
       </div>
       <div class="flex items-start gap-2">
         <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
-        <span>{{ memberCountLabel }}</span>
+        <span>{{ $t('community.groups.format.members', { count: memberCountLabel }) }}</span>
       </div>
     </div>
 
@@ -57,7 +57,7 @@
           :key="rule"
           class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-600"
         >
-          {{ rule }}
+          {{ $t(rule) }}
         </div>
       </div>
     </div>

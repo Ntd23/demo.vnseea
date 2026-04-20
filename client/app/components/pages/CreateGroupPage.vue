@@ -1,29 +1,28 @@
 <template>
   <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
     <CommunityCreationHeaderCard
-      eyebrow="P-18 · Community"
-      title="Tạo nhóm mới"
-      description="Thiết lập một cộng đồng mới cho thành viên cùng trao đổi, chia sẻ nội dung và kết nối quanh một chủ đề chung."
+      :eyebrow="$t('community.creation.group.eyebrow')"
+      :title="$t('community.creation.group.title')"
+      :description="$t('community.creation.group.description')"
       icon="i-ph-users-four-fill"
-      :highlights="['URL tùy chỉnh', 'Kiểm soát quyền riêng tư', 'Sẵn sàng mời thành viên']"
+      :highlights="highlights"
     />
 
     <CommunityCreationForm
       v-model="draft"
-      entity-label="nhóm"
+      entity-label="community.creation.common.entityLabelGroup"
       :privacy-options="communityPrivacyOptions"
       :category-options="communityCategoryOptions"
-      name-label="Tên nhóm"
-      name-placeholder="Ví dụ: Cộng đồng Ô tô miền Trung"
-      url-label="Tập đoàn URL"
-      slug-placeholder="cong-dong-o-to-mien-trung"
-      description-label="Sự mô tả"
-      description-placeholder="Mô tả ngắn gọn chủ đề của nhóm, đối tượng phù hợp và nội dung mọi người sẽ cùng thảo luận."
-      privacy-label="Loại nhóm"
-      category-label="Loại"
+      :name-label="$t('community.creation.group.nameLabel')"
+      :name-placeholder="$t('community.creation.group.namePlaceholder')"
+      :url-label="$t('community.creation.common.urlLabel')"
+      :slug-placeholder="$t('community.creation.group.slugPlaceholder')"
+      :description-label="$t('community.creation.common.descriptionLabel')"
+      :description-placeholder="$t('community.creation.group.description')"
+      :privacy-label="$t('community.creation.group.privacyLabel')"
+      :category-label="$t('community.creation.common.categoryLabel')"
       back-to="/groups"
       submit-to="/groups"
-      submit-label="Tạo ra"
     />
   </div>
 </template>
@@ -35,10 +34,18 @@ import {
 } from "../../../types/community"
 import type { CommunityDraft } from "../../../types/community"
 
+const { t } = useI18n()
+
 useSeoMeta({
-  title: "Tạo nhóm mới | VNSEEA",
-  description: "Tạo nhóm mới trên VNSEEA với tên, URL, mô tả, category và quyền riêng tư.",
+  title: `${t("community.creation.group.title")} | VNSEEA`,
+  description: t("community.creation.group.description"),
 })
+
+const highlights = computed(() => [
+  t("community.creation.group.highlights[0]"),
+  t("community.creation.group.highlights[1]"),
+  t("community.creation.group.highlights[2]"),
+])
 
 const draft = ref<CommunityDraft>({
   name: "",

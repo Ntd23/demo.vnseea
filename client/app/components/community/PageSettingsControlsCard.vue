@@ -1,8 +1,8 @@
 <template>
   <CommunitySettingsSectionCard
-    eyebrow="Tương tác & hiển thị"
-    title="CTA và các tín hiệu công khai"
-    description="Tinh chỉnh hành động chính và quyết định phần thông tin nào sẽ được đẩy ra giao diện fanpage."
+    :eyebrow="$t('community.pageSettings.controls.eyebrow')"
+    :title="$t('community.pageSettings.controls.title')"
+    :description="$t('community.pageSettings.controls.desc')"
     icon="i-ph-cursor-click-bold"
   >
     <template #trailing>
@@ -14,7 +14,7 @@
     <div class="space-y-5">
       <div>
         <p class="text-[12px] font-bold uppercase tracking-[0.16em] text-[#0000ff]/65">
-          Preset CTA
+          {{ $t('community.pageSettings.controls.preset') }}
         </p>
 
         <div class="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -32,10 +32,10 @@
               <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
             </div>
             <p class="mt-4 text-[14px] font-black text-[#243b63]">
-              {{ option.label }}
+              {{ $t(option.label) }}
             </p>
             <p class="mt-2 text-[12px] leading-5 text-slate-500">
-              {{ option.description }}
+              {{ $t(option.description) }}
             </p>
           </button>
         </div>
@@ -43,39 +43,36 @@
 
       <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-4">
         <p class="text-[12px] font-bold uppercase tracking-[0.16em] text-[#0000ff]/65">
-          Logic đang áp dụng
+          {{ $t('community.pageSettings.controls.logic') }}
         </p>
-        <p class="mt-2 text-[14px] leading-6 text-slate-500">
-          CTA hiện tại là <span class="font-bold text-[#243b63]">{{ selectedCtaLabel.toLowerCase() }}</span>.
-          Bạn có thể kết hợp với hiển thị website, nút nhắn tin và chỉ số tương tác để page nhìn rõ mục tiêu hơn.
-        </p>
+        <p class="mt-2 text-[14px] leading-6 text-slate-500" v-html="$t('community.pageSettings.controls.logicDesc', { cta: selectedCtaLabel.toLowerCase() })" />
       </div>
 
       <div class="grid gap-3 lg:grid-cols-2">
         <FormsToggleSwitch
           v-model="model.allowMessages"
-          label="Bật nút nhắn tin"
-          description="Cho phép khách chuyển nhanh sang inbox từ banner và action card."
+          :label="$t('community.pageSettings.controls.toggles.messagesLabel')"
+          :description="$t('community.pageSettings.controls.toggles.messagesDesc')"
         />
         <FormsToggleSwitch
           v-model="model.showFollowerCount"
-          label="Hiển thị số người theo dõi"
-          description="Giữ follower count trên phần giới thiệu và preview page."
+          :label="$t('community.pageSettings.controls.toggles.followersLabel')"
+          :description="$t('community.pageSettings.controls.toggles.followersDesc')"
         />
         <FormsToggleSwitch
           v-model="model.showLikeCount"
-          label="Hiển thị số lượt thích"
-          description="Giữ like count như một tín hiệu xã hội ở sidebar và khu vực about."
+          :label="$t('community.pageSettings.controls.toggles.likesLabel')"
+          :description="$t('community.pageSettings.controls.toggles.likesDesc')"
         />
         <FormsToggleSwitch
           v-model="model.showWebsite"
-          label="Hiển thị website công khai"
-          description="Ẩn hoặc hiện link landing page/website trong phần thông tin fanpage."
+          :label="$t('community.pageSettings.controls.toggles.websiteLabel')"
+          :description="$t('community.pageSettings.controls.toggles.websiteDesc')"
         />
         <FormsToggleSwitch
           v-model="model.recommendRelatedPages"
-          label="Gợi ý fanpage liên quan"
-          description="Cho phép hệ thống chèn các đề xuất tương tự ở vùng khám phá sau này."
+          :label="$t('community.pageSettings.controls.toggles.relatedLabel')"
+          :description="$t('community.pageSettings.controls.toggles.relatedDesc')"
         />
       </div>
     </div>
@@ -88,7 +85,9 @@ import type { CommunityPageSettingsDraft } from "../../../types/community"
 
 const model = defineModel<CommunityPageSettingsDraft>({ required: true })
 
+const { t } = useI18n()
+
 const selectedCtaLabel = computed(() =>
-  model.value.ctaLabel.trim() || "Chưa chọn CTA",
+  model.value.ctaLabel.trim() ? model.value.ctaLabel : t("community.pageSettings.basics.stats.ctaFallback"),
 )
 </script>

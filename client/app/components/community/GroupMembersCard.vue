@@ -6,7 +6,7 @@
           {{ t("pages.groupDetailPage.membersEyebrow") }}
         </p>
         <h3 class="mt-2 text-[1.15rem] font-black tracking-[-0.04em] text-[#243b63]">
-          {{ memberCountLabel }}
+          {{ $t('community.groups.format.members', { count: memberCountLabel }) }}
         </h3>
       </div>
 

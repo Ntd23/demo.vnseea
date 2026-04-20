@@ -8,16 +8,16 @@
 
         <div class="min-w-0">
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            {{ eyebrow }}
+            {{ eyebrow ? $t(eyebrow) : '' }}
           </p>
           <h2 class="mt-2 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
-            {{ title }}
+            {{ $t(title) }}
           </h2>
           <p
             v-if="description"
             class="mt-1 text-[14px] leading-6 text-slate-500"
           >
-            {{ description }}
+            {{ $t(description) }}
           </p>
         </div>
       </div>
@@ -40,7 +40,7 @@ withDefaults(defineProps<{
   description?: string
   icon?: string
 }>(), {
-  eyebrow: "Thiết lập",
+  eyebrow: "community.settings.defaultEyebrow",
   description: "",
   icon: "i-ph-gear-six-bold",
 })
