@@ -3,13 +3,13 @@
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <p class="text-label-secondary text-[var(--color-primary-600)]">
-          Bộ lọc
+          {{ $t("pages.blogsPage.filtersEyebrow") }}
         </p>
         <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-          Tìm bài báo phù hợp
+          {{ $t("pages.blogsPage.filtersTitle") }}
         </h2>
         <p class="mt-1 max-w-[620px] text-body-secondary">
-          Tìm theo tiêu đề, tác giả, chủ đề, hashtag và sắp xếp luồng đọc theo nhu cầu.
+          {{ $t("pages.blogsPage.filtersDescription") }}
         </p>
       </div>
 
@@ -18,7 +18,7 @@
         class="inline-flex h-14 items-center justify-center gap-2 rounded-[20px] bg-[var(--color-primary-500)] px-6 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 lg:min-w-[190px]"
       >
         <Icon name="i-ph-note-pencil-fill" class="h-5 w-5" />
-        Tạo bài báo
+        {{ $t("pages.blogsPage.createArticle") }}
       </NuxtLink>
     </div>
 
@@ -30,7 +30,7 @@
       <input
         :value="search"
         class="h-16 w-full rounded-[22px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-14 pr-5 text-[15px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:font-medium placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-200)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-        placeholder="Tìm kiếm bài báo, tác giả, chủ đề hoặc hashtag"
+        :placeholder="$t('pages.blogsPage.searchPlaceholder')"
         type="search"
         @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
       >
@@ -40,10 +40,10 @@
       <div>
         <div class="flex items-center justify-between gap-3 px-1">
           <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            Chủ đề
+            {{ $t("pages.blogsPage.topic") }}
           </p>
           <span class="text-[12px] font-bold text-[var(--text-tertiary)]">
-            {{ categories.length }} danh mục
+            {{ $t("pages.blogsPage.categoryCount", { count: categories.length }) }}
           </span>
         </div>
 
@@ -69,7 +69,7 @@
       <div class="space-y-4">
         <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3">
           <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            Sắp xếp
+            {{ $t("pages.blogsPage.sort") }}
           </p>
           <div class="mt-3 grid gap-2">
             <button
@@ -104,8 +104,8 @@
           @click="$emit('update:mineOnly', !mineOnly)"
         >
           <span>
-            <span class="block text-[13px] font-extrabold">Bài báo của tôi</span>
-            <span class="mt-1 block text-[12px] font-semibold opacity-75">Lọc nhanh các bài bạn đã tạo.</span>
+            <span class="block text-[13px] font-extrabold">{{ $t("pages.blogsPage.myArticles") }}</span>
+            <span class="mt-1 block text-[12px] font-semibold opacity-75">{{ $t("pages.blogsPage.mineFilterDescription") }}</span>
           </span>
           <span class="inline-flex h-10 w-10 items-center justify-center rounded-[16px] bg-white text-[var(--color-primary-600)] shadow-[var(--shadow-sm)]">
             <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-toggle-left-fill'" class="h-6 w-6" />
@@ -117,7 +117,7 @@
     <div class="mt-5 flex flex-col gap-3 rounded-[24px] border border-[var(--border-default)] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
       <div class="inline-flex items-center gap-2 text-[13px] font-bold text-[var(--text-secondary)]">
         <Icon name="i-ph-funnel-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
-        {{ articleCount }} bài viết phù hợp
+        {{ $t("pages.blogsPage.matchingArticles", { count: articleCount }) }}
       </div>
       <div class="text-[13px] font-semibold text-[var(--text-tertiary)]">
         {{ activeSummary }}
@@ -127,6 +127,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const props = defineProps<{
   search: string
   selectedCategory: string
@@ -152,9 +154,9 @@ defineEmits<{
 }>()
 
 const activeSummary = computed(() => {
-  const category = props.categories.find(item => item.value === props.selectedCategory)?.label ?? "Tất cả"
-  const sort = props.sortOptions.find(item => item.value === props.sortBy)?.label ?? "Mới nhất"
-  const owner = props.mineOnly ? "Bài của tôi" : "Tất cả tác giả"
+  const category = props.categories.find(item => item.value === props.selectedCategory)?.label ?? t("pages.blogsPage.categoryAll")
+  const sort = props.sortOptions.find(item => item.value === props.sortBy)?.label ?? t("pages.blogsPage.sortLatest")
+  const owner = props.mineOnly ? t("pages.blogsPage.myPostsSummary") : t("pages.blogsPage.allAuthors")
 
   return `${category} · ${sort} · ${owner}`
 })
