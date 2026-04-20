@@ -32,6 +32,11 @@ import type { SettingField } from "~/composables/useMockSettingsData"
 
 const props = defineProps<{ field: SettingField }>()
 const value = ref(props.field.value)
+
+// Update internal value when the translated prop value changes
+watch(() => props.field.value, (newVal) => {
+  value.value = newVal
+})
 </script>
 
 <style scoped>

@@ -14,6 +14,7 @@
         </div>
 
         <div class="ml-auto flex shrink-0 items-center gap-2">
+          <NavigationLocaleSwitcher compact />
           <component
             :is="action.to ? NuxtLink : 'button'"
             v-for="action in desktopActions"
@@ -49,41 +50,43 @@
           <span v-if="item.badge" class="mobile-icon-badge">{{ item.badge }}</span>
         </NuxtLink>
 
-        <button
-          class="mobile-icon-btn mobile-icon-btn--avatar"
-          type="button"
-          aria-label="Tài khoản"
-          @click="$emit('toggle-menu')"
-        >
-          <Icon name="i-lucide-circle-user-round" class="h-[21px] w-[21px] text-white" />
-        </button>
+        <div class="flex items-center gap-1">
+          <NavigationLocaleSwitcher compact />
+          <button
+            class="mobile-icon-btn mobile-icon-btn--avatar"
+            type="button"
+            aria-label="Tài khoản"
+            @click="$emit('toggle-menu')"
+          >
+            <Icon name="i-lucide-circle-user-round" class="h-[21px] w-[21px] text-white" />
+          </button>
+        </div>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { NuxtLink } from '#components'
+import { NuxtLink } from "#components"
 
-defineEmits<{ 'toggle-menu': [] }>()
+defineEmits<{ "toggle-menu": [] }>()
 
 const route = useRoute()
-const isHome = computed(() => route.path === '/' || route.path === '/home')
+const isHome = computed(() => route.path === "/" || route.path === "/home")
 
 const desktopActions = [
-  { label: 'Yêu cầu kết bạn', icon: 'i-ph-user-plus-fill', badge: 1 },
-  { label: 'Tin nhắn', icon: 'i-ph-chat-circle-dots-fill', to: '/messages' },
-  { label: 'Thông báo', icon: 'i-ph-bell-fill', badge: 3 },
+  { label: "Yêu cầu kết bạn", icon: "i-ph-user-plus-fill", badge: 1 },
+  { label: "Tin nhắn", icon: "i-ph-chat-circle-dots-fill", to: "/messages" },
+  { label: "Thông báo", icon: "i-ph-bell-fill", badge: 3 },
 ]
 
-
 const mobileIconItems = computed(() => [
-  { label: 'Home', to: '/home', icon: 'i-ph-house-fill', active: route.path === '/' || route.path === '/home' },
-  { label: 'Search', to: '/search', icon: 'i-ph-magnifying-glass-bold', active: route.path === '/search' },
-  { label: 'Reels', to: '/reels', icon: 'i-ph-film-strip-fill', active: route.path === '/reels', logoBadge: 'V' },
-  { label: 'Video', to: '/watch', icon: 'i-ph-video-camera-fill', active: route.path === '/watch' },
-  { label: 'Notifications', to: '/home', icon: 'i-ph-bell-fill', active: false },
-  { label: 'Profile', to: '/@me', icon: 'i-ph-handshake-fill', active: route.path.includes('/@') },
+  { label: "Home", to: "/home", icon: "i-ph-house-fill", active: route.path === "/" || route.path === "/home" },
+  { label: "Search", to: "/search", icon: "i-ph-magnifying-glass-bold", active: route.path === "/search" },
+  { label: "Reels", to: "/reels", icon: "i-ph-film-strip-fill", active: route.path === "/reels", logoBadge: "V" },
+  { label: "Video", to: "/watch", icon: "i-ph-video-camera-fill", active: route.path === "/watch" },
+  { label: "Notifications", to: "/home", icon: "i-ph-bell-fill", active: false },
+  { label: "Profile", to: "/@me", icon: "i-ph-handshake-fill", active: route.path.includes("/@") },
 ])
 </script>
 

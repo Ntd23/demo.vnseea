@@ -16,7 +16,7 @@
     },
     "hero": {
       "auditLabel": "P-34 · Cài đặt",
-      "title": "Settings",
+      "title": "Cài đặt",
       "description": "Quản lý tài khoản, quyền riêng tư, bảo mật, thông báo, thanh toán và hồ sơ nghề nghiệp.",
       "stats": {
         "subPages": {
@@ -35,16 +35,16 @@
       }
     },
     "sidebar": {
-      "subPages": "{count} sub-pages",
+      "subPages": "{count} mục",
       "title": "Menu cài đặt"
     },
     "section": {
       "kind": {
-        "form": "Form",
-        "toggles": "Toggles",
-        "list": "List",
-        "danger": "Danger",
-        "summary": "Summary"
+        "form": "Biểu mẫu",
+        "toggles": "Công tắc",
+        "list": "Danh sách",
+        "danger": "Nguy hiểm",
+        "summary": "Tổng quan"
       },
       "saveChanges": "Lưu thay đổi",
       "dangerMessage": "Khu vực nguy hiểm. Hành động này chỉ đang mô phỏng, chưa gọi API xóa tài khoản.",
@@ -78,8 +78,8 @@
         "themeEmerald": "Emerald",
         "themeAmber": "Amber",
         "themeSlate": "Slate",
-        "enable": "Enable",
-        "disable": "Disable"
+        "enable": "Bật",
+        "disable": "Tắt"
       },
       "pages": {
         "general": {
@@ -90,16 +90,16 @@
               "title": "Thông tin tài khoản",
               "description": "Cập nhật các thông tin nhận diện chính của tài khoản.",
               "fields": {
-                "username": "Username",
+                "username": "Tên đăng nhập",
                 "email": "Email",
-                "phone": "Phone",
-                "birthday": "Birthday",
-                "gender": "Gender",
-                "country": "Country",
-                "website": "Website"
+                "phone": "Số điện thoại",
+                "birthday": "Ngày sinh",
+                "gender": "Giới tính",
+                "country": "Quốc gia",
+                "website": "Trang web"
               },
               "placeholders": {
-                "username": "username"
+                "username": "nhập tên đăng nhập"
               }
             }
           }
@@ -112,12 +112,12 @@
               "title": "Hồ sơ công khai",
               "description": "Các trường này xuất hiện trong trang cá nhân.",
               "fields": {
-                "bio": "Bio",
-                "workplace": "Workplace",
-                "school": "School",
-                "relationship": "Relationship",
-                "city": "City",
-                "hometown": "Hometown"
+                "bio": "Tiểu sử",
+                "workplace": "Nơi làm việc",
+                "school": "Trường học",
+                "relationship": "Tình trạng quan hệ",
+                "city": "Thành phố",
+                "hometown": "Quê quán"
               },
               "values": {
                 "bio": "Community builder tại VNSEEA.",
@@ -134,14 +134,14 @@
           "sections": {
             "privacyControls": {
               "title": "Quyền riêng tư",
-              "description": "Mock các lựa chọn privacy trước khi nối API setting.",
+              "description": "Thiết lập quyền xem bài viết, theo dõi và trạng thái hoạt động của tài khoản.",
               "fields": {
-                "posts": "Who sees posts",
-                "follow": "Who can follow",
-                "search": "Search visibility",
-                "friends": "Who sees friends",
-                "birthdayPrivacy": "Who sees birthday",
-                "onlineStatus": "Status online/offline"
+                "posts": "Ai xem được bài viết",
+                "follow": "Ai có thể theo dõi",
+                "search": "Hiển thị trong tìm kiếm",
+                "friends": "Ai xem được bạn bè",
+                "birthdayPrivacy": "Ai xem được ngày sinh",
+                "onlineStatus": "Trạng thái online/offline"
               }
             }
           }
@@ -154,7 +154,7 @@
               "title": "Upload & crop avatar",
               "description": "Chọn ảnh mới và mô phỏng vùng crop.",
               "fields": {
-                "avatar": "Avatar image"
+                "avatar": "Hình ảnh đại diện"
               }
             }
           }
@@ -181,33 +181,33 @@
               "title": "Đổi mật khẩu",
               "description": "Nhập mật khẩu hiện tại và mật khẩu mới.",
               "fields": {
-                "currentPassword": "Current password",
-                "newPassword": "New password",
-                "confirmPassword": "Confirm password"
+                "currentPassword": "Mật khẩu hiện tại",
+                "newPassword": "Mật khẩu mới",
+                "confirmPassword": "Xác nhận mật khẩu"
               }
             }
           }
         },
         "twoFactor": {
-          "label": "2FA",
-          "description": "Authenticator, QR code và backup codes.",
+          "label": "Bảo mật 2 lớp",
+          "description": "Xác thực qua ứng dụng, mã QR và mã dự phòng.",
           "sections": {
             "authenticator": {
-              "title": "Two-Factor Authentication",
-              "description": "Bật bảo mật hai lớp và quét QR bằng ứng dụng authenticator.",
+              "title": "Xác thực hai yếu tố (2FA)",
+              "description": "Bật bảo mật hai lớp và quét mã QR bằng ứng dụng xác thực (như Google Authenticator).",
               "items": {
                 "enable": {
-                  "title": "Enable/disable 2FA",
-                  "description": "Trạng thái hiện tại: chưa bật.",
-                  "action": "Bật 2FA"
+                  "title": "Bật/Tắt 2FA",
+                  "description": "Trạng thái hiện tại: chưa kích hoạt.",
+                  "action": "Kích hoạt 2FA"
                 },
                 "qr": {
-                  "title": "QR code authenticator",
-                  "description": "Mock QR placeholder cho ứng dụng xác thực."
+                  "title": "Mã QR xác thực",
+                  "description": "Sử dụng ứng dụng xác thực để quét mã QR bên dưới."
                 },
                 "backup": {
-                  "title": "Backup codes",
-                  "description": "8 mã dự phòng chưa được tạo.",
+                  "title": "Mã dự phòng",
+                  "description": "8 mã dự phòng chưa được tạo. Dùng khi bạn mất quyền truy cập vào ứng dụng xác thực.",
                   "action": "Tạo mã mới"
                 }
               }
@@ -216,60 +216,60 @@
         },
         "notifications": {
           "label": "Thông báo",
-          "description": "Bật tắt thông báo theo từng loại.",
+          "description": "Bật tắt thông báo theo từng loại hoạt động.",
           "sections": {
             "inApp": {
-              "title": "Thông báo trong app",
-              "description": "Likes, comments, follows, messages, mentions và các sự kiện khác.",
+              "title": "Thông báo trong ứng dụng",
+              "description": "Lượt thích, bình luận, theo dõi, tin nhắn và các sự kiện khác.",
               "toggles": {
-                "likes": { "label": "Likes", "description": "Nhận thông báo likes." },
-                "comments": { "label": "Comments", "description": "Nhận thông báo comments." },
-                "follows": { "label": "Follows", "description": "Nhận thông báo follows." },
-                "messages": { "label": "Messages", "description": "Nhận thông báo messages." },
-                "mentions": { "label": "Mentions", "description": "Nhận thông báo mentions." },
-                "shares": { "label": "Shares", "description": "Nhận thông báo shares." },
-                "events": { "label": "Events", "description": "Nhận thông báo events." },
-                "groups": { "label": "Groups", "description": "Nhận thông báo groups." },
-                "pages": { "label": "Pages", "description": "Nhận thông báo pages." },
-                "marketplace": { "label": "Marketplace", "description": "Nhận thông báo marketplace." },
-                "jobs": { "label": "Jobs", "description": "Nhận thông báo jobs." },
-                "funding": { "label": "Funding", "description": "Nhận thông báo funding." },
-                "live": { "label": "Live", "description": "Nhận thông báo live." },
-                "watch": { "label": "Watch", "description": "Nhận thông báo watch." },
-                "security": { "label": "Security", "description": "Nhận thông báo security." }
+                "likes": { "label": "Lượt thích", "description": "Thông báo khi có người thích bài viết của bạn." },
+                "comments": { "label": "Bình luận", "description": "Thông báo khi có người bình luận bài viết của bạn." },
+                "follows": { "label": "Người theo dõi", "description": "Thông báo khi có người theo dõi bạn." },
+                "messages": { "label": "Tin nhắn", "description": "Thông báo khi có tin nhắn mới." },
+                "mentions": { "label": "Nhắc đến", "description": "Thông báo khi bạn được nhắc đến trong bài viết hoặc bình luận." },
+                "shares": { "label": "Chia sẻ", "description": "Thông báo khi có người chia sẻ bài viết của bạn." },
+                "events": { "label": "Sự kiện", "description": "Thông báo về các sự kiện bạn tham gia hoặc được mời." },
+                "groups": { "label": "Nhóm", "description": "Thông báo về hoạt động trong các nhóm bạn tham gia." },
+                "pages": { "label": "Trang", "description": "Thông báo về các trang bạn theo dõi hoặc quản lý." },
+                "marketplace": { "label": "Chợ", "description": "Thông báo về các sản phẩm bạn quan tâm hoặc đăng bán." },
+                "jobs": { "label": "Việc làm", "description": "Thông báo về các tin tuyển dụng phù hợp." },
+                "funding": { "label": "Gây quỹ", "description": "Thông báo về các chiến dịch gây quỹ." },
+                "live": { "label": "Trực tiếp", "description": "Thông báo khi bạn bè hoặc trang bạn theo dõi phát trực tiếp." },
+                "watch": { "label": "Video", "description": "Thông báo về các video mới." },
+                "security": { "label": "Bảo mật", "description": "Thông báo về các vấn đề bảo mật tài khoản." }
               }
             }
           }
         },
         "emailNotifications": {
-          "label": "Email",
-          "description": "Thông báo qua email.",
+          "label": "Thông báo Email",
+          "description": "Quản lý các loại thông báo gửi qua email.",
           "sections": {
             "email": {
-              "title": "Email notifications",
-              "description": "Chọn loại email hệ thống được phép gửi.",
+              "title": "Thông báo qua Email",
+              "description": "Chọn loại email hệ thống được phép gửi tới bạn.",
               "toggles": {
-                "newMessage": { "label": "New message email", "description": "Email khi có tin nhắn mới." },
-                "mention": { "label": "Mention email", "description": "Email khi được nhắc tên." },
-                "weeklyDigest": { "label": "Weekly digest", "description": "Tóm tắt hoạt động hàng tuần." },
-                "security": { "label": "Security email", "description": "Cảnh báo đăng nhập và bảo mật." }
+                "newMessage": { "label": "Email tin nhắn mới", "description": "Gửi email khi bạn nhận được tin nhắn mới." },
+                "mention": { "label": "Email nhắc đến", "description": "Gửi email khi bạn được nhắc đến." },
+                "weeklyDigest": { "label": "Tóm tắt hàng tuần", "description": "Email tóm tắt các hoạt động nổi bật trong tuần." },
+                "security": { "label": "Email bảo mật", "description": "Cảnh báo đăng nhập lạ và các thay đổi bảo mật quan trọng." }
               }
             }
           }
         },
         "socialLinks": {
-          "label": "Liên kết xã hội",
-          "description": "Facebook, Twitter, LinkedIn, Instagram, YouTube.",
+          "label": "Mạng xã hội",
+          "description": "Cập nhật liên kết Facebook, Twitter, LinkedIn, Instagram, YouTube.",
           "sections": {
             "socialLinks": {
-              "title": "Social links",
-              "description": "Các URL hiển thị trên hồ sơ.",
+              "title": "Liên kết mạng xã hội",
+              "description": "Các đường dẫn này sẽ hiển thị trên hồ sơ công khai của bạn.",
               "fields": {
-                "facebook": "Facebook URL",
-                "twitter": "Twitter URL",
-                "linkedin": "LinkedIn URL",
-                "instagram": "Instagram URL",
-                "youtube": "YouTube URL"
+                "facebook": "Link Facebook",
+                "twitter": "Link Twitter",
+                "linkedin": "Link LinkedIn",
+                "instagram": "Link Instagram",
+                "youtube": "Link YouTube"
               },
               "placeholders": {
                 "facebook": "https://facebook.com/username",
@@ -282,90 +282,90 @@
           }
         },
         "blockedUsers": {
-          "label": "Đã chặn",
-          "description": "Danh sách blocked và unblock.",
+          "label": "Người dùng đã chặn",
+          "description": "Danh sách người dùng bạn đã chặn.",
           "sections": {
             "blockedUsers": {
-              "title": "Blocked users",
-              "description": "Quản lý người dùng đã chặn.",
+              "title": "Quản lý chặn",
+              "description": "Những người trong danh sách này sẽ không thể tương tác với bạn.",
               "items": {
-                "spamAccount": { "description": "Đã chặn 2 ngày trước", "action": "Unblock" },
-                "oldBot": { "description": "Đã chặn 1 tháng trước", "action": "Unblock" }
+                "spamAccount": { "description": "Đã chặn 2 ngày trước", "action": "Bỏ chặn" },
+                "oldBot": { "description": "Đã chặn 1 tháng trước", "action": "Bỏ chặn" }
               }
             }
           }
         },
         "sessions": {
           "label": "Phiên đăng nhập",
-          "description": "Active sessions và terminate.",
+          "description": "Danh sách các thiết bị và trình duyệt đang đăng nhập tài khoản của bạn.",
           "sections": {
             "activeSessions": {
-              "title": "Active sessions",
-              "description": "Kiểm tra các thiết bị đang đăng nhập.",
+              "title": "Các phiên hoạt động",
+              "description": "Kiểm tra và đăng xuất khỏi các thiết bị lạ.",
               "items": {
                 "chrome": {
                   "title": "Chrome · Windows",
                   "description": "127.0.0.1 · hiện tại",
-                  "meta": "Active now",
-                  "action": "Giữ phiên"
+                  "meta": "Đang hoạt động",
+                  "action": "Giữ lại"
                 },
                 "safari": {
                   "title": "Safari · iPhone",
                   "description": "TP. Hồ Chí Minh · 2 ngày trước",
-                  "meta": "Mobile",
-                  "action": "Terminate"
+                  "meta": "Di động",
+                  "action": "Đăng xuất"
                 }
               }
             }
           }
         },
         "verification": {
-          "label": "Xác minh",
-          "description": "Upload documents và gửi request xác minh.",
+          "label": "Xác minh tài khoản",
+          "description": "Gửi yêu cầu để nhận dấu tích xác minh (verified badge).",
           "sections": {
             "request": {
-              "title": "Verification request",
-              "description": "Tải giấy tờ và mô tả lý do xác minh.",
+              "title": "Yêu cầu xác minh",
+              "description": "Vui lòng tải lên giấy tờ tùy thân và mô tả lý do bạn cần xác minh.",
               "fields": {
-                "documents": "Document upload",
-                "note": "Request note"
+                "documents": "Tải lên tài liệu",
+                "note": "Lý do xác minh"
               }
             }
           }
         },
         "deleteAccount": {
           "label": "Xóa tài khoản",
-          "description": "Xác nhận mật khẩu và xóa tài khoản.",
+          "description": "Xác nhận và xóa vĩnh viễn tài khoản của bạn.",
           "sections": {
             "deleteAccount": {
-              "title": "Delete account",
-              "description": "Hành động nguy hiểm, hiện chỉ mô phỏng.",
+              "title": "Vùng nguy hiểm",
+              "description": "Hành động này sẽ xóa toàn bộ dữ liệu của bạn và không thể khôi phục.",
               "fields": {
-                "passwordConfirm": "Password confirm"
+                "passwordConfirm": "Xác nhận mật khẩu"
               },
-              "action": "Delete account"
+              "action": "Xác nhận xóa tài khoản"
             }
           }
         },
         "payments": {
           "label": "Thanh toán",
-          "description": "Payment methods management.",
+          "description": "Quản lý phương thức thanh toán và ví của bạn.",
           "sections": {
             "paymentMethods": {
-              "title": "Payment methods",
-              "description": "Quản lý thẻ và ví thanh toán.",
+              "title": "Phương thức thanh toán",
+              "description": "Thêm hoặc xóa các thẻ và ví dùng để giao dịch.",
               "items": {
                 "visa": {
-                  "title": "Visa ending 4242",
+                  "title": "Visa đuôi 4242",
                   "description": "Phương thức mặc định",
-                  "meta": "Default",
-                  "action": "Edit"
+                  "meta": "Mặc định",
+                  "action": "Chỉnh sửa"
                 },
                 "wallet": {
-                  "title": "VNSEEA Wallet",
-                  "description": "Số dư mock: VND 9.999.999",
-                  "meta": "Wallet",
-                  "action": "Manage"
+                  "title": "Ví VNSEEA",
+                  "description": "Số dư: 9.999.999 VND",
+                  "meta": "Ví",
+                  "action": "Quản lý"
                 }
               }
             }
@@ -373,60 +373,60 @@
         },
         "monetization": {
           "label": "Kiếm tiền",
-          "description": "Plan, price và enable/disable.",
+          "description": "Thiết lập các gói nội dung trả phí cho người theo dõi.",
           "sections": {
             "plan": {
-              "title": "Monetization plan",
-              "description": "Tạo gói nội dung trả phí.",
+              "title": "Gói kiếm tiền",
+              "description": "Tạo gói nội dung độc quyền dành cho những người đăng ký.",
               "fields": {
-                "planName": "Plan name",
-                "price": "Price",
-                "enabled": "Enable/disable"
+                "planName": "Tên gói",
+                "price": "Giá tiền",
+                "enabled": "Trạng thái"
               }
             }
           }
         },
         "invitationLinks": {
           "label": "Lời mời",
-          "description": "Generate invite link, copy link và invitees.",
+          "description": "Tạo link mời bạn bè gia nhập VNSEEA.",
           "sections": {
             "links": {
-              "title": "Invitation links",
-              "description": "Tạo và theo dõi link mời.",
+              "title": "Liên kết mời",
+              "description": "Theo dõi số lượng người đã dùng link của bạn.",
               "items": {
                 "link": {
                   "description": "12 người đã tham gia",
-                  "meta": "Active",
-                  "action": "Copy link"
+                  "meta": "Đang hoạt động",
+                  "action": "Sao chép link"
                 },
                 "invitees": {
-                  "title": "Invitees",
-                  "description": "Hoangne, Dung1, Nicolas",
-                  "action": "View invitees"
+                  "title": "Người đã mời",
+                  "description": "Hoàng, Dũng, Nicolas...",
+                  "action": "Xem danh sách"
                 }
               }
             }
           }
         },
         "affiliates": {
-          "label": "Affiliates",
-          "description": "Referral link và earnings dashboard.",
+          "label": "Tiếp thị liên kết",
+          "description": "Xem thống kê thu nhập từ chương trình cộng tác viên.",
           "sections": {
             "dashboard": {
-              "title": "Affiliate dashboard",
-              "description": "Theo dõi referral và thu nhập.",
+              "title": "Bảng điều khiển Affiliate",
+              "description": "Theo dõi lượt giới thiệu và thu nhập hàng tháng.",
               "items": {
                 "referralLink": {
-                  "title": "Referral link",
-                  "action": "Copy"
+                  "title": "Link giới thiệu",
+                  "action": "Sao chép"
                 },
                 "earnings": {
-                  "title": "Earnings",
+                  "title": "Thu nhập",
                   "meta": "Tháng này"
                 },
                 "referrals": {
-                  "title": "Referrals",
-                  "description": "42 lượt đăng ký"
+                  "title": "Lượt giới thiệu",
+                  "description": "42 lượt đăng ký thành công"
                 }
               }
             }
@@ -434,40 +434,40 @@
         },
         "myInfo": {
           "label": "Dữ liệu của tôi",
-          "description": "Download personal data.",
+          "description": "Yêu cầu và tải xuống toàn bộ dữ liệu cá nhân của bạn.",
           "sections": {
             "myInfo": {
-              "title": "My info",
-              "description": "Tải dữ liệu cá nhân dạng archive.",
+              "title": "Thông tin cá nhân",
+              "description": "Nhận bản sao dữ liệu của bạn dưới dạng file nén.",
               "items": {
                 "download": {
-                  "title": "Download personal data",
-                  "description": "Bao gồm profile, posts, media, messages metadata.",
-                  "action": "Request archive"
+                  "title": "Tải dữ liệu cá nhân",
+                  "description": "Bao gồm ảnh, bài viết, tin nhắn và thông tin cá nhân khác.",
+                  "action": "Yêu cầu bản sao"
                 }
               }
             }
           }
         },
         "myPoints": {
-          "label": "Điểm của tôi",
-          "description": "Points balance và history.",
+          "label": "Điểm thưởng",
+          "description": "Kiểm tra số dư điểm tích lũy và lịch sử nhận điểm.",
           "sections": {
             "myPoints": {
-              "title": "My points",
-              "description": "Điểm tích lũy từ hoạt động cộng đồng.",
+              "title": "Điểm VNSEEA",
+              "description": "Điểm bạn tích được từ các hoạt động đóng góp cho cộng đồng.",
               "items": {
                 "balance": {
                   "title": "50 điểm",
-                  "description": "Số dư hiện tại",
-                  "meta": "Balance"
+                  "description": "Số dư khả dụng",
+                  "meta": "Số dư"
                 },
                 "comment": {
-                  "description": "Bình luận hữu ích",
+                  "description": "Đóng góp bình luận chất lượng",
                   "meta": "Hôm nay"
                 },
                 "event": {
-                  "description": "Tham gia event",
+                  "description": "Tham gia sự kiện cộng đồng",
                   "meta": "Tuần này"
                 }
               }
@@ -475,16 +475,16 @@
           }
         },
         "addresses": {
-          "label": "Địa chỉ",
-          "description": "Add/edit shipping addresses.",
+          "label": "Địa chỉ nhận hàng",
+          "description": "Quản lý địa chỉ giao hàng cho các đơn hàng Marketplace.",
           "sections": {
             "shippingAddresses": {
-              "title": "Shipping addresses",
-              "description": "Địa chỉ giao hàng cho marketplace.",
+              "title": "Địa chỉ giao hàng",
+              "description": "Thông tin liên hệ và vị trí nhận hàng của bạn.",
               "fields": {
-                "fullName": "Full name",
-                "phone": "Phone",
-                "address": "Address"
+                "fullName": "Họ và tên",
+                "phone": "Số điện thoại",
+                "address": "Địa chỉ chi tiết"
               },
               "values": {
                 "address": "Quận 1, TP. Hồ Chí Minh"
@@ -493,27 +493,27 @@
           }
         },
         "career": {
-          "label": "LinkedIn mode",
-          "description": "Experience, certifications và projects.",
+          "label": "Chế độ sự nghiệp",
+          "description": "Quản lý kinh nghiệm làm việc, chứng chỉ và các dự án chuyên nghiệp.",
           "sections": {
             "profile": {
-              "title": "Experience + Certifications + Projects",
-              "description": "Bổ sung hồ sơ nghề nghiệp.",
+              "title": "Kinh nghiệm - Chứng chỉ - Dự án",
+              "description": "Xây dựng thương hiệu cá nhân và hồ sơ năng lực chuyên môn.",
               "items": {
                 "workExperience": {
-                  "title": "Work experience",
-                  "description": "Community Manager · VNSEEA",
-                  "action": "Add work experience"
+                  "title": "Kinh nghiệm làm việc",
+                  "description": "Quản lý cộng đồng · VNSEEA",
+                  "action": "Thêm kinh nghiệm"
                 },
                 "certifications": {
-                  "title": "Certifications",
-                  "description": "Product Growth Certificate",
-                  "action": "Add certification"
+                  "title": "Chứng chỉ & Bằng cấp",
+                  "description": "Chứng chỉ Phát triển sản phẩm",
+                  "action": "Thêm chứng chỉ"
                 },
                 "projects": {
-                  "title": "Projects",
-                  "description": "VNSEEA migration UI",
-                  "action": "Add project"
+                  "title": "Dự án tiêu biểu",
+                  "description": "Dự án di chuyển UI VNSEEA",
+                  "action": "Thêm dự án"
                 }
               }
             }

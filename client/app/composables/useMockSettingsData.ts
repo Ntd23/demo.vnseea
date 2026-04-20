@@ -45,7 +45,7 @@ export const useMockSettingsData = () => {
   const { t } = useI18n()
   const tr = (key: string, params?: Record<string, string | number>) => t(`settings.data.${key}`, params)
 
-  const pages: SettingPage[] = [
+  const pages = computed<SettingPage[]>(() => [
     {
       slug: "general",
       label: tr("pages.general.label"),
@@ -446,11 +446,11 @@ export const useMockSettingsData = () => {
         },
       ],
     },
-  ]
+  ])
 
   return {
     pages,
     defaultSlug: "general",
-    findPageBySlug: (slug: string) => pages.find(page => page.slug === slug),
+    findPageBySlug: (slug: string) => pages.value.find(page => page.slug === slug),
   }
 }
