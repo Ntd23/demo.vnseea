@@ -1023,6 +1023,314 @@
       "statsRelatedDescriptionMatch": "Other hashtags that often appear with this topic.",
       "statsRelatedDescriptionEmpty": "Suggested hashtags to keep exploring when there are no results yet."
     },
+    "withdrawalPage": {
+      "seoTitle": "Withdrawal | VNSEEA",
+      "seoDescription": "Create withdrawal requests, manage payment details, and track processing history on VNSEEA.",
+      "heroEyebrow": "P-46 · Withdrawal",
+      "heroTitle": "Withdraw from VNSEEA",
+      "heroDescription": "Submit a withdrawal request, review payment details, and track processing status from one screen.",
+      "availableBalance": "Available balance",
+      "statPending": "Pending",
+      "statRequests": "Requests",
+      "requestEyebrow": "Request",
+      "requestTitle": "Create a withdrawal request",
+      "requestDescription": "Minimum {amount} per withdrawal.",
+      "availableBadge": "Available {amount}",
+      "amountLabel": "Amount",
+      "accountNameLabel": "Account holder name",
+      "accountNamePlaceholder": "Must match the verified profile",
+      "accountNumberLabel": "Bank account / wallet email",
+      "accountNumberPlaceholder": "Enter the payout destination",
+      "noteLabel": "Note",
+      "notePlaceholder": "Reconciliation note",
+      "submit": "Submit withdrawal request",
+      "errorMinimum": "The minimum withdrawal amount is {amount}.",
+      "errorMaximum": "The withdrawal amount cannot exceed the available balance.",
+      "errorMissingFields": "Please fill in both the account holder name and payout information.",
+      "paymentInfoEyebrow": "Payment info",
+      "paymentInfoTitle": "Payment information",
+      "historyEyebrow": "History",
+      "historyTitle": "Withdrawal requests",
+      "statusApproved": "Approved",
+      "statusRejected": "Rejected",
+      "statusPending": "Processing",
+      "fallbackMethod": "Withdrawal",
+      "submittedNow": "Just submitted",
+      "methods": [
+        {
+          "label": "Bank transfer",
+          "value": "bank",
+          "icon": "i-ph-bank-fill",
+          "description": "Receive funds through a domestic bank account."
+        },
+        {
+          "label": "MoMo wallet",
+          "value": "momo",
+          "icon": "i-ph-device-mobile-fill",
+          "description": "Fast payout to a verified e-wallet."
+        },
+        {
+          "label": "PayPal",
+          "value": "paypal",
+          "icon": "i-ph-paypal-logo-fill",
+          "description": "For creators receiving international payouts."
+        }
+      ],
+      "paymentProfiles": [
+        { "label": "Primary account", "value": "Nguyen Van Justin · 0123 456 789" },
+        { "label": "Verification", "value": "Identity and email verified." },
+        { "label": "Processing time", "value": "1-3 business days." }
+      ],
+      "history": [
+        { "id": "wd-pending-bank", "amount": 1250000, "method": "Bank transfer", "account": "VCB · **** 6789", "time": "Awaiting approval", "status": "pending" },
+        { "id": "wd-approved-momo", "amount": 800000, "method": "MoMo wallet", "account": "MoMo · **** 2211", "time": "3 days ago", "status": "approved" },
+        { "id": "wd-approved-bank", "amount": 2200000, "method": "Bank transfer", "account": "ACB · **** 1042", "time": "Last week", "status": "approved" }
+      ]
+    },
+    "groupDetailPage": {
+      "seoFallbackTitle": "Group page | VNSEEA",
+      "seoFallbackDescription": "A VNSEEA group detail page.",
+      "emptyTitle": "Group not found",
+      "emptyDescription": "This group slug is not available in the current mock data. You can return to the group list and pick another community.",
+      "backToGroups": "Back to groups",
+      "heroTypeLabel": "Group page",
+      "joinFallback": "Join group",
+      "inviteFallback": "Invite members",
+      "settingsButton": "Group settings",
+      "tabPosts": "Posts",
+      "tabAbout": "About",
+      "feedEyebrow": "Activity",
+      "feedTitle": "Group feed",
+      "feedDescription": "{activity}. This is where members post updates, share context, and discuss topics relevant to the community.",
+      "aboutCompactEyebrow": "Summary",
+      "aboutEyebrow": "About the group",
+      "aboutCompactTitle": "Quick info",
+      "membersEyebrow": "Members",
+      "privacyTitle": "Privacy",
+      "categoryTitle": "Category",
+      "guidelinesTitle": "Guidelines",
+      "inviteMore": "Invite more",
+      "adminEyebrow": "Admin area",
+      "adminDescription": "You currently have admin rights for this group. You can update the description, cover, privacy, and member list in the next step.",
+      "adminButton": "Open group settings",
+      "topicsTitle": "Featured topics",
+      "topicsAudienceTitle": "Who is it for",
+      "topicsAudienceDescription": "Members interested in {category}, looking for deeper discussions and steady updates in a clearly focused space.",
+      "topicsJoinTitle": "How to join",
+      "topicsJoinDescription": "{privacy} After joining, members can post, comment, and invite relevant friends.",
+      "memberCount": "{count} members",
+      "onlineCount": "{count} people online",
+      "privacy": {
+        "public": "Public",
+        "private": "Private",
+        "secret": "Secret"
+      },
+      "privacyDescription": {
+        "public": "Anyone can find the group and view its basic content.",
+        "private": "The group is publicly visible, but only members can see posts.",
+        "secret": "Only invited people can find and join this group."
+      },
+      "categories": {
+        "auto": "Autos & Vehicles",
+        "business": "Business",
+        "technology": "Technology",
+        "education": "Education",
+        "travel": "Travel",
+        "marketplace": "Marketplace"
+      },
+      "memberRoleFallback": "Member",
+      "postRole": "{group} · {role}",
+      "postTime1": "5 minutes ago",
+      "postTime2": "37 minutes ago",
+      "postTime3": "2 hours ago",
+      "postText1": "Inside {group}, people are actively discussing the topic {topic}. This pinned post quickly reminds everyone to add real context so they can receive more useful feedback.",
+      "postText2": "Quick recap for this week in {group}: {activity}. New members can read this thread to catch up on the hottest topics and core guidelines before publishing their first post.",
+      "postText3": "One topic currently getting attention in {group}: practical experience, lessons learned, and the best resources shared under #{topic}.",
+      "groups": {
+        "cong-dong-xe-dien-viet": {
+          "summary": "Reviews of electric vehicles, charging stations, maintenance experience, and real-world usage journeys.",
+          "activityLabel": "128 new posts this week",
+          "ownerLabel": "Managed by Studio Mobility",
+          "locationLabel": "Nationwide activity",
+          "foundedLabel": "Founded in March 2024",
+          "joinLabel": "Joined",
+          "inviteLabel": "Invite members",
+          "guidelines": [
+            "Prioritize hands-on reviews with photos or metrics whenever possible.",
+            "Do not post direct selling content outside the scope of EVs and related accessories.",
+            "Keep discussions respectful and focused on solutions and useful knowledge."
+          ]
+        },
+        "founder-circle-vietnam": {
+          "summary": "A space to discuss operations, growth, and strategy for founders, C-level leaders, and builders.",
+          "activityLabel": "24 discussions currently open",
+          "ownerLabel": "Curated by VNSEEA Business",
+          "locationLabel": "Ha Noi · Ho Chi Minh City · Online",
+          "foundedLabel": "Founded in August 2023",
+          "joinLabel": "Request to join",
+          "inviteLabel": "Invite collaborators",
+          "guidelines": [
+            "Keep posts concise and go straight to the problem and context you want feedback on.",
+            "Do not flood the main feed with hiring posts or service pitches.",
+            "Respect privacy when sharing internal numbers and sensitive operational details."
+          ]
+        },
+        "ai-product-builders": {
+          "summary": "Focused on AI products, automation, datasets, prompt engineering, and weekly product demos.",
+          "activityLabel": "6 online events this month",
+          "ownerLabel": "You joined in February",
+          "locationLabel": "Remote-first community",
+          "foundedLabel": "Founded in January 2024",
+          "joinLabel": "Joined",
+          "inviteLabel": "Invite members",
+          "guidelines": [
+            "Prioritize demos with visuals, video, or a prototype link so people can respond quickly.",
+            "Tag posts clearly by intent: research, case study, prompt, automation, or launch.",
+            "Avoid sharing sensitive customer data or confidential company information."
+          ]
+        },
+        "di-va-hoc": {
+          "summary": "A group for workshops, courses, study materials, and meetup schedules for working professionals.",
+          "activityLabel": "18 new resources shared",
+          "ownerLabel": "You are following 4 subtopics",
+          "locationLabel": "Vietnamese learning community",
+          "foundedLabel": "Founded in November 2023",
+          "joinLabel": "Joined",
+          "inviteLabel": "Invite friends",
+          "guidelines": [
+            "Shared documents should include sources so others can verify and continue learning.",
+            "Short notes and key insights after each workshop are encouraged.",
+            "Do not spam unrelated course links or affiliate content."
+          ]
+        },
+        "weekend-escape-club": {
+          "summary": "Plan short getaways, share compact itineraries, homestays, and ticket-hunting experience.",
+          "activityLabel": "9 new weekend itineraries",
+          "ownerLabel": "Recommended based on travel interests",
+          "locationLabel": "Domestic and Southeast Asia destinations",
+          "foundedLabel": "Founded in June 2024",
+          "joinLabel": "Join group",
+          "inviteLabel": "Invite travel partners",
+          "guidelines": [
+            "When reviewing a place, include cost, travel time, and practical notes.",
+            "Respect local environments and avoid promoting harmful activities.",
+            "Do not share unreliable or unverified tour-hunting information."
+          ]
+        }
+      },
+      "members": {
+        "cong-dong-xe-dien-viet": [
+          { "role": "Administrator", "meta": "Community operator" },
+          { "role": "Moderator", "meta": "Handles charging Q&A" },
+          { "role": "Active member", "meta": "24 posts this month" },
+          { "role": "Reviewer", "meta": "Tests vehicles and accessories" },
+          { "role": "Member", "meta": "Joined in May 2024" }
+        ],
+        "founder-circle-vietnam": [
+          { "role": "Host", "meta": "B2B SaaS founder" },
+          { "role": "Moderator", "meta": "Growth and community lead" },
+          { "role": "Member", "meta": "Runs an education startup" },
+          { "role": "Member", "meta": "Internal systems builder" }
+        ],
+        "ai-product-builders": [
+          { "role": "Host", "meta": "AI product consultant" },
+          { "role": "Moderator", "meta": "Specializes in workflow automation" },
+          { "role": "Member", "meta": "Designs AI experiences" },
+          { "role": "Member", "meta": "Works on prototyping and prompts" }
+        ],
+        "di-va-hoc": [
+          { "role": "Host", "meta": "Coordinates workshops" },
+          { "role": "Mentor", "meta": "Guides learning paths" },
+          { "role": "Member", "meta": "Shares skill-building materials" },
+          { "role": "Member", "meta": "Joined in January 2024" }
+        ],
+        "weekend-escape-club": [
+          { "role": "Host", "meta": "Builds weekend itineraries" },
+          { "role": "Active member", "meta": "Reviews homestays and restaurants" },
+          { "role": "Member", "meta": "Shares photos and transport tips" },
+          { "role": "Member", "meta": "Often joins trekking tours" }
+        ]
+      }
+    },
+    "pageDetailPage": {
+      "seoFallbackTitle": "Fanpage | VNSEEA",
+      "seoFallbackDescription": "A VNSEEA fanpage detail view.",
+      "emptyTitle": "Fanpage not found",
+      "emptyDescription": "This fanpage slug is not available in the current mock data. You can return to the creation flow and build a new page.",
+      "createNewPage": "Create new page",
+      "heroTypeLabel": "Fanpage",
+      "followFallback": "Follow",
+      "shareButton": "Share page",
+      "settingsButton": "Page settings",
+      "feedEyebrow": "Posts",
+      "feedTitle": "Fanpage feed",
+      "feedDescription": "{owner}. This is where the page publishes updates, brand stories, and core content to keep followers engaged.",
+      "aboutCompactEyebrow": "Summary",
+      "aboutEyebrow": "About the fanpage",
+      "aboutCompactTitle": "Quick info",
+      "categoryTitle": "Category",
+      "interactionTitle": "Interaction",
+      "hiddenMetrics": "Public metrics are hidden",
+      "mainTopicsTitle": "Main topics",
+      "actionEyebrow": "Fanpage interaction",
+      "actionTitle": "Follow, message, and updates",
+      "actionDescription": "{response}. This page can use CTAs to route viewers to inbox, store, or the main landing page.",
+      "messageButton": "Message",
+      "followStat": "Followers",
+      "likeStat": "Likes",
+      "manageTitle": "You currently manage this fanpage.",
+      "manageDescription": "In the next step, you can adjust the CTA, contact details, cover image, and display settings for the page.",
+      "previewSummary": "This fanpage is currently in preview mode. You can use it to introduce your brand, services, or key content to followers.",
+      "previewOwnerLabel": "You are viewing this fanpage in preview mode",
+      "previewResponseLabel": "CTA and response rules can be configured in the next step",
+      "previewLocationLabel": "Update after finishing the profile",
+      "previewFoundedLabel": "Just created",
+      "previewCtaLabel": "Follow",
+      "newPageName": "New page",
+      "categories": {
+        "local-business": "Local business",
+        "creator": "Creator & Expert",
+        "brand": "Brand & Product",
+        "education": "Education & Training",
+        "organization": "Organization & Community",
+        "service": "Professional service"
+      },
+      "followerCount": "{count} followers",
+      "likeCount": "{count} likes",
+      "postRole": "{category} · Fanpage",
+      "postTime1": "12 minutes ago",
+      "postTime2": "1 hour ago",
+      "postTime3": "Yesterday at 8:30 PM",
+      "postText1": "{page} has just published a short introduction post around the topic {tag}. This is where the fanpage shares new posts, offers, case studies, and important updates with followers.",
+      "postText2": "Another sample post from {page}: a short summary of the product, service, or featured content being pushed this week to keep engagement more consistent.",
+      "postText3": "The fanpage {page} can also use this space for announcements, event recaps, or behind-the-scenes stories to feel more personal to followers.",
+      "pages": {
+        "moc-may-studio": {
+          "summary": "A fanpage introducing wooden interiors, home styling concepts, and modern minimalist construction projects.",
+          "ownerLabel": "Verified business page",
+          "responseLabel": "Usually replies within 30 minutes",
+          "locationLabel": "Da Nang · Nationwide delivery",
+          "foundedLabel": "Operating since February 2022",
+          "ctaLabel": "Message"
+        },
+        "vnseea-mobility-lab": {
+          "summary": "A page sharing research, events, and insights on electric mobility, charging stations, and green transport infrastructure.",
+          "ownerLabel": "Content brand fanpage",
+          "responseLabel": "Replies during business hours",
+          "locationLabel": "Ha Noi · Ho Chi Minh City · Online",
+          "foundedLabel": "Launched in May 2024",
+          "ctaLabel": "Follow"
+        },
+        "hoc-nhanh-moi-ngay": {
+          "summary": "A fanpage sharing study notes, workshop schedules, and concise materials for working professionals who want to keep learning continuously.",
+          "ownerLabel": "Education and training page",
+          "responseLabel": "Supported regularly by an admin team",
+          "locationLabel": "Online-first",
+          "foundedLabel": "Started in September 2021",
+          "ctaLabel": "View courses"
+        }
+      }
+    },
     "fundingPage": {
       "seoTitle": "Funding | VNSEEA",
       "seoDescription": "Create fundraising campaigns, search and filter by category, track progress, and make mock donations in the VNSEEA community.",
@@ -1848,7 +2156,7 @@
       "tooltipMention": "Mention"
     },
     "publisherBox": {
-      "prompt": "What is happening? #Hashtag .. @Mention .. Link ..",
+      "prompt": "What is happening? Hashtag, mention, link...",
       "expandedOpen": "Post composer is open",
       "expandedClosed": "Tap to write a post, add images, video, polls, and more",
       "actionImage": "Image",

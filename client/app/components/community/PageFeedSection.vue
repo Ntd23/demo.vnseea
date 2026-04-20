@@ -4,13 +4,13 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            Bài viết
+            {{ t("pages.pageDetailPage.feedEyebrow") }}
           </p>
           <h2 class="mt-2 text-[1.3rem] font-black tracking-[-0.04em] text-[#243b63]">
-            Bảng tin fanpage
+            {{ t("pages.pageDetailPage.feedTitle") }}
           </h2>
           <p class="mt-1 text-[14px] leading-6 text-slate-500">
-            {{ page.ownerLabel }}. Đây là nơi fanpage đăng cập nhật, câu chuyện thương hiệu và nội dung chính để giữ nhịp tương tác với người theo dõi.
+            {{ t("pages.pageDetailPage.feedDescription", { owner: page.ownerLabel }) }}
           </p>
         </div>
 
@@ -32,6 +32,8 @@
 
 <script setup lang="ts">
 import type { CommunityPageRecord } from "../../../types/community"
+
+const { t } = useI18n()
 
 defineProps<{
   page: CommunityPageRecord

@@ -1023,6 +1023,314 @@
       "statsRelatedDescriptionMatch": "Hashtag khác thường xuất hiện cùng chủ đề này.",
       "statsRelatedDescriptionEmpty": "Hashtag gợi ý để tiếp tục khám phá khi chưa có kết quả."
     },
+    "withdrawalPage": {
+      "seoTitle": "Withdrawal | VNSEEA",
+      "seoDescription": "Tạo yêu cầu rút tiền, quản lý thông tin thanh toán và theo dõi lịch sử xử lý trên VNSEEA.",
+      "heroEyebrow": "P-46 · Withdrawal",
+      "heroTitle": "Rút tiền VNSEEA",
+      "heroDescription": "Gửi yêu cầu rút tiền, kiểm tra thông tin thanh toán và theo dõi trạng thái xử lý trong cùng một màn hình.",
+      "availableBalance": "Số dư khả dụng",
+      "statPending": "Đang chờ",
+      "statRequests": "Yêu cầu",
+      "requestEyebrow": "Yêu cầu",
+      "requestTitle": "Tạo yêu cầu rút tiền",
+      "requestDescription": "Tối thiểu {amount} cho mỗi lần rút.",
+      "availableBadge": "Khả dụng {amount}",
+      "amountLabel": "Số tiền",
+      "accountNameLabel": "Tên chủ tài khoản",
+      "accountNamePlaceholder": "Tên trùng với hồ sơ xác minh",
+      "accountNumberLabel": "Số tài khoản / Email ví",
+      "accountNumberPlaceholder": "Nhập thông tin nhận tiền",
+      "noteLabel": "Ghi chú",
+      "notePlaceholder": "Nội dung đối soát",
+      "submit": "Gửi yêu cầu rút tiền",
+      "errorMinimum": "Số tiền rút tối thiểu là {amount}.",
+      "errorMaximum": "Số tiền rút không được vượt quá số dư khả dụng.",
+      "errorMissingFields": "Vui lòng nhập đủ tên chủ tài khoản và thông tin nhận tiền.",
+      "paymentInfoEyebrow": "Thanh toán",
+      "paymentInfoTitle": "Thông tin thanh toán",
+      "historyEyebrow": "Lịch sử",
+      "historyTitle": "Yêu cầu rút tiền",
+      "statusApproved": "Đã duyệt",
+      "statusRejected": "Từ chối",
+      "statusPending": "Đang xử lý",
+      "fallbackMethod": "Rút tiền",
+      "submittedNow": "Vừa gửi",
+      "methods": [
+        {
+          "label": "Ngân hàng",
+          "value": "bank",
+          "icon": "i-ph-bank-fill",
+          "description": "Nhận tiền qua tài khoản ngân hàng nội địa."
+        },
+        {
+          "label": "Ví MoMo",
+          "value": "momo",
+          "icon": "i-ph-device-mobile-fill",
+          "description": "Rút nhanh về ví điện tử đã xác minh."
+        },
+        {
+          "label": "PayPal",
+          "value": "paypal",
+          "icon": "i-ph-paypal-logo-fill",
+          "description": "Dành cho creator nhận thanh toán quốc tế."
+        }
+      ],
+      "paymentProfiles": [
+        { "label": "Tài khoản chính", "value": "Nguyen Van Justin · 0123 456 789" },
+        { "label": "Xác minh", "value": "Đã xác minh danh tính và email." },
+        { "label": "Thời gian xử lý", "value": "1-3 ngày làm việc." }
+      ],
+      "history": [
+        { "id": "wd-pending-bank", "amount": 1250000, "method": "Ngân hàng", "account": "VCB · **** 6789", "time": "Đang chờ duyệt", "status": "pending" },
+        { "id": "wd-approved-momo", "amount": 800000, "method": "Ví MoMo", "account": "MoMo · **** 2211", "time": "3 ngày trước", "status": "approved" },
+        { "id": "wd-approved-bank", "amount": 2200000, "method": "Ngân hàng", "account": "ACB · **** 1042", "time": "Tuần trước", "status": "approved" }
+      ]
+    },
+    "groupDetailPage": {
+      "seoFallbackTitle": "Trang nhóm | VNSEEA",
+      "seoFallbackDescription": "Trang chi tiết nhóm trên VNSEEA.",
+      "emptyTitle": "Không tìm thấy nhóm",
+      "emptyDescription": "Slug nhóm này chưa có trong dữ liệu mock hiện tại. Bạn có thể quay lại danh sách nhóm để chọn một community khác.",
+      "backToGroups": "Quay lại danh sách nhóm",
+      "heroTypeLabel": "Trang nhóm",
+      "joinFallback": "Tham gia nhóm",
+      "inviteFallback": "Mời thành viên",
+      "settingsButton": "Cài đặt nhóm",
+      "tabPosts": "Bài viết",
+      "tabAbout": "Giới thiệu",
+      "feedEyebrow": "Hoạt động",
+      "feedTitle": "Bảng tin nhóm",
+      "feedDescription": "{activity}. Đây là khu vực thành viên đăng bài, chia sẻ update và thảo luận theo chủ đề của cộng đồng.",
+      "aboutCompactEyebrow": "Tóm tắt",
+      "aboutEyebrow": "Giới thiệu nhóm",
+      "aboutCompactTitle": "Thông tin nhanh",
+      "membersEyebrow": "Thành viên",
+      "privacyTitle": "Quyền riêng tư",
+      "categoryTitle": "Danh mục",
+      "guidelinesTitle": "Nội quy",
+      "inviteMore": "Mời thêm",
+      "adminEyebrow": "Khu vực admin",
+      "adminDescription": "Bạn đang có quyền quản trị nhóm này. Có thể chỉnh mô tả, cover, quyền riêng tư và danh sách thành viên ở bước tiếp theo.",
+      "adminButton": "Mở cài đặt nhóm",
+      "topicsTitle": "Chủ đề nổi bật",
+      "topicsAudienceTitle": "Dành cho ai",
+      "topicsAudienceDescription": "Thành viên quan tâm tới {category}, muốn trao đổi có chiều sâu và cập nhật đều đặn trong một không gian rõ chủ đề.",
+      "topicsJoinTitle": "Cách tham gia",
+      "topicsJoinDescription": "{privacy} Sau khi vào nhóm, thành viên có thể đăng bài, bình luận và mời thêm bạn bè phù hợp.",
+      "memberCount": "{count} thành viên",
+      "onlineCount": "{count} người đang online",
+      "privacy": {
+        "public": "Công cộng",
+        "private": "Riêng tư",
+        "secret": "Bí mật"
+      },
+      "privacyDescription": {
+        "public": "Ai cũng có thể tìm thấy nhóm và xem nội dung cơ bản.",
+        "private": "Nhóm hiển thị công khai nhưng chỉ thành viên mới xem được bài đăng.",
+        "secret": "Chỉ người được mời mới nhìn thấy và tham gia được nhóm."
+      },
+      "categories": {
+        "auto": "Ô tô và Xe cộ",
+        "business": "Kinh doanh",
+        "technology": "Công nghệ",
+        "education": "Giáo dục",
+        "travel": "Du lịch",
+        "marketplace": "Mua bán"
+      },
+      "memberRoleFallback": "Thành viên",
+      "postRole": "{group} · {role}",
+      "postTime1": "5 phút trước",
+      "postTime2": "37 phút trước",
+      "postTime3": "2 giờ trước",
+      "postText1": "Trong {group}, mọi người đang thảo luận rất sôi về chủ đề {topic}. Đây là bài ghim nhắc nhanh những câu hỏi nên kèm ngữ cảnh thật để nhận góp ý chất lượng hơn.",
+      "postText2": "Tổng hợp nhanh cho tuần này của {group}: {activity}. Thành viên mới có thể đọc thread này để nắm chủ đề nóng và nội quy trước khi đăng bài đầu tiên.",
+      "postText3": "Một chủ đề đang được quan tâm trong {group}: kinh nghiệm thực tế, bài học rút ra và các nguồn tham khảo tốt nhất cho tag #{topic}.",
+      "groups": {
+        "cong-dong-xe-dien-viet": {
+          "summary": "Review xe điện, trạm sạc, kinh nghiệm bảo dưỡng và chia sẻ hành trình dùng xe thực tế.",
+          "activityLabel": "128 bài mới tuần này",
+          "ownerLabel": "Quản trị bởi Studio Mobility",
+          "locationLabel": "Hoạt động toàn quốc",
+          "foundedLabel": "Thành lập từ tháng 3/2024",
+          "joinLabel": "Đã tham gia",
+          "inviteLabel": "Mời thành viên",
+          "guidelines": [
+            "Ưu tiên review thực tế, có hình ảnh hoặc số liệu khi chia sẻ trải nghiệm.",
+            "Không đăng bán hàng trực tiếp ngoài chủ đề xe điện và phụ kiện liên quan.",
+            "Giữ thảo luận tôn trọng, tập trung vào giải pháp và kiến thức hữu ích."
+          ]
+        },
+        "founder-circle-vietnam": {
+          "summary": "Không gian trao đổi bài toán vận hành, tăng trưởng và chiến lược cho founder, C-level và builder.",
+          "activityLabel": "24 thảo luận đang mở",
+          "ownerLabel": "Được tuyển chọn bởi VNSEEA Business",
+          "locationLabel": "Hà Nội · TP.HCM · Online",
+          "foundedLabel": "Thành lập từ tháng 8/2023",
+          "joinLabel": "Gửi yêu cầu tham gia",
+          "inviteLabel": "Mời cộng sự",
+          "guidelines": [
+            "Chia sẻ ngắn gọn, đi thẳng vào bài toán và bối cảnh cần góp ý.",
+            "Không đăng bài tuyển dụng hoặc chào bán dịch vụ tràn lan trong feed chính.",
+            "Tôn trọng nguyên tắc riêng tư với các số liệu nội bộ được chia sẻ trong nhóm."
+          ]
+        },
+        "ai-product-builders": {
+          "summary": "Tập trung vào AI product, automation, dataset, prompt engineering và demo sản phẩm mới mỗi tuần.",
+          "activityLabel": "6 sự kiện trực tuyến tháng này",
+          "ownerLabel": "Bạn đã tham gia từ tháng 2",
+          "locationLabel": "Remote-first community",
+          "foundedLabel": "Thành lập từ tháng 1/2024",
+          "joinLabel": "Đã tham gia",
+          "inviteLabel": "Mời thành viên",
+          "guidelines": [
+            "Ưu tiên demo có hình, video hoặc link prototype để mọi người góp ý nhanh.",
+            "Gắn tag rõ mục tiêu: nghiên cứu, case study, prompt, automation hoặc launch.",
+            "Tránh chia sẻ dữ liệu nhạy cảm của khách hàng và thông tin bí mật công ty."
+          ]
+        },
+        "di-va-hoc": {
+          "summary": "Nhóm chia sẻ workshop, khóa học, tài liệu ôn tập và lịch meetup dành cho người đi làm.",
+          "activityLabel": "18 tài liệu mới được chia sẻ",
+          "ownerLabel": "Bạn đang theo dõi 4 chủ đề con",
+          "locationLabel": "Cộng đồng học tập Việt Nam",
+          "foundedLabel": "Thành lập từ tháng 11/2023",
+          "joinLabel": "Đã tham gia",
+          "inviteLabel": "Mời bạn bè",
+          "guidelines": [
+            "Tài liệu đăng lên cần ghi nguồn để người sau có thể kiểm chứng và học tiếp.",
+            "Khuyến khích chia sẻ note ngắn, tóm tắt key insight sau mỗi workshop.",
+            "Không spam link khóa học hoặc affiliate không liên quan đến nội dung học tập."
+          ]
+        },
+        "weekend-escape-club": {
+          "summary": "Lên kế hoạch cho các chuyến đi ngắn ngày, chia sẻ lịch trình gọn, homestay và kinh nghiệm săn vé.",
+          "activityLabel": "9 hành trình mới cuối tuần này",
+          "ownerLabel": "Được đề xuất theo sở thích du lịch",
+          "locationLabel": "Điểm đến nội địa & Đông Nam Á",
+          "foundedLabel": "Thành lập từ tháng 6/2024",
+          "joinLabel": "Tham gia nhóm",
+          "inviteLabel": "Mời bạn đồng hành",
+          "guidelines": [
+            "Khi review địa điểm nên ghi chi phí, thời gian đi và lưu ý thực tế.",
+            "Tôn trọng môi trường địa phương, tránh cổ vũ hoạt động ảnh hưởng thiên nhiên.",
+            "Không đăng thông tin săn tour kém uy tín hoặc không rõ nguồn gốc."
+          ]
+        }
+      },
+      "members": {
+        "cong-dong-xe-dien-viet": [
+          { "role": "Quản trị viên", "meta": "Điều hành cộng đồng" },
+          { "role": "Moderator", "meta": "Phụ trách hỏi đáp sạc xe" },
+          { "role": "Thành viên tích cực", "meta": "24 bài viết tháng này" },
+          { "role": "Reviewer", "meta": "Chuyên thử xe và phụ kiện" },
+          { "role": "Thành viên", "meta": "Tham gia từ tháng 5/2024" }
+        ],
+        "founder-circle-vietnam": [
+          { "role": "Host", "meta": "Founder SaaS B2B" },
+          { "role": "Moderator", "meta": "Growth & community lead" },
+          { "role": "Thành viên", "meta": "Điều hành startup giáo dục" },
+          { "role": "Thành viên", "meta": "Builder hệ thống nội bộ" }
+        ],
+        "ai-product-builders": [
+          { "role": "Host", "meta": "AI product consultant" },
+          { "role": "Moderator", "meta": "Chuyên automation workflow" },
+          { "role": "Thành viên", "meta": "Thiết kế trải nghiệm AI" },
+          { "role": "Thành viên", "meta": "Làm prototyping và prompt" }
+        ],
+        "di-va-hoc": [
+          { "role": "Host", "meta": "Điều phối workshop" },
+          { "role": "Mentor", "meta": "Hướng dẫn lộ trình học" },
+          { "role": "Thành viên", "meta": "Chia sẻ tài liệu kỹ năng" },
+          { "role": "Thành viên", "meta": "Tham gia từ tháng 1/2024" }
+        ],
+        "weekend-escape-club": [
+          { "role": "Host", "meta": "Lên lịch trình cuối tuần" },
+          { "role": "Thành viên tích cực", "meta": "Review homestay & quán ăn" },
+          { "role": "Thành viên", "meta": "Chia sẻ ảnh và tips di chuyển" },
+          { "role": "Thành viên", "meta": "Đi nhiều tour trekking" }
+        ]
+      }
+    },
+    "pageDetailPage": {
+      "seoFallbackTitle": "Trang fanpage | VNSEEA",
+      "seoFallbackDescription": "Trang fanpage trên VNSEEA.",
+      "emptyTitle": "Không tìm thấy fanpage",
+      "emptyDescription": "Slug fanpage này chưa có trong dữ liệu mock hiện tại. Bạn có thể quay lại flow tạo trang để dựng một fanpage mới.",
+      "createNewPage": "Tạo trang mới",
+      "heroTypeLabel": "Fanpage",
+      "followFallback": "Theo dõi",
+      "shareButton": "Chia sẻ trang",
+      "settingsButton": "Cài đặt trang",
+      "feedEyebrow": "Bài viết",
+      "feedTitle": "Bảng tin fanpage",
+      "feedDescription": "{owner}. Đây là nơi fanpage đăng cập nhật, câu chuyện thương hiệu và nội dung chính để giữ nhịp tương tác với người theo dõi.",
+      "aboutCompactEyebrow": "Tóm tắt",
+      "aboutEyebrow": "Giới thiệu fanpage",
+      "aboutCompactTitle": "Thông tin nhanh",
+      "categoryTitle": "Danh mục",
+      "interactionTitle": "Tương tác",
+      "hiddenMetrics": "Đã ẩn chỉ số công khai",
+      "mainTopicsTitle": "Chủ đề chính",
+      "actionEyebrow": "Tương tác fanpage",
+      "actionTitle": "Theo dõi, nhắn tin và cập nhật",
+      "actionDescription": "{response}. Fanpage này có thể dùng CTA để điều hướng người xem sang hộp thư, cửa hàng hoặc landing page chính.",
+      "messageButton": "Nhắn tin",
+      "followStat": "Theo dõi",
+      "likeStat": "Yêu thích",
+      "manageTitle": "Bạn đang có quyền quản lý fanpage này.",
+      "manageDescription": "Ở bước tiếp theo bạn có thể chỉnh CTA, thông tin liên hệ, cover và các thiết lập hiển thị của trang.",
+      "previewSummary": "Fanpage này đang ở chế độ xem trước. Bạn có thể dùng trang này để giới thiệu thương hiệu, dịch vụ hoặc những nội dung quan trọng với người theo dõi.",
+      "previewOwnerLabel": "Bạn đang xem fanpage ở chế độ preview",
+      "previewResponseLabel": "Có thể thiết lập CTA và phản hồi ở bước tiếp theo",
+      "previewLocationLabel": "Cập nhật sau khi hoàn thiện hồ sơ",
+      "previewFoundedLabel": "Vừa khởi tạo",
+      "previewCtaLabel": "Theo dõi",
+      "newPageName": "Trang mới",
+      "categories": {
+        "local-business": "Doanh nghiệp địa phương",
+        "creator": "Creator & Chuyên gia",
+        "brand": "Thương hiệu & Sản phẩm",
+        "education": "Giáo dục & Đào tạo",
+        "organization": "Tổ chức & Cộng đồng",
+        "service": "Dịch vụ chuyên nghiệp"
+      },
+      "followerCount": "{count} người theo dõi",
+      "likeCount": "{count} lượt thích",
+      "postRole": "{category} · Fanpage",
+      "postTime1": "12 phút trước",
+      "postTime2": "1 giờ trước",
+      "postTime3": "Hôm qua lúc 20:30",
+      "postText1": "{page} vừa cập nhật một bài giới thiệu ngắn về chủ đề {tag}. Đây là nơi fanpage chia sẻ bài viết mới, ưu đãi, case study và những cập nhật quan trọng với người theo dõi.",
+      "postText2": "Một bài post mẫu khác của {page}: tóm tắt ngắn về sản phẩm, dịch vụ hoặc nội dung nổi bật đang được đẩy lên tuần này để giữ nhịp tương tác đều hơn trên fanpage.",
+      "postText3": "Fanpage {page} cũng có thể dùng không gian này để ghim announcement, recap sự kiện hoặc câu chuyện hậu trường nhằm tạo cảm giác gần gũi hơn với người theo dõi.",
+      "pages": {
+        "moc-may-studio": {
+          "summary": "Fanpage giới thiệu nội thất gỗ, concept trang trí nhà ở và các dự án thi công theo phong cách tối giản hiện đại.",
+          "ownerLabel": "Trang doanh nghiệp được xác minh",
+          "responseLabel": "Thường phản hồi trong 30 phút",
+          "locationLabel": "Đà Nẵng · Giao hàng toàn quốc",
+          "foundedLabel": "Hoạt động từ tháng 2/2022",
+          "ctaLabel": "Nhắn tin"
+        },
+        "vnseea-mobility-lab": {
+          "summary": "Trang cập nhật nghiên cứu, sự kiện và insight về giao thông điện hóa, trạm sạc và hạ tầng di chuyển xanh.",
+          "ownerLabel": "Fanpage thương hiệu nội dung",
+          "responseLabel": "Phản hồi trong ngày làm việc",
+          "locationLabel": "Hà Nội · TP.HCM · Online",
+          "foundedLabel": "Khởi chạy từ tháng 5/2024",
+          "ctaLabel": "Theo dõi"
+        },
+        "hoc-nhanh-moi-ngay": {
+          "summary": "Fanpage chia sẻ note học tập, lịch workshop và tài liệu ngắn dành cho người đi làm muốn cập nhật kỹ năng liên tục.",
+          "ownerLabel": "Trang giáo dục & đào tạo",
+          "responseLabel": "Có đội ngũ admin hỗ trợ đều đặn",
+          "locationLabel": "Online-first",
+          "foundedLabel": "Khởi tạo từ tháng 9/2021",
+          "ctaLabel": "Xem khóa học"
+        }
+      }
+    },
     "fundingPage": {
       "seoTitle": "Kinh phí | VNSEEA",
       "seoDescription": "Tạo chiến dịch gây quỹ, tìm kiếm, lọc theo danh mục, xem tiến độ và donate mock trong cộng đồng VNSEEA.",
@@ -1848,7 +2156,7 @@
       "tooltipMention": "Nhắc đến"
     },
     "publisherBox": {
-      "prompt": "Chuyện gì đang xảy ra vậy? #Hashtag .. @Mention .. Link ..",
+      "prompt": "Chuyện gì đang xảy ra vậy? Hashtag, mention, link...",
       "expandedOpen": "Đang mở trình tạo bài viết",
       "expandedClosed": "Chạm để viết bài, thêm ảnh, video, poll và nhiều hơn nữa",
       "actionImage": "Ảnh",

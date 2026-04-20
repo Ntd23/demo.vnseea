@@ -174,9 +174,9 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/forum/index.vue`
 - [ ] `client/app/pages/directory/index.vue`
 - [ ] `client/app/pages/wallet.vue`
-- [ ] `client/app/pages/withdrawal.vue`
-- [ ] `client/app/pages/g/[name].vue`
-- [ ] `client/app/pages/p/[name].vue`
+- [x] `client/app/pages/withdrawal.vue`
+- [x] `client/app/pages/g/[name].vue`
+- [x] `client/app/pages/p/[name].vue`
 - [x] `client/app/pages/@[username].vue`
 - [x] `client/app/pages/[username].vue`
 - [x] `client/app/pages/hashtag/[tag].vue`
@@ -230,6 +230,8 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 ### Profile / community
 - [x] `client/app/components/pages/ProfilePage.vue`
 - [x] `client/app/components/pages/HashtagPage.vue`
+- [x] `client/app/components/pages/GroupDetailPage.vue`
+- [x] `client/app/components/pages/PageDetailPage.vue`
 - [x] `client/app/components/profile/ProfileHero.vue`
 - [x] `client/app/components/profile/ProfileCompletionCard.vue`
 - [x] `client/app/components/profile/ProfileSidebar.vue`
@@ -248,13 +250,17 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/community/PageSettingsBasicsCard.vue`
 - [ ] `client/app/components/community/PageSettingsControlsCard.vue`
 - [ ] `client/app/components/community/PageSettingsSidebar.vue`
-- [ ] `client/app/components/community/GroupHeroBanner.vue`
-- [ ] `client/app/components/community/GroupFeedSection.vue`
-- [ ] `client/app/components/community/GroupAboutCard.vue`
-- [ ] `client/app/components/community/GroupTabsBar.vue`
-- [ ] `client/app/components/community/GroupMembersCard.vue`
-- [ ] `client/app/components/community/GroupAdminCard.vue`
-- [ ] `client/app/components/community/GroupTopicsCard.vue`
+- [x] `client/app/components/community/PageHeroBanner.vue`
+- [x] `client/app/components/community/PageFeedSection.vue`
+- [x] `client/app/components/community/PageAboutCard.vue`
+- [x] `client/app/components/community/PageActionCard.vue`
+- [x] `client/app/components/community/GroupHeroBanner.vue`
+- [x] `client/app/components/community/GroupFeedSection.vue`
+- [x] `client/app/components/community/GroupAboutCard.vue`
+- [x] `client/app/components/community/GroupTabsBar.vue`
+- [x] `client/app/components/community/GroupMembersCard.vue`
+- [x] `client/app/components/community/GroupAdminCard.vue`
+- [x] `client/app/components/community/GroupTopicsCard.vue`
 - [ ] `client/app/components/community/GroupSettingsBasicsCard.vue`
 - [ ] `client/app/components/community/GroupSettingsControlsCard.vue`
 - [ ] `client/app/components/community/GroupSettingsSidebar.vue`
@@ -336,6 +342,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/pages/EditProductPage.vue`
 - [x] `client/app/components/pages/MyProductsPage.vue`
 - [x] `client/app/components/pages/ProductsPage.vue`
+- [x] `client/app/components/pages/WithdrawalPage.vue`
 - [x] `client/app/components/product/HeroBanner.vue`
 - [x] `client/app/components/product/PreviewCard.vue`
 - [x] `client/app/components/product/EditorFields.vue`
@@ -365,10 +372,10 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/wallet/WalletTransactions.vue`
 - [ ] `client/app/components/wallet/WalletSendForm.vue`
 - [ ] `client/app/components/wallet/WalletTopupForm.vue`
-- [ ] `client/app/components/withdrawal/WithdrawalHero.vue`
-- [ ] `client/app/components/withdrawal/WithdrawalRequestForm.vue`
-- [ ] `client/app/components/withdrawal/WithdrawalPaymentInfo.vue`
-- [ ] `client/app/components/withdrawal/WithdrawalHistory.vue`
+- [x] `client/app/components/withdrawal/WithdrawalHero.vue`
+- [x] `client/app/components/withdrawal/WithdrawalRequestForm.vue`
+- [x] `client/app/components/withdrawal/WithdrawalPaymentInfo.vue`
+- [x] `client/app/components/withdrawal/WithdrawalHistory.vue`
 
 ### Search / explore / saved / poke / memories / directory / games / go-pro / forum / settings
 - [ ] `client/app/components/pages/SearchPage.vue`

@@ -25,7 +25,7 @@
 
             <div class="min-w-0 pb-1">
               <p class="text-[12px] font-bold uppercase tracking-[0.24em] text-white/70">
-                Trang nhóm
+                {{ t("pages.groupDetailPage.heroTypeLabel") }}
               </p>
               <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-white sm:text-[2.5rem]">
                 {{ group.name }}
@@ -49,7 +49,7 @@
               type="button"
             >
               <Icon name="i-ph-user-plus-bold" class="mr-2 h-4 w-4" />
-              {{ group.joinLabel || "Tham gia nhóm" }}
+              {{ group.joinLabel || t("pages.groupDetailPage.joinFallback") }}
             </button>
 
             <button
@@ -57,7 +57,7 @@
               type="button"
             >
               <Icon name="i-ph-user-circle-plus-bold" class="mr-2 h-4 w-4" />
-              {{ group.inviteLabel || "Mời thành viên" }}
+              {{ group.inviteLabel || t("pages.groupDetailPage.inviteFallback") }}
             </button>
 
             <NuxtLink
@@ -66,7 +66,7 @@
               class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
             >
               <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
-              Cài đặt nhóm
+              {{ t("pages.groupDetailPage.settingsButton") }}
             </NuxtLink>
           </div>
         </div>
@@ -81,6 +81,8 @@ import {
   getCommunityGroupSettingsPath,
 } from "../../../types/community"
 import type { CommunityGroupRecord } from "../../../types/community"
+
+const { t } = useI18n()
 
 const props = defineProps<{
   group: CommunityGroupRecord

@@ -1,11 +1,7 @@
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
 import { useMockSocialData } from "./useMockSocialData"
 import {
-  communityPageCategoryOptions,
   createCommunitySlug,
-  formatCommunityFollowerCount,
-  formatCommunityLikeCount,
-  getCommunityOptionLabel,
   getCommunityPageBySlug,
 } from "../../types/community"
 import type { CommunityPageRecord } from "../../types/community"
@@ -23,15 +19,24 @@ function titleFromSlug(value: string) {
     .join(" ")
 }
 
+function formatLocalizedCount(value: number, locale: string) {
+  return new Intl.NumberFormat(locale === "vi" ? "vi-VN" : "en-US").format(value)
+}
+
 export function useCommunityPageDetail(
   slugSource: MaybeRefOrGetter<string>,
   querySource?: MaybeRefOrGetter<Record<string, unknown>>,
 ) {
+  const { t, tm, locale } = useI18n()
   const { posts } = useMockSocialData()
 
   const slug = computed(() => String(toValue(slugSource) || "").trim())
   const query = computed(() =>
     querySource ? (toValue(querySource) as Record<string, unknown>) : {},
+  )
+
+  const pageDictionary = computed(() =>
+    tm("pages.pageDetailPage.pages") as Record<string, Partial<CommunityPageRecord>>,
   )
 
   const page = computed<CommunityPageRecord | null>(() => {
@@ -56,58 +61,58 @@ export function useCommunityPageDetail(
     const resolvedCategory =
       queryCategory
       || basePage?.category
-      || communityPageCategoryOptions[0]?.value
       || "local-business"
 
+    const localizedBasePage = basePage
+      ? {
+          ...basePage,
+          ...(pageDictionary.value?.[basePage.slug] ?? {}),
+        }
+      : null
+
     return {
-      id: basePage?.id ?? 0,
-      name: resolvedName || "Trang mới",
+      id: localizedBasePage?.id ?? 0,
+      name: resolvedName || t("pages.pageDetailPage.newPageName"),
       slug: resolvedSlug,
       summary:
         queryDescription
-        || basePage?.summary
-        || "Fanpage này đang ở chế độ xem trước. Bạn có thể dùng trang này để giới thiệu thương hiệu, dịch vụ hoặc những nội dung quan trọng với người theo dõi.",
+        || localizedBasePage?.summary
+        || t("pages.pageDetailPage.previewSummary"),
       category: resolvedCategory,
       banner:
-        basePage?.banner
+        localizedBasePage?.banner
         || "linear-gradient(135deg,#0f172a_0%,#0000ff_42%,#93c5fd_100%)",
-      accent: basePage?.accent || "#0000ff",
-      followers: basePage?.followers ?? 0,
-      likes: basePage?.likes ?? 0,
-      ownerLabel: basePage?.ownerLabel || "Bạn đang xem fanpage ở chế độ preview",
-      responseLabel: basePage?.responseLabel || "Có thể thiết lập CTA và phản hồi ở bước tiếp theo",
-      website: basePage?.website || `vnseea.vn/p/${resolvedSlug}`,
-      locationLabel: basePage?.locationLabel || "Cập nhật sau khi hoàn thiện hồ sơ",
-      foundedLabel: basePage?.foundedLabel || "Vừa khởi tạo",
-      ctaLabel: basePage?.ctaLabel || "Theo dõi",
-      canManage: basePage?.canManage ?? true,
+      accent: localizedBasePage?.accent || "#0000ff",
+      followers: localizedBasePage?.followers ?? 0,
+      likes: localizedBasePage?.likes ?? 0,
+      ownerLabel: localizedBasePage?.ownerLabel || t("pages.pageDetailPage.previewOwnerLabel"),
+      responseLabel: localizedBasePage?.responseLabel || t("pages.pageDetailPage.previewResponseLabel"),
+      website: localizedBasePage?.website || `vnseea.vn/p/${resolvedSlug}`,
+      locationLabel: localizedBasePage?.locationLabel || t("pages.pageDetailPage.previewLocationLabel"),
+      foundedLabel: localizedBasePage?.foundedLabel || t("pages.pageDetailPage.previewFoundedLabel"),
+      ctaLabel: localizedBasePage?.ctaLabel || t("pages.pageDetailPage.previewCtaLabel"),
+      canManage: localizedBasePage?.canManage ?? true,
       tags:
-        basePage?.tags?.length
-          ? basePage.tags
+        localizedBasePage?.tags?.length
+          ? localizedBasePage.tags
           : [resolvedCategory, "fanpage", "community"].filter(Boolean),
     }
   })
 
   const categoryLabel = computed(() =>
-    page.value
-      ? getCommunityOptionLabel(
-          communityPageCategoryOptions,
-          page.value.category,
-          "Chưa phân loại",
-        )
-      : "Chưa phân loại",
+    t(`pages.pageDetailPage.categories.${page.value?.category || "local-business"}`),
   )
 
   const followerCountLabel = computed(() =>
-    page.value
-      ? formatCommunityFollowerCount(page.value.followers)
-      : formatCommunityFollowerCount(0),
+    t("pages.pageDetailPage.followerCount", {
+      count: formatLocalizedCount(page.value?.followers ?? 0, locale.value),
+    }),
   )
 
   const likeCountLabel = computed(() =>
-    page.value
-      ? formatCommunityLikeCount(page.value.likes)
-      : formatCommunityLikeCount(0),
+    t("pages.pageDetailPage.likeCount", {
+      count: formatLocalizedCount(page.value?.likes ?? 0, locale.value),
+    }),
   )
 
   const pagePosts = computed(() => {
@@ -120,15 +125,21 @@ export function useCommunityPageDetail(
         ...post,
         id: page.value.id * 100 + index + 1,
         author: page.value.name,
-        role: index === 0 ? page.value.ownerLabel : `${categoryLabel.value} · Fanpage`,
+        role: index === 0
+          ? page.value.ownerLabel
+          : t("pages.pageDetailPage.postRole", { category: categoryLabel.value }),
         audience: page.value.name,
-        time: index === 0 ? "12 phút trước" : index === 1 ? "1 giờ trước" : "Hôm qua lúc 20:30",
+        time: index === 0
+          ? t("pages.pageDetailPage.postTime1")
+          : index === 1
+            ? t("pages.pageDetailPage.postTime2")
+            : t("pages.pageDetailPage.postTime3"),
         text:
           index === 0
-            ? `${page.value.name} vừa cập nhật một bài giới thiệu ngắn về chủ đề ${tag}. Đây là nơi fanpage chia sẻ bài viết mới, ưu đãi, case study và những cập nhật quan trọng với người theo dõi.`
+            ? t("pages.pageDetailPage.postText1", { page: page.value.name, tag })
             : index === 1
-              ? `Một bài post mẫu khác của ${page.value.name}: tóm tắt ngắn về sản phẩm, dịch vụ hoặc nội dung nổi bật đang được đẩy lên tuần này để giữ nhịp tương tác đều hơn trên fanpage.`
-              : `Fanpage ${page.value.name} cũng có thể dùng không gian này để ghim announcement, recap sự kiện hoặc câu chuyện hậu trường nhằm tạo cảm giác gần gũi hơn với người theo dõi.`,
+              ? t("pages.pageDetailPage.postText2", { page: page.value.name })
+              : t("pages.pageDetailPage.postText3", { page: page.value.name }),
         tags: Array.from(
           new Set([
             `#${tag}`,
