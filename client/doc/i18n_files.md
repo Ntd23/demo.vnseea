@@ -272,55 +272,61 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/pages/CreateBlogPage.vue`
 - [x] `client/app/components/blogs/CreateBlogHero.vue`
 - [x] `client/app/components/blogs/CreateBlogSidebar.vue`
-- [ ] `client/app/components/pages/ReadBlogPage.vue`
-- [ ] `client/app/components/blogs/ReadBlogHero.vue`
-- [ ] `client/app/components/blogs/ReadBlogMain.vue`
-- [ ] `client/app/components/blogs/ReadBlogSidebar.vue`
+- [x] `client/app/components/pages/ReadBlogPage.vue`
+- [x] `client/app/components/blogs/ReadBlogHero.vue`
+- [x] `client/app/components/blogs/ReadBlogMain.vue`
+- [x] `client/app/components/blogs/ReadBlogSidebar.vue`
 - [x] `client/app/components/blogs/BlogArticleCard.vue`
 
 ### Events / jobs / funding / live / watch
-- [ ] `client/app/components/pages/EventsPage.vue`
-- [ ] `client/app/components/events/EventsHero.vue`
-- [ ] `client/app/components/events/EventsFilters.vue`
-- [ ] `client/app/components/events/EventCard.vue`
-- [ ] `client/app/components/events/EventDetailHero.vue`
-- [ ] `client/app/components/events/EventDetailMain.vue`
-- [ ] `client/app/components/events/EventDetailSidebar.vue`
-- [ ] `client/app/components/events/CreateEventPage.vue`
-- [ ] `client/app/components/events/CreateEventHero.vue`
-- [ ] `client/app/components/events/CreateEventComposer.vue`
-- [ ] `client/app/components/events/EventsSidebar.vue`
-- [ ] `client/app/components/jobs/JobsHero.vue`
-- [ ] `client/app/components/jobs/JobsFilters.vue`
-- [ ] `client/app/components/jobs/JobsResultsHeader.vue`
-- [ ] `client/app/components/jobs/JobsSidebar.vue`
-- [ ] `client/app/components/jobs/JobsEmptyState.vue`
-- [ ] `client/app/components/jobs/JobCard.vue`
-- [ ] `client/app/components/jobs/JobDetailPanel.vue`
+- [x] `client/app/components/pages/EventsPage.vue`
+- [x] `client/app/components/events/EventsHero.vue`
+- [x] `client/app/components/events/EventsFilters.vue`
+- [x] `client/app/components/events/EventCard.vue`
+- [x] `client/app/components/events/EventDetailHero.vue`
+- [x] `client/app/components/events/EventDetailMain.vue`
+- [x] `client/app/components/events/EventDetailSidebar.vue`
+- [x] `client/app/components/pages/CreateEventPage.vue`
+- [x] `client/app/components/pages/EventDetailPage.vue`
+- [x] `client/app/components/pages/JobsPage.vue`
+- [x] `client/app/components/events/CreateEventHero.vue`
+- [x] `client/app/components/events/CreateEventComposer.vue`
+- [x] `client/app/components/events/EventsSidebar.vue`
+- [x] `client/app/components/jobs/JobsHero.vue`
+- [x] `client/app/components/jobs/JobsFilters.vue`
+- [x] `client/app/components/jobs/JobsResultsHeader.vue`
+- [x] `client/app/components/jobs/JobsSidebar.vue`
+- [x] `client/app/components/jobs/JobsEmptyState.vue`
+- [x] `client/app/components/jobs/JobCard.vue`
+- [x] `client/app/components/jobs/JobDetailPanel.vue`
 - [ ] `client/app/components/jobs/JobApplyModal.vue`
-- [ ] `client/app/components/jobs/JobPostModal.vue`
-- [ ] `client/app/components/funding/FundingHero.vue`
-- [ ] `client/app/components/funding/FundingFilters.vue`
-- [ ] `client/app/components/funding/FundingCard.vue`
-- [ ] `client/app/components/funding/FundingProgress.vue`
-- [ ] `client/app/components/funding/FundingSidebar.vue`
-- [ ] `client/app/components/funding/FundingDetailHero.vue`
-- [ ] `client/app/components/funding/FundingDetailMain.vue`
-- [ ] `client/app/components/funding/FundingDetailSidebar.vue`
-- [ ] `client/app/components/funding/CreateFundingForm.vue`
-- [ ] `client/app/components/funding/FundingDonateModal.vue`
-- [ ] `client/app/components/funding/FundingFilters.vue`
-- [ ] `client/app/components/live/LiveHero.vue`
-- [ ] `client/app/components/live/LivePlayer.vue`
-- [ ] `client/app/components/live/LiveStreamList.vue`
-- [ ] `client/app/components/live/LiveChat.vue`
-- [ ] `client/app/components/live/GoLiveModal.vue`
-- [ ] `client/app/components/watch/WatchHero.vue`
-- [ ] `client/app/components/watch/WatchFilters.vue`
-- [ ] `client/app/components/watch/WatchPlayer.vue`
-- [ ] `client/app/components/watch/WatchVideoInfo.vue`
-- [ ] `client/app/components/watch/WatchComments.vue`
-- [ ] `client/app/components/watch/RelatedVideos.vue`
+- [x] `client/app/components/jobs/JobPostModal.vue`
+- [x] `client/app/components/pages/FundingPage.vue`
+- [x] `client/app/components/pages/CreateFundingPage.vue`
+- [x] `client/app/components/pages/ShowFundPage.vue`
+- [x] `client/app/components/funding/FundingHero.vue`
+- [x] `client/app/components/funding/FundingFilters.vue`
+- [x] `client/app/components/funding/FundingCard.vue`
+- [x] `client/app/components/funding/FundingProgress.vue`
+- [x] `client/app/components/funding/FundingSidebar.vue`
+- [x] `client/app/components/funding/FundingDetailHero.vue`
+- [x] `client/app/components/funding/FundingDetailMain.vue`
+- [x] `client/app/components/funding/FundingDetailSidebar.vue`
+- [x] `client/app/components/funding/CreateFundingForm.vue`
+- [x] `client/app/components/funding/FundingDonateModal.vue`
+- [x] `client/app/components/pages/LivePage.vue`
+- [x] `client/app/components/live/LiveHero.vue`
+- [x] `client/app/components/live/LivePlayer.vue`
+- [x] `client/app/components/live/LiveStreamList.vue`
+- [x] `client/app/components/live/LiveChat.vue`
+- [x] `client/app/components/live/GoLiveModal.vue`
+- [x] `client/app/components/pages/WatchPage.vue`
+- [x] `client/app/components/watch/WatchHero.vue`
+- [x] `client/app/components/watch/WatchFilters.vue`
+- [x] `client/app/components/watch/WatchPlayer.vue`
+- [x] `client/app/components/watch/WatchVideoInfo.vue`
+- [x] `client/app/components/watch/WatchComments.vue`
+- [x] `client/app/components/watch/RelatedVideos.vue`
 
 ### Marketplace / checkout / orders / wallet / withdrawal
 - [x] `client/app/components/pages/NewProductPage.vue`
@@ -397,11 +403,11 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/forum/ForumThreadCard.vue`
 - [ ] `client/app/components/forum/ForumThreadDetail.vue`
 - [ ] `client/app/components/forum/CreateThreadModal.vue`
-- [ ] `client/app/components/pages/SettingsPage.vue`
-- [ ] `client/app/components/settings/SettingsHero.vue`
-- [ ] `client/app/components/settings/SettingsSidebar.vue`
-- [ ] `client/app/components/settings/SettingsSection.vue`
-- [ ] `client/app/components/settings/SettingsField.vue`
+- [x] `client/app/components/pages/SettingsPage.vue`
+- [x] `client/app/components/settings/SettingsHero.vue`
+- [x] `client/app/components/settings/SettingsSidebar.vue`
+- [x] `client/app/components/settings/SettingsSection.vue`
+- [x] `client/app/components/settings/SettingsField.vue`
 
 ## Note nhanh
 Danh sách trên là những file có khả năng chứa UI text hardcode cao nhất. Khi bắt đầu i18n thật, nên ưu tiên:
