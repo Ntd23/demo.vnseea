@@ -7,7 +7,8 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
 useHead({
-  title: "Sự kiện | VNSEEA",
+  title: () => t("pages.eventsPage.seoTitle"),
 })
 </script>

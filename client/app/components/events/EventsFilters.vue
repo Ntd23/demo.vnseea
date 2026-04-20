@@ -3,13 +3,13 @@
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <p class="text-label-secondary text-[var(--color-primary-600)]">
-          Bộ lọc
+          {{ $t("pages.eventsPage.filtersEyebrow") }}
         </p>
         <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-          Tìm sự kiện phù hợp
+          {{ $t("pages.eventsPage.filtersTitle") }}
         </h2>
         <p class="mt-1 max-w-[560px] text-body-secondary">
-          Lọc theo trạng thái, danh mục, địa điểm và mức độ quan tâm.
+          {{ $t("pages.eventsPage.filtersDescription") }}
         </p>
       </div>
 
@@ -18,7 +18,7 @@
         class="inline-flex h-14 items-center justify-center gap-2 rounded-[20px] bg-[var(--color-primary-500)] px-6 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 lg:min-w-[190px]"
       >
         <Icon name="i-ph-calendar-plus-fill" class="h-5 w-5" />
-        Tạo sự kiện
+        {{ $t("pages.eventsPage.createEvent") }}
       </NuxtLink>
     </div>
 
@@ -30,7 +30,7 @@
       <input
         :value="search"
         class="h-16 w-full rounded-[22px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-14 pr-5 text-[15px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:font-medium placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-200)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-        placeholder="Tìm kiếm sự kiện, địa điểm, người tổ chức hoặc hashtag"
+        :placeholder="$t('pages.eventsPage.searchPlaceholder')"
         type="search"
         @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
       >
@@ -40,10 +40,10 @@
       <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3">
         <div class="flex items-center justify-between gap-3 px-1">
           <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            Trạng thái
+            {{ $t("pages.eventsPage.status") }}
           </p>
           <span class="text-[12px] font-bold text-[var(--text-tertiary)]">
-            {{ tabs.length }} lựa chọn
+            {{ $t("pages.eventsPage.optionCount", { count: tabs.length }) }}
           </span>
         </div>
 
@@ -75,7 +75,7 @@
       <div class="space-y-4">
         <div>
           <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            Danh mục
+            {{ $t("pages.eventsPage.category") }}
           </p>
           <div class="mt-3 flex flex-wrap gap-2">
             <button
@@ -96,7 +96,7 @@
 
         <div>
           <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            Địa điểm
+            {{ $t("pages.eventsPage.location") }}
           </p>
           <div class="mt-3 flex flex-wrap gap-2">
             <button
@@ -120,10 +120,10 @@
     <div class="mt-5 flex flex-col gap-3 rounded-[24px] border border-[var(--border-default)] bg-white px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
       <div class="min-w-0">
         <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-          Sắp xếp
+          {{ $t("pages.eventsPage.sort") }}
         </p>
         <p class="mt-1 truncate text-[13px] font-semibold text-[var(--text-secondary)]">
-          Chọn cách ưu tiên danh sách sự kiện.
+          {{ $t("pages.eventsPage.sortDescription") }}
         </p>
       </div>
 
@@ -171,9 +171,11 @@ defineEmits<{
   "update:selectedSort": [value: EventSortKey]
 }>()
 
-const sortOptions: { value: EventSortKey; label: string; icon: string }[] = [
-  { value: "soonest", label: "Gần nhất", icon: "i-ph-clock-countdown-fill" },
-  { value: "going", label: "Nhiều người đi", icon: "i-ph-users-three-fill" },
-  { value: "interested", label: "Được quan tâm", icon: "i-ph-star-fill" },
-]
+const { t } = useI18n()
+
+const sortOptions = computed<{ value: EventSortKey; label: string; icon: string }[]>(() => [
+  { value: "soonest", label: t("pages.eventsPage.sortSoonest"), icon: "i-ph-clock-countdown-fill" },
+  { value: "going", label: t("pages.eventsPage.sortGoing"), icon: "i-ph-users-three-fill" },
+  { value: "interested", label: t("pages.eventsPage.sortInterested"), icon: "i-ph-star-fill" },
+])
 </script>

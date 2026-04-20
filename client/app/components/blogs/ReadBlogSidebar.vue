@@ -2,7 +2,7 @@
   <aside class="space-y-4">
     <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Tác giả
+        {{ $t("pages.readBlogPage.author") }}
       </p>
       <div class="mt-4 flex items-center gap-3">
         <div class="avatar-lg text-white" :style="{ background: article.authorGradient }">
@@ -18,13 +18,13 @@
         </div>
       </div>
       <p class="mt-4 text-[13px] leading-6 text-[var(--text-secondary)]">
-        Tác giả đang đóng góp các bài viết nổi bật trong luồng Blogs của VNSEEA.
+        {{ $t("pages.readBlogPage.authorDescription") }}
       </p>
     </section>
 
     <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Bài liên quan
+        {{ $t("pages.readBlogPage.relatedArticles") }}
       </p>
       <div class="mt-4 space-y-3">
         <NuxtLink
@@ -40,7 +40,7 @@
             {{ item.title }}
           </h3>
           <p class="mt-2 text-caption-secondary">
-            {{ item.readMinutes }} phút đọc
+            {{ $t("pages.blogsPage.readMinutes", { count: item.readMinutes }) }}
           </p>
         </NuxtLink>
       </div>

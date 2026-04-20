@@ -24,13 +24,13 @@
         <div class="flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white/95 px-4 py-4 shadow-[var(--shadow-md)] sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p class="text-label-secondary text-[var(--color-primary-600)]">
-              Kết quả
+              {{ $t("pages.eventsPage.results") }}
             </p>
             <h2 class="mt-1 text-heading text-[var(--text-primary)]">
               {{ resultHeading }}
             </h2>
             <p class="mt-1 text-body-secondary">
-              {{ visibleEvents.length }} sự kiện phù hợp · {{ activeTabLabel }}
+              {{ $t("pages.eventsPage.resultMeta", { count: visibleEvents.length, tab: activeTabLabel }) }}
             </p>
           </div>
 
@@ -40,7 +40,7 @@
               class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary-500)] px-3 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
             >
               <Icon name="i-ph-calendar-plus-fill" class="h-4 w-4" />
-              Tạo sự kiện
+              {{ $t("pages.eventsPage.createEvent") }}
             </NuxtLink>
             <div class="inline-flex h-11 items-center gap-2 rounded-[18px] bg-[var(--color-primary-50)] px-3 text-[13px] font-bold text-[var(--color-primary-600)]">
               <Icon name="i-ph-funnel-fill" class="h-4 w-4" />
@@ -52,7 +52,7 @@
               @click="resetFilters"
             >
               <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-              Đặt lại
+              {{ $t("pages.eventsPage.reset") }}
             </button>
           </div>
         </div>
@@ -78,10 +78,10 @@
             <Icon name="i-ph-calendar-x-fill" class="h-10 w-10" />
           </div>
           <h2 class="mt-5 text-heading text-[var(--text-primary)]">
-            Chưa có sự kiện phù hợp
+            {{ $t("pages.eventsPage.emptyTitle") }}
           </h2>
           <p class="mx-auto mt-2 max-w-[520px] text-body-secondary">
-            Hãy đổi tab, từ khoá hoặc địa điểm để xem những sự kiện khác trong mock data.
+            {{ $t("pages.eventsPage.emptyDescription") }}
           </p>
         </section>
       </section>
@@ -101,11 +101,12 @@
 <script setup lang="ts">
 import type { EventRsvpState, EventTabKey, MockEvent } from "~/composables/useMockEventsData"
 
+const { t } = useI18n()
 const { events, eventTabs, eventCategories, eventCities } = useMockEventsData()
 
 useSeoMeta({
-  title: "Sự kiện | VNSEEA",
-  description: "Khám phá, lọc và tham gia các sự kiện cộng đồng trên VNSEEA.",
+  title: () => t("pages.eventsPage.seoTitle"),
+  description: () => t("pages.eventsPage.seoDescription"),
 })
 
 const search = ref("")
@@ -172,37 +173,37 @@ const visibleEvents = computed(() => {
 
 const heroStats = computed(() => [
   {
-    label: "Sắp diễn ra",
+    label: t("pages.eventsPage.statUpcoming"),
     value: tabCounts.value.upcoming,
-    description: "Lịch còn mở trong mock data.",
+    description: t("pages.eventsPage.statUpcomingDescription"),
   },
   {
-    label: "Sẽ tham gia",
+    label: t("pages.eventsPage.statGoing"),
     value: tabCounts.value.going,
-    description: "Sự kiện bạn đã chọn đi.",
+    description: t("pages.eventsPage.statGoingDescription"),
   },
   {
-    label: "Được mời",
+    label: t("pages.eventsPage.statInvited"),
     value: tabCounts.value.invited,
-    description: "Lời mời đang chờ phản hồi.",
+    description: t("pages.eventsPage.statInvitedDescription"),
   },
 ])
 
-const activeTabLabel = computed(() => eventTabs.find((tab) => tab.key === activeTab.value)?.label || "Sự kiện")
+const activeTabLabel = computed(() => eventTabs.find((tab) => tab.key === activeTab.value)?.label || t("pages.eventsPage.eventFallback"))
 
 const resultHeading = computed(() => {
-  if (search.value.trim()) return `Kết quả cho “${search.value.trim()}”`
+  if (search.value.trim()) return t("pages.eventsPage.searchResult", { query: search.value.trim() })
   return activeTabLabel.value
 })
 
 const activeFiltersLabel = computed(() => {
-  const category = eventCategories.find((item) => item.value === selectedCategory.value)?.label || "Tất cả"
-  const city = eventCities.find((item) => item.value === selectedCity.value)?.label || "Mọi địa điểm"
+  const category = eventCategories.find((item) => item.value === selectedCategory.value)?.label || t("pages.eventsPage.all")
+  const city = eventCities.find((item) => item.value === selectedCity.value)?.label || t("pages.eventsPage.anywhere")
   const sort = selectedSort.value === "going"
-    ? "Nhiều người đi"
+    ? t("pages.eventsPage.sortGoing")
     : selectedSort.value === "interested"
-      ? "Được quan tâm"
-      : "Gần nhất"
+      ? t("pages.eventsPage.sortInterested")
+      : t("pages.eventsPage.sortSoonest")
 
   return `${category} · ${city} · ${sort}`
 })

@@ -4,7 +4,7 @@
       v-if="articleNotFound"
       class="rounded-[24px] border border-[var(--border-default)] bg-[var(--color-accent-50)] p-4 text-[13px] font-semibold text-[var(--color-accent-700)] shadow-[var(--shadow-sm)]"
     >
-      Không tìm thấy slug này trong mock data, đang mở bài viết mẫu gần nhất.
+      {{ $t("pages.readBlogPage.notFound") }}
     </section>
 
     <div class="relative min-h-[340px] overflow-hidden lg:min-h-[460px]">
@@ -25,7 +25,7 @@
               {{ article.categoryLabel }}
             </span>
             <span class="rounded-[10px] bg-[#101828]/64 px-3 py-1.5 text-[11px] font-bold backdrop-blur-[4px]">
-              {{ article.readMinutes }} phút đọc
+              {{ $t("pages.blogsPage.readMinutes", { count: article.readMinutes }) }}
             </span>
           </div>
 
@@ -43,7 +43,7 @@
             <div>
               <p class="text-[14px] font-bold">{{ article.author }}</p>
               <p class="text-[12px] text-white/72">
-                {{ article.publishedAt }} · {{ formatCompact(article.views) }} lượt xem
+                {{ article.publishedAt }} · {{ $t("pages.readBlogPage.views", { count: formatCompact(article.views) }) }}
               </p>
             </div>
           </div>

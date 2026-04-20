@@ -29,7 +29,7 @@
             v-if="event.isOwner"
             class="rounded-[10px] bg-white/18 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-[4px]"
           >
-            Của tôi
+            {{ $t("pages.eventsPage.ownerBadge") }}
           </span>
         </div>
 
@@ -78,7 +78,7 @@
         </div>
         <div class="flex items-center gap-2">
           <Icon name="i-ph-users-three-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
-          <span>{{ formatCompact(event.stats.going) }} sẽ tham gia · {{ formatCompact(event.stats.interested) }} quan tâm</span>
+          <span>{{ $t("pages.eventsPage.attendanceSummary", { going: formatCompact(event.stats.going), interested: formatCompact(event.stats.interested) }) }}</span>
         </div>
       </div>
 
@@ -101,7 +101,7 @@
           type="button"
           @click="$emit('rsvp', event.id, 'going')"
         >
-          Sẽ đi
+          {{ $t("pages.eventsPage.rsvpGoing") }}
         </button>
         <button
           class="inline-flex h-10 items-center justify-center rounded-[16px] text-[12px] font-bold transition"
@@ -111,13 +111,13 @@
           type="button"
           @click="$emit('rsvp', event.id, 'interested')"
         >
-          Quan tâm
+          {{ $t("pages.eventsPage.rsvpInterested") }}
         </button>
         <NuxtLink
           :to="`/events/${event.id}`"
           class="inline-flex h-10 items-center justify-center rounded-[16px] border border-[var(--border-default)] bg-white text-[12px] font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
         >
-          Chi tiết
+          {{ $t("pages.eventsPage.detail") }}
         </NuxtLink>
       </div>
     </div>
@@ -132,19 +132,21 @@ const props = defineProps<{
   rsvpState: EventRsvpState
 }>()
 
+const { t, locale } = useI18n()
+
 defineEmits<{
   rsvp: [id: string, state: EventRsvpState]
 }>()
 
 const rsvpLabel = computed(() => {
-  if (props.rsvpState === "going") return "Sẽ đi"
-  if (props.rsvpState === "interested") return "Quan tâm"
-  if (props.rsvpState === "invited") return "Được mời"
-  if (props.rsvpState === "not_interested") return "Bỏ qua"
-  return "Mở"
+  if (props.rsvpState === "going") return t("pages.eventsPage.rsvpGoing")
+  if (props.rsvpState === "interested") return t("pages.eventsPage.rsvpInterested")
+  if (props.rsvpState === "invited") return t("pages.eventsPage.rsvpInvited")
+  if (props.rsvpState === "not_interested") return t("pages.eventsPage.rsvpSkipped")
+  return t("pages.eventsPage.rsvpOpen")
 })
 
-const formatCompact = (value: number) => new Intl.NumberFormat("vi-VN", {
+const formatCompact = (value: number) => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
   notation: "compact",
   maximumFractionDigits: 1,
 }).format(value)

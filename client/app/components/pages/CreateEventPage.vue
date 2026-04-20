@@ -9,28 +9,30 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: "Tạo sự kiện | VNSEEA",
-  description: "Tạo sự kiện cộng đồng mới trên VNSEEA với thông tin, lịch trình và ảnh bìa.",
+  title: () => t("pages.createEventPage.seoTitle"),
+  description: () => t("pages.createEventPage.seoDescription"),
 })
 
 const quickFillSeed = ref(0)
 
-const heroStats = [
+const heroStats = computed(() => [
   {
-    label: "Trường chính",
+    label: t("pages.createEventPage.statMainFields"),
     value: "7",
-    description: "Tên, mô tả, địa điểm, thời gian và ảnh bìa.",
+    description: t("pages.createEventPage.statMainFieldsDescription"),
   },
   {
-    label: "Preview",
-    value: "Live",
-    description: "Card bên phải đổi theo nội dung đang nhập.",
+    label: t("pages.createEventPage.statPreview"),
+    value: t("pages.createEventPage.statPreviewValue"),
+    description: t("pages.createEventPage.statPreviewDescription"),
   },
   {
-    label: "Submit",
-    value: "Mock",
-    description: "Chưa ghi dữ liệu vào backend.",
+    label: t("pages.createEventPage.statSubmit"),
+    value: t("pages.createEventPage.statSubmitValue"),
+    description: t("pages.createEventPage.statSubmitDescription"),
   },
-] as const
+] as const)
 </script>
