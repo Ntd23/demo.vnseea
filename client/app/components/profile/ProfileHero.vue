@@ -6,8 +6,8 @@
       <div class="absolute left-4 top-4 flex items-center gap-3 rounded-full bg-white/12 px-3 py-2 backdrop-blur-sm sm:left-5 sm:top-5 sm:px-4">
         <div class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/80 bg-white/10 text-[12px] font-bold text-white">QT</div>
         <div>
-          <p class="text-[14px] font-semibold text-white sm:text-[18px]">Quản trị viên</p>
-          <p class="text-[11px] text-white/80 sm:text-[12px]">Đang hoạt động</p>
+          <p class="text-[14px] font-semibold text-white sm:text-[18px]">{{ t("pages.profilePage.heroRole") }}</p>
+          <p class="text-[11px] text-white/80 sm:text-[12px]">{{ t("pages.profilePage.heroStatus") }}</p>
         </div>
       </div>
 
@@ -26,16 +26,16 @@
             </div>
 
             <div class="rounded-[18px] bg-white/92 px-4 py-3 shadow-lg backdrop-blur-sm sm:px-5">
-              <p class="text-[16px] font-bold text-slate-900 sm:text-[18px]">Marketing Staff</p>
-              <p class="mt-1 text-[12px] text-slate-500 sm:text-[13px]">Khuyến khích hoàn thiện hồ sơ, thêm bài đăng và nội dung giới thiệu.</p>
+              <p class="text-[16px] font-bold text-slate-900 sm:text-[18px]">{{ t("pages.profilePage.heroHeadline") }}</p>
+              <p class="mt-1 text-[12px] text-slate-500 sm:text-[13px]">{{ t("pages.profilePage.heroDescription") }}</p>
             </div>
           </div>
 
           <div class="ml-auto flex flex-wrap items-center gap-2 rounded-full bg-white/92 px-3 py-2 shadow-sm">
-            <button class="rounded-full bg-[#0000ff] px-3 py-1.5 text-[12px] font-semibold text-white" type="button">Chỉnh sửa</button>
-            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">Các hoạt động</button>
-            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">Theo dõi</button>
-            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">Nhắn tin</button>
+            <button class="rounded-full bg-[#0000ff] px-3 py-1.5 text-[12px] font-semibold text-white" type="button">{{ t("pages.profilePage.heroActionEdit") }}</button>
+            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">{{ t("pages.profilePage.heroActionActivities") }}</button>
+            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">{{ t("pages.profilePage.heroActionFollow") }}</button>
+            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">{{ t("pages.profilePage.heroActionMessage") }}</button>
           </div>
         </div>
       </div>
@@ -56,5 +56,18 @@
 </template>
 
 <script setup lang="ts">
-const tabs = ['Thị trường', 'Mốc thời gian', 'Các nhóm', 'Thích', 'Đang theo dõi', 'Người theo dõi', 'Hình ảnh', 'Albums', 'Sản phẩm', 'Gia đình']
+const { t } = useI18n()
+
+const tabs = computed(() => [
+  t("pages.profilePage.heroTabMarketplace"),
+  t("pages.profilePage.heroTabTimeline"),
+  t("pages.profilePage.heroTabGroups"),
+  t("pages.profilePage.heroTabLikes"),
+  t("pages.profilePage.heroTabFollowing"),
+  t("pages.profilePage.heroTabFollowers"),
+  t("pages.profilePage.heroTabPhotos"),
+  t("pages.profilePage.heroTabAlbums"),
+  t("pages.profilePage.heroTabProducts"),
+  t("pages.profilePage.heroTabFamily"),
+])
 </script>

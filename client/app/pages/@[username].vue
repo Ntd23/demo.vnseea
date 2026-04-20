@@ -5,10 +5,19 @@
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-const username = computed(() => route.params.username as string)
+definePageMeta({
+  layout: "default",
+})
 
-useHead({
-  title: `${username.value} — Trang cá nhân`,
+const route = useRoute()
+const { t } = useI18n()
+const username = computed(() => {
+  const value = route.params.username
+  return Array.isArray(value) ? String(value[0] ?? "") : String(value ?? "")
+})
+
+useSeoMeta({
+  title: () => t("pages.profilePage.seoTitle", { username: username.value }),
+  description: () => t("pages.profilePage.seoDescription"),
 })
 </script>

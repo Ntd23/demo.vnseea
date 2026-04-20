@@ -10,10 +10,10 @@
       </div>
       <div class="min-w-0 flex-1">
         <p class="truncate text-[0.95rem] font-semibold text-[#243b63]">
-          Chuyện gì đang xảy ra vậy? #Hashtag .. @Mention .. Link ..
+          {{ t("feed.publisherBox.prompt") }}
         </p>
         <p class="mt-1 text-[0.8rem] text-slate-500">
-          {{ expanded ? 'Đang mở trình tạo bài viết' : 'Chạm để viết bài, thêm ảnh, video, poll và nhiều hơn nữa' }}
+          {{ expanded ? t("feed.publisherBox.expandedOpen") : t("feed.publisherBox.expandedClosed") }}
         </p>
       </div>
       <div class="flex h-9 w-9 items-center justify-center rounded-full bg-[#f5f8ff] text-[#6a7ea5]">
@@ -42,7 +42,7 @@
             <span>{{ chip.label }}</span>
           </button>
           <button class="ml-auto rounded-full bg-[linear-gradient(180deg,#2749ff_0%,#0000ff_100%)] px-5 py-2 text-sm font-bold text-white shadow-[0_8px_18px_rgba(0,0,255,0.18)]" type="button">
-            Chia sẻ
+            {{ t("feed.publisherBox.share") }}
           </button>
         </div>
       </div>
@@ -51,25 +51,27 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const expanded = ref(false)
 
-const actions = [
-  { label: 'Ảnh', icon: 'i-ph-image' },
-  { label: 'Video', icon: 'i-ph-video-camera' },
-  { label: 'Poll', icon: 'i-ph-list-checks' },
-  { label: 'GIF', icon: 'i-ph-film-strip' },
-  { label: 'Cảm xúc', icon: 'i-ph-smiley' },
-  { label: 'Âm thanh', icon: 'i-ph-music-note' },
-  { label: 'Tệp', icon: 'i-ph-file-text' },
-  { label: 'Câu chuyện', icon: 'i-ph-sparkle' },
-]
+const actions = computed(() => [
+  { label: t("feed.publisherBox.actionImage"), icon: "i-ph-image" },
+  { label: t("feed.publisherBox.actionVideo"), icon: "i-ph-video-camera" },
+  { label: t("feed.publisherBox.actionPoll"), icon: "i-ph-list-checks" },
+  { label: t("feed.publisherBox.actionGif"), icon: "i-ph-film-strip" },
+  { label: t("feed.publisherBox.actionFeeling"), icon: "i-ph-smiley" },
+  { label: t("feed.publisherBox.actionAudio"), icon: "i-ph-music-note" },
+  { label: t("feed.publisherBox.actionFile"), icon: "i-ph-file-text" },
+  { label: t("feed.publisherBox.actionStory"), icon: "i-ph-sparkle" },
+])
 
-const chips = [
-  { label: 'Chỉ có tôi', icon: 'i-ph-lock-key' },
-  { label: 'Thêm vị trí', icon: 'i-ph-map-pin' },
-  { label: 'Gắn thẻ bạn bè', icon: 'i-ph-user-plus' },
-  { label: 'Màu sắc', icon: 'i-ph-palette' },
-]
+const chips = computed(() => [
+  { label: t("feed.publisherBox.chipOnlyMe"), icon: "i-ph-lock-key" },
+  { label: t("feed.publisherBox.chipAddLocation"), icon: "i-ph-map-pin" },
+  { label: t("feed.publisherBox.chipTagFriends"), icon: "i-ph-user-plus" },
+  { label: t("feed.publisherBox.chipColors"), icon: "i-ph-palette" },
+])
 </script>
 
 <style scoped>

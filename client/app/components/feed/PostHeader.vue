@@ -7,7 +7,7 @@
       <div>
         <div class="flex items-center gap-1.5">
           <p class="text-[13px] font-bold text-slate-900 sm:text-sm">{{ author }}</p>
-          <button class="text-[11px] font-bold text-[#0000ff] hover:underline" type="button">Theo dõi</button>
+          <button class="text-[11px] font-bold text-[#0000ff] hover:underline" type="button">{{ t("feed.postHeader.follow") }}</button>
         </div>
         <div class="flex items-center gap-1.5 text-[11px] text-slate-400 sm:text-xs">
           <span>{{ role }}</span>
@@ -76,6 +76,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const props = defineProps<{
   author: string
   role: string
@@ -106,43 +108,43 @@ const audienceIcon = computed(() => {
 const open = ref(false)
 const menuRef = ref<HTMLElement>()
 
-const menuItems = [
+const menuItems = computed(() => [
   {
-    label: "Xóa bài đăng",
-    desc: "Xóa hoàn toàn bài đăng này.",
+    label: t("feed.postHeader.menuDeleteLabel"),
+    desc: t("feed.postHeader.menuDeleteDescription"),
     icon: "i-lucide-trash-2",
     danger: true,
     action: () => { open.value = false },
   },
   {
-    label: "Lưu bài đăng",
-    desc: "Thêm bài đăng này vào danh sách yêu thích của bạn.",
+    label: t("feed.postHeader.menuSaveLabel"),
+    desc: t("feed.postHeader.menuSaveDescription"),
     icon: "i-lucide-bookmark",
     danger: false,
     action: () => { open.value = false },
   },
   {
-    label: "Báo cáo về bài đăng",
-    desc: "Báo cáo bài đăng này cho chúng tôi.",
+    label: t("feed.postHeader.menuReportLabel"),
+    desc: t("feed.postHeader.menuReportDescription"),
     icon: "i-lucide-flag",
     danger: false,
     action: () => { open.value = false },
   },
   {
-    label: "Mở bài đăng trong tab mới",
-    desc: "Xem bài đăng này trong một tab mới.",
+    label: t("feed.postHeader.menuOpenLabel"),
+    desc: t("feed.postHeader.menuOpenDescription"),
     icon: "i-lucide-external-link",
     danger: false,
     action: () => { window.open(window.location.href, "_blank"); open.value = false },
   },
   {
-    label: "Ẩn bài đăng",
-    desc: "Tôi không muốn xem bài đăng này nữa.",
+    label: t("feed.postHeader.menuHideLabel"),
+    desc: t("feed.postHeader.menuHideDescription"),
     icon: "i-lucide-eye-off",
     danger: false,
     action: () => { open.value = false },
   },
-]
+])
 
 // Close on outside click
 onMounted(() => document.addEventListener("mousedown", onOutside))

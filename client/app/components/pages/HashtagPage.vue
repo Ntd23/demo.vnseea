@@ -13,7 +13,7 @@
 
               <div>
                 <p class="text-[12px] font-black uppercase tracking-[0.22em] text-[#0000ff]/60">
-                  Hashtag Feed
+                  {{ t("pages.hashtagPage.heroEyebrow") }}
                 </p>
                 <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[2.35rem]">
                   {{ hashtagLabel }}
@@ -30,7 +30,7 @@
                 class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
               >
                 <Icon name="i-ph-magnifying-glass-bold" class="mr-2 h-4 w-4" />
-                Tìm trong search
+                {{ t("pages.hashtagPage.searchInSearch") }}
               </NuxtLink>
 
               <NuxtLink
@@ -38,7 +38,7 @@
                 class="inline-flex h-11 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(0,0,255,0.22)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
               >
                 <Icon name="i-ph-house-line-fill" class="mr-2 h-4 w-4" />
-                Về bảng tin
+                {{ t("pages.hashtagPage.backToFeed") }}
               </NuxtLink>
             </div>
           </div>
@@ -68,12 +68,12 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-            {{ hasMatches ? 'Hashtag liên quan' : 'Hashtag gợi ý' }}
+            {{ hasMatches ? t("pages.hashtagPage.relatedEyebrow") : t("pages.hashtagPage.suggestedEyebrow") }}
           </p>
           <p class="mt-1 text-[14px] leading-6 text-slate-500">
             {{ hasMatches
-              ? 'Các hashtag này thường xuất hiện cùng nhóm bài viết đang được lọc.'
-              : 'Hiện chưa có bài phù hợp, bạn có thể thử các hashtag phổ biến dưới đây.' }}
+              ? t("pages.hashtagPage.relatedDescription")
+              : t("pages.hashtagPage.suggestedDescription") }}
           </p>
         </div>
       </div>
@@ -97,13 +97,13 @@
     >
       <div class="flex flex-col gap-2 border-b border-[#eef2fb] pb-4">
         <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-          Bài viết chứa hashtag
+          {{ t("pages.hashtagPage.postsEyebrow") }}
         </p>
         <h2 class="text-[1.45rem] font-black tracking-[-0.04em] text-[#243b63]">
-          {{ matchingPosts.length }} bài đang hiển thị cho {{ hashtagLabel }}
+          {{ t("pages.hashtagPage.postsTitle", { count: matchingPosts.length, tag: hashtagLabel }) }}
         </h2>
         <p class="text-[14px] leading-6 text-slate-500">
-          Danh sách này được lấy từ mock feed hiện có, giữ nguyên card bài viết và luồng tương tác giống trang chủ.
+          {{ t("pages.hashtagPage.postsDescription") }}
         </p>
       </div>
 
@@ -123,8 +123,8 @@
       <div class="mx-auto max-w-2xl text-center">
         <FoundationEmptyState
           icon="i-ph-hash-bold"
-          :title="`Chưa có bài viết cho ${hashtagLabel}`"
-          description="Mock social feed hiện tại chưa có bài đăng gắn hashtag này. Bạn có thể thử các hashtag liên quan hoặc quay lại bảng tin để xem các chủ đề khác."
+          :title="t('pages.hashtagPage.emptyTitle', { tag: hashtagLabel })"
+          :description="t('pages.hashtagPage.emptyDescription', { tag: hashtagLabel })"
         />
 
         <div class="mt-6 flex flex-wrap justify-center gap-3">
@@ -151,6 +151,7 @@ function readRouteParam(value: unknown) {
 }
 
 const route = useRoute()
+const { t } = useI18n()
 
 const rawTag = computed(() => readRouteParam(route.params.tag))
 
@@ -169,18 +170,17 @@ const visibleHashtags = computed(() =>
 
 const heroDescription = computed(() => {
   if (hasMatches.value) {
-    return `${hashtagLabel.value} đang gom các bài viết liên quan trong mock social feed. Bạn có thể mở từng bài để xem tương tác, chuyển nhanh sang hashtag khác hoặc quay lại search tổng hợp khi cần.`
+    return t("pages.hashtagPage.heroDescriptionMatch", { tag: hashtagLabel.value })
   }
 
-  return `${hashtagLabel.value} hiện chưa có dữ liệu bài viết trong feed mock. Trang này vẫn giữ sẵn luồng hashtag để bạn nối API ` + "`posts.php?type=hashtag`" + ` hoặc mở rộng dữ liệu mock sau đó.`
+  return t("pages.hashtagPage.heroDescriptionEmpty", { tag: hashtagLabel.value })
 })
 
 useSeoMeta({
-  title: computed(() => `${hashtagLabel.value} | VNSEEA`),
-  description: computed(() =>
+  title: () => t("pages.hashtagPage.seoTitle", { tag: hashtagLabel.value }),
+  description: () =>
     hasMatches.value
-      ? `Xem các bài viết đang chứa hashtag ${hashtagLabel.value} trên VNSEEA.`
-      : `Trang hashtag ${hashtagLabel.value} trên VNSEEA hiện chưa có dữ liệu bài viết.`,
-  ),
+      ? t("pages.hashtagPage.seoDescriptionMatch", { tag: hashtagLabel.value })
+      : t("pages.hashtagPage.seoDescriptionEmpty", { tag: hashtagLabel.value }),
 })
 </script>

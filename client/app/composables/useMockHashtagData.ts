@@ -58,7 +58,7 @@ function pushHashtagCount(
   })
 }
 
-function collectHashtagCounts(posts: MockSocialPost[], excludedSlug?: string) {
+function collectHashtagCounts(posts: MockSocialPost[], excludedSlug?: string, locale = "en") {
   const map = new Map<string, { label: string; slug: string; count: number }>()
 
   posts.forEach((post) => {
@@ -66,10 +66,11 @@ function collectHashtagCounts(posts: MockSocialPost[], excludedSlug?: string) {
   })
 
   return Array.from(map.values())
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, "vi"))
+    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, locale))
 }
 
 export function useMockHashtagData(tagSource: MaybeRefOrGetter<string>) {
+  const { t, locale } = useI18n()
   const { posts, widgets } = useMockSocialData()
 
   const tagSlug = computed(() => normalizeHashtagValue(String(toValue(tagSource) || "")))
@@ -104,7 +105,7 @@ export function useMockHashtagData(tagSource: MaybeRefOrGetter<string>) {
   )
 
   const relatedHashtags = computed<HashtagChip[]>(() =>
-    collectHashtagCounts(matchingPosts.value, tagSlug.value).map(item => ({
+    collectHashtagCounts(matchingPosts.value, tagSlug.value, locale.value).map(item => ({
       ...item,
       to: createHashtagPath(item.slug),
     })),
@@ -113,7 +114,7 @@ export function useMockHashtagData(tagSource: MaybeRefOrGetter<string>) {
   const suggestedHashtags = computed<HashtagChip[]>(() => {
     const map = new Map<string, { label: string; slug: string; count: number }>()
 
-    collectHashtagCounts(posts, tagSlug.value).forEach((item) => {
+    collectHashtagCounts(posts, tagSlug.value, locale.value).forEach((item) => {
       map.set(item.slug, { ...item })
     })
 
@@ -125,7 +126,7 @@ export function useMockHashtagData(tagSource: MaybeRefOrGetter<string>) {
       })
 
     return Array.from(map.values())
-      .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, "vi"))
+      .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, locale.value))
       .map(item => ({
         ...item,
         to: createHashtagPath(item.slug),
@@ -134,26 +135,26 @@ export function useMockHashtagData(tagSource: MaybeRefOrGetter<string>) {
 
   const heroStats = computed(() => [
     {
-      label: "Bài viết",
+      label: t("pages.hashtagPage.statsPostsLabel"),
       value: matchingPosts.value.length,
-      description: "Số bài trong mock social feed chứa hashtag này.",
+      description: t("pages.hashtagPage.statsPostsDescription"),
     },
     {
-      label: "Tác giả",
+      label: t("pages.hashtagPage.statsAuthorsLabel"),
       value: authorCount.value,
-      description: "Số người đã đăng nội dung có gắn hashtag tương ứng.",
+      description: t("pages.hashtagPage.statsAuthorsDescription"),
     },
     {
-      label: "Tương tác",
+      label: t("pages.hashtagPage.statsInteractionsLabel"),
       value: interactionCount.value,
-      description: "Tổng lượt thích, bình luận và chia sẻ của các bài liên quan.",
+      description: t("pages.hashtagPage.statsInteractionsDescription"),
     },
     {
-      label: "Liên quan",
+      label: t("pages.hashtagPage.statsRelatedLabel"),
       value: hasMatches.value ? relatedHashtags.value.length : suggestedHashtags.value.length,
       description: hasMatches.value
-        ? "Hashtag khác thường xuất hiện cùng chủ đề này."
-        : "Hashtag gợi ý để tiếp tục khám phá khi chưa có kết quả.",
+        ? t("pages.hashtagPage.statsRelatedDescriptionMatch")
+        : t("pages.hashtagPage.statsRelatedDescriptionEmpty"),
     },
   ])
 

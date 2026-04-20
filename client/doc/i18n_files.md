@@ -177,25 +177,25 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/pages/withdrawal.vue`
 - [ ] `client/app/pages/g/[name].vue`
 - [ ] `client/app/pages/p/[name].vue`
-- [ ] `client/app/pages/@[username].vue`
-- [ ] `client/app/pages/[username].vue`
-- [ ] `client/app/pages/hashtag/[tag].vue`
+- [x] `client/app/pages/@[username].vue`
+- [x] `client/app/pages/[username].vue`
+- [x] `client/app/pages/hashtag/[tag].vue`
 
 ## Components có title/heading/CTA hardcode cần i18n
 ### Feed / home
 - [ ] `client/app/components/pages/HomeFeedPage.vue`
-- [ ] `client/app/components/feed/FeedPublisherBox.vue`
-- [ ] `client/app/components/feed/PostCard.vue`
-- [ ] `client/app/components/feed/PostHeader.vue`
-- [ ] `client/app/components/feed/CommentItem.vue`
-- [ ] `client/app/components/feed/CommentList.vue`
+- [x] `client/app/components/feed/FeedPublisherBox.vue`
+- [x] `client/app/components/feed/PostCard.vue`
+- [x] `client/app/components/feed/PostHeader.vue`
+- [x] `client/app/components/feed/CommentItem.vue`
+- [x] `client/app/components/feed/CommentList.vue`
 - [x] `client/app/components/feed/CommentComposer.vue` ← **ví dụ mẫu, xem hướng dẫn phần trên**
-- [ ] `client/app/components/feed/ShareModal.vue`
+- [x] `client/app/components/feed/ShareModal.vue`
 - [ ] `client/app/components/feed/StoryCarousel.vue`
 - [ ] `client/app/components/feed/PublisherBox.vue`
-- [ ] `client/app/components/feed/PostMediaGrid.vue`
+- [x] `client/app/components/feed/PostMediaGrid.vue`
 - [ ] `client/app/components/feed/LightboxViewer.vue`
-- [ ] `client/app/components/lightbox/LightboxModal.vue`
+- [x] `client/app/components/lightbox/LightboxModal.vue`
 
 ### Navigation / layout
 - [ ] `client/app/components/navigation/HeaderBar.vue`
@@ -228,16 +228,19 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/reels/ReelsOverlay.vue`
 
 ### Profile / community
-- [ ] `client/app/components/pages/ProfilePage.vue`
-- [ ] `client/app/components/profile/ProfileHero.vue`
+- [x] `client/app/components/pages/ProfilePage.vue`
+- [x] `client/app/components/pages/HashtagPage.vue`
+- [x] `client/app/components/profile/ProfileHero.vue`
+- [x] `client/app/components/profile/ProfileCompletionCard.vue`
+- [x] `client/app/components/profile/ProfileSidebar.vue`
 - [ ] `client/app/components/profile/ProfileIntroCard.vue`
 - [ ] `client/app/components/profile/ProfileAboutCard.vue`
-- [ ] `client/app/components/profile/ProfileInfoCard.vue`
+- [x] `client/app/components/profile/ProfileInfoCard.vue`
 - [ ] `client/app/components/profile/ProfileTabs.vue`
-- [ ] `client/app/components/profile/ProfileFeedList.vue`
+- [x] `client/app/components/profile/ProfileFeedList.vue`
 - [ ] `client/app/components/profile/ProfileFriendsGrid.vue`
 - [ ] `client/app/components/profile/ProfilePhotosGrid.vue`
-- [ ] `client/app/components/profile/ProfileMediaGrid.vue`
+- [x] `client/app/components/profile/ProfileMediaGrid.vue`
 - [ ] `client/app/components/community/PageHeroBanner.vue`
 - [ ] `client/app/components/community/PageFeedSection.vue`
 - [ ] `client/app/components/community/PageAboutCard.vue`
