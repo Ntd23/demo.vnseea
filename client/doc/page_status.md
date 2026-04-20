@@ -17,8 +17,8 @@
 - `[x]` `P-04` `/home` — Trang chủ / News Feed
 - `[x]` `P-05` `/@{username}` — User Profile / Timeline
 - `[x]` `P-06` `/messages` — Tin nhắn (Full page)
-- `[~]` `P-07` `/reels` — Short Videos
-- `[ ]` `P-08` `/story-content` — Xem Stories
+- `[x]` `P-07` `/reels` — Short Videos
+- `[x]` `P-08` `/story-content` — Xem Stories (đã chuyển sang overlay story trong feed)
 - `[x]` `P-09` `/status/create` — Tạo Story
 - `[x]` `P-10` `/products` — Marketplace
 - `[x]` `P-11` `/new-product` — Tạo sản phẩm
@@ -103,8 +103,9 @@
 - `poke` — đã hoàn thiện UI danh sách poke, card kết nối, nút chọc lại và nối route đúng `/poke` từ sidebar/mobile menu
 - `memories` — đã hoàn thiện UI ngày này năm trước, wrapper memory card, nút chia sẻ lại và nối route từ điều hướng hệ thống
 
-### Đang làm / cần chốt lại
-- `reels` — đã bắt đầu UI theo ảnh gợi ý, cần review/hoàn thiện thêm nếu bạn muốn chốt
+### Đã xong
+- `reels` — đã hoàn thiện UI reels full-viewport, swipe chuyển reel, action overlay và responsive mobile/desktop
+- `story-content` — đã chuyển thành story overlay trong feed, không còn page riêng
 
 ### Chưa làm
 - toàn bộ page còn lại trong checklist
