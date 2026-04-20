@@ -1,0 +1,13 @@
+{
+  "feed": {
+    "commentComposer": {
+      "placeholder": "Write a constructive comment...",
+      "submit": "Post",
+      "tooltipEmoji": "Emoji",
+      "tooltipImage": "Image",
+      "tooltipGif": "GIF",
+      "tooltipSticker": "Sticker",
+      "tooltipMention": "Mention"
+    }
+  }
+}

@@ -2,6 +2,133 @@
 
 > Mục tiêu: gom các chỗ đang hardcode `title`, `label`, `placeholder`, `aria-label`, CTA text, heading và trạng thái UI để chuyển sang đa ngôn ngữ.
 
+---
+
+## ⚡ Hướng dẫn làm i18n (đọc trước khi làm)
+
+### 1. Setup đã có sẵn
+
+Module `@nuxtjs/i18n` đã được cài và cấu hình trong `nuxt.config.ts`:
+- Locale mặc định: **`vi`** (Tiếng Việt)
+- Locale thứ 2: **`en`** (English)
+- Strategy: `no_prefix` → URL không thay đổi (`/home` thay vì `/vi/home`)
+- File locale: `client/i18n/locales/vi.json` và `en.json` _(nằm ngoài thư mục `app/`, đây là convention của `@nuxtjs/i18n`)_
+
+### 2. Cấu trúc key trong file JSON
+
+Key được **tổ chức theo namespace** dạng `<section>.<component>.<key>`:
+
+```json
+// client/app/i18n/locales/vi.json
+{
+  "feed": {
+    "commentComposer": {
+      "placeholder": "Viết bình luận mang tính xây dựng...",
+      "submit": "Gửi",
+      "tooltipEmoji": "Emoji"
+    }
+  },
+  "navigation": {
+    "headerBar": {
+      "search": "Tìm kiếm...",
+      "notifications": "Thông báo"
+    }
+  }
+}
+```
+
+> **Quy tắc đặt tên namespace:**
+> - Dùng **camelCase**
+> - `<section>` = tên thư mục component (feed, navigation, profile, blogs…)
+> - `<component>` = tên file component bỏ `.vue` (commentComposer, headerBar…)
+> - `<key>` = tên text ngắn gọn (submit, placeholder, title…)
+
+### 3. Cách dùng trong `.vue`
+
+#### Trong `<template>` — dùng `$t()` trực tiếp
+
+```vue
+<template>
+  <!-- Text node -->
+  <button>{{ $t('feed.commentComposer.submit') }}</button>
+
+  <!-- Thuộc tính (placeholder, title, aria-label) — phải dùng binding : -->
+  <input :placeholder="$t('feed.commentComposer.placeholder')" />
+  <button :title="$t('feed.commentComposer.tooltipEmoji')">...</button>
+  <div :aria-label="$t('feed.commentComposer.title')">...</div>
+</template>
+```
+
+#### Trong `<script setup>` — dùng `useI18n()`
+
+```vue
+<script setup lang="ts">
+const { t } = useI18n()
+
+// Dùng khi cần text trong JS (useSeoMeta, computed, toast...)
+useSeoMeta({ title: () => t('pages.home.title') })
+const heading = computed(() => t('profile.profileHero.editProfile'))
+</script>
+```
+
+### 4. Ví dụ thực tế — `CommentComposer.vue` ✅ (đã làm)
+
+**Trước:**
+```vue
+<FormsTextareaAutoResize placeholder="Viết bình luận mang tính xây dựng..." />
+<button title="Ảnh">...</button>
+<button>Gửi</button>
+```
+
+**Sau:**
+```vue
+<FormsTextareaAutoResize :placeholder="$t('feed.commentComposer.placeholder')" />
+<button :title="$t('feed.commentComposer.tooltipImage')">...</button>
+<button>{{ $t('feed.commentComposer.submit') }}</button>
+```
+
+**Key thêm vào `vi.json`:**
+```json
+"feed": {
+  "commentComposer": {
+    "placeholder": "Viết bình luận mang tính xây dựng...",
+    "submit": "Gửi",
+    "tooltipEmoji": "Emoji",
+    "tooltipImage": "Ảnh",
+    "tooltipGif": "GIF",
+    "tooltipSticker": "Sticker",
+    "tooltipMention": "Nhắc đến"
+  }
+}
+```
+
+### 5. Quy trình làm từng file
+
+```
+1. Mở file .vue cần làm
+2. Tìm tất cả text hiển thị cho user (string trong template, placeholder, title, aria-label)
+3. Thêm key vào vi.json (tiếng Việt) VÀ en.json (tiếng Anh) cùng lúc
+4. Thay text trong .vue bằng $t('...')
+5. Đánh dấu [x] trong danh sách bên dưới
+```
+
+> ⚠️ **Không i18n** các text kỹ thuật như: tên route, class CSS, prop nội bộ, console.log
+
+### 6. Khi cần text có biến (interpolation)
+
+```json
+// vi.json
+{ "profile": { "friendCount": "{count} bạn bè" } }
+```
+```vue
+{{ $t('profile.friendCount', { count: 42 }) }}
+// → "42 bạn bè"
+```
+
+---
+
+
+
 ## Ưu tiên cao: page / route có `useSeoMeta({ title: ... })` hoặc heading chính hardcode
 - [ ] `client/app/pages/index.vue`
 - [ ] `client/app/pages/home.vue`
@@ -61,7 +188,7 @@
 - [ ] `client/app/components/feed/PostCard.vue`
 - [ ] `client/app/components/feed/PostHeader.vue`
 - [ ] `client/app/components/feed/CommentItem.vue`
-- [ ] `client/app/components/feed/CommentComposer.vue`
+- [x] `client/app/components/feed/CommentComposer.vue` ← **ví dụ mẫu, xem hướng dẫn phần trên**
 - [ ] `client/app/components/feed/ShareModal.vue`
 - [ ] `client/app/components/feed/StoryCarousel.vue`
 - [ ] `client/app/components/feed/PublisherBox.vue`

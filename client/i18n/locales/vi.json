@@ -1,0 +1,13 @@
+{
+  "feed": {
+    "commentComposer": {
+      "placeholder": "Viết bình luận mang tính xây dựng...",
+      "submit": "Gửi",
+      "tooltipEmoji": "Emoji",
+      "tooltipImage": "Ảnh",
+      "tooltipGif": "GIF",
+      "tooltipSticker": "Sticker",
+      "tooltipMention": "Nhắc đến"
+    }
+  }
+}

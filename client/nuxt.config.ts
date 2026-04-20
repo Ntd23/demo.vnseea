@@ -54,7 +54,17 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@pinia/nuxt",
     "@vueuse/nuxt",
+    "@nuxtjs/i18n",
   ],
+  i18n: {
+    defaultLocale: "vi",
+    langDir: "locales",
+    locales: [
+      { code: "vi", language: "vi-VN", file: "vi.json", name: "Tiếng Việt" },
+      { code: "en", language: "en-US", file: "en.json", name: "English" },
+    ],
+    strategy: "no_prefix",
+  },
   fonts: {
     families: [
       {
