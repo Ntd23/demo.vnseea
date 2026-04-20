@@ -165,7 +165,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/pages/create-page.vue`
 - [x] `client/app/pages/pages.vue`
 - [x] `client/app/pages/page-setting/[page].vue`
-- [ ] `client/app/pages/search.vue`
+- [x] `client/app/pages/search.vue` (đã dịch toàn bộ)
 - [ ] `client/app/pages/explore.vue`
 - [ ] `client/app/pages/saved-posts.vue`
 - [ ] `client/app/pages/poke.vue`

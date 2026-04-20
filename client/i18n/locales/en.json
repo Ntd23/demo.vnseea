@@ -1070,6 +1070,150 @@
         "likes": "{count} likes"
       }
     },
+    "search": {
+      "seoTitle": "Search | VNSEEA",
+      "seoTitleQuery": "Search \"{query}\" | VNSEEA",
+      "seoDesc": "Search aggregate page for users, pages, groups and posts on VNSEEA.",
+      "seoDescQuery": "Look up users, pages, groups and posts related to {query} on VNSEEA.",
+      "emptyValue": {
+        "title": "No matching results found",
+        "desc": "No items match the keyword \"{keyword}\". Try changing the result type, rewriting, or selecting another suggestion."
+      },
+      "emptyState": {
+        "title": "What are you looking for?",
+        "desc": "Enter a keyword above to find users, pages, groups, or posts. You can also start with the quick suggestions appearing in the filter."
+      },
+      "clearFilters": "Clear filters",
+      "tryKeyword": "Try {keyword}",
+      "controls": {
+        "eyebrow": "Search Hub",
+        "title": "Discover users, pages, groups, and posts",
+        "desc": "Search by keyword, filter by result type, and quickly switch between datasets mathematically available in VNSEEA's mock social graph.",
+        "keywordParams": {
+          "label": "Keyword",
+          "placeholder": "Search for users, pages, groups, posts, or #hashtags"
+        },
+        "typeLabel": "Result type",
+        "sortLabel": "Sort by",
+        "submit": "Search",
+        "quickSuggestions": "Quick suggestions"
+      },
+      "results": {
+        "label": "Results",
+        "headingSingle": "1 result in {type}",
+        "headingMultiple": "{count} results in {type}",
+        "descEmpty": "Results will appear here when you enter a keyword.",
+        "descAll": "You are viewing an aggregate of all result types for \"{keyword}\". Select individual tabs if you want to dive into a specific dataset.",
+        "descSpecific": "The list below has been filtered within {type} for the keyword \"{keyword}\".",
+        "showAllTypes": "Show all result types",
+        "viewAllOfSpecific": "View all {count} results"
+      },
+      "summary": {
+        "total": {
+          "label": "Total Results",
+          "descEmpty": "Number of items currently in mock data.",
+          "descQuery": "Results matching the keyword \"{keyword}\"."
+        },
+        "users": {
+          "label": "Users",
+          "desc": "Contacts, connection suggestions, and community members."
+        },
+        "communities": {
+          "label": "Communities",
+          "desc": "Total pages and groups matching the current filter."
+        },
+        "posts": {
+          "label": "Posts",
+          "desc": "Discussions and content related to the keyword."
+        }
+      },
+      "tabs": {
+        "all": {
+          "label": "All",
+          "desc": "Combine users, pages, groups, and posts."
+        },
+        "users": {
+          "label": "Users",
+          "desc": "Find members, contacts, and connection suggestions."
+        },
+        "pages": {
+          "label": "Pages",
+          "desc": "Find fanpages, brands, and content communities."
+        },
+        "groups": {
+          "label": "Groups",
+          "desc": "Discover active communities in the ecosystem."
+        },
+        "posts": {
+          "label": "Posts",
+          "desc": "Find discussions, recaps, and latest updates."
+        }
+      },
+      "types": {
+        "all": "All results",
+        "users": "Users",
+        "pages": "Pages",
+        "groups": "Groups",
+        "posts": "Posts"
+      },
+      "sorts": {
+        "relevance": "Most relevant",
+        "popular": "Popular",
+        "recent": "Recently updated"
+      },
+      "footer": {
+        "home": "Home",
+        "about": "About",
+        "contact": "Contact Us",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Use",
+        "blog": "Blog",
+        "developers": "Developers",
+        "language": "Language"
+      },
+      "mock": {
+        "badge": {
+          "online": "Online",
+          "suggested": "Suggested",
+          "joined": "Joined",
+          "managed": "Managed by you",
+          "member": "In group",
+          "public": "Public",
+          "private": "Private"
+        },
+        "metrics": {
+          "canChat": "Available to chat now",
+          "inContacts": "In your contacts",
+          "mutualFriends": "{count} mutual friends",
+          "quickResponse": "Quick response via chat",
+          "recentContact": "Recent contact",
+          "activeInGroup": "Active in group",
+          "followers": "{count} followers",
+          "members": "{count} members",
+          "likes": "{count} likes",
+          "comments": "{count} comments",
+          "shares": "{count} shares"
+        },
+        "users": {
+          "contactSubtitle": "{'@'}{handle} · Contact in network",
+          "contactDescOnline": "Currently active and can start a conversation immediately from the chat widget.",
+          "contactDescOffline": "Appeared in contacts recently and can be invited to a new conversation.",
+          "suggestedSubtitle": "{'@'}{handle} · {role}",
+          "suggestedDesc": "{mutual} mutual friends in the VNSEEA ecosystem. This is a suitable connection to expand your network or exchange work.",
+          "memberSubtitle": "{'@'}{handle} · {role}",
+          "memberDesc": "{meta}. Member of {group}, suitable if you are looking for people with the same topic {topic}."
+        },
+        "pages": {
+          "subtitle": "{category} · /p/{slug}"
+        },
+        "groups": {
+          "subtitle": "{privacy} · {category}"
+        },
+        "posts": {
+          "subtitle": "Post · {time}"
+        }
+      }
+    },
     "settings": {
       "eyebrow": "Group settings",
       "defaultEyebrow": "Settings",

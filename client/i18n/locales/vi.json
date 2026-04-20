@@ -1070,6 +1070,150 @@
         "likes": "{count} lượt thích"
       }
     },
+    "search": {
+      "seoTitle": "Tìm kiếm | VNSEEA",
+      "seoTitleQuery": "Tìm kiếm \"{query}\" | VNSEEA",
+      "seoDesc": "Trang tìm kiếm tổng hợp người dùng, fanpage, nhóm và bài đăng trong VNSEEA.",
+      "seoDescQuery": "Tra cứu người dùng, fanpage, nhóm và bài đăng liên quan tới {query} trên VNSEEA.",
+      "emptyValue": {
+        "title": "Không tìm thấy kết quả phù hợp",
+        "desc": "Không có mục nào khớp với từ khóa \"{keyword}\". Thử đổi loại kết quả, đổi cách viết hoặc chọn một gợi ý khác."
+      },
+      "emptyState": {
+        "title": "Bạn đang tìm gì vậy?",
+        "desc": "Nhập một từ khóa phía trên để tìm người dùng, fanpage, nhóm hoặc bài đăng. Bạn cũng có thể bắt đầu bằng các gợi ý nhanh đang xuất hiện trong bộ lọc."
+      },
+      "clearFilters": "Xóa bộ lọc",
+      "tryKeyword": "Thử {keyword}",
+      "controls": {
+        "eyebrow": "Search Hub",
+        "title": "Khám phá người, trang, nhóm và bài đăng",
+        "desc": "Tìm kiếm theo từ khóa, lọc theo loại kết quả và chuyển nhanh giữa những tập dữ liệu đang có sẵn trong mock social graph của VNSEEA.",
+        "keywordParams": {
+          "label": "Từ khóa",
+          "placeholder": "Tìm kiếm người, trang, nhóm, bài đăng hoặc #hashtags"
+        },
+        "typeLabel": "Loại kết quả",
+        "sortLabel": "Sắp xếp",
+        "submit": "Tìm kiếm",
+        "quickSuggestions": "Gợi ý nhanh"
+      },
+      "results": {
+        "label": "Kết quả",
+        "headingSingle": "1 kết quả trong mục {type}",
+        "headingMultiple": "{count} kết quả trong mục {type}",
+        "descEmpty": "Kết quả sẽ xuất hiện tại đây khi bạn nhập từ khóa.",
+        "descAll": "Bạn đang xem tổng hợp tất cả loại kết quả cho \"{keyword}\". Chọn từng tab nếu muốn đi sâu vào một tập dữ liệu cụ thể.",
+        "descSpecific": "Danh sách dưới đây đã được lọc trong phạm vi {type} cho từ khóa \"{keyword}\".",
+        "showAllTypes": "Hiện tất cả loại kết quả",
+        "viewAllOfSpecific": "Xem tất cả {count} kết quả"
+      },
+      "summary": {
+        "total": {
+          "label": "Tổng kết quả",
+          "descEmpty": "Số lượng mục đang có trong mock data.",
+          "descQuery": "Kết quả đang khớp với từ khóa \"{keyword}\"."
+        },
+        "users": {
+          "label": "Người dùng",
+          "desc": "Liên hệ, gợi ý kết nối và thành viên cộng đồng."
+        },
+        "communities": {
+          "label": "Cộng đồng",
+          "desc": "Tổng fanpage và nhóm đang khớp với bộ lọc hiện tại."
+        },
+        "posts": {
+          "label": "Bài đăng",
+          "desc": "Những thảo luận và nội dung có liên quan tới từ khóa."
+        }
+      },
+      "tabs": {
+        "all": {
+          "label": "Tất cả",
+          "desc": "Gộp người dùng, trang, nhóm và bài đăng."
+        },
+        "users": {
+          "label": "Người dùng",
+          "desc": "Tìm thành viên, liên hệ và đề xuất kết nối."
+        },
+        "pages": {
+          "label": "Các trang",
+          "desc": "Tìm fanpage, thương hiệu và cộng đồng nội dung."
+        },
+        "groups": {
+          "label": "Các nhóm",
+          "desc": "Khám phá cộng đồng đang hoạt động trong hệ sinh thái."
+        },
+        "posts": {
+          "label": "Bài đăng",
+          "desc": "Tìm thảo luận, recap và cập nhật mới nhất."
+        }
+      },
+      "types": {
+        "all": "Tất cả kết quả",
+        "users": "Người dùng",
+        "pages": "Các trang",
+        "groups": "Các nhóm",
+        "posts": "Bài đăng"
+      },
+      "sorts": {
+        "relevance": "Phù hợp nhất",
+        "popular": "Phổ biến",
+        "recent": "Mới cập nhật"
+      },
+      "footer": {
+        "home": "Trang chủ",
+        "about": "Về",
+        "contact": "Liên hệ chúng tôi",
+        "privacy": "Chính sách bảo mật",
+        "terms": "Điều khoản sử dụng",
+        "blog": "Blog",
+        "developers": "Nhà phát triển",
+        "language": "Ngôn ngữ"
+      },
+      "mock": {
+        "badge": {
+          "online": "Online",
+          "suggested": "Gợi ý",
+          "joined": "Đã tham gia",
+          "managed": "Bạn quản lý",
+          "member": "Trong nhóm",
+          "public": "Công cộng",
+          "private": "Riêng tư"
+        },
+        "metrics": {
+          "canChat": "Có thể trò chuyện ngay",
+          "inContacts": "Có trong danh bạ của bạn",
+          "mutualFriends": "{count} bạn chung",
+          "quickResponse": "Phản hồi nhanh qua chat",
+          "recentContact": "Liên hệ gần đây",
+          "activeInGroup": "Đang hoạt động trong nhóm",
+          "followers": "{count} người theo dõi",
+          "members": "{count} thành viên",
+          "likes": "{count} lượt thích",
+          "comments": "{count} bình luận",
+          "shares": "{count} chia sẻ"
+        },
+        "users": {
+          "contactSubtitle": "{'@'}{handle} · Liên hệ trong mạng lưới",
+          "contactDescOnline": "Đang hoạt động và có thể mở cuộc trò chuyện ngay từ chat widget.",
+          "contactDescOffline": "Đã xuất hiện trong danh bạ gần đây và có thể mời vào hội thoại mới.",
+          "suggestedSubtitle": "{'@'}{handle} · {role}",
+          "suggestedDesc": "{mutual} bạn chung trong hệ sinh thái VNSEEA. Đây là kết nối phù hợp để mở rộng network hoặc trao đổi công việc.",
+          "memberSubtitle": "{'@'}{handle} · {role}",
+          "memberDesc": "{meta}. Thành viên của {group}, phù hợp nếu bạn đang tìm người cùng chủ đề {topic}."
+        },
+        "pages": {
+          "subtitle": "{category} · /p/{slug}"
+        },
+        "groups": {
+          "subtitle": "{privacy} · {category}"
+        },
+        "posts": {
+          "subtitle": "Bài đăng · {time}"
+        }
+      }
+    },
     "settings": {
       "eyebrow": "Cài đặt nhóm",
       "defaultEyebrow": "Thiết lập",
