@@ -1064,6 +1064,12 @@
         }
       }
     },
+    "pages": {
+      "format": {
+        "followers": "{count} followers",
+        "likes": "{count} likes"
+      }
+    },
     "settings": {
       "eyebrow": "Group settings",
       "defaultEyebrow": "Settings",
@@ -1160,6 +1166,96 @@
         "desc": "This group slug is not in the current mock data. Please go back to the group list and select a valid community.",
         "back": "Back to group list"
       }
+    },
+    "pageSettings": {
+      "eyebrow": "Page settings",
+      "title": "{name} Settings",
+      "desc": "Adjust fanpage profile, main CTA, and some visibility signals before connecting the real admin API.",
+      "basics": {
+        "eyebrow": "Public Information",
+        "title": "Fanpage Profile",
+        "desc": "Update name, URL, description, and main identity signals to make the fanpage look clearer when visitors drop by.",
+        "viewPage": "View fanpage",
+        "fields": {
+          "name": "Page name",
+          "namePlaceholder": "Enter fanpage name",
+          "url": "Page URL",
+          "urlSuggested": "Suggestion: {slug}",
+          "urlUseSuggestion": "Use suggested slug",
+          "summary": "Short introduction",
+          "summaryPlaceholder": "Summarize the brand, service, or type of content this fanpage shares.",
+          "category": "Page category",
+          "location": "Display area",
+          "locationPlaceholder": "Example: Da Nang · Nationwide Delivery",
+          "website": "Website or landing page",
+          "websitePlaceholder": "vnseea.vn/p/fanpage-name",
+          "ownerLabel": "Brand label",
+          "ownerPlaceholder": "Example: Content Brand Fanpage",
+          "responseLabel": "Response commitment",
+          "responsePlaceholder": "Example: Responds within a working day",
+          "ctaLabel": "Main CTA",
+          "ctaPlaceholder": "Example: Send Message",
+          "tags": "Main topics",
+          "tagsPlaceholder": "furniture, construction, natural-wood"
+        },
+        "stats": {
+          "summaryLength": "{count} characters",
+          "tagCount": "{count} tags",
+          "ctaFallback": "Not selected",
+          "websiteYes": "Available",
+          "websiteNo": "Not available"
+        }
+      },
+      "controls": {
+        "eyebrow": "Interaction & Visibility",
+        "title": "CTA and Public Signals",
+        "desc": "Tweak the primary action and decide what info will be pushed to the fanpage interface.",
+        "preset": "Preset CTA",
+        "logic": "Applied Logic",
+        "logicDesc": "Current CTA is **{cta}**. You can combine it with website display, message button, and engagement metrics to make the page's goal clearer.",
+        "toggles": {
+          "messagesLabel": "Enable message button",
+          "messagesDesc": "Allow visitors to quickly switch to inbox from the banner and action card.",
+          "followersLabel": "Show follower count",
+          "followersDesc": "Keep follower count on the intro section and preview page.",
+          "likesLabel": "Show like count",
+          "likesDesc": "Keep like count as a social signal on the sidebar and about area.",
+          "websiteLabel": "Show public website",
+          "websiteDesc": "Hide or show the landing page/website link in the fanpage info section.",
+          "relatedLabel": "Suggest related fanpages",
+          "relatedDesc": "Allow the system to insert similar suggestions in the discovery area later."
+        }
+      },
+      "finish": {
+        "eyebrow": "Finish",
+        "title": "Quick Actions",
+        "desc": "This page settings flow is currently a UI mock. You can go back to the fanpage to compare or continue tweaking before connecting the API.",
+        "status": "{enabled}/{total} signals enabled. Current main CTA is **{cta}**.",
+        "back": "Back to fanpage",
+        "save": "Save changes"
+      },
+      "sidebar": {
+        "preview": "Preview after saving",
+        "signals": "Signals on",
+        "followers": "Followers",
+        "likes": "Likes",
+        "hidden": "Hidden",
+        "tips": "Optimization Tips",
+        "ctaFocus": "Prioritized CTA",
+        "ctaWithMessages": "is supported by direct inbox.",
+        "ctaWithoutMessages": "is one-way, inbox not enabled.",
+        "discovery": "Related Discovery Block",
+        "discoveryOn": "The system may insert similar fanpages to boost discovery.",
+        "discoveryOff": "You are turning off related fanpage suggestions on the UI."
+      },
+      "empty": {
+        "title": "Fanpage to setup not found",
+        "desc": "This page slug does not exist in the current mock data. Go back to the list or creation flow to build a valid fanpage.",
+        "back": "Back to fanpage"
+      },
+      "seoTitle": "{name} Settings | VNSEEA",
+      "seoTitleFallback": "Page Settings | VNSEEA",
+      "seoDescFallback": "Manage fanpage configurations on VNSEEA."
     },
     "mock": {
       "groups": {

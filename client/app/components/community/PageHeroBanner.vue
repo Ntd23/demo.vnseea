@@ -7,7 +7,7 @@
       <div class="relative flex h-full flex-col justify-between gap-6">
         <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/88">
           <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ categoryLabel }}
+            {{ $t(categoryLabel) }}
           </span>
           <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
             {{ page.responseLabel }}
@@ -34,9 +34,9 @@
                 {{ page.summary }}
               </p>
               <div class="mt-3 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-white/82">
-                <span>{{ followerCountLabel }}</span>
+                <span>{{ $t('community.pages.format.followers', { count: followerCountLabel }) }}</span>
                 <span class="text-white/30">•</span>
-                <span>{{ likeCountLabel }}</span>
+                <span>{{ $t('community.pages.format.likes', { count: likeCountLabel }) }}</span>
                 <span class="text-white/30">•</span>
                 <span>{{ page.locationLabel }}</span>
               </div>

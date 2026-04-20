@@ -573,15 +573,18 @@ export function getCommunityInitials(name: string, limit = 2) {
 }
 
 export function formatCommunityMemberCount(count: number) {
-  return "community.groups.format.members"
+  if (count < 1000) return count.toString()
+  return `${(count / 1000).toFixed(1)}K`
 }
 
 export function formatCommunityFollowerCount(count: number) {
-  return "community.pages.format.followers"
+  if (count < 1000) return count.toString()
+  return `${(count / 1000).toFixed(1)}K`
 }
 
 export function formatCommunityLikeCount(count: number) {
-  return "community.pages.format.likes"
+  if (count < 1000) return count.toString()
+  return `${(count / 1000).toFixed(1)}K`
 }
 
 export function getCommunityGroupPath(slug: string) {

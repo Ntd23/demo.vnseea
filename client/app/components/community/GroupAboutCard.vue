@@ -43,7 +43,7 @@
       </div>
       <div class="flex items-start gap-2">
         <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
-        <span>{{ memberCountLabel }}</span>
+        <span>{{ $t('community.groups.format.members', { count: memberCountLabel }) }}</span>
       </div>
     </div>
 

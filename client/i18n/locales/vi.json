@@ -1064,6 +1064,12 @@
         }
       }
     },
+    "pages": {
+      "format": {
+        "followers": "{count} người theo dõi",
+        "likes": "{count} lượt thích"
+      }
+    },
     "settings": {
       "eyebrow": "Cài đặt nhóm",
       "defaultEyebrow": "Thiết lập",
@@ -1157,9 +1163,99 @@
       },
       "empty": {
         "title": "Không tìm thấy nhóm để cài đặt",
-        "desc": "Slug nhóm này chưa có trong dữ liệu mock hiện tại. Hãy quay lại danh sách nhóm và chọn một community hợp lệ.",
-        "back": "Quay lại danh sách nhóm"
+        "desc": "Slug nhóm này chưa có trong dữ liệu mock hiện tại. Hãy quay lại danh sách hoặc flow tạo nhóm để dựng một cộng đồng hợp lệ.",
+        "back": "Quay lại nhóm"
       }
+    },
+    "pageSettings": {
+      "eyebrow": "Page settings",
+      "title": "Cài đặt {name}",
+      "desc": "Điều chỉnh hồ sơ fanpage, CTA chính và một số tín hiệu hiển thị trước khi nối API quản trị thật.",
+      "basics": {
+        "eyebrow": "Thông tin công khai",
+        "title": "Hồ sơ fanpage",
+        "desc": "Cập nhật tên, URL, mô tả và những tín hiệu nhận diện chính để fanpage nhìn rõ ràng hơn khi khách ghé thăm.",
+        "viewPage": "Xem fanpage",
+        "fields": {
+          "name": "Tên trang",
+          "namePlaceholder": "Nhập tên fanpage",
+          "url": "Page URL",
+          "urlSuggested": "Gợi ý: {slug}",
+          "urlUseSuggestion": "Dùng slug gợi ý",
+          "summary": "Giới thiệu ngắn",
+          "summaryPlaceholder": "Tóm tắt thương hiệu, dịch vụ hoặc loại nội dung mà fanpage này đang chia sẻ.",
+          "category": "Loại trang",
+          "location": "Khu vực hiển thị",
+          "locationPlaceholder": "Ví dụ: Đà Nẵng · Giao hàng toàn quốc",
+          "website": "Website hoặc landing page",
+          "websitePlaceholder": "vnseea.vn/p/ten-fanpage",
+          "ownerLabel": "Nhãn thương hiệu",
+          "ownerPlaceholder": "Ví dụ: Fanpage thương hiệu nội dung",
+          "responseLabel": "Cam kết phản hồi",
+          "responsePlaceholder": "Ví dụ: Phản hồi trong ngày làm việc",
+          "ctaLabel": "CTA chính",
+          "ctaPlaceholder": "Ví dụ: Nhắn tin",
+          "tags": "Chủ đề chính",
+          "tagsPlaceholder": "noi-that, thi-cong, go-tu-nhien"
+        },
+        "stats": {
+          "summaryLength": "{count} ký tự",
+          "tagCount": "{count} thẻ",
+          "ctaFallback": "Chưa chọn",
+          "websiteYes": "Đã có",
+          "websiteNo": "Chưa có"
+        }
+      },
+      "controls": {
+        "eyebrow": "Tương tác & hiển thị",
+        "title": "CTA và các tín hiệu công khai",
+        "desc": "Tinh chỉnh hành động chính và quyết định phần thông tin nào sẽ được đẩy ra giao diện fanpage.",
+        "preset": "Preset CTA",
+        "logic": "Logic đang áp dụng",
+        "logicDesc": "CTA hiện tại là **{cta}**. Bạn có thể kết hợp với hiển thị website, nút nhắn tin và chỉ số tương tác để page nhìn rõ mục tiêu hơn.",
+        "toggles": {
+          "messagesLabel": "Bật nút nhắn tin",
+          "messagesDesc": "Cho phép khách chuyển nhanh sang inbox từ banner và action card.",
+          "followersLabel": "Hiển thị số người theo dõi",
+          "followersDesc": "Giữ follower count trên phần giới thiệu và preview page.",
+          "likesLabel": "Hiển thị số lượt thích",
+          "likesDesc": "Giữ like count như một tín hiệu xã hội ở sidebar và khu vực about.",
+          "websiteLabel": "Hiển thị website công khai",
+          "websiteDesc": "Ẩn hoặc hiện link landing page/website trong phần thông tin fanpage.",
+          "relatedLabel": "Gợi ý fanpage liên quan",
+          "relatedDesc": "Cho phép hệ thống chèn các đề xuất tương tự ở vùng khám phá sau này."
+        }
+      },
+      "finish": {
+        "eyebrow": "Hoàn tất",
+        "title": "Hành động nhanh",
+        "desc": "Flow page settings này hiện là UI mock. Bạn có thể quay lại fanpage để so sánh hoặc tiếp tục tinh chỉnh trước khi nối API.",
+        "status": "{enabled}/{total} tín hiệu đang bật. CTA chính hiện tại là **{cta}**.",
+        "back": "Quay lại fanpage",
+        "save": "Lưu thay đổi"
+      },
+      "sidebar": {
+        "preview": "Xem trước sau khi lưu",
+        "signals": "Tín hiệu bật",
+        "followers": "Theo dõi",
+        "likes": "Yêu thích",
+        "hidden": "Đang ẩn",
+        "tips": "Gợi ý tối ưu",
+        "ctaFocus": "CTA đang ưu tiên",
+        "ctaWithMessages": "đã được hỗ trợ bởi inbox trực tiếp.",
+        "ctaWithoutMessages": "đang ở chế độ một chiều, chưa bật inbox.",
+        "discovery": "Khối khám phá liên quan",
+        "discoveryOn": "Hệ thống có thể chèn fanpage tương tự để tăng khám phá.",
+        "discoveryOff": "Bạn đang tắt gợi ý fanpage liên quan trên giao diện."
+      },
+      "empty": {
+        "title": "Không tìm thấy fanpage để cài đặt",
+        "desc": "Slug page này chưa có trong dữ liệu mock hiện tại. Hãy quay lại danh sách hoặc flow tạo trang để dựng một fanpage hợp lệ.",
+        "back": "Quay lại fanpage"
+      },
+      "seoTitle": "Cài đặt {name} | VNSEEA",
+      "seoTitleFallback": "Cài đặt page | VNSEEA",
+      "seoDescFallback": "Quản lý thiết lập fanpage trên VNSEEA."
     },
     "mock": {
       "groups": {
