@@ -86,6 +86,18 @@
       "activeYesterday": "Hoạt động hôm qua",
       "contactName": "Thanh Hà",
       "loadOlder": "Tải tin nhắn cũ hơn",
+      "call": "Gọi thoại",
+      "videoCall": "Gọi video",
+      "conversationInfo": "Thông tin cuộc trò chuyện",
+      "addAttachment": "Thêm tệp đính kèm",
+      "photoLibrary": "Mở thư viện ảnh",
+      "stickers": "Mở sticker",
+      "gifs": "Mở GIF",
+      "composerPlaceholder": "Aa",
+      "sendLike": "Gửi lượt thích",
+      "messageTimeOne": "T4 10:20",
+      "messageTimeTwo": "11:30",
+      "messageTimeThree": "11:35",
       "messageOne": "Helo cậu!",
       "messageTwo": "Hôm nay làm bài xong chưa?",
       "messageThree": "Cũng gần xong rồi á",
@@ -3166,6 +3178,11 @@
       "titleLine1": "Kết nối với",
       "titleLine2": "bạn bè!",
       "subtitle": "Chia sẻ những điều mới và những khoảnh khắc đáng nhớ cùng cộng đồng của bạn."
+    }
+  },
+  "auth": {
+    "heroPanel": {
+      "defaultImageAlt": "Nhóm người đang dùng điện thoại"
     }
   },
   "settings": {

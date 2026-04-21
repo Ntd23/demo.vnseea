@@ -219,12 +219,12 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/pages/RegisterPage.vue`
 - [x] `client/app/components/pages/ForgotPasswordPage.vue`
 - [x] `client/app/components/auth/AuthSplitShell.vue`
-- [ ] `client/app/components/auth/AuthHeroPanel.vue`
+- [x] `client/app/components/auth/AuthHeroPanel.vue`
 
 ### Messages / reels
 - [x] `client/app/components/pages/MessagesPage.vue`
 - [x] `client/app/components/messages/ConversationList.vue`
-- [ ] `client/app/components/messages/MessagePane.vue`
+- [x] `client/app/components/messages/MessagePane.vue`
 - [x] `client/app/components/pages/ReelsPage.vue`
 - [x] `client/app/components/reels/ReelsPlayer.vue`
 - [x] `client/app/components/reels/ReelsOverlay.vue`

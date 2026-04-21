@@ -86,6 +86,18 @@
       "activeYesterday": "Active yesterday",
       "contactName": "Thanh Ha",
       "loadOlder": "Load older messages",
+      "call": "Voice call",
+      "videoCall": "Video call",
+      "conversationInfo": "Conversation info",
+      "addAttachment": "Add attachment",
+      "photoLibrary": "Open photo library",
+      "stickers": "Open stickers",
+      "gifs": "Open GIFs",
+      "composerPlaceholder": "Aa",
+      "sendLike": "Send like",
+      "messageTimeOne": "Wed 10:20",
+      "messageTimeTwo": "11:30",
+      "messageTimeThree": "11:35",
       "messageOne": "Hey!",
       "messageTwo": "Have you finished today's work?",
       "messageThree": "Almost done",
@@ -3166,6 +3178,11 @@
       "titleLine1": "Connect with",
       "titleLine2": "friends!",
       "subtitle": "Share new things and memorable moments with your community."
+    }
+  },
+  "auth": {
+    "heroPanel": {
+      "defaultImageAlt": "People using phones"
     }
   },
   "settings": {
