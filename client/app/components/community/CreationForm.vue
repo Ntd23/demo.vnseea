@@ -40,7 +40,7 @@
           <div class="mt-5 space-y-6">
             <label class="block">
               <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-                {{ nameLabel }}
+                {{ nameLabelText }}
               </span>
               <input
                 v-model="model.name"
@@ -63,7 +63,7 @@
 
             <label class="block">
               <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-                {{ urlLabel }}
+                {{ urlLabelText }}
               </span>
               <div class="relative mt-3">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-5 text-[1rem] font-medium text-slate-500">
@@ -110,7 +110,7 @@
 
           <label class="mt-5 block">
             <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-              {{ descriptionLabel }}
+              {{ descriptionLabelText }}
             </span>
             <textarea
               v-model="model.description"
@@ -165,7 +165,7 @@
 
           <label class="mt-5 block">
             <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-              {{ categoryLabel }}
+              {{ categoryLabelText }}
             </span>
             <div class="relative mt-3">
               <select
@@ -305,14 +305,14 @@ const props = withDefaults(defineProps<{
   submitLabel: "", // handled in computed
   backLabel: "",   // handled in computed
   backTo: "/home",
-  nameLabel: "Tên",
+  nameLabel: "",
   namePlaceholder: "",
-  urlLabel: "URL",
+  urlLabel: "",
   slugPlaceholder: "",
-  descriptionLabel: "Mô tả",
+  descriptionLabel: "",
   descriptionPlaceholder: "",
-  categoryLabel: "Loại",
-  privacyLabel: "Loại hiển thị",
+  categoryLabel: "",
+  privacyLabel: "",
   urlPrefix: communityUrlPrefix,
   identitySectionLabel: "",
   identitySectionTitle: "",
@@ -336,6 +336,22 @@ const submitLabelText = computed(() =>
 
 const backLabelText = computed(() =>
   props.backLabel || t("community.creation.common.back"),
+)
+
+const nameLabelText = computed(() =>
+  props.nameLabel || t("community.creation.common.nameLabel"),
+)
+
+const urlLabelText = computed(() =>
+  props.urlLabel || t("community.creation.common.urlLabel"),
+)
+
+const descriptionLabelText = computed(() =>
+  props.descriptionLabel || t("community.creation.common.descriptionLabel"),
+)
+
+const categoryLabelText = computed(() =>
+  props.categoryLabel || t("community.creation.common.categoryLabel"),
 )
 
 const completionCount = computed(() =>
@@ -428,7 +444,7 @@ const previewTitle = computed(() =>
 )
 
 const effectiveSlug = computed(() =>
-  model.value.slug.trim() || suggestedSlug.value || "duong-dan-cua-ban",
+  model.value.slug.trim() || suggestedSlug.value || t("community.creation.common.previewUrlDefault"),
 )
 
 const previewUrl = computed(() =>

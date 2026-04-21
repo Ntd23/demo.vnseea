@@ -259,14 +259,14 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/community/GroupMembersCard.vue`
 - [x] `client/app/components/community/GroupAdminCard.vue`
 - [x] `client/app/components/community/GroupTopicsCard.vue`
-- [ ] `client/app/components/community/GroupSettingsBasicsCard.vue`
-- [ ] `client/app/components/community/GroupSettingsControlsCard.vue`
-- [ ] `client/app/components/community/GroupSettingsSidebar.vue`
-- [ ] `client/app/components/community/GroupsFilterBar.vue`
-- [ ] `client/app/components/community/PageDirectoryTabsBar.vue`
-- [ ] `client/app/components/community/CreationHeaderCard.vue`
-- [ ] `client/app/components/community/CreationInsightsPanel.vue`
-- [ ] `client/app/components/community/CreationForm.vue`
+- [x] `client/app/components/community/GroupSettingsBasicsCard.vue`
+- [x] `client/app/components/community/GroupSettingsControlsCard.vue`
+- [x] `client/app/components/community/GroupSettingsSidebar.vue`
+- [x] `client/app/components/community/GroupsFilterBar.vue`
+- [x] `client/app/components/community/PageDirectoryTabsBar.vue`
+- [x] `client/app/components/community/CreationHeaderCard.vue`
+- [x] `client/app/components/community/CreationInsightsPanel.vue`
+- [x] `client/app/components/community/CreationForm.vue`
 
 ### Blogs
 - [x] `client/app/components/pages/BlogsPage.vue`

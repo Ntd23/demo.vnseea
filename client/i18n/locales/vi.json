@@ -4057,6 +4057,7 @@
     "pagesDirectory": {
       "title": "Các trang",
       "desc": "Quản lý fanpage bạn theo dõi, xem gợi ý phù hợp và mở nhanh flow tạo page mới trong cùng một khu vực.",
+      "createAction": "Tạo trang",
       "emptyMineTitle": "Không có trang nào để hiển thị",
       "emptyMineDesc": "Bạn chưa tạo fanpage nào trong tài khoản này. Bắt đầu bằng một page mới để giới thiệu thương hiệu, dịch vụ hoặc kênh nội dung của bạn.",
       "createFirst": "Tạo page đầu tiên",
@@ -4122,6 +4123,7 @@
         "fillInfo": "Điền thông tin {entity}",
         "fillDesc": "Hoàn thiện tên, URL, mô tả và phân loại để {entity} mới của bạn sẵn sàng xuất hiện trên VNSEEA.",
         "completionStatus": "{count}/{total} mục chính đã sẵn sàng",
+        "nameLabel": "Tên",
         "urlSuggested": "Gợi ý URL",
         "urlDefault": "ten-cua-ban",
         "useSuggestion": "Dùng gợi ý",

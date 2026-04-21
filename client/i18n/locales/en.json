@@ -4057,6 +4057,7 @@
     "pagesDirectory": {
       "title": "Pages",
       "desc": "Manage your followed fanpages, see suitable suggestions, and quickly open the new page creation flow in the same area.",
+      "createAction": "Create page",
       "emptyMineTitle": "No pages to display",
       "emptyMineDesc": "You haven't created any fanpages on this account yet. Start with a new page to introduce your brand, service, or content channel.",
       "createFirst": "Create your first page",
@@ -4122,6 +4123,7 @@
         "fillInfo": "Fill in {entity} information",
         "fillDesc": "Complete the name, URL, description, and category to get your new {entity} ready to appear on VNSEEA.",
         "completionStatus": "{count}/{total} key items ready",
+        "nameLabel": "Name",
         "urlSuggested": "URL suggestion",
         "urlDefault": "your-name",
         "useSuggestion": "Use suggestion",

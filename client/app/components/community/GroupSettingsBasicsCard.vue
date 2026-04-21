@@ -43,7 +43,7 @@
 
           <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
             <span class="rounded-full bg-[#f8fbff] px-3 py-1.5 font-medium text-[#243b63]">
-              {{ $t('community.settings.basics.fields.suggested', { slug: suggestedSlug || "ten-nhom" }) }}
+              {{ $t('community.settings.basics.fields.suggested', { slug: suggestedSlug || t('community.settings.basics.fields.urlPlaceholder') }) }}
             </span>
             <button
               v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
@@ -154,6 +154,7 @@ import {
 import type { CommunityGroupSettingsDraft } from "../../../types/community"
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
+const { t } = useI18n()
 
 defineProps<{
   groupPath: string
