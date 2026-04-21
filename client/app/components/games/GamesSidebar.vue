@@ -1,8 +1,8 @@
 <template>
   <aside class="space-y-4">
     <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-      <p class="text-label-secondary text-[var(--text-tertiary)]">Leaderboard</p>
-      <h2 class="mt-1 text-heading text-[var(--text-primary)]">Bảng xếp hạng</h2>
+      <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t('community.games.sidebar.leaderboard.label') }}</p>
+      <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t('community.games.sidebar.leaderboard.title') }}</h2>
       <p class="mt-1 text-[12px] font-semibold text-[var(--text-secondary)]">{{ gameTitle }}</p>
       <div class="mt-4 space-y-2">
         <div v-for="(player, index) in leaderboard" :key="player.name" class="flex items-center justify-between rounded-[20px] bg-[var(--bg-surface-hover)] p-3">
@@ -16,8 +16,8 @@
     </section>
 
     <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-      <p class="text-label-secondary text-[var(--text-tertiary)]">Achievements</p>
-      <h2 class="mt-1 text-heading text-[var(--text-primary)]">Thành tựu</h2>
+      <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t('community.games.sidebar.achievements.label') }}</p>
+      <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t('community.games.sidebar.achievements.title') }}</h2>
       <div class="mt-4 space-y-3">
         <div v-for="item in achievements" :key="item.title" class="rounded-[20px] bg-[var(--bg-surface-hover)] p-3">
           <div class="flex items-center justify-between gap-3">

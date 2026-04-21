@@ -398,12 +398,12 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/directory/DirectoryFilters.vue`
 - [x] `client/app/components/directory/DirectorySidebar.vue`
 - [x] `client/app/components/directory/DirectoryCard.vue`
-- [ ] `client/app/components/pages/GamesPage.vue`
-- [ ] `client/app/components/games/GamesHero.vue`
-- [ ] `client/app/components/games/GamesFilters.vue`
-- [ ] `client/app/components/games/GamesSidebar.vue`
-- [ ] `client/app/components/games/GameCard.vue`
-- [ ] `client/app/components/games/GamePlayModal.vue`
+- [x] `client/app/components/pages/GamesPage.vue`
+- [x] `client/app/components/games/GamesHero.vue`
+- [x] `client/app/components/games/GamesFilters.vue`
+- [x] `client/app/components/games/GamesSidebar.vue`
+- [x] `client/app/components/games/GameCard.vue`
+- [x] `client/app/components/games/GamePlayModal.vue`
 
 - [x] `client/app/components/go-pro/GoProHero.vue`
 - [x] `client/app/components/go-pro/BillingToggle.vue`

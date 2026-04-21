@@ -2,12 +2,12 @@
   <section class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]">
     <div class="grid gap-0 lg:grid-cols-[minmax(0,1fr)_420px]">
       <div class="p-5 sm:p-7 lg:p-8">
-        <p class="text-label-secondary text-[var(--color-primary-600)]">P-41 · Games</p>
+        <p class="text-label-secondary text-[var(--color-primary-600)]">P-41 · {{ $t('community.games.hero.label') }}</p>
         <h1 class="mt-2 text-display text-[2.15rem] leading-tight text-[var(--text-primary)] sm:text-[3rem]">
-          Trung tâm trò chơi
+          {{ $t('community.games.hero.title') }}
         </h1>
         <p class="mt-3 max-w-2xl text-[15px] font-semibold leading-7 text-[var(--text-secondary)]">
-          Chọn game của bạn, khám phá game mới, xem game phổ biến và bắt đầu lượt chơi mock ngay trong trang.
+          {{ $t('community.games.hero.desc') }}
         </p>
         <div class="mt-6 flex flex-wrap gap-2">
           <button

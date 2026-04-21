@@ -5593,6 +5593,162 @@
         "likes": "{count} lượt thích",
         "comments": "{count} bình luận",
         "shares": "{count} chia sẻ"
+      },
+      "games": {
+        "tags": {
+          "logic": "Giải đố",
+          "market": "Thị trường",
+          "fast": "Tốc độ",
+          "startup": "Startup",
+          "speed": "Tốc độ",
+          "demo": "Demo",
+          "green": "Green",
+          "strategy": "Chiến thuật",
+          "city": "Thành phố",
+          "quiz": "Quiz",
+          "community": "Cộng đồng",
+          "knowledge": "Kiến thức",
+          "event": "Sự kiện",
+          "runner": "Runner",
+          "friends": "Bạn bè",
+          "code": "Code",
+          "logistics": "Logistics",
+          "rush": "Rush",
+          "arcade": "Arcade",
+          "memory": "Bộ nhớ",
+          "puzzle": "Giải đố",
+          "combo": "Combo",
+          "football": "Bóng đá",
+          "sport": "Thể thao",
+          "score": "Điểm số"
+        },
+        "achievements": {
+          "firstPlay": {
+            "title": "Lượt chơi đầu",
+            "desc": "Hoàn thành lượt chơi đầu tiên."
+          },
+          "top10": {
+            "title": "Top 10%",
+            "desc": "Đạt điểm cao hơn 90% người chơi."
+          },
+          "streak": {
+            "title": "Chuỗi hàng ngày",
+            "desc": "Chơi 5 ngày liên tiếp."
+          }
+        },
+        "market-maze": {
+          "title": "Market Maze",
+          "desc": "Xếp đường đi cho đơn hàng qua các trạm thị trường trước khi hết thời gian."
+        },
+        "startup-sprint": {
+          "title": "Startup Sprint",
+          "desc": "Thu thập ý tưởng, né blocker và tăng tốc trước demo day."
+        },
+        "green-city-builder": {
+          "title": "Green City Builder",
+          "desc": "Cân bằng năng lượng, cây xanh và ngân sách để xây khu phố bền vững."
+        },
+        "vnseea-quiz-night": {
+          "title": "VNSEEA Quiz Night",
+          "desc": "Trả lời nhanh các câu hỏi về cộng đồng, sự kiện và marketplace."
+        },
+        "event-runner": {
+          "title": "Event Runner",
+          "desc": "Chạy qua các checkpoint sự kiện, mời bạn bè và hoàn thành nhiệm vụ."
+        },
+        "code-quest": {
+          "title": "Code Quest",
+          "desc": "Sắp xếp module, tối ưu tài nguyên và vượt qua các bug trước deadline."
+        },
+        "supply-chain-rush": {
+          "title": "Supply Chain Rush",
+          "desc": "Điều phối kho, xe giao hàng và đơn khẩn trong một vòng chơi tốc độ."
+        },
+        "memory-lab": {
+          "title": "Memory Lab",
+          "desc": "Ghi nhớ chuỗi biểu tượng, mở khoá phòng thí nghiệm và tăng combo."
+        },
+        "penalty-master": {
+          "title": "Penalty Master",
+          "desc": "Canh lực sút, hướng bóng và chuỗi penalty để leo top bảng xếp hạng."
+        }
+      }
+    },
+    "games": {
+      "hero": {
+        "label": "P-41 · Trò chơi",
+        "title": "Trung tâm trò chơi",
+        "desc": "Chọn game của bạn, khám phá game mới, xem game phổ biến và bắt đầu lượt chơi mock ngay trong trang."
+      },
+      "stats": {
+        "totalGames": "Game",
+        "plays": "Lượt chơi",
+        "sessions": "Phiên của bạn",
+        "totalGamesDesc": "Danh sách game mock.",
+        "playsDesc": "Tổng lượt chơi.",
+        "sessionsDesc": "Lượt chơi trong phiên này."
+      },
+      "results": {
+        "label": "Kết quả",
+        "found": "{count} game phù hợp",
+        "reset": "Đặt lại"
+      },
+      "empty": {
+        "title": "Không tìm thấy game",
+        "desc": "Thử đổi tab, danh mục hoặc từ khóa tìm kiếm."
+      },
+      "tabs": {
+        "my": "Game của tôi",
+        "new": "Mới",
+        "popular": "Phổ biến"
+      },
+      "categories": {
+        "all": "Tất cả",
+        "puzzle": "Giải đố",
+        "arcade": "Arcade",
+        "strategy": "Chiến thuật",
+        "quiz": "Quiz",
+        "sport": "Thể thao"
+      },
+      "sidebar": {
+        "leaderboard": {
+          "label": "Leaderboard",
+          "title": "Bảng xếp hạng"
+        },
+        "achievements": {
+          "label": "Achievements",
+          "title": "Thành tựu"
+        }
+      },
+      "card": {
+        "isNew": "Mới",
+        "plays": "Chơi",
+        "rating": "Rating",
+        "best": "Kỷ lục",
+        "playBtn": "Chơi"
+      },
+      "modal": {
+        "mockPlayArea": "Khu vực chơi thử",
+        "mockDesc": "Bấm “Ghi điểm” để mô phỏng một lượt chơi. Chưa tải game engine thật.",
+        "scoreBtn": "Ghi điểm",
+        "finishBtn": "Kết thúc lượt",
+        "savedMsg": "Đã lưu điểm mock: {score}. Chưa gọi API games.",
+        "sessionInfo": "Phiên chơi",
+        "bestScore": "Điểm cao nhất",
+        "duration": "Thời lượng",
+        "status": "Trạng thái",
+        "finished": "Đã hoàn thành",
+        "playing": "Đang chơi"
+      },
+      "filters": {
+        "placeholder": "Tìm game, thể loại, hashtag..."
+      },
+      "common": {
+        "you": "Bạn"
+      },
+      "seo": {
+        "title": "Games | VNSEEA",
+        "description": "Danh sách game, tab game của tôi, game mới, game phổ biến và play game mock trong VNSEEA."
       }
     }
   }

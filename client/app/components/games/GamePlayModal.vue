@@ -17,40 +17,40 @@
         <div class="grid gap-0 lg:grid-cols-[minmax(0,1fr)_260px]">
           <div class="p-5">
             <div class="rounded-[24px] bg-[var(--bg-surface-hover)] p-5 text-center">
-              <p class="text-label-secondary text-[var(--text-tertiary)]">Mock play area</p>
+              <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t('community.games.modal.mockPlayArea') }}</p>
               <p class="mt-2 text-[3rem] font-black leading-none text-[var(--color-primary-600)]">{{ score }}</p>
               <p class="mt-2 text-[14px] font-semibold text-[var(--text-secondary)]">
-                Bấm “Ghi điểm” để mô phỏng một lượt chơi. Chưa tải game engine thật.
+                {{ $t('community.games.modal.mockDesc') }}
               </p>
               <div class="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-center">
                 <button class="h-12 rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-6 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="button" @click="score += scoreStep">
-                  Ghi điểm
+                  {{ $t('community.games.modal.scoreBtn') }}
                 </button>
                 <button class="h-12 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-6 text-[14px] font-extrabold text-[var(--color-primary-600)]" type="button" @click="finish">
-                  Kết thúc lượt
+                  {{ $t('community.games.modal.finishBtn') }}
                 </button>
               </div>
             </div>
 
             <div v-if="finished" class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]">
-              Đã lưu điểm mock: {{ score }}. Chưa gọi API games.
+              {{ $t('community.games.modal.savedMsg', { score }) }}
             </div>
           </div>
 
           <aside class="border-t border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-5 lg:border-l lg:border-t-0">
-            <p class="text-label-secondary text-[var(--text-tertiary)]">Phiên chơi</p>
+            <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t('community.games.modal.sessionInfo') }}</p>
             <div class="mt-4 space-y-3">
               <div class="rounded-[18px] bg-white p-3">
-                <p class="text-[12px] font-bold text-[var(--text-tertiary)]">Điểm cao nhất</p>
+                <p class="text-[12px] font-bold text-[var(--text-tertiary)]">{{ $t('community.games.modal.bestScore') }}</p>
                 <p class="mt-1 text-[20px] font-black text-[var(--text-primary)]">{{ bestScore }}</p>
               </div>
               <div class="rounded-[18px] bg-white p-3">
-                <p class="text-[12px] font-bold text-[var(--text-tertiary)]">Thời lượng</p>
+                <p class="text-[12px] font-bold text-[var(--text-tertiary)]">{{ $t('community.games.modal.duration') }}</p>
                 <p class="mt-1 text-[20px] font-black text-[var(--text-primary)]">{{ duration }}</p>
               </div>
               <div class="rounded-[18px] bg-white p-3">
-                <p class="text-[12px] font-bold text-[var(--text-tertiary)]">Trạng thái</p>
-                <p class="mt-1 text-[14px] font-extrabold text-[var(--color-primary-600)]">{{ finished ? "Đã hoàn thành" : "Đang chơi" }}</p>
+                <p class="text-[12px] font-bold text-[var(--text-tertiary)]">{{ $t('community.games.modal.status') }}</p>
+                <p class="mt-1 text-[14px] font-extrabold text-[var(--color-primary-600)]">{{ finished ? $t('community.games.modal.finished') : $t('community.games.modal.playing') }}</p>
               </div>
             </div>
           </aside>

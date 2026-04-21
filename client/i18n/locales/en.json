@@ -5591,6 +5591,162 @@
         "likes": "{count} likes",
         "comments": "{count} comments",
         "shares": "{count} shares"
+      },
+      "games": {
+        "tags": {
+          "logic": "Logic",
+          "market": "Market",
+          "fast": "Fast",
+          "startup": "Startup",
+          "speed": "Speed",
+          "demo": "Demo",
+          "green": "Green",
+          "strategy": "Strategy",
+          "city": "City",
+          "quiz": "Quiz",
+          "community": "Community",
+          "knowledge": "Knowledge",
+          "event": "Event",
+          "runner": "Runner",
+          "friends": "Friends",
+          "code": "Code",
+          "logistics": "Logistics",
+          "rush": "Rush",
+          "arcade": "Arcade",
+          "memory": "Memory",
+          "puzzle": "Puzzle",
+          "combo": "Combo",
+          "football": "Football",
+          "sport": "Sport",
+          "score": "Score"
+        },
+        "achievements": {
+          "firstPlay": {
+            "title": "First Play",
+            "desc": "Complete your first play session."
+          },
+          "top10": {
+            "title": "Top 10%",
+            "desc": "Score higher than 90% of players."
+          },
+          "streak": {
+            "title": "Daily Streak",
+            "desc": "Play for 5 consecutive days."
+          }
+        },
+        "market-maze": {
+          "title": "Market Maze",
+          "desc": "Route orders through market stations before time runs out."
+        },
+        "startup-sprint": {
+          "title": "Startup Sprint",
+          "desc": "Collect ideas, dodge blockers, and speed up before demo day."
+        },
+        "green-city-builder": {
+          "title": "Green City Builder",
+          "desc": "Balance energy, greenery, and budget to build a sustainable neighborhood."
+        },
+        "vnseea-quiz-night": {
+          "title": "VNSEEA Quiz Night",
+          "desc": "Quickly answer questions about community, events, and marketplace."
+        },
+        "event-runner": {
+          "title": "Event Runner",
+          "desc": "Run through event checkpoints, invite friends, and complete missions."
+        },
+        "code-quest": {
+          "title": "Code Quest",
+          "desc": "Arrange modules, optimize resources, and overcome bugs before the deadline."
+        },
+        "supply-chain-rush": {
+          "title": "Supply Chain Rush",
+          "desc": "Coordinate warehouse, delivery trucks, and urgent orders in a fast-paced round."
+        },
+        "memory-lab": {
+          "title": "Memory Lab",
+          "desc": "Memorize symbol sequences, unlock labs, and increase combos."
+        },
+        "penalty-master": {
+          "title": "Penalty Master",
+          "desc": "Aim shots, ball direction, and penalty streaks to climb the leaderboard."
+        }
+      }
+    },
+    "games": {
+      "hero": {
+        "label": "P-41 · Games",
+        "title": "Game Hub",
+        "desc": "Select your game, explore new games, see popular ones and start a mock play session right on the page."
+      },
+      "stats": {
+        "totalGames": "Games",
+        "plays": "Plays",
+        "sessions": "Your Sessions",
+        "totalGamesDesc": "List of mock games.",
+        "playsDesc": "Total cumulative plays.",
+        "sessionsDesc": "Plays in this session."
+      },
+      "results": {
+        "label": "Results",
+        "found": "{count} games match",
+        "reset": "Reset"
+      },
+      "empty": {
+        "title": "No games found",
+        "desc": "Try changing tabs, categories, or search keywords."
+      },
+      "tabs": {
+        "my": "My Games",
+        "new": "New",
+        "popular": "Popular"
+      },
+      "categories": {
+        "all": "All",
+        "puzzle": "Puzzle",
+        "arcade": "Arcade",
+        "strategy": "Strategy",
+        "quiz": "Quiz",
+        "sport": "Sports"
+      },
+      "sidebar": {
+        "leaderboard": {
+          "label": "Leaderboard",
+          "title": "Leaderboard"
+        },
+        "achievements": {
+          "label": "Achievements",
+          "title": "Achievements"
+        }
+      },
+      "card": {
+        "isNew": "New",
+        "plays": "Plays",
+        "rating": "Rating",
+        "best": "Best",
+        "playBtn": "Play"
+      },
+      "modal": {
+        "mockPlayArea": "Mock Play Area",
+        "mockDesc": "Click \"Score\" to simulate a play session. Game engine not loaded yet.",
+        "scoreBtn": "Score",
+        "finishBtn": "Finish Session",
+        "savedMsg": "Saved mock score: {score}. API games not called.",
+        "sessionInfo": "Session Info",
+        "bestScore": "Best Score",
+        "duration": "Duration",
+        "status": "Status",
+        "finished": "Finished",
+        "playing": "Playing"
+      },
+      "filters": {
+        "placeholder": "Search games, categories, hashtags..."
+      },
+      "common": {
+        "you": "You"
+      },
+      "seo": {
+        "title": "Games | VNSEEA",
+        "description": "Game list, my games tab, new games, popular games and play mock games in VNSEEA."
       }
     }
   }

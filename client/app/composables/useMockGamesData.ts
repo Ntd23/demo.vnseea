@@ -38,29 +38,30 @@ export type GameSessionPayload = {
 }
 
 export const useMockGamesData = () => {
-  const tabs: GameTab[] = [
-    { label: "Game của tôi", value: "my", icon: "i-ph-user-circle-check-fill" },
-    { label: "Mới", value: "new", icon: "i-ph-sparkle-fill" },
-    { label: "Phổ biến", value: "popular", icon: "i-ph-fire-fill" },
-  ]
+  const { t } = useI18n()
+  const tabs = computed<GameTab[]>(() => [
+    { label: t("community.games.tabs.my"), value: "my", icon: "i-ph-user-circle-check-fill" },
+    { label: t("community.games.tabs.new"), value: "new", icon: "i-ph-sparkle-fill" },
+    { label: t("community.games.tabs.popular"), value: "popular", icon: "i-ph-fire-fill" },
+  ])
 
-  const categories: GameCategory[] = [
-    { label: "Tất cả", value: "all", icon: "i-ph-squares-four-fill" },
-    { label: "Giải đố", value: "puzzle", icon: "i-ph-puzzle-piece-fill" },
-    { label: "Arcade", value: "arcade", icon: "i-ph-game-controller-fill" },
-    { label: "Chiến thuật", value: "strategy", icon: "i-ph-flag-fill" },
-    { label: "Quiz", value: "quiz", icon: "i-ph-question-fill" },
-    { label: "Thể thao", value: "sport", icon: "i-ph-soccer-ball-fill" },
-  ]
+  const categories = computed<GameCategory[]>(() => [
+    { label: t("community.games.categories.all"), value: "all", icon: "i-ph-squares-four-fill" },
+    { label: t("community.games.categories.puzzle"), value: "puzzle", icon: "i-ph-puzzle-piece-fill" },
+    { label: t("community.games.categories.arcade"), value: "arcade", icon: "i-ph-game-controller-fill" },
+    { label: t("community.games.categories.strategy"), value: "strategy", icon: "i-ph-flag-fill" },
+    { label: t("community.games.categories.quiz"), value: "quiz", icon: "i-ph-question-fill" },
+    { label: t("community.games.categories.sport"), value: "sport", icon: "i-ph-soccer-ball-fill" },
+  ])
 
-  const games: MockGame[] = [
+  const games = computed<MockGame[]>(() => [
     {
       id: "market-maze",
-      title: "Market Maze",
+      title: t("community.mock.games.market-maze.title"),
       category: "puzzle",
-      categoryLabel: "Giải đố",
+      categoryLabel: t("community.games.categories.puzzle"),
       cover: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=1200&q=80",
-      description: "Xếp đường đi cho đơn hàng qua các trạm thị trường trước khi hết thời gian.",
+      description: t("community.mock.games.market-maze.desc"),
       players: 1284,
       rating: 4.8,
       plays: 18400,
@@ -68,7 +69,7 @@ export const useMockGamesData = () => {
       isMine: true,
       isNew: false,
       isPopular: true,
-      tags: ["#logic", "#market", "#fast"],
+      tags: [t("community.mock.games.tags.logic"), t("community.mock.games.tags.market"), t("community.mock.games.tags.fast")],
       leaderboard: [
         { name: "Justin", score: 9200 },
         { name: "Hoangne", score: 8840 },
@@ -78,11 +79,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "startup-sprint",
-      title: "Startup Sprint",
+      title: t("community.mock.games.startup-sprint.title"),
       category: "arcade",
-      categoryLabel: "Arcade",
+      categoryLabel: t("community.games.categories.arcade"),
       cover: "https://images.unsplash.com/photo-1556438064-2d7646166914?auto=format&fit=crop&w=1200&q=80",
-      description: "Thu thập ý tưởng, né blocker và tăng tốc trước demo day.",
+      description: t("community.mock.games.startup-sprint.desc"),
       players: 842,
       rating: 4.6,
       plays: 12600,
@@ -90,7 +91,7 @@ export const useMockGamesData = () => {
       isMine: true,
       isNew: true,
       isPopular: true,
-      tags: ["#startup", "#speed", "#demo"],
+      tags: [t("community.mock.games.tags.startup"), t("community.mock.games.tags.speed"), t("community.mock.games.tags.demo")],
       leaderboard: [
         { name: "Hoangne", score: 7400 },
         { name: "Justin", score: 7110 },
@@ -100,11 +101,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "green-city-builder",
-      title: "Green City Builder",
+      title: t("community.mock.games.green-city-builder.title"),
       category: "strategy",
-      categoryLabel: "Chiến thuật",
+      categoryLabel: t("community.games.categories.strategy"),
       cover: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
-      description: "Cân bằng năng lượng, cây xanh và ngân sách để xây khu phố bền vững.",
+      description: t("community.mock.games.green-city-builder.desc"),
       players: 536,
       rating: 4.7,
       plays: 9300,
@@ -112,7 +113,7 @@ export const useMockGamesData = () => {
       isMine: true,
       isNew: true,
       isPopular: false,
-      tags: ["#green", "#strategy", "#city"],
+      tags: [t("community.mock.games.tags.green"), t("community.mock.games.tags.strategy"), t("community.mock.games.tags.city")],
       leaderboard: [
         { name: "Learning Guild", score: 6800 },
         { name: "Justin", score: 6420 },
@@ -122,11 +123,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "vnseea-quiz-night",
-      title: "VNSEEA Quiz Night",
+      title: t("community.mock.games.vnseea-quiz-night.title"),
       category: "quiz",
-      categoryLabel: "Quiz",
+      categoryLabel: t("community.games.categories.quiz"),
       cover: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=1200&q=80",
-      description: "Trả lời nhanh các câu hỏi về cộng đồng, sự kiện và marketplace.",
+      description: t("community.mock.games.vnseea-quiz-night.desc"),
       players: 2190,
       rating: 4.9,
       plays: 24100,
@@ -134,7 +135,7 @@ export const useMockGamesData = () => {
       isMine: true,
       isNew: false,
       isPopular: true,
-      tags: ["#quiz", "#community", "#knowledge"],
+      tags: [t("community.mock.games.tags.quiz"), t("community.mock.games.tags.community"), t("community.mock.games.tags.knowledge")],
       leaderboard: [
         { name: "Justin", score: 9900 },
         { name: "Dung1", score: 9440 },
@@ -144,11 +145,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "event-runner",
-      title: "Event Runner",
+      title: t("community.mock.games.event-runner.title"),
       category: "sport",
-      categoryLabel: "Thể thao",
+      categoryLabel: t("community.games.categories.sport"),
       cover: "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1200&q=80",
-      description: "Chạy qua các checkpoint sự kiện, mời bạn bè và hoàn thành nhiệm vụ.",
+      description: t("community.mock.games.event-runner.desc"),
       players: 412,
       rating: 4.4,
       plays: 5200,
@@ -156,7 +157,7 @@ export const useMockGamesData = () => {
       isMine: false,
       isNew: true,
       isPopular: false,
-      tags: ["#event", "#runner", "#friends"],
+      tags: [t("community.mock.games.tags.event"), t("community.mock.games.tags.runner"), t("community.mock.games.tags.friends")],
       leaderboard: [
         { name: "Event Crew", score: 6100 },
         { name: "Justin", score: 5840 },
@@ -166,11 +167,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "code-quest",
-      title: "Code Quest",
+      title: t("community.mock.games.code-quest.title"),
       category: "strategy",
-      categoryLabel: "Chiến thuật",
+      categoryLabel: t("community.games.categories.strategy"),
       cover: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80",
-      description: "Sắp xếp module, tối ưu tài nguyên và vượt qua các bug trước deadline.",
+      description: t("community.mock.games.code-quest.desc"),
       players: 730,
       rating: 4.7,
       plays: 11700,
@@ -178,7 +179,7 @@ export const useMockGamesData = () => {
       isMine: true,
       isNew: true,
       isPopular: true,
-      tags: ["#code", "#strategy", "#logic"],
+      tags: [t("community.mock.games.tags.code"), t("community.mock.games.tags.strategy"), t("community.mock.games.tags.logic")],
       leaderboard: [
         { name: "Justin", score: 8600 },
         { name: "Ngoc Tokyo", score: 8210 },
@@ -188,11 +189,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "supply-chain-rush",
-      title: "Supply Chain Rush",
+      title: t("community.mock.games.supply-chain-rush.title"),
       category: "arcade",
-      categoryLabel: "Arcade",
+      categoryLabel: t("community.games.categories.arcade"),
       cover: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80",
-      description: "Điều phối kho, xe giao hàng và đơn khẩn trong một vòng chơi tốc độ.",
+      description: t("community.mock.games.supply-chain-rush.desc"),
       players: 1190,
       rating: 4.5,
       plays: 15100,
@@ -200,7 +201,7 @@ export const useMockGamesData = () => {
       isMine: false,
       isNew: true,
       isPopular: true,
-      tags: ["#logistics", "#rush", "#arcade"],
+      tags: [t("community.mock.games.tags.logistics"), t("community.mock.games.tags.rush"), t("community.mock.games.tags.arcade")],
       leaderboard: [
         { name: "Hoangne", score: 8150 },
         { name: "Justin", score: 7880 },
@@ -210,11 +211,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "memory-lab",
-      title: "Memory Lab",
+      title: t("community.mock.games.memory-lab.title"),
       category: "puzzle",
-      categoryLabel: "Giải đố",
+      categoryLabel: t("community.games.categories.puzzle"),
       cover: "https://images.unsplash.com/photo-1607706189992-eae578626c86?auto=format&fit=crop&w=1200&q=80",
-      description: "Ghi nhớ chuỗi biểu tượng, mở khoá phòng thí nghiệm và tăng combo.",
+      description: t("community.mock.games.memory-lab.desc"),
       players: 604,
       rating: 4.6,
       plays: 8800,
@@ -222,7 +223,7 @@ export const useMockGamesData = () => {
       isMine: false,
       isNew: true,
       isPopular: false,
-      tags: ["#memory", "#puzzle", "#combo"],
+      tags: [t("community.mock.games.tags.memory"), t("community.mock.games.tags.puzzle"), t("community.mock.games.tags.combo")],
       leaderboard: [
         { name: "Ngoc Tokyo", score: 7700 },
         { name: "Justin", score: 7420 },
@@ -232,11 +233,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "penalty-master",
-      title: "Penalty Master",
+      title: t("community.mock.games.penalty-master.title"),
       category: "sport",
-      categoryLabel: "Thể thao",
+      categoryLabel: t("community.games.categories.sport"),
       cover: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
-      description: "Canh lực sút, hướng bóng và chuỗi penalty để leo top bảng xếp hạng.",
+      description: t("community.mock.games.penalty-master.desc"),
       players: 1560,
       rating: 4.4,
       plays: 17600,
@@ -244,7 +245,7 @@ export const useMockGamesData = () => {
       isMine: false,
       isNew: false,
       isPopular: true,
-      tags: ["#football", "#sport", "#score"],
+      tags: [t("community.mock.games.tags.football"), t("community.mock.games.tags.sport"), t("community.mock.games.tags.score")],
       leaderboard: [
         { name: "Nicolas", score: 8300 },
         { name: "Hoangne", score: 8020 },
@@ -252,13 +253,13 @@ export const useMockGamesData = () => {
         { name: "Dung1", score: 7550 },
       ],
     },
-  ]
+  ])
 
-  const achievements = [
-    { title: "First Play", description: "Hoàn thành lượt chơi đầu tiên.", progress: 100 },
-    { title: "Top 10%", description: "Đạt điểm cao hơn 90% người chơi.", progress: 68 },
-    { title: "Daily Streak", description: "Chơi 5 ngày liên tiếp.", progress: 40 },
-  ]
+  const achievements = computed(() => [
+    { title: t("community.mock.games.achievements.firstPlay.title"), description: t("community.mock.games.achievements.firstPlay.desc"), progress: 100 },
+    { title: t("community.mock.games.achievements.top10.title"), description: t("community.mock.games.achievements.top10.desc"), progress: 68 },
+    { title: t("community.mock.games.achievements.streak.title"), description: t("community.mock.games.achievements.streak.desc"), progress: 40 },
+  ])
 
   return {
     tabs,
