@@ -4550,6 +4550,7 @@
           "name": "Page name",
           "namePlaceholder": "Enter fanpage name",
           "url": "Page URL",
+          "slugPlaceholder": "fanpage-name",
           "urlSuggested": "Suggestion: {slug}",
           "urlUseSuggestion": "Use suggested slug",
           "summary": "Short introduction",
@@ -4569,6 +4570,9 @@
           "tagsPlaceholder": "furniture, construction, natural-wood"
         },
         "stats": {
+          "topicsLabel": "Topics",
+          "ctaLabel": "CTA",
+          "publicLinkLabel": "Public link",
           "summaryLength": "{count} characters",
           "tagCount": "{count} tags",
           "ctaFallback": "Not selected",

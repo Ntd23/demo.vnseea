@@ -36,14 +36,14 @@
             <input
               v-model="model.slug"
               class="h-14 w-full rounded-[18px] border border-[#dbe3f2] bg-white pl-[130px] pr-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
-              placeholder="ten-fanpage"
+              :placeholder="$t('community.pageSettings.basics.fields.slugPlaceholder')"
               type="text"
             >
           </div>
 
           <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
             <span class="rounded-full bg-[#f8fbff] px-3 py-1.5 font-medium text-[#243b63]">
-              {{ $t('community.pageSettings.basics.fields.urlSuggested', { slug: suggestedSlug || "ten-fanpage" }) }}
+              {{ $t('community.pageSettings.basics.fields.urlSuggested', { slug: suggestedSlug || t('community.pageSettings.basics.fields.slugPlaceholder') }) }}
             </span>
             <button
               v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
@@ -157,15 +157,15 @@
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t('community.pageSettings.basics.stats.summaryLength', { count: model.summary.trim().length }) }}</p>
         </div>
         <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Chủ đề</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.pageSettings.basics.stats.topicsLabel') }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t('community.pageSettings.basics.stats.tagCount', { count: tagCount }) }}</p>
         </div>
         <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">CTA</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.pageSettings.basics.stats.ctaLabel') }}</p>
           <p class="mt-1 truncate text-[15px] font-black text-[#243b63]">{{ model.ctaLabel.trim() || $t('community.pageSettings.basics.stats.ctaFallback') }}</p>
         </div>
         <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Link công khai</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.pageSettings.basics.stats.publicLinkLabel') }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ model.website.trim() ? $t('community.pageSettings.basics.stats.websiteYes') : $t('community.pageSettings.basics.stats.websiteNo') }}</p>
         </div>
       </div>
@@ -182,6 +182,7 @@ import {
 import type { CommunityPageSettingsDraft } from "../../../types/community"
 
 const model = defineModel<CommunityPageSettingsDraft>({ required: true })
+const { t } = useI18n()
 
 defineProps<{
   pagePath: string

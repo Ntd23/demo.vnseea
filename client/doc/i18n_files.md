@@ -245,17 +245,13 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/profile/ProfileFriendsGrid.vue`
 - [x] `client/app/components/profile/ProfilePhotosGrid.vue`
 - [x] `client/app/components/profile/ProfileMediaGrid.vue`
-- [ ] `client/app/components/community/PageHeroBanner.vue`
-- [ ] `client/app/components/community/PageFeedSection.vue`
-- [ ] `client/app/components/community/PageAboutCard.vue`
-- [ ] `client/app/components/community/PageActionCard.vue`
-- [ ] `client/app/components/community/PageSettingsBasicsCard.vue`
-- [ ] `client/app/components/community/PageSettingsControlsCard.vue`
-- [ ] `client/app/components/community/PageSettingsSidebar.vue`
 - [x] `client/app/components/community/PageHeroBanner.vue`
 - [x] `client/app/components/community/PageFeedSection.vue`
 - [x] `client/app/components/community/PageAboutCard.vue`
 - [x] `client/app/components/community/PageActionCard.vue`
+- [x] `client/app/components/community/PageSettingsBasicsCard.vue`
+- [x] `client/app/components/community/PageSettingsControlsCard.vue`
+- [x] `client/app/components/community/PageSettingsSidebar.vue`
 - [x] `client/app/components/community/GroupHeroBanner.vue`
 - [x] `client/app/components/community/GroupFeedSection.vue`
 - [x] `client/app/components/community/GroupAboutCard.vue`

@@ -4550,6 +4550,7 @@
           "name": "Tên trang",
           "namePlaceholder": "Nhập tên fanpage",
           "url": "Page URL",
+          "slugPlaceholder": "ten-fanpage",
           "urlSuggested": "Gợi ý: {slug}",
           "urlUseSuggestion": "Dùng slug gợi ý",
           "summary": "Giới thiệu ngắn",
@@ -4569,6 +4570,9 @@
           "tagsPlaceholder": "noi-that, thi-cong, go-tu-nhien"
         },
         "stats": {
+          "topicsLabel": "Chủ đề",
+          "ctaLabel": "CTA",
+          "publicLinkLabel": "Link công khai",
           "summaryLength": "{count} ký tự",
           "tagCount": "{count} thẻ",
           "ctaFallback": "Chưa chọn",
