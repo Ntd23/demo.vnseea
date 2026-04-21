@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-6 pb-10 pt-5">
+  <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
     <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
       <div class="relative overflow-hidden px-5 py-6 sm:px-7">
         <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,255,0.14),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(8,145,178,0.16),transparent_32%)]" />

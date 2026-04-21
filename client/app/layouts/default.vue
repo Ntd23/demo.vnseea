@@ -12,7 +12,7 @@
         </aside>
 
         <main class="min-w-0 w-full" :class="mainClass">
-          <div v-if="showHeaderIconNav" class="sticky top-[56px] z-20 mt-2 xl:block">
+          <div v-if="showHeaderIconNav" class="sticky top-[56px] z-20 mb-4 mt-2 xl:block">
             <div class="overflow-hidden rounded-[1.4rem] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)]">
               <NavigationHeaderIconNav />
             </div>

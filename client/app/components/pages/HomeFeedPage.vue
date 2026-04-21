@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-5 sm:space-y-6">
-    <div class="pt-3 sm:pt-4">
+    <div>
       <FeedStoryCarousel />
     </div>
 
