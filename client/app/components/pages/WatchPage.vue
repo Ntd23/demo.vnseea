@@ -1,6 +1,32 @@
 <template>
-  <div class="space-y-5 pb-10">
-    <WatchHero :stats="heroStats" />
+  <div class="space-y-4 pb-10 sm:space-y-5">
+    <section class="sm:hidden rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
+      <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--color-primary-600)]">
+        {{ t("pages.watchPage.heroEyebrow") }}
+      </p>
+      <h1 class="mt-2 text-[1.85rem] font-black leading-[1.04] text-[var(--text-primary)]">
+        {{ t("pages.watchPage.heroTitle") }}
+      </h1>
+      <p class="mt-2 text-[13px] font-semibold leading-6 text-[var(--text-secondary)]">
+        {{ t("pages.watchPage.heroDescription") }}
+      </p>
+
+      <div class="scrollbar-hide mt-4 flex gap-2 overflow-x-auto pb-1">
+        <div
+          v-for="item in mobileHeroStats"
+          :key="item.label"
+          class="min-w-[132px] shrink-0 rounded-[20px] bg-[var(--bg-surface-hover)] px-3.5 py-3"
+        >
+          <p class="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">{{ item.label }}</p>
+          <p class="mt-1.5 text-[1.3rem] font-black leading-none text-[var(--text-primary)]">{{ item.value }}</p>
+          <p class="mt-1 text-[11px] font-semibold text-[var(--text-secondary)]">{{ item.description }}</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="hidden sm:block">
+      <WatchHero :stats="heroStats" />
+    </div>
 
     <WatchFilters
       v-model:search="search"
@@ -119,6 +145,8 @@ const heroStats = computed(() => [
     description: t("pages.watchPage.statCommentsDescription"),
   },
 ])
+
+const mobileHeroStats = computed(() => heroStats.value.slice(0, 3))
 
 let progressTimer: ReturnType<typeof setInterval> | undefined
 

@@ -1,5 +1,5 @@
 <template>
-  <aside class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
+  <aside class="rounded-[26px] border border-[var(--border-default)] bg-white p-3.5 shadow-[var(--shadow-md)] sm:rounded-[30px] sm:p-4">
     <div class="flex items-center justify-between gap-3">
       <div>
         <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.watchPage.relatedEyebrow") }}</p>
@@ -14,12 +14,12 @@
       <button
         v-for="video in videos"
         :key="video.id"
-        class="w-full rounded-[22px] border p-2 text-left transition"
+        class="w-full rounded-[20px] border p-2 text-left transition sm:rounded-[22px]"
         :class="video.id === selectedId ? 'border-[var(--border-strong)] bg-[var(--color-primary-50)]' : 'border-[var(--border-default)] bg-white hover:bg-[var(--bg-surface-hover)]'"
         type="button"
         @click="$emit('select', video.id)"
       >
-        <div class="grid gap-3 sm:grid-cols-[140px_minmax(0,1fr)] xl:grid-cols-1">
+        <div class="grid grid-cols-[112px_minmax(0,1fr)] gap-3 sm:grid-cols-[140px_minmax(0,1fr)] xl:grid-cols-1">
           <div class="relative h-24 overflow-hidden rounded-[18px] sm:h-full xl:h-28">
             <img :alt="video.title" class="h-full w-full object-cover" :src="video.cover">
             <span class="absolute bottom-2 right-2 rounded-[var(--radius-full)] bg-black/60 px-2 py-1 text-[11px] font-bold text-white">
