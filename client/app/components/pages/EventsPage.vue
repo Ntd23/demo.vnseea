@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5 pb-10">
+  <div class="space-y-8 pb-10">
     <EventsHero
       :my-events-active="activeTab === 'my'"
       :total-events="events.length"
