@@ -844,7 +844,7 @@
       "fullName": "Họ tên",
       "fullNamePlaceholder": "Nguyễn Văn A",
       "email": "Email",
-      "emailPlaceholder": "email@vi-du.com",
+      "emailPlaceholder": "email{'@'}vi-du.com",
       "phone": "Số điện thoại",
       "phonePlaceholder": "090...",
       "cvUpload": "CV upload",
