@@ -2426,6 +2426,189 @@
         }
       ]
     },
+    "popularPage": {
+      "seoTitle": "Popular posts | VNSEEA",
+      "seoDescription": "Track the highest-engagement posts on VNSEEA, filter by topic, and jump into search, explore, or hashtag flows.",
+      "heroEyebrow": "Pulse Board",
+      "heroTitle": "Follow the hottest posts across the community",
+      "heroDescription": "The /popular page gathers high-engagement posts, lets you filter by topic, and opens directly into hashtag, search, or explore flows without routing back through the main feed.",
+      "primaryCta": "Back to feed",
+      "secondaryCta": "Open search",
+      "searchPlaceholder": "Search posts, creators, hashtags...",
+      "openLink": "Open link",
+      "resultEyebrow": "Current ranking",
+      "resultHeadingAll": "Popular posts across the platform",
+      "resultHeadingCategory": "Topic group: {label}",
+      "resultCount": "{count} posts match the current filters",
+      "resetFilters": "Reset",
+      "emptyTitle": "No matching posts yet",
+      "emptyDescription": "Try a different topic group or keyword to see other hot posts.",
+      "rankLabel": "Top {rank}",
+      "scoreCount": "{count} hot points",
+      "statPosts": "Posts",
+      "statPostsDescription": "Posts currently ranked in the popular flow.",
+      "statInteractions": "Interactions",
+      "statInteractionsDescription": "Combined likes, comments, and shares in the current list.",
+      "statCreators": "Creators",
+      "statCreatorsDescription": "People currently driving engagement in this ranking.",
+      "statComments": "Comments",
+      "statCommentsDescription": "Discussion volume attached to these popular posts.",
+      "sidebarHashtagsEyebrow": "Hot hashtags",
+      "sidebarHashtagsTitle": "Tags pulling traffic",
+      "sidebarCreatorsEyebrow": "Featured creators",
+      "sidebarCreatorsTitle": "People driving engagement",
+      "sidebarLinksEyebrow": "Quick paths",
+      "sidebarLinksTitle": "Open related flows",
+      "categories": [
+        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Community", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Product", "value": "product", "icon": "i-ph-rocket-launch-fill" },
+        { "label": "Business", "value": "business", "icon": "i-ph-briefcase-fill" },
+        { "label": "Design", "value": "design", "icon": "i-ph-paint-brush-broad-fill" },
+        { "label": "Technology", "value": "technology", "icon": "i-ph-cpu-fill" }
+      ],
+      "quickLinks": [
+        {
+          "title": "Search deeper",
+          "description": "Jump to search to filter posts by keyword, author, or a specific hashtag.",
+          "to": "/search",
+          "icon": "i-ph-magnifying-glass-bold",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Explore suggestions",
+          "description": "Open explore to compare popular posts with suggested people and fanpages.",
+          "to": "/explore",
+          "icon": "i-ph-compass-fill",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)"
+        },
+        {
+          "title": "Saved posts",
+          "description": "Jump to saved posts to keep the hottest content and review it later.",
+          "to": "/saved-posts",
+          "icon": "i-ph-bookmark-simple-fill",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ],
+      "posts": [
+        {
+          "id": "community-onboarding-sprint",
+          "author": "Thu Ha",
+          "role": "Community lead",
+          "audience": "Public",
+          "time": "12 minutes ago",
+          "text": "The latest sprint for community onboarding is pulling strong engagement: the team merged group, page, and hashtag entry points so new users do not fall out of the flow after their first three clicks.",
+          "tags": ["community", "retention", "ux"],
+          "stats": { "likes": 482, "comments": 94, "shares": 31 },
+          "media": "double",
+          "comments": [
+            {
+              "id": 101,
+              "author": "Nam Pham",
+              "role": "Frontend",
+              "text": "If we keep onboarding this short, the secondary pages will become much easier to enter."
+            },
+            {
+              "id": 102,
+              "author": "Linh Dao",
+              "role": "Product",
+              "text": "We should keep featured hashtags in the first screen so new users immediately have an anchor."
+            }
+          ],
+          "category": "community",
+          "trendLabel": "Hot 6h"
+        },
+        {
+          "id": "popular-launch-review",
+          "author": "Bao Tran",
+          "role": "Product partnerships",
+          "audience": "Members",
+          "time": "35 minutes ago",
+          "text": "The new /popular mock is getting good signals because it combines ranking, filters, and quick links in a single screen. Once real analytics are connected, this should become a strong hub for measuring which content is pulling traffic across the system.",
+          "tags": ["product", "launch", "analytics"],
+          "stats": { "likes": 366, "comments": 72, "shares": 24 },
+          "media": "single",
+          "comments": [
+            {
+              "id": 201,
+              "author": "Minh Trang",
+              "role": "Strategy",
+              "text": "This page works well as an entry point for content discovery instead of relying only on search."
+            }
+          ],
+          "category": "product",
+          "trendLabel": "Rising fast"
+        },
+        {
+          "id": "design-system-rhythm",
+          "author": "Quynh Le",
+          "role": "Designer",
+          "audience": "Public",
+          "time": "1 hour ago",
+          "text": "I just tightened the rhythm for popular post cards: ranking badge, trend label, and hot score go first, while the content stays on top of the existing PostCard so we do not duplicate components without a clear reason.",
+          "tags": ["design", "tokens", "components"],
+          "stats": { "likes": 418, "comments": 61, "shares": 22 },
+          "media": "single",
+          "comments": [
+            {
+              "id": 301,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "That makes it obvious why a post is trending at first glance."
+            }
+          ],
+          "category": "design",
+          "trendLabel": "Highly saved"
+        },
+        {
+          "id": "founder-content-cadence",
+          "author": "Minh Trang",
+          "role": "Strategy",
+          "audience": "Public",
+          "time": "2 hours ago",
+          "text": "If the popular page is wired to blogs, live, and watch through clear quick links, the content cadence becomes much smoother: posts drive discovery, live drives conversation, and watch drives deeper content consumption.",
+          "tags": ["business", "growth", "content"],
+          "stats": { "likes": 297, "comments": 58, "shares": 19 },
+          "comments": [
+            {
+              "id": 401,
+              "author": "Bao Tran",
+              "role": "Partnerships",
+              "text": "Agreed. This is the right place to measure which posts are creating conversions into secondary pages."
+            }
+          ],
+          "category": "business",
+          "trendLabel": "Heavy discussion"
+        },
+        {
+          "id": "nuxt-performance-notes",
+          "author": "Nam Pham",
+          "role": "Frontend",
+          "audience": "Group",
+          "time": "3 hours ago",
+          "text": "I just documented the checklist for new pages: dedicated route, mock data read from i18n, SSR build passing, and real links kept in the mobile menu. The /popular flow should become the reference template for the next content pages.",
+          "tags": ["nuxt", "performance", "technology"],
+          "stats": { "likes": 524, "comments": 77, "shares": 28 },
+          "media": "double",
+          "comments": [
+            {
+              "id": 501,
+              "author": "Quynh Le",
+              "role": "Designer",
+              "text": "With a template like this, the team can move much faster on new pages, especially locale and SEO."
+            },
+            {
+              "id": 502,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "Exactly. We should keep this pattern for popular, movies, and the next content pages."
+            }
+          ],
+          "category": "technology",
+          "trendLabel": "Tech pick"
+        }
+      ]
+    },
     "explorePage": {
       "seoTitle": "Explore | VNSEEA",
       "seoDescription": "Discover recommended posts, people, and fanpages on VNSEEA.",

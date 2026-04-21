@@ -31,7 +31,7 @@
     <div class="p-4">
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
-          <h3 class="text-[1.2rem] font-black leading-tight text-[var(--text-primary)]">{{ movie.title }}</h3>
+          <h3 class="text-[1.1rem] font-black leading-tight text-[var(--text-primary)] sm:text-[1.2rem]">{{ movie.title }}</h3>
           <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">
             {{ movie.year }} · {{ movie.runtime }}
           </p>
@@ -60,17 +60,17 @@
         <Icon name="i-ph-clapperboard-fill" class="h-5 w-5 shrink-0 text-[var(--color-primary-600)]" />
       </div>
 
-      <div class="mt-4 flex gap-2">
+      <div class="mt-4 flex flex-col gap-2 sm:flex-row">
         <NuxtLink
           :to="movie.to"
-          class="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full bg-[var(--color-primary-500)] px-4 text-[12px] font-black text-white shadow-[var(--shadow-brand)]"
+          class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full bg-[var(--color-primary-500)] px-4 text-[12px] font-black text-white shadow-[var(--shadow-brand)] sm:flex-1"
         >
           <Icon name="i-ph-play-fill" class="h-4 w-4" />
           {{ primaryLabel }}
         </NuxtLink>
         <NuxtLink
           :to="movie.companionTo"
-          class="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-4 text-[12px] font-black text-[var(--color-primary-700)]"
+          class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-4 text-[12px] font-black text-[var(--color-primary-700)] sm:flex-1"
         >
           <Icon name="i-ph-newspaper-fill" class="h-4 w-4" />
           {{ secondaryLabel }}

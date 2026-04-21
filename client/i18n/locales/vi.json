@@ -2426,6 +2426,189 @@
         }
       ]
     },
+    "popularPage": {
+      "seoTitle": "Bài viết phổ biến | VNSEEA",
+      "seoDescription": "Theo dõi các bài viết đang có tương tác cao nhất trên VNSEEA, lọc theo chủ đề và mở sâu sang search, explore hoặc hashtag.",
+      "heroEyebrow": "Pulse Board",
+      "heroTitle": "Theo dõi những bài viết đang nóng nhất cộng đồng",
+      "heroDescription": "Trang /popular gom các bài post có tương tác cao, cho phép lọc theo nhóm chủ đề và mở sâu vào hashtag, search hoặc explore mà không cần đi vòng qua feed chính.",
+      "primaryCta": "Về bảng tin",
+      "secondaryCta": "Mở search",
+      "searchPlaceholder": "Tìm bài viết, tác giả, hashtag...",
+      "openLink": "Mở link",
+      "resultEyebrow": "Bảng xếp hạng hiện tại",
+      "resultHeadingAll": "Bài viết phổ biến trên toàn hệ thống",
+      "resultHeadingCategory": "Nhóm chủ đề: {label}",
+      "resultCount": "{count} bài viết đang khớp bộ lọc",
+      "resetFilters": "Đặt lại",
+      "emptyTitle": "Chưa có bài viết phù hợp",
+      "emptyDescription": "Thử đổi nhóm chủ đề hoặc từ khóa để xem các bài đang hot khác.",
+      "rankLabel": "Top {rank}",
+      "scoreCount": "{count} điểm nóng",
+      "statPosts": "Bài viết",
+      "statPostsDescription": "Số post đang được xếp vào luồng phổ biến.",
+      "statInteractions": "Tương tác",
+      "statInteractionsDescription": "Tổng like, bình luận và chia sẻ của danh sách hiện tại.",
+      "statCreators": "Tác giả",
+      "statCreatorsDescription": "Số người đang kéo tương tác trong bảng xếp hạng này.",
+      "statComments": "Bình luận",
+      "statCommentsDescription": "Lượng thảo luận đang đi cùng các bài phổ biến.",
+      "sidebarHashtagsEyebrow": "Hashtag nóng",
+      "sidebarHashtagsTitle": "Tag đang kéo traffic",
+      "sidebarCreatorsEyebrow": "Tác giả nổi bật",
+      "sidebarCreatorsTitle": "Người đang kéo tương tác",
+      "sidebarLinksEyebrow": "Lối đi nhanh",
+      "sidebarLinksTitle": "Mở thêm flow liên quan",
+      "categories": [
+        { "label": "Tất cả", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Cộng đồng", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Sản phẩm", "value": "product", "icon": "i-ph-rocket-launch-fill" },
+        { "label": "Kinh doanh", "value": "business", "icon": "i-ph-briefcase-fill" },
+        { "label": "Thiết kế", "value": "design", "icon": "i-ph-paint-brush-broad-fill" },
+        { "label": "Công nghệ", "value": "technology", "icon": "i-ph-cpu-fill" }
+      ],
+      "quickLinks": [
+        {
+          "title": "Search sâu hơn",
+          "description": "Đi sang search để lọc bài viết theo từ khóa, người đăng hoặc hashtag cụ thể.",
+          "to": "/search",
+          "icon": "i-ph-magnifying-glass-bold",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Explore đề xuất",
+          "description": "Mở explore để so sánh bài phổ biến với người dùng và fanpage đang được đề xuất.",
+          "to": "/explore",
+          "icon": "i-ph-compass-fill",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)"
+        },
+        {
+          "title": "Bài đã lưu",
+          "description": "Nhảy sang saved posts để giữ lại các bài đang hot và tham chiếu lại sau.",
+          "to": "/saved-posts",
+          "icon": "i-ph-bookmark-simple-fill",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ],
+      "posts": [
+        {
+          "id": "community-onboarding-sprint",
+          "author": "Thu Ha",
+          "role": "Community lead",
+          "audience": "Công khai",
+          "time": "12 phút trước",
+          "text": "Bản sprint mới cho luồng community onboarding đang kéo tương tác rất tốt: team gộp lại nhịp giới thiệu nhóm, page và hashtag để người mới vào không bị rơi khỏi flow sau 3 click đầu tiên.",
+          "tags": ["community", "retention", "ux"],
+          "stats": { "likes": 482, "comments": 94, "shares": 31 },
+          "media": "double",
+          "comments": [
+            {
+              "id": 101,
+              "author": "Nam Pham",
+              "role": "Frontend",
+              "text": "Nếu giữ được nhịp onboarding ngắn như này thì các page phụ sẽ vào nhanh hơn hẳn."
+            },
+            {
+              "id": 102,
+              "author": "Linh Dao",
+              "role": "Product",
+              "text": "Nên giữ phần hashtag nổi bật ngay trong màn đầu để người mới có điểm bám rõ hơn."
+            }
+          ],
+          "category": "community",
+          "trendLabel": "Hot 6h"
+        },
+        {
+          "id": "popular-launch-review",
+          "author": "Bao Tran",
+          "role": "Product partnerships",
+          "audience": "Thành viên",
+          "time": "35 phút trước",
+          "text": "Mock mới cho trang /popular đang có tín hiệu ổn vì gom được cả ranking, filter và quick link trong một màn. Nếu nối thêm analytics thật thì đây sẽ là hub tốt để đo nội dung nào đang kéo traffic cho toàn hệ thống.",
+          "tags": ["product", "launch", "analytics"],
+          "stats": { "likes": 366, "comments": 72, "shares": 24 },
+          "media": "single",
+          "comments": [
+            {
+              "id": 201,
+              "author": "Minh Trang",
+              "role": "Strategy",
+              "text": "Trang này hợp để làm điểm vào cho flow content discovery thay vì chỉ dựa vào search."
+            }
+          ],
+          "category": "product",
+          "trendLabel": "Tăng nhanh"
+        },
+        {
+          "id": "design-system-rhythm",
+          "author": "Quynh Le",
+          "role": "Designer",
+          "audience": "Công khai",
+          "time": "1 giờ trước",
+          "text": "Mình vừa gom lại rhythm cho card bài viết phổ biến: ưu tiên badge xếp hạng, trend label và score nóng ở trên, còn phần nội dung giữ nguyên PostCard để không nhân đôi component không cần thiết.",
+          "tags": ["design", "tokens", "components"],
+          "stats": { "likes": 418, "comments": 61, "shares": 22 },
+          "media": "single",
+          "comments": [
+            {
+              "id": 301,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "Cách này giúp người xem hiểu vì sao bài đó đang hot ngay từ cái nhìn đầu."
+            }
+          ],
+          "category": "design",
+          "trendLabel": "Được lưu nhiều"
+        },
+        {
+          "id": "founder-content-cadence",
+          "author": "Minh Trang",
+          "role": "Strategy",
+          "audience": "Công khai",
+          "time": "2 giờ trước",
+          "text": "Nếu page phổ biến được gắn với blogs, live và watch bằng quick link rõ ràng thì content cadence sẽ mượt hơn rất nhiều: bài viết kéo khám phá, live kéo trao đổi, watch kéo chiều sâu nội dung.",
+          "tags": ["business", "growth", "content"],
+          "stats": { "likes": 297, "comments": 58, "shares": 19 },
+          "comments": [
+            {
+              "id": 401,
+              "author": "Bao Tran",
+              "role": "Partnerships",
+              "text": "Đúng, luồng này hợp để đo bài nào đang tạo chuyển đổi sang các page vệ tinh."
+            }
+          ],
+          "category": "business",
+          "trendLabel": "Bàn luận cao"
+        },
+        {
+          "id": "nuxt-performance-notes",
+          "author": "Nam Pham",
+          "role": "Frontend",
+          "audience": "Nhóm",
+          "time": "3 giờ trước",
+          "text": "Mình vừa note lại checklist cho các page mới: route riêng, data mock đọc từ i18n, build pass SSR và giữ link thật trong mobile menu. Luồng /popular nên coi như template chuẩn cho các page phụ tiếp theo.",
+          "tags": ["nuxt", "performance", "technology"],
+          "stats": { "likes": 524, "comments": 77, "shares": 28 },
+          "media": "double",
+          "comments": [
+            {
+              "id": 501,
+              "author": "Quynh Le",
+              "role": "Designer",
+              "text": "Có template kiểu này thì team vào page mới nhanh hơn, nhất là phần locale và SEO."
+            },
+            {
+              "id": 502,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "Chuẩn, cứ giữ pattern này cho popular, movies và các page content tiếp theo."
+            }
+          ],
+          "category": "technology",
+          "trendLabel": "Tech pick"
+        }
+      ]
+    },
     "explorePage": {
       "seoTitle": "Khám phá | VNSEEA",
       "seoDescription": "Khám phá các bài viết, người dùng và fanpage được đề xuất trên VNSEEA.",

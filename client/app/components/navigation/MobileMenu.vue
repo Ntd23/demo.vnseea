@@ -120,7 +120,7 @@ const mainNav = [
   { label: "navigation.mobileMenu.mainNav.savedPosts", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
   { label: "navigation.mobileMenu.mainNav.poke", icon: "i-ph-hand-waving", to: "/poke" },
   { label: "navigation.mobileMenu.mainNav.explore", icon: "i-ph-compass", to: "/explore" },
-  { label: "navigation.mobileMenu.mainNav.popularPosts", icon: "i-ph-fire", to: "#" },
+  { label: "navigation.mobileMenu.mainNav.popularPosts", icon: "i-ph-fire", to: "/popular" },
   { label: "navigation.mobileMenu.mainNav.findFriends", icon: "i-ph-user-plus", to: "#" },
   { label: "navigation.mobileMenu.mainNav.games", icon: "i-ph-game-controller", to: "/games" },
   { label: "navigation.mobileMenu.mainNav.jobs", icon: "i-ph-briefcase", to: "/jobs" },

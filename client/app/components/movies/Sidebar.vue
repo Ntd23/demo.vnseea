@@ -1,5 +1,5 @@
 <template>
-  <aside class="space-y-4">
+  <aside class="min-w-0 space-y-4">
     <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <div class="flex items-start justify-between gap-3">
         <div>
@@ -13,12 +13,12 @@
 
       <div class="mt-4 space-y-3">
         <div v-for="item in upcoming" :key="item.title" class="rounded-[22px] bg-[var(--bg-surface-hover)] p-3.5">
-          <div class="flex items-start justify-between gap-3">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p class="text-[14px] font-black text-[var(--text-primary)]">{{ item.title }}</p>
               <p class="mt-1 text-[12px] font-semibold text-[var(--text-secondary)]">{{ item.formatLabel }}</p>
             </div>
-            <div class="rounded-[18px] bg-white px-3 py-2 text-right shadow-[0_8px_18px_rgba(15,23,42,0.04)]">
+            <div class="w-fit rounded-[18px] bg-white px-3 py-2 text-left shadow-[0_8px_18px_rgba(15,23,42,0.04)] sm:text-right">
               <p class="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">{{ item.dayLabel }}</p>
               <p class="mt-1 text-[13px] font-black text-[var(--color-primary-700)]">{{ item.timeLabel }}</p>
             </div>
@@ -66,16 +66,16 @@
           {{ t("pages.moviesPage.sidebarRoutingDescription") }}
         </p>
 
-        <div class="mt-4 flex flex-wrap gap-2">
-          <NuxtLink to="/watch" class="inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-[12px] font-black text-[var(--color-primary-700)]">
+        <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+          <NuxtLink to="/watch" class="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-white px-4 text-[12px] font-black text-[var(--color-primary-700)] sm:justify-start">
             <Icon name="i-ph-play-fill" class="h-4 w-4" />
             /watch
           </NuxtLink>
-          <NuxtLink to="/live" class="inline-flex h-10 items-center gap-2 rounded-full border border-white/15 bg-white/12 px-4 text-[12px] font-black text-white backdrop-blur">
+          <NuxtLink to="/live" class="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/12 px-4 text-[12px] font-black text-white backdrop-blur sm:justify-start">
             <Icon name="i-ph-broadcast-fill" class="h-4 w-4" />
             /live
           </NuxtLink>
-          <NuxtLink to="/blogs" class="inline-flex h-10 items-center gap-2 rounded-full border border-white/15 bg-white/12 px-4 text-[12px] font-black text-white backdrop-blur">
+          <NuxtLink to="/blogs" class="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/12 px-4 text-[12px] font-black text-white backdrop-blur sm:justify-start">
             <Icon name="i-ph-newspaper-fill" class="h-4 w-4" />
             /blogs
           </NuxtLink>
