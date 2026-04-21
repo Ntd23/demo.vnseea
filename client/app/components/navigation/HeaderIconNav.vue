@@ -35,9 +35,9 @@ const items = computed(() => [
   },
   {
     label: 'navigation.headerIconNav.photos',
-    to: '/home',
+    to: '/photos',
     icon: 'i-ph-image-fill',
-    active: false,
+    active: route.path === '/photos',
   },
   {
     label: 'navigation.headerIconNav.reels',

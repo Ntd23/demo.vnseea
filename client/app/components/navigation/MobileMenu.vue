@@ -114,7 +114,7 @@ const mainNav = [
   { label: "navigation.mobileMenu.mainNav.myGroups", icon: "i-ph-users-three", to: "/groups" },
   { label: "navigation.mobileMenu.mainNav.forum", icon: "i-ph-chats-circle", to: "/forum" },
   { label: "navigation.mobileMenu.mainNav.ads", icon: "i-ph-megaphone", to: "#" },
-  { label: "navigation.mobileMenu.mainNav.photos", icon: "i-ph-images", to: "#" },
+  { label: "navigation.mobileMenu.mainNav.photos", icon: "i-ph-images", to: "/photos" },
   { label: "navigation.mobileMenu.mainNav.watch", icon: "i-ph-play-circle", to: "/watch" },
   { label: "navigation.mobileMenu.mainNav.reelsShortcut", icon: "i-ph-film-reel", to: "#" },
   { label: "navigation.mobileMenu.mainNav.savedPosts", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
