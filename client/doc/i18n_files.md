@@ -382,9 +382,9 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 
 
 ### Search / explore / saved / poke / memories / directory / games / go-pro / forum / settings
-- [ ] `client/app/components/pages/SearchPage.vue`
-- [ ] `client/app/components/search/FiltersPanel.vue`
-- [ ] `client/app/components/search/ResultCard.vue`
+- [x] `client/app/components/pages/SearchPage.vue`
+- [x] `client/app/components/search/FiltersPanel.vue`
+- [x] `client/app/components/search/ResultCard.vue`
 - [x] `client/app/components/pages/ExplorePage.vue`
 - [x] `client/app/components/explore/UserSpotlightCard.vue`
 - [x] `client/app/components/pages/SavedPostsPage.vue`

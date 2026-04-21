@@ -1077,14 +1077,44 @@
         }
       ],
       "paymentProfiles": [
-        { "label": "Primary account", "value": "Nguyen Van Justin · 0123 456 789" },
-        { "label": "Verification", "value": "Identity and email verified." },
-        { "label": "Processing time", "value": "1-3 business days." }
+        {
+          "label": "Primary account",
+          "value": "Nguyen Van Justin · 0123 456 789"
+        },
+        {
+          "label": "Verification",
+          "value": "Identity and email verified."
+        },
+        {
+          "label": "Processing time",
+          "value": "1-3 business days."
+        }
       ],
       "history": [
-        { "id": "wd-pending-bank", "amount": 1250000, "method": "Bank transfer", "account": "VCB · **** 6789", "time": "Awaiting approval", "status": "pending" },
-        { "id": "wd-approved-momo", "amount": 800000, "method": "MoMo wallet", "account": "MoMo · **** 2211", "time": "3 days ago", "status": "approved" },
-        { "id": "wd-approved-bank", "amount": 2200000, "method": "Bank transfer", "account": "ACB · **** 1042", "time": "Last week", "status": "approved" }
+        {
+          "id": "wd-pending-bank",
+          "amount": 1250000,
+          "method": "Bank transfer",
+          "account": "VCB · **** 6789",
+          "time": "Awaiting approval",
+          "status": "pending"
+        },
+        {
+          "id": "wd-approved-momo",
+          "amount": 800000,
+          "method": "MoMo wallet",
+          "account": "MoMo · **** 2211",
+          "time": "3 days ago",
+          "status": "approved"
+        },
+        {
+          "id": "wd-approved-bank",
+          "amount": 2200000,
+          "method": "Bank transfer",
+          "account": "ACB · **** 1042",
+          "time": "Last week",
+          "status": "approved"
+        }
       ]
     },
     "groupDetailPage": {
@@ -1220,35 +1250,98 @@
       },
       "members": {
         "cong-dong-xe-dien-viet": [
-          { "role": "Administrator", "meta": "Community operator" },
-          { "role": "Moderator", "meta": "Handles charging Q&A" },
-          { "role": "Active member", "meta": "24 posts this month" },
-          { "role": "Reviewer", "meta": "Tests vehicles and accessories" },
-          { "role": "Member", "meta": "Joined in May 2024" }
+          {
+            "role": "Administrator",
+            "meta": "Community operator"
+          },
+          {
+            "role": "Moderator",
+            "meta": "Handles charging Q&A"
+          },
+          {
+            "role": "Active member",
+            "meta": "24 posts this month"
+          },
+          {
+            "role": "Reviewer",
+            "meta": "Tests vehicles and accessories"
+          },
+          {
+            "role": "Member",
+            "meta": "Joined in May 2024"
+          }
         ],
         "founder-circle-vietnam": [
-          { "role": "Host", "meta": "B2B SaaS founder" },
-          { "role": "Moderator", "meta": "Growth and community lead" },
-          { "role": "Member", "meta": "Runs an education startup" },
-          { "role": "Member", "meta": "Internal systems builder" }
+          {
+            "role": "Host",
+            "meta": "B2B SaaS founder"
+          },
+          {
+            "role": "Moderator",
+            "meta": "Growth and community lead"
+          },
+          {
+            "role": "Member",
+            "meta": "Runs an education startup"
+          },
+          {
+            "role": "Member",
+            "meta": "Internal systems builder"
+          }
         ],
         "ai-product-builders": [
-          { "role": "Host", "meta": "AI product consultant" },
-          { "role": "Moderator", "meta": "Specializes in workflow automation" },
-          { "role": "Member", "meta": "Designs AI experiences" },
-          { "role": "Member", "meta": "Works on prototyping and prompts" }
+          {
+            "role": "Host",
+            "meta": "AI product consultant"
+          },
+          {
+            "role": "Moderator",
+            "meta": "Specializes in workflow automation"
+          },
+          {
+            "role": "Member",
+            "meta": "Designs AI experiences"
+          },
+          {
+            "role": "Member",
+            "meta": "Works on prototyping and prompts"
+          }
         ],
         "di-va-hoc": [
-          { "role": "Host", "meta": "Coordinates workshops" },
-          { "role": "Mentor", "meta": "Guides learning paths" },
-          { "role": "Member", "meta": "Shares skill-building materials" },
-          { "role": "Member", "meta": "Joined in January 2024" }
+          {
+            "role": "Host",
+            "meta": "Coordinates workshops"
+          },
+          {
+            "role": "Mentor",
+            "meta": "Guides learning paths"
+          },
+          {
+            "role": "Member",
+            "meta": "Shares skill-building materials"
+          },
+          {
+            "role": "Member",
+            "meta": "Joined in January 2024"
+          }
         ],
         "weekend-escape-club": [
-          { "role": "Host", "meta": "Builds weekend itineraries" },
-          { "role": "Active member", "meta": "Reviews homestays and restaurants" },
-          { "role": "Member", "meta": "Shares photos and transport tips" },
-          { "role": "Member", "meta": "Often joins trekking tours" }
+          {
+            "role": "Host",
+            "meta": "Builds weekend itineraries"
+          },
+          {
+            "role": "Active member",
+            "meta": "Reviews homestays and restaurants"
+          },
+          {
+            "role": "Member",
+            "meta": "Shares photos and transport tips"
+          },
+          {
+            "role": "Member",
+            "meta": "Often joins trekking tours"
+          }
         ]
       }
     },
@@ -1378,13 +1471,48 @@
       "sectionsEyebrow": "Sections",
       "sectionsTitle": "Featured sections",
       "sections": [
-        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill", "description": "All discussions" },
-        { "label": "Announcements", "value": "announcements", "icon": "i-ph-megaphone-fill", "description": "Official news from VNSEEA" },
-        { "label": "Support", "value": "support", "icon": "i-ph-lifebuoy-fill", "description": "Questions and help" },
-        { "label": "Marketplace", "value": "marketplace", "icon": "i-ph-storefront-fill", "description": "Selling and shop operations" },
-        { "label": "Events", "value": "events", "icon": "i-ph-calendar-dots-fill", "description": "Events, workshops, meetups" },
-        { "label": "Jobs", "value": "jobs", "icon": "i-ph-briefcase-fill", "description": "Hiring and careers" },
-        { "label": "Showcase", "value": "showcase", "icon": "i-ph-sparkle-fill", "description": "Share products and projects" }
+        {
+          "label": "All",
+          "value": "all",
+          "icon": "i-ph-squares-four-fill",
+          "description": "All discussions"
+        },
+        {
+          "label": "Announcements",
+          "value": "announcements",
+          "icon": "i-ph-megaphone-fill",
+          "description": "Official news from VNSEEA"
+        },
+        {
+          "label": "Support",
+          "value": "support",
+          "icon": "i-ph-lifebuoy-fill",
+          "description": "Questions and help"
+        },
+        {
+          "label": "Marketplace",
+          "value": "marketplace",
+          "icon": "i-ph-storefront-fill",
+          "description": "Selling and shop operations"
+        },
+        {
+          "label": "Events",
+          "value": "events",
+          "icon": "i-ph-calendar-dots-fill",
+          "description": "Events, workshops, meetups"
+        },
+        {
+          "label": "Jobs",
+          "value": "jobs",
+          "icon": "i-ph-briefcase-fill",
+          "description": "Hiring and careers"
+        },
+        {
+          "label": "Showcase",
+          "value": "showcase",
+          "icon": "i-ph-sparkle-fill",
+          "description": "Share products and projects"
+        }
       ],
       "threads": [
         {
@@ -1400,10 +1528,28 @@
           "views": 1840,
           "repliesCount": 18,
           "excerpt": "A summary of the latest UI changes and quick test guidance for each module.",
-          "tags": ["#release", "#ui", "#test"],
+          "tags": [
+            "#release",
+            "#ui",
+            "#test"
+          ],
           "replies": [
-            { "id": 1, "author": "Justin", "initials": "JT", "role": "Member", "message": "The games area is much clearer now with leaderboards per game.", "time": "1 hour ago" },
-            { "id": 2, "author": "Hoangne", "initials": "HN", "role": "Creator", "message": "The test checklist should stay pinned inside this thread.", "time": "42 minutes ago" }
+            {
+              "id": 1,
+              "author": "Justin",
+              "initials": "JT",
+              "role": "Member",
+              "message": "The games area is much clearer now with leaderboards per game.",
+              "time": "1 hour ago"
+            },
+            {
+              "id": 2,
+              "author": "Hoangne",
+              "initials": "HN",
+              "role": "Creator",
+              "message": "The test checklist should stay pinned inside this thread.",
+              "time": "42 minutes ago"
+            }
           ]
         },
         {
@@ -1419,9 +1565,21 @@
           "views": 642,
           "repliesCount": 7,
           "excerpt": "I am testing checkout and want to understand what confirmation flow the internal wallet will use once the API is connected.",
-          "tags": ["#checkout", "#wallet", "#marketplace"],
+          "tags": [
+            "#checkout",
+            "#wallet",
+            "#marketplace"
+          ],
           "replies": [
-            { "id": 3, "author": "Ngoc Tokyo", "initials": "NT", "role": "Moderator", "message": "The mock does not have OTP yet. Once wallet.php is connected, confirmation should be added for large transactions.", "time": "2 hours ago", "accepted": true }
+            {
+              "id": 3,
+              "author": "Ngoc Tokyo",
+              "initials": "NT",
+              "role": "Moderator",
+              "message": "The mock does not have OTP yet. Once wallet.php is connected, confirmation should be added for large transactions.",
+              "time": "2 hours ago",
+              "accepted": true
+            }
           ]
         },
         {
@@ -1437,9 +1595,21 @@
           "views": 930,
           "repliesCount": 11,
           "excerpt": "Sharing a short format for speaker, agenda, and FAQ content on event detail pages.",
-          "tags": ["#events", "#speaker", "#template"],
+          "tags": [
+            "#events",
+            "#speaker",
+            "#template"
+          ],
           "replies": [
-            { "id": 4, "author": "VNSEEA Admin", "initials": "VA", "role": "Admin", "message": "A useful structure is: role, topic, profile link, and a two-line bio.", "time": "Yesterday", "accepted": true }
+            {
+              "id": 4,
+              "author": "VNSEEA Admin",
+              "initials": "VA",
+              "role": "Admin",
+              "message": "A useful structure is: role, topic, profile link, and a two-line bio.",
+              "time": "Yesterday",
+              "accepted": true
+            }
           ]
         },
         {
@@ -1455,9 +1625,20 @@
           "views": 1204,
           "repliesCount": 16,
           "excerpt": "I need a checklist for title, salary, location, requirements, and benefits so candidates can scan quickly.",
-          "tags": ["#jobs", "#hiring", "#copy"],
+          "tags": [
+            "#jobs",
+            "#hiring",
+            "#copy"
+          ],
           "replies": [
-            { "id": 5, "author": "Justin", "initials": "JT", "role": "Member", "message": "Put the salary range and remote policy in the first three lines.", "time": "1 day ago" }
+            {
+              "id": 5,
+              "author": "Justin",
+              "initials": "JT",
+              "role": "Member",
+              "message": "Put the salary range and remote policy in the first three lines.",
+              "time": "1 day ago"
+            }
           ]
         },
         {
@@ -1473,9 +1654,20 @@
           "views": 1540,
           "repliesCount": 24,
           "excerpt": "Updated photos, progress, and the next preparation steps after the funding campaign gained momentum.",
-          "tags": ["#funding", "#education", "#showcase"],
+          "tags": [
+            "#funding",
+            "#education",
+            "#showcase"
+          ],
           "replies": [
-            { "id": 6, "author": "Quynh Lan", "initials": "QL", "role": "Donor", "message": "The cost report is transparent and should be pinned in the funding detail view.", "time": "2 days ago" }
+            {
+              "id": 6,
+              "author": "Quynh Lan",
+              "initials": "QL",
+              "role": "Donor",
+              "message": "The cost report is transparent and should be pinned in the funding detail view.",
+              "time": "2 days ago"
+            }
           ]
         }
       ]
@@ -1506,19 +1698,84 @@
       "sidebarFeaturedEyebrow": "Featured",
       "sidebarFeaturedTitle": "Quick access",
       "categories": [
-        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill", "description": "All categories" },
-        { "label": "Users", "value": "users", "icon": "i-ph-user-circle-fill", "description": "Featured members" },
-        { "label": "Pages", "value": "pages", "icon": "i-ph-flag-fill", "description": "Fanpages and community pages" },
-        { "label": "Groups", "value": "groups", "icon": "i-ph-users-three-fill", "description": "Active groups" },
-        { "label": "Market", "value": "market", "icon": "i-ph-storefront-fill", "description": "Marketplace" },
-        { "label": "Events", "value": "events", "icon": "i-ph-calendar-dots-fill", "description": "Events" },
-        { "label": "Jobs", "value": "jobs", "icon": "i-ph-briefcase-fill", "description": "Jobs" },
-        { "label": "Blogs", "value": "blogs", "icon": "i-ph-newspaper-fill", "description": "Long-form posts" },
-        { "label": "Funding", "value": "funding", "icon": "i-ph-hand-heart-fill", "description": "Fundraising" },
-        { "label": "Live", "value": "live", "icon": "i-ph-broadcast-fill", "description": "Livestreams" },
-        { "label": "Watch", "value": "watch", "icon": "i-ph-play-circle-fill", "description": "Videos" },
-        { "label": "Games", "value": "games", "icon": "i-ph-game-controller-fill", "description": "Games" },
-        { "label": "Forum", "value": "forum", "icon": "i-ph-chats-circle-fill", "description": "Discussions" }
+        {
+          "label": "All",
+          "value": "all",
+          "icon": "i-ph-squares-four-fill",
+          "description": "All categories"
+        },
+        {
+          "label": "Users",
+          "value": "users",
+          "icon": "i-ph-user-circle-fill",
+          "description": "Featured members"
+        },
+        {
+          "label": "Pages",
+          "value": "pages",
+          "icon": "i-ph-flag-fill",
+          "description": "Fanpages and community pages"
+        },
+        {
+          "label": "Groups",
+          "value": "groups",
+          "icon": "i-ph-users-three-fill",
+          "description": "Active groups"
+        },
+        {
+          "label": "Market",
+          "value": "market",
+          "icon": "i-ph-storefront-fill",
+          "description": "Marketplace"
+        },
+        {
+          "label": "Events",
+          "value": "events",
+          "icon": "i-ph-calendar-dots-fill",
+          "description": "Events"
+        },
+        {
+          "label": "Jobs",
+          "value": "jobs",
+          "icon": "i-ph-briefcase-fill",
+          "description": "Jobs"
+        },
+        {
+          "label": "Blogs",
+          "value": "blogs",
+          "icon": "i-ph-newspaper-fill",
+          "description": "Long-form posts"
+        },
+        {
+          "label": "Funding",
+          "value": "funding",
+          "icon": "i-ph-hand-heart-fill",
+          "description": "Fundraising"
+        },
+        {
+          "label": "Live",
+          "value": "live",
+          "icon": "i-ph-broadcast-fill",
+          "description": "Livestreams"
+        },
+        {
+          "label": "Watch",
+          "value": "watch",
+          "icon": "i-ph-play-circle-fill",
+          "description": "Videos"
+        },
+        {
+          "label": "Games",
+          "value": "games",
+          "icon": "i-ph-game-controller-fill",
+          "description": "Games"
+        },
+        {
+          "label": "Forum",
+          "value": "forum",
+          "icon": "i-ph-chats-circle-fill",
+          "description": "Discussions"
+        }
       ],
       "items": [
         {
@@ -1531,7 +1788,10 @@
           "count": "24 online",
           "href": "/search?type=users",
           "accent": "linear-gradient(135deg,var(--color-primary-500),var(--color-info))",
-          "tags": ["#users", "#creator"],
+          "tags": [
+            "#users",
+            "#creator"
+          ],
           "featured": true
         },
         {
@@ -1544,7 +1804,10 @@
           "count": "8 new",
           "href": "/pages",
           "accent": "linear-gradient(135deg,var(--color-accent-500),var(--color-primary-600))",
-          "tags": ["#pages", "#brand"],
+          "tags": [
+            "#pages",
+            "#brand"
+          ],
           "featured": true
         },
         {
@@ -1557,7 +1820,10 @@
           "count": "1.2K members",
           "href": "/groups",
           "accent": "linear-gradient(135deg,var(--color-success),var(--color-primary-500))",
-          "tags": ["#groups", "#community"],
+          "tags": [
+            "#groups",
+            "#community"
+          ],
           "featured": false
         },
         {
@@ -1570,7 +1836,10 @@
           "count": "18 deals",
           "href": "/products",
           "accent": "linear-gradient(135deg,var(--color-primary-700),var(--color-accent-500))",
-          "tags": ["#market", "#shop"],
+          "tags": [
+            "#market",
+            "#shop"
+          ],
           "featured": true
         },
         {
@@ -1583,7 +1852,10 @@
           "count": "642 interested",
           "href": "/events",
           "accent": "linear-gradient(135deg,var(--color-error),var(--color-primary-500))",
-          "tags": ["#events", "#networking"],
+          "tags": [
+            "#events",
+            "#networking"
+          ],
           "featured": false
         },
         {
@@ -1596,7 +1868,10 @@
           "count": "9 remote",
           "href": "/jobs",
           "accent": "linear-gradient(135deg,var(--color-primary-500),var(--color-success))",
-          "tags": ["#jobs", "#hiring"],
+          "tags": [
+            "#jobs",
+            "#hiring"
+          ],
           "featured": false
         },
         {
@@ -1609,7 +1884,10 @@
           "count": "16 new",
           "href": "/blogs",
           "accent": "linear-gradient(135deg,var(--color-info),var(--color-primary-600))",
-          "tags": ["#blogs", "#writing"],
+          "tags": [
+            "#blogs",
+            "#writing"
+          ],
           "featured": false
         },
         {
@@ -1622,7 +1900,10 @@
           "count": "312 donors",
           "href": "/funding",
           "accent": "linear-gradient(135deg,var(--color-success),var(--color-accent-500))",
-          "tags": ["#funding", "#impact"],
+          "tags": [
+            "#funding",
+            "#impact"
+          ],
           "featured": true
         },
         {
@@ -1635,7 +1916,10 @@
           "count": "1.9K viewers",
           "href": "/live",
           "accent": "linear-gradient(135deg,var(--color-error),var(--color-accent-500))",
-          "tags": ["#live", "#stream"],
+          "tags": [
+            "#live",
+            "#stream"
+          ],
           "featured": false
         },
         {
@@ -1648,7 +1932,10 @@
           "count": "92K views",
           "href": "/watch",
           "accent": "linear-gradient(135deg,var(--color-primary-500),var(--color-primary-900))",
-          "tags": ["#watch", "#video"],
+          "tags": [
+            "#watch",
+            "#video"
+          ],
           "featured": false
         },
         {
@@ -1661,7 +1948,10 @@
           "count": "114K plays",
           "href": "/games",
           "accent": "linear-gradient(135deg,var(--color-accent-500),var(--color-error))",
-          "tags": ["#games", "#leaderboard"],
+          "tags": [
+            "#games",
+            "#leaderboard"
+          ],
           "featured": false
         },
         {
@@ -1674,7 +1964,10 @@
           "count": "76 replies",
           "href": "/forum",
           "accent": "linear-gradient(135deg,var(--color-primary-600),var(--color-info))",
-          "tags": ["#forum", "#qa"],
+          "tags": [
+            "#forum",
+            "#qa"
+          ],
           "featured": false
         }
       ]
@@ -1715,9 +2008,21 @@
       "sendTransactionDescription": "Mock money transfer. wallet.php has not been called yet.",
       "justNow": "Just now",
       "methods": [
-        { "label": "Bank transfer", "value": "bank", "icon": "i-ph-bank-fill" },
-        { "label": "Payment card", "value": "card", "icon": "i-ph-credit-card-fill" },
-        { "label": "MoMo wallet", "value": "momo", "icon": "i-ph-device-mobile-fill" }
+        {
+          "label": "Bank transfer",
+          "value": "bank",
+          "icon": "i-ph-bank-fill"
+        },
+        {
+          "label": "Payment card",
+          "value": "card",
+          "icon": "i-ph-credit-card-fill"
+        },
+        {
+          "label": "MoMo wallet",
+          "value": "momo",
+          "icon": "i-ph-device-mobile-fill"
+        }
       ],
       "transactions": [
         {
@@ -2046,12 +2351,36 @@
       "viewerRole": "Viewer",
       "justNow": "Just now",
       "categories": [
-        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill" },
-        { "label": "Community", "value": "community", "icon": "i-ph-users-three-fill" },
-        { "label": "Education", "value": "education", "icon": "i-ph-graduation-cap-fill" },
-        { "label": "Business", "value": "business", "icon": "i-ph-briefcase-fill" },
-        { "label": "Events", "value": "events", "icon": "i-ph-calendar-dots-fill" },
-        { "label": "Technology", "value": "technology", "icon": "i-ph-cpu-fill" }
+        {
+          "label": "All",
+          "value": "all",
+          "icon": "i-ph-squares-four-fill"
+        },
+        {
+          "label": "Community",
+          "value": "community",
+          "icon": "i-ph-users-three-fill"
+        },
+        {
+          "label": "Education",
+          "value": "education",
+          "icon": "i-ph-graduation-cap-fill"
+        },
+        {
+          "label": "Business",
+          "value": "business",
+          "icon": "i-ph-briefcase-fill"
+        },
+        {
+          "label": "Events",
+          "value": "events",
+          "icon": "i-ph-calendar-dots-fill"
+        },
+        {
+          "label": "Technology",
+          "value": "technology",
+          "icon": "i-ph-cpu-fill"
+        }
       ],
       "videos": [
         {
@@ -2069,10 +2398,28 @@
           "shares": 218,
           "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
           "description": "A full demo of the latest UI changes, component organization, and the checklist before connecting posts.php for video.",
-          "tags": ["#product", "#ui", "#nuxt"],
+          "tags": [
+            "#product",
+            "#ui",
+            "#nuxt"
+          ],
           "comments": [
-            { "id": 1, "author": "Hoangne", "initials": "HN", "role": "Member", "message": "The player looks clear and the related list is easy to use.", "time": "5 minutes ago" },
-            { "id": 2, "author": "Dung1", "initials": "D1", "role": "Creator", "message": "We should keep this layout for desktop.", "time": "12 minutes ago" }
+            {
+              "id": 1,
+              "author": "Hoangne",
+              "initials": "HN",
+              "role": "Member",
+              "message": "The player looks clear and the related list is easy to use.",
+              "time": "5 minutes ago"
+            },
+            {
+              "id": 2,
+              "author": "Dung1",
+              "initials": "D1",
+              "role": "Creator",
+              "message": "We should keep this layout for desktop.",
+              "time": "12 minutes ago"
+            }
           ]
         },
         {
@@ -2090,9 +2437,20 @@
           "shares": 96,
           "cover": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=80",
           "description": "A recap of the founder meetup covering first customers, pricing, and pitch deck questions.",
-          "tags": ["#startup", "#founder", "#business"],
+          "tags": [
+            "#startup",
+            "#founder",
+            "#business"
+          ],
           "comments": [
-            { "id": 3, "author": "Ngoc Tokyo", "initials": "NT", "role": "Founder", "message": "The pricing section is worth saving.", "time": "1 hour ago" }
+            {
+              "id": 3,
+              "author": "Ngoc Tokyo",
+              "initials": "NT",
+              "role": "Founder",
+              "message": "The pricing section is worth saving.",
+              "time": "1 hour ago"
+            }
           ]
         },
         {
@@ -2110,9 +2468,20 @@
           "shares": 144,
           "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
           "description": "A short video about building a green learning corner, a mini library, and a transparent report for the community.",
-          "tags": ["#education", "#funding", "#community"],
+          "tags": [
+            "#education",
+            "#funding",
+            "#community"
+          ],
           "comments": [
-            { "id": 4, "author": "Quynh Lan", "initials": "QL", "role": "Donor", "message": "The content is clear and builds trust.", "time": "2 hours ago" }
+            {
+              "id": 4,
+              "author": "Quynh Lan",
+              "initials": "QL",
+              "role": "Donor",
+              "message": "The content is clear and builds trust.",
+              "time": "2 hours ago"
+            }
           ]
         },
         {
@@ -2130,7 +2499,11 @@
           "shares": 302,
           "cover": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=80",
           "description": "Highlights from the summit: keynote, workshop sessions, and the networking closeout.",
-          "tags": ["#event", "#summit", "#tech"],
+          "tags": [
+            "#event",
+            "#summit",
+            "#tech"
+          ],
           "comments": []
         }
       ]
@@ -2356,11 +2729,25 @@
           "yearlyPrice": 990000,
           "description": "For users who want to unlock the Pro badge and make their profile stand out.",
           "highlight": false,
-          "features": ["Pro badge", "Hide basic ads", "Priority community support", "5 pinned posts"],
+          "features": [
+            "Pro badge",
+            "Hide basic ads",
+            "Priority community support",
+            "5 pinned posts"
+          ],
           "limits": [
-            { "label": "Post boosts", "value": "3 / month" },
-            { "label": "Media storage", "value": "20GB" },
-            { "label": "Support", "value": "48h" }
+            {
+              "label": "Post boosts",
+              "value": "3 / month"
+            },
+            {
+              "label": "Media storage",
+              "value": "20GB"
+            },
+            {
+              "label": "Support",
+              "value": "48h"
+            }
           ]
         },
         {
@@ -2371,11 +2758,26 @@
           "yearlyPrice": 1990000,
           "description": "Optimized for creators, bloggers, and event organizers in VNSEEA.",
           "highlight": true,
-          "features": ["Everything in Starter Pro", "Creator analytics", "Priority livestreaming", "10 boost campaigns", "Monetization tools"],
+          "features": [
+            "Everything in Starter Pro",
+            "Creator analytics",
+            "Priority livestreaming",
+            "10 boost campaigns",
+            "Monetization tools"
+          ],
           "limits": [
-            { "label": "Post boosts", "value": "10 / month" },
-            { "label": "Media storage", "value": "80GB" },
-            { "label": "Support", "value": "24h" }
+            {
+              "label": "Post boosts",
+              "value": "10 / month"
+            },
+            {
+              "label": "Media storage",
+              "value": "80GB"
+            },
+            {
+              "label": "Support",
+              "value": "24h"
+            }
           ]
         },
         {
@@ -2386,26 +2788,83 @@
           "yearlyPrice": 4990000,
           "description": "For shops, fanpages, and teams that manage content, jobs, and promotion at scale.",
           "highlight": false,
-          "features": ["Everything in Creator Plus", "Team roles", "Marketplace insights", "Job highlight", "Priority verification"],
+          "features": [
+            "Everything in Creator Plus",
+            "Team roles",
+            "Marketplace insights",
+            "Job highlight",
+            "Priority verification"
+          ],
           "limits": [
-            { "label": "Post boosts", "value": "30 / month" },
-            { "label": "Media storage", "value": "250GB" },
-            { "label": "Support", "value": "4h" }
+            {
+              "label": "Post boosts",
+              "value": "30 / month"
+            },
+            {
+              "label": "Media storage",
+              "value": "250GB"
+            },
+            {
+              "label": "Support",
+              "value": "4h"
+            }
           ]
         }
       ],
       "comparisonRows": [
-        { "label": "Pro badge", "starter": true, "creator": true, "business": true },
-        { "label": "Hide ads", "starter": true, "creator": true, "business": true },
-        { "label": "Advanced analytics", "starter": false, "creator": true, "business": true },
-        { "label": "Priority livestreaming", "starter": false, "creator": true, "business": true },
-        { "label": "Team roles", "starter": false, "creator": false, "business": true },
-        { "label": "Priority verification", "starter": false, "creator": false, "business": true }
+        {
+          "label": "Pro badge",
+          "starter": true,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Hide ads",
+          "starter": true,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Advanced analytics",
+          "starter": false,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Priority livestreaming",
+          "starter": false,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Team roles",
+          "starter": false,
+          "creator": false,
+          "business": true
+        },
+        {
+          "label": "Priority verification",
+          "starter": false,
+          "creator": false,
+          "business": true
+        }
       ],
       "paymentMethods": [
-        { "label": "VNSEEA wallet", "value": "wallet", "icon": "i-ph-wallet-fill" },
-        { "label": "Payment card", "value": "card", "icon": "i-ph-credit-card-fill" },
-        { "label": "Bank transfer", "value": "bank", "icon": "i-ph-bank-fill" }
+        {
+          "label": "VNSEEA wallet",
+          "value": "wallet",
+          "icon": "i-ph-wallet-fill"
+        },
+        {
+          "label": "Payment card",
+          "value": "card",
+          "icon": "i-ph-credit-card-fill"
+        },
+        {
+          "label": "Bank transfer",
+          "value": "bank",
+          "icon": "i-ph-bank-fill"
+        }
       ]
     },
     "settingsPage": {
@@ -2444,13 +2903,60 @@
               "description": "Update the main identity details for your account.",
               "kind": "form",
               "fields": [
-                { "label": "Username", "key": "username", "type": "text", "value": "justin", "placeholder": "username" },
-                { "label": "Email", "key": "email", "type": "email", "value": "justin.vnseea.test" },
-                { "label": "Phone", "key": "phone", "type": "tel", "value": "+84 900 000 000" },
-                { "label": "Birthday", "key": "birthday", "type": "date", "value": "1995-04-17" },
-                { "label": "Gender", "key": "gender", "type": "select", "value": "Male", "options": ["Male", "Female", "Other"] },
-                { "label": "Country", "key": "country", "type": "select", "value": "Vietnam", "options": ["Vietnam", "Singapore", "Thailand", "United States"] },
-                { "label": "Website", "key": "website", "type": "url", "value": "https://vnseea.test" }
+                {
+                  "label": "Username",
+                  "key": "username",
+                  "type": "text",
+                  "value": "justin",
+                  "placeholder": "username"
+                },
+                {
+                  "label": "Email",
+                  "key": "email",
+                  "type": "email",
+                  "value": "justin.vnseea.test"
+                },
+                {
+                  "label": "Phone",
+                  "key": "phone",
+                  "type": "tel",
+                  "value": "+84 900 000 000"
+                },
+                {
+                  "label": "Birthday",
+                  "key": "birthday",
+                  "type": "date",
+                  "value": "1995-04-17"
+                },
+                {
+                  "label": "Gender",
+                  "key": "gender",
+                  "type": "select",
+                  "value": "Male",
+                  "options": [
+                    "Male",
+                    "Female",
+                    "Other"
+                  ]
+                },
+                {
+                  "label": "Country",
+                  "key": "country",
+                  "type": "select",
+                  "value": "Vietnam",
+                  "options": [
+                    "Vietnam",
+                    "Singapore",
+                    "Thailand",
+                    "United States"
+                  ]
+                },
+                {
+                  "label": "Website",
+                  "key": "website",
+                  "type": "url",
+                  "value": "https://vnseea.test"
+                }
               ]
             }
           ]
@@ -2466,12 +2972,48 @@
               "description": "These fields appear on your public profile.",
               "kind": "form",
               "fields": [
-                { "label": "Bio", "key": "bio", "type": "textarea", "value": "Community builder at VNSEEA." },
-                { "label": "Workplace", "key": "workplace", "type": "text", "value": "VNSEEA" },
-                { "label": "School", "key": "school", "type": "text", "value": "University of Economics" },
-                { "label": "Relationship", "key": "relationship", "type": "select", "value": "Hidden", "options": ["Hidden", "Single", "Dating", "Married"] },
-                { "label": "City", "key": "city", "type": "text", "value": "Ho Chi Minh City" },
-                { "label": "Hometown", "key": "hometown", "type": "text", "value": "Hanoi" }
+                {
+                  "label": "Bio",
+                  "key": "bio",
+                  "type": "textarea",
+                  "value": "Community builder at VNSEEA."
+                },
+                {
+                  "label": "Workplace",
+                  "key": "workplace",
+                  "type": "text",
+                  "value": "VNSEEA"
+                },
+                {
+                  "label": "School",
+                  "key": "school",
+                  "type": "text",
+                  "value": "University of Economics"
+                },
+                {
+                  "label": "Relationship",
+                  "key": "relationship",
+                  "type": "select",
+                  "value": "Hidden",
+                  "options": [
+                    "Hidden",
+                    "Single",
+                    "Dating",
+                    "Married"
+                  ]
+                },
+                {
+                  "label": "City",
+                  "key": "city",
+                  "type": "text",
+                  "value": "Ho Chi Minh City"
+                },
+                {
+                  "label": "Hometown",
+                  "key": "hometown",
+                  "type": "text",
+                  "value": "Hanoi"
+                }
               ]
             }
           ]
@@ -2487,12 +3029,69 @@
               "description": "Mock privacy options before connecting the settings API.",
               "kind": "form",
               "fields": [
-                { "label": "Who can see posts", "key": "posts", "type": "select", "value": "Friends", "options": ["Public", "Friends", "Only me"] },
-                { "label": "Who can follow", "key": "follow", "type": "select", "value": "Public", "options": ["Public", "Friends"] },
-                { "label": "Search visibility", "key": "search", "type": "select", "value": "Allow", "options": ["Allow", "Hide from search"] },
-                { "label": "Who can see friends", "key": "friends", "type": "select", "value": "Friends", "options": ["Public", "Friends", "Only me"] },
-                { "label": "Who can see birthday", "key": "birthdayPrivacy", "type": "select", "value": "Friends", "options": ["Public", "Friends", "Only me"] },
-                { "label": "Online/offline status", "key": "onlineStatus", "type": "select", "value": "Show online", "options": ["Show online", "Always offline"] }
+                {
+                  "label": "Who can see posts",
+                  "key": "posts",
+                  "type": "select",
+                  "value": "Friends",
+                  "options": [
+                    "Public",
+                    "Friends",
+                    "Only me"
+                  ]
+                },
+                {
+                  "label": "Who can follow",
+                  "key": "follow",
+                  "type": "select",
+                  "value": "Public",
+                  "options": [
+                    "Public",
+                    "Friends"
+                  ]
+                },
+                {
+                  "label": "Search visibility",
+                  "key": "search",
+                  "type": "select",
+                  "value": "Allow",
+                  "options": [
+                    "Allow",
+                    "Hide from search"
+                  ]
+                },
+                {
+                  "label": "Who can see friends",
+                  "key": "friends",
+                  "type": "select",
+                  "value": "Friends",
+                  "options": [
+                    "Public",
+                    "Friends",
+                    "Only me"
+                  ]
+                },
+                {
+                  "label": "Who can see birthday",
+                  "key": "birthdayPrivacy",
+                  "type": "select",
+                  "value": "Friends",
+                  "options": [
+                    "Public",
+                    "Friends",
+                    "Only me"
+                  ]
+                },
+                {
+                  "label": "Online/offline status",
+                  "key": "onlineStatus",
+                  "type": "select",
+                  "value": "Show online",
+                  "options": [
+                    "Show online",
+                    "Always offline"
+                  ]
+                }
               ]
             }
           ]
@@ -2508,7 +3107,12 @@
               "description": "Choose a new image and simulate the crop area.",
               "kind": "form",
               "fields": [
-                { "label": "Avatar image", "key": "avatar", "type": "file", "value": "" }
+                {
+                  "label": "Avatar image",
+                  "key": "avatar",
+                  "type": "file",
+                  "value": ""
+                }
               ]
             }
           ]
@@ -2524,8 +3128,29 @@
               "description": "Configure how the interface looks on your device.",
               "kind": "form",
               "fields": [
-                { "label": "Night mode", "key": "nightMode", "type": "select", "value": "System", "options": ["On", "Off", "System"] },
-                { "label": "Theme color", "key": "themeColor", "type": "select", "value": "VNSEEA Blue", "options": ["VNSEEA Blue", "Emerald", "Amber", "Slate"] }
+                {
+                  "label": "Night mode",
+                  "key": "nightMode",
+                  "type": "select",
+                  "value": "System",
+                  "options": [
+                    "On",
+                    "Off",
+                    "System"
+                  ]
+                },
+                {
+                  "label": "Theme color",
+                  "key": "themeColor",
+                  "type": "select",
+                  "value": "VNSEEA Blue",
+                  "options": [
+                    "VNSEEA Blue",
+                    "Emerald",
+                    "Amber",
+                    "Slate"
+                  ]
+                }
               ]
             }
           ]
@@ -2541,9 +3166,24 @@
               "description": "Enter your current password and a new one.",
               "kind": "form",
               "fields": [
-                { "label": "Current password", "key": "currentPassword", "type": "password", "value": "" },
-                { "label": "New password", "key": "newPassword", "type": "password", "value": "" },
-                { "label": "Confirm password", "key": "confirmPassword", "type": "password", "value": "" }
+                {
+                  "label": "Current password",
+                  "key": "currentPassword",
+                  "type": "password",
+                  "value": ""
+                },
+                {
+                  "label": "New password",
+                  "key": "newPassword",
+                  "type": "password",
+                  "value": ""
+                },
+                {
+                  "label": "Confirm password",
+                  "key": "confirmPassword",
+                  "type": "password",
+                  "value": ""
+                }
               ]
             }
           ]
@@ -2559,9 +3199,21 @@
               "description": "Enable two-step security and scan the QR code with an authenticator app.",
               "kind": "summary",
               "items": [
-                { "title": "Enable/disable 2FA", "description": "Current status: disabled.", "action": "Enable 2FA" },
-                { "title": "Authenticator QR code", "description": "Mock QR placeholder for the authenticator app.", "meta": "VNSEEA-2FA-2026" },
-                { "title": "Backup codes", "description": "8 backup codes have not been generated yet.", "action": "Generate new codes" }
+                {
+                  "title": "Enable/disable 2FA",
+                  "description": "Current status: disabled.",
+                  "action": "Enable 2FA"
+                },
+                {
+                  "title": "Authenticator QR code",
+                  "description": "Mock QR placeholder for the authenticator app.",
+                  "meta": "VNSEEA-2FA-2026"
+                },
+                {
+                  "title": "Backup codes",
+                  "description": "8 backup codes have not been generated yet.",
+                  "action": "Generate new codes"
+                }
               ]
             }
           ]
@@ -2577,21 +3229,81 @@
               "description": "Likes, comments, follows, messages, mentions, and other updates.",
               "kind": "toggles",
               "toggles": [
-                { "label": "Likes", "description": "Receive like notifications.", "enabled": true },
-                { "label": "Comments", "description": "Receive comment notifications.", "enabled": true },
-                { "label": "Follows", "description": "Receive follow notifications.", "enabled": true },
-                { "label": "Messages", "description": "Receive message notifications.", "enabled": true },
-                { "label": "Mentions", "description": "Receive mention notifications.", "enabled": true },
-                { "label": "Shares", "description": "Receive share notifications.", "enabled": true },
-                { "label": "Events", "description": "Receive event notifications.", "enabled": true },
-                { "label": "Groups", "description": "Receive group notifications.", "enabled": true },
-                { "label": "Pages", "description": "Receive page notifications.", "enabled": true },
-                { "label": "Marketplace", "description": "Receive marketplace notifications.", "enabled": true },
-                { "label": "Jobs", "description": "Receive jobs notifications.", "enabled": false },
-                { "label": "Funding", "description": "Receive funding notifications.", "enabled": false },
-                { "label": "Live", "description": "Receive live notifications.", "enabled": false },
-                { "label": "Watch", "description": "Receive watch notifications.", "enabled": false },
-                { "label": "Security", "description": "Receive security notifications.", "enabled": false }
+                {
+                  "label": "Likes",
+                  "description": "Receive like notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Comments",
+                  "description": "Receive comment notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Follows",
+                  "description": "Receive follow notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Messages",
+                  "description": "Receive message notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Mentions",
+                  "description": "Receive mention notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Shares",
+                  "description": "Receive share notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Events",
+                  "description": "Receive event notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Groups",
+                  "description": "Receive group notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Pages",
+                  "description": "Receive page notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Marketplace",
+                  "description": "Receive marketplace notifications.",
+                  "enabled": true
+                },
+                {
+                  "label": "Jobs",
+                  "description": "Receive jobs notifications.",
+                  "enabled": false
+                },
+                {
+                  "label": "Funding",
+                  "description": "Receive funding notifications.",
+                  "enabled": false
+                },
+                {
+                  "label": "Live",
+                  "description": "Receive live notifications.",
+                  "enabled": false
+                },
+                {
+                  "label": "Watch",
+                  "description": "Receive watch notifications.",
+                  "enabled": false
+                },
+                {
+                  "label": "Security",
+                  "description": "Receive security notifications.",
+                  "enabled": false
+                }
               ]
             }
           ]
@@ -2607,10 +3319,26 @@
               "description": "Choose which system emails are allowed.",
               "kind": "toggles",
               "toggles": [
-                { "label": "New message email", "description": "Email when a new message arrives.", "enabled": true },
-                { "label": "Mention email", "description": "Email when someone mentions you.", "enabled": true },
-                { "label": "Weekly digest", "description": "Weekly activity summary.", "enabled": false },
-                { "label": "Security email", "description": "Login and security alerts.", "enabled": true }
+                {
+                  "label": "New message email",
+                  "description": "Email when a new message arrives.",
+                  "enabled": true
+                },
+                {
+                  "label": "Mention email",
+                  "description": "Email when someone mentions you.",
+                  "enabled": true
+                },
+                {
+                  "label": "Weekly digest",
+                  "description": "Weekly activity summary.",
+                  "enabled": false
+                },
+                {
+                  "label": "Security email",
+                  "description": "Login and security alerts.",
+                  "enabled": true
+                }
               ]
             }
           ]
@@ -2626,11 +3354,41 @@
               "description": "URLs shown on your profile.",
               "kind": "form",
               "fields": [
-                { "label": "Facebook URL", "key": "facebook", "type": "url", "value": "", "placeholder": "https://facebook.com/username" },
-                { "label": "Twitter URL", "key": "twitter", "type": "url", "value": "", "placeholder": "https://twitter.com/username" },
-                { "label": "LinkedIn URL", "key": "linkedin", "type": "url", "value": "", "placeholder": "https://linkedin.com/username" },
-                { "label": "Instagram URL", "key": "instagram", "type": "url", "value": "", "placeholder": "https://instagram.com/username" },
-                { "label": "YouTube URL", "key": "youtube", "type": "url", "value": "", "placeholder": "https://youtube.com/username" }
+                {
+                  "label": "Facebook URL",
+                  "key": "facebook",
+                  "type": "url",
+                  "value": "",
+                  "placeholder": "https://facebook.com/username"
+                },
+                {
+                  "label": "Twitter URL",
+                  "key": "twitter",
+                  "type": "url",
+                  "value": "",
+                  "placeholder": "https://twitter.com/username"
+                },
+                {
+                  "label": "LinkedIn URL",
+                  "key": "linkedin",
+                  "type": "url",
+                  "value": "",
+                  "placeholder": "https://linkedin.com/username"
+                },
+                {
+                  "label": "Instagram URL",
+                  "key": "instagram",
+                  "type": "url",
+                  "value": "",
+                  "placeholder": "https://instagram.com/username"
+                },
+                {
+                  "label": "YouTube URL",
+                  "key": "youtube",
+                  "type": "url",
+                  "value": "",
+                  "placeholder": "https://youtube.com/username"
+                }
               ]
             }
           ]
@@ -2646,8 +3404,16 @@
               "description": "Manage the users you have blocked.",
               "kind": "list",
               "items": [
-                { "title": "spam-account", "description": "Blocked 2 days ago", "action": "Unblock" },
-                { "title": "old-bot", "description": "Blocked 1 month ago", "action": "Unblock" }
+                {
+                  "title": "spam-account",
+                  "description": "Blocked 2 days ago",
+                  "action": "Unblock"
+                },
+                {
+                  "title": "old-bot",
+                  "description": "Blocked 1 month ago",
+                  "action": "Unblock"
+                }
               ]
             }
           ]
@@ -2663,8 +3429,18 @@
               "description": "Review devices that are currently signed in.",
               "kind": "list",
               "items": [
-                { "title": "Chrome · Windows", "description": "127.0.0.1 · current", "meta": "Active now", "action": "Keep session" },
-                { "title": "Safari · iPhone", "description": "Ho Chi Minh City · 2 days ago", "meta": "Mobile", "action": "Terminate" }
+                {
+                  "title": "Chrome · Windows",
+                  "description": "127.0.0.1 · current",
+                  "meta": "Active now",
+                  "action": "Keep session"
+                },
+                {
+                  "title": "Safari · iPhone",
+                  "description": "Ho Chi Minh City · 2 days ago",
+                  "meta": "Mobile",
+                  "action": "Terminate"
+                }
               ]
             }
           ]
@@ -2680,8 +3456,18 @@
               "description": "Upload documents and describe why you want verification.",
               "kind": "form",
               "fields": [
-                { "label": "Document upload", "key": "documents", "type": "file", "value": "" },
-                { "label": "Request note", "key": "verificationNote", "type": "textarea", "value": "" }
+                {
+                  "label": "Document upload",
+                  "key": "documents",
+                  "type": "file",
+                  "value": ""
+                },
+                {
+                  "label": "Request note",
+                  "key": "verificationNote",
+                  "type": "textarea",
+                  "value": ""
+                }
               ]
             }
           ]
@@ -2697,7 +3483,12 @@
               "description": "A dangerous action that is currently simulated only.",
               "kind": "danger",
               "fields": [
-                { "label": "Confirm password", "key": "deletePassword", "type": "password", "value": "" }
+                {
+                  "label": "Confirm password",
+                  "key": "deletePassword",
+                  "type": "password",
+                  "value": ""
+                }
               ]
             }
           ]
@@ -2713,8 +3504,18 @@
               "description": "Manage cards and payment wallets.",
               "kind": "list",
               "items": [
-                { "title": "Visa ending 4242", "description": "Default payment method", "meta": "Default", "action": "Edit" },
-                { "title": "VNSEEA Wallet", "description": "Mock balance: VND 9,999,999", "meta": "Wallet", "action": "Manage" }
+                {
+                  "title": "Visa ending 4242",
+                  "description": "Default payment method",
+                  "meta": "Default",
+                  "action": "Edit"
+                },
+                {
+                  "title": "VNSEEA Wallet",
+                  "description": "Mock balance: VND 9,999,999",
+                  "meta": "Wallet",
+                  "action": "Manage"
+                }
               ]
             }
           ]
@@ -2730,9 +3531,28 @@
               "description": "Create a paid content plan.",
               "kind": "form",
               "fields": [
-                { "label": "Plan name", "key": "planName", "type": "text", "value": "Creator Plus" },
-                { "label": "Price", "key": "price", "type": "number", "value": 99000 },
-                { "label": "Enable/disable", "key": "enabled", "type": "select", "value": "Enable", "options": ["Enable", "Disable"] }
+                {
+                  "label": "Plan name",
+                  "key": "planName",
+                  "type": "text",
+                  "value": "Creator Plus"
+                },
+                {
+                  "label": "Price",
+                  "key": "price",
+                  "type": "number",
+                  "value": 99000
+                },
+                {
+                  "label": "Enable/disable",
+                  "key": "enabled",
+                  "type": "select",
+                  "value": "Enable",
+                  "options": [
+                    "Enable",
+                    "Disable"
+                  ]
+                }
               ]
             }
           ]
@@ -2748,8 +3568,17 @@
               "description": "Create and monitor invite links.",
               "kind": "list",
               "items": [
-                { "title": "https://vnseea.test/invite/JUSTIN2026", "description": "12 people joined", "meta": "Active", "action": "Copy link" },
-                { "title": "Invitees", "description": "Hoangne, Dung1, Nicolas", "action": "View list" }
+                {
+                  "title": "https://vnseea.test/invite/JUSTIN2026",
+                  "description": "12 people joined",
+                  "meta": "Active",
+                  "action": "Copy link"
+                },
+                {
+                  "title": "Invitees",
+                  "description": "Hoangne, Dung1, Nicolas",
+                  "action": "View list"
+                }
               ]
             }
           ]
@@ -2765,9 +3594,21 @@
               "description": "Track referrals and earnings.",
               "kind": "summary",
               "items": [
-                { "title": "Referral link", "description": "https://vnseea.test/ref/justin", "action": "Copy" },
-                { "title": "Earnings", "description": "VND 12,400,000", "meta": "This month" },
-                { "title": "Referrals", "description": "42 signups", "meta": "2026" }
+                {
+                  "title": "Referral link",
+                  "description": "https://vnseea.test/ref/justin",
+                  "action": "Copy"
+                },
+                {
+                  "title": "Earnings",
+                  "description": "VND 12,400,000",
+                  "meta": "This month"
+                },
+                {
+                  "title": "Referrals",
+                  "description": "42 signups",
+                  "meta": "2026"
+                }
               ]
             }
           ]
@@ -2783,7 +3624,11 @@
               "description": "Download personal data as an archive.",
               "kind": "summary",
               "items": [
-                { "title": "Download personal data", "description": "Includes profile, posts, media, and message metadata.", "action": "Request archive" }
+                {
+                  "title": "Download personal data",
+                  "description": "Includes profile, posts, media, and message metadata.",
+                  "action": "Request archive"
+                }
               ]
             }
           ]
@@ -2799,9 +3644,21 @@
               "description": "Points collected from community activity.",
               "kind": "list",
               "items": [
-                { "title": "50 points", "description": "Current balance", "meta": "Balance" },
-                { "title": "+10", "description": "Helpful comment", "meta": "Today" },
-                { "title": "+25", "description": "Joined an event", "meta": "This week" }
+                {
+                  "title": "50 points",
+                  "description": "Current balance",
+                  "meta": "Balance"
+                },
+                {
+                  "title": "+10",
+                  "description": "Helpful comment",
+                  "meta": "Today"
+                },
+                {
+                  "title": "+25",
+                  "description": "Joined an event",
+                  "meta": "This week"
+                }
               ]
             }
           ]
@@ -2817,9 +3674,24 @@
               "description": "Shipping addresses for marketplace orders.",
               "kind": "form",
               "fields": [
-                { "label": "Full name", "key": "addressName", "type": "text", "value": "Justin" },
-                { "label": "Phone", "key": "addressPhone", "type": "tel", "value": "+84 900 000 000" },
-                { "label": "Address", "key": "addressLine", "type": "textarea", "value": "District 1, Ho Chi Minh City" }
+                {
+                  "label": "Full name",
+                  "key": "addressName",
+                  "type": "text",
+                  "value": "Justin"
+                },
+                {
+                  "label": "Phone",
+                  "key": "addressPhone",
+                  "type": "tel",
+                  "value": "+84 900 000 000"
+                },
+                {
+                  "label": "Address",
+                  "key": "addressLine",
+                  "type": "textarea",
+                  "value": "District 1, Ho Chi Minh City"
+                }
               ]
             }
           ]
@@ -2835,9 +3707,21 @@
               "description": "Expand your professional profile.",
               "kind": "list",
               "items": [
-                { "title": "Work experience", "description": "Community Manager · VNSEEA", "action": "Add work experience" },
-                { "title": "Certifications", "description": "Product Growth Certificate", "action": "Add certification" },
-                { "title": "Projects", "description": "VNSEEA migration UI", "action": "Add project" }
+                {
+                  "title": "Work experience",
+                  "description": "Community Manager · VNSEEA",
+                  "action": "Add work experience"
+                },
+                {
+                  "title": "Certifications",
+                  "description": "Product Growth Certificate",
+                  "action": "Add certification"
+                },
+                {
+                  "title": "Projects",
+                  "description": "VNSEEA migration UI",
+                  "action": "Add project"
+                }
               ]
             }
           ]
@@ -3161,21 +4045,66 @@
               "title": "In-app notifications",
               "description": "Likes, comments, follows, messages, mentions, and more.",
               "toggles": {
-                "likes": { "label": "Likes", "description": "Receive like notifications." },
-                "comments": { "label": "Comments", "description": "Receive comment notifications." },
-                "follows": { "label": "Follows", "description": "Receive follow notifications." },
-                "messages": { "label": "Messages", "description": "Receive message notifications." },
-                "mentions": { "label": "Mentions", "description": "Receive mention notifications." },
-                "shares": { "label": "Shares", "description": "Receive share notifications." },
-                "events": { "label": "Events", "description": "Receive event notifications." },
-                "groups": { "label": "Groups", "description": "Receive group notifications." },
-                "pages": { "label": "Pages", "description": "Receive page notifications." },
-                "marketplace": { "label": "Marketplace", "description": "Receive marketplace notifications." },
-                "jobs": { "label": "Jobs", "description": "Receive job notifications." },
-                "funding": { "label": "Funding", "description": "Receive funding notifications." },
-                "live": { "label": "Live", "description": "Receive live notifications." },
-                "watch": { "label": "Watch", "description": "Receive watch notifications." },
-                "security": { "label": "Security", "description": "Receive security notifications." }
+                "likes": {
+                  "label": "Likes",
+                  "description": "Receive like notifications."
+                },
+                "comments": {
+                  "label": "Comments",
+                  "description": "Receive comment notifications."
+                },
+                "follows": {
+                  "label": "Follows",
+                  "description": "Receive follow notifications."
+                },
+                "messages": {
+                  "label": "Messages",
+                  "description": "Receive message notifications."
+                },
+                "mentions": {
+                  "label": "Mentions",
+                  "description": "Receive mention notifications."
+                },
+                "shares": {
+                  "label": "Shares",
+                  "description": "Receive share notifications."
+                },
+                "events": {
+                  "label": "Events",
+                  "description": "Receive event notifications."
+                },
+                "groups": {
+                  "label": "Groups",
+                  "description": "Receive group notifications."
+                },
+                "pages": {
+                  "label": "Pages",
+                  "description": "Receive page notifications."
+                },
+                "marketplace": {
+                  "label": "Marketplace",
+                  "description": "Receive marketplace notifications."
+                },
+                "jobs": {
+                  "label": "Jobs",
+                  "description": "Receive job notifications."
+                },
+                "funding": {
+                  "label": "Funding",
+                  "description": "Receive funding notifications."
+                },
+                "live": {
+                  "label": "Live",
+                  "description": "Receive live notifications."
+                },
+                "watch": {
+                  "label": "Watch",
+                  "description": "Receive watch notifications."
+                },
+                "security": {
+                  "label": "Security",
+                  "description": "Receive security notifications."
+                }
               }
             }
           }
@@ -3188,10 +4117,22 @@
               "title": "Email notifications",
               "description": "Choose which system emails are allowed.",
               "toggles": {
-                "newMessage": { "label": "New message email", "description": "Email when a new message arrives." },
-                "mention": { "label": "Mention email", "description": "Email when someone mentions you." },
-                "weeklyDigest": { "label": "Weekly digest", "description": "Weekly activity summary." },
-                "security": { "label": "Security email", "description": "Sign-in and security alerts." }
+                "newMessage": {
+                  "label": "New message email",
+                  "description": "Email when a new message arrives."
+                },
+                "mention": {
+                  "label": "Mention email",
+                  "description": "Email when someone mentions you."
+                },
+                "weeklyDigest": {
+                  "label": "Weekly digest",
+                  "description": "Weekly activity summary."
+                },
+                "security": {
+                  "label": "Security email",
+                  "description": "Sign-in and security alerts."
+                }
               }
             }
           }
@@ -3228,8 +4169,14 @@
               "title": "Blocked users",
               "description": "Manage blocked users.",
               "items": {
-                "spamAccount": { "description": "Blocked 2 days ago", "action": "Unblock" },
-                "oldBot": { "description": "Blocked 1 month ago", "action": "Unblock" }
+                "spamAccount": {
+                  "description": "Blocked 2 days ago",
+                  "action": "Unblock"
+                },
+                "oldBot": {
+                  "description": "Blocked 1 month ago",
+                  "action": "Unblock"
+                }
               }
             }
           }
@@ -3615,15 +4562,14 @@
       "contactShop": "Contact Shop",
       "viewMore": "View More",
       "chooseOther": "Choose Other",
-      "contactBuyer": "Contact Buyer",
+      "contactBuyer": "Order from buyer {buyer}",
       "shippingAddress": "Shipping Address",
       "orderedFrom": "Order from {seller} • {price}",
       "productsSummary": "{count} products ordered",
       "productsInOrder": "Products in Order",
       "customerProducts": "Customer Products",
       "productsRemaining": "{count} products to process",
-      "belongsToStore": "From store {store} • Unit price {price}",
-      "contactBuyer": "Order from buyer {buyer}"
+      "belongsToStore": "From store {store} • Unit price {price}"
     },
     "filter": {
       "title": "Filter Orders",
@@ -3709,19 +4655,52 @@
         "ongoing": "Ongoing",
         "notApplicable": "N/A",
         "notCompleted": "Wait for completion",
-        "created": { "label": "Order created", "description": "The order has been recorded and is waiting for shop confirmation." },
-        "confirmed": { "label": "Shop confirmed", "description": "The shop will check inventory and prepare your order." },
-        "shipping": { "label": "Handed over to shipping", "description": "The order will be handed over to the shipping unit after confirmation." },
-        "delivered": { "label": "Delivered successfully", "description": "You will receive a notification when the order is completed." },
-        "shipping_active": { "label": "Shipping", "description": "The order is on the delivery truck and will arrive today." },
-        "cancelled": { "label": "Cancellation request", "description": "The buyer submitted a cancellation request before confirmation." },
-        "refunded": { "label": "Refunded & closed", "description": "The funds have been refunded to the internal VNSEEA wallet." }
+        "created": {
+          "label": "Order created",
+          "description": "The order has been recorded and is waiting for shop confirmation."
+        },
+        "confirmed": {
+          "label": "Shop confirmed",
+          "description": "The shop will check inventory and prepare your order."
+        },
+        "shipping": {
+          "label": "Handed over to shipping",
+          "description": "The order will be handed over to the shipping unit after confirmation."
+        },
+        "delivered": {
+          "label": "Delivered successfully",
+          "description": "You will receive a notification when the order is completed."
+        },
+        "shipping_active": {
+          "label": "Shipping",
+          "description": "The order is on the delivery truck and will arrive today."
+        },
+        "cancelled": {
+          "label": "Cancellation request",
+          "description": "The buyer submitted a cancellation request before confirmation."
+        },
+        "refunded": {
+          "label": "Refunded & closed",
+          "description": "The funds have been refunded to the internal VNSEEA wallet."
+        }
       },
       "tasks": {
-        "payment": { "label": "Verify payment", "description": "Internal wallet has recorded success or funds have reached the system." },
-        "stock": { "label": "Check inventory", "description": "Ensure sufficient quantity, accessories, and packaging condition." },
-        "packing": { "label": "Pack & Print label", "description": "Must be completed before handing over to the shipping unit." },
-        "handoff": { "label": "Handover to shipper", "description": "The system will open payout after the order leaves the warehouse." }
+        "payment": {
+          "label": "Verify payment",
+          "description": "Internal wallet has recorded success or funds have reached the system."
+        },
+        "stock": {
+          "label": "Check inventory",
+          "description": "Ensure sufficient quantity, accessories, and packaging condition."
+        },
+        "packing": {
+          "label": "Pack & Print label",
+          "description": "Must be completed before handing over to the shipping unit."
+        },
+        "handoff": {
+          "label": "Handover to shipper",
+          "description": "The system will open payout after the order leaves the warehouse."
+        }
       },
       "delivery": {
         "expected2h": "Shop expected to confirm in 2 hours",
@@ -3777,7 +4756,11 @@
         "eyebrow": "P-18 · Community",
         "title": "Create new group",
         "description": "Set up a new community for members to exchange, share content, and connect around a common topic.",
-        "highlights": ["Custom URL", "Privacy control", "Ready to invite members"],
+        "highlights": [
+          "Custom URL",
+          "Privacy control",
+          "Ready to invite members"
+        ],
         "nameLabel": "Group name",
         "namePlaceholder": "Example: Central Auto Community",
         "slugPlaceholder": "central-auto-community",
@@ -3788,7 +4771,11 @@
         "eyebrow": "P-21 · Fanpage",
         "title": "Create new page",
         "description": "Create a fanpage for your brand, store, professional, or content project to start posting, receiving followers, and building a public presence.",
-        "highlights": ["Public from the start", "Brand URL", "Ready for fanpage profile"],
+        "highlights": [
+          "Public from the start",
+          "Brand URL",
+          "Ready for fanpage profile"
+        ],
         "nameLabel": "Page name",
         "namePlaceholder": "Example: Moc May Furniture Studio",
         "slugPlaceholder": "moc-may-furniture-studio",
@@ -3888,11 +4875,26 @@
       }
     },
     "cta": {
-      "message": { "label": "Message", "description": "Suitable when you want to draw viewers to inbox for direct consultation." },
-      "follow": { "label": "Follow", "description": "Good for content fanpages, brands, or periodic update channels." },
-      "catalog": { "label": "View catalog", "description": "Used for pages with product catalogs, services, or featured collections." },
-      "booking": { "label": "Book now", "description": "Suitable for studios, experts, classes, or services that need to close scheduled slots." },
-      "call": { "label": "Call now", "description": "Suitable for local businesses or teams that need quick responses." }
+      "message": {
+        "label": "Message",
+        "description": "Suitable when you want to draw viewers to inbox for direct consultation."
+      },
+      "follow": {
+        "label": "Follow",
+        "description": "Good for content fanpages, brands, or periodic update channels."
+      },
+      "catalog": {
+        "label": "View catalog",
+        "description": "Used for pages with product catalogs, services, or featured collections."
+      },
+      "booking": {
+        "label": "Book now",
+        "description": "Suitable for studios, experts, classes, or services that need to close scheduled slots."
+      },
+      "call": {
+        "label": "Call now",
+        "description": "Suitable for local businesses or teams that need quick responses."
+      }
     },
     "tabs": {
       "groups": {
@@ -3907,22 +4909,64 @@
       }
     },
     "privacy": {
-      "public": { "label": "Public", "description": "Anyone can find the group and view basic content." },
-      "private": { "label": "Private", "description": "Group is publicly visible but only members can view posts." },
-      "secret": { "label": "Secret", "description": "Only invited people can see and join the group." }
+      "public": {
+        "label": "Public",
+        "description": "Anyone can find the group and view basic content."
+      },
+      "private": {
+        "label": "Private",
+        "description": "Group is publicly visible but only members can view posts."
+      },
+      "secret": {
+        "label": "Secret",
+        "description": "Only invited people can see and join the group."
+      }
     },
     "categories": {
-      "auto": { "label": "Auto & Vehicles", "description": "For discussions on new cars, maintenance, reviews, and accessories." },
-      "business": { "label": "Business", "description": "Focus on collaboration, sales, management, and business development." },
-      "technology": { "label": "Technology", "description": "Suitable for communities interested in software, AI, devices, and programming." },
-      "education": { "label": "Education", "description": "Share knowledge, study materials, workshops, and mentoring." },
-      "travel": { "label": "Travel", "description": "Used to organize trips, share schedules, and practical experiences." },
-      "marketplace": { "label": "Marketplace", "description": "Suitable for groups exchanging products, deals, and group buying needs." },
-      "local-business": { "label": "Local Business", "description": "Suitable for shops, studios, eateries, and brands operating locally." },
-      "creator": { "label": "Creator & Professional", "description": "For KOLs, experts, coaches, or people building personal brands." },
-      "brand": { "label": "Brand & Product", "description": "For fanpages introduced products, campaigns, deals, and brand updates." },
-      "organization": { "label": "Organization & Community", "description": "For organizations, clubs, social projects, and community programs." },
-      "service": { "label": "Professional Service", "description": "Suitable for agencies, freelancers, service studios, and consulting teams." }
+      "auto": {
+        "label": "Auto & Vehicles",
+        "description": "For discussions on new cars, maintenance, reviews, and accessories."
+      },
+      "business": {
+        "label": "Business",
+        "description": "Focus on collaboration, sales, management, and business development."
+      },
+      "technology": {
+        "label": "Technology",
+        "description": "Suitable for communities interested in software, AI, devices, and programming."
+      },
+      "education": {
+        "label": "Education",
+        "description": "Share knowledge, study materials, workshops, and mentoring."
+      },
+      "travel": {
+        "label": "Travel",
+        "description": "Used to organize trips, share schedules, and practical experiences."
+      },
+      "marketplace": {
+        "label": "Marketplace",
+        "description": "Suitable for groups exchanging products, deals, and group buying needs."
+      },
+      "local-business": {
+        "label": "Local Business",
+        "description": "Suitable for shops, studios, eateries, and brands operating locally."
+      },
+      "creator": {
+        "label": "Creator & Professional",
+        "description": "For KOLs, experts, coaches, or people building personal brands."
+      },
+      "brand": {
+        "label": "Brand & Product",
+        "description": "For fanpages introduced products, campaigns, deals, and brand updates."
+      },
+      "organization": {
+        "label": "Organization & Community",
+        "description": "For organizations, clubs, social projects, and community programs."
+      },
+      "service": {
+        "label": "Professional Service",
+        "description": "Suitable for agencies, freelancers, service studios, and consulting teams."
+      }
     },
     "groups": {
       "hub": "Community Hub",
@@ -4095,7 +5139,8 @@
         "terms": "Terms of Use",
         "blog": "Blog",
         "developers": "Developers",
-        "language": "Language"
+        "language": "Language",
+        "copyright": "© {year} VNSEEA"
       },
       "mock": {
         "badge": {
@@ -4336,7 +5381,11 @@
           "owner": "Managed by Studio Mobility",
           "location": "Nationwide activity",
           "founded": "Established from March 2024",
-          "tags": ["ev", "charging", "review"],
+          "tags": [
+            "ev",
+            "charging",
+            "review"
+          ],
           "guidelines": {
             "0": "Prioritize real reviews with images or data when sharing experiences.",
             "1": "Do not post direct sales outside of EV and related accessories topics.",
@@ -4350,7 +5399,11 @@
           "owner": "Curated by VNSEEA Business",
           "location": "Hanoi · HCMC · Online",
           "founded": "Established from August 2023",
-          "tags": ["founder", "growth", "networking"],
+          "tags": [
+            "founder",
+            "growth",
+            "networking"
+          ],
           "joinLabel": "Request to join",
           "inviteLabel": "Invite partners",
           "guidelines": {
@@ -4366,7 +5419,11 @@
           "owner": "You joined since February",
           "location": "Remote-first community",
           "founded": "Established from January 2024",
-          "tags": ["AI", "product", "automation"],
+          "tags": [
+            "AI",
+            "product",
+            "automation"
+          ],
           "guidelines": {
             "0": "Prioritize demos with images, videos, or prototype links for quick feedback.",
             "1": "Clearly tag goals: research, case study, prompt, automation, or launch.",
@@ -4380,7 +5437,11 @@
           "owner": "You are following 4 sub-topics",
           "location": "Vietnam learning community",
           "founded": "Established from November 2023",
-          "tags": ["workshop", "learning", "mentoring"],
+          "tags": [
+            "workshop",
+            "learning",
+            "mentoring"
+          ],
           "guidelines": {
             "0": "Documents posted need to site sources so others can verify and continue learning.",
             "1": "Encourage sharing short notes, summarizing key insights after each workshop.",
@@ -4449,6 +5510,87 @@
             "2": "career"
           }
         }
+      },
+      "members": {
+        "role": {
+          "admin": "Administrator",
+          "moderator": "Moderator",
+          "active_member": "Active Member",
+          "reviewer": "Reviewer",
+          "member": "Member",
+          "host": "Host",
+          "mentor": "Mentor",
+          "designer": "Designer",
+          "frontend": "Frontend Dev",
+          "product": "Product Manager",
+          "backend": "Backend Dev",
+          "community_lead": "Community Lead",
+          "partnerships": "Partnerships"
+        },
+        "meta": {
+          "electric_admin": "Community Operator",
+          "electric_charging": "Charging Q&A Lead",
+          "electric_posts": "24 posts this month",
+          "electric_reviewer": "Vehicle & Accessory Specialist",
+          "electric_joined": "Joined since May 2024",
+          "founder_saas": "Founder SaaS B2B",
+          "founder_growth": "Growth & community lead",
+          "founder_edu": "Educational startup operator",
+          "founder_builder": "Internal systems builder",
+          "ai_consultant": "AI product consultant",
+          "ai_automation": "Automation workflow specialist",
+          "ai_designer": "AI experience designer",
+          "ai_prototyping": "Làm prototyping và prompt",
+          "learning_workshop": "Workshop coordinator",
+          "learning_roadmap": "Learning roadmap guide",
+          "learning_skills": "Skills documentation sharing",
+          "learning_joined": "Joined since Jan 2024",
+          "weekend_planner": "Weekend itinerary planner",
+          "weekend_reviewer": "Homestay & restaurant reviewer",
+          "weekend_tips": "Photos and travel tips sharing",
+          "weekend_trekking": "Veteran trekker"
+        }
+      },
+      "posts": {
+        "audience": {
+          "public": "Public",
+          "members": "Members"
+        },
+        "time": {
+          "12m": "12 minutes ago",
+          "35m": "35 minutes ago"
+        },
+        "text": {
+          "1": "Today the team finalized the new UI direction: focusing on component systems and template pages for validation.",
+          "2": "I am mocking the hero section for the profile and business pages."
+        },
+        "comment": {
+          "1": "This direction looks solid.",
+          "2": "The /welcome section looks much more like a real product now.",
+          "3": "Should keep the blue palette dominant."
+        }
+      },
+      "badge": {
+        "online": "Online",
+        "suggested": "Suggested",
+        "joined": "Joined",
+        "managed": "Managed by you",
+        "member": "In group",
+        "public": "Public",
+        "private": "Private"
+      },
+      "metrics": {
+        "canChat": "Available to chat now",
+        "inContacts": "In your contacts",
+        "mutualFriends": "{count} mutual friends",
+        "quickResponse": "Quick response via chat",
+        "recentContact": "Recent contact",
+        "activeInGroup": "Active in group",
+        "followers": "{count} followers",
+        "members": "{count} members",
+        "likes": "{count} likes",
+        "comments": "{count} comments",
+        "shares": "{count} shares"
       }
     }
   }

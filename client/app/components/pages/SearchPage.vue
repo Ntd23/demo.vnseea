@@ -147,7 +147,7 @@
     <footer class="rounded-[28px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_30px_rgba(15,35,110,0.05)]">
       <div class="flex flex-col gap-4 border-t border-[#eef2fb] pt-5 text-[13px] text-slate-500 md:flex-row md:items-center md:justify-between">
         <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <span>© 2026 VNSEEA</span>
+          <span>{{ $t('community.search.footer.copyright', { year: 2026 }) }}</span>
           <NuxtLink
             v-for="link in primaryFooterLinks"
             :key="link.label"

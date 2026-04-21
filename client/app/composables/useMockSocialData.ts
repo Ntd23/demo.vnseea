@@ -219,10 +219,10 @@ export const useMockSocialData = () => {
   ]
 
   const suggestedUsers: SuggestedUser[] = [
-    { id: 101, name: "Miên Trần", avatar: "MT", mutual: 8, role: "Designer" },
-    { id: 102, name: "Khánh Vũ", avatar: "KV", mutual: 5, role: "Frontend Dev" },
-    { id: 103, name: "Thanh Hà", avatar: "TH", mutual: 12, role: "Product" },
-    { id: 104, name: "Phú Lê", avatar: "PL", mutual: 3, role: "Backend" },
+    { id: 101, name: "Miên Trần", avatar: "MT", mutual: 8, role: "community.mock.members.role.designer" },
+    { id: 102, name: "Khánh Vũ", avatar: "KV", mutual: 5, role: "community.mock.members.role.frontend" },
+    { id: 103, name: "Thanh Hà", avatar: "TH", mutual: 12, role: "community.mock.members.role.product" },
+    { id: 104, name: "Phú Lê", avatar: "PL", mutual: 3, role: "community.mock.members.role.backend" },
   ]
 
   const birthdays: BirthdayItem[] = [
@@ -259,10 +259,10 @@ export const useMockSocialData = () => {
     {
       id: 1,
       author: "Thu Ha",
-      role: "Community lead",
-      audience: "Cong khai",
-      time: "12 phut truoc",
-      text: "Hom nay team da chot duoc huong UI moi: tap trung vao he component va trang mau de validate. Minh dang tong hop feedback de tuan toi vao phase profile va settings.",
+      role: "community.mock.members.role.community_lead",
+      audience: "community.mock.posts.audience.public",
+      time: "community.mock.posts.time.12m",
+      text: "community.mock.posts.text.1",
       tags: ["Migration", "Design system", "Nuxt"],
       stats: { likes: 124, comments: 28, shares: 7 },
       media: "double",
@@ -270,24 +270,24 @@ export const useMockSocialData = () => {
         {
           id: 11,
           author: "Nam Pham",
-          role: "Frontend",
-          text: "Huong nay on. Neu bo shell va feed core on thi cac page sau se vao nhanh hon rat nhieu.",
+          role: "community.mock.members.role.frontend",
+          text: "community.mock.posts.comment.1",
         },
         {
           id: 12,
           author: "Linh Dao",
-          role: "Product",
-          text: "Phan /welcome hien nhin da ra chat san pham hon roi.",
+          role: "community.mock.members.role.product",
+          text: "community.mock.posts.comment.2",
         },
       ],
     },
     {
       id: 2,
       author: "Bao Tran",
-      role: "Partnerships",
-      audience: "Thanh vien",
-      time: "35 phut truoc",
-      text: "Minh dang mock lai hero cho profile va business page. Muc tieu la giu tinh chuyen nghiep nhung van co cam giac cong dong.",
+      role: "community.mock.members.role.partnerships",
+      audience: "community.mock.posts.audience.members",
+      time: "community.mock.posts.time.35m",
+      text: "community.mock.posts.text.2",
       tags: ["Profile", "Branding"],
       stats: { likes: 89, comments: 16, shares: 4 },
       media: "single",
@@ -295,8 +295,8 @@ export const useMockSocialData = () => {
         {
           id: 21,
           author: "Quynh Le",
-          role: "Designer",
-          text: "Nen giu palette xanh lam chu dao va dung accent am de tranh qua lanh.",
+          role: "community.mock.members.role.designer",
+          text: "community.mock.posts.comment.3",
         },
       ],
     },
