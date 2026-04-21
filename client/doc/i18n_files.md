@@ -154,6 +154,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/pages/show_fund/[id].vue`
 - [x] `client/app/pages/live.vue`
 - [x] `client/app/pages/watch.vue`
+- [x] `client/app/pages/movies.vue`
 - [x] `client/app/pages/setting/index.vue`
 - [x] `client/app/pages/explore.vue`
 - [x] `client/app/pages/saved-posts.vue`
@@ -334,6 +335,11 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/watch/WatchVideoInfo.vue`
 - [x] `client/app/components/watch/WatchComments.vue`
 - [x] `client/app/components/watch/RelatedVideos.vue`
+- [x] `client/app/components/pages/MoviesPage.vue`
+- [x] `client/app/components/movies/Hero.vue`
+- [x] `client/app/components/movies/Filters.vue`
+- [x] `client/app/components/movies/Card.vue`
+- [x] `client/app/components/movies/Sidebar.vue`
 
 ### Marketplace / checkout / orders / wallet / withdrawal
 

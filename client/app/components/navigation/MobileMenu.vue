@@ -105,7 +105,7 @@ const mainNav = [
   { label: "navigation.mobileMenu.mainNav.blog", icon: "i-ph-newspaper", to: "/blogs" },
   { label: "navigation.mobileMenu.mainNav.createBlog", icon: "i-ph-pencil-simple-line", to: "/create-blog" },
   { label: "navigation.mobileMenu.mainNav.myArticles", icon: "i-ph-article", to: "/blogs?mine=1" },
-  { label: "navigation.mobileMenu.mainNav.movies", icon: "i-ph-film-strip", to: "#" },
+  { label: "navigation.mobileMenu.mainNav.movies", icon: "i-ph-film-strip", to: "/movies" },
   { label: "navigation.mobileMenu.mainNav.events", icon: "i-ph-calendar-blank", to: "/events" },
   { label: "navigation.mobileMenu.mainNav.createEvent", icon: "i-ph-calendar-plus", to: "/events/create-event" },
   { label: "navigation.mobileMenu.mainNav.live", icon: "i-ph-broadcast", to: "/live" },
