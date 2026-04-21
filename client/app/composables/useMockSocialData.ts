@@ -89,6 +89,8 @@ type Message = {
 }
 
 export const useMockSocialData = () => {
+  const { t } = useI18n()
+
   const primaryNav: NavItem[] = [
     { label: "Trang chu", icon: "i-lucide-house", to: "/" },
     { label: "Tin nhan", icon: "i-lucide-message-square", to: "/messages", badge: 4 },
@@ -100,13 +102,13 @@ export const useMockSocialData = () => {
   const stories: Story[] = [
     {
       id: 0,
-      author: "Tạo tin",
+      author: t("feed.storyCarousel.createStory"),
       avatar: "VN",
       gradient: "linear-gradient(135deg,#0000ff 0%,#6666ff 100%)",
       isMe: true,
-      title: "Tạo story mới",
-      caption: "Chia sẻ khoảnh khắc của bạn",
-      meta: "Story · của bạn",
+      title: t("feed.storyCarousel.stories.mine.title"),
+      caption: t("feed.storyCarousel.stories.mine.caption"),
+      meta: t("feed.storyCarousel.stories.mine.meta"),
       media: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
     },
     {
@@ -114,9 +116,9 @@ export const useMockSocialData = () => {
       author: "Thu Ha",
       avatar: "TH",
       gradient: "linear-gradient(135deg,#0000cc 0%,#3333ff 100%)",
-      title: "Một buổi sáng yên tĩnh để lên ý tưởng",
-      caption: "Story viewer theo style dự án, giữ cảm giác gần Facebook nhưng vẫn bám palette và spacing của VNSEEA.",
-      meta: "Story · 2 phút trước",
+      title: t("feed.storyCarousel.stories.story1.title"),
+      caption: t("feed.storyCarousel.stories.story1.caption"),
+      meta: t("feed.storyCarousel.stories.story1.meta"),
       media: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
     },
     {
@@ -124,9 +126,9 @@ export const useMockSocialData = () => {
       author: "Bao Tran",
       avatar: "BT",
       gradient: "linear-gradient(135deg,#1a1aff 0%,#8080ff 100%)",
-      title: "Đoạn chill ngắn cho một ngày dài",
-      caption: "Vuốt trái/phải để chuyển story, bấm nút để điều hướng nhanh hơn trên desktop.",
-      meta: "Story · 15 phút trước",
+      title: t("feed.storyCarousel.stories.story2.title"),
+      caption: t("feed.storyCarousel.stories.story2.caption"),
+      meta: t("feed.storyCarousel.stories.story2.meta"),
       media: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1200&q=80",
     },
     {
@@ -134,9 +136,9 @@ export const useMockSocialData = () => {
       author: "Nam Pham",
       avatar: "NP",
       gradient: "linear-gradient(135deg,#0000ee 0%,#4444ff 100%)",
-      title: "Mẫu story full-screen cho mobile-first",
-      caption: "Phù hợp cả ảnh và video, sau này có thể nối API story thật từ backend.",
-      meta: "Story · 1 giờ trước",
+      title: t("feed.storyCarousel.stories.story3.title"),
+      caption: t("feed.storyCarousel.stories.story3.caption"),
+      meta: t("feed.storyCarousel.stories.story3.meta"),
       media: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80",
     },
     {
@@ -144,9 +146,9 @@ export const useMockSocialData = () => {
       author: "Linh Dao",
       avatar: "LD",
       gradient: "linear-gradient(135deg,#0000dd 0%,#5555ff 100%)",
-      title: "Story hướng dẫn nội bộ",
-      caption: "Cách dùng story để highlight thông báo và nội dung nhanh.",
-      meta: "Story · 3 giờ trước",
+      title: t("feed.storyCarousel.stories.story4.title"),
+      caption: t("feed.storyCarousel.stories.story4.caption"),
+      meta: t("feed.storyCarousel.stories.story4.meta"),
       media: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
     },
     {
@@ -154,9 +156,9 @@ export const useMockSocialData = () => {
       author: "Quynh Le",
       avatar: "QL",
       gradient: "linear-gradient(135deg,#0000bb 0%,#2222ff 100%)",
-      title: "Story du lịch",
-      caption: "Một góc ảnh nhẹ nhàng, hợp style Facebook nhưng vẫn rất VNSEEA.",
-      meta: "Story · 5 giờ trước",
+      title: t("feed.storyCarousel.stories.story5.title"),
+      caption: t("feed.storyCarousel.stories.story5.caption"),
+      meta: t("feed.storyCarousel.stories.story5.meta"),
       media: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
     },
     {
@@ -164,9 +166,9 @@ export const useMockSocialData = () => {
       author: "Xu Nguyen",
       avatar: "XN",
       gradient: "linear-gradient(135deg,#111199 0%,#4444dd 100%)",
-      title: "Story về sản phẩm",
-      caption: "Tập trung vào một thông điệp ngắn, rõ, đẹp.",
-      meta: "Story · 7 giờ trước",
+      title: t("feed.storyCarousel.stories.story6.title"),
+      caption: t("feed.storyCarousel.stories.story6.caption"),
+      meta: t("feed.storyCarousel.stories.story6.meta"),
       media: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80",
     },
   ]

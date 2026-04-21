@@ -12,7 +12,7 @@
       <div v-if="newPostsCount > 0" class="flex justify-center">
         <button class="flex items-center gap-2 rounded-full border border-[#0000ff]/20 bg-white px-4 py-2 text-sm font-semibold text-[#0000ff] shadow-[0_4px_20px_rgba(0,0,255,0.12)] transition hover:bg-[#0000ff] hover:text-white" type="button" @click="loadNewPosts">
           <Icon name="i-ph-arrow-up-bold" class="h-4 w-4" />
-          {{ newPostsCount }} bài mới — nhấn để tải
+          {{ t("pages.homeFeedPage.newPostsButton", { count: newPostsCount }) }}
         </button>
       </div>
     </Transition>
@@ -25,25 +25,22 @@
       <button v-if="!allLoaded" class="flex items-center gap-2 rounded-full border border-[#0000ff]/15 bg-white px-6 py-2.5 text-sm font-semibold text-[#0000ff]/70 shadow-[0_2px_12px_rgba(0,0,255,0.07)] transition hover:border-[#0000ff]/30 hover:text-[#0000ff]" :disabled="loadingMore" type="button" @click="loadMore">
         <Icon v-if="loadingMore" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
         <Icon v-else name="i-ph-arrow-down-bold" class="h-4 w-4" />
-        {{ loadingMore ? 'Đang tải...' : 'Tải thêm bài viết' }}
+        {{ loadingMore ? t("pages.homeFeedPage.loadingMore") : t("pages.homeFeedPage.loadMore") }}
       </button>
-      <p v-else class="text-sm text-[#0000ff]/40">Bạn đã xem hết bài viết 🎉</p>
+      <p v-else class="text-sm text-[#0000ff]/40">{{ t("pages.homeFeedPage.allCaughtUp") }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const { posts } = useMockSocialData()
-useSeoMeta({ title: 'Bảng tin | VNSEEA', description: 'Bảng tin cộng đồng VNSEEA — chia sẻ, kết nối và khám phá.' })
-const greetingLabel = computed(() => { const h = new Date().getHours(); if (h < 12) return '☀️ Chào buổi sáng'; if (h < 18) return '🌤️ Chào buổi chiều'; return '🌙 Chào buổi tối' })
-const ordering = ref('all')
-const mobileTabs = [
-  { label: 'Home', icon: 'i-ph-house-fill', active: true },
-  { label: 'Photos', icon: 'i-ph-image-fill', active: false },
-  { label: 'People', icon: 'i-ph-users-fill', active: false },
-  { label: 'Video', icon: 'i-ph-video-camera-fill', active: false },
-  { label: 'Music', icon: 'i-ph-music-note-fill', active: false },
-]
+useSeoMeta({
+  title: () => t("pages.homeFeedPage.seoTitle"),
+  description: () => t("pages.homeFeedPage.seoDescription"),
+})
+
 const newPostsCount = ref(0)
 let newPostTimer: ReturnType<typeof setTimeout>
 onMounted(() => { newPostTimer = setTimeout(() => { newPostsCount.value = 3 }, 8000) })

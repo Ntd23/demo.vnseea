@@ -54,6 +54,14 @@
       "heroSubtitle": "Share new things and moments from your life with your friends.",
       "seoTitle": "Forgot password | VNSEEA"
     },
+    "homeFeedPage": {
+      "seoTitle": "Feed | VNSEEA",
+      "seoDescription": "VNSEEA community feed - share, connect, and discover.",
+      "newPostsButton": "{count} new posts - tap to load",
+      "loadingMore": "Loading...",
+      "loadMore": "Load more posts",
+      "allCaughtUp": "You have seen all posts."
+    },
     "messagesPage": {
       "seoTitle": "Messages | VNSEEA",
       "searchPlaceholder": "Search conversations",
@@ -2857,6 +2865,7 @@
     },
     "publisherBox": {
       "prompt": "What is happening? Hashtag, mention, link...",
+      "composerPlaceholder": "What is happening? Hashtag, mention, link...",
       "expandedOpen": "Post composer is open",
       "expandedClosed": "Tap to write a post, add images, video, polls, and more",
       "actionImage": "Image",
@@ -2867,11 +2876,61 @@
       "actionAudio": "Audio",
       "actionFile": "File",
       "actionStory": "Story",
+      "actionProduct": "Product",
       "chipOnlyMe": "Only me",
       "chipAddLocation": "Add location",
       "chipTagFriends": "Tag friends",
       "chipColors": "Colors",
+      "live": "Live",
       "share": "Share"
+    },
+    "storyCarousel": {
+      "createStory": "Create story",
+      "fallbackMeta": "Just now",
+      "previousStory": "Previous story",
+      "nextStory": "Next story",
+      "storyLabel": "Story",
+      "interactions": "Interactions",
+      "actionLike": "Like story",
+      "actionComment": "Comment on story",
+      "actionShare": "Share story",
+      "stories": {
+        "mine": {
+          "title": "Create a new story",
+          "caption": "Share your moment",
+          "meta": "Story · yours"
+        },
+        "story1": {
+          "title": "A quiet morning for shaping ideas",
+          "caption": "A story viewer styled for the project, keeping a familiar social feel while staying aligned with VNSEEA spacing and palette.",
+          "meta": "Story · 2 minutes ago"
+        },
+        "story2": {
+          "title": "A short chill break in a long day",
+          "caption": "Swipe left or right to move between stories, or use the controls for faster desktop navigation.",
+          "meta": "Story · 15 minutes ago"
+        },
+        "story3": {
+          "title": "A full-screen story mock for mobile-first",
+          "caption": "Works for both images and video, and can later connect to a real story API from the backend.",
+          "meta": "Story · 1 hour ago"
+        },
+        "story4": {
+          "title": "Internal guide story",
+          "caption": "A quick way to highlight announcements and short updates through stories.",
+          "meta": "Story · 3 hours ago"
+        },
+        "story5": {
+          "title": "Travel story",
+          "caption": "A soft travel frame that feels familiar yet still reads as VNSEEA.",
+          "meta": "Story · 5 hours ago"
+        },
+        "story6": {
+          "title": "Product story",
+          "caption": "Focused on one short, clear, and polished message.",
+          "meta": "Story · 7 hours ago"
+        }
+      }
     },
     "postHeader": {
       "follow": "Follow",
@@ -2947,6 +3006,10 @@
       "actionComment": "Comment on image",
       "actionShare": "Share image",
       "defaultTitle": "Lightbox"
+    },
+    "lightboxViewer": {
+      "title": "View media",
+      "mockLabel": "Mock lightbox viewer"
     }
   },
   "settings": {
@@ -3615,7 +3678,6 @@
       "contactShop": "Contact Shop",
       "viewMore": "View More",
       "chooseOther": "Choose Other",
-      "contactBuyer": "Contact Buyer",
       "shippingAddress": "Shipping Address",
       "orderedFrom": "Order from {seller} • {price}",
       "productsSummary": "{count} products ordered",

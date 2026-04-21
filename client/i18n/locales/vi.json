@@ -54,6 +54,14 @@
       "heroSubtitle": "Chia sẻ những điều mới và những khoảnh khắc trong cuộc sống với bạn bè của bạn.",
       "seoTitle": "Quên mật khẩu | VNSEEA"
     },
+    "homeFeedPage": {
+      "seoTitle": "Bảng tin | VNSEEA",
+      "seoDescription": "Bảng tin cộng đồng VNSEEA - chia sẻ, kết nối và khám phá.",
+      "newPostsButton": "{count} bài mới - nhấn để tải",
+      "loadingMore": "Đang tải...",
+      "loadMore": "Tải thêm bài viết",
+      "allCaughtUp": "Bạn đã xem hết bài viết."
+    },
     "messagesPage": {
       "seoTitle": "Tin nhắn | VNSEEA",
       "searchPlaceholder": "Tìm kiếm cuộc trò chuyện",
@@ -2857,6 +2865,7 @@
     },
     "publisherBox": {
       "prompt": "Chuyện gì đang xảy ra vậy? Hashtag, mention, link...",
+      "composerPlaceholder": "Chuyện gì đang xảy ra vậy? Hashtag, mention, link...",
       "expandedOpen": "Đang mở trình tạo bài viết",
       "expandedClosed": "Chạm để viết bài, thêm ảnh, video, poll và nhiều hơn nữa",
       "actionImage": "Ảnh",
@@ -2867,11 +2876,61 @@
       "actionAudio": "Âm thanh",
       "actionFile": "Tệp",
       "actionStory": "Câu chuyện",
+      "actionProduct": "Sản phẩm",
       "chipOnlyMe": "Chỉ có tôi",
       "chipAddLocation": "Thêm vị trí",
       "chipTagFriends": "Gắn thẻ bạn bè",
       "chipColors": "Màu sắc",
+      "live": "Trực tiếp",
       "share": "Chia sẻ"
+    },
+    "storyCarousel": {
+      "createStory": "Tạo tin",
+      "fallbackMeta": "Vừa xong",
+      "previousStory": "Story trước",
+      "nextStory": "Story sau",
+      "storyLabel": "Story",
+      "interactions": "Tương tác",
+      "actionLike": "Thích story",
+      "actionComment": "Bình luận story",
+      "actionShare": "Chia sẻ story",
+      "stories": {
+        "mine": {
+          "title": "Tạo story mới",
+          "caption": "Chia sẻ khoảnh khắc của bạn",
+          "meta": "Story · của bạn"
+        },
+        "story1": {
+          "title": "Một buổi sáng yên tĩnh để lên ý tưởng",
+          "caption": "Story viewer theo style dự án, giữ cảm giác gần Facebook nhưng vẫn bám palette và spacing của VNSEEA.",
+          "meta": "Story · 2 phút trước"
+        },
+        "story2": {
+          "title": "Đoạn chill ngắn cho một ngày dài",
+          "caption": "Vuốt trái/phải để chuyển story, bấm nút để điều hướng nhanh hơn trên desktop.",
+          "meta": "Story · 15 phút trước"
+        },
+        "story3": {
+          "title": "Mẫu story full-screen cho mobile-first",
+          "caption": "Phù hợp cả ảnh và video, sau này có thể nối API story thật từ backend.",
+          "meta": "Story · 1 giờ trước"
+        },
+        "story4": {
+          "title": "Story hướng dẫn nội bộ",
+          "caption": "Cách dùng story để highlight thông báo và nội dung nhanh.",
+          "meta": "Story · 3 giờ trước"
+        },
+        "story5": {
+          "title": "Story du lịch",
+          "caption": "Một góc ảnh nhẹ nhàng, hợp style Facebook nhưng vẫn rất VNSEEA.",
+          "meta": "Story · 5 giờ trước"
+        },
+        "story6": {
+          "title": "Story về sản phẩm",
+          "caption": "Tập trung vào một thông điệp ngắn, rõ, đẹp.",
+          "meta": "Story · 7 giờ trước"
+        }
+      }
     },
     "postHeader": {
       "follow": "Theo dõi",
@@ -2947,6 +3006,10 @@
       "actionComment": "Bình luận trên ảnh",
       "actionShare": "Chia sẻ ảnh",
       "defaultTitle": "Lightbox"
+    },
+    "lightboxViewer": {
+      "title": "Xem media",
+      "mockLabel": "Trình xem lightbox mô phỏng"
     }
   },
   "settings": {
@@ -3615,7 +3678,6 @@
       "contactShop": "Liên hệ shop",
       "viewMore": "Xem thêm",
       "chooseOther": "Chọn đơn khác",
-      "contactBuyer": "Liên hệ người mua",
       "shippingAddress": "Địa chỉ nhận hàng",
       "orderedFrom": "Đơn từ {seller} • {price}",
       "productsSummary": "{count} sản phẩm đã đặt",

@@ -185,7 +185,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 
 ## Components có title/heading/CTA hardcode cần i18n
 ### Feed / home
-- [ ] `client/app/components/pages/HomeFeedPage.vue`
+- [x] `client/app/components/pages/HomeFeedPage.vue`
 - [x] `client/app/components/feed/FeedPublisherBox.vue`
 - [x] `client/app/components/feed/PostCard.vue`
 - [x] `client/app/components/feed/PostHeader.vue`
@@ -193,10 +193,10 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/feed/CommentList.vue`
 - [x] `client/app/components/feed/CommentComposer.vue` ← **ví dụ mẫu, xem hướng dẫn phần trên**
 - [x] `client/app/components/feed/ShareModal.vue`
-- [ ] `client/app/components/feed/StoryCarousel.vue`
-- [ ] `client/app/components/feed/PublisherBox.vue`
+- [x] `client/app/components/feed/StoryCarousel.vue`
+- [x] `client/app/components/feed/PublisherBox.vue`
 - [x] `client/app/components/feed/PostMediaGrid.vue`
-- [ ] `client/app/components/feed/LightboxViewer.vue`
+- [x] `client/app/components/feed/LightboxViewer.vue`
 - [x] `client/app/components/lightbox/LightboxModal.vue`
 
 ### Navigation / layout
