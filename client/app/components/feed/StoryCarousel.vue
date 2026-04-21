@@ -2,7 +2,7 @@
   <div class="relative">
     <div
       ref="scrollRef"
-      class="flex gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide sm:gap-4"
+      class="flex gap-3 overflow-x-auto px-1 pt-1.5 pb-3 scrollbar-hide sm:gap-4"
       style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;"
     >
       <!-- Create story (me) -->
@@ -42,7 +42,7 @@
 
     <button
       v-if="canScrollLeft"
-      class="absolute -left-2 top-[30px] z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
+      class="absolute -left-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
       type="button"
       @click="scroll(-1)"
     >
@@ -50,7 +50,7 @@
     </button>
     <button
       v-if="canScrollRight"
-      class="absolute -right-2 top-[30px] z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
+      class="absolute -right-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
       type="button"
       @click="scroll(1)"
     >
