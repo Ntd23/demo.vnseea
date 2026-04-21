@@ -54,6 +54,14 @@
       "heroSubtitle": "Chia sẻ những điều mới và những khoảnh khắc trong cuộc sống với bạn bè của bạn.",
       "seoTitle": "Quên mật khẩu | VNSEEA"
     },
+    "homeFeedPage": {
+      "seoTitle": "Bảng tin | VNSEEA",
+      "seoDescription": "Bảng tin cộng đồng VNSEEA - chia sẻ, kết nối và khám phá.",
+      "newPostsButton": "{count} bài mới - nhấn để tải",
+      "loadingMore": "Đang tải...",
+      "loadMore": "Tải thêm bài viết",
+      "allCaughtUp": "Bạn đã xem hết bài viết."
+    },
     "messagesPage": {
       "seoTitle": "Tin nhắn | VNSEEA",
       "searchPlaceholder": "Tìm kiếm cuộc trò chuyện",
@@ -78,6 +86,18 @@
       "activeYesterday": "Hoạt động hôm qua",
       "contactName": "Thanh Hà",
       "loadOlder": "Tải tin nhắn cũ hơn",
+      "call": "Gọi thoại",
+      "videoCall": "Gọi video",
+      "conversationInfo": "Thông tin cuộc trò chuyện",
+      "addAttachment": "Thêm tệp đính kèm",
+      "photoLibrary": "Mở thư viện ảnh",
+      "stickers": "Mở sticker",
+      "gifs": "Mở GIF",
+      "composerPlaceholder": "Aa",
+      "sendLike": "Gửi lượt thích",
+      "messageTimeOne": "T4 10:20",
+      "messageTimeTwo": "11:30",
+      "messageTimeThree": "11:35",
       "messageOne": "Helo cậu!",
       "messageTwo": "Hôm nay làm bài xong chưa?",
       "messageThree": "Cũng gần xong rồi á",
@@ -993,7 +1013,72 @@
       "infoOnlineStatus": "Trực tuyến",
       "infoPostsCountLabel": "bài viết",
       "infoGenderMale": "Nam giới",
-      "infoLocationValue": "Nằm ở Số 1 Tôn Thất Thuyết"
+      "infoLocationValue": "Nằm ở Số 1 Tôn Thất Thuyết",
+      "introCard": {
+        "title": "Giới thiệu",
+        "edit": "Chỉnh sửa",
+        "headline": "🎯 Xây dựng cộng đồng kết nối người Việt. Đam mê công nghệ và thiết kế sản phẩm.",
+        "items": {
+          "work": { "label": "Công việc", "value": "Founder tại VNSEEA" },
+          "education": { "label": "Học vấn", "value": "Đại học Bách Khoa" },
+          "livesIn": { "label": "Sống tại", "value": "TP. Hồ Chí Minh, Việt Nam" },
+          "relationship": { "label": "Tình trạng", "value": "Độc thân" },
+          "joined": { "label": "Tham gia", "value": "Tháng 3, 2024" },
+          "website": { "label": "Website", "value": "vnseea.com" }
+        }
+      },
+      "aboutCard": {
+        "title": "Giới thiệu",
+        "sections": {
+          "workEducation": {
+            "title": "Công việc và học vấn",
+            "items": {
+              "job": { "value": "Founder tại VNSEEA", "sub": "2023 — Hiện tại" },
+              "school": { "value": "Đại học Bách Khoa TP.HCM", "sub": "Khoa Khoa học Máy tính · 2018 — 2022" }
+            }
+          },
+          "living": {
+            "title": "Nơi ở",
+            "items": {
+              "current": { "value": "Sống tại TP. Hồ Chí Minh" },
+              "hometown": { "value": "Đến từ Đà Nẵng, Việt Nam" }
+            }
+          },
+          "contact": {
+            "title": "Thông tin liên hệ",
+            "items": {
+              "email": { "value": "admin{'@'}vnseea.com" },
+              "website": { "value": "vnseea.com" },
+              "phone": { "value": "+84 xxx xxx xxx" }
+            }
+          },
+          "basic": {
+            "title": "Thông tin cơ bản",
+            "items": {
+              "gender": { "value": "Nam" },
+              "birthday": { "value": "Ngày sinh: 15/03/1996" },
+              "relationship": { "value": "Độc thân" }
+            }
+          }
+        }
+      },
+      "tabs": {
+        "timeline": "Dòng thời gian",
+        "about": "Giới thiệu",
+        "friends": "Bạn bè",
+        "photos": "Ảnh",
+        "videos": "Video",
+        "albums": "Albums"
+      },
+      "friendsGrid": {
+        "title": "Bạn bè",
+        "seeAll": "Xem tất cả",
+        "friendCount": "{count} bạn bè"
+      },
+      "photosGrid": {
+        "title": "Ảnh",
+        "seeAll": "Xem tất cả"
+      }
     },
     "hashtagPage": {
       "seoTitle": "{tag} | Hashtag | VNSEEA",
@@ -2135,6 +2220,631 @@
         }
       ]
     },
+    "moviesPage": {
+      "seoTitle": "Phim | VNSEEA",
+      "seoDescription": "Trang giao diện movies mock cho VNSEEA, có hero phim nổi bật, bộ lọc, grid phim và link đi tới watch, live, blogs.",
+      "heroEyebrow": "P-34 · Movies",
+      "searchPlaceholder": "Tìm phim, đạo diễn, hashtag...",
+      "openLink": "Mở link",
+      "resultEyebrow": "Bộ sưu tập đang hiển thị",
+      "resultHeadingAll": "Khám phá phim nổi bật",
+      "resultHeadingCategory": "Thể loại: {label}",
+      "resultCount": "{count} phim phù hợp với bộ lọc hiện tại",
+      "resetFilters": "Đặt lại",
+      "directorLabel": "Đạo diễn",
+      "cardPrimaryAction": "Xem trailer",
+      "cardSecondaryAction": "Hậu trường",
+      "emptyTitle": "Không tìm thấy phim phù hợp",
+      "emptyDescription": "Thử đổi thể loại, tên phim hoặc tên đạo diễn để xem danh sách khác.",
+      "sidebarPicksEyebrow": "Rating cao",
+      "sidebarPicksTitle": "Top pick của tuần",
+      "sidebarUpcomingEyebrow": "Lịch chiếu mock",
+      "sidebarUpcomingTitle": "Suất sắp lên",
+      "sidebarRoutingEyebrow": "Routing",
+      "sidebarRoutingTitle": "Luồng link đã gắn sẵn",
+      "sidebarRoutingDescription": "Từ trang này có thể đi ngay tới watch, live premiere hoặc blogs hậu trường mà không cần thêm route trung gian.",
+      "badgePremiere": "Công chiếu",
+      "badgeEditorsPick": "Biên tập chọn",
+      "statTitles": "Phim",
+      "statTitlesDescription": "Phim mock đã dựng UI.",
+      "statViews": "Lượt xem",
+      "statViewsDescription": "Lượt xem giả lập toàn bộ thư viện.",
+      "statHours": "Giờ",
+      "statHoursDescription": "Tổng thời lượng đang có.",
+      "primaryActionPremiere": "Vào watch ngay",
+      "primaryActionDefault": "Xem trailer",
+      "secondaryActionEditorsPick": "Đọc review",
+      "secondaryActionDefault": "Xem hậu trường",
+      "categories": [
+        { "label": "Tất cả", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Cộng đồng", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Kinh doanh", "value": "business", "icon": "i-ph-briefcase-fill" },
+        { "label": "Giáo dục", "value": "education", "icon": "i-ph-graduation-cap-fill" },
+        { "label": "Tài liệu", "value": "documentary", "icon": "i-ph-film-strip-fill" },
+        { "label": "Công nghệ", "value": "technology", "icon": "i-ph-cpu-fill" }
+      ],
+      "movies": [
+        {
+          "id": "green-horizon",
+          "title": "Green Horizon",
+          "category": "documentary",
+          "year": 2025,
+          "runtime": "2h 08m",
+          "runtimeMinutes": 128,
+          "rating": 8.9,
+          "director": "Lan Chi",
+          "summary": "Một phim tài liệu theo chân các lớp học xanh, xưởng tái chế và cộng đồng địa phương đang tự thiết kế lại không gian sống bền vững.",
+          "cover": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 45%,#99f6e4 100%)",
+          "tags": ["#documentary", "#green", "#community"],
+          "isPremiere": true,
+          "isEditorsPick": true,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "late-shift-founders",
+          "title": "Late Shift Founders",
+          "category": "business",
+          "year": 2024,
+          "runtime": "1h 46m",
+          "runtimeMinutes": 106,
+          "rating": 8.4,
+          "director": "Khai Minh",
+          "summary": "Nhịp phim căng và nhanh về những founder đang xoay vốn, dựng prototype và giữ tinh thần đội ngũ trong 30 ngày trước demo day.",
+          "cover": "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#172554 0%,#1d4ed8 46%,#93c5fd 100%)",
+          "tags": ["#startup", "#business", "#demo"],
+          "isPremiere": false,
+          "isEditorsPick": true,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "classroom-light",
+          "title": "Classroom Light",
+          "category": "education",
+          "year": 2025,
+          "runtime": "1h 58m",
+          "runtimeMinutes": 118,
+          "rating": 8.7,
+          "director": "An Nhien",
+          "summary": "Một câu chuyện giàu cảm xúc về giáo viên, học sinh và cách một lớp học nhỏ thay đổi khi có thêm công nghệ, ánh sáng và góc đọc mới.",
+          "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#4338ca 0%,#2563eb 48%,#c4b5fd 100%)",
+          "tags": ["#education", "#school", "#future"],
+          "isPremiere": true,
+          "isEditorsPick": false,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "signal-2049",
+          "title": "Signal 2049",
+          "category": "technology",
+          "year": 2025,
+          "runtime": "2h 14m",
+          "runtimeMinutes": 134,
+          "rating": 9.1,
+          "director": "Vu Hoang",
+          "summary": "Sci-fi mang tông đương đại về một thành phố biển nơi dữ liệu cộng đồng, AI và hạ tầng số cùng định hình quyết định của con người.",
+          "cover": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#111827 0%,#312e81 45%,#38bdf8 100%)",
+          "tags": ["#ai", "#tech", "#futurecity"],
+          "isPremiere": false,
+          "isEditorsPick": true,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "market-after-rain",
+          "title": "Market After Rain",
+          "category": "community",
+          "year": 2024,
+          "runtime": "1h 32m",
+          "runtimeMinutes": 92,
+          "rating": 8.1,
+          "director": "Gia Bao",
+          "summary": "Bộ phim nhiều năng lượng về chợ đêm, người bán hàng nhỏ và những mối liên kết rất đời thường trong thành phố đang chuyển mình.",
+          "cover": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#7c2d12 0%,#ea580c 50%,#fed7aa 100%)",
+          "tags": ["#community", "#market", "#citylife"],
+          "isPremiere": false,
+          "isEditorsPick": false,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "port-of-us",
+          "title": "Port of Us",
+          "category": "community",
+          "year": 2025,
+          "runtime": "1h 52m",
+          "runtimeMinutes": 112,
+          "rating": 8.6,
+          "director": "Minh Trang",
+          "summary": "Một phim chính kịch cộng đồng đặt tại khu cảng cũ, nơi nhiều thế hệ phải chọn giữa ký ức, công việc và con đường phát triển mới.",
+          "cover": "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#0f172a 0%,#334155 42%,#94a3b8 100%)",
+          "tags": ["#drama", "#harbor", "#people"],
+          "isPremiere": true,
+          "isEditorsPick": false,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        }
+      ],
+      "collections": [
+        {
+          "title": "Trailer mới lên sóng",
+          "description": "Nhảy sang giao diện watch để xem player mock và flow video đầy đủ.",
+          "icon": "i-ph-play-circle-fill",
+          "to": "/watch",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Đêm premiere trực tiếp",
+          "description": "Dùng layout live để mô phỏng buổi công chiếu cộng đồng hoặc Q&A sau phim.",
+          "icon": "i-ph-broadcast-fill",
+          "to": "/live",
+          "accent": "linear-gradient(135deg,#dc2626 0%,#fb7185 100%)"
+        },
+        {
+          "title": "Hậu trường & bài viết",
+          "description": "Chuyển sang blogs để đọc review, ghi chú đạo diễn và story production.",
+          "icon": "i-ph-newspaper-fill",
+          "to": "/blogs",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#10b981 100%)"
+        }
+      ],
+      "upcoming": [
+        {
+          "title": "Green Horizon Premiere",
+          "dayLabel": "Tối nay",
+          "timeLabel": "20:30",
+          "formatLabel": "Cinema + Live Q&A",
+          "note": "Sau suất chiếu là phần hỏi đáp 20 phút với đạo diễn."
+        },
+        {
+          "title": "Signal 2049 Teaser Drop",
+          "dayLabel": "Ngày mai",
+          "timeLabel": "18:00",
+          "formatLabel": "Online first",
+          "note": "Teaser mới sẽ mở tại watch và có bản recap ở blogs."
+        },
+        {
+          "title": "Classroom Light Community Screening",
+          "dayLabel": "Thứ sáu",
+          "timeLabel": "19:15",
+          "formatLabel": "Campus tour",
+          "note": "Suất chiếu thử nghiệm cho nhóm giáo viên và sinh viên."
+        }
+      ]
+    },
+    "photosPage": {
+      "seoTitle": "Ảnh | VNSEEA",
+      "seoDescription": "Trang photo mock của VNSEEA với hero thư viện ảnh, bộ lọc, strip album, masonry gallery, lightbox và link sang hashtag, popular, memories.",
+      "heroEyebrow": "P-35 · Photos",
+      "heroTitle": "Thư viện ảnh cộng đồng đang được xem nhiều",
+      "heroDescription": "Trang /photos gom các bộ ảnh theo chủ đề, cho phép lọc theo loại nội dung, mở lightbox trực tiếp và đi nhanh sang hashtag, memories hoặc popular.",
+      "heroPrimaryAction": "Mở ảnh nổi bật",
+      "heroSecondaryAction": "Mở luồng liên quan",
+      "searchPlaceholder": "Tìm bộ ảnh, nhiếp ảnh gia, địa điểm...",
+      "openLink": "Mở link",
+      "albumCount": "{count} ảnh",
+      "resultEyebrow": "Thư viện đang hiển thị",
+      "resultHeadingAll": "Toàn bộ ảnh nổi bật",
+      "resultHeadingCategory": "Nhóm ảnh: {label}",
+      "resultCount": "{count} ảnh đang khớp bộ lọc",
+      "resetFilters": "Đặt lại",
+      "photographerLabel": "Nhiếp ảnh gia",
+      "cardPrimaryAction": "Mở lightbox",
+      "cardSecondaryAction": "Xem flow",
+      "cardReachLabel": "Độ phủ",
+      "cardCommentsLabel": "Bình luận",
+      "emptyTitle": "Chưa có ảnh phù hợp",
+      "emptyDescription": "Thử đổi nhóm ảnh hoặc từ khóa để xem bộ ảnh khác.",
+      "statPhotos": "Ảnh",
+      "statPhotosDescription": "Tổng số ảnh đang hiển thị theo bộ lọc.",
+      "statAlbums": "Album",
+      "statAlbumsDescription": "Các cụm bộ ảnh đã gắn route điều hướng.",
+      "statReach": "Độ phủ",
+      "statReachDescription": "Tổng mức độ tương tác giả lập của thư viện hiện tại.",
+      "statCreators": "Tác giả",
+      "statCreatorsDescription": "Nhiếp ảnh gia đang xuất hiện trong luồng này.",
+      "sidebarHashtagsEyebrow": "Tag nổi bật",
+      "sidebarHashtagsTitle": "Hashtag đang kéo khám phá",
+      "sidebarCreatorsEyebrow": "Nhiếp ảnh gia",
+      "sidebarCreatorsTitle": "Người đang kéo tương tác",
+      "sidebarLinksEyebrow": "Lối đi nhanh",
+      "sidebarLinksTitle": "Mở thêm flow liên quan",
+      "categories": [
+        { "label": "Tất cả", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Cộng đồng", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Sự kiện", "value": "events", "icon": "i-ph-calendar-blank-fill" },
+        { "label": "Chân dung", "value": "portraits", "icon": "i-ph-user-focus-fill" },
+        { "label": "Sản phẩm", "value": "product", "icon": "i-ph-package-fill" },
+        { "label": "Giáo dục", "value": "education", "icon": "i-ph-graduation-cap-fill" }
+      ],
+      "albums": [
+        {
+          "title": "Album summit cộng đồng 2026",
+          "description": "Bộ ảnh tổng hợp từ keynote, networking, hậu trường sân khấu và các booth demo trong ngày summit.",
+          "cover": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
+          "count": 48,
+          "badge": "Highlight",
+          "to": "/events",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Nhật ký workshop cuối tuần",
+          "description": "Đi sang memories để xem thêm chuỗi ảnh hoạt động, ảnh tập thể và các khoảnh khắc hậu trường nhẹ hơn.",
+          "cover": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+          "count": 32,
+          "badge": "Community",
+          "to": "/memories",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#10b981 100%)"
+        },
+        {
+          "title": "Photo essay sản phẩm",
+          "description": "Mở blogs để nối qua bài viết hậu trường, note chụp set-up sản phẩm và case study visual.",
+          "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+          "count": 21,
+          "badge": "Studio",
+          "to": "/blogs",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ],
+      "photos": [
+        {
+          "id": "rooftop-workshop",
+          "title": "Sân thượng sau buổi workshop",
+          "category": "community",
+          "albumTitle": "Cộng đồng cuối tuần",
+          "photographer": "Thu Hà",
+          "photographerRole": "Community photographer",
+          "location": "TP.HCM",
+          "timeLabel": "17/04/2026",
+          "likes": 18200,
+          "comments": 624,
+          "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)",
+          "tags": ["#community", "#workshop", "#rooftop"],
+          "frame": "portrait",
+          "companionTo": "/memories"
+        },
+        {
+          "id": "summit-stage-lights",
+          "title": "Ánh đèn sân khấu trước keynote",
+          "category": "events",
+          "albumTitle": "Summit 2026",
+          "photographer": "Bảo Trần",
+          "photographerRole": "Event shooter",
+          "location": "Đà Nẵng",
+          "timeLabel": "14/04/2026",
+          "likes": 26100,
+          "comments": 840,
+          "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
+          "accent": "linear-gradient(135deg,#172554 0%,#2563eb 100%)",
+          "tags": ["#event", "#summit", "#community"],
+          "frame": "landscape",
+          "companionTo": "/events"
+        },
+        {
+          "id": "portrait-linh-dao",
+          "title": "Chân dung Linh Dao tại studio xanh",
+          "category": "portraits",
+          "albumTitle": "Member Portraits",
+          "photographer": "Quỳnh Lê",
+          "photographerRole": "Portrait lead",
+          "location": "Hà Nội",
+          "timeLabel": "11/04/2026",
+          "likes": 14300,
+          "comments": 318,
+          "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#7c3aed 0%,#c084fc 100%)",
+          "tags": ["#portrait", "#member", "#studio"],
+          "frame": "tall",
+          "companionTo": "/search"
+        },
+        {
+          "id": "product-desk-grid",
+          "title": "Set-up bàn chụp cho bộ sản phẩm mới",
+          "category": "product",
+          "albumTitle": "Product Sprint",
+          "photographer": "Ngọc Phạm",
+          "photographerRole": "Brand visual",
+          "location": "TP.HCM",
+          "timeLabel": "09/04/2026",
+          "likes": 11900,
+          "comments": 274,
+          "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",
+          "tags": ["#product", "#studio", "#brand"],
+          "frame": "landscape",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "classroom-makerspace",
+          "title": "Góc makerspace trong lớp học mở",
+          "category": "education",
+          "albumTitle": "Education Lab",
+          "photographer": "An Nhiên",
+          "photographerRole": "Education documenter",
+          "location": "Huế",
+          "timeLabel": "07/04/2026",
+          "likes": 9800,
+          "comments": 201,
+          "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#4338ca 0%,#60a5fa 100%)",
+          "tags": ["#education", "#makerspace", "#future"],
+          "frame": "portrait",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "market-night-community",
+          "title": "Chợ đêm sau cơn mưa",
+          "category": "community",
+          "albumTitle": "Life Between Events",
+          "photographer": "Gia Bảo",
+          "photographerRole": "Street photographer",
+          "location": "Cần Thơ",
+          "timeLabel": "03/04/2026",
+          "likes": 13200,
+          "comments": 352,
+          "image": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#7c2d12 0%,#fb923c 100%)",
+          "tags": ["#community", "#market", "#citylife"],
+          "frame": "square",
+          "companionTo": "/popular"
+        },
+        {
+          "id": "backstage-vnseea",
+          "title": "Hậu trường booth demo trước giờ mở cửa",
+          "category": "events",
+          "albumTitle": "Backstage Flow",
+          "photographer": "Minh Trang",
+          "photographerRole": "Backstage editor",
+          "location": "Đà Nẵng",
+          "timeLabel": "14/04/2026",
+          "likes": 16700,
+          "comments": 407,
+          "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#111827 0%,#334155 100%)",
+          "tags": ["#event", "#backstage", "#demo"],
+          "frame": "portrait",
+          "companionTo": "/popular"
+        },
+        {
+          "id": "creator-lab-portrait",
+          "title": "Creator lab trước giờ ghi hình",
+          "category": "portraits",
+          "albumTitle": "Member Portraits",
+          "photographer": "Xu Nguyễn",
+          "photographerRole": "Visual storyteller",
+          "location": "Hà Nội",
+          "timeLabel": "12/04/2026",
+          "likes": 15400,
+          "comments": 289,
+          "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#be123c 0%,#fb7185 100%)",
+          "tags": ["#portrait", "#creator", "#studio"],
+          "frame": "tall",
+          "companionTo": "/search"
+        }
+      ],
+      "quickLinks": [
+        {
+          "title": "Mở luồng popular",
+          "description": "So sánh bộ ảnh đang nổi với các bài post có tương tác mạnh trên bảng xếp hạng popular.",
+          "to": "/popular",
+          "icon": "i-ph-fire-fill",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Chuyển sang memories",
+          "description": "Xem thêm ảnh theo mốc thời gian và các album cộng đồng đã được gom theo đợt hoạt động.",
+          "to": "/memories",
+          "icon": "i-ph-clock-counter-clockwise-fill",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)"
+        },
+        {
+          "title": "Đọc hậu trường ở blogs",
+          "description": "Đi sang blogs để đọc note set-up, bài kể chuyện hậu trường và nội dung mở rộng cho từng bộ ảnh.",
+          "to": "/blogs",
+          "icon": "i-ph-newspaper-fill",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ]
+    },
+    "popularPage": {
+      "seoTitle": "Bài viết phổ biến | VNSEEA",
+      "seoDescription": "Theo dõi các bài viết đang có tương tác cao nhất trên VNSEEA, lọc theo chủ đề và mở sâu sang search, explore hoặc hashtag.",
+      "heroEyebrow": "Pulse Board",
+      "heroTitle": "Theo dõi những bài viết đang nóng nhất cộng đồng",
+      "heroDescription": "Trang /popular gom các bài post có tương tác cao, cho phép lọc theo nhóm chủ đề và mở sâu vào hashtag, search hoặc explore mà không cần đi vòng qua feed chính.",
+      "primaryCta": "Về bảng tin",
+      "secondaryCta": "Mở search",
+      "searchPlaceholder": "Tìm bài viết, tác giả, hashtag...",
+      "openLink": "Mở link",
+      "resultEyebrow": "Bảng xếp hạng hiện tại",
+      "resultHeadingAll": "Bài viết phổ biến trên toàn hệ thống",
+      "resultHeadingCategory": "Nhóm chủ đề: {label}",
+      "resultCount": "{count} bài viết đang khớp bộ lọc",
+      "resetFilters": "Đặt lại",
+      "emptyTitle": "Chưa có bài viết phù hợp",
+      "emptyDescription": "Thử đổi nhóm chủ đề hoặc từ khóa để xem các bài đang hot khác.",
+      "rankLabel": "Top {rank}",
+      "scoreCount": "{count} điểm nóng",
+      "statPosts": "Bài viết",
+      "statPostsDescription": "Số post đang được xếp vào luồng phổ biến.",
+      "statInteractions": "Tương tác",
+      "statInteractionsDescription": "Tổng like, bình luận và chia sẻ của danh sách hiện tại.",
+      "statCreators": "Tác giả",
+      "statCreatorsDescription": "Số người đang kéo tương tác trong bảng xếp hạng này.",
+      "statComments": "Bình luận",
+      "statCommentsDescription": "Lượng thảo luận đang đi cùng các bài phổ biến.",
+      "sidebarHashtagsEyebrow": "Hashtag nóng",
+      "sidebarHashtagsTitle": "Tag đang kéo traffic",
+      "sidebarCreatorsEyebrow": "Tác giả nổi bật",
+      "sidebarCreatorsTitle": "Người đang kéo tương tác",
+      "sidebarLinksEyebrow": "Lối đi nhanh",
+      "sidebarLinksTitle": "Mở thêm flow liên quan",
+      "categories": [
+        { "label": "Tất cả", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Cộng đồng", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Sản phẩm", "value": "product", "icon": "i-ph-rocket-launch-fill" },
+        { "label": "Kinh doanh", "value": "business", "icon": "i-ph-briefcase-fill" },
+        { "label": "Thiết kế", "value": "design", "icon": "i-ph-paint-brush-broad-fill" },
+        { "label": "Công nghệ", "value": "technology", "icon": "i-ph-cpu-fill" }
+      ],
+      "quickLinks": [
+        {
+          "title": "Search sâu hơn",
+          "description": "Đi sang search để lọc bài viết theo từ khóa, người đăng hoặc hashtag cụ thể.",
+          "to": "/search",
+          "icon": "i-ph-magnifying-glass-bold",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Explore đề xuất",
+          "description": "Mở explore để so sánh bài phổ biến với người dùng và fanpage đang được đề xuất.",
+          "to": "/explore",
+          "icon": "i-ph-compass-fill",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)"
+        },
+        {
+          "title": "Bài đã lưu",
+          "description": "Nhảy sang saved posts để giữ lại các bài đang hot và tham chiếu lại sau.",
+          "to": "/saved-posts",
+          "icon": "i-ph-bookmark-simple-fill",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ],
+      "posts": [
+        {
+          "id": "community-onboarding-sprint",
+          "author": "Thu Ha",
+          "role": "Community lead",
+          "audience": "Công khai",
+          "time": "12 phút trước",
+          "text": "Bản sprint mới cho luồng community onboarding đang kéo tương tác rất tốt: team gộp lại nhịp giới thiệu nhóm, page và hashtag để người mới vào không bị rơi khỏi flow sau 3 click đầu tiên.",
+          "tags": ["community", "retention", "ux"],
+          "stats": { "likes": 482, "comments": 94, "shares": 31 },
+          "media": "double",
+          "comments": [
+            {
+              "id": 101,
+              "author": "Nam Pham",
+              "role": "Frontend",
+              "text": "Nếu giữ được nhịp onboarding ngắn như này thì các page phụ sẽ vào nhanh hơn hẳn."
+            },
+            {
+              "id": 102,
+              "author": "Linh Dao",
+              "role": "Product",
+              "text": "Nên giữ phần hashtag nổi bật ngay trong màn đầu để người mới có điểm bám rõ hơn."
+            }
+          ],
+          "category": "community",
+          "trendLabel": "Hot 6h"
+        },
+        {
+          "id": "popular-launch-review",
+          "author": "Bao Tran",
+          "role": "Product partnerships",
+          "audience": "Thành viên",
+          "time": "35 phút trước",
+          "text": "Mock mới cho trang /popular đang có tín hiệu ổn vì gom được cả ranking, filter và quick link trong một màn. Nếu nối thêm analytics thật thì đây sẽ là hub tốt để đo nội dung nào đang kéo traffic cho toàn hệ thống.",
+          "tags": ["product", "launch", "analytics"],
+          "stats": { "likes": 366, "comments": 72, "shares": 24 },
+          "media": "single",
+          "comments": [
+            {
+              "id": 201,
+              "author": "Minh Trang",
+              "role": "Strategy",
+              "text": "Trang này hợp để làm điểm vào cho flow content discovery thay vì chỉ dựa vào search."
+            }
+          ],
+          "category": "product",
+          "trendLabel": "Tăng nhanh"
+        },
+        {
+          "id": "design-system-rhythm",
+          "author": "Quynh Le",
+          "role": "Designer",
+          "audience": "Công khai",
+          "time": "1 giờ trước",
+          "text": "Mình vừa gom lại rhythm cho card bài viết phổ biến: ưu tiên badge xếp hạng, trend label và score nóng ở trên, còn phần nội dung giữ nguyên PostCard để không nhân đôi component không cần thiết.",
+          "tags": ["design", "tokens", "components"],
+          "stats": { "likes": 418, "comments": 61, "shares": 22 },
+          "media": "single",
+          "comments": [
+            {
+              "id": 301,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "Cách này giúp người xem hiểu vì sao bài đó đang hot ngay từ cái nhìn đầu."
+            }
+          ],
+          "category": "design",
+          "trendLabel": "Được lưu nhiều"
+        },
+        {
+          "id": "founder-content-cadence",
+          "author": "Minh Trang",
+          "role": "Strategy",
+          "audience": "Công khai",
+          "time": "2 giờ trước",
+          "text": "Nếu page phổ biến được gắn với blogs, live và watch bằng quick link rõ ràng thì content cadence sẽ mượt hơn rất nhiều: bài viết kéo khám phá, live kéo trao đổi, watch kéo chiều sâu nội dung.",
+          "tags": ["business", "growth", "content"],
+          "stats": { "likes": 297, "comments": 58, "shares": 19 },
+          "comments": [
+            {
+              "id": 401,
+              "author": "Bao Tran",
+              "role": "Partnerships",
+              "text": "Đúng, luồng này hợp để đo bài nào đang tạo chuyển đổi sang các page vệ tinh."
+            }
+          ],
+          "category": "business",
+          "trendLabel": "Bàn luận cao"
+        },
+        {
+          "id": "nuxt-performance-notes",
+          "author": "Nam Pham",
+          "role": "Frontend",
+          "audience": "Nhóm",
+          "time": "3 giờ trước",
+          "text": "Mình vừa note lại checklist cho các page mới: route riêng, data mock đọc từ i18n, build pass SSR và giữ link thật trong mobile menu. Luồng /popular nên coi như template chuẩn cho các page phụ tiếp theo.",
+          "tags": ["nuxt", "performance", "technology"],
+          "stats": { "likes": 524, "comments": 77, "shares": 28 },
+          "media": "double",
+          "comments": [
+            {
+              "id": 501,
+              "author": "Quynh Le",
+              "role": "Designer",
+              "text": "Có template kiểu này thì team vào page mới nhanh hơn, nhất là phần locale và SEO."
+            },
+            {
+              "id": 502,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "Chuẩn, cứ giữ pattern này cho popular, movies và các page content tiếp theo."
+            }
+          ],
+          "category": "technology",
+          "trendLabel": "Tech pick"
+        }
+      ]
+    },
     "explorePage": {
       "seoTitle": "Khám phá | VNSEEA",
       "seoDescription": "Khám phá các bài viết, người dùng và fanpage được đề xuất trên VNSEEA.",
@@ -2857,6 +3567,7 @@
     },
     "publisherBox": {
       "prompt": "Chuyện gì đang xảy ra vậy? Hashtag, mention, link...",
+      "composerPlaceholder": "Chuyện gì đang xảy ra vậy? Hashtag, mention, link...",
       "expandedOpen": "Đang mở trình tạo bài viết",
       "expandedClosed": "Chạm để viết bài, thêm ảnh, video, poll và nhiều hơn nữa",
       "actionImage": "Ảnh",
@@ -2867,11 +3578,61 @@
       "actionAudio": "Âm thanh",
       "actionFile": "Tệp",
       "actionStory": "Câu chuyện",
+      "actionProduct": "Sản phẩm",
       "chipOnlyMe": "Chỉ có tôi",
       "chipAddLocation": "Thêm vị trí",
       "chipTagFriends": "Gắn thẻ bạn bè",
       "chipColors": "Màu sắc",
+      "live": "Trực tiếp",
       "share": "Chia sẻ"
+    },
+    "storyCarousel": {
+      "createStory": "Tạo tin",
+      "fallbackMeta": "Vừa xong",
+      "previousStory": "Story trước",
+      "nextStory": "Story sau",
+      "storyLabel": "Story",
+      "interactions": "Tương tác",
+      "actionLike": "Thích story",
+      "actionComment": "Bình luận story",
+      "actionShare": "Chia sẻ story",
+      "stories": {
+        "mine": {
+          "title": "Tạo story mới",
+          "caption": "Chia sẻ khoảnh khắc của bạn",
+          "meta": "Story · của bạn"
+        },
+        "story1": {
+          "title": "Một buổi sáng yên tĩnh để lên ý tưởng",
+          "caption": "Story viewer theo style dự án, giữ cảm giác gần Facebook nhưng vẫn bám palette và spacing của VNSEEA.",
+          "meta": "Story · 2 phút trước"
+        },
+        "story2": {
+          "title": "Đoạn chill ngắn cho một ngày dài",
+          "caption": "Vuốt trái/phải để chuyển story, bấm nút để điều hướng nhanh hơn trên desktop.",
+          "meta": "Story · 15 phút trước"
+        },
+        "story3": {
+          "title": "Mẫu story full-screen cho mobile-first",
+          "caption": "Phù hợp cả ảnh và video, sau này có thể nối API story thật từ backend.",
+          "meta": "Story · 1 giờ trước"
+        },
+        "story4": {
+          "title": "Story hướng dẫn nội bộ",
+          "caption": "Cách dùng story để highlight thông báo và nội dung nhanh.",
+          "meta": "Story · 3 giờ trước"
+        },
+        "story5": {
+          "title": "Story du lịch",
+          "caption": "Một góc ảnh nhẹ nhàng, hợp style Facebook nhưng vẫn rất VNSEEA.",
+          "meta": "Story · 5 giờ trước"
+        },
+        "story6": {
+          "title": "Story về sản phẩm",
+          "caption": "Tập trung vào một thông điệp ngắn, rõ, đẹp.",
+          "meta": "Story · 7 giờ trước"
+        }
+      }
     },
     "postHeader": {
       "follow": "Theo dõi",
@@ -2947,6 +3708,171 @@
       "actionComment": "Bình luận trên ảnh",
       "actionShare": "Chia sẻ ảnh",
       "defaultTitle": "Lightbox"
+    },
+    "lightboxViewer": {
+      "title": "Xem media",
+      "mockLabel": "Trình xem lightbox mô phỏng"
+    }
+  },
+  "navigation": {
+    "headerBar": {
+      "home": "Trang chủ",
+      "friendRequests": "Lời mời kết bạn",
+      "messages": "Tin nhắn",
+      "notifications": "Thông báo",
+      "account": "Tài khoản",
+      "search": "Tìm kiếm",
+      "reels": "Reels",
+      "video": "Video",
+      "profile": "Trang cá nhân"
+    },
+    "headerIconNav": {
+      "home": "Trang chủ",
+      "photos": "Ảnh",
+      "reels": "Reels",
+      "video": "Video",
+      "music": "Nhạc"
+    },
+    "mobileMenu": {
+      "title": "Menu",
+      "close": "Đóng menu",
+      "adminTitle": "Quản trị viên",
+      "walletBalance": "Ví: {amount}",
+      "points": "Điểm: {points}",
+      "mainNav": {
+        "search": "Tìm kiếm",
+        "pages": "Các trang",
+        "myProducts": "Sản phẩm của tôi",
+        "marketplace": "Thị trường",
+        "blog": "Blog",
+        "createBlog": "Viết blog",
+        "myArticles": "Bài viết của tôi",
+        "movies": "Phim",
+        "events": "Sự kiện",
+        "createEvent": "Tạo sự kiện",
+        "live": "Live",
+        "myGroupsPlaceholder": "Nhóm của tôi",
+        "eventsPlaceholder": "Sự kiện",
+        "myGroups": "Nhóm của tôi",
+        "forum": "Diễn đàn",
+        "ads": "Quảng cáo",
+        "photos": "Tập ảnh",
+        "watch": "Xem",
+        "reelsShortcut": "Cuộn phim",
+        "savedPosts": "Bài đã lưu",
+        "poke": "Chọc",
+        "explore": "Khám phá",
+        "popularPosts": "Bài viết phổ biến",
+        "findFriends": "Tìm bạn",
+        "games": "Trò chơi",
+        "jobs": "Việc làm",
+        "goPro": "Go Pro",
+        "wallet": "Ví VNSEEA",
+        "withdrawal": "Rút tiền",
+        "directory": "Danh mục",
+        "trending": "Những điều phổ biến",
+        "funding": "Kinh phí",
+        "memories": "Ký ức",
+        "deals": "Ưu đãi"
+      },
+      "settingsNav": {
+        "settings": "Cài đặt",
+        "register": "Đăng ký",
+        "adminArea": "Khu vực quản trị",
+        "logout": "Đăng xuất"
+      },
+      "bottomActions": {
+        "switchAccount": "Chuyển tài khoản",
+        "keyboardShortcuts": "Các phím tắt bàn phím",
+        "darkMode": "Chế độ ban đêm"
+      }
+    },
+    "leftSidebar": {
+      "showMore": "Xem thêm",
+      "showLess": "Ẩn bớt",
+      "items": {
+        "feed": "Nguồn cấp tin tức",
+        "photos": "Tập ảnh",
+        "watch": "Xem",
+        "reels": "Cuộn phim",
+        "savedPosts": "Bài đã lưu",
+        "popularPosts": "Bài viết phổ biến",
+        "memories": "Ký ức",
+        "poke": "Chọc",
+        "myGroups": "Nhóm của tôi",
+        "myPages": "Trang của tôi",
+        "blog": "Blog",
+        "marketplace": "Thị trường",
+        "directory": "Danh mục",
+        "events": "Sự kiện",
+        "live": "Live",
+        "forum": "Diễn đàn",
+        "movies": "Phim",
+        "jobs": "Việc làm",
+        "deals": "Ưu đãi",
+        "findFriends": "Tìm bạn",
+        "games": "Trò chơi",
+        "goPro": "Go Pro",
+        "wallet": "Ví VNSEEA",
+        "withdrawal": "Rút tiền",
+        "trending": "Trending",
+        "funding": "Kinh phí"
+      }
+    },
+    "chatWidget": {
+      "title": "Trò chuyện",
+      "onlineCount": "{count} người đang online",
+      "actionCreateGroup": "Tạo nhóm chat",
+      "actionSettings": "Cài đặt",
+      "content": "Nội dung",
+      "sendToLabel": "Gửi đến:",
+      "recipientPlaceholder": "Tên người nhận...",
+      "messagePlaceholder": "Nhập tin nhắn...",
+      "attachLabel": "Đính kèm",
+      "optional": "tùy chọn",
+      "chooseFile": "Chọn tệp",
+      "noFileSelected": "Chưa có tệp nào được chọn",
+      "selectAll": "Chọn tất cả",
+      "sendMessage": "Gửi tin nhắn",
+      "selectTag": "Chọn thẻ...",
+      "tagImportant": "Quan trọng",
+      "tagWork": "Công việc",
+      "onlineBadge": "Online",
+      "readyToChat": "Sẵn sàng trò chuyện",
+      "onlineStatus": "Đang online",
+      "offlineToday": "Hôm nay không hoạt động",
+      "groupMembers": "{count} thành viên",
+      "searchPlaceholder": "Tìm kiếm người dùng",
+      "miniChatActive": "Đang hoạt động",
+      "miniChatSample": "Chào bạn, mình nhắn nhanh từ chat widget.",
+      "miniChatReply": "Ok, mình phản hồi ngay đây.",
+      "miniGroupSample": "Đây là mẫu hội thoại nhóm.",
+      "miniGroupReply": "Đã thêm vào nhóm.",
+      "miniInputPlaceholder": "Nhập tin nhắn...",
+      "tabSend": "Gửi tin",
+      "tabContacts": "Danh bạ",
+      "tabGroups": "Nhóm"
+    },
+    "headerSearchInput": {
+      "placeholder": "Tìm kiếm người, trang, nhóm và #hashtags"
+    },
+    "headerLogo": {
+      "tagline": "Social hub"
+    },
+    "widgetCard": {
+      "mockBadge": "Mock"
+    }
+  },
+  "layouts": {
+    "guest": {
+      "titleLine1": "Kết nối với",
+      "titleLine2": "bạn bè!",
+      "subtitle": "Chia sẻ những điều mới và những khoảnh khắc đáng nhớ cùng cộng đồng của bạn."
+    }
+  },
+  "auth": {
+    "heroPanel": {
+      "defaultImageAlt": "Nhóm người đang dùng điện thoại"
     }
   },
   "settings": {
@@ -3615,7 +4541,6 @@
       "contactShop": "Liên hệ shop",
       "viewMore": "Xem thêm",
       "chooseOther": "Chọn đơn khác",
-      "contactBuyer": "Liên hệ người mua",
       "shippingAddress": "Địa chỉ nhận hàng",
       "orderedFrom": "Đơn từ {seller} • {price}",
       "productsSummary": "{count} sản phẩm đã đặt",
@@ -3757,6 +4682,7 @@
     "pagesDirectory": {
       "title": "Các trang",
       "desc": "Quản lý fanpage bạn theo dõi, xem gợi ý phù hợp và mở nhanh flow tạo page mới trong cùng một khu vực.",
+      "createAction": "Tạo trang",
       "emptyMineTitle": "Không có trang nào để hiển thị",
       "emptyMineDesc": "Bạn chưa tạo fanpage nào trong tài khoản này. Bắt đầu bằng một page mới để giới thiệu thương hiệu, dịch vụ hoặc kênh nội dung của bạn.",
       "createFirst": "Tạo page đầu tiên",
@@ -3822,6 +4748,7 @@
         "fillInfo": "Điền thông tin {entity}",
         "fillDesc": "Hoàn thiện tên, URL, mô tả và phân loại để {entity} mới của bạn sẵn sàng xuất hiện trên VNSEEA.",
         "completionStatus": "{count}/{total} mục chính đã sẵn sàng",
+        "nameLabel": "Tên",
         "urlSuggested": "Gợi ý URL",
         "urlDefault": "ten-cua-ban",
         "useSuggestion": "Dùng gợi ý",
@@ -4250,6 +5177,7 @@
           "name": "Tên trang",
           "namePlaceholder": "Nhập tên fanpage",
           "url": "Page URL",
+          "slugPlaceholder": "ten-fanpage",
           "urlSuggested": "Gợi ý: {slug}",
           "urlUseSuggestion": "Dùng slug gợi ý",
           "summary": "Giới thiệu ngắn",
@@ -4269,6 +5197,9 @@
           "tagsPlaceholder": "noi-that, thi-cong, go-tu-nhien"
         },
         "stats": {
+          "topicsLabel": "Chủ đề",
+          "ctaLabel": "CTA",
+          "publicLinkLabel": "Link công khai",
           "summaryLength": "{count} ký tự",
           "tagCount": "{count} thẻ",
           "ctaFallback": "Chưa chọn",

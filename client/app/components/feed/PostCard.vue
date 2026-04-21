@@ -19,7 +19,7 @@
 
       <FeedPostMediaGrid v-if="post.media" class="mt-4" :variant="post.media" @open="onOpenMedia" />
 
-      <div class="mt-4 flex items-center justify-between border-t border-[#0000ff]/8 pt-3 text-[12px] text-slate-500">
+      <div class="mt-4 flex flex-col gap-2 border-t border-[#0000ff]/8 pt-3 text-[12px] text-slate-500 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex items-center gap-2">
           <div class="flex -space-x-1.5">
             <span class="inline-flex h-[22px] w-[22px] items-center justify-center rounded-full border-[3px] border-white bg-blue-500 text-[11px]">👍</span>
@@ -28,22 +28,22 @@
           </div>
           <span>{{ post.stats.likes }}</span>
         </div>
-        <div class="flex items-center gap-3 text-[12px] text-slate-400">
+        <div class="flex flex-wrap items-center gap-3 text-[12px] text-slate-400">
           <span>{{ t("feed.postCard.commentsCount", { count: post.stats.comments }) }}</span>
           <span>{{ t("feed.postCard.sharesCount", { count: post.stats.shares }) }}</span>
         </div>
       </div>
 
-      <div class="mt-3 grid grid-cols-3 gap-2">
-        <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[13px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button" @click="toggleLike">
+      <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[12px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff] sm:text-[13px]" type="button" @click="toggleLike">
           <Icon name="i-lucide-thumbs-up" class="h-4 w-4" />
           {{ liked ? t("feed.postCard.likeActive") : t("feed.postCard.like") }}
         </button>
-        <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[13px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button" @click="showComments = !showComments">
+        <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[12px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff] sm:text-[13px]" type="button" @click="showComments = !showComments">
           <Icon name="i-lucide-message-circle" class="h-4 w-4" />
           {{ t("feed.postCard.comment") }}
         </button>
-        <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[13px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff]" type="button" @click="showShare = true">
+        <button class="flex w-full items-center justify-center gap-2 rounded-[14px] border border-[#0000ff]/10 bg-white py-2.5 text-[12px] font-semibold text-slate-500 transition duration-200 hover:border-[#0000ff]/25 hover:bg-[#0000ff]/5 hover:text-[#0000ff] sm:text-[13px]" type="button" @click="showShare = true">
           <Icon name="i-lucide-share-2" class="h-4 w-4" />
           {{ t("feed.postCard.share") }}
         </button>

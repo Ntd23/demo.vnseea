@@ -19,23 +19,23 @@
 
         <div class="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           <button
-            v-for="option in communityPageCtaOptions"
+            v-for="option in ctaOptions"
             :key="option.value"
             class="rounded-[22px] border px-4 py-4 text-left transition"
-            :class="selectedCtaLabel === option.label
+            :class="selectedCtaLabel === option.labelText
               ? 'border-[#0000ff]/22 bg-[#eef0ff] shadow-[0_12px_24px_rgba(0,0,255,0.08)]'
               : 'border-[#dbe3f2] bg-white hover:border-[#c5caff] hover:bg-[#f8fbff]'"
             type="button"
-            @click="model.ctaLabel = option.label"
+            @click="model.ctaLabel = option.labelText"
           >
             <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.05)]">
               <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
             </div>
             <p class="mt-4 text-[14px] font-black text-[#243b63]">
-              {{ $t(option.label) }}
+              {{ option.labelText }}
             </p>
             <p class="mt-2 text-[12px] leading-5 text-slate-500">
-              {{ $t(option.description) }}
+              {{ option.descriptionText }}
             </p>
           </button>
         </div>
@@ -86,6 +86,14 @@ import type { CommunityPageSettingsDraft } from "../../../types/community"
 const model = defineModel<CommunityPageSettingsDraft>({ required: true })
 
 const { t } = useI18n()
+
+const ctaOptions = computed(() =>
+  communityPageCtaOptions.map(option => ({
+    ...option,
+    labelText: t(option.label),
+    descriptionText: option.description ? t(option.description) : "",
+  })),
+)
 
 const selectedCtaLabel = computed(() =>
   model.value.ctaLabel.trim() ? model.value.ctaLabel : t("community.pageSettings.basics.stats.ctaFallback"),

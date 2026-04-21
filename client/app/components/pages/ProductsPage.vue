@@ -61,7 +61,7 @@
       </div>
     </section>
 
-    <section class="relative z-10 -mt-10 rounded-[28px] border border-white/70 bg-white/95 p-3 shadow-[0_16px_36px_rgba(15,35,110,0.09)] backdrop-blur sm:p-4">
+    <section class="relative z-10 rounded-[28px] border border-white/70 bg-white/95 p-3 shadow-[0_16px_36px_rgba(15,35,110,0.09)] backdrop-blur sm:p-4">
       <label class="relative block">
         <Icon
           name="i-ph-magnifying-glass"
@@ -75,7 +75,7 @@
         >
       </label>
 
-      <div class="mt-3 grid gap-3 xl:grid-cols-[1fr_1fr_1.15fr_auto]">
+      <div class="mt-3 grid gap-3 xl:grid-cols-2 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.15fr)_auto]">
         <label class="block">
           <span class="sr-only">{{ $t("pages.productsPage.sortSr") }}</span>
           <select
@@ -125,7 +125,7 @@
         </label>
 
         <button
-          class="inline-flex h-12 items-center justify-center rounded-[18px] px-5 text-[15px] font-extrabold transition duration-150"
+          class="inline-flex h-12 w-full items-center justify-center rounded-[18px] px-5 text-[15px] font-extrabold transition duration-150 xl:col-span-2 2xl:col-span-1 2xl:w-auto"
           :class="nearbyOnly
             ? 'bg-[#243b63] text-white shadow-[0_10px_24px_rgba(36,59,99,0.18)]'
             : 'bg-[#b44848] text-white shadow-[0_10px_24px_rgba(180,72,72,0.16)] hover:-translate-y-0.5'"

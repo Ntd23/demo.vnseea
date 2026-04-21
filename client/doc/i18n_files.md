@@ -154,6 +154,9 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/pages/show_fund/[id].vue`
 - [x] `client/app/pages/live.vue`
 - [x] `client/app/pages/watch.vue`
+- [x] `client/app/pages/movies.vue`
+- [x] `client/app/pages/photos.vue`
+- [x] `client/app/pages/popular.vue`
 - [x] `client/app/pages/setting/index.vue`
 - [x] `client/app/pages/explore.vue`
 - [x] `client/app/pages/saved-posts.vue`
@@ -185,7 +188,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 
 ## Components có title/heading/CTA hardcode cần i18n
 ### Feed / home
-- [ ] `client/app/components/pages/HomeFeedPage.vue`
+- [x] `client/app/components/pages/HomeFeedPage.vue`
 - [x] `client/app/components/feed/FeedPublisherBox.vue`
 - [x] `client/app/components/feed/PostCard.vue`
 - [x] `client/app/components/feed/PostHeader.vue`
@@ -193,25 +196,25 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/feed/CommentList.vue`
 - [x] `client/app/components/feed/CommentComposer.vue` ← **ví dụ mẫu, xem hướng dẫn phần trên**
 - [x] `client/app/components/feed/ShareModal.vue`
-- [ ] `client/app/components/feed/StoryCarousel.vue`
-- [ ] `client/app/components/feed/PublisherBox.vue`
+- [x] `client/app/components/feed/StoryCarousel.vue`
+- [x] `client/app/components/feed/PublisherBox.vue`
 - [x] `client/app/components/feed/PostMediaGrid.vue`
-- [ ] `client/app/components/feed/LightboxViewer.vue`
+- [x] `client/app/components/feed/LightboxViewer.vue`
 - [x] `client/app/components/lightbox/LightboxModal.vue`
 
 ### Navigation / layout
-- [ ] `client/app/components/navigation/HeaderBar.vue`
-- [ ] `client/app/components/navigation/HeaderIconNav.vue`
-- [ ] `client/app/components/navigation/MobileMenu.vue`
-- [ ] `client/app/components/navigation/LeftSidebar.vue`
+- [x] `client/app/components/navigation/HeaderBar.vue`
+- [x] `client/app/components/navigation/HeaderIconNav.vue`
+- [x] `client/app/components/navigation/MobileMenu.vue`
+- [x] `client/app/components/navigation/LeftSidebar.vue`
 - [x] `client/app/components/navigation/RightSidebar.vue`
-- [ ] `client/app/components/navigation/ChatWidget.vue`
-- [ ] `client/app/components/navigation/HeaderSearchInput.vue`
-- [ ] `client/app/components/navigation/HeaderLogo.vue`
-- [ ] `client/app/components/navigation/SidebarMenuItem.vue`
-- [ ] `client/app/components/navigation/WidgetCard.vue`
+- [x] `client/app/components/navigation/ChatWidget.vue`
+- [x] `client/app/components/navigation/HeaderSearchInput.vue`
+- [x] `client/app/components/navigation/HeaderLogo.vue`
+- [x] `client/app/components/navigation/SidebarMenuItem.vue`
+- [x] `client/app/components/navigation/WidgetCard.vue`
 - [x] `client/app/layouts/default.vue`
-- [ ] `client/app/layouts/guest.vue`
+- [x] `client/app/layouts/guest.vue`
 - [x] `client/app/layouts/messages.vue`
 
 ### Auth / onboarding
@@ -219,12 +222,12 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/pages/RegisterPage.vue`
 - [x] `client/app/components/pages/ForgotPasswordPage.vue`
 - [x] `client/app/components/auth/AuthSplitShell.vue`
-- [ ] `client/app/components/auth/AuthHeroPanel.vue`
+- [x] `client/app/components/auth/AuthHeroPanel.vue`
 
 ### Messages / reels
 - [x] `client/app/components/pages/MessagesPage.vue`
 - [x] `client/app/components/messages/ConversationList.vue`
-- [ ] `client/app/components/messages/MessagePane.vue`
+- [x] `client/app/components/messages/MessagePane.vue`
 - [x] `client/app/components/pages/ReelsPage.vue`
 - [x] `client/app/components/reels/ReelsPlayer.vue`
 - [x] `client/app/components/reels/ReelsOverlay.vue`
@@ -237,25 +240,21 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/profile/ProfileHero.vue`
 - [x] `client/app/components/profile/ProfileCompletionCard.vue`
 - [x] `client/app/components/profile/ProfileSidebar.vue`
-- [ ] `client/app/components/profile/ProfileIntroCard.vue`
-- [ ] `client/app/components/profile/ProfileAboutCard.vue`
+- [x] `client/app/components/profile/ProfileIntroCard.vue`
+- [x] `client/app/components/profile/ProfileAboutCard.vue`
 - [x] `client/app/components/profile/ProfileInfoCard.vue`
-- [ ] `client/app/components/profile/ProfileTabs.vue`
+- [x] `client/app/components/profile/ProfileTabs.vue`
 - [x] `client/app/components/profile/ProfileFeedList.vue`
-- [ ] `client/app/components/profile/ProfileFriendsGrid.vue`
-- [ ] `client/app/components/profile/ProfilePhotosGrid.vue`
+- [x] `client/app/components/profile/ProfileFriendsGrid.vue`
+- [x] `client/app/components/profile/ProfilePhotosGrid.vue`
 - [x] `client/app/components/profile/ProfileMediaGrid.vue`
-- [ ] `client/app/components/community/PageHeroBanner.vue`
-- [ ] `client/app/components/community/PageFeedSection.vue`
-- [ ] `client/app/components/community/PageAboutCard.vue`
-- [ ] `client/app/components/community/PageActionCard.vue`
-- [ ] `client/app/components/community/PageSettingsBasicsCard.vue`
-- [ ] `client/app/components/community/PageSettingsControlsCard.vue`
-- [ ] `client/app/components/community/PageSettingsSidebar.vue`
 - [x] `client/app/components/community/PageHeroBanner.vue`
 - [x] `client/app/components/community/PageFeedSection.vue`
 - [x] `client/app/components/community/PageAboutCard.vue`
 - [x] `client/app/components/community/PageActionCard.vue`
+- [x] `client/app/components/community/PageSettingsBasicsCard.vue`
+- [x] `client/app/components/community/PageSettingsControlsCard.vue`
+- [x] `client/app/components/community/PageSettingsSidebar.vue`
 - [x] `client/app/components/community/GroupHeroBanner.vue`
 - [x] `client/app/components/community/GroupFeedSection.vue`
 - [x] `client/app/components/community/GroupAboutCard.vue`
@@ -263,14 +262,14 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/community/GroupMembersCard.vue`
 - [x] `client/app/components/community/GroupAdminCard.vue`
 - [x] `client/app/components/community/GroupTopicsCard.vue`
-- [ ] `client/app/components/community/GroupSettingsBasicsCard.vue`
-- [ ] `client/app/components/community/GroupSettingsControlsCard.vue`
-- [ ] `client/app/components/community/GroupSettingsSidebar.vue`
-- [ ] `client/app/components/community/GroupsFilterBar.vue`
-- [ ] `client/app/components/community/PageDirectoryTabsBar.vue`
-- [ ] `client/app/components/community/CreationHeaderCard.vue`
-- [ ] `client/app/components/community/CreationInsightsPanel.vue`
-- [ ] `client/app/components/community/CreationForm.vue`
+- [x] `client/app/components/community/GroupSettingsBasicsCard.vue`
+- [x] `client/app/components/community/GroupSettingsControlsCard.vue`
+- [x] `client/app/components/community/GroupSettingsSidebar.vue`
+- [x] `client/app/components/community/GroupsFilterBar.vue`
+- [x] `client/app/components/community/PageDirectoryTabsBar.vue`
+- [x] `client/app/components/community/CreationHeaderCard.vue`
+- [x] `client/app/components/community/CreationInsightsPanel.vue`
+- [x] `client/app/components/community/CreationForm.vue`
 
 ### Blogs
 - [x] `client/app/components/pages/BlogsPage.vue`
@@ -338,6 +337,15 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/watch/WatchVideoInfo.vue`
 - [x] `client/app/components/watch/WatchComments.vue`
 - [x] `client/app/components/watch/RelatedVideos.vue`
+- [x] `client/app/components/pages/MoviesPage.vue`
+- [x] `client/app/components/movies/Hero.vue`
+- [x] `client/app/components/movies/Filters.vue`
+- [x] `client/app/components/movies/Card.vue`
+- [x] `client/app/components/movies/Sidebar.vue`
+- [x] `client/app/components/pages/PopularPage.vue`
+- [x] `client/app/components/popular/Hero.vue`
+- [x] `client/app/components/popular/Filters.vue`
+- [x] `client/app/components/popular/Sidebar.vue`
 
 ### Marketplace / checkout / orders / wallet / withdrawal
 
@@ -404,6 +412,12 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [ ] `client/app/components/games/GamesSidebar.vue`
 - [ ] `client/app/components/games/GameCard.vue`
 - [ ] `client/app/components/games/GamePlayModal.vue`
+
+- [x] `client/app/components/pages/PhotosPage.vue`
+- [x] `client/app/components/photos/Hero.vue`
+- [x] `client/app/components/photos/Filters.vue`
+- [x] `client/app/components/photos/Sidebar.vue`
+- [x] `client/app/components/photos/Card.vue`
 
 - [x] `client/app/components/go-pro/GoProHero.vue`
 - [x] `client/app/components/go-pro/BillingToggle.vue`

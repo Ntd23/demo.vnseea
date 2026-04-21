@@ -54,6 +54,14 @@
       "heroSubtitle": "Share new things and moments from your life with your friends.",
       "seoTitle": "Forgot password | VNSEEA"
     },
+    "homeFeedPage": {
+      "seoTitle": "Feed | VNSEEA",
+      "seoDescription": "VNSEEA community feed - share, connect, and discover.",
+      "newPostsButton": "{count} new posts - tap to load",
+      "loadingMore": "Loading...",
+      "loadMore": "Load more posts",
+      "allCaughtUp": "You have seen all posts."
+    },
     "messagesPage": {
       "seoTitle": "Messages | VNSEEA",
       "searchPlaceholder": "Search conversations",
@@ -78,6 +86,18 @@
       "activeYesterday": "Active yesterday",
       "contactName": "Thanh Ha",
       "loadOlder": "Load older messages",
+      "call": "Voice call",
+      "videoCall": "Video call",
+      "conversationInfo": "Conversation info",
+      "addAttachment": "Add attachment",
+      "photoLibrary": "Open photo library",
+      "stickers": "Open stickers",
+      "gifs": "Open GIFs",
+      "composerPlaceholder": "Aa",
+      "sendLike": "Send like",
+      "messageTimeOne": "Wed 10:20",
+      "messageTimeTwo": "11:30",
+      "messageTimeThree": "11:35",
       "messageOne": "Hey!",
       "messageTwo": "Have you finished today's work?",
       "messageThree": "Almost done",
@@ -993,7 +1013,72 @@
       "infoOnlineStatus": "Online",
       "infoPostsCountLabel": "posts",
       "infoGenderMale": "Male",
-      "infoLocationValue": "Based at No. 1 Ton That Thuyet"
+      "infoLocationValue": "Based at No. 1 Ton That Thuyet",
+      "introCard": {
+        "title": "Intro",
+        "edit": "Edit",
+        "headline": "🎯 Building a community that connects Vietnamese people. Passionate about technology and product design.",
+        "items": {
+          "work": { "label": "Work", "value": "Founder at VNSEEA" },
+          "education": { "label": "Education", "value": "Ho Chi Minh City University of Technology" },
+          "livesIn": { "label": "Lives in", "value": "Ho Chi Minh City, Vietnam" },
+          "relationship": { "label": "Relationship", "value": "Single" },
+          "joined": { "label": "Joined", "value": "March 2024" },
+          "website": { "label": "Website", "value": "vnseea.com" }
+        }
+      },
+      "aboutCard": {
+        "title": "About",
+        "sections": {
+          "workEducation": {
+            "title": "Work and education",
+            "items": {
+              "job": { "value": "Founder at VNSEEA", "sub": "2023 — Present" },
+              "school": { "value": "Ho Chi Minh City University of Technology", "sub": "Computer Science Faculty · 2018 — 2022" }
+            }
+          },
+          "living": {
+            "title": "Places lived",
+            "items": {
+              "current": { "value": "Lives in Ho Chi Minh City" },
+              "hometown": { "value": "From Da Nang, Vietnam" }
+            }
+          },
+          "contact": {
+            "title": "Contact info",
+            "items": {
+              "email": { "value": "admin{'@'}vnseea.com" },
+              "website": { "value": "vnseea.com" },
+              "phone": { "value": "+84 xxx xxx xxx" }
+            }
+          },
+          "basic": {
+            "title": "Basic info",
+            "items": {
+              "gender": { "value": "Male" },
+              "birthday": { "value": "Birthday: 15/03/1996" },
+              "relationship": { "value": "Single" }
+            }
+          }
+        }
+      },
+      "tabs": {
+        "timeline": "Timeline",
+        "about": "About",
+        "friends": "Friends",
+        "photos": "Photos",
+        "videos": "Videos",
+        "albums": "Albums"
+      },
+      "friendsGrid": {
+        "title": "Friends",
+        "seeAll": "See all",
+        "friendCount": "{count} friends"
+      },
+      "photosGrid": {
+        "title": "Photos",
+        "seeAll": "See all"
+      }
     },
     "hashtagPage": {
       "seoTitle": "{tag} | Hashtag | VNSEEA",
@@ -2135,6 +2220,631 @@
         }
       ]
     },
+    "moviesPage": {
+      "seoTitle": "Movies | VNSEEA",
+      "seoDescription": "A mock movies hub on VNSEEA with a featured hero, filters, a movie grid, and direct links to watch, live, and blogs.",
+      "heroEyebrow": "P-34 · Movies",
+      "searchPlaceholder": "Search movies, directors, hashtags...",
+      "openLink": "Open link",
+      "resultEyebrow": "Current collection",
+      "resultHeadingAll": "Discover featured movies",
+      "resultHeadingCategory": "Category: {label}",
+      "resultCount": "{count} movies match the current filters",
+      "resetFilters": "Reset",
+      "directorLabel": "Director",
+      "cardPrimaryAction": "Watch trailer",
+      "cardSecondaryAction": "Behind the scenes",
+      "emptyTitle": "No matching movies found",
+      "emptyDescription": "Try another category, movie title, or director name to view a different list.",
+      "sidebarPicksEyebrow": "Top rated",
+      "sidebarPicksTitle": "Top picks this week",
+      "sidebarUpcomingEyebrow": "Mock schedule",
+      "sidebarUpcomingTitle": "Coming up",
+      "sidebarRoutingEyebrow": "Routing",
+      "sidebarRoutingTitle": "Direct links are already wired",
+      "sidebarRoutingDescription": "From this page you can jump straight to watch, a live premiere, or behind-the-scenes blogs without any extra intermediate route.",
+      "badgePremiere": "Premiere",
+      "badgeEditorsPick": "Editor's Pick",
+      "statTitles": "Titles",
+      "statTitlesDescription": "Mock titles built for this UI.",
+      "statViews": "Views",
+      "statViewsDescription": "Simulated views across the full library.",
+      "statHours": "Hours",
+      "statHoursDescription": "Total runtime currently available.",
+      "primaryActionPremiere": "Open watch now",
+      "primaryActionDefault": "Watch trailer",
+      "secondaryActionEditorsPick": "Read review",
+      "secondaryActionDefault": "Behind the scenes",
+      "categories": [
+        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Community", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Business", "value": "business", "icon": "i-ph-briefcase-fill" },
+        { "label": "Education", "value": "education", "icon": "i-ph-graduation-cap-fill" },
+        { "label": "Documentary", "value": "documentary", "icon": "i-ph-film-strip-fill" },
+        { "label": "Technology", "value": "technology", "icon": "i-ph-cpu-fill" }
+      ],
+      "movies": [
+        {
+          "id": "green-horizon",
+          "title": "Green Horizon",
+          "category": "documentary",
+          "year": 2025,
+          "runtime": "2h 08m",
+          "runtimeMinutes": 128,
+          "rating": 8.9,
+          "director": "Lan Chi",
+          "summary": "A documentary following green classrooms, recycling workshops, and local communities redesigning their living spaces around sustainability.",
+          "cover": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 45%,#99f6e4 100%)",
+          "tags": ["#documentary", "#green", "#community"],
+          "isPremiere": true,
+          "isEditorsPick": true,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "late-shift-founders",
+          "title": "Late Shift Founders",
+          "category": "business",
+          "year": 2024,
+          "runtime": "1h 46m",
+          "runtimeMinutes": 106,
+          "rating": 8.4,
+          "director": "Khai Minh",
+          "summary": "A fast-paced business drama about founders juggling funding, prototypes, and team morale in the 30 days before demo day.",
+          "cover": "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#172554 0%,#1d4ed8 46%,#93c5fd 100%)",
+          "tags": ["#startup", "#business", "#demo"],
+          "isPremiere": false,
+          "isEditorsPick": true,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "classroom-light",
+          "title": "Classroom Light",
+          "category": "education",
+          "year": 2025,
+          "runtime": "1h 58m",
+          "runtimeMinutes": 118,
+          "rating": 8.7,
+          "director": "An Nhien",
+          "summary": "An emotional story about teachers, students, and how a small classroom changes with new technology, better lighting, and a reading corner.",
+          "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#4338ca 0%,#2563eb 48%,#c4b5fd 100%)",
+          "tags": ["#education", "#school", "#future"],
+          "isPremiere": true,
+          "isEditorsPick": false,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "signal-2049",
+          "title": "Signal 2049",
+          "category": "technology",
+          "year": 2025,
+          "runtime": "2h 14m",
+          "runtimeMinutes": 134,
+          "rating": 9.1,
+          "director": "Vu Hoang",
+          "summary": "A contemporary sci-fi story set in a coastal city where community data, AI, and digital infrastructure shape human decisions.",
+          "cover": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#111827 0%,#312e81 45%,#38bdf8 100%)",
+          "tags": ["#ai", "#tech", "#futurecity"],
+          "isPremiere": false,
+          "isEditorsPick": true,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "market-after-rain",
+          "title": "Market After Rain",
+          "category": "community",
+          "year": 2024,
+          "runtime": "1h 32m",
+          "runtimeMinutes": 92,
+          "rating": 8.1,
+          "director": "Gia Bao",
+          "summary": "An energetic film about a night market, small vendors, and the everyday relationships inside a city in transition.",
+          "cover": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#7c2d12 0%,#ea580c 50%,#fed7aa 100%)",
+          "tags": ["#community", "#market", "#citylife"],
+          "isPremiere": false,
+          "isEditorsPick": false,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "port-of-us",
+          "title": "Port of Us",
+          "category": "community",
+          "year": 2025,
+          "runtime": "1h 52m",
+          "runtimeMinutes": 112,
+          "rating": 8.6,
+          "director": "Minh Trang",
+          "summary": "A community drama set in an old harbor district where several generations must choose between memory, work, and a new path forward.",
+          "cover": "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=900&q=80",
+          "backdrop": "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=1600&q=80",
+          "accent": "linear-gradient(135deg,#0f172a 0%,#334155 42%,#94a3b8 100%)",
+          "tags": ["#drama", "#harbor", "#people"],
+          "isPremiere": true,
+          "isEditorsPick": false,
+          "to": "/watch",
+          "companionTo": "/blogs"
+        }
+      ],
+      "collections": [
+        {
+          "title": "Fresh trailers on air",
+          "description": "Jump to the watch layout to see the mock player and the full video flow.",
+          "icon": "i-ph-play-circle-fill",
+          "to": "/watch",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Live premiere night",
+          "description": "Use the live layout to simulate a community premiere or a post-screening Q&A.",
+          "icon": "i-ph-broadcast-fill",
+          "to": "/live",
+          "accent": "linear-gradient(135deg,#dc2626 0%,#fb7185 100%)"
+        },
+        {
+          "title": "Behind the scenes & articles",
+          "description": "Jump to blogs to read reviews, director notes, and production stories.",
+          "icon": "i-ph-newspaper-fill",
+          "to": "/blogs",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#10b981 100%)"
+        }
+      ],
+      "upcoming": [
+        {
+          "title": "Green Horizon Premiere",
+          "dayLabel": "Tonight",
+          "timeLabel": "20:30",
+          "formatLabel": "Cinema + Live Q&A",
+          "note": "The screening is followed by a 20-minute Q&A with the director."
+        },
+        {
+          "title": "Signal 2049 Teaser Drop",
+          "dayLabel": "Tomorrow",
+          "timeLabel": "18:00",
+          "formatLabel": "Online first",
+          "note": "The new teaser opens in watch and gets a recap post in blogs."
+        },
+        {
+          "title": "Classroom Light Community Screening",
+          "dayLabel": "Friday",
+          "timeLabel": "19:15",
+          "formatLabel": "Campus tour",
+          "note": "A trial screening for teachers and student groups."
+        }
+      ]
+    },
+    "photosPage": {
+      "seoTitle": "Photos | VNSEEA",
+      "seoDescription": "A mock VNSEEA photo hub with a gallery hero, filters, album strip, masonry gallery, lightbox, and direct links to hashtags, popular, and memories.",
+      "heroEyebrow": "P-35 · Photos",
+      "heroTitle": "Community photo stories people are opening most",
+      "heroDescription": "The /photos page gathers themed photo sets, lets you filter by content type, opens directly into a lightbox, and jumps quickly to hashtags, memories, or popular.",
+      "heroPrimaryAction": "Open featured photo",
+      "heroSecondaryAction": "Open related flow",
+      "searchPlaceholder": "Search albums, photographers, locations...",
+      "openLink": "Open link",
+      "albumCount": "{count} photos",
+      "resultEyebrow": "Visible library",
+      "resultHeadingAll": "All featured photos",
+      "resultHeadingCategory": "Photo group: {label}",
+      "resultCount": "{count} photos match the current filters",
+      "resetFilters": "Reset",
+      "photographerLabel": "Photographer",
+      "cardPrimaryAction": "Open lightbox",
+      "cardSecondaryAction": "View flow",
+      "cardReachLabel": "Reach",
+      "cardCommentsLabel": "Comments",
+      "emptyTitle": "No matching photos yet",
+      "emptyDescription": "Try a different photo group or keyword to see another gallery slice.",
+      "statPhotos": "Photos",
+      "statPhotosDescription": "Total photos currently visible in the filters.",
+      "statAlbums": "Albums",
+      "statAlbumsDescription": "Album clusters already wired with routes.",
+      "statReach": "Reach",
+      "statReachDescription": "Combined simulated engagement across the current gallery.",
+      "statCreators": "Creators",
+      "statCreatorsDescription": "Photographers currently appearing in this flow.",
+      "sidebarHashtagsEyebrow": "Featured tags",
+      "sidebarHashtagsTitle": "Hashtags driving discovery",
+      "sidebarCreatorsEyebrow": "Photographers",
+      "sidebarCreatorsTitle": "People driving engagement",
+      "sidebarLinksEyebrow": "Quick paths",
+      "sidebarLinksTitle": "Open related flows",
+      "categories": [
+        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Community", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Events", "value": "events", "icon": "i-ph-calendar-blank-fill" },
+        { "label": "Portraits", "value": "portraits", "icon": "i-ph-user-focus-fill" },
+        { "label": "Product", "value": "product", "icon": "i-ph-package-fill" },
+        { "label": "Education", "value": "education", "icon": "i-ph-graduation-cap-fill" }
+      ],
+      "albums": [
+        {
+          "title": "Community summit album 2026",
+          "description": "A full visual set from keynote moments, networking, backstage staging, and demo booths throughout the summit day.",
+          "cover": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80",
+          "count": 48,
+          "badge": "Highlight",
+          "to": "/events",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Weekend workshop diary",
+          "description": "Jump to memories to browse activity photos, group shots, and lighter backstage moments from the same run.",
+          "cover": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+          "count": 32,
+          "badge": "Community",
+          "to": "/memories",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#10b981 100%)"
+        },
+        {
+          "title": "Product photo essay",
+          "description": "Open blogs to continue into behind-the-scenes notes, product setup stories, and visual case-study writeups.",
+          "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+          "count": 21,
+          "badge": "Studio",
+          "to": "/blogs",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ],
+      "photos": [
+        {
+          "id": "rooftop-workshop",
+          "title": "Rooftop after the workshop",
+          "category": "community",
+          "albumTitle": "Weekend Community",
+          "photographer": "Thu Ha",
+          "photographerRole": "Community photographer",
+          "location": "Ho Chi Minh City",
+          "timeLabel": "04/17/2026",
+          "likes": 18200,
+          "comments": 624,
+          "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)",
+          "tags": ["#community", "#workshop", "#rooftop"],
+          "frame": "portrait",
+          "companionTo": "/memories"
+        },
+        {
+          "id": "summit-stage-lights",
+          "title": "Stage lights before the keynote",
+          "category": "events",
+          "albumTitle": "Summit 2026",
+          "photographer": "Bao Tran",
+          "photographerRole": "Event shooter",
+          "location": "Da Nang",
+          "timeLabel": "04/14/2026",
+          "likes": 26100,
+          "comments": 840,
+          "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
+          "accent": "linear-gradient(135deg,#172554 0%,#2563eb 100%)",
+          "tags": ["#event", "#summit", "#community"],
+          "frame": "landscape",
+          "companionTo": "/events"
+        },
+        {
+          "id": "portrait-linh-dao",
+          "title": "Portrait of Linh Dao in the green studio",
+          "category": "portraits",
+          "albumTitle": "Member Portraits",
+          "photographer": "Quynh Le",
+          "photographerRole": "Portrait lead",
+          "location": "Hanoi",
+          "timeLabel": "04/11/2026",
+          "likes": 14300,
+          "comments": 318,
+          "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#7c3aed 0%,#c084fc 100%)",
+          "tags": ["#portrait", "#member", "#studio"],
+          "frame": "tall",
+          "companionTo": "/search"
+        },
+        {
+          "id": "product-desk-grid",
+          "title": "Desktop setup for the new product shoot",
+          "category": "product",
+          "albumTitle": "Product Sprint",
+          "photographer": "Ngoc Pham",
+          "photographerRole": "Brand visual",
+          "location": "Ho Chi Minh City",
+          "timeLabel": "04/09/2026",
+          "likes": 11900,
+          "comments": 274,
+          "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",
+          "tags": ["#product", "#studio", "#brand"],
+          "frame": "landscape",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "classroom-makerspace",
+          "title": "Makerspace corner inside the open classroom",
+          "category": "education",
+          "albumTitle": "Education Lab",
+          "photographer": "An Nhien",
+          "photographerRole": "Education documenter",
+          "location": "Hue",
+          "timeLabel": "04/07/2026",
+          "likes": 9800,
+          "comments": 201,
+          "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#4338ca 0%,#60a5fa 100%)",
+          "tags": ["#education", "#makerspace", "#future"],
+          "frame": "portrait",
+          "companionTo": "/blogs"
+        },
+        {
+          "id": "market-night-community",
+          "title": "Night market after the rain",
+          "category": "community",
+          "albumTitle": "Life Between Events",
+          "photographer": "Gia Bao",
+          "photographerRole": "Street photographer",
+          "location": "Can Tho",
+          "timeLabel": "04/03/2026",
+          "likes": 13200,
+          "comments": 352,
+          "image": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#7c2d12 0%,#fb923c 100%)",
+          "tags": ["#community", "#market", "#citylife"],
+          "frame": "square",
+          "companionTo": "/popular"
+        },
+        {
+          "id": "backstage-vnseea",
+          "title": "Backstage demo booth before opening",
+          "category": "events",
+          "albumTitle": "Backstage Flow",
+          "photographer": "Minh Trang",
+          "photographerRole": "Backstage editor",
+          "location": "Da Nang",
+          "timeLabel": "04/14/2026",
+          "likes": 16700,
+          "comments": 407,
+          "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#111827 0%,#334155 100%)",
+          "tags": ["#event", "#backstage", "#demo"],
+          "frame": "portrait",
+          "companionTo": "/popular"
+        },
+        {
+          "id": "creator-lab-portrait",
+          "title": "Creator lab just before recording",
+          "category": "portraits",
+          "albumTitle": "Member Portraits",
+          "photographer": "Xu Nguyen",
+          "photographerRole": "Visual storyteller",
+          "location": "Hanoi",
+          "timeLabel": "04/12/2026",
+          "likes": 15400,
+          "comments": 289,
+          "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
+          "accent": "linear-gradient(135deg,#be123c 0%,#fb7185 100%)",
+          "tags": ["#portrait", "#creator", "#studio"],
+          "frame": "tall",
+          "companionTo": "/search"
+        }
+      ],
+      "quickLinks": [
+        {
+          "title": "Open the popular flow",
+          "description": "Compare trending photo sets with the highest-engagement posts in the popular ranking board.",
+          "to": "/popular",
+          "icon": "i-ph-fire-fill",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Jump to memories",
+          "description": "Browse more photos by timeline and community albums already grouped by activity runs.",
+          "to": "/memories",
+          "icon": "i-ph-clock-counter-clockwise-fill",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)"
+        },
+        {
+          "title": "Read the blogs backstage notes",
+          "description": "Go to blogs for setup notes, backstage stories, and the longer editorial context behind each album.",
+          "to": "/blogs",
+          "icon": "i-ph-newspaper-fill",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ]
+    },
+    "popularPage": {
+      "seoTitle": "Popular posts | VNSEEA",
+      "seoDescription": "Track the highest-engagement posts on VNSEEA, filter by topic, and jump into search, explore, or hashtag flows.",
+      "heroEyebrow": "Pulse Board",
+      "heroTitle": "Follow the hottest posts across the community",
+      "heroDescription": "The /popular page gathers high-engagement posts, lets you filter by topic, and opens directly into hashtag, search, or explore flows without routing back through the main feed.",
+      "primaryCta": "Back to feed",
+      "secondaryCta": "Open search",
+      "searchPlaceholder": "Search posts, creators, hashtags...",
+      "openLink": "Open link",
+      "resultEyebrow": "Current ranking",
+      "resultHeadingAll": "Popular posts across the platform",
+      "resultHeadingCategory": "Topic group: {label}",
+      "resultCount": "{count} posts match the current filters",
+      "resetFilters": "Reset",
+      "emptyTitle": "No matching posts yet",
+      "emptyDescription": "Try a different topic group or keyword to see other hot posts.",
+      "rankLabel": "Top {rank}",
+      "scoreCount": "{count} hot points",
+      "statPosts": "Posts",
+      "statPostsDescription": "Posts currently ranked in the popular flow.",
+      "statInteractions": "Interactions",
+      "statInteractionsDescription": "Combined likes, comments, and shares in the current list.",
+      "statCreators": "Creators",
+      "statCreatorsDescription": "People currently driving engagement in this ranking.",
+      "statComments": "Comments",
+      "statCommentsDescription": "Discussion volume attached to these popular posts.",
+      "sidebarHashtagsEyebrow": "Hot hashtags",
+      "sidebarHashtagsTitle": "Tags pulling traffic",
+      "sidebarCreatorsEyebrow": "Featured creators",
+      "sidebarCreatorsTitle": "People driving engagement",
+      "sidebarLinksEyebrow": "Quick paths",
+      "sidebarLinksTitle": "Open related flows",
+      "categories": [
+        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill" },
+        { "label": "Community", "value": "community", "icon": "i-ph-users-three-fill" },
+        { "label": "Product", "value": "product", "icon": "i-ph-rocket-launch-fill" },
+        { "label": "Business", "value": "business", "icon": "i-ph-briefcase-fill" },
+        { "label": "Design", "value": "design", "icon": "i-ph-paint-brush-broad-fill" },
+        { "label": "Technology", "value": "technology", "icon": "i-ph-cpu-fill" }
+      ],
+      "quickLinks": [
+        {
+          "title": "Search deeper",
+          "description": "Jump to search to filter posts by keyword, author, or a specific hashtag.",
+          "to": "/search",
+          "icon": "i-ph-magnifying-glass-bold",
+          "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)"
+        },
+        {
+          "title": "Explore suggestions",
+          "description": "Open explore to compare popular posts with suggested people and fanpages.",
+          "to": "/explore",
+          "icon": "i-ph-compass-fill",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)"
+        },
+        {
+          "title": "Saved posts",
+          "description": "Jump to saved posts to keep the hottest content and review it later.",
+          "to": "/saved-posts",
+          "icon": "i-ph-bookmark-simple-fill",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ],
+      "posts": [
+        {
+          "id": "community-onboarding-sprint",
+          "author": "Thu Ha",
+          "role": "Community lead",
+          "audience": "Public",
+          "time": "12 minutes ago",
+          "text": "The latest sprint for community onboarding is pulling strong engagement: the team merged group, page, and hashtag entry points so new users do not fall out of the flow after their first three clicks.",
+          "tags": ["community", "retention", "ux"],
+          "stats": { "likes": 482, "comments": 94, "shares": 31 },
+          "media": "double",
+          "comments": [
+            {
+              "id": 101,
+              "author": "Nam Pham",
+              "role": "Frontend",
+              "text": "If we keep onboarding this short, the secondary pages will become much easier to enter."
+            },
+            {
+              "id": 102,
+              "author": "Linh Dao",
+              "role": "Product",
+              "text": "We should keep featured hashtags in the first screen so new users immediately have an anchor."
+            }
+          ],
+          "category": "community",
+          "trendLabel": "Hot 6h"
+        },
+        {
+          "id": "popular-launch-review",
+          "author": "Bao Tran",
+          "role": "Product partnerships",
+          "audience": "Members",
+          "time": "35 minutes ago",
+          "text": "The new /popular mock is getting good signals because it combines ranking, filters, and quick links in a single screen. Once real analytics are connected, this should become a strong hub for measuring which content is pulling traffic across the system.",
+          "tags": ["product", "launch", "analytics"],
+          "stats": { "likes": 366, "comments": 72, "shares": 24 },
+          "media": "single",
+          "comments": [
+            {
+              "id": 201,
+              "author": "Minh Trang",
+              "role": "Strategy",
+              "text": "This page works well as an entry point for content discovery instead of relying only on search."
+            }
+          ],
+          "category": "product",
+          "trendLabel": "Rising fast"
+        },
+        {
+          "id": "design-system-rhythm",
+          "author": "Quynh Le",
+          "role": "Designer",
+          "audience": "Public",
+          "time": "1 hour ago",
+          "text": "I just tightened the rhythm for popular post cards: ranking badge, trend label, and hot score go first, while the content stays on top of the existing PostCard so we do not duplicate components without a clear reason.",
+          "tags": ["design", "tokens", "components"],
+          "stats": { "likes": 418, "comments": 61, "shares": 22 },
+          "media": "single",
+          "comments": [
+            {
+              "id": 301,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "That makes it obvious why a post is trending at first glance."
+            }
+          ],
+          "category": "design",
+          "trendLabel": "Highly saved"
+        },
+        {
+          "id": "founder-content-cadence",
+          "author": "Minh Trang",
+          "role": "Strategy",
+          "audience": "Public",
+          "time": "2 hours ago",
+          "text": "If the popular page is wired to blogs, live, and watch through clear quick links, the content cadence becomes much smoother: posts drive discovery, live drives conversation, and watch drives deeper content consumption.",
+          "tags": ["business", "growth", "content"],
+          "stats": { "likes": 297, "comments": 58, "shares": 19 },
+          "comments": [
+            {
+              "id": 401,
+              "author": "Bao Tran",
+              "role": "Partnerships",
+              "text": "Agreed. This is the right place to measure which posts are creating conversions into secondary pages."
+            }
+          ],
+          "category": "business",
+          "trendLabel": "Heavy discussion"
+        },
+        {
+          "id": "nuxt-performance-notes",
+          "author": "Nam Pham",
+          "role": "Frontend",
+          "audience": "Group",
+          "time": "3 hours ago",
+          "text": "I just documented the checklist for new pages: dedicated route, mock data read from i18n, SSR build passing, and real links kept in the mobile menu. The /popular flow should become the reference template for the next content pages.",
+          "tags": ["nuxt", "performance", "technology"],
+          "stats": { "likes": 524, "comments": 77, "shares": 28 },
+          "media": "double",
+          "comments": [
+            {
+              "id": 501,
+              "author": "Quynh Le",
+              "role": "Designer",
+              "text": "With a template like this, the team can move much faster on new pages, especially locale and SEO."
+            },
+            {
+              "id": 502,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "Exactly. We should keep this pattern for popular, movies, and the next content pages."
+            }
+          ],
+          "category": "technology",
+          "trendLabel": "Tech pick"
+        }
+      ]
+    },
     "explorePage": {
       "seoTitle": "Explore | VNSEEA",
       "seoDescription": "Discover recommended posts, people, and fanpages on VNSEEA.",
@@ -2857,6 +3567,7 @@
     },
     "publisherBox": {
       "prompt": "What is happening? Hashtag, mention, link...",
+      "composerPlaceholder": "What is happening? Hashtag, mention, link...",
       "expandedOpen": "Post composer is open",
       "expandedClosed": "Tap to write a post, add images, video, polls, and more",
       "actionImage": "Image",
@@ -2867,11 +3578,61 @@
       "actionAudio": "Audio",
       "actionFile": "File",
       "actionStory": "Story",
+      "actionProduct": "Product",
       "chipOnlyMe": "Only me",
       "chipAddLocation": "Add location",
       "chipTagFriends": "Tag friends",
       "chipColors": "Colors",
+      "live": "Live",
       "share": "Share"
+    },
+    "storyCarousel": {
+      "createStory": "Create story",
+      "fallbackMeta": "Just now",
+      "previousStory": "Previous story",
+      "nextStory": "Next story",
+      "storyLabel": "Story",
+      "interactions": "Interactions",
+      "actionLike": "Like story",
+      "actionComment": "Comment on story",
+      "actionShare": "Share story",
+      "stories": {
+        "mine": {
+          "title": "Create a new story",
+          "caption": "Share your moment",
+          "meta": "Story · yours"
+        },
+        "story1": {
+          "title": "A quiet morning for shaping ideas",
+          "caption": "A story viewer styled for the project, keeping a familiar social feel while staying aligned with VNSEEA spacing and palette.",
+          "meta": "Story · 2 minutes ago"
+        },
+        "story2": {
+          "title": "A short chill break in a long day",
+          "caption": "Swipe left or right to move between stories, or use the controls for faster desktop navigation.",
+          "meta": "Story · 15 minutes ago"
+        },
+        "story3": {
+          "title": "A full-screen story mock for mobile-first",
+          "caption": "Works for both images and video, and can later connect to a real story API from the backend.",
+          "meta": "Story · 1 hour ago"
+        },
+        "story4": {
+          "title": "Internal guide story",
+          "caption": "A quick way to highlight announcements and short updates through stories.",
+          "meta": "Story · 3 hours ago"
+        },
+        "story5": {
+          "title": "Travel story",
+          "caption": "A soft travel frame that feels familiar yet still reads as VNSEEA.",
+          "meta": "Story · 5 hours ago"
+        },
+        "story6": {
+          "title": "Product story",
+          "caption": "Focused on one short, clear, and polished message.",
+          "meta": "Story · 7 hours ago"
+        }
+      }
     },
     "postHeader": {
       "follow": "Follow",
@@ -2947,6 +3708,171 @@
       "actionComment": "Comment on image",
       "actionShare": "Share image",
       "defaultTitle": "Lightbox"
+    },
+    "lightboxViewer": {
+      "title": "View media",
+      "mockLabel": "Mock lightbox viewer"
+    }
+  },
+  "navigation": {
+    "headerBar": {
+      "home": "Home",
+      "friendRequests": "Friend requests",
+      "messages": "Messages",
+      "notifications": "Notifications",
+      "account": "Account",
+      "search": "Search",
+      "reels": "Reels",
+      "video": "Video",
+      "profile": "Profile"
+    },
+    "headerIconNav": {
+      "home": "Home",
+      "photos": "Photos",
+      "reels": "Reels",
+      "video": "Video",
+      "music": "Music"
+    },
+    "mobileMenu": {
+      "title": "Menu",
+      "close": "Close menu",
+      "adminTitle": "Administrator",
+      "walletBalance": "Wallet: {amount}",
+      "points": "Points: {points}",
+      "mainNav": {
+        "search": "Search",
+        "pages": "Pages",
+        "myProducts": "My products",
+        "marketplace": "Marketplace",
+        "blog": "Blog",
+        "createBlog": "Write blog",
+        "myArticles": "My articles",
+        "movies": "Movies",
+        "events": "Events",
+        "createEvent": "Create event",
+        "live": "Live",
+        "myGroupsPlaceholder": "My groups",
+        "eventsPlaceholder": "Events",
+        "myGroups": "My groups",
+        "forum": "Forum",
+        "ads": "Ads",
+        "photos": "Photos",
+        "watch": "Watch",
+        "reelsShortcut": "Reels",
+        "savedPosts": "Saved posts",
+        "poke": "Poke",
+        "explore": "Explore",
+        "popularPosts": "Popular posts",
+        "findFriends": "Find friends",
+        "games": "Games",
+        "jobs": "Jobs",
+        "goPro": "Go Pro",
+        "wallet": "VNSEEA Wallet",
+        "withdrawal": "Withdrawal",
+        "directory": "Directory",
+        "trending": "Trending",
+        "funding": "Funding",
+        "memories": "Memories",
+        "deals": "Deals"
+      },
+      "settingsNav": {
+        "settings": "Settings",
+        "register": "Register",
+        "adminArea": "Admin area",
+        "logout": "Log out"
+      },
+      "bottomActions": {
+        "switchAccount": "Switch account",
+        "keyboardShortcuts": "Keyboard shortcuts",
+        "darkMode": "Dark mode"
+      }
+    },
+    "leftSidebar": {
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "items": {
+        "feed": "News feed",
+        "photos": "Photos",
+        "watch": "Watch",
+        "reels": "Reels",
+        "savedPosts": "Saved posts",
+        "popularPosts": "Popular posts",
+        "memories": "Memories",
+        "poke": "Poke",
+        "myGroups": "My groups",
+        "myPages": "My pages",
+        "blog": "Blog",
+        "marketplace": "Marketplace",
+        "directory": "Directory",
+        "events": "Events",
+        "live": "Live",
+        "forum": "Forum",
+        "movies": "Movies",
+        "jobs": "Jobs",
+        "deals": "Deals",
+        "findFriends": "Find friends",
+        "games": "Games",
+        "goPro": "Go Pro",
+        "wallet": "VNSEEA Wallet",
+        "withdrawal": "Withdraw",
+        "trending": "Trending",
+        "funding": "Funding"
+      }
+    },
+    "chatWidget": {
+      "title": "Chats",
+      "onlineCount": "{count} online now",
+      "actionCreateGroup": "Create group chat",
+      "actionSettings": "Chat settings",
+      "content": "Content",
+      "sendToLabel": "Send to:",
+      "recipientPlaceholder": "Recipient name...",
+      "messagePlaceholder": "Enter message...",
+      "attachLabel": "Attachment",
+      "optional": "optional",
+      "chooseFile": "Choose file",
+      "noFileSelected": "No file selected",
+      "selectAll": "Select all",
+      "sendMessage": "Send message",
+      "selectTag": "Choose tag...",
+      "tagImportant": "Important",
+      "tagWork": "Work",
+      "onlineBadge": "Online",
+      "readyToChat": "Ready to chat",
+      "onlineStatus": "Online now",
+      "offlineToday": "Away today",
+      "groupMembers": "{count} members",
+      "searchPlaceholder": "Search users",
+      "miniChatActive": "Active now",
+      "miniChatSample": "Hey, sending a quick note from the chat widget.",
+      "miniChatReply": "Okay, I am replying now.",
+      "miniGroupSample": "This is a sample group conversation.",
+      "miniGroupReply": "Added to the group.",
+      "miniInputPlaceholder": "Enter message...",
+      "tabSend": "Send",
+      "tabContacts": "Contacts",
+      "tabGroups": "Groups"
+    },
+    "headerSearchInput": {
+      "placeholder": "Search people, pages, groups, and #hashtags"
+    },
+    "headerLogo": {
+      "tagline": "Social hub"
+    },
+    "widgetCard": {
+      "mockBadge": "Mock"
+    }
+  },
+  "layouts": {
+    "guest": {
+      "titleLine1": "Connect with",
+      "titleLine2": "friends!",
+      "subtitle": "Share new things and memorable moments with your community."
+    }
+  },
+  "auth": {
+    "heroPanel": {
+      "defaultImageAlt": "People using phones"
     }
   },
   "settings": {
@@ -3615,7 +4541,6 @@
       "contactShop": "Contact Shop",
       "viewMore": "View More",
       "chooseOther": "Choose Other",
-      "contactBuyer": "Contact Buyer",
       "shippingAddress": "Shipping Address",
       "orderedFrom": "Order from {seller} • {price}",
       "productsSummary": "{count} products ordered",
@@ -3757,6 +4682,7 @@
     "pagesDirectory": {
       "title": "Pages",
       "desc": "Manage your followed fanpages, see suitable suggestions, and quickly open the new page creation flow in the same area.",
+      "createAction": "Create page",
       "emptyMineTitle": "No pages to display",
       "emptyMineDesc": "You haven't created any fanpages on this account yet. Start with a new page to introduce your brand, service, or content channel.",
       "createFirst": "Create your first page",
@@ -3822,6 +4748,7 @@
         "fillInfo": "Fill in {entity} information",
         "fillDesc": "Complete the name, URL, description, and category to get your new {entity} ready to appear on VNSEEA.",
         "completionStatus": "{count}/{total} key items ready",
+        "nameLabel": "Name",
         "urlSuggested": "URL suggestion",
         "urlDefault": "your-name",
         "useSuggestion": "Use suggestion",
@@ -4250,6 +5177,7 @@
           "name": "Page name",
           "namePlaceholder": "Enter fanpage name",
           "url": "Page URL",
+          "slugPlaceholder": "fanpage-name",
           "urlSuggested": "Suggestion: {slug}",
           "urlUseSuggestion": "Use suggested slug",
           "summary": "Short introduction",
@@ -4269,6 +5197,9 @@
           "tagsPlaceholder": "furniture, construction, natural-wood"
         },
         "stats": {
+          "topicsLabel": "Topics",
+          "ctaLabel": "CTA",
+          "publicLinkLabel": "Public link",
           "summaryLength": "{count} characters",
           "tagCount": "{count} tags",
           "ctaFallback": "Not selected",
