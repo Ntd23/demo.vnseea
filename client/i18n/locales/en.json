@@ -844,6 +844,7 @@
       "fullName": "Full name",
       "fullNamePlaceholder": "Alex Nguyen",
       "email": "Email",
+      "emailPlaceholder": "email@example.com",
       "phone": "Phone number",
       "phonePlaceholder": "090...",
       "cvUpload": "Upload CV",

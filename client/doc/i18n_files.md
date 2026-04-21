@@ -310,7 +310,7 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/jobs/JobsEmptyState.vue`
 - [x] `client/app/components/jobs/JobCard.vue`
 - [x] `client/app/components/jobs/JobDetailPanel.vue`
-- [ ] `client/app/components/jobs/JobApplyModal.vue`
+- [x] `client/app/components/jobs/JobApplyModal.vue`
 - [x] `client/app/components/jobs/JobPostModal.vue`
 - [x] `client/app/components/pages/FundingPage.vue`
 - [x] `client/app/components/pages/CreateFundingPage.vue`

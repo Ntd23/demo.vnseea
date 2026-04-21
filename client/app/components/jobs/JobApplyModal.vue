@@ -37,7 +37,7 @@
           </label>
           <label class="block">
             <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.email") }}</span>
-            <input v-model="form.email" required class="job-input mt-2" placeholder="email@example.com" type="email">
+            <input v-model="form.email" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.emailPlaceholder')" type="email">
           </label>
           <label class="block">
             <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.phone") }}</span>
