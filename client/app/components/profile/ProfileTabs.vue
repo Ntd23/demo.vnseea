@@ -21,12 +21,14 @@
 defineProps<{ modelValue: string }>()
 defineEmits<{ 'update:modelValue': [value: string] }>()
 
-const tabs = [
-  { key: 'timeline', label: 'Dòng thời gian' },
-  { key: 'about', label: 'Giới thiệu' },
-  { key: 'friends', label: 'Bạn bè' },
-  { key: 'photos', label: 'Ảnh' },
-  { key: 'videos', label: 'Video' },
-  { key: 'albums', label: 'Albums' },
-]
+const { t } = useI18n()
+
+const tabs = computed(() => [
+  { key: 'timeline', label: t('pages.profilePage.tabs.timeline') },
+  { key: 'about', label: t('pages.profilePage.tabs.about') },
+  { key: 'friends', label: t('pages.profilePage.tabs.friends') },
+  { key: 'photos', label: t('pages.profilePage.tabs.photos') },
+  { key: 'videos', label: t('pages.profilePage.tabs.videos') },
+  { key: 'albums', label: t('pages.profilePage.tabs.albums') },
+])
 </script>

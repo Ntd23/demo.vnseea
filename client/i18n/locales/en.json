@@ -1013,7 +1013,72 @@
       "infoOnlineStatus": "Online",
       "infoPostsCountLabel": "posts",
       "infoGenderMale": "Male",
-      "infoLocationValue": "Based at No. 1 Ton That Thuyet"
+      "infoLocationValue": "Based at No. 1 Ton That Thuyet",
+      "introCard": {
+        "title": "Intro",
+        "edit": "Edit",
+        "headline": "🎯 Building a community that connects Vietnamese people. Passionate about technology and product design.",
+        "items": {
+          "work": { "label": "Work", "value": "Founder at VNSEEA" },
+          "education": { "label": "Education", "value": "Ho Chi Minh City University of Technology" },
+          "livesIn": { "label": "Lives in", "value": "Ho Chi Minh City, Vietnam" },
+          "relationship": { "label": "Relationship", "value": "Single" },
+          "joined": { "label": "Joined", "value": "March 2024" },
+          "website": { "label": "Website", "value": "vnseea.com" }
+        }
+      },
+      "aboutCard": {
+        "title": "About",
+        "sections": {
+          "workEducation": {
+            "title": "Work and education",
+            "items": {
+              "job": { "value": "Founder at VNSEEA", "sub": "2023 — Present" },
+              "school": { "value": "Ho Chi Minh City University of Technology", "sub": "Computer Science Faculty · 2018 — 2022" }
+            }
+          },
+          "living": {
+            "title": "Places lived",
+            "items": {
+              "current": { "value": "Lives in Ho Chi Minh City" },
+              "hometown": { "value": "From Da Nang, Vietnam" }
+            }
+          },
+          "contact": {
+            "title": "Contact info",
+            "items": {
+              "email": { "value": "admin{'@'}vnseea.com" },
+              "website": { "value": "vnseea.com" },
+              "phone": { "value": "+84 xxx xxx xxx" }
+            }
+          },
+          "basic": {
+            "title": "Basic info",
+            "items": {
+              "gender": { "value": "Male" },
+              "birthday": { "value": "Birthday: 15/03/1996" },
+              "relationship": { "value": "Single" }
+            }
+          }
+        }
+      },
+      "tabs": {
+        "timeline": "Timeline",
+        "about": "About",
+        "friends": "Friends",
+        "photos": "Photos",
+        "videos": "Videos",
+        "albums": "Albums"
+      },
+      "friendsGrid": {
+        "title": "Friends",
+        "seeAll": "See all",
+        "friendCount": "{count} friends"
+      },
+      "photosGrid": {
+        "title": "Photos",
+        "seeAll": "See all"
+      }
     },
     "hashtagPage": {
       "seoTitle": "{tag} | Hashtag | VNSEEA",

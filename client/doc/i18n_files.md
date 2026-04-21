@@ -237,13 +237,13 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/profile/ProfileHero.vue`
 - [x] `client/app/components/profile/ProfileCompletionCard.vue`
 - [x] `client/app/components/profile/ProfileSidebar.vue`
-- [ ] `client/app/components/profile/ProfileIntroCard.vue`
-- [ ] `client/app/components/profile/ProfileAboutCard.vue`
+- [x] `client/app/components/profile/ProfileIntroCard.vue`
+- [x] `client/app/components/profile/ProfileAboutCard.vue`
 - [x] `client/app/components/profile/ProfileInfoCard.vue`
-- [ ] `client/app/components/profile/ProfileTabs.vue`
+- [x] `client/app/components/profile/ProfileTabs.vue`
 - [x] `client/app/components/profile/ProfileFeedList.vue`
-- [ ] `client/app/components/profile/ProfileFriendsGrid.vue`
-- [ ] `client/app/components/profile/ProfilePhotosGrid.vue`
+- [x] `client/app/components/profile/ProfileFriendsGrid.vue`
+- [x] `client/app/components/profile/ProfilePhotosGrid.vue`
 - [x] `client/app/components/profile/ProfileMediaGrid.vue`
 - [ ] `client/app/components/community/PageHeroBanner.vue`
 - [ ] `client/app/components/community/PageFeedSection.vue`

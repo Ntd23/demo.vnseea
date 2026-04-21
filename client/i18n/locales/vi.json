@@ -1013,7 +1013,72 @@
       "infoOnlineStatus": "Trực tuyến",
       "infoPostsCountLabel": "bài viết",
       "infoGenderMale": "Nam giới",
-      "infoLocationValue": "Nằm ở Số 1 Tôn Thất Thuyết"
+      "infoLocationValue": "Nằm ở Số 1 Tôn Thất Thuyết",
+      "introCard": {
+        "title": "Giới thiệu",
+        "edit": "Chỉnh sửa",
+        "headline": "🎯 Xây dựng cộng đồng kết nối người Việt. Đam mê công nghệ và thiết kế sản phẩm.",
+        "items": {
+          "work": { "label": "Công việc", "value": "Founder tại VNSEEA" },
+          "education": { "label": "Học vấn", "value": "Đại học Bách Khoa" },
+          "livesIn": { "label": "Sống tại", "value": "TP. Hồ Chí Minh, Việt Nam" },
+          "relationship": { "label": "Tình trạng", "value": "Độc thân" },
+          "joined": { "label": "Tham gia", "value": "Tháng 3, 2024" },
+          "website": { "label": "Website", "value": "vnseea.com" }
+        }
+      },
+      "aboutCard": {
+        "title": "Giới thiệu",
+        "sections": {
+          "workEducation": {
+            "title": "Công việc và học vấn",
+            "items": {
+              "job": { "value": "Founder tại VNSEEA", "sub": "2023 — Hiện tại" },
+              "school": { "value": "Đại học Bách Khoa TP.HCM", "sub": "Khoa Khoa học Máy tính · 2018 — 2022" }
+            }
+          },
+          "living": {
+            "title": "Nơi ở",
+            "items": {
+              "current": { "value": "Sống tại TP. Hồ Chí Minh" },
+              "hometown": { "value": "Đến từ Đà Nẵng, Việt Nam" }
+            }
+          },
+          "contact": {
+            "title": "Thông tin liên hệ",
+            "items": {
+              "email": { "value": "admin{'@'}vnseea.com" },
+              "website": { "value": "vnseea.com" },
+              "phone": { "value": "+84 xxx xxx xxx" }
+            }
+          },
+          "basic": {
+            "title": "Thông tin cơ bản",
+            "items": {
+              "gender": { "value": "Nam" },
+              "birthday": { "value": "Ngày sinh: 15/03/1996" },
+              "relationship": { "value": "Độc thân" }
+            }
+          }
+        }
+      },
+      "tabs": {
+        "timeline": "Dòng thời gian",
+        "about": "Giới thiệu",
+        "friends": "Bạn bè",
+        "photos": "Ảnh",
+        "videos": "Video",
+        "albums": "Albums"
+      },
+      "friendsGrid": {
+        "title": "Bạn bè",
+        "seeAll": "Xem tất cả",
+        "friendCount": "{count} bạn bè"
+      },
+      "photosGrid": {
+        "title": "Ảnh",
+        "seeAll": "Xem tất cả"
+      }
     },
     "hashtagPage": {
       "seoTitle": "{tag} | Hashtag | VNSEEA",
