@@ -11,9 +11,9 @@
         </header>
 
         <div class="hero-copy">
-          <h1 class="hero-title">Ket noi voi<br>ban be!</h1>
+          <h1 class="hero-title">{{ $t("layouts.guest.titleLine1") }}<br>{{ $t("layouts.guest.titleLine2") }}</h1>
           <p class="hero-subtitle">
-            Chia se nhung dieu moi va nhung khoanh khac dang nho cung cong dong cua ban.
+            {{ $t("layouts.guest.subtitle") }}
           </p>
         </div>
 

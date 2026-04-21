@@ -8,7 +8,7 @@
     <input
       v-model="search"
       class="h-11 w-full rounded-full border border-[#dbe3f2] bg-white pl-12 pr-4 text-[14px] text-slate-900 outline-none transition placeholder:text-[#90a0d5] focus:border-[#0000ff] focus:ring-4 focus:ring-[#dfe3ff]"
-      placeholder="Tìm kiếm người, trang, nhóm và #hashtags"
+      :placeholder="$t('navigation.headerSearchInput.placeholder')"
       type="search"
     >
   </form>

@@ -3012,6 +3012,162 @@
       "mockLabel": "Trình xem lightbox mô phỏng"
     }
   },
+  "navigation": {
+    "headerBar": {
+      "home": "Trang chủ",
+      "friendRequests": "Lời mời kết bạn",
+      "messages": "Tin nhắn",
+      "notifications": "Thông báo",
+      "account": "Tài khoản",
+      "search": "Tìm kiếm",
+      "reels": "Reels",
+      "video": "Video",
+      "profile": "Trang cá nhân"
+    },
+    "headerIconNav": {
+      "home": "Trang chủ",
+      "photos": "Ảnh",
+      "reels": "Reels",
+      "video": "Video",
+      "music": "Nhạc"
+    },
+    "mobileMenu": {
+      "title": "Menu",
+      "close": "Đóng menu",
+      "adminTitle": "Quản trị viên",
+      "walletBalance": "Ví: {amount}",
+      "points": "Điểm: {points}",
+      "mainNav": {
+        "search": "Tìm kiếm",
+        "pages": "Các trang",
+        "myProducts": "Sản phẩm của tôi",
+        "marketplace": "Thị trường",
+        "blog": "Blog",
+        "createBlog": "Viết blog",
+        "myArticles": "Bài viết của tôi",
+        "movies": "Phim",
+        "events": "Sự kiện",
+        "createEvent": "Tạo sự kiện",
+        "live": "Live",
+        "myGroupsPlaceholder": "Nhóm của tôi",
+        "eventsPlaceholder": "Sự kiện",
+        "myGroups": "Nhóm của tôi",
+        "forum": "Diễn đàn",
+        "ads": "Quảng cáo",
+        "photos": "Tập ảnh",
+        "watch": "Xem",
+        "reelsShortcut": "Cuộn phim",
+        "savedPosts": "Bài đã lưu",
+        "poke": "Chọc",
+        "explore": "Khám phá",
+        "popularPosts": "Bài viết phổ biến",
+        "findFriends": "Tìm bạn",
+        "games": "Trò chơi",
+        "jobs": "Việc làm",
+        "goPro": "Go Pro",
+        "wallet": "Ví VNSEEA",
+        "withdrawal": "Rút tiền",
+        "directory": "Danh mục",
+        "trending": "Những điều phổ biến",
+        "funding": "Kinh phí",
+        "memories": "Ký ức",
+        "deals": "Ưu đãi"
+      },
+      "settingsNav": {
+        "settings": "Cài đặt",
+        "register": "Đăng ký",
+        "adminArea": "Khu vực quản trị",
+        "logout": "Đăng xuất"
+      },
+      "bottomActions": {
+        "switchAccount": "Chuyển tài khoản",
+        "keyboardShortcuts": "Các phím tắt bàn phím",
+        "darkMode": "Chế độ ban đêm"
+      }
+    },
+    "leftSidebar": {
+      "showMore": "Xem thêm",
+      "showLess": "Ẩn bớt",
+      "items": {
+        "feed": "Nguồn cấp tin tức",
+        "photos": "Tập ảnh",
+        "watch": "Xem",
+        "reels": "Cuộn phim",
+        "savedPosts": "Bài đã lưu",
+        "popularPosts": "Bài viết phổ biến",
+        "memories": "Ký ức",
+        "poke": "Chọc",
+        "myGroups": "Nhóm của tôi",
+        "myPages": "Trang của tôi",
+        "blog": "Blog",
+        "marketplace": "Thị trường",
+        "directory": "Danh mục",
+        "events": "Sự kiện",
+        "live": "Live",
+        "forum": "Diễn đàn",
+        "movies": "Phim",
+        "jobs": "Việc làm",
+        "deals": "Ưu đãi",
+        "findFriends": "Tìm bạn",
+        "games": "Trò chơi",
+        "goPro": "Go Pro",
+        "wallet": "Ví VNSEEA",
+        "withdrawal": "Rút tiền",
+        "trending": "Trending",
+        "funding": "Kinh phí"
+      }
+    },
+    "chatWidget": {
+      "title": "Trò chuyện",
+      "onlineCount": "{count} người đang online",
+      "actionCreateGroup": "Tạo nhóm chat",
+      "actionSettings": "Cài đặt",
+      "content": "Nội dung",
+      "sendToLabel": "Gửi đến:",
+      "recipientPlaceholder": "Tên người nhận...",
+      "messagePlaceholder": "Nhập tin nhắn...",
+      "attachLabel": "Đính kèm",
+      "optional": "tùy chọn",
+      "chooseFile": "Chọn tệp",
+      "noFileSelected": "Chưa có tệp nào được chọn",
+      "selectAll": "Chọn tất cả",
+      "sendMessage": "Gửi tin nhắn",
+      "selectTag": "Chọn thẻ...",
+      "tagImportant": "Quan trọng",
+      "tagWork": "Công việc",
+      "onlineBadge": "Online",
+      "readyToChat": "Sẵn sàng trò chuyện",
+      "onlineStatus": "Đang online",
+      "offlineToday": "Hôm nay không hoạt động",
+      "groupMembers": "{count} thành viên",
+      "searchPlaceholder": "Tìm kiếm người dùng",
+      "miniChatActive": "Đang hoạt động",
+      "miniChatSample": "Chào bạn, mình nhắn nhanh từ chat widget.",
+      "miniChatReply": "Ok, mình phản hồi ngay đây.",
+      "miniGroupSample": "Đây là mẫu hội thoại nhóm.",
+      "miniGroupReply": "Đã thêm vào nhóm.",
+      "miniInputPlaceholder": "Nhập tin nhắn...",
+      "tabSend": "Gửi tin",
+      "tabContacts": "Danh bạ",
+      "tabGroups": "Nhóm"
+    },
+    "headerSearchInput": {
+      "placeholder": "Tìm kiếm người, trang, nhóm và #hashtags"
+    },
+    "headerLogo": {
+      "tagline": "Social hub"
+    },
+    "widgetCard": {
+      "mockBadge": "Mock"
+    }
+  },
+  "layouts": {
+    "guest": {
+      "titleLine1": "Kết nối với",
+      "titleLine2": "bạn bè!",
+      "subtitle": "Chia sẻ những điều mới và những khoảnh khắc đáng nhớ cùng cộng đồng của bạn."
+    }
+  },
   "settings": {
     "seo": {
       "titleSuffix": "Cài đặt VNSEEA"

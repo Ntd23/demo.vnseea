@@ -3012,6 +3012,162 @@
       "mockLabel": "Mock lightbox viewer"
     }
   },
+  "navigation": {
+    "headerBar": {
+      "home": "Home",
+      "friendRequests": "Friend requests",
+      "messages": "Messages",
+      "notifications": "Notifications",
+      "account": "Account",
+      "search": "Search",
+      "reels": "Reels",
+      "video": "Video",
+      "profile": "Profile"
+    },
+    "headerIconNav": {
+      "home": "Home",
+      "photos": "Photos",
+      "reels": "Reels",
+      "video": "Video",
+      "music": "Music"
+    },
+    "mobileMenu": {
+      "title": "Menu",
+      "close": "Close menu",
+      "adminTitle": "Administrator",
+      "walletBalance": "Wallet: {amount}",
+      "points": "Points: {points}",
+      "mainNav": {
+        "search": "Search",
+        "pages": "Pages",
+        "myProducts": "My products",
+        "marketplace": "Marketplace",
+        "blog": "Blog",
+        "createBlog": "Write blog",
+        "myArticles": "My articles",
+        "movies": "Movies",
+        "events": "Events",
+        "createEvent": "Create event",
+        "live": "Live",
+        "myGroupsPlaceholder": "My groups",
+        "eventsPlaceholder": "Events",
+        "myGroups": "My groups",
+        "forum": "Forum",
+        "ads": "Ads",
+        "photos": "Photos",
+        "watch": "Watch",
+        "reelsShortcut": "Reels",
+        "savedPosts": "Saved posts",
+        "poke": "Poke",
+        "explore": "Explore",
+        "popularPosts": "Popular posts",
+        "findFriends": "Find friends",
+        "games": "Games",
+        "jobs": "Jobs",
+        "goPro": "Go Pro",
+        "wallet": "VNSEEA Wallet",
+        "withdrawal": "Withdrawal",
+        "directory": "Directory",
+        "trending": "Trending",
+        "funding": "Funding",
+        "memories": "Memories",
+        "deals": "Deals"
+      },
+      "settingsNav": {
+        "settings": "Settings",
+        "register": "Register",
+        "adminArea": "Admin area",
+        "logout": "Log out"
+      },
+      "bottomActions": {
+        "switchAccount": "Switch account",
+        "keyboardShortcuts": "Keyboard shortcuts",
+        "darkMode": "Dark mode"
+      }
+    },
+    "leftSidebar": {
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "items": {
+        "feed": "News feed",
+        "photos": "Photos",
+        "watch": "Watch",
+        "reels": "Reels",
+        "savedPosts": "Saved posts",
+        "popularPosts": "Popular posts",
+        "memories": "Memories",
+        "poke": "Poke",
+        "myGroups": "My groups",
+        "myPages": "My pages",
+        "blog": "Blog",
+        "marketplace": "Marketplace",
+        "directory": "Directory",
+        "events": "Events",
+        "live": "Live",
+        "forum": "Forum",
+        "movies": "Movies",
+        "jobs": "Jobs",
+        "deals": "Deals",
+        "findFriends": "Find friends",
+        "games": "Games",
+        "goPro": "Go Pro",
+        "wallet": "VNSEEA Wallet",
+        "withdrawal": "Withdraw",
+        "trending": "Trending",
+        "funding": "Funding"
+      }
+    },
+    "chatWidget": {
+      "title": "Chats",
+      "onlineCount": "{count} online now",
+      "actionCreateGroup": "Create group chat",
+      "actionSettings": "Chat settings",
+      "content": "Content",
+      "sendToLabel": "Send to:",
+      "recipientPlaceholder": "Recipient name...",
+      "messagePlaceholder": "Enter message...",
+      "attachLabel": "Attachment",
+      "optional": "optional",
+      "chooseFile": "Choose file",
+      "noFileSelected": "No file selected",
+      "selectAll": "Select all",
+      "sendMessage": "Send message",
+      "selectTag": "Choose tag...",
+      "tagImportant": "Important",
+      "tagWork": "Work",
+      "onlineBadge": "Online",
+      "readyToChat": "Ready to chat",
+      "onlineStatus": "Online now",
+      "offlineToday": "Away today",
+      "groupMembers": "{count} members",
+      "searchPlaceholder": "Search users",
+      "miniChatActive": "Active now",
+      "miniChatSample": "Hey, sending a quick note from the chat widget.",
+      "miniChatReply": "Okay, I am replying now.",
+      "miniGroupSample": "This is a sample group conversation.",
+      "miniGroupReply": "Added to the group.",
+      "miniInputPlaceholder": "Enter message...",
+      "tabSend": "Send",
+      "tabContacts": "Contacts",
+      "tabGroups": "Groups"
+    },
+    "headerSearchInput": {
+      "placeholder": "Search people, pages, groups, and #hashtags"
+    },
+    "headerLogo": {
+      "tagline": "Social hub"
+    },
+    "widgetCard": {
+      "mockBadge": "Mock"
+    }
+  },
+  "layouts": {
+    "guest": {
+      "titleLine1": "Connect with",
+      "titleLine2": "friends!",
+      "subtitle": "Share new things and memorable moments with your community."
+    }
+  },
   "settings": {
     "seo": {
       "titleSuffix": "VNSEEA Settings"

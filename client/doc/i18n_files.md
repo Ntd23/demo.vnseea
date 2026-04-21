@@ -200,18 +200,18 @@ const heading = computed(() => t('profile.profileHero.editProfile'))
 - [x] `client/app/components/lightbox/LightboxModal.vue`
 
 ### Navigation / layout
-- [ ] `client/app/components/navigation/HeaderBar.vue`
-- [ ] `client/app/components/navigation/HeaderIconNav.vue`
-- [ ] `client/app/components/navigation/MobileMenu.vue`
-- [ ] `client/app/components/navigation/LeftSidebar.vue`
+- [x] `client/app/components/navigation/HeaderBar.vue`
+- [x] `client/app/components/navigation/HeaderIconNav.vue`
+- [x] `client/app/components/navigation/MobileMenu.vue`
+- [x] `client/app/components/navigation/LeftSidebar.vue`
 - [x] `client/app/components/navigation/RightSidebar.vue`
-- [ ] `client/app/components/navigation/ChatWidget.vue`
-- [ ] `client/app/components/navigation/HeaderSearchInput.vue`
-- [ ] `client/app/components/navigation/HeaderLogo.vue`
-- [ ] `client/app/components/navigation/SidebarMenuItem.vue`
-- [ ] `client/app/components/navigation/WidgetCard.vue`
+- [x] `client/app/components/navigation/ChatWidget.vue`
+- [x] `client/app/components/navigation/HeaderSearchInput.vue`
+- [x] `client/app/components/navigation/HeaderLogo.vue`
+- [x] `client/app/components/navigation/SidebarMenuItem.vue`
+- [x] `client/app/components/navigation/WidgetCard.vue`
 - [x] `client/app/layouts/default.vue`
-- [ ] `client/app/layouts/guest.vue`
+- [x] `client/app/layouts/guest.vue`
 - [x] `client/app/layouts/messages.vue`
 
 ### Auth / onboarding

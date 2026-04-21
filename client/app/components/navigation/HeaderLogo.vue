@@ -11,7 +11,7 @@
         class="text-[10px] font-semibold uppercase tracking-[0.28em]"
         :class="inverted ? 'text-white/70' : 'text-primary-600'"
       >
-        Social hub
+        {{ $t("navigation.headerLogo.tagline") }}
       </p>
       <p class="text-sm font-black leading-none" :class="inverted ? 'text-white' : 'text-slate-900'">VNSEEA</p>
     </div>

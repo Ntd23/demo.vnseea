@@ -5,7 +5,7 @@
         <div class="flex shrink-0 items-center gap-2 rounded-full border border-[#dbe3f2] bg-[#f7f9ff] p-1">
           <button class="desktop-pill" :class="isHome ? 'desktop-pill--active' : 'desktop-pill--inactive'" type="button">
             <Icon name="i-ph-house-fill" class="h-4.5 w-4.5" />
-            <span>{{ $t("common.header.home") }}</span>
+            <span>{{ $t("navigation.headerBar.home") }}</span>
           </button>
         </div>
 
@@ -28,7 +28,7 @@
             <Icon :name="action.icon" class="h-5 w-5" />
             <span v-if="action.badge" class="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0000ff] px-1 text-[9px] font-bold text-white">{{ action.badge }}</span>
           </component>
-          <button class="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[#dce4ff] bg-[linear-gradient(145deg,#1f34ff_0%,#0000ff_60%,#4d63ff_100%)] text-white shadow-[0_8px_18px_rgba(0,0,255,0.16)]" type="button" :aria-label="$t('common.header.account')" @click="$emit('toggle-menu')">
+          <button class="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[#dce4ff] bg-[linear-gradient(145deg,#1f34ff_0%,#0000ff_60%,#4d63ff_100%)] text-white shadow-[0_8px_18px_rgba(0,0,255,0.16)]" type="button" :aria-label="$t('navigation.headerBar.account')" @click="$emit('toggle-menu')">
             <Icon name="i-lucide-circle-user-round" class="h-5 w-5" />
           </button>
         </div>
@@ -55,7 +55,7 @@
           <button
             class="mobile-icon-btn mobile-icon-btn--avatar"
             type="button"
-            :aria-label="$t('common.header.account')"
+            :aria-label="$t('navigation.headerBar.account')"
             @click="$emit('toggle-menu')"
           >
             <Icon name="i-lucide-circle-user-round" class="h-[21px] w-[21px] text-white" />
@@ -75,18 +75,18 @@ const route = useRoute()
 const isHome = computed(() => route.path === "/" || route.path === "/home")
 
 const desktopActions = [
-  { label: "common.header.friendRequests", icon: "i-ph-user-plus-fill", badge: 1 },
-  { label: "common.header.messages", icon: "i-ph-chat-circle-dots-fill", to: "/messages" },
-  { label: "common.header.notifications", icon: "i-ph-bell-fill", badge: 3 },
+  { label: "navigation.headerBar.friendRequests", icon: "i-ph-user-plus-fill", badge: 1 },
+  { label: "navigation.headerBar.messages", icon: "i-ph-chat-circle-dots-fill", to: "/messages" },
+  { label: "navigation.headerBar.notifications", icon: "i-ph-bell-fill", badge: 3 },
 ]
 
 const mobileIconItems = computed(() => [
-  { label: "common.header.home", to: "/home", icon: "i-ph-house-fill", active: route.path === "/" || route.path === "/home" },
-  { label: "common.header.search", to: "/search", icon: "i-ph-magnifying-glass-bold", active: route.path === "/search" },
-  { label: "common.header.reels", to: "/reels", icon: "i-ph-film-strip-fill", active: route.path === "/reels", logoBadge: "V" },
-  { label: "common.header.video", to: "/watch", icon: "i-ph-video-camera-fill", active: route.path === "/watch" },
-  { label: "common.header.notifications", to: "/home", icon: "i-ph-bell-fill", active: false },
-  { label: "common.header.profile", to: "/@me", icon: "i-ph-handshake-fill", active: route.path.includes("/@") },
+  { label: "navigation.headerBar.home", to: "/home", icon: "i-ph-house-fill", active: route.path === "/" || route.path === "/home" },
+  { label: "navigation.headerBar.search", to: "/search", icon: "i-ph-magnifying-glass-bold", active: route.path === "/search" },
+  { label: "navigation.headerBar.reels", to: "/reels", icon: "i-ph-film-strip-fill", active: route.path === "/reels", logoBadge: "V" },
+  { label: "navigation.headerBar.video", to: "/watch", icon: "i-ph-video-camera-fill", active: route.path === "/watch" },
+  { label: "navigation.headerBar.notifications", to: "/home", icon: "i-ph-bell-fill", active: false },
+  { label: "navigation.headerBar.profile", to: "/@me", icon: "i-ph-handshake-fill", active: route.path.includes("/@") },
 ])
 </script>
 

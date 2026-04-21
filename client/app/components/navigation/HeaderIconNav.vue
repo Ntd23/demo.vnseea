@@ -9,7 +9,7 @@
         :class="item.active
           ? 'border-[#0000ff] bg-[#0000ff]/8 text-[#0000ff]'
           : 'border-slate-200 bg-white text-slate-500 hover:border-[#0000ff]/30 hover:text-[#0000ff]'"
-        :aria-label="item.label"
+        :aria-label="$t(item.label)"
       >
         <Icon :name="item.icon" class="h-5 w-5" />
         <span
@@ -28,32 +28,32 @@ const route = useRoute()
 
 const items = computed(() => [
   {
-    label: 'Home',
+    label: 'navigation.headerIconNav.home',
     to: '/home',
     icon: 'i-ph-house-fill',
     active: route.path === '/' || route.path === '/home',
   },
   {
-    label: 'Photos',
+    label: 'navigation.headerIconNav.photos',
     to: '/home',
     icon: 'i-ph-image-fill',
     active: false,
   },
   {
-    label: 'Reels',
+    label: 'navigation.headerIconNav.reels',
     to: '/reels',
     icon: 'i-ph-film-strip-fill',
     active: route.path === '/reels',
     logoBadge: 'V',
   },
   {
-    label: 'Video',
+    label: 'navigation.headerIconNav.video',
     to: '/watch',
     icon: 'i-ph-video-camera-fill',
     active: route.path === '/watch',
   },
   {
-    label: 'Music',
+    label: 'navigation.headerIconNav.music',
     to: '/home',
     icon: 'i-ph-music-note-fill',
     active: false,
