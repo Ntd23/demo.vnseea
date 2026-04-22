@@ -9,33 +9,99 @@
             <p class="text-[1rem] leading-7 text-slate-500">{{ $t('pages.welcomePage.subtitle') }}</p>
           </section>
 
-          <section class="mt-7 flex flex-col gap-4">
-            <div class="flex flex-col gap-2">
-              <label class="text-[0.95rem] font-semibold text-[#243b63]" for="welcome-login">{{ $t('pages.welcomePage.loginLabel') }}</label>
-              <input id="welcome-login" v-model="login" type="text" class="h-[3.6rem] w-full rounded-[1.15rem] border border-[#dbe3f2] bg-white px-5 text-[1rem] text-slate-900 outline-none sm:h-[3.85rem] sm:rounded-[1.45rem]">
-            </div>
+          <UForm
+            :state="form"
+            :validate="validateForm"
+            class="mt-7 flex flex-col gap-5"
+            @submit="handleLogin"
+            @error="handleFormError"
+          >
+            <UAlert
+              v-if="statusAlert"
+              :color="statusAlert.color"
+              variant="subtle"
+              :icon="statusAlert.icon"
+              :title="statusAlert.title"
+              :description="statusAlert.description"
+              class="rounded-[20px]"
+            />
 
-            <div class="flex flex-col gap-2">
-              <div class="flex items-center justify-between gap-4">
-                <label class="text-[0.95rem] font-semibold text-[#243b63]" for="welcome-password">{{ $t('pages.welcomePage.passwordLabel') }}</label>
+            <UFormField
+              name="login"
+              :label="$t('pages.welcomePage.loginLabel')"
+              :hint="$t('pages.welcomePage.loginHint')"
+              required
+              size="xl"
+              class="space-y-2"
+            >
+              <UInput
+                v-model="form.login"
+                autocomplete="username"
+                size="xl"
+                color="primary"
+                :placeholder="$t('pages.welcomePage.loginPlaceholder')"
+                class="w-full"
+                :ui="{ base: 'h-[3.85rem] rounded-[1.45rem] px-5 text-[1rem]' }"
+              />
+            </UFormField>
+
+            <UFormField
+              name="password"
+              required
+              size="xl"
+              class="space-y-2"
+            >
+              <template #label>
+                {{ $t('pages.welcomePage.passwordLabel') }}
+              </template>
+
+              <template #hint>
                 <NuxtLink class="text-[0.95rem] font-bold text-[#0000ff]" to="/forgot-password">{{ $t('pages.welcomePage.forgotPassword') }}</NuxtLink>
-              </div>
-              <div class="relative">
-                <input id="welcome-password" v-model="password" :type="showPassword ? 'text' : 'password'" class="h-[3.6rem] w-full rounded-[1.15rem] border border-[#dbe3f2] bg-white px-5 pr-14 text-[1rem] text-slate-900 outline-none sm:h-[3.85rem] sm:rounded-[1.45rem]">
-                <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" :aria-label="showPassword ? $t('pages.welcomePage.hidePassword') : $t('pages.welcomePage.showPassword')" @click="showPassword = !showPassword">
-                  <svg v-if="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
-                </button>
-              </div>
-            </div>
+              </template>
 
-            <button class="h-[3.7rem] w-full rounded-[1.2rem] bg-[linear-gradient(180deg,#2749ff_0%,#0000ff_100%)] text-[1.05rem] font-black text-white shadow-[0_14px_32px_rgba(0,0,255,0.18)] sm:h-[3.95rem] sm:rounded-[1.45rem] sm:text-[1.15rem]" type="button" :disabled="loading" @click="handleLogin">
-              <span v-if="loading" class="flex items-center justify-center gap-2"><Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" /> {{ $t('pages.welcomePage.loggingIn') }}</span>
-              <span v-else>{{ $t('pages.welcomePage.login') }}</span>
-            </button>
+              <UInput
+                v-model="form.password"
+                name="password"
+                :type="showPassword ? 'text' : 'password'"
+                autocomplete="current-password"
+                size="xl"
+                color="primary"
+                :placeholder="$t('pages.welcomePage.passwordPlaceholder')"
+                class="w-full"
+                :ui="{ base: 'h-[3.85rem] rounded-[1.45rem] px-5 pe-14 text-[1rem]' }"
+              >
+                <template #trailing>
+                  <button
+                    type="button"
+                    class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[#0000ff]"
+                    :aria-label="showPassword ? $t('pages.welcomePage.hidePassword') : $t('pages.welcomePage.showPassword')"
+                    @click="showPassword = !showPassword"
+                  >
+                    <Icon :name="showPassword ? 'i-ph-eye-slash-bold' : 'i-ph-eye-bold'" class="h-5 w-5" />
+                  </button>
+                </template>
+              </UInput>
+            </UFormField>
 
-            <p class="text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">{{ $t('pages.welcomePage.noAccount') }} <NuxtLink class="font-extrabold text-[#0000ff]" to="/register">{{ $t('pages.welcomePage.register') }}</NuxtLink></p>
-          </section>
+            <UButton
+              type="submit"
+              loading-auto
+              loading-icon="i-lucide-loader-2"
+              color="primary"
+              variant="solid"
+              block
+              size="xl"
+              :disabled="isSubmitDisabled"
+              class="mt-1 h-[3.95rem] rounded-[1.45rem] text-[1.05rem] font-black shadow-[0_14px_32px_rgba(0,0,255,0.18)]"
+            >
+              {{ submitLabel }}
+            </UButton>
+
+            <p class="text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
+              {{ $t('pages.welcomePage.noAccount') }}
+              <NuxtLink class="font-extrabold text-[#0000ff]" to="/register">{{ $t('pages.welcomePage.register') }}</NuxtLink>
+            </p>
+          </UForm>
         </div>
       </div>
     </template>
@@ -43,21 +109,125 @@
 </template>
 
 <script setup lang="ts">
-const login = ref('')
-const password = ref('')
+type WelcomeFormState = {
+  login: string
+  password: string
+}
+
+type WelcomeFormError = {
+  name?: keyof WelcomeFormState
+  message: string
+}
+
+const form = reactive<WelcomeFormState>({
+  login: '',
+  password: '',
+})
+
 const showPassword = ref(false)
-const loading = ref(false)
+const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
 const { t } = useI18n()
+const route = useRoute()
+const requestURL = useRequestURL()
+
+const canonicalUrl = computed(() => new URL(route.fullPath || '/welcome', requestURL.origin).toString())
+
 const heroProps = computed(() => ({
   title: t('pages.welcomePage.title'),
   subtitle: t('pages.welcomePage.subtitle'),
 }))
 
-const handleLogin = async () => {
-  loading.value = true
-  await new Promise(r => setTimeout(r, 300))
-  loading.value = false
+const validateForm = (state: WelcomeFormState): WelcomeFormError[] => {
+  const errors: WelcomeFormError[] = []
+
+  if (!state.login.trim()) {
+    errors.push({
+      name: 'login',
+      message: t('pages.welcomePage.validationLoginRequired'),
+    })
+  }
+
+  if (!state.password.trim()) {
+    errors.push({
+      name: 'password',
+      message: t('pages.welcomePage.validationPasswordRequired'),
+    })
+  }
+  else if (state.password.trim().length < 6) {
+    errors.push({
+      name: 'password',
+      message: t('pages.welcomePage.validationPasswordLength'),
+    })
+  }
+
+  return errors
 }
 
-useSeoMeta({ title: () => t('pages.welcomePage.seoTitle') })
+const isSubmitDisabled = computed(() =>
+  submitState.value === 'loading'
+  || !form.login.trim()
+  || !form.password.trim(),
+)
+
+const submitLabel = computed(() =>
+  submitState.value === 'loading'
+    ? t('pages.welcomePage.loggingIn')
+    : t('pages.welcomePage.login'),
+)
+
+const statusAlert = computed(() => {
+  if (submitState.value === 'success') {
+    return {
+      color: 'success' as const,
+      icon: 'i-ph-check-circle-fill',
+      title: t('pages.welcomePage.statusSuccessTitle'),
+      description: t('pages.welcomePage.statusSuccessDescription'),
+    }
+  }
+
+  if (submitState.value === 'error') {
+    return {
+      color: 'error' as const,
+      icon: 'i-ph-warning-circle-fill',
+      title: t('pages.welcomePage.statusErrorTitle'),
+      description: t('pages.welcomePage.statusErrorDescription'),
+    }
+  }
+
+  return null
+})
+
+const handleLogin = async () => {
+  submitState.value = 'loading'
+  await new Promise(r => setTimeout(r, 500))
+  submitState.value = 'success'
+}
+
+const handleFormError = () => {
+  submitState.value = 'error'
+}
+
+watch(() => [form.login, form.password], () => {
+  if (submitState.value !== 'loading') {
+    submitState.value = 'idle'
+  }
+})
+
+useSeoMeta({
+  title: () => t('pages.welcomePage.seoTitle'),
+  description: () => t('pages.welcomePage.seoDescription'),
+  ogTitle: () => t('pages.welcomePage.seoTitle'),
+  ogDescription: () => t('pages.welcomePage.seoDescription'),
+  ogUrl: () => canonicalUrl.value,
+  robots: 'noindex, nofollow',
+})
+
+useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: canonicalUrl,
+    },
+  ],
+})
 </script>

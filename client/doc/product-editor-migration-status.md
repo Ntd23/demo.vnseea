@@ -125,8 +125,16 @@ Vai trò:
 
 Nhận xét migrate:
 - shell ổn
-- form thật hiện nằm chủ yếu ở `pages/RegisterPage.vue`, `pages/WelcomePage.vue`, `pages/ForgotPasswordPage.vue`
-- cần migrate các form auth sang `@nuxt/ui`
+- `AuthHeroPanel.vue` đã được nâng lên theo hướng reusable hơn:
+  - dùng `NuxtImg` thay cho `<img>` thường
+  - có fallback preview nội bộ khi ảnh remote lỗi hoặc không có ảnh
+  - không đụng vào browser API nên an toàn cho SSR
+- `WelcomePage.vue` đã migrate sang `@nuxt/ui`:
+  - dùng `UForm`, `UFormField`, `UInput`, `UButton`, `UAlert`
+  - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
+  - đã bổ sung `SEO` gồm title, description, OG, canonical
+- form auth còn lại hiện vẫn nằm chủ yếu ở `pages/RegisterPage.vue`, `pages/ForgotPasswordPage.vue`
+- cần migrate tiếp `register` và `forgot-password` sang `@nuxt/ui`
 
 ### `blogs` - 12 files
 
