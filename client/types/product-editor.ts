@@ -29,10 +29,15 @@ export type ProductOption<T extends string> = {
 
 export type ProductCurrentImage = {
   id: string
+  src: string
+  alt: string
 }
 
 export type ProductImageTile = {
+  id: string
   name: string
+  src?: string
+  alt?: string
 }
 
 export type ProductCategoryMeta = {
@@ -44,4 +49,23 @@ export type ProductCategoryMeta = {
 export type ProductCurrencyMeta = {
   label: string
   locale: string
+}
+
+export type ProductEditorFields = {
+  title: string
+  price: string
+  description: string
+  category: CategoryValue
+  condition: ConditionValue
+  location: string
+  currency: CurrencyValue
+  stock: string
+}
+
+export type ProductEditorDraft = {
+  mode: "create" | "edit"
+  productId?: string
+  fields: ProductEditorFields
+  removedImageIds: string[]
+  lastSavedAt: number | null
 }

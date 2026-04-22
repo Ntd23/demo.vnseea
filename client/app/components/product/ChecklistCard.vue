@@ -1,14 +1,16 @@
 <template>
-  <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
+  <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-5' }">
     <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
       {{ title || $t("pages.productEditor.checklist") }}
     </p>
+    <UProgress :model-value="donePercent" color="success" size="sm" class="mt-4" />
     <div class="mt-4 space-y-3">
-      <div
+      <UCard
         v-for="item in items"
         :key="item.label"
-        class="flex items-start gap-3 rounded-[18px] border px-3.5 py-3"
+        class="rounded-[18px] border"
         :class="item.done ? 'border-[#b8f0c9] bg-[#f2fcf5]' : 'border-[#dbe3f2] bg-[#f8fbff]'"
+        :ui="{ body: 'flex items-start gap-3 px-3.5 py-3' }"
       >
         <div
           class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
@@ -20,18 +22,24 @@
           <p class="text-[13px] font-semibold text-[#243b63]">{{ item.label }}</p>
           <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ item.description }}</p>
         </div>
-      </div>
+      </UCard>
     </div>
-  </section>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import type { ProductChecklistItem } from "~/types/product-editor"
+import type { ProductChecklistItem } from "../../../types/product-editor"
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   title?: string
   items: ProductChecklistItem[]
 }>(), {
   title: undefined,
+})
+
+const donePercent = computed(() => {
+  if (!props.items.length) return 0
+  const doneCount = props.items.filter(item => item.done).length
+  return (doneCount / props.items.length) * 100
 })
 </script>

@@ -12,7 +12,7 @@
 
     <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.06fr)_360px]">
       <section class="space-y-5">
-        <div class="rounded-[28px] border border-[#dbe3f2] bg-white p-4 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-5">
+        <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-4 sm:p-5' }">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
@@ -26,40 +26,44 @@
               </p>
             </div>
 
-            <div class="inline-flex items-center gap-2 rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-600">
+            <UBadge color="primary" variant="subtle" class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-semibold">
               <Icon name="i-ph-seal-check-fill" class="h-4 w-4 text-[#0000ff]" />
               {{ completionText }}
-            </div>
+            </UBadge>
           </div>
-        </div>
+          <UProgress :model-value="completionPercent" color="primary" class="mt-4" />
+        </UCard>
 
-        <ProductEditorFields
-          v-model:title="title"
-          v-model:price="price"
-          v-model:description="description"
-          v-model:category="category"
-          v-model:condition="condition"
-          v-model:location="location"
-          v-model:currency="currency"
-          v-model:stock="stock"
-          :description-label="$t('pages.productEditor.descriptionLabel')"
-          :category-options="categoryOptions"
-          :condition-options="conditionOptions"
-          :currency-options="currencyOptions"
-          :media-summary="mediaSummary"
-        >
-          <template #media>
-            <ProductCreateMediaField
-              :image-tiles="imageTiles"
-              :image-button-label="imageButtonLabel"
-              @add-image="cycleImageCount"
-            />
-          </template>
-        </ProductEditorFields>
+        <UForm :state="draft.fields" class="space-y-5">
+          <ProductEditorFields
+            v-model:title="draft.fields.title"
+            v-model:price="draft.fields.price"
+            v-model:description="draft.fields.description"
+            v-model:category="draft.fields.category"
+            v-model:condition="draft.fields.condition"
+            v-model:location="draft.fields.location"
+            v-model:currency="draft.fields.currency"
+            v-model:stock="draft.fields.stock"
+            description-label="Sự mô tả"
+            :category-options="categoryOptions"
+            :condition-options="conditionOptions"
+            :currency-options="currencyOptions"
+            :media-summary="mediaSummary"
+          >
+            <template #media>
+              <ProductCreateMediaField
+                v-model:files="newFiles"
+                :image-button-label="imageButtonLabel"
+              />
+            </template>
+          </ProductEditorFields>
+        </UForm>
 
         <FormsSubmitBar
-          :hint="$t('pages.newProductPage.submitHint')"
-          :cta="$t('pages.newProductPage.submitCta')"
+          :hint="saveHint"
+          cta="Đăng sản phẩm"
+          @save="saveDraft"
+          @submit="submitMock"
         />
       </section>
 
@@ -70,12 +74,12 @@
           :category-label="previewCategoryLabel"
           :condition-label="previewConditionLabel"
           :currency-label="previewCurrencyLabel"
-          :title="title"
-          :empty-title="$t('pages.newProductPage.emptyTitle')"
+          :title="draft.fields.title"
+          empty-title="Tên sản phẩm của bạn sẽ hiển thị ở đây"
           :description="previewDescription"
           :price="previewPrice"
           :stock-label="stockLabel"
-          :location="location"
+          :location="draft.fields.location"
           :image-count="imageCount"
           leading-icon="i-ph-chat-circle-text-fill"
           trailing-icon="i-ph-shopping-cart-simple-fill"
@@ -95,13 +99,12 @@
 
 <script setup lang="ts">
 import type {
-  CategoryValue,
-  ConditionValue,
-  CurrencyValue,
   ProductChecklistItem,
+  ProductEditorDraft,
   ProductHeroStat,
   ProductTipItem,
-} from "~/types/product-editor"
+} from "../../../types/product-editor"
+import { useTimeAgo, watchDebounced } from "@vueuse/core"
 
 const { t } = useI18n()
 
@@ -121,36 +124,44 @@ const {
   formatProductStockLabel,
 } = useProductEditorMeta()
 
-const title = ref("")
-const price = ref("")
-const description = ref("")
-const category = ref<CategoryValue>("vehicles")
-const condition = ref<ConditionValue>("new")
-const location = ref("")
-const currency = ref<CurrencyValue>("USD")
-const stock = ref("")
-const imageCount = ref(1)
+const createInitialDraft = (): ProductEditorDraft => ({
+  mode: "create",
+  fields: {
+    title: "",
+    price: "",
+    description: "",
+    category: "vehicles",
+    condition: "new",
+    location: "",
+    currency: "USD",
+    stock: "",
+  },
+  removedImageIds: [],
+  lastSavedAt: null,
+})
 
-const imageTiles = computed(() =>
-  Array.from({ length: imageCount.value }, (_, index) => ({
-    name: `image-${index + 1}`,
-  })),
-)
+const { draft, markSaved } = useProductEditorDraft("product-editor:create", createInitialDraft())
+const newFiles = shallowRef<File[]>([])
+const toast = useToast()
+const savedAgo = useTimeAgo(computed(() => draft.value.lastSavedAt || Date.now()))
+
+const imageCount = computed(() => newFiles.value.length)
 
 const completionCount = computed(() =>
   [
-    title.value.trim(),
-    price.value.trim(),
-    description.value.trim(),
-    category.value,
-    condition.value,
-    location.value.trim(),
-    stock.value.trim(),
+    draft.value.fields.title.trim(),
+    draft.value.fields.price.trim(),
+    draft.value.fields.description.trim(),
+    draft.value.fields.category,
+    draft.value.fields.condition,
+    draft.value.fields.location.trim(),
+    draft.value.fields.stock.trim(),
     imageCount.value > 0,
   ].filter(Boolean).length,
 )
 
-const completionText = computed(() => t("pages.productEditor.completionText", { count: completionCount.value }))
+const completionText = computed(() => `${completionCount.value}/8 trường chính đã hoàn thiện`)
+const completionPercent = computed(() => (completionCount.value / 8) * 100)
 
 const heroStats = computed<ProductHeroStat[]>(() => [
   {
@@ -159,60 +170,64 @@ const heroStats = computed<ProductHeroStat[]>(() => [
     description: t("pages.newProductPage.statFilledDescription"),
   },
   {
-    label: t("pages.newProductPage.statImages"),
+    label: "Ảnh local",
     value: String(imageCount.value),
-    description: t("pages.newProductPage.statImagesDescription"),
+    description: "Ảnh được chọn từ máy để kiểm tra flow preview trước khi nối upload thật.",
   },
   {
-    label: t("pages.newProductPage.statCurrency"),
-    value: currency.value,
-    description: t("pages.newProductPage.statCurrencyDescription"),
+    label: "Tiền tệ",
+    value: draft.value.fields.currency,
+    description: "Loại tiền đang dùng cho giá bán và preview bên phải.",
   },
 ])
 
-const previewBackground = computed(() => categoryMeta.value[category.value].background)
-const previewIcon = computed(() => categoryMeta.value[category.value].icon)
-const previewCategoryLabel = computed(() => categoryMeta.value[category.value].label)
-const previewConditionLabel = computed(() => conditionMap.value[condition.value])
-const previewCurrencyLabel = computed(() => currencyMeta[currency.value].label)
+const previewBackground = computed(() => categoryMeta[draft.value.fields.category].background)
+const previewIcon = computed(() => categoryMeta[draft.value.fields.category].icon)
+const previewCategoryLabel = computed(() => categoryMeta[draft.value.fields.category].label)
+const previewConditionLabel = computed(() => conditionMap[draft.value.fields.condition])
+const previewCurrencyLabel = computed(() => currencyMeta[draft.value.fields.currency].label)
 const previewDescription = computed(() =>
-  description.value.trim()
-    || t("pages.newProductPage.previewDescription"),
+  draft.value.fields.description.trim()
+    || "Mô tả sản phẩm sẽ xuất hiện ở đây để bạn kiểm tra nội dung trước khi đăng.",
 )
 
-const previewPrice = computed(() => formatProductPrice(price.value, currency.value))
-const stockLabel = computed(() => formatProductStockLabel(stock.value))
+const previewPrice = computed(() => formatProductPrice(draft.value.fields.price, draft.value.fields.currency))
+const stockLabel = computed(() => formatProductStockLabel(draft.value.fields.stock))
 
 const mediaSummary = computed(() =>
-  imageCount.value === 1
-    ? t("pages.newProductPage.oneSampleImage")
-    : t("pages.newProductPage.sampleImages", { count: imageCount.value }),
+  imageCount.value === 0 ? "Chưa có ảnh local" : imageCount.value === 1 ? "1 ảnh local" : `${imageCount.value} ảnh local`,
 )
 
 const imageButtonLabel = computed(() =>
   imageCount.value >= 10 ? t("pages.newProductPage.maxImages") : t("pages.newProductPage.addImage"),
 )
 
+const saveHint = computed(() =>
+  draft.value.lastSavedAt
+    ? `Nháp được lưu cục bộ ${savedAgo.value}. Upload local chỉ phục vụ preview UI.`
+    : "Nháp chưa được lưu cục bộ. Upload local chỉ phục vụ preview UI.",
+)
+
 const checklistItems = computed<ProductChecklistItem[]>(() => [
   {
-    label: t("pages.newProductPage.checkNamePrice"),
-    description: t("pages.newProductPage.checkNamePriceDescription"),
-    done: title.value.trim().length > 0 && Number(price.value) > 0,
+    label: "Tên và giá bán",
+    description: "Điền đủ tên sản phẩm và giá bán để card hiển thị đầy đủ.",
+    done: draft.value.fields.title.trim().length > 0 && Number(draft.value.fields.price) > 0,
   },
   {
-    label: t("pages.newProductPage.checkDescription"),
-    description: t("pages.newProductPage.checkDescriptionDescription"),
-    done: description.value.trim().length >= 20,
+    label: "Mô tả rõ ràng",
+    description: "Nội dung nên đủ dài để người mua hiểu nhanh sản phẩm.",
+    done: draft.value.fields.description.trim().length >= 20,
   },
   {
-    label: t("pages.newProductPage.checkCategory"),
-    description: t("pages.newProductPage.checkCategoryDescription"),
-    done: Boolean(category.value && condition.value && currency.value),
+    label: "Phân loại",
+    description: "Chọn loại, loại hình và tiền tệ đúng với tin đăng.",
+    done: Boolean(draft.value.fields.category && draft.value.fields.condition && draft.value.fields.currency),
   },
   {
-    label: t("pages.newProductPage.checkLocation"),
-    description: t("pages.newProductPage.checkLocationDescription"),
-    done: location.value.trim().length > 0 && Number(stock.value) > 0 && imageCount.value > 0,
+    label: "Địa điểm, tồn kho và ảnh",
+    description: "Hoàn thiện khu vực, số lượng còn lại và ít nhất một ảnh local.",
+    done: draft.value.fields.location.trim().length > 0 && Number(draft.value.fields.stock) > 0 && imageCount.value > 0,
   },
 ])
 
@@ -228,25 +243,52 @@ const sellingTips = computed<ProductTipItem[]>(() => [
     icon: "i-ph-currency-circle-dollar-fill",
   },
   {
-    title: t("pages.newProductPage.tipImage"),
-    description: t("pages.newProductPage.tipImageDescription"),
+    title: "Ảnh đầu tiên nên rõ sản phẩm",
+    description: "Uploader local đã sẵn để kiểm tra preview trước khi nối upload thật.",
     icon: "i-ph-image-square-fill",
   },
 ])
 
-const cycleImageCount = () => {
-  imageCount.value = imageCount.value >= 10 ? 1 : imageCount.value + 1
+const quickFillDemo = () => {
+  draft.value.fields.title = "Honda Vision 2024"
+  draft.value.fields.price = "1250"
+  draft.value.fields.description = "Xe đi ít, giấy tờ đầy đủ, máy êm và ngoại hình còn mới. Phù hợp đi lại hằng ngày hoặc mua cho sinh viên."
+  draft.value.fields.category = "vehicles"
+  draft.value.fields.condition = "new"
+  draft.value.fields.location = "Đà Nẵng"
+  draft.value.fields.currency = "USD"
+  draft.value.fields.stock = "2"
+
+  toast.add({
+    title: "Đã điền dữ liệu mẫu",
+    description: "Bạn có thể tiếp tục chỉnh nội dung rồi xem preview bên phải.",
+    color: "primary",
+  })
 }
 
-const quickFillDemo = () => {
-  title.value = t("pages.newProductPage.demoTitle")
-  price.value = "1250"
-  description.value = t("pages.newProductPage.demoDescription")
-  category.value = "vehicles"
-  condition.value = "new"
-  location.value = t("pages.newProductPage.demoLocation")
-  currency.value = "USD"
-  stock.value = "2"
-  imageCount.value = 4
+watchDebounced(
+  [() => draft.value.fields, () => newFiles.value.length],
+  () => {
+    markSaved()
+  },
+  { deep: true, debounce: 800, maxWait: 2000 },
+)
+
+const saveDraft = () => {
+  markSaved()
+  toast.add({
+    title: "Đã lưu nháp",
+    description: "Thông tin sản phẩm đã được lưu cục bộ trên trình duyệt này.",
+    color: "success",
+  })
+}
+
+const submitMock = () => {
+  markSaved()
+  toast.add({
+    title: "Chưa nối submit thật",
+    description: "Flow hiện đang dừng ở mức UI mock và preview local.",
+    color: "neutral",
+  })
 }
 </script>
