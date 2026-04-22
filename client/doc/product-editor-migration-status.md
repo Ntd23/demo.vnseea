@@ -357,6 +357,28 @@ Nhận xét migrate:
 - create flow và filters là điểm nên chuyển sang `@nuxt/ui`
 - event create hợp với `UForm`, `UInputDate`, `UTextarea`, `USelect`
 - filters hợp với `VueUse`
+- nên chia migration thành 2 đợt để giữ patch vừa phải:
+  - đợt 1: listing + create
+    - `CreateEventComposer.vue`
+    - `CreateEventHero.vue`
+    - `EventCard.vue`
+    - `EventsFilters.vue`
+    - `EventsHero.vue`
+    - `EventsSidebar.vue`
+  - đợt 2: detail
+    - `EventDetailHero.vue`
+    - `EventDetailMain.vue`
+    - `EventDetailSidebar.vue`
+- đợt 1 đã xử lý:
+  - migrate `CreateEventComposer.vue`, `CreateEventHero.vue`, `EventCard.vue`, `EventsFilters.vue`, `EventsHero.vue`, `EventsSidebar.vue`
+  - đưa SEO của `/events` và `/events/create-event` về page-level route
+  - sync listing filter của events với route query `q`, `tab`, `category`, `city`, `sort`
+  - thêm local persistence SSR-safe cho listing filter và create draft bằng `useStorage(..., { initOnMounted: true })`
+  - thêm state rõ `idle/loading/success/error`, `UAlert`, `UProgress`, `useToast`, disabled/loading CTA cho create flow và RSVP/listing actions
+  - bổ sung đầy đủ locale `pages.eventsPage`, `pages.createEventPage`, `pages.eventDetailPage` để tránh render raw key cho mock data và page copy
+- đợt 2 còn lại:
+  - migrate `EventDetailHero.vue`, `EventDetailMain.vue`, `EventDetailSidebar.vue`
+  - đưa SEO/canonical/action state của `/events/[id]` về đúng page-level/detail flow
 
 ### `explore` - 1 file
 
