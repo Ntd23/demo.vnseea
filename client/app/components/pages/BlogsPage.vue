@@ -95,24 +95,125 @@ type BlogArticle = {
 }
 
 const { t, locale } = useI18n()
-
-useSeoMeta({
-  title: () => t("pages.blogsPage.seoTitle"),
-  description: () => t("pages.blogsPage.seoDescription"),
-})
-
 const route = useRoute()
+const router = useRouter()
 
-const search = ref("")
-const selectedCategory = ref<BlogCategory>("all")
-const sortBy = ref<SortValue>("latest")
-const currentPage = ref(1)
-const mineOnly = ref(route.query.mine === "1")
+const blogCategoryValues = new Set<BlogCategory>([
+  "all",
+  "vehicles",
+  "business",
+  "education",
+  "movies",
+  "gaming",
+  "history",
+  "lifestyle",
+  "pets",
+  "science",
+  "sports",
+  "travel",
+  "people",
+  "other",
+])
+
+const blogSortValues = new Set<SortValue>(["latest", "popular", "views", "reading"])
+const blogQueryKeys = ["search", "category", "sort", "mine", "page"] as const
+
+type BlogsRouteQuery = Partial<Record<(typeof blogQueryKeys)[number], string>>
+
+const getQueryValue = (value: string | string[] | undefined) =>
+  Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
+
+const resolveSearchQuery = (value: string | string[] | undefined) => getQueryValue(value).trim()
+
+const resolveCategoryQuery = (value: string | string[] | undefined): BlogCategory => {
+  const normalized = getQueryValue(value)
+  return blogCategoryValues.has(normalized as BlogCategory) ? normalized as BlogCategory : "all"
+}
+
+const resolveSortQuery = (value: string | string[] | undefined): SortValue => {
+  const normalized = getQueryValue(value)
+  return blogSortValues.has(normalized as SortValue) ? normalized as SortValue : "latest"
+}
+
+const resolveMineQuery = (value: string | string[] | undefined) => getQueryValue(value) === "1"
+
+const resolvePageQuery = (value: string | string[] | undefined) => {
+  const parsed = Number.parseInt(getQueryValue(value), 10)
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : 1
+}
+
+const buildBlogsQuery = (state: {
+  search: string
+  selectedCategory: BlogCategory
+  sortBy: SortValue
+  mineOnly: boolean
+  currentPage: number
+}): BlogsRouteQuery => {
+  const nextQuery: BlogsRouteQuery = {}
+  const normalizedSearch = state.search.trim()
+
+  if (normalizedSearch) {
+    nextQuery.search = normalizedSearch
+  }
+
+  if (state.selectedCategory !== "all") {
+    nextQuery.category = state.selectedCategory
+  }
+
+  if (state.sortBy !== "latest") {
+    nextQuery.sort = state.sortBy
+  }
+
+  if (state.mineOnly) {
+    nextQuery.mine = "1"
+  }
+
+  if (state.currentPage > 1) {
+    nextQuery.page = String(state.currentPage)
+  }
+
+  return nextQuery
+}
+
+const hasSameBlogsQuery = (
+  nextQuery: BlogsRouteQuery,
+  currentQuery: ReturnType<typeof useRoute>["query"],
+) => blogQueryKeys.every(key => (nextQuery[key] ?? "") === getQueryValue(currentQuery[key]))
+
+const search = ref(resolveSearchQuery(route.query.search))
+const selectedCategory = ref<BlogCategory>(resolveCategoryQuery(route.query.category))
+const sortBy = ref<SortValue>(resolveSortQuery(route.query.sort))
+const currentPage = ref(resolvePageQuery(route.query.page))
+const mineOnly = ref(resolveMineQuery(route.query.mine))
 const pageSize = 6
 
-watch(() => route.query.mine, (value) => {
-  mineOnly.value = value === "1"
-})
+watch(() => route.query, (query) => {
+  const nextSearch = resolveSearchQuery(query.search)
+  const nextCategory = resolveCategoryQuery(query.category)
+  const nextSort = resolveSortQuery(query.sort)
+  const nextMineOnly = resolveMineQuery(query.mine)
+  const nextPage = resolvePageQuery(query.page)
+
+  if (search.value !== nextSearch) {
+    search.value = nextSearch
+  }
+
+  if (selectedCategory.value !== nextCategory) {
+    selectedCategory.value = nextCategory
+  }
+
+  if (sortBy.value !== nextSort) {
+    sortBy.value = nextSort
+  }
+
+  if (mineOnly.value !== nextMineOnly) {
+    mineOnly.value = nextMineOnly
+  }
+
+  if (currentPage.value !== nextPage) {
+    currentPage.value = nextPage
+  }
+}, { immediate: true })
 
 watch([search, selectedCategory, sortBy, mineOnly], () => {
   currentPage.value = 1
@@ -363,6 +464,32 @@ const filteredArticles = computed(() => {
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(filteredArticles.value.length / pageSize)))
+
+watch(totalPages, (value) => {
+  if (currentPage.value > value) {
+    currentPage.value = value
+  }
+})
+
+watch([search, selectedCategory, sortBy, mineOnly, currentPage], async () => {
+  if (import.meta.server) {
+    return
+  }
+
+  const nextQuery = buildBlogsQuery({
+    search: search.value,
+    selectedCategory: selectedCategory.value,
+    sortBy: sortBy.value,
+    mineOnly: mineOnly.value,
+    currentPage: currentPage.value,
+  })
+
+  if (hasSameBlogsQuery(nextQuery, route.query)) {
+    return
+  }
+
+  await router.replace({ query: nextQuery })
+}, { flush: "post" })
 
 const pageArticles = computed(() => {
   const start = (currentPage.value - 1) * pageSize

@@ -167,10 +167,20 @@ Vai trò:
 
 Nhận xét migrate:
 - đã có cấu trúc component tốt
+- `BlogArticleCard.vue` đã chuyển ảnh card sang `NuxtImg` và fallback reactive:
+  - không còn mutate DOM trực tiếp khi ảnh lỗi
+  - an toàn hơn cho SSR/hydration
+- `BlogsEmptyState.vue` đã đổi CTA chính sang `UButton`
+- `BlogsFilters.vue` đã nâng phần action/search lên `@nuxt/ui`:
+  - dùng `UInput`, `UButton`
+  - bổ sung `aria-label`, `aria-pressed`, `aria-live` cho các điểm tương tác chính
+- `/blogs` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + canonical + Open Graph
+  - query `search/category/sort/mine/page` đã sync với route cho listing public
+- đã có `i18n` cho `blogsPage` để tránh render raw key ở listing/read/create support
 - `CreateBlogPage.vue` vẫn là form native lớn
-- filters/pagination/card có thể tận dụng thêm `@nuxt/ui`
+- `BlogsPagination.vue`, `BlogsResultsHeader.vue`, `BlogsHero.vue` vẫn còn native action có thể chuẩn hóa thêm bằng `@nuxt/ui`
 - chưa có `VueUse` cho draft/search/filter persistence
-- chưa có `i18n`
 
 ### `checkout` - 3 files
 

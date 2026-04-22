@@ -2,14 +2,19 @@
   <article class="group overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition duration-200 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]">
     <NuxtLink :to="article.href" class="block">
       <div class="relative aspect-[16/9] overflow-hidden bg-[var(--color-secondary-100)]">
-        <div class="absolute inset-0" :style="{ background: article.imageFallback }" />
-        <img
+        <div aria-hidden="true" class="absolute inset-0" :style="{ background: article.imageFallback }" />
+        <NuxtImg
+          v-if="showCoverImage"
           :src="article.image"
           :alt="article.title"
+          width="1200"
+          height="675"
+          sizes="(max-width: 767px) 100vw, (max-width: 1535px) 50vw, 33vw"
           class="relative h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
           loading="lazy"
+          decoding="async"
           @error="handleImageError"
-        >
+        />
         <div class="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,rgba(15,23,42,0.56)_100%)]" />
 
         <div class="absolute left-3 top-3 flex flex-wrap gap-2">
@@ -78,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   article: {
     href: string
     image: string
@@ -98,9 +103,16 @@ defineProps<{
   formatCompact: (value: number) => string
 }>()
 
-const handleImageError = (event: Event) => {
-  const image = event.target as HTMLImageElement
-  image.style.display = "none"
+const hasImageError = ref(false)
+
+watch(() => props.article.image, (value) => {
+  hasImageError.value = !value.trim()
+}, { immediate: true })
+
+const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !hasImageError.value)
+
+const handleImageError = () => {
+  hasImageError.value = true
 }
 </script>
 
