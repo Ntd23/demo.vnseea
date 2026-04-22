@@ -1,65 +1,139 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+  <section class="surface-card p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.withdrawalPage.requestEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.withdrawalPage.requestTitle") }}</h2>
-        <p class="mt-1 text-body-secondary">
+        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.withdrawalPage.requestEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.withdrawalPage.requestTitle") }}</h2>
+        <p class="mt-2 text-body-secondary">
           {{ t("pages.withdrawalPage.requestDescription", { amount: formatWithdrawalCurrency(minimumAmount, locale) }) }}
         </p>
       </div>
-      <p class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-4 py-2 text-[12px] font-extrabold text-[var(--color-primary-600)]">
-        {{ t("pages.withdrawalPage.availableBadge", { amount: formatWithdrawalCurrency(availableBalance, locale) }) }}
-      </p>
+
+      <UBadge
+        :label="t('pages.withdrawalPage.availableBadge', { amount: formatWithdrawalCurrency(availableBalance, locale) })"
+        size="lg"
+        variant="subtle"
+        color="primary"
+        class="rounded-full px-4 font-bold"
+      />
     </div>
 
-    <div class="mt-5 grid gap-4 sm:grid-cols-3">
+    <!-- Method Selection Tiles -->
+    <div class="mt-8 grid gap-4 sm:grid-cols-3">
       <button
         v-for="method in methods"
         :key="method.value"
         :class="form.method === method.value
-          ? 'border-[var(--border-strong)] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]'
-          : 'border-[var(--border-default)] bg-white text-[var(--text-secondary)]'"
-        class="rounded-[20px] border p-4 text-left transition"
+          ? 'ring-2 ring-primary-500 bg-primary-50 border-primary-200'
+          : 'border-secondary-200 bg-white hover:border-primary-300 hover:bg-primary-50/30'"
+        class="group relative flex flex-col items-start rounded-2xl border p-5 transition-all duration-200 text-left outline-none"
         type="button"
         @click="form.method = method.value"
       >
-        <Icon :name="messageText(method.icon)" class="h-6 w-6" />
-        <p class="mt-3 text-[13px] font-extrabold">{{ messageText(method.label) }}</p>
-        <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ messageText(method.description) }}</p>
+        <div 
+          :class="form.method === method.value ? 'bg-primary-500 text-white' : 'bg-secondary-100 text-secondary-500 group-hover:bg-primary-100 group-hover:text-primary-600'"
+          class="flex h-10 w-10 items-center justify-center rounded-xl transition-colors"
+        >
+          <Icon :name="messageText(method.icon)" class="h-6 w-6" />
+        </div>
+        <p class="mt-4 text-[14px] font-black text-secondary-900">{{ messageText(method.label) }}</p>
+        <p class="mt-1 text-[12px] font-medium text-secondary-500 leading-normal">{{ messageText(method.description) }}</p>
+        
+        <!-- Selection Checkmark -->
+        <div 
+          v-if="form.method === method.value"
+          class="absolute top-4 right-4"
+        >
+          <div class="flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-white">
+            <Icon name="i-ph-check-bold" class="h-3 w-3" />
+          </div>
+        </div>
       </button>
     </div>
 
-    <div class="mt-5 grid gap-4 md:grid-cols-2">
-      <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.withdrawalPage.amountLabel") }}</span>
-        <input v-model.number="form.amount" class="withdrawal-input mt-2" min="100000" type="number">
-      </label>
-      <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.withdrawalPage.accountNameLabel") }}</span>
-        <input v-model="form.accountName" class="withdrawal-input mt-2" :placeholder="t('pages.withdrawalPage.accountNamePlaceholder')">
-      </label>
-      <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.withdrawalPage.accountNumberLabel") }}</span>
-        <input v-model="form.accountNumber" class="withdrawal-input mt-2" :placeholder="t('pages.withdrawalPage.accountNumberPlaceholder')">
-      </label>
-      <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.withdrawalPage.noteLabel") }}</span>
-        <input v-model="form.note" class="withdrawal-input mt-2" :placeholder="t('pages.withdrawalPage.notePlaceholder')">
-      </label>
-    </div>
-
-    <p v-if="errorMessage" class="mt-4 rounded-[16px] bg-red-50 px-4 py-3 text-[13px] font-bold text-red-600">
-      {{ errorMessage }}
-    </p>
-
-    <button
-      class="mt-5 h-12 w-full rounded-[var(--radius-full)] bg-[var(--color-primary-500)] text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)]"
-      type="button"
-      @click="submit"
+    <UForm
+      :state="form"
+      :validate="validate"
+      class="mt-8 space-y-6"
+      @submit="onSubmit"
     >
-      {{ t("pages.withdrawalPage.submit") }}
-    </button>
+      <div class="grid gap-6 md:grid-cols-2">
+        <UFormGroup
+          :label="t('pages.withdrawalPage.amountLabel')"
+          name="amount"
+          required
+        >
+          <UInput
+            v-model.number="form.amount"
+            type="number"
+            icon="i-ph-money"
+            size="xl"
+            variant="outline"
+            :placeholder="t('pages.withdrawalPage.amountPlaceholder')"
+            class="font-bold"
+          />
+        </UFormGroup>
+
+        <UFormGroup
+          :label="t('pages.withdrawalPage.accountNameLabel')"
+          name="accountName"
+          required
+        >
+          <UInput
+            v-model="form.accountName"
+            icon="i-ph-user"
+            size="xl"
+            variant="outline"
+            :placeholder="t('pages.withdrawalPage.accountNamePlaceholder')"
+          />
+        </UFormGroup>
+
+        <UFormGroup
+          :label="t('pages.withdrawalPage.accountNumberLabel')"
+          name="accountNumber"
+          required
+        >
+          <UInput
+            v-model="form.accountNumber"
+            icon="i-ph-hash"
+            size="xl"
+            variant="outline"
+            :placeholder="t('pages.withdrawalPage.accountNumberPlaceholder')"
+          />
+        </UFormGroup>
+
+        <UFormGroup
+          :label="t('pages.withdrawalPage.noteLabel')"
+          name="note"
+        >
+          <UInput
+            v-model="form.note"
+            icon="i-ph-note"
+            size="xl"
+            variant="outline"
+            :placeholder="t('pages.withdrawalPage.notePlaceholder')"
+          />
+        </UFormGroup>
+      </div>
+
+      <UAlert
+        v-if="errorMessage"
+        color="red"
+        variant="soft"
+        icon="i-ph-warning-circle"
+        :title="errorMessage"
+        class="mt-4"
+      />
+
+      <UButton
+        type="submit"
+        size="xl"
+        block
+        color="primary"
+        class="rounded-full font-black shadow-lg shadow-primary-500/30"
+        :label="t('pages.withdrawalPage.submit')"
+      />
+    </UForm>
   </section>
 </template>
 
@@ -68,6 +142,7 @@ import type { WithdrawalMethod, WithdrawalRequestPayload } from "~/composables/u
 import { formatWithdrawalCurrency } from "~/composables/useMockWithdrawalData"
 
 const { t, rt, locale } = useI18n()
+const { rules, createValidator } = useFormValidation()
 
 const props = defineProps<{
   availableBalance: number
@@ -89,51 +164,28 @@ const form = reactive<WithdrawalRequestPayload>({
 const messageText = (value: unknown) =>
   typeof value === "string" ? value : rt(value as never)
 
-const submit = () => {
-  errorMessage.value = ""
-
-  if (form.amount < props.minimumAmount) {
-    errorMessage.value = t("pages.withdrawalPage.errorMinimum", {
+// Validation logic using our new shared composable
+const validate = createValidator({
+  amount: [
+    rules.required(),
+    (val) => val < props.minimumAmount ? t("pages.withdrawalPage.errorMinimum", {
       amount: formatWithdrawalCurrency(props.minimumAmount, locale.value),
-    })
-    return
-  }
+    }) : true,
+    (val) => val > props.availableBalance ? t("pages.withdrawalPage.errorMaximum") : true
+  ],
+  accountName: [rules.required()],
+  accountNumber: [rules.required()]
+})
 
-  if (form.amount > props.availableBalance) {
-    errorMessage.value = t("pages.withdrawalPage.errorMaximum")
-    return
-  }
-
-  if (!form.accountName.trim() || !form.accountNumber.trim()) {
-    errorMessage.value = t("pages.withdrawalPage.errorMissingFields")
-    return
-  }
-
+function onSubmit() {
+  errorMessage.value = ""
+  
   emit("request", { ...form })
+  
+  // Reset form but keep method
   form.amount = props.minimumAmount
   form.accountName = ""
   form.accountNumber = ""
   form.note = ""
 }
 </script>
-
-<style scoped>
-.withdrawal-input {
-  min-height: 48px;
-  width: 100%;
-  border-radius: 18px;
-  border: 1px solid var(--border-default);
-  background: var(--bg-surface);
-  padding: 0 16px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  outline: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.withdrawal-input:focus {
-  border-color: var(--border-strong);
-  box-shadow: 0 0 0 4px var(--color-primary-50);
-}
-</style>
