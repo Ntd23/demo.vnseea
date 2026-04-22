@@ -36,7 +36,9 @@
       "lastName": "Last name",
       "lastNamePlaceholder": "Enter your last name",
       "emailOrPhone": "Email or phone number",
+      "emailOrPhonePlaceholder": "Enter your email or phone number",
       "newPassword": "New password",
+      "newPasswordPlaceholder": "Create a new password",
       "showPassword": "Show password",
       "hidePassword": "Hide password",
       "birthday": "Birthday",
@@ -48,10 +50,23 @@
       "female": "Female",
       "male": "Male",
       "custom": "Custom",
+      "submitting": "Creating your account...",
       "submit": "Sign up",
       "hasAccount": "Already have an account?",
       "login": "Sign in",
-      "seoTitle": "Register"
+      "seoTitle": "Register",
+      "seoDescription": "Create your VNSEEA account to join the community, connect with people, and start building your profile.",
+      "statusSuccessTitle": "Mock sign up completed",
+      "statusSuccessDescription": "The sign-up flow finished in the UI. A real authentication API is not connected yet.",
+      "statusErrorTitle": "The form is not ready",
+      "statusErrorDescription": "Please review your registration details and try again.",
+      "validationFirstNameRequired": "Enter your first name.",
+      "validationLastNameRequired": "Enter your last name.",
+      "validationEmailOrPhoneRequired": "Enter your email or phone number.",
+      "validationPasswordRequired": "Enter a new password.",
+      "validationPasswordLength": "Your password must be at least 6 characters.",
+      "validationBirthdayRequired": "Select your full birthday.",
+      "validationGenderRequired": "Select a gender."
     },
     "forgotPasswordPage": {
       "title": "Forgot password",
@@ -395,7 +410,8 @@
   },
   "auth": {
     "heroPanel": {
-      "defaultImageAlt": "People using phones"
+      "defaultTitle": "Connect with your community",
+      "defaultSubtitle": "Follow your feed, grow your network, and keep your activity in one place."
     }
   },
   "settings": {

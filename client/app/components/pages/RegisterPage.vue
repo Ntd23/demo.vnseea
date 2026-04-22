@@ -1,71 +1,474 @@
 <template>
-  <AuthSplitShell :hero-props="heroProps">
-    <template #right>
-      <div class="w-full max-w-[420px]">
-        <div class="mx-auto max-w-[420px]">
-          <section class="flex flex-col gap-2">
-            <p class="text-[13px] font-extrabold tracking-[0.32em] text-[#0000ff]">{{ $t('pages.registerPage.eyebrow') }}</p>
-            <h1 class="text-[2.35rem] font-black leading-[0.95] tracking-[-0.08em] text-[#0000ff] sm:text-[2.7rem]">{{ $t('pages.registerPage.title') }}</h1>
-            <p class="text-[1rem] leading-7 text-slate-500">{{ $t('pages.registerPage.subtitle') }}</p>
-          </section>
+  <div class="mx-auto w-full max-w-[720px]">
+    <section class="flex flex-col gap-2">
+      <p class="text-[13px] font-extrabold tracking-[0.32em] text-[#0000ff]">{{ $t('pages.registerPage.eyebrow') }}</p>
+      <h1 class="text-[2.35rem] font-black leading-[0.95] tracking-[-0.08em] text-[#0000ff] sm:text-[2.7rem]">{{ $t('pages.registerPage.title') }}</h1>
+      <p class="max-w-[38rem] text-[1rem] leading-7 text-slate-500">{{ $t('pages.registerPage.subtitle') }}</p>
+    </section>
 
-          <section class="mt-7 flex flex-col gap-4">
-            <div class="flex gap-3">
-              <div class="field-group flex-1">
-                <label class="field-label" for="register-firstname">{{ $t('pages.registerPage.firstName') }}</label>
-                <input id="register-firstname" class="field-input" :placeholder="$t('pages.registerPage.firstNamePlaceholder')" type="text">
-              </div>
-              <div class="field-group flex-1">
-                <label class="field-label" for="register-lastname">{{ $t('pages.registerPage.lastName') }}</label>
-                <input id="register-lastname" class="field-input" :placeholder="$t('pages.registerPage.lastNamePlaceholder')" type="text">
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="register-email">{{ $t('pages.registerPage.emailOrPhone') }}</label>
-              <input id="register-email" class="field-input" autocomplete="username" placeholder="" type="text">
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="register-password">{{ $t('pages.registerPage.newPassword') }}</label>
-              <div class="password-wrap">
-                <input id="register-password" v-model="password" :type="showPassword ? 'text' : 'password'" class="field-input" autocomplete="new-password">
-                <button class="password-toggle" type="button" :aria-label="showPassword ? $t('pages.registerPage.hidePassword') : $t('pages.registerPage.showPassword')" @click="showPassword = !showPassword">
-                  <svg v-if="!showPassword" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                  <svg v-else fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" x2="23" y1="1" y2="23" /></svg>
-                </button>
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label">{{ $t('pages.registerPage.birthday') }}</label>
-              <div class="flex gap-2">
-                <select class="field-input flex-1 appearance-none px-3 py-2.5"><option value="">{{ $t('pages.registerPage.day') }}</option><option v-for="d in 31" :key="d" :value="d">{{ d }}</option></select>
-                <select class="field-input flex-1 appearance-none px-3 py-2.5"><option value="">{{ $t('pages.registerPage.month') }}</option><option v-for="m in 12" :key="m" :value="m">{{ $t('pages.registerPage.monthShort', { month: m }) }}</option></select>
-                <select class="field-input flex-1 appearance-none px-3 py-2.5"><option value="">{{ $t('pages.registerPage.year') }}</option><option v-for="y in 50" :key="y" :value="2026 - y">{{ 2026 - y }}</option></select>
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label">{{ $t('pages.registerPage.gender') }}</label>
-              <div class="flex gap-3">
-                <label class="flex flex-1 cursor-pointer items-center justify-between rounded-[10px] border border-slate-200 px-4 py-3 transition hover:bg-slate-50"><span class="text-[14px] font-medium text-slate-700">{{ $t('pages.registerPage.female') }}</span><input class="h-4 w-4 text-[#0000ff]" name="gender" type="radio" value="female"></label>
-                <label class="flex flex-1 cursor-pointer items-center justify-between rounded-[10px] border border-slate-200 px-4 py-3 transition hover:bg-slate-50"><span class="text-[14px] font-medium text-slate-700">{{ $t('pages.registerPage.male') }}</span><input class="h-4 w-4 text-[#0000ff]" name="gender" type="radio" value="male"></label>
-                <label class="flex flex-1 cursor-pointer items-center justify-between rounded-[10px] border border-slate-200 px-4 py-3 transition hover:bg-slate-50"><span class="text-[14px] font-medium text-slate-700">{{ $t('pages.registerPage.custom') }}</span><input class="h-4 w-4 text-[#0000ff]" name="gender" type="radio" value="custom"></label>
-              </div>
-            </div>
-            <button class="submit-button" type="button">{{ $t('pages.registerPage.submit') }}</button>
-            <p class="register-row">{{ $t('pages.registerPage.hasAccount') }} <NuxtLink class="register-link" to="/welcome">{{ $t('pages.registerPage.login') }}</NuxtLink></p>
-          </section>
+    <UForm
+      :state="form"
+      :validate="validateForm"
+      class="mt-8 flex flex-col gap-5"
+      @submit="handleRegister"
+      @error="handleFormError"
+    >
+      <UAlert
+        v-if="statusAlert"
+        :color="statusAlert.color"
+        variant="subtle"
+        :icon="statusAlert.icon"
+        :title="statusAlert.title"
+        :description="statusAlert.description"
+        class="rounded-[20px]"
+      />
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <UFormField
+          name="firstName"
+          :label="$t('pages.registerPage.firstName')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <UInput
+            v-model="form.firstName"
+            autocomplete="given-name"
+            size="xl"
+            color="primary"
+            :placeholder="$t('pages.registerPage.firstNamePlaceholder')"
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
+
+        <UFormField
+          name="lastName"
+          :label="$t('pages.registerPage.lastName')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <UInput
+            v-model="form.lastName"
+            autocomplete="family-name"
+            size="xl"
+            color="primary"
+            :placeholder="$t('pages.registerPage.lastNamePlaceholder')"
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
+      </div>
+
+      <UFormField
+        name="emailOrPhone"
+        :label="$t('pages.registerPage.emailOrPhone')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
+        <UInput
+          v-model="form.emailOrPhone"
+          autocomplete="username"
+          size="xl"
+          color="primary"
+          :placeholder="$t('pages.registerPage.emailOrPhonePlaceholder')"
+          class="w-full"
+          :ui="inputUi"
+        />
+      </UFormField>
+
+      <UFormField
+        name="password"
+        :label="$t('pages.registerPage.newPassword')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
+        <UInput
+          v-model="form.password"
+          name="password"
+          :type="showPassword ? 'text' : 'password'"
+          autocomplete="new-password"
+          size="xl"
+          color="primary"
+          :placeholder="$t('pages.registerPage.newPasswordPlaceholder')"
+          class="w-full"
+          :ui="passwordInputUi"
+        >
+          <template #trailing>
+            <button
+              type="button"
+              class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[#0000ff]"
+              :aria-label="showPassword ? $t('pages.registerPage.hidePassword') : $t('pages.registerPage.showPassword')"
+              @click="showPassword = !showPassword"
+            >
+              <Icon :name="showPassword ? 'i-ph-eye-slash-bold' : 'i-ph-eye-bold'" class="h-5 w-5" />
+            </button>
+          </template>
+        </UInput>
+      </UFormField>
+
+      <div class="space-y-2">
+        <p class="text-[0.95rem] font-medium text-slate-700">
+          {{ $t('pages.registerPage.birthday') }}
+        </p>
+
+        <div class="grid gap-3 md:grid-cols-3">
+          <UFormField name="birthdayDay" class="space-y-2">
+            <USelect
+              v-model="form.birthdayDay"
+              :items="dayOptions"
+              value-key="value"
+              label-key="label"
+              size="xl"
+              color="primary"
+              :placeholder="$t('pages.registerPage.day')"
+              :aria-label="$t('pages.registerPage.day')"
+              class="w-full"
+              :ui="selectUi"
+            />
+          </UFormField>
+
+          <UFormField name="birthdayMonth" class="space-y-2">
+            <USelect
+              v-model="form.birthdayMonth"
+              :items="monthOptions"
+              value-key="value"
+              label-key="label"
+              size="xl"
+              color="primary"
+              :placeholder="$t('pages.registerPage.month')"
+              :aria-label="$t('pages.registerPage.month')"
+              class="w-full"
+              :ui="selectUi"
+            />
+          </UFormField>
+
+          <UFormField name="birthdayYear" class="space-y-2">
+            <USelect
+              v-model="form.birthdayYear"
+              :items="yearOptions"
+              value-key="value"
+              label-key="label"
+              size="xl"
+              color="primary"
+              :placeholder="$t('pages.registerPage.year')"
+              :aria-label="$t('pages.registerPage.year')"
+              class="w-full"
+              :ui="selectUi"
+            />
+          </UFormField>
         </div>
       </div>
-    </template>
-  </AuthSplitShell>
+
+      <UFormField
+        name="gender"
+        :label="$t('pages.registerPage.gender')"
+        required
+        size="xl"
+        class="space-y-3"
+      >
+        <URadioGroup
+          v-model="form.gender"
+          :items="genderOptions"
+          value-key="value"
+          label-key="label"
+          color="primary"
+          variant="card"
+          indicator="end"
+          size="xl"
+          :ui="radioGroupUi"
+        />
+      </UFormField>
+
+      <UButton
+        type="submit"
+        loading-auto
+        loading-icon="i-lucide-loader-2"
+        color="primary"
+        variant="solid"
+        block
+        size="xl"
+        :disabled="isSubmitDisabled"
+        class="mt-1 h-[3.95rem] rounded-[1.45rem] text-[1.05rem] font-black shadow-[0_14px_32px_rgba(0,0,255,0.18)]"
+      >
+        {{ submitLabel }}
+      </UButton>
+
+      <p class="text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
+        {{ $t('pages.registerPage.hasAccount') }}
+        <NuxtLink class="font-extrabold text-[#0000ff]" to="/welcome">{{ $t('pages.registerPage.login') }}</NuxtLink>
+      </p>
+    </UForm>
+  </div>
 </template>
 
 <script setup lang="ts">
-const password = ref('')
+type RegisterGender = 'female' | 'male' | 'custom'
+
+type RegisterFormState = {
+  firstName: string
+  lastName: string
+  emailOrPhone: string
+  password: string
+  birthdayDay?: string
+  birthdayMonth?: string
+  birthdayYear?: string
+  gender?: RegisterGender
+}
+
+type RegisterFormError = {
+  name?: keyof RegisterFormState
+  message: string
+}
+
+const form = reactive<RegisterFormState>({
+  firstName: '',
+  lastName: '',
+  emailOrPhone: '',
+  password: '',
+  birthdayDay: undefined,
+  birthdayMonth: undefined,
+  birthdayYear: undefined,
+  gender: undefined,
+})
+
+const inputUi = {
+  base: 'h-[3.85rem] rounded-[1.45rem] px-5 text-[1rem]',
+}
+
+const passwordInputUi = {
+  base: 'h-[3.85rem] rounded-[1.45rem] px-5 pe-14 text-[1rem]',
+}
+
+const selectUi = {
+  base: 'h-[3.85rem] rounded-[1.45rem] px-5 text-[1rem]',
+}
+
+const radioGroupUi = {
+  fieldset: 'grid grid-cols-1 gap-3 md:grid-cols-3',
+  item: 'min-h-[4.85rem] items-center rounded-[1.45rem] border px-4 py-4 transition hover:border-[#c8d9ef]',
+  container: 'h-full',
+  wrapper: 'flex-1',
+  label: 'text-[1rem] font-semibold text-slate-700',
+  base: 'size-5 ring-[#cbd9ea] bg-white data-[state=checked]:ring-[#0000ff]',
+}
+
 const showPassword = ref(false)
+const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
 const { t } = useI18n()
-const heroProps = computed(() => ({
-  title: t('pages.registerPage.heroTitle'),
-  subtitle: t('pages.registerPage.subtitle'),
-}))
-useSeoMeta({ title: () => t('pages.registerPage.seoTitle') })
+const route = useRoute()
+const requestURL = useRequestURL()
+const currentYear = new Date().getFullYear()
+
+const canonicalUrl = computed(() => new URL(route.fullPath || '/register', requestURL.origin).toString())
+
+const dayOptions = computed(() =>
+  Array.from({ length: 31 }, (_, index) => {
+    const value = String(index + 1)
+
+    return {
+      label: value,
+      value,
+    }
+  }),
+)
+
+const monthOptions = computed(() =>
+  Array.from({ length: 12 }, (_, index) => {
+    const value = String(index + 1)
+
+    return {
+      label: t('pages.registerPage.monthShort', { month: index + 1 }),
+      value,
+    }
+  }),
+)
+
+const yearOptions = computed(() =>
+  Array.from({ length: 100 }, (_, index) => {
+    const year = String(currentYear - index)
+
+    return {
+      label: year,
+      value: year,
+    }
+  }),
+)
+
+const genderOptions = computed(() => {
+  const selectedClass = 'border-[#0000ff] bg-[#eef3ff] shadow-[0_10px_20px_rgba(0,0,255,0.08)]'
+  const defaultClass = 'border-[#d5e4f0] bg-white shadow-sm'
+
+  return [
+    {
+      label: t('pages.registerPage.female'),
+      value: 'female',
+      class: form.gender === 'female' ? selectedClass : defaultClass,
+    },
+    {
+      label: t('pages.registerPage.male'),
+      value: 'male',
+      class: form.gender === 'male' ? selectedClass : defaultClass,
+    },
+    {
+      label: t('pages.registerPage.custom'),
+      value: 'custom',
+      class: form.gender === 'custom' ? selectedClass : defaultClass,
+    },
+  ] satisfies Array<{ label: string, value: RegisterGender, class: string }>
+})
+
+const validateForm = (state: RegisterFormState): RegisterFormError[] => {
+  const errors: RegisterFormError[] = []
+
+  if (!state.firstName.trim()) {
+    errors.push({
+      name: 'firstName',
+      message: t('pages.registerPage.validationFirstNameRequired'),
+    })
+  }
+
+  if (!state.lastName.trim()) {
+    errors.push({
+      name: 'lastName',
+      message: t('pages.registerPage.validationLastNameRequired'),
+    })
+  }
+
+  if (!state.emailOrPhone.trim()) {
+    errors.push({
+      name: 'emailOrPhone',
+      message: t('pages.registerPage.validationEmailOrPhoneRequired'),
+    })
+  }
+
+  if (!state.password.trim()) {
+    errors.push({
+      name: 'password',
+      message: t('pages.registerPage.validationPasswordRequired'),
+    })
+  }
+  else if (state.password.trim().length < 6) {
+    errors.push({
+      name: 'password',
+      message: t('pages.registerPage.validationPasswordLength'),
+    })
+  }
+
+  if (!state.birthdayDay) {
+    errors.push({
+      name: 'birthdayDay',
+      message: t('pages.registerPage.validationBirthdayRequired'),
+    })
+  }
+
+  if (!state.birthdayMonth) {
+    errors.push({
+      name: 'birthdayMonth',
+      message: t('pages.registerPage.validationBirthdayRequired'),
+    })
+  }
+
+  if (!state.birthdayYear) {
+    errors.push({
+      name: 'birthdayYear',
+      message: t('pages.registerPage.validationBirthdayRequired'),
+    })
+  }
+
+  if (!state.gender) {
+    errors.push({
+      name: 'gender',
+      message: t('pages.registerPage.validationGenderRequired'),
+    })
+  }
+
+  return errors
+}
+
+const isSubmitDisabled = computed(() =>
+  submitState.value === 'loading'
+  || !form.firstName.trim()
+  || !form.lastName.trim()
+  || !form.emailOrPhone.trim()
+  || !form.password.trim()
+  || !form.birthdayDay
+  || !form.birthdayMonth
+  || !form.birthdayYear
+  || !form.gender,
+)
+
+const submitLabel = computed(() =>
+  submitState.value === 'loading'
+    ? t('pages.registerPage.submitting')
+    : t('pages.registerPage.submit'),
+)
+
+const statusAlert = computed(() => {
+  if (submitState.value === 'success') {
+    return {
+      color: 'success' as const,
+      icon: 'i-ph-check-circle-fill',
+      title: t('pages.registerPage.statusSuccessTitle'),
+      description: t('pages.registerPage.statusSuccessDescription'),
+    }
+  }
+
+  if (submitState.value === 'error') {
+    return {
+      color: 'error' as const,
+      icon: 'i-ph-warning-circle-fill',
+      title: t('pages.registerPage.statusErrorTitle'),
+      description: t('pages.registerPage.statusErrorDescription'),
+    }
+  }
+
+  return null
+})
+
+const handleRegister = async () => {
+  submitState.value = 'loading'
+  await new Promise(resolve => setTimeout(resolve, 500))
+  submitState.value = 'success'
+}
+
+const handleFormError = () => {
+  submitState.value = 'error'
+}
+
+watch(() => [
+  form.firstName,
+  form.lastName,
+  form.emailOrPhone,
+  form.password,
+  form.birthdayDay,
+  form.birthdayMonth,
+  form.birthdayYear,
+  form.gender,
+], () => {
+  if (submitState.value !== 'loading') {
+    submitState.value = 'idle'
+  }
+})
+
+useSeoMeta({
+  title: () => t('pages.registerPage.seoTitle'),
+  description: () => t('pages.registerPage.seoDescription'),
+  ogTitle: () => t('pages.registerPage.seoTitle'),
+  ogDescription: () => t('pages.registerPage.seoDescription'),
+  ogUrl: () => canonicalUrl.value,
+  robots: 'noindex, nofollow',
+})
+
+useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: canonicalUrl,
+    },
+  ],
+})
 </script>

@@ -36,7 +36,9 @@
       "lastName": "Họ",
       "lastNamePlaceholder": "Nhập họ",
       "emailOrPhone": "Email hoặc số điện thoại",
+      "emailOrPhonePlaceholder": "Nhập email hoặc số điện thoại",
       "newPassword": "Mật khẩu mới",
+      "newPasswordPlaceholder": "Tạo mật khẩu mới",
       "showPassword": "Hiện mật khẩu",
       "hidePassword": "Ẩn mật khẩu",
       "birthday": "Ngày sinh",
@@ -48,10 +50,23 @@
       "female": "Nữ",
       "male": "Nam",
       "custom": "Tùy chỉnh",
+      "submitting": "Đang tạo tài khoản...",
       "submit": "Đăng ký",
       "hasAccount": "Đã có tài khoản?",
       "login": "Đăng nhập",
-      "seoTitle": "Đăng ký"
+      "seoTitle": "Đăng ký",
+      "seoDescription": "Tạo tài khoản VNSEEA để tham gia cộng đồng, kết nối với mọi người và bắt đầu xây dựng hồ sơ của bạn.",
+      "statusSuccessTitle": "Tạo tài khoản mô phỏng thành công",
+      "statusSuccessDescription": "Luồng đăng ký đã chạy xong ở giao diện. Chưa kết nối API xác thực thật.",
+      "statusErrorTitle": "Biểu mẫu chưa hợp lệ",
+      "statusErrorDescription": "Hãy kiểm tra lại thông tin đăng ký rồi thử lại.",
+      "validationFirstNameRequired": "Vui lòng nhập tên.",
+      "validationLastNameRequired": "Vui lòng nhập họ.",
+      "validationEmailOrPhoneRequired": "Vui lòng nhập email hoặc số điện thoại.",
+      "validationPasswordRequired": "Vui lòng nhập mật khẩu mới.",
+      "validationPasswordLength": "Mật khẩu cần ít nhất 6 ký tự.",
+      "validationBirthdayRequired": "Vui lòng chọn đầy đủ ngày sinh.",
+      "validationGenderRequired": "Vui lòng chọn giới tính."
     },
     "forgotPasswordPage": {
       "title": "Quên mật khẩu",
@@ -395,7 +410,8 @@
   },
   "auth": {
     "heroPanel": {
-      "defaultImageAlt": "Nhóm người đang dùng điện thoại"
+      "defaultTitle": "Kết nối với cộng đồng của bạn",
+      "defaultSubtitle": "Theo dõi bảng tin, mở rộng mạng lưới và giữ mọi hoạt động của bạn ở cùng một nơi."
     }
   },
   "settings": {
