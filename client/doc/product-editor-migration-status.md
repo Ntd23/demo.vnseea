@@ -543,8 +543,19 @@ Vai trò:
 - UI shell/foundation layer
 
 Nhận xét migrate:
-- đây là khu đã tận dụng `@nuxt/ui` tốt nhất ngoài product
-- nên tiếp tục dùng làm pattern chung cho app
+- `ModalShell.vue` và `DrawerShell.vue` đã không còn là wrapper mỏng:
+  - có contract chung cho `open/update:open/close/cancel/confirm`
+  - có footer mặc định, loading guard cho dismiss, và `UAlert` trạng thái `idle/loading/success/error`
+  - hợp hơn để chuẩn hóa modal/drawer ở `jobs`, `funding`, `games`, `go-pro`
+- `DropdownShell.vue` đã có trigger accessible mặc định:
+  - typed items tốt hơn thay vì `unknown[]`
+  - có `searchTerm`, filter, empty state và event `update:open/update:searchTerm`
+  - không còn phụ thuộc hoàn toàn vào trigger slot để dùng được
+- `EmptyState.vue`, `LoadingSkeleton.vue`, `PageHeader.vue`, `PageSection.vue`, `ResponsiveContainer.vue` đã được nâng thành pattern nền:
+  - dùng `UCard` / `UContainer` rõ hơn thay vì div wrapper thuần
+  - mobile-first, có slot/action/header/footer rõ hơn
+  - state/shape SSR ổn định, không đọc browser API trong setup
+- `foundation` hiện phù hợp làm baseline cho các module khác thay vì mỗi nơi tự bọc `@nuxt/ui` theo một kiểu riêng
 
 ### `funding` - 10 files
 
