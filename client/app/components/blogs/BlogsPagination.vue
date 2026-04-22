@@ -3,37 +3,46 @@
     class="flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white/95 p-3 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center sm:justify-between"
     :aria-label="$t('pages.blogsPage.paginationAria')"
   >
-    <p class="text-caption-secondary px-2">
+    <p class="text-caption-secondary px-2" role="status" aria-live="polite">
       {{ $t("pages.blogsPage.pageStatus", { current: currentPage, total: totalPages }) }}
     </p>
 
     <div class="flex flex-wrap gap-2">
-      <button
-        class="blog-page-btn"
+      <UButton
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="min-w-[42px] rounded-[var(--radius-md)] px-3 font-bold"
         :disabled="currentPage === 1"
         type="button"
         @click="$emit('update:currentPage', currentPage - 1)"
       >
         {{ $t("pages.blogsPage.previous") }}
-      </button>
-      <button
+      </UButton>
+      <UButton
         v-for="page in pages"
         :key="page"
-        class="blog-page-btn"
-        :class="currentPage === page ? 'blog-page-btn--active' : ''"
+        :color="currentPage === page ? 'primary' : 'neutral'"
+        :variant="currentPage === page ? 'solid' : 'outline'"
+        size="sm"
+        class="min-w-[42px] rounded-[var(--radius-md)] px-3 font-bold"
         type="button"
+        :aria-current="currentPage === page ? 'page' : undefined"
         @click="$emit('update:currentPage', page)"
       >
         {{ page }}
-      </button>
-      <button
-        class="blog-page-btn"
+      </UButton>
+      <UButton
+        color="neutral"
+        variant="outline"
+        size="sm"
+        class="min-w-[42px] rounded-[var(--radius-md)] px-3 font-bold"
         :disabled="currentPage === totalPages"
         type="button"
         @click="$emit('update:currentPage', currentPage + 1)"
       >
         {{ $t("pages.blogsPage.next") }}
-      </button>
+      </UButton>
     </div>
   </nav>
 </template>
@@ -49,33 +58,3 @@ defineEmits<{
   "update:currentPage": [value: number]
 }>()
 </script>
-
-<style scoped>
-.blog-page-btn {
-  display: inline-flex;
-  min-width: 42px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  background: var(--bg-surface);
-  padding: 0 12px;
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 700;
-  transition: all var(--duration-fast) var(--ease-default);
-}
-
-.blog-page-btn:hover:not(:disabled),
-.blog-page-btn--active {
-  border-color: var(--border-strong);
-  background: var(--color-primary-500);
-  color: var(--text-inverse);
-}
-
-.blog-page-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-</style>

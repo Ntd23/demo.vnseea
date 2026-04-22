@@ -174,12 +174,25 @@ Nhận xét migrate:
 - `BlogsFilters.vue` đã nâng phần action/search lên `@nuxt/ui`:
   - dùng `UInput`, `UButton`
   - bổ sung `aria-label`, `aria-pressed`, `aria-live` cho các điểm tương tác chính
+- `BlogsHero.vue`, `BlogsPagination.vue`, `BlogsResultsHeader.vue` đã chuẩn hóa action chính bằng `@nuxt/ui`:
+  - dùng `UButton`, `UBadge`, `UCard` ở các vùng điều hướng/trạng thái quan trọng
+  - pagination không còn button CSS thủ công riêng
+  - phần heading/status có landmark và live feedback rõ hơn
+- `BlogsSidebar.vue` đã chuyển các block phụ sang `UCard`, `UButton`, `UBadge`:
+  - topic list và author list có semantics rõ hơn (`role="list"`, `role="listitem"`)
+  - CTA/filter phụ không còn là button tự dựng bằng CSS thuần
+- `CreateBlogHero.vue` và `CreateBlogSidebar.vue` đã chuẩn hóa theo `@nuxt/ui`:
+  - hero action dùng `UButton`
+  - stat/preview/checklist block dùng `UCard`, `UBadge`
+  - preview sidebar có `aria-live` để phản ánh trạng thái preview/checklist rõ hơn
 - `/blogs` đã dời `SEO` về page-level route:
   - có `useSeoMeta()` + canonical + Open Graph
   - query `search/category/sort/mine/page` đã sync với route cho listing public
-- đã có `i18n` cho `blogsPage` để tránh render raw key ở listing/read/create support
+- `/create-blog` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + canonical
+  - route create flow để `noindex, nofollow`, tránh index nhầm page thao tác nội bộ
+- đã có `i18n` cho `blogsPage` và `createBlogPage` để tránh render raw key ở listing/read/create support
 - `CreateBlogPage.vue` vẫn là form native lớn
-- `BlogsPagination.vue`, `BlogsResultsHeader.vue`, `BlogsHero.vue` vẫn còn native action có thể chuẩn hóa thêm bằng `@nuxt/ui`
 - chưa có `VueUse` cho draft/search/filter persistence
 
 ### `checkout` - 3 files
