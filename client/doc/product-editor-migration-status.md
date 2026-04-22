@@ -185,13 +185,20 @@ Nhận xét migrate:
   - hero action dùng `UButton`
   - stat/preview/checklist block dùng `UCard`, `UBadge`
   - preview sidebar có `aria-live` để phản ánh trạng thái preview/checklist rõ hơn
+- `ReadBlogHero.vue`, `ReadBlogMain.vue`, `ReadBlogSidebar.vue` đã được chuẩn hóa lại:
+  - hero detail dùng `NuxtImg` thay cho `<img>` thường và fallback không còn mutate DOM trực tiếp
+  - action bar, content block, comment area, author/related sidebar đã chuyển sang `UCard`, `UButton`, `UBadge`, `UTextarea`
+  - detail view có semantics và live feedback rõ hơn ở share/comment state
 - `/blogs` đã dời `SEO` về page-level route:
   - có `useSeoMeta()` + canonical + Open Graph
   - query `search/category/sort/mine/page` đã sync với route cho listing public
 - `/create-blog` đã dời `SEO` về page-level route:
   - có `useSeoMeta()` + canonical
   - route create flow để `noindex, nofollow`, tránh index nhầm page thao tác nội bộ
-- đã có `i18n` cho `blogsPage` và `createBlogPage` để tránh render raw key ở listing/read/create support
+- `/read-blog/[slug]` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + canonical + `ogImage`
+  - slug không hợp lệ sẽ bị `noindex, nofollow` để tránh index sai route detail
+- đã có `i18n` cho `blogsPage`, `createBlogPage`, `readBlogPage` để tránh render raw key ở listing/read/create support
 - `CreateBlogPage.vue` vẫn là form native lớn
 - chưa có `VueUse` cho draft/search/filter persistence
 
