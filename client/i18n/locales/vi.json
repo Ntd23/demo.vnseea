@@ -69,16 +69,28 @@
       "validationGenderRequired": "Vui lòng chọn giới tính."
     },
     "forgotPasswordPage": {
+      "eyebrow": "Khôi phục",
       "title": "Quên mật khẩu",
+      "subtitle": "Nhập email hoặc số điện thoại đã dùng với VNSEEA để nhận hướng dẫn đặt lại mật khẩu và lấy lại quyền truy cập.",
       "emailLabel": "Email hoặc số điện thoại",
+      "emailPlaceholder": "Nhập email hoặc số điện thoại",
       "captchaLabel": "Tôi không phải là robot",
       "captchaBrand": "reCAPTCHA",
+      "submitting": "Đang gửi liên kết đặt lại...",
       "submit": "Gửi liên kết đặt lại",
       "readyQuestion": "Đã nhớ mật khẩu?",
       "login": "Đăng nhập",
       "heroTitle": "Khôi phục quyền truy cập",
       "heroSubtitle": "Nhập email hoặc số điện thoại để nhận hướng dẫn đặt lại mật khẩu cho tài khoản VNSEEA.",
-      "seoTitle": "Quên mật khẩu"
+      "seoTitle": "Quên mật khẩu",
+      "seoDescription": "Nhập email hoặc số điện thoại để nhận hướng dẫn đặt lại mật khẩu và khôi phục quyền truy cập vào tài khoản VNSEEA.",
+      "statusSuccessTitle": "Đã gửi yêu cầu khôi phục mô phỏng",
+      "statusSuccessDescription": "Luồng quên mật khẩu đã chạy xong ở giao diện. Chưa kết nối API gửi email hoặc SMS thật.",
+      "statusErrorTitle": "Biểu mẫu chưa hợp lệ",
+      "statusErrorDescription": "Hãy kiểm tra lại email hoặc số điện thoại rồi thử lại.",
+      "validationEmailRequired": "Vui lòng nhập email hoặc số điện thoại.",
+      "validationEmailInvalid": "Hãy nhập email hợp lệ hoặc số điện thoại có ít nhất 8 chữ số.",
+      "validationCaptchaRequired": "Vui lòng xác nhận bạn không phải là robot."
     },
     "productEditor": {
       "titleLabel": "Tên sản phẩm",

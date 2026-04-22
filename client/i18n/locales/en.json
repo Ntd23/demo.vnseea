@@ -69,16 +69,28 @@
       "validationGenderRequired": "Select a gender."
     },
     "forgotPasswordPage": {
+      "eyebrow": "Recover",
       "title": "Forgot password",
+      "subtitle": "Enter the email or phone number you use with VNSEEA to receive reset instructions and recover access to your account.",
       "emailLabel": "Email or phone number",
+      "emailPlaceholder": "Enter your email or phone number",
       "captchaLabel": "I'm not a robot",
       "captchaBrand": "reCAPTCHA",
+      "submitting": "Sending reset link...",
       "submit": "Send reset link",
       "readyQuestion": "Remembered your password?",
       "login": "Sign in",
       "heroTitle": "Recover access",
       "heroSubtitle": "Enter your email or phone number to receive password reset instructions for your VNSEEA account.",
-      "seoTitle": "Forgot password"
+      "seoTitle": "Forgot password",
+      "seoDescription": "Enter your email or phone number to receive password reset instructions and recover access to your VNSEEA account.",
+      "statusSuccessTitle": "Mock recovery request sent",
+      "statusSuccessDescription": "The forgot-password flow finished in the UI. A real email or SMS API is not connected yet.",
+      "statusErrorTitle": "The form is not ready",
+      "statusErrorDescription": "Please review your email or phone number and try again.",
+      "validationEmailRequired": "Enter your email or phone number.",
+      "validationEmailInvalid": "Enter a valid email address or a phone number with at least 8 digits.",
+      "validationCaptchaRequired": "Confirm that you are not a robot."
     },
     "productEditor": {
       "titleLabel": "Product title",

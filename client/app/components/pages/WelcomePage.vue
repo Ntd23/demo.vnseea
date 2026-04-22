@@ -121,10 +121,6 @@ const form = reactive<WelcomeFormState>({
 const showPassword = ref(false)
 const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
 const { t } = useI18n()
-const route = useRoute()
-const requestURL = useRequestURL()
-
-const canonicalUrl = computed(() => new URL(route.fullPath || '/welcome', requestURL.origin).toString())
 
 const validateForm = (state: WelcomeFormState): WelcomeFormError[] => {
   const errors: WelcomeFormError[] = []
@@ -200,23 +196,5 @@ watch(() => [form.login, form.password], () => {
   if (submitState.value !== 'loading') {
     submitState.value = 'idle'
   }
-})
-
-useSeoMeta({
-  title: () => t('pages.welcomePage.seoTitle'),
-  description: () => t('pages.welcomePage.seoDescription'),
-  ogTitle: () => t('pages.welcomePage.seoTitle'),
-  ogDescription: () => t('pages.welcomePage.seoDescription'),
-  ogUrl: () => canonicalUrl.value,
-  robots: 'noindex, nofollow',
-})
-
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: canonicalUrl,
-    },
-  ],
 })
 </script>

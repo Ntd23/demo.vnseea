@@ -259,11 +259,7 @@ const radioGroupUi = {
 const showPassword = ref(false)
 const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
 const { t } = useI18n()
-const route = useRoute()
-const requestURL = useRequestURL()
 const currentYear = new Date().getFullYear()
-
-const canonicalUrl = computed(() => new URL(route.fullPath || '/register', requestURL.origin).toString())
 
 const dayOptions = computed(() =>
   Array.from({ length: 31 }, (_, index) => {
@@ -452,23 +448,5 @@ watch(() => [
   if (submitState.value !== 'loading') {
     submitState.value = 'idle'
   }
-})
-
-useSeoMeta({
-  title: () => t('pages.registerPage.seoTitle'),
-  description: () => t('pages.registerPage.seoDescription'),
-  ogTitle: () => t('pages.registerPage.seoTitle'),
-  ogDescription: () => t('pages.registerPage.seoDescription'),
-  ogUrl: () => canonicalUrl.value,
-  robots: 'noindex, nofollow',
-})
-
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: canonicalUrl,
-    },
-  ],
 })
 </script>

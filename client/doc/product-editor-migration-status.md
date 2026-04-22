@@ -124,7 +124,11 @@ Vai trò:
 - shell và hero dùng cho login/register/forgot password
 
 Nhận xét migrate:
-- shell ổn
+- `AuthSplitShell.vue` hiện là shell thật của `guest layout` cho `login/register/forgot-password`
+- shell đã giữ đúng scope layout:
+  - mobile-first, chỉ hiện hero từ `lg`
+  - có mobile brand/header rõ ràng
+  - không đụng browser API nên an toàn cho SSR
 - `AuthHeroPanel.vue` đã được nâng lên theo hướng reusable hơn:
   - dùng `NuxtImg` thay cho `<img>` thường
   - có fallback preview nội bộ khi ảnh remote lỗi hoặc không có ảnh
@@ -132,9 +136,15 @@ Nhận xét migrate:
 - `WelcomePage.vue` đã migrate sang `@nuxt/ui`:
   - dùng `UForm`, `UFormField`, `UInput`, `UButton`, `UAlert`
   - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
-  - đã bổ sung `SEO` gồm title, description, OG, canonical
-- form auth còn lại hiện vẫn nằm chủ yếu ở `pages/RegisterPage.vue`, `pages/ForgotPasswordPage.vue`
-- cần migrate tiếp `register` và `forgot-password` sang `@nuxt/ui`
+  - `SEO` đã được dời lên page-level route
+- `RegisterPage.vue` đã migrate sang `@nuxt/ui`:
+  - dùng `UForm`, `UFormField`, `UInput`, `USelect`, `URadioGroup`, `UButton`, `UAlert`
+  - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
+  - `SEO` đã được dời lên page-level route
+- `ForgotPasswordPage.vue` đã migrate sang `@nuxt/ui`:
+  - dùng `UForm`, `UFormField`, `UInput`, `UCheckbox`, `UButton`, `UAlert`
+  - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
+  - `SEO` đã được dời lên page-level route
 
 ### `blogs` - 12 files
 
