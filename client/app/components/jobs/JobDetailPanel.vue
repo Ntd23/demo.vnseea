@@ -10,7 +10,7 @@
         </div>
         <div class="min-w-0">
           <p class="text-label-secondary text-[var(--color-primary-600)]">
-            Chi tiết job
+            {{ $t("pages.jobsPage.detailEyebrow") }}
           </p>
           <h2 class="mt-1 text-title-primary">
             {{ job.title }}
@@ -32,7 +32,7 @@
         </div>
         <div class="flex items-center gap-2 rounded-[18px] bg-[var(--color-secondary-100)] px-3 py-2">
           <Icon name="i-ph-calendar-check-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
-          Hạn nộp {{ job.deadline }}
+          {{ $t("pages.jobsPage.deadlineLabel", { date: job.deadline }) }}
         </div>
       </div>
 
@@ -56,13 +56,13 @@
         @click="$emit('apply', job)"
       >
         <Icon name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
-        Ứng tuyển vị trí này
+        {{ $t("pages.jobsPage.applyThisJob") }}
       </button>
     </section>
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Yêu cầu
+        {{ $t("pages.jobsPage.requirements") }}
       </p>
       <ul class="mt-3 space-y-2">
         <li
@@ -78,7 +78,7 @@
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Quyền lợi
+        {{ $t("pages.jobsPage.benefits") }}
       </p>
       <ul class="mt-3 space-y-2">
         <li

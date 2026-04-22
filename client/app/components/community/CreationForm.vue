@@ -3,19 +3,19 @@
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div class="max-w-[760px]">
         <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-          Thiết lập cơ bản
+          {{ $t("community.creation.common.basicSetup") }}
         </p>
         <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[1.75rem]">
-          Điền thông tin {{ entityLabel }}
+          {{ $t("community.creation.common.fillInfo", { entity: $t(entityLabel) }) }}
         </h2>
         <p class="mt-2 text-[14px] leading-7 text-slate-500">
-          Hoàn thiện tên, URL, mô tả và phân loại để {{ entityLabel }} mới của bạn sẵn sàng xuất hiện trên VNSEEA.
+          {{ $t("community.creation.common.fillDesc", { entity: $t(entityLabel) }) }}
         </p>
       </div>
 
       <div class="inline-flex items-center gap-2 rounded-full bg-[#f6f8ff] px-4 py-2 text-[12px] font-semibold text-slate-600">
         <Icon name="i-ph-check-circle-fill" class="h-4 w-4 text-[#0000ff]" />
-        {{ completionCount }}/{{ completionTotal }} mục chính đã sẵn sàng
+        {{ $t("community.creation.common.completionStatus", { count: completionCount, total: completionTotal }) }}
       </div>
     </div>
 
@@ -40,7 +40,7 @@
           <div class="mt-5 space-y-6">
             <label class="block">
               <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-                {{ nameLabel }}
+                {{ nameLabelText }}
               </span>
               <input
                 v-model="model.name"
@@ -63,7 +63,7 @@
 
             <label class="block">
               <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-                {{ urlLabel }}
+                {{ urlLabelText }}
               </span>
               <div class="relative mt-3">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-5 text-[1rem] font-medium text-slate-500">
@@ -80,10 +80,10 @@
               <div class="mt-3 flex flex-col gap-2 rounded-[18px] bg-white px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)] sm:flex-row sm:items-center sm:justify-between">
                 <div class="min-w-0">
                   <p class="text-[12px] font-semibold text-slate-500">
-                    Gợi ý URL
+                    {{ $t("community.creation.common.urlSuggested") }}
                   </p>
                   <p class="mt-1 break-all text-[13px] font-medium text-[#243b63]">
-                    {{ urlPrefix }}{{ suggestedSlug || "ten-nhom-cua-ban" }}
+                    {{ urlPrefix }}{{ suggestedSlug || $t("community.creation.common.urlDefault") }}
                   </p>
                 </div>
 
@@ -93,7 +93,7 @@
                   type="button"
                   @click="applySuggestedSlug"
                 >
-                  Dùng gợi ý
+                  {{ $t("community.creation.common.useSuggestion") }}
                 </button>
               </div>
             </label>
@@ -110,7 +110,7 @@
 
           <label class="mt-5 block">
             <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-              {{ descriptionLabel }}
+              {{ descriptionLabelText }}
             </span>
             <textarea
               v-model="model.description"
@@ -124,7 +124,7 @@
               {{ descriptionHintText }}
             </p>
             <span class="font-semibold text-[#243b63]">
-              {{ descriptionLength }} ký tự
+              {{ $t("community.creation.common.charCount", { count: descriptionLength }) }}
             </span>
           </div>
         </section>
@@ -155,17 +155,17 @@
                 <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
               </div>
               <p class="mt-4 text-[14px] font-black text-[#243b63]">
-                {{ option.label }}
+                {{ $t(option.label) }}
               </p>
               <p class="mt-2 text-[12px] leading-5 text-slate-500">
-                {{ option.description }}
+                {{ option.description ? $t(option.description) : "" }}
               </p>
             </button>
           </div>
 
           <label class="mt-5 block">
             <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-              {{ categoryLabel }}
+              {{ categoryLabelText }}
             </span>
             <div class="relative mt-3">
               <select
@@ -177,7 +177,7 @@
                   :key="option.value"
                   :value="option.value"
                 >
-                  {{ option.label }}
+                  {{ $t(option.label) }}
                 </option>
               </select>
               <Icon name="i-ph-caret-down" class="pointer-events-none absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
@@ -193,7 +193,7 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-                Hành động
+                {{ $t("community.creation.common.action") }}
               </p>
               <p class="mt-1 text-[14px] leading-6 text-slate-500">
                 {{ actionDescriptionText }}
@@ -206,7 +206,7 @@
                 class="inline-flex h-14 min-w-[180px] items-center justify-center rounded-full border border-transparent bg-transparent px-5 text-[1rem] font-semibold text-slate-500 transition hover:text-[#243b63]"
               >
                 <Icon name="i-ph-arrow-left" class="mr-2 h-5 w-5" />
-                {{ backLabel }}
+                {{ backLabelText }}
               </NuxtLink>
 
               <NuxtLink
@@ -214,7 +214,7 @@
                 :to="submitTo"
                 class="inline-flex h-14 min-w-[210px] items-center justify-center rounded-[18px] bg-[#0000ff] px-6 text-[1.02rem] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e6]"
               >
-                {{ submitLabel }}
+                {{ submitLabelText }}
               </NuxtLink>
 
               <button
@@ -222,7 +222,7 @@
                 class="inline-flex h-14 min-w-[210px] items-center justify-center rounded-[18px] bg-[#0000ff] px-6 text-[1.02rem] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e6]"
                 type="button"
               >
-                {{ submitLabel }}
+                {{ submitLabelText }}
               </button>
             </div>
           </div>
@@ -264,6 +264,8 @@ import type {
   CommunityOption,
 } from "../../../types/community"
 
+const { t } = useI18n()
+
 const model = defineModel<CommunityDraft>({ required: true })
 
 const props = withDefaults(defineProps<{
@@ -300,17 +302,17 @@ const props = withDefaults(defineProps<{
 }>(), {
   privacyOptions: () => [],
   showPrivacy: true,
-  submitLabel: "Tạo ra",
-  backLabel: "Quay lại",
+  submitLabel: "", // handled in computed
+  backLabel: "",   // handled in computed
   backTo: "/home",
-  nameLabel: "Tên",
+  nameLabel: "",
   namePlaceholder: "",
-  urlLabel: "URL",
+  urlLabel: "",
   slugPlaceholder: "",
-  descriptionLabel: "Mô tả",
+  descriptionLabel: "",
   descriptionPlaceholder: "",
-  categoryLabel: "Loại",
-  privacyLabel: "Loại hiển thị",
+  categoryLabel: "",
+  privacyLabel: "",
   urlPrefix: communityUrlPrefix,
   identitySectionLabel: "",
   identitySectionTitle: "",
@@ -323,9 +325,34 @@ const props = withDefaults(defineProps<{
   configurationSectionLabel: "",
   configurationSectionTitle: "",
   actionDescription: "",
+  previewTitle: "",
   previewIcon: "i-ph-users-three-fill",
   nextSteps: () => [],
 })
+
+const submitLabelText = computed(() =>
+  props.submitLabel || t("community.creation.common.create"),
+)
+
+const backLabelText = computed(() =>
+  props.backLabel || t("community.creation.common.back"),
+)
+
+const nameLabelText = computed(() =>
+  props.nameLabel || t("community.creation.common.nameLabel"),
+)
+
+const urlLabelText = computed(() =>
+  props.urlLabel || t("community.creation.common.urlLabel"),
+)
+
+const descriptionLabelText = computed(() =>
+  props.descriptionLabel || t("community.creation.common.descriptionLabel"),
+)
+
+const categoryLabelText = computed(() =>
+  props.categoryLabel || t("community.creation.common.categoryLabel"),
+)
 
 const completionCount = computed(() =>
   getCommunityCompletionCount(model.value, { includePrivacy: props.showPrivacy }),
@@ -339,89 +366,97 @@ const descriptionLength = computed(() => model.value.description.trim().length)
 const suggestedSlug = computed(() => createCommunitySlug(model.value.name))
 
 const selectedPrivacyLabel = computed(() =>
-  props.privacyOptions.find(option => option.value === model.value.privacy)?.label ?? "Chưa chọn hiển thị",
+  props.privacyOptions.find(option => option.value === model.value.privacy)?.label
+    ? t(props.privacyOptions.find(option => option.value === model.value.privacy)!.label)
+    : t("community.creation.common.noPrivacy"),
 )
 
 const selectedPrivacyDescription = computed(() =>
   props.privacyOptions.find(option => option.value === model.value.privacy)?.description
-    ?? `Thiết lập này quyết định ai sẽ tìm thấy và xem được nội dung trong ${props.entityLabel}.`,
+    ? t(props.privacyOptions.find(option => option.value === model.value.privacy)!.description!)
+    : t("community.creation.common.privacyDescDefault", { entity: t(props.entityLabel) }),
 )
 
 const selectedCategoryLabel = computed(() =>
-  props.categoryOptions.find(option => option.value === model.value.category)?.label ?? "Chưa chọn loại",
+  props.categoryOptions.find(option => option.value === model.value.category)?.label
+    ? t(props.categoryOptions.find(option => option.value === model.value.category)!.label)
+    : t("community.creation.common.noCategory"),
 )
 
 const selectedCategoryDescription = computed(() =>
   props.categoryOptions.find(option => option.value === model.value.category)?.description
-    ?? `Hãy chọn một category gần nhất với chủ đề chính của ${props.entityLabel}.`,
+    ? t(props.categoryOptions.find(option => option.value === model.value.category)!.description!)
+    : t("community.creation.common.categoryDescDefault", { entity: t(props.entityLabel) }),
 )
 
 const identitySectionLabelText = computed(() =>
-  props.identitySectionLabel || `Định danh ${props.entityLabel}`,
+  props.identitySectionLabel || t("community.creation.common.identitySection", { entity: t(props.entityLabel) }),
 )
 
 const identitySectionTitleText = computed(() =>
-  props.identitySectionTitle || "Tên ngắn gọn và URL dễ nhớ",
+  props.identitySectionTitle || t("community.creation.common.identityTitle"),
 )
 
 const identitySectionBadgeText = computed(() =>
-  props.identitySectionBadge || "Hiển thị đẹp trên tìm kiếm và chia sẻ",
+  props.identitySectionBadge || t("community.creation.common.identityBadge"),
 )
 
 const identityHintText = computed(() =>
-  props.identityHint || "Dễ nhớ, ngắn và đúng chủ đề",
+  props.identityHint || t("community.creation.common.identityHint"),
 )
 
 const identityReadyLabelText = computed(() =>
-  props.identityReadyLabel || "Tên đã đủ rõ",
+  props.identityReadyLabel || t("community.creation.common.identityReady"),
 )
 
 const descriptionSectionLabelText = computed(() =>
-  props.descriptionSectionLabel || `Giới thiệu ${props.entityLabel}`,
+  props.descriptionSectionLabel || t("community.creation.common.introSection", { entity: t(props.entityLabel) }),
 )
 
 const descriptionSectionTitleText = computed(() =>
   props.descriptionSectionTitle
-    || `Mô tả rõ mục tiêu và đối tượng ${props.showPrivacy ? "thành viên" : "người theo dõi"}`,
+    || (props.showPrivacy ? t("community.creation.common.introTitleGroup") : t("community.creation.common.introTitlePage")),
 )
 
 const descriptionHintText = computed(() =>
   props.descriptionHint
-    || `Gợi ý: nói rõ ${props.entityLabel} dành cho ai, nội dung chính là gì và điểm khác biệt nổi bật nhất.`,
+    || t("community.creation.common.introHint", { entity: t(props.entityLabel) }),
 )
 
 const configurationSectionLabelText = computed(() =>
-  props.configurationSectionLabel || (props.showPrivacy ? "Cấu hình hiển thị" : "Phân loại nội dung"),
+  props.configurationSectionLabel || (props.showPrivacy ? t("community.creation.common.configLabelDisplay") : t("community.creation.common.configLabelContent")),
 )
 
 const configurationSectionTitleText = computed(() =>
   props.configurationSectionTitle
     || (props.showPrivacy
-      ? "Chọn phạm vi tiếp cận và nhóm nội dung phù hợp"
-      : "Chọn danh mục gần nhất với nội dung chính của trang"),
+      ? t("community.creation.common.configTitleGroup")
+      : t("community.creation.common.configTitlePage")),
 )
 
 const actionDescriptionText = computed(() =>
   props.actionDescription
-    || `Khi hoàn tất, bạn vẫn có thể quay lại chỉnh ảnh cover, mô tả và ${props.showPrivacy ? "quyền quản trị" : "thông tin liên hệ"}.`,
+    || t("community.creation.common.finishHint", { extra: props.showPrivacy ? t("community.creation.common.finishExtraGroup") : t("community.creation.common.finishExtraPage") }),
 )
 
 const previewTitle = computed(() =>
-  model.value.name.trim() || `Tên ${props.entityLabel} sẽ hiển thị ở đây`,
+  model.value.name.trim() || t("community.creation.common.previewTitle", { entity: t(props.entityLabel) }),
 )
 
 const effectiveSlug = computed(() =>
-  model.value.slug.trim() || suggestedSlug.value || "duong-dan-cua-ban",
+  model.value.slug.trim() || suggestedSlug.value || t("community.creation.common.previewUrlDefault"),
 )
 
 const previewUrl = computed(() =>
   `${props.urlPrefix}${effectiveSlug.value}`,
 )
 
-const previewDescription = computed(() =>
-  model.value.description.trim()
-    || `${props.entityLabel.charAt(0).toUpperCase()}${props.entityLabel.slice(1)} mới của bạn sẽ có phần mô tả ngắn để người khác hiểu rõ mục tiêu, chủ đề và cách tham gia.`,
-)
+const previewDescription = computed(() => {
+  const entity = t(props.entityLabel)
+  const capitalizedEntity = entity.charAt(0).toUpperCase() + entity.slice(1)
+  return model.value.description.trim()
+    || t("community.creation.common.previewDescDefault", { entity: capitalizedEntity })
+})
 
 const isNameReady = computed(() => model.value.name.trim().length >= 3)
 const isUrlReady = computed(() => model.value.slug.trim().length >= 3)

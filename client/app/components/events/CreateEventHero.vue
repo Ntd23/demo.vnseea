@@ -7,13 +7,13 @@
     <div class="relative z-10 flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-[760px]">
         <p class="text-label-secondary text-white/72">
-          P-28 · Tạo sự kiện
+          {{ $t("pages.createEventPage.heroEyebrow") }}
         </p>
         <h1 class="mt-4 text-display text-[2.2rem] leading-[0.95] text-white sm:text-[2.85rem]">
-          Tạo sự kiện mới
+          {{ $t("pages.createEventPage.heroTitle") }}
         </h1>
         <p class="mt-4 max-w-[620px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-          Chuẩn bị tên, mô tả, địa điểm, thời gian và ảnh bìa để đăng sự kiện vào cộng đồng VNSEEA.
+          {{ $t("pages.createEventPage.heroDescription") }}
         </p>
 
         <div class="mt-7 flex flex-wrap gap-3">
@@ -22,7 +22,7 @@
             class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] border border-white/20 bg-white/10 px-5 text-[14px] font-bold text-white transition hover:bg-white/15"
           >
             <Icon name="i-ph-arrow-left" class="mr-2 h-4 w-4" />
-            Quay lại Sự kiện
+            {{ $t("pages.createEventPage.backToEvents") }}
           </NuxtLink>
 
           <button
@@ -30,7 +30,7 @@
             type="button"
             @click="$emit('quickFill')"
           >
-            Điền nhanh dữ liệu mẫu
+            {{ $t("pages.createEventPage.quickFill") }}
           </button>
         </div>
       </div>

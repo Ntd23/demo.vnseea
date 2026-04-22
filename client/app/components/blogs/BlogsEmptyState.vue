@@ -4,10 +4,10 @@
       <Icon name="i-ph-newspaper-clipping-fill" class="h-7 w-7" />
     </div>
     <h3 class="mt-4 text-[1.3rem] font-black tracking-[-0.04em] text-[var(--text-primary)]">
-      Chưa có bài phù hợp
+      {{ $t("pages.blogsPage.emptyTitle") }}
     </h3>
     <p class="mx-auto mt-2 max-w-[460px] text-body-secondary">
-      Hãy đổi từ khóa, chọn lại chủ đề hoặc bỏ lọc bài báo của tôi.
+      {{ $t("pages.blogsPage.emptyDescription") }}
     </p>
     <button
       class="mt-5 inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-5 py-3 text-[14px] font-bold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
@@ -15,7 +15,7 @@
       @click="$emit('reset')"
     >
       <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-      Xem tất cả
+      {{ $t("pages.blogsPage.viewAll") }}
     </button>
   </div>
 </template>

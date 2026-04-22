@@ -1,9 +1,9 @@
 <template>
   <div v-if="page && previewPage" class="mx-auto max-w-[1280px] space-y-5 pb-10">
     <CommunityCreationHeaderCard
-      eyebrow="Page settings"
-      :title="`Cài đặt ${page.name}`"
-      description="Điều chỉnh hồ sơ fanpage, CTA chính và một số tín hiệu hiển thị trước khi nối API quản trị thật."
+      :eyebrow="$t('community.pageSettings.eyebrow')"
+      :title="$t('community.pageSettings.title', { name: $t(page.name) })"
+      :description="$t('community.pageSettings.desc')"
       icon="i-ph-sliders-horizontal-bold"
       :highlights="[selectedCategoryLabel, selectedCtaLabel, visibilityLabel]"
     />
@@ -18,15 +18,14 @@
         <CommunityPageSettingsControlsCard v-model="draft" />
 
         <CommunitySettingsSectionCard
-          eyebrow="Hoàn tất"
-          title="Hành động nhanh"
-          description="Flow page settings này hiện là UI mock. Bạn có thể quay lại fanpage để so sánh hoặc tiếp tục tinh chỉnh trước khi nối API."
+          :eyebrow="$t('community.pageSettings.finish.eyebrow')"
+          :title="$t('community.pageSettings.finish.title')"
+          :description="$t('community.pageSettings.finish.desc')"
           icon="i-ph-floppy-disk-back-bold"
         >
           <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-500">
-              {{ enabledPolicies }}/{{ totalPolicies }} tín hiệu đang bật. CTA chính hiện tại là
-              <span class="font-bold text-[#243b63]">{{ selectedCtaLabel.toLowerCase() }}</span>.
+              <span v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: selectedCtaLabel.toLowerCase() })" />
             </div>
 
             <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
@@ -35,7 +34,7 @@
                 class="inline-flex h-12 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-5 text-[14px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
               >
                 <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
-                Quay lại fanpage
+                {{ $t('community.pageSettings.finish.back') }}
               </NuxtLink>
 
               <button
@@ -43,7 +42,7 @@
                 type="button"
               >
                 <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
-                Lưu thay đổi
+                {{ $t('community.pageSettings.finish.save') }}
               </button>
             </div>
           </div>
@@ -70,8 +69,8 @@
     <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-sliders-horizontal-fill"
-        title="Không tìm thấy fanpage để cài đặt"
-        description="Slug page này chưa có trong dữ liệu mock hiện tại. Hãy quay lại danh sách hoặc flow tạo trang để dựng một fanpage hợp lệ."
+        :title="$t('community.pageSettings.empty.title')"
+        :description="$t('community.pageSettings.empty.desc')"
       />
 
       <div class="mt-6 flex justify-center">
@@ -79,7 +78,7 @@
           to="/pages"
           class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
         >
-          Quay lại fanpage
+          {{ $t('community.pageSettings.empty.back') }}
         </NuxtLink>
       </div>
     </section>
@@ -115,7 +114,9 @@ const draft = ref<CommunityPageSettingsDraft>(
   createCommunityPageSettingsDraft(),
 )
 
-watch(page, (value) => {
+const { t, locale } = useI18n()
+
+watch([page, locale], ([value]) => {
   draft.value = createCommunityPageSettingsDraft(value || undefined)
 }, { immediate: true })
 
@@ -155,7 +156,7 @@ const selectedCategoryLabel = computed(() =>
 )
 
 const selectedCtaLabel = computed(() =>
-  draft.value.ctaLabel.trim() || page.value?.ctaLabel || "Theo dõi",
+  draft.value.ctaLabel.trim() || page.value?.ctaLabel || t("community.pageSettings.basics.stats.ctaFallback"),
 )
 
 const totalPolicies = 5
@@ -171,7 +172,7 @@ const enabledPolicies = computed(() =>
 )
 
 const visibilityLabel = computed(() =>
-  draft.value.showWebsite ? "Website đang hiển thị" : "Website đang ẩn",
+  draft.value.showWebsite ? t("community.pageSettings.basics.stats.websiteYes") : t("community.pageSettings.basics.stats.websiteNo"),
 )
 
 const pagePath = computed(() =>
@@ -182,10 +183,10 @@ const pagePath = computed(() =>
 
 useSeoMeta({
   title: computed(() =>
-    page.value ? `Cài đặt ${page.value.name} | VNSEEA` : "Cài đặt page | VNSEEA",
+    page.value ? t("community.pageSettings.seoTitle", { name: t(page.value.name) }) : t("community.pageSettings.seoTitleFallback"),
   ),
   description: computed(() =>
-    page.value?.summary || "Quản lý thiết lập fanpage trên VNSEEA.",
+    page.value ? t(page.value.summary) : t("community.pageSettings.seoDescFallback"),
   ),
 })
 </script>

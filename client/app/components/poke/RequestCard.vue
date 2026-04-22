@@ -40,7 +40,7 @@
       <div class="grid gap-3 sm:grid-cols-2">
         <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            Kết nối
+            {{ t("pages.pokePage.connectionLabel") }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
             {{ record.mutualLabel }}
@@ -49,7 +49,7 @@
 
         <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            Bối cảnh
+            {{ t("pages.pokePage.contextLabel") }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
             {{ record.contextLabel }}
@@ -69,14 +69,14 @@
           @click="$emit('poke', record.id)"
         >
           <Icon :name="pokedBack ? 'i-ph-check-bold' : 'i-ph-hand-waving-bold'" class="mr-2 h-4 w-4" />
-          {{ pokedBack ? "Đã chọc lại" : "Chọc lại" }}
+          {{ pokedBack ? t("pages.pokePage.pokedBackAction") : t("pages.pokePage.pokeBackAction") }}
         </button>
 
         <NuxtLink
           :to="record.href"
           class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
         >
-          Xem hồ sơ
+          {{ t("pages.pokePage.viewProfile") }}
         </NuxtLink>
       </div>
     </div>
@@ -90,6 +90,8 @@ const props = defineProps<{
   record: MockPokeRecord
   pokedBack: boolean
 }>()
+
+const { t } = useI18n()
 
 defineEmits<{
   poke: [id: string]

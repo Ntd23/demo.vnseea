@@ -7,7 +7,9 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: "Tìm kiếm | VNSEEA",
+  title: computed(() => t('community.search.seoTitle')),
 })
 </script>

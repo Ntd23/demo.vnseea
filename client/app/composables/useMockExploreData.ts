@@ -1,6 +1,7 @@
 import { communityPageDirectory, createCommunitySlug } from "../../types/community"
 import { createHashtagPath } from "./useMockHashtagData"
 import { useMockSocialData } from "./useMockSocialData"
+import { computed } from "vue"
 
 type SocialData = ReturnType<typeof useMockSocialData>
 type SocialPost = SocialData["posts"][number]
@@ -69,48 +70,51 @@ const accentPalette = [
 ]
 
 export function useMockExploreData() {
+  const { t, locale } = useI18n()
   const { contacts, posts, suggestedUsers, widgets } = useMockSocialData()
+  const formatCount = (value: number) =>
+    value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US")
 
-  const exploreViewOptions: ExploreViewOption[] = [
+  const exploreViewOptions = computed<ExploreViewOption[]>(() => [
     {
-      label: "Tất cả",
+      label: t("pages.explorePage.viewAllLabel"),
       value: "all",
       icon: "i-ph-squares-four-fill",
-      description: "Hiển thị đồng thời bài viết, kết nối và fanpage đang đáng chú ý nhất.",
+      description: t("pages.explorePage.viewAllDescription"),
     },
     {
-      label: "Bài viết",
+      label: t("pages.explorePage.viewPostsLabel"),
       value: "posts",
       icon: "i-ph-newspaper-clipping-fill",
-      description: "Ưu tiên các bài đăng đang có tương tác cao trong social mock hiện tại.",
+      description: t("pages.explorePage.viewPostsDescription"),
     },
     {
-      label: "Người dùng",
+      label: t("pages.explorePage.viewUsersLabel"),
       value: "users",
       icon: "i-ph-user-circle-fill",
-      description: "Gợi ý hồ sơ dựa trên bạn chung, vai trò và hoạt động gần đây.",
+      description: t("pages.explorePage.viewUsersDescription"),
     },
     {
-      label: "Fanpage",
+      label: t("pages.explorePage.viewPagesLabel"),
       value: "pages",
       icon: "i-ph-flag-fill",
-      description: "Các trang nội dung và thương hiệu phù hợp để theo dõi tiếp.",
+      description: t("pages.explorePage.viewPagesDescription"),
     },
-  ]
+  ])
 
-  const recommendedUsers = [
+  const recommendedUsers = computed<ExploreUserSpotlight[]>(() => [
     ...suggestedUsers.map((user, index) => ({
       id: `suggested-${user.id}`,
       name: user.name,
       initials: user.avatar,
       role: user.role,
       href: createProfilePath(user.name),
-      mutualLabel: `${user.mutual} bạn chung`,
-      meta: "Gợi ý từ mạng lưới tương tác gần đây",
+      mutualLabel: t("pages.explorePage.mutualFriends", { count: user.mutual }),
+      meta: t("pages.explorePage.suggestionMeta"),
       reason: user.mutual >= 8
-        ? "Có nhiều kết nối trùng và chủ đề chuyên môn gần với nội dung bạn đang theo dõi."
-        : "Phù hợp với các chủ đề bạn từng quan tâm trong search và hashtag.",
-      tags: [user.role, "Kết nối mới"],
+        ? t("pages.explorePage.highMutualReason")
+        : t("pages.explorePage.defaultUserReason"),
+      tags: [user.role, t("pages.explorePage.newConnectionTag")],
       accent: accentPalette[index % accentPalette.length],
       online: index % 2 === 0,
     })),
@@ -121,97 +125,103 @@ export function useMockExploreData() {
         id: `contact-${contact.id}`,
         name: contact.name,
         initials: contact.avatar,
-        role: "Đang hoạt động",
+        role: t("pages.explorePage.activeNow"),
         href: createProfilePath(contact.name),
-        mutualLabel: `${index + 2} bạn chung`,
-        meta: "Xuất hiện trong danh sách chat đang online",
-        reason: "Có mặt trong mạng lưới liên hệ trực tiếp, phù hợp để mở kết nối nhanh.",
-        tags: ["Online", "Trao đổi nhanh"],
+        mutualLabel: t("pages.explorePage.mutualFriends", { count: index + 2 }),
+        meta: t("pages.explorePage.onlineMeta"),
+        reason: t("pages.explorePage.onlineReason"),
+        tags: [t("pages.explorePage.onlineTag"), t("pages.explorePage.quickChatTag")],
         accent: accentPalette[(suggestedUsers.length + index) % accentPalette.length],
         online: true,
       })),
-  ]
+  ])
 
-  const recommendedPages = [...communityPageDirectory]
-    .sort((left, right) => right.followers - left.followers)
-    .slice(0, 3)
+  const recommendedPages = computed(() =>
+    [...communityPageDirectory]
+      .sort((left, right) => right.followers - left.followers)
+      .slice(0, 3),
+  )
 
-  const recommendedPosts = [...posts]
-    .sort((left, right) => getPostScore(right) - getPostScore(left))
+  const recommendedPosts = computed(() =>
+    [...posts]
+      .sort((left, right) => getPostScore(right) - getPostScore(left)),
+  )
 
-  const hashtagScoreMap = new Map<string, { label: string; score: number }>()
+  const trendingHashtags = computed<ExploreHashtag[]>(() => {
+    const hashtagScoreMap = new Map<string, { label: string; score: number }>()
 
-  recommendedPosts.forEach((post) => {
-    const score = getPostScore(post)
+    recommendedPosts.value.forEach((post) => {
+      const score = getPostScore(post)
 
-    post.tags.forEach((tag) => {
-      const slug = normalizeTag(tag)
-      if (!slug) return
+      post.tags.forEach((tag) => {
+        const slug = normalizeTag(tag)
+        if (!slug) return
 
-      const existing = hashtagScoreMap.get(slug)
-      if (existing) {
-        existing.score += score
-        return
-      }
+        const existing = hashtagScoreMap.get(slug)
+        if (existing) {
+          existing.score += score
+          return
+        }
 
-      hashtagScoreMap.set(slug, {
-        label: tag.replace(/^#/, "").trim(),
-        score,
+        hashtagScoreMap.set(slug, {
+          label: tag.replace(/^#/, "").trim(),
+          score,
+        })
       })
     })
+
+    widgets
+      .flatMap(section => section.items)
+      .filter(item => item.title.startsWith("#"))
+      .forEach((item) => {
+        const slug = normalizeTag(item.title)
+        if (!slug) return
+
+        const score = readNumberFromSubtitle(item.subtitle)
+        const existing = hashtagScoreMap.get(slug)
+
+        if (existing) {
+          existing.score += score
+          return
+        }
+
+        hashtagScoreMap.set(slug, {
+          label: item.title.replace(/^#/, "").trim(),
+          score,
+        })
+      })
+
+    return Array.from(hashtagScoreMap.entries())
+      .map(([slug, item]) => ({
+        slug,
+        label: item.label,
+        score: item.score,
+        to: createHashtagPath(slug),
+      }))
+      .sort((left, right) => right.score - left.score || left.label.localeCompare(right.label, locale.value === "vi" ? "vi" : "en"))
+      .slice(0, 6)
   })
 
-  widgets
-    .flatMap(section => section.items)
-    .filter(item => item.title.startsWith("#"))
-    .forEach((item) => {
-      const slug = normalizeTag(item.title)
-      if (!slug) return
-
-      const score = readNumberFromSubtitle(item.subtitle)
-      const existing = hashtagScoreMap.get(slug)
-
-      if (existing) {
-        existing.score += score
-        return
-      }
-
-      hashtagScoreMap.set(slug, {
-        label: item.title.replace(/^#/, "").trim(),
-        score,
-      })
-    })
-
-  const trendingHashtags: ExploreHashtag[] = Array.from(hashtagScoreMap.entries())
-    .map(([slug, item]) => ({
-      slug,
-      label: item.label,
-      score: item.score,
-      to: createHashtagPath(slug),
-    }))
-    .sort((left, right) => right.score - left.score || left.label.localeCompare(right.label, "vi"))
-    .slice(0, 6)
-
-  const summaryCards: ExploreSummaryCard[] = [
+  const summaryCards = computed<ExploreSummaryCard[]>(() => [
     {
-      label: "Bài viết đề xuất",
-      value: recommendedPosts.length.toLocaleString("vi-VN"),
-      description: "Các bài đang có mức tương tác tốt nhất trong social mock.",
+      label: t("pages.explorePage.summaryPosts"),
+      value: formatCount(recommendedPosts.value.length),
+      description: t("pages.explorePage.summaryPostsDescription"),
       icon: "i-ph-newspaper-clipping-fill",
     },
     {
-      label: "Kết nối gợi ý",
-      value: recommendedUsers.length.toLocaleString("vi-VN"),
-      description: "Hồ sơ được gom từ suggested users và liên hệ đang hoạt động.",
+      label: t("pages.explorePage.summaryUsers"),
+      value: formatCount(recommendedUsers.value.length),
+      description: t("pages.explorePage.summaryUsersDescription"),
       icon: "i-ph-users-three-fill",
     },
     {
-      label: "Fanpage nên theo dõi",
-      value: recommendedPages.length.toLocaleString("vi-VN"),
-      description: "Trang cộng đồng và thương hiệu phù hợp để mở sâu hơn.",
+      label: t("pages.explorePage.summaryPages"),
+      value: formatCount(recommendedPages.value.length),
+      description: t("pages.explorePage.summaryPagesDescription"),
       icon: "i-ph-flag-fill",
     },
-  ]
+  ])
 
   return {
     exploreViewOptions,

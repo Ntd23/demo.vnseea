@@ -2,7 +2,7 @@
   <aside class="space-y-4">
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Chủ đề nổi bật
+        {{ $t("pages.blogsPage.featuredTopics") }}
       </p>
       <div class="mt-4 space-y-2.5">
         <button
@@ -27,7 +27,7 @@
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-surface)_0%,var(--color-primary-50)_100%)] p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Tác giả tuần này
+        {{ $t("pages.blogsPage.authorsThisWeek") }}
       </p>
       <div class="mt-4 space-y-3">
         <div
@@ -43,7 +43,7 @@
               {{ author.name }}
             </p>
             <p class="text-caption-secondary">
-              {{ author.count }} bài · {{ author.topic }}
+              {{ $t("pages.blogsPage.authorArticleTopic", { count: author.count, topic: author.topic }) }}
             </p>
           </div>
         </div>

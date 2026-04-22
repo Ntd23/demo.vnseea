@@ -1,8 +1,8 @@
 <template>
   <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <p class="text-label-secondary text-[var(--text-tertiary)]">Nạp tiền</p>
-    <h2 class="mt-1 text-heading text-[var(--text-primary)]">Thêm tiền vào ví</h2>
-    <p class="mt-1 text-body-secondary">Chọn số tiền và phương thức nạp.</p>
+    <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.walletPage.topupEyebrow") }}</p>
+    <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.topupTitle") }}</h2>
+    <p class="mt-1 text-body-secondary">{{ t("pages.walletPage.topupDescription") }}</p>
 
     <div class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
       <button
@@ -13,12 +13,12 @@
         type="button"
         @click="form.amount = amount"
       >
-        {{ formatWalletCurrency(amount) }}
+        {{ formatWalletCurrency(amount, locale.value) }}
       </button>
     </div>
 
     <label class="mt-4 block">
-      <span class="text-[12px] font-bold text-[var(--text-secondary)]">Số tiền khác</span>
+      <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.walletPage.otherAmountLabel") }}</span>
       <input v-model.number="form.amount" class="wallet-input mt-2" min="10000" type="number">
     </label>
 
@@ -37,7 +37,7 @@
     </div>
 
     <button class="mt-5 h-12 w-full rounded-[var(--radius-full)] bg-[var(--color-primary-500)] text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="button" @click="submit">
-      Nạp tiền
+      {{ t("pages.walletPage.topupSubmit") }}
     </button>
   </section>
 </template>
@@ -45,6 +45,8 @@
 <script setup lang="ts">
 import type { WalletTopupPayload } from "~/composables/useMockWalletData"
 import { formatWalletCurrency } from "~/composables/useMockWalletData"
+
+const { t, locale } = useI18n()
 
 defineProps<{
   methods: ReadonlyArray<{ label: string; value: WalletTopupPayload["method"]; icon: string }>

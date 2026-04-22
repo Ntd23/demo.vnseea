@@ -11,10 +11,10 @@
             :to="groupTo"
             class="mt-4 block text-[1.35rem] font-black tracking-[-0.04em] text-white transition hover:text-white/85"
           >
-            {{ group.name }}
+            {{ $t(group.name) }}
           </NuxtLink>
           <p class="mt-2 max-w-[28rem] text-[13px] leading-6 text-white/82">
-            {{ group.summary }}
+            {{ $t(group.summary) }}
           </p>
         </div>
 
@@ -45,19 +45,19 @@
       <div class="grid gap-3 md:grid-cols-2">
         <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            Hoạt động
+            {{ $t('community.groups.card.activity') }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-            {{ group.activityLabel }}
+            {{ $t(group.activityLabel) }}
           </p>
         </div>
 
         <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            Ngữ cảnh
+            {{ $t('community.groups.card.context') }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-            {{ group.ownerLabel }}
+            {{ $t(group.ownerLabel) }}
           </p>
         </div>
       </div>
@@ -74,7 +74,7 @@
           class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)] transition hover:-translate-y-0.5"
           :style="{ background: primaryButtonBackground }"
         >
-          {{ actionLabel }}
+          {{ resolvedActionLabel }}
         </NuxtLink>
       </div>
     </div>
@@ -83,7 +83,6 @@
 
 <script setup lang="ts">
 import {
-  formatCommunityMemberCount,
   getCommunityGroupPath,
   communityCategoryOptions,
   communityPrivacyOptions,
@@ -92,27 +91,36 @@ import {
 } from "../../../types/community"
 import type { CommunityGroupRecord } from "../../../types/community"
 
+const { t } = useI18n()
+
 const props = withDefaults(defineProps<{
   group: CommunityGroupRecord
   actionLabel?: string
 }>(), {
-  actionLabel: "Xem nhóm",
+  actionLabel: "",
 })
 
 const memberLabel = computed(() =>
-  formatCommunityMemberCount(props.group.members),
+  t("community.groups.format.members", { count: props.group.members.toLocaleString() }),
 )
 
-const privacyLabel = computed(() =>
-  getCommunityOptionLabel(communityPrivacyOptions, props.group.privacy, "Nhóm"),
-)
+const privacyLabel = computed(() => {
+  const label = getCommunityOptionLabel(communityPrivacyOptions, props.group.privacy, "")
+  return label ? t(label) : t("community.groups.card.privacyFallback")
+})
 
-const privacyDescription = computed(() =>
-  getCommunityOptionDescription(communityPrivacyOptions, props.group.privacy, "Cài đặt quyền riêng tư đang được áp dụng cho nhóm này."),
-)
+const privacyDescription = computed(() => {
+  const desc = getCommunityOptionDescription(communityPrivacyOptions, props.group.privacy, "")
+  return desc ? t(desc) : t("community.groups.card.privacyHint")
+})
 
-const categoryLabel = computed(() =>
-  getCommunityOptionLabel(communityCategoryOptions, props.group.category, "Chưa phân loại"),
+const categoryLabel = computed(() => {
+  const label = getCommunityOptionLabel(communityCategoryOptions, props.group.category, "")
+  return label ? t(label) : t("community.groups.card.noCategory")
+})
+
+const resolvedActionLabel = computed(() =>
+  props.actionLabel ? t(props.actionLabel) : t("community.groups.action.viewGroup"),
 )
 
 const primaryButtonBackground = computed(() =>

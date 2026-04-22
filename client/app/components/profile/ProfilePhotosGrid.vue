@@ -1,8 +1,8 @@
 <template>
   <div class="rounded-[18px] border border-[#0000ff]/10 bg-white p-4 shadow-[0_2px_12px_rgba(0,0,255,0.04)]">
     <div class="flex items-center justify-between">
-      <h3 class="text-title-primary">Ảnh</h3>
-      <button class="text-caption-secondary hover:text-[#0000ff] transition" type="button">Xem tất cả</button>
+      <h3 class="text-title-primary">{{ $t("pages.profilePage.photosGrid.title") }}</h3>
+      <button class="text-caption-secondary hover:text-[#0000ff] transition" type="button">{{ $t("pages.profilePage.photosGrid.seeAll") }}</button>
     </div>
 
     <div class="mt-3 grid grid-cols-3 gap-1.5">

@@ -63,8 +63,8 @@
     <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-users-three-fill"
-        title="Không tìm thấy nhóm"
-        description="Slug nhóm này chưa có trong dữ liệu mock hiện tại. Bạn có thể quay lại danh sách nhóm để chọn một community khác."
+        :title="t('pages.groupDetailPage.emptyTitle')"
+        :description="t('pages.groupDetailPage.emptyDescription')"
       />
 
       <div class="mt-6 flex justify-center">
@@ -72,7 +72,7 @@
           to="/groups"
           class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
         >
-          Quay lại danh sách nhóm
+          {{ t("pages.groupDetailPage.backToGroups") }}
         </NuxtLink>
       </div>
     </section>
@@ -81,6 +81,7 @@
 
 <script setup lang="ts">
 const route = useRoute()
+const { t } = useI18n()
 
 const activeTab = ref<"posts" | "about">("posts")
 
@@ -101,10 +102,10 @@ watch(() => route.fullPath, () => {
 
 useSeoMeta({
   title: computed(() =>
-    group.value ? `${group.value.name} | VNSEEA` : "Trang nhóm | VNSEEA",
+    group.value ? `${group.value.name} | VNSEEA` : t("pages.groupDetailPage.seoFallbackTitle"),
   ),
   description: computed(() =>
-    group.value?.summary || "Trang chi tiết nhóm trên VNSEEA.",
+    group.value?.summary || t("pages.groupDetailPage.seoFallbackDescription"),
   ),
 })
 </script>

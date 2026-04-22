@@ -50,8 +50,8 @@
     <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-megaphone-simple-fill"
-        title="Không tìm thấy fanpage"
-        description="Slug fanpage này chưa có trong dữ liệu mock hiện tại. Bạn có thể quay lại flow tạo trang để dựng một fanpage mới."
+        :title="t('pages.pageDetailPage.emptyTitle')"
+        :description="t('pages.pageDetailPage.emptyDescription')"
       />
 
       <div class="mt-6 flex justify-center">
@@ -59,7 +59,7 @@
           to="/create-page"
           class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
         >
-          Tạo trang mới
+          {{ t("pages.pageDetailPage.createNewPage") }}
         </NuxtLink>
       </div>
     </section>
@@ -72,6 +72,7 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
+const { t } = useI18n()
 const activeTab = ref<"posts" | "about">("posts")
 
 const resolvedSlug = computed(() =>
@@ -92,10 +93,10 @@ watch(() => route.fullPath, () => {
 
 useSeoMeta({
   title: computed(() =>
-    page.value ? `${page.value.name} | VNSEEA` : "Trang fanpage | VNSEEA",
+    page.value ? `${page.value.name} | VNSEEA` : t("pages.pageDetailPage.seoFallbackTitle"),
   ),
   description: computed(() =>
-    page.value?.summary || "Trang fanpage trên VNSEEA.",
+    page.value?.summary || t("pages.pageDetailPage.seoFallbackDescription"),
   ),
 })
 </script>

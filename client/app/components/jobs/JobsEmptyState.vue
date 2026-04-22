@@ -4,10 +4,10 @@
       <Icon name="i-ph-briefcase-fill" class="h-8 w-8" />
     </div>
     <h3 class="mt-4 text-[1.35rem] font-black tracking-[-0.04em] text-[var(--text-primary)]">
-      Chưa có việc làm phù hợp
+      {{ $t("pages.jobsPage.emptyTitle") }}
     </h3>
     <p class="mx-auto mt-2 max-w-[480px] text-body-secondary">
-      Hãy đổi từ khóa, ngành nghề, địa điểm hoặc loại hình làm việc để xem thêm cơ hội khác.
+      {{ $t("pages.jobsPage.emptyDescription") }}
     </p>
     <button
       class="mt-5 inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-5 py-3 text-[14px] font-bold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
@@ -15,7 +15,7 @@
       @click="$emit('reset')"
     >
       <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-      Xem tất cả
+      {{ $t("pages.jobsPage.viewAll") }}
     </button>
   </section>
 </template>

@@ -2,13 +2,13 @@
   <div class="flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white/95 px-4 py-4 shadow-[var(--shadow-md)] sm:flex-row sm:items-center sm:justify-between">
     <div>
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Kết quả
+        {{ $t("pages.blogsPage.results") }}
       </p>
       <h2 class="mt-1 text-heading text-[var(--text-primary)]">
         {{ heading }}
       </h2>
       <p class="mt-1 text-body-secondary">
-        {{ count }} bài viết phù hợp · {{ sortLabel }}
+        {{ $t("pages.blogsPage.resultMeta", { count, sort: sortLabel }) }}
       </p>
     </div>
 
@@ -19,7 +19,7 @@
         @click="$emit('reset')"
       >
         <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-        Đặt lại
+        {{ $t("pages.blogsPage.reset") }}
       </button>
     </div>
   </div>

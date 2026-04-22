@@ -7,7 +7,9 @@ definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
+
 useHead({
-  title: "Go Pro | VNSEEA",
+  title: () => t("pages.goProPage.seoTitle"),
 })
 </script>

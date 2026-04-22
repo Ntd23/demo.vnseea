@@ -94,9 +94,11 @@ type BlogArticle = {
   mine?: boolean
 }
 
+const { t, locale } = useI18n()
+
 useSeoMeta({
-  title: "Blogs | VNSEEA",
-  description: "Danh sách bài báo mới, chủ đề nổi bật và các bài viết cộng đồng trên VNSEEA.",
+  title: () => t("pages.blogsPage.seoTitle"),
+  description: () => t("pages.blogsPage.seoDescription"),
 })
 
 const route = useRoute()
@@ -116,41 +118,41 @@ watch([search, selectedCategory, sortBy, mineOnly], () => {
   currentPage.value = 1
 })
 
-const categoryOptions = [
-  { label: "Tất cả", value: "all", icon: "i-ph-squares-four-fill" },
-  { label: "Ô tô và Xe cộ", value: "vehicles", icon: "i-ph-car-profile" },
-  { label: "Kinh tế và Thương mại", value: "business", icon: "i-ph-trend-up" },
-  { label: "Giáo dục", value: "education", icon: "i-ph-graduation-cap" },
-  { label: "Phim & Hoạt hình", value: "movies", icon: "i-ph-film-slate" },
-  { label: "Chơi game", value: "gaming", icon: "i-ph-game-controller" },
-  { label: "Lịch sử và Sự kiện", value: "history", icon: "i-ph-landmark" },
-  { label: "Cách sống", value: "lifestyle", icon: "i-ph-house-line" },
-  { label: "Thú cưng và Động vật", value: "pets", icon: "i-ph-paw-print" },
-  { label: "Khoa học và Công nghệ", value: "science", icon: "i-ph-microscope" },
-  { label: "Thể thao", value: "sports", icon: "i-ph-soccer-ball" },
-  { label: "Du lịch và Sự kiện", value: "travel", icon: "i-ph-airplane-tilt" },
-  { label: "Con người và Quốc gia", value: "people", icon: "i-ph-globe-hemisphere-east" },
-  { label: "Khác", value: "other", icon: "i-ph-dots-three-circle" },
-] satisfies { label: string; value: BlogCategory; icon: string }[]
+const categoryOptions = computed(() => [
+  { label: t("pages.blogsPage.categoryAll"), value: "all", icon: "i-ph-squares-four-fill" },
+  { label: t("pages.blogsPage.categoryVehicles"), value: "vehicles", icon: "i-ph-car-profile" },
+  { label: t("pages.blogsPage.categoryBusiness"), value: "business", icon: "i-ph-trend-up" },
+  { label: t("pages.blogsPage.categoryEducation"), value: "education", icon: "i-ph-graduation-cap" },
+  { label: t("pages.blogsPage.categoryMovies"), value: "movies", icon: "i-ph-film-slate" },
+  { label: t("pages.blogsPage.categoryGaming"), value: "gaming", icon: "i-ph-game-controller" },
+  { label: t("pages.blogsPage.categoryHistory"), value: "history", icon: "i-ph-landmark" },
+  { label: t("pages.blogsPage.categoryLifestyle"), value: "lifestyle", icon: "i-ph-house-line" },
+  { label: t("pages.blogsPage.categoryPets"), value: "pets", icon: "i-ph-paw-print" },
+  { label: t("pages.blogsPage.categoryScience"), value: "science", icon: "i-ph-microscope" },
+  { label: t("pages.blogsPage.categorySports"), value: "sports", icon: "i-ph-soccer-ball" },
+  { label: t("pages.blogsPage.categoryTravel"), value: "travel", icon: "i-ph-airplane-tilt" },
+  { label: t("pages.blogsPage.categoryPeople"), value: "people", icon: "i-ph-globe-hemisphere-east" },
+  { label: t("pages.blogsPage.categoryOther"), value: "other", icon: "i-ph-dots-three-circle" },
+] satisfies { label: string; value: BlogCategory; icon: string }[])
 
-const sortOptions = [
-  { label: "Mới nhất", value: "latest" },
-  { label: "Được quan tâm", value: "popular" },
-  { label: "Nhiều lượt xem", value: "views" },
-  { label: "Đọc nhanh", value: "reading" },
-] satisfies { label: string; value: SortValue }[]
+const sortOptions = computed(() => [
+  { label: t("pages.blogsPage.sortLatest"), value: "latest" },
+  { label: t("pages.blogsPage.sortPopular"), value: "popular" },
+  { label: t("pages.blogsPage.sortViews"), value: "views" },
+  { label: t("pages.blogsPage.sortReading"), value: "reading" },
+] satisfies { label: string; value: SortValue }[])
 
-const articles = [
+const articles = computed(() => [
   {
     id: 1,
-    title: "Recycled Plastic Granules Market Growth Accelerates with Global Sustainability Initiatives",
-    excerpt: "Các doanh nghiệp tái chế đang mở rộng chuỗi cung ứng nhựa hạt, tập trung vào tiêu chuẩn xanh và hợp đồng dài hạn.",
+    title: t("pages.blogsPage.article1Title"),
+    excerpt: t("pages.blogsPage.article1Excerpt"),
     category: "business",
-    categoryLabel: "Kinh tế và Thương mại",
+    categoryLabel: t("pages.blogsPage.categoryBusiness"),
     author: "Justin",
     authorInitials: "JT",
     authorGradient: "linear-gradient(135deg,#0000ff 0%,#4f7cff 100%)",
-    publishedAt: "15 phút trước",
+    publishedAt: t("pages.blogsPage.article1PublishedAt"),
     publishedHoursAgo: 0.25,
     views: 18400,
     readMinutes: 5,
@@ -163,14 +165,14 @@ const articles = [
   },
   {
     id: 2,
-    title: "Passion Hose: Your Trusted Gas Hose Manufacturer for Industrial and Automotive Needs",
-    excerpt: "Một góc nhìn về tiêu chuẩn an toàn, kiểm định vật liệu và cách doanh nghiệp lựa chọn nhà sản xuất ống dẫn khí.",
+    title: t("pages.blogsPage.article2Title"),
+    excerpt: t("pages.blogsPage.article2Excerpt"),
     category: "vehicles",
-    categoryLabel: "Ô tô và Xe cộ",
+    categoryLabel: t("pages.blogsPage.categoryVehicles"),
     author: "Hoangne",
     authorInitials: "HN",
     authorGradient: "linear-gradient(135deg,#334155 0%,#0f172a 100%)",
-    publishedAt: "42 phút trước",
+    publishedAt: t("pages.blogsPage.article2PublishedAt"),
     publishedHoursAgo: 0.7,
     views: 12600,
     readMinutes: 4,
@@ -182,14 +184,14 @@ const articles = [
   },
   {
     id: 3,
-    title: "Lớp học số sau giờ làm: cách người trẻ nâng kỹ năng mỗi tuần",
-    excerpt: "Những khóa học ngắn, nhóm học nhỏ và tài liệu mở giúp người đi làm duy trì nhịp học tập bền hơn.",
+    title: t("pages.blogsPage.article3Title"),
+    excerpt: t("pages.blogsPage.article3Excerpt"),
     category: "education",
-    categoryLabel: "Giáo dục",
+    categoryLabel: t("pages.blogsPage.categoryEducation"),
     author: "Dung 1",
     authorInitials: "D1",
     authorGradient: "linear-gradient(135deg,#7c3aed 0%,#2563eb 100%)",
-    publishedAt: "1 giờ trước",
+    publishedAt: t("pages.blogsPage.article3PublishedAt"),
     publishedHoursAgo: 1,
     views: 9300,
     readMinutes: 6,
@@ -201,14 +203,14 @@ const articles = [
   },
   {
     id: 4,
-    title: "Không gian sống tối giản cho căn hộ nhỏ",
-    excerpt: "Một số lựa chọn ánh sáng, lưu trữ và màu sắc giúp căn hộ nhỏ gọn gàng nhưng vẫn có cá tính riêng.",
+    title: t("pages.blogsPage.article4Title"),
+    excerpt: t("pages.blogsPage.article4Excerpt"),
     category: "lifestyle",
-    categoryLabel: "Cách sống",
+    categoryLabel: t("pages.blogsPage.categoryLifestyle"),
     author: "Ngoctokyo",
     authorInitials: "NT",
     authorGradient: "linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)",
-    publishedAt: "3 giờ trước",
+    publishedAt: t("pages.blogsPage.article4PublishedAt"),
     publishedHoursAgo: 3,
     views: 7600,
     readMinutes: 3,
@@ -220,14 +222,14 @@ const articles = [
   },
   {
     id: 5,
-    title: "Bản tin công nghệ: AI cá nhân hóa luồng đọc tin",
-    excerpt: "Các hệ thống gợi ý mới ưu tiên ngữ cảnh, sở thích và lịch sử tương tác thay vì chỉ dựa trên lượt xem.",
+    title: t("pages.blogsPage.article5Title"),
+    excerpt: t("pages.blogsPage.article5Excerpt"),
     category: "science",
-    categoryLabel: "Khoa học và Công nghệ",
+    categoryLabel: t("pages.blogsPage.categoryScience"),
     author: "Nicolas",
     authorInitials: "NC",
     authorGradient: "linear-gradient(135deg,#1e293b 0%,#4f46e5 100%)",
-    publishedAt: "4 giờ trước",
+    publishedAt: t("pages.blogsPage.article5PublishedAt"),
     publishedHoursAgo: 4,
     views: 15400,
     readMinutes: 5,
@@ -239,14 +241,14 @@ const articles = [
   },
   {
     id: 6,
-    title: "Những cung đường cuối tuần gần biển",
-    excerpt: "Gợi ý các điểm dừng dễ đi, lịch trình ngắn và cách chuẩn bị để chuyến đi nhẹ nhàng hơn.",
+    title: t("pages.blogsPage.article6Title"),
+    excerpt: t("pages.blogsPage.article6Excerpt"),
     category: "travel",
-    categoryLabel: "Du lịch và Sự kiện",
+    categoryLabel: t("pages.blogsPage.categoryTravel"),
     author: "Minh Anh",
     authorInitials: "MA",
     authorGradient: "linear-gradient(135deg,#0284c7 0%,#38bdf8 100%)",
-    publishedAt: "5 giờ trước",
+    publishedAt: t("pages.blogsPage.article6PublishedAt"),
     publishedHoursAgo: 5,
     views: 6900,
     readMinutes: 4,
@@ -258,14 +260,14 @@ const articles = [
   },
   {
     id: 7,
-    title: "Đội bóng phong trào và cách giữ lịch tập đều",
-    excerpt: "Quản lý sân bãi, chia vai trò và theo dõi thể lực giúp các đội nghiệp dư giữ nhịp thi đấu ổn định.",
+    title: t("pages.blogsPage.article7Title"),
+    excerpt: t("pages.blogsPage.article7Excerpt"),
     category: "sports",
-    categoryLabel: "Thể thao",
+    categoryLabel: t("pages.blogsPage.categorySports"),
     author: "Thanh Sơn",
     authorInitials: "TS",
     authorGradient: "linear-gradient(135deg,#15803d 0%,#22c55e 100%)",
-    publishedAt: "6 giờ trước",
+    publishedAt: t("pages.blogsPage.article7PublishedAt"),
     publishedHoursAgo: 6,
     views: 5300,
     readMinutes: 4,
@@ -277,14 +279,14 @@ const articles = [
   },
   {
     id: 8,
-    title: "Game indie Việt và những nhóm phát triển nhỏ",
-    excerpt: "Từ prototype cuối tuần đến bản phát hành đầu tiên, các nhóm nhỏ đang tìm cách kể câu chuyện rất riêng.",
+    title: t("pages.blogsPage.article8Title"),
+    excerpt: t("pages.blogsPage.article8Excerpt"),
     category: "gaming",
-    categoryLabel: "Chơi game",
+    categoryLabel: t("pages.blogsPage.categoryGaming"),
     author: "Hải Nam",
     authorInitials: "HN",
     authorGradient: "linear-gradient(135deg,#4338ca 0%,#a855f7 100%)",
-    publishedAt: "Hôm qua",
+    publishedAt: t("pages.blogsPage.article8PublishedAt"),
     publishedHoursAgo: 24,
     views: 8800,
     readMinutes: 5,
@@ -295,40 +297,40 @@ const articles = [
     href: "/read-blog/game-indie-viet-nhom-phat-trien-nho",
     mine: true,
   },
-] satisfies BlogArticle[]
+] satisfies BlogArticle[])
 
 const heroStats = computed(() => [
   {
-    label: "Bài mới hôm nay",
-    value: String(articles.filter(article => article.publishedHoursAgo <= 12).length),
-    description: "Các bài đã được cập nhật trong ngày.",
+    label: t("pages.blogsPage.statNewToday"),
+    value: String(articles.value.filter(article => article.publishedHoursAgo <= 12).length),
+    description: t("pages.blogsPage.statNewTodayDescription"),
   },
   {
-    label: "Chủ đề",
-    value: String(categoryOptions.length - 1),
-    description: "Danh mục theo luồng nội dung hiện có.",
+    label: t("pages.blogsPage.statTopics"),
+    value: String(categoryOptions.value.length - 1),
+    description: t("pages.blogsPage.statTopicsDescription"),
   },
   {
-    label: "Của tôi",
-    value: String(articles.filter(article => article.mine).length),
-    description: "Bài báo bạn có thể lọc nhanh.",
+    label: t("pages.blogsPage.statMine"),
+    value: String(articles.value.filter(article => article.mine).length),
+    description: t("pages.blogsPage.statMineDescription"),
   },
 ])
 
 const currentSortLabel = computed(
-  () => sortOptions.find(option => option.value === sortBy.value)?.label ?? "Mới nhất",
+  () => sortOptions.value.find(option => option.value === sortBy.value)?.label ?? t("pages.blogsPage.sortLatest"),
 )
 
 const resultHeading = computed(() => {
-  if (mineOnly.value) return "Bài báo của tôi"
-  if (selectedCategory.value === "all") return "Danh sách bài báo đang được quan tâm"
-  return categoryOptions.find(category => category.value === selectedCategory.value)?.label ?? "Danh sách bài báo"
+  if (mineOnly.value) return t("pages.blogsPage.resultHeadingMine")
+  if (selectedCategory.value === "all") return t("pages.blogsPage.resultHeadingAll")
+  return categoryOptions.value.find(category => category.value === selectedCategory.value)?.label ?? t("pages.blogsPage.resultHeadingFallback")
 })
 
 const filteredArticles = computed(() => {
   const keyword = search.value.trim().toLowerCase()
 
-  const filtered = articles.filter((article) => {
+  const filtered = articles.value.filter((article) => {
     const matchesKeyword = keyword.length === 0 || [
       article.title,
       article.excerpt,
@@ -372,19 +374,19 @@ const visiblePageNumbers = computed(() =>
 )
 
 const trendingTopics = computed(() =>
-  categoryOptions
+  categoryOptions.value
     .filter(category => category.value !== "all")
     .map(category => ({
       ...category,
-      count: articles.filter(article => article.category === category.value).length,
+      count: articles.value.filter(article => article.category === category.value).length,
     }))
     .filter(topic => topic.count > 0)
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, "vi"))
+    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, locale.value === "vi" ? "vi" : "en"))
     .slice(0, 6),
 )
 
 const featuredAuthors = computed(() =>
-  articles
+  articles.value
     .slice()
     .sort((left, right) => right.likes - left.likes)
     .slice(0, 4)
@@ -392,17 +394,17 @@ const featuredAuthors = computed(() =>
       name: article.author,
       initials: article.authorInitials,
       gradient: article.authorGradient,
-      count: articles.filter(item => item.author === article.author).length,
+      count: articles.value.filter(item => item.author === article.author).length,
       topic: article.categoryLabel,
     })),
 )
 
-const compactFormatter = new Intl.NumberFormat("vi-VN", {
+const compactFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
   notation: "compact",
   maximumFractionDigits: 1,
-})
+}))
 
-const formatCompact = (value: number) => compactFormatter.format(value)
+const formatCompact = (value: number) => compactFormatter.value.format(value)
 
 const resetFilters = () => {
   search.value = ""

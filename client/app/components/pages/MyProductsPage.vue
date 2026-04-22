@@ -7,10 +7,10 @@
         </div>
         <div>
           <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-            Marketplace
+            {{ $t("pages.myProductsPage.eyebrow") }}
           </p>
           <h1 class="mt-1 text-[1.55rem] font-black tracking-[-0.05em] text-[#243b63]">
-            Thị trường
+            {{ $t("pages.myProductsPage.title") }}
           </h1>
         </div>
       </div>
@@ -23,19 +23,19 @@
             class="inline-flex h-11 items-center justify-center rounded-full border border-[#0000ff]/15 bg-[#eef0ff] px-4 text-[14px] font-bold text-[#0000ff] shadow-[inset_0_-2px_0_rgba(0,0,255,0.18)]"
             type="button"
           >
-            Sản phẩm của tôi
+            {{ $t("pages.myProductsPage.myProducts") }}
           </button>
           <button
             class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-4 text-[14px] font-semibold text-slate-500 transition hover:border-[#c5caff] hover:text-[#243b63]"
             type="button"
           >
-            Đã mua
+            {{ $t("pages.myProductsPage.purchased") }}
           </button>
           <NuxtLink
             to="/products"
             class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-4 text-[14px] font-semibold text-slate-500 transition hover:border-[#c5caff] hover:text-[#243b63]"
           >
-            Thị trường
+            {{ $t("pages.myProductsPage.marketplace") }}
           </NuxtLink>
         </div>
 
@@ -44,7 +44,7 @@
           class="inline-flex h-11 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5"
         >
           <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-          Tạo ra
+          {{ $t("pages.myProductsPage.create") }}
         </NuxtLink>
       </div>
     </section>
@@ -73,11 +73,10 @@
           <Icon name="i-ph-shopping-cart-simple-fill" class="h-10 w-10" />
         </div>
         <h2 class="mt-6 text-[1.5rem] font-black tracking-[-0.05em] text-[#243b63]">
-          Không có sản phẩm có sẵn để hiển thị.
+          {{ $t("pages.myProductsPage.emptyTitle") }}
         </h2>
         <p class="mt-3 text-[14px] leading-7 text-slate-500 sm:text-[15px]">
-          Khi bạn tạo sản phẩm mới, danh sách tin đăng sẽ xuất hiện tại đây để
-          bạn tiếp tục quản lý, chỉnh sửa hoặc theo dõi tương tác.
+          {{ $t("pages.myProductsPage.emptyDescription") }}
         </p>
 
         <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -86,13 +85,13 @@
             class="inline-flex h-12 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5"
           >
             <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-            Tạo sản phẩm đầu tiên
+            {{ $t("pages.myProductsPage.createFirst") }}
           </NuxtLink>
           <NuxtLink
             to="/products"
             class="inline-flex h-12 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-5 text-[14px] font-semibold text-slate-600 transition hover:border-[#c5caff] hover:text-[#243b63]"
           >
-            Xem thị trường
+            {{ $t("pages.myProductsPage.viewMarketplace") }}
           </NuxtLink>
         </div>
       </div>
@@ -101,26 +100,28 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 useSeoMeta({
-  title: "Sản phẩm của tôi | VNSEEA",
-  description: "Quản lý các tin đăng marketplace của bạn và tạo sản phẩm mới trong VNSEEA.",
+  title: () => t("pages.myProductsPage.seoTitle"),
+  description: () => t("pages.myProductsPage.seoDescription"),
 })
 
-const overviewCards = [
+const overviewCards = computed(() => [
   {
-    label: "Đang bán",
+    label: t("pages.myProductsPage.activeListings"),
     value: "0",
-    description: "Tin đăng đang hiển thị công khai trên marketplace.",
+    description: t("pages.myProductsPage.activeListingsDescription"),
   },
   {
-    label: "Bản nháp",
+    label: t("pages.myProductsPage.drafts"),
     value: "0",
-    description: "Sản phẩm đang lưu dở, chưa hoàn tất để đăng bán.",
+    description: t("pages.myProductsPage.draftsDescription"),
   },
   {
-    label: "Đã bán",
+    label: t("pages.myProductsPage.sold"),
     value: "0",
-    description: "Các sản phẩm đã hoàn tất giao dịch gần đây.",
+    description: t("pages.myProductsPage.soldDescription"),
   },
-] as const
+] as const)
 </script>

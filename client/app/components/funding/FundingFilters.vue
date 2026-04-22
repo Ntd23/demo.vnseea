@@ -2,10 +2,10 @@
   <section class="relative z-10 -mt-10 overflow-hidden rounded-[30px] border border-white/70 bg-white/95 p-4 shadow-[var(--shadow-xl)] backdrop-blur sm:p-5">
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
-        <p class="text-label-secondary text-[var(--color-primary-600)]">Bộ lọc</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">Tìm chiến dịch phù hợp</h2>
+        <p class="text-label-secondary text-[var(--color-primary-600)]">{{ $t("pages.fundingPage.filtersEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.fundingPage.filtersTitle") }}</h2>
         <p class="mt-1 max-w-[620px] text-body-secondary">
-          Tìm theo tên chiến dịch, chủ dự án, địa điểm; lọc theo lĩnh vực và trạng thái gây quỹ.
+          {{ $t("pages.fundingPage.filtersDescription") }}
         </p>
       </div>
       <NuxtLink
@@ -13,7 +13,7 @@
         class="inline-flex h-14 items-center justify-center gap-2 rounded-[20px] bg-[var(--color-primary-500)] px-6 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 lg:min-w-[190px]"
       >
         <Icon name="i-ph-plus-circle-fill" class="h-5 w-5" />
-        Tạo quỹ
+        {{ $t("pages.fundingPage.createCampaign") }}
       </NuxtLink>
     </div>
 
@@ -22,7 +22,7 @@
       <input
         :value="search"
         class="h-16 w-full rounded-[22px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-14 pr-5 text-[15px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:font-medium placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-200)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-        placeholder="Tìm kiếm chiến dịch, chủ dự án hoặc địa điểm"
+        :placeholder="$t('pages.fundingPage.searchPlaceholder')"
         type="search"
         @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
       >
@@ -30,7 +30,7 @@
 
     <div class="mt-5 grid gap-5 xl:grid-cols-2">
       <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3">
-        <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">Lĩnh vực</p>
+        <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">{{ $t("pages.fundingPage.category") }}</p>
         <div class="mt-3 grid gap-2 sm:grid-cols-2">
           <button
             v-for="category in categories"
@@ -47,7 +47,7 @@
       </div>
 
       <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3">
-        <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">Trạng thái</p>
+        <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">{{ $t("pages.fundingPage.status") }}</p>
         <div class="mt-3 grid gap-2 sm:grid-cols-2">
           <button
             v-for="status in statuses"

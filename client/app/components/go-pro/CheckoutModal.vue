@@ -4,9 +4,9 @@
       <form class="w-full max-w-[620px] rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-xl)]" @submit.prevent="submit">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-label-secondary text-[var(--color-primary-600)]">Checkout</p>
+            <p class="text-label-secondary text-[var(--color-primary-600)]">{{ t("pages.goProPage.checkoutEyebrow") }}</p>
             <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ plan.name }}</h2>
-            <p class="mt-1 text-body-secondary">{{ billingCycle === "monthly" ? "Thanh toán hàng tháng" : "Thanh toán hàng năm" }}</p>
+            <p class="mt-1 text-body-secondary">{{ billingCycle === "monthly" ? t("pages.goProPage.checkoutMonthly") : t("pages.goProPage.checkoutYearly") }}</p>
           </div>
           <button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] bg-[var(--bg-surface-hover)] text-[var(--text-secondary)]" type="button" @click="$emit('close')">
             <Icon name="i-ph-x-bold" class="h-4 w-4" />
@@ -15,10 +15,10 @@
 
         <div class="mt-5 rounded-[24px] bg-[var(--bg-surface-hover)] p-4">
           <div class="flex items-center justify-between gap-4">
-            <span class="text-[14px] font-bold text-[var(--text-secondary)]">Tổng thanh toán</span>
-            <span class="text-2xl font-black text-[var(--text-primary)]">{{ formatProCurrency(amount) }}</span>
+            <span class="text-[14px] font-bold text-[var(--text-secondary)]">{{ t("pages.goProPage.totalPayment") }}</span>
+            <span class="text-2xl font-black text-[var(--text-primary)]">{{ formatProCurrency(amount, locale) }}</span>
           </div>
-          <p class="mt-2 text-[12px] font-semibold text-[var(--text-tertiary)]">Mock payment. Chưa gọi API thanh toán/subscription.</p>
+          <p class="mt-2 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ t("pages.goProPage.mockPaymentNote") }}</p>
         </div>
 
         <div class="mt-5 grid gap-2 sm:grid-cols-3">
@@ -36,12 +36,12 @@
         </div>
 
         <div v-if="submitted" class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]">
-          Đã mô phỏng thanh toán thành công. Chưa gọi API subscription.
+          {{ t("pages.goProPage.checkoutSuccess") }}
         </div>
 
         <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button class="h-11 rounded-[18px] border border-[var(--border-default)] bg-white px-5 text-[13px] font-bold text-[var(--text-secondary)]" type="button" @click="$emit('close')">Đóng</button>
-          <button class="h-11 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="submit">Thanh toán</button>
+          <button class="h-11 rounded-[18px] border border-[var(--border-default)] bg-white px-5 text-[13px] font-bold text-[var(--text-secondary)]" type="button" @click="$emit('close')">{{ t("pages.goProPage.close") }}</button>
+          <button class="h-11 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="submit">{{ t("pages.goProPage.pay") }}</button>
         </div>
       </form>
     </div>
@@ -65,6 +65,7 @@ const emit = defineEmits<{
 
 const paymentMethod = ref<PaymentMethodKey>("wallet")
 const submitted = ref(false)
+const { t, locale } = useI18n()
 
 const amount = computed(() => {
   if (!props.plan) return 0

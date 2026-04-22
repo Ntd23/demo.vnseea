@@ -15,8 +15,8 @@
     </div>
 
     <div class="mt-6 rounded-[24px] bg-[var(--bg-surface-hover)] p-4">
-      <p class="break-words text-[1.8rem] font-black leading-tight text-[var(--text-primary)] 2xl:text-[2.15rem]">{{ formatProCurrency(price) }}</p>
-      <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">/{{ billingCycle === "monthly" ? "tháng" : "năm" }}</p>
+      <p class="break-words text-[1.8rem] font-black leading-tight text-[var(--text-primary)] 2xl:text-[2.15rem]">{{ formatProCurrency(price, locale) }}</p>
+      <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">/{{ billingCycle === "monthly" ? t("pages.goProPage.periodMonth") : t("pages.goProPage.periodYear") }}</p>
     </div>
 
     <ul class="mt-6 grid gap-3">
@@ -40,7 +40,7 @@
       @click="$emit('select', plan)"
     >
       <Icon name="i-ph-crown-simple-fill" class="h-5 w-5" />
-      Chọn plan
+      {{ t("pages.goProPage.selectPlan") }}
     </button>
   </article>
 </template>
@@ -56,5 +56,6 @@ const props = defineProps<{
 
 defineEmits<{ select: [plan: ProPlan] }>()
 
+const { t, locale } = useI18n()
 const price = computed(() => props.billingCycle === "monthly" ? props.plan.monthlyPrice : props.plan.yearlyPrice)
 </script>

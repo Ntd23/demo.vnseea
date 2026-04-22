@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-6 pb-10 pt-5">
+  <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
     <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
       <div class="relative overflow-hidden px-5 py-6 sm:px-7">
         <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,255,0.14),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(8,145,178,0.16),transparent_32%)]" />
@@ -8,15 +8,13 @@
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-[780px]">
               <p class="text-[12px] font-black uppercase tracking-[0.22em] text-[#0000ff]/60">
-                Explore Hub
+                {{ t("pages.explorePage.heroEyebrow") }}
               </p>
               <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[2.35rem]">
-                Khám phá nội dung, con người và fanpage phù hợp
+                {{ t("pages.explorePage.heroTitle") }}
               </h1>
               <p class="mt-3 text-[14px] leading-7 text-slate-500">
-                Trang <span class="font-semibold text-[#243b63]">/explore</span> gom 3 luồng chính theo audit:
-                bài viết đề xuất, người dùng gợi ý và fanpage nên theo dõi. Trang này tái dùng card bài viết,
-                card fanpage hiện có và chỉ tách thêm card user để tránh lặp UI.
+                {{ t("pages.explorePage.heroDescription") }}
               </p>
             </div>
 
@@ -26,7 +24,7 @@
                 class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
               >
                 <Icon name="i-ph-magnifying-glass-bold" class="mr-2 h-4 w-4" />
-                Mở tìm kiếm
+                {{ t("pages.explorePage.openSearch") }}
               </NuxtLink>
 
               <NuxtLink
@@ -34,7 +32,7 @@
                 class="inline-flex h-11 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(0,0,255,0.22)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
               >
                 <Icon name="i-ph-house-line-fill" class="mr-2 h-4 w-4" />
-                Về bảng tin
+                {{ t("pages.explorePage.homeFeed") }}
               </NuxtLink>
             </div>
           </div>
@@ -70,7 +68,7 @@
             <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
               <div>
                 <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-                  Bộ lọc khám phá
+                  {{ t("pages.explorePage.filterEyebrow") }}
                 </p>
                 <h2 class="mt-2 text-[1.4rem] font-black tracking-[-0.04em] text-[#243b63]">
                   {{ activeViewOption.label }}
@@ -120,8 +118,8 @@
       <div class="mx-auto max-w-2xl text-center">
         <FoundationEmptyState
           icon="i-ph-compass"
-          title="Chưa có dữ liệu khám phá"
-          description="Mock hiện tại chưa có nội dung phù hợp cho bộ lọc này. Bạn có thể chuyển sang tất cả nội dung hoặc dùng trang search để tìm theo từ khóa cụ thể."
+          :title="t('pages.explorePage.emptyTitle')"
+          :description="t('pages.explorePage.emptyDescription')"
         />
 
         <div class="mt-6 flex flex-wrap justify-center gap-3">
@@ -130,14 +128,14 @@
             type="button"
             @click="setView('all')"
           >
-            Hiện tất cả nội dung
+            {{ t("pages.explorePage.showAll") }}
           </button>
 
           <NuxtLink
             to="/search"
             class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
           >
-            Sang trang tìm kiếm
+            {{ t("pages.explorePage.goToSearch") }}
           </NuxtLink>
         </div>
       </div>
@@ -167,7 +165,7 @@
           type="button"
           @click="setView(section.kind)"
         >
-          Chỉ xem {{ section.shortLabel }}
+          {{ t("pages.explorePage.onlyView", { label: section.shortLabel }) }}
         </button>
       </div>
 
@@ -184,7 +182,7 @@
           v-for="item in recommendedPages"
           :key="item.id"
           :page="item"
-          action-label="Mở fanpage"
+          :action-label="t('pages.explorePage.openFanpage')"
         />
       </div>
 
@@ -218,6 +216,7 @@ function readQueryValue(value: unknown) {
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n()
 
 const {
   exploreViewOptions,
@@ -229,7 +228,7 @@ const {
 } = useMockExploreData()
 
 const normalizeView = (value: string): ExploreView =>
-  exploreViewOptions.some(option => option.value === value)
+  exploreViewOptions.value.some(option => option.value === value)
     ? value as ExploreView
     : "all"
 
@@ -238,30 +237,30 @@ const activeView = computed<ExploreView>(() =>
 )
 
 const activeViewOption = computed(() =>
-  exploreViewOptions.find(option => option.value === activeView.value) ?? exploreViewOptions[0],
+  exploreViewOptions.value.find(option => option.value === activeView.value) ?? exploreViewOptions.value[0],
 )
 
 const sections = computed<ExploreSection[]>(() => [
   {
     kind: "posts",
-    label: "Bài viết nổi bật",
-    shortLabel: "bài viết",
-    description: "Các post đang có mức tương tác cao nhất từ mock social feed hiện tại.",
-    countLabel: `${recommendedPosts.length} bài đang được đề xuất`,
+    label: t("pages.explorePage.sectionPostsLabel"),
+    shortLabel: t("pages.explorePage.sectionPostsShort"),
+    description: t("pages.explorePage.sectionPostsDescription"),
+    countLabel: t("pages.explorePage.sectionPostsCount", { count: recommendedPosts.value.length }),
   },
   {
     kind: "users",
-    label: "Kết nối gợi ý",
-    shortLabel: "người dùng",
-    description: "Hồ sơ phù hợp được chọn từ suggested users và danh sách liên hệ đang online.",
-    countLabel: `${recommendedUsers.length} hồ sơ phù hợp`,
+    label: t("pages.explorePage.sectionUsersLabel"),
+    shortLabel: t("pages.explorePage.sectionUsersShort"),
+    description: t("pages.explorePage.sectionUsersDescription"),
+    countLabel: t("pages.explorePage.sectionUsersCount", { count: recommendedUsers.value.length }),
   },
   {
     kind: "pages",
-    label: "Fanpage nên theo dõi",
-    shortLabel: "fanpage",
-    description: "Các fanpage/community page nổi bật từ directory hiện có của hệ thống.",
-    countLabel: `${recommendedPages.length} fanpage phù hợp`,
+    label: t("pages.explorePage.sectionPagesLabel"),
+    shortLabel: t("pages.explorePage.sectionPagesShort"),
+    description: t("pages.explorePage.sectionPagesDescription"),
+    countLabel: t("pages.explorePage.sectionPagesCount", { count: recommendedPages.value.length }),
   },
 ])
 
@@ -273,9 +272,9 @@ const visibleSections = computed(() =>
 
 const hasContent = computed(() =>
   visibleSections.value.some((section) => {
-    if (section.kind === "posts") return recommendedPosts.length > 0
-    if (section.kind === "users") return recommendedUsers.length > 0
-    return recommendedPages.length > 0
+    if (section.kind === "posts") return recommendedPosts.value.length > 0
+    if (section.kind === "users") return recommendedUsers.value.length > 0
+    return recommendedPages.value.length > 0
   }),
 )
 
@@ -293,15 +292,13 @@ function setView(view: ExploreView) {
 }
 
 useSeoMeta({
-  title: computed(() =>
+  title: () =>
     activeView.value === "all"
-      ? "Khám phá | VNSEEA"
-      : `${activeViewOption.value.label} | VNSEEA`,
-  ),
-  description: computed(() =>
+      ? t("pages.explorePage.seoTitle")
+      : t("pages.explorePage.filteredSeoTitle", { label: activeViewOption.value.label }),
+  description: () =>
     activeView.value === "all"
-      ? "Khám phá các bài viết, người dùng và fanpage được đề xuất trên VNSEEA."
-      : `${activeViewOption.value.label} được đề xuất trên VNSEEA.`,
-  ),
+      ? t("pages.explorePage.seoDescription")
+      : t("pages.explorePage.filteredSeoDescription", { label: activeViewOption.value.label }),
 })
 </script>

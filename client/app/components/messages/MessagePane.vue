@@ -8,19 +8,19 @@
             <span class="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white bg-green-500" />
           </div>
           <div class="min-w-0">
-            <h3 class="truncate text-[0.98rem] font-bold leading-tight text-[#243b63]">Thanh Hà</h3>
-            <p class="mt-0.5 text-[0.82rem] text-slate-500">Đang hoạt động</p>
+            <h3 class="truncate text-[0.98rem] font-bold leading-tight text-[#243b63]">{{ $t('pages.messagesPage.contactName') }}</h3>
+            <p class="mt-0.5 text-[0.82rem] text-slate-500">{{ $t('pages.messagesPage.activeNow') }}</p>
           </div>
         </div>
 
         <div class="flex items-center gap-1.5">
-          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.call')" :aria-label="$t('pages.messagesPage.call')">
             <Icon name="i-ph-phone-fill" class="h-5 w-5" />
           </button>
-          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.videoCall')" :aria-label="$t('pages.messagesPage.videoCall')">
             <Icon name="i-ph-video-camera-fill" class="h-5 w-5" />
           </button>
-          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.conversationInfo')" :aria-label="$t('pages.messagesPage.conversationInfo')">
             <Icon name="i-ph-info-fill" class="h-5 w-5" />
           </button>
         </div>
@@ -30,7 +30,7 @@
     <div class="flex-1 min-h-0 overflow-y-auto bg-[#f8fbff] px-4 py-5 scrollbar-hide">
       <div class="flex justify-center pb-2">
         <button class="rounded-full border border-[#dbe3f2] bg-white px-4 py-2 text-[0.8rem] font-semibold text-slate-500 shadow-[0_6px_20px_rgba(15,23,42,0.04)] transition hover:border-[#c7d3ea] hover:text-[#0000ff]" type="button">
-          Tải tin nhắn cũ hơn
+          {{ $t('pages.messagesPage.loadOlder') }}
         </button>
       </div>
 
@@ -63,29 +63,29 @@
 
     <div class="shrink-0 border-t border-[#dce6fb] bg-white px-4 py-4 pb-[calc(env(safe-area-inset-bottom,0px)+12px)] shadow-[0_-8px_18px_rgba(15,23,42,0.03)]">
       <div class="flex items-end gap-2">
-        <button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+        <button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.addAttachment')" :aria-label="$t('pages.messagesPage.addAttachment')">
           <Icon name="i-ph-plus-circle-fill" class="h-6 w-6" />
         </button>
         <div class="hidden shrink-0 items-center gap-1 lg:flex">
-          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.photoLibrary')" :aria-label="$t('pages.messagesPage.photoLibrary')">
             <Icon name="i-ph-image-fill" class="h-6 w-6" />
           </button>
-          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.stickers')" :aria-label="$t('pages.messagesPage.stickers')">
             <Icon name="i-ph-sticker-fill" class="h-6 w-6" />
           </button>
-          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+          <button class="flex h-10 w-10 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.gifs')" :aria-label="$t('pages.messagesPage.gifs')">
             <Icon name="i-ph-gif-fill" class="h-6 w-6" />
           </button>
         </div>
 
         <div class="flex flex-1 items-center rounded-[1.25rem] border border-[#dbe3f2] bg-[#f8fbff] pr-2">
-          <textarea rows="1" class="max-h-[120px] w-full resize-none bg-transparent px-4 py-2.5 text-[0.95rem] outline-none placeholder:text-slate-500 scrollbar-hide" placeholder="Aa" />
-          <button class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+          <textarea rows="1" class="max-h-[120px] w-full resize-none bg-transparent px-4 py-2.5 text-[0.95rem] outline-none placeholder:text-slate-500 scrollbar-hide" :placeholder="$t('pages.messagesPage.composerPlaceholder')" />
+          <button class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.stickers')" :aria-label="$t('pages.messagesPage.stickers')">
             <Icon name="i-ph-smiley-fill" class="h-[22px] w-[22px]" />
           </button>
         </div>
 
-        <button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button">
+        <button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#0000ff] transition hover:bg-[#eef2ff]" type="button" :title="$t('pages.messagesPage.sendLike')" :aria-label="$t('pages.messagesPage.sendLike')">
           <Icon name="i-ph-thumbs-up-fill" class="h-6 w-6" />
         </button>
       </div>
@@ -94,13 +94,14 @@
 </template>
 
 <script setup lang="ts">
-const messages = [
-  { text: 'Helo cậu!', isMine: false, time: 'T4 10:20', showTime: true, isLast: false },
-  { text: 'Hôm nay làm bài xong chưa?', isMine: false, isLast: true },
-  { text: 'Cũng gần xong rồi á', isMine: true, isLast: false },
-  { text: 'Còn phần UI trang Messages này thôi\nđang ráng làm cho xong hihi', isMine: true, isLast: true },
-  { text: 'Oke cố lên nhaa', isMine: false, time: '11:30', showTime: true, isLast: false },
-  { text: 'Chừng nào xong rủ đi ăn uống bữa cho vui', isMine: false, isLast: true },
-  { text: 'Oh ye sure', isMine: true, time: '11:35', showTime: true, isLast: true },
-]
+const { t } = useI18n()
+const messages = computed(() => [
+  { text: t('pages.messagesPage.messageOne'), isMine: false, time: t('pages.messagesPage.messageTimeOne'), showTime: true, isLast: false },
+  { text: t('pages.messagesPage.messageTwo'), isMine: false, isLast: true },
+  { text: t('pages.messagesPage.messageThree'), isMine: true, isLast: false },
+  { text: t('pages.messagesPage.messageFour'), isMine: true, isLast: true },
+  { text: t('pages.messagesPage.messageFive'), isMine: false, time: t('pages.messagesPage.messageTimeTwo'), showTime: true, isLast: false },
+  { text: t('pages.messagesPage.messageSix'), isMine: false, isLast: true },
+  { text: t('pages.messagesPage.messageSeven'), isMine: true, time: t('pages.messagesPage.messageTimeThree'), showTime: true, isLast: true },
+])
 </script>

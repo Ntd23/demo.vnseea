@@ -20,10 +20,10 @@
         <div class="rounded-[28px] border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-card)]">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-muted)]">Kết quả</p>
+              <p class="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-muted)]">{{ $t("pages.fundingPage.results") }}</p>
               <h2 class="mt-1 text-2xl font-extrabold text-[var(--color-text)]">{{ resultHeading }}</h2>
               <p class="mt-1 text-sm font-semibold text-[var(--color-muted)]">
-                {{ filteredCampaigns.length }} chiến dịch phù hợp
+                {{ $t("pages.fundingPage.resultsMeta", { count: filteredCampaigns.length }) }}
               </p>
             </div>
             <NuxtLink
@@ -31,7 +31,7 @@
               class="inline-flex items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary)] px-5 py-3 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
             >
               <Icon name="i-ph-plus-circle-fill" class="h-5 w-5" />
-              Tạo gây quỹ
+              {{ $t("pages.fundingPage.createCampaign") }}
             </NuxtLink>
           </div>
         </div>
@@ -52,16 +52,16 @@
           <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[22px] bg-[var(--color-soft)] text-[var(--color-primary)]">
             <Icon name="i-ph-hand-heart-fill" class="h-8 w-8" />
           </div>
-          <h3 class="mt-4 text-xl font-extrabold text-[var(--color-text)]">Chưa có chiến dịch phù hợp</h3>
+          <h3 class="mt-4 text-xl font-extrabold text-[var(--color-text)]">{{ $t("pages.fundingPage.emptyTitle") }}</h3>
           <p class="mx-auto mt-2 max-w-xl text-sm font-semibold leading-6 text-[var(--color-muted)]">
-            Thử bỏ bớt từ khóa hoặc đổi danh mục để xem thêm các chiến dịch đang gây quỹ.
+            {{ $t("pages.fundingPage.emptyDescription") }}
           </p>
           <button
             type="button"
             class="mt-5 rounded-[18px] border border-[var(--color-border)] px-5 py-3 text-sm font-extrabold text-[var(--color-primary)] transition hover:border-[var(--color-primary)] hover:bg-[var(--color-soft)]"
             @click="resetFilters"
           >
-            Đặt lại bộ lọc
+            {{ $t("pages.fundingPage.reset") }}
           </button>
         </div>
       </section>
@@ -86,11 +86,12 @@ import type { DonationPayload, FundingCategoryKey, FundingStatusKey, MockFunding
 
 type CategoryFilter = "all" | FundingCategoryKey
 
+const { t, locale } = useI18n()
 const { campaigns, fundingCategories, fundingStatuses } = useMockFundingData()
 
 useSeoMeta({
-  title: "Kinh phí | VNSEEA",
-  description: "Tạo chiến dịch gây quỹ, tìm kiếm, lọc theo danh mục, xem tiến độ và donate mock trong cộng đồng VNSEEA.",
+  title: () => t("pages.fundingPage.seoTitle"),
+  description: () => t("pages.fundingPage.seoDescription"),
 })
 
 const search = ref("")
@@ -126,26 +127,26 @@ const filteredCampaigns = computed(() => {
 
 const heroStats = computed(() => [
   {
-    label: "Đang gây quỹ",
+    label: t("pages.fundingPage.statActive"),
     value: allCampaigns.value.filter(campaign => campaign.status === "active" || campaign.status === "ending").length,
-    description: "Chiến dịch còn nhận donate.",
+    description: t("pages.fundingPage.statActiveDescription"),
   },
   {
-    label: "Đã huy động",
-    value: formatFundingCurrency(allCampaigns.value.reduce((sum, campaign) => sum + campaign.raisedAmount, 0)),
-    description: "Tổng số tiền mock hiện có.",
+    label: t("pages.fundingPage.statRaised"),
+    value: formatFundingCurrency(allCampaigns.value.reduce((sum, campaign) => sum + campaign.raisedAmount, 0), locale.value),
+    description: t("pages.fundingPage.statRaisedDescription"),
   },
   {
-    label: "Donate mới",
+    label: t("pages.fundingPage.statDonations"),
     value: donations.value.length,
-    description: "Giao dịch trong phiên này.",
+    description: t("pages.fundingPage.statDonationsDescription"),
   },
 ])
 
 const sidebarStats = computed(() => [
-  { label: "Chiến dịch nổi bật", value: allCampaigns.value.filter(campaign => campaign.isFeatured).length },
-  { label: "Của tôi", value: allCampaigns.value.filter(campaign => campaign.isOwner).length },
-  { label: "Người ủng hộ", value: allCampaigns.value.reduce((sum, campaign) => sum + campaign.backers, 0) },
+  { label: t("pages.fundingPage.sidebarFeatured"), value: allCampaigns.value.filter(campaign => campaign.isFeatured).length },
+  { label: t("pages.fundingPage.sidebarMine"), value: allCampaigns.value.filter(campaign => campaign.isOwner).length },
+  { label: t("pages.fundingPage.sidebarBackers"), value: allCampaigns.value.reduce((sum, campaign) => sum + campaign.backers, 0) },
 ])
 
 const categoryBreakdown = computed(() =>
@@ -156,17 +157,17 @@ const categoryBreakdown = computed(() =>
       count: allCampaigns.value.filter(campaign => campaign.category === category.value).length,
     }))
     .filter(category => category.count > 0)
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, "vi")),
+    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, locale.value)),
 )
 
 const resultHeading = computed(() => {
-  if (selectedStatus.value === "mine") return "Chiến dịch của tôi"
-  if (selectedStatus.value === "ending") return "Sắp kết thúc"
-  if (selectedStatus.value === "funded") return "Đã đạt mục tiêu"
+  if (selectedStatus.value === "mine") return t("pages.fundingPage.headingMine")
+  if (selectedStatus.value === "ending") return t("pages.fundingPage.headingEnding")
+  if (selectedStatus.value === "funded") return t("pages.fundingPage.headingFunded")
   if (selectedCategory.value !== "all") {
-    return fundingCategories.find(category => category.value === selectedCategory.value)?.label ?? "Chiến dịch phù hợp"
+    return fundingCategories.find(category => category.value === selectedCategory.value)?.label ?? t("pages.fundingPage.headingDefault")
   }
-  return "Danh sách gây quỹ"
+  return t("pages.fundingPage.headingDefault")
 })
 
 const openDonate = (campaign: MockFundingCampaign) => {

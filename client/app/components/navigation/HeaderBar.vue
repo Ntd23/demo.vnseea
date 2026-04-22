@@ -5,7 +5,7 @@
         <div class="flex shrink-0 items-center gap-2 rounded-full border border-[#dbe3f2] bg-[#f7f9ff] p-1">
           <button class="desktop-pill" :class="isHome ? 'desktop-pill--active' : 'desktop-pill--inactive'" type="button">
             <Icon name="i-ph-house-fill" class="h-4.5 w-4.5" />
-            <span>Trang chủ</span>
+            <span>{{ $t("navigation.headerBar.home") }}</span>
           </button>
         </div>
 
@@ -14,6 +14,7 @@
         </div>
 
         <div class="ml-auto flex shrink-0 items-center gap-2">
+          <NavigationLocaleSwitcher compact />
           <component
             :is="action.to ? NuxtLink : 'button'"
             v-for="action in desktopActions"
@@ -22,12 +23,12 @@
             class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f5f8ff] text-[#33496d] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
             :class="action.to === route.path ? 'border-[#0000ff] bg-[#eef2ff] text-[#0000ff]' : ''"
             :type="action.to ? undefined : 'button'"
-            :aria-label="action.label"
+            :aria-label="$t(action.label)"
           >
             <Icon :name="action.icon" class="h-5 w-5" />
             <span v-if="action.badge" class="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0000ff] px-1 text-[9px] font-bold text-white">{{ action.badge }}</span>
           </component>
-          <button class="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[#dce4ff] bg-[linear-gradient(145deg,#1f34ff_0%,#0000ff_60%,#4d63ff_100%)] text-white shadow-[0_8px_18px_rgba(0,0,255,0.16)]" type="button" aria-label="Tài khoản" @click="$emit('toggle-menu')">
+          <button class="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[#dce4ff] bg-[linear-gradient(145deg,#1f34ff_0%,#0000ff_60%,#4d63ff_100%)] text-white shadow-[0_8px_18px_rgba(0,0,255,0.16)]" type="button" :aria-label="$t('navigation.headerBar.account')" @click="$emit('toggle-menu')">
             <Icon name="i-lucide-circle-user-round" class="h-5 w-5" />
           </button>
         </div>
@@ -42,48 +43,50 @@
           :to="item.to"
           class="mobile-icon-btn"
           :class="item.active ? 'mobile-icon-btn--active' : ''"
-          :aria-label="item.label"
+          :aria-label="$t(item.label)"
         >
           <Icon :name="item.icon" class="h-[21px] w-[21px]" />
           <span v-if="item.logoBadge" class="mobile-icon-logo">{{ item.logoBadge }}</span>
           <span v-if="item.badge" class="mobile-icon-badge">{{ item.badge }}</span>
         </NuxtLink>
 
-        <button
-          class="mobile-icon-btn mobile-icon-btn--avatar"
-          type="button"
-          aria-label="Tài khoản"
-          @click="$emit('toggle-menu')"
-        >
-          <Icon name="i-lucide-circle-user-round" class="h-[21px] w-[21px] text-white" />
-        </button>
+        <div class="flex items-center gap-1">
+          <NavigationLocaleSwitcher compact />
+          <button
+            class="mobile-icon-btn mobile-icon-btn--avatar"
+            type="button"
+            :aria-label="$t('navigation.headerBar.account')"
+            @click="$emit('toggle-menu')"
+          >
+            <Icon name="i-lucide-circle-user-round" class="h-[21px] w-[21px] text-white" />
+          </button>
+        </div>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { NuxtLink } from '#components'
+import { NuxtLink } from "#components"
 
-defineEmits<{ 'toggle-menu': [] }>()
+defineEmits<{ "toggle-menu": [] }>()
 
 const route = useRoute()
-const isHome = computed(() => route.path === '/' || route.path === '/home')
+const isHome = computed(() => route.path === "/" || route.path === "/home")
 
 const desktopActions = [
-  { label: 'Yêu cầu kết bạn', icon: 'i-ph-user-plus-fill', badge: 1 },
-  { label: 'Tin nhắn', icon: 'i-ph-chat-circle-dots-fill', to: '/messages' },
-  { label: 'Thông báo', icon: 'i-ph-bell-fill', badge: 3 },
+  { label: "navigation.headerBar.friendRequests", icon: "i-ph-user-plus-fill", badge: 1 },
+  { label: "navigation.headerBar.messages", icon: "i-ph-chat-circle-dots-fill", to: "/messages" },
+  { label: "navigation.headerBar.notifications", icon: "i-ph-bell-fill", badge: 3 },
 ]
 
-
 const mobileIconItems = computed(() => [
-  { label: 'Home', to: '/home', icon: 'i-ph-house-fill', active: route.path === '/' || route.path === '/home' },
-  { label: 'Search', to: '/search', icon: 'i-ph-magnifying-glass-bold', active: route.path === '/search' },
-  { label: 'Reels', to: '/reels', icon: 'i-ph-film-strip-fill', active: route.path === '/reels', logoBadge: 'V' },
-  { label: 'Video', to: '/watch', icon: 'i-ph-video-camera-fill', active: route.path === '/watch' },
-  { label: 'Notifications', to: '/home', icon: 'i-ph-bell-fill', active: false },
-  { label: 'Profile', to: '/@me', icon: 'i-ph-handshake-fill', active: route.path.includes('/@') },
+  { label: "navigation.headerBar.home", to: "/home", icon: "i-ph-house-fill", active: route.path === "/" || route.path === "/home" },
+  { label: "navigation.headerBar.search", to: "/search", icon: "i-ph-magnifying-glass-bold", active: route.path === "/search" },
+  { label: "navigation.headerBar.reels", to: "/reels", icon: "i-ph-film-strip-fill", active: route.path === "/reels", logoBadge: "V" },
+  { label: "navigation.headerBar.video", to: "/watch", icon: "i-ph-video-camera-fill", active: route.path === "/watch" },
+  { label: "navigation.headerBar.notifications", to: "/home", icon: "i-ph-bell-fill", active: false },
+  { label: "navigation.headerBar.profile", to: "/@me", icon: "i-ph-handshake-fill", active: route.path.includes("/@") },
 ])
 </script>
 

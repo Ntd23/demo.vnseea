@@ -2,7 +2,7 @@
   <aside class="space-y-4">
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Thống kê nhanh
+        {{ $t("pages.jobsPage.sidebarQuickStats") }}
       </p>
       <div class="mt-4 grid gap-3">
         <div
@@ -22,7 +22,7 @@
 
     <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Ngành đang tuyển
+        {{ $t("pages.jobsPage.sidebarHiringCategories") }}
       </p>
       <div class="mt-4 space-y-2">
         <button

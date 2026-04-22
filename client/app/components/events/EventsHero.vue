@@ -7,13 +7,13 @@
     <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-[780px]">
         <p class="text-label-secondary text-white/72">
-          P-27 · Sự kiện
+          {{ $t("pages.eventsPage.heroEyebrow") }}
         </p>
         <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
-          Sự kiện đang diễn ra quanh bạn
+          {{ $t("pages.eventsPage.heroTitle") }}
         </h1>
         <p class="mt-4 max-w-[630px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-          Theo dõi lịch meetup, workshop, hoạt động cộng đồng và những buổi gặp mặt bạn đã quan tâm trên VNSEEA.
+          {{ $t("pages.eventsPage.heroDescription") }}
         </p>
 
         <div class="mt-7 flex flex-wrap items-center gap-3">
@@ -22,7 +22,7 @@
             class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] bg-white px-5 text-[14px] font-extrabold text-[var(--color-primary-600)] shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
           >
             <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />
-            Tạo sự kiện
+            {{ $t("pages.eventsPage.createEvent") }}
           </NuxtLink>
 
           <button
@@ -34,12 +34,12 @@
             @click="$emit('showMyEvents')"
           >
             <Icon name="i-ph-user-circle-check-fill" class="mr-2 h-4 w-4" />
-            Sự kiện của tôi
+            {{ $t("pages.eventsPage.myEvents") }}
           </button>
 
           <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90">
             <Icon name="i-ph-calendar-dots-fill" class="h-4 w-4 text-[#fde7b2]" />
-            {{ totalEvents }} sự kiện mẫu
+            {{ $t("pages.eventsPage.sampleEvents", { count: totalEvents }) }}
           </div>
         </div>
       </div>

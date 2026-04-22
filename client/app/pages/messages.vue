@@ -7,7 +7,8 @@
 <script setup lang="ts">
 definePageMeta({ layout: "messages" })
 
+const { t } = useI18n()
 useHead({
-  title: "Tin nhắn | VNSEEA",
+  title: () => t('pages.messagesPage.seoTitle'),
 })
 </script>

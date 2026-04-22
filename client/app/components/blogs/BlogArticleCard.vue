@@ -20,7 +20,7 @@
             v-if="article.mine"
             class="rounded-[10px] bg-white/18 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-[4px]"
           >
-            Của tôi
+            {{ $t("pages.blogsPage.mineBadge") }}
           </span>
         </div>
 
@@ -30,7 +30,7 @@
             {{ formatCompact(article.views) }}
           </div>
           <div class="rounded-[var(--radius-full)] bg-white/18 px-2.5 py-1.5 text-[11px] font-bold text-white backdrop-blur-[4px]">
-            {{ article.readMinutes }} phút đọc
+            {{ $t("pages.blogsPage.readMinutes", { count: article.readMinutes }) }}
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
             </span>
           </div>
           <span class="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--color-primary-600)]">
-            Đọc tiếp
+            {{ $t("pages.blogsPage.continueReading") }}
             <Icon name="i-ph-arrow-right-bold" class="h-3.5 w-3.5" />
           </span>
         </div>

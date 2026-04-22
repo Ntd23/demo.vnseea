@@ -2,14 +2,14 @@
   <div class="flex h-full w-full flex-col overflow-hidden rounded-[22px] bg-white shadow-[0_4px_24px_rgba(0,0,255,0.06)]">
     <div class="flex shrink-0 items-center justify-between border-b border-[#f1f4f9] px-4 py-4">
       <div>
-        <span class="block text-[17px] font-bold text-[#1f2937]">Trò chuyện</span>
-        <span class="block text-[12px] text-slate-500">{{ onlineCount }} người đang online</span>
+        <span class="block text-[17px] font-bold text-[#1f2937]">{{ $t("navigation.chatWidget.title") }}</span>
+        <span class="block text-[12px] text-slate-500">{{ $t("navigation.chatWidget.onlineCount", { count: onlineCount }) }}</span>
       </div>
       <div class="flex items-center gap-2">
-        <button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200" title="Tạo nhóm chat" type="button">
+        <button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200" :title="$t('navigation.chatWidget.actionCreateGroup')" type="button">
           <Icon name="i-ph-user-plus-bold" class="h-[15px] w-[15px]" />
         </button>
-        <button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200" title="Cài đặt" type="button">
+        <button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200" :title="$t('navigation.chatWidget.actionSettings')" type="button">
           <Icon name="i-ph-gear-bold" class="h-[15px] w-[15px]" />
         </button>
       </div>
@@ -22,6 +22,7 @@
         class="flex h-[36px] flex-1 items-center justify-center rounded-[10px] transition duration-150"
         :class="activeTab === tab.value ? 'bg-[#f4eaea] text-[#0000ff]' : 'bg-transparent text-slate-400 hover:bg-slate-50'"
         type="button"
+        :aria-label="$t(tab.label)"
         @click="activeTab = tab.value"
       >
         <Icon :name="tab.icon" class="h-5 w-5" />
@@ -30,26 +31,26 @@
 
     <div class="flex-1 overflow-y-auto scrollbar-hide">
       <div v-if="activeTab === 'send'" class="flex flex-col gap-4 px-4 py-4">
-        <span class="text-[13px] font-bold uppercase tracking-[0.05em] text-[#6b7280]">Nội dung</span>
+        <span class="text-[13px] font-bold uppercase tracking-[0.05em] text-[#6b7280]">{{ $t("navigation.chatWidget.content") }}</span>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-semibold text-[#333333]">Gửi đến:</label>
-          <input v-model="sendTo" class="h-[42px] w-full rounded-[8px] border border-[#d1d5db] bg-white px-3 text-[14px] text-[#333333] outline-none transition focus:border-[#0000ff] focus:ring-1 focus:ring-[#0000ff]/20" placeholder="Tên người nhận..." type="text">
+          <label class="text-[14px] font-semibold text-[#333333]">{{ $t("navigation.chatWidget.sendToLabel") }}</label>
+          <input v-model="sendTo" class="h-[42px] w-full rounded-[8px] border border-[#d1d5db] bg-white px-3 text-[14px] text-[#333333] outline-none transition focus:border-[#0000ff] focus:ring-1 focus:ring-[#0000ff]/20" :placeholder="$t('navigation.chatWidget.recipientPlaceholder')" type="text">
         </div>
 
         <div>
-          <textarea v-model="sendMessage" class="w-full resize-none rounded-[8px] border border-[#d1d5db] bg-white p-3 text-[14px] text-[#333333] placeholder:text-[#9ca3af] outline-none transition focus:border-[#0000ff] focus:ring-1 focus:ring-[#0000ff]/20" placeholder="Nhập tin nhắn..." rows="3" />
+          <textarea v-model="sendMessage" class="w-full resize-none rounded-[8px] border border-[#d1d5db] bg-white p-3 text-[14px] text-[#333333] placeholder:text-[#9ca3af] outline-none transition focus:border-[#0000ff] focus:ring-1 focus:ring-[#0000ff]/20" :placeholder="$t('navigation.chatWidget.messagePlaceholder')" rows="3" />
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label class="text-[14px] font-semibold text-[#333333]">Đính kèm <span class="font-normal text-[#6b7280]">(tùy chọn)</span></label>
+          <label class="text-[14px] font-semibold text-[#333333]">{{ $t("navigation.chatWidget.attachLabel") }} <span class="font-normal text-[#6b7280]">({{ $t("navigation.chatWidget.optional") }})</span></label>
           <div class="flex items-center overflow-hidden rounded-[8px] border border-dashed border-[#c7d2fe]">
             <label class="flex h-[38px] cursor-pointer items-center gap-1.5 bg-[#f8fafc] px-3 transition hover:bg-[#f1f5f9]">
               <Icon name="i-ph-paperclip" class="h-4 w-4 text-[#0000ff]" />
-              <span class="text-[13px] font-medium text-[#333333]">Chọn tệp</span>
+              <span class="text-[13px] font-medium text-[#333333]">{{ $t("navigation.chatWidget.chooseFile") }}</span>
               <input class="hidden" type="file" @change="onFile">
             </label>
-            <span class="border-l border-dashed border-[#c7d2fe] px-3 text-[13px] text-[#6b7280] truncate">{{ attachFile ? attachFile.name : 'Chưa có tệp nào được chọn' }}</span>
+            <span class="border-l border-dashed border-[#c7d2fe] px-3 text-[13px] text-[#6b7280] truncate">{{ attachFile ? attachFile.name : $t("navigation.chatWidget.noFileSelected") }}</span>
           </div>
         </div>
 
@@ -58,16 +59,16 @@
             <input id="select-all" v-model="selectAll" class="peer h-[18px] w-[18px] cursor-pointer appearance-none rounded-[4px] border border-[#cbd5e1] bg-white checked:border-[#0000ff] checked:bg-[#0000ff] transition" type="checkbox">
             <Icon name="i-ph-check-bold" class="pointer-events-none absolute h-3 w-3 text-white opacity-0 transition peer-checked:opacity-100" />
           </div>
-          <label class="cursor-pointer text-[14px] text-[#4b5563]" for="select-all">Chọn tất cả</label>
+          <label class="cursor-pointer text-[14px] text-[#4b5563]" for="select-all">{{ $t("navigation.chatWidget.selectAll") }}</label>
         </div>
 
-        <button class="flex h-[42px] w-full items-center justify-center rounded-[8px] bg-[#0000ff] text-[15px] font-bold text-white transition hover:bg-[#0000dd]" type="button">Gửi tin nhắn</button>
+        <button class="flex h-[42px] w-full items-center justify-center rounded-[8px] bg-[#0000ff] text-[15px] font-bold text-white transition hover:bg-[#0000dd]" type="button">{{ $t("navigation.chatWidget.sendMessage") }}</button>
 
         <div class="relative mt-2">
           <select class="w-full appearance-none rounded-[8px] border border-[#d1d5db] bg-white px-3 py-2.5 text-[14px] text-[#333333] outline-none transition focus:border-[#0000ff]">
-            <option value="">Chọn thẻ...</option>
-            <option value="important">Quan trọng</option>
-            <option value="work">Công việc</option>
+            <option value="">{{ $t("navigation.chatWidget.selectTag") }}</option>
+            <option value="important">{{ $t("navigation.chatWidget.tagImportant") }}</option>
+            <option value="work">{{ $t("navigation.chatWidget.tagWork") }}</option>
           </select>
           <Icon name="i-ph-caret-down-bold" class="pointer-events-none absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6b7280]" />
         </div>
@@ -84,9 +85,9 @@
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
               <span class="truncate text-[14px] text-[#333333]">{{ contact.name }}</span>
-              <span v-if="contact.online" class="rounded-full bg-[#e7f8ec] px-2 py-0.5 text-[10px] font-semibold text-[#31a24c]">Online</span>
+              <span v-if="contact.online" class="rounded-full bg-[#e7f8ec] px-2 py-0.5 text-[10px] font-semibold text-[#31a24c]">{{ $t("navigation.chatWidget.onlineBadge") }}</span>
             </div>
-            <p class="truncate text-[12px] text-slate-500">{{ contact.status || 'Sẵn sàng trò chuyện' }}</p>
+            <p class="truncate text-[12px] text-slate-500">{{ contact.status || $t("navigation.chatWidget.readyToChat") }}</p>
           </div>
 
           <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] bg-[#0056ff] text-white transition hover:bg-[#0047d4]">
@@ -102,7 +103,7 @@
           </div>
           <div class="min-w-0 flex-1 text-left">
             <p class="truncate text-[14px] text-[#333333]">{{ group.name }}</p>
-            <p class="text-[12px] text-slate-500">{{ group.members }} thành viên</p>
+            <p class="text-[12px] text-slate-500">{{ $t("navigation.chatWidget.groupMembers", { count: group.members }) }}</p>
           </div>
         </button>
       </div>
@@ -111,7 +112,7 @@
     <div class="shrink-0 border-t border-[#f1f4f9] p-4">
       <div class="flex items-center gap-2 rounded-[8px] bg-[#f1f5f9] px-3 py-2">
         <Icon name="i-ph-magnifying-glass" class="h-[18px] w-[18px] shrink-0 text-[#94a3b8]" />
-        <input v-model="search" class="flex-1 bg-transparent text-[14px] text-[#333333] placeholder:text-[#94a3b8] outline-none" placeholder="Tìm kiếm người dùng" type="text">
+        <input v-model="search" class="flex-1 bg-transparent text-[14px] text-[#333333] placeholder:text-[#94a3b8] outline-none" :placeholder="$t('navigation.chatWidget.searchPlaceholder')" type="text">
       </div>
     </div>
 
@@ -120,7 +121,7 @@
         <div class="flex items-center justify-between border-b border-[#f1f4f9] px-3 py-2.5">
           <div class="min-w-0">
             <p class="truncate text-[13px] font-semibold text-slate-800">{{ miniChat.title }}</p>
-            <p class="text-[11px] text-[#31a24c]">Đang hoạt động</p>
+            <p class="text-[11px] text-[#31a24c]">{{ $t("navigation.chatWidget.miniChatActive") }}</p>
           </div>
           <button class="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500" type="button" @click="miniChat.open = false">
             <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
@@ -129,16 +130,16 @@
 
         <div class="max-h-56 space-y-2 overflow-y-auto p-3 text-[13px]">
           <div class="flex justify-end">
-            <div class="max-w-[82%] rounded-2xl bg-[#0000ff] px-3 py-2 text-white">{{ miniChat.sample }}</div>
+            <div class="max-w-[82%] rounded-2xl bg-[#0000ff] px-3 py-2 text-white">{{ miniSample }}</div>
           </div>
           <div class="flex justify-start">
-            <div class="max-w-[82%] rounded-2xl bg-slate-100 px-3 py-2 text-slate-700">{{ miniChat.reply }}</div>
+            <div class="max-w-[82%] rounded-2xl bg-slate-100 px-3 py-2 text-slate-700">{{ miniReply }}</div>
           </div>
         </div>
 
         <div class="border-t border-[#f1f4f9] p-3">
           <div class="flex items-center gap-2 rounded-[10px] bg-[#f1f5f9] px-3 py-2">
-            <input v-model="miniChat.message" class="flex-1 bg-transparent text-[13px] outline-none" placeholder="Nhập tin nhắn..." type="text">
+            <input v-model="miniChat.message" class="flex-1 bg-transparent text-[13px] outline-none" :placeholder="$t('navigation.chatWidget.miniInputPlaceholder')" type="text">
             <button class="text-[#0000ff]" type="button">
               <Icon name="i-ph-paper-plane-right-bold" class="h-4 w-4" />
             </button>
@@ -150,6 +151,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const { contacts } = useMockSocialData()
 
 const activeTab = ref('send')
@@ -161,9 +164,9 @@ const selectAll = ref(false)
 const onlineCount = computed(() => contacts.filter(c => c.online).length)
 
 const tabs = [
-  { value: 'send', icon: 'i-ph-paper-plane-right' },
-  { value: 'contacts', icon: 'i-ph-address-book' },
-  { value: 'groups', icon: 'i-ph-users-three' },
+  { value: 'send', icon: 'i-ph-paper-plane-right', label: 'navigation.chatWidget.tabSend' },
+  { value: 'contacts', icon: 'i-ph-address-book', label: 'navigation.chatWidget.tabContacts' },
+  { value: 'groups', icon: 'i-ph-users-three', label: 'navigation.chatWidget.tabGroups' },
 ]
 
 const groups = [
@@ -178,22 +181,36 @@ const extendedContacts = computed(() => contacts.map((c, i) => {
   if (i === 2) img = 'https://i.pravatar.cc/150?u=3'
   if (i === 4) img = 'https://i.pravatar.cc/150?u=4'
   if (i === 5) img = 'https://i.pravatar.cc/150?u=5'
-  return { ...c, avatarUrl: img, status: c.online ? 'Đang online' : 'Hôm nay không hoạt động' }
+  return { ...c, avatarUrl: img, status: c.online ? t('navigation.chatWidget.onlineStatus') : t('navigation.chatWidget.offlineToday') }
 }))
 
 const palette = ['#0000ff', '#2525e0', '#3d3dcc', '#5555bb', '#1a1aff', '#0000cc', '#4444dd', '#0000aa', '#3333ee', '#6666ff', '#2222dd', '#1111cc']
 function avatarColor(id: number) { return palette[(id - 1) % palette.length] }
 
-const miniChat = reactive({ open: false, title: '', sample: 'Chào bạn, mình nhắn nhanh từ chat widget.', reply: 'Ok, mình phản hồi ngay đây.', message: '' })
+const miniChat = reactive<{ open: boolean; title: string; message: string; kind: 'direct' | 'group' }>({
+  open: false,
+  title: '',
+  message: '',
+  kind: 'direct',
+})
+
+const miniSample = computed(() =>
+  miniChat.kind === 'group' ? t('navigation.chatWidget.miniGroupSample') : t('navigation.chatWidget.miniChatSample'),
+)
+
+const miniReply = computed(() =>
+  miniChat.kind === 'group' ? t('navigation.chatWidget.miniGroupReply') : t('navigation.chatWidget.miniChatReply'),
+)
+
 const openMiniChat = (contact: any) => {
   miniChat.title = contact.name
+  miniChat.kind = 'direct'
   miniChat.open = true
 }
 const openMiniGroup = (group: any) => {
   miniChat.title = group.name
+  miniChat.kind = 'group'
   miniChat.open = true
-  miniChat.sample = 'Đây là mẫu hội thoại nhóm.'
-  miniChat.reply = 'Đã thêm vào nhóm.'
 }
 
 const onFile = (e: Event) => {

@@ -2,10 +2,10 @@
   <div class="space-y-5 pb-10">
     <ProductHeroBanner
       variant="create"
-      badge="P-11 · Tạo sản phẩm"
-      title="Đăng sản phẩm mới"
-      description="Biểu mẫu đã được rút lại theo đúng flow marketplace: tên, giá bán, mô tả, loại, loại hình, địa điểm, tiền tệ, tồn kho và hình ảnh."
-      secondary-action-label="Điền nhanh dữ liệu mẫu"
+      :badge="$t('pages.newProductPage.badge')"
+      :title="$t('pages.newProductPage.title')"
+      :description="$t('pages.newProductPage.description')"
+      :secondary-action-label="$t('pages.newProductPage.quickFill')"
       :stats="heroStats"
       @secondary-action="quickFillDemo"
     />
@@ -16,14 +16,13 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-                Biên tập
+                {{ $t("pages.productEditor.editSectionEyebrow") }}
               </p>
               <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
-                Thông tin sản phẩm
+                {{ $t("pages.newProductPage.sectionTitle") }}
               </h2>
               <p class="mt-1 text-[14px] leading-6 text-slate-500">
-                Form được căn lại theo thiết kế mới, tập trung vào các trường
-                cốt lõi của tin đăng.
+                {{ $t("pages.newProductPage.sectionDescription") }}
               </p>
             </div>
 
@@ -84,13 +83,13 @@
           :image-count="imageCount"
           leading-icon="i-ph-chat-circle-text-fill"
           trailing-icon="i-ph-shopping-cart-simple-fill"
-          status-label="Sẵn sàng"
+          :status-label="$t('pages.newProductPage.statusReady')"
         />
 
         <ProductChecklistCard :items="checklistItems" />
 
         <ProductTipsCard
-          title="Gợi ý điền form"
+          :title="$t('pages.newProductPage.tipsTitle')"
           :items="sellingTips"
         />
       </aside>
@@ -107,9 +106,11 @@ import type {
 } from "../../../types/product-editor"
 import { useTimeAgo, watchDebounced } from "@vueuse/core"
 
+const { t } = useI18n()
+
 useSeoMeta({
-  title: "Tạo sản phẩm | VNSEEA",
-  description: "Tạo tin đăng sản phẩm mới trong marketplace VNSEEA với bộ trường được rút gọn theo thiết kế.",
+  title: () => t("pages.newProductPage.seoTitle"),
+  description: () => t("pages.newProductPage.seoDescription"),
 })
 
 const {
@@ -164,9 +165,9 @@ const completionPercent = computed(() => (completionCount.value / 8) * 100)
 
 const heroStats = computed<ProductHeroStat[]>(() => [
   {
-    label: "Mục đã điền",
+    label: t("pages.newProductPage.statFilled"),
     value: `${completionCount.value}/8`,
-    description: "Theo dõi mức hoàn thiện biểu mẫu trước khi đăng.",
+    description: t("pages.newProductPage.statFilledDescription"),
   },
   {
     label: "Ảnh local",
@@ -198,7 +199,7 @@ const mediaSummary = computed(() =>
 )
 
 const imageButtonLabel = computed(() =>
-  imageCount.value >= 10 ? "Đã đủ 10 ảnh" : "Thêm ảnh",
+  imageCount.value >= 10 ? t("pages.newProductPage.maxImages") : t("pages.newProductPage.addImage"),
 )
 
 const saveHint = computed(() =>
@@ -230,15 +231,15 @@ const checklistItems = computed<ProductChecklistItem[]>(() => [
   },
 ])
 
-const sellingTips: ProductTipItem[] = [
+const sellingTips = computed<ProductTipItem[]>(() => [
   {
-    title: "Tên sản phẩm ngắn gọn",
-    description: "Đặt tên theo đúng món hàng để card marketplace dễ đọc và dễ tìm hơn.",
+    title: t("pages.newProductPage.tipName"),
+    description: t("pages.newProductPage.tipNameDescription"),
     icon: "i-ph-text-t-fill",
   },
   {
-    title: "Giá và tiền tệ phải nhất quán",
-    description: "Nếu bạn dùng USD ở form, preview và card bên phải sẽ đồng bộ ngay lập tức.",
+    title: t("pages.newProductPage.tipPrice"),
+    description: t("pages.newProductPage.tipPriceDescription"),
     icon: "i-ph-currency-circle-dollar-fill",
   },
   {
@@ -246,7 +247,7 @@ const sellingTips: ProductTipItem[] = [
     description: "Uploader local đã sẵn để kiểm tra preview trước khi nối upload thật.",
     icon: "i-ph-image-square-fill",
   },
-]
+])
 
 const quickFillDemo = () => {
   draft.value.fields.title = "Honda Vision 2024"

@@ -9,8 +9,9 @@ definePageMeta({
 
 const route = useRoute()
 const productId = computed(() => String(route.params.id || ""))
+const { t } = useI18n()
 
 useHead({
-  title: () => `Sửa sản phẩm #${productId.value} | VNSEEA`,
+  title: () => t("pages.editProductPage.seoTitle", { id: productId.value }),
 })
 </script>

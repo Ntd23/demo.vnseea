@@ -16,10 +16,10 @@
 
       <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
         <div class="rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-semibold text-white backdrop-blur-[4px]">
-          {{ location || locationPlaceholder }}
+          {{ location || locationPlaceholder || $t("pages.productEditor.previewLocationPlaceholder") }}
         </div>
         <div class="rounded-full bg-white/18 px-2.5 py-1.5 text-[11px] font-bold text-white backdrop-blur-[4px]">
-          {{ imageCount }} ảnh
+          {{ $t("pages.productEditor.imageCount", { count: imageCount }) }}
         </div>
       </div>
     </div>
@@ -47,7 +47,7 @@
 
       <div class="mt-4 flex items-end justify-between gap-3">
         <div>
-          <p class="text-[12px] font-semibold text-slate-400">Giá bán</p>
+          <p class="text-[12px] font-semibold text-slate-400">{{ $t("pages.productEditor.priceLabel") }}</p>
           <p class="text-[1.2rem] font-black text-[#16a34a]">
             {{ price }}
           </p>
@@ -86,6 +86,6 @@ withDefaults(defineProps<{
   statusLabel: string
   locationPlaceholder?: string
 }>(), {
-  locationPlaceholder: "Khu vực hiển thị",
+  locationPlaceholder: undefined,
 })
 </script>

@@ -4,13 +4,13 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            Hoạt động
+            {{ t("pages.groupDetailPage.feedEyebrow") }}
           </p>
           <h2 class="mt-2 text-[1.3rem] font-black tracking-[-0.04em] text-[#243b63]">
-            Bảng tin nhóm
+            {{ t("pages.groupDetailPage.feedTitle") }}
           </h2>
           <p class="mt-1 text-[14px] leading-6 text-slate-500">
-            {{ group.activityLabel }}. Đây là khu vực thành viên đăng bài, chia sẻ update và thảo luận theo chủ đề của cộng đồng.
+            {{ t("pages.groupDetailPage.feedDescription", { activity: group.activityLabel }) }}
           </p>
         </div>
 
@@ -32,6 +32,8 @@
 
 <script setup lang="ts">
 import type { CommunityGroupRecord } from "../../../types/community"
+
+const { t } = useI18n()
 
 defineProps<{
   group: CommunityGroupRecord

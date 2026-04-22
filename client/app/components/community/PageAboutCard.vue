@@ -3,10 +3,10 @@
     <div class="flex items-start justify-between gap-3">
       <div>
         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-          {{ compact ? "Tóm tắt" : "Giới thiệu fanpage" }}
+          {{ compact ? t("pages.pageDetailPage.aboutCompactEyebrow") : t("pages.pageDetailPage.aboutEyebrow") }}
         </p>
         <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
-          {{ compact ? "Thông tin nhanh" : page.name }}
+          {{ compact ? t("pages.pageDetailPage.aboutCompactTitle") : page.name }}
         </h3>
       </div>
 
@@ -21,19 +21,19 @@
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Danh mục</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.categoryTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ categoryLabel }}</p>
         <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ page.ownerLabel }}</p>
       </div>
       <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">Tương tác</p>
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.interactionTitle") }}</p>
         <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ page.responseLabel }}</p>
         <p class="mt-1 text-[12px] leading-5 text-slate-500">
           {{
             [
               showFollowerCount ? followerCountLabel : "",
               showLikeCount ? likeCountLabel : "",
-            ].filter(Boolean).join(" · ") || "Đã ẩn chỉ số công khai"
+            ].filter(Boolean).join(" · ") || t("pages.pageDetailPage.hiddenMetrics")
           }}
         </p>
       </div>
@@ -54,13 +54,13 @@
       </div>
       <div v-if="showFollowerCount" class="flex items-start gap-2">
         <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
-        <span>{{ followerCountLabel }}</span>
+        <span>{{ $t('community.pages.format.followers', { count: followerCountLabel }) }}</span>
       </div>
     </div>
 
     <div v-if="!compact" class="mt-5">
       <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-        Chủ đề chính
+        {{ t("pages.pageDetailPage.mainTopicsTitle") }}
       </p>
       <div class="mt-3 flex flex-wrap gap-2">
         <span
@@ -77,6 +77,8 @@
 
 <script setup lang="ts">
 import type { CommunityPageRecord } from "../../../types/community"
+
+const { t } = useI18n()
 
 withDefaults(defineProps<{
   page: CommunityPageRecord

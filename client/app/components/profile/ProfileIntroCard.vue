@@ -1,12 +1,12 @@
 <template>
   <div class="rounded-[18px] border border-[#0000ff]/10 bg-white p-4 shadow-[0_2px_12px_rgba(0,0,255,0.04)]">
     <div class="flex items-center justify-between">
-      <h3 class="text-title-primary">Giới thiệu</h3>
-      <button class="text-caption-secondary hover:text-[#0000ff] transition" type="button">Chỉnh sửa</button>
+      <h3 class="text-title-primary">{{ t("pages.profilePage.introCard.title") }}</h3>
+      <button class="text-caption-secondary hover:text-[#0000ff] transition" type="button">{{ t("pages.profilePage.introCard.edit") }}</button>
     </div>
 
     <p class="text-body-secondary mt-3 leading-relaxed">
-      🎯 Xây dựng cộng đồng kết nối người Việt. Đam mê công nghệ và thiết kế sản phẩm.
+      {{ t("pages.profilePage.introCard.headline") }}
     </p>
 
     <div class="mt-4 space-y-3">
@@ -24,12 +24,38 @@
 </template>
 
 <script setup lang="ts">
-const infoItems = [
-  { icon: "i-ph-briefcase", label: "Công việc", value: "Founder tại VNSEEA" },
-  { icon: "i-ph-graduation-cap", label: "Học vấn", value: "Đại học Bách Khoa" },
-  { icon: "i-ph-map-pin", label: "Sống tại", value: "TP. Hồ Chí Minh, Việt Nam" },
-  { icon: "i-ph-heart", label: "Tình trạng", value: "Độc thân" },
-  { icon: "i-ph-calendar-blank", label: "Tham gia", value: "Tháng 3, 2024" },
-  { icon: "i-ph-globe-simple", label: "Website", value: "vnseea.com" },
-]
+const { t } = useI18n()
+
+const infoItems = computed(() => [
+  {
+    icon: "i-ph-briefcase",
+    label: t("pages.profilePage.introCard.items.work.label"),
+    value: t("pages.profilePage.introCard.items.work.value"),
+  },
+  {
+    icon: "i-ph-graduation-cap",
+    label: t("pages.profilePage.introCard.items.education.label"),
+    value: t("pages.profilePage.introCard.items.education.value"),
+  },
+  {
+    icon: "i-ph-map-pin",
+    label: t("pages.profilePage.introCard.items.livesIn.label"),
+    value: t("pages.profilePage.introCard.items.livesIn.value"),
+  },
+  {
+    icon: "i-ph-heart",
+    label: t("pages.profilePage.introCard.items.relationship.label"),
+    value: t("pages.profilePage.introCard.items.relationship.value"),
+  },
+  {
+    icon: "i-ph-calendar-blank",
+    label: t("pages.profilePage.introCard.items.joined.label"),
+    value: t("pages.profilePage.introCard.items.joined.value"),
+  },
+  {
+    icon: "i-ph-globe-simple",
+    label: t("pages.profilePage.introCard.items.website.label"),
+    value: t("pages.profilePage.introCard.items.website.value"),
+  },
+])
 </script>

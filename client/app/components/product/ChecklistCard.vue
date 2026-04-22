@@ -1,7 +1,7 @@
 <template>
   <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-5' }">
     <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-      {{ title }}
+      {{ title || $t("pages.productEditor.checklist") }}
     </p>
     <UProgress :model-value="donePercent" color="success" size="sm" class="mt-4" />
     <div class="mt-4 space-y-3">
@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<{
   title?: string
   items: ProductChecklistItem[]
 }>(), {
-  title: "Checklist",
+  title: undefined,
 })
 
 const donePercent = computed(() => {

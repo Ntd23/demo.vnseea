@@ -2,7 +2,7 @@
   <div class="relative">
     <div
       ref="scrollRef"
-      class="flex gap-3 overflow-x-auto px-1 pb-2 scrollbar-hide sm:gap-4"
+      class="flex gap-3 overflow-x-auto px-1 pt-1.5 pb-3 scrollbar-hide sm:gap-4"
       style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;"
     >
       <!-- Create story (me) -->
@@ -14,7 +14,7 @@
           <Icon name="i-ph-plus-bold" class="h-5 w-5 text-[#0000ff]" />
           <div class="absolute inset-0 rounded-full ring-2 ring-[#0000ff]/30" />
         </div>
-        <span class="text-[11px] font-semibold text-slate-600">Tạo tin</span>
+        <span class="text-[11px] font-semibold text-slate-600">{{ t("feed.storyCarousel.createStory") }}</span>
       </NuxtLink>
 
       <button
@@ -42,7 +42,7 @@
 
     <button
       v-if="canScrollLeft"
-      class="absolute -left-2 top-[30px] z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
+      class="absolute -left-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
       type="button"
       @click="scroll(-1)"
     >
@@ -50,7 +50,7 @@
     </button>
     <button
       v-if="canScrollRight"
-      class="absolute -right-2 top-[30px] z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
+      class="absolute -right-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
       type="button"
       @click="scroll(1)"
     >
@@ -95,7 +95,7 @@
               </div>
               <div>
                 <p class="text-sm font-bold text-white">{{ activeStoryData?.author }}</p>
-                <p class="text-[11px] text-white/70">{{ activeStoryData?.meta ?? 'Vừa xong' }}</p>
+                <p class="text-[11px] text-white/70">{{ activeStoryData?.meta ?? t("feed.storyCarousel.fallbackMeta") }}</p>
               </div>
             </div>
 
@@ -110,13 +110,13 @@
             <button
               class="absolute inset-y-0 left-0 z-10 w-1/3"
               type="button"
-              aria-label="Story trước"
+              :aria-label="$t('feed.storyCarousel.previousStory')"
               @click="prevStory"
             />
             <button
               class="absolute inset-y-0 right-0 z-10 w-1/3"
               type="button"
-              aria-label="Story sau"
+              :aria-label="$t('feed.storyCarousel.nextStory')"
               @click="nextStory"
             />
             <div
@@ -124,7 +124,7 @@
               :style="activeStoryData?.media ? { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.36)), url(${activeStoryData.media})` } : undefined"
             >
               <div class="max-w-[78%] rounded-2xl bg-black/20 px-6 py-4 text-center backdrop-blur-sm lg:max-w-[70%]">
-                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/80">Story</p>
+                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/80">{{ t("feed.storyCarousel.storyLabel") }}</p>
                 <p class="mt-2 text-lg font-bold text-white">{{ activeStoryData?.title }}</p>
                 <p class="mt-2 text-sm leading-6 text-white/85">{{ activeStoryData?.caption }}</p>
               </div>
@@ -132,7 +132,7 @@
 
             <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4 sm:p-5">
               <div class="max-w-[70%] rounded-2xl bg-black/20 px-4 py-3 backdrop-blur-sm">
-                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/70">Tương tác</p>
+                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/70">{{ t("feed.storyCarousel.interactions") }}</p>
                 <div class="mt-3 flex items-center gap-5 text-white">
                   <div class="flex items-center gap-2">
                     <Icon name="i-ph-eye-fill" class="h-4 w-4" />
@@ -150,13 +150,13 @@
               </div>
 
               <div class="flex flex-col gap-2">
-                <button class="story-action-pill story-action-pill--dark" type="button" aria-label="Like story">
+                <button class="story-action-pill story-action-pill--dark" type="button" :aria-label="$t('feed.storyCarousel.actionLike')">
                   <Icon name="i-ph-heart-fill" class="h-5 w-5 text-[#ff4d5a]" />
                 </button>
-                <button class="story-action-pill story-action-pill--dark" type="button" aria-label="Bình luận story">
+                <button class="story-action-pill story-action-pill--dark" type="button" :aria-label="$t('feed.storyCarousel.actionComment')">
                   <Icon name="i-ph-chats-circle-fill" class="h-5 w-5" />
                 </button>
-                <button class="story-action-pill story-action-pill--dark" type="button" aria-label="Chia sẻ story">
+                <button class="story-action-pill story-action-pill--dark" type="button" :aria-label="$t('feed.storyCarousel.actionShare')">
                   <Icon name="i-ph-share-network-fill" class="h-5 w-5" />
                 </button>
               </div>
@@ -169,6 +169,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const { stories } = useMockSocialData()
 
 const scrollRef = ref<HTMLElement>()

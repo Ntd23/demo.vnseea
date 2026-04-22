@@ -1,10 +1,10 @@
 <template>
   <nav
     class="flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white/95 p-3 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center sm:justify-between"
-    aria-label="Phân trang blogs"
+    :aria-label="$t('pages.blogsPage.paginationAria')"
   >
     <p class="text-caption-secondary px-2">
-      Trang {{ currentPage }} / {{ totalPages }}
+      {{ $t("pages.blogsPage.pageStatus", { current: currentPage, total: totalPages }) }}
     </p>
 
     <div class="flex flex-wrap gap-2">
@@ -14,7 +14,7 @@
         type="button"
         @click="$emit('update:currentPage', currentPage - 1)"
       >
-        Trước
+        {{ $t("pages.blogsPage.previous") }}
       </button>
       <button
         v-for="page in pages"
@@ -32,7 +32,7 @@
         type="button"
         @click="$emit('update:currentPage', currentPage + 1)"
       >
-        Sau
+        {{ $t("pages.blogsPage.next") }}
       </button>
     </div>
   </nav>

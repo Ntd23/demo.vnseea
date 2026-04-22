@@ -3,18 +3,17 @@
     <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-          Vận hành đơn bán
+          {{ $t("orders.detail.operating") }}
         </p>
         <h3 class="mt-1 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
-          Checklist xử lý & cập nhật trạng thái
+          {{ $t("orders.detail.checklist") }}
         </h3>
       </div>
 
       <div
-        class="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-bold"
         :class="statusMeta.panelClass"
       >
-        {{ statusMeta.label }}
+        {{ $t(statusMeta.label) }}
       </div>
     </div>
 
@@ -22,7 +21,7 @@
       v-if="order.status === 'cancelled'"
       class="mt-5 rounded-[20px] border border-[#fecdd3] bg-[#fff1f3] px-4 py-3 text-[13px] leading-6 text-[#be123c]"
     >
-      Đơn đã bị hủy nên không thể tiếp tục cập nhật `Shipped` hoặc `Completed`. Hãy lưu ghi chú và đóng hồ sơ hoàn tiền.
+      {{ $t("orders.detail.cancelledWarning") }}
     </div>
 
     <div v-else class="mt-5 grid gap-3 sm:grid-cols-2">
@@ -32,13 +31,13 @@
         :class="shippingStageClass"
       >
         <p class="text-[11px] font-bold uppercase tracking-[0.18em]">
-          Shipped
+          {{ $t("orders.detail.shippedLabel") }}
         </p>
         <p class="mt-2 text-[15px] font-black">
-          Đã bàn giao vận chuyển
+          {{ $t("orders.detail.shippedTitle") }}
         </p>
         <p class="mt-2 text-[13px] leading-6 opacity-80">
-          Dùng khi đơn đã được in nhãn và giao cho đơn vị vận chuyển.
+          {{ $t("orders.detail.shippedDesc") }}
         </p>
       </button>
 
@@ -48,13 +47,13 @@
         :class="completedStageClass"
       >
         <p class="text-[11px] font-bold uppercase tracking-[0.18em]">
-          Completed
+          {{ $t("orders.detail.completedLabel") }}
         </p>
         <p class="mt-2 text-[15px] font-black">
-          Đã giao thành công
+          {{ $t("orders.detail.completedTitle") }}
         </p>
         <p class="mt-2 text-[13px] leading-6 opacity-80">
-          Dùng khi khách đã nhận đủ hàng và đơn đủ điều kiện chốt đối soát.
+          {{ $t("orders.detail.completedDesc") }}
         </p>
       </button>
     </div>
@@ -77,17 +76,17 @@
           <div class="min-w-0 flex-1">
             <div class="flex flex-wrap items-center gap-2">
               <p class="text-[14px] font-black text-[#243b63]">
-                {{ task.label }}
+                {{ $t(task.label) }}
               </p>
               <span
-                class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em]"
+                class="rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider"
                 :class="task.done ? 'bg-[#dbe7ff] text-[#1d4ed8]' : 'bg-[#eef2f8] text-slate-500'"
               >
-                {{ task.done ? "Done" : "Pending" }}
+                {{ $t(task.done ? 'orders.detail.taskStatus.done' : 'orders.detail.taskStatus.pending') }}
               </span>
             </div>
             <p class="mt-2 text-[13px] leading-6 text-slate-500">
-              {{ task.description }}
+              {{ $t(task.description) }}
             </p>
           </div>
         </div>

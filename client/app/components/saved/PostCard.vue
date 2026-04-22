@@ -32,7 +32,7 @@
           @click="$emit('remove', entry.id)"
         >
           <Icon name="i-ph-bookmark-simple" class="mr-2 h-4 w-4" />
-          Bỏ lưu
+          {{ t("pages.savedPostsPage.remove") }}
         </button>
       </div>
     </div>
@@ -49,6 +49,8 @@ import type { MockSavedPostEntry } from "~/composables/useMockSavedPostsData"
 defineProps<{
   entry: MockSavedPostEntry
 }>()
+
+const { t } = useI18n()
 
 defineEmits<{
   remove: [id: string]

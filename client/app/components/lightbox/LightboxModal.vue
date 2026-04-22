@@ -16,8 +16,8 @@
                 <Icon name="i-ph-image-square-bold" class="h-5 w-5" />
               </div>
               <div>
-                <p class="text-sm font-bold text-slate-800">Xem ảnh</p>
-                <p class="text-[12px] text-slate-500">{{ currentIndex + 1 }} / {{ items.length }}</p>
+                <p class="text-sm font-bold text-slate-800">{{ t("feed.lightboxModal.viewTitle") }}</p>
+                <p class="text-[12px] text-slate-500">{{ t("feed.lightboxModal.counter", { current: currentIndex + 1, total: items.length }) }}</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
@@ -44,7 +44,7 @@
                 <source :src="currentItem.src" :type="currentItem.mime || 'video/mp4'">
               </video>
               <div v-else class="rounded-[18px] bg-slate-800 px-6 py-8 text-center text-white">
-                <p class="text-lg font-bold">Không có nội dung</p>
+                <p class="text-lg font-bold">{{ t("feed.lightboxModal.empty") }}</p>
               </div>
 
               <button class="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition hover:bg-white/20" type="button" @click="next">
@@ -54,7 +54,7 @@
 
             <aside class="flex min-h-0 flex-col border-t border-slate-200 bg-white lg:border-t-0 lg:border-l">
               <div class="border-b border-slate-200 px-4 py-3">
-                <p class="text-sm font-bold text-slate-800">{{ title }}</p>
+                <p class="text-sm font-bold text-slate-800">{{ resolvedTitle }}</p>
                 <p class="mt-1 text-[12px] text-slate-500">{{ description }}</p>
               </div>
 
@@ -65,22 +65,22 @@
                       {{ authorInitials }}
                     </div>
                     <div class="min-w-0">
-                      <p class="text-[13px] font-semibold text-slate-800">{{ author }}</p>
+                      <p class="text-[13px] font-semibold text-slate-800">{{ resolvedAuthor }}</p>
                       <p class="text-[12px] leading-relaxed text-slate-600">{{ caption }}</p>
                     </div>
                   </div>
                 </div>
 
                 <button class="w-full rounded-[14px] border border-[#0000ff]/15 bg-white px-3 py-2 text-left text-[13px] font-semibold text-slate-600 transition hover:border-[#0000ff]/30 hover:text-[#0000ff]" type="button" @click="emit('like')">
-                  Thích / React ảnh
+                  {{ t("feed.lightboxModal.actionLike") }}
                 </button>
 
                 <button class="w-full rounded-[14px] border border-[#0000ff]/15 bg-white px-3 py-2 text-left text-[13px] font-semibold text-slate-600 transition hover:border-[#0000ff]/30 hover:text-[#0000ff]" type="button" @click="emit('comment')">
-                  Bình luận trên ảnh
+                  {{ t("feed.lightboxModal.actionComment") }}
                 </button>
 
                 <button class="w-full rounded-[14px] border border-[#0000ff]/15 bg-white px-3 py-2 text-left text-[13px] font-semibold text-slate-600 transition hover:border-[#0000ff]/30 hover:text-[#0000ff]" type="button" @click="emit('share')">
-                  Chia sẻ ảnh
+                  {{ t("feed.lightboxModal.actionShare") }}
                 </button>
               </div>
             </aside>
@@ -92,6 +92,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const props = withDefaults(defineProps<{
   open?: boolean
   title?: string
@@ -102,17 +104,19 @@ const props = withDefaults(defineProps<{
   currentIndex?: number
 }>(), {
   open: false,
-  title: 'Lightbox',
-  description: '',
-  author: 'VNSEEA',
-  caption: '',
+  title: "",
+  description: "",
+  author: "VNSEEA",
+  caption: "",
   currentIndex: 0,
 })
 
 const emit = defineEmits<{ close: []; share: []; download: []; like: []; comment: []; change: [index: number] }>()
 
 const currentItem = computed(() => props.items[props.currentIndex] ?? null)
-const authorInitials = computed(() => props.author.slice(0, 2).toUpperCase())
+const resolvedTitle = computed(() => props.title || t("feed.lightboxModal.defaultTitle"))
+const resolvedAuthor = computed(() => props.author || "VNSEEA")
+const authorInitials = computed(() => resolvedAuthor.value.slice(0, 2).toUpperCase())
 
 const prev = () => {
   if (!props.items.length) return

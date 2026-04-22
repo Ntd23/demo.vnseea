@@ -6,13 +6,13 @@
     <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-[760px]">
         <p class="text-label-secondary text-white/72">
-          P-24 · Blogs
+          {{ $t("pages.blogsPage.heroEyebrow") }}
         </p>
         <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
-          Các bài báo gần đây nhất
+          {{ $t("pages.blogsPage.heroTitle") }}
         </h1>
         <p class="mt-4 max-w-[620px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-          Theo dõi các câu chuyện mới, góc nhìn cộng đồng và những chủ đề đang được quan tâm trên VNSEEA.
+          {{ $t("pages.blogsPage.heroDescription") }}
         </p>
 
         <div class="mt-7 flex flex-wrap items-center gap-3">
@@ -25,7 +25,7 @@
             @click="$emit('toggleMine')"
           >
             <Icon name="i-ph-article-fill" class="mr-2 h-4 w-4" />
-            Bài báo của tôi
+            {{ $t("pages.blogsPage.myArticles") }}
           </button>
 
           <NuxtLink
@@ -33,12 +33,12 @@
             class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] bg-white px-5 text-[14px] font-extrabold text-[var(--color-primary-600)] shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
           >
             <Icon name="i-ph-pencil-simple-line-fill" class="mr-2 h-4 w-4" />
-            Viết blog
+            {{ $t("pages.blogsPage.writeBlog") }}
           </NuxtLink>
 
           <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90">
             <Icon name="i-ph-newspaper-clipping-fill" class="h-4 w-4 text-[#fde7b2]" />
-            {{ articleCount }} bài đang hiển thị
+            {{ $t("pages.blogsPage.visibleArticles", { count: articleCount }) }}
           </div>
         </div>
       </div>

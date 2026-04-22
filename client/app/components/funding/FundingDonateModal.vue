@@ -4,7 +4,7 @@
       <form class="w-full max-w-[540px] rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-xl)]" @submit.prevent="submit">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-label-secondary text-[var(--color-primary-600)]">Donate</p>
+            <p class="text-label-secondary text-[var(--color-primary-600)]">{{ $t("pages.fundingPage.donateEyebrow") }}</p>
             <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ campaign.title }}</h2>
             <p class="mt-1 text-body-secondary">{{ campaign.owner }} · {{ campaign.location }}</p>
           </div>
@@ -15,36 +15,36 @@
 
         <div class="mt-5 grid grid-cols-3 gap-2">
           <button v-for="amount in amounts" :key="amount" class="h-12 rounded-[18px] text-[13px] font-extrabold transition" :class="form.amount === amount ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]' : 'bg-[var(--color-secondary-100)] text-[var(--color-primary-900)]'" type="button" @click="form.amount = amount">
-            {{ formatFundingCurrency(amount) }}
+            {{ formatFundingCurrency(amount, locale.value) }}
           </button>
         </div>
 
         <label class="mt-4 block">
-          <span class="text-[12px] font-bold text-[var(--text-secondary)]">Số tiền khác</span>
+          <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.fundingPage.otherAmount") }}</span>
           <input v-model.number="form.amount" class="funding-input mt-2" min="10000" type="number">
         </label>
 
         <label class="mt-4 block">
-          <span class="text-[12px] font-bold text-[var(--text-secondary)]">Phương thức</span>
+          <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.fundingPage.paymentMethod") }}</span>
           <select v-model="form.paymentMethod" class="funding-input mt-2">
-            <option value="wallet">Ví VNSEEA</option>
-            <option value="card">Thẻ thanh toán</option>
-            <option value="bank">Chuyển khoản</option>
+            <option value="wallet">{{ $t("pages.fundingPage.paymentWallet") }}</option>
+            <option value="card">{{ $t("pages.fundingPage.paymentCard") }}</option>
+            <option value="bank">{{ $t("pages.fundingPage.paymentBank") }}</option>
           </select>
         </label>
 
         <label class="mt-4 block">
-          <span class="text-[12px] font-bold text-[var(--text-secondary)]">Lời nhắn</span>
-          <textarea v-model="form.message" class="funding-input mt-2 min-h-[110px] resize-y py-3" placeholder="Gửi lời nhắn đến chủ chiến dịch." />
+          <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.fundingPage.message") }}</span>
+          <textarea v-model="form.message" class="funding-input mt-2 min-h-[110px] resize-y py-3" :placeholder="$t('pages.fundingPage.messagePlaceholder')" />
         </label>
 
         <div v-if="submitted" class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]">
-          Đã mô phỏng donate. Chưa gọi API funding.php / wallet.php.
+          {{ $t("pages.fundingPage.donateSuccess") }}
         </div>
 
         <div class="mt-5 flex justify-end gap-2">
-          <button class="h-11 rounded-[18px] border border-[var(--border-default)] bg-white px-4 text-[13px] font-bold text-[var(--text-secondary)]" type="button" @click="$emit('close')">Đóng</button>
-          <button class="h-11 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="submit">Ủng hộ</button>
+          <button class="h-11 rounded-[18px] border border-[var(--border-default)] bg-white px-4 text-[13px] font-bold text-[var(--text-secondary)]" type="button" @click="$emit('close')">{{ $t("pages.fundingPage.close") }}</button>
+          <button class="h-11 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="submit">{{ $t("pages.fundingPage.donate") }}</button>
         </div>
       </form>
     </div>
@@ -58,6 +58,7 @@ import { formatFundingCurrency } from "~/composables/useMockFundingData"
 const props = defineProps<{ campaign?: MockFundingCampaign }>()
 const emit = defineEmits<{ close: []; donate: [payload: DonationPayload] }>()
 
+const { locale } = useI18n()
 const amounts = [100000, 300000, 500000]
 const submitted = ref(false)
 const form = reactive<DonationPayload>({

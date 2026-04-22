@@ -16,7 +16,6 @@
               <Icon :name="activePage.icon" class="h-7 w-7" />
             </div>
             <div>
-              <p class="text-label-secondary text-[var(--text-tertiary)]">/setting/{{ activePage.slug === defaultSlug ? "" : activePage.slug }}</p>
               <h1 class="mt-1 text-2xl font-black text-[var(--text-primary)]">{{ activePage.label }}</h1>
               <p class="mt-1 text-body-secondary">{{ activePage.description }}</p>
             </div>
@@ -40,6 +39,7 @@ const props = defineProps<{
   pageSlug?: string
 }>()
 
+const { t } = useI18n()
 const { pages, defaultSlug, findPageBySlug } = useMockSettingsData()
 
 const activePage = computed<SettingPage>(() =>
@@ -47,7 +47,7 @@ const activePage = computed<SettingPage>(() =>
 )
 
 const featureCount = computed(() =>
-  pages.reduce((sum, page) =>
+  pages.value.reduce((sum, page) =>
     sum
     + page.sections.reduce((sectionSum, section) =>
       sectionSum
@@ -60,24 +60,24 @@ const featureCount = computed(() =>
 
 const stats = computed(() => [
   {
-    label: "Sub-pages",
-    value: pages.length,
-    description: "Nhóm cài đặt theo audit.",
+    label: t("pages.settingsPage.statsSubpages"),
+    value: pages.value.length,
+    description: t("pages.settingsPage.statsSubpagesDescription"),
   },
   {
-    label: "Chức năng",
+    label: t("pages.settingsPage.statsFeatures"),
     value: featureCount.value,
-    description: "Field, toggle, list và action.",
+    description: t("pages.settingsPage.statsFeaturesDescription"),
   },
   {
-    label: "API",
-    value: "Mock",
-    description: "Chưa gọi backend setting.",
+    label: t("pages.settingsPage.statsApi"),
+    value: t("pages.settingsPage.statsApiValue"),
+    description: t("pages.settingsPage.statsApiDescription"),
   },
 ])
 
 useSeoMeta({
-  title: () => `${activePage.value.label} | Cài đặt VNSEEA`,
+  title: () => t("pages.settingsPage.seoTitle", { page: activePage.value.label }),
   description: () => activePage.value.description,
 })
 </script>

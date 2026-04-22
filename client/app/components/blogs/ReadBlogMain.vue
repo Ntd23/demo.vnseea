@@ -19,7 +19,7 @@
           @click="$emit('toggleShare')"
         >
           <Icon name="i-ph-share-network-fill" class="h-4 w-4" />
-          Chia sẻ
+          {{ $t("pages.readBlogPage.share") }}
         </button>
       </div>
 
@@ -39,7 +39,7 @@
       class="rounded-[22px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-sm)]"
     >
       <p class="text-[13px] font-bold text-[var(--text-primary)]">
-        Liên kết chia sẻ mock
+        {{ $t("pages.readBlogPage.shareMockLink") }}
       </p>
       <p class="mt-2 break-all rounded-[16px] bg-[var(--bg-surface-hover)] px-3 py-2 text-[13px] text-[var(--text-secondary)]">
         {{ shareUrl }}
@@ -60,10 +60,10 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-label-secondary text-[var(--color-primary-600)]">
-            Bình luận
+            {{ $t("pages.readBlogPage.comments") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-            {{ comments.length }} phản hồi
+            {{ $t("pages.readBlogPage.responses", { count: comments.length }) }}
           </h2>
         </div>
       </div>
@@ -74,7 +74,7 @@
           <textarea
             :value="commentText"
             class="min-h-[96px] w-full resize-y rounded-[20px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 py-3 text-[14px] leading-6 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-            placeholder="Viết bình luận..."
+            :placeholder="$t('pages.readBlogPage.commentPlaceholder')"
             @input="$emit('update:commentText', ($event.target as HTMLTextAreaElement).value)"
           />
           <div class="mt-3 flex justify-end">
@@ -83,7 +83,7 @@
               type="button"
               @click="$emit('addComment')"
             >
-              Gửi bình luận
+              {{ $t("pages.readBlogPage.submitComment") }}
             </button>
           </div>
         </div>

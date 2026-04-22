@@ -16,13 +16,13 @@
             v-if="job.isFeatured"
             class="rounded-[var(--radius-full)] bg-[var(--color-accent-100)] px-2.5 py-1 text-[11px] font-black text-[var(--color-accent-700)]"
           >
-            Nổi bật
+            {{ $t("pages.jobsPage.featuredBadge") }}
           </span>
           <span
             v-if="job.isOwner"
             class="rounded-[var(--radius-full)] bg-[var(--color-secondary-100)] px-2.5 py-1 text-[11px] font-black text-[var(--text-secondary)]"
           >
-            Của tôi
+            {{ $t("pages.jobsPage.myBadge") }}
           </span>
         </div>
 
@@ -54,7 +54,7 @@
       </div>
       <div class="flex items-center gap-2">
         <Icon name="i-ph-users-three-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
-        <span>{{ job.applicants }} ứng viên</span>
+        <span>{{ $t("pages.jobsPage.applicantCount", { count: job.applicants }) }}</span>
       </div>
     </div>
 
@@ -75,14 +75,14 @@
         @click="$emit('apply', job)"
       >
         <Icon name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
-        Ứng tuyển
+        {{ $t("pages.jobsPage.apply") }}
       </button>
       <button
         class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] border border-[var(--border-default)] bg-white px-4 text-[13px] font-extrabold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
         type="button"
         @click="$emit('view', job)"
       >
-        Chi tiết
+        {{ $t("pages.jobsPage.detail") }}
       </button>
       <button
         class="inline-flex h-11 items-center justify-center rounded-[18px] border border-[var(--border-default)] bg-white text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"

@@ -4,13 +4,13 @@
     <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-[760px]">
         <p class="text-label-secondary text-white/72">
-          P-31 · Crowdfunding
+          {{ $t("pages.fundingPage.heroEyebrow") }}
         </p>
         <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
-          Gây quỹ cho những dự án cộng đồng
+          {{ $t("pages.fundingPage.heroTitle") }}
         </h1>
         <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-          Khám phá chiến dịch đang kêu gọi, theo dõi tiến độ, danh sách người ủng hộ và đóng góp trực tiếp.
+          {{ $t("pages.fundingPage.heroDescription") }}
         </p>
         <div class="mt-7 flex flex-wrap items-center gap-3">
           <NuxtLink
@@ -18,11 +18,11 @@
             class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] bg-white px-5 text-[14px] font-extrabold text-[var(--color-primary-600)] shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
           >
             <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />
-            Tạo chiến dịch
+            {{ $t("pages.fundingPage.createCampaign") }}
           </NuxtLink>
           <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90">
             <Icon name="i-ph-hand-heart-fill" class="h-4 w-4 text-[var(--color-accent-100)]" />
-            {{ campaignCount }} chiến dịch
+            {{ $t("pages.fundingPage.campaignCount", { count: campaignCount }) }}
           </div>
         </div>
       </div>

@@ -7,19 +7,19 @@
         <div class="flex flex-col gap-5">
           <div class="max-w-3xl">
             <p class="text-[12px] font-black uppercase tracking-[0.22em] text-[#0000ff]/65">
-              Search Hub
+              {{ $t('community.search.controls.eyebrow') }}
             </p>
             <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[2.3rem]">
-              Khám phá người, trang, nhóm và bài đăng
+              {{ $t('community.search.controls.title') }}
             </h1>
             <p class="mt-2 text-[14px] leading-7 text-slate-500">
-              Tìm kiếm theo từ khóa, lọc theo loại kết quả và chuyển nhanh giữa những tập dữ liệu đang có sẵn trong mock social graph của VNSEEA.
+              {{ $t('community.search.controls.desc') }}
             </p>
           </div>
 
           <label class="block space-y-3">
             <span class="text-[13px] font-bold uppercase tracking-[0.14em] text-[#243b63]/65">
-              Từ khóa
+              {{ $t('community.search.controls.keywordParams.label') }}
             </span>
 
             <div class="relative">
@@ -31,7 +31,7 @@
               <input
                 v-model="keywordModel"
                 class="h-14 w-full rounded-[20px] border border-[#dbe3f2] bg-[#f8faff] pl-12 pr-4 text-[15px] font-medium text-slate-900 outline-none transition placeholder:text-[#90a0d5] focus:border-[#0000ff] focus:bg-white focus:ring-4 focus:ring-[#dfe3ff]"
-                placeholder="Tìm kiếm người, trang, nhóm, bài đăng hoặc #hashtags"
+                :placeholder="$t('community.search.controls.keywordParams.placeholder')"
                 type="search"
                 @keydown.enter.prevent="$emit('submit')"
               >
@@ -42,13 +42,13 @@
             <div class="grid gap-3 md:grid-cols-2">
               <FormsSelectBox
                 v-model="typeModel"
-                label="Loại kết quả"
-                :options="typeOptions"
+                :label="$t('community.search.controls.typeLabel')"
+                :options="translatedTypeOptions"
               />
               <FormsSelectBox
                 v-model="sortModel"
-                label="Sắp xếp"
-                :options="sortOptions"
+                :label="$t('community.search.controls.sortLabel')"
+                :options="translatedSortOptions"
               />
             </div>
 
@@ -58,14 +58,14 @@
               @click="$emit('submit')"
             >
               <Icon name="i-ph-magnifying-glass-bold" class="mr-2 h-4.5 w-4.5" />
-              Tìm kiếm
+              {{ $t('community.search.controls.submit') }}
             </button>
           </div>
 
           <div class="space-y-3 border-t border-[#eef2fb] pt-4">
             <div class="flex flex-wrap items-center gap-2">
               <span class="text-[12px] font-bold uppercase tracking-[0.16em] text-[#243b63]/55">
-                Gợi ý nhanh
+                {{ $t('community.search.controls.quickSuggestions') }}
               </span>
 
               <button
@@ -103,10 +103,10 @@
                 </div>
 
                 <p class="mt-3 text-[14px] font-black tracking-[-0.02em] text-[#243b63]">
-                  {{ tab.label }}
+                  {{ $t(`community.search.tabs.${tab.value}.label`) }}
                 </p>
                 <p class="mt-1 text-[12px] leading-5 text-slate-500">
-                  {{ tab.description }}
+                  {{ $t(`community.search.tabs.${tab.value}.desc`) }}
                 </p>
               </button>
             </div>
@@ -134,12 +134,28 @@ defineEmits<{
   "quick-search": [keyword: string]
 }>()
 
-defineProps<{
+const props = defineProps<{
   typeOptions: SearchOption<SearchResultType>[]
   sortOptions: SearchOption<SearchSortKey>[]
   tabs: SearchPanelTab[]
   quickKeywords: string[]
 }>()
+
+const { t } = useI18n()
+
+const translatedTypeOptions = computed(() =>
+  props.typeOptions.map(opt => ({
+    ...opt,
+    label: t(`community.search.types.${opt.value}`),
+  })),
+)
+
+const translatedSortOptions = computed(() =>
+  props.sortOptions.map(opt => ({
+    ...opt,
+    label: t(`community.search.sorts.${opt.value}`),
+  })),
+)
 
 const keywordModel = defineModel<string>("keyword", { default: "" })
 const typeModel = defineModel<SearchResultType>("type", { default: "all" })

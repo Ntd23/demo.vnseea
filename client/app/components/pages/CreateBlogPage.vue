@@ -11,13 +11,13 @@
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p class="text-label-secondary text-[var(--color-primary-600)]">
-                Biên tập
+                {{ $t("pages.createBlogPage.editorEyebrow") }}
               </p>
               <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-                Nội dung bài báo
+                {{ $t("pages.createBlogPage.contentTitle") }}
               </h2>
               <p class="mt-1 text-body-secondary">
-                Các trường đang mô phỏng UI tạo blog theo audit P-25, chưa gọi API thật.
+                {{ $t("pages.createBlogPage.contentDescription") }}
               </p>
             </div>
 
@@ -30,12 +30,12 @@
 
         <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)] sm:p-6">
           <label class="block space-y-3">
-            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">Tiêu đề</span>
+            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createBlogPage.titleLabel") }}</span>
             <input
               v-model="title"
               class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.08rem] text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
               maxlength="120"
-              placeholder="Nhập tiêu đề bài báo"
+              :placeholder="$t('pages.createBlogPage.titlePlaceholder')"
               type="text"
             >
           </label>
@@ -43,7 +43,7 @@
           <div class="mt-7 space-y-3">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p class="text-[1.02rem] font-black text-[var(--text-primary)]">
-                Nội dung
+                {{ $t("pages.createBlogPage.contentLabel") }}
               </p>
               <div class="flex flex-wrap gap-2">
                 <button
@@ -62,14 +62,14 @@
             <textarea
               v-model="content"
               class="min-h-[280px] w-full resize-y rounded-[22px] border border-[var(--border-default)] bg-white px-5 py-5 text-[1rem] leading-8 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-              placeholder="Viết nội dung bài báo của bạn..."
+              :placeholder="$t('pages.createBlogPage.contentPlaceholder')"
               rows="10"
             />
           </div>
 
           <div class="mt-7 grid gap-5 md:grid-cols-2">
             <label class="block space-y-3">
-              <span class="text-[1.02rem] font-black text-[var(--text-primary)]">Thể loại</span>
+              <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createBlogPage.categoryLabel") }}</span>
               <select
                 v-model="category"
                 class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
@@ -85,11 +85,11 @@
             </label>
 
             <label class="block space-y-3">
-              <span class="text-[1.02rem] font-black text-[var(--text-primary)]">Tags</span>
+              <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createBlogPage.tagsLabel") }}</span>
               <input
                 v-model="tagsInput"
                 class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-                placeholder="ai, cộng đồng, thị trường"
+                :placeholder="$t('pages.createBlogPage.tagsPlaceholder')"
                 type="text"
               >
             </label>
@@ -104,12 +104,12 @@
               #{{ tag }}
             </span>
             <span v-if="tagList.length === 0" class="text-caption-secondary">
-              Các tag sẽ xuất hiện tại đây sau khi nhập, phân tách bằng dấu phẩy.
+              {{ $t("pages.createBlogPage.tagsHelp") }}
             </span>
           </div>
 
           <div class="mt-8 space-y-3">
-            <p class="text-[1.02rem] font-black text-[var(--text-primary)]">Ảnh đại diện</p>
+            <p class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createBlogPage.thumbnailLabel") }}</p>
             <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
               <label
                 class="group flex min-h-[170px] cursor-pointer items-center justify-center rounded-[22px] border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface-hover)] p-4 text-center transition hover:bg-[var(--color-primary-50)]"
@@ -127,10 +127,10 @@
                     <Icon name="i-ph-image-square-fill" class="h-8 w-8" />
                   </span>
                   <span class="mt-3 block text-[13px] font-bold text-[var(--text-primary)]">
-                    Chọn ảnh thumbnail
+                    {{ $t("pages.createBlogPage.chooseThumbnail") }}
                   </span>
                   <span class="mt-1 block text-[12px] leading-5 text-[var(--text-secondary)]">
-                    {{ thumbnailName || "PNG, JPG hoặc WEBP" }}
+                    {{ thumbnailName || $t("pages.createBlogPage.thumbnailFormats") }}
                   </span>
                 </span>
               </label>
@@ -144,13 +144,13 @@
                 <div class="absolute inset-0 bg-[linear-gradient(180deg,transparent_20%,rgba(15,23,42,0.55)_100%)]" />
                 <div class="relative flex h-full min-h-[170px] flex-col justify-end p-4 text-white">
                   <p class="text-[12px] font-bold uppercase tracking-[0.18em] text-white/72">
-                    Preview
+                    {{ $t("pages.createBlogPage.previewLabel") }}
                   </p>
                   <p class="mt-2 text-[1.1rem] font-black leading-tight">
-                    {{ title || "Tiêu đề bài báo sẽ hiển thị ở đây" }}
+                    {{ title || $t("pages.createBlogPage.previewTitleFallback") }}
                   </p>
                   <p class="mt-2 text-[12px] text-white/78">
-                    Nhấn để đổi nền mẫu
+                    {{ $t("pages.createBlogPage.cycleBackground") }}
                   </p>
                 </div>
               </button>
@@ -160,7 +160,7 @@
 
         <section class="flex flex-col gap-3 rounded-[28px] border border-[var(--border-default)] bg-white/90 p-4 shadow-[var(--shadow-md)] md:flex-row md:items-center md:justify-between">
           <p class="text-body-secondary">
-            {{ submitMessage || "Mock state: form hiện chỉ mô phỏng UI, chưa submit thật." }}
+            {{ submitMessage || $t("pages.createBlogPage.submitHint") }}
           </p>
           <div class="flex flex-wrap gap-3">
             <button
@@ -168,14 +168,14 @@
               type="button"
               @click="saveDraft"
             >
-              Lưu nháp
+              {{ $t("pages.createBlogPage.saveDraft") }}
             </button>
             <button
               class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-5 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
               type="button"
               @click="publishMock"
             >
-              Đăng bài báo
+              {{ $t("pages.createBlogPage.publish") }}
             </button>
           </div>
         </section>
@@ -209,9 +209,11 @@ type BlogCategoryValue =
   | "travel"
   | "other"
 
+const { t } = useI18n()
+
 useSeoMeta({
-  title: "Viết blog | VNSEEA",
-  description: "Tạo bài báo mới trên VNSEEA với tiêu đề, nội dung, chủ đề, tags và thumbnail.",
+  title: () => t("pages.createBlogPage.seoTitle"),
+  description: () => t("pages.createBlogPage.seoDescription"),
 })
 
 const title = ref("")
@@ -222,27 +224,27 @@ const thumbnailName = ref("")
 const thumbnailIndex = ref(0)
 const submitMessage = ref("")
 
-const categoryOptions = [
-  { label: "Kinh tế và Thương mại", value: "business" },
-  { label: "Giáo dục", value: "education" },
-  { label: "Phim & Hoạt hình", value: "movies" },
-  { label: "Chơi game", value: "gaming" },
-  { label: "Lịch sử và Sự kiện", value: "history" },
-  { label: "Cách sống", value: "lifestyle" },
-  { label: "Con người và Quốc gia", value: "people" },
-  { label: "Thú cưng và Động vật", value: "pets" },
-  { label: "Khoa học và Công nghệ", value: "science" },
-  { label: "Thể thao", value: "sports" },
-  { label: "Du lịch và Sự kiện", value: "travel" },
-  { label: "Khác", value: "other" },
-] satisfies { label: string; value: BlogCategoryValue }[]
+const categoryOptions = computed(() => [
+  { label: t("pages.blogsPage.categoryBusiness"), value: "business" },
+  { label: t("pages.blogsPage.categoryEducation"), value: "education" },
+  { label: t("pages.blogsPage.categoryMovies"), value: "movies" },
+  { label: t("pages.blogsPage.categoryGaming"), value: "gaming" },
+  { label: t("pages.blogsPage.categoryHistory"), value: "history" },
+  { label: t("pages.blogsPage.categoryLifestyle"), value: "lifestyle" },
+  { label: t("pages.blogsPage.categoryPeople"), value: "people" },
+  { label: t("pages.blogsPage.categoryPets"), value: "pets" },
+  { label: t("pages.blogsPage.categoryScience"), value: "science" },
+  { label: t("pages.blogsPage.categorySports"), value: "sports" },
+  { label: t("pages.blogsPage.categoryTravel"), value: "travel" },
+  { label: t("pages.blogsPage.categoryOther"), value: "other" },
+] satisfies { label: string; value: BlogCategoryValue }[])
 
-const editorActions = [
-  { label: "Đậm", icon: "i-ph-text-b-bold", token: "**nội dung đậm**" },
-  { label: "Tiêu đề", icon: "i-ph-text-h-bold", token: "## Tiêu đề phụ" },
-  { label: "Trích dẫn", icon: "i-ph-quotes-fill", token: "> Trích dẫn nổi bật" },
-  { label: "Danh sách", icon: "i-ph-list-bullets-bold", token: "- Ý chính" },
-] as const
+const editorActions = computed(() => [
+  { label: t("pages.createBlogPage.actionBold"), icon: "i-ph-text-b-bold", token: t("pages.createBlogPage.tokenBold") },
+  { label: t("pages.createBlogPage.actionHeading"), icon: "i-ph-text-h-bold", token: t("pages.createBlogPage.tokenHeading") },
+  { label: t("pages.createBlogPage.actionQuote"), icon: "i-ph-quotes-fill", token: t("pages.createBlogPage.tokenQuote") },
+  { label: t("pages.createBlogPage.actionList"), icon: "i-ph-list-bullets-bold", token: t("pages.createBlogPage.tokenList") },
+] as const)
 
 const thumbnailBackgrounds = [
   "linear-gradient(135deg,#14532d 0%,#16a34a 46%,#bbf7d0 100%)",
@@ -260,7 +262,7 @@ const tagList = computed(() =>
 )
 
 const selectedCategoryLabel = computed(
-  () => categoryOptions.find(option => option.value === category.value)?.label ?? "Khác",
+  () => categoryOptions.value.find(option => option.value === category.value)?.label ?? t("pages.blogsPage.categoryOther"),
 )
 
 const thumbnailBackground = computed(
@@ -282,51 +284,51 @@ const completionCount = computed(() =>
   ].filter(Boolean).length,
 )
 
-const completionText = computed(() => `${completionCount.value}/5 mục chính đã hoàn thiện`)
+const completionText = computed(() => t("pages.createBlogPage.completionText", { count: completionCount.value }))
 
 const heroStats = computed(() => [
   {
-    label: "Hoàn thiện",
+    label: t("pages.createBlogPage.statCompletion"),
     value: `${completionCount.value}/5`,
-    description: "Theo dõi các trường bắt buộc trước khi đăng.",
+    description: t("pages.createBlogPage.statCompletionDescription"),
   },
   {
-    label: "Thời lượng",
-    value: `${readMinutes.value}p`,
-    description: "Ước tính thời gian đọc theo nội dung hiện tại.",
+    label: t("pages.createBlogPage.statReading"),
+    value: t("pages.createBlogPage.statReadingValue", { count: readMinutes.value }),
+    description: t("pages.createBlogPage.statReadingDescription"),
   },
   {
-    label: "Tags",
+    label: t("pages.createBlogPage.tagsLabel"),
     value: String(tagList.value.length),
-    description: "Hashtags giúp bài viết dễ được tìm thấy.",
+    description: t("pages.createBlogPage.statTagsDescription"),
   },
 ])
 
 const previewExcerpt = computed(() => {
   const clean = content.value.replace(/[#>*-]/g, "").trim()
-  if (!clean) return "Đoạn mở đầu của bài báo sẽ hiển thị trong preview để bạn kiểm tra nhịp đọc trước khi đăng."
+  if (!clean) return t("pages.createBlogPage.emptyPreviewExcerpt")
   return clean.length > 180 ? `${clean.slice(0, 180)}...` : clean
 })
 
 const checklistItems = computed(() => [
   {
-    label: "Tiêu đề rõ ràng",
-    description: "Tối thiểu 12 ký tự để card blog không bị trống hoặc quá ngắn.",
+    label: t("pages.createBlogPage.checkTitle"),
+    description: t("pages.createBlogPage.checkTitleDescription"),
     done: title.value.trim().length >= 12,
   },
   {
-    label: "Nội dung đủ dài",
-    description: "Tối thiểu 80 ký tự để reader layout có phần nội dung chính.",
+    label: t("pages.createBlogPage.checkContent"),
+    description: t("pages.createBlogPage.checkContentDescription"),
     done: content.value.trim().length >= 80,
   },
   {
-    label: "Chủ đề và tags",
-    description: "Chọn đúng thể loại và thêm ít nhất một hashtag.",
+    label: t("pages.createBlogPage.checkTopicTags"),
+    description: t("pages.createBlogPage.checkTopicTagsDescription"),
     done: Boolean(category.value) && tagList.value.length > 0,
   },
   {
-    label: "Thumbnail",
-    description: "Ảnh đại diện giúp bài viết rõ hơn trong danh sách blogs.",
+    label: t("pages.createBlogPage.checkThumbnail"),
+    description: t("pages.createBlogPage.checkThumbnailDescription"),
     done: thumbnailName.value.length > 0 || thumbnailIndex.value > 0,
   },
 ])
@@ -350,18 +352,18 @@ const onThumbnailChange = (event: Event) => {
 }
 
 const saveDraft = () => {
-  submitMessage.value = "Đã lưu nháp mock. Nội dung vẫn nằm trong state hiện tại của trang."
+  submitMessage.value = t("pages.createBlogPage.draftSaved")
 }
 
 const publishMock = () => {
   submitMessage.value = completionCount.value >= 5
-    ? "Mock publish hoàn tất. Khi nối API, nút này sẽ gửi dữ liệu tới blogs.php."
-    : "Bổ sung các mục còn thiếu trong checklist trước khi đăng thật."
+    ? t("pages.createBlogPage.publishComplete")
+    : t("pages.createBlogPage.publishMissing")
 }
 
 const quickFillDemo = () => {
-  title.value = "Cộng đồng địa phương trong các dự án xanh"
-  content.value = "Khi cư dân tham gia từ đầu, kế hoạch trồng cây, phân loại rác và giữ vệ sinh công cộng dễ duy trì hơn. Bài viết này ghi lại cách một nhóm nhỏ phân chia vai trò, giữ lịch cập nhật và đo hiệu quả sau từng tuần triển khai.\n\n## Điểm đáng chú ý\n- Mỗi nhóm có một người phụ trách nhắc lịch.\n- Kết quả được cập nhật bằng hình ảnh trước và sau.\n- Các hoạt động nhỏ được lặp lại đều đặn thay vì tổ chức quá lớn."
+  title.value = t("pages.createBlogPage.demoTitle")
+  content.value = t("pages.createBlogPage.demoContent")
   category.value = "people"
   tagsInput.value = "community, green, local"
   thumbnailName.value = "community-green.jpg"

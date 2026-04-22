@@ -2,12 +2,12 @@
   <section class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]">
     <div class="grid gap-0 xl:grid-cols-[minmax(0,1fr)_520px]">
       <div class="p-5 sm:p-7 lg:p-8">
-        <p class="text-label-secondary text-[var(--color-primary-600)]">P-42 · Go Pro</p>
+        <p class="text-label-secondary text-[var(--color-primary-600)]">{{ t("pages.goProPage.heroEyebrow") }}</p>
         <h1 class="mt-2 text-display text-[2.15rem] leading-tight text-[var(--text-primary)] sm:text-[3rem]">
-          Nâng cấp tài khoản VNSEEA
+          {{ t("pages.goProPage.heroTitle") }}
         </h1>
         <p class="mt-3 max-w-2xl text-[15px] font-semibold leading-7 text-[var(--text-secondary)]">
-          So sánh packages, chọn plan phù hợp và hoàn tất thanh toán mock trước khi nối API subscription.
+          {{ t("pages.goProPage.heroDescription") }}
         </p>
 
         <div class="mt-6 grid gap-3 sm:grid-cols-3">
@@ -21,7 +21,7 @@
 
       <div class="border-t border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-5 xl:border-l xl:border-t-0">
         <div class="rounded-[28px] bg-white p-5 shadow-[var(--shadow-sm)]">
-          <p class="text-label-secondary text-[var(--text-tertiary)]">Gói hiện tại</p>
+          <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.goProPage.currentPlanLabel") }}</p>
           <div class="mt-3 flex items-center justify-between gap-4">
             <div>
               <h2 class="text-2xl font-black text-[var(--text-primary)]">{{ subscription.plan }}</h2>
@@ -34,12 +34,12 @@
 
           <div class="mt-4 grid gap-3 sm:grid-cols-2">
             <div class="rounded-[18px] bg-[var(--bg-surface-hover)] p-3">
-              <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">Gia hạn</p>
+              <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.goProPage.renewsAtLabel") }}</p>
               <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ subscription.renewsAt }}</p>
             </div>
             <div class="rounded-[18px] bg-[var(--bg-surface-hover)] p-3">
-              <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">Thanh toán</p>
-              <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ payments.length }} giao dịch</p>
+              <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.goProPage.paymentsLabel") }}</p>
+              <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ t("pages.goProPage.transactionCount", { count: payments.length }) }}</p>
             </div>
           </div>
         </div>
@@ -47,8 +47,8 @@
         <div class="mt-4 rounded-[28px] bg-white p-5 shadow-[var(--shadow-sm)]">
           <div class="flex items-center justify-between gap-3">
             <div>
-              <p class="text-label-secondary text-[var(--text-tertiary)]">Gần đây</p>
-              <h3 class="mt-1 text-[18px] font-black text-[var(--text-primary)]">Lịch sử mock</h3>
+              <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.goProPage.recentLabel") }}</p>
+              <h3 class="mt-1 text-[18px] font-black text-[var(--text-primary)]">{{ t("pages.goProPage.mockHistoryTitle") }}</h3>
             </div>
             <Icon name="i-ph-receipt-fill" class="h-6 w-6 text-[var(--color-primary-600)]" />
           </div>
@@ -63,7 +63,7 @@
             </div>
           </div>
           <p v-else class="mt-4 rounded-[18px] bg-[var(--bg-surface-hover)] p-3 text-[13px] font-semibold text-[var(--text-secondary)]">
-            Chưa có thanh toán trong phiên này.
+            {{ t("pages.goProPage.emptyPayments") }}
           </p>
         </div>
       </div>
@@ -77,4 +77,6 @@ defineProps<{
   subscription: { plan: string; status: string; renewsAt: string }
   payments: ReadonlyArray<{ id: number; plan: string; amount: string; method: string; time: string }>
 }>()
+
+const { t } = useI18n()
 </script>

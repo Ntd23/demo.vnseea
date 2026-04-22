@@ -7,13 +7,13 @@
       <div class="relative flex h-full flex-col justify-between gap-6">
         <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/88">
           <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ privacyLabel }}
+            {{ $t(privacyLabel) }}
           </span>
           <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ categoryLabel }}
+            {{ $t(categoryLabel) }}
           </span>
           <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ group.foundedLabel }}
+            {{ $t(group.foundedLabel) }}
           </span>
         </div>
 
@@ -25,7 +25,7 @@
 
             <div class="min-w-0 pb-1">
               <p class="text-[12px] font-bold uppercase tracking-[0.24em] text-white/70">
-                Trang nhóm
+                {{ t("pages.groupDetailPage.heroTypeLabel") }}
               </p>
               <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-white sm:text-[2.5rem]">
                 {{ group.name }}
@@ -34,7 +34,7 @@
                 {{ group.summary }}
               </p>
               <div class="mt-3 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-white/82">
-                <span>{{ memberCountLabel }}</span>
+                <span>{{ $t('community.groups.format.members', { count: memberCountLabel }) }}</span>
                 <span class="text-white/30">•</span>
                 <span>{{ onlineCountLabel }}</span>
                 <span class="text-white/30">•</span>
@@ -49,7 +49,7 @@
               type="button"
             >
               <Icon name="i-ph-user-plus-bold" class="mr-2 h-4 w-4" />
-              {{ group.joinLabel || "Tham gia nhóm" }}
+              {{ group.joinLabel || t("pages.groupDetailPage.joinFallback") }}
             </button>
 
             <button
@@ -57,7 +57,7 @@
               type="button"
             >
               <Icon name="i-ph-user-circle-plus-bold" class="mr-2 h-4 w-4" />
-              {{ group.inviteLabel || "Mời thành viên" }}
+              {{ group.inviteLabel || t("pages.groupDetailPage.inviteFallback") }}
             </button>
 
             <NuxtLink
@@ -66,7 +66,7 @@
               class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
             >
               <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
-              Cài đặt nhóm
+              {{ t("pages.groupDetailPage.settingsButton") }}
             </NuxtLink>
           </div>
         </div>
@@ -81,6 +81,8 @@ import {
   getCommunityGroupSettingsPath,
 } from "../../../types/community"
 import type { CommunityGroupRecord } from "../../../types/community"
+
+const { t } = useI18n()
 
 const props = defineProps<{
   group: CommunityGroupRecord

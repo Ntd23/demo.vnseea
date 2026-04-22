@@ -11,10 +11,10 @@
 
       <div class="p-4">
         <p class="text-caption-secondary">
-          {{ readMinutes }} phút đọc · {{ tagList.length }} tags
+          {{ $t("pages.createBlogPage.sidebarMeta", { minutes: readMinutes, tags: tagList.length }) }}
         </p>
         <h3 class="mt-2 text-[1.25rem] font-black leading-tight tracking-[-0.04em] text-[var(--text-primary)]">
-          {{ title || "Tiêu đề bài báo của bạn" }}
+          {{ title || $t("pages.createBlogPage.sidebarTitleFallback") }}
         </h3>
         <p class="mt-3 min-h-[96px] text-[13px] leading-6 text-[var(--text-secondary)]">
           {{ previewExcerpt }}
@@ -33,7 +33,7 @@
 
     <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
-        Checklist
+        {{ $t("pages.createBlogPage.checklist") }}
       </p>
       <div class="mt-4 space-y-3">
         <div

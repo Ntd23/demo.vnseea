@@ -1,21 +1,21 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-    <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+  <section class="rounded-[26px] border border-[var(--border-default)] bg-white p-3.5 shadow-[var(--shadow-md)] sm:rounded-[30px] sm:p-4">
+    <div class="grid gap-2.5 sm:gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
       <label class="relative block">
         <Icon name="i-ph-magnifying-glass-bold" class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-tertiary)]" />
         <input
           :value="search"
-          class="h-12 w-full rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-12 pr-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white"
-          placeholder="Tìm video, tác giả, hashtag..."
+          class="h-11 w-full rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-12 pr-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white sm:h-12"
+          :placeholder="$t('pages.watchPage.searchPlaceholder')"
           @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
         >
       </label>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="scrollbar-hide -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         <button
           v-for="category in categories"
           :key="category.value"
-          class="inline-flex h-11 items-center gap-2 rounded-[var(--radius-full)] px-4 text-[13px] font-extrabold transition"
+          class="inline-flex h-10 shrink-0 items-center gap-2 rounded-[var(--radius-full)] px-3.5 text-[12.5px] font-extrabold transition sm:h-11 sm:px-4 sm:text-[13px]"
           :class="selectedCategory === category.value ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]' : 'bg-[var(--bg-surface-hover)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)]'"
           type="button"
           @click="$emit('update:selectedCategory', category.value)"
@@ -42,3 +42,13 @@ defineEmits<{
   "update:selectedCategory": [value: WatchCategoryKey]
 }>()
 </script>
+
+<style scoped>
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+</style>

@@ -1,9 +1,9 @@
 <template>
   <div class="space-y-5 pb-10">
     <CheckoutLayout
-      eyebrow="P-15 · Đơn hàng"
-      title="Đơn hàng của tôi"
-      description="Theo dõi các đơn mua trong marketplace, kiểm tra trạng thái giao hàng và mở lại chi tiết đơn khi cần."
+      :eyebrow="$t('orders.page.eyebrow')"
+      :title="$t('orders.page.layoutTitle')"
+      :description="$t('orders.page.layoutDescription')"
     >
       <template #left>
         <div class="space-y-5">
@@ -29,8 +29,8 @@
           <FoundationEmptyState
             v-else
             icon="i-ph-package-fill"
-            title="Không tìm thấy đơn phù hợp"
-            description="Hãy thử đổi bộ lọc hoặc từ khóa tìm kiếm. Khi bạn mua sản phẩm mới, đơn hàng sẽ xuất hiện tại đây."
+            :title="$t('orders.empty.noMatchedTitle')"
+            :description="$t('orders.empty.noMatchedDesc')"
           />
         </div>
       </template>
@@ -56,9 +56,11 @@ import type {
   OrdersOverviewCard,
 } from "../../../types/orders"
 
+const { t } = useI18n()
+
 useSeoMeta({
-  title: "Đơn hàng của tôi | VNSEEA",
-  description: "Theo dõi đơn mua, trạng thái giao hàng và tổng quan các đơn marketplace của bạn trên VNSEEA.",
+  title: t("orders.page.title"),
+  description: t("orders.page.description"),
 })
 
 const { orders } = useBuyerOrders()
@@ -101,30 +103,30 @@ const visibleOrders = computed(() => {
 
 const overviewCards = computed<OrdersOverviewCard[]>(() => [
   {
-    label: "Chờ xác nhận",
+    label: "orders.status.pending.label",
     value: String(orders.value.filter(order => order.status === "pending").length),
-    description: "Các đơn vừa đặt, đang chờ shop xác nhận và chuẩn bị.",
+    description: "orders.status.pending.description",
     icon: "i-ph-hourglass-medium-fill",
     tone: "amber",
   },
   {
-    label: "Đang giao",
+    label: "orders.status.shipping.label",
     value: String(orders.value.filter(order => order.status === "shipping").length),
-    description: "Đơn đã rời kho và đang trên hành trình đến tay bạn.",
+    description: "orders.status.shipping.description",
     icon: "i-ph-truck-fill",
     tone: "blue",
   },
   {
-    label: "Hoàn tất",
+    label: "orders.status.delivered.label",
     value: String(orders.value.filter(order => order.status === "delivered").length),
-    description: "Đơn đã giao thành công và có thể xem lại để mua tiếp.",
+    description: "orders.status.delivered.description",
     icon: "i-ph-check-circle-fill",
     tone: "green",
   },
   {
-    label: "Đã hủy",
+    label: "orders.status.cancelled.label",
     value: String(orders.value.filter(order => order.status === "cancelled").length),
-    description: "Các đơn bị hủy hoặc đã hoàn tiền về ví nội bộ.",
+    description: "orders.status.cancelled.description",
     icon: "i-ph-x-circle-fill",
     tone: "rose",
   },

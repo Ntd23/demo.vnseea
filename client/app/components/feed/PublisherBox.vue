@@ -7,7 +7,7 @@
           <textarea
             v-model="text"
             rows="2"
-            placeholder="Chuyện gì đang xảy ra vậy? #Hashtag .. @Mention .. Link .."
+            :placeholder="$t('feed.publisherBox.composerPlaceholder')"
             class="w-full resize-none bg-transparent text-[14px] leading-6 text-slate-700 placeholder:text-slate-400 outline-none"
           />
         </div>
@@ -36,25 +36,25 @@
         <div class="flex flex-wrap items-center gap-2">
           <button class="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-[#0000ff] shadow-sm" type="button">
             <Icon name="i-lucide-lock" class="h-3.5 w-3.5" />
-            Chỉ có tôi
+            {{ $t("feed.publisherBox.chipOnlyMe") }}
           </button>
           <button class="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600 shadow-sm" type="button">
             <Icon name="i-lucide-map-pin" class="h-3.5 w-3.5" />
-            Thêm vị trí
+            {{ $t("feed.publisherBox.chipAddLocation") }}
           </button>
           <button class="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600 shadow-sm" type="button">
             <Icon name="i-lucide-user-plus" class="h-3.5 w-3.5" />
-            Gắn thẻ bạn bè
+            {{ $t("feed.publisherBox.chipTagFriends") }}
           </button>
           <button class="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600 shadow-sm" type="button">
             <Icon name="i-lucide-palette" class="h-3.5 w-3.5" />
-            Màu sắc
+            {{ $t("feed.publisherBox.chipColors") }}
           </button>
         </div>
 
         <div class="flex items-center gap-2">
-          <button class="rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600 shadow-sm" type="button">Trực tiếp</button>
-          <button class="rounded-full bg-[#0000ff] px-5 py-1.5 text-[13px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.28)]" type="button">Chia sẻ</button>
+          <button class="rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600 shadow-sm" type="button">{{ $t("feed.publisherBox.live") }}</button>
+          <button class="rounded-full bg-[#0000ff] px-5 py-1.5 text-[13px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.28)]" type="button">{{ $t("feed.publisherBox.share") }}</button>
         </div>
       </div>
     </div>
@@ -62,18 +62,22 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const text = ref('')
-const mediaActions = [
-  { label: 'Ảnh', icon: 'i-lucide-image' },
-  { label: 'Video', icon: 'i-lucide-video' },
-  { label: 'Poll', icon: 'i-lucide-list-plus' },
-  { label: 'GIF', icon: 'i-lucide-film' },
-  { label: 'Cảm xúc', icon: 'i-lucide-smile-plus' },
-]
-const extraActions = [
-  { label: 'Âm thanh', icon: 'i-lucide-music-4' },
-  { label: 'Tệp', icon: 'i-lucide-file-up' },
-  { label: 'Câu chuyện', icon: 'i-lucide-clapperboard' },
-  { label: 'Sản phẩm', icon: 'i-lucide-shopping-cart' },
-]
+
+const mediaActions = computed(() => [
+  { label: t("feed.publisherBox.actionImage"), icon: 'i-lucide-image' },
+  { label: t("feed.publisherBox.actionVideo"), icon: 'i-lucide-video' },
+  { label: t("feed.publisherBox.actionPoll"), icon: 'i-lucide-list-plus' },
+  { label: t("feed.publisherBox.actionGif"), icon: 'i-lucide-film' },
+  { label: t("feed.publisherBox.actionFeeling"), icon: 'i-lucide-smile-plus' },
+])
+
+const extraActions = computed(() => [
+  { label: t("feed.publisherBox.actionAudio"), icon: 'i-lucide-music-4' },
+  { label: t("feed.publisherBox.actionFile"), icon: 'i-lucide-file-up' },
+  { label: t("feed.publisherBox.actionStory"), icon: 'i-lucide-clapperboard' },
+  { label: t("feed.publisherBox.actionProduct"), icon: 'i-lucide-shopping-cart' },
+])
 </script>

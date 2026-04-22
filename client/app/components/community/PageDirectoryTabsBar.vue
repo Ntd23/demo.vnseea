@@ -11,30 +11,36 @@
             ? 'border-[#0000ff] text-[#243b63]'
             : 'border-transparent text-slate-500 hover:text-[#243b63]'"
         >
-          {{ tab.label }}
+          {{ $t(tab.label) }}
         </NuxtLink>
       </div>
 
       <NuxtLink
         :to="createTo"
         class="inline-flex h-12 shrink-0 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-      >
-        <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-        {{ createLabel }}
-      </NuxtLink>
-    </div>
-  </section>
+        >
+          <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
+          {{ createLabelText }}
+        </NuxtLink>
+      </div>
+    </section>
 </template>
 
 <script setup lang="ts">
 import type { CommunityPageTab } from "../../../types/community"
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   tabs: Array<{ label: string; value: CommunityPageTab; to: string }>
   activeTab: CommunityPageTab
   createTo: string
   createLabel?: string
 }>(), {
-  createLabel: "Tạo ra",
+  createLabel: "",
 })
+
+const { t } = useI18n()
+
+const createLabelText = computed(() =>
+  props.createLabel || t("community.pagesDirectory.createAction"),
+)
 </script>

@@ -3,20 +3,20 @@
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-          Lọc đơn hàng
+          {{ $t("orders.filter.title") }}
         </p>
         <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
-          {{ visibleCount }} đơn phù hợp
+          {{ $t("orders.filter.matched", { count: visibleCount }) }}
         </h2>
         <p class="mt-1 text-[14px] leading-6 text-slate-500">
-          Bộ lọc hiện tại: {{ activeFilterLabel }}. Tìm nhanh theo mã đơn, shop hoặc tên sản phẩm.
+          {{ $t("orders.filter.current", { label: $t(activeFilterLabel) }) }}
         </p>
       </div>
 
       <div class="w-full lg:max-w-[320px]">
         <FormsSearchInput
           v-model="searchModel"
-          placeholder="Tìm mã đơn, shop hoặc sản phẩm"
+          :placeholder="$t('orders.filter.placeholder')"
         />
       </div>
     </div>
@@ -32,7 +32,7 @@
         type="button"
         @click="activeFilterModel = filter.key"
       >
-        <span>{{ filter.label }}</span>
+        <span>{{ $t(filter.label) }}</span>
         <span
           class="inline-flex min-w-[24px] justify-center rounded-full px-2 py-0.5 text-[11px] font-black"
           :class="activeFilterModel === filter.key ? 'bg-white text-[#0000ff]' : 'bg-[#f7f9ff] text-slate-500'"

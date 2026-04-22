@@ -1,8 +1,8 @@
 <template>
   <div class="space-y-5 pb-10">
     <CheckoutLayout
-      title="Thủ tục thanh toán"
-      description="Điền địa chỉ nhận hàng, kiểm tra giỏ hàng và chọn phương thức thanh toán trước khi xác nhận đơn."
+      :title="$t('checkout.page.layoutTitle')"
+      :description="$t('checkout.page.layoutDescription')"
     >
       <template #left>
         <ShippingAddressFormUI
@@ -31,9 +31,11 @@ import CheckoutSummary from "../checkout/CheckoutSummary.vue"
 import ShippingAddressFormUI from "../checkout/ShippingAddressFormUI.vue"
 import type { CheckoutLineItem, SavedShippingAddress } from "~/types/checkout"
 
+const { t } = useI18n()
+
 useSeoMeta({
-  title: "Thanh toán | VNSEEA",
-  description: "Hoàn tất checkout marketplace với form địa chỉ, giỏ hàng, số dư ví và tổng thanh toán.",
+  title: t("checkout.page.title"),
+  description: t("checkout.page.description"),
 })
 
 const cartItems = ref<CheckoutLineItem[]>([
