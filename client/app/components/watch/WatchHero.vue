@@ -1,21 +1,21 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-lg)] sm:p-7">
-    <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-[760px]">
-        <p class="text-label-secondary text-[var(--color-primary-600)]">{{ $t("pages.watchPage.heroEyebrow") }}</p>
-        <h1 class="mt-2 text-display text-[2.15rem] leading-[1.05] text-[var(--text-primary)] sm:text-[3rem]">
+  <section class="surface-card p-6 sm:p-8">
+    <div class="flex flex-col gap-8 xl:flex-row xl:items-center xl:justify-between">
+      <div class="max-w-[800px] space-y-4">
+        <p class="text-label-primary text-primary-600 uppercase tracking-widest">{{ $t("pages.watchPage.heroEyebrow") }}</p>
+        <h1 class="text-display text-4xl sm:text-6xl text-secondary-900 leading-[1.1]">
           {{ $t("pages.watchPage.heroTitle") }}
         </h1>
-        <p class="mt-3 text-[15px] font-semibold leading-7 text-[var(--text-secondary)]">
+        <p class="text-body-secondary text-lg leading-relaxed max-w-2xl">
           {{ $t("pages.watchPage.heroDescription") }}
         </p>
       </div>
 
-      <div class="grid gap-3 sm:grid-cols-3 xl:w-[520px]">
-        <div v-for="item in stats" :key="item.label" class="rounded-[22px] bg-[var(--bg-surface-hover)] p-4">
-          <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-tertiary)]">{{ item.label }}</p>
-          <p class="mt-2 text-[1.55rem] font-black leading-none text-[var(--text-primary)]">{{ item.value }}</p>
-          <p class="mt-1 text-[12px] font-semibold text-[var(--text-secondary)]">{{ item.description }}</p>
+      <div class="grid gap-4 sm:grid-cols-3 xl:w-[540px]">
+        <div v-for="item in stats" :key="item.label" class="rounded-2xl bg-secondary-50/50 p-5 border border-secondary-100/30">
+          <p class="text-micro font-bold uppercase tracking-wider text-secondary-400">{{ item.label }}</p>
+          <p class="mt-2 text-3xl font-black text-secondary-900 leading-none">{{ item.value }}</p>
+          <p class="mt-1 text-xs font-semibold text-secondary-500">{{ item.description }}</p>
         </div>
       </div>
     </div>

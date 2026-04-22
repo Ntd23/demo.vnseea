@@ -1,28 +1,34 @@
 <template>
-  <section class="rounded-[26px] border border-[var(--border-default)] bg-white p-3.5 shadow-[var(--shadow-md)] sm:rounded-[30px] sm:p-4">
-    <div class="grid gap-2.5 sm:gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-      <label class="relative block">
-        <Icon name="i-ph-magnifying-glass-bold" class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-tertiary)]" />
-        <input
-          :value="search"
-          class="h-11 w-full rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-12 pr-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white sm:h-12"
+  <section class="surface-card p-4 sm:p-5">
+    <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex-1 max-w-lg">
+        <UInput
+          :model-value="search"
+          icon="i-ph-magnifying-glass-bold"
+          size="xl"
+          class="font-semibold"
+          variant="outline"
           :placeholder="$t('pages.watchPage.searchPlaceholder')"
-          @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
-        >
-      </label>
+          @update:model-value="$emit('update:search', $event)"
+        />
+      </div>
 
       <div class="scrollbar-hide -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
-        <button
+        <UButton
           v-for="category in categories"
           :key="category.value"
-          class="inline-flex h-10 shrink-0 items-center gap-2 rounded-[var(--radius-full)] px-3.5 text-[12.5px] font-extrabold transition sm:h-11 sm:px-4 sm:text-[13px]"
-          :class="selectedCategory === category.value ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]' : 'bg-[var(--bg-surface-hover)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)]'"
-          type="button"
+          :color="selectedCategory === category.value ? 'primary' : 'gray'"
+          :variant="selectedCategory === category.value ? 'solid' : 'soft'"
+          size="lg"
+          class="rounded-full font-bold px-5 whitespace-nowrap transition-all duration-300"
+          :class="{ 'shadow-lg shadow-primary-500/20 translate-y-[-1px]': selectedCategory === category.value }"
           @click="$emit('update:selectedCategory', category.value)"
         >
-          <Icon :name="category.icon" class="h-4 w-4" />
+          <template v-if="category.icon" #leading>
+            <Icon :name="category.icon" class="h-4 w-4" />
+          </template>
           {{ category.label }}
-        </button>
+        </UButton>
       </div>
     </div>
   </section>
