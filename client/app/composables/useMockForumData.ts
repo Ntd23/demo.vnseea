@@ -3,6 +3,16 @@ import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
 
 export type ForumSectionKey = "all" | "announcements" | "support" | "marketplace" | "events" | "jobs" | "showcase"
 
+export const forumSectionKeys = [
+  "all",
+  "announcements",
+  "support",
+  "marketplace",
+  "events",
+  "jobs",
+  "showcase",
+] as const satisfies readonly ForumSectionKey[]
+
 export type ForumSection = {
   label: string
   value: ForumSectionKey
@@ -56,6 +66,38 @@ export const useMockForumData = () => {
     sections,
     threads,
   }
+}
+
+export function readForumQueryValue(value: unknown) {
+  if (Array.isArray(value)) return String(value[0] || "")
+  return typeof value === "string" ? value : ""
+}
+
+export function normalizeForumSection(value: string): ForumSectionKey {
+  return forumSectionKeys.includes(value as ForumSectionKey)
+    ? value as ForumSectionKey
+    : "all"
+}
+
+export function filterForumThreads(
+  threads: readonly ForumThread[],
+  search: string,
+  section: ForumSectionKey,
+) {
+  const keyword = search.trim().toLowerCase()
+
+  return threads.filter((thread) => {
+    const matchesSection = section === "all" || thread.section === section
+    const matchesKeyword = keyword.length === 0 || [
+      thread.title,
+      thread.author,
+      thread.sectionLabel,
+      thread.excerpt,
+      ...thread.tags,
+    ].some(field => field.toLowerCase().includes(keyword))
+
+    return matchesSection && matchesKeyword
+  })
 }
 
 export const formatForumNumber = (value: number, locale = "vi") =>

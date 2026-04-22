@@ -1168,6 +1168,354 @@
         "service": "Service"
       }
     },
+    "forumPage": {
+      "seoTitle": "Forum | VNSEEA",
+      "seoTitleQuery": "\"{query}\" Results | Forum | VNSEEA",
+      "seoTitleSection": "{section} | Forum | VNSEEA",
+      "seoTitleQuerySection": "\"{query}\" in {section} | Forum | VNSEEA",
+      "seoTitleThread": "{title} | Forum | VNSEEA",
+      "seoDescription": "Follow public forum threads, notable questions, and the latest replies across the VNSEEA community.",
+      "seoDescriptionQuery": "Discussion results for \"{query}\" on the VNSEEA forum.",
+      "seoDescriptionSection": "Explore the latest threads in the {section} section of the VNSEEA forum.",
+      "seoDescriptionQuerySection": "Results for \"{query}\" in the {section} section of the VNSEEA forum.",
+      "seoDescriptionThread": "Thread \"{title}\" on the VNSEEA forum. {excerpt}",
+      "heroEyebrow": "P-13 · Forum",
+      "heroTitle": "Track public threads, ask quickly, and keep discussion context clear",
+      "heroDescription": "The VNSEEA forum favors public listings that are easy to index, filters that stay in the URL, and a detail panel clear enough for reading replies and continuing the conversation without losing context.",
+      "heroStatusAll": "Follow {count} public threads, notable questions, and fresh updates from the VNSEEA community.",
+      "heroStatusSection": "The {section} section currently shows {count} public threads.",
+      "heroStatusSearch": "You are viewing {count} results for \"{query}\".",
+      "heroStatusSearchSection": "You are viewing {count} results for \"{query}\" in {section}.",
+      "createThreadButton": "Create new thread",
+      "filtersEyebrow": "Public filters",
+      "filtersTitle": "Find the right thread faster",
+      "filtersDescription": "The keyword, active section, and open thread stay synced to the URL so you can return to the same public listing state.",
+      "filterStatusTitle": "Filter status",
+      "filterStatusDefault": "Showing the latest {count} public threads on the forum.",
+      "filterStatusSection": "Showing {count} threads in {section}.",
+      "filterStatusSearch": "Found {count} threads matching \"{query}\".",
+      "filterStatusSearchSection": "Found {count} threads for \"{query}\" in {section}.",
+      "searchPlaceholder": "Search thread titles, tags, authors, or body text...",
+      "clearSearch": "Clear keyword",
+      "resetFilters": "Reset filters",
+      "resultMeta": "{count} matching threads",
+      "sectionCount": "{count} sections",
+      "resultsEyebrow": "Discussion results",
+      "resultHeadingSearch": "Results for \"{query}\"",
+      "resultHeadingSearchSection": "\"{query}\" in {section}",
+      "matchingThreads": "{count} matching threads",
+      "queryBadge": "\"{query}\"",
+      "allThreads": "All threads",
+      "emptyTitle": "No threads match the current filters",
+      "emptyDescription": "Try a different keyword or switch sections. The URL stays clean so crawlers and people can return to the correct public listing state.",
+      "sectionsEyebrow": "Forum sections",
+      "sectionsTitle": "Open sections",
+      "sidebarTitle": "Current context",
+      "threadDetailEyebrow": "Open thread",
+      "detailStatus": "Thread \"{title}\" currently shows {count} replies in the mock experience.",
+      "detailEmptyTitle": "No thread is available to display",
+      "detailEmptyDescription": "Choose a thread from the left column or reset the filters to reopen a discussion detail view.",
+      "viewsLabel": "Views",
+      "repliesLabel": "Replies",
+      "repliesTitle": "Thread discussion",
+      "repliesEmptyTitle": "No replies yet",
+      "repliesEmptyDescription": "This thread has no answers in the mock data yet. You can be the first person to start the discussion.",
+      "acceptedLabel": "Accepted",
+      "replyFieldLabel": "Your reply",
+      "replyPlaceholder": "Write a specific reply with enough context so the original poster can continue from here...",
+      "replyHelper": "{count} characters. Your content will be added to this mock thread immediately.",
+      "replySubmit": "Send reply",
+      "replyFieldError": "The reply should be at least 8 characters long.",
+      "replyStatusLoadingTitle": "Sending reply",
+      "replyStatusLoadingDescription": "Your reply is being added to this mock thread.",
+      "replyStatusSuccessTitle": "Reply sent",
+      "replyStatusSuccessDescription": "Your answer now appears in the thread reply list.",
+      "replyStatusErrorTitle": "Could not send reply",
+      "replyStatusErrorDescription": "Enter at least 8 characters so the reply is not empty.",
+      "openThreadAction": "Open discussion",
+      "selectedThreadAction": "Viewing",
+      "statusPinned": "Pinned",
+      "statusSolved": "Solved",
+      "statusOpen": "Open",
+      "modalEyebrow": "Start a new discussion",
+      "modalTitle": "Prepare a new thread",
+      "modalDescription": "Write a clear title, choose the right section, and provide enough opening context so people can respond quickly.",
+      "modalTitleLabel": "Thread title",
+      "modalTitlePlaceholder": "Example: How do you keep forum filters synced to the URL without SSR drift?",
+      "modalSectionLabel": "Discussion section",
+      "modalMessageLabel": "Opening message",
+      "modalMessagePlaceholder": "Describe the problem, context, what you already tried, and the specific part where you want help from the community.",
+      "modalHelper": "The new thread will be added to the top of the mock listing so you can inspect the create, filter, and detail flow right away.",
+      "modalCharCount": "{count} characters",
+      "modalClose": "Close",
+      "modalSubmit": "Create thread",
+      "modalTitleError": "The title should be at least 8 characters long.",
+      "modalSectionError": "Choose a valid section.",
+      "modalMessageError": "The opening message should be at least 20 characters long.",
+      "modalStatusLoadingTitle": "Publishing thread",
+      "modalStatusLoadingDescription": "VNSEEA is checking the title, section, and content before adding the mock thread to the top of the listing.",
+      "modalStatusSuccessTitle": "Mock thread is ready",
+      "modalStatusSuccessDescription": "The new thread has been added to the top of the listing and keeps the current URL context intact.",
+      "modalStatusErrorTitle": "More content is required",
+      "modalStatusErrorDescription": "Add a clear title, choose the right section, and write at least 20 characters for the opening message.",
+      "statSections": "Active sections",
+      "statSectionsDescription": "The number of public discussion groups currently visible on the mock forum.",
+      "statThreads": "Public threads",
+      "statThreadsDescription": "The total number of threads currently rendered in the SSR forum listing.",
+      "statViews": "Cumulative views",
+      "statViewsDescription": "Mock view volume so you can read the pace of discussion more quickly.",
+      "supportFallback": "Technical support",
+      "replyAuthor": "You",
+      "replyInitials": "YO",
+      "replyRole": "VNSEEA member",
+      "justNow": "Just now",
+      "sections": [
+        {
+          "label": "All",
+          "value": "all",
+          "icon": "i-ph-squares-four-bold",
+          "description": "See every public thread currently visible on the forum."
+        },
+        {
+          "label": "Announcements",
+          "value": "announcements",
+          "icon": "i-ph-megaphone-simple-bold",
+          "description": "Official updates, flow changes, and important notices."
+        },
+        {
+          "label": "Technical support",
+          "value": "support",
+          "icon": "i-ph-lifebuoy-bold",
+          "description": "Questions about SSR, route sync, UI state, and implementation details."
+        },
+        {
+          "label": "Marketplace",
+          "value": "marketplace",
+          "icon": "i-ph-storefront-bold",
+          "description": "Guidelines, thread templates, and trust signals for buying and selling."
+        },
+        {
+          "label": "Events",
+          "value": "events",
+          "icon": "i-ph-calendar-dots-bold",
+          "description": "Recaps, planning checklists, and event-related community questions."
+        },
+        {
+          "label": "Jobs",
+          "value": "jobs",
+          "icon": "i-ph-briefcase-bold",
+          "description": "Hiring templates, role details, and ways to keep job threads readable."
+        },
+        {
+          "label": "Showcase",
+          "value": "showcase",
+          "icon": "i-ph-sparkle-bold",
+          "description": "Share products, case studies, and before/after improvements to thread content."
+        }
+      ],
+      "threads": [
+        {
+          "id": "announcement-forum-migration-scope",
+          "title": "Forum migration scope update for April 2026",
+          "section": "announcements",
+          "sectionLabel": "Announcements",
+          "author": "VNSEEA Team",
+          "authorInitials": "VT",
+          "authorRole": "Core Team",
+          "status": "pinned",
+          "createdAt": "35 minutes ago",
+          "views": 5260,
+          "repliesCount": 2,
+          "excerpt": "This thread tracks the forum work planned so far: page-level SEO, route sync, UI feedback, and SSR guards for the primary interactions.",
+          "tags": ["migration", "seo", "roadmap"],
+          "replies": [
+            {
+              "id": 101,
+              "author": "Hai Nam",
+              "initials": "HN",
+              "role": "Frontend Lead",
+              "message": "For `q/section/thread` route sync, prioritize a clean canonical URL and do not let invalid query state survive for long after hydration.",
+              "time": "21 minutes ago"
+            },
+            {
+              "id": 102,
+              "author": "Linh Dan",
+              "initials": "LD",
+              "role": "SEO Specialist",
+              "message": "If detail lives inside the listing page, the route file should still reflect the open thread in title and description whenever the query is valid.",
+              "time": "13 minutes ago"
+            }
+          ]
+        },
+        {
+          "id": "nuxt-ui-ssr-forum-page",
+          "title": "How do you keep `Nuxt UI` stable when a forum page uses SSR and URL-synced filters together?",
+          "section": "support",
+          "sectionLabel": "Technical support",
+          "author": "Minh Quan",
+          "authorInitials": "MQ",
+          "authorRole": "Frontend Engineer",
+          "status": "solved",
+          "createdAt": "12 minutes ago",
+          "views": 1840,
+          "repliesCount": 2,
+          "excerpt": "I am migrating a listing page to Nuxt 4 with search + section + thread in the URL. Has anyone already handled the SSR and hydration contract for this flow cleanly?",
+          "tags": ["nuxt-ui", "ssr", "router"],
+          "replies": [
+            {
+              "id": 201,
+              "author": "Tuan Anh",
+              "initials": "TA",
+              "role": "Nuxt Maintainer",
+              "message": "Take the initial state from the route first, then sync local refs. Do not let the default selected thread depend on client-only side effects.",
+              "time": "8 minutes ago",
+              "accepted": true
+            },
+            {
+              "id": 202,
+              "author": "Mai Huong",
+              "initials": "MH",
+              "role": "UI Engineer",
+              "message": "Modal and reply card forms should each expose clear `idle/loading/success/error` states so people understand what happened after submit.",
+              "time": "4 minutes ago"
+            }
+          ]
+        },
+        {
+          "id": "marketplace-thread-pricing-rules",
+          "title": "What pricing rules should be pinned to keep marketplace threads focused?",
+          "section": "marketplace",
+          "sectionLabel": "Marketplace",
+          "author": "Lan Huong",
+          "authorInitials": "LH",
+          "authorRole": "Marketplace Moderator",
+          "status": "open",
+          "createdAt": "1 hour ago",
+          "views": 940,
+          "repliesCount": 2,
+          "excerpt": "The marketplace area is seeing a lot of price questions in comments. How are you handling guidelines or thread templates to make opening posts clearer?",
+          "tags": ["marketplace", "guideline", "pricing"],
+          "replies": [
+            {
+              "id": 301,
+              "author": "Vu Khanh",
+              "initials": "VK",
+              "role": "Seller",
+              "message": "I am testing a rule that requires the opening lines to include price, region, and product condition before anything else.",
+              "time": "46 minutes ago"
+            },
+            {
+              "id": 302,
+              "author": "Ngoc Tram",
+              "initials": "NT",
+              "role": "Community Ops",
+              "message": "You can pin a sample thread at the top of the marketplace section and reuse that structure as helper copy inside the create-thread modal.",
+              "time": "31 minutes ago"
+            }
+          ]
+        },
+        {
+          "id": "community-events-checklist",
+          "title": "What is the minimum checklist for a community event recap thread?",
+          "section": "events",
+          "sectionLabel": "Events",
+          "author": "Bao Tram",
+          "authorInitials": "BT",
+          "authorRole": "Event Host",
+          "status": "open",
+          "createdAt": "2 hours ago",
+          "views": 770,
+          "repliesCount": 1,
+          "excerpt": "I want a recap format that stays readable on mobile but still gives enough context to people who did not attend. What checklist do you keep as the minimum?",
+          "tags": ["events", "recap", "community"],
+          "replies": [
+            {
+              "id": 401,
+              "author": "Thao Vy",
+              "initials": "TV",
+              "role": "Content Lead",
+              "message": "A good recap should keep four fixed blocks: goal, highlights, follow-up resources, and a CTA so people know the next step immediately.",
+              "time": "1 hour ago"
+            }
+          ]
+        },
+        {
+          "id": "jobs-remote-hiring-template",
+          "title": "Which fields should always appear in a remote hiring thread template?",
+          "section": "jobs",
+          "sectionLabel": "Jobs",
+          "author": "Phuc An",
+          "authorInitials": "PA",
+          "authorRole": "Hiring Manager",
+          "status": "solved",
+          "createdAt": "2 hours ago",
+          "views": 1280,
+          "repliesCount": 3,
+          "excerpt": "I am standardizing hiring threads so candidates can scan them quickly on mobile. Which fields should always appear near the top of the thread?",
+          "tags": ["jobs", "remote", "hiring"],
+          "replies": [
+            {
+              "id": 501,
+              "author": "Duc Minh",
+              "initials": "DM",
+              "role": "Recruiter",
+              "message": "At minimum include role, seniority, timezone, salary range, and the exact contact path for CV submission.",
+              "time": "1 hour ago",
+              "accepted": true
+            },
+            {
+              "id": 502,
+              "author": "Gia Linh",
+              "initials": "GL",
+              "role": "People Ops",
+              "message": "If there is a test or a hiring timeline, write that down clearly to reduce repetitive questions in the thread.",
+              "time": "54 minutes ago"
+            },
+            {
+              "id": 503,
+              "author": "Anh Thu",
+              "initials": "AT",
+              "role": "Product Designer",
+              "message": "A short team-context block also helps candidates decide quickly whether the thread is relevant to them.",
+              "time": "42 minutes ago"
+            }
+          ]
+        },
+        {
+          "id": "showcase-product-case-study",
+          "title": "Do you have before-and-after examples for improving showcase threads?",
+          "section": "showcase",
+          "sectionLabel": "Showcase",
+          "author": "Hoang Mai",
+          "authorInitials": "HM",
+          "authorRole": "Creator",
+          "status": "open",
+          "createdAt": "3 hours ago",
+          "views": 688,
+          "repliesCount": 2,
+          "excerpt": "I want to collect real examples of changing titles, tags, and opening summaries so showcase threads feel stronger in public listings.",
+          "tags": ["showcase", "case-study", "content"],
+          "replies": [
+            {
+              "id": 601,
+              "author": "Kim Ngan",
+              "initials": "KN",
+              "role": "Content Strategist",
+              "message": "Strong showcase threads usually open with the outcome first, then explain the method and implementation details.",
+              "time": "2 hours ago"
+            },
+            {
+              "id": 602,
+              "author": "Trong Nhan",
+              "initials": "TN",
+              "role": "Growth",
+              "message": "If the public listing card uses a short excerpt, the first sentence should already make the outcome obvious before someone opens detail.",
+              "time": "1 hour ago"
+            }
+          ]
+        }
+      ]
+    },
     "productEditor": {
       "titleLabel": "Product title",
       "priceLabel": "Price",

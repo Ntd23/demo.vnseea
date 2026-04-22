@@ -506,8 +506,26 @@ Vai trò:
 - forum list/detail/create thread
 
 Nhận xét migrate:
-- `CreateThreadModal.vue` nên dùng `UModal` + `UForm`
-- `ForumFilters.vue` nên thêm `VueUse`
+- `/forum` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + canonical + Open Graph
+  - query `q/section/thread` đã sync với route để listing/detail public có URL quay lại được
+  - query không hợp lệ sẽ được normalize về state ổn định hơn để tránh SEO/canonical sai
+- `CreateThreadModal.vue` đã chuyển sang flow `@nuxt/ui`:
+  - dùng `UModal`, `UForm`, `UFormField`, `UInput`, `USelect`, `UTextarea`, `UAlert`, `UButton`
+  - có state rõ `idle`, `loading`, `success`, `error`
+  - có validate field-level và feedback toast/inline cho create thread
+- `ForumFilters.vue`, `ForumHero.vue`, `ForumStatsSidebar.vue` đã chuẩn hóa action/filter theo `@nuxt/ui`:
+  - dùng `UCard`, `UInput`, `UButton`, `UBadge`, `UAlert`
+  - filter status và context public rõ hơn, mobile-first tốt hơn
+  - filter/query/result state không còn là HTML button/input thủ công
+- `ForumThreadCard.vue` và `ForumThreadDetail.vue` đã được nâng lại:
+  - card có trạng thái selected rõ, badge/status/action thống nhất hơn
+  - detail/reply flow dùng `UCard`, `UForm`, `UTextarea`, `UAlert`, `UButton`
+  - reply form có state rõ `idle`, `loading`, `success`, `error` và empty state ổn định
+- đã bổ sung `i18n` cho `pages.forumPage` để tránh render raw key ở listing/detail/create thread
+- state của `ForumPage.vue` đã ổn định hơn cho SSR:
+  - không còn phụ thuộc non-null assertion để tìm selected thread
+  - default state đủ shape khi filter không có kết quả hoặc query thread không hợp lệ
 
 ### `foundation` - 8 files
 
