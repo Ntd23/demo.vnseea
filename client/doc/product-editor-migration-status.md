@@ -376,9 +376,11 @@ Nhận xét migrate:
   - thêm local persistence SSR-safe cho listing filter và create draft bằng `useStorage(..., { initOnMounted: true })`
   - thêm state rõ `idle/loading/success/error`, `UAlert`, `UProgress`, `useToast`, disabled/loading CTA cho create flow và RSVP/listing actions
   - bổ sung đầy đủ locale `pages.eventsPage`, `pages.createEventPage`, `pages.eventDetailPage` để tránh render raw key cho mock data và page copy
-- đợt 2 còn lại:
+- đợt 2 đã xử lý:
   - migrate `EventDetailHero.vue`, `EventDetailMain.vue`, `EventDetailSidebar.vue`
-  - đưa SEO/canonical/action state của `/events/[id]` về đúng page-level/detail flow
+  - đưa SEO của `/events/[id]` về page-level route với `useSeoMeta()`, canonical sạch không giữ query và `robots` theo trạng thái event
+  - gom action state `idle/loading/success/error` cho RSVP, share, invite và owner actions ở detail page, kèm `UAlert`, `useToast`, disabled/loading CTA rõ ràng
+  - thay ảnh cover/related event sang `NuxtImg` với fallback ổn định để tránh render placeholder vô nghĩa và giảm rủi ro hydration lệch
 
 ### `explore` - 1 file
 
