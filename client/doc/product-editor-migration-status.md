@@ -330,6 +330,12 @@ Vai trò:
 Nhận xét migrate:
 - `DirectoryFilters.vue` là điểm nên migrate trước
 - hợp để dùng `UInput`, `USelect`, `watchDebounced`, `useStorage`
+- đã xử lý:
+  - migrate `DirectoryCard.vue`, `DirectoryFilters.vue`, `DirectoryHero.vue`, `DirectorySidebar.vue`
+  - đưa SEO của `/directory` về page-level route trong `pages/directory/index.vue`
+  - sync filter của directory với route query `q` và `category`
+  - thêm local persistence SSR-safe bằng `useStorage(..., { initOnMounted: true })`
+  - bổ sung đầy đủ locale `pages.directoryPage` cho copy UI và mock data categories/items
 
 ### `events` - 9 files
 

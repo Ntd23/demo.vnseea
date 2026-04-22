@@ -16,6 +16,22 @@ export type DirectoryCategoryKey =
   | "games"
   | "forum"
 
+export const directoryCategoryKeys: DirectoryCategoryKey[] = [
+  "all",
+  "users",
+  "pages",
+  "groups",
+  "market",
+  "events",
+  "jobs",
+  "blogs",
+  "funding",
+  "live",
+  "watch",
+  "games",
+  "forum",
+]
+
 export type DirectoryCategory = {
   label: string
   value: DirectoryCategoryKey
