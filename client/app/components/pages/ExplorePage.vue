@@ -290,15 +290,4 @@ function setView(view: ExploreView) {
 
   router.replace({ query: nextQuery })
 }
-
-useSeoMeta({
-  title: () =>
-    activeView.value === "all"
-      ? t("pages.explorePage.seoTitle")
-      : t("pages.explorePage.filteredSeoTitle", { label: activeViewOption.value.label }),
-  description: () =>
-    activeView.value === "all"
-      ? t("pages.explorePage.seoDescription")
-      : t("pages.explorePage.filteredSeoDescription", { label: activeViewOption.value.label }),
-})
 </script>

@@ -32,17 +32,17 @@
           </div>
         </div>
 
-        <span class="inline-flex shrink-0 items-center rounded-full bg-[#eef3ff] px-3 py-1 text-[11px] font-bold text-[#243b63]">
+        <UBadge color="neutral" variant="soft" class="shrink-0 rounded-full bg-[#eef3ff] px-3 py-1 text-[11px] font-bold text-[#243b63]">
           {{ user.mutualLabel }}
-        </span>
+        </UBadge>
       </div>
 
       <p class="text-[14px] leading-7 text-slate-600">
         {{ user.reason }}
       </p>
 
-      <div class="grid gap-3 sm:grid-cols-2">
-        <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
+      <div class="grid gap-3 sm:grid-cols-2" role="list">
+        <div role="listitem" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
             {{ t("pages.explorePage.signalLabel") }}
           </p>
@@ -51,7 +51,7 @@
           </p>
         </div>
 
-        <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
+        <div role="listitem" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
             {{ t("pages.explorePage.statusLabel") }}
           </p>
@@ -61,29 +61,48 @@
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-2 text-[12px] font-semibold">
+      <div class="flex flex-wrap gap-2 text-[12px] font-semibold" role="list">
         <span
           v-for="tag in user.tags"
           :key="tag"
+          role="listitem"
           class="inline-flex items-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-3 py-1.5 text-[#4b5f82]"
         >
           {{ tag }}
         </span>
       </div>
 
+      <UAlert
+        v-if="actionState !== 'idle' && actionMessage"
+        class="rounded-[20px]"
+        :color="actionState === 'error' ? 'warning' : actionState === 'success' ? 'success' : 'primary'"
+        variant="subtle"
+        :icon="actionState === 'error'
+          ? 'i-ph-warning-circle-fill'
+          : actionState === 'success'
+            ? 'i-ph-check-circle-fill'
+            : 'i-ph-spinner-gap-bold'"
+        :description="actionMessage"
+      />
+
       <div class="flex flex-col gap-2 sm:flex-row">
-        <button
-          class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)] transition hover:-translate-y-0.5"
+        <UButton
+          color="neutral"
+          variant="solid"
+          size="lg"
+          class="justify-center rounded-full text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)]"
           :style="{ background: accentBackground }"
-          type="button"
-          @click="connected = !connected"
+          :loading="actionState === 'loading'"
+          :disabled="actionState === 'loading' || connected"
+          :aria-label="`${primaryActionLabel}: ${user.name}`"
+          @click="connectWithUser"
         >
-          {{ connected ? t("pages.explorePage.inviteSent") : t("pages.explorePage.connectNow") }}
-        </button>
+          {{ primaryActionLabel }}
+        </UButton>
 
         <NuxtLink
           :to="user.href"
-          class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+          class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0000ff]"
         >
           {{ t("pages.explorePage.viewProfile") }}
         </NuxtLink>
@@ -95,12 +114,17 @@
 <script setup lang="ts">
 import type { ExploreUserSpotlight } from "~/composables/useMockExploreData"
 
+type SpotlightActionState = "idle" | "loading" | "success" | "error"
+
 const props = defineProps<{
   user: ExploreUserSpotlight
 }>()
 
 const { t } = useI18n()
+const toast = useToast()
 const connected = ref(false)
+const actionState = ref<SpotlightActionState>("idle")
+const actionMessage = ref("")
 
 const accentBackground = computed(() =>
   `linear-gradient(135deg, ${props.user.accent} 0%, #0000ff 100%)`,
@@ -109,4 +133,56 @@ const accentBackground = computed(() =>
 const profileLabel = computed(() =>
   props.user.online ? t("pages.explorePage.activeNow") : t("pages.explorePage.connectable"),
 )
+
+const primaryActionLabel = computed(() => {
+  if (actionState.value === "loading") return t("pages.explorePage.connecting")
+  if (connected.value) return t("pages.explorePage.inviteSent")
+  return t("pages.explorePage.connectNow")
+})
+
+watch(
+  () => props.user.id,
+  () => {
+    connected.value = false
+    actionState.value = "idle"
+    actionMessage.value = ""
+  },
+  { immediate: true },
+)
+
+async function connectWithUser() {
+  if (actionState.value === "loading" || connected.value) return
+
+  if (!props.user.id || !props.user.href) {
+    actionState.value = "error"
+    actionMessage.value = t("pages.explorePage.connectErrorMessage")
+
+    toast.add({
+      color: "warning",
+      icon: "i-ph-warning-circle-fill",
+      title: props.user.name,
+      description: actionMessage.value,
+    })
+
+    return
+  }
+
+  actionState.value = "loading"
+  actionMessage.value = ""
+
+  await new Promise(resolve => setTimeout(resolve, 260))
+
+  connected.value = true
+  actionState.value = "success"
+  actionMessage.value = t("pages.explorePage.connectSuccessMessage", {
+    name: props.user.name,
+  })
+
+  toast.add({
+    color: "success",
+    icon: "i-ph-user-plus-fill",
+    title: props.user.name,
+    description: actionMessage.value,
+  })
+}
 </script>

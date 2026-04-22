@@ -391,7 +391,10 @@ Vai trò:
 - card spotlight ở explore
 
 Nhận xét migrate:
-- module nhỏ, ưu tiên thấp
+- `UserSpotlightCard.vue` đã chuyển action chính sang `UButton`, `UBadge`, `UAlert`
+- card có state rõ `idle/loading/success/error`, `useToast`, disabled/loading CTA và reset state an toàn khi đổi user
+- `/explore` đã dời `SEO` về page-level route với `useSeoMeta()`, Open Graph, canonical và query `view` được chuẩn hóa ở canonical
+- đã bổ sung đầy đủ locale `pages.explorePage` để tránh render raw key cho hero/filter/card/mock data
 
 ### `feed` - 11 files
 
