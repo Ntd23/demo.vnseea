@@ -213,11 +213,23 @@ Vai trò:
 - flow checkout marketplace
 
 Nhận xét migrate:
-- layout đã tách gọn
-- `ShippingAddressFormUI.vue` vẫn là form native lớn
-- `CheckoutSummary.vue` nên chuẩn hóa button/input bằng `@nuxt/ui`
-- hợp để thêm `useStorage` cho address draft
-- hợp để đưa cart/checkout state sang `Pinia`
+- `/checkout` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + Open Graph + canonical
+  - route checkout được để `noindex, nofollow` để tránh index nhầm flow giao dịch
+- `CheckoutLayout.vue` đã được nâng thêm semantics cho flow:
+  - có progress header và landmark rõ cho vùng địa chỉ giao hàng / tóm tắt đơn
+  - layout sticky summary vẫn giữ ổn trên mobile-first và desktop
+- `ShippingAddressFormUI.vue` đã migrate sang `@nuxt/ui`:
+  - dùng `UForm`, `UFormField`, `UInput`, `UTextarea`, `UAlert`, `UProgress`, `UButton`, `UBadge`
+  - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
+  - có validate field-level, autosave draft bằng `useStorage()` với `initOnMounted` để giữ SSR/hydration ổn định
+- `CheckoutSummary.vue` đã chuẩn hóa action chính bằng `@nuxt/ui`:
+  - dùng `UButton`, `UAlert`, `UBadge`
+  - CTA chính phụ thuộc rõ vào `cart/address/wallet` thay vì button tĩnh
+  - quantity/remove action có `aria-label` và disabled state phù hợp
+- bước tiếp theo hợp lý:
+  - cân nhắc đưa cart/checkout state sang `Pinia`
+  - nếu checkout có API thật, nên tách submit/top-up ra composable riêng để reuse và test dễ hơn
 
 ### `community` - 25 files
 
@@ -895,7 +907,6 @@ Nên ưu tiên store cho:
 - `pages/RegisterPage.vue`
 - `pages/WelcomePage.vue`
 - `pages/ForgotPasswordPage.vue`
-- `checkout/ShippingAddressFormUI.vue`
 - `pages/ProductsPage.vue`
 
 ### Ưu tiên 2
@@ -926,10 +937,10 @@ Nên ưu tiên store cho:
 
 ### Task B: Checkout migration
 
-- migrate `ShippingAddressFormUI.vue`
-- chuẩn hóa `CheckoutSummary.vue`
-- thêm `useStorage` cho draft address
-- cân nhắc `Pinia` cho cart state
+- đã migrate `ShippingAddressFormUI.vue`, `CheckoutSummary.vue`, `CheckoutLayout.vue`
+- đã đưa `SEO` của `/checkout` về page-level route
+- còn lại nên cân nhắc `Pinia` cho cart state
+- nếu nối API thật, nên tách submit/top-up/address persistence ra composable riêng
 
 ### Task C: Community migration
 
