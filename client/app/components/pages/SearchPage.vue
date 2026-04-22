@@ -241,7 +241,17 @@ const normalizeSort = (value: string): SearchSortKey =>
     ? value as SearchSortKey
     : "relevance"
 
-const searchText = ref(readQueryValue(route.query.q))
+// 1. Breakpoints logic
+const { isMobile } = useAppBreakpoints()
+
+// 2. Search logic with debouncing and URL sync
+const { searchQuery: searchText, debouncedSearchQuery } = useDebouncedSearch({
+  debounceMs: 500,
+  syncUrl: true,
+  queryParamName: "q"
+})
+
+// Other filters (no debounce needed, simple sync)
 const selectedType = ref<SearchResultType>(normalizeType(readQueryValue(route.query.type)))
 const selectedSort = ref<SearchSortKey>(normalizeSort(readQueryValue(route.query.sort)))
 
@@ -256,37 +266,25 @@ const keywordTokens = computed(() =>
 )
 
 function syncFromRoute() {
-  const nextKeyword = readQueryValue(route.query.q)
   const nextType = normalizeType(readQueryValue(route.query.type))
   const nextSort = normalizeSort(readQueryValue(route.query.sort))
 
-  if (nextKeyword !== searchText.value) searchText.value = nextKeyword
   if (nextType !== selectedType.value) selectedType.value = nextType
   if (nextSort !== selectedSort.value) selectedSort.value = nextSort
 }
 
 watch(
-  () => [route.query.q, route.query.type, route.query.sort],
+  () => [route.query.type, route.query.sort],
   syncFromRoute,
 )
 
 function commitSearch() {
-  const nextKeyword = searchText.value.trim()
   const nextType = selectedType.value === "all" ? "" : selectedType.value
   const nextSort = selectedSort.value === "relevance" ? "" : selectedSort.value
 
-  if (
-    nextKeyword === readQueryValue(route.query.q)
-    && nextType === readQueryValue(route.query.type)
-    && nextSort === readQueryValue(route.query.sort)
-  ) {
-    return
-  }
-
-  const nextQuery: Record<string, string> = {}
-  if (nextKeyword) nextQuery.q = nextKeyword
-  if (nextType) nextQuery.type = nextType
-  if (nextSort) nextQuery.sort = nextSort
+  const nextQuery: Record<string, string> = { ...route.query }
+  if (nextType) nextQuery.type = nextType; else delete nextQuery.type
+  if (nextSort) nextQuery.sort = nextSort; else delete nextQuery.sort
 
   void router.replace({ path: "/search", query: nextQuery })
 }
@@ -405,7 +403,9 @@ const visibleSections = computed<SearchSection[]>(() => {
         label: config?.label ?? kind,
         description: config?.description ?? "",
         items: source,
-        visibleItems: selectedType.value === "all" ? source.slice(0, 4) : source,
+        visibleItems: selectedType.value === "all" 
+          ? source.slice(0, isMobile.value ? 2 : 4) 
+          : source,
       }
     })
 
