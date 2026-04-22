@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1320px] space-y-6 pb-10 pt-5">
+  <div class="mx-auto max-w-[1320px] space-y-8 pb-16 pt-8 px-4 sm:px-6">
     <SearchFiltersPanel
       v-model:keyword="searchText"
       v-model:type="selectedType"
@@ -12,129 +12,143 @@
       @quick-search="applyQuickKeyword"
     />
 
+    <!-- Summary Cards -->
     <section
       v-if="hasKeyword"
-      class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+      class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       <article
         v-for="item in summaryCards"
         :key="item.label"
-        class="rounded-[24px] border border-[#dbe3f2] bg-white px-5 py-4 shadow-[0_14px_30px_rgba(15,35,110,0.06)]"
+        class="surface-card p-6 border-secondary-100 flex flex-col justify-center"
       >
-        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
+        <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
           {{ item.label }}
         </p>
-        <p class="mt-2 text-[1.7rem] font-black tracking-[-0.05em] text-[#243b63]">
-          {{ item.value }}
-        </p>
-        <p class="mt-2 text-[13px] leading-6 text-slate-500">
+        <div class="mt-2 flex items-baseline gap-2">
+          <p class="text-3xl font-black text-secondary-900 leading-none">
+            {{ item.value }}
+          </p>
+          <span class="text-xs font-bold text-secondary-400">results</span>
+        </div>
+        <p class="mt-3 text-xs font-medium text-secondary-500 leading-relaxed">
           {{ item.description }}
         </p>
       </article>
     </section>
 
+    <!-- Empty State (No keyword) -->
     <section
       v-if="!hasKeyword"
-      class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white px-5 py-12 shadow-[0_16px_38px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16"
+      class="surface-card p-12 sm:p-20 border-secondary-100"
     >
-      <div class="flex min-h-[360px] flex-col items-center justify-center text-center">
-        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-[#9bb0c2] text-[2.1rem] font-light text-white">
+      <div class="flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
+        <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary-50 text-3xl font-black text-primary-600 border border-primary-100 shadow-sm mb-8">
           {{ idleMonogram }}
         </div>
-        <p class="mt-5 text-[1.35rem] font-medium text-[#4b5f82]">
+        <h2 class="text-2xl font-black text-secondary-900 tracking-tight">
           {{ $t('community.search.emptyState.title') }}
-        </p>
-        <p class="mt-2 max-w-xl text-[14px] leading-7 text-slate-500">
+        </h2>
+        <p class="mt-3 text-body-secondary text-base leading-relaxed">
           {{ $t('community.search.emptyState.desc') }}
         </p>
       </div>
     </section>
 
+    <!-- No Results found -->
     <section
       v-else-if="totalResults === 0"
-      class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white px-5 py-12 shadow-[0_16px_38px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16"
+      class="surface-card p-12 sm:p-20 border-secondary-100"
     >
       <div class="mx-auto max-w-2xl text-center">
         <FoundationEmptyState
-          icon="i-ph-magnifying-glass"
+          icon="i-ph-magnifying-glass-duotone"
           :title="$t('community.search.emptyValue.title')"
           :description="$t('community.search.emptyValue.desc', { keyword: searchText.trim() })"
         />
 
-        <div class="mt-6 flex flex-wrap justify-center gap-3">
-          <button
-            class="inline-flex h-11 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-            type="button"
+        <div class="mt-10 flex flex-wrap justify-center gap-3">
+          <UButton
+            color="primary"
+            size="lg"
+            class="rounded-full font-black px-8 shadow-lg shadow-primary-500/20"
             @click="clearFilters"
           >
             {{ $t('community.search.clearFilters') }}
-          </button>
+          </UButton>
 
-          <button
+          <UButton
             v-for="item in quickKeywords.slice(0, 3)"
             :key="item"
-            class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-            type="button"
+            variant="soft"
+            color="gray"
+            size="lg"
+            class="rounded-full px-6 font-bold"
             @click="applyQuickKeyword(item)"
           >
             {{ $t('community.search.tryKeyword', { keyword: item }) }}
-          </button>
+          </UButton>
         </div>
       </div>
     </section>
 
-    <div v-else class="space-y-5">
-      <section class="rounded-[28px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_30px_rgba(15,35,110,0.06)]">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
+    <!-- Main Results Flow -->
+    <div v-else class="space-y-8">
+      <section class="surface-card p-6 sm:p-8 border-secondary-100/50">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div class="space-y-1">
+            <p class="text-micro font-bold uppercase tracking-widest text-primary-600">
               {{ $t('community.search.results.label') }}
             </p>
-            <h2 class="mt-2 text-[1.55rem] font-black tracking-[-0.05em] text-[#243b63]">
+            <h2 class="text-2xl font-black text-secondary-900 leading-tight">
               {{ resultHeading }}
             </h2>
-            <p class="mt-2 text-[14px] leading-7 text-slate-500">
+            <p class="text-body-secondary text-sm">
               {{ resultDescription }}
             </p>
           </div>
 
-          <button
+          <UButton
             v-if="selectedType !== 'all'"
-            class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-            type="button"
+            variant="soft"
+            color="primary"
+            size="md"
+            class="rounded-full font-black px-6"
             @click="showAllResults"
           >
             {{ $t('community.search.results.showAllTypes') }}
-          </button>
+          </UButton>
         </div>
       </section>
 
       <section
         v-for="section in visibleSections"
         :key="section.kind"
-        class="space-y-4 rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_32px_rgba(15,35,110,0.06)]"
+        class="space-y-6 surface-card p-6 sm:p-8 border-secondary-100/30"
       >
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-secondary-100/50 pb-6">
+          <div class="space-y-1">
+            <p class="text-label-primary text-secondary-900 uppercase tracking-widest text-xs font-black">
               {{ $t(`community.search.tabs.${section.kind}.label`) }}
             </p>
-            <p class="mt-1 text-[14px] leading-6 text-slate-500">
+            <p class="text-body-secondary text-sm">
               {{ $t(`community.search.tabs.${section.kind}.desc`) }}
             </p>
           </div>
 
-          <button
+          <UButton
             v-if="selectedType === 'all' && section.items.length > section.visibleItems.length"
-            class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-            type="button"
+            variant="ghost"
+            color="primary"
+            size="sm"
+            class="rounded-full font-black px-4"
             @click="selectOnlyType(section.kind)"
           >
             {{ $t('community.search.results.viewAllOfSpecific', { count: section.items.length }) }}
-          </button>
+          </UButton>
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-2">
+        <div class="grid gap-6 lg:grid-cols-2">
           <SearchResultCard
             v-for="item in section.visibleItems"
             :key="item.id"
@@ -144,32 +158,32 @@
       </section>
     </div>
 
-    <footer class="rounded-[28px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_30px_rgba(15,35,110,0.05)]">
-      <div class="flex flex-col gap-4 border-t border-[#eef2fb] pt-5 text-[13px] text-slate-500 md:flex-row md:items-center md:justify-between">
-        <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
-          <span>© 2026 VNSEEA</span>
+    <!-- Footer -->
+    <footer class="surface-card p-6 sm:p-8 border-secondary-100/50">
+      <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm font-bold text-secondary-400">
+          <span class="text-secondary-900">© 2026 VNSEEA</span>
           <NuxtLink
             v-for="link in primaryFooterLinks"
             :key="link.label"
             :to="link.to || '/home'"
-            class="transition hover:text-[#0000ff]"
+            class="transition hover:text-primary-600"
           >
             {{ $t(link.label) }}
           </NuxtLink>
-          <button
-            v-for="link in secondaryFooterLinks"
-            :key="link.label"
-            class="transition hover:text-[#0000ff]"
-            type="button"
-          >
-            {{ $t(link.label) }}
-          </button>
         </div>
 
-        <button class="inline-flex items-center gap-2 font-semibold text-[#4b5f82] transition hover:text-[#0000ff]" type="button">
-          <Icon name="i-ph-globe-hemisphere-west-fill" class="h-4 w-4" />
+        <UButton
+          variant="ghost"
+          color="gray"
+          size="sm"
+          class="rounded-full font-black text-secondary-500 hover:text-primary-600"
+        >
+          <template #leading>
+            <Icon name="i-ph-globe-hemisphere-west-fill" class="h-4 w-4" />
+          </template>
           {{ $t('community.search.footer.language') }}
-        </button>
+        </UButton>
       </div>
     </footer>
   </div>

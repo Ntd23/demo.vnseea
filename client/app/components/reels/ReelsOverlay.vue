@@ -1,42 +1,74 @@
 <template>
-  <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 px-4 pb-4 sm:px-5 sm:pb-5">
-    <div class="min-w-0 max-w-[360px] pb-10 sm:pb-0">
+  <div class="absolute inset-x-0 bottom-0 flex h-full items-end justify-between p-4 sm:p-6 pb-20 sm:pb-8">
+    <div class="flex-1 min-w-0 pr-12">
       <div class="flex items-center gap-3">
-        <img :src="reel.avatar" :alt="reel.author" class="h-10 w-10 rounded-full border-2 border-white object-cover shadow-lg sm:h-11 sm:w-11">
+        <UAvatar
+          :src="reel.avatar"
+          :alt="reel.author"
+          size="lg"
+          class="ring-2 ring-white shadow-lg"
+        />
         <div class="min-w-0">
-          <p class="truncate text-[0.98rem] font-bold leading-tight text-white">{{ reel.author }}</p>
-          <p class="truncate text-[0.8rem] text-white/70">{{ reel.subtitle }}</p>
+          <p class="truncate text-base font-black text-white tracking-tight">{{ reel.author }}</p>
+          <p class="truncate text-xs font-bold text-white/70">{{ reel.subtitle }}</p>
         </div>
       </div>
 
-      <h1 class="mt-4 text-[1.05rem] font-black leading-tight text-white sm:text-[1.25rem]">
-        {{ reel.title }}
-      </h1>
-      <p class="mt-2 text-[0.92rem] leading-7 text-white/82 sm:max-w-[330px]">
-        {{ reel.description }}
-      </p>
+      <div class="mt-4 space-y-2">
+        <h2 class="text-xl font-black text-white leading-tight sm:text-2xl drop-shadow-md">
+          {{ reel.title }}
+        </h2>
+        <p class="line-clamp-2 text-sm font-medium leading-relaxed text-white/90 sm:max-w-md drop-shadow-sm">
+          {{ reel.description }}
+        </p>
+      </div>
     </div>
 
-    <div class="flex w-[76px] flex-col items-center justify-end gap-2 pb-1 sm:w-[82px] sm:gap-3">
-      <button class="fb-action-button text-[#ff4d5a]" type="button" :aria-label="$t('pages.reelsPage.like')">
-        <Icon name="i-ph-heart-fill" class="h-6 w-6" />
-      </button>
-      <span class="fb-action-count">{{ reel.likes }}</span>
+    <!-- Actions Sidebar -->
+    <div class="flex flex-col items-center gap-4 sm:gap-5 pb-2">
+      <div class="flex flex-col items-center gap-1.5">
+        <UButton
+          icon="i-ph-heart-fill"
+          size="xl"
+          class="rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all active:scale-90"
+          :ui="{ icon: { base: 'text-red-500 w-7 h-7' } }"
+          variant="ghost"
+        />
+        <span class="text-[11px] font-black text-white drop-shadow-md">{{ reel.likes }}</span>
+      </div>
 
-      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.comment')">
-        <Icon name="i-ph-chat-circle-text-fill" class="h-6 w-6" />
-      </button>
-      <span class="fb-action-count">{{ reel.comments }}</span>
+      <div class="flex flex-col items-center gap-1.5">
+        <UButton
+          icon="i-ph-chat-circle-text-fill"
+          size="xl"
+          class="rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all active:scale-90"
+          :ui="{ icon: { base: 'w-7 h-7' } }"
+          variant="ghost"
+        />
+        <span class="text-[11px] font-black text-white drop-shadow-md">{{ reel.comments }}</span>
+      </div>
 
-      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.share')">
-        <Icon name="i-ph-share-network-fill" class="h-6 w-6" />
-      </button>
-      <span class="fb-action-count">{{ $t('pages.reelsPage.share') }}</span>
+      <div class="flex flex-col items-center gap-1.5">
+        <UButton
+          icon="i-ph-share-network-fill"
+          size="xl"
+          class="rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all active:scale-90"
+          :ui="{ icon: { base: 'w-7 h-7' } }"
+          variant="ghost"
+        />
+        <span class="text-[11px] font-black text-white uppercase tracking-tighter drop-shadow-md">{{ $t('pages.reelsPage.share') }}</span>
+      </div>
 
-      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.save')">
-        <Icon name="i-ph-bookmark-simple-fill" class="h-6 w-6" />
-      </button>
-      <span class="fb-action-count">{{ $t('pages.reelsPage.save') }}</span>
+      <div class="flex flex-col items-center gap-1.5">
+        <UButton
+          icon="i-ph-bookmark-simple-fill"
+          size="xl"
+          class="rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all active:scale-90"
+          :ui="{ icon: { base: 'w-7 h-7' } }"
+          variant="ghost"
+        />
+        <span class="text-[11px] font-black text-white uppercase tracking-tighter drop-shadow-md">{{ $t('pages.reelsPage.save') }}</span>
+      </div>
     </div>
   </div>
 </template>
