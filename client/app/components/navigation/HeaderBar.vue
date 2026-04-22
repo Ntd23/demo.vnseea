@@ -1,65 +1,101 @@
-<template>
-  <header class="sticky top-0 z-30">
-    <div class="hidden border-b border-[#dfe6ff] bg-white/95 shadow-[0_10px_26px_rgba(15,35,110,0.08)] backdrop-blur xl:block">
-      <div class="mx-auto flex h-16 w-full max-w-[1880px] items-center gap-4 px-5">
-        <div class="flex shrink-0 items-center gap-2 rounded-full border border-[#dbe3f2] bg-[#f7f9ff] p-1">
-          <button class="desktop-pill" :class="isHome ? 'desktop-pill--active' : 'desktop-pill--inactive'" type="button">
-            <Icon name="i-ph-house-fill" class="h-4.5 w-4.5" />
-            <span>{{ $t("navigation.headerBar.home") }}</span>
-          </button>
-        </div>
+  <header class="sticky top-0 z-40">
+    <!-- Desktop Header -->
+    <div class="hidden xl:block">
+      <div class="border-b border-secondary-100 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+        <div class="mx-auto flex h-[72px] w-full max-w-[1920px] items-center gap-6 px-8">
+          <!-- Home Navigation Pill -->
+          <div class="flex shrink-0 items-center gap-2 rounded-2xl border border-secondary-100 bg-secondary-50/50 p-1.5 ring-1 ring-inset ring-white/50">
+            <NuxtLink 
+              to="/home"
+              class="flex items-center gap-2.5 px-4 py-2 rounded-xl transition-all duration-300 group"
+              :class="isHome ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' : 'text-secondary-500 hover:text-primary-600 hover:bg-white'"
+            >
+              <Icon :name="isHome ? 'i-ph-house-fill' : 'i-ph-house-duotone'" class="h-5 w-5 transition-transform group-hover:scale-110" />
+              <span class="text-[11px] font-black uppercase tracking-[0.2em]">{{ $t("navigation.headerBar.home") }}</span>
+            </NuxtLink>
+          </div>
 
-        <div class="min-w-0 max-w-[780px] flex-1">
-          <NavigationHeaderSearchInput />
-        </div>
+          <!-- Search Input Section -->
+          <div class="min-w-0 max-w-[840px] flex-1">
+            <NavigationHeaderSearchInput />
+          </div>
 
-        <div class="ml-auto flex shrink-0 items-center gap-2">
-          <NavigationLocaleSwitcher compact />
-          <component
-            :is="action.to ? NuxtLink : 'button'"
-            v-for="action in desktopActions"
-            :key="action.label"
-            :to="action.to"
-            class="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f5f8ff] text-[#33496d] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-            :class="action.to === route.path ? 'border-[#0000ff] bg-[#eef2ff] text-[#0000ff]' : ''"
-            :type="action.to ? undefined : 'button'"
-            :aria-label="$t(action.label)"
-          >
-            <Icon :name="action.icon" class="h-5 w-5" />
-            <span v-if="action.badge" class="absolute -right-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0000ff] px-1 text-[9px] font-bold text-white">{{ action.badge }}</span>
-          </component>
-          <button class="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border-2 border-[#dce4ff] bg-[linear-gradient(145deg,#1f34ff_0%,#0000ff_60%,#4d63ff_100%)] text-white shadow-[0_8px_18px_rgba(0,0,255,0.16)]" type="button" :aria-label="$t('navigation.headerBar.account')" @click="$emit('toggle-menu')">
-            <Icon name="i-lucide-circle-user-round" class="h-5 w-5" />
-          </button>
+          <!-- Action Buttons Section -->
+          <div class="ml-auto flex shrink-0 items-center gap-3">
+            <NavigationLocaleSwitcher compact />
+            
+            <div class="flex items-center gap-1.5 p-1 bg-secondary-50/50 border border-secondary-100 rounded-2xl">
+              <component
+                :is="action.to ? NuxtLink : 'button'"
+                v-for="action in desktopActions"
+                :key="action.label"
+                :to="action.to"
+                class="relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-500 group"
+                :class="action.to === route.path || (action.label === 'navigation.headerBar.notifications' && false) ? 'bg-white text-primary-600 shadow-sm ring-1 ring-secondary-100' : 'text-secondary-400 hover:text-primary-600 hover:bg-white'"
+                :type="action.to ? undefined : 'button'"
+                :aria-label="$t(action.label)"
+              >
+                <Icon :name="action.icon.includes('duotone') ? action.icon : action.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5 transition-transform group-hover:scale-110" />
+                <span v-if="action.badge" class="absolute -top-1 -right-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-lg bg-primary-600 px-1 text-[9px] font-black text-white ring-2 ring-white shadow-lg shadow-primary-500/30">
+                  {{ action.badge }}
+                </span>
+              </component>
+            </div>
+
+            <!-- Profile / User Menu Trigger -->
+            <button 
+              class="group relative flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 p-[2px] transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary-500/20" 
+              type="button" 
+              :aria-label="$t('navigation.headerBar.account')" 
+              @click="$emit('toggle-menu')"
+            >
+              <div class="flex h-full w-full items-center justify-center rounded-[14px] bg-white text-primary-600 transition-colors group-hover:bg-primary-50">
+                <Icon name="i-ph-user-duotone" class="h-6 w-6" />
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="bg-[linear-gradient(135deg,#1738ff_0%,#0016c9_100%)] px-3 py-2.5 shadow-[0_10px_24px_rgba(0,0,255,0.25)] xl:hidden">
-      <div class="flex items-center justify-between gap-1 overflow-x-auto scrollbar-hide">
-        <NuxtLink
-          v-for="item in mobileIconItems.slice(0, -1)"
-          :key="item.label"
-          :to="item.to"
-          class="mobile-icon-btn"
-          :class="item.active ? 'mobile-icon-btn--active' : ''"
-          :aria-label="$t(item.label)"
-        >
-          <Icon :name="item.icon" class="h-[21px] w-[21px]" />
-          <span v-if="item.logoBadge" class="mobile-icon-logo">{{ item.logoBadge }}</span>
-          <span v-if="item.badge" class="mobile-icon-badge">{{ item.badge }}</span>
-        </NuxtLink>
+    <!-- Mobile Header -->
+    <div class="xl:hidden">
+      <div class="relative overflow-hidden bg-primary-950 px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
+        <!-- Visual Decor -->
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-950 to-secondary-950 z-0 opacity-50" />
+        <div class="absolute top-0 right-0 w-32 h-32 bg-primary-600/20 rounded-full blur-3xl -mr-16 -mt-16" />
+        
+        <div class="relative z-10 flex items-center justify-between gap-2 overflow-x-auto scrollbar-hide no-scrollbar">
+          <div class="flex items-center gap-1">
+            <NuxtLink
+              v-for="item in mobileIconItems.slice(0, -1)"
+              :key="item.label"
+              :to="item.to"
+              class="relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-300"
+              :class="item.active ? 'bg-white/15 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] ring-1 ring-white/10' : 'text-white/60 hover:text-white hover:bg-white/5'"
+              :aria-label="$t(item.label)"
+            >
+              <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5" />
+              <span v-if="item.logoBadge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-white px-1 text-[8px] font-black text-primary-600 shadow-xl ring-1 ring-white/20">
+                {{ item.logoBadge }}
+              </span>
+              <span v-if="item.badge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-rose-500 px-1 text-[8px] font-black text-white shadow-xl ring-1 ring-white/20">
+                {{ item.badge }}
+              </span>
+            </NuxtLink>
+          </div>
 
-        <div class="flex items-center gap-1">
-          <NavigationLocaleSwitcher compact />
-          <button
-            class="mobile-icon-btn mobile-icon-btn--avatar"
-            type="button"
-            :aria-label="$t('navigation.headerBar.account')"
-            @click="$emit('toggle-menu')"
-          >
-            <Icon name="i-lucide-circle-user-round" class="h-[21px] w-[21px] text-white" />
-          </button>
+          <div class="flex items-center gap-2 pl-2 border-l border-white/10">
+            <NavigationLocaleSwitcher compact />
+            <button
+              class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white transition-all active:scale-95 ring-1 ring-white/10"
+              type="button"
+              :aria-label="$t('navigation.headerBar.account')"
+              @click="$emit('toggle-menu')"
+            >
+              <Icon name="i-ph-user-duotone" class="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

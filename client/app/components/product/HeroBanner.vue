@@ -1,70 +1,67 @@
-  <section :class="theme.container">
-    <!-- Premium Deco -->
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.1),transparent_40%)]" />
-    <div class="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
+  <section :class="[theme.container, 'surface-card group relative overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl transition-all duration-700']">
+    <!-- Premium Decorations -->
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.05),transparent_40%)]" />
+    <div class="pointer-events-none absolute right-[-10%] top-[-30%] h-[500px] w-[500px] rounded-full bg-white/5 blur-[120px] transition-transform duration-1000 group-hover:scale-110" />
     <div :class="theme.bottomGlow" />
 
-    <div class="relative z-10 flex flex-col gap-10 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-[760px] space-y-6">
+    <div class="relative z-10 flex flex-col gap-12 px-8 py-16 sm:px-12 lg:px-16 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-[780px] space-y-8">
         <div class="space-y-4">
-          <UBadge color="white" variant="soft" class="rounded-full bg-white/10 px-4 py-1.5 font-black uppercase tracking-widest text-primary-200 border border-white/10 backdrop-blur-md">
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-300/80 pl-1">
             {{ badge }}
-          </UBadge>
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-[0.95] tracking-tight text-white">
+          </p>
+          <h1 class="text-5xl sm:text-7xl font-black leading-none tracking-tight text-white transition-colors group-hover:text-primary-100">
             {{ title }}
           </h1>
-          <p class="max-w-[580px] text-base font-medium leading-relaxed text-white/80 sm:text-lg">
-            {{ description }}
+          <p class="text-base font-medium leading-relaxed text-white/70 sm:text-lg pl-1 max-w-2xl italic">
+            "{{ description }}"
           </p>
         </div>
 
-        <div class="flex flex-wrap gap-4 pt-4">
+        <div class="flex flex-wrap items-center gap-4 pt-4">
           <UButton
             to="/my-products"
-            color="white"
             variant="soft"
             size="xl"
-            leading-icon="i-ph-arrow-left-bold"
-            class="rounded-full px-8 font-black bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all active:scale-95"
+            class="h-14 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-xl transition-all active:scale-95 px-8"
           >
-             {{ $t("pages.productsPage.backToMyProducts") || "Back" }}
+            <template #leading>
+              <Icon name="i-ph-arrow-left-duotone" class="h-5 w-5" />
+            </template>
+            {{ $t("pages.productsPage.backToMyProducts") || "Back" }}
           </UButton>
 
           <UButton
-            color="white"
-            variant="solid"
             size="xl"
-            class="rounded-full px-8 font-black shadow-2xl active:scale-95 transition-all"
+            class="h-14 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl transition-all active:scale-95 px-10 border-none"
             :class="theme.secondaryAction"
             @click="$emit('secondaryAction')"
           >
+            <template #leading>
+              <Icon name="i-ph-sparkle-duotone" class="h-6 w-6" />
+            </template>
             {{ secondaryActionLabel }}
           </UButton>
         </div>
       </div>
 
       <!-- Hero Stats -->
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:w-[450px] xl:grid-cols-1">
-        <UCard
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:w-[380px]">
+        <div
           v-for="item in stats"
           :key="item.label"
-          class="group rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl transition-all hover:bg-white/10"
-          :ui="{ body: { padding: 'p-5' }, base: 'overflow-hidden' }"
+          class="group/stat rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/10"
         >
-          <div class="space-y-3">
-            <p class="text-[10px] font-black uppercase tracking-widest text-white/50 group-hover:text-white/70 transition-colors">
-              {{ item.label }}
-            </p>
-            <div class="flex items-baseline gap-2">
-              <p class="text-3xl font-black text-white leading-none tracking-tight">
-                {{ item.value }}
-              </p>
-              <p class="text-xs font-bold text-white/60">
-                {{ item.description }}
-              </p>
-            </div>
-          </div>
-        </UCard>
+          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
+            {{ item.label }}
+          </p>
+          <p class="mt-4 text-3xl font-black text-white leading-none tracking-tight">
+            {{ item.value }}
+          </p>
+          <p class="mt-2 text-[10px] font-bold text-white/40 group-hover/stat:text-white/60 line-clamp-1">
+            {{ item.description }}
+          </p>
+        </div>
       </div>
     </div>
   </section>
@@ -89,16 +86,16 @@ defineEmits<{
 const theme = computed(() => {
   if (props.variant === "edit") {
     return {
-      container: "relative overflow-hidden rounded-[40px] bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 px-6 pb-20 pt-10 text-white shadow-2xl sm:px-10 lg:px-12",
-      bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[240px] w-[240px] rounded-full bg-primary-400/20 blur-3xl",
-      secondaryAction: "bg-white text-primary-950 hover:bg-primary-50",
+      container: "bg-gradient-to-br from-secondary-950 via-primary-900 to-secondary-900",
+      bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[300px] w-[300px] rounded-full bg-primary-400/10 blur-3xl",
+      secondaryAction: "bg-primary-600 text-white hover:bg-primary-700 shadow-primary-500/40",
     }
   }
 
   return {
-    container: "relative overflow-hidden rounded-[40px] bg-gradient-to-br from-orange-950 via-amber-900 to-rose-900 px-6 pb-20 pt-10 text-white shadow-2xl sm:px-10 lg:px-12",
-    bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[240px] w-[240px] rounded-full bg-amber-500/20 blur-3xl",
-    secondaryAction: "bg-white text-amber-950 hover:bg-amber-50",
+    container: "bg-gradient-to-br from-orange-950 via-amber-900 to-rose-900",
+    bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[300px] w-[300px] rounded-full bg-amber-500/10 blur-3xl",
+    secondaryAction: "bg-white text-amber-900 hover:bg-amber-50 shadow-white/20",
   }
 })
 </script>

@@ -1,38 +1,57 @@
-  <UCard class="surface-card ring-1 ring-secondary-100 shadow-xl" :ui="{ body: { padding: 'p-6' } }">
-    <p class="text-[10px] font-black uppercase tracking-[0.25em] text-primary-500 mb-4 pl-1">
-      {{ title || $t("pages.productEditor.checklist") }}
-    </p>
-    
-    <div class="space-y-4">
-      <div class="px-1">
-        <UProgress :model-value="donePercent" color="success" size="sm" class="h-1.5" />
+<UCard 
+    class="surface-card group ring-1 ring-secondary-200/50 shadow-2xl bg-white transition-all duration-500 hover:shadow-3xl"
+    :ui="{ body: { padding: 'p-8 sm:p-10' } }"
+  >
+    <div class="space-y-8">
+      <div class="flex items-center justify-between">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+          {{ $t('pages.productEditor.checklistLabel') }}
+        </p>
+        <Icon name="i-ph-list-checks-duotone" class="h-6 w-6 text-primary-300" />
       </div>
 
-      <div class="space-y-3 pt-2">
-        <div
-          v-for="item in items"
-          :key="item.label"
-          class="flex items-start gap-4 p-4 rounded-2xl transition-all border group"
-          :class="item.done 
-            ? 'border-emerald-100 bg-emerald-50/40' 
-            : 'border-secondary-100 bg-secondary-50/20'"
+      <div class="space-y-5">
+        <div 
+          v-for="item in items" 
+          :key="item.label" 
+          class="flex items-center gap-4 group/item"
         >
-          <div
-            class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all"
+          <div 
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-500"
             :class="item.done 
-              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-110' 
-              : 'bg-white border-2 border-secondary-100 text-secondary-300 group-hover:border-primary-200 group-hover:text-primary-300'"
+              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
+              : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100'"
           >
-            <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle'" class="h-4 w-4" />
+            <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle-duotone'" class="h-5 w-5" />
           </div>
           <div class="space-y-0.5">
-            <p class="text-sm font-black text-secondary-950 tracking-tight leading-tight transition-colors" :class="{ 'text-emerald-900': item.done }">
+            <span 
+              class="text-[11px] font-black uppercase tracking-widest text-secondary-500 transition-colors group-hover/item:text-secondary-900"
+              :class="{ 'line-through text-secondary-300': item.done }"
+            >
               {{ item.label }}
-            </p>
-            <p class="text-[11px] font-medium leading-relaxed text-secondary-500">
-              {{ item.description }}
+            </span>
+            <p v-if="!item.done" class="text-[10px] font-bold text-secondary-400 opacity-60">
+              {{ $t('pages.productEditor.required') }}
             </p>
           </div>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-secondary-50">
+        <div class="flex items-center justify-between px-1">
+          <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
+            {{ $t('pages.productEditor.completionLabel') }}
+          </p>
+          <p class="text-[14px] font-black text-primary-600">
+            {{ Math.round(donePercent) }}%
+          </p>
+        </div>
+        <div class="mt-4 h-2 w-full rounded-full bg-secondary-50 ring-1 ring-secondary-100 overflow-hidden">
+          <div 
+            class="h-full bg-primary-500 transition-all duration-1000 shadow-[0_0_12px_rgba(var(--color-primary-500-rgb),0.5)]" 
+            :style="{ width: `${donePercent}%` }" 
+          />
         </div>
       </div>
     </div>

@@ -1,20 +1,21 @@
-<template>
   <NuxtLink
     :to="to"
-    class="group flex min-w-0 items-center gap-2.5 rounded-xl px-2.5 py-2 text-[12px] font-semibold transition"
-    :class="active ? 'bg-[#edf1ff] text-[#0000ff]' : 'text-slate-700 hover:bg-[#f7f9ff] hover:text-[#0000ff]'"
+    class="group flex min-w-0 items-center gap-3.5 rounded-xl px-3 py-2.5 transition-all duration-300"
+    :class="active ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm shadow-primary-500/5' : 'text-secondary-500 hover:bg-secondary-50 hover:text-primary-600'"
   >
     <span
-      class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border"
-      :class="active ? 'border-[#ccd7ff] bg-white text-[#0000ff]' : 'border-[#edf2fb] bg-white text-slate-600'"
+      class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-300"
+      :class="active ? 'border-primary-200 bg-white text-primary-600 shadow-sm' : 'border-secondary-100 bg-white text-secondary-400 group-hover:border-primary-200 group-hover:text-primary-600'"
     >
-      <Icon :name="icon" class="h-3.5 w-3.5" />
+      <Icon :name="active ? icon : icon.replace('-fill', '-duotone')" class="h-4.5 w-4.5" />
     </span>
-    <span class="truncate">{{ label }}</span>
+    
+    <span class="truncate text-[10px] font-black uppercase tracking-[0.2em] leading-none">{{ label }}</span>
+    
     <span
       v-if="badge"
-      class="ml-auto inline-flex min-w-5 shrink-0 items-center justify-center rounded-full px-1.5 py-0.5 text-[9px] font-bold"
-      :class="active ? 'bg-white text-[#0000ff]' : 'bg-amber-100 text-amber-700'"
+      class="ml-auto inline-flex min-w-5 shrink-0 items-center justify-center rounded-lg px-2 py-1 text-[9px] font-black shadow-sm ring-1 ring-inset"
+      :class="active ? 'bg-primary-600 text-white ring-primary-500' : 'bg-primary-100 text-primary-700 ring-primary-200'"
     >
       {{ badge }}
     </span>

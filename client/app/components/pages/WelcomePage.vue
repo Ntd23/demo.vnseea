@@ -1,42 +1,86 @@
 <template>
   <AuthSplitShell :hero-props="heroProps">
     <template #right>
-      <div class="w-full max-w-[420px]">
-        <div class="mx-auto max-w-[420px]">
-          <section class="flex flex-col gap-2">
-            <p class="text-[13px] font-extrabold tracking-[0.32em] text-[#0000ff]">{{ $t('pages.welcomePage.eyebrow') }}</p>
-            <h1 class="text-[2.35rem] font-black leading-[0.95] tracking-[-0.08em] text-[#0000ff] sm:text-[2.7rem]">{{ $t('pages.welcomePage.title') }}</h1>
-            <p class="text-[1rem] leading-7 text-slate-500">{{ $t('pages.welcomePage.subtitle') }}</p>
-          </section>
+      <div class="w-full max-w-[420px] mx-auto space-y-10">
+        <section class="space-y-3">
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+            {{ $t('pages.welcomePage.eyebrow') }}
+          </p>
+          <h1 class="text-5xl font-black leading-[0.9] tracking-tighter text-secondary-900 sm:text-6xl">
+            {{ $t('pages.welcomePage.title') }}
+          </h1>
+          <p class="text-base font-medium leading-relaxed text-secondary-500 sm:text-lg">
+            {{ $t('pages.welcomePage.subtitle') }}
+          </p>
+        </section>
 
-          <section class="mt-7 flex flex-col gap-4">
-            <div class="flex flex-col gap-2">
-              <label class="text-[0.95rem] font-semibold text-[#243b63]" for="welcome-login">{{ $t('pages.welcomePage.loginLabel') }}</label>
-              <input id="welcome-login" v-model="login" type="text" class="h-[3.6rem] w-full rounded-[1.15rem] border border-[#dbe3f2] bg-white px-5 text-[1rem] text-slate-900 outline-none sm:h-[3.85rem] sm:rounded-[1.45rem]">
-            </div>
+        <section class="space-y-6">
+          <div class="space-y-5">
+            <UFormGroup
+              :label="$t('pages.welcomePage.loginLabel')"
+              label-class="text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2"
+            >
+              <UInput
+                id="welcome-login"
+                v-model="login"
+                size="xl"
+                icon="i-ph-user-duotone"
+                :ui="{
+                  base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
+                  icon: { leading: { pointer: 'pointer-events-none', base: 'text-primary-500' } }
+                }"
+              />
+            </UFormGroup>
 
-            <div class="flex flex-col gap-2">
-              <div class="flex items-center justify-between gap-4">
-                <label class="text-[0.95rem] font-semibold text-[#243b63]" for="welcome-password">{{ $t('pages.welcomePage.passwordLabel') }}</label>
-                <NuxtLink class="text-[0.95rem] font-bold text-[#0000ff]" to="/forgot-password">{{ $t('pages.welcomePage.forgotPassword') }}</NuxtLink>
-              </div>
-              <div class="relative">
-                <input id="welcome-password" v-model="password" :type="showPassword ? 'text' : 'password'" class="h-[3.6rem] w-full rounded-[1.15rem] border border-[#dbe3f2] bg-white px-5 pr-14 text-[1rem] text-slate-900 outline-none sm:h-[3.85rem] sm:rounded-[1.45rem]">
-                <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" :aria-label="showPassword ? $t('pages.welcomePage.hidePassword') : $t('pages.welcomePage.showPassword')" @click="showPassword = !showPassword">
-                  <svg v-if="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></svg>
-                </button>
-              </div>
-            </div>
+            <UFormGroup
+              label-class="w-full"
+            >
+              <template #label>
+                <div class="flex items-center justify-between w-full mb-2 px-1">
+                  <span class="text-[10px] font-black uppercase tracking-widest text-secondary-400">{{ $t('pages.welcomePage.passwordLabel') }}</span>
+                  <NuxtLink class="text-[10px] font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 transition-colors" to="/forgot-password">{{ $t('pages.welcomePage.forgotPassword') }}</NuxtLink>
+                </div>
+              </template>
+              <UInput
+                id="welcome-password"
+                v-model="password"
+                size="xl"
+                :type="showPassword ? 'text' : 'password'"
+                icon="i-ph-lock-duotone"
+                :ui="{
+                  base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pr-12',
+                  icon: { leading: { pointer: 'pointer-events-none', base: 'text-primary-500' } }
+                }"
+              >
+                <template #trailing>
+                  <button type="button" class="flex items-center justify-center h-10 w-10 text-secondary-400 hover:text-primary-600 transition-colors" @click="showPassword = !showPassword">
+                    <Icon :name="showPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'" class="h-5 w-5" />
+                  </button>
+                </template>
+              </UInput>
+            </UFormGroup>
+          </div>
 
-            <button class="h-[3.7rem] w-full rounded-[1.2rem] bg-[linear-gradient(180deg,#2749ff_0%,#0000ff_100%)] text-[1.05rem] font-black text-white shadow-[0_14px_32px_rgba(0,0,255,0.18)] sm:h-[3.95rem] sm:rounded-[1.45rem] sm:text-[1.15rem]" type="button" :disabled="loading" @click="handleLogin">
-              <span v-if="loading" class="flex items-center justify-center gap-2"><Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" /> {{ $t('pages.welcomePage.loggingIn') }}</span>
-              <span v-else>{{ $t('pages.welcomePage.login') }}</span>
-            </button>
+          <UButton
+            size="xl"
+            block
+            :loading="loading"
+            class="h-14 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/30 transition-all active:scale-[0.98]"
+            @click="handleLogin"
+          >
+            <template #leading>
+              <Icon v-if="!loading" name="i-ph-sign-in-duotone" class="h-5 w-5" />
+            </template>
+            {{ loading ? $t('pages.welcomePage.loggingIn') : $t('pages.welcomePage.login') }}
+          </UButton>
 
-            <p class="text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">{{ $t('pages.welcomePage.noAccount') }} <NuxtLink class="font-extrabold text-[#0000ff]" to="/register">{{ $t('pages.welcomePage.register') }}</NuxtLink></p>
-          </section>
-        </div>
+          <div class="flex items-center justify-center gap-1.5 py-4">
+            <p class="text-xs font-medium text-secondary-400">{{ $t('pages.welcomePage.noAccount') }}</p>
+            <NuxtLink class="text-xs font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest decoration-primary-600/30 decoration-2 underline-offset-4 hover:underline" to="/register">
+              {{ $t('pages.welcomePage.register') }}
+            </NuxtLink>
+          </div>
+        </section>
       </div>
     </template>
   </AuthSplitShell>

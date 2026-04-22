@@ -1,28 +1,31 @@
   <UCard
-    class="surface-card ring-1 ring-secondary-100 shadow-xl"
-    :ui="{ body: { padding: 'p-6 sm:p-8' } }"
+    class="surface-card group/editor ring-1 ring-secondary-100 shadow-2xl bg-white transition-all duration-500 hover:shadow-3xl"
+    :ui="{ body: { padding: 'p-8 sm:p-12' }, base: 'overflow-hidden' }"
   >
-    <div class="space-y-10">
+    <div class="space-y-12">
       <!-- Title & Price Section -->
-      <div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_300px]">
-        <UFormField size="md" class="space-y-3">
+      <div class="grid gap-8 md:grid-cols-[minmax(0,1fr)_340px]">
+        <UFormField class="space-y-4" :ui="{ label: { base: 'text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-3 block pl-1' } }">
           <template #label>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 pl-1">{{ $t('pages.productEditor.titleLabel') }}</span>
+            {{ $t('pages.productEditor.titleLabel') }}
           </template>
           <UInput
             v-model="title"
             size="xl"
-            color="primary"
-            variant="outline"
+            icon="i-ph-text-aa-duotone"
             class="w-full"
-            :ui="{ base: 'h-16 rounded-2xl px-6 text-lg font-bold' }"
+            :ui="{ 
+              rounded: 'rounded-2xl', 
+              base: 'h-18 lg:h-20 text-xl font-bold bg-secondary-50/30 border-none ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all pl-16 px-8',
+              icon: { leading: { wrapper: 'left-6', base: 'h-6 w-6 text-primary-500' } }
+            }"
             :placeholder="$t('pages.productEditor.titleLabel')"
           />
         </UFormField>
 
-        <UFormField size="md" class="space-y-3">
+        <UFormField class="space-y-4" :ui="{ label: { base: 'text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-3 block pl-1' } }">
           <template #label>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 pl-1">{{ $t('pages.productEditor.priceLabel') }}</span>
+            {{ $t('pages.productEditor.priceLabel') }}
           </template>
           <UInputNumber
             v-model="priceValue"
@@ -32,31 +35,36 @@
             :step="0.01"
             placeholder="0.00"
             class="w-full"
-            :ui="{ base: 'h-16 rounded-2xl px-6 text-lg font-bold' }"
+            :ui="{ 
+              rounded: 'rounded-2xl', 
+              base: 'h-18 lg:h-20 text-xl font-bold bg-secondary-50/30 border-none ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all px-8'
+            }"
           />
         </UFormField>
       </div>
 
       <!-- Description Section -->
-      <UFormField size="md" class="space-y-3">
+      <UFormField class="space-y-4" :ui="{ label: { base: 'text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-3 block pl-1' } }">
         <template #label>
-          <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 pl-1">{{ descriptionLabel || $t('pages.productEditor.descriptionLabel') }}</span>
+          {{ descriptionLabel || $t('pages.productEditor.descriptionLabel') }}
         </template>
         <UTextarea
           v-model="description"
-          autoresize
           :rows="6"
           :placeholder="$t('pages.productEditor.descriptionPlaceholder')"
           class="w-full"
-          :ui="{ base: 'min-h-[180px] rounded-2xl px-6 py-5 text-base font-medium leading-relaxed' }"
+          :ui="{ 
+            rounded: 'rounded-[2.5rem]', 
+            base: 'min-h-[220px] bg-secondary-50/30 border-none ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all px-10 py-8 text-lg font-medium leading-relaxed italic'
+          }"
         />
       </UFormField>
 
       <!-- Category & Condition Section -->
-      <div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_300px]">
-        <UFormField size="md" class="space-y-3">
+      <div class="grid gap-8 md:grid-cols-[minmax(0,1fr)_340px]">
+        <UFormField class="space-y-4" :ui="{ label: { base: 'text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-3 block pl-1' } }">
           <template #label>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 pl-1">{{ $t('pages.productEditor.categoryLabel') }}</span>
+            {{ $t('pages.productEditor.categoryLabel') }}
           </template>
           <USelect
             v-model="category"
@@ -65,13 +73,16 @@
             label-key="label"
             size="xl"
             class="w-full"
-            :ui="{ base: 'h-16 rounded-2xl px-6 text-base font-bold' }"
+            :ui="{ 
+              rounded: 'rounded-2xl', 
+              base: 'h-18 lg:h-20 text-lg font-bold bg-secondary-50/30 border-none ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all px-8'
+            }"
           />
         </UFormField>
 
-        <UFormField size="md" class="space-y-3">
+        <UFormField class="space-y-4" :ui="{ label: { base: 'text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-3 block pl-1' } }">
           <template #label>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 pl-1">{{ $t('pages.productEditor.conditionLabel') }}</span>
+            {{ $t('pages.productEditor.conditionLabel') }}
           </template>
           <USelect
             v-model="condition"
@@ -80,32 +91,37 @@
             label-key="label"
             size="xl"
             class="w-full"
-            :ui="{ base: 'h-16 rounded-2xl px-6 text-base font-bold' }"
+            :ui="{ 
+              rounded: 'rounded-2xl', 
+              base: 'h-18 lg:h-20 text-lg font-bold bg-secondary-50/30 border-none ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all px-8'
+            }"
           />
         </UFormField>
       </div>
 
       <!-- Location & Currency Section -->
-      <div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_300px]">
-        <UFormField size="md" class="space-y-3">
+      <div class="grid gap-8 md:grid-cols-[minmax(0,1fr)_340px]">
+        <UFormField class="space-y-4" :ui="{ label: { base: 'text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-3 block pl-1' } }">
           <template #label>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 pl-1">{{ $t('pages.productEditor.locationLabel') }}</span>
+            {{ $t('pages.productEditor.locationLabel') }}
           </template>
           <UInput
             v-model="location"
             size="xl"
-            color="primary"
-            variant="outline"
             icon="i-ph-map-pin-duotone"
-            :placeholder="$t('pages.productEditor.locationPlaceholder')"
             class="w-full"
-            :ui="{ base: 'h-16 rounded-2xl px-6 text-base font-bold' }"
+            :ui="{ 
+              rounded: 'rounded-2xl', 
+              base: 'h-18 lg:h-20 text-lg font-bold bg-secondary-50/30 border-none ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all pl-16 px-8',
+              icon: { leading: { wrapper: 'left-6', base: 'h-6 w-6 text-primary-500' } }
+            }"
+            :placeholder="$t('pages.productEditor.locationPlaceholder')"
           />
         </UFormField>
 
-        <UFormField size="md" class="space-y-3">
+        <UFormField class="space-y-4" :ui="{ label: { base: 'text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-3 block pl-1' } }">
           <template #label>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 pl-1">{{ $t('pages.productEditor.currencyLabel') }}</span>
+            {{ $t('pages.productEditor.currencyLabel') }}
           </template>
           <USelect
             v-model="currency"
@@ -114,16 +130,19 @@
             label-key="label"
             size="xl"
             class="w-full"
-            :ui="{ base: 'h-16 rounded-2xl px-6 text-base font-bold' }"
+            :ui="{ 
+              rounded: 'rounded-2xl', 
+              base: 'h-18 lg:h-20 text-lg font-bold bg-secondary-50/30 border-none ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all px-8'
+            }"
           />
         </UFormField>
       </div>
 
       <!-- Stock & Status Section -->
-      <div class="flex flex-col gap-8 md:flex-row md:items-end md:justify-between pt-6 border-t border-secondary-100">
-        <UFormField size="md" class="space-y-3 w-full md:max-w-[240px]">
+      <div class="flex flex-col gap-10 md:flex-row md:items-end md:justify-between pt-10 border-t border-secondary-50">
+        <UFormField class="space-y-4 w-full md:max-w-[280px]" :ui="{ label: { base: 'text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 mb-3 block pl-1' } }">
           <template #label>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 pl-1">{{ $t('pages.productEditor.stockLabel') }}</span>
+            {{ $t('pages.productEditor.stockLabel') }}
           </template>
           <UInputNumber
             v-model="stockValue"
@@ -132,14 +151,24 @@
             :min="0"
             :step="1"
             class="w-full"
-            :ui="{ base: 'h-16 rounded-2xl px-6 text-lg font-bold' }"
+            :ui="{ 
+              rounded: 'rounded-2xl', 
+              base: 'h-18 lg:h-20 text-xl font-bold bg-secondary-50/30 border-none ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all px-8'
+            }"
           />
         </UFormField>
 
-        <div class="flex items-center gap-4">
-          <div class="flex flex-col items-end gap-1">
-            <span class="text-[10px] font-black uppercase tracking-widest text-secondary-400">{{ $t('pages.productEditor.mediaStatusLabel') || 'Media Files' }}</span>
-            <UBadge color="primary" variant="soft" class="rounded-full px-5 py-2 text-xs font-black uppercase tracking-tighter ring-1 ring-primary-100">
+        <div class="flex items-center gap-6">
+          <div class="flex flex-col items-end gap-2">
+            <span class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 pl-1">{{ $t('pages.productEditor.mediaStatusLabel') || 'Media Files' }}</span>
+            <UBadge
+              variant="soft"
+              size="lg"
+              class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm flex items-center justify-center min-w-[160px]"
+            >
+              <template #leading>
+                <Icon name="i-ph-images-duotone" class="h-5 w-5 mr-3" />
+              </template>
               {{ mediaSummary }}
             </UBadge>
           </div>
@@ -147,18 +176,19 @@
       </div>
 
       <UAlert
-        class="rounded-3xl p-5 border border-primary-100"
+        class="rounded-[2.5rem] p-8 border border-primary-200 bg-primary-50/50 shadow-sm"
         color="primary"
         variant="soft"
         icon="i-ph-info-duotone"
         :description="$t('pages.productEditor.descriptionPlaceholder')"
         :ui="{ 
-          title: 'text-sm font-black text-primary-900',
-          description: 'text-xs font-medium text-primary-700 leading-relaxed mt-1'
+          title: 'text-sm font-black text-primary-900 uppercase tracking-widest',
+          description: 'text-sm font-medium text-primary-700 leading-relaxed mt-2 italic',
+          icon: 'h-7 w-7 text-primary-600'
         }"
       />
 
-      <div class="pt-2">
+      <div class="pt-4">
         <slot name="media" />
       </div>
     </div>

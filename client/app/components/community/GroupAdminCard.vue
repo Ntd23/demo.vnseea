@@ -1,19 +1,32 @@
-<template>
-  <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
-    <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-      {{ t("pages.groupDetailPage.adminEyebrow") }}
-    </p>
-    <p class="mt-2 text-[14px] leading-6 text-slate-500">
-      {{ t("pages.groupDetailPage.adminDescription") }}
-    </p>
+  <section class="surface-card p-6 ring-1 ring-secondary-100 shadow-xl relative overflow-hidden">
+    <!-- Visual Decor -->
+    <div class="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />
 
-    <NuxtLink
-      :to="settingsPath"
-      class="mt-4 inline-flex h-11 items-center justify-center rounded-[16px] bg-[#0000ff] px-4 text-[13px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.22)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-    >
-      <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
-      {{ t("pages.groupDetailPage.adminButton") }}
-    </NuxtLink>
+    <div class="relative z-10 space-y-4">
+      <div class="space-y-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 px-1">
+          {{ t("pages.groupDetailPage.adminEyebrow") }}
+        </p>
+        <div class="h-1 w-12 bg-primary-600 rounded-full ml-1" />
+      </div>
+
+      <p class="text-xs font-medium leading-relaxed text-secondary-500 px-1">
+        {{ t("pages.groupDetailPage.adminDescription") }}
+      </p>
+
+      <div class="pt-2">
+        <UButton
+          :to="settingsPath"
+          size="xl"
+          class="h-12 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-500/20 transition-all active:scale-95 px-8"
+        >
+          <template #leading>
+            <Icon name="i-ph-gear-six-duotone" class="h-5 w-5" />
+          </template>
+          {{ t("pages.groupDetailPage.adminButton") }}
+        </UButton>
+      </div>
+    </div>
   </section>
 </template>
 

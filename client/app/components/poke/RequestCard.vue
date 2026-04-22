@@ -1,83 +1,83 @@
 <template>
-  <article class="overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,35,110,0.12)]">
-    <div class="h-1.5 w-full" :style="{ background: accentBackground }" />
+  <article class="surface-card group overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-3xl ring-1 ring-secondary-200/50 hover:ring-primary-500/20 relative bg-white rounded-3xl">
+    <div class="h-2 w-full bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 shadow-sm" />
 
-    <div class="space-y-5 px-5 py-5">
-      <div class="flex items-start justify-between gap-3">
-        <div class="flex min-w-0 items-center gap-3">
-          <div class="relative">
+    <div class="p-8 space-y-8">
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex min-w-0 items-center gap-5">
+          <div class="relative shrink-0">
             <div
-              class="flex h-14 w-14 items-center justify-center rounded-[18px] text-[1rem] font-black text-white shadow-[0_14px_28px_rgba(15,35,110,0.18)]"
+              class="flex h-16 w-16 items-center justify-center rounded-2xl text-sm font-black text-white shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-primary-500/30 ring-1 ring-white/20"
               :style="{ background: accentBackground }"
             >
               {{ record.initials }}
             </div>
 
-            <span
+            <div
               v-if="record.online"
-              class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-white bg-emerald-500"
+              class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-white bg-emerald-500 shadow-lg shadow-emerald-500/20"
             />
           </div>
 
-          <div class="min-w-0">
-            <NuxtLink
-              :to="record.href"
-              class="block truncate text-[1.1rem] font-black tracking-[-0.03em] text-[#243b63] transition hover:text-[#0000ff]"
-            >
+          <div class="min-w-0 space-y-1">
+            <p class="truncate text-lg font-black tracking-tight text-secondary-900 group-hover:text-primary-600 transition-colors">
               {{ record.name }}
-            </NuxtLink>
-            <p class="mt-1 text-[13px] font-semibold text-slate-500">
-              {{ record.role }}
             </p>
+            <div class="flex items-center gap-2">
+              <Icon name="i-ph-clock-duotone" class="h-3 w-3 text-primary-400" />
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500">
+                {{ record.time }}
+              </p>
+            </div>
           </div>
         </div>
 
-        <span class="inline-flex shrink-0 items-center rounded-full bg-[#eef3ff] px-3 py-1 text-[11px] font-bold text-[#243b63]">
-          {{ record.timeLabel }}
-        </span>
+        <UBadge 
+          variant="soft" 
+          class="rounded-xl font-black text-[9px] uppercase tracking-widest px-3 py-2 bg-secondary-50 text-secondary-500 ring-1 ring-secondary-100 group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:ring-primary-200 transition-all shadow-sm"
+        >
+          {{ record.mutual }}
+        </UBadge>
       </div>
 
-      <div class="grid gap-3 sm:grid-cols-2">
-        <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            {{ t("pages.pokePage.connectionLabel") }}
-          </p>
-          <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-            {{ record.mutualLabel }}
-          </p>
+      <div class="rounded-2xl bg-secondary-50/50 p-6 space-y-4 ring-1 ring-secondary-100/50 transition-all group-hover:bg-white group-hover:ring-primary-100 group-hover:shadow-lg group-hover:shadow-primary-500/5">
+        <div class="flex items-center justify-between gap-2 border-b border-secondary-100/50 pb-4">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-400">{{ t("pages.pokePage.pokeCountLabel") }}</p>
+          <div class="flex items-center gap-2 font-black text-sm text-secondary-900">
+            <Icon name="i-ph-hand-pointing-duotone" class="h-5 w-5 text-primary-500" />
+            {{ record.count }}
+          </div>
         </div>
-
-        <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            {{ t("pages.pokePage.contextLabel") }}
-          </p>
-          <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-            {{ record.contextLabel }}
-          </p>
+        
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-400">{{ t("pages.pokePage.pokeActionLabel") }}</p>
+          <p class="text-[11px] font-black uppercase tracking-widest text-primary-600 truncate italic">"{{ record.action }}"</p>
         </div>
       </div>
 
-      <p class="text-[14px] leading-7 text-slate-600">
-        {{ record.note }}
-      </p>
-
-      <div class="flex flex-col gap-2 sm:flex-row">
-        <button
-          class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)] transition hover:-translate-y-0.5"
-          :style="{ background: accentBackground }"
-          type="button"
+      <div class="flex flex-col gap-3 pt-2">
+        <UButton
+          size="xl"
+          class="h-14 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-600/20 transition-all active:scale-95 border-none"
           @click="$emit('poke', record.id)"
         >
-          <Icon :name="pokedBack ? 'i-ph-check-bold' : 'i-ph-hand-waving-bold'" class="mr-2 h-4 w-4" />
-          {{ pokedBack ? t("pages.pokePage.pokedBackAction") : t("pages.pokePage.pokeBackAction") }}
-        </button>
+          <template #leading>
+            <Icon :name="pokedBack ? 'i-ph-check-circle-duotone' : 'i-ph-hand-pointing-duotone'" class="h-5 w-5 mr-1" />
+          </template>
+          {{ pokedBack ? t("pages.pokePage.invitationSent") : t("pages.pokePage.pokeBack") }}
+        </UButton>
 
-        <NuxtLink
-          :to="record.href"
-          class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+        <UButton
+          v-if="!pokedBack"
+          variant="soft"
+          size="xl"
+          class="h-14 rounded-2xl bg-white text-secondary-500 ring-1 ring-secondary-200/50 hover:bg-secondary-50 hover:text-secondary-900 hover:ring-secondary-300 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95"
         >
-          {{ t("pages.pokePage.viewProfile") }}
-        </NuxtLink>
+          <template #leading>
+             <Icon name="i-ph-trash-duotone" class="h-5 w-5 mr-1" />
+          </template>
+          {{ t("pages.pokePage.deletePoke") }}
+        </UButton>
       </div>
     </div>
   </article>

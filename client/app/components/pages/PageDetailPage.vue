@@ -1,5 +1,4 @@
-<template>
-  <div v-if="page" class="mx-auto max-w-[1280px] space-y-5 pb-10">
+  <div v-if="page" class="mx-auto max-w-7xl space-y-8 pb-20 pt-4 px-4 sm:px-6">
     <CommunityPageHeroBanner
       :page="page"
       :category-label="categoryLabel"
@@ -9,8 +8,8 @@
 
     <CommunityGroupTabsBar v-model="activeTab" />
 
-    <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.24fr)_320px]">
-      <section class="min-w-0 space-y-4">
+    <div class="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+      <section class="min-w-0 space-y-8">
         <template v-if="activeTab === 'posts'">
           <CommunityPageFeedSection
             :page="page"
@@ -28,7 +27,7 @@
         </template>
       </section>
 
-      <aside class="space-y-4">
+      <aside class="space-y-8">
         <CommunityPageActionCard
           :page="page"
           :follower-count-label="followerCountLabel"
@@ -46,21 +45,23 @@
     </div>
   </div>
 
-  <div v-else class="mx-auto max-w-[960px] pb-10 pt-4">
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
+  <div v-else class="mx-auto max-w-4xl pb-20 pt-10 px-4 sm:px-6">
+    <section class="surface-card p-12 text-center ring-1 ring-secondary-100 shadow-xl">
       <FoundationEmptyState
-        icon="i-ph-megaphone-simple-fill"
+        icon="i-ph-megaphone-simple-duotone"
         :title="t('pages.pageDetailPage.emptyTitle')"
         :description="t('pages.pageDetailPage.emptyDescription')"
       />
 
-      <div class="mt-6 flex justify-center">
-        <NuxtLink
+      <div class="mt-8 flex justify-center">
+        <UButton
           to="/create-page"
-          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
+          size="xl"
+          icon="i-ph-plus-bold"
+          class="rounded-2xl bg-primary-600 px-8 font-black text-xs uppercase tracking-widest text-white shadow-xl shadow-primary-500/30 transition-all active:scale-95"
         >
           {{ t("pages.pageDetailPage.createNewPage") }}
-        </NuxtLink>
+        </UButton>
       </div>
     </section>
   </div>

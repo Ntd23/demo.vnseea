@@ -1,51 +1,57 @@
-<template>
-  <div class="flex h-full w-full flex-col overflow-y-auto bg-white scrollbar-hide py-4 px-3">
-    <div class="flex flex-col items-center border-b border-[#0000ff]/5 pb-6 pt-2">
-      <div class="relative mb-3">
-        <img src="https://i.pravatar.cc/150?u=12" class="h-16 w-16 rounded-full object-cover">
-        <span class="absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white bg-green-500" />
+  <div class="flex h-full w-full flex-col overflow-y-auto bg-white scrollbar-hide py-8 px-6 ring-1 ring-secondary-100 shadow-xl">
+    <!-- User Profile Header -->
+    <div class="flex flex-col items-center border-b border-secondary-100 pb-10">
+      <div class="relative mb-4 group cursor-pointer">
+        <UAvatar
+          src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80"
+          size="3xl"
+          class="ring-4 ring-white shadow-xl transition-transform duration-500 group-hover:scale-105"
+          :ui="{ rounded: 'rounded-[24px]' }"
+        />
+        <span class="absolute bottom-0 right-0 h-6 w-6 rounded-full border-4 border-white bg-green-500 shadow-sm" />
       </div>
-      <h3 class="text-[17px] font-bold text-slate-900 font-secondary">{{ $t('pages.messagesPage.contactName') }}</h3>
-      <p class="mt-0.5 text-[13px] text-slate-500">{{ $t('pages.messagesPage.activeNow') }}</p>
+      <h3 class="text-[15px] font-black uppercase tracking-widest text-secondary-900 leading-none">{{ $t('pages.messagesPage.contactName') }}</h3>
+      <div class="flex items-center gap-2 mt-2">
+        <span class="h-1.5 w-1.5 rounded-full bg-green-500" />
+        <p class="text-[10px] font-bold uppercase tracking-widest text-secondary-400">{{ $t('pages.messagesPage.activeNow') }}</p>
+      </div>
 
-      <div class="mt-4 flex gap-5">
-        <button class="flex flex-col items-center gap-1.5 text-slate-600 transition hover:text-[#0000ff]">
-          <span class="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-slate-100 hover:bg-[#0000ff]/10">
-            <Icon name="i-ph-user-fill" class="h-[18px] w-[18px]" />
+      <!-- Quick Actions -->
+      <div class="mt-8 flex gap-6">
+        <button 
+          v-for="action in [
+            { icon: 'i-ph-user-duotone', label: $t('pages.messagesPage.profile') },
+            { icon: 'i-ph-bell-duotone', label: $t('pages.messagesPage.muteNotifications') },
+            { icon: 'i-ph-magnifying-glass-duotone', label: $t('pages.messagesPage.search') }
+          ]"
+          :key="action.label"
+          class="flex flex-col items-center gap-2 text-secondary-400 transition-all hover:text-primary-600 group"
+        >
+          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-secondary-50 ring-1 ring-secondary-100 group-hover:bg-primary-50 group-hover:ring-primary-100 group-hover:shadow-lg group-hover:shadow-primary-500/10 transition-all">
+            <Icon :name="action.icon" class="h-5 w-5" />
           </span>
-          <span class="text-[11px] font-medium">{{ $t('pages.messagesPage.profile') }}</span>
-        </button>
-        <button class="flex flex-col items-center gap-1.5 text-slate-600 transition hover:text-[#0000ff]">
-          <span class="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-slate-100 hover:bg-[#0000ff]/10">
-            <Icon name="i-ph-bell-fill" class="h-[18px] w-[18px]" />
-          </span>
-          <span class="text-[11px] font-medium">{{ $t('pages.messagesPage.muteNotifications') }}</span>
-        </button>
-        <button class="flex flex-col items-center gap-1.5 text-slate-600 transition hover:text-[#0000ff]">
-          <span class="flex h-[38px] w-[38px] items-center justify-center rounded-full bg-slate-100 hover:bg-[#0000ff]/10">
-            <Icon name="i-ph-magnifying-glass-fill" class="h-[18px] w-[18px]" />
-          </span>
-          <span class="text-[11px] font-medium">{{ $t('pages.messagesPage.search') }}</span>
+          <span class="text-[9px] font-black uppercase tracking-widest">{{ action.label }}</span>
         </button>
       </div>
     </div>
 
-    <div class="flex-1 space-y-1 py-2">
-      <button class="flex w-full items-center justify-between rounded-[8px] p-3 text-[14px] font-semibold text-slate-800 transition hover:bg-slate-50">
-        {{ $t('pages.messagesPage.chatInfo') }}
-        <Icon name="i-ph-caret-down-bold" class="h-4 w-4 text-slate-400" />
-      </button>
-      <button class="flex w-full items-center justify-between rounded-[8px] p-3 text-[14px] font-semibold text-slate-800 transition hover:bg-slate-50">
-        {{ $t('pages.messagesPage.chatCustomize') }}
-        <Icon name="i-ph-caret-down-bold" class="h-4 w-4 text-slate-400" />
-      </button>
-      <button class="flex w-full items-center justify-between rounded-[8px] p-3 text-[14px] font-semibold text-slate-800 transition hover:bg-slate-50">
-        {{ $t('pages.messagesPage.mediaFilesLinks') }}
-        <Icon name="i-ph-caret-down-bold" class="h-4 w-4 text-slate-400" />
-      </button>
-      <button class="flex w-full items-center justify-between rounded-[8px] p-3 text-[14px] font-semibold text-slate-800 transition hover:bg-slate-50">
-        {{ $t('pages.messagesPage.privacySupport') }}
-        <Icon name="i-ph-caret-down-bold" class="h-4 w-4 text-slate-400" />
+    <!-- Collapsible Sections -->
+    <div class="flex-1 py-4 space-y-2">
+      <button 
+        v-for="section in [
+          $t('pages.messagesPage.chatInfo'),
+          $t('pages.messagesPage.chatCustomize'),
+          $t('pages.messagesPage.mediaFilesLinks'),
+          $t('pages.messagesPage.privacySupport')
+        ]"
+        :key="section"
+        class="flex w-full items-center justify-between rounded-2xl p-4 text-[10px] font-black uppercase tracking-widest text-secondary-900 transition-all duration-300 hover:bg-secondary-50 hover:text-primary-600 group"
+      >
+        <span class="flex items-center gap-3">
+          <Icon name="i-ph-folder-simple-duotone" class="h-4 w-4 text-primary-500 group-hover:scale-110 transition-transform" />
+          {{ section }}
+        </span>
+        <Icon name="i-ph-caret-right-bold" class="h-3 w-3 text-secondary-300 group-hover:text-primary-500 transition-all group-hover:translate-x-1" />
       </button>
     </div>
   </div>

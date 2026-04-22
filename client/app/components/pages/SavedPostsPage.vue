@@ -1,70 +1,70 @@
-<template>
-  <div class="mx-auto max-w-[1280px] space-y-8 pb-16 pt-8 px-4 sm:px-6">
-    <section class="surface-card overflow-hidden">
-      <div class="relative px-6 py-8 sm:px-8">
-        <!-- Background decoration -->
-        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-from),transparent_34%),radial-gradient(circle_at_bottom_left,var(--tw-gradient-to),transparent_32%)] from-primary-500/10 to-primary-600/5" />
+  <div class="mx-auto max-w-[1280px] space-y-10 pb-24 px-4 sm:px-6 pt-4">
+    <!-- Hero Section -->
+    <section class="surface-card overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-gradient-to-br from-secondary-950 via-secondary-900 to-primary-950 text-white relative group/hero">
+      <!-- Premium Decorations -->
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(var(--color-primary-500-rgb),0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.2),transparent_40%)]" />
+      <div class="absolute top-0 right-0 w-80 h-80 bg-primary-500/10 rounded-full blur-[100px] -mr-40 -mt-40 pointer-events-none transition-transform duration-1000 group-hover/hero:scale-110" />
 
-        <div class="relative space-y-8">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-[780px]">
-              <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
-                {{ t("pages.savedPostsPage.heroEyebrow") }}
-              </p>
-              <h1 class="text-display mt-2 text-3xl font-black text-secondary-900 sm:text-4xl">
-                {{ t("pages.savedPostsPage.heroTitle") }}
-              </h1>
-              <p class="text-body-secondary mt-3 text-sm leading-relaxed">
-                {{ t("pages.savedPostsPage.heroDescription") }}
-              </p>
-            </div>
-
-            <div class="flex flex-wrap gap-3">
-              <UButton
-                to="/home"
-                variant="soft"
-                color="gray"
-                size="md"
-                class="rounded-full font-bold px-5"
-              >
-                <template #leading>
-                  <Icon name="i-ph-house-line-fill" class="h-4 w-4" />
-                </template>
-                {{ t("pages.savedPostsPage.backToFeed") }}
-              </UButton>
-
-              <UButton
-                v-if="visibleSavedPosts.length > 0"
-                color="red"
-                size="md"
-                class="rounded-full font-black px-6 shadow-lg shadow-red-500/20"
-                @click="removeAll"
-              >
-                <template #leading>
-                  <Icon name="i-ph-trash-bold" class="h-4 w-4" />
-                </template>
-                {{ t("pages.savedPostsPage.removeAll") }}
-              </UButton>
-            </div>
+      <div class="relative px-8 py-14 sm:px-12 lg:px-16 space-y-14">
+        <div class="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-[820px] space-y-6">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-400 pl-1">
+              {{ t("pages.savedPostsPage.heroEyebrow") }}
+            </p>
+            <h1 class="text-5xl sm:text-6xl font-black leading-none tracking-tight text-white italic">
+              {{ t("pages.savedPostsPage.heroTitle") }}
+            </h1>
+            <p class="text-base font-medium leading-relaxed text-secondary-300 sm:text-lg pl-0.5 max-w-2xl italic">
+              "{{ t("pages.savedPostsPage.heroDescription") }}"
+            </p>
           </div>
 
-          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <article
-              v-for="item in summaryCards"
-              :key="item.label"
-              class="rounded-2xl border border-secondary-100 bg-secondary-50/50 p-5 transition-all hover:bg-white hover:shadow-md"
+          <div class="flex flex-wrap gap-4 pt-4 lg:pt-0">
+            <UButton
+              to="/home"
+              size="xl"
+              class="h-14 rounded-2xl bg-white/5 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/10 backdrop-blur-xl transition-all active:scale-95 px-8"
             >
-              <p class="text-micro font-bold uppercase tracking-wider text-primary-600">
+              <template #leading>
+                <Icon name="i-ph-house-line-duotone" class="h-5 w-5" />
+              </template>
+              {{ t("pages.savedPostsPage.backToFeed") }}
+            </UButton>
+
+            <UButton
+              v-if="visibleSavedPosts.length > 0"
+              size="xl"
+              class="h-14 rounded-2xl bg-red-600 text-white font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-red-500/20 transition-all hover:bg-red-700 active:scale-95 px-8"
+              @click="removeAll"
+            >
+              <template #leading>
+                <Icon name="i-ph-trash-duotone" class="h-5 w-5" />
+              </template>
+              {{ t("pages.savedPostsPage.removeAll") }}
+            </UButton>
+          </div>
+        </div>
+
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <article
+            v-for="item in summaryStats"
+            :key="item.label"
+            class="group/stat surface-card rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-3xl ring-1 ring-white/10 transition-all duration-500 hover:bg-white/10 hover:ring-primary-400/30"
+          >
+            <div class="flex items-center justify-between">
+              <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
                 {{ item.label }}
               </p>
-              <p class="mt-2 text-2xl font-black text-secondary-900 tracking-tight">
-                {{ item.value }}
-              </p>
-              <p class="mt-2 text-xs font-medium text-secondary-400 leading-tight">
-                {{ item.description }}
-              </p>
-            </article>
-          </div>
+              <Icon :name="item.icon" class="h-4 w-4 text-white/20 group-hover/stat:text-primary-400 transition-all" />
+            </div>
+            
+            <p class="mt-8 text-4xl font-black text-white leading-none tracking-tighter">
+              {{ item.value }}
+            </p>
+            <p class="mt-4 text-[10px] font-bold text-white/30 group-hover/stat:text-white/50 italic line-clamp-1">
+              {{ item.description }}
+            </p>
+          </article>
         </div>
       </div>
     </section>
@@ -72,32 +72,42 @@
     <!-- Empty State -->
     <section
       v-if="visibleSavedPosts.length === 0"
-      class="surface-card p-12 sm:p-20"
+      class="surface-card p-20 sm:p-28 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden"
     >
-      <div class="mx-auto max-w-2xl text-center">
-        <FoundationEmptyState
-          icon="i-ph-bookmark-simple-duotone"
-          :title="t('pages.savedPostsPage.emptyTitle')"
-          :description="t('pages.savedPostsPage.emptyDescription')"
-        />
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(var(--color-primary-500-rgb),0.05)_0%,_transparent_70%)]" />
+      
+      <div class="relative z-10 mx-auto max-w-2xl text-center">
+        <div class="flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-secondary-50 text-secondary-300 ring-4 ring-secondary-50/50 mx-auto mb-10">
+          <Icon name="i-ph-bookmark-simple-duotone" class="h-12 w-12" />
+        </div>
 
-        <div class="mt-10 flex flex-wrap justify-center gap-4">
+        <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-tight">
+          {{ t('pages.savedPostsPage.emptyTitle') }}
+        </h2>
+        <p class="mt-4 text-base font-medium leading-relaxed text-secondary-500 max-w-md mx-auto">
+          {{ t('pages.savedPostsPage.emptyDescription') }}
+        </p>
+
+        <div class="mt-12 flex flex-wrap justify-center gap-4">
           <UButton
-            color="primary"
-            size="lg"
-            class="rounded-full font-black px-10 shadow-lg shadow-primary-500/20"
+            size="xl"
+            class="h-14 rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-600/20 transition-all active:scale-95 px-12"
             @click="restoreMockData"
           >
+            <template #leading>
+              <Icon name="i-ph-arrow-counter-clockwise-bold" class="h-5 w-5" />
+            </template>
             {{ t("pages.savedPostsPage.restoreMock") }}
           </UButton>
 
           <UButton
             to="/explore"
-            variant="soft"
-            color="gray"
-            size="lg"
-            class="rounded-full font-bold px-8"
+            size="xl"
+            class="h-14 rounded-2xl bg-white text-secondary-600 ring-1 ring-secondary-200 hover:bg-secondary-50 hover:text-secondary-900 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 px-10"
           >
+            <template #leading>
+              <Icon name="i-ph-compass-duotone" class="h-5 w-5" />
+            </template>
             {{ t("pages.savedPostsPage.goToExplore") }}
           </UButton>
         </div>
@@ -107,40 +117,40 @@
     <!-- List Section -->
     <section
       v-else
-      class="surface-card p-0 overflow-hidden"
+      class="surface-card overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-white group/list relative"
     >
-      <div class="flex flex-col gap-4 border-b border-secondary-100/50 p-6 sm:p-8 sm:flex-row sm:items-center sm:justify-between bg-secondary-50/30">
-        <div>
-          <p class="text-micro font-bold uppercase tracking-widest text-primary-600">
+      <div class="absolute inset-0 bg-gradient-to-b from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/list:opacity-100 transition-opacity duration-1000" />
+      
+      <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 p-10 sm:p-12 sm:flex-row sm:items-center sm:justify-between">
+        <div class="space-y-4">
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
             {{ t("pages.savedPostsPage.listEyebrow") }}
           </p>
-          <h2 class="text-xl font-black text-secondary-900 leading-tight mt-1">
+          <h2 class="text-4xl font-black text-secondary-900 tracking-tight leading-none">
             {{ t("pages.savedPostsPage.listTitle", { count: visibleSavedPosts.length }) }}
           </h2>
-          <p class="text-body-secondary text-sm">
+          <p class="text-base font-medium leading-relaxed text-secondary-500 italic max-w-2xl px-0.5 opacity-70">
             {{ t("pages.savedPostsPage.listDescription") }}
           </p>
         </div>
 
         <UButton
           to="/search"
-          variant="soft"
-          color="primary"
-          size="md"
-          class="rounded-full font-black px-6"
+          size="xl"
+          class="h-14 rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-600/20 transition-all hover:bg-primary-700 active:scale-95 px-10"
         >
           <template #leading>
-            <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />
+            <Icon name="i-ph-magnifying-glass-duotone" class="h-5 w-5" />
           </template>
           {{ t("pages.savedPostsPage.findMore") }}
         </UButton>
       </div>
 
-      <div class="divide-y divide-secondary-100/30">
+      <div class="relative z-10 divide-y divide-secondary-100/30">
         <div 
           v-for="item in visibleSavedPosts" 
           :key="item.id"
-          class="p-4 sm:p-6 transition hover:bg-secondary-50/20"
+          class="p-6 sm:p-12 transition-all hover:bg-primary-50/10 group/item"
         >
           <SavedPostCard
             :entry="item"
@@ -165,7 +175,7 @@ const visibleSavedPosts = computed(() =>
 const formatCount = (value: number) =>
   value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US")
 
-const summaryCards = computed(() => {
+const summaryStats = computed(() => {
   const authors = new Set(visibleSavedPosts.value.map(item => item.post.author))
   const collections = new Set(visibleSavedPosts.value.map(item => item.collectionLabel))
   const interactionCount = visibleSavedPosts.value.reduce(
@@ -177,21 +187,25 @@ const summaryCards = computed(() => {
     {
       label: t("pages.savedPostsPage.statSaved"),
       value: formatCount(visibleSavedPosts.value.length),
+      icon: "i-ph-bookmarks-duotone",
       description: t("pages.savedPostsPage.statSavedDescription"),
     },
     {
       label: t("pages.savedPostsPage.statAuthors"),
       value: formatCount(authors.size),
+      icon: "i-ph-users-three-duotone",
       description: t("pages.savedPostsPage.statAuthorsDescription"),
     },
     {
       label: t("pages.savedPostsPage.statCollections"),
       value: formatCount(collections.size),
+      icon: "i-ph-folder-star-duotone",
       description: t("pages.savedPostsPage.statCollectionsDescription"),
     },
     {
       label: t("pages.savedPostsPage.statInteractions"),
       value: formatCount(interactionCount),
+      icon: "i-ph-sparkle-duotone",
       description: t("pages.savedPostsPage.statInteractionsDescription"),
     },
   ]

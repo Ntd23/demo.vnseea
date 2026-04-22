@@ -1,117 +1,68 @@
-<template>
-  <div class="absolute inset-x-0 bottom-0 flex h-full items-end justify-between p-4 sm:p-6 pb-20 sm:pb-8">
-    <div class="flex-1 min-w-0 pr-12">
-      <div class="flex items-center gap-3">
-        <UAvatar
-          :src="reel.avatar"
-          :alt="reel.author"
-          size="lg"
-          class="ring-2 ring-white shadow-lg"
-        />
-        <div class="min-w-0">
-          <p class="truncate text-base font-black text-white tracking-tight">{{ reel.author }}</p>
-          <p class="truncate text-xs font-bold text-white/70">{{ reel.subtitle }}</p>
+  <div class="absolute inset-x-0 bottom-0 flex h-full items-end justify-between p-8 pb-12 sm:p-10 sm:pb-16 pointer-events-none">
+    <div class="flex-1 min-w-0 pr-16 pointer-events-auto">
+      <div class="flex items-center gap-4">
+        <div class="p-0.5 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 shadow-2xl">
+          <UAvatar
+            :src="reel.avatar"
+            :alt="reel.author"
+            size="lg"
+            class="rounded-[14px] ring-2 ring-black/20"
+          />
+        </div>
+        <div class="min-w-0 space-y-0.5">
+          <p class="truncate text-base font-black text-white tracking-tight uppercase">{{ reel.author }}</p>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white/60 uppercase tracking-widest">{{ reel.subtitle }}</span>
+            <span class="h-1 w-1 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(37,99,235,1)]" />
+          </div>
         </div>
       </div>
 
-      <div class="mt-4 space-y-2">
-        <h2 class="text-xl font-black text-white leading-tight sm:text-2xl drop-shadow-md">
+      <div class="mt-6 space-y-3">
+        <h2 class="text-2xl font-black text-white leading-tight tracking-tight drop-shadow-2xl">
           {{ reel.title }}
         </h2>
-        <p class="line-clamp-2 text-sm font-medium leading-relaxed text-white/90 sm:max-w-md drop-shadow-sm">
-          {{ reel.description }}
+        <p class="line-clamp-2 text-[13px] font-medium leading-relaxed text-white/80 sm:max-w-md drop-shadow-lg italic">
+          "{{ reel.description }}"
         </p>
+      </div>
+
+      <!-- Progressive Tags -->
+      <div class="mt-6 flex flex-wrap gap-2 opacity-80">
+        <span v-for="tag in ['#trending', '#reel']" :key="tag" class="text-[10px] font-black uppercase tracking-widest text-primary-400 bg-black/40 px-3 py-1 rounded-lg backdrop-blur-md border border-white/5">
+          {{ tag }}
+        </span>
       </div>
     </div>
 
     <!-- Actions Sidebar -->
-    <div class="flex flex-col items-center gap-4 sm:gap-5 pb-2">
-      <div class="flex flex-col items-center gap-1.5">
-        <UButton
-          icon="i-ph-heart-fill"
-          size="xl"
-          class="rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all active:scale-90"
-          :ui="{ icon: { base: 'text-red-500 w-7 h-7' } }"
-          variant="ghost"
-        />
-        <span class="text-[11px] font-black text-white drop-shadow-md">{{ reel.likes }}</span>
+    <div class="flex flex-col items-center gap-6 pb-2 pointer-events-auto">
+      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-primary-600 group-hover/action:scale-110 group-hover/action:-rotate-6 group-hover/action:ring-primary-400">
+          <Icon name="i-ph-heart-duotone" class="h-7 w-7 transition-colors group-hover/action:text-white" />
+        </div>
+        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ reel.likes }}</span>
       </div>
 
-      <div class="flex flex-col items-center gap-1.5">
-        <UButton
-          icon="i-ph-chat-circle-text-fill"
-          size="xl"
-          class="rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all active:scale-90"
-          :ui="{ icon: { base: 'w-7 h-7' } }"
-          variant="ghost"
-        />
-        <span class="text-[11px] font-black text-white drop-shadow-md">{{ reel.comments }}</span>
+      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:rotate-6">
+          <Icon name="i-ph-chat-circle-text-duotone" class="h-7 w-7" />
+        </div>
+        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ reel.comments }}</span>
       </div>
 
-      <div class="flex flex-col items-center gap-1.5">
-        <UButton
-          icon="i-ph-share-network-fill"
-          size="xl"
-          class="rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all active:scale-90"
-          :ui="{ icon: { base: 'w-7 h-7' } }"
-          variant="ghost"
-        />
-        <span class="text-[11px] font-black text-white uppercase tracking-tighter drop-shadow-md">{{ $t('pages.reelsPage.share') }}</span>
+      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:-rotate-6">
+          <Icon name="i-ph-share-network-duotone" class="h-7 w-7" />
+        </div>
+        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ $t('pages.reelsPage.share') }}</span>
       </div>
 
-      <div class="flex flex-col items-center gap-1.5">
-        <UButton
-          icon="i-ph-bookmark-simple-fill"
-          size="xl"
-          class="rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md transition-all active:scale-90"
-          :ui="{ icon: { base: 'w-7 h-7' } }"
-          variant="ghost"
-        />
-        <span class="text-[11px] font-black text-white uppercase tracking-tighter drop-shadow-md">{{ $t('pages.reelsPage.save') }}</span>
+      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:rotate-6">
+          <Icon name="i-ph-bookmark-simple-duotone" class="h-7 w-7" />
+        </div>
+        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ $t('pages.reelsPage.save') }}</span>
       </div>
     </div>
   </div>
-</template>
-
-<script setup lang="ts">
-defineProps<{
-  reel: {
-    title: string
-    author: string
-    subtitle: string
-    description: string
-    likes: number
-    comments: number
-    avatar: string
-  }
-}>()
-</script>
-
-<style scoped>
-.fb-action-button {
-  display: flex;
-  height: 44px;
-  width: 44px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  backdrop-filter: blur(10px);
-  transition: background-color 0.15s ease, transform 0.15s ease;
-}
-
-.fb-action-button:hover {
-  background: rgba(255, 255, 255, 0.18);
-  transform: translateY(-1px);
-}
-
-.fb-action-count {
-  min-height: 14px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1;
-  color: rgba(255, 255, 255, 0.82);
-  text-align: center;
-}
-</style>

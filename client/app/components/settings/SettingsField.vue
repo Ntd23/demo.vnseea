@@ -1,38 +1,58 @@
-<template>
   <div class="flex flex-col gap-2">
     <UFormGroup
       :label="field.label"
       :help="field.description"
       class="w-full"
+      :ui="{
+        label: {
+          base: 'text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2'
+        },
+        help: 'text-[10px] font-medium text-secondary-400 pl-1 mt-1.5'
+      }"
     >
+      <!-- Textarea -->
       <UTextarea
         v-if="field.type === 'textarea'"
         v-model="value"
         :placeholder="field.placeholder"
-        size="lg"
-        variant="outline"
-        class="font-semibold"
+        size="xl"
         :rows="4"
+        :ui="{
+          base: 'rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
+        }"
       />
 
+      <!-- Select Menu -->
       <USelectMenu
         v-else-if="field.type === 'select'"
         v-model="value"
         :options="field.options ?? []"
-        size="lg"
-        variant="outline"
-        class="font-semibold"
-      />
+        size="xl"
+        :ui="{
+          trigger: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-black text-xs uppercase tracking-widest text-secondary-900',
+          icon: { base: 'text-primary-500 h-5 w-5' }
+        }"
+      >
+        <template #leading>
+          <Icon name="i-ph-list-bullets-duotone" class="h-5 w-5 text-primary-500" />
+        </template>
+      </USelectMenu>
 
+      <!-- Standard Input -->
       <UInput
         v-else
         v-model="value"
         :type="field.type"
         :placeholder="field.placeholder"
-        size="lg"
-        variant="outline"
-        class="font-semibold"
-      />
+        size="xl"
+        :ui="{
+          base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
+        }"
+      >
+        <template #leading>
+          <Icon :name="field.key.includes('password') ? 'i-ph-lock-duotone' : (field.key.includes('email') ? 'i-ph-envelope-duotone' : 'i-ph-pencil-duotone')" class="h-5 w-5 text-primary-500" />
+        </template>
+      </UInput>
     </UFormGroup>
   </div>
 </template>
@@ -48,19 +68,3 @@ watch(() => props.field.value, (newVal) => {
   value.value = newVal
 })
 </script>
-
-<style scoped>
-.setting-input {
-  width: 100%;
-  min-height: 46px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  background: var(--bg-surface-hover);
-  padding-left: 14px;
-  padding-right: 14px;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  outline: none;
-}
-</style>

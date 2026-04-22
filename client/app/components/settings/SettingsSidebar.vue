@@ -1,29 +1,37 @@
-<template>
-  <aside class="surface-card p-5 xl:w-[330px] xl:max-w-[330px] xl:shrink-0 flex flex-col">
-    <div class="px-2 py-1">
-      <p class="text-label-primary text-secondary-500 uppercase tracking-widest text-[10px]">{{ t("pages.settingsPage.sidebarCount", { count: pages.length }) }}</p>
-      <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.settingsPage.sidebarTitle") }}</h2>
+  <aside class="surface-card p-6 xl:w-[360px] xl:max-w-[360px] xl:shrink-0 flex flex-col ring-1 ring-secondary-100 shadow-xl min-h-[600px]">
+    <div class="px-2 space-y-4 mb-8">
+      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500">
+        {{ t("pages.settingsPage.sidebarEyebrow") || 'Account Center' }}
+      </p>
+      <div class="space-y-1">
+        <h2 class="text-3xl font-black text-secondary-900 tracking-tighter leading-none">
+          {{ t("pages.settingsPage.sidebarTitle") }}
+        </h2>
+        <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
+          {{ t("pages.settingsPage.sidebarCount", { count: pages.length }) }}
+        </p>
+      </div>
     </div>
 
-    <nav class="mt-6 flex flex-col gap-2 overflow-y-auto">
+    <nav class="flex-1 space-y-2 overflow-y-auto no-scrollbar">
       <NuxtLink
         v-for="page in pages"
         :key="page.slug"
         :to="page.slug === defaultSlug ? '/setting' : `/setting/${page.slug}`"
-        class="group flex w-full min-w-0 items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 border border-transparent"
+        class="group flex w-full min-w-0 items-center gap-4 rounded-2xl px-4 py-4 transition-all duration-300 border border-transparent"
         :class="page.slug === activeSlug 
-          ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/20' 
-          : 'text-secondary-600 hover:bg-secondary-50 hover:text-primary-600 hover:border-secondary-100'"
+          ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm shadow-primary-500/5' 
+          : 'text-secondary-500 hover:bg-secondary-50 hover:text-primary-600'"
       >
         <div 
-          :class="page.slug === activeSlug ? 'bg-white/20' : 'bg-secondary-100 group-hover:bg-primary-100'"
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors"
+          :class="page.slug === activeSlug ? 'bg-white border-primary-200 text-primary-600 shadow-md ring-1 ring-primary-100' : 'bg-white border-secondary-100 text-secondary-400 group-hover:border-primary-200 group-hover:text-primary-600'"
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] transition-all duration-300 border shadow-sm"
         >
-          <Icon :name="page.icon" class="h-6 w-6" />
+          <Icon :name="page.slug === activeSlug ? page.icon : page.icon.replace('-fill', '-duotone')" class="h-6 w-6" />
         </div>
         <div class="min-w-0 flex-1">
-          <p class="truncate text-sm font-black tracking-tight">{{ page.label }}</p>
-          <p class="truncate text-xs font-semibold opacity-70 mt-0.5">{{ page.description }}</p>
+          <p class="truncate text-[11px] font-black uppercase tracking-widest leading-none">{{ page.label }}</p>
+          <p class="truncate text-[9px] font-bold uppercase tracking-widest text-secondary-400 transition-colors group-hover:text-primary-400 mt-1.5">{{ page.description }}</p>
         </div>
       </NuxtLink>
     </nav>

@@ -1,65 +1,79 @@
-<template>
-  <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:px-7">
-      <div class="flex items-center gap-4">
-        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#1d4ed8_0%,#0000ff_100%)] text-white shadow-[0_14px_30px_rgba(0,0,255,0.22)]">
-          <Icon name="i-ph-flag-fill" class="h-7 w-7" />
-        </div>
+  <div class="mx-auto max-w-7xl space-y-8 pb-20 px-4 sm:px-6">
+    <!-- Premium Hero Section -->
+    <header class="surface-card p-10 relative overflow-hidden ring-1 ring-white/10 shadow-2xl bg-gradient-to-br from-primary-700 via-primary-600 to-primary-800 group/header">
+      <!-- Decorative background elements -->
+      <div class="absolute top-0 right-0 w-[40%] h-full bg-gradient-to-l from-white/10 to-transparent pointer-events-none" />
+      <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-[100px] -ml-32 -mb-32 pointer-events-none" />
+      <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 pointer-events-none" />
 
-        <div>
-          <h1 class="text-[2rem] font-black tracking-[-0.05em] text-[#243b63]">
-            {{ $t('community.pagesDirectory.title') }}
-          </h1>
-          <p class="mt-1 text-[14px] leading-6 text-slate-500">
-            {{ $t('community.pagesDirectory.desc') }}
-          </p>
+      <div class="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-6 sm:gap-8">
+          <!-- Glassmorphic Icon Wrapper -->
+          <div class="flex h-16 w-16 sm:h-20 sm:w-20 shrink-0 items-center justify-center rounded-[24px] bg-white/20 text-white border border-white/30 backdrop-blur-xl shadow-2xl transition-transform duration-700 group-hover/header:rotate-6 group-hover/header:scale-110">
+            <Icon name="i-ph-flag-duotone" class="h-8 w-8 sm:h-10 sm:w-10" />
+          </div>
+
+          <div class="space-y-2">
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+              {{ $t('community.pagesDirectory.title') }}
+            </h1>
+            <p class="max-w-2xl text-sm sm:text-base font-medium leading-relaxed text-white/80">
+              {{ $t('community.pagesDirectory.desc') }}
+            </p>
+          </div>
         </div>
       </div>
-    </section>
+    </header>
 
+    <!-- Tabs/Navigation Bar -->
     <CommunityPageDirectoryTabsBar
       :tabs="tabItems"
       :active-tab="mode"
       create-to="/create-page"
     />
 
+    <!-- Empty State: Creation CTA -->
     <section
       v-if="mode === 'mine' && visiblePages.length === 0"
-      class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-12 shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16 lg:min-h-[520px]"
+      class="surface-card p-12 sm:p-20 text-center ring-1 ring-secondary-100 shadow-xl relative overflow-hidden lg:min-h-[520px] flex items-center justify-center"
     >
-      <div class="flex h-full flex-col items-center justify-center text-center">
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-500/5 rounded-full blur-[100px] pointer-events-none" />
+      
+      <div class="relative z-10 mx-auto max-w-xl space-y-8">
         <FoundationEmptyState
-          icon="i-ph-flag-fill"
+          icon="i-ph-flag-duotone"
           :title="$t('community.pagesDirectory.emptyMineTitle')"
           :description="$t('community.pagesDirectory.emptyMineDesc')"
         />
 
-        <div class="mt-6 flex justify-center">
+        <div class="flex justify-center pt-4">
           <NuxtLink
             to="/create-page"
-            class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
+            class="group inline-flex h-14 items-center justify-center rounded-2xl bg-primary-600 px-8 text-[14px] font-black uppercase tracking-[0.15em] text-white shadow-2xl shadow-primary-500/30 transition-all hover:-translate-y-1 hover:bg-primary-700 active:scale-95"
           >
-            <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
+            <Icon name="i-ph-plus-bold" class="mr-3 h-5 w-5 transition-transform group-hover:rotate-90" />
             {{ $t('community.pagesDirectory.createFirst') }}
           </NuxtLink>
         </div>
       </div>
     </section>
 
+    <!-- Empty State: No Results -->
     <section
       v-else-if="visiblePages.length === 0"
-      class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-12 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16"
+      class="surface-card p-12 sm:p-20 text-center ring-1 ring-secondary-100 shadow-xl flex items-center justify-center"
     >
       <div class="mx-auto max-w-xl">
         <FoundationEmptyState
-          icon="i-ph-magnifying-glass"
+          icon="i-ph-magnifying-glass-duotone"
           :title="$t('community.pagesDirectory.emptyOtherTitle')"
           :description="$t('community.pagesDirectory.emptyOtherDesc')"
         />
       </div>
     </section>
 
-    <div v-else class="grid gap-4 xl:grid-cols-2">
+    <!-- Page Cards Grid -->
+    <div v-else class="grid gap-6 xl:grid-cols-2">
       <CommunityPageCard
         v-for="page in visiblePages"
         :key="page.id"
@@ -67,6 +81,7 @@
         :action-label="actionLabel"
       />
     </div>
+  </div>
   </div>
 </template>
 

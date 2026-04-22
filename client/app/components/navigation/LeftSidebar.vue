@@ -1,68 +1,45 @@
-<template>
-  <div class="min-w-0">
-    <nav class="space-y-0.5">
-      <NuxtLink
-        v-for="item in sidebarNav"
-        :key="item.label"
-        :to="item.to"
-        class="group flex min-w-0 items-center gap-2.5 rounded-[12px] px-2.5 py-2 transition duration-150"
-        :class="isActive(item.to)
-          ? 'bg-[#0000ff]/8 text-[#0000ff]'
-          : 'text-slate-600 hover:bg-[#0000ff]/5 hover:text-[#0000ff]'"
-      >
-        <span
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] transition duration-150"
-          :class="isActive(item.to)
-            ? 'bg-[#0000ff] text-white shadow-[0_4px_10px_rgba(0,0,255,0.22)]'
-            : 'bg-[#0000ff]/6 text-[#0000ff]/70 group-hover:bg-[#0000ff]/10 group-hover:text-[#0000ff]'"
-        >
-          <Icon :name="item.icon" class="h-4 w-4" />
-        </span>
-        <span class="truncate text-[13px] font-medium leading-tight">
-          {{ $t(item.label) }}
-        </span>
-      </NuxtLink>
+  <div class="min-w-0 space-y-8">
+    <nav class="space-y-1">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-3 mb-4">
+        {{ $t("navigation.leftSidebar.menu") || 'Menu' }}
+      </p>
 
-      <!-- Expandable section -->
-      <template v-if="expanded">
-        <NuxtLink
-          v-for="item in sidebarNavMore"
+      <div class="space-y-0.5">
+        <NavigationSidebarMenuItem
+          v-for="item in sidebarNav"
           :key="item.label"
           :to="item.to"
-          class="group flex min-w-0 items-center gap-2.5 rounded-[12px] px-2.5 py-2 transition duration-150"
-          :class="isActive(item.to)
-            ? 'bg-[#0000ff]/8 text-[#0000ff]'
-            : 'text-slate-600 hover:bg-[#0000ff]/5 hover:text-[#0000ff]'"
-        >
-          <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] transition duration-150"
-            :class="isActive(item.to)
-              ? 'bg-[#0000ff] text-white shadow-[0_4px_10px_rgba(0,0,255,0.22)]'
-              : 'bg-[#0000ff]/6 text-[#0000ff]/60 group-hover:bg-[#0000ff]/10 group-hover:text-[#0000ff]'"
-          >
-            <Icon :name="item.icon" class="h-4 w-4" />
-          </span>
-          <span class="truncate text-[13px] font-medium leading-tight">
-            {{ $t(item.label) }}
-          </span>
-        </NuxtLink>
-      </template>
+          :label="$t(item.label)"
+          :icon="item.icon"
+        />
 
-      <!-- Xem thêm / Ẩn bớt -->
+        <!-- Expandable section -->
+        <template v-if="expanded">
+          <NavigationSidebarMenuItem
+            v-for="item in sidebarNavMore"
+            :key="item.label"
+            :to="item.to"
+            :label="$t(item.label)"
+            :icon="item.icon"
+          />
+        </template>
+      </div>
+
+      <!-- Show More Toggle -->
       <button
-        class="group flex w-full items-center gap-2.5 rounded-[12px] px-2.5 py-2 text-left text-slate-500 transition duration-150 hover:bg-[#0000ff]/5 hover:text-[#0000ff]"
+        class="group flex w-full items-center gap-3.5 rounded-xl px-3 py-2.5 text-left transition-all duration-300 hover:bg-secondary-50"
         type="button"
         @click="expanded = !expanded"
       >
         <span
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-[#0000ff]/6 text-[#0000ff]/60 transition group-hover:bg-[#0000ff]/10 group-hover:text-[#0000ff]"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-secondary-100 bg-white text-secondary-400 transition-all duration-300 group-hover:border-primary-200 group-hover:text-primary-600 shadow-sm"
         >
           <Icon
-            :name="expanded ? 'i-ph-caret-up' : 'i-ph-caret-down'"
-            class="h-4 w-4"
+            :name="expanded ? 'i-ph-caret-up-bold' : 'i-ph-caret-down-bold'"
+            class="h-3.5 w-3.5"
           />
         </span>
-        <span class="text-[13px] font-medium">
+        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 group-hover:text-primary-600 transition-colors leading-none">
           {{ expanded ? $t('navigation.leftSidebar.showLess') : $t('navigation.leftSidebar.showMore') }}
         </span>
       </button>

@@ -1,73 +1,95 @@
-<template>
-  <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-    <div class="relative min-h-[220px] overflow-hidden px-5 py-6 text-white sm:min-h-[260px] sm:px-7">
-      <div class="absolute inset-0" :style="{ background: page.banner }" />
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.32),transparent_38%),linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.38))]" />
-
-      <div class="relative flex h-full flex-col justify-between gap-6">
-        <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/88">
-          <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ $t(categoryLabel) }}
-          </span>
-          <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ page.responseLabel }}
-          </span>
-          <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ page.foundedLabel }}
-          </span>
+  <section class="surface-card overflow-hidden ring-1 ring-secondary-100 shadow-2xl relative">
+    <!-- Hero Banner with Premium Overlays -->
+    <div class="relative min-h-[340px] overflow-hidden px-8 py-10 text-white flex flex-col justify-end" :style="{ background: page.banner }">
+      <!-- Premium Overlays -->
+      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent transition-transform duration-700 group-hover:scale-105" />
+      <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full blur-[90px] -mr-36 -mt-36 pointer-events-none animate-pulse" />
+      
+      <div class="relative z-10 space-y-8">
+        <!-- Badge row -->
+        <div class="flex flex-wrap items-center gap-2">
+          <UBadge
+            v-for="label in [categoryLabel, page.responseLabel, page.foundedLabel]"
+            :key="label"
+            variant="soft"
+            class="rounded-lg font-black text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 bg-white/20 text-white backdrop-blur-md ring-1 ring-white/30"
+          >
+            {{ $t(label) }}
+          </UBadge>
         </div>
 
-        <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div class="flex items-end gap-4">
-            <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-[28px] border border-white/18 bg-white/12 text-[1.55rem] font-black text-white shadow-[0_16px_30px_rgba(15,23,42,0.22)] backdrop-blur sm:h-28 sm:w-28 sm:text-[1.8rem]">
+        <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+          <div class="flex flex-col sm:flex-row items-start sm:items-end gap-6">
+            <!-- Initials Avatar -->
+            <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-[28px] bg-white/10 text-3xl font-black text-white shadow-2xl ring-2 ring-white/20 backdrop-blur-xl group cursor-pointer transition-transform duration-500 hover:scale-110">
               {{ avatarLabel }}
             </div>
 
-            <div class="min-w-0 pb-1">
-              <p class="text-[12px] font-bold uppercase tracking-[0.24em] text-white/70">
+            <div class="min-w-0 pb-1 space-y-3">
+              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-400">
                 {{ t("pages.pageDetailPage.heroTypeLabel") }}
               </p>
-              <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-white sm:text-[2.5rem]">
+              <h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-white leading-none">
                 {{ page.name }}
               </h1>
-              <p class="mt-2 max-w-[760px] text-[14px] leading-7 text-white/82">
+              <p class="max-w-2xl text-sm font-medium leading-relaxed text-white/70 line-clamp-2">
                 {{ page.summary }}
               </p>
-              <div class="mt-3 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-white/82">
-                <span>{{ $t('community.pages.format.followers', { count: followerCountLabel }) }}</span>
-                <span class="text-white/30">•</span>
-                <span>{{ $t('community.pages.format.likes', { count: likeCountLabel }) }}</span>
-                <span class="text-white/30">•</span>
-                <span>{{ page.locationLabel }}</span>
+              
+              <div class="flex flex-wrap items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/50">
+                <div class="flex items-center gap-2">
+                  <Icon name="i-ph-users-three-duotone" class="h-4 w-4 text-primary-400" />
+                  <span class="text-white">{{ $t('community.pages.format.followers', { count: followerCountLabel }) }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <Icon name="i-ph-heart-duotone" class="h-4 w-4 text-primary-400" />
+                  <span class="text-white">{{ $t('community.pages.format.likes', { count: likeCountLabel }) }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 text-primary-400" />
+                  <span class="text-white/70">{{ page.locationLabel }}</span>
+                </div>
               </div>
             </div>
           </div>
 
+          <!-- Action Buttons -->
           <div class="flex flex-wrap items-center gap-3">
-            <button
-              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-white px-5 text-[14px] font-extrabold text-[#1d4ed8] shadow-[0_12px_24px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
-              type="button"
+            <UButton
+              size="xl"
+              class="h-12 rounded-2xl bg-white text-primary-600 font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-black/20 hover:scale-105 transition-all px-8 border-none"
+              @click="$emit('follow')"
             >
-              <Icon name="i-ph-bell-simple-ringing-bold" class="mr-2 h-4 w-4" />
+              <template #leading>
+                <Icon name="i-ph-bell-simple-ringing-duotone" class="h-5 w-5" />
+              </template>
               {{ page.ctaLabel || t("pages.pageDetailPage.followFallback") }}
-            </button>
+            </UButton>
 
-            <button
-              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/16 bg-white/12 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-white/18"
-              type="button"
+            <UButton
+              size="xl"
+              variant="soft"
+              class="h-12 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-md px-6 transition-all border-none"
+              @click="$emit('share')"
             >
-              <Icon name="i-ph-paper-plane-tilt-bold" class="mr-2 h-4 w-4" />
+              <template #leading>
+                <Icon name="i-ph-paper-plane-tilt-duotone" class="h-5 w-5" />
+              </template>
               {{ t("pages.pageDetailPage.shareButton") }}
-            </button>
+            </UButton>
 
-            <NuxtLink
+            <UButton
               v-if="page.canManage"
               :to="pageSettingsPath"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
+              size="xl"
+              variant="soft"
+              class="h-12 rounded-2xl bg-black/40 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/10 hover:bg-black/60 backdrop-blur-md px-6 border-none"
             >
-              <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
+              <template #leading>
+                <Icon name="i-ph-gear-six-duotone" class="h-5 w-5" />
+              </template>
               {{ t("pages.pageDetailPage.settingsButton") }}
-            </NuxtLink>
+            </UButton>
           </div>
         </div>
       </div>
