@@ -1,28 +1,39 @@
 <template>
-  <label class="flex items-center justify-between gap-4 rounded-[24px] border border-slate-200 bg-white p-4">
-    <div>
-      <p class="text-sm font-semibold text-slate-900">{{ label }}</p>
-      <p v-if="description" class="mt-1 text-xs text-slate-500">{{ description }}</p>
-    </div>
-    <button
-      class="relative h-7 w-13 rounded-full transition"
-      :class="model ? 'bg-primary-600' : 'bg-slate-200'"
-      type="button"
-      @click="model = !model"
-    >
-      <span
-        class="absolute top-1 h-5 w-5 rounded-full bg-white shadow-sm transition"
-        :class="model ? 'left-7' : 'left-1'"
+  <div class="space-y-2">
+    <div class="rounded-[1.15rem] border border-slate-200 bg-white px-4 py-4">
+      <USwitch
+        v-model="model"
+        :label="label"
+        :description="description"
+        :disabled="disabled"
+        color="primary"
+        size="lg"
+        class="items-start"
       />
-    </button>
-  </label>
+    </div>
+
+    <p v-if="error" class="text-sm font-medium text-rose-600">
+      {{ error }}
+    </p>
+    <p v-else-if="hint" class="text-sm text-slate-500">
+      {{ hint }}
+    </p>
+  </div>
 </template>
 
 <script setup lang="ts">
 const model = defineModel<boolean>({ default: false })
 
-defineProps<{
+withDefaults(defineProps<{
   label: string
   description?: string
-}>()
+  hint?: string
+  error?: string
+  disabled?: boolean
+}>(), {
+  description: "",
+  hint: "",
+  error: "",
+  disabled: false,
+})
 </script>

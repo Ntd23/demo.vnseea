@@ -1,25 +1,59 @@
 <template>
   <div class="space-y-3">
-    <p v-if="label" class="text-sm font-semibold text-slate-600">{{ label }}</p>
-    <div class="flex flex-wrap gap-3">
-      <label
-        v-for="option in options"
-        :key="option.value"
-        class="inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition"
-        :class="model === option.value ? 'border-[#0000ff] bg-[#0000ff]/5 text-[#0000ff]' : 'border-[#0000ff]/15 bg-white text-[#0000ff]/60'"
-      >
-        <input v-model="model" :value="option.value" class="hidden" type="radio">
-        <span>{{ option.label }}</span>
-      </label>
-    </div>
+    <p v-if="label" class="text-sm font-semibold text-slate-700">
+      {{ label }}
+    </p>
+
+    <p v-if="description" class="text-sm text-slate-500">
+      {{ description }}
+    </p>
+
+    <URadioGroup
+      v-model="model"
+      :items="options"
+      value-key="value"
+      label-key="label"
+      color="primary"
+      variant="card"
+      indicator="end"
+      size="lg"
+      :disabled="disabled"
+      :ui="radioGroupUi"
+    />
+
+    <p v-if="error" class="text-sm font-medium text-rose-600">
+      {{ error }}
+    </p>
+    <p v-else-if="hint" class="text-sm text-slate-500">
+      {{ hint }}
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
 const model = defineModel<string>({ default: "" })
 
-defineProps<{
+withDefaults(defineProps<{
   label?: string
+  description?: string
+  hint?: string
+  error?: string
+  disabled?: boolean
   options: { label: string; value: string }[]
-}>()
+}>(), {
+  label: "",
+  description: "",
+  hint: "",
+  error: "",
+  disabled: false,
+})
+
+const radioGroupUi = {
+  fieldset: "grid grid-cols-1 gap-3 md:grid-cols-2",
+  item: "min-h-[4.4rem] items-center rounded-[1.15rem] border px-4 py-4 transition hover:border-[#c8d9ef]",
+  container: "h-full",
+  wrapper: "flex-1",
+  label: "text-[0.98rem] font-semibold text-slate-700",
+  base: "size-5 ring-[#cbd9ea] bg-white data-[state=checked]:ring-[#0000ff]",
+}
 </script>

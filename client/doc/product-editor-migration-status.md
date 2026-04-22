@@ -445,18 +445,18 @@ Nhận xét migrate:
 ### `forms` - 12 files
 
 Files:
-- `CheckboxField.vue`
-- `FormSection.vue`
-- `MediaPreviewList.vue`
-- `PasswordInput.vue`
-- `RadioGroupField.vue`
-- `SearchInput.vue`
-- `SelectBox.vue`
-- `SubmitBar.vue`
-- `TextareaAutoResize.vue`
-- `TextInput.vue`
-- `ToggleSwitch.vue`
-- `Uploader.vue`
+- `[x]` `CheckboxField.vue`
+- `[x]` `FormSection.vue`
+- `[x]` `MediaPreviewList.vue`
+- `[x]` `PasswordInput.vue`
+- `[x]` `RadioGroupField.vue`
+- `[x]` `SearchInput.vue`
+- `[x]` `SelectBox.vue`
+- `[x]` `SubmitBar.vue`
+- `[x]` `TextareaAutoResize.vue`
+- `[x]` `TextInput.vue`
+- `[x]` `ToggleSwitch.vue`
+- `[x]` `Uploader.vue`
 
 Vai trò:
 - shared form primitives tự build
@@ -467,7 +467,30 @@ Nhận xét migrate:
 - nên phân loại:
   - cái nào giữ lại vì có business styling riêng
   - cái nào bỏ dần để thay bằng `UInput`, `USelect`, `UCheckbox`, `USwitch`, `UFileUpload`
-- hiện `SubmitBar.vue` đã được migrate tốt
+- nên chia thành 2 đợt:
+  - đợt 1: primitive input/control
+    - `CheckboxField.vue`
+    - `PasswordInput.vue`
+    - `RadioGroupField.vue`
+    - `SearchInput.vue`
+    - `SelectBox.vue`
+    - `TextareaAutoResize.vue`
+    - `TextInput.vue`
+    - `ToggleSwitch.vue`
+  - đợt 2: wrapper/media pattern
+    - `FormSection.vue`
+    - `MediaPreviewList.vue`
+    - `SubmitBar.vue`
+    - `Uploader.vue`
+- đợt 1 đã xử lý:
+  - đổi 8 primitive input/control sang ruột `@nuxt/ui` nhưng giữ wrapper API cũ để không phải chase rộng toàn app
+  - thêm `description`, `hint`, `error`, `disabled` cho shared wrapper để form state rõ hơn thay vì chỉ render native input
+  - `SearchInput.vue` có clear action + `Esc` clear, `PasswordInput.vue` dùng trailing toggle chuẩn hơn, `TextareaAutoResize.vue` bỏ resize thủ công để dùng `UTextarea` autoresize SSR-safe hơn
+- đợt 2 đã xử lý:
+  - giữ `FormSection.vue` như shared wrapper nhưng nâng thành card section có header, badge, hint alert và slot `actions/footer` rõ hơn
+  - `MediaPreviewList.vue` có empty state, preview state, remove action và status `idle/uploading/ready/error` thay vì chỉ vẽ box mock
+  - `Uploader.vue` có hidden input + event emit `select/select-image/select-video`, alert trạng thái rõ và nối trực tiếp với `FormsMediaPreviewList`
+  - `SubmitBar.vue` có contract rõ hơn cho `save/submit`: `disabled`, `loading`, `status`, `progress`, save button tuỳ chọn và feedback inline đồng nhất với `UForm`
 
 ### `forum` - 6 files
 
