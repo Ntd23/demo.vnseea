@@ -10,15 +10,13 @@
       />
 
       <main class="min-w-0 flex-1 space-y-5">
-        <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-          <div class="flex items-start gap-4">
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]">
-              <Icon :name="activePage.icon" class="h-7 w-7" />
-            </div>
-            <div>
-              <h1 class="mt-1 text-2xl font-black text-[var(--text-primary)]">{{ activePage.label }}</h1>
-              <p class="mt-1 text-body-secondary">{{ activePage.description }}</p>
-            </div>
+        <section class="surface-card p-6 sm:p-8 flex items-center gap-6">
+          <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 border border-primary-100 shadow-sm transition hover:scale-105">
+            <Icon :name="activePage.icon" class="h-8 w-8" />
+          </div>
+          <div class="space-y-1">
+            <h1 class="text-3xl font-black text-secondary-900 leading-tight">{{ activePage.label }}</h1>
+            <p class="text-body-secondary text-sm">{{ activePage.description }}</p>
           </div>
         </section>
 

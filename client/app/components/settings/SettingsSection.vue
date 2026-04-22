@@ -1,22 +1,24 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-      <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ kindLabel }}</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ section.title }}</h2>
-        <p class="mt-1 max-w-2xl text-body-secondary">{{ section.description }}</p>
+  <section class="surface-card p-6 sm:p-8">
+    <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-secondary-100 pb-6 mb-8">
+      <div class="space-y-1">
+        <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">{{ kindLabel }}</p>
+        <h2 class="text-2xl font-black text-secondary-900 leading-tight">{{ section.title }}</h2>
+        <p class="text-body-secondary text-sm max-w-xl">{{ section.description }}</p>
       </div>
-      <button
+      <UButton
         v-if="section.kind === 'form'"
-        class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]"
-        type="button"
+        color="primary"
+        size="lg"
+        class="rounded-full font-black px-8 shadow-lg shadow-primary-500/20"
         @click="saved = true"
       >
         {{ t("pages.settingsPage.saveChanges") }}
-      </button>
+      </UButton>
     </div>
 
-    <div v-if="section.fields?.length" class="mt-5 grid gap-4 md:grid-cols-2">
+    <!-- Fields Grid -->
+    <div v-if="section.fields?.length" class="grid gap-6 md:grid-cols-2">
       <SettingsField
         v-for="field in section.fields"
         :key="field.key"
@@ -25,65 +27,75 @@
       />
     </div>
 
-    <div v-if="section.toggles?.length" class="mt-5 grid gap-3 md:grid-cols-2">
-      <button
+    <!-- Toggles Grid -->
+    <div v-if="section.toggles?.length" class="grid gap-4 md:grid-cols-2">
+      <div
         v-for="toggle in section.toggles"
         :key="toggle.label"
-        class="flex items-center justify-between gap-4 rounded-[22px] bg-[var(--bg-surface-hover)] p-4 text-left"
-        type="button"
-        @click="toggleState[toggle.label] = !currentToggle(toggle.label, toggle.enabled)"
+        class="flex items-center justify-between gap-6 rounded-2xl bg-secondary-50/50 p-5 border border-secondary-100/30 transition hover:bg-secondary-50"
       >
-        <span>
-          <span class="block text-[14px] font-extrabold text-[var(--text-primary)]">{{ toggle.label }}</span>
-          <span class="mt-1 block text-[12px] font-semibold leading-5 text-[var(--text-secondary)]">{{ toggle.description }}</span>
-        </span>
-        <span
-          class="relative h-7 w-12 shrink-0 rounded-full transition"
-          :class="currentToggle(toggle.label, toggle.enabled) ? 'bg-[var(--color-primary-500)]' : 'bg-[var(--color-secondary-200)]'"
-        >
-          <span
-            class="absolute top-1 h-5 w-5 rounded-full bg-white shadow-[var(--shadow-sm)] transition"
-            :class="currentToggle(toggle.label, toggle.enabled) ? 'left-6' : 'left-1'"
-          />
-        </span>
-      </button>
-    </div>
-
-    <div v-if="section.items?.length" class="mt-5 space-y-3">
-      <div v-for="item in section.items" :key="item.title" class="flex flex-col gap-3 rounded-[22px] bg-[var(--bg-surface-hover)] p-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div class="flex flex-wrap items-center gap-2">
-            <h3 class="text-[14px] font-extrabold text-[var(--text-primary)]">{{ item.title }}</h3>
-            <span v-if="item.meta" class="rounded-[var(--radius-full)] bg-white px-2.5 py-1 text-[11px] font-black text-[var(--color-primary-600)]">{{ item.meta }}</span>
-          </div>
-          <p class="mt-1 text-[13px] font-semibold leading-5 text-[var(--text-secondary)]">{{ item.description }}</p>
+        <div class="space-y-1">
+          <p class="text-sm font-black text-secondary-900">{{ toggle.label }}</p>
+          <p class="text-xs font-semibold leading-relaxed text-secondary-400">{{ toggle.description }}</p>
         </div>
-        <button
-          v-if="item.action"
-          class="inline-flex h-10 items-center justify-center rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-4 text-[12px] font-extrabold text-[var(--color-primary-600)]"
-          type="button"
-          @click="saved = true"
-        >
-          {{ item.action }}
-        </button>
+        <USwitch
+          :model-value="currentToggle(toggle.label, toggle.enabled)"
+          color="primary"
+          @update:model-value="toggleState[toggle.label] = $event"
+        />
       </div>
     </div>
 
-    <div v-if="section.kind === 'danger'" class="mt-5 rounded-[22px] border border-[var(--color-error)]/20 bg-[var(--color-error)]/5 p-4">
-      <p class="text-[13px] font-bold leading-6 text-[var(--color-error)]">{{ t("pages.settingsPage.dangerDescription") }}</p>
-      <button
-        class="mt-4 inline-flex h-11 items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-error)] px-5 text-[13px] font-extrabold text-white"
-        type="button"
-        @click="saved = true"
-      >
-        <Icon name="i-ph-trash-fill" class="h-4 w-4" />
-        {{ t("pages.settingsPage.deleteAccountAction") }}
-      </button>
+    <!-- List Items -->
+    <div v-if="section.items?.length" class="space-y-4">
+      <div v-for="item in section.items" :key="item.title" class="flex flex-col gap-4 rounded-2xl border border-secondary-100 bg-white p-5 transition hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
+        <div class="space-y-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="text-sm font-black text-secondary-900">{{ item.title }}</h3>
+            <UBadge v-if="item.meta" :label="item.meta" size="xs" variant="soft" color="primary" class="rounded-full font-bold px-2" />
+          </div>
+          <p class="text-xs font-semibold text-secondary-500 leading-relaxed">{{ item.description }}</p>
+        </div>
+        <UButton
+          v-if="item.action"
+          color="primary"
+          variant="soft"
+          size="sm"
+          class="rounded-full font-bold px-4"
+          @click="saved = true"
+        >
+          {{ item.action }}
+        </UButton>
+      </div>
     </div>
 
-    <div v-if="saved" class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]">
-      {{ t("pages.settingsPage.saveSuccess") }}
+    <!-- Danger Zone -->
+    <div v-if="section.kind === 'danger'" class="mt-8 rounded-2xl border border-red-100 bg-red-50/50 p-6">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-6">
+        <div class="flex-1 space-y-1">
+          <p class="text-xs font-black text-red-600 uppercase tracking-widest">{{ t("pages.settingsPage.kindDanger") }}</p>
+          <p class="text-sm font-semibold text-red-700 leading-relaxed">{{ t("pages.settingsPage.dangerDescription") }}</p>
+        </div>
+        <UButton
+          color="red"
+          size="lg"
+          class="rounded-full font-black px-6 shadow-lg shadow-red-500/20"
+          icon="i-ph-trash-fill"
+          @click="saved = true"
+        >
+          {{ t("pages.settingsPage.deleteAccountAction") }}
+        </UButton>
+      </div>
     </div>
+
+    <UAlert
+      v-if="saved"
+      class="mt-8 rounded-xl"
+      color="primary"
+      variant="soft"
+      icon="i-ph-check-circle-fill"
+      :title="t('pages.settingsPage.saveSuccess')"
+    />
   </section>
 </template>
 

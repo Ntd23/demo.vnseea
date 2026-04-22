@@ -1,30 +1,40 @@
 <template>
-  <label class="block">
-    <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ field.label }}</span>
-
-    <textarea
-      v-if="field.type === 'textarea'"
-      v-model="value"
-      class="setting-input mt-2 min-h-[120px] resize-y py-3"
-      :placeholder="field.placeholder"
-    />
-
-    <select
-      v-else-if="field.type === 'select'"
-      v-model="value"
-      class="setting-input mt-2"
+  <div class="flex flex-col gap-2">
+    <UFormGroup
+      :label="field.label"
+      :help="field.description"
+      class="w-full"
     >
-      <option v-for="option in field.options ?? []" :key="option" :value="option">{{ option }}</option>
-    </select>
+      <UTextarea
+        v-if="field.type === 'textarea'"
+        v-model="value"
+        :placeholder="field.placeholder"
+        size="lg"
+        variant="outline"
+        class="font-semibold"
+        :rows="4"
+      />
 
-    <input
-      v-else
-      v-model="value"
-      class="setting-input mt-2"
-      :placeholder="field.placeholder"
-      :type="field.type"
-    >
-  </label>
+      <USelectMenu
+        v-else-if="field.type === 'select'"
+        v-model="value"
+        :options="field.options ?? []"
+        size="lg"
+        variant="outline"
+        class="font-semibold"
+      />
+
+      <UInput
+        v-else
+        v-model="value"
+        :type="field.type"
+        :placeholder="field.placeholder"
+        size="lg"
+        variant="outline"
+        class="font-semibold"
+      />
+    </UFormGroup>
+  </div>
 </template>
 
 <script setup lang="ts">
