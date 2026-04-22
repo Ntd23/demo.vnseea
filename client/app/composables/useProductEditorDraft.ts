@@ -1,11 +1,37 @@
 import { computed, ref, watch, type ComputedRef, type Ref } from "vue"
 import { useStorage } from "@vueuse/core"
-import type { ProductEditorDraft } from "../../types/product-editor"
+import type {
+  CategoryValue,
+  ConditionValue,
+  CurrencyValue,
+  ProductEditorDraft,
+} from "../../types/product-editor"
 
 const cloneDraft = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null
+
+const categoryValues = ["home", "tech", "beauty", "books", "vehicles", "food"] as const satisfies readonly CategoryValue[]
+const conditionValues = ["new", "like-new", "used"] as const satisfies readonly ConditionValue[]
+const currencyValues = ["USD", "VND", "EUR"] as const satisfies readonly CurrencyValue[]
+
+const extractStringValue = (value: unknown): string | null => {
+  if (typeof value === "string") return value
+  if (!isRecord(value)) return null
+  if (typeof value.value === "string") return value.value
+  return null
+}
+
+const normalizeEnumField = <T extends string>(
+  value: unknown,
+  allowedValues: readonly T[],
+  fallback: T,
+): T => {
+  const candidate = extractStringValue(value)
+  if (!candidate) return fallback
+  return (allowedValues.find(item => item === candidate) ?? fallback) as T
+}
 
 const normalizeDraft = (value: unknown, fallback: ProductEditorDraft): ProductEditorDraft => {
   if (!isRecord(value)) {
@@ -22,10 +48,10 @@ const normalizeDraft = (value: unknown, fallback: ProductEditorDraft): ProductEd
       title: typeof fieldsSource.title === "string" ? fieldsSource.title : fallbackFields.title,
       price: typeof fieldsSource.price === "string" ? fieldsSource.price : fallbackFields.price,
       description: typeof fieldsSource.description === "string" ? fieldsSource.description : fallbackFields.description,
-      category: typeof fieldsSource.category === "string" ? fieldsSource.category as ProductEditorDraft["fields"]["category"] : fallbackFields.category,
-      condition: typeof fieldsSource.condition === "string" ? fieldsSource.condition as ProductEditorDraft["fields"]["condition"] : fallbackFields.condition,
+      category: normalizeEnumField(fieldsSource.category, categoryValues, fallbackFields.category),
+      condition: normalizeEnumField(fieldsSource.condition, conditionValues, fallbackFields.condition),
       location: typeof fieldsSource.location === "string" ? fieldsSource.location : fallbackFields.location,
-      currency: typeof fieldsSource.currency === "string" ? fieldsSource.currency as ProductEditorDraft["fields"]["currency"] : fallbackFields.currency,
+      currency: normalizeEnumField(fieldsSource.currency, currencyValues, fallbackFields.currency),
       stock: typeof fieldsSource.stock === "string" ? fieldsSource.stock : fallbackFields.stock,
     },
     removedImageIds: Array.isArray(value.removedImageIds)
@@ -44,7 +70,12 @@ export const useProductEditorDraft = (
   const sourceDraft = ref<ProductEditorDraft>(cloneDraft(baseDraft))
 
   if (import.meta.client) {
-    const persistedDraft = useStorage<ProductEditorDraft>(storageKey, cloneDraft(baseDraft))
+    const persistedDraft = useStorage<ProductEditorDraft>(
+      storageKey,
+      cloneDraft(baseDraft),
+      undefined,
+      { initOnMounted: true },
+    )
     draft.value = normalizeDraft(persistedDraft.value, baseDraft)
 
     watch(

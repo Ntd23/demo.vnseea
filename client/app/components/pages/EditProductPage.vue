@@ -265,10 +265,16 @@ const heroStats = computed<ProductHeroStat[]>(() => [
   },
 ])
 
-const previewBackground = computed(() => categoryMeta[draft.value.fields.category].background)
-const previewIcon = computed(() => categoryMeta[draft.value.fields.category].icon)
-const previewCategoryLabel = computed(() => categoryMeta[draft.value.fields.category].label)
-const previewConditionLabel = computed(() => conditionMap[draft.value.fields.condition])
+const activeCategoryMeta = computed(() =>
+  categoryMeta.value[draft.value.fields.category] ?? categoryMeta.value.vehicles,
+)
+
+const previewBackground = computed(() => activeCategoryMeta.value.background)
+const previewIcon = computed(() => activeCategoryMeta.value.icon)
+const previewCategoryLabel = computed(() => activeCategoryMeta.value.label)
+const previewConditionLabel = computed(() =>
+  conditionMap.value[draft.value.fields.condition] ?? conditionMap.value.new,
+)
 const previewCurrencyLabel = computed(() => currencyMeta[draft.value.fields.currency].label)
 const previewDescription = computed(() =>
   draft.value.fields.description.trim() || "Mô tả cập nhật sẽ hiển thị ở đây để bạn kiểm tra trước khi lưu.",

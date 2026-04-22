@@ -47,7 +47,7 @@
     <div class="mt-8 grid gap-5 md:grid-cols-[minmax(0,1fr)_360px]">
       <UFormField :label="$t('pages.productEditor.categoryLabel')" size="xl" class="space-y-2">
         <USelect
-          v-model="category"
+          v-model="categoryModel"
           :items="categoryOptions"
           value-key="value"
           label-key="label"
@@ -59,7 +59,7 @@
 
       <UFormField :label="$t('pages.productEditor.conditionLabel')" size="xl" class="space-y-2">
         <USelect
-          v-model="condition"
+          v-model="conditionModel"
           :items="conditionOptions"
           value-key="value"
           label-key="label"
@@ -85,7 +85,7 @@
 
       <UFormField :label="$t('pages.productEditor.currencyLabel')" size="xl" class="space-y-2">
         <USelect
-          v-model="currency"
+          v-model="currencyModel"
           :items="currencyOptions"
           value-key="value"
           label-key="label"
@@ -138,7 +138,7 @@ import type {
   ProductOption,
 } from "../../../types/product-editor"
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   categoryOptions: ProductOption<CategoryValue>[]
   conditionOptions: ProductOption<ConditionValue>[]
   currencyOptions: ProductOption<CurrencyValue>[]
@@ -156,6 +156,53 @@ const condition = defineModel<ConditionValue>("condition", { required: true })
 const location = defineModel<string>("location", { required: true })
 const currency = defineModel<CurrencyValue>("currency", { required: true })
 const stock = defineModel<string>("stock", { required: true })
+
+const normalizeSelectValue = <T extends string>(
+  value: unknown,
+  options: ProductOption<T>[],
+  fallback: T,
+): T => {
+  if (typeof value === "string" && options.some(option => option.value === value)) {
+    return value as T
+  }
+
+  if (
+    typeof value === "object"
+    && value !== null
+    && "value" in value
+    && typeof value.value === "string"
+    && options.some(option => option.value === value.value)
+  ) {
+    return value.value as T
+  }
+
+  return fallback
+}
+
+const categoryFallback = computed(() => props.categoryOptions[0]?.value ?? "vehicles")
+const conditionFallback = computed(() => props.conditionOptions[0]?.value ?? "new")
+const currencyFallback = computed(() => props.currencyOptions[0]?.value ?? "USD")
+
+const categoryModel = computed<CategoryValue>({
+  get: () => normalizeSelectValue(category.value, props.categoryOptions, categoryFallback.value),
+  set: value => {
+    category.value = normalizeSelectValue(value, props.categoryOptions, categoryFallback.value)
+  },
+})
+
+const conditionModel = computed<ConditionValue>({
+  get: () => normalizeSelectValue(condition.value, props.conditionOptions, conditionFallback.value),
+  set: value => {
+    condition.value = normalizeSelectValue(value, props.conditionOptions, conditionFallback.value)
+  },
+})
+
+const currencyModel = computed<CurrencyValue>({
+  get: () => normalizeSelectValue(currency.value, props.currencyOptions, currencyFallback.value),
+  set: value => {
+    currency.value = normalizeSelectValue(value, props.currencyOptions, currencyFallback.value)
+  },
+})
 
 const priceValue = computed<number | undefined>({
   get: () => {

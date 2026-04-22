@@ -10,7 +10,7 @@
 
     <USelect
       :id="inputId"
-      v-model="model"
+      v-model="normalizedModel"
       :items="options"
       value-key="value"
       label-key="label"
@@ -61,6 +61,34 @@ const props = withDefaults(defineProps<{
 })
 
 const inputId = computed(() => props.id || generatedId)
+
+const normalizeOptionValue = (
+  value: unknown,
+  fallback = "",
+) => {
+  if (typeof value === "string" && props.options.some(option => option.value === value)) {
+    return value
+  }
+
+  if (
+    typeof value === "object"
+    && value !== null
+    && "value" in value
+    && typeof value.value === "string"
+    && props.options.some(option => option.value === value.value)
+  ) {
+    return value.value
+  }
+
+  return fallback
+}
+
+const normalizedModel = computed({
+  get: () => normalizeOptionValue(model.value, model.value),
+  set: value => {
+    model.value = normalizeOptionValue(value, props.options[0]?.value ?? "")
+  },
+})
 
 const selectUi = {
   base: "h-[3.25rem] rounded-[1.1rem] px-4 text-[0.98rem]",
