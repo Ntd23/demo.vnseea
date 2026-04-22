@@ -10,23 +10,35 @@
             {{ t("pages.pageDetailPage.feedTitle") }}
           </h2>
           <p class="mt-1 text-[14px] leading-6 text-slate-500">
-            {{ t("pages.pageDetailPage.feedDescription", { owner: page.ownerLabel }) }}
+            {{ t("pages.pageDetailPage.feedDescription", { owner: ownerLabel }) }}
           </p>
         </div>
 
-        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[12px] font-semibold text-slate-500">
-          {{ page.responseLabel }}
-        </div>
+        <UBadge color="neutral" variant="soft" class="rounded-full px-4 py-3 text-[12px] font-semibold text-slate-500">
+          {{ responseLabel }}
+        </UBadge>
       </div>
     </section>
 
     <FeedPublisherBox />
 
-    <FeedPostCard
-      v-for="post in posts"
-      :key="post.id"
-      :post="post"
+    <UAlert
+      v-if="posts.length === 0"
+      color="neutral"
+      variant="subtle"
+      icon="i-ph-newspaper-clipping-bold"
+      :title="t('pages.pageDetailPage.feedEmptyTitle')"
+      :description="t('pages.pageDetailPage.feedEmptyDescription')"
+      class="rounded-[24px]"
     />
+
+    <template v-else>
+      <FeedPostCard
+        v-for="post in posts"
+        :key="post.id"
+        :post="post"
+      />
+    </template>
   </div>
 </template>
 
@@ -34,8 +46,9 @@
 import type { CommunityPageRecord } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
-defineProps<{
+const props = defineProps<{
   page: CommunityPageRecord
   posts: Array<{
     id: number
@@ -50,4 +63,12 @@ defineProps<{
     comments: { id: number; author: string; role: string; text: string }[]
   }>
 }>()
+
+const ownerLabel = computed(() =>
+  translateText(props.page.ownerLabel),
+)
+
+const responseLabel = computed(() =>
+  translateText(props.page.responseLabel),
+)
 </script>

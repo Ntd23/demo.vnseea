@@ -6,10 +6,10 @@
           {{ $t("community.creation.common.basicSetup") }}
         </p>
         <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[1.75rem]">
-          {{ $t("community.creation.common.fillInfo", { entity: $t(entityLabel) }) }}
+          {{ $t("community.creation.common.fillInfo", { entity: entityText }) }}
         </h2>
         <p class="mt-2 text-[14px] leading-7 text-slate-500">
-          {{ $t("community.creation.common.fillDesc", { entity: $t(entityLabel) }) }}
+          {{ $t("community.creation.common.fillDesc", { entity: entityText }) }}
         </p>
       </div>
 
@@ -19,65 +19,87 @@
       </div>
     </div>
 
-    <div class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-      <div class="space-y-6">
-        <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-                {{ identitySectionLabelText }}
-              </p>
-              <p class="mt-1 text-[15px] font-black text-[#243b63]">
-                {{ identitySectionTitleText }}
-              </p>
+    <UForm
+      :state="model"
+      :validate="validateForm"
+      class="mt-8"
+      @submit="emit('submit')"
+    >
+      <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div class="space-y-6">
+          <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+                  {{ identitySectionLabelText }}
+                </p>
+                <p class="mt-1 text-[15px] font-black text-[#243b63]">
+                  {{ identitySectionTitleText }}
+                </p>
+              </div>
+
+              <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold text-slate-500">
+                {{ identitySectionBadgeText }}
+              </UBadge>
             </div>
 
-            <div class="inline-flex items-center rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-              {{ identitySectionBadgeText }}
-            </div>
-          </div>
-
-          <div class="mt-5 space-y-6">
-            <label class="block">
-              <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-                {{ nameLabelText }}
-              </span>
-              <input
-                v-model="model.name"
-                :placeholder="namePlaceholder"
-                class="mt-3 h-[76px] w-full rounded-[24px] border border-[#d1d5db] bg-white px-5 text-[1.05rem] text-slate-900 outline-none transition placeholder:text-slate-300 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
-                type="text"
+            <div class="mt-5 space-y-6">
+              <UFormField
+                name="name"
+                :label="nameLabelText"
+                required
+                size="xl"
+                class="space-y-2"
               >
-              <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
-                <span class="rounded-full bg-white px-3 py-1.5 shadow-[0_6px_14px_rgba(15,35,110,0.04)]">
+                <UInput
+                  v-model="model.name"
+                  :placeholder="namePlaceholder"
+                  color="primary"
+                  size="xl"
+                  :disabled="isBusy"
+                  class="w-full"
+                  :ui="inputUi"
+                />
+              </UFormField>
+
+              <div class="flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
+                <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-medium text-[#243b63]">
                   {{ identityHintText }}
-                </span>
-                <span
+                </UBadge>
+                <UBadge
                   v-if="isNameReady"
-                  class="rounded-full bg-[#effaf3] px-3 py-1.5 font-semibold text-[#1f7a38]"
+                  color="success"
+                  variant="soft"
+                  class="rounded-full px-3 py-1.5 text-[12px] font-semibold"
                 >
                   {{ identityReadyLabelText }}
-                </span>
+                </UBadge>
               </div>
-            </label>
 
-            <label class="block">
-              <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-                {{ urlLabelText }}
-              </span>
-              <div class="relative mt-3">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-5 text-[1rem] font-medium text-slate-500">
-                  {{ urlPrefix }}
+              <UFormField
+                name="slug"
+                :label="urlLabelText"
+                required
+                size="xl"
+                class="space-y-2"
+              >
+                <div class="relative">
+                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-5 text-[0.95rem] font-medium text-slate-500">
+                    {{ urlPrefix }}
+                  </div>
+                  <UInput
+                    v-model="model.slug"
+                    :placeholder="slugPlaceholder"
+                    color="primary"
+                    size="xl"
+                    :disabled="isBusy"
+                    class="w-full"
+                    :ui="slugInputUi"
+                  />
                 </div>
-                <input
-                  v-model="model.slug"
-                  :placeholder="slugPlaceholder"
-                  class="h-[76px] w-full rounded-[24px] border border-[#d1d5db] bg-white pl-[182px] pr-5 text-[1.05rem] text-slate-900 outline-none transition placeholder:text-slate-300 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8 sm:pl-[194px]"
-                  type="text"
-                >
-              </div>
+              </UFormField>
 
-              <div class="mt-3 flex flex-col gap-2 rounded-[18px] bg-white px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)] sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex flex-col gap-2 rounded-[18px] bg-white px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)] sm:flex-row sm:items-center sm:justify-between">
                 <div class="min-w-0">
                   <p class="text-[12px] font-semibold text-slate-500">
                     {{ $t("community.creation.common.urlSuggested") }}
@@ -87,168 +109,201 @@
                   </p>
                 </div>
 
-                <button
+                <UButton
                   v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
-                  class="inline-flex h-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f7f9ff] px-4 text-[12px] font-bold text-[#243b63] transition hover:border-[#c5caff] hover:text-[#0000ff]"
                   type="button"
+                  color="neutral"
+                  variant="outline"
+                  size="md"
+                  :disabled="isBusy"
+                  class="rounded-full"
                   @click="applySuggestedSlug"
                 >
                   {{ $t("community.creation.common.useSuggestion") }}
-                </button>
+                </UButton>
               </div>
-            </label>
-          </div>
-        </section>
+            </div>
+          </section>
 
-        <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            {{ descriptionSectionLabelText }}
-          </p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">
-            {{ descriptionSectionTitleText }}
-          </p>
-
-          <label class="mt-5 block">
-            <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-              {{ descriptionLabelText }}
-            </span>
-            <textarea
-              v-model="model.description"
-              :placeholder="descriptionPlaceholder"
-              class="mt-3 min-h-[210px] w-full rounded-[24px] border border-[#d1d5db] bg-white px-5 py-4 text-[1.02rem] leading-7 text-slate-900 outline-none transition placeholder:text-slate-300 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
-            ></textarea>
-          </label>
-
-          <div class="mt-3 flex flex-col gap-2 rounded-[18px] bg-white px-4 py-3 text-[12px] text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)] sm:flex-row sm:items-center sm:justify-between">
-            <p>
-              {{ descriptionHintText }}
+          <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+              {{ descriptionSectionLabelText }}
             </p>
-            <span class="font-semibold text-[#243b63]">
-              {{ $t("community.creation.common.charCount", { count: descriptionLength }) }}
-            </span>
-          </div>
-        </section>
+            <p class="mt-1 text-[15px] font-black text-[#243b63]">
+              {{ descriptionSectionTitleText }}
+            </p>
 
-        <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            {{ configurationSectionLabelText }}
-          </p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">
-            {{ configurationSectionTitleText }}
-          </p>
-
-          <div
-            v-if="showPrivacy"
-            class="mt-5 grid gap-3 sm:grid-cols-3"
-          >
-            <button
-              v-for="option in privacyOptions"
-              :key="option.value"
-              class="rounded-[22px] border px-4 py-4 text-left transition"
-              :class="model.privacy === option.value
-                ? 'border-[#0000ff]/25 bg-[#eef0ff] shadow-[0_12px_24px_rgba(0,0,255,0.08)]'
-                : 'border-[#dbe3f2] bg-white hover:border-[#c5caff] hover:bg-[#f8fbff]'"
-              type="button"
-              @click="selectPrivacy(option.value)"
+            <UFormField
+              name="description"
+              :label="descriptionLabelText"
+              required
+              size="xl"
+              class="mt-5 space-y-2"
             >
-              <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.05)]">
-                <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
-              </div>
-              <p class="mt-4 text-[14px] font-black text-[#243b63]">
-                {{ $t(option.label) }}
-              </p>
-              <p class="mt-2 text-[12px] leading-5 text-slate-500">
-                {{ option.description ? $t(option.description) : "" }}
-              </p>
-            </button>
-          </div>
+              <UTextarea
+                v-model="model.description"
+                :placeholder="descriptionPlaceholder"
+                color="primary"
+                size="xl"
+                autoresize
+                :rows="7"
+                :disabled="isBusy"
+                class="w-full"
+                :ui="textareaUi"
+              />
+            </UFormField>
 
-          <label class="mt-5 block">
-            <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-              {{ categoryLabelText }}
-            </span>
-            <div class="relative mt-3">
-              <select
-                v-model="model.category"
-                class="h-[76px] w-full appearance-none rounded-[24px] border border-[#d1d5db] bg-white px-5 pr-14 text-[1rem] font-medium text-slate-700 outline-none transition focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
-              >
-                <option
-                  v-for="option in categoryOptions"
-                  :key="option.value"
-                  :value="option.value"
-                >
-                  {{ $t(option.label) }}
-                </option>
-              </select>
-              <Icon name="i-ph-caret-down" class="pointer-events-none absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+            <div class="mt-3 flex flex-col gap-2 rounded-[18px] bg-white px-4 py-3 text-[12px] text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)] sm:flex-row sm:items-center sm:justify-between">
+              <p>
+                {{ descriptionHintText }}
+              </p>
+              <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
+                {{ $t("community.creation.common.charCount", { count: descriptionLength }) }}
+              </UBadge>
             </div>
-          </label>
+          </section>
 
-          <div class="mt-3 rounded-[18px] bg-white px-4 py-3 text-[13px] leading-6 text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-            {{ selectedCategoryDescription }}
-          </div>
-        </section>
+          <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+              {{ configurationSectionLabelText }}
+            </p>
+            <p class="mt-1 text-[15px] font-black text-[#243b63]">
+              {{ configurationSectionTitleText }}
+            </p>
 
-        <section class="rounded-[24px] border border-[#dbe3f2] bg-white px-4 py-4 sm:px-5">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-                {{ $t("community.creation.common.action") }}
-              </p>
-              <p class="mt-1 text-[14px] leading-6 text-slate-500">
-                {{ actionDescriptionText }}
-              </p>
-            </div>
-
-            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
-              <NuxtLink
-                :to="backTo"
-                class="inline-flex h-14 min-w-[180px] items-center justify-center rounded-full border border-transparent bg-transparent px-5 text-[1rem] font-semibold text-slate-500 transition hover:text-[#243b63]"
-              >
-                <Icon name="i-ph-arrow-left" class="mr-2 h-5 w-5" />
-                {{ backLabelText }}
-              </NuxtLink>
-
-              <NuxtLink
-                v-if="submitTo"
-                :to="submitTo"
-                class="inline-flex h-14 min-w-[210px] items-center justify-center rounded-[18px] bg-[#0000ff] px-6 text-[1.02rem] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e6]"
-              >
-                {{ submitLabelText }}
-              </NuxtLink>
-
+            <div
+              v-if="showPrivacy"
+              class="mt-5 grid gap-3 sm:grid-cols-3"
+              role="radiogroup"
+              :aria-label="privacyLabelText"
+            >
               <button
-                v-else
-                class="inline-flex h-14 min-w-[210px] items-center justify-center rounded-[18px] bg-[#0000ff] px-6 text-[1.02rem] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e6]"
+                v-for="option in privacyOptions"
+                :key="option.value"
+                class="rounded-[22px] border px-4 py-4 text-left transition"
+                :class="model.privacy === option.value
+                  ? 'border-[#0000ff]/25 bg-[#eef0ff] shadow-[0_12px_24px_rgba(0,0,255,0.08)]'
+                  : 'border-[#dbe3f2] bg-white hover:border-[#c5caff] hover:bg-[#f8fbff]'"
                 type="button"
+                :aria-pressed="model.privacy === option.value"
+                @click="selectPrivacy(option.value)"
               >
-                {{ submitLabelText }}
+                <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.05)]">
+                  <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
+                </div>
+                <p class="mt-4 text-[14px] font-black text-[#243b63]">
+                  {{ $t(option.label) }}
+                </p>
+                <p class="mt-2 text-[12px] leading-5 text-slate-500">
+                  {{ option.description ? $t(option.description) : "" }}
+                </p>
               </button>
             </div>
-          </div>
-        </section>
-      </div>
 
-      <CommunityCreationInsightsPanel
-        :entity-label="entityLabel"
-        :completion-count="completionCount"
-        :completion-total="completionTotal"
-        :preview-title="previewTitle"
-        :preview-url="previewUrl"
-        :preview-description="previewDescription"
-        :privacy-label="selectedPrivacyLabel"
-        :privacy-description="selectedPrivacyDescription"
-        :category-label="selectedCategoryLabel"
-        :show-privacy="showPrivacy"
-        :preview-icon="previewIcon"
-        :next-steps="nextSteps"
-        :name-ready="isNameReady"
-        :url-ready="isUrlReady"
-        :description-ready="isDescriptionReady"
-        :privacy-ready="isPrivacyReady"
-        :category-ready="isCategoryReady"
-      />
-    </div>
+            <UFormField
+              name="category"
+              :label="categoryLabelText"
+              required
+              size="xl"
+              class="mt-5 space-y-2"
+            >
+              <USelect
+                v-model="model.category"
+                :items="categoryItems"
+                value-key="value"
+                label-key="label"
+                color="primary"
+                size="xl"
+                :disabled="isBusy"
+                class="w-full"
+                :ui="selectUi"
+              />
+            </UFormField>
+
+            <div class="mt-3 rounded-[18px] bg-white px-4 py-3 text-[13px] leading-6 text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
+              {{ selectedCategoryDescription }}
+            </div>
+          </section>
+
+          <section class="rounded-[24px] border border-[#dbe3f2] bg-white px-4 py-4 sm:px-5">
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+                    {{ $t("community.creation.common.action") }}
+                  </p>
+                  <p class="mt-1 text-[14px] leading-6 text-slate-500">
+                    {{ actionDescriptionText }}
+                  </p>
+                </div>
+
+                <div class="inline-flex items-center gap-2 self-start rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
+                  <Icon name="i-ph-floppy-disk-back-fill" class="h-4 w-4 text-[#0000ff]" />
+                  {{ $t("community.creation.common.completionStatus", { count: completionCount, total: completionTotal }) }}
+                </div>
+              </div>
+
+              <UAlert
+                v-if="statusAlert"
+                :color="statusAlert.color"
+                variant="subtle"
+                :icon="statusAlert.icon"
+                :title="statusAlert.title"
+                :description="statusAlert.description"
+                class="rounded-[20px]"
+                aria-live="polite"
+              />
+
+              <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <UButton
+                  :to="backTo"
+                  color="neutral"
+                  variant="ghost"
+                  size="xl"
+                  :disabled="isBusy"
+                  class="justify-center rounded-full text-[1rem] font-semibold"
+                >
+                  <Icon name="i-ph-arrow-left" class="mr-2 h-5 w-5" />
+                  {{ backLabelText }}
+                </UButton>
+
+                <UButton
+                  type="submit"
+                  color="primary"
+                  variant="solid"
+                  size="xl"
+                  :loading="isBusy"
+                  :disabled="isSubmitDisabled"
+                  class="justify-center rounded-[18px] px-6 text-[1.02rem] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
+                >
+                  {{ submitLabelText }}
+                </UButton>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <CommunityCreationInsightsPanel
+          :entity-label="entityLabel"
+          :completion-count="completionCount"
+          :completion-total="completionTotal"
+          :preview-title="previewTitle"
+          :preview-url="previewUrl"
+          :preview-description="previewDescription"
+          :privacy-label="selectedPrivacyLabel"
+          :privacy-description="selectedPrivacyDescription"
+          :category-label="selectedCategoryLabel"
+          :show-privacy="showPrivacy"
+          :preview-icon="previewIcon"
+          :next-steps="nextSteps"
+          :name-ready="isNameReady"
+          :url-ready="isUrlReady"
+          :description-ready="isDescriptionReady"
+          :privacy-ready="isPrivacyReady"
+          :category-ready="isCategoryReady"
+        />
+      </div>
+    </UForm>
   </section>
 </template>
 
@@ -264,7 +319,18 @@ import type {
   CommunityOption,
 } from "../../../types/community"
 
+type CreationSubmitState = "idle" | "loading" | "success" | "error"
+
+type CreationFormError = {
+  name?: keyof CommunityDraft
+  message: string
+}
+
 const { t } = useI18n()
+
+const emit = defineEmits<{
+  submit: []
+}>()
 
 const model = defineModel<CommunityDraft>({ required: true })
 
@@ -274,7 +340,6 @@ const props = withDefaults(defineProps<{
   privacyOptions?: CommunityOption[]
   showPrivacy?: boolean
   submitLabel?: string
-  submitTo?: string
   backLabel?: string
   backTo?: string
   nameLabel?: string
@@ -299,11 +364,14 @@ const props = withDefaults(defineProps<{
   actionDescription?: string
   previewIcon?: string
   nextSteps?: Array<{ title: string; description: string }>
+  submitState?: CreationSubmitState
+  submitDisabled?: boolean
+  draftRestored?: boolean
 }>(), {
   privacyOptions: () => [],
   showPrivacy: true,
-  submitLabel: "", // handled in computed
-  backLabel: "",   // handled in computed
+  submitLabel: "",
+  backLabel: "",
   backTo: "/home",
   nameLabel: "",
   namePlaceholder: "",
@@ -325,10 +393,30 @@ const props = withDefaults(defineProps<{
   configurationSectionLabel: "",
   configurationSectionTitle: "",
   actionDescription: "",
-  previewTitle: "",
   previewIcon: "i-ph-users-three-fill",
   nextSteps: () => [],
+  submitState: "idle",
+  submitDisabled: false,
+  draftRestored: false,
 })
+
+const inputUi = {
+  base: "h-[4.75rem] rounded-[24px] px-5 text-[1.05rem]",
+}
+
+const slugInputUi = {
+  base: "h-[4.75rem] rounded-[24px] pl-[11.2rem] pr-5 text-[1.05rem] sm:pl-[12rem]",
+}
+
+const textareaUi = {
+  base: "min-h-[210px] rounded-[24px] px-5 py-4 text-[1.02rem] leading-7",
+}
+
+const selectUi = {
+  base: "h-[4.75rem] rounded-[24px] px-5 text-[1rem] font-medium",
+}
+
+const entityText = computed(() => t(props.entityLabel))
 
 const submitLabelText = computed(() =>
   props.submitLabel || t("community.creation.common.create"),
@@ -354,6 +442,10 @@ const categoryLabelText = computed(() =>
   props.categoryLabel || t("community.creation.common.categoryLabel"),
 )
 
+const privacyLabelText = computed(() =>
+  props.privacyLabel || t("community.creation.group.privacyLabel"),
+)
+
 const completionCount = computed(() =>
   getCommunityCompletionCount(model.value, { includePrivacy: props.showPrivacy }),
 )
@@ -364,33 +456,50 @@ const completionTotal = computed(() =>
 
 const descriptionLength = computed(() => model.value.description.trim().length)
 const suggestedSlug = computed(() => createCommunitySlug(model.value.name))
+const isBusy = computed(() => props.submitState === "loading")
+const isSubmitDisabled = computed(() => props.submitDisabled || isBusy.value)
+
+const selectedPrivacyOption = computed(() =>
+  props.privacyOptions.find(option => option.value === model.value.privacy),
+)
+
+const selectedCategoryOption = computed(() =>
+  props.categoryOptions.find(option => option.value === model.value.category),
+)
+
+const categoryItems = computed(() =>
+  props.categoryOptions.map(option => ({
+    value: option.value,
+    label: t(option.label),
+  })),
+)
 
 const selectedPrivacyLabel = computed(() =>
-  props.privacyOptions.find(option => option.value === model.value.privacy)?.label
-    ? t(props.privacyOptions.find(option => option.value === model.value.privacy)!.label)
+  selectedPrivacyOption.value?.label
+    ? t(selectedPrivacyOption.value.label)
     : t("community.creation.common.noPrivacy"),
 )
 
 const selectedPrivacyDescription = computed(() =>
-  props.privacyOptions.find(option => option.value === model.value.privacy)?.description
-    ? t(props.privacyOptions.find(option => option.value === model.value.privacy)!.description!)
-    : t("community.creation.common.privacyDescDefault", { entity: t(props.entityLabel) }),
+  selectedPrivacyOption.value?.description
+    ? t(selectedPrivacyOption.value.description)
+    : t("community.creation.common.privacyDescDefault", { entity: entityText.value }),
 )
 
 const selectedCategoryLabel = computed(() =>
-  props.categoryOptions.find(option => option.value === model.value.category)?.label
-    ? t(props.categoryOptions.find(option => option.value === model.value.category)!.label)
+  selectedCategoryOption.value?.label
+    ? t(selectedCategoryOption.value.label)
     : t("community.creation.common.noCategory"),
 )
 
 const selectedCategoryDescription = computed(() =>
-  props.categoryOptions.find(option => option.value === model.value.category)?.description
-    ? t(props.categoryOptions.find(option => option.value === model.value.category)!.description!)
-    : t("community.creation.common.categoryDescDefault", { entity: t(props.entityLabel) }),
+  selectedCategoryOption.value?.description
+    ? t(selectedCategoryOption.value.description)
+    : t("community.creation.common.categoryDescDefault", { entity: entityText.value }),
 )
 
 const identitySectionLabelText = computed(() =>
-  props.identitySectionLabel || t("community.creation.common.identitySection", { entity: t(props.entityLabel) }),
+  props.identitySectionLabel || t("community.creation.common.identitySection", { entity: entityText.value }),
 )
 
 const identitySectionTitleText = computed(() =>
@@ -410,7 +519,7 @@ const identityReadyLabelText = computed(() =>
 )
 
 const descriptionSectionLabelText = computed(() =>
-  props.descriptionSectionLabel || t("community.creation.common.introSection", { entity: t(props.entityLabel) }),
+  props.descriptionSectionLabel || t("community.creation.common.introSection", { entity: entityText.value }),
 )
 
 const descriptionSectionTitleText = computed(() =>
@@ -419,8 +528,7 @@ const descriptionSectionTitleText = computed(() =>
 )
 
 const descriptionHintText = computed(() =>
-  props.descriptionHint
-    || t("community.creation.common.introHint", { entity: t(props.entityLabel) }),
+  props.descriptionHint || t("community.creation.common.introHint", { entity: entityText.value }),
 )
 
 const configurationSectionLabelText = computed(() =>
@@ -436,11 +544,15 @@ const configurationSectionTitleText = computed(() =>
 
 const actionDescriptionText = computed(() =>
   props.actionDescription
-    || t("community.creation.common.finishHint", { extra: props.showPrivacy ? t("community.creation.common.finishExtraGroup") : t("community.creation.common.finishExtraPage") }),
+    || t("community.creation.common.finishHint", {
+      extra: props.showPrivacy
+        ? t("community.creation.common.finishExtraGroup")
+        : t("community.creation.common.finishExtraPage"),
+    }),
 )
 
 const previewTitle = computed(() =>
-  model.value.name.trim() || t("community.creation.common.previewTitle", { entity: t(props.entityLabel) }),
+  model.value.name.trim() || t("community.creation.common.previewTitle", { entity: entityText.value }),
 )
 
 const effectiveSlug = computed(() =>
@@ -452,8 +564,8 @@ const previewUrl = computed(() =>
 )
 
 const previewDescription = computed(() => {
-  const entity = t(props.entityLabel)
-  const capitalizedEntity = entity.charAt(0).toUpperCase() + entity.slice(1)
+  const capitalizedEntity = entityText.value.charAt(0).toUpperCase() + entityText.value.slice(1)
+
   return model.value.description.trim()
     || t("community.creation.common.previewDescDefault", { entity: capitalizedEntity })
 })
@@ -464,6 +576,58 @@ const isDescriptionReady = computed(() => descriptionLength.value >= 24)
 const isPrivacyReady = computed(() => !props.showPrivacy || Boolean(model.value.privacy))
 const isCategoryReady = computed(() => Boolean(model.value.category))
 
+const statusAlert = computed(() => {
+  if (props.submitState === "loading") {
+    return {
+      color: "primary" as const,
+      icon: "i-ph-spinner-gap-bold",
+      title: t("community.creation.common.statusLoadingTitle", { entity: entityText.value }),
+      description: t("community.creation.common.statusLoadingDescription"),
+    }
+  }
+
+  if (props.submitState === "success") {
+    return {
+      color: "success" as const,
+      icon: "i-ph-check-circle-fill",
+      title: t("community.creation.common.statusSuccessTitle", { entity: entityText.value }),
+      description: t("community.creation.common.statusSuccessDescription", { entity: entityText.value }),
+    }
+  }
+
+  if (props.submitState === "error") {
+    return {
+      color: "error" as const,
+      icon: "i-ph-warning-circle-fill",
+      title: t("community.creation.common.statusErrorTitle"),
+      description: t("community.creation.common.statusErrorDescription"),
+    }
+  }
+
+  if (props.draftRestored) {
+    return {
+      color: "primary" as const,
+      icon: "i-ph-clock-counter-clockwise-fill",
+      title: t("community.creation.common.draftRestoredTitle"),
+      description: t("community.creation.common.draftRestoredDescription"),
+    }
+  }
+
+  return null
+})
+
+watch(
+  () => model.value.name,
+  (value, previousValue) => {
+    const previousSuggestedSlug = createCommunitySlug(previousValue || "")
+    const currentSlug = model.value.slug.trim()
+
+    if (!currentSlug || currentSlug === previousSuggestedSlug) {
+      model.value.slug = createCommunitySlug(value)
+    }
+  },
+)
+
 function applySuggestedSlug() {
   if (suggestedSlug.value) {
     model.value.slug = suggestedSlug.value
@@ -472,5 +636,53 @@ function applySuggestedSlug() {
 
 function selectPrivacy(value: string) {
   model.value.privacy = value as CommunityDraft["privacy"]
+}
+
+const validateForm = (state: CommunityDraft): CreationFormError[] => {
+  const errors: CreationFormError[] = []
+  const slug = state.slug.trim()
+
+  if (!state.name.trim()) {
+    errors.push({
+      name: "name",
+      message: t("community.creation.common.validationNameRequired"),
+    })
+  }
+
+  if (!slug) {
+    errors.push({
+      name: "slug",
+      message: t("community.creation.common.validationSlugRequired"),
+    })
+  }
+  else if (slug.length < 3 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    errors.push({
+      name: "slug",
+      message: t("community.creation.common.validationSlugInvalid"),
+    })
+  }
+
+  if (state.description.trim().length < 24) {
+    errors.push({
+      name: "description",
+      message: t("community.creation.common.validationDescriptionRequired"),
+    })
+  }
+
+  if (props.showPrivacy && !state.privacy) {
+    errors.push({
+      name: "privacy",
+      message: t("community.creation.common.validationPrivacyRequired"),
+    })
+  }
+
+  if (!state.category) {
+    errors.push({
+      name: "category",
+      message: t("community.creation.common.validationCategoryRequired"),
+    })
+  }
+
+  return errors
 }
 </script>

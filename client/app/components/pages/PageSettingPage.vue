@@ -9,7 +9,13 @@
     />
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.08fr)_340px]">
-      <section class="min-w-0 space-y-4">
+      <UForm
+        :state="draft"
+        :validate="validateDraft"
+        class="min-w-0 space-y-4"
+        @submit="handleSave"
+        @error="handleSaveError"
+      >
         <CommunityPageSettingsBasicsCard
           v-model="draft"
           :page-path="pagePath"
@@ -23,31 +29,51 @@
           :description="$t('community.pageSettings.finish.desc')"
           icon="i-ph-floppy-disk-back-bold"
         >
-          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div class="flex flex-col gap-4">
             <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-500">
               <span v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: selectedCtaLabel.toLowerCase() })" />
             </div>
 
-            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
-              <NuxtLink
+            <UAlert
+              v-if="statusAlert"
+              :color="statusAlert.color"
+              variant="subtle"
+              :icon="statusAlert.icon"
+              :title="statusAlert.title"
+              :description="statusAlert.description"
+              class="rounded-[20px]"
+              aria-live="polite"
+            />
+
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <UButton
                 :to="pagePath"
-                class="inline-flex h-12 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-5 text-[14px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+                color="neutral"
+                variant="outline"
+                size="xl"
+                :disabled="isBusy"
+                class="justify-center rounded-full"
               >
                 <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
-                {{ $t('community.pageSettings.finish.back') }}
-              </NuxtLink>
+                {{ $t("community.pageSettings.finish.back") }}
+              </UButton>
 
-              <button
-                class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-                type="button"
+              <UButton
+                type="submit"
+                color="primary"
+                variant="solid"
+                size="xl"
+                :loading="isBusy"
+                :disabled="isSaveDisabled"
+                class="justify-center rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
               >
                 <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
-                {{ $t('community.pageSettings.finish.save') }}
-              </button>
+                {{ $t("community.pageSettings.finish.save") }}
+              </UButton>
             </div>
           </div>
         </CommunitySettingsSectionCard>
-      </section>
+      </UForm>
 
       <CommunityPageSettingsSidebar
         :page="previewPage"
@@ -78,7 +104,7 @@
           to="/pages"
           class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
         >
-          {{ $t('community.pageSettings.empty.back') }}
+          {{ $t("community.pageSettings.empty.back") }}
         </NuxtLink>
       </div>
     </section>
@@ -86,10 +112,12 @@
 </template>
 
 <script setup lang="ts">
+import { useStorage, watchDebounced } from "@vueuse/core"
 import {
   appendCommunityQuery,
   communityPageCategoryOptions,
   createCommunityPageSettingsDraft,
+  createCommunitySlug,
   getCommunityOptionLabel,
   getCommunityPagePath,
 } from "../../../types/community"
@@ -98,7 +126,16 @@ import type {
   CommunityPageSettingsDraft,
 } from "../../../types/community"
 
+type PageSettingsState = "idle" | "loading" | "success" | "error"
+
+type PageSettingsError = {
+  name?: keyof CommunityPageSettingsDraft
+  message: string
+}
+
 const route = useRoute()
+const toast = useToast()
+const { t } = useI18n()
 
 const {
   page,
@@ -113,12 +150,17 @@ const {
 const draft = ref<CommunityPageSettingsDraft>(
   createCommunityPageSettingsDraft(),
 )
+const saveState = ref<PageSettingsState>("idle")
+const draftRestored = ref(false)
+const storageHydrated = ref(false)
+const isSyncingDraft = ref(false)
 
-const { t, locale } = useI18n()
-
-watch([page, locale], ([value]) => {
-  draft.value = createCommunityPageSettingsDraft(value || undefined)
-}, { immediate: true })
+const draftStorage = useStorage<CommunityPageSettingsDraft | null>(
+  `community:page-settings:${String(route.params.page || "")}`,
+  null,
+  undefined,
+  { initOnMounted: true },
+)
 
 const normalizedTags = computed(() =>
   draft.value.tags
@@ -148,10 +190,12 @@ const previewPage = computed<CommunityPageRecord | null>(() => {
 })
 
 const selectedCategoryLabel = computed(() =>
-  getCommunityOptionLabel(
-    communityPageCategoryOptions,
-    draft.value.category,
-    baseCategoryLabel.value,
+  t(
+    getCommunityOptionLabel(
+      communityPageCategoryOptions,
+      draft.value.category,
+      baseCategoryLabel.value,
+    ),
   ),
 )
 
@@ -181,12 +225,231 @@ const pagePath = computed(() =>
     : "/pages",
 )
 
-useSeoMeta({
-  title: computed(() =>
-    page.value ? t("community.pageSettings.seoTitle", { name: t(page.value.name) }) : t("community.pageSettings.seoTitleFallback"),
-  ),
-  description: computed(() =>
-    page.value ? t(page.value.summary) : t("community.pageSettings.seoDescFallback"),
-  ),
+const isBusy = computed(() => saveState.value === "loading")
+const isSaveDisabled = computed(() =>
+  isBusy.value
+  || !draft.value.name.trim()
+  || !draft.value.slug.trim()
+  || draft.value.summary.trim().length < 24
+  || !draft.value.category,
+)
+
+const statusAlert = computed(() => {
+  if (saveState.value === "loading") {
+    return {
+      color: "primary" as const,
+      icon: "i-ph-spinner-gap-bold",
+      title: t("community.pageSettings.finish.statusSavingTitle"),
+      description: t("community.pageSettings.finish.statusSavingDescription"),
+    }
+  }
+
+  if (saveState.value === "success") {
+    return {
+      color: "success" as const,
+      icon: "i-ph-check-circle-fill",
+      title: t("community.pageSettings.finish.statusSuccessTitle"),
+      description: t("community.pageSettings.finish.statusSuccessDescription"),
+    }
+  }
+
+  if (saveState.value === "error") {
+    return {
+      color: "error" as const,
+      icon: "i-ph-warning-circle-fill",
+      title: t("community.pageSettings.finish.statusErrorTitle"),
+      description: t("community.pageSettings.finish.statusErrorDescription"),
+    }
+  }
+
+  if (draftRestored.value) {
+    return {
+      color: "primary" as const,
+      icon: "i-ph-clock-counter-clockwise-fill",
+      title: t("community.pageSettings.finish.draftRestoredTitle"),
+      description: t("community.pageSettings.finish.draftRestoredDescription"),
+    }
+  }
+
+  return null
 })
+
+watch(page, syncDraftFromPage, { immediate: true })
+
+watchDebounced(
+  () => normalizeDraft(draft.value),
+  (value) => {
+    if (!storageHydrated.value || !page.value) {
+      return
+    }
+
+    draftStorage.value = { ...value }
+  },
+  {
+    debounce: 250,
+    maxWait: 1000,
+  },
+)
+
+watch(
+  () => ({ ...draft.value }),
+  () => {
+    if (isSyncingDraft.value) {
+      return
+    }
+
+    if (saveState.value !== "loading") {
+      saveState.value = "idle"
+    }
+
+    draftRestored.value = false
+  },
+)
+
+onMounted(async () => {
+  storageHydrated.value = true
+  await nextTick()
+  syncDraftFromPage()
+})
+
+async function handleSave() {
+  saveState.value = "loading"
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    const normalized = normalizeDraft(draft.value)
+
+    draft.value = { ...normalized }
+    draftStorage.value = { ...normalized }
+    draftRestored.value = false
+    saveState.value = "success"
+
+    toast.add({
+      title: t("community.pageSettings.finish.statusSuccessTitle"),
+      description: t("community.pageSettings.finish.statusSuccessDescription"),
+      color: "success",
+    })
+  }
+  catch {
+    saveState.value = "error"
+
+    toast.add({
+      title: t("community.pageSettings.finish.statusErrorTitle"),
+      description: t("community.pageSettings.finish.statusErrorDescription"),
+      color: "error",
+    })
+  }
+}
+
+function handleSaveError() {
+  saveState.value = "error"
+}
+
+function syncDraftFromPage() {
+  if (!page.value) {
+    return
+  }
+
+  const baseDraft = createLocalizedDraft(page.value)
+  const restoredDraft = storageHydrated.value && draftStorage.value
+    ? normalizeDraft(draftStorage.value)
+    : null
+
+  applyDraft(
+    restoredDraft && !isSameDraft(restoredDraft, baseDraft)
+      ? { ...baseDraft, ...restoredDraft }
+      : baseDraft,
+    Boolean(restoredDraft && !isSameDraft(restoredDraft, baseDraft)),
+  )
+}
+
+function applyDraft(value: CommunityPageSettingsDraft, restored: boolean) {
+  isSyncingDraft.value = true
+  draft.value = value
+  draftRestored.value = restored
+  saveState.value = "idle"
+
+  nextTick(() => {
+    isSyncingDraft.value = false
+  })
+}
+
+function createLocalizedDraft(value: CommunityPageRecord): CommunityPageSettingsDraft {
+  return {
+    ...createCommunityPageSettingsDraft(value),
+    name: t(value.name),
+    summary: value.summary,
+    locationLabel: value.locationLabel || "",
+    ctaLabel: value.ctaLabel || "",
+    responseLabel: value.responseLabel,
+    ownerLabel: value.ownerLabel,
+    tags: value.tags.join(", "),
+  }
+}
+
+function normalizeDraft(value: CommunityPageSettingsDraft): CommunityPageSettingsDraft {
+  return {
+    ...value,
+    name: value.name.trim(),
+    slug: value.slug.trim(),
+    summary: value.summary.trim(),
+    website: value.website.trim(),
+    locationLabel: value.locationLabel.trim(),
+    category: value.category.trim(),
+    ctaLabel: value.ctaLabel.trim(),
+    responseLabel: value.responseLabel.trim(),
+    ownerLabel: value.ownerLabel.trim(),
+    tags: value.tags
+      .split(",")
+      .map(tag => tag.trim())
+      .filter(Boolean)
+      .join(", "),
+  }
+}
+
+function isSameDraft(first: CommunityPageSettingsDraft, second: CommunityPageSettingsDraft) {
+  return JSON.stringify(normalizeDraft(first)) === JSON.stringify(normalizeDraft(second))
+}
+
+const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] => {
+  const errors: PageSettingsError[] = []
+  const slug = state.slug.trim()
+
+  if (!state.name.trim()) {
+    errors.push({
+      name: "name",
+      message: t("community.creation.common.validationNameRequired"),
+    })
+  }
+
+  if (!slug) {
+    errors.push({
+      name: "slug",
+      message: t("community.creation.common.validationSlugRequired"),
+    })
+  }
+  else if (slug.length < 3 || createCommunitySlug(slug) !== slug) {
+    errors.push({
+      name: "slug",
+      message: t("community.creation.common.validationSlugInvalid"),
+    })
+  }
+
+  if (state.summary.trim().length < 24) {
+    errors.push({
+      name: "summary",
+      message: t("community.creation.common.validationDescriptionRequired"),
+    })
+  }
+
+  if (!state.category) {
+    errors.push({
+      name: "category",
+      message: t("community.creation.common.validationCategoryRequired"),
+    })
+  }
+
+  return errors
+}
 </script>

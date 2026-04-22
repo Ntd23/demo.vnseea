@@ -34,6 +34,7 @@
         <div class="bg-white px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.settings.finish.status', { enabled: enabledPolicies, total: totalPolicies, privacy: '' }).split('.')[0] }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ enabledPolicies }}/{{ totalPolicies }}</p>
+          <UProgress :model-value="policyProgress" color="primary" class="mt-3" />
         </div>
         <div class="bg-white px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.settings.basics.stats.tagCount') }}</p>
@@ -105,4 +106,12 @@ const props = defineProps<{
 const initials = computed(() =>
   getCommunityInitials(props.group.name),
 )
+
+const policyProgress = computed(() => {
+  if (!props.totalPolicies) {
+    return 0
+  }
+
+  return (props.enabledPolicies / props.totalPolicies) * 100
+})
 </script>

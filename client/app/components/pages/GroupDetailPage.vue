@@ -6,9 +6,17 @@
       :online-count-label="onlineCountLabel"
       :privacy-label="privacyLabel"
       :category-label="categoryLabel"
+      :join-state="joinState"
+      :invite-state="inviteState"
+      :joined="joined"
+      @join="handleJoinGroup"
+      @invite="handleInviteMembers"
     />
 
-    <CommunityGroupTabsBar v-model="activeTab" />
+    <CommunityGroupTabsBar
+      v-model="activeTab"
+      :aria-label="t('pages.groupDetailPage.tabsAriaLabel')"
+    />
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.24fr)_320px]">
       <section class="min-w-0 space-y-4">
@@ -49,6 +57,8 @@
         <CommunityGroupMembersCard
           :members="members"
           :member-count-label="memberCountLabel"
+          :invite-state="inviteState"
+          @invite="handleInviteMembers"
         />
 
         <CommunityGroupAdminCard
@@ -68,22 +78,43 @@
       />
 
       <div class="mt-6 flex justify-center">
-        <NuxtLink
+        <UButton
           to="/groups"
-          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
+          color="primary"
+          variant="solid"
+          size="xl"
+          class="rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
         >
           {{ t("pages.groupDetailPage.backToGroups") }}
-        </NuxtLink>
+        </UButton>
       </div>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-const route = useRoute()
-const { t } = useI18n()
+type CommunityDetailTab = "posts" | "about"
+type CommunityActionState = "idle" | "loading" | "success" | "error"
 
-const activeTab = ref<"posts" | "about">("posts")
+function readQueryValue(value: unknown) {
+  if (Array.isArray(value)) return String(value[0] || "")
+  return typeof value === "string" ? value : ""
+}
+
+function normalizeDetailTab(value: string): CommunityDetailTab {
+  return value === "about" ? "about" : "posts"
+}
+
+const route = useRoute()
+const router = useRouter()
+const { t } = useI18n()
+const toast = useToast()
+const translateText = useMaybeTranslatedText()
+
+const activeTab = ref<CommunityDetailTab>(normalizeDetailTab(readQueryValue(route.query.tab)))
+const joinState = ref<CommunityActionState>("idle")
+const inviteState = ref<CommunityActionState>("idle")
+const joined = ref(false)
 
 const {
   group,
@@ -96,16 +127,98 @@ const {
   groupPosts,
 } = useCommunityGroupDetail(computed(() => String(route.params.name || "")))
 
-watch(() => route.fullPath, () => {
-  activeTab.value = "posts"
+const localizedGroupName = computed(() =>
+  group.value ? translateText(group.value.name) : t("pages.groupDetailPage.seoFallbackTitle"),
+)
+
+watch(() => route.query.tab, (value) => {
+  const normalizedTab = normalizeDetailTab(readQueryValue(value))
+  if (normalizedTab !== activeTab.value) {
+    activeTab.value = normalizedTab
+  }
 })
 
-useSeoMeta({
-  title: computed(() =>
-    group.value ? `${group.value.name} | VNSEEA` : t("pages.groupDetailPage.seoFallbackTitle"),
-  ),
-  description: computed(() =>
-    group.value?.summary || t("pages.groupDetailPage.seoFallbackDescription"),
-  ),
+watch(activeTab, (value) => {
+  const currentTab = readQueryValue(route.query.tab)
+  const nextTab = value === "posts" ? "" : value
+
+  if (currentTab === nextTab) return
+
+  const nextQuery = { ...route.query }
+
+  if (value === "posts") {
+    delete nextQuery.tab
+  }
+  else {
+    nextQuery.tab = value
+  }
+
+  router.replace({ query: nextQuery })
 })
+
+watch(() => route.params.name, () => {
+  activeTab.value = normalizeDetailTab(readQueryValue(route.query.tab))
+  joinState.value = "idle"
+  inviteState.value = "idle"
+  joined.value = false
+})
+
+async function handleJoinGroup() {
+  if (!group.value || joinState.value === "loading" || joined.value) return
+
+  joinState.value = "loading"
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 480))
+
+    joinState.value = "success"
+    joined.value = true
+
+    toast.add({
+      title: t("pages.groupDetailPage.joinSuccessTitle"),
+      description: t("pages.groupDetailPage.joinSuccessDescription", {
+        group: localizedGroupName.value,
+      }),
+      color: "success",
+    })
+  }
+  catch {
+    joinState.value = "error"
+
+    toast.add({
+      title: t("pages.groupDetailPage.joinErrorTitle"),
+      description: t("pages.groupDetailPage.joinErrorDescription"),
+      color: "error",
+    })
+  }
+}
+
+async function handleInviteMembers() {
+  if (!group.value || inviteState.value === "loading") return
+
+  inviteState.value = "loading"
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 420))
+
+    inviteState.value = "success"
+
+    toast.add({
+      title: t("pages.groupDetailPage.inviteSuccessTitle"),
+      description: t("pages.groupDetailPage.inviteSuccessDescription", {
+        group: localizedGroupName.value,
+      }),
+      color: "success",
+    })
+  }
+  catch {
+    inviteState.value = "error"
+
+    toast.add({
+      title: t("pages.groupDetailPage.inviteErrorTitle"),
+      description: t("pages.groupDetailPage.inviteErrorDescription"),
+      color: "error",
+    })
+  }
+}
 </script>

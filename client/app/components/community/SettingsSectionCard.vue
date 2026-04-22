@@ -1,5 +1,5 @@
 <template>
-  <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)] sm:p-6">
+  <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)] sm:p-6" role="region">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div class="flex items-start gap-3">
         <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] bg-[#eef3ff] text-[#0000ff] shadow-[0_10px_20px_rgba(0,0,255,0.08)]">

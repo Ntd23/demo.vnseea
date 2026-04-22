@@ -14,7 +14,7 @@
 
     <CommunityCreationForm
       v-model="draft"
-      :entity-label="$t('community.creation.common.entityLabelPage')"
+      entity-label="community.creation.common.entityLabelPage"
       :category-options="communityPageCategoryOptions"
       :show-privacy="false"
       :url-prefix="communityPageUrlPrefix"
@@ -28,7 +28,6 @@
       :back-label="$t('community.creation.common.back')"
       back-to="/home"
       :submit-label="$t('community.creation.page.submitLabel')"
-      :submit-to="submitTo"
       :identity-section-label="$t('community.creation.page.identitySectionLabel')"
       :identity-section-title="$t('community.creation.page.identitySectionTitle')"
       :identity-section-badge="$t('community.creation.page.identitySectionBadge')"
@@ -41,30 +40,44 @@
       :action-description="$t('community.creation.page.actionDescription')"
       preview-icon="i-ph-storefront-fill"
       :next-steps="nextSteps"
+      :submit-state="submitState"
+      :submit-disabled="isSubmitDisabled"
+      :draft-restored="draftRestored"
+      @submit="handleCreatePage"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useStorage } from "@vueuse/core"
 import {
   communityPageCategoryOptions,
   communityPageUrlPrefix,
-  createCommunitySlug,
   createCommunityPageDraft,
+  createCommunitySlug,
   getCommunityPagePath,
 } from "../../../types/community"
 import type { CommunityDraft } from "../../../types/community"
 
+type CommunityCreationState = "idle" | "loading" | "success" | "error"
+
 const { t } = useI18n()
+const toast = useToast()
 
-useSeoMeta({
-  title: computed(() => `${t("community.creation.page.seoTitle")} | VNSEEA`),
-  description: computed(() => t("community.creation.page.seoDesc")),
-})
+const draft = useStorage<CommunityDraft>(
+  "community:create-page-draft",
+  createCommunityPageDraft(),
+  undefined,
+  {
+    mergeDefaults: true,
+    initOnMounted: true,
+  },
+)
 
-const draft = ref<CommunityDraft>(createCommunityPageDraft())
+const submitState = ref<CommunityCreationState>("idle")
+const draftRestored = ref(false)
 
-const submitTo = computed(() => {
+const submitPath = computed(() => {
   const resolvedSlug =
     draft.value.slug.trim()
     || createCommunitySlug(draft.value.name)
@@ -103,4 +116,74 @@ const nextSteps = computed(() => [
     description: t("community.creation.page.nextSteps.step3Desc"),
   },
 ])
+
+const isSubmitDisabled = computed(() =>
+  submitState.value === "loading"
+  || !draft.value.name.trim()
+  || !draft.value.slug.trim()
+  || draft.value.description.trim().length < 24
+  || !draft.value.category,
+)
+
+onMounted(async () => {
+  await nextTick()
+  draftRestored.value = !isDefaultDraft(draft.value)
+})
+
+watch(
+  () => ({ ...draft.value }),
+  () => {
+    if (submitState.value !== "loading") {
+      submitState.value = "idle"
+    }
+
+    draftRestored.value = false
+  },
+)
+
+async function handleCreatePage() {
+  submitState.value = "loading"
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 550))
+
+    submitState.value = "success"
+
+    toast.add({
+      title: t("community.creation.common.statusSuccessTitle", {
+        entity: t("community.creation.common.entityLabelPage"),
+      }),
+      description: t("community.creation.common.statusSuccessDescription", {
+        entity: t("community.creation.common.entityLabelPage"),
+      }),
+      color: "success",
+    })
+
+    const destination = submitPath.value
+
+    draft.value = createCommunityPageDraft()
+    draftRestored.value = false
+
+    await navigateTo(destination)
+  }
+  catch {
+    submitState.value = "error"
+
+    toast.add({
+      title: t("community.creation.common.statusErrorTitle"),
+      description: t("community.creation.common.statusErrorDescription"),
+      color: "error",
+    })
+  }
+}
+
+function isDefaultDraft(value: CommunityDraft) {
+  const defaultDraft = createCommunityPageDraft()
+
+  return value.name === defaultDraft.name
+    && value.slug === defaultDraft.slug
+    && value.description === defaultDraft.description
+    && value.privacy === defaultDraft.privacy
+    && value.category === defaultDraft.category
+}
 </script>

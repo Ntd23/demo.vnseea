@@ -7,25 +7,35 @@
       {{ t("pages.pageDetailPage.actionTitle") }}
     </h3>
     <p class="mt-2 text-[13px] leading-6 text-slate-500">
-      {{ t("pages.pageDetailPage.actionDescription", { response: page.responseLabel }) }}
+      {{ t("pages.pageDetailPage.actionDescription", { response: responseLabel }) }}
     </p>
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
-      <button
-        class="inline-flex h-11 items-center justify-center rounded-[16px] bg-[#0000ff] px-4 text-[13px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.22)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-        type="button"
+      <UButton
+        color="primary"
+        variant="solid"
+        size="lg"
+        :loading="followState === 'loading'"
+        :disabled="followState === 'loading' || isFollowing"
+        class="justify-center rounded-[16px] px-4 text-[13px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.22)]"
+        @click="emit('follow')"
       >
         <Icon name="i-ph-bell-simple-ringing-bold" class="mr-2 h-4 w-4" />
-        {{ page.ctaLabel || t("pages.pageDetailPage.followFallback") }}
-      </button>
+        {{ followButtonLabel }}
+      </UButton>
 
-      <button
-        class="inline-flex h-11 items-center justify-center rounded-[16px] border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-        type="button"
+      <UButton
+        color="neutral"
+        variant="outline"
+        size="lg"
+        :loading="messageState === 'loading'"
+        :disabled="messageState === 'loading'"
+        class="justify-center rounded-[16px] px-4 text-[13px] font-bold"
+        @click="emit('message')"
       >
         <Icon name="i-ph-chat-circle-dots-bold" class="mr-2 h-4 w-4" />
-        {{ t("pages.pageDetailPage.messageButton") }}
-      </button>
+        {{ messageButtonLabel }}
+      </UButton>
     </div>
 
     <div class="mt-4 grid gap-3 sm:grid-cols-2">
@@ -63,16 +73,40 @@ import {
 import type { CommunityPageRecord } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
 const props = defineProps<{
   page: CommunityPageRecord
   followerCountLabel: string
   likeCountLabel: string
+  followState?: "idle" | "loading" | "success" | "error"
+  messageState?: "idle" | "loading" | "success" | "error"
+  isFollowing?: boolean
+}>()
+
+const emit = defineEmits<{
+  follow: []
+  message: []
 }>()
 
 const route = useRoute()
 
 const pageSettingsPath = computed(() =>
   appendCommunityQuery(getCommunityPageSettingsPath(props.page.slug), route.query),
+)
+
+const responseLabel = computed(() =>
+  translateText(props.page.responseLabel),
+)
+
+const followButtonLabel = computed(() => {
+  if (props.isFollowing) return t("pages.pageDetailPage.followingButton")
+  return translateText(props.page.ctaLabel, t("pages.pageDetailPage.followFallback"))
+})
+
+const messageButtonLabel = computed(() =>
+  props.messageState === "success"
+    ? t("pages.pageDetailPage.messageSentButton")
+    : t("pages.pageDetailPage.messageButton"),
 )
 </script>

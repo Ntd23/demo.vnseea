@@ -6,140 +6,197 @@
     icon="i-ph-identification-card-bold"
   >
     <template #trailing>
-      <NuxtLink
+      <UButton
         :to="groupPath"
-        class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[12px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+        color="neutral"
+        variant="outline"
+        size="md"
+        class="rounded-full"
       >
         <Icon name="i-ph-arrow-square-out-bold" class="mr-1.5 h-4 w-4" />
-        {{ $t('community.settings.basics.viewGroup') }}
-      </NuxtLink>
+        {{ $t("community.settings.basics.viewGroup") }}
+      </UButton>
     </template>
 
     <div class="space-y-5">
       <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.82fr)]">
-        <label class="block">
-          <span class="text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.fields.name') }}</span>
-          <input
+        <UFormField
+          name="name"
+          :label="$t('community.settings.basics.fields.name')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <UInput
             v-model="model.name"
-            class="mt-3 h-14 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
             :placeholder="$t('community.settings.basics.fields.namePlaceholder')"
-            type="text"
-          >
-        </label>
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
 
-        <label class="block">
-          <span class="text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.fields.url') }}</span>
-          <div class="relative mt-3">
-            <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-[13px] font-semibold text-slate-500">
+        <UFormField
+          name="slug"
+          :label="$t('community.settings.basics.fields.url')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-[13px] font-semibold text-slate-500">
               {{ urlPrefix }}
             </div>
-            <input
+            <UInput
               v-model="model.slug"
-              class="h-14 w-full rounded-[18px] border border-[#dbe3f2] bg-white pl-[130px] pr-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
               :placeholder="$t('community.settings.basics.fields.urlPlaceholder')"
-              type="text"
-            >
+              color="primary"
+              size="xl"
+              class="w-full"
+              :ui="slugInputUi"
+            />
           </div>
 
           <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
-            <span class="rounded-full bg-[#f8fbff] px-3 py-1.5 font-medium text-[#243b63]">
-              {{ $t('community.settings.basics.fields.suggested', { slug: suggestedSlug || t('community.settings.basics.fields.urlPlaceholder') }) }}
-            </span>
-            <button
+            <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-medium text-[#243b63]">
+              {{ $t("community.settings.basics.fields.suggested", { slug: suggestedSlug || $t("community.settings.basics.fields.urlPlaceholder") }) }}
+            </UBadge>
+            <UButton
               v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
-              class="rounded-full border border-[#dbe3f2] bg-white px-3 py-1.5 font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
               type="button"
+              color="neutral"
+              variant="outline"
+              size="sm"
+              class="rounded-full"
               @click="model.slug = suggestedSlug"
             >
-              {{ $t('community.settings.basics.fields.useSuggested') }}
-            </button>
+              {{ $t("community.settings.basics.fields.useSuggested") }}
+            </UButton>
           </div>
-        </label>
+        </UFormField>
       </div>
 
-      <label class="block">
-        <span class="text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.fields.desc') }}</span>
-        <textarea
+      <UFormField
+        name="summary"
+        :label="$t('community.settings.basics.fields.desc')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
+        <UTextarea
           v-model="model.summary"
-          class="mt-3 min-h-[160px] w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 py-3 text-[15px] leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
           :placeholder="$t('community.settings.basics.fields.descPlaceholder')"
+          color="primary"
+          size="xl"
+          autoresize
+          :rows="6"
+          class="w-full"
+          :ui="textareaUi"
         />
-      </label>
+      </UFormField>
 
       <div class="grid gap-5 lg:grid-cols-2">
-        <label class="block">
-          <span class="text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.fields.category') }}</span>
-          <div class="relative mt-3">
-            <select
-              v-model="model.category"
-              class="h-14 w-full appearance-none rounded-[18px] border border-[#dbe3f2] bg-white px-4 pr-12 text-[15px] text-slate-900 outline-none transition focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
-            >
-              <option
-                v-for="option in communityCategoryOptions"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ $t(option.label) }}
-              </option>
-            </select>
-            <Icon name="i-ph-caret-down" class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-          </div>
-        </label>
+        <UFormField
+          name="category"
+          :label="$t('community.settings.basics.fields.category')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <USelect
+            v-model="model.category"
+            :items="categoryItems"
+            value-key="value"
+            label-key="label"
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="selectUi"
+          />
+        </UFormField>
 
-        <label class="block">
-          <span class="text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.fields.location') }}</span>
-          <input
+        <UFormField
+          name="locationLabel"
+          :label="$t('community.settings.basics.fields.location')"
+          size="xl"
+          class="space-y-2"
+        >
+          <UInput
             v-model="model.locationLabel"
-            class="mt-3 h-14 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
             :placeholder="$t('community.settings.basics.fields.locationPlaceholder')"
-            type="text"
-          >
-        </label>
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
       </div>
 
       <div class="grid gap-5 lg:grid-cols-2">
-        <label class="block">
-          <span class="text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.fields.website') }}</span>
-          <input
+        <UFormField
+          name="website"
+          :label="$t('community.settings.basics.fields.website')"
+          size="xl"
+          class="space-y-2"
+        >
+          <UInput
             v-model="model.website"
-            class="mt-3 h-14 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
             :placeholder="$t('community.settings.basics.fields.websitePlaceholder')"
-            type="text"
-          >
-        </label>
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
 
-        <label class="block">
-          <span class="text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.fields.tags') }}</span>
-          <input
+        <UFormField
+          name="tags"
+          :label="$t('community.settings.basics.fields.tags')"
+          size="xl"
+          class="space-y-2"
+        >
+          <UInput
             v-model="model.tags"
-            class="mt-3 h-14 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
             :placeholder="$t('community.settings.basics.fields.tagsPlaceholder')"
-            type="text"
-          >
-        </label>
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
       </div>
 
-      <label class="block">
-        <span class="text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.fields.guidelines') }}</span>
-        <textarea
+      <UFormField
+        name="guidelines"
+        :label="$t('community.settings.basics.fields.guidelines')"
+        size="xl"
+        class="space-y-2"
+      >
+        <UTextarea
           v-model="model.guidelines"
-          class="mt-3 min-h-[148px] w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 py-3 text-[15px] leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
           :placeholder="$t('community.settings.basics.fields.guidelinesPlaceholder')"
+          color="primary"
+          size="xl"
+          autoresize
+          :rows="5"
+          class="w-full"
+          :ui="secondaryTextareaUi"
         />
-      </label>
+      </UFormField>
 
       <div class="grid gap-3 sm:grid-cols-3">
         <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.settings.basics.stats.descLength') }}</p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.stats.charCount', { count: model.summary.trim().length }) }}</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.settings.basics.stats.descLength") }}</p>
+          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.settings.basics.stats.charCount", { count: model.summary.trim().length }) }}</p>
         </div>
         <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.settings.basics.stats.tagCount') }}</p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.stats.topicCount', { count: tagCount }) }}</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.settings.basics.stats.tagCount") }}</p>
+          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.settings.basics.stats.topicCount", { count: tagCount }) }}</p>
         </div>
         <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.settings.basics.stats.guidelinesCount') }}</p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t('community.settings.basics.stats.itemCount', { count: guidelineCount }) }}</p>
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.settings.basics.stats.guidelinesCount") }}</p>
+          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.settings.basics.stats.itemCount", { count: guidelineCount }) }}</p>
         </div>
       </div>
     </div>
@@ -160,7 +217,34 @@ defineProps<{
   groupPath: string
 }>()
 
+const inputUi = {
+  base: "h-14 rounded-[18px] px-4 text-[15px]",
+}
+
+const slugInputUi = {
+  base: "h-14 rounded-[18px] pl-[8.1rem] pr-4 text-[15px]",
+}
+
+const textareaUi = {
+  base: "min-h-[160px] rounded-[18px] px-4 py-3 text-[15px] leading-7",
+}
+
+const secondaryTextareaUi = {
+  base: "min-h-[148px] rounded-[18px] px-4 py-3 text-[15px] leading-7",
+}
+
+const selectUi = {
+  base: "h-14 rounded-[18px] px-4 text-[15px]",
+}
+
 const urlPrefix = "vnseea.vn/g/"
+
+const categoryItems = computed(() =>
+  communityCategoryOptions.map(option => ({
+    value: option.value,
+    label: t(option.label),
+  })),
+)
 
 const suggestedSlug = computed(() =>
   createCommunitySlug(model.value.name),

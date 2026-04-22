@@ -10,23 +10,35 @@
             {{ t("pages.groupDetailPage.feedTitle") }}
           </h2>
           <p class="mt-1 text-[14px] leading-6 text-slate-500">
-            {{ t("pages.groupDetailPage.feedDescription", { activity: group.activityLabel }) }}
+            {{ t("pages.groupDetailPage.feedDescription", { activity: activityLabel }) }}
           </p>
         </div>
 
-        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[12px] font-semibold text-slate-500">
-          {{ group.ownerLabel }}
-        </div>
+        <UBadge color="neutral" variant="soft" class="rounded-full px-4 py-3 text-[12px] font-semibold text-slate-500">
+          {{ ownerLabel }}
+        </UBadge>
       </div>
     </section>
 
     <FeedPublisherBox />
 
-    <FeedPostCard
-      v-for="post in posts"
-      :key="post.id"
-      :post="post"
+    <UAlert
+      v-if="posts.length === 0"
+      color="neutral"
+      variant="subtle"
+      icon="i-ph-newspaper-clipping-bold"
+      :title="t('pages.groupDetailPage.feedEmptyTitle')"
+      :description="t('pages.groupDetailPage.feedEmptyDescription')"
+      class="rounded-[24px]"
     />
+
+    <template v-else>
+      <FeedPostCard
+        v-for="post in posts"
+        :key="post.id"
+        :post="post"
+      />
+    </template>
   </div>
 </template>
 
@@ -34,8 +46,9 @@
 import type { CommunityGroupRecord } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
-defineProps<{
+const props = defineProps<{
   group: CommunityGroupRecord
   posts: Array<{
     id: number
@@ -50,4 +63,12 @@ defineProps<{
     comments: { id: number; author: string; role: string; text: string }[]
   }>
 }>()
+
+const activityLabel = computed(() =>
+  translateText(props.group.activityLabel),
+)
+
+const ownerLabel = computed(() =>
+  translateText(props.group.ownerLabel),
+)
 </script>

@@ -268,7 +268,53 @@ Nhận xét migrate:
 - `CreationForm.vue`, `GroupSettingsBasicsCard.vue`, `PageSettingsBasicsCard.vue` còn native form nhiều
 - `GroupsFilterBar.vue` phù hợp để thêm `VueUse` cho debounce/filter persistence
 - nên chuẩn hóa form system của community bằng `UForm`, `UInput`, `UTextarea`, `USelect`, `USwitch`
-- chưa có `i18n`
+- community đã có `i18n` khá đầy đủ, nhưng ghi chú cũ này cần bỏ vì không còn đúng
+- nên chia migration thành 3 đợt để tránh patch quá dài:
+  - đợt 1: create + settings
+    - `CreationForm.vue`
+    - `CreationHeaderCard.vue`
+    - `CreationInsightsPanel.vue`
+    - `GroupSettingsBasicsCard.vue`
+    - `GroupSettingsControlsCard.vue`
+    - `GroupSettingsSidebar.vue`
+    - `PageSettingsBasicsCard.vue`
+    - `PageSettingsControlsCard.vue`
+    - `PageSettingsSidebar.vue`
+    - `SettingsSectionCard.vue`
+  - đợt 2: listing + filter + tab bar
+    - `CommunityGroupCard.vue`
+    - `GroupsFilterBar.vue`
+    - `GroupTabsBar.vue`
+    - `PageCard.vue`
+    - `PageDirectoryTabsBar.vue`
+  - đợt 3: detail/read-only cards
+    - `GroupAboutCard.vue`
+    - `GroupAdminCard.vue`
+    - `GroupFeedSection.vue`
+    - `GroupHeroBanner.vue`
+    - `GroupMembersCard.vue`
+    - `GroupTopicsCard.vue`
+    - `PageAboutCard.vue`
+    - `PageActionCard.vue`
+    - `PageFeedSection.vue`
+    - `PageHeroBanner.vue`
+- đợt 1 đã xử lý:
+  - đưa SEO của `create-group`, `create-page`, `group-setting/[group]`, `page-setting/[page]` về page-level route
+  - thêm draft persistence SSR-safe cho create/settings
+  - thêm state `idle/loading/success/error`, `UAlert`, `useToast`, disabled/loading CTA rõ ràng
+  - thay native input/toggle chính bằng `UForm`, `UFormField`, `UInput`, `UTextarea`, `USelect`, `USwitch`
+- đợt 2 đã xử lý:
+  - migrate `CommunityGroupCard.vue`, `GroupsFilterBar.vue`, `GroupTabsBar.vue`, `PageCard.vue`, `PageDirectoryTabsBar.vue`
+  - đưa SEO của `groups`, `suggested-groups`, `joined_groups`, `pages`, `suggested-pages`, `liked-pages` về page-level route
+  - sync keyword filter của group/page listing với route query `q`
+  - thêm debounce + local persistence cho keyword filter bằng `watchDebounced` + `useStorage`
+  - sửa card listing để render text i18n thực tế thay vì lộ translation key ở `name/summary/tags`
+- đợt 3 đã xử lý:
+  - migrate `GroupAboutCard.vue`, `GroupAdminCard.vue`, `GroupFeedSection.vue`, `GroupHeroBanner.vue`, `GroupMembersCard.vue`, `GroupTopicsCard.vue`, `PageAboutCard.vue`, `PageActionCard.vue`, `PageFeedSection.vue`, `PageHeroBanner.vue`
+  - đưa SEO của `g/[name]` và `p/[name]` về page-level route, thêm canonical và `robots` phù hợp cho detail/preview
+  - sync tab detail với query `tab` để route shareable hơn và tránh state local rời route
+  - thêm action state `idle/loading/success/error` + `useToast` cho join/invite/follow/share/message
+  - sửa detail pages để render text i18n an toàn với cả translation key lẫn query text preview, đồng thời bổ sung locale `pages.groupDetailPage` và `pages.pageDetailPage`
 
 ### `directory` - 4 files
 
@@ -944,10 +990,43 @@ Nên ưu tiên store cho:
 
 ### Task C: Community migration
 
-- migrate `CreationForm.vue`
-- migrate `GroupSettingsBasicsCard.vue`
-- migrate `PageSettingsBasicsCard.vue`
-- thêm draft persistence bằng `VueUse`
+- đợt 1:
+  - migrate `CreationForm.vue`
+  - migrate `CreationHeaderCard.vue`
+  - migrate `CreationInsightsPanel.vue`
+  - migrate `GroupSettingsBasicsCard.vue`
+  - migrate `GroupSettingsControlsCard.vue`
+  - migrate `GroupSettingsSidebar.vue`
+  - migrate `PageSettingsBasicsCard.vue`
+  - migrate `PageSettingsControlsCard.vue`
+  - migrate `PageSettingsSidebar.vue`
+  - migrate `SettingsSectionCard.vue`
+  - thêm draft persistence bằng `VueUse`
+  - kéo SEO create/settings về page-level route
+- đợt 2:
+  - migrate `CommunityGroupCard.vue`
+  - migrate `GroupsFilterBar.vue`
+  - migrate `GroupTabsBar.vue`
+  - migrate `PageCard.vue`
+  - migrate `PageDirectoryTabsBar.vue`
+  - kéo SEO listing pages về page-level route
+  - sync keyword filter với query `q`
+  - thêm debounce + persistence cho filter listing
+- đợt 3:
+  - migrate `GroupAboutCard.vue`
+  - migrate `GroupAdminCard.vue`
+  - migrate `GroupFeedSection.vue`
+  - migrate `GroupHeroBanner.vue`
+  - migrate `GroupMembersCard.vue`
+  - migrate `GroupTopicsCard.vue`
+  - migrate `PageAboutCard.vue`
+  - migrate `PageActionCard.vue`
+  - migrate `PageFeedSection.vue`
+  - migrate `PageHeroBanner.vue`
+  - kéo SEO detail routes `g/[name]`, `p/[name]` về page-level route
+  - sync tab detail với query `tab`
+  - thêm loading/success/error feedback cho join/invite/follow/share/message
+  - bổ sung locale detail page và chặn lộ translation key ở UI detail
 
 ### Task D: Blog + Funding migration
 

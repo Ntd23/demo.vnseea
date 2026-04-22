@@ -292,6 +292,248 @@
       "article8Body2": "Điểm mạnh của nhóm nhỏ là tốc độ thử nghiệm. Họ có thể thay đổi nhanh, lắng nghe phản hồi từ cộng đồng sớm và tinh chỉnh gameplay trước khi chi phí sản xuất bị đẩy lên quá cao.",
       "article8Body3": "Để đi xa hơn, các studio này cần không chỉ một trò chơi tốt mà còn một chiến lược phát hành và chăm sóc cộng đồng đủ bền để giữ người chơi quay lại sau giai đoạn ra mắt đầu tiên."
     },
+    "groupDetailPage": {
+      "seoFallbackTitle": "Chi tiết nhóm",
+      "seoFallbackDescription": "Theo dõi bài viết, thành viên và thông tin nổi bật của nhóm cộng đồng trên VNSEEA.",
+      "tabsAriaLabel": "Điều hướng nội dung nhóm",
+      "emptyTitle": "Không tìm thấy nhóm này",
+      "emptyDescription": "Đường dẫn nhóm không còn hợp lệ hoặc dữ liệu mô phỏng chưa tồn tại.",
+      "backToGroups": "Quay lại danh sách nhóm",
+      "heroTypeLabel": "Nhóm cộng đồng",
+      "joinFallback": "Tham gia nhóm",
+      "joinedButton": "Đã tham gia",
+      "inviteFallback": "Mời thành viên",
+      "invitedButton": "Đã gửi lời mời",
+      "settingsButton": "Cài đặt nhóm",
+      "aboutCompactEyebrow": "Tổng quan nhanh",
+      "aboutEyebrow": "Giới thiệu nhóm",
+      "aboutCompactTitle": "Thông tin nhóm",
+      "privacyTitle": "Quyền riêng tư",
+      "categoryTitle": "Lĩnh vực",
+      "guidelinesTitle": "Nguyên tắc tham gia",
+      "feedEyebrow": "Bảng tin",
+      "feedTitle": "Hoạt động gần đây",
+      "feedDescription": "Cập nhật các bài viết, trao đổi và nhịp sinh hoạt mới nhất về {activity}.",
+      "feedEmptyTitle": "Chưa có bài viết trong nhóm",
+      "feedEmptyDescription": "Khi nhóm có bài đăng mới, nội dung sẽ xuất hiện ở đây.",
+      "membersEyebrow": "Thành viên nổi bật",
+      "inviteMore": "Mời thêm",
+      "memberOnline": "Đang online",
+      "memberOffline": "Ngoại tuyến",
+      "adminEyebrow": "Khu quản trị",
+      "adminDescription": "Bạn đang có quyền quản trị nhóm này. Có thể cập nhật thiết lập, nội quy và cách duyệt thành viên từ màn hình settings.",
+      "adminButton": "Mở cài đặt nhóm",
+      "topicsTitle": "Chủ đề đang theo dõi",
+      "topicsAudienceTitle": "Đối tượng phù hợp",
+      "topicsAudienceDescription": "Nhóm này phù hợp với thành viên đang quan tâm tới {category} và muốn trao đổi đều đặn hơn.",
+      "topicsJoinTitle": "Cách tham gia",
+      "topicsJoinDescription": "Hiện tại nhóm đang ở chế độ {privacy}. Hãy đọc mô tả và chuẩn bị nội dung phù hợp trước khi gửi bài.",
+      "tabPosts": "Bài viết",
+      "tabAbout": "Giới thiệu",
+      "memberCount": "{count} thành viên",
+      "onlineCount": "{count} đang online",
+      "memberRoleFallback": "Thành viên",
+      "postRole": "{role} · {group}",
+      "postTime1": "12 phút trước",
+      "postTime2": "46 phút trước",
+      "postTime3": "2 giờ trước",
+      "postText1": "Chủ đề {topic} tuần này đang được thảo luận khá nhiều trong {group}. Mọi người có case thực tế nào muốn chia sẻ thêm không?",
+      "postText2": "Mình tổng hợp nhanh vài ý chính từ các trao đổi gần đây của {group}, nhất là phần liên quan tới {activity}.",
+      "postText3": "Ai đang triển khai chủ đề {topic} có thể để lại kinh nghiệm bên dưới để mọi người cùng tham khảo.",
+      "joinSuccessTitle": "Đã gửi yêu cầu tham gia",
+      "joinSuccessDescription": "Bạn đã tham gia {group} trong giao diện mô phỏng.",
+      "joinErrorTitle": "Không thể tham gia nhóm",
+      "joinErrorDescription": "Hãy thử lại sau ít phút.",
+      "inviteSuccessTitle": "Đã chuẩn bị lời mời",
+      "inviteSuccessDescription": "Lời mời vào {group} đã được tạo trong giao diện mô phỏng.",
+      "inviteErrorTitle": "Không thể tạo lời mời",
+      "inviteErrorDescription": "Hãy thử lại sau.",
+      "privacy": {
+        "public": "Công khai",
+        "private": "Riêng tư",
+        "secret": "Bí mật"
+      },
+      "privacyDescription": {
+        "public": "Ai cũng có thể xem nội dung và gửi yêu cầu tham gia ngay.",
+        "private": "Người ngoài vẫn tìm thấy nhóm nhưng cần duyệt trước khi vào.",
+        "secret": "Chỉ ai có liên kết mời hoặc được thêm thủ công mới truy cập được."
+      },
+      "categories": {
+        "auto": "Xe cộ",
+        "business": "Kinh doanh",
+        "technology": "Công nghệ",
+        "education": "Giáo dục",
+        "travel": "Du lịch",
+        "marketplace": "Mua bán"
+      },
+      "members": {
+        "cong-dong-xe-dien-viet": [
+          {
+            "role": "Quản trị viên",
+            "meta": "Điều hành cộng đồng"
+          },
+          {
+            "role": "Điều phối viên",
+            "meta": "Phụ trách hỏi đáp sạc xe"
+          },
+          {
+            "role": "Thành viên tích cực",
+            "meta": "24 bài viết tháng này"
+          },
+          {
+            "role": "Reviewer",
+            "meta": "Chuyên thử xe và phụ kiện"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Tham gia từ tháng 5/2024"
+          }
+        ],
+        "founder-circle-vietnam": [
+          {
+            "role": "Host",
+            "meta": "Founder SaaS B2B"
+          },
+          {
+            "role": "Điều phối viên",
+            "meta": "Phụ trách growth và community"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Điều hành startup giáo dục"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Xây hệ thống nội bộ"
+          }
+        ],
+        "ai-product-builders": [
+          {
+            "role": "Host",
+            "meta": "AI product consultant"
+          },
+          {
+            "role": "Điều phối viên",
+            "meta": "Chuyên automation workflow"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Thiết kế trải nghiệm AI"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Làm prototyping và prompt"
+          }
+        ],
+        "di-va-hoc": [
+          {
+            "role": "Host",
+            "meta": "Điều phối workshop"
+          },
+          {
+            "role": "Mentor",
+            "meta": "Hướng dẫn lộ trình học"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Chia sẻ tài liệu kỹ năng"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Tham gia từ tháng 1/2024"
+          }
+        ],
+        "weekend-escape-club": [
+          {
+            "role": "Host",
+            "meta": "Lên lịch trình cuối tuần"
+          },
+          {
+            "role": "Thành viên tích cực",
+            "meta": "Review homestay và quán ăn"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Chia sẻ ảnh và tips di chuyển"
+          },
+          {
+            "role": "Thành viên",
+            "meta": "Đi nhiều tour trekking"
+          }
+        ]
+      }
+    },
+    "pageDetailPage": {
+      "seoFallbackTitle": "Chi tiết fanpage",
+      "seoFallbackDescription": "Xem bài viết, thông tin giới thiệu và các hành động chính của fanpage trên VNSEEA.",
+      "tabsAriaLabel": "Điều hướng nội dung fanpage",
+      "emptyTitle": "Không tìm thấy fanpage",
+      "emptyDescription": "Đường dẫn fanpage không còn hợp lệ hoặc chưa có dữ liệu mô phỏng.",
+      "createNewPage": "Tạo fanpage mới",
+      "heroTypeLabel": "Fanpage",
+      "followFallback": "Theo dõi",
+      "followingButton": "Đang theo dõi",
+      "shareButton": "Chia sẻ",
+      "sharedButton": "Đã sao chép liên kết",
+      "settingsButton": "Cài đặt fanpage",
+      "aboutCompactEyebrow": "Tổng quan nhanh",
+      "aboutEyebrow": "Giới thiệu fanpage",
+      "aboutCompactTitle": "Thông tin fanpage",
+      "categoryTitle": "Danh mục",
+      "interactionTitle": "Phản hồi",
+      "hiddenMetrics": "Đã ẩn số liệu công khai",
+      "mainTopicsTitle": "Chủ đề chính",
+      "actionEyebrow": "Hành động",
+      "actionTitle": "Tương tác với fanpage",
+      "actionDescription": "Fanpage này hiện đang hiển thị thông điệp phản hồi: {response}.",
+      "messageButton": "Nhắn tin",
+      "messageSentButton": "Đã mở lời nhắn",
+      "followStat": "Theo dõi",
+      "likeStat": "Lượt thích",
+      "manageTitle": "Quyền quản trị",
+      "manageDescription": "Bạn có thể cập nhật thông tin cơ bản, CTA và chế độ hiển thị của fanpage này từ màn hình settings.",
+      "feedEyebrow": "Bảng tin",
+      "feedTitle": "Bài viết gần đây",
+      "feedDescription": "Theo dõi các cập nhật, thông báo và nội dung mới nhất từ {owner}.",
+      "feedEmptyTitle": "Chưa có bài viết nào",
+      "feedEmptyDescription": "Khi fanpage có bài đăng mới, nội dung sẽ hiển thị ở đây.",
+      "newPageName": "Fanpage mới",
+      "previewSummary": "Trang này đang ở chế độ xem trước. Hãy hoàn thiện mô tả để fanpage trông đáng tin cậy hơn.",
+      "previewOwnerLabel": "Fanpage công khai",
+      "previewResponseLabel": "Phản hồi trong ngày làm việc",
+      "previewLocationLabel": "Đang cập nhật địa điểm",
+      "previewFoundedLabel": "Mới tạo gần đây",
+      "previewCtaLabel": "Theo dõi",
+      "followerCount": "{count} người theo dõi",
+      "likeCount": "{count} lượt thích",
+      "postRole": "Bản cập nhật từ {category}",
+      "postTime1": "18 phút trước",
+      "postTime2": "1 giờ trước",
+      "postTime3": "3 giờ trước",
+      "postText1": "{page} vừa đăng một cập nhật mới về {tag} để người theo dõi nắm bối cảnh nhanh hơn.",
+      "postText2": "{page} đang thử một cách trình bày nội dung gọn hơn để người xem dễ theo dõi trên mobile.",
+      "postText3": "Nếu bạn đang theo dõi {page}, đây là lúc phù hợp để lưu lại bài viết và quay lại khi cần.",
+      "followSuccessTitle": "Đã theo dõi fanpage",
+      "followSuccessDescription": "Bạn đang theo dõi {page} trong giao diện mô phỏng.",
+      "followErrorTitle": "Không thể theo dõi fanpage",
+      "followErrorDescription": "Hãy thử lại sau ít phút.",
+      "shareSuccessTitle": "Đã chuẩn bị liên kết chia sẻ",
+      "shareSuccessDescription": "Liên kết chia sẻ đã sẵn sàng: {url}",
+      "shareErrorTitle": "Không thể chia sẻ fanpage",
+      "shareErrorDescription": "Hãy thử lại sau.",
+      "messageSuccessTitle": "Đã mở lời nhắn",
+      "messageSuccessDescription": "Bạn có thể bắt đầu nhắn tin với {page} trong luồng mô phỏng.",
+      "messageErrorTitle": "Không thể mở lời nhắn",
+      "messageErrorDescription": "Hãy thử lại sau.",
+      "categories": {
+        "local-business": "Kinh doanh địa phương",
+        "creator": "Creator",
+        "brand": "Thương hiệu",
+        "education": "Giáo dục",
+        "organization": "Tổ chức",
+        "service": "Dịch vụ"
+      }
+    },
     "productEditor": {
       "titleLabel": "Tên sản phẩm",
       "priceLabel": "Giá bán",
@@ -1484,7 +1726,11 @@
   "community": {
     "pagesDirectory": {
       "title": "Các trang",
+      "titleSuggested": "Các trang đề xuất",
+      "titleFavorite": "Các trang được yêu thích",
       "desc": "Quản lý fanpage bạn theo dõi, xem gợi ý phù hợp và mở nhanh flow tạo page mới trong cùng một khu vực.",
+      "descSuggested": "Khám phá fanpage được gợi ý theo thương hiệu, lĩnh vực và nội dung bạn đang quan tâm trong hệ sinh thái VNSEEA.",
+      "descFavorite": "Quay lại những fanpage bạn đã đánh dấu yêu thích để xem cập nhật mới, CTA và tín hiệu thương hiệu nổi bật.",
       "createAction": "Tạo trang",
       "emptyMineTitle": "Không có trang nào để hiển thị",
       "emptyMineDesc": "Bạn chưa tạo fanpage nào trong tài khoản này. Bắt đầu bằng một page mới để giới thiệu thương hiệu, dịch vụ hoặc kênh nội dung của bạn.",
@@ -1494,6 +1740,21 @@
       "actionSuggested": "Khám phá fanpage",
       "actionFavorite": "Xem cập nhật",
       "actionMine": "Xem fanpage",
+      "settingsAction": "Cài đặt",
+      "brandLabel": "Thương hiệu",
+      "interactionLabel": "Tương tác",
+      "publicFallback": "Fanpage công khai",
+      "search": "Tìm trang, thương hiệu hoặc URL...",
+      "clearSearch": "Xóa tìm kiếm",
+      "searchLabel": "Bộ lọc theo từ khóa",
+      "resultsActive": "{count} fanpage đang khớp với từ khóa hiện tại.",
+      "resultsIdle": "Từ khóa sẽ đồng bộ lên URL để bạn quay lại đúng danh sách đang xem.",
+      "hintMine": "Khu này sẽ hiện các fanpage bạn tạo hoặc đang quản lý. Hiện tại mock account chưa có page nào.",
+      "hintSuggested": "Danh sách này ưu tiên fanpage có tín hiệu thương hiệu rõ, lượng theo dõi tốt và chủ đề gần với hoạt động của bạn.",
+      "hintFavorite": "Đây là các fanpage bạn đã đánh dấu yêu thích để tiện quay lại xem bài mới, CTA và tín hiệu thương hiệu.",
+      "statusMine": "Chưa có fanpage nào",
+      "statusSuggested": "{count} fanpage đang chờ bạn khám phá",
+      "statusFavorite": "{count} fanpage đang nằm trong danh sách yêu thích",
       "seoSuggestedTitle": "Các trang được đề xuất",
       "seoFavoriteTitle": "Các trang được yêu thích",
       "seoMineTitle": "Các trang",
@@ -1586,7 +1847,21 @@
         "editLater": "Có thể chỉnh sửa sau",
         "urlLabel": "Đường dẫn URL",
         "descriptionLabel": "Mô tả",
-        "categoryLabel": "Danh mục"
+        "categoryLabel": "Danh mục",
+        "statusLoadingTitle": "Đang kiểm tra thông tin {entity}",
+        "statusLoadingDescription": "VNSEEA đang rà lại tên, URL, mô tả và phân loại trước khi mở bước tiếp theo.",
+        "statusSuccessTitle": "{entity} đã sẵn sàng",
+        "statusSuccessDescription": "Bạn có thể tiếp tục tinh chỉnh sau khi vào màn hình chi tiết hoặc khu quản trị.",
+        "statusErrorTitle": "Cần hoàn thiện vài trường bắt buộc",
+        "statusErrorDescription": "Kiểm tra lại tên, URL, mô tả và danh mục trước khi tiếp tục.",
+        "draftRestoredTitle": "Đã khôi phục bản nháp gần nhất",
+        "draftRestoredDescription": "Thông tin bạn nhập trước đó đã được điền lại trên thiết bị này.",
+        "validationNameRequired": "Nhập tên để tiếp tục.",
+        "validationSlugRequired": "Nhập URL tùy chỉnh cho community này.",
+        "validationSlugInvalid": "URL chỉ nên gồm chữ thường, số và dấu gạch nối.",
+        "validationDescriptionRequired": "Mô tả nên đủ rõ, tối thiểu 24 ký tự.",
+        "validationPrivacyRequired": "Chọn loại hiển thị cho nhóm.",
+        "validationCategoryRequired": "Chọn một danh mục phù hợp."
       },
       "insights": {
         "preview": "Xem trước",
@@ -1669,14 +1944,19 @@
       },
       "filter": {
         "search": "Tìm nhóm, chủ đề hoặc URL...",
-        "create": "Tạo ra"
+        "create": "Tạo ra",
+        "clear": "Xóa tìm kiếm",
+        "searchLabel": "Bộ lọc theo từ khóa",
+        "results": "{count} nhóm đang khớp với từ khóa hiện tại.",
+        "resultsIdle": "Từ khóa sẽ đồng bộ lên URL để bạn quay lại đúng danh sách đang xem."
       },
       "action": {
         "createNew": "Tạo nhóm mới",
         "createFirst": "Tạo nhóm đầu tiên",
         "explore": "Khám phá nhóm",
         "viewUpdates": "Xem cập nhật",
-        "viewGroup": "Xem nhóm"
+        "viewGroup": "Xem nhóm",
+        "manage": "Quản trị"
       },
       "empty": {
         "mineTitle": "Không có nhóm nào để hiển thị",
@@ -1944,7 +2224,15 @@
         "desc": "Flow settings này đang là UI mock. Bạn có thể quay lại trang nhóm hoặc tiếp tục tinh chỉnh trước khi nối API.",
         "status": "{enabled}/{total} chính sách đang bật. Quyền hiển thị hiện tại là {privacy}.",
         "back": "Quay lại nhóm",
-        "save": "Lưu thay đổi"
+        "save": "Lưu thay đổi",
+        "draftRestoredTitle": "Đã khôi phục bản nháp cài đặt",
+        "draftRestoredDescription": "Những thay đổi chưa lưu trước đó đã được nạp lại cho nhóm này.",
+        "statusSavingTitle": "Đang lưu cấu hình nhóm",
+        "statusSavingDescription": "Mock flow đang đồng bộ hồ sơ hiển thị và các chính sách quản trị.",
+        "statusSuccessTitle": "Đã lưu cấu hình nhóm",
+        "statusSuccessDescription": "Bạn có thể quay lại trang nhóm hoặc tiếp tục tinh chỉnh thêm.",
+        "statusErrorTitle": "Chưa thể lưu cấu hình nhóm",
+        "statusErrorDescription": "Kiểm tra lại tên, URL, mô tả và danh mục trước khi lưu."
       },
       "sidebar": {
         "preview": "Xem trước sau khi lưu",
@@ -2036,7 +2324,15 @@
         "desc": "Flow page settings này hiện là UI mock. Bạn có thể quay lại fanpage để so sánh hoặc tiếp tục tinh chỉnh trước khi nối API.",
         "status": "{enabled}/{total} tín hiệu đang bật. CTA chính hiện tại là **{cta}**.",
         "back": "Quay lại fanpage",
-        "save": "Lưu thay đổi"
+        "save": "Lưu thay đổi",
+        "draftRestoredTitle": "Đã khôi phục bản nháp fanpage",
+        "draftRestoredDescription": "Những thay đổi chưa lưu trước đó đã được nạp lại cho fanpage này.",
+        "statusSavingTitle": "Đang lưu cài đặt fanpage",
+        "statusSavingDescription": "Mock flow đang đồng bộ hồ sơ fanpage, CTA và các tín hiệu hiển thị.",
+        "statusSuccessTitle": "Đã lưu cài đặt fanpage",
+        "statusSuccessDescription": "Bạn có thể quay lại fanpage hoặc tiếp tục tinh chỉnh thêm.",
+        "statusErrorTitle": "Chưa thể lưu cài đặt fanpage",
+        "statusErrorDescription": "Kiểm tra lại tên, URL, mô tả và danh mục trước khi lưu."
       },
       "sidebar": {
         "preview": "Xem trước sau khi lưu",

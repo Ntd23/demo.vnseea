@@ -6,17 +6,22 @@
           {{ t("pages.groupDetailPage.membersEyebrow") }}
         </p>
         <h3 class="mt-2 text-[1.15rem] font-black tracking-[-0.04em] text-[#243b63]">
-          {{ $t('community.groups.format.members', { count: memberCountLabel }) }}
+          {{ memberCountLabel }}
         </h3>
       </div>
 
-      <button
-        class="inline-flex h-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[12px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-        type="button"
+      <UButton
+        color="neutral"
+        variant="outline"
+        size="md"
+        class="rounded-full"
+        :loading="inviteState === 'loading'"
+        :disabled="inviteState === 'loading'"
+        @click="emit('invite')"
       >
         <Icon name="i-ph-user-circle-plus-bold" class="mr-1.5 h-4 w-4" />
-        {{ t("pages.groupDetailPage.inviteMore") }}
-      </button>
+        {{ inviteButtonLabel }}
+      </UButton>
     </div>
 
     <div class="mt-4 space-y-3">
@@ -37,9 +42,17 @@
 
         <div class="min-w-0 flex-1">
           <p class="truncate text-[13px] font-semibold text-[#243b63]">{{ member.name }}</p>
-          <p class="mt-0.5 text-[12px] text-slate-500">{{ member.role }}</p>
-          <p class="mt-0.5 truncate text-[11px] text-slate-400">{{ member.meta }}</p>
+          <p class="mt-0.5 text-[12px] text-slate-500">{{ translateText(member.role) }}</p>
+          <p class="mt-0.5 truncate text-[11px] text-slate-400">{{ translateText(member.meta) }}</p>
         </div>
+
+        <UBadge
+          color="neutral"
+          :variant="member.online ? 'subtle' : 'outline'"
+          class="rounded-full px-3 py-1 text-[11px] font-semibold"
+        >
+          {{ member.online ? t("pages.groupDetailPage.memberOnline") : t("pages.groupDetailPage.memberOffline") }}
+        </UBadge>
       </div>
     </div>
   </section>
@@ -49,9 +62,21 @@
 import type { CommunityGroupMember } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
-defineProps<{
+const props = defineProps<{
   members: CommunityGroupMember[]
   memberCountLabel: string
+  inviteState?: "idle" | "loading" | "success" | "error"
 }>()
+
+const emit = defineEmits<{
+  invite: []
+}>()
+
+const inviteButtonLabel = computed(() =>
+  props.inviteState === "success"
+    ? t("pages.groupDetailPage.invitedButton")
+    : t("pages.groupDetailPage.inviteMore"),
+)
 </script>

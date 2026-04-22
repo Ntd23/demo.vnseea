@@ -4,13 +4,15 @@
       {{ t("pages.groupDetailPage.topicsTitle") }}
     </p>
     <div class="mt-4 flex flex-wrap gap-2">
-      <span
+      <UBadge
         v-for="tag in group.tags"
         :key="tag"
-        class="inline-flex items-center rounded-full bg-[#eef3ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]"
+        color="neutral"
+        variant="soft"
+        class="rounded-full px-3 py-1.5 text-[12px] font-semibold text-[#243b63]"
       >
-        #{{ tag }}
-      </span>
+        #{{ translateText(tag) }}
+      </UBadge>
     </div>
 
     <div class="mt-5 grid gap-3 sm:grid-cols-2">
@@ -34,6 +36,7 @@
 import type { CommunityGroupRecord } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
 defineProps<{
   group: CommunityGroupRecord

@@ -6,15 +6,15 @@
 
       <div class="relative flex h-full flex-col justify-between gap-6">
         <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/88">
-          <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ $t(categoryLabel) }}
-          </span>
-          <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ page.responseLabel }}
-          </span>
-          <span class="rounded-full bg-white/12 px-3 py-1.5 backdrop-blur">
-            {{ page.foundedLabel }}
-          </span>
+          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+            {{ categoryLabel }}
+          </UBadge>
+          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+            {{ responseLabel }}
+          </UBadge>
+          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+            {{ foundedLabel }}
+          </UBadge>
         </div>
 
         <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -28,46 +28,59 @@
                 {{ t("pages.pageDetailPage.heroTypeLabel") }}
               </p>
               <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-white sm:text-[2.5rem]">
-                {{ page.name }}
+                {{ pageName }}
               </h1>
               <p class="mt-2 max-w-[760px] text-[14px] leading-7 text-white/82">
-                {{ page.summary }}
+                {{ pageSummary }}
               </p>
               <div class="mt-3 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-white/82">
-                <span>{{ $t('community.pages.format.followers', { count: followerCountLabel }) }}</span>
+                <span>{{ followerCountLabel }}</span>
                 <span class="text-white/30">•</span>
-                <span>{{ $t('community.pages.format.likes', { count: likeCountLabel }) }}</span>
+                <span>{{ likeCountLabel }}</span>
                 <span class="text-white/30">•</span>
-                <span>{{ page.locationLabel }}</span>
+                <span>{{ locationLabel }}</span>
               </div>
             </div>
           </div>
 
           <div class="flex flex-wrap items-center gap-3">
-            <button
-              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-white px-5 text-[14px] font-extrabold text-[#1d4ed8] shadow-[0_12px_24px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
-              type="button"
+            <UButton
+              color="neutral"
+              variant="solid"
+              size="xl"
+              :loading="followState === 'loading'"
+              :disabled="followState === 'loading' || isFollowing"
+              class="rounded-[16px] bg-white px-5 text-[14px] font-extrabold text-[#1d4ed8] shadow-[0_12px_24px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
+              @click="emit('follow')"
             >
               <Icon name="i-ph-bell-simple-ringing-bold" class="mr-2 h-4 w-4" />
-              {{ page.ctaLabel || t("pages.pageDetailPage.followFallback") }}
-            </button>
+              {{ followButtonLabel }}
+            </UButton>
 
-            <button
-              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/16 bg-white/12 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-white/18"
-              type="button"
+            <UButton
+              color="neutral"
+              variant="soft"
+              size="xl"
+              :loading="shareState === 'loading'"
+              :disabled="shareState === 'loading'"
+              class="rounded-[16px] border border-white/16 bg-white/12 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-white/18"
+              @click="emit('share')"
             >
               <Icon name="i-ph-paper-plane-tilt-bold" class="mr-2 h-4 w-4" />
-              {{ t("pages.pageDetailPage.shareButton") }}
-            </button>
+              {{ shareButtonLabel }}
+            </UButton>
 
-            <NuxtLink
+            <UButton
               v-if="page.canManage"
               :to="pageSettingsPath"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
+              color="neutral"
+              variant="soft"
+              size="xl"
+              class="rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
             >
               <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
               {{ t("pages.pageDetailPage.settingsButton") }}
-            </NuxtLink>
+            </UButton>
           </div>
         </div>
       </div>
@@ -84,21 +97,61 @@ import {
 import type { CommunityPageRecord } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
 const props = defineProps<{
   page: CommunityPageRecord
   categoryLabel: string
   followerCountLabel: string
   likeCountLabel: string
+  followState?: "idle" | "loading" | "success" | "error"
+  shareState?: "idle" | "loading" | "success" | "error"
+  isFollowing?: boolean
+}>()
+
+const emit = defineEmits<{
+  follow: []
+  share: []
 }>()
 
 const route = useRoute()
 
 const avatarLabel = computed(() =>
-  getCommunityInitials(props.page.name),
+  getCommunityInitials(translateText(props.page.name)),
 )
 
 const pageSettingsPath = computed(() =>
   appendCommunityQuery(getCommunityPageSettingsPath(props.page.slug), route.query),
+)
+
+const pageName = computed(() =>
+  translateText(props.page.name),
+)
+
+const pageSummary = computed(() =>
+  translateText(props.page.summary),
+)
+
+const responseLabel = computed(() =>
+  translateText(props.page.responseLabel),
+)
+
+const foundedLabel = computed(() =>
+  translateText(props.page.foundedLabel),
+)
+
+const locationLabel = computed(() =>
+  translateText(props.page.locationLabel, t("community.pagesDirectory.publicFallback")),
+)
+
+const followButtonLabel = computed(() => {
+  if (props.isFollowing) return t("pages.pageDetailPage.followingButton")
+  return translateText(props.page.ctaLabel, t("pages.pageDetailPage.followFallback"))
+})
+
+const shareButtonLabel = computed(() =>
+  props.shareState === "success"
+    ? t("pages.pageDetailPage.sharedButton")
+    : t("pages.pageDetailPage.shareButton"),
 )
 </script>

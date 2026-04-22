@@ -9,7 +9,7 @@
 
           <div>
             <p class="text-[12px] font-bold uppercase tracking-[0.22em] text-[#0000ff]/65">
-              {{ $t('community.groups.hub') }}
+              {{ $t("community.groups.hub") }}
             </p>
             <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63]">
               {{ pageTitle }}
@@ -23,7 +23,7 @@
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
             <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t('community.groups.stats.suggested') }}
+              {{ $t("community.groups.stats.suggested") }}
             </p>
             <p class="mt-1 text-[1.25rem] font-black text-[#243b63]">
               {{ suggestedCount }}
@@ -31,7 +31,7 @@
           </div>
           <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
             <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t('community.groups.stats.joined') }}
+              {{ $t("community.groups.stats.joined") }}
             </p>
             <p class="mt-1 text-[1.25rem] font-black text-[#243b63]">
               {{ joinedCount }}
@@ -39,7 +39,7 @@
           </div>
           <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
             <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t('community.groups.stats.status') }}
+              {{ $t("community.groups.stats.status") }}
             </p>
             <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
               {{ activeTabDescription }}
@@ -54,6 +54,7 @@
       :tabs="tabItems"
       :active-tab="mode"
       create-to="/create-group"
+      :status-label="filterStatusLabel"
     />
 
     <section class="rounded-[28px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
@@ -67,13 +68,16 @@
           </p>
         </div>
 
-        <NuxtLink
+        <UButton
           to="/create-group"
-          class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8faff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+          color="neutral"
+          variant="outline"
+          size="lg"
+          class="rounded-full text-[13px] font-bold"
         >
           <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-          {{ $t('community.groups.action.createNew') }}
-        </NuxtLink>
+          {{ $t("community.groups.action.createNew") }}
+        </UButton>
       </div>
     </section>
 
@@ -94,7 +98,7 @@
             class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
           >
             <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-            {{ $t('community.groups.action.createFirst') }}
+            {{ $t("community.groups.action.createFirst") }}
           </NuxtLink>
         </div>
       </div>
@@ -118,20 +122,29 @@
         v-for="group in visibleGroups"
         :key="group.id"
         :group="group"
-        :action-label="mode === 'suggested' ? 'community.groups.action.explore' : 'community.groups.action.viewUpdates'"
+        :action-label="cardActionLabel"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useStorage, watchDebounced } from "@vueuse/core"
 import {
+  appendCommunityQuery,
   communityGroupDirectory,
   communityGroupRouteMap,
   communityGroupTabs,
 } from "../../../types/community"
 import type { CommunityGroupTab } from "../../../types/community"
 
+function readQueryValue(value: unknown) {
+  if (Array.isArray(value)) return String(value[0] || "")
+  return typeof value === "string" ? value : ""
+}
+
+const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 
 const props = withDefaults(defineProps<{
@@ -141,7 +154,13 @@ const props = withDefaults(defineProps<{
 })
 
 const mode = computed(() => props.mode)
-const search = ref("")
+const search = ref(readQueryValue(route.query.q))
+const storedSearch = useStorage<string>(
+  `community:groups:${props.mode}:search`,
+  "",
+  undefined,
+  { initOnMounted: true },
+)
 
 const pageTitle = computed(() => {
   if (props.mode === "suggested") return t("community.groups.titleSuggested")
@@ -166,7 +185,7 @@ const joinedCount = computed(() =>
 const tabItems = computed(() =>
   communityGroupTabs.map(tab => ({
     ...tab,
-    to: communityGroupRouteMap[tab.value],
+    to: appendCommunityQuery(communityGroupRouteMap[tab.value], { q: search.value.trim() }),
     count:
       tab.value === "mine"
         ? 0
@@ -183,15 +202,17 @@ const visibleGroups = computed(() => {
   const keyword = search.value.trim().toLowerCase()
   if (!keyword) return groups
 
-  return groups.filter(group =>
-    [
-      group.name,
+  return groups.filter(group => {
+    const searchable = [
+      t(group.name),
       group.slug,
-      group.summary,
-      group.ownerLabel,
-      ...group.tags,
-    ].join(" ").toLowerCase().includes(keyword),
-  )
+      t(group.summary),
+      t(group.ownerLabel),
+      ...group.tags.map(tag => t(tag)),
+    ].join(" ").toLowerCase()
+
+    return searchable.includes(keyword)
+  })
 })
 
 const activeTabLabel = computed(() => {
@@ -211,8 +232,65 @@ const activeTabHint = computed(() => {
   return t("community.groups.hint.joined")
 })
 
-useSeoMeta({
-  title: computed(() => `${pageTitle.value} | VNSEEA`),
-  description: pageDescription,
+const filterStatusLabel = computed(() =>
+  search.value.trim()
+    ? t("community.groups.filter.results", { count: visibleGroups.value.length })
+    : t("community.groups.filter.resultsIdle"),
+)
+
+const cardActionLabel = computed(() => {
+  if (mode.value === "suggested") return "community.groups.action.explore"
+  if (mode.value === "joined") return "community.groups.action.viewUpdates"
+  return "community.groups.action.viewGroup"
 })
+
+watch(
+  () => route.query.q,
+  (value) => {
+    const nextValue = readQueryValue(value)
+
+    if (nextValue !== search.value) {
+      search.value = nextValue
+    }
+
+    if (nextValue.trim()) {
+      storedSearch.value = nextValue.trim()
+    }
+  },
+  { immediate: true },
+)
+
+onMounted(() => {
+  if (!readQueryValue(route.query.q) && storedSearch.value.trim()) {
+    search.value = storedSearch.value.trim()
+  }
+})
+
+watchDebounced(
+  search,
+  async (value) => {
+    const keyword = value.trim()
+
+    storedSearch.value = keyword
+
+    if (keyword === readQueryValue(route.query.q)) {
+      return
+    }
+
+    const nextQuery = { ...route.query }
+
+    if (keyword) {
+      nextQuery.q = keyword
+    }
+    else {
+      delete nextQuery.q
+    }
+
+    await router.replace({ query: nextQuery })
+  },
+  {
+    debounce: 250,
+    maxWait: 1000,
+  },
+)
 </script>

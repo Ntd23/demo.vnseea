@@ -22,24 +22,41 @@
       :privacy-label="$t('community.creation.group.privacyLabel')"
       :category-label="$t('community.creation.common.categoryLabel')"
       back-to="/groups"
-      submit-to="/groups"
+      :submit-label="$t('community.creation.common.create')"
+      :submit-state="submitState"
+      :submit-disabled="isSubmitDisabled"
+      :draft-restored="draftRestored"
+      @submit="handleCreateGroup"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useStorage } from "@vueuse/core"
 import {
   communityCategoryOptions,
   communityPrivacyOptions,
+  createCommunityGroupDraft,
 } from "../../../types/community"
 import type { CommunityDraft } from "../../../types/community"
 
-const { t } = useI18n()
+type CommunityCreationState = "idle" | "loading" | "success" | "error"
 
-useSeoMeta({
-  title: `${t("community.creation.group.title")} | VNSEEA`,
-  description: t("community.creation.group.description"),
-})
+const { t } = useI18n()
+const toast = useToast()
+
+const draft = useStorage<CommunityDraft>(
+  "community:create-group-draft",
+  createCommunityGroupDraft(),
+  undefined,
+  {
+    mergeDefaults: true,
+    initOnMounted: true,
+  },
+)
+
+const submitState = ref<CommunityCreationState>("idle")
+const draftRestored = ref(false)
 
 const highlights = computed(() => [
   t("community.creation.group.highlights[0]"),
@@ -47,11 +64,72 @@ const highlights = computed(() => [
   t("community.creation.group.highlights[2]"),
 ])
 
-const draft = ref<CommunityDraft>({
-  name: "",
-  slug: "",
-  description: "",
-  privacy: "public",
-  category: "auto",
+const isSubmitDisabled = computed(() =>
+  submitState.value === "loading"
+  || !draft.value.name.trim()
+  || !draft.value.slug.trim()
+  || draft.value.description.trim().length < 24
+  || !draft.value.privacy
+  || !draft.value.category,
+)
+
+onMounted(async () => {
+  await nextTick()
+  draftRestored.value = !isDefaultDraft(draft.value)
 })
+
+watch(
+  () => ({ ...draft.value }),
+  () => {
+    if (submitState.value !== "loading") {
+      submitState.value = "idle"
+    }
+
+    draftRestored.value = false
+  },
+)
+
+async function handleCreateGroup() {
+  submitState.value = "loading"
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 550))
+
+    submitState.value = "success"
+
+    toast.add({
+      title: t("community.creation.common.statusSuccessTitle", {
+        entity: t("community.creation.common.entityLabelGroup"),
+      }),
+      description: t("community.creation.common.statusSuccessDescription", {
+        entity: t("community.creation.common.entityLabelGroup"),
+      }),
+      color: "success",
+    })
+
+    draft.value = createCommunityGroupDraft()
+    draftRestored.value = false
+
+    await navigateTo("/groups")
+  }
+  catch {
+    submitState.value = "error"
+
+    toast.add({
+      title: t("community.creation.common.statusErrorTitle"),
+      description: t("community.creation.common.statusErrorDescription"),
+      color: "error",
+    })
+  }
+}
+
+function isDefaultDraft(value: CommunityDraft) {
+  const defaultDraft = createCommunityGroupDraft()
+
+  return value.name === defaultDraft.name
+    && value.slug === defaultDraft.slug
+    && value.description === defaultDraft.description
+    && value.privacy === defaultDraft.privacy
+    && value.category === defaultDraft.category
+}
 </script>

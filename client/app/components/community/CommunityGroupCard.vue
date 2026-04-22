@@ -4,17 +4,17 @@
       <div class="pointer-events-none absolute inset-0 opacity-30" :style="{ background: 'radial-gradient(circle_at_top_right, rgba(255,255,255,0.45), transparent 42%)' }" />
       <div class="relative flex items-start justify-between gap-3">
         <div class="min-w-0">
-          <span class="inline-flex items-center rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
             {{ privacyLabel }}
-          </span>
+          </UBadge>
           <NuxtLink
             :to="groupTo"
             class="mt-4 block text-[1.35rem] font-black tracking-[-0.04em] text-white transition hover:text-white/85"
           >
-            {{ $t(group.name) }}
+            {{ groupName }}
           </NuxtLink>
           <p class="mt-2 max-w-[28rem] text-[13px] leading-6 text-white/82">
-            {{ $t(group.summary) }}
+            {{ groupSummary }}
           </p>
         </div>
 
@@ -26,38 +26,40 @@
 
     <div class="space-y-5 px-5 py-5">
       <div class="flex flex-wrap items-center gap-2 text-[12px] font-semibold">
-        <span class="inline-flex items-center rounded-full bg-[#eef3ff] px-3 py-1.5 text-[#243b63]">
+        <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[#243b63]">
           <Icon name="i-ph-users" class="mr-1.5 h-4 w-4 text-[#0000ff]" />
           {{ memberLabel }}
-        </span>
-        <span class="inline-flex items-center rounded-full bg-[#f8fafc] px-3 py-1.5 text-slate-500">
+        </UBadge>
+        <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-slate-500">
           {{ categoryLabel }}
-        </span>
-        <span
-          v-for="tag in group.tags.slice(0, 2)"
+        </UBadge>
+        <UBadge
+          v-for="tag in localizedTags.slice(0, 2)"
           :key="tag"
-          class="inline-flex items-center rounded-full border border-[#e2e8f0] px-3 py-1.5 text-slate-500"
+          color="neutral"
+          variant="outline"
+          class="rounded-full px-3 py-1.5 text-slate-500"
         >
           #{{ tag }}
-        </span>
+        </UBadge>
       </div>
 
       <div class="grid gap-3 md:grid-cols-2">
         <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            {{ $t('community.groups.card.activity') }}
+            {{ $t("community.groups.card.activity") }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-            {{ $t(group.activityLabel) }}
+            {{ activityLabel }}
           </p>
         </div>
 
         <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            {{ $t('community.groups.card.context') }}
+            {{ $t("community.groups.card.context") }}
           </p>
           <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-            {{ $t(group.ownerLabel) }}
+            {{ ownerLabel }}
           </p>
         </div>
       </div>
@@ -69,13 +71,30 @@
           <span>{{ privacyDescription }}</span>
         </div>
 
-        <NuxtLink
-          :to="groupTo"
-          class="inline-flex h-11 items-center justify-center rounded-full px-5 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)] transition hover:-translate-y-0.5"
-          :style="{ background: primaryButtonBackground }"
-        >
-          {{ resolvedActionLabel }}
-        </NuxtLink>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <UButton
+            v-if="group.canManage"
+            :to="groupSettingsTo"
+            color="neutral"
+            variant="outline"
+            size="md"
+            class="rounded-full"
+          >
+            <Icon name="i-ph-gear-six-bold" class="mr-1.5 h-4 w-4" />
+            {{ $t("community.groups.action.manage") }}
+          </UButton>
+
+          <UButton
+            :to="groupTo"
+            color="primary"
+            variant="solid"
+            size="md"
+            class="rounded-full px-5 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)]"
+            :style="{ background: primaryButtonBackground }"
+          >
+            {{ resolvedActionLabel }}
+          </UButton>
+        </div>
       </div>
     </div>
   </article>
@@ -84,6 +103,7 @@
 <script setup lang="ts">
 import {
   getCommunityGroupPath,
+  getCommunityGroupSettingsPath,
   communityCategoryOptions,
   communityPrivacyOptions,
   getCommunityOptionDescription,
@@ -91,7 +111,7 @@ import {
 } from "../../../types/community"
 import type { CommunityGroupRecord } from "../../../types/community"
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const props = withDefaults(defineProps<{
   group: CommunityGroupRecord
@@ -100,8 +120,19 @@ const props = withDefaults(defineProps<{
   actionLabel: "",
 })
 
+const groupName = computed(() => t(props.group.name))
+const groupSummary = computed(() => t(props.group.summary))
+const activityLabel = computed(() => t(props.group.activityLabel))
+const ownerLabel = computed(() => t(props.group.ownerLabel))
+
+const localizedTags = computed(() =>
+  props.group.tags.map(tag => t(tag)),
+)
+
 const memberLabel = computed(() =>
-  t("community.groups.format.members", { count: props.group.members.toLocaleString() }),
+  t("community.groups.format.members", {
+    count: new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US").format(props.group.members),
+  }),
 )
 
 const privacyLabel = computed(() => {
@@ -129,5 +160,9 @@ const primaryButtonBackground = computed(() =>
 
 const groupTo = computed(() =>
   getCommunityGroupPath(props.group.slug),
+)
+
+const groupSettingsTo = computed(() =>
+  getCommunityGroupSettingsPath(props.group.slug),
 )
 </script>

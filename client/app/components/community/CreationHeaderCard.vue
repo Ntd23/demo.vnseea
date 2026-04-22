@@ -29,13 +29,15 @@
       </div>
 
       <div class="flex flex-wrap gap-2">
-        <div
+        <UBadge
           v-for="highlight in normalizedHighlights"
           :key="highlight"
-          class="inline-flex items-center rounded-full border border-[#dbe3f2] bg-white/85 px-3.5 py-2 text-[12px] font-semibold text-slate-600 shadow-[0_8px_18px_rgba(15,35,110,0.04)] backdrop-blur-[8px]"
+          color="neutral"
+          variant="soft"
+          class="rounded-full border border-[#dbe3f2] bg-white/85 px-3.5 py-2 text-[12px] font-semibold text-slate-600 shadow-[0_8px_18px_rgba(15,35,110,0.04)] backdrop-blur-[8px]"
         >
           {{ $t(highlight) }}
-        </div>
+        </UBadge>
       </div>
     </div>
   </section>

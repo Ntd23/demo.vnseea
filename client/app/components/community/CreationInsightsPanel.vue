@@ -57,6 +57,12 @@
             </div>
           </div>
 
+          <UProgress
+            :model-value="progressValue"
+            color="primary"
+            class="mt-4"
+          />
+
           <div class="mt-4 space-y-2.5">
             <div
               v-for="item in readinessItems"
@@ -155,6 +161,14 @@ const resolvedPreviewDescription = computed(() => {
   const capitalizedEntity = entity.charAt(0).toUpperCase() + entity.slice(1)
   return props.previewDescription.trim()
     || t("community.creation.common.previewDescDefault", { entity: capitalizedEntity })
+})
+
+const progressValue = computed(() => {
+  if (!props.completionTotal) {
+    return 0
+  }
+
+  return (props.completionCount / props.completionTotal) * 100
 })
 
 const readinessItems = computed(() => {
