@@ -1,17 +1,31 @@
-<template>
-  <div class="surface-card rounded-[20px] border border-[#0000ff]/10 p-4 shadow-[0_2px_14px_rgba(0,0,255,0.05)]">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <p class="text-title-primary">{{ t("pages.profilePage.completionTitle") }}</p>
-        <p class="text-caption-secondary mt-1">{{ t("pages.profilePage.completionDescription") }}</p>
+  <div class="surface-card p-5 space-y-5">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="space-y-1">
+        <h3 class="text-sm font-black text-secondary-900 tracking-tight">{{ t("pages.profilePage.completionTitle") }}</h3>
+        <p class="text-xs font-medium text-secondary-500 leading-relaxed">{{ t("pages.profilePage.completionDescription") }}</p>
       </div>
-      <button class="btn-secondary px-3 py-2 text-[13px]" type="button">{{ t("pages.profilePage.completionAction") }}</button>
+      <UButton
+        color="gray"
+        variant="soft"
+        size="md"
+        class="font-black px-5 rounded-full"
+      >
+        {{ t("pages.profilePage.completionAction") }}
+      </UButton>
     </div>
-    <div class="mt-4 flex flex-wrap gap-2">
-      <span v-for="item in items" :key="item" class="rounded-full bg-[#0000ff]/5 px-3 py-1 text-[12px] font-medium text-[#0000ff]">{{ item }}</span>
+    <div class="flex flex-wrap gap-2">
+      <UBadge
+        v-for="item in items"
+        :key="item"
+        variant="soft"
+        color="primary"
+        size="md"
+        class="rounded-full font-bold px-3"
+      >
+        {{ item }}
+      </UBadge>
     </div>
   </div>
-</template>
 
 <script setup lang="ts">
 const { t } = useI18n()

@@ -1,27 +1,41 @@
-<template>
-  <div class="rounded-[18px] border border-[#0000ff]/10 bg-white p-4 shadow-[0_2px_12px_rgba(0,0,255,0.04)]">
+  <div class="surface-card p-5 space-y-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-title-primary">{{ t("pages.profilePage.friendsGrid.title") }}</h3>
-      <button class="text-caption-secondary hover:text-[#0000ff] transition" type="button">{{ t("pages.profilePage.friendsGrid.seeAll") }}</button>
+      <div class="space-y-0.5">
+        <h3 class="text-sm font-black text-secondary-900 tracking-tight">{{ t("pages.profilePage.friendsGrid.title") }}</h3>
+        <p class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">{{ t("pages.profilePage.friendsGrid.friendCount", { count: friendCount }) }}</p>
+      </div>
+      <UButton
+        variant="ghost"
+        color="primary"
+        size="xs"
+        class="font-bold -mr-2"
+      >
+        {{ t("pages.profilePage.friendsGrid.seeAll") }}
+      </UButton>
     </div>
-    <p class="text-caption-secondary mt-0.5">{{ t("pages.profilePage.friendsGrid.friendCount", { count: friendCount }) }}</p>
 
-    <div class="mt-3 grid grid-cols-3 gap-2">
+    <div class="grid grid-cols-3 gap-4">
       <div
         v-for="friend in friends"
         :key="friend.name"
-        class="group cursor-pointer text-center"
+        class="group cursor-pointer text-center space-y-2"
       >
-        <div class="aspect-square overflow-hidden rounded-[14px] border-2 border-slate-100 transition group-hover:border-[#0000ff]/20">
-          <div class="flex h-full w-full items-center justify-center bg-slate-100 text-sm font-bold text-slate-500">
-            {{ friend.avatar }}
-          </div>
+        <div class="relative aspect-square overflow-hidden rounded-2xl border-4 border-secondary-50 transition-all group-hover:border-primary-100 group-hover:scale-[1.05] shadow-sm">
+          <UAvatar
+            :text="friend.avatar"
+            size="3xl"
+            class="h-full w-full"
+            :ui="{ 
+              rounded: 'rounded-none',
+              background: 'bg-secondary-50',
+              text: 'text-secondary-400 font-bold text-lg'
+            }"
+          />
         </div>
-        <p class="mt-1.5 truncate text-[11px] font-semibold text-slate-700 group-hover:text-[#0000ff]">{{ friend.name }}</p>
+        <p class="truncate text-[11px] font-black text-secondary-700 group-hover:text-primary-600 transition-colors leading-none pb-1">{{ friend.name }}</p>
       </div>
     </div>
   </div>
-</template>
 
 <script setup lang="ts">
 const { t } = useI18n()

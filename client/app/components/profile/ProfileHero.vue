@@ -1,56 +1,116 @@
-<template>
-  <div class="surface-card overflow-hidden rounded-[24px] border border-[#0000ff]/10 shadow-[0_2px_14px_rgba(0,0,255,0.05)]">
-    <div class="relative min-h-[240px] overflow-hidden bg-gradient-to-r from-[#bb1838] via-[#991130] to-[#5c0b28] sm:min-h-[300px]">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_18%,rgba(255,255,255,0.16),transparent_28%),radial-gradient(circle_at_84%_18%,rgba(255,255,255,0.1),transparent_24%)]" />
-
-      <div class="absolute left-4 top-4 flex items-center gap-3 rounded-full bg-white/12 px-3 py-2 backdrop-blur-sm sm:left-5 sm:top-5 sm:px-4">
-        <div class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white/80 bg-white/10 text-[12px] font-bold text-white">QT</div>
-        <div>
-          <p class="text-[14px] font-semibold text-white sm:text-[18px]">{{ t("pages.profilePage.heroRole") }}</p>
-          <p class="text-[11px] text-white/80 sm:text-[12px]">{{ t("pages.profilePage.heroStatus") }}</p>
+  <div class="surface-card overflow-hidden">
+    <!-- Cover Identity -->
+    <div class="relative min-h-[220px] overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 sm:min-h-[280px]">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_24%_24%,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_76%_24%,rgba(255,255,255,0.1),transparent_30%)] opacity-60" />
+      
+      <!-- Top Badges (Status/Role) -->
+      <div class="absolute left-6 top-6 flex items-center gap-4 rounded-2xl bg-white/10 px-4 py-2.5 backdrop-blur-xl border border-white/20 shadow-xl transition-all hover:bg-white/15">
+        <UAvatar
+          text="QT"
+          size="md"
+          :ui="{ 
+            rounded: 'rounded-xl',
+            background: 'bg-white/20',
+            text: 'text-white font-black'
+          }"
+          class="ring-2 ring-white/30"
+        />
+        <div class="space-y-0.5">
+          <p class="text-sm font-black tracking-tight text-white leading-none">{{ t("pages.profilePage.heroRole") }}</p>
+          <p class="text-[10px] font-bold uppercase tracking-wider text-white/70">{{ t("pages.profilePage.heroStatus") }}</p>
         </div>
       </div>
 
-      <button class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-sm" type="button">
-        <Icon name="i-ph-smiley" class="h-5 w-5" />
-      </button>
+      <!-- Emoji/Status Trigger -->
+      <UButton
+        icon="i-ph-smiley-duotone"
+        color="white"
+        variant="solid"
+        size="md"
+        class="absolute right-6 top-6 rounded-2xl bg-white/90 hover:bg-white shadow-lg text-secondary-700 active:scale-95 transition-transform"
+      />
 
-      <div class="absolute inset-x-0 bottom-0 px-3 pb-3 sm:px-5 sm:pb-5">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
-          <div class="flex items-end gap-3">
-            <div class="relative -mb-8 sm:-mb-10">
-              <div class="flex h-[96px] w-[96px] items-center justify-center rounded-full border-[4px] border-white bg-[#0000ff] text-[28px] font-bold text-white shadow-[0_6px_18px_rgba(0,0,255,0.22)] sm:h-[112px] sm:w-[112px] sm:text-[32px]">VN</div>
-              <button class="absolute bottom-1 right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-white bg-[#f0f3ff] text-slate-600 shadow-sm" type="button">
-                <Icon name="i-ph-camera-fill" class="h-3.5 w-3.5" />
-              </button>
+      <!-- Content Overlay -->
+      <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent">
+        <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div class="flex flex-col sm:flex-row sm:items-end gap-5">
+            <!-- Profile Avatar Card -->
+            <div class="relative group">
+              <div class="relative -mb-12 sm:-mb-14">
+                <UAvatar
+                  text="VN"
+                  size="3xl"
+                  class="h-[100px] w-[100px] sm:h-[128px] sm:w-[128px] ring-[6px] ring-white shadow-2xl transition-transform group-hover:scale-[1.02]"
+                  :ui="{ 
+                    rounded: 'rounded-[2.5rem]',
+                    background: 'bg-primary-600',
+                    text: 'text-white font-black text-3xl'
+                  }"
+                />
+                <UButton
+                  icon="i-ph-camera-fill"
+                  color="gray"
+                  variant="solid"
+                  size="xs"
+                  class="absolute bottom-2 right-2 rounded-xl ring-4 ring-white shadow-md"
+                />
+              </div>
             </div>
 
-            <div class="rounded-[18px] bg-white/92 px-4 py-3 shadow-lg backdrop-blur-sm sm:px-5">
-              <p class="text-[16px] font-bold text-slate-900 sm:text-[18px]">{{ t("pages.profilePage.heroHeadline") }}</p>
-              <p class="mt-1 text-[12px] text-slate-500 sm:text-[13px]">{{ t("pages.profilePage.heroDescription") }}</p>
+            <!-- Identity Info -->
+            <div class="rounded-3xl bg-white/10 p-5 px-6 backdrop-blur-2xl border border-white/20 shadow-2xl space-y-1 sm:max-w-md">
+              <h1 class="text-lg sm:text-xl font-black text-white tracking-tight">{{ t("pages.profilePage.heroHeadline") }}</h1>
+              <p class="text-xs sm:text-sm font-medium text-white/80 leading-relaxed">{{ t("pages.profilePage.heroDescription") }}</p>
             </div>
           </div>
 
-          <div class="ml-auto flex flex-wrap items-center gap-2 rounded-full bg-white/92 px-3 py-2 shadow-sm">
-            <button class="rounded-full bg-[#0000ff] px-3 py-1.5 text-[12px] font-semibold text-white" type="button">{{ t("pages.profilePage.heroActionEdit") }}</button>
-            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">{{ t("pages.profilePage.heroActionActivities") }}</button>
-            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">{{ t("pages.profilePage.heroActionFollow") }}</button>
-            <button class="rounded-full border border-[#0000ff]/15 bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-600" type="button">{{ t("pages.profilePage.heroActionMessage") }}</button>
+          <!-- Action Buttons Group -->
+          <div class="flex flex-wrap items-center gap-2.5 rounded-[2rem] bg-white/10 p-2.5 backdrop-blur-2xl border border-white/10 shadow-xl">
+            <UButton
+              color="primary"
+              size="md"
+              class="rounded-full px-6 font-black shadow-lg shadow-primary-500/30"
+            >
+              {{ t("pages.profilePage.heroActionEdit") }}
+            </UButton>
+            <div class="h-6 w-[1.5px] bg-white/10 mx-1 hidden sm:block" />
+            <div class="flex gap-2">
+              <UButton
+                v-for="action in [
+                  { icon: 'i-ph-clock-counter-clockwise-duotone', label: t('pages.profilePage.heroActionActivities') },
+                  { icon: 'i-ph-user-plus-duotone', label: t('pages.profilePage.heroActionFollow') },
+                  { icon: 'i-ph-messenger-logo-duotone', label: t('pages.profilePage.heroActionMessage') }
+                ]"
+                :key="action.label"
+                variant="soft"
+                color="white"
+                size="md"
+                class="rounded-full font-bold px-4 hover:bg-white/20"
+                :icon="action.icon"
+              >
+                <span class="hidden lg:inline">{{ action.label }}</span>
+              </UButton>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="flex items-center gap-2 overflow-x-auto border-t border-[#0000ff]/10 bg-white px-3 py-3 sm:px-4">
-      <button
+    <!-- Navigation Tabs -->
+    <div class="flex items-center gap-2 overflow-x-auto border-t border-secondary-100 bg-white/80 px-4 py-3 sm:px-6 backdrop-blur-md">
+      <UButton
         v-for="tab in tabs"
         :key="tab"
-        class="flex shrink-0 items-center gap-2 rounded-full border border-transparent px-3 py-2 text-[12px] font-semibold text-slate-600 hover:border-[#0000ff]/10 hover:bg-[#f7f9ff] hover:text-[#0000ff]"
-        type="button"
+        variant="ghost"
+        color="gray"
+        size="sm"
+        class="rounded-full px-5 py-2.5 font-bold text-secondary-600 hover:text-primary-600 hover:bg-primary-50/50 flex-shrink-0 transition-all border border-transparent hover:border-primary-100"
       >
-        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-[#0000ff]/8 text-[#0000ff]">•</span>
+        <template #leading>
+          <div class="h-1.5 w-1.5 rounded-full bg-primary-500/40" />
+        </template>
         {{ tab }}
-      </button>
+      </UButton>
     </div>
   </div>
 </template>
