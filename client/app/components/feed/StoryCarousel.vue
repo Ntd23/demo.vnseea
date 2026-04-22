@@ -2,10 +2,9 @@
   <div class="relative">
     <div
       ref="scrollRef"
-      class="flex gap-3 overflow-x-auto px-1 pt-1.5 pb-3 scrollbar-hide sm:gap-4"
+      class="flex gap-3 overflow-x-auto px-1 pb-3 pt-1.5 scrollbar-hide sm:gap-4"
       style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;"
     >
-      <!-- Create story (me) -->
       <NuxtLink
         to="/status/create"
         class="flex shrink-0 flex-col items-center gap-1.5"
@@ -22,40 +21,47 @@
         :key="story.id"
         class="flex shrink-0 flex-col items-center gap-1.5"
         type="button"
+        :aria-label="t('feed.storyCarousel.openStory', { author: story.author })"
         @click="openStory(story.id)"
       >
         <div class="relative">
           <div class="absolute -inset-[3px] rounded-full" :style="{ background: story.gradient }" />
           <div class="absolute -inset-[1px] rounded-full bg-[#f1f4fb]" />
           <div
-            class="relative flex h-[60px] w-[60px] items-center justify-center rounded-full text-[16px] font-bold text-white sm:h-[68px] sm:w-[68px]"
+            class="relative flex h-[60px] w-[60px] items-center justify-center rounded-full text-[16px] font-bold text-white shadow-[0_12px_26px_rgba(15,35,110,0.18)] sm:h-[68px] sm:w-[68px]"
             :style="{ background: story.gradient }"
           >
             {{ story.avatar }}
           </div>
         </div>
         <span class="w-[64px] truncate text-center text-[11px] font-semibold text-slate-600 sm:w-[72px]">
-          {{ story.author.split(' ').at(-1) }}
+          {{ story.author.split(" ").at(-1) }}
         </span>
       </button>
     </div>
 
-    <button
+    <UButton
       v-if="canScrollLeft"
-      class="absolute -left-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
-      type="button"
+      color="neutral"
+      variant="soft"
+      size="sm"
+      class="absolute -left-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 justify-center rounded-full shadow-md sm:inline-flex"
+      :aria-label="t('feed.storyCarousel.previousStory')"
       @click="scroll(-1)"
     >
       <Icon name="i-ph-caret-left-bold" class="h-3.5 w-3.5" />
-    </button>
-    <button
+    </UButton>
+    <UButton
       v-if="canScrollRight"
-      class="absolute -right-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border-4 border-[#0000ff]/10 bg-white text-[#0000ff] shadow-md transition hover:bg-[#0000ff]/5 sm:flex"
-      type="button"
+      color="neutral"
+      variant="soft"
+      size="sm"
+      class="absolute -right-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 justify-center rounded-full shadow-md sm:inline-flex"
+      :aria-label="t('feed.storyCarousel.nextStory')"
       @click="scroll(1)"
     >
       <Icon name="i-ph-caret-right-bold" class="h-3.5 w-3.5" />
-    </button>
+    </UButton>
 
     <Teleport to="body">
       <Transition
@@ -66,16 +72,28 @@
         leave-to-class="opacity-0 scale-95"
       >
         <div
-          v-if="activeStory !== null"
+          v-if="activeStoryId !== null"
           class="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm lg:flex lg:items-center lg:justify-center lg:px-6"
           @click.self="closeStory"
         >
           <div
-            class="relative h-dvh w-dvw overflow-hidden lg:h-[86vh] lg:w-full lg:max-w-[460px] lg:rounded-[28px] xl:max-w-[500px]"
+            ref="dialogRef"
+            class="relative h-dvh w-dvw overflow-hidden outline-none lg:h-[86vh] lg:w-full lg:max-w-[460px] lg:rounded-[28px] xl:max-w-[500px]"
             :style="{ background: activeStoryData?.gradient }"
+            role="dialog"
+            aria-modal="true"
+            tabindex="-1"
             @touchstart.passive="onStoryTouchStart"
             @touchend.passive="onStoryTouchEnd"
           >
+            <img
+              v-if="activeStoryData?.media"
+              :src="activeStoryData.media"
+              :alt="activeStoryData.title || activeStoryData.author"
+              class="absolute inset-0 h-full w-full object-cover"
+            >
+            <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/60" />
+
             <div class="absolute left-0 right-0 top-3 z-20 flex gap-1 px-3">
               <div
                 v-for="item in storyQueue"
@@ -99,13 +117,15 @@
               </div>
             </div>
 
-            <button
-              class="absolute right-3 top-5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm lg:right-4 lg:top-4"
-              type="button"
+            <UButton
+              color="neutral"
+              variant="soft"
+              size="xs"
+              class="absolute right-3 top-5 z-20 rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30 lg:right-4 lg:top-4"
               @click="closeStory"
             >
               <Icon name="i-ph-x-bold" class="h-4 w-4" />
-            </button>
+            </UButton>
 
             <button
               class="absolute inset-y-0 left-0 z-10 w-1/3"
@@ -119,46 +139,77 @@
               :aria-label="$t('feed.storyCarousel.nextStory')"
               @click="nextStory"
             />
-            <div
-              class="absolute inset-0 flex items-center justify-center bg-cover bg-center"
-              :style="activeStoryData?.media ? { backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.36)), url(${activeStoryData.media})` } : undefined"
-            >
-              <div class="max-w-[78%] rounded-2xl bg-black/20 px-6 py-4 text-center backdrop-blur-sm lg:max-w-[70%]">
+
+            <div class="absolute inset-x-0 bottom-0 z-20 p-4 sm:p-5">
+              <div class="max-w-[82%] rounded-2xl bg-black/25 px-5 py-4 backdrop-blur-sm">
                 <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/80">{{ t("feed.storyCarousel.storyLabel") }}</p>
                 <p class="mt-2 text-lg font-bold text-white">{{ activeStoryData?.title }}</p>
                 <p class="mt-2 text-sm leading-6 text-white/85">{{ activeStoryData?.caption }}</p>
               </div>
-            </div>
 
-            <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4 sm:p-5">
-              <div class="max-w-[70%] rounded-2xl bg-black/20 px-4 py-3 backdrop-blur-sm">
-                <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/70">{{ t("feed.storyCarousel.interactions") }}</p>
-                <div class="mt-3 flex items-center gap-5 text-white">
-                  <div class="flex items-center gap-2">
-                    <Icon name="i-ph-eye-fill" class="h-4 w-4" />
-                    <span class="text-sm font-semibold">{{ activeStoryData?.views ?? 0 }}</span>
+              <UAlert
+                v-if="feedbackMessage"
+                color="neutral"
+                variant="soft"
+                icon="i-ph-check-circle-fill"
+                :description="feedbackMessage"
+                class="mt-3 rounded-[18px] border-white/10 bg-black/30 text-white"
+              />
+
+              <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div class="max-w-[78%] rounded-2xl bg-black/25 px-4 py-3 backdrop-blur-sm">
+                  <p class="text-[11px] font-bold uppercase tracking-[0.28em] text-white/70">{{ t("feed.storyCarousel.interactions") }}</p>
+                  <div class="mt-3 flex flex-wrap items-center gap-5 text-white">
+                    <div class="flex items-center gap-2">
+                      <Icon name="i-ph-eye-fill" class="h-4 w-4" />
+                      <span class="text-sm font-semibold">{{ activeMetrics?.views ?? 0 }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <Icon name="i-ph-chats-circle-fill" class="h-4 w-4" />
+                      <span class="text-sm font-semibold">{{ activeMetrics?.comments ?? 0 }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <Icon name="i-ph-heart-fill" class="h-4 w-4 text-[#ff4d5a]" />
+                      <span class="text-sm font-semibold">{{ activeMetrics?.likes ?? 0 }}</span>
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2">
-                    <Icon name="i-ph-chats-circle-fill" class="h-4 w-4" />
-                    <span class="text-sm font-semibold">{{ activeStoryData?.comments ?? 0 }}</span>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <Icon name="i-ph-heart-fill" class="h-4 w-4 text-[#ff4d5a]" />
-                    <span class="text-sm font-semibold">{{ activeStoryData?.likes ?? 0 }}</span>
-                  </div>
+                  <p class="mt-3 text-[11px] text-white/65">
+                    {{ t("feed.storyCarousel.viewerHint") }}
+                  </p>
                 </div>
-              </div>
 
-              <div class="flex flex-col gap-2">
-                <button class="story-action-pill story-action-pill--dark" type="button" :aria-label="$t('feed.storyCarousel.actionLike')">
-                  <Icon name="i-ph-heart-fill" class="h-5 w-5 text-[#ff4d5a]" />
-                </button>
-                <button class="story-action-pill story-action-pill--dark" type="button" :aria-label="$t('feed.storyCarousel.actionComment')">
-                  <Icon name="i-ph-chats-circle-fill" class="h-5 w-5" />
-                </button>
-                <button class="story-action-pill story-action-pill--dark" type="button" :aria-label="$t('feed.storyCarousel.actionShare')">
-                  <Icon name="i-ph-share-network-fill" class="h-5 w-5" />
-                </button>
+                <div class="flex items-center gap-2">
+                  <UButton
+                    color="neutral"
+                    variant="soft"
+                    size="sm"
+                    class="rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
+                    :aria-label="$t('feed.storyCarousel.actionLike')"
+                    @click.stop="runStoryAction('like')"
+                  >
+                    <Icon name="i-ph-heart-fill" class="h-4 w-4 text-[#ff4d5a]" />
+                  </UButton>
+                  <UButton
+                    color="neutral"
+                    variant="soft"
+                    size="sm"
+                    class="rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
+                    :aria-label="$t('feed.storyCarousel.actionComment')"
+                    @click.stop="runStoryAction('comment')"
+                  >
+                    <Icon name="i-ph-chats-circle-fill" class="h-4 w-4" />
+                  </UButton>
+                  <UButton
+                    color="neutral"
+                    variant="soft"
+                    size="sm"
+                    class="rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
+                    :aria-label="$t('feed.storyCarousel.actionShare')"
+                    @click.stop="runStoryAction('share')"
+                  >
+                    <Icon name="i-ph-share-network-fill" class="h-4 w-4" />
+                  </UButton>
+                </div>
               </div>
             </div>
           </div>
@@ -169,51 +220,124 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
+import { useEventListener } from "@vueuse/core"
 
+type StoryMetrics = {
+  likes: number
+  comments: number
+  views: number
+}
+
+const { t } = useI18n()
+const toast = useToast()
 const { stories } = useMockSocialData()
 
-const scrollRef = ref<HTMLElement>()
+const scrollRef = ref<HTMLElement | null>(null)
+const dialogRef = ref<HTMLElement | null>(null)
 const canScrollLeft = ref(false)
-const canScrollRight = ref(true)
-const activeStory = ref<number | null>(null)
+const canScrollRight = ref(false)
+const activeStoryId = ref<number | null>(null)
+const feedbackMessage = ref("")
 const storyTouchStartX = ref<number | null>(null)
 const storyTouchStartY = ref<number | null>(null)
-
-const visibleStories = computed(() => stories.filter(s => !s.isMe))
-const storyQueue = computed(() => visibleStories.value)
-const activeStoryData = computed(() =>
-  activeStory.value !== null ? stories.find(s => s.id === activeStory.value) ?? null : null,
+const storyMetrics = ref<Record<number, StoryMetrics>>(
+  Object.fromEntries(
+    stories.map(story => [story.id, {
+      likes: story.likes,
+      comments: story.comments,
+      views: story.views,
+    }]),
+  ),
 )
 
-const openStory = (storyId: number) => {
-  activeStory.value = storyId
+const visibleStories = computed(() => stories.filter(story => !story.isMe))
+const storyQueue = computed(() => visibleStories.value)
+const activeStoryData = computed(() =>
+  activeStoryId.value !== null
+    ? visibleStories.value.find(story => story.id === activeStoryId.value) ?? null
+    : null,
+)
+const activeMetrics = computed(() =>
+  activeStoryData.value ? storyMetrics.value[activeStoryData.value.id] : null,
+)
+
+const viewedStories = new Set<number>()
+
+function updateScroll() {
+  const el = scrollRef.value
+  if (!el) return
+  canScrollLeft.value = el.scrollLeft > 10
+  canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 10
 }
 
-const closeStory = () => {
-  activeStory.value = null
+function scroll(dir: 1 | -1) {
+  scrollRef.value?.scrollBy({ left: dir * 220, behavior: "smooth" })
 }
 
-const nextStory = () => {
-  if (activeStory.value === null) return
-  const index = visibleStories.value.findIndex(s => s.id === activeStory.value)
-  activeStory.value = visibleStories.value[(index + 1) % visibleStories.value.length]?.id ?? activeStory.value
+function openStory(storyId: number) {
+  activeStoryId.value = storyId
 }
 
-const prevStory = () => {
-  if (activeStory.value === null) return
-  const index = visibleStories.value.findIndex(s => s.id === activeStory.value)
-  activeStory.value = visibleStories.value[(index - 1 + visibleStories.value.length) % visibleStories.value.length]?.id ?? activeStory.value
+function closeStory() {
+  activeStoryId.value = null
+  feedbackMessage.value = ""
 }
 
+function nextStory() {
+  if (activeStoryId.value === null || !visibleStories.value.length) return
+  const index = visibleStories.value.findIndex(story => story.id === activeStoryId.value)
+  activeStoryId.value = visibleStories.value[(index + 1) % visibleStories.value.length]?.id ?? activeStoryId.value
+}
 
-const onStoryTouchStart = (event: TouchEvent) => {
+function prevStory() {
+  if (activeStoryId.value === null || !visibleStories.value.length) return
+  const index = visibleStories.value.findIndex(story => story.id === activeStoryId.value)
+  activeStoryId.value = visibleStories.value[(index - 1 + visibleStories.value.length) % visibleStories.value.length]?.id ?? activeStoryId.value
+}
+
+function setFeedback(message: string) {
+  feedbackMessage.value = message
+}
+
+function runStoryAction(action: "like" | "comment" | "share") {
+  const story = activeStoryData.value
+  if (!story) return
+
+  if (action === "like") {
+    storyMetrics.value[story.id] = {
+      ...storyMetrics.value[story.id],
+      likes: storyMetrics.value[story.id].likes + 1,
+    }
+    setFeedback(t("feed.storyCarousel.actionLikeDone"))
+  }
+
+  if (action === "comment") {
+    storyMetrics.value[story.id] = {
+      ...storyMetrics.value[story.id],
+      comments: storyMetrics.value[story.id].comments + 1,
+    }
+    setFeedback(t("feed.storyCarousel.actionCommentDone"))
+  }
+
+  if (action === "share") {
+    setFeedback(t("feed.storyCarousel.actionShareDone"))
+  }
+
+  toast.add({
+    color: "primary",
+    icon: "i-ph-check-circle-fill",
+    title: story.author,
+    description: feedbackMessage.value,
+  })
+}
+
+function onStoryTouchStart(event: TouchEvent) {
   const touch = event.changedTouches[0]
   storyTouchStartX.value = touch?.clientX ?? null
   storyTouchStartY.value = touch?.clientY ?? null
 }
 
-const onStoryTouchEnd = (event: TouchEvent) => {
+function onStoryTouchEnd(event: TouchEvent) {
   const startX = storyTouchStartX.value
   const startY = storyTouchStartY.value
   const touch = event.changedTouches[0]
@@ -244,22 +368,43 @@ const onStoryTouchEnd = (event: TouchEvent) => {
   else if (x > third * 2) nextStory()
 }
 
-const scroll = (dir: 1 | -1) => {
-  scrollRef.value?.scrollBy({ left: dir * 200, behavior: 'smooth' })
+useEventListener(scrollRef, "scroll", updateScroll, { passive: true })
+
+if (import.meta.client) {
+  useEventListener(window, "keydown", (event) => {
+    if (activeStoryId.value === null) return
+
+    if (event.key === "Escape") closeStory()
+    if (event.key === "ArrowLeft") prevStory()
+    if (event.key === "ArrowRight") nextStory()
+  })
 }
 
-const updateScroll = () => {
-  const el = scrollRef.value
-  if (!el) return
-  canScrollLeft.value = el.scrollLeft > 10
-  canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 10
-}
+watch(
+  visibleStories,
+  async () => {
+    await nextTick()
+    updateScroll()
+  },
+  { deep: true, immediate: true },
+)
 
-onMounted(() => {
-  scrollRef.value?.addEventListener('scroll', updateScroll, { passive: true })
-  updateScroll()
+watch(activeStoryId, async (storyId) => {
+  feedbackMessage.value = ""
+
+  if (storyId === null) return
+
+  if (!viewedStories.has(storyId)) {
+    viewedStories.add(storyId)
+    storyMetrics.value[storyId] = {
+      ...storyMetrics.value[storyId],
+      views: storyMetrics.value[storyId].views + 1,
+    }
+  }
+
+  await nextTick()
+  dialogRef.value?.focus()
 })
-onUnmounted(() => scrollRef.value?.removeEventListener('scroll', updateScroll))
 </script>
 
 <style scoped>

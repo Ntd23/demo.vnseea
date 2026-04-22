@@ -918,6 +918,14 @@
       "connectErrorMessage": "This profile is not ready to receive a connection invite yet.",
       "viewProfile": "View profile"
     },
+    "homeFeedPage": {
+      "seoTitle": "Feed | VNSEEA",
+      "seoDescription": "Follow stories, publish quick updates, and catch the latest content from the VNSEEA community network.",
+      "newPostsButton": "Show {count} new posts",
+      "loadingMore": "Loading more",
+      "loadMore": "Load more posts",
+      "allCaughtUp": "You have reached the end of the current mock feed."
+    },
     "groupDetailPage": {
       "seoFallbackTitle": "Group Detail",
       "seoFallbackDescription": "Follow posts, members, and the most important highlights of a VNSEEA community group.",
@@ -1176,7 +1184,11 @@
   "feed": {
     "commentComposer": {
       "placeholder": "Write a constructive comment...",
+      "helper": "{count}/280 characters",
+      "emptyError": "Enter a comment before posting.",
+      "successMessage": "The mock comment has been posted.",
       "submit": "Post",
+      "submitLoading": "Posting...",
       "tooltipEmoji": "Emoji",
       "tooltipImage": "Image",
       "tooltipGif": "GIF",
@@ -1188,6 +1200,16 @@
       "composerPlaceholder": "What is happening? Hashtag, mention, link...",
       "expandedOpen": "Post composer is open",
       "expandedClosed": "Tap to write a post, add images, video, polls, and more",
+      "expandComposer": "Expand post composer",
+      "collapseComposer": "Collapse post composer",
+      "advancedTrigger": "Open advanced post options",
+      "advancedTitle": "Post options",
+      "advancedDescription": "Quickly adjust visibility, format, and attachment options before posting.",
+      "advancedSummaryTitle": "Current setup summary",
+      "advancedSummaryDescription": "This post is set to {audience}, format {action}, with {count} extra options enabled.",
+      "advancedActionTitle": "Content format",
+      "advancedActionEmpty": "no format selected",
+      "advancedChipTitle": "Extra options",
       "actionImage": "Image",
       "actionVideo": "Video",
       "actionPoll": "Poll",
@@ -1201,19 +1223,50 @@
       "chipAddLocation": "Add location",
       "chipTagFriends": "Tag friends",
       "chipColors": "Colors",
+      "audienceTitle": "Visibility",
+      "audiencePublic": "Public",
+      "audienceConnections": "My connections",
+      "audienceGroup": "Group only",
+      "autosaveLabel": "Local draft",
+      "helperLabel": "Quick posting help",
+      "helperProgress": "Readiness",
+      "helper": "{count}/280 characters",
+      "helperDefault": "The post will be visible to {audience}. Add a format or extra tags if you want stronger context before publishing.",
+      "helperWithAction": "The post is being prepared as {action} for {audience}. Review the opener before publishing.",
+      "chipsSelected": "{count} options selected",
+      "clear": "Clear draft",
+      "resetOptions": "Reset options",
+      "done": "Done",
       "live": "Live",
-      "share": "Share"
+      "liveStarted": "The live setup flow opened in the mock experience.",
+      "share": "Share",
+      "submitLoading": "Posting...",
+      "statusReadyTitle": "Draft is ready",
+      "statusReadyDescription": "The composer state will stay stable on this device while you keep working.",
+      "statusDraftRestoredTitle": "Draft restored",
+      "statusDraftRestoredDescription": "The text you entered earlier has been restored in this composer.",
+      "statusLoadingTitle": "Preparing post",
+      "statusLoadingDescription": "VNSEEA is doing a quick mock check on content, visibility, and format.",
+      "statusSuccessTitle": "Mock post is ready",
+      "statusSuccessDescription": "You can continue drafting the next update in the same composer.",
+      "statusErrorTitle": "Add some text before posting",
+      "statusErrorDescription": "Enter at least a short description so the post is not empty."
     },
     "storyCarousel": {
       "createStory": "Create story",
       "fallbackMeta": "Just now",
       "previousStory": "Previous story",
       "nextStory": "Next story",
+      "openStory": "Open {author}'s story",
       "storyLabel": "Story",
       "interactions": "Interactions",
       "actionLike": "Like story",
       "actionComment": "Comment on story",
       "actionShare": "Share story",
+      "actionLikeDone": "Story liked in the mock feed.",
+      "actionCommentDone": "The story reply flow will open in a later integration step.",
+      "actionShareDone": "The story share flow was triggered in the mock experience.",
+      "viewerHint": "Swipe horizontally or use the arrow keys to move through stories. Press Escape to close on desktop.",
       "stories": {
         "mine": {
           "title": "Create a new story",
@@ -1254,6 +1307,8 @@
     },
     "postHeader": {
       "follow": "Follow",
+      "following": "Working...",
+      "followed": "Following",
       "menuDeleteLabel": "Delete post",
       "menuDeleteDescription": "Permanently delete this post.",
       "menuSaveLabel": "Save post",
@@ -1269,6 +1324,7 @@
       "title": "Comments",
       "sortTop": "Top",
       "sortNewest": "Newest",
+      "emptyDescription": "No comments yet. Start the first conversation.",
       "loadMore": "Load more comments"
     },
     "commentItem": {
@@ -1284,7 +1340,10 @@
       "replyText2": "I agree."
     },
     "postMediaGrid": {
-      "label": "Mock media {index}"
+      "label": "Mock media {index}",
+      "openLabel": "Open media {index}",
+      "imageType": "Image",
+      "videoType": "Video"
     },
     "postCard": {
       "commentsCount": "{count} comments",
@@ -1299,7 +1358,11 @@
       "copyLink": "Copy link",
       "translatePost": "Translate post",
       "viewMoreComments": "View {count} more comments",
-      "lightboxTitle": "Post media"
+      "lightboxTitle": "Post media",
+      "commentAuthor": "You",
+      "commentRole": "Community member",
+      "commentAddedMessage": "The new comment was added to the mock UI.",
+      "lightboxDownloadMessage": "Prepared the mock media download action."
     },
     "shareModal": {
       "title": "Share post",
@@ -1311,7 +1374,9 @@
       "destinationTitle": "Share destination",
       "previewLabel": "Post preview",
       "shared": "Shared!",
+      "submitLoading": "Sharing...",
       "submit": "Share",
+      "copyUnavailable": "This device does not support link copying right now.",
       "platformCopy": "Copy",
       "destinationTimeline": "Timeline",
       "destinationPage": "Page",
@@ -1329,7 +1394,7 @@
     },
     "lightboxViewer": {
       "title": "View media",
-      "mockLabel": "Mock lightbox viewer"
+      "description": "Use the navigation arrows to browse the {count} media items in this post."
     }
   },
   "navigation": {

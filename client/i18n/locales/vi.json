@@ -918,6 +918,14 @@
       "connectErrorMessage": "Hồ sơ này chưa sẵn sàng để gửi lời mời kết nối.",
       "viewProfile": "Xem hồ sơ"
     },
+    "homeFeedPage": {
+      "seoTitle": "Bảng tin | VNSEEA",
+      "seoDescription": "Theo dõi story, đăng bài nhanh và cập nhật nội dung mới nhất từ mạng lưới cộng đồng VNSEEA.",
+      "newPostsButton": "Hiển thị {count} bài viết mới",
+      "loadingMore": "Đang tải thêm",
+      "loadMore": "Tải thêm bài viết",
+      "allCaughtUp": "Bạn đã xem hết bảng tin mô phỏng hiện tại."
+    },
     "groupDetailPage": {
       "seoFallbackTitle": "Chi tiết nhóm",
       "seoFallbackDescription": "Theo dõi bài viết, thành viên và thông tin nổi bật của nhóm cộng đồng trên VNSEEA.",
@@ -1176,7 +1184,11 @@
   "feed": {
     "commentComposer": {
       "placeholder": "Viết bình luận mang tính xây dựng...",
+      "helper": "{count}/280 ký tự",
+      "emptyError": "Hãy nhập nội dung bình luận trước khi gửi.",
+      "successMessage": "Bình luận mô phỏng đã được gửi.",
       "submit": "Gửi",
+      "submitLoading": "Đang gửi...",
       "tooltipEmoji": "Emoji",
       "tooltipImage": "Ảnh",
       "tooltipGif": "GIF",
@@ -1188,6 +1200,16 @@
       "composerPlaceholder": "Chuyện gì đang xảy ra vậy? Hashtag, mention, link...",
       "expandedOpen": "Đang mở trình tạo bài viết",
       "expandedClosed": "Chạm để viết bài, thêm ảnh, video, poll và nhiều hơn nữa",
+      "expandComposer": "Mở trình tạo bài viết",
+      "collapseComposer": "Thu gọn trình tạo bài viết",
+      "advancedTrigger": "Mở tuỳ chọn nâng cao cho bài viết",
+      "advancedTitle": "Tuỳ chọn bài viết",
+      "advancedDescription": "Chỉnh nhanh quyền hiển thị, định dạng và các lựa chọn đính kèm trước khi đăng.",
+      "advancedSummaryTitle": "Tóm tắt cấu hình hiện tại",
+      "advancedSummaryDescription": "Bài viết đang để {audience}, định dạng {action} và có {count} tuỳ chọn bổ sung.",
+      "advancedActionTitle": "Định dạng nội dung",
+      "advancedActionEmpty": "chưa chọn định dạng",
+      "advancedChipTitle": "Tuỳ chọn bổ sung",
       "actionImage": "Ảnh",
       "actionVideo": "Video",
       "actionPoll": "Poll",
@@ -1201,19 +1223,50 @@
       "chipAddLocation": "Thêm vị trí",
       "chipTagFriends": "Gắn thẻ bạn bè",
       "chipColors": "Màu sắc",
+      "audienceTitle": "Quyền hiển thị",
+      "audiencePublic": "Công khai",
+      "audienceConnections": "Kết nối của tôi",
+      "audienceGroup": "Chỉ trong group",
+      "autosaveLabel": "Bản nháp cục bộ",
+      "helperLabel": "Hỗ trợ đăng nhanh",
+      "helperProgress": "Mức sẵn sàng",
+      "helper": "{count}/280 ký tự",
+      "helperDefault": "Bài viết sẽ hiển thị cho {audience}. Bạn có thể thêm định dạng hoặc tag để bài đăng rõ ngữ cảnh hơn.",
+      "helperWithAction": "Bài viết đang chuẩn bị theo định dạng {action} cho nhóm người xem {audience}. Kiểm tra lại phần mở đầu trước khi đăng.",
+      "chipsSelected": "{count} tuỳ chọn đã chọn",
+      "clear": "Xoá bản nháp",
+      "resetOptions": "Đặt lại tuỳ chọn",
+      "done": "Xong",
       "live": "Trực tiếp",
-      "share": "Chia sẻ"
+      "liveStarted": "Flow chuẩn bị live đã được mở trong giao diện mô phỏng.",
+      "share": "Chia sẻ",
+      "submitLoading": "Đang đăng...",
+      "statusReadyTitle": "Bản nháp đang sẵn sàng",
+      "statusReadyDescription": "Nội dung sẽ được giữ ổn định trên thiết bị này trong lúc bạn tiếp tục soạn bài.",
+      "statusDraftRestoredTitle": "Đã khôi phục bản nháp bài viết",
+      "statusDraftRestoredDescription": "Nội dung bạn nhập trước đó đã được điền lại trong khung soạn bài này.",
+      "statusLoadingTitle": "Đang chuẩn bị đăng bài",
+      "statusLoadingDescription": "VNSEEA đang kiểm tra nhanh nội dung, tuỳ chọn hiển thị và định dạng mô phỏng.",
+      "statusSuccessTitle": "Bài viết mô phỏng đã sẵn sàng",
+      "statusSuccessDescription": "Bạn có thể tiếp tục soạn bài khác ngay trên cùng khung composer này.",
+      "statusErrorTitle": "Cần nhập nội dung trước khi đăng",
+      "statusErrorDescription": "Hãy thêm ít nhất một đoạn mô tả ngắn để bài viết không bị trống."
     },
     "storyCarousel": {
       "createStory": "Tạo tin",
       "fallbackMeta": "Vừa xong",
       "previousStory": "Story trước",
       "nextStory": "Story sau",
+      "openStory": "Mở story của {author}",
       "storyLabel": "Story",
       "interactions": "Tương tác",
       "actionLike": "Thích story",
       "actionComment": "Bình luận story",
       "actionShare": "Chia sẻ story",
+      "actionLikeDone": "Đã thả tim story trong giao diện mô phỏng.",
+      "actionCommentDone": "Khung phản hồi story sẽ mở ở bước tích hợp tiếp theo.",
+      "actionShareDone": "Flow chia sẻ story đã được kích hoạt trong giao diện mô phỏng.",
+      "viewerHint": "Vuốt ngang hoặc dùng phím mũi tên để chuyển story. Nhấn Esc để đóng nhanh trên desktop.",
       "stories": {
         "mine": {
           "title": "Tạo story mới",
@@ -1254,6 +1307,8 @@
     },
     "postHeader": {
       "follow": "Theo dõi",
+      "following": "Đang xử lý...",
+      "followed": "Đã theo dõi",
       "menuDeleteLabel": "Xóa bài đăng",
       "menuDeleteDescription": "Xóa hoàn toàn bài đăng này.",
       "menuSaveLabel": "Lưu bài đăng",
@@ -1269,6 +1324,7 @@
       "title": "Bình luận",
       "sortTop": "Top",
       "sortNewest": "Mới nhất",
+      "emptyDescription": "Chưa có bình luận nào. Hãy bắt đầu cuộc trao đổi đầu tiên.",
       "loadMore": "Tải thêm bình luận"
     },
     "commentItem": {
@@ -1284,7 +1340,10 @@
       "replyText2": "Mình đồng ý."
     },
     "postMediaGrid": {
-      "label": "Mock media {index}"
+      "label": "Media mô phỏng {index}",
+      "openLabel": "Mở media số {index}",
+      "imageType": "Ảnh",
+      "videoType": "Video"
     },
     "postCard": {
       "commentsCount": "{count} bình luận",
@@ -1299,7 +1358,11 @@
       "copyLink": "Sao chép link",
       "translatePost": "Dịch bài",
       "viewMoreComments": "Xem thêm {count} bình luận",
-      "lightboxTitle": "Ảnh bài viết"
+      "lightboxTitle": "Ảnh bài viết",
+      "commentAuthor": "Bạn",
+      "commentRole": "Thành viên cộng đồng",
+      "commentAddedMessage": "Bình luận mới đã được thêm vào giao diện mô phỏng.",
+      "lightboxDownloadMessage": "Đã chuẩn bị thao tác tải media trong giao diện mô phỏng."
     },
     "shareModal": {
       "title": "Chia sẻ bài đăng",
@@ -1311,7 +1374,9 @@
       "destinationTitle": "Đích chia sẻ",
       "previewLabel": "Xem trước bài đăng",
       "shared": "Đã chia sẻ!",
+      "submitLoading": "Đang chia sẻ...",
       "submit": "Chia sẻ",
+      "copyUnavailable": "Thiết bị hiện tại chưa hỗ trợ sao chép liên kết.",
       "platformCopy": "Sao chép",
       "destinationTimeline": "Dòng thời gian",
       "destinationPage": "Trang",
@@ -1329,7 +1394,7 @@
     },
     "lightboxViewer": {
       "title": "Xem media",
-      "mockLabel": "Trình xem lightbox mô phỏng"
+      "description": "Dùng mũi tên điều hướng để xem {count} media trong bài viết này."
     }
   },
   "navigation": {

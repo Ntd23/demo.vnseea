@@ -72,13 +72,13 @@ Thang đánh giá:
 
 | Module | SEO impact | UX impact | SSR risk | Ghi chú |
 | --- | --- | --- | --- | --- |
-| `auth` | Medium | High | Medium | Form đăng nhập/đăng ký quan trọng cho conversion, cần form UX tốt và SSR-safe |
-| `blogs` | High | High | Medium | Blog là content public, ảnh hưởng SEO rõ nhất |
-| `checkout` | Low | High | High | SEO không quan trọng, nhưng form/state SSR rất dễ lỗi |
-| `community` | High | High | Medium | Group/page create/settings và listing đều quan trọng |
-| `directory` | High | Medium | Medium | Filter/listing nên sync URL tốt để hỗ trợ SEO |
-| `events` | High | High | Medium | Page public + create flow + filters |
-| `explore` | Medium | Low | Low | Module nhỏ |
+|x `auth` | Medium | High | Medium | Form đăng nhập/đăng ký quan trọng cho conversion, cần form UX tốt và SSR-safe |
+|x `blogs` | High | High | Medium | Blog là content public, ảnh hưởng SEO rõ nhất |
+|x `checkout` | Low | High | High | SEO không quan trọng, nhưng form/state SSR rất dễ lỗi |
+|x `community` | High | High | Medium | Group/page create/settings và listing đều quan trọng |
+|x `directory` | High | Medium | Medium | Filter/listing nên sync URL tốt để hỗ trợ SEO |
+|x `events` | High | High | Medium | Page public + create flow + filters |
+|x `explore` | Medium | Low | Low | Module nhỏ |
 | `feed` | Medium | High | Medium | Interaction-heavy, ảnh hưởng UX lớn |
 | `forms` | Low | High | Low | Là tầng primitive, ảnh hưởng dây chuyền |
 | `forum` | High | High | Medium | Forum list/detail là public content |
@@ -399,27 +399,48 @@ Nhận xét migrate:
 ### `feed` - 11 files
 
 Files:
-- `CommentComposer.vue`
-- `CommentItem.vue`
-- `CommentList.vue`
-- `FeedPublisherBox.vue`
-- `LightboxViewer.vue`
-- `PostCard.vue`
-- `PostHeader.vue`
-- `PostMediaGrid.vue`
-- `PublisherBox.vue`
-- `ShareModal.vue`
-- `StoryCarousel.vue`
+- `[x]` `CommentComposer.vue`
+- `[x]` `CommentItem.vue`
+- `[x]` `CommentList.vue`
+- `[x]` `FeedPublisherBox.vue`
+- `[x]` `LightboxViewer.vue`
+- `[x]` `PostCard.vue`
+- `[x]` `PostHeader.vue`
+- `[x]` `PostMediaGrid.vue`
+- `[x]` `PublisherBox.vue` -> đổi tên thành `PublisherComposerPanel.vue` để tránh collision auto-import với `FeedPublisherBox.vue`
+- `[x]` `ShareModal.vue`
+- `[x]` `StoryCarousel.vue`
 
 Vai trò:
 - feed, post card, comment, publisher, share modal, story
 
 Nhận xét migrate:
-- `CommentComposer.vue` là một trong số ít file đã dùng `i18n`
-- còn nhiều button/panel native
-- `ShareModal.vue` nên chuẩn hóa với `UModal`
-- `PublisherBox.vue`/`FeedPublisherBox.vue` đang có warning trùng tên component
-- feed là khu tốt để tận dụng `UAvatar`, `UDropdownMenu`, `UTooltip`, `UTextarea`
+- nên chia migration thành 2 đợt để giữ patch vừa phải:
+  - đợt 1: comment + post interaction + share
+    - `CommentComposer.vue`
+    - `CommentItem.vue`
+    - `CommentList.vue`
+    - `PostCard.vue`
+    - `PostHeader.vue`
+    - `ShareModal.vue`
+  - đợt 2: publisher + media + story
+    - `FeedPublisherBox.vue`
+    - `LightboxViewer.vue`
+    - `PostMediaGrid.vue`
+    - `PublisherBox.vue`
+    - `StoryCarousel.vue`
+- đợt 1 đã xử lý:
+  - migrate `CommentComposer.vue`, `CommentItem.vue`, `CommentList.vue`, `PostCard.vue`, `PostHeader.vue`, `ShareModal.vue`
+  - chuẩn hóa action comment/share/menu bằng `UButton`, `UTextarea`, `UAlert`, `useToast`, disabled/loading CTA rõ ràng
+  - bỏ bớt state thủ công không ổn định bằng local state có reset rõ cho comment, like, share, quick action và share destination
+  - thêm locale cho flow comment/share để tránh render raw key khi hiển thị feedback
+- đợt 2 đã xử lý:
+  - migrate `FeedPublisherBox.vue`, `LightboxViewer.vue`, `PostMediaGrid.vue`, `StoryCarousel.vue`
+  - đổi `PublisherBox.vue` thành `PublisherComposerPanel.vue` để hết warning trùng tên `FeedPublisherBox`
+  - `FeedPublisherBox.vue` có draft local SSR-safe, `idle/loading/success/error`, `UAlert`, `UProgress`, advanced panel và feedback rõ cho live/share/reset
+  - `PostMediaGrid.vue` render media mock ổn định hơn, có label mở media rõ ràng và được nối với `FeedLightboxViewer`
+  - `StoryCarousel.vue` có keyboard/swipe navigation, state feedback cho like/comment/share và metrics local không lệch shape khi SSR
+  - dời `SEO` home feed về page-level cho `/` và `/home`
 
 ### `forms` - 12 files
 

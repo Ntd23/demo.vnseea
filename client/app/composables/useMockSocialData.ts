@@ -21,6 +21,9 @@ type Story = {
   caption?: string
   media?: string
   meta?: string
+  likes: number
+  comments: number
+  views: number
 }
 
 type Contact = {
@@ -110,6 +113,9 @@ export const useMockSocialData = () => {
       caption: t("feed.storyCarousel.stories.mine.caption"),
       meta: t("feed.storyCarousel.stories.mine.meta"),
       media: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=80",
+      likes: 14,
+      comments: 3,
+      views: 148,
     },
     {
       id: 1,
@@ -120,6 +126,9 @@ export const useMockSocialData = () => {
       caption: t("feed.storyCarousel.stories.story1.caption"),
       meta: t("feed.storyCarousel.stories.story1.meta"),
       media: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
+      likes: 28,
+      comments: 5,
+      views: 231,
     },
     {
       id: 2,
@@ -130,6 +139,9 @@ export const useMockSocialData = () => {
       caption: t("feed.storyCarousel.stories.story2.caption"),
       meta: t("feed.storyCarousel.stories.story2.meta"),
       media: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?auto=format&fit=crop&w=1200&q=80",
+      likes: 16,
+      comments: 4,
+      views: 189,
     },
     {
       id: 3,
@@ -140,6 +152,9 @@ export const useMockSocialData = () => {
       caption: t("feed.storyCarousel.stories.story3.caption"),
       meta: t("feed.storyCarousel.stories.story3.meta"),
       media: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80",
+      likes: 36,
+      comments: 8,
+      views: 315,
     },
     {
       id: 4,
@@ -150,6 +165,9 @@ export const useMockSocialData = () => {
       caption: t("feed.storyCarousel.stories.story4.caption"),
       meta: t("feed.storyCarousel.stories.story4.meta"),
       media: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
+      likes: 22,
+      comments: 6,
+      views: 201,
     },
     {
       id: 5,
@@ -160,6 +178,9 @@ export const useMockSocialData = () => {
       caption: t("feed.storyCarousel.stories.story5.caption"),
       meta: t("feed.storyCarousel.stories.story5.meta"),
       media: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
+      likes: 19,
+      comments: 5,
+      views: 177,
     },
     {
       id: 6,
@@ -170,6 +191,9 @@ export const useMockSocialData = () => {
       caption: t("feed.storyCarousel.stories.story6.caption"),
       meta: t("feed.storyCarousel.stories.story6.meta"),
       media: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=1200&q=80",
+      likes: 31,
+      comments: 7,
+      views: 264,
     },
   ]
 
