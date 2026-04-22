@@ -1,28 +1,25 @@
-<template>
-  <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-5' }">
-    <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+  <UCard class="surface-card ring-1 ring-secondary-100 shadow-xl" :ui="{ body: { padding: 'p-6' } }">
+    <p class="text-[10px] font-black uppercase tracking-[0.25em] text-primary-500 mb-6 pl-1">
       {{ title }}
     </p>
-    <div class="mt-4 space-y-3">
-      <UCard
+    <div class="space-y-4">
+      <div
         v-for="tip in items"
         :key="tip.title"
-        class="rounded-[18px] border border-[#dbe3f2] bg-[#f8fbff]"
-        :ui="{ body: 'p-4' }"
+        class="rounded-2xl border border-secondary-100 bg-secondary-50/30 p-5 group transition-all hover:bg-white hover:shadow-lg hover:border-primary-100"
       >
-        <div class="flex items-center gap-2">
-          <UBadge color="primary" variant="subtle" class="rounded-full p-1.5">
-            <Icon :name="tip.icon" class="h-4 w-4 text-[#0000ff]" />
+        <div class="flex items-center gap-3">
+          <UBadge color="primary" variant="soft" class="rounded-xl p-2 group-hover:scale-110 transition-transform">
+            <Icon :name="tip.icon" class="h-5 w-5" />
           </UBadge>
-          <p class="text-[13px] font-semibold text-[#243b63]">{{ tip.title }}</p>
+          <p class="text-sm font-black text-secondary-950 tracking-tight">{{ tip.title }}</p>
         </div>
-        <p class="mt-2 text-[12px] leading-6 text-slate-500">
+        <p class="mt-3 text-xs font-medium leading-relaxed text-secondary-500 pl-1">
           {{ tip.description }}
         </p>
-      </UCard>
+      </div>
     </div>
   </UCard>
-</template>
 
 <script setup lang="ts">
 import type { ProductTipItem } from "../../../types/product-editor"

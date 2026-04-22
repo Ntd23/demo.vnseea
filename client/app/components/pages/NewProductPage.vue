@@ -1,5 +1,4 @@
-<template>
-  <div class="space-y-5 pb-10">
+  <div class="space-y-8 pb-20 pt-4 px-4 sm:px-6 max-w-[1440px] mx-auto">
     <ProductHeroBanner
       variant="create"
       :badge="$t('pages.newProductPage.badge')"
@@ -10,31 +9,41 @@
       @secondary-action="quickFillDemo"
     />
 
-    <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.06fr)_360px]">
-      <section class="space-y-5">
-        <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-4 sm:p-5' }">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+    <div class="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+      <section class="space-y-8">
+        <!-- Completion Summary Card -->
+        <div class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 shadow-xl">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="space-y-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.25em] text-primary-500 pl-1">
                 {{ $t("pages.productEditor.editSectionEyebrow") }}
               </p>
-              <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
+              <h2 class="text-2xl font-black tracking-tight text-secondary-900">
                 {{ $t("pages.newProductPage.sectionTitle") }}
               </h2>
-              <p class="mt-1 text-[14px] leading-6 text-slate-500">
+              <p class="text-sm font-medium leading-relaxed text-secondary-500 max-w-[480px]">
                 {{ $t("pages.newProductPage.sectionDescription") }}
               </p>
             </div>
 
-            <UBadge color="primary" variant="subtle" class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-semibold">
-              <Icon name="i-ph-seal-check-fill" class="h-4 w-4 text-[#0000ff]" />
+            <UBadge color="primary" variant="soft" size="lg" class="rounded-full px-5 font-black uppercase tracking-tighter ring-1 ring-primary-100 h-10">
+              <template #leading>
+                <Icon name="i-ph-seal-check-duotone" class="h-5 w-5 mr-1" />
+              </template>
               {{ completionText }}
             </UBadge>
           </div>
-          <UProgress :model-value="completionPercent" color="primary" class="mt-4" />
-        </UCard>
+          
+          <div class="space-y-2">
+            <div class="flex justify-between text-[11px] font-black text-secondary-400 uppercase tracking-widest px-1">
+              <span>Độ hoàn thiện</span>
+              <span>{{ Math.round(completionPercent) }}%</span>
+            </div>
+            <UProgress :model-value="completionPercent" color="primary" size="md" class="h-2" />
+          </div>
+        </div>
 
-        <UForm :state="draft.fields" class="space-y-5">
+        <UForm :state="draft.fields" class="space-y-8">
           <ProductEditorFields
             v-model:title="draft.fields.title"
             v-model:price="draft.fields.price"

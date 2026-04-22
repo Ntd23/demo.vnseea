@@ -1,271 +1,292 @@
 <template>
   <div class="space-y-5 pb-10">
-    <section class="relative overflow-hidden rounded-[30px] bg-[linear-gradient(135deg,#c9343a_0%,#d95d93_42%,#b44848_100%)] px-5 pb-16 pt-6 text-white shadow-[0_16px_40px_rgba(180,72,72,0.22)] sm:px-7 sm:pt-8 lg:px-8">
-      <div class="pointer-events-none absolute inset-x-[-8%] top-[22%] h-[220px] rounded-[50%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.16),transparent_65%)]" />
-      <div class="pointer-events-none absolute right-[-6%] top-[-12%] h-[240px] w-[240px] rounded-full bg-white/10 blur-2xl" />
-      <div class="pointer-events-none absolute bottom-[-24%] left-[-6%] h-[220px] w-[220px] rounded-full bg-[#f59e0b]/20 blur-3xl" />
+    <!-- Hero Marketplace -->
+    <section class="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-primary-950 via-primary-900 to-primary-700 px-6 pb-20 pt-8 text-white shadow-2xl sm:px-10 sm:pt-10 lg:px-12">
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.1),transparent_40%)]" />
+      <div class="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-white/5 blur-3xl" />
 
-      <div class="relative z-10 flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
-        <div class="max-w-[720px]">
-          <p class="text-[12px] font-extrabold uppercase tracking-[0.32em] text-white/70">
-            {{ $t("pages.productsPage.eyebrow") }}
-          </p>
-          <h1 class="mt-3 text-display text-[2.2rem] leading-[0.92] text-white sm:text-[2.8rem]">
-            {{ $t("pages.productsPage.title") }}
-          </h1>
-          <p class="mt-3 max-w-[560px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-            {{ $t("pages.productsPage.description") }}
-          </p>
+      <div class="relative z-10 flex flex-col gap-10 xl:flex-row xl:items-end xl:justify-between">
+        <div class="max-w-[800px] space-y-6">
+          <div class="space-y-4">
+            <UBadge color="white" variant="soft" class="rounded-full bg-white/10 px-4 py-1.5 font-black uppercase tracking-widest text-primary-200 border border-white/10 backdrop-blur-md">
+              {{ $t("pages.productsPage.eyebrow") }}
+            </UBadge>
+            <h1 class="text-4xl sm:text-6xl font-black leading-[0.95] tracking-tight text-white">
+              {{ $t("pages.productsPage.title") }}
+            </h1>
+            <p class="max-w-[600px] text-base font-medium leading-relaxed text-white/80 sm:text-lg">
+              {{ $t("pages.productsPage.description") }}
+            </p>
+          </div>
 
-          <div class="mt-6 flex flex-wrap items-center gap-3">
-            <NuxtLink
+          <div class="flex flex-wrap items-center gap-4">
+            <UButton
               to="/new-product"
-              class="inline-flex h-12 items-center justify-center rounded-full bg-[#243b63] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_24px_rgba(36,59,99,0.24)] transition hover:-translate-y-0.5"
+              color="white"
+              size="xl"
+              class="rounded-full px-8 font-black shadow-xl shadow-black/10 active:scale-95 transition-transform"
+              icon="i-ph-plus-circle-fill"
             >
-              <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />
               {{ $t("pages.productsPage.newListing") }}
-            </NuxtLink>
+            </UButton>
 
-            <NuxtLink
+            <UButton
               to="/my-products"
-              class="inline-flex h-12 items-center justify-center rounded-full bg-[#fde7b2] px-5 text-[14px] font-extrabold text-[#c85c3f] shadow-[0_10px_26px_rgba(253,231,178,0.24)] transition hover:-translate-y-0.5"
+              color="white"
+              variant="soft"
+              size="xl"
+              class="rounded-full px-8 font-black bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md active:scale-95 transition-transform"
+              icon="i-ph-package-fill"
             >
-              <Icon name="i-ph-package-fill" class="mr-2 h-4 w-4" />
               {{ $t("pages.productsPage.myProducts") }}
-            </NuxtLink>
+            </UButton>
 
-            <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-medium text-white/90">
-              <Icon name="i-ph-map-pin-fill" class="h-4 w-4 text-[#fde7b2]" />
+            <div class="inline-flex h-12 items-center gap-2.5 rounded-full border border-white/20 bg-white/10 px-6 text-sm font-bold text-white/90 backdrop-blur-md">
+              <Icon name="i-ph-map-pin-fill" class="h-5 w-5 text-amber-300" />
               {{ $t("pages.productsPage.nearbyStores", { count: nearbyCount }) }}
             </div>
           </div>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-3 xl:w-[420px] xl:grid-cols-1">
+        <!-- Hero Stats -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:w-[450px] xl:grid-cols-1">
           <div
             v-for="item in heroStats"
             :key="item.label"
-            class="rounded-[22px] border border-white/15 bg-white/10 p-4 backdrop-blur-[6px]"
+            class="group rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl transition-all hover:bg-white/10"
           >
-            <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-white/60">
+            <p class="text-[10px] font-black uppercase tracking-widest text-white/50 group-hover:text-white/70 transition-colors">
               {{ item.label }}
             </p>
-            <p class="mt-2 text-[1.7rem] font-black leading-none text-white">
-              {{ item.value }}
-            </p>
-            <p class="mt-1 text-[13px] text-white/72">
-              {{ item.description }}
-            </p>
+            <div class="mt-2 flex items-baseline gap-2">
+              <p class="text-3xl font-black text-white leading-none tracking-tight">
+                {{ item.value }}
+              </p>
+              <p class="text-xs font-bold text-white/60">
+                {{ item.description }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="relative z-10 rounded-[28px] border border-white/70 bg-white/95 p-3 shadow-[0_16px_36px_rgba(15,35,110,0.09)] backdrop-blur sm:p-4">
-      <label class="relative block">
-        <Icon
-          name="i-ph-magnifying-glass"
-          class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400"
-        />
-        <input
+    <!-- Global Search & Discovery Bar -->
+    <section class="relative z-20 -mt-10 mx-4 sm:mx-10 rounded-[2.5rem] border border-white/60 bg-white/90 p-3 shadow-2xl backdrop-blur-2xl sm:p-5">
+      <div class="flex flex-col gap-4 lg:flex-row">
+        <UInput
           v-model="search"
-          class="h-14 w-full rounded-[20px] border border-[#dbe3f2] bg-[#f7f7f8] pl-12 pr-4 text-[15px] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#c5caff] focus:bg-white focus:ring-4 focus:ring-[#edf1ff]"
+          size="xl"
+          icon="i-ph-magnifying-glass"
+          class="flex-1"
+          :ui="{ rounded: 'rounded-[2rem]', base: 'h-16 text-lg font-bold' }"
           :placeholder="$t('pages.productsPage.searchPlaceholder')"
-          type="search"
-        >
-      </label>
-
-      <div class="mt-3 grid gap-3 xl:grid-cols-2 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.15fr)_auto]">
-        <label class="block">
-          <span class="sr-only">{{ $t("pages.productsPage.sortSr") }}</span>
-          <select
+        />
+        
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:w-auto">
+          <USelectMenu
             v-model="sortBy"
-            class="h-12 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] font-semibold text-slate-700 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#edf1ff]"
+            :options="sortOptions"
+            value-attribute="value"
+            option-attribute="label"
+            size="xl"
+            class="min-w-[180px]"
+            :ui="{ rounded: 'rounded-2xl', trigger: 'h-16 font-bold px-6' }"
           >
-            <option
-              v-for="option in sortOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+            <template #leading>
+              <Icon name="i-ph-sort-ascending-duotone" class="h-5 w-5 text-primary-500" />
+            </template>
+          </USelectMenu>
 
-        <label class="block">
-          <span class="sr-only">{{ $t("pages.productsPage.categorySr") }}</span>
-          <select
+          <USelectMenu
             v-model="selectedCategory"
-            class="h-12 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] font-semibold text-slate-700 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#edf1ff]"
+            :options="categoryOptions"
+            value-attribute="value"
+            option-attribute="label"
+            size="xl"
+            class="min-w-[180px]"
+            :ui="{ rounded: 'rounded-2xl', trigger: 'h-16 font-bold px-6' }"
           >
-            <option
-              v-for="option in categoryOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+            <template #leading>
+              <Icon name="i-ph-tag-duotone" class="h-5 w-5 text-primary-500" />
+            </template>
+          </USelectMenu>
 
-        <label class="block">
-          <span class="sr-only">{{ $t("pages.productsPage.distanceSr") }}</span>
-          <select
+          <USelectMenu
             v-model="selectedDistance"
-            class="h-12 w-full rounded-[18px] border border-[#dbe3f2] bg-white px-4 text-[15px] font-semibold text-slate-700 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#edf1ff]"
+            :options="distanceOptions"
+            value-attribute="value"
+            option-attribute="label"
+            size="xl"
+            class="min-w-[160px]"
+            :ui="{ rounded: 'rounded-2xl', trigger: 'h-16 font-bold px-6' }"
           >
-            <option
-              v-for="option in distanceOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+            <template #leading>
+              <Icon name="i-ph-navigation-arrow-duotone" class="h-5 w-5 text-primary-500" />
+            </template>
+          </USelectMenu>
 
-        <button
-          class="inline-flex h-12 w-full items-center justify-center rounded-[18px] px-5 text-[15px] font-extrabold transition duration-150 xl:col-span-2 2xl:col-span-1 2xl:w-auto"
-          :class="nearbyOnly
-            ? 'bg-[#243b63] text-white shadow-[0_10px_24px_rgba(36,59,99,0.18)]'
-            : 'bg-[#b44848] text-white shadow-[0_10px_24px_rgba(180,72,72,0.16)] hover:-translate-y-0.5'"
-          type="button"
-          @click="nearbyOnly = !nearbyOnly"
+          <UButton
+            size="xl"
+            class="rounded-2xl h-16 px-8 font-black justify-center active:scale-95 transition-transform"
+            :color="nearbyOnly ? 'primary' : 'secondary'"
+            :variant="nearbyOnly ? 'solid' : 'soft'"
+            icon="i-ph-gps-fixed-duotone"
+            @click="nearbyOnly = !nearbyOnly"
+          >
+            {{ nearbyOnly ? $t("pages.productsPage.nearbyOn") : $t("pages.productsPage.nearbyOff") }}
+          </UButton>
+        </div>
+      </div>
+
+      <!-- Quick Category Chips -->
+      <div class="mt-4 flex flex-wrap gap-2.5 px-2">
+        <UButton
+          v-for="chip in quickCategoryChips"
+          :key="chip.value"
+          variant="ghost"
+          size="md"
+          class="rounded-full font-bold transition-all px-5 border border-transparent"
+          :class="selectedCategory === chip.value
+            ? 'bg-primary-50 text-primary-600 border-primary-200'
+            : 'text-secondary-500 hover:bg-secondary-50 hover:text-secondary-900'"
+          :icon="chip.icon"
+          @click="selectedCategory = chip.value"
         >
-          {{ nearbyOnly ? $t("pages.productsPage.nearbyOn") : $t("pages.productsPage.nearbyOff") }}
-        </button>
+          {{ chip.label }}
+        </UButton>
       </div>
     </section>
 
-    <div class="flex flex-wrap gap-2">
-      <button
-        v-for="chip in quickCategoryChips"
-        :key="chip.value"
-        class="inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[13px] font-semibold transition duration-150"
-        :class="selectedCategory === chip.value
-          ? 'border-[#0000ff] bg-[#eef0ff] text-[#0000ff]'
-          : 'border-[#dbe3f2] bg-white text-slate-500 hover:border-[#c5caff] hover:text-[#0000ff]'"
-        type="button"
-        @click="selectedCategory = chip.value"
-      >
-        <Icon :name="chip.icon" class="h-3.5 w-3.5" />
-        {{ chip.label }}
-      </button>
-    </div>
-
-    <div class="flex flex-col gap-3 rounded-[24px] border border-[#dbe3f2] bg-white/90 px-4 py-4 shadow-[0_6px_22px_rgba(15,35,110,0.05)] sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+    <!-- Results Header -->
+    <div class="surface-card p-6 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <div class="space-y-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500/80">
           {{ $t("pages.productsPage.results") }}
         </p>
-        <h2 class="mt-1 text-[1.25rem] font-black tracking-[-0.05em] text-[#243b63]">
+        <h2 class="text-2xl font-black tracking-tight text-secondary-900">
           {{ resultHeading }}
         </h2>
-        <p class="mt-1 text-[14px] text-slate-500">
-          {{ $t("pages.productsPage.matchingProducts", { count: visibleProducts.length, sort: currentSortLabel }) }}
-        </p>
+        <div class="flex items-center gap-2 text-xs font-bold text-secondary-500">
+          <span>{{ visibleProducts.length }} {{ $t("pages.productsPage.matchingProducts", { count: visibleProducts.length, sort: '' }).split(' ')[1] }}</span>
+          <span class="w-1 h-1 rounded-full bg-secondary-300" />
+          <span class="text-primary-600">{{ currentSortLabel }}</span>
+        </div>
       </div>
 
-      <div class="flex flex-wrap gap-2">
-        <div class="inline-flex items-center gap-2 rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-600">
-          <Icon name="i-ph-funnel-fill" class="h-4 w-4 text-[#0000ff]" />
+      <div class="flex flex-wrap items-center gap-3">
+        <UBadge color="primary" variant="soft" size="md" class="rounded-full px-4 font-black">
+          <template #leading>
+            <Icon name="i-ph-funnel-duotone" class="h-4 w-4 mr-1" />
+          </template>
           {{ activeFiltersLabel }}
-        </div>
-        <button
-          class="inline-flex items-center gap-2 rounded-full border border-[#dbe3f2] bg-white px-3 py-2 text-[12px] font-semibold text-slate-500 transition hover:border-[#c5caff] hover:text-[#0000ff]"
-          type="button"
+        </UBadge>
+        <UButton
+          color="gray"
+          variant="ghost"
+          size="sm"
+          class="font-bold -mr-2"
+          icon="i-ph-arrow-counter-clockwise-bold"
           @click="resetFilters"
         >
-          <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
           {{ $t("pages.productsPage.resetFilters") }}
-        </button>
+        </UButton>
       </div>
     </div>
 
     <div
       v-if="visibleProducts.length > 0"
-      class="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4"
+      class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
     >
       <article
         v-for="product in visibleProducts"
         :key="product.id"
-        class="group overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(15,35,110,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(15,35,110,0.12)]"
+        class="surface-card group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ring-1 ring-secondary-100 hover:ring-primary-400/50"
       >
-        <div class="relative h-[240px] overflow-hidden">
-          <div class="absolute inset-0" :style="{ background: product.background }" />
-          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_30%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.15)_100%)]" />
+        <!-- Product Media Layer -->
+        <div class="relative h-[260px] overflow-hidden">
+          <div class="absolute inset-0 transition-transform duration-500 group-hover:scale-110" :style="{ background: product.background }" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent_40%)]" />
 
           <Icon
             :name="product.icon"
-            class="absolute right-5 top-6 h-24 w-24 text-white/18 transition duration-200 group-hover:scale-110"
+            class="absolute right-6 top-8 h-28 w-28 text-white/10 transition-transform duration-500 group-hover:scale-125 group-hover:rotate-6"
           />
 
-          <div class="absolute left-3 top-3 flex flex-wrap gap-2">
-            <span class="rounded-[10px] bg-[#101828]/80 px-2.5 py-1 text-[11px] font-bold text-white">
+          <!-- Categories/Status Badges -->
+          <div class="absolute left-4 top-4 flex flex-wrap gap-2">
+            <UBadge color="white" variant="solid" class="rounded-lg bg-black/60 text-white font-black text-[10px] backdrop-blur-md px-2.5 py-1">
               {{ product.categoryLabel }}
-            </span>
-            <span class="rounded-[10px] bg-white/16 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-[4px]">
+            </UBadge>
+            <UBadge color="white" variant="soft" class="rounded-lg bg-white/10 text-white font-bold text-[10px] backdrop-blur-md px-2.5 py-1 border border-white/20">
               {{ product.condition }}
-            </span>
+            </UBadge>
           </div>
 
-          <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
-            <div class="rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-semibold text-white backdrop-blur-[4px]">
+          <!-- Location/Distance Layer -->
+          <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-3">
+            <div class="flex items-center gap-1.5 rounded-full bg-black/40 px-3 py-1.5 text-[10px] font-bold text-white backdrop-blur-xl border border-white/10">
+              <Icon name="i-ph-map-pin-bold" class="h-3 w-3" />
               {{ product.location }}
             </div>
-            <div class="rounded-full bg-white/18 px-2.5 py-1.5 text-[11px] font-bold text-white backdrop-blur-[4px]">
+            <div class="rounded-full bg-white/20 px-3 py-1.5 text-[10px] font-black text-white backdrop-blur-xl border border-white/20">
               {{ formatDistance(product.distanceKm) }}
             </div>
           </div>
         </div>
 
-        <div class="relative p-4">
-          <div class="absolute -top-6 right-4 flex items-center gap-2">
-            <button
-              class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#f5f7ff] text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.12)] transition hover:bg-white hover:text-[#243b63]"
-              type="button"
+        <!-- Product Details Layer -->
+        <div class="relative p-5 space-y-4">
+          <!-- Floating Action Buttons -->
+          <div class="absolute -top-7 right-6 flex items-center gap-2.5">
+            <UButton
+              color="white"
+              variant="solid"
+              size="md"
+              class="rounded-2xl shadow-xl hover:bg-primary-50 hover:text-primary-600 transition-colors"
+              icon="i-ph-chat-circle-text-duotone"
               :aria-label="$t('pages.productsPage.messageSeller')"
-            >
-              <Icon name="i-ph-chat-circle-text-fill" class="h-5 w-5" />
-            </button>
-            <button
-              class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#0000ff] text-white shadow-[0_10px_22px_rgba(0,0,255,0.24)] transition hover:scale-[1.03]"
-              type="button"
+            />
+            <UButton
+              color="primary"
+              variant="solid"
+              size="md"
+              class="rounded-2xl shadow-xl shadow-primary-500/30 active:scale-90 transition-transform"
+              icon="i-ph-shopping-cart-simple-duotone"
               :aria-label="$t('pages.productsPage.addToCart')"
-            >
-              <Icon name="i-ph-shopping-cart-simple-fill" class="h-5 w-5" />
-            </button>
+            />
           </div>
 
-          <div class="pr-24">
-            <p class="text-[12px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 group-hover:text-primary-500 transition-colors">
               {{ product.seller }}
             </p>
-            <h3 class="mt-2 text-[1.28rem] font-black leading-[1.1] tracking-[-0.05em] text-[#243b63]">
+            <h3 class="mt-1 text-xl font-black leading-tight tracking-tight text-secondary-950 group-hover:text-primary-950 transition-colors">
               {{ product.title }}
             </h3>
           </div>
 
-          <p class="mt-3 min-h-[42px] text-[13px] leading-6 text-slate-500">
+          <p class="text-xs font-medium leading-relaxed text-secondary-500 line-clamp-2 min-h-[3rem]">
             {{ product.description }}
           </p>
 
-          <div class="mt-4 flex items-end justify-between gap-3">
-            <div>
-              <p class="text-[12px] font-semibold text-slate-400">
+          <div class="flex items-end justify-between gap-4 pt-2">
+            <div class="space-y-0.5">
+              <p class="text-[10px] font-bold uppercase tracking-widest text-secondary-400 leading-none">
                 {{ $t("pages.productsPage.priceLabel") }}
               </p>
-              <p class="text-[1.2rem] font-black text-[#16a34a]">
+              <p class="text-2xl font-black text-emerald-600 tracking-tight leading-none pt-1">
                 {{ formatCurrency(product.price) }}
               </p>
             </div>
 
-            <div class="text-right">
-              <div class="inline-flex items-center gap-1 rounded-full bg-[#effaf3] px-2.5 py-1 text-[11px] font-bold text-[#16a34a]">
+            <div class="flex flex-col items-end gap-2 text-right">
+              <div class="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1.5 text-[11px] font-black text-emerald-700 border border-emerald-100/50">
                 <Icon name="i-ph-star-fill" class="h-3.5 w-3.5" />
                 {{ product.rating.toFixed(1) }}
               </div>
-              <p class="mt-2 text-[12px] font-medium text-slate-400">
+              <p class="text-[10px] font-bold text-secondary-400 uppercase tracking-tighter">
                 {{ product.postedLabel }}
               </p>
             </div>

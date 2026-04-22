@@ -1,31 +1,42 @@
-<template>
-  <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-5' }">
-    <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+  <UCard class="surface-card ring-1 ring-secondary-100 shadow-xl" :ui="{ body: { padding: 'p-6' } }">
+    <p class="text-[10px] font-black uppercase tracking-[0.25em] text-primary-500 mb-4 pl-1">
       {{ title || $t("pages.productEditor.checklist") }}
     </p>
-    <UProgress :model-value="donePercent" color="success" size="sm" class="mt-4" />
-    <div class="mt-4 space-y-3">
-      <UCard
-        v-for="item in items"
-        :key="item.label"
-        class="rounded-[18px] border"
-        :class="item.done ? 'border-[#b8f0c9] bg-[#f2fcf5]' : 'border-[#dbe3f2] bg-[#f8fbff]'"
-        :ui="{ body: 'flex items-start gap-3 px-3.5 py-3' }"
-      >
+    
+    <div class="space-y-4">
+      <div class="px-1">
+        <UProgress :model-value="donePercent" color="success" size="sm" class="h-1.5" />
+      </div>
+
+      <div class="space-y-3 pt-2">
         <div
-          class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-          :class="item.done ? 'bg-[#16a34a] text-white' : 'border border-[#dbe3f2] bg-white text-slate-300'"
+          v-for="item in items"
+          :key="item.label"
+          class="flex items-start gap-4 p-4 rounded-2xl transition-all border group"
+          :class="item.done 
+            ? 'border-emerald-100 bg-emerald-50/40' 
+            : 'border-secondary-100 bg-secondary-50/20'"
         >
-          <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-dot-outline'" class="h-3.5 w-3.5" />
+          <div
+            class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all"
+            :class="item.done 
+              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-110' 
+              : 'bg-white border-2 border-secondary-100 text-secondary-300 group-hover:border-primary-200 group-hover:text-primary-300'"
+          >
+            <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle'" class="h-4 w-4" />
+          </div>
+          <div class="space-y-0.5">
+            <p class="text-sm font-black text-secondary-950 tracking-tight leading-tight transition-colors" :class="{ 'text-emerald-900': item.done }">
+              {{ item.label }}
+            </p>
+            <p class="text-[11px] font-medium leading-relaxed text-secondary-500">
+              {{ item.description }}
+            </p>
+          </div>
         </div>
-        <div>
-          <p class="text-[13px] font-semibold text-[#243b63]">{{ item.label }}</p>
-          <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ item.description }}</p>
-        </div>
-      </UCard>
+      </div>
     </div>
   </UCard>
-</template>
 
 <script setup lang="ts">
 import type { ProductChecklistItem } from "../../../types/product-editor"
