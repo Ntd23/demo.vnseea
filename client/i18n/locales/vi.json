@@ -1,4 +1,18 @@
 {
+  "pages": {
+    "productEditor": {
+      "titleLabel": "Tên sản phẩm",
+      "priceLabel": "Giá bán",
+      "descriptionLabel": "Mô tả sản phẩm",
+      "descriptionPlaceholder": "Mô tả ngắn gọn về sản phẩm, tình trạng, thông số và điểm nổi bật.",
+      "categoryLabel": "Danh mục",
+      "conditionLabel": "Tình trạng",
+      "locationLabel": "Địa điểm",
+      "locationPlaceholder": "Tìm tỉnh thành, quận huyện hoặc điểm nhận hàng",
+      "currencyLabel": "Đơn vị tiền tệ",
+      "stockLabel": "Số lượng"
+    }
+  },
   "feed": {
     "commentComposer": {
       "placeholder": "Viết bình luận mang tính xây dựng...",

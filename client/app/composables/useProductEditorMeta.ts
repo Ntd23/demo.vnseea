@@ -5,7 +5,7 @@ import type {
   ProductCategoryMeta,
   ProductCurrencyMeta,
   ProductOption,
-} from "~/types/product-editor"
+} from "../../types/product-editor"
 
 const categoryOptions = [
   { label: "Nhà cửa", value: "home" },

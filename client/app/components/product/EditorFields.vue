@@ -1,129 +1,133 @@
 <template>
-  <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-6">
+  <UCard
+    class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]"
+    :ui="{ body: 'p-5 sm:p-6' }"
+  >
     <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_360px]">
-      <label class="block space-y-3">
-        <span class="text-[1.02rem] font-black text-[#2f3542]">Tên</span>
-        <input
+      <UFormField :label="$t('pages.productEditor.titleLabel')" size="xl" class="space-y-2">
+        <UInput
           v-model="title"
-          type="text"
-          class="h-[5.5rem] w-full rounded-[22px] border border-slate-200 bg-white px-5 text-[1.1rem] text-slate-900 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#0000ff]/10"
-        >
-      </label>
+          size="xl"
+          variant="outline"
+          color="primary"
+          class="w-full"
+          :ui="{ base: 'h-[5.5rem] rounded-[22px] px-5 text-[1.1rem]' }"
+        />
+      </UFormField>
 
-      <label class="block space-y-3">
-        <span class="text-[1.02rem] font-black text-[#2f3542]">Giá bán</span>
-        <input
-          v-model="price"
-          type="number"
-          min="0"
-          step="0.01"
+      <UFormField :label="$t('pages.productEditor.priceLabel')" size="xl" class="space-y-2">
+        <UInputNumber
+          v-model="priceValue"
+          size="xl"
+          orientation="vertical"
+          :min="0"
+          :step="0.01"
           placeholder="0.00"
-          class="h-[5.5rem] w-full rounded-[22px] border border-slate-200 bg-white px-5 text-[1.1rem] text-slate-900 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#0000ff]/10"
-        >
-      </label>
+          class="w-full"
+          :ui="{ base: 'h-[5.5rem] rounded-[22px] px-5 text-[1.1rem]' }"
+        />
+      </UFormField>
     </div>
 
-    <label class="mt-8 block space-y-3">
-      <span class="text-[1.02rem] font-black text-[#2f3542]">{{ descriptionLabel }}</span>
-      <textarea
+    <UFormField
+      :label="descriptionLabel || $t('pages.productEditor.descriptionLabel')"
+      size="xl"
+      class="mt-8 space-y-2"
+    >
+      <UTextarea
         v-model="description"
-        rows="5"
-        placeholder="Vui lòng mô tả sản phẩm của bạn."
-        class="min-h-[210px] w-full resize-y rounded-[22px] border border-slate-200 bg-white px-5 py-5 text-[1rem] leading-8 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff] focus:ring-4 focus:ring-[#0000ff]/10"
+        autoresize
+        :rows="5"
+        :placeholder="$t('pages.productEditor.descriptionPlaceholder')"
+        class="w-full"
+        :ui="{ base: 'min-h-[210px] rounded-[22px] px-5 py-5 text-[1rem] leading-8' }"
       />
-    </label>
+    </UFormField>
 
     <div class="mt-8 grid gap-5 md:grid-cols-[minmax(0,1fr)_360px]">
-      <label class="block space-y-3">
-        <span class="text-[1.02rem] font-black text-[#2f3542]">Loại</span>
-        <select
+      <UFormField :label="$t('pages.productEditor.categoryLabel')" size="xl" class="space-y-2">
+        <USelect
           v-model="category"
-          class="h-[5.5rem] w-full rounded-[22px] border border-slate-200 bg-white px-5 text-[1.1rem] font-medium text-slate-900 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#0000ff]/10"
-        >
-          <option
-            v-for="option in categoryOptions"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-      </label>
+          :items="categoryOptions"
+          value-key="value"
+          label-key="label"
+          size="xl"
+          class="w-full"
+          :ui="{ base: 'h-[5.5rem] rounded-[22px] px-5 text-[1.1rem] font-medium' }"
+        />
+      </UFormField>
 
-      <label class="block space-y-3">
-        <span class="text-[1.02rem] font-black text-[#2f3542]">Loại hình</span>
-        <select
+      <UFormField :label="$t('pages.productEditor.conditionLabel')" size="xl" class="space-y-2">
+        <USelect
           v-model="condition"
-          class="h-[5.5rem] w-full rounded-[22px] border border-slate-200 bg-white px-5 text-[1.1rem] font-medium text-slate-900 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#0000ff]/10"
-        >
-          <option
-            v-for="option in conditionOptions"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-      </label>
+          :items="conditionOptions"
+          value-key="value"
+          label-key="label"
+          size="xl"
+          class="w-full"
+          :ui="{ base: 'h-[5.5rem] rounded-[22px] px-5 text-[1.1rem] font-medium' }"
+        />
+      </UFormField>
     </div>
 
     <div class="mt-8 grid gap-5 md:grid-cols-[minmax(0,1fr)_360px]">
-      <label class="block space-y-3">
-        <span class="text-[1.02rem] font-black text-[#2f3542]">Địa điểm</span>
-        <span class="relative block">
-          <Icon
-            name="i-ph-magnifying-glass-bold"
-            class="pointer-events-none absolute left-5 top-1/2 h-7 w-7 -translate-y-1/2 text-slate-500"
-          />
-          <input
-            v-model="location"
-            type="text"
-            placeholder="Địa điểm"
-            class="h-[5.5rem] w-full rounded-[22px] border border-slate-900 bg-white pl-16 pr-5 text-[1.1rem] text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#0000ff] focus:ring-4 focus:ring-[#0000ff]/10"
-          >
-        </span>
-      </label>
+      <UFormField :label="$t('pages.productEditor.locationLabel')" size="xl" class="space-y-2">
+        <UInput
+          v-model="location"
+          size="xl"
+          color="neutral"
+          :leading-icon="'i-ph-magnifying-glass-bold'"
+          :placeholder="$t('pages.productEditor.locationPlaceholder')"
+          class="w-full"
+          :ui="{ base: 'h-[5.5rem] rounded-[22px] px-5 text-[1.1rem]' }"
+        />
+      </UFormField>
 
-      <label class="block space-y-3">
-        <span class="text-[1.02rem] font-black text-[#2f3542]">Tiền tệ</span>
-        <select
+      <UFormField :label="$t('pages.productEditor.currencyLabel')" size="xl" class="space-y-2">
+        <USelect
           v-model="currency"
-          class="h-[5.5rem] w-full rounded-[22px] border border-slate-200 bg-white px-5 text-[1.1rem] font-medium text-slate-900 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#0000ff]/10"
-        >
-          <option
-            v-for="option in currencyOptions"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </option>
-        </select>
-      </label>
+          :items="currencyOptions"
+          value-key="value"
+          label-key="label"
+          size="xl"
+          class="w-full"
+          :ui="{ base: 'h-[5.5rem] rounded-[22px] px-5 text-[1.1rem] font-medium' }"
+        />
+      </UFormField>
     </div>
 
     <div class="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_240px]">
-      <label class="block space-y-3">
-        <span class="text-[1.02rem] font-black text-[#2f3542]">Tổng số đơn vị mặt hàng</span>
-        <input
-          v-model="stock"
-          type="number"
-          min="0"
-          step="1"
-          class="h-[5.5rem] w-full rounded-[22px] border border-slate-200 bg-white px-5 text-[1.1rem] text-slate-900 outline-none transition focus:border-[#0000ff] focus:ring-4 focus:ring-[#0000ff]/10"
-        >
-      </label>
+      <UFormField :label="$t('pages.productEditor.stockLabel')" size="xl" class="space-y-2">
+        <UInputNumber
+          v-model="stockValue"
+          size="xl"
+          orientation="vertical"
+          :min="0"
+          :step="1"
+          class="w-full"
+          :ui="{ base: 'h-[5.5rem] rounded-[22px] px-5 text-[1.1rem]' }"
+        />
+      </UFormField>
 
       <div class="flex items-end justify-start lg:justify-end">
-        <div class="rounded-full bg-[#f7f9ff] px-4 py-3 text-[13px] font-semibold text-slate-500">
+        <UBadge color="neutral" variant="soft" class="rounded-full px-4 py-3 text-[13px] font-semibold">
           {{ mediaSummary }}
-        </div>
+        </UBadge>
       </div>
     </div>
+
+    <UAlert
+      class="mt-8 rounded-[22px]"
+      color="primary"
+      variant="subtle"
+      icon="i-ph-info-fill"
+      :description="$t('pages.productEditor.descriptionPlaceholder')"
+    />
 
     <div class="mt-8">
       <slot name="media" />
     </div>
-  </section>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -132,7 +136,7 @@ import type {
   ConditionValue,
   CurrencyValue,
   ProductOption,
-} from "~/types/product-editor"
+} from "../../../types/product-editor"
 
 withDefaults(defineProps<{
   categoryOptions: ProductOption<CategoryValue>[]
@@ -141,7 +145,7 @@ withDefaults(defineProps<{
   mediaSummary: string
   descriptionLabel?: string
 }>(), {
-  descriptionLabel: "Mô tả",
+  descriptionLabel: undefined,
 })
 
 const title = defineModel<string>("title", { required: true })
@@ -152,4 +156,24 @@ const condition = defineModel<ConditionValue>("condition", { required: true })
 const location = defineModel<string>("location", { required: true })
 const currency = defineModel<CurrencyValue>("currency", { required: true })
 const stock = defineModel<string>("stock", { required: true })
+
+const priceValue = computed<number | undefined>({
+  get: () => {
+    const value = Number(price.value)
+    return Number.isFinite(value) ? value : undefined
+  },
+  set: value => {
+    price.value = value === undefined || value === null ? "" : String(value)
+  },
+})
+
+const stockValue = computed<number | undefined>({
+  get: () => {
+    const value = Number(stock.value)
+    return Number.isFinite(value) ? value : undefined
+  },
+  set: value => {
+    stock.value = value === undefined || value === null ? "" : String(value)
+  },
+})
 </script>

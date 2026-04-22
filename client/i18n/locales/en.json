@@ -1,4 +1,18 @@
 {
+  "pages": {
+    "productEditor": {
+      "titleLabel": "Product title",
+      "priceLabel": "Price",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe the product, key specs, condition, and highlights.",
+      "categoryLabel": "Category",
+      "conditionLabel": "Condition",
+      "locationLabel": "Location",
+      "locationPlaceholder": "Search city, district, or pickup point",
+      "currencyLabel": "Currency",
+      "stockLabel": "Stock"
+    }
+  },
   "feed": {
     "commentComposer": {
       "placeholder": "Write a constructive comment...",

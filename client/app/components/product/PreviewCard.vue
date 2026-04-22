@@ -1,5 +1,5 @@
 <template>
-  <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
+  <UCard class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-0' }">
     <div class="relative h-[250px] overflow-hidden">
       <div class="absolute inset-0" :style="{ background: previewBackground }" />
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_30%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.18)_100%)]" />
@@ -64,7 +64,7 @@
         </div>
       </div>
     </div>
-  </section>
+  </UCard>
 </template>
 
 <script setup lang="ts">

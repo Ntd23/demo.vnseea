@@ -17,47 +17,54 @@
         </p>
 
         <div class="mt-6 flex flex-wrap gap-3">
-          <NuxtLink
+          <UButton
             to="/my-products"
-            class="inline-flex h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 text-[14px] font-bold text-white transition hover:bg-white/15"
+            color="neutral"
+            variant="soft"
+            size="lg"
+            leading-icon="i-ph-arrow-left"
+            class="rounded-full"
           >
-            <Icon name="i-ph-arrow-left" class="mr-2 h-4 w-4" />
             Quay lại sản phẩm của tôi
-          </NuxtLink>
+          </UButton>
 
-          <button
+          <UButton
+            :color="props.variant === 'edit' ? 'primary' : 'warning'"
+            variant="solid"
+            size="lg"
+            class="rounded-full"
             :class="theme.secondaryAction"
-            type="button"
             @click="$emit('secondaryAction')"
           >
             {{ secondaryActionLabel }}
-          </button>
+          </UButton>
         </div>
       </div>
 
       <div class="grid gap-3 sm:grid-cols-3 xl:w-[430px] xl:grid-cols-1">
-        <div
+        <UCard
           v-for="item in stats"
           :key="item.label"
-          class="rounded-[22px] border border-white/15 bg-white/10 p-4 backdrop-blur-[6px]"
+          class="rounded-[22px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
+          :ui="{ body: 'p-4' }"
         >
-          <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-white/60">
+          <UBadge color="neutral" variant="soft" class="bg-white/15 text-white">
             {{ item.label }}
-          </p>
-          <p class="mt-2 text-[1.7rem] font-black leading-none text-white">
+          </UBadge>
+          <p class="mt-3 text-[1.7rem] font-black leading-none text-white">
             {{ item.value }}
           </p>
           <p class="mt-1 text-[13px] text-white/72">
             {{ item.description }}
           </p>
-        </div>
+        </UCard>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import type { ProductHeroStat } from "~/types/product-editor"
+import type { ProductHeroStat } from "../../../types/product-editor"
 
 const props = defineProps<{
   variant: "create" | "edit"
@@ -77,14 +84,14 @@ const theme = computed(() => {
     return {
       container: "relative overflow-hidden rounded-[30px] bg-[linear-gradient(135deg,#243b63_0%,#1d4ed8_42%,#38bdf8_110%)] px-5 pb-10 pt-6 text-white shadow-[0_16px_40px_rgba(29,78,216,0.22)] sm:px-7 sm:pt-8 lg:px-8",
       bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[220px] w-[220px] rounded-full bg-[#0f172a]/30 blur-3xl",
-      secondaryAction: "inline-flex h-12 items-center justify-center rounded-full bg-[#dbeafe] px-5 text-[14px] font-extrabold text-[#1d4ed8] shadow-[0_10px_26px_rgba(219,234,254,0.24)] transition hover:-translate-y-0.5",
+      secondaryAction: "bg-[#dbeafe] px-5 text-[14px] font-extrabold text-[#1d4ed8] shadow-[0_10px_26px_rgba(219,234,254,0.24)] transition hover:-translate-y-0.5",
     }
   }
 
   return {
     container: "relative overflow-hidden rounded-[30px] bg-[linear-gradient(135deg,#9d2e43_0%,#d95d93_44%,#f59e0b_120%)] px-5 pb-10 pt-6 text-white shadow-[0_16px_40px_rgba(157,46,67,0.22)] sm:px-7 sm:pt-8 lg:px-8",
     bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[220px] w-[220px] rounded-full bg-[#243b63]/30 blur-3xl",
-    secondaryAction: "inline-flex h-12 items-center justify-center rounded-full bg-[#fde7b2] px-5 text-[14px] font-extrabold text-[#9d2e43] shadow-[0_10px_26px_rgba(253,231,178,0.24)] transition hover:-translate-y-0.5",
+    secondaryAction: "bg-[#fde7b2] px-5 text-[14px] font-extrabold text-[#9d2e43] shadow-[0_10px_26px_rgba(253,231,178,0.24)] transition hover:-translate-y-0.5",
   }
 })
 </script>

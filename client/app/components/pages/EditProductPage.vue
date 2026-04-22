@@ -12,7 +12,7 @@
 
     <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.06fr)_360px]">
       <section class="space-y-5">
-        <div class="rounded-[28px] border border-[#dbe3f2] bg-white p-4 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-5">
+        <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-4 sm:p-5' }">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
@@ -26,43 +26,46 @@
               </p>
             </div>
 
-            <div class="inline-flex items-center gap-2 rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-600">
+            <UBadge color="primary" variant="subtle" class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-semibold">
               <Icon name="i-ph-seal-check-fill" class="h-4 w-4 text-[#0000ff]" />
               {{ completionText }}
-            </div>
+            </UBadge>
           </div>
-        </div>
+          <UProgress :model-value="completionPercent" color="primary" class="mt-4" />
+        </UCard>
 
-        <ProductEditorFields
-          v-model:title="title"
-          v-model:price="price"
-          v-model:description="description"
-          v-model:category="category"
-          v-model:condition="condition"
-          v-model:location="location"
-          v-model:currency="currency"
-          v-model:stock="stock"
-          :category-options="categoryOptions"
-          :condition-options="conditionOptions"
-          :currency-options="currencyOptions"
-          :media-summary="mediaSummary"
-        >
-          <template #media>
-            <ProductEditMediaManager
-              :current-images="currentImages"
-              :removed-count="removedImages.length"
-              :new-image-tiles="newImageTiles"
-              :image-button-label="imageButtonLabel"
-              @add-new-image="addNewImage"
-              @remove-current-image="removeCurrentImage"
-              @remove-new-image="removeNewImage"
-            />
-          </template>
-        </ProductEditorFields>
+        <UForm :state="draft.fields" class="space-y-5">
+          <ProductEditorFields
+            v-model:title="draft.fields.title"
+            v-model:price="draft.fields.price"
+            v-model:description="draft.fields.description"
+            v-model:category="draft.fields.category"
+            v-model:condition="draft.fields.condition"
+            v-model:location="draft.fields.location"
+            v-model:currency="draft.fields.currency"
+            v-model:stock="draft.fields.stock"
+            :category-options="categoryOptions"
+            :condition-options="conditionOptions"
+            :currency-options="currencyOptions"
+            :media-summary="mediaSummary"
+          >
+            <template #media>
+              <ProductEditMediaManager
+                v-model:files="newFiles"
+                :current-images="currentImages"
+                :removed-count="draft.removedImageIds.length"
+                :image-button-label="imageButtonLabel"
+                @remove-current-image="removeCurrentImage"
+              />
+            </template>
+          </ProductEditorFields>
+        </UForm>
 
         <FormsSubmitBar
-          hint="Mock state: giao diện sửa sản phẩm đã có pre-fill dữ liệu cũ và xóa ảnh cũ, chưa submit thật tới edit-product.php."
+          :hint="saveHint"
           cta="Lưu thay đổi"
+          @save="saveDraft"
+          @submit="submitMock"
         />
       </section>
 
@@ -73,12 +76,12 @@
           :category-label="previewCategoryLabel"
           :condition-label="previewConditionLabel"
           :currency-label="previewCurrencyLabel"
-          :title="title"
+          :title="draft.fields.title"
           empty-title="Tên sản phẩm sẽ hiển thị ở đây"
           :description="previewDescription"
           :price="previewPrice"
           :stock-label="stockLabel"
-          :location="location"
+          :location="draft.fields.location"
           :image-count="totalImageCount"
           leading-icon="i-ph-pencil-simple-fill"
           trailing-icon="i-ph-floppy-disk-back-fill"
@@ -98,25 +101,16 @@
 
 <script setup lang="ts">
 import type {
-  CategoryValue,
-  ConditionValue,
-  CurrencyValue,
   ProductChecklistItem,
   ProductCurrentImage,
+  ProductEditorDraft,
   ProductHeroStat,
-  ProductImageTile,
   ProductTipItem,
-} from "~/types/product-editor"
+} from "../../../types/product-editor"
+import { useTimeAgo, watchDebounced } from "@vueuse/core"
 
 type MockProduct = {
-  title: string
-  price: string
-  description: string
-  category: CategoryValue
-  condition: ConditionValue
-  location: string
-  currency: CurrencyValue
-  stock: string
+  fields: ProductEditorDraft["fields"]
   oldImages: ProductCurrentImage[]
   updatedAt: string
 }
@@ -136,108 +130,117 @@ const {
   formatProductStockLabel,
 } = useProductEditorMeta()
 
+const toast = useToast()
+
 const mockProducts: Record<string, MockProduct> = {
   "101": {
-    title: "Honda Vision 2024",
-    price: "1250",
-    description: "Xe đi ít, giấy tờ đầy đủ, máy êm và ngoại hình còn mới. Phù hợp đi lại hằng ngày hoặc mua cho sinh viên.",
-    category: "vehicles",
-    condition: "like-new",
-    location: "Đà Nẵng",
-    currency: "USD",
-    stock: "2",
-    oldImages: [{ id: "old-1" }, { id: "old-2" }, { id: "old-3" }],
+    fields: {
+      title: "Honda Vision 2024",
+      price: "1250",
+      description: "Xe đi ít, giấy tờ đầy đủ, máy êm và ngoại hình còn mới. Phù hợp đi lại hằng ngày hoặc mua cho sinh viên.",
+      category: "vehicles",
+      condition: "like-new",
+      location: "Đà Nẵng",
+      currency: "USD",
+      stock: "2",
+    },
+    oldImages: [
+      createProductMockImage("old-1", "Vision Front", 0),
+      createProductMockImage("old-2", "Vision Side", 1),
+      createProductMockImage("old-3", "Vision Detail", 2),
+    ],
     updatedAt: "Cập nhật 2 giờ trước",
   },
   "202": {
-    title: "Bộ nồi chiên không dầu 6L",
-    price: "185",
-    description: "Bộ nồi chiên còn đẹp, hoạt động ổn định, đầy đủ khay và phụ kiện. Phù hợp gia đình nhỏ và căn hộ.",
-    category: "home",
-    condition: "used",
-    location: "TP. Hồ Chí Minh",
-    currency: "USD",
-    stock: "5",
-    oldImages: [{ id: "old-1" }, { id: "old-2" }],
+    fields: {
+      title: "Bộ nồi chiên không dầu 6L",
+      price: "185",
+      description: "Bộ nồi chiên còn đẹp, hoạt động ổn định, đầy đủ khay và phụ kiện. Phù hợp gia đình nhỏ và căn hộ.",
+      category: "home",
+      condition: "used",
+      location: "TP. Hồ Chí Minh",
+      currency: "USD",
+      stock: "5",
+    },
+    oldImages: [
+      createProductMockImage("old-1", "Air Fryer Main", 0),
+      createProductMockImage("old-2", "Air Fryer Tray", 3),
+    ],
     updatedAt: "Cập nhật hôm qua",
   },
 }
 
 const fallbackProduct: MockProduct = {
-  title: "Sản phẩm demo đang chỉnh sửa",
-  price: "89",
-  description: "Đây là dữ liệu mẫu để kiểm tra flow sửa sản phẩm trong marketplace.",
-  category: "tech",
-  condition: "new",
-  location: "Hà Nội",
-  currency: "USD",
-  stock: "3",
-  oldImages: [{ id: "old-1" }, { id: "old-2" }],
+  fields: {
+    title: "Sản phẩm demo đang chỉnh sửa",
+    price: "89",
+    description: "Đây là dữ liệu mẫu để kiểm tra flow sửa sản phẩm trong marketplace.",
+    category: "tech",
+    condition: "new",
+    location: "Hà Nội",
+    currency: "USD",
+    stock: "3",
+  },
+  oldImages: [
+    createProductMockImage("old-1", "Demo Main", 0),
+    createProductMockImage("old-2", "Demo Secondary", 1),
+  ],
   updatedAt: "Cập nhật gần đây",
 }
 
-const title = ref("")
-const price = ref("")
-const description = ref("")
-const category = ref<CategoryValue>("vehicles")
-const condition = ref<ConditionValue>("new")
-const location = ref("")
-const currency = ref<CurrencyValue>("USD")
-const stock = ref("")
-const currentImages = ref<ProductCurrentImage[]>([])
-const removedImages = ref<string[]>([])
-const newImages = ref<ProductImageTile[]>([])
-
 const activeProduct = computed(() => mockProducts[props.productId] ?? fallbackProduct)
+const storageKey = computed(() => `product-editor:edit:${props.productId}`)
 
-const applyProduct = (product: MockProduct) => {
-  title.value = product.title
-  price.value = product.price
-  description.value = product.description
-  category.value = product.category
-  condition.value = product.condition
-  location.value = product.location
-  currency.value = product.currency
-  stock.value = product.stock
-  currentImages.value = product.oldImages.map(image => ({ ...image }))
-  removedImages.value = []
-  newImages.value = []
-}
+const createDraftFromProduct = (product: MockProduct): ProductEditorDraft => ({
+  mode: "edit",
+  productId: props.productId,
+  fields: { ...product.fields },
+  removedImageIds: [],
+  lastSavedAt: null,
+})
+
+const { draft, replaceSource, markSaved } = useProductEditorDraft(storageKey, createDraftFromProduct(activeProduct.value))
+const newFiles = shallowRef<File[]>([])
+const savedAgo = useTimeAgo(computed(() => draft.value.lastSavedAt || Date.now()))
+
+const currentImages = computed(() =>
+  activeProduct.value.oldImages.filter(image => !draft.value.removedImageIds.includes(image.id)),
+)
 
 watch(
   () => props.productId,
   () => {
-    applyProduct(activeProduct.value)
+    replaceSource(createDraftFromProduct(activeProduct.value))
+    newFiles.value = []
   },
   { immediate: true },
 )
 
-const totalImageCount = computed(() => currentImages.value.length + newImages.value.length)
+const totalImageCount = computed(() => currentImages.value.length + newFiles.value.length)
 
 const completionCount = computed(() =>
   [
-    title.value.trim(),
-    price.value.trim(),
-    description.value.trim(),
-    category.value,
-    condition.value,
-    location.value.trim(),
-    stock.value.trim(),
+    draft.value.fields.title.trim(),
+    draft.value.fields.price.trim(),
+    draft.value.fields.description.trim(),
+    draft.value.fields.category,
+    draft.value.fields.condition,
+    draft.value.fields.location.trim(),
+    draft.value.fields.stock.trim(),
     totalImageCount.value > 0,
   ].filter(Boolean).length,
 )
 
 const completionText = computed(() => `${completionCount.value}/8 trường chính đã hoàn thiện`)
+const completionPercent = computed(() => (completionCount.value / 8) * 100)
 
 const mediaSummary = computed(() => {
   if (totalImageCount.value === 0) return "Không còn ảnh"
   return totalImageCount.value === 1 ? "1 ảnh đang giữ" : `${totalImageCount.value} ảnh đang giữ`
 })
 
-const newImageTiles = computed(() => newImages.value)
-
 const imageButtonLabel = computed(() =>
-  newImages.value.length >= 6 ? "Đã đủ 6 ảnh mới" : "Thêm ảnh mới",
+  newFiles.value.length >= 6 ? "Đã đủ 6 ảnh mới" : "Thêm ảnh mới",
 )
 
 const heroStats = computed<ProductHeroStat[]>(() => [
@@ -258,17 +261,23 @@ const heroStats = computed<ProductHeroStat[]>(() => [
   },
 ])
 
-const previewBackground = computed(() => categoryMeta[category.value].background)
-const previewIcon = computed(() => categoryMeta[category.value].icon)
-const previewCategoryLabel = computed(() => categoryMeta[category.value].label)
-const previewConditionLabel = computed(() => conditionMap[condition.value])
-const previewCurrencyLabel = computed(() => currencyMeta[currency.value].label)
+const previewBackground = computed(() => categoryMeta[draft.value.fields.category].background)
+const previewIcon = computed(() => categoryMeta[draft.value.fields.category].icon)
+const previewCategoryLabel = computed(() => categoryMeta[draft.value.fields.category].label)
+const previewConditionLabel = computed(() => conditionMap[draft.value.fields.condition])
+const previewCurrencyLabel = computed(() => currencyMeta[draft.value.fields.currency].label)
 const previewDescription = computed(() =>
-  description.value.trim() || "Mô tả cập nhật sẽ hiển thị ở đây để bạn kiểm tra trước khi lưu.",
+  draft.value.fields.description.trim() || "Mô tả cập nhật sẽ hiển thị ở đây để bạn kiểm tra trước khi lưu.",
 )
 
-const previewPrice = computed(() => formatProductPrice(price.value, currency.value))
-const stockLabel = computed(() => formatProductStockLabel(stock.value))
+const previewPrice = computed(() => formatProductPrice(draft.value.fields.price, draft.value.fields.currency))
+const stockLabel = computed(() => formatProductStockLabel(draft.value.fields.stock))
+
+const saveHint = computed(() =>
+  draft.value.lastSavedAt
+    ? `Nháp chỉnh sửa được lưu cục bộ ${savedAgo.value}. Ảnh local mới chỉ phục vụ preview UI.`
+    : "Nháp chỉnh sửa chưa được lưu cục bộ. Ảnh local mới chỉ phục vụ preview UI.",
+)
 
 const checklistItems = computed<ProductChecklistItem[]>(() => [
   {
@@ -279,12 +288,14 @@ const checklistItems = computed<ProductChecklistItem[]>(() => [
   {
     label: "Cập nhật nội dung chính",
     description: "Điền đủ tên sản phẩm, giá bán và mô tả để card hiển thị chuẩn.",
-    done: title.value.trim().length > 0 && Number(price.value) > 0 && description.value.trim().length >= 20,
+    done: draft.value.fields.title.trim().length > 0
+      && Number(draft.value.fields.price) > 0
+      && draft.value.fields.description.trim().length >= 20,
   },
   {
     label: "Xử lý ảnh cũ",
     description: "Bạn có thể bỏ bớt ảnh hiện tại trước khi lưu thay đổi.",
-    done: removedImages.value.length >= 0,
+    done: draft.value.removedImageIds.length >= 0,
   },
   {
     label: "Sẵn sàng lưu",
@@ -311,23 +322,46 @@ const editingTips: ProductTipItem[] = [
   },
 ]
 
-const addNewImage = () => {
-  if (newImages.value.length >= 6) return
-  newImages.value.push({ name: `new-image-${newImages.value.length + 1}` })
-}
-
 const removeCurrentImage = (imageId: string) => {
-  currentImages.value = currentImages.value.filter(image => image.id !== imageId)
-  if (!removedImages.value.includes(imageId)) {
-    removedImages.value.push(imageId)
+  if (!draft.value.removedImageIds.includes(imageId)) {
+    draft.value.removedImageIds.push(imageId)
   }
 }
 
-const removeNewImage = (imageName: string) => {
-  newImages.value = newImages.value.filter(image => image.name !== imageName)
+const restoreOriginal = () => {
+  replaceSource(createDraftFromProduct(activeProduct.value))
+  newFiles.value = []
+
+  toast.add({
+    title: "Đã khôi phục dữ liệu gốc",
+    description: "Form đã quay về trạng thái mock ban đầu của sản phẩm.",
+    color: "primary",
+  })
 }
 
-const restoreOriginal = () => {
-  applyProduct(activeProduct.value)
+watchDebounced(
+  [() => draft.value.fields, () => draft.value.removedImageIds.slice(), () => newFiles.value.length],
+  () => {
+    markSaved()
+  },
+  { deep: true, debounce: 800, maxWait: 2000 },
+)
+
+const saveDraft = () => {
+  markSaved()
+  toast.add({
+    title: "Đã lưu nháp chỉnh sửa",
+    description: "Thay đổi hiện tại đã được lưu cục bộ theo mã sản phẩm.",
+    color: "success",
+  })
+}
+
+const submitMock = () => {
+  markSaved()
+  toast.add({
+    title: "Chưa nối API chỉnh sửa",
+    description: "Flow hiện vẫn dừng ở mức UI mock với preview và quản lý ảnh local.",
+    color: "neutral",
+  })
 }
 </script>
