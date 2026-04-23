@@ -1,29 +1,42 @@
 <template>
-  <section class="rounded-[28px] border border-[#dbe3f2] bg-white px-4 py-4 shadow-[0_12px_30px_rgba(15,35,110,0.06)] sm:px-5">
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div class="flex flex-wrap items-center gap-1 sm:gap-2">
+  <section class="surface-card p-4 sm:p-5 ring-1 ring-secondary-100 shadow-lg">
+    <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+      <!-- Tabs Container -->
+      <div class="flex items-center gap-1 sm:gap-4 overflow-x-auto no-scrollbar">
         <NuxtLink
           v-for="tab in tabs"
           :key="tab.value"
           :to="tab.to"
-          class="inline-flex h-12 items-center border-b-2 px-3 text-[14px] font-bold transition sm:text-[15px]"
+          class="inline-flex h-12 items-center px-4 text-xs font-black uppercase tracking-[0.2em] transition-all relative group"
           :class="activeTab === tab.value
-            ? 'border-[#0000ff] text-[#243b63]'
-            : 'border-transparent text-slate-500 hover:text-[#243b63]'"
+            ? 'text-primary-600'
+            : 'text-secondary-400 hover:text-secondary-900'"
         >
           {{ $t(tab.label) }}
+          
+          <!-- Active Indicator -->
+          <div 
+            v-if="activeTab === tab.value"
+            class="absolute bottom-0 left-4 right-4 h-1 rounded-full bg-primary-600 shadow-[0_2px_10px_rgba(37,99,235,0.4)]"
+          />
+          <div 
+            v-else
+            class="absolute bottom-0 left-4 right-4 h-1 rounded-full bg-primary-600 opacity-0 transition-opacity group-hover:opacity-20"
+          />
         </NuxtLink>
       </div>
 
-      <NuxtLink
+      <!-- Action Button -->
+      <UButton
         :to="createTo"
-        class="inline-flex h-12 shrink-0 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-        >
-          <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-          {{ createLabelText }}
-        </NuxtLink>
-      </div>
-    </section>
+        size="xl"
+        icon="i-ph-plus-bold"
+        class="rounded-2xl font-black text-xs uppercase tracking-widest bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-500/30 transition-all active:scale-95"
+      >
+        {{ createLabelText }}
+      </UButton>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">

@@ -12,7 +12,6 @@
         <span>{{ option.label }}</span>
       </label>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">

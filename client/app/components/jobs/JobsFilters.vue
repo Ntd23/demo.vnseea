@@ -1,110 +1,112 @@
 <template>
-  <section class="relative z-10 overflow-hidden rounded-[30px] border border-white/70 bg-white/95 p-4 shadow-[var(--shadow-xl)] backdrop-blur sm:p-5">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-      <div>
-        <p class="text-label-secondary text-[var(--color-primary-600)]">
+  <section class="surface-card p-6 sm:p-10 ring-1 ring-secondary-200/50 shadow-2xl bg-white/60 backdrop-blur-3xl space-y-10 group/filters">
+    <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between border-b border-secondary-100/50 pb-10">
+      <div class="space-y-2">
+        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
           {{ $t("pages.jobsPage.filtersEyebrow") }}
         </p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">
+        <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
           {{ $t("pages.jobsPage.filtersTitle") }}
         </h2>
-        <p class="mt-1 max-w-[620px] text-body-secondary">
+        <p class="text-[13px] font-medium leading-relaxed text-secondary-500 italic max-w-2xl px-0.5">
           {{ $t("pages.jobsPage.filtersDescription") }}
         </p>
       </div>
 
-      <button
-        class="inline-flex h-14 items-center justify-center gap-2 rounded-[20px] bg-[var(--color-primary-500)] px-6 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 lg:min-w-[190px]"
-        type="button"
+      <UButton
+        size="xl"
+        class="h-12 rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-primary-500/30 transition-all hover:-translate-y-0.5 hover:bg-primary-700 active:scale-95 px-8"
         @click="$emit('openPost')"
       >
-        <Icon name="i-ph-plus-circle-fill" class="h-5 w-5" />
+        <template #leading>
+          <Icon name="i-ph-plus-circle-duotone" class="h-5 w-5" />
+        </template>
         {{ $t("pages.jobsPage.postJob") }}
-      </button>
+      </UButton>
     </div>
 
-    <label class="relative mt-5 block">
+    <label class="relative block group/search">
       <Icon
-        name="i-ph-magnifying-glass"
-        class="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-tertiary)]"
+        name="i-ph-magnifying-glass-duotone"
+        class="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-primary-500 transition-transform group-focus-within/search:scale-110"
       />
       <input
         :value="search"
-        class="h-16 w-full rounded-[22px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-14 pr-5 text-[15px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:font-medium placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-200)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]"
+        class="h-14 w-full rounded-2xl border border-secondary-100 bg-secondary-50/50 py-3 pl-13 pr-5 text-[14px] font-black uppercase tracking-widest text-secondary-900 outline-none transition-all placeholder:text-secondary-400 placeholder:font-medium placeholder:normal-case placeholder:tracking-normal focus:border-primary-100 focus:bg-white focus:ring-4 focus:ring-primary-500/5"
         :placeholder="$t('pages.jobsPage.searchPlaceholder')"
         type="search"
         @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
       >
     </label>
 
-    <div class="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-      <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3">
+    <div class="grid gap-8 xl:grid-cols-2">
+      <div class="rounded-3xl bg-secondary-50/50 p-6 ring-1 ring-secondary-100 space-y-6">
         <div class="flex items-center justify-between gap-3 px-1">
-          <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500">
             {{ $t("pages.jobsPage.category") }}
           </p>
-          <span class="text-[12px] font-bold text-[var(--text-tertiary)]">
+          <span class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
             {{ $t("pages.jobsPage.optionCount", { count: categories.length }) }}
           </span>
         </div>
 
-        <div class="mt-3 grid gap-2 sm:grid-cols-2">
+        <div class="grid gap-3 sm:grid-cols-2">
           <button
             v-for="category in categories"
             :key="category.value"
-            class="flex min-h-12 items-center justify-between gap-3 rounded-[18px] px-3 py-2 text-left transition"
+            class="flex items-center justify-between gap-3 rounded-xl px-4 py-3 text-left transition-all active:scale-95 ring-1"
             :class="selectedCategory === category.value
-              ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-              : 'bg-white text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
+              ? 'bg-primary-50 text-primary-600 ring-primary-100 shadow-sm'
+              : 'bg-white text-secondary-500 ring-secondary-100 hover:ring-primary-100 hover:text-primary-600'"
             type="button"
             @click="$emit('update:selectedCategory', category.value)"
           >
-            <span class="inline-flex min-w-0 items-center gap-2 text-[13px] font-extrabold">
-              <Icon :name="category.icon" class="h-4 w-4 shrink-0" />
+            <span class="inline-flex min-w-0 items-center gap-2.5 text-[11px] font-black uppercase tracking-widest">
+              <Icon :name="category.icon.replace('-fill', '-duotone')" class="h-4 w-4 shrink-0" />
               <span class="truncate">{{ category.label }}</span>
             </span>
           </button>
         </div>
       </div>
 
-      <div class="space-y-4">
-        <div>
-          <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+      <div class="space-y-6">
+        <div class="space-y-4">
+          <p class="px-1 text-[9px] font-black uppercase tracking-[0.4em] text-primary-500">
             {{ $t("pages.jobsPage.location") }}
           </p>
-          <div class="mt-3 flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-2.5">
             <button
               v-for="location in locations"
               :key="location.value"
-              class="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-full)] px-4 py-2 text-[13px] font-extrabold transition"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ring-1"
               :class="selectedLocation === location.value
-                ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-                : 'bg-[var(--color-secondary-100)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
+                ? 'bg-primary-50 text-primary-600 ring-primary-100 shadow-sm'
+                : 'bg-secondary-50/50 text-secondary-500 ring-secondary-100 hover:bg-white hover:text-primary-600 hover:ring-primary-100'"
               type="button"
               @click="$emit('update:selectedLocation', location.value)"
             >
-              <Icon :name="location.icon" class="h-4 w-4" />
+              <Icon :name="location.icon.replace('-fill', '-duotone')" class="h-4 w-4" />
               {{ location.label }}
             </button>
           </div>
         </div>
 
-        <div>
-          <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+        <div class="space-y-4">
+          <p class="px-1 text-[9px] font-black uppercase tracking-[0.4em] text-primary-500">
             {{ $t("pages.jobsPage.type") }}
           </p>
-          <div class="mt-3 flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-2.5">
             <button
               v-for="type in types"
               :key="type.value"
-              class="inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-full)] px-4 py-2 text-[13px] font-extrabold transition"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ring-1"
               :class="selectedType === type.value
-                ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-                : 'bg-[var(--color-secondary-100)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
+                ? 'bg-primary-50 text-primary-600 ring-primary-100 shadow-sm'
+                : 'bg-secondary-50/50 text-secondary-500 ring-secondary-100 hover:bg-white hover:text-primary-600 hover:ring-primary-100'"
               type="button"
               @click="$emit('update:selectedType', type.value)"
             >
-              <Icon :name="type.icon" class="h-4 w-4" />
+              <Icon :name="type.icon.replace('-fill', '-duotone')" class="h-4 w-4" />
               {{ type.label }}
             </button>
           </div>
@@ -112,28 +114,28 @@
       </div>
     </div>
 
-    <div class="mt-5 flex flex-col gap-3 rounded-[24px] border border-[var(--border-default)] bg-white px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
-      <div>
-        <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+    <div class="flex flex-col gap-6 rounded-3xl border border-secondary-100/50 bg-secondary-50/30 p-6 lg:flex-row lg:items-center lg:justify-between">
+      <div class="space-y-1">
+        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
           {{ $t("pages.jobsPage.sort") }}
         </p>
-        <p class="mt-1 text-[13px] font-semibold text-[var(--text-secondary)]">
+        <p class="text-[13px] font-medium text-secondary-500 italic px-1">
           {{ $t("pages.jobsPage.resultSummary", { count: resultCount, summary: activeSummary }) }}
         </p>
       </div>
 
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap gap-2.5">
         <button
           v-for="sortOption in sortOptions"
           :key="sortOption.value"
-          class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] px-4 text-[13px] font-extrabold transition"
+          class="inline-flex h-10 items-center justify-center gap-2.5 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 ring-1"
           :class="sortBy === sortOption.value
-            ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-            : 'bg-[var(--color-secondary-100)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
+            ? 'bg-primary-50 text-primary-600 ring-primary-100 shadow-sm'
+            : 'bg-white text-secondary-500 ring-secondary-100 hover:border-primary-100 hover:text-primary-600'"
           type="button"
           @click="$emit('update:sortBy', sortOption.value)"
         >
-          <Icon :name="sortOption.icon" class="h-4 w-4" />
+          <Icon :name="sortOption.icon.replace('-fill', '-duotone')" class="h-4 w-4" />
           {{ sortOption.label }}
         </button>
       </div>

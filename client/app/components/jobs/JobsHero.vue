@@ -1,60 +1,65 @@
 <template>
-  <section class="relative overflow-hidden rounded-[30px] bg-[linear-gradient(135deg,var(--color-primary-700)_0%,var(--color-primary-500)_58%,var(--color-accent-500)_132%)] px-5 pb-16 pt-7 text-white shadow-[var(--shadow-xl)] sm:px-7 lg:px-8">
-    <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
-    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.14)_100%)]" />
+  <section class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 text-white shadow-2xl group/hero">
+    <!-- Premium Decorations -->
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.1),transparent_40%)]" />
+    <div class="button-shadow-sm absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
 
-    <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-[780px]">
-        <p class="text-label-secondary text-white/72">
+    <div class="relative z-10 flex flex-col gap-10 px-8 py-12 sm:px-12 lg:px-16 xl:flex-row xl:items-end xl:justify-between">
+      <div class="max-w-[780px] space-y-6">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-300/80 pl-1">
           {{ $t("pages.jobsPage.heroEyebrow") }}
         </p>
-        <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight text-white">
           {{ $t("pages.jobsPage.heroTitle") }}
         </h1>
-        <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
+        <p class="text-base font-medium leading-relaxed text-white/78 sm:text-lg pl-0.5 max-w-2xl">
           {{ $t("pages.jobsPage.heroDescription") }}
         </p>
 
-        <div class="mt-7 flex flex-wrap items-center gap-3">
-          <button
-            class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] bg-white px-5 text-[14px] font-extrabold text-[var(--color-primary-600)] shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
-            type="button"
+        <div class="flex flex-wrap items-center gap-4 pt-4">
+          <UButton
+            size="xl"
+            class="h-14 rounded-2xl bg-white text-primary-950 hover:bg-primary-50 font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-white/10 transition-all active:scale-95 px-10"
             @click="$emit('openPost')"
           >
-            <Icon name="i-ph-briefcase-fill" class="mr-2 h-4 w-4" />
+            <template #leading>
+              <Icon name="i-ph-briefcase-duotone" class="h-5 w-5" />
+            </template>
             {{ $t("pages.jobsPage.postJob") }}
-          </button>
+          </UButton>
 
-          <button
-            class="inline-flex h-12 items-center justify-center rounded-[var(--radius-full)] px-5 text-[14px] font-extrabold shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
-            :class="savedOnly ? 'bg-white text-[var(--color-primary-600)]' : 'bg-[var(--color-accent-100)] text-[var(--color-primary-900)]'"
-            type="button"
+          <UButton
+            variant="soft"
+            size="xl"
+            class="h-14 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-xl transition-all active:scale-95 px-8"
             @click="$emit('toggleSaved')"
           >
-            <Icon name="i-ph-bookmark-simple-fill" class="mr-2 h-4 w-4" />
+            <template #leading>
+              <Icon :name="savedOnly ? 'i-ph-bookmark-simple-fill' : 'i-ph-bookmark-simple-duotone'" class="h-5 w-5" />
+            </template>
             {{ $t("pages.jobsPage.savedJobs") }}
-          </button>
+          </UButton>
 
-          <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] border border-white/20 bg-white/10 px-4 py-2 text-[13px] font-semibold text-white/90">
-            <Icon name="i-ph-list-magnifying-glass-fill" class="h-4 w-4 text-[var(--color-accent-100)]" />
+          <div class="inline-flex h-14 items-center gap-3 rounded-2xl border border-white/5 bg-white/5 px-6 text-[11px] font-black uppercase tracking-widest text-white/90 backdrop-blur-md">
+            <Icon name="i-ph-list-magnifying-glass-duotone" class="h-5 w-5 text-primary-300" />
             {{ $t("pages.jobsPage.jobCount", { count: jobCount }) }}
           </div>
         </div>
       </div>
 
-      <div class="grid gap-3 sm:grid-cols-3 xl:w-[430px] xl:grid-cols-1">
+      <div class="grid gap-4 sm:grid-cols-3 xl:w-[420px] xl:grid-cols-1">
         <div
           v-for="item in stats"
           :key="item.label"
-          class="rounded-[var(--radius-xl)] border border-white/15 bg-white/10 p-4 backdrop-blur-[6px]"
+          class="group/stat rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/10"
         >
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
+          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
             {{ item.label }}
           </p>
-          <p class="mt-2 text-[1.6rem] font-black leading-none text-white">
+          <p class="mt-4 text-4xl font-black text-white leading-none tracking-tight">
             {{ item.value }}
           </p>
-          <p class="mt-1 text-[13px] leading-5 text-white/74">
+          <p class="mt-2 text-[10px] font-bold text-white/40 group-hover/stat:text-white/60">
             {{ item.description }}
           </p>
         </div>

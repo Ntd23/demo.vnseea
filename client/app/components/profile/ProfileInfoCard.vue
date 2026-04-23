@@ -1,31 +1,45 @@
 <template>
-  <div class="surface-card rounded-[18px] border border-[#0000ff]/10 p-3 shadow-[0_2px_14px_rgba(0,0,255,0.05)]">
-    <div class="flex items-center gap-2">
-      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-[#0000ff] text-white">
-        <Icon :name="icon" class="h-4 w-4" />
+  <div class="surface-card p-4 space-y-4">
+    <div class="flex items-center gap-3">
+      <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 shadow-sm border border-primary-100">
+        <Icon :name="icon" class="h-5 w-5" />
       </div>
-      <p class="text-title-primary text-[15px] font-semibold">{{ title }}</p>
+      <p class="text-base font-black text-secondary-900 tracking-tight">{{ title }}</p>
     </div>
 
-    <div class="mt-3 divide-y divide-slate-200 rounded-[14px] border border-slate-200 bg-white">
-      <div v-for="row in rows" :key="row.label" class="flex items-center gap-3 px-3 py-2.5 text-[13px]">
-        <Icon :name="row.icon" class="h-4 w-4 text-slate-500" />
-        <span v-if="row.left" class="flex-1 leading-6 text-slate-700">{{ row.left }}</span>
+    <div class="overflow-hidden rounded-2xl border border-secondary-100 bg-secondary-50/20 divide-y divide-secondary-100/50">
+      <div v-for="row in rows" :key="row.label" class="flex items-center gap-4 px-4 py-3.5 group transition-colors hover:bg-white/60">
+        <Icon :name="row.icon" class="h-5 w-5 text-secondary-400 group-hover:text-primary-500 transition-colors" />
+        <span v-if="row.left" class="flex-1 text-sm font-semibold text-secondary-800">{{ row.left }}</span>
         <template v-else>
-          <span v-if="row.center" class="flex-1 text-center text-slate-700">{{ row.center }}</span>
-          <span v-if="row.right" :class="row.rightClass || 'text-slate-700'">{{ row.right }}</span>
+          <span v-if="row.center" class="flex-1 text-center text-sm font-bold text-secondary-900">{{ row.center }}</span>
+          <span v-if="row.right" :class="[row.rightClass || 'text-secondary-600', 'text-sm font-bold']">{{ row.right }}</span>
         </template>
       </div>
     </div>
 
-    <div class="mt-3 overflow-hidden rounded-[14px] border border-slate-200 bg-[#f7f9ff]">
-      <div class="relative h-[260px] bg-[linear-gradient(180deg,#f8f5e9_0%,#eef3ff_38%,#f6e7ef_100%)]">
-        <div class="absolute left-3 top-3 flex flex-col overflow-hidden rounded-[6px] border border-slate-300 bg-white shadow-sm">
-          <button class="h-9 w-9 border-b border-slate-200 text-[22px] leading-none text-slate-700" type="button">+</button>
-          <button class="h-9 w-9 text-[22px] leading-none text-slate-700" type="button">−</button>
+    <!-- Premium Map Preview Placeholder -->
+    <div class="group relative mt-4 overflow-hidden rounded-2xl border border-secondary-200 bg-secondary-100/30 aspect-[4/3] sm:aspect-auto sm:h-[200px]">
+      <div class="absolute inset-0 bg-[linear-gradient(135deg,var(--tw-gradient-from),var(--tw-gradient-to))] from-primary-50 to-secondary-100 opacity-60" />
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.03)_1px,transparent_1px)] [background-size:20px_20px]" />
+      
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="relative">
+          <div class="animate-ping absolute -inset-1 rounded-full bg-primary-400 opacity-30"></div>
+          <Icon name="i-ph-map-pin-fill" class="relative h-10 w-10 text-primary-600 drop-shadow-lg" />
         </div>
-        <div class="absolute inset-0 opacity-70 [background-image:radial-gradient(circle_at_48%_50%,rgba(43,114,255,0.75)_0,rgba(43,114,255,0.75)_7px,transparent_8px),linear-gradient(90deg,transparent_0,transparent_24%,rgba(0,0,0,0.03)_24%,rgba(0,0,0,0.03)_26%,transparent_26%,transparent_100%),linear-gradient(0deg,transparent_0,transparent_24%,rgba(0,0,0,0.03)_24%,rgba(0,0,0,0.03)_26%,transparent_26%,transparent_100%)]" />
-        <div class="absolute bottom-3 right-3 text-[12px] text-slate-600">Leaflet</div>
+      </div>
+
+      <div class="absolute bottom-3 left-1/2 -translate-x-1/2">
+        <UBadge color="white" variant="solid" size="xs" class="rounded-full shadow-sm font-bold px-3 text-secondary-500 border border-secondary-200">
+          Google Maps
+        </UBadge>
+      </div>
+
+      <div class="absolute left-3 top-3 flex flex-col items-center gap-1.5 p-1 rounded-xl bg-white/80 backdrop-blur-md shadow-lg border border-white/40">
+        <UButton color="gray" variant="ghost" icon="i-ph-plus-bold" size="xs" class="rounded-lg h-8 w-8" />
+        <div class="w-4 h-px bg-secondary-200" />
+        <UButton color="gray" variant="ghost" icon="i-ph-minus-bold" size="xs" class="rounded-lg h-8 w-8" />
       </div>
     </div>
   </div>

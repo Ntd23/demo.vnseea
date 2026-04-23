@@ -1,229 +1,241 @@
 <template>
-  <section class="rounded-[30px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-8">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-      <div class="max-w-[760px]">
-        <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+  <section class="surface-card p-6 sm:p-10 space-y-10 ring-1 ring-secondary-100 shadow-2xl">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between border-b border-secondary-50 pb-8">
+      <div class="max-w-3xl space-y-2">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
           {{ $t("community.creation.common.basicSetup") }}
         </p>
-        <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[1.75rem]">
+        <h2 class="text-4xl font-black tracking-tight text-secondary-900 leading-tight">
           {{ $t("community.creation.common.fillInfo", { entity: $t(entityLabel) }) }}
         </h2>
-        <p class="mt-2 text-[14px] leading-7 text-slate-500">
+        <p class="text-sm font-medium leading-relaxed text-secondary-500 pl-0.5">
           {{ $t("community.creation.common.fillDesc", { entity: $t(entityLabel) }) }}
         </p>
       </div>
 
-      <div class="inline-flex items-center gap-2 rounded-full bg-[#f6f8ff] px-4 py-2 text-[12px] font-semibold text-slate-600">
-        <Icon name="i-ph-check-circle-fill" class="h-4 w-4 text-[#0000ff]" />
+      <UBadge
+        variant="soft"
+        size="lg"
+        class="rounded-xl px-5 font-black uppercase tracking-widest h-11 bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm"
+      >
+        <template #leading>
+          <Icon name="i-ph-check-circle-duotone" class="h-4 w-4 mr-2" />
+        </template>
         {{ $t("community.creation.common.completionStatus", { count: completionCount, total: completionTotal }) }}
-      </div>
+      </UBadge>
     </div>
 
-    <div class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_340px]">
-      <div class="space-y-6">
-        <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+    <div class="grid gap-10 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+      <div class="space-y-10">
+        <!-- Identity Section -->
+        <section class="surface-card p-6 sm:p-8 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-8 group hover:bg-white transition-all duration-500">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-secondary-100 pb-6">
+            <div class="space-y-1">
+              <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
                 {{ identitySectionLabelText }}
               </p>
-              <p class="mt-1 text-[15px] font-black text-[#243b63]">
+              <p class="text-xl font-black text-secondary-900 leading-none tracking-tight">
                 {{ identitySectionTitleText }}
               </p>
             </div>
 
-            <div class="inline-flex items-center rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
+            <UBadge variant="soft" class="rounded-lg bg-white ring-1 ring-secondary-100 text-secondary-400 font-black text-[9px] uppercase tracking-widest px-3 py-1.5 shadow-sm">
               {{ identitySectionBadgeText }}
-            </div>
+            </UBadge>
           </div>
 
-          <div class="mt-5 space-y-6">
-            <label class="block">
-              <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-                {{ nameLabelText }}
-              </span>
-              <input
+          <div class="space-y-8">
+            <UFormGroup :label="nameLabelText" class="space-y-3" :ui="{ label: { base: 'text-xs font-black uppercase tracking-widest text-secondary-900 mb-2 block pl-1' } }">
+              <UInput
                 v-model="model.name"
                 :placeholder="namePlaceholder"
-                class="mt-3 h-[76px] w-full rounded-[24px] border border-[#d1d5db] bg-white px-5 text-[1.05rem] text-slate-900 outline-none transition placeholder:text-slate-300 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
-                type="text"
-              >
-              <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
-                <span class="rounded-full bg-white px-3 py-1.5 shadow-[0_6px_14px_rgba(15,35,110,0.04)]">
+                size="xl"
+                class="rounded-2xl"
+                :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[64px] text-lg px-6' }, base: 'bg-white ring-1 ring-secondary-200 focus:ring-primary-500' }"
+              />
+              <div class="mt-2 flex flex-wrap items-center gap-2">
+                <UBadge color="white" variant="soft" class="rounded-lg bg-white/50 text-secondary-400 font-bold text-[10px] px-3 py-1 border border-secondary-100 italic">
                   {{ identityHintText }}
-                </span>
-                <span
-                  v-if="isNameReady"
-                  class="rounded-full bg-[#effaf3] px-3 py-1.5 font-semibold text-[#1f7a38]"
-                >
-                  {{ identityReadyLabelText }}
-                </span>
+                </UBadge>
+                <transition enter-active-class="duration-300 ease-out" enter-from-class="transform scale-95 opacity-0" enter-to-class="transform scale-100 opacity-100">
+                  <UBadge v-if="isNameReady" color="emerald" variant="soft" class="rounded-lg font-bold text-[10px] px-3 py-1 uppercase tracking-tight">
+                    {{ identityReadyLabelText }}
+                  </UBadge>
+                </transition>
               </div>
-            </label>
+            </UFormGroup>
 
-            <label class="block">
-              <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-                {{ urlLabelText }}
-              </span>
-              <div class="relative mt-3">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-5 text-[1rem] font-medium text-slate-500">
+            <UFormGroup :label="urlLabelText" class="space-y-3" :ui="{ label: { base: 'text-xs font-black uppercase tracking-widest text-secondary-900 mb-2 block pl-1' } }">
+              <div class="relative group/input">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-6 text-sm font-black text-secondary-400 pointer-events-none group-focus-within/input:text-primary-500 transition-colors">
                   {{ urlPrefix }}
                 </div>
-                <input
+                <UInput
                   v-model="model.slug"
                   :placeholder="slugPlaceholder"
-                  class="h-[76px] w-full rounded-[24px] border border-[#d1d5db] bg-white pl-[182px] pr-5 text-[1.05rem] text-slate-900 outline-none transition placeholder:text-slate-300 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8 sm:pl-[194px]"
-                  type="text"
-                >
+                  size="xl"
+                  class="rounded-2xl"
+                  :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[64px] text-lg pl-[164px] pr-6' }, base: 'bg-white ring-1 ring-secondary-200 focus:ring-primary-500' }"
+                />
               </div>
 
-              <div class="mt-3 flex flex-col gap-2 rounded-[18px] bg-white px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)] sm:flex-row sm:items-center sm:justify-between">
-                <div class="min-w-0">
-                  <p class="text-[12px] font-semibold text-slate-500">
+              <div class="mt-4 flex flex-col gap-3 rounded-2xl bg-white p-4 ring-1 ring-secondary-100 shadow-sm transition-all group-hover:shadow-md sm:flex-row sm:items-center sm:justify-between">
+                <div class="space-y-1">
+                  <p class="text-[9px] font-black uppercase tracking-widest text-secondary-400">
                     {{ $t("community.creation.common.urlSuggested") }}
                   </p>
-                  <p class="mt-1 break-all text-[13px] font-medium text-[#243b63]">
+                  <p class="text-xs font-black text-primary-600 truncate max-w-[280px]">
                     {{ urlPrefix }}{{ suggestedSlug || $t("community.creation.common.urlDefault") }}
                   </p>
                 </div>
 
-                <button
+                <UButton
                   v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
-                  class="inline-flex h-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f7f9ff] px-4 text-[12px] font-bold text-[#243b63] transition hover:border-[#c5caff] hover:text-[#0000ff]"
-                  type="button"
+                  size="sm"
+                  color="white"
+                  variant="soft"
+                  class="rounded-xl font-black text-[10px] uppercase tracking-widest bg-secondary-50 hover:bg-secondary-100 text-secondary-900 border border-secondary-100 px-4 py-2 transition-all active:scale-95"
                   @click="applySuggestedSlug"
                 >
                   {{ $t("community.creation.common.useSuggestion") }}
-                </button>
+                </UButton>
               </div>
-            </label>
+            </UFormGroup>
           </div>
         </section>
 
-        <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            {{ descriptionSectionLabelText }}
-          </p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">
-            {{ descriptionSectionTitleText }}
-          </p>
+        <!-- Description Section -->
+        <section class="surface-card p-6 sm:p-8 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-8 group hover:bg-white transition-colors duration-500">
+          <div class="space-y-1 border-b border-secondary-100 pb-6">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+              {{ descriptionSectionLabelText }}
+            </p>
+            <p class="text-lg font-black text-secondary-900 leading-none">
+              {{ descriptionSectionTitleText }}
+            </p>
+          </div>
 
-          <label class="mt-5 block">
-            <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-              {{ descriptionLabelText }}
-            </span>
-            <textarea
+          <UFormGroup :label="descriptionLabelText" class="space-y-3" :ui="{ label: { base: 'text-xs font-black uppercase tracking-widest text-secondary-900 mb-2 block pl-1' } }">
+            <UTextarea
               v-model="model.description"
               :placeholder="descriptionPlaceholder"
-              class="mt-3 min-h-[210px] w-full rounded-[24px] border border-[#d1d5db] bg-white px-5 py-4 text-[1.02rem] leading-7 text-slate-900 outline-none transition placeholder:text-slate-300 focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
-            ></textarea>
-          </label>
-
-          <div class="mt-3 flex flex-col gap-2 rounded-[18px] bg-white px-4 py-3 text-[12px] text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)] sm:flex-row sm:items-center sm:justify-between">
-            <p>
-              {{ descriptionHintText }}
-            </p>
-            <span class="font-semibold text-[#243b63]">
-              {{ $t("community.creation.common.charCount", { count: descriptionLength }) }}
-            </span>
-          </div>
+              size="xl"
+              :rows="6"
+              class="rounded-3xl"
+              :ui="{ rounded: 'rounded-3xl', base: 'bg-white ring-1 ring-secondary-200 focus:ring-primary-500 px-6 py-5 text-base leading-relaxed' }"
+            />
+            <div class="mt-4 flex flex-col gap-2 rounded-2xl bg-white p-4 ring-1 ring-secondary-100 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+              <p class="text-[11px] font-medium text-secondary-500">
+                {{ descriptionHintText }}
+              </p>
+              <UBadge color="white" variant="soft" class="rounded-lg bg-secondary-50 text-secondary-400 font-black text-[10px] uppercase tracking-widest px-3 py-1">
+                {{ $t("community.creation.common.charCount", { count: descriptionLength }) }}
+              </UBadge>
+            </div>
+          </UFormGroup>
         </section>
 
-        <section class="rounded-[26px] border border-[#e8edf7] bg-[#fbfcff] p-5">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            {{ configurationSectionLabelText }}
-          </p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">
-            {{ configurationSectionTitleText }}
-          </p>
+        <!-- Configuration Section -->
+        <section class="surface-card p-6 sm:p-8 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-8 group hover:bg-white transition-colors duration-500">
+          <div class="space-y-1 border-b border-secondary-100 pb-6">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+              {{ configurationSectionLabelText }}
+            </p>
+            <p class="text-lg font-black text-secondary-900 leading-none">
+              {{ configurationSectionTitleText }}
+            </p>
+          </div>
 
-          <div
-            v-if="showPrivacy"
-            class="mt-5 grid gap-3 sm:grid-cols-3"
-          >
+          <div v-if="showPrivacy" class="grid gap-4 sm:grid-cols-3">
             <button
               v-for="option in privacyOptions"
               :key="option.value"
-              class="rounded-[22px] border px-4 py-4 text-left transition"
+              class="flex flex-col h-full rounded-2xl border p-5 text-left transition-all duration-300 relative group/opt overflow-hidden"
               :class="model.privacy === option.value
-                ? 'border-[#0000ff]/25 bg-[#eef0ff] shadow-[0_12px_24px_rgba(0,0,255,0.08)]'
-                : 'border-[#dbe3f2] bg-white hover:border-[#c5caff] hover:bg-[#f8fbff]'"
+                ? 'border-primary-400 bg-primary-50/50 shadow-xl ring-1 ring-primary-100'
+                : 'border-secondary-100 bg-white hover:border-primary-200 hover:bg-primary-50/10'"
               type="button"
               @click="selectPrivacy(option.value)"
             >
-              <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.05)]">
-                <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
+              <div class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-primary-100/20 blur-xl opacity-0 transition-opacity group-hover/opt:opacity-100" />
+              
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-sm transition-all duration-500 group-hover/opt:scale-110 group-hover/opt:rotate-3"
+                :class="model.privacy === option.value ? 'bg-primary-600 text-white shadow-primary-500/30' : 'bg-secondary-50 text-secondary-400 border border-secondary-50'"
+              >
+                <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-6 w-6" />
               </div>
-              <p class="mt-4 text-[14px] font-black text-[#243b63]">
+              
+              <p class="mt-5 text-sm font-black tracking-tight text-secondary-900">
                 {{ $t(option.label) }}
               </p>
-              <p class="mt-2 text-[12px] leading-5 text-slate-500">
+              <p class="mt-2 text-[11px] leading-relaxed font-medium text-secondary-500">
                 {{ option.description ? $t(option.description) : "" }}
               </p>
+
+              <div v-if="model.privacy === option.value" class="absolute top-4 right-4">
+                <Icon name="i-ph-seal-check-fill" class="h-5 w-5 text-primary-600 animate-pulse" />
+              </div>
             </button>
           </div>
 
-          <label class="mt-5 block">
-            <span class="text-[1.02rem] font-black text-[#3a3a3a] sm:text-[1.16rem]">
-              {{ categoryLabelText }}
-            </span>
-            <div class="relative mt-3">
-              <select
-                v-model="model.category"
-                class="h-[76px] w-full appearance-none rounded-[24px] border border-[#d1d5db] bg-white px-5 pr-14 text-[1rem] font-medium text-slate-700 outline-none transition focus:border-[#0000ff]/35 focus:ring-4 focus:ring-[#0000ff]/8"
-              >
-                <option
-                  v-for="option in categoryOptions"
-                  :key="option.value"
-                  :value="option.value"
-                >
-                  {{ $t(option.label) }}
-                </option>
-              </select>
-              <Icon name="i-ph-caret-down" class="pointer-events-none absolute right-5 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500" />
+          <UFormGroup :label="categoryLabelText" class="space-y-3" :ui="{ label: { base: 'text-xs font-black uppercase tracking-widest text-secondary-900 mb-2 block pl-1' } }">
+            <USelect
+              v-model="model.category"
+              :options="categoryOptions.map(o => ({ label: $t(o.label), value: o.value }))"
+              size="xl"
+              class="rounded-2xl"
+              :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[64px] text-lg px-6' }, base: 'bg-white ring-1 ring-secondary-200 focus:ring-primary-500 appearance-none' }"
+            />
+            <div class="mt-4 rounded-2xl bg-white p-4 ring-1 ring-secondary-100 shadow-sm">
+              <p class="text-[11px] font-medium leading-relaxed text-secondary-500 italic">
+                {{ selectedCategoryDescription }}
+              </p>
             </div>
-          </label>
-
-          <div class="mt-3 rounded-[18px] bg-white px-4 py-3 text-[13px] leading-6 text-slate-500 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-            {{ selectedCategoryDescription }}
-          </div>
+          </UFormGroup>
         </section>
 
-        <section class="rounded-[24px] border border-[#dbe3f2] bg-white px-4 py-4 sm:px-5">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+        <!-- Final Action Section -->
+        <section class="surface-card p-8 sm:p-10 bg-secondary-900 shadow-2xl ring-1 ring-white/10 relative overflow-hidden group">
+          <div class="absolute inset-0 bg-gradient-to-br from-primary-600/30 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+          
+          <div class="relative z-10 flex flex-col gap-10 sm:flex-row sm:items-center sm:justify-between">
+            <div class="space-y-2">
+              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-400 pl-1">
                 {{ $t("community.creation.common.action") }}
               </p>
-              <p class="mt-1 text-[14px] leading-6 text-slate-500">
+              <p class="text-sm font-medium leading-relaxed text-white/70 max-w-md italic">
                 {{ actionDescriptionText }}
               </p>
             </div>
 
-            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
-              <NuxtLink
+            <div class="flex flex-col-reverse gap-5 sm:flex-row sm:items-center">
+              <UButton
                 :to="backTo"
-                class="inline-flex h-14 min-w-[180px] items-center justify-center rounded-full border border-transparent bg-transparent px-5 text-[1rem] font-semibold text-slate-500 transition hover:text-[#243b63]"
+                variant="ghost"
+                size="xl"
+                icon="i-ph-arrow-left-bold"
+                class="rounded-2xl font-black text-[11px] uppercase tracking-widest text-white/60 hover:text-white hover:bg-white/10 transition-all"
               >
-                <Icon name="i-ph-arrow-left" class="mr-2 h-5 w-5" />
                 {{ backLabelText }}
-              </NuxtLink>
+              </UButton>
 
-              <NuxtLink
+              <UButton
                 v-if="submitTo"
                 :to="submitTo"
-                class="inline-flex h-14 min-w-[210px] items-center justify-center rounded-[18px] bg-[#0000ff] px-6 text-[1.02rem] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e6]"
+                size="xl"
+                class="min-w-[220px] rounded-2xl font-black text-[11px] uppercase tracking-widest bg-primary-600 hover:bg-primary-700 text-white shadow-2xl shadow-primary-500/40 transition-all active:scale-95 py-4"
               >
                 {{ submitLabelText }}
-              </NuxtLink>
+              </UButton>
 
-              <button
+              <UButton
                 v-else
-                class="inline-flex h-14 min-w-[210px] items-center justify-center rounded-[18px] bg-[#0000ff] px-6 text-[1.02rem] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e6]"
-                type="button"
+                size="xl"
+                class="min-w-[220px] rounded-2xl font-black text-[11px] uppercase tracking-widest bg-primary-600 hover:bg-primary-700 text-white shadow-2xl shadow-primary-500/40 transition-all active:scale-95 py-4"
+                @click="$emit('submit')"
               >
                 {{ submitLabelText }}
-              </button>
+              </UButton>
             </div>
           </div>
         </section>

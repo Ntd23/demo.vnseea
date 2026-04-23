@@ -1,70 +1,90 @@
 <template>
-  <div class="space-y-5">
-    <section class="rounded-[28px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf7_100%)] p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-      <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+  <div class="space-y-6">
+    <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
         {{ $t("orders.sidebar.coordination") }}
       </p>
 
-      <OrdersOrderPriceSummary :order="order" class="mt-4" />
+      <div class="space-y-4">
+        <OrdersOrderPriceSummary
+          :order="order"
+          card-class="surface-card p-6 bg-primary-50/30 ring-1 ring-primary-100 shadow-sm"
+        />
 
-      <div class="mt-4 grid gap-3">
-        <div class="rounded-[18px] border border-[#eef2f8] bg-white px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+        <!-- Payment Info Card -->
+        <div class="surface-card p-5 bg-white ring-1 ring-secondary-100 space-y-4 group/info">
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
             {{ $t("orders.summary.totalPayment") }}
           </p>
-          <p class="mt-2 text-[14px] font-black text-[#243b63]">
-            {{ $t(order.paymentMethod) }}
-          </p>
-          <div class="mt-2 flex flex-wrap items-center gap-2">
-            <span
-              class="inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-bold"
-              :class="paymentMeta.badgeClass"
-            >
-              {{ $t(paymentMeta.label) }}
-            </span>
-            <span class="text-[12px] text-slate-500">
-              {{ order.paymentReference }}
-            </span>
+          <div class="flex flex-col gap-2">
+            <p class="text-sm font-black text-secondary-900 group-hover/info:text-primary-700 transition-colors">
+              {{ $t(order.paymentMethod) }}
+            </p>
+            <div class="flex flex-wrap items-center gap-3">
+              <UBadge
+                variant="soft"
+                class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2.5 py-1 ring-1 ring-inset"
+                :class="paymentMeta.badgeClass"
+              >
+                {{ $t(paymentMeta.label) }}
+              </UBadge>
+              <span class="text-[10px] font-bold text-secondary-400 tracking-wider">
+                #{{ order.paymentReference }}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div class="rounded-[18px] border border-[#eef2f8] bg-white px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+        <!-- Payout Info Card -->
+        <div class="surface-card p-5 bg-white ring-1 ring-secondary-100 space-y-4 group/payout">
+          <p class="text-[10px] font-black uppercase tracking-[0.18em] text-secondary-400 pl-1">
             {{ $t("orders.sidebar.payoutShop") }}
           </p>
-          <div class="mt-2 flex flex-wrap items-center gap-2">
-            <p class="text-[14px] font-black text-[#243b63]">
-              {{ formatOrderCurrency(order.payoutAmount) }}
-            </p>
-            <span
-              class="inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-bold"
-              :class="payoutMeta.badgeClass"
-            >
-              {{ $t(payoutMeta.label) }}
-            </span>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between gap-3">
+              <p class="text-base font-black text-secondary-900 group-hover/payout:text-primary-700 transition-colors">
+                {{ formatOrderCurrency(order.payoutAmount) }}
+              </p>
+              <UBadge
+                variant="soft"
+                class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2.5 py-1 ring-1 ring-inset"
+                :class="payoutMeta.badgeClass"
+              >
+                {{ $t(payoutMeta.label) }}
+              </UBadge>
+            </div>
+            <div class="space-y-1">
+              <p class="text-[11px] font-semibold text-secondary-500 leading-relaxed italic">
+                {{ $t(order.payoutWindow) }}
+              </p>
+              <p class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">
+                ID: {{ order.payoutReference }}
+              </p>
+            </div>
           </div>
-          <p class="mt-2 text-[12px] leading-6 text-slate-500">
-            {{ $t(order.payoutWindow) }}
-          </p>
-          <p class="mt-1 text-[12px] text-slate-400">
-            {{ order.payoutReference }}
-          </p>
         </div>
 
-        <div class="rounded-[18px] border border-[#eef2f8] bg-white px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+        <!-- Shipping Info Card -->
+        <div class="surface-card p-5 bg-white ring-1 ring-secondary-100 space-y-4 group/ship">
+          <p class="text-[10px] font-black uppercase tracking-[0.18em] text-secondary-400 pl-1">
             {{ $t("orders.detail.shippingProvider") }}
           </p>
-          <p class="mt-2 text-[14px] font-black text-[#243b63]">
-            {{ order.shippingProvider }}
-          </p>
-          <p class="mt-2 text-[12px] text-slate-500">
-            {{ $t("orders.detail.trackingCodeLabel", { code: $t(order.trackingCode) }) }}
-          </p>
+          <div class="space-y-2">
+            <p class="text-sm font-black text-secondary-900 group-hover/ship:text-primary-700 transition-colors">
+              {{ order.shippingProvider }}
+            </p>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary-50 border border-secondary-100">
+              <Icon name="i-ph-package-duotone" class="h-3.5 w-3.5 text-secondary-400" />
+              <p class="text-[10px] font-black text-secondary-600 uppercase tracking-widest">
+                {{ $t(order.trackingCode) }}
+              </p>
+            </div>
+          </div>
         </div>
 
+        <!-- Payout Status Hint -->
         <div
-          class="rounded-[18px] px-4 py-3 text-[13px] leading-6"
+          class="surface-card p-5 text-xs font-black uppercase tracking-widest leading-relaxed text-center"
           :class="payoutMeta.panelClass"
         >
           {{ $t(payoutMeta.description) }}
@@ -72,32 +92,39 @@
       </div>
     </section>
 
-    <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-      <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+    <!-- Task Section -->
+    <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
         {{ $t("orders.sidebar.tasks") }}
       </p>
 
-      <div class="mt-4 grid gap-3">
-        <button
-          class="inline-flex h-11 items-center justify-center rounded-full bg-[#243b63] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(36,59,99,0.18)] transition hover:-translate-y-0.5"
-          type="button"
+      <div class="flex flex-col gap-3">
+        <UButton
+          size="xl"
+          icon="i-ph-lightning-duotone"
+          class="rounded-2xl bg-secondary-900 hover:bg-black text-white font-black text-xs uppercase tracking-widest h-12 shadow-lg transition-all active:scale-95"
         >
           {{ $t(primaryActionLabel) }}
-        </button>
+        </UButton>
 
-        <button
-          class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-5 text-[14px] font-semibold text-slate-600 transition hover:border-[#c5caff] hover:text-[#243b63]"
-          type="button"
+        <UButton
+          color="white"
+          variant="soft"
+          size="xl"
+          icon="i-ph-chat-circle-dots-duotone"
+          class="rounded-2xl border border-secondary-200 bg-white hover:bg-secondary-50 text-secondary-900 font-black text-xs uppercase tracking-widest h-12 shadow-sm transition-all active:scale-95"
         >
           {{ $t("orders.card.contactBuyer", { buyer: order.buyerName }) }}
-        </button>
+        </UButton>
 
-        <NuxtLink
+        <UButton
           to="/my-products"
-          class="inline-flex h-11 items-center justify-center rounded-full bg-[#9ad89f] px-5 text-[14px] font-extrabold text-[#1f4d26] shadow-[0_10px_22px_rgba(154,216,159,0.22)] transition hover:-translate-y-0.5"
+          size="xl"
+          icon="i-ph-arrow-left-duotone"
+          class="rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-black text-xs uppercase tracking-widest h-12 shadow-xl shadow-primary-500/30 transition-all active:scale-95"
         >
           {{ $t("orders.sidebar.backToProducts") }}
-        </NuxtLink>
+        </UButton>
       </div>
     </section>
   </div>

@@ -1,33 +1,42 @@
 <template>
-  <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-6">
-    <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+  <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
+    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
       {{ $t("orders.card.orderProgress") }}
     </p>
 
-    <div class="mt-5 space-y-4">
+    <div class="space-y-6">
       <div
         v-for="event in events"
         :key="event.key"
-        class="flex items-start gap-3"
+        class="group/event flex items-start gap-4 relative"
       >
+        <!-- Timeline Link Line -->
+        <div 
+          v-if="events.indexOf(event) !== events.length - 1"
+          class="absolute left-4 top-8 bottom-0 w-px bg-secondary-100 group-hover/event:bg-primary-100 transition-colors"
+          :class="{ 'bg-primary-500/30': event.done }"
+        />
+
+        <!-- Marker -->
         <div
-          class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-          :class="event.done ? 'bg-[#0000ff] text-white' : 'bg-[#eef2f8] text-slate-400'"
+          class="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition-all duration-500"
+          :class="event.done ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30 ring-1 ring-primary-500' : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100 group-hover/event:bg-secondary-100'"
         >
-          <Icon :name="event.done ? 'i-ph-check-bold' : 'i-ph-dot-outline'" class="h-4 w-4" />
+          <Icon :name="event.done ? 'i-ph-check-bold' : 'i-ph-clock-duotone'" class="h-4 w-4" />
         </div>
 
-        <div class="min-w-0 flex-1 rounded-[18px] border p-3.5" :class="event.done ? 'border-[#d7e3ff] bg-[#f8fbff]' : 'border-[#eef2f8] bg-white'">
-          <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-[14px] font-black text-[#243b63]">
+        <!-- Content Card -->
+        <div class="min-w-0 flex-1 surface-card p-5 group-hover/event:ring-primary-100 transition-all duration-300" :class="event.done ? 'bg-primary-50/20 ring-1 ring-primary-50' : 'bg-white ring-1 ring-secondary-100'">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-[15px] font-black text-secondary-900 group-hover/event:text-primary-700 transition-colors">
               {{ $t(event.label) }}
             </p>
-            <p class="text-[12px] font-semibold text-slate-400">
+            <UBadge v-if="event.time" variant="soft" color="white" class="rounded-lg bg-white/50 ring-1 ring-secondary-100 font-black text-[10px] px-2.5 py-1 text-secondary-400">
               {{ $t(event.time) }}
-            </p>
+            </UBadge>
           </div>
 
-          <p class="mt-2 text-[13px] leading-6 text-slate-500">
+          <p class="mt-3 text-xs font-medium leading-relaxed text-secondary-500">
             {{ $t(event.description) }}
           </p>
         </div>

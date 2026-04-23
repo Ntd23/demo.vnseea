@@ -1,31 +1,68 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.walletPage.sendEyebrow") }}</p>
-    <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.sendTitle") }}</h2>
-    <p class="mt-1 text-body-secondary">{{ t("pages.walletPage.currentBalance", { amount: formatWalletCurrency(balance, locale.value) }) }}</p>
-
-    <div class="mt-5 grid gap-4">
-      <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.walletPage.recipientLabel") }}</span>
-        <input v-model="form.recipient" class="wallet-input mt-2" :placeholder="t('pages.walletPage.recipientPlaceholder')">
-      </label>
-      <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.walletPage.amountLabel") }}</span>
-        <input v-model.number="form.amount" class="wallet-input mt-2" min="10000" type="number">
-      </label>
-      <label>
-        <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.walletPage.noteLabel") }}</span>
-        <textarea v-model="form.note" class="wallet-input mt-2 min-h-[110px] resize-y py-3" :placeholder="t('pages.walletPage.notePlaceholder')" />
-      </label>
+  <section class="surface-card p-6 sm:p-8">
+    <div class="space-y-1">
+      <p class="text-label-primary text-secondary-500 uppercase tracking-widest text-[10px]">{{ t("pages.walletPage.sendEyebrow") }}</p>
+      <h2 class="text-2xl font-black text-secondary-900 leading-tight">{{ t("pages.walletPage.sendTitle") }}</h2>
+      <p class="text-body-secondary text-sm">{{ t("pages.walletPage.currentBalance", { amount: formatWalletCurrency(balance, locale.value) }) }}</p>
     </div>
 
-    <div v-if="error" class="mt-4 rounded-[18px] bg-[var(--color-error)]/10 px-4 py-3 text-[13px] font-bold text-[var(--color-error)]">
-      {{ error }}
-    </div>
+    <div class="mt-8 space-y-5">
+      <UFormGroup :label="t('pages.walletPage.recipientLabel')">
+        <UInput
+          v-model="form.recipient"
+          size="lg"
+          variant="outline"
+          class="font-semibold"
+          icon="i-ph-user"
+          :placeholder="t('pages.walletPage.recipientPlaceholder')"
+        />
+      </UFormGroup>
 
-    <button class="mt-5 h-12 w-full rounded-[var(--radius-full)] bg-[var(--color-primary-500)] text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="button" @click="submit">
-      {{ t("pages.walletPage.sendSubmit") }}
-    </button>
+      <UFormGroup :label="t('pages.walletPage.amountLabel')">
+        <UInput
+          v-model.number="form.amount"
+          type="number"
+          size="lg"
+          variant="outline"
+          class="font-black"
+          min="10000"
+        >
+          <template #trailing>
+            <span class="text-secondary-400 font-bold px-2">VND</span>
+          </template>
+        </UInput>
+      </UFormGroup>
+
+      <UFormGroup :label="t('pages.walletPage.noteLabel')">
+        <UTextarea
+          v-model="form.note"
+          size="lg"
+          variant="outline"
+          class="font-semibold"
+          :rows="3"
+          :placeholder="t('pages.walletPage.notePlaceholder')"
+        />
+      </UFormGroup>
+
+      <UAlert
+        v-if="error"
+        color="red"
+        variant="soft"
+        icon="i-ph-warning-circle-fill"
+        :title="error"
+        class="rounded-xl"
+      />
+
+      <UButton
+        block
+        size="xl"
+        color="primary"
+        class="rounded-full font-black px-10 shadow-lg shadow-primary-500/20 mt-4"
+        @click="submit"
+      >
+        {{ t("pages.walletPage.sendSubmit") }}
+      </UButton>
+    </div>
   </section>
 </template>
 

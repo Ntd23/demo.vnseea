@@ -1,94 +1,117 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
-    <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
-      <div class="relative overflow-hidden px-5 py-6 sm:px-7">
-        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,255,0.12),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(56,189,248,0.14),transparent_30%)]" />
+  <div class="mx-auto max-w-[1280px] space-y-8 pb-20 pt-4 px-4 sm:px-6">
+    <!-- Hero Section -->
+    <section class="surface-card group overflow-hidden border-none ring-1 ring-secondary-100 shadow-2xl relative">
+      <div class="relative overflow-hidden px-8 py-10 sm:px-12 sm:py-16">
+        <!-- Abstract Background -->
+        <div class="pointer-events-none absolute inset-0 opacity-40">
+          <div class="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-primary-500/10 blur-[100px]" />
+          <div class="absolute -left-20 -bottom-20 h-96 w-96 rounded-full bg-sky-500/10 blur-[100px]" />
+        </div>
 
-        <div class="relative flex flex-col gap-6">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div class="max-w-[780px]">
-              <p class="text-[12px] font-black uppercase tracking-[0.22em] text-[#0000ff]/60">
+        <div class="relative flex flex-col gap-10">
+          <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-[720px] space-y-4">
+              <UBadge
+                variant="soft"
+                color="primary"
+                class="rounded-full font-black text-[10px] uppercase tracking-[0.3em] px-5 py-1.5 ring-1 ring-inset ring-primary-100"
+              >
                 {{ t("pages.memoriesPage.heroEyebrow") }}
-              </p>
-              <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[2.35rem]">
+              </UBadge>
+              <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-secondary-900 leading-[1.1]">
                 {{ t("pages.memoriesPage.heroTitle") }}
               </h1>
-              <p class="mt-3 text-[14px] leading-7 text-slate-500">
+              <p class="text-base font-medium leading-relaxed text-secondary-500">
                 {{ t("pages.memoriesPage.heroDescription") }}
               </p>
             </div>
 
             <div class="flex flex-col gap-3 sm:flex-row">
-              <NuxtLink
+              <UButton
                 to="/home"
-                class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+                size="xl"
+                variant="soft"
+                color="white"
+                class="rounded-2xl font-black text-xs uppercase tracking-widest px-6 h-12 ring-1 ring-secondary-200 hover:ring-primary-500 transition-all bg-white shadow-sm"
               >
-                <Icon name="i-ph-house-line-fill" class="mr-2 h-4 w-4" />
+                <template #leading>
+                  <Icon name="i-ph-house-line-duotone" class="h-5 w-5 text-primary-600" />
+                </template>
                 {{ t("pages.memoriesPage.homeFeed") }}
-              </NuxtLink>
+              </UButton>
 
-              <button
+              <UButton
                 v-if="sharedMemoryCount > 0"
-                class="inline-flex h-11 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(0,0,255,0.22)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-                type="button"
+                size="xl"
+                variant="solid"
+                color="primary"
+                class="rounded-2xl font-black text-xs uppercase tracking-widest px-8 h-12 shadow-xl shadow-primary-500/20 bg-primary-600 hover:bg-primary-700 transition-all active:scale-95"
                 @click="resetSharedMemories"
               >
-                <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-4 w-4" />
+                <template #leading>
+                  <Icon name="i-ph-arrow-counter-clockwise-bold" class="h-5 w-5" />
+                </template>
                 {{ t("pages.memoriesPage.resetSharing") }}
-              </button>
+              </UButton>
             </div>
           </div>
 
-          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <article
+          <!-- Summary Stats -->
+          <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div
               v-for="item in summaryCards"
               :key="item.label"
-              class="rounded-[24px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-4"
+              class="surface-card p-6 ring-1 ring-secondary-50 bg-secondary-50/10 hover:bg-white hover:ring-primary-100 hover:shadow-xl transition-all duration-500 group/stat"
             >
-              <p class="text-[11px] font-black uppercase tracking-[0.16em] text-[#0000ff]/60">
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 mb-4 transition-transform group-hover/stat:translate-x-1">
                 {{ item.label }}
               </p>
-              <p class="mt-2 text-[1.55rem] font-black tracking-[-0.05em] text-[#243b63]">
+              <p class="text-3xl font-black tracking-tight text-secondary-900 mb-2">
                 {{ item.value }}
               </p>
-              <p class="mt-2 text-[13px] leading-6 text-slate-500">
+              <p class="text-[12px] font-semibold leading-relaxed text-secondary-400 group-hover/stat:text-secondary-500 transition-colors">
                 {{ item.description }}
               </p>
-            </article>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_32px_rgba(15,35,110,0.06)]">
-      <div class="flex flex-col gap-3 border-b border-[#eef2fb] pb-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-            {{ t("pages.memoriesPage.sectionEyebrow") }}
-          </p>
-          <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.04em] text-[#243b63]">
-            {{ t("pages.memoriesPage.sectionTitle", { count: memoryEntries.length }) }}
-          </h2>
-          <p class="mt-2 text-[14px] leading-6 text-slate-500">
+    <!-- Main Feed Section -->
+    <section class="space-y-6">
+      <div class="flex flex-col gap-4 border-b border-secondary-100 pb-8 sm:flex-row sm:items-center sm:justify-between px-2">
+        <div class="space-y-2">
+          <div class="flex items-center gap-3">
+            <Icon name="i-ph-calendar-duotone" class="h-6 w-6 text-primary-600" />
+            <h2 class="text-2xl font-black tracking-tight text-secondary-900">
+              {{ t("pages.memoriesPage.sectionTitle", { count: memoryEntries.length }) }}
+            </h2>
+          </div>
+          <p class="text-sm font-medium text-secondary-500 pl-9">
             {{ t("pages.memoriesPage.sectionDescription") }}
           </p>
         </div>
 
-        <NuxtLink
+        <UButton
           to="/saved-posts"
-          class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+          size="lg"
+          variant="soft"
+          color="white"
+          class="rounded-xl font-black text-[10px] uppercase tracking-widest px-6 h-11 bg-white text-secondary-600 ring-1 ring-secondary-200 hover:border-primary-500 hover:text-primary-600 transition-all shadow-sm"
         >
-          <Icon name="i-ph-bookmark-simple-bold" class="mr-2 h-4 w-4" />
+          <template #leading>
+            <Icon name="i-ph-bookmark-simple-duotone" class="h-4.5 w-4.5" />
+          </template>
           {{ t("pages.memoriesPage.savedPosts") }}
-        </NuxtLink>
+        </UButton>
       </div>
 
-      <div class="mt-5 space-y-5">
-        <MemoriesMemoryCard
-          v-for="item in memoryEntries"
-          :key="item.id"
-          :entry="item"
-          :shared="sharedMemoryIds.includes(item.id)"
+      <div class="mx-auto max-w-4xl">
+        <MemoriesMemoryFeed
+          :entries="memoryEntries"
+          :shared-ids="sharedMemoryIds"
           @share="shareMemory"
         />
       </div>

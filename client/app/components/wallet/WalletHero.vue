@@ -1,24 +1,25 @@
 <template>
-  <section class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]">
-    <div class="grid gap-0 xl:grid-cols-[minmax(0,1fr)_420px]">
-      <div class="p-5 sm:p-7 lg:p-8">
-        <p class="text-label-secondary text-[var(--color-primary-600)]">{{ t("pages.walletPage.heroEyebrow") }}</p>
-        <h1 class="mt-2 text-display text-[2.15rem] leading-tight text-[var(--text-primary)] sm:text-[3rem]">
+  <section class="surface-card overflow-hidden">
+    <div class="grid gap-0 xl:grid-cols-[minmax(0,1fr)_440px]">
+      <div class="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+        <p class="text-label-primary text-primary-600 uppercase tracking-widest">{{ t("pages.walletPage.heroEyebrow") }}</p>
+        <h1 class="mt-3 text-display text-4xl sm:text-6xl text-secondary-900 leading-tight">
           {{ t("pages.walletPage.heroTitle") }}
         </h1>
-        <p class="mt-3 max-w-2xl text-[15px] font-semibold leading-7 text-[var(--text-secondary)]">
+        <p class="mt-5 max-w-xl text-body-secondary text-lg leading-relaxed">
           {{ t("pages.walletPage.heroDescription") }}
         </p>
       </div>
 
-      <div class="border-t border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-5 xl:border-l xl:border-t-0">
-        <div class="rounded-[28px] bg-white p-5 shadow-[var(--shadow-sm)]">
-          <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.walletPage.balanceLabel") }}</p>
-          <p class="mt-3 break-words text-[2rem] font-black leading-tight text-[var(--text-primary)]">{{ formatWalletCurrency(balance, locale.value) }}</p>
-          <div class="mt-4 grid gap-3 sm:grid-cols-2">
-            <div v-for="item in stats" :key="item.label" class="rounded-[18px] bg-[var(--bg-surface-hover)] p-3">
-              <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ item.label }}</p>
-              <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ item.value }}</p>
+      <div class="bg-secondary-50 p-6 sm:p-8 xl:border-l xl:border-secondary-100 flex flex-col justify-center">
+        <div class="rounded-3xl bg-white p-6 shadow-xl shadow-secondary-900/5 border border-secondary-100">
+          <p class="text-micro font-bold uppercase tracking-wider text-secondary-400">{{ t("pages.walletPage.balanceLabel") }}</p>
+          <p class="mt-3 break-words text-4xl font-black text-primary-600 leading-none">{{ formatWalletCurrency(balance, locale.value) }}</p>
+          
+          <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            <div v-for="item in stats" :key="item.label" class="rounded-2xl bg-secondary-50/80 p-4 border border-secondary-100/50">
+              <p class="text-[10px] font-black uppercase tracking-wider text-secondary-400">{{ item.label }}</p>
+              <p class="mt-1.5 text-lg font-black text-secondary-900 leading-none">{{ item.value }}</p>
             </div>
           </div>
         </div>

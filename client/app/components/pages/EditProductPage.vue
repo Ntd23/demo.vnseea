@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5 pb-10">
+  <div class="mx-auto max-w-[1280px] space-y-10 pb-28 px-4 sm:px-6">
     <ProductHeroBanner
       variant="edit"
       :badge="$t('pages.editProductPage.badge')"
@@ -10,31 +10,52 @@
       @secondary-action="restoreOriginal"
     />
 
-    <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.06fr)_360px]">
-      <section class="space-y-5">
-        <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-4 sm:p-5' }">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
+      <section class="lg:col-span-8 space-y-10">
+        <!-- Completion Summary Card -->
+        <div class="surface-card p-8 sm:p-10 space-y-8 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/summary">
+          <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/summary:opacity-100 transition-opacity duration-1000" />
+          
+          <div class="relative z-10 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
+            <div class="space-y-3">
+              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
                 {{ $t("pages.productEditor.editSectionEyebrow") }}
               </p>
-              <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
+              <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
                 {{ $t("pages.editProductPage.sectionTitle") }}
               </h2>
-              <p class="mt-1 text-[14px] leading-6 text-slate-500">
-                {{ $t("pages.editProductPage.sectionDescription") }}
+              <p class="text-base font-medium leading-relaxed text-secondary-500 max-w-[520px] italic">
+                "{{ $t("pages.editProductPage.sectionDescription") }}"
               </p>
             </div>
 
-            <UBadge color="primary" variant="subtle" class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-semibold">
-              <Icon name="i-ph-seal-check-fill" class="h-4 w-4 text-[#0000ff]" />
+            <UBadge
+              variant="soft"
+              size="lg"
+              class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm"
+            >
+              <template #leading>
+                <Icon name="i-ph-seal-check-duotone" class="h-5 w-5 mr-3" />
+              </template>
               {{ completionText }}
             </UBadge>
           </div>
-          <UProgress :model-value="completionPercent" color="primary" class="mt-4" />
-        </UCard>
+          
+          <div class="relative z-10 space-y-4">
+            <div class="flex justify-between text-[11px] font-black text-secondary-400 uppercase tracking-[0.2em] px-1">
+              <span>{{ $t('pages.productEditor.completionLabel') || 'Độ hoàn thiện' }}</span>
+              <span class="text-primary-600">{{ Math.round(completionPercent) }}%</span>
+            </div>
+            <div class="h-3 w-full rounded-full bg-secondary-50 ring-1 ring-secondary-100 overflow-hidden shadow-inner">
+              <div 
+                class="h-full bg-primary-500 transition-all duration-1000 shadow-[0_0_12px_rgba(var(--color-primary-500-rgb),0.5)]" 
+                :style="{ width: `${completionPercent}%` }" 
+              />
+            </div>
+          </div>
+        </div>
 
-        <UForm :state="draft.fields" class="space-y-5">
+        <UForm :state="draft.fields" class="space-y-10">
           <ProductEditorFields
             v-model:title="draft.fields.title"
             v-model:price="draft.fields.price"
@@ -44,6 +65,7 @@
             v-model:location="draft.fields.location"
             v-model:currency="draft.fields.currency"
             v-model:stock="draft.fields.stock"
+            :description-label="$t('pages.productEditor.descriptionLabel') || 'Sự mô tả'"
             :category-options="categoryOptions"
             :condition-options="conditionOptions"
             :currency-options="currencyOptions"
@@ -63,13 +85,14 @@
 
         <FormsSubmitBar
           :hint="saveHint"
-          cta="Lưu thay đổi"
+          :cta="$t('pages.editProductPage.submitCta') || 'Lưu thay đổi'"
+          class="rounded-[2.5rem] p-4 bg-white/90 backdrop-blur-3xl ring-1 ring-secondary-200/50 shadow-[0_-32px_64px_-16px_rgba(0,0,0,0.1)] transition-all hover:shadow-[0_-48px_80px_-24px_rgba(0,0,0,0.15)]"
           @save="saveDraft"
           @submit="submitMock"
         />
       </section>
 
-      <aside class="space-y-5">
+      <aside class="lg:col-span-4 space-y-8">
         <ProductPreviewCard
           :preview-background="previewBackground"
           :preview-icon="previewIcon"
@@ -77,23 +100,20 @@
           :condition-label="previewConditionLabel"
           :currency-label="previewCurrencyLabel"
           :title="draft.fields.title"
-          empty-title="Tên sản phẩm sẽ hiển thị ở đây"
+          :empty-title="$t('pages.editProductPage.emptyPreviewTitle') || 'Tên sản phẩm sẽ hiển thị ở đây'"
           :description="previewDescription"
           :price="previewPrice"
           :stock-label="stockLabel"
           :location="draft.fields.location"
           :image-count="totalImageCount"
-          leading-icon="i-ph-pencil-simple-fill"
-          trailing-icon="i-ph-floppy-disk-back-fill"
+          leading-icon="i-ph-pencil-simple"
+          trailing-icon="i-ph-floppy-disk-back"
           :status-label="$t('pages.editProductPage.statusUpdated')"
         />
 
         <ProductChecklistCard :items="checklistItems" />
 
-        <ProductTipsCard
-          :title="$t('pages.editProductPage.tipsTitle')"
-          :items="editingTips"
-        />
+        <ProductTipsCard :tips="editingTips" />
       </aside>
     </div>
   </div>
@@ -285,45 +305,29 @@ const saveHint = computed(() =>
 
 const checklistItems = computed<ProductChecklistItem[]>(() => [
   {
-    label: t("pages.editProductPage.checkPrefill"),
-    description: t("pages.editProductPage.checkPrefillDescription"),
+    label: t("pages.editProductPage.checkPrefill") || "Khởi tạo dữ liệu",
     done: true,
   },
   {
-    label: "Cập nhật nội dung chính",
-    description: "Điền đủ tên sản phẩm, giá bán và mô tả để card hiển thị chuẩn.",
+    label: t('pages.productEditor.checkTitlePriceDescription') || "Cập nhật nội dung chính",
     done: draft.value.fields.title.trim().length > 0
       && Number(draft.value.fields.price) > 0
       && draft.value.fields.description.trim().length >= 20,
   },
   {
-    label: "Xử lý ảnh cũ",
-    description: "Bạn có thể bỏ bớt ảnh hiện tại trước khi lưu thay đổi.",
+    label: t('pages.productEditor.checkMediaLegacy') || "Xử lý ảnh cũ",
     done: draft.value.removedImageIds.length >= 0,
   },
   {
     label: t("pages.editProductPage.checkReady"),
-    description: t("pages.editProductPage.checkReadyDescription"),
     done: totalImageCount.value > 0 && completionCount.value >= 7,
   },
 ])
 
-const editingTips = computed<ProductTipItem[]>(() => [
-  {
-    title: t("pages.editProductPage.tipSmallChanges"),
-    description: t("pages.editProductPage.tipSmallChangesDescription"),
-    icon: "i-ph-pencil-line-fill",
-  },
-  {
-    title: t("pages.editProductPage.tipRemoveOld"),
-    description: t("pages.editProductPage.tipRemoveOldDescription"),
-    icon: "i-ph-trash-fill",
-  },
-  {
-    title: t("pages.editProductPage.tipPreview"),
-    description: t("pages.editProductPage.tipPreviewDescription"),
-    icon: "i-ph-eye-fill",
-  },
+const editingTips = computed<string[]>(() => [
+  t("pages.editProductPage.tipSmallChangesDescription"),
+  t("pages.editProductPage.tipRemoveOldDescription"),
+  t("pages.editProductPage.tipPreviewDescription"),
 ])
 
 const removeCurrentImage = (imageId: string) => {
@@ -369,3 +373,6 @@ const submitMock = () => {
   })
 }
 </script>
+
+<style scoped>
+</style>

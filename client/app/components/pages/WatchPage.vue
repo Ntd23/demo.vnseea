@@ -1,25 +1,25 @@
 <template>
   <div class="space-y-4 pb-10 sm:space-y-5">
-    <section class="sm:hidden rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-      <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--color-primary-600)]">
+    <section class="sm:hidden surface-card p-5">
+      <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
         {{ t("pages.watchPage.heroEyebrow") }}
       </p>
-      <h1 class="mt-2 text-[1.85rem] font-black leading-[1.04] text-[var(--text-primary)]">
+      <h1 class="mt-2 text-3xl font-black leading-tight text-secondary-900">
         {{ t("pages.watchPage.heroTitle") }}
       </h1>
-      <p class="mt-2 text-[13px] font-semibold leading-6 text-[var(--text-secondary)]">
+      <p class="mt-2 text-sm font-medium leading-relaxed text-secondary-500">
         {{ t("pages.watchPage.heroDescription") }}
       </p>
 
-      <div class="scrollbar-hide mt-4 flex gap-2 overflow-x-auto pb-1">
+      <div class="scrollbar-hide -mx-1 mt-6 flex gap-3 overflow-x-auto pb-1 px-1">
         <div
           v-for="item in mobileHeroStats"
           :key="item.label"
-          class="min-w-[132px] shrink-0 rounded-[20px] bg-[var(--bg-surface-hover)] px-3.5 py-3"
+          class="min-w-[140px] shrink-0 rounded-2xl bg-secondary-50/50 border border-secondary-100/50 px-4 py-3"
         >
-          <p class="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">{{ item.label }}</p>
-          <p class="mt-1.5 text-[1.3rem] font-black leading-none text-[var(--text-primary)]">{{ item.value }}</p>
-          <p class="mt-1 text-[11px] font-semibold text-[var(--text-secondary)]">{{ item.description }}</p>
+          <p class="text-[10px] font-black uppercase tracking-wider text-secondary-400">{{ item.label }}</p>
+          <p class="mt-1.5 text-xl font-black leading-none text-secondary-900">{{ item.value }}</p>
+          <p class="mt-1 text-[11px] font-semibold text-secondary-500">{{ item.description }}</p>
         </div>
       </div>
     </section>
@@ -29,13 +29,14 @@
     </div>
 
     <WatchFilters
-      v-model:search="search"
+      :search="searchQuery"
       v-model:selected-category="selectedCategory"
       :categories="categories"
+      @update:search="searchQuery = $event"
     />
 
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <main class="space-y-5">
+    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <main class="space-y-6">
         <WatchPlayer
           :elapsed="elapsed"
           :playing="playing"
@@ -74,13 +75,13 @@ import { formatWatchNumber } from "~/composables/useMockWatchData"
 
 const { t, locale } = useI18n()
 const { categories, videos } = useMockWatchData()
+const { searchQuery, debouncedSearchQuery } = useDebouncedSearch()
 
 useSeoMeta({
   title: () => t("pages.watchPage.seoTitle"),
   description: () => t("pages.watchPage.seoDescription"),
 })
 
-const search = ref("")
 const selectedCategory = ref<WatchCategoryKey>("all")
 const selectedVideoId = ref(videos.value[0]?.id ?? "")
 const playing = ref(false)
@@ -91,7 +92,7 @@ const localCommentsById = ref<Record<string, WatchComment[]>>({})
 const shareMessage = ref("")
 
 const filteredVideos = computed(() => {
-  const keyword = search.value.trim().toLowerCase()
+  const keyword = debouncedSearchQuery.value.trim().toLowerCase()
 
   return videos.value.filter((video) => {
     const matchesKeyword = keyword.length === 0 || [

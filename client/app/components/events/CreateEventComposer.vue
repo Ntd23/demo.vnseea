@@ -1,266 +1,300 @@
 <template>
-  <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.05fr)_360px]">
-    <section class="space-y-5">
-      <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)] sm:p-5">
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <p class="text-label-secondary text-[var(--color-primary-600)]">
+  <div class="grid grid-cols-1 gap-12 xl:grid-cols-[minmax(0,1fr)_380px]">
+    <div class="space-y-12">
+      <!-- Header Info Section -->
+      <section class="surface-card p-8 sm:p-10 space-y-8 ring-1 ring-secondary-100 shadow-xl bg-white group/header transition-all hover:shadow-2xl">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between border-b border-secondary-50 pb-8 transition-colors group-hover/header:border-primary-100">
+          <div class="max-w-2xl space-y-2.5">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
               {{ $t("pages.createEventPage.editorEyebrow") }}
             </p>
-            <h2 class="mt-1 text-heading text-[var(--text-primary)]">
+            <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
               {{ $t("pages.createEventPage.infoTitle") }}
             </h2>
-            <p class="mt-1 text-body-secondary">
-              {{ $t("pages.createEventPage.infoDescription") }}
+            <p class="text-sm font-medium leading-relaxed text-secondary-500 pl-1 italic">
+              "{{ $t("pages.createEventPage.infoDescription") }}"
             </p>
           </div>
 
-          <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-2 text-[12px] font-bold text-[var(--color-primary-600)]">
-            <Icon name="i-ph-seal-check-fill" class="h-4 w-4" />
+          <UBadge
+            variant="soft"
+            size="lg"
+            class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm flex items-center justify-center min-w-[180px]"
+          >
+            <template #leading>
+              <Icon name="i-ph-seal-check-duotone" class="h-5 w-5 mr-3" />
+            </template>
             {{ completionText }}
-          </div>
+          </UBadge>
         </div>
       </section>
 
-      <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)] sm:p-6">
-        <label class="block space-y-3">
-          <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.eventName") }}</span>
-          <input
-            v-model="title"
-            class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.08rem] text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-            maxlength="120"
-            :placeholder="$t('pages.createEventPage.eventNamePlaceholder')"
-            type="text"
-          >
-        </label>
+      <!-- Form Section -->
+      <section class="surface-card p-8 sm:p-12 space-y-12 ring-1 ring-secondary-100 shadow-2xl bg-white group/form transition-all hover:shadow-3xl">
+        <!-- Basic Info -->
+        <div class="space-y-10">
+          <UFormGroup :label="$t('pages.createEventPage.eventName')" class="space-y-4" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1' } }">
+            <UInput
+              v-model="title"
+              :placeholder="$t('pages.createEventPage.eventNamePlaceholder')"
+              size="xl"
+              class="rounded-2xl"
+              maxlength="120"
+              :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[72px] text-xl px-8' }, base: 'bg-secondary-50/30 ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all font-bold' }"
+            />
+          </UFormGroup>
 
-        <label class="mt-7 block space-y-3">
-          <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.descriptionLabel") }}</span>
-          <textarea
-            v-model="description"
-            class="min-h-[210px] w-full resize-y rounded-[22px] border border-[var(--border-default)] bg-white px-5 py-5 text-[1rem] leading-8 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-            :placeholder="$t('pages.createEventPage.descriptionPlaceholder')"
-            rows="7"
-          />
-        </label>
+          <UFormGroup :label="$t('pages.createEventPage.descriptionLabel')" class="space-y-4" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1' } }">
+            <UTextarea
+              v-model="description"
+              :placeholder="$t('pages.createEventPage.descriptionPlaceholder')"
+              size="xl"
+              :rows="7"
+              class="rounded-3xl"
+              :ui="{ rounded: 'rounded-3xl', base: 'bg-secondary-50/30 ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all px-8 py-6 text-lg leading-relaxed font-medium' }"
+            />
+          </UFormGroup>
 
-        <div class="mt-7 grid gap-5 md:grid-cols-2">
-          <label class="block space-y-3">
-            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.locationLabel") }}</span>
-            <span class="relative block">
-              <Icon
-                name="i-ph-map-pin-bold"
-                class="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-tertiary)]"
-              />
-              <input
+          <div class="grid gap-6 md:grid-cols-2">
+            <UFormGroup :label="$t('pages.createEventPage.locationLabel')" class="space-y-4" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1' } }">
+              <UInput
                 v-model="location"
-                class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white pl-14 pr-5 text-[1.02rem] text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
                 :placeholder="$t('pages.createEventPage.locationPlaceholder')"
-                type="text"
+                size="xl"
+                icon="i-ph-map-pin-duotone"
+                class="rounded-2xl"
+                :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[72px] text-xl pl-14 pr-8' }, base: 'bg-secondary-50/30 ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all font-bold', icon: { leading: { wrapper: 'left-6', base: 'h-6 w-6 text-primary-500' } } }"
+              />
+            </UFormGroup>
+
+            <UFormGroup :label="$t('pages.createEventPage.categoryLabel')" class="space-y-4" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1' } }">
+              <USelect
+                v-model="category"
+                :options="eventCategories.slice(1).map(o => ({ label: o.label, value: o.value }))"
+                size="xl"
+                class="rounded-2xl"
+                :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[72px] text-lg px-8' }, base: 'bg-secondary-50/30 ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all font-bold' }"
+              />
+            </UFormGroup>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <UFormGroup :label="$t('pages.createEventPage.startDate')" class="space-y-4" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1' } }">
+              <UInput
+                v-model="startDate"
+                type="date"
+                size="xl"
+                class="rounded-2xl"
+                :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[72px] text-lg px-8' }, base: 'bg-secondary-50/30 ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all font-bold' }"
+              />
+            </UFormGroup>
+
+            <UFormGroup :label="$t('pages.createEventPage.startTime')" class="space-y-4" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1' } }">
+              <UInput
+                v-model="startTime"
+                type="time"
+                size="xl"
+                class="rounded-2xl"
+                :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[72px] text-lg px-8' }, base: 'bg-secondary-50/30 ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all font-bold' }"
+              />
+            </UFormGroup>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-2">
+            <UFormGroup :label="$t('pages.createEventPage.endDate')" class="space-y-4" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1' } }">
+              <UInput
+                v-model="endDate"
+                type="date"
+                size="xl"
+                class="rounded-2xl"
+                :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[72px] text-lg px-8' }, base: 'bg-secondary-50/30 ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all font-bold' }"
+              />
+            </UFormGroup>
+
+            <UFormGroup :label="$t('pages.createEventPage.endTime')" class="space-y-4" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1' } }">
+              <UInput
+                v-model="endTime"
+                type="time"
+                size="xl"
+                class="rounded-2xl"
+                :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[72px] text-lg px-8' }, base: 'bg-secondary-50/30 ring-1 ring-secondary-200 focus:ring-primary-500 hover:ring-primary-200 transition-all font-bold' }"
+              />
+            </UFormGroup>
+          </div>
+
+          <div class="space-y-6 pt-4">
+            <p class="text-[11px] font-black uppercase tracking-widest text-secondary-500 mb-2 block pl-1">{{ $t("pages.createEventPage.coverImage") }}</p>
+            <div class="grid gap-6 md:grid-cols-[240px_minmax(0,1fr)]">
+              <label
+                class="group/upload flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-[32px] border-2 border-dashed border-secondary-200 bg-secondary-50/30 p-6 text-center transition-all hover:bg-primary-50 hover:border-primary-300 hover:scale-[1.02] active:scale-95"
+                for="event-cover"
               >
-            </span>
-          </label>
-
-          <label class="block space-y-3">
-            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.categoryLabel") }}</span>
-            <select
-              v-model="category"
-              class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-            >
-              <option
-                v-for="option in eventCategories.slice(1)"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ option.label }}
-              </option>
-            </select>
-          </label>
-        </div>
-
-        <div class="mt-7 grid gap-5 md:grid-cols-2">
-          <label class="block space-y-3">
-            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.startDate") }}</span>
-            <input
-              v-model="startDate"
-              class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-              type="date"
-            >
-          </label>
-
-          <label class="block space-y-3">
-            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.startTime") }}</span>
-            <input
-              v-model="startTime"
-              class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-              type="time"
-            >
-          </label>
-        </div>
-
-        <div class="mt-7 grid gap-5 md:grid-cols-2">
-          <label class="block space-y-3">
-            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.endDate") }}</span>
-            <input
-              v-model="endDate"
-              class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-              type="date"
-            >
-          </label>
-
-          <label class="block space-y-3">
-            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.endTime") }}</span>
-            <input
-              v-model="endTime"
-              class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-              type="time"
-            >
-          </label>
-        </div>
-
-        <div class="mt-8 space-y-3">
-          <p class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createEventPage.coverImage") }}</p>
-          <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
-            <label
-              class="group flex min-h-[170px] cursor-pointer items-center justify-center rounded-[22px] border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface-hover)] p-4 text-center transition hover:bg-[var(--color-primary-50)]"
-              for="event-cover"
-            >
-              <input
-                id="event-cover"
-                class="sr-only"
-                type="file"
-                accept="image/*"
-                @change="onCoverChange"
-              >
-              <span>
-                <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-white text-[var(--color-primary-600)] shadow-[var(--shadow-sm)]">
-                  <Icon name="i-ph-image-square-fill" class="h-8 w-8" />
-                </span>
-                <span class="mt-3 block text-[13px] font-bold text-[var(--text-primary)]">
+                <input
+                  id="event-cover"
+                  class="sr-only"
+                  type="file"
+                  accept="image/*"
+                  @change="onCoverChange"
+                >
+                <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-primary-600 shadow-xl shadow-primary-500/10 mb-4 transition-transform group-hover/upload:scale-110 group-hover/upload:rotate-6">
+                  <Icon name="i-ph-image-square-duotone" class="h-9 w-9" />
+                </div>
+                <p class="text-[13px] font-black text-secondary-900 uppercase tracking-widest">
                   {{ $t("pages.createEventPage.chooseCover") }}
-                </span>
-                <span class="mt-1 block text-[12px] leading-5 text-[var(--text-secondary)]">
+                </p>
+                <p class="mt-2 text-[11px] font-bold text-secondary-400 italic px-4">
                   {{ coverName || $t("pages.createEventPage.imageFormats") }}
-                </span>
-              </span>
-            </label>
+                </p>
+              </label>
 
-            <button
-              class="relative min-h-[170px] overflow-hidden rounded-[22px] border border-[var(--border-default)] text-left shadow-[var(--shadow-sm)]"
-              type="button"
-              @click="cycleCover"
-            >
-              <div class="absolute inset-0" :style="{ background: activeCoverFallback }" />
-              <img
-                v-if="coverPreviewUrl"
-                :src="coverPreviewUrl"
-                :alt="$t('pages.createEventPage.coverPreviewAlt')"
-                class="absolute inset-0 h-full w-full object-cover"
+              <button
+                class="relative min-h-[180px] overflow-hidden rounded-[32px] border border-secondary-100 text-left shadow-2xl transition-all hover:scale-[1.02] group/cover"
+                type="button"
+                @click="cycleCover"
               >
-              <div class="absolute inset-0 bg-[linear-gradient(180deg,transparent_20%,rgba(15,23,42,0.58)_100%)]" />
-              <div class="relative flex h-full min-h-[170px] flex-col justify-end p-4 text-white">
-                <p class="text-[12px] font-bold uppercase tracking-[0.18em] text-white/72">
-                  {{ $t("pages.createEventPage.previewLabel") }}
-                </p>
-                <p class="mt-2 text-[1.1rem] font-black leading-tight">
-                  {{ title || $t("pages.createEventPage.previewTitleFallback") }}
-                </p>
-                <p class="mt-2 text-[12px] text-white/78">
-                  {{ $t("pages.createEventPage.cycleBackground") }}
-                </p>
-              </div>
-            </button>
+                <div class="absolute inset-0" :style="{ background: activeCoverFallback }" />
+                <img
+                  v-if="coverPreviewUrl"
+                  :src="coverPreviewUrl"
+                  :alt="$t('pages.createEventPage.coverPreviewAlt')"
+                  class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover/cover:scale-110"
+                >
+                <div class="absolute inset-0 bg-gradient-to-t from-secondary-950 via-secondary-950/20 to-transparent" />
+                <div class="relative flex h-full flex-col justify-end p-8 text-white">
+                  <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-300">
+                    {{ $t("pages.createEventPage.previewLabel") }}
+                  </p>
+                  <p class="mt-3 text-2xl font-black leading-none tracking-tight">
+                    {{ title || $t("pages.createEventPage.previewTitleFallback") }}
+                  </p>
+                  <div class="mt-4 flex items-center gap-2 text-[11px] font-bold text-white/60">
+                    <Icon name="i-ph-arrows-clockwise-duotone" class="h-4 w-4" />
+                    {{ $t("pages.createEventPage.cycleBackground") }}
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="flex flex-col gap-3 rounded-[28px] border border-[var(--border-default)] bg-white/90 p-4 shadow-[var(--shadow-md)] md:flex-row md:items-center md:justify-between">
-        <p class="text-body-secondary">
-          {{ submitMessage || $t("pages.createEventPage.submitHint") }}
-        </p>
-        <div class="flex flex-wrap gap-3">
-          <button
-            class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[14px] font-bold text-[var(--color-primary-600)] transition hover:border-[var(--border-strong)]"
-            type="button"
-            @click="saveDraft"
-          >
-            {{ $t("pages.createEventPage.saveDraft") }}
-          </button>
-          <button
-            class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-5 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
-            type="button"
-            @click="publishEvent"
-          >
-            {{ $t("pages.createEventPage.publish") }}
-          </button>
+      <!-- Final Actions Section -->
+      <section class="surface-card p-10 bg-secondary-900 ring-1 ring-white/10 shadow-3xl rounded-[32px] overflow-hidden relative group/actions">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-600/20 to-transparent pointer-events-none opacity-0 group-hover/actions:opacity-100 transition-opacity duration-1000" />
+        
+        <div class="relative z-10 flex flex-col gap-10 sm:flex-row sm:items-center sm:justify-between">
+          <div class="space-y-2">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-400 pl-1">
+              {{ $t("pages.createEventPage.finishHint") }}
+            </p>
+            <p class="text-sm font-medium leading-relaxed text-white/70 max-w-sm italic">
+              {{ submitMessage || $t("pages.createEventPage.submitHint") }}
+            </p>
+          </div>
+
+          <div class="flex flex-col-reverse gap-4 sm:flex-row sm:items-center">
+            <UButton
+              variant="soft"
+              size="xl"
+              class="h-14 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest hover:bg-white/20 transition-all active:scale-95 px-8 border-none"
+              @click="saveDraft"
+            >
+              <template #leading>
+                <Icon name="i-ph-floppy-disk-duotone" class="h-5 w-5" />
+              </template>
+              {{ $t("pages.createEventPage.saveDraft") }}
+            </UButton>
+
+            <UButton
+              size="xl"
+              class="h-14 min-w-[200px] rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-primary-500/40 transition-all hover:bg-primary-700 active:scale-95 px-10 border-none"
+              @click="publishEvent"
+            >
+              <template #leading>
+                <Icon name="i-ph-rocket-launch-duotone" class="h-6 w-6" />
+              </template>
+              {{ $t("pages.createEventPage.publish") }}
+            </UButton>
+          </div>
         </div>
       </section>
-    </section>
+    </div>
 
-    <aside class="space-y-4">
-      <section class="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
+    <!-- Sidebar Preview/Checklist -->
+    <aside class="space-y-8 xl:sticky xl:top-[120px]">
+      <section class="surface-card overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-white group/preview">
         <div class="relative aspect-[16/10] overflow-hidden">
           <div class="absolute inset-0" :style="{ background: activeCoverFallback }" />
           <img
             v-if="coverPreviewUrl"
             :src="coverPreviewUrl"
             :alt="$t('pages.createEventPage.coverPreviewAlt')"
-            class="absolute inset-0 h-full w-full object-cover"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover/preview:scale-110"
           >
-          <div class="absolute inset-0 bg-[linear-gradient(180deg,transparent_18%,rgba(15,23,42,0.72)_100%)]" />
-          <div class="absolute left-4 top-4 rounded-[16px] bg-white text-center shadow-[var(--shadow-md)]">
-            <p class="rounded-t-[16px] bg-[var(--color-primary-500)] px-3 py-1 text-[11px] font-black uppercase text-white">
+          <div class="absolute inset-0 bg-gradient-to-t from-secondary-950 via-secondary-950/20 to-transparent" />
+          
+          <div class="absolute left-6 top-6 rounded-2xl bg-white text-center shadow-2xl shadow-secondary-900/20 overflow-hidden ring-1 ring-secondary-100">
+            <p class="bg-primary-600 px-4 py-1.5 text-[10px] font-black uppercase text-white tracking-widest">
               {{ previewMonth }}
             </p>
-            <p class="px-3 py-2 text-[1.35rem] font-black leading-none text-[var(--text-primary)]">
+            <p class="px-4 py-3 text-3xl font-black leading-none text-secondary-900">
               {{ previewDay }}
             </p>
           </div>
-          <div class="absolute bottom-4 left-4 right-4 text-white">
-            <p class="text-[12px] font-bold uppercase tracking-[0.18em] text-white/72">
+
+          <div class="absolute bottom-6 left-6 right-6 text-white space-y-2">
+            <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-300">
               {{ currentCategoryLabel }}
             </p>
-            <h2 class="mt-2 text-[1.25rem] font-black leading-tight">
+            <h2 class="text-xl font-black leading-tight tracking-tight">
               {{ title || $t("pages.createEventPage.eventTitleFallback") }}
             </h2>
           </div>
         </div>
-        <div class="p-4">
-          <div class="space-y-3 text-[13px] font-semibold text-[var(--text-secondary)]">
-            <div class="flex items-center gap-2">
-              <Icon name="i-ph-calendar-check-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
-              <span>{{ dateSummary }}</span>
+
+        <div class="p-8 space-y-8">
+          <div class="space-y-4">
+            <div class="flex items-center gap-4 group/info">
+              <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-secondary-50 text-primary-600 ring-1 ring-secondary-100 group-hover/info:bg-primary-50 group-hover/info:ring-primary-100 transition-all">
+                <Icon name="i-ph-calendar-check-duotone" class="h-5 w-5" />
+              </div>
+              <span class="text-[13px] font-bold text-secondary-700 tracking-tight transition-colors group-hover/info:text-primary-700">{{ dateSummary }}</span>
             </div>
-            <div class="flex items-center gap-2">
-              <Icon name="i-ph-map-pin-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
-              <span>{{ location || $t("pages.createEventPage.locationFallback") }}</span>
+            <div class="flex items-center gap-4 group/info">
+              <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-secondary-50 text-primary-600 ring-1 ring-secondary-100 group-hover/info:bg-primary-50 group-hover/info:ring-primary-100 transition-all">
+                <Icon name="i-ph-map-pin-duotone" class="h-5 w-5" />
+              </div>
+              <span class="text-[13px] font-bold text-secondary-700 tracking-tight transition-colors group-hover/info:text-primary-700">{{ location || $t("pages.createEventPage.locationFallback") }}</span>
             </div>
           </div>
-          <p class="mt-4 text-[13px] leading-6 text-[var(--text-secondary)]">
-            {{ description || $t("pages.createEventPage.descriptionFallback") }}
-          </p>
+          
+          <div class="bg-secondary-50/50 p-6 rounded-2xl ring-1 ring-secondary-100 italic transition-all group-hover/preview:bg-white group-hover/preview:shadow-md">
+            <p class="text-[13px] leading-relaxed text-secondary-600 line-clamp-4">
+              "{{ description || $t("pages.createEventPage.descriptionFallback") }}"
+            </p>
+          </div>
         </div>
       </section>
 
-      <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-        <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <section class="surface-card p-8 sm:p-10 space-y-8 ring-1 ring-secondary-200/50 shadow-2xl bg-white">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
           {{ $t("pages.createEventPage.checklist") }}
         </p>
-        <div class="mt-4 space-y-3">
+        <div class="space-y-4">
           <div
             v-for="item in checklist"
             :key="item.label"
-            class="flex items-center gap-3"
+            class="flex items-center gap-4 group/item"
           >
-            <span
-              class="flex h-8 w-8 items-center justify-center rounded-full"
+            <div
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-500"
               :class="item.done
-                ? 'bg-[var(--color-primary-500)] text-white'
-                : 'bg-[var(--color-secondary-100)] text-[var(--text-tertiary)]'"
+                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+                : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100'"
             >
-              <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle'" class="h-4 w-4" />
-            </span>
-            <span class="text-[13px] font-semibold text-[var(--text-secondary)]">
+              <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle-duotone'" class="h-5 w-5" />
+            </div>
+            <span class="text-[11px] font-black uppercase tracking-widest text-secondary-500 transition-colors group-hover/item:text-secondary-900" :class="{ 'line-through text-secondary-300': item.done }">
               {{ item.label }}
             </span>
           </div>

@@ -1,9 +1,9 @@
 <template>
-  <div class="space-y-4 pb-10">
+  <div class="space-y-6 pb-20 pt-4 px-4 sm:px-6 max-w-[1440px] mx-auto">
     <ProfileHero />
 
-    <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.26fr)_270px] 2xl:grid-cols-[minmax(0,1.28fr)_280px]">
-      <section class="space-y-4 min-w-0">
+    <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+      <section class="space-y-6 min-w-0">
         <ProfileCompletionCard :items="checklist" />
         <FeedPublisherBox />
         <ProfileFeedList :posts="posts" />
@@ -20,6 +20,13 @@
 <script setup lang="ts">
 const { t } = useI18n()
 const { posts } = useMockSocialData()
+
+useSeoMeta({
+  title: () => t("pages.profilePage.seoTitle"),
+  description: () => t("pages.profilePage.seoDescription"),
+  ogTitle: () => t("pages.profilePage.seoTitle"),
+  ogDescription: () => t("pages.profilePage.seoDescription"),
+})
 
 const checklist = computed(() => [
   t("pages.profilePage.checklistAvatar"),

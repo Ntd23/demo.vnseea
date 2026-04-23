@@ -1,110 +1,135 @@
 <template>
-  <div class="space-y-5">
-    <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-      <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+  <div class="space-y-6">
+    <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 shadow-xl">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
         {{ $t("orders.sidebar.overview") }}
       </p>
 
-      <div class="mt-4 grid gap-3">
+      <div class="grid gap-4">
         <div
           v-for="card in cards"
           :key="card.label"
-          class="rounded-[20px] border p-4"
+          class="group/stat rounded-2xl border p-5 transition-all duration-300 hover:shadow-lg"
           :class="toneClassMap[card.tone]"
         >
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <p class="text-[11px] font-bold uppercase tracking-[0.2em] opacity-70">
+          <div class="flex items-start justify-between gap-4">
+            <div class="space-y-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
                 {{ $t(card.label) }}
               </p>
-              <p class="mt-2 text-[1.7rem] font-black leading-none">
+              <p class="text-3xl font-black leading-none tracking-tight">
                 {{ card.value }}
               </p>
             </div>
 
-            <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white/80 shadow-[0_8px_18px_rgba(15,35,110,0.05)]">
-              <Icon :name="card.icon" class="h-5 w-5" />
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-black/5 transition-transform group-hover/stat:scale-110 group-hover/stat:rotate-3">
+              <Icon :name="card.icon.includes('duotone') ? card.icon : card.icon.replace('-fill', '-duotone')" class="h-6 w-6" />
             </div>
           </div>
 
-          <p class="mt-3 text-[13px] leading-6 opacity-80">
+          <p class="mt-4 text-xs font-semibold leading-relaxed opacity-70">
             {{ $t(card.description) }}
           </p>
         </div>
       </div>
     </section>
 
-    <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-      <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+    <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 shadow-xl">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
         {{ $t("orders.sidebar.trackRecent") }}
       </p>
 
       <template v-if="nextOrder">
-        <div class="mt-4 rounded-[22px] border border-[#eef2f8] bg-[#f8fbff] p-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <p class="text-[14px] font-black text-[#243b63]">
+        <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-5 group/recent hover:bg-white transition-colors duration-500">
+          <div class="flex flex-wrap items-center gap-3 border-b border-secondary-100 pb-4">
+            <p class="text-sm font-black text-secondary-900">
               {{ nextOrder.orderNumber }}
             </p>
-            <span
-              class="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-bold"
+            <UBadge
+              variant="soft"
+              class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2.5 py-1 ring-1 ring-inset"
               :class="nextStatusMeta.badgeClass"
             >
-              <Icon :name="nextStatusMeta.icon" class="h-3.5 w-3.5" />
+              <template #leading>
+                <Icon :name="nextStatusMeta.icon.includes('duotone') ? nextStatusMeta.icon : nextStatusMeta.icon.replace('-fill', '-duotone')" class="h-3 w-3 mr-1" />
+              </template>
               {{ $t(nextStatusMeta.label) }}
-            </span>
+            </UBadge>
           </div>
 
-          <p class="mt-3 text-[14px] font-semibold text-slate-600">
-            {{ nextOrder.seller }}
-          </p>
-          <p class="mt-2 text-[13px] leading-6 text-slate-500">
-            {{ $t(nextOrder.deliveryWindow) }}
-          </p>
+          <div class="space-y-1">
+            <p class="text-sm font-black text-secondary-900 group-hover/recent:text-primary-700 transition-colors">
+              {{ nextOrder.seller }}
+            </p>
+            <p class="text-xs font-medium text-secondary-500 leading-relaxed italic">
+              {{ $t(nextOrder.deliveryWindow) }}
+            </p>
+          </div>
 
-          <NuxtLink
+          <UButton
             :to="`/order/${nextOrder.id}`"
-            class="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-[#243b63] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(36,59,99,0.18)] transition hover:-translate-y-0.5"
+            size="xl"
+            block
+            variant="solid"
+            color="primary"
+            class="rounded-2xl font-black text-xs uppercase tracking-widest h-12 shadow-lg shadow-primary-500/20"
           >
             {{ $t("orders.sidebar.viewStatus") }}
-          </NuxtLink>
+          </UButton>
         </div>
       </template>
 
-      <div v-else class="mt-4 rounded-[22px] border border-dashed border-[#dbe3f2] bg-[#f8fbff] px-4 py-6 text-center">
-        <p class="text-[14px] font-semibold text-slate-500">
+      <div v-else class="surface-card p-8 border-dashed border-2 border-secondary-200 bg-secondary-50/30 text-center">
+        <p class="text-xs font-black uppercase tracking-widest text-secondary-400">
           {{ $t("orders.sidebar.noRecent") }}
         </p>
       </div>
     </section>
 
-    <section class="rounded-[28px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf7_100%)] p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-      <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+    <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-primary-100 bg-gradient-to-br from-primary-50/30 via-white to-white shadow-xl relative overflow-hidden">
+      <div class="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+        <Icon name="i-ph-shopping-cart-duotone" class="h-32 w-32 -mr-12 -mt-12" />
+      </div>
+
+      <p class="relative z-10 text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
         {{ $t("orders.sidebar.currentFilter") }}
       </p>
-      <div class="mt-4 rounded-[20px] bg-white/80 px-4 py-4 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-        <p class="text-[14px] font-black text-[#243b63]">
-          {{ $t(activeFilterLabel) }}
-        </p>
-        <p class="mt-2 text-[13px] leading-6 text-slate-500">
-          {{ $t("orders.sidebar.filterHint", { count: visibleCount }) }}
-        </p>
-      </div>
-
-      <div class="mt-4 space-y-3 text-[13px] leading-6 text-slate-500">
-        <div class="rounded-[18px] bg-white/80 px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-          {{ $t("orders.sidebar.flowHintReal") }}
+      
+      <div class="relative z-10 space-y-5">
+        <div class="surface-card p-5 bg-white ring-1 ring-primary-100 shadow-sm space-y-2">
+          <p class="text-sm font-black text-primary-600">
+            {{ $t(activeFilterLabel) }}
+          </p>
+          <p class="text-[11px] font-medium leading-relaxed text-secondary-500">
+            {{ $t("orders.sidebar.filterHint", { count: visibleCount }) }}
+          </p>
         </div>
-        <div class="rounded-[18px] bg-white/80 px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-          {{ $t("orders.sidebar.flowHintMarketplace") }}
-        </div>
-      </div>
 
-      <NuxtLink
-        to="/products"
-        class="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-[#9ad89f] px-5 text-[14px] font-extrabold text-[#1f4d26] shadow-[0_10px_22px_rgba(154,216,159,0.22)] transition hover:-translate-y-0.5"
-      >
-        {{ $t("orders.sidebar.continueShopping") }}
-      </NuxtLink>
+        <div class="space-y-3">
+          <div class="flex gap-3 items-start p-3 rounded-xl bg-white/50 border border-primary-50">
+            <Icon name="i-ph-info-duotone" class="h-4 w-4 shrink-0 text-primary-500 mt-0.5" />
+            <p class="text-[11px] font-medium leading-relaxed text-secondary-600">
+              {{ $t("orders.sidebar.flowHintReal") }}
+            </p>
+          </div>
+          <div class="flex gap-3 items-start p-3 rounded-xl bg-white/50 border border-primary-50">
+            <Icon name="i-ph-lightbulb-duotone" class="h-4 w-4 shrink-0 text-primary-500 mt-0.5" />
+            <p class="text-[11px] font-medium leading-relaxed text-secondary-600">
+              {{ $t("orders.sidebar.flowHintMarketplace") }}
+            </p>
+          </div>
+        </div>
+
+        <UButton
+          to="/products"
+          block
+          size="xl"
+          icon="i-ph-bag-duotone"
+          class="rounded-2xl bg-secondary-900 hover:bg-black text-white font-black text-xs uppercase tracking-widest h-12 shadow-xl shadow-secondary-900/10 transition-all active:scale-95 mt-2"
+        >
+          {{ $t("orders.sidebar.continueShopping") }}
+        </UButton>
+      </div>
     </section>
   </div>
 </template>

@@ -1,16 +1,16 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.withdrawalPage.paymentInfoEyebrow") }}</p>
-    <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.withdrawalPage.paymentInfoTitle") }}</h2>
+  <section class="surface-card p-6">
+    <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.withdrawalPage.paymentInfoEyebrow") }}</p>
+    <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.withdrawalPage.paymentInfoTitle") }}</h2>
 
-    <div class="mt-5 space-y-3">
+    <div class="mt-6 space-y-4">
       <div
         v-for="profile in profiles"
         :key="profile.label"
-        class="rounded-[22px] bg-[var(--bg-surface-hover)] p-4"
+        class="rounded-2xl bg-secondary-50/50 p-5 border border-secondary-100/30"
       >
-        <p class="text-[12px] font-bold text-[var(--text-tertiary)]">{{ profile.label }}</p>
-        <p class="mt-1 text-[14px] font-extrabold text-[var(--text-primary)]">{{ profile.value }}</p>
+        <p class="text-micro font-bold text-secondary-400 uppercase tracking-wider">{{ profile.label }}</p>
+        <p class="mt-1 text-body-primary font-black">{{ profile.value }}</p>
       </div>
     </div>
   </section>

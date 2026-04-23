@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5 pb-10">
+  <div class="mx-auto max-w-[1280px] space-y-10 pb-20 px-4 sm:px-6">
     <JobsHero
       :job-count="allJobs.length"
       :saved-only="savedOnly"
@@ -21,8 +21,8 @@
       @open-post="postModalOpen = true"
     />
 
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
-      <section class="space-y-4">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px] items-start">
+      <section class="min-w-0 space-y-10">
         <JobsResultsHeader
           :heading="resultHeading"
           :count="filteredJobs.length"
@@ -31,7 +31,7 @@
           @reset="resetFilters"
         />
 
-        <div v-if="filteredJobs.length > 0" class="grid gap-4 lg:grid-cols-2">
+        <div v-if="filteredJobs.length > 0" class="grid gap-6 lg:grid-cols-2">
           <JobsJobCard
             v-for="job in filteredJobs"
             :key="job.id"
@@ -46,7 +46,7 @@
         <JobsEmptyState v-else @reset="resetFilters" />
       </section>
 
-      <div class="space-y-4">
+      <aside class="sticky top-24 space-y-10">
         <JobsJobDetailPanel
           v-if="selectedJob"
           :job="selectedJob"
@@ -58,7 +58,7 @@
           :categories="categoryBreakdown"
           @select-category="selectCategory"
         />
-      </div>
+      </aside>
     </div>
 
     <JobsJobApplyModal

@@ -433,94 +433,108 @@ Vai trò:
 Nhận xét migrate:
 - cần rà xem có thể hợp nhất với `foundation/ModalShell.vue` hay không
 
-### `live` - 5 files
+### `messages` - 7 files [DONE]
 
 Files:
-- `GoLiveModal.vue`
-- `LiveChat.vue`
-- `LiveHero.vue`
-- `LivePlayer.vue`
-- `LiveStreamList.vue`
+- `ChatBubble.vue` [DONE]
+- `ChatInput.vue` [DONE]
+- `ChatList.vue` [DONE]
+- `ChatListItem.vue` [DONE]
+- `ChatMessageList.vue` [DONE]
+- `ChatWindow.vue` [DONE]
+- `MessageEmojiPicker.vue` [DONE]
+
+Vai trò:
+- chat system messaging
+
+Nhận xét migrate:
+- [x] re-architected into 7 reusable components
+- [x] chat flow optimized with `scroll-to-bottom` in `ChatMessageList.vue`
+- [x] `ChatBubble.vue` synchronized with feed post design tokens
+- [x] emoji picker implemented with `UPopover`
+- [x] smooth transitions for info panel in `MessagesPage.vue`
+
+### `live` - 5 files [DONE]
+
+Files:
+- `GoLiveModal.vue` [DONE]
+- `LiveChat.vue` [DONE]
+- `LiveHero.vue` [DONE]
+- `LivePlayer.vue` [DONE]
+- `LiveStreamList.vue` [DONE]
 
 Vai trò:
 - live streaming UI
 
 Nhận xét migrate:
-- `GoLiveModal.vue` nên đi theo chuẩn `UModal`
-- `LiveChat.vue` hợp với `VueUse` cho scroll/input behavior
+- [x] `GoLiveModal.vue` chuyển sang chuẩn `UModal` + `UForm`
+- [x] `LiveChat.vue` tích hợp mượt mà với tự động cuộn và thiết kế bong bóng chat mới
+- [x] `LivePlayer.vue` nâng cấp giao diện premium với glassmorphism và statistics bar chuyên nghiệp
+- [x] `LiveHero.vue` đồng bộ thiết kế với các module khác, bổ sung stats summary
 
-### `memories` - 1 file
+
+### `memories` - 2 files [DONE]
 
 Files:
-- `MemoryCard.vue`
+- `MemoryCard.vue` [DONE]
+- `MemoryFeed.vue` [DONE]
 
 Vai trò:
-- memory feed card
+- hiển thị bài viết kỷ niệm
 
 Nhận xét migrate:
-- module nhỏ, ưu tiên thấp
+- [x] hiển thị post cũ theo timeline với thiết kế đồng bộ feed posts
+- [x] trích xuất `MemoryFeed.vue` để quản lý danh sách và trạng thái trống
+- [x] nâng cấp `MemoriesPage.vue` với Hero section premium và UI theo chuẩn `@nuxt/ui`
 
-### `messages` - 3 files
 
-Files:
-- `ConversationList.vue`
-- `MessagePane.vue`
-- `MessageSidePanel.vue`
-
-Vai trò:
-- inbox/messages UI
-
-Nhận xét migrate:
-- đây là module tương tác mạnh nhưng mới tận dụng thư viện rất ít
-- nên dùng:
-  - `UAvatar`
-  - `UInput`
-  - `UDrawer` cho mobile side panel
-  - `UCollapsible` hoặc `UAccordion`
-  - `VueUse` cho `useBreakpoints`, `useScroll`, `onClickOutside`
-
-### `navigation` - 11 files
+### `navigation` - 11 files [DONE]
 
 Files:
-- `ChatWidget.vue`
-- `HeaderBar.vue`
-- `HeaderIconNav.vue`
-- `HeaderLogo.vue`
-- `HeaderSearchInput.vue`
-- `HeaderUserMenu.vue`
-- `LeftSidebar.vue`
-- `MobileMenu.vue`
-- `RightSidebar.vue`
-- `SidebarMenuItem.vue`
-- `WidgetCard.vue`
+- `ChatWidget.vue` [DONE]
+- `HeaderBar.vue` [DONE]
+- `HeaderIconNav.vue` [DONE]
+- `HeaderLogo.vue` [DONE]
+- `HeaderSearchInput.vue` [DONE]
+- `HeaderUserMenu.vue` [DONE]
+- `LeftSidebar.vue` [DONE]
+- `MobileMenu.vue` [DONE]
+- `RightSidebar.vue` [DONE]
+- `SidebarMenuItem.vue` [DONE]
+- `WidgetCard.vue` [DONE]
 
 Vai trò:
 - app navigation, header, sidebar, widgets
 
 Nhận xét migrate:
-- nên chuẩn hóa menu/search/user menu bằng `@nuxt/ui`
-- `HeaderSearchInput.vue` hợp để thêm `watchDebounced`
-- `MobileMenu.vue` hợp với `UDrawer`
+- [x] chuẩn hóa menu/search/user menu bằng `@nuxt/ui`
+- [x] `HeaderSearchInput.vue` đã thêm `watchDebounced`
+- [x] `MobileMenu.vue` đã dùng `UDrawer`
+- [x] fixed missing tag in `WidgetCard.vue`
+- [x] improved `HeaderUserMenu.vue` with `UDropdown`
 
-### `orders` - 9 files
+
+### `orders` - 9 files [DONE]
 
 Files:
-- `BuyerOrderCard.vue`
-- `DetailSidebar.vue`
-- `DetailTimelineCard.vue`
-- `FilterBar.vue`
-- `OrderItemCard.vue`
-- `OrderPriceSummary.vue`
-- `OverviewSidebar.vue`
-- `SellerOrderChecklistCard.vue`
-- `SellerOrderSidebar.vue`
+- `BuyerOrderCard.vue` [DONE]
+- `DetailSidebar.vue` [DONE]
+- `DetailTimelineCard.vue` [DONE]
+- `FilterBar.vue` [DONE]
+- `OrderItemCard.vue` [DONE]
+- `OrderPriceSummary.vue` [DONE]
+- `OverviewSidebar.vue` [DONE]
+- `SellerOrderChecklistCard.vue` [DONE]
+- `SellerOrderSidebar.vue` [DONE]
 
 Vai trò:
 - orders list/detail/buyer/seller
 
 Nhận xét migrate:
-- `FilterBar.vue` nên dùng `UInput`, `USelect`, `watchDebounced`
-- detail/checklist/sidebar có thể tận dụng `UCard`, `UBadge`, `UProgress`
+- [x] `FilterBar.vue` nên dùng `UInput`, `USelect`, `watchDebounced`
+- [x] detail/checklist/sidebar có thể tận dụng `UCard`, `UBadge`, `UProgress`
+- [x] added useSeoMeta to OrderDetailPage.vue
+
 
 ### `pages` - 49 files
 

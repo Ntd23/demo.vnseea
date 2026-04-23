@@ -34,7 +34,7 @@
         {{ $t('feed.commentComposer.submit') }}
       </button>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">

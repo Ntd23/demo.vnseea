@@ -1,38 +1,42 @@
 <template>
   <div
     :class="compact
-      ? 'inline-flex items-center gap-1 rounded-full border border-[#dbe3f2] bg-[#f5f8ff] p-1'
-      : 'rounded-[16px] border border-slate-200 bg-slate-50 p-2'"
+      ? 'inline-flex items-center gap-1 rounded-2xl border border-secondary-100 bg-secondary-50/50 p-1.5 ring-1 ring-inset ring-white/50 shadow-sm'
+      : 'surface-card p-4 ring-1 ring-secondary-100 bg-white space-y-4'"
   >
     <div
       v-if="!compact"
-      class="mb-2 flex items-center gap-2 px-2 text-[12px] font-bold uppercase tracking-[0.08em] text-slate-500"
+      class="flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.3em] text-primary-500"
     >
-      <Icon name="i-ph-translate" class="h-4 w-4" />
+      <Icon name="i-ph-translate-duotone" class="h-4 w-4" />
       <span>Language</span>
     </div>
 
-    <div :class="compact ? 'flex items-center gap-1' : 'grid gap-2'">
-      <button
+    <div :class="compact ? 'flex items-center gap-1' : 'grid gap-2.5'">
+      <UButton
         v-for="item in localeOptions"
         :key="item.code"
-        :class="compact
-          ? activeLocale === item.code
-            ? 'rounded-full bg-[#0000ff] px-3 py-1.5 text-[11px] font-black text-white shadow-[0_8px_18px_rgba(0,0,255,0.22)]'
-            : 'rounded-full px-3 py-1.5 text-[11px] font-black text-[#4a5c7a] hover:bg-[#eef3ff] hover:text-[#0000ff]'
-          : activeLocale === item.code
-            ? 'border-[#0000ff] bg-white text-[#0000ff]'
-            : 'border-transparent bg-white text-slate-600 hover:border-slate-200 hover:text-[#0000ff]'"
-        class="transition"
-        type="button"
+        variant="soft"
+        :color="activeLocale === item.code ? 'primary' : 'white'"
+        class="transition-all duration-300 rounded-xl font-black text-[10px] uppercase tracking-widest px-3 py-1.5"
+        :class="[
+          compact ? 'min-w-[40px] justify-center' : 'w-full justify-start py-3 px-4',
+          activeLocale === item.code 
+            ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' 
+            : 'bg-white text-secondary-500 border border-secondary-100 hover:border-primary-200 hover:text-primary-600'
+        ]"
         @click="changeLocale(item.code)"
       >
-        <span v-if="compact">{{ item.short }}</span>
-        <span v-else class="flex w-full items-center justify-between gap-3 rounded-[12px] border px-3 py-2 text-left text-[13px] font-bold">
-          <span>{{ item.short }}</span>
-          <span class="text-[12px] font-semibold opacity-80">{{ item.name }}</span>
-        </span>
-      </button>
+        <template v-if="!compact">
+          <div class="flex w-full items-center justify-between gap-4">
+            <span class="text-xs">{{ item.short }}</span>
+            <span class="text-[10px] font-medium normal-case text-secondary-400 group-hover:text-primary-400">{{ item.name }}</span>
+          </div>
+        </template>
+        <template v-else>
+          {{ item.short }}
+        </template>
+      </UButton>
     </div>
   </div>
 </template>

@@ -1,31 +1,31 @@
 <template>
-  <div class="space-y-6">
-    <section class="px-1 pt-1">
-      <p class="text-[12px] font-extrabold uppercase tracking-[0.28em] text-[#0000ff]/65">
+  <div class="space-y-10">
+    <section class="max-w-4xl space-y-2 pl-1">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
         {{ eyebrow || $t("checkout.page.eyebrow") }}
       </p>
-      <h1 class="mt-2 text-display text-[2rem] text-[#2f3542] sm:text-[2.3rem]">
+      <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-secondary-900 leading-tight">
         {{ title }}
       </h1>
-      <div class="mt-4 h-[5px] w-20 rounded-full bg-[#2f3542]" />
+      <div class="h-1.5 w-16 rounded-full bg-primary-600 shadow-sm" />
       <p
         v-if="description"
-        class="mt-4 max-w-[720px] text-[14px] leading-7 text-slate-500 sm:text-[15px]"
+        class="text-sm sm:text-base font-medium leading-relaxed text-secondary-500 max-w-3xl"
       >
         {{ description }}
       </p>
     </section>
 
-    <div class="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_380px] xl:grid-cols-[minmax(0,1.08fr)_420px] 2xl:grid-cols-[minmax(0,1.1fr)_450px]">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px] 2xl:grid-cols-[minmax(0,1fr)_450px] xl:items-start">
       <section class="min-w-0 order-2 lg:order-1">
         <slot name="left" />
       </section>
 
-      <aside class="min-w-0 order-1 self-start lg:order-2 lg:sticky lg:top-[84px]">
+      <aside class="min-w-0 order-1 self-start lg:order-2 lg:sticky lg:top-[100px]">
         <slot name="right" />
       </aside>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">

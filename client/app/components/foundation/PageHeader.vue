@@ -14,7 +14,6 @@
     <div v-if="$slots.trailing" class="shrink-0">
       <slot name="trailing" />
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
