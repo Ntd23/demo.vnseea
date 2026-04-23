@@ -730,7 +730,7 @@ Vai trò:
 - lightbox modal riêng
 
 Nhận xét migrate:
-- cần rà xem có thể hợp nhất với `foundation/ModalShell.vue` hay không
+- `LightboxModal.vue` đã chuyển sang `UModal`, dùng `NuxtImg` cho ảnh, normalize index an toàn hơn cho SSR và thêm keyboard navigation bằng phím mũi tên
 
 ### `live` - 5 files
 
