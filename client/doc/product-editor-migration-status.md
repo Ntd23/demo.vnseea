@@ -470,35 +470,20 @@ Nhận xét migrate:
 - `GoLiveModal.vue` nên đi theo chuẩn `UModal`
 - `LiveChat.vue` hợp với `VueUse` cho scroll/input behavior
 
-### `memories` - 1 file
+### `memories` - 2 files [DONE]
 
 Files:
-- `MemoryCard.vue`
+- `MemoryCard.vue` [DONE]
+- `MemoryFeed.vue` [DONE]
 
 Vai trò:
-- memory feed card
+- hiển thị bài viết kỷ niệm
 
 Nhận xét migrate:
-- module nhỏ, ưu tiên thấp
+- [x] hiển thị post cũ theo timeline với thiết kế đồng bộ feed posts
+- [x] trích xuất `MemoryFeed.vue` để quản lý danh sách và trạng thái trống
+- [x] nâng cấp `MemoriesPage.vue` với Hero section premium và UI theo chuẩn `@nuxt/ui`
 
-### `messages` - 3 files
-
-Files:
-- `ConversationList.vue`
-- `MessagePane.vue`
-- `MessageSidePanel.vue`
-
-Vai trò:
-- inbox/messages UI
-
-Nhận xét migrate:
-- đây là module tương tác mạnh nhưng mới tận dụng thư viện rất ít
-- nên dùng:
-  - `UAvatar`
-  - `UInput`
-  - `UDrawer` cho mobile side panel
-  - `UCollapsible` hoặc `UAccordion`
-  - `VueUse` cho `useBreakpoints`, `useScroll`, `onClickOutside`
 
 ### `navigation` - 11 files [DONE]
 
