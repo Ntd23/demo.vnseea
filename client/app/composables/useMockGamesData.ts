@@ -1,16 +1,24 @@
 export type GameTabKey = "my" | "new" | "popular"
 export type GameCategoryKey = "all" | "puzzle" | "arcade" | "strategy" | "quiz" | "sport"
 
-export type GameTab = {
+export type GameOption<T extends string = string> = {
   label: string
-  value: GameTabKey
+  value: T
   icon: string
 }
 
-export type GameCategory = {
-  label: string
-  value: GameCategoryKey
-  icon: string
+export type GameTab = GameOption<GameTabKey>
+export type GameCategory = GameOption<GameCategoryKey>
+
+export type GameLeaderboardEntry = {
+  name: string
+  score: number
+}
+
+export type GameAchievement = {
+  title: string
+  description: string
+  progress: number
 }
 
 export type MockGame = {
@@ -28,7 +36,7 @@ export type MockGame = {
   isNew: boolean
   isPopular: boolean
   tags: string[]
-  leaderboard: { name: string; score: number }[]
+  leaderboard: GameLeaderboardEntry[]
 }
 
 export type GameSessionPayload = {
@@ -37,30 +45,111 @@ export type GameSessionPayload = {
   duration: string
 }
 
+export const defaultGameTab: GameTabKey = "popular"
+
+export const gameTabKeys = [
+  "my",
+  "new",
+  "popular",
+] as const satisfies GameTabKey[]
+
+export const gameCategoryKeys = [
+  "puzzle",
+  "arcade",
+  "strategy",
+  "quiz",
+  "sport",
+] as const satisfies Exclude<GameCategoryKey, "all">[]
+
+export const readGameQueryValue = (value: unknown) => {
+  if (Array.isArray(value)) return String(value[0] || "")
+  return typeof value === "string" ? value : ""
+}
+
+export const normalizeGameTab = (value: string): GameTabKey => {
+  if (gameTabKeys.includes(value as GameTabKey)) {
+    return value as GameTabKey
+  }
+
+  return defaultGameTab
+}
+
+export const normalizeGameCategory = (value: string): GameCategoryKey => {
+  if (value === "all") return "all"
+
+  if (gameCategoryKeys.includes(value as Exclude<GameCategoryKey, "all">)) {
+    return value as Exclude<GameCategoryKey, "all">
+  }
+
+  return "all"
+}
+
+export const filterMockGames = (
+  games: ReadonlyArray<MockGame>,
+  options: {
+    search: string
+    category: GameCategoryKey
+    tab: GameTabKey
+    savedById?: Record<string, boolean>
+  },
+) => {
+  const keyword = options.search.trim().toLowerCase()
+  const savedLookup = options.savedById ?? {}
+
+  return games.filter((game) => {
+    const matchesTab = options.tab === "my"
+      ? (savedLookup[game.id] ?? game.isMine)
+      : options.tab === "new"
+        ? game.isNew
+        : game.isPopular
+
+    const matchesCategory = options.category === "all" || game.category === options.category
+    const matchesKeyword = keyword.length === 0 || [
+      game.title,
+      game.categoryLabel,
+      game.description,
+      ...game.tags,
+    ].some(field => field.toLowerCase().includes(keyword))
+
+    return matchesTab && matchesCategory && matchesKeyword
+  })
+}
+
+export const formatGameNumber = (value: number, locale = "vi") =>
+  new Intl.NumberFormat(
+    locale.toLowerCase().startsWith("en") ? "en-US" : "vi-VN",
+    {
+      notation: value >= 10000 ? "compact" : "standard",
+      maximumFractionDigits: value >= 10000 ? 1 : 0,
+    },
+  ).format(value)
+
 export const useMockGamesData = () => {
+  const { t } = useI18n()
+
   const tabs: GameTab[] = [
-    { label: "Game của tôi", value: "my", icon: "i-ph-user-circle-check-fill" },
-    { label: "Mới", value: "new", icon: "i-ph-sparkle-fill" },
-    { label: "Phổ biến", value: "popular", icon: "i-ph-fire-fill" },
+    { label: t("pages.gamesPage.tabPopular"), value: "popular", icon: "i-ph-fire-fill" },
+    { label: t("pages.gamesPage.tabNew"), value: "new", icon: "i-ph-sparkle-fill" },
+    { label: t("pages.gamesPage.tabMy"), value: "my", icon: "i-ph-user-circle-check-fill" },
   ]
 
   const categories: GameCategory[] = [
-    { label: "Tất cả", value: "all", icon: "i-ph-squares-four-fill" },
-    { label: "Giải đố", value: "puzzle", icon: "i-ph-puzzle-piece-fill" },
-    { label: "Arcade", value: "arcade", icon: "i-ph-game-controller-fill" },
-    { label: "Chiến thuật", value: "strategy", icon: "i-ph-flag-fill" },
-    { label: "Quiz", value: "quiz", icon: "i-ph-question-fill" },
-    { label: "Thể thao", value: "sport", icon: "i-ph-soccer-ball-fill" },
+    { label: t("pages.gamesPage.categoryAll"), value: "all", icon: "i-ph-squares-four-fill" },
+    { label: t("pages.gamesPage.categoryPuzzle"), value: "puzzle", icon: "i-ph-puzzle-piece-fill" },
+    { label: t("pages.gamesPage.categoryArcade"), value: "arcade", icon: "i-ph-game-controller-fill" },
+    { label: t("pages.gamesPage.categoryStrategy"), value: "strategy", icon: "i-ph-flag-fill" },
+    { label: t("pages.gamesPage.categoryQuiz"), value: "quiz", icon: "i-ph-question-fill" },
+    { label: t("pages.gamesPage.categorySport"), value: "sport", icon: "i-ph-soccer-ball-fill" },
   ]
 
   const games: MockGame[] = [
     {
       id: "market-maze",
-      title: "Market Maze",
+      title: t("pages.gamesPage.game1Title"),
       category: "puzzle",
-      categoryLabel: "Giải đố",
+      categoryLabel: t("pages.gamesPage.categoryPuzzle"),
       cover: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&w=1200&q=80",
-      description: "Xếp đường đi cho đơn hàng qua các trạm thị trường trước khi hết thời gian.",
+      description: t("pages.gamesPage.game1Description"),
       players: 1284,
       rating: 4.8,
       plays: 18400,
@@ -78,11 +167,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "startup-sprint",
-      title: "Startup Sprint",
+      title: t("pages.gamesPage.game2Title"),
       category: "arcade",
-      categoryLabel: "Arcade",
+      categoryLabel: t("pages.gamesPage.categoryArcade"),
       cover: "https://images.unsplash.com/photo-1556438064-2d7646166914?auto=format&fit=crop&w=1200&q=80",
-      description: "Thu thập ý tưởng, né blocker và tăng tốc trước demo day.",
+      description: t("pages.gamesPage.game2Description"),
       players: 842,
       rating: 4.6,
       plays: 12600,
@@ -100,11 +189,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "green-city-builder",
-      title: "Green City Builder",
+      title: t("pages.gamesPage.game3Title"),
       category: "strategy",
-      categoryLabel: "Chiến thuật",
+      categoryLabel: t("pages.gamesPage.categoryStrategy"),
       cover: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1200&q=80",
-      description: "Cân bằng năng lượng, cây xanh và ngân sách để xây khu phố bền vững.",
+      description: t("pages.gamesPage.game3Description"),
       players: 536,
       rating: 4.7,
       plays: 9300,
@@ -122,11 +211,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "vnseea-quiz-night",
-      title: "VNSEEA Quiz Night",
+      title: t("pages.gamesPage.game4Title"),
       category: "quiz",
-      categoryLabel: "Quiz",
+      categoryLabel: t("pages.gamesPage.categoryQuiz"),
       cover: "https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=1200&q=80",
-      description: "Trả lời nhanh các câu hỏi về cộng đồng, sự kiện và marketplace.",
+      description: t("pages.gamesPage.game4Description"),
       players: 2190,
       rating: 4.9,
       plays: 24100,
@@ -144,11 +233,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "event-runner",
-      title: "Event Runner",
+      title: t("pages.gamesPage.game5Title"),
       category: "sport",
-      categoryLabel: "Thể thao",
+      categoryLabel: t("pages.gamesPage.categorySport"),
       cover: "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1200&q=80",
-      description: "Chạy qua các checkpoint sự kiện, mời bạn bè và hoàn thành nhiệm vụ.",
+      description: t("pages.gamesPage.game5Description"),
       players: 412,
       rating: 4.4,
       plays: 5200,
@@ -166,11 +255,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "code-quest",
-      title: "Code Quest",
+      title: t("pages.gamesPage.game6Title"),
       category: "strategy",
-      categoryLabel: "Chiến thuật",
+      categoryLabel: t("pages.gamesPage.categoryStrategy"),
       cover: "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&q=80",
-      description: "Sắp xếp module, tối ưu tài nguyên và vượt qua các bug trước deadline.",
+      description: t("pages.gamesPage.game6Description"),
       players: 730,
       rating: 4.7,
       plays: 11700,
@@ -188,11 +277,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "supply-chain-rush",
-      title: "Supply Chain Rush",
+      title: t("pages.gamesPage.game7Title"),
       category: "arcade",
-      categoryLabel: "Arcade",
+      categoryLabel: t("pages.gamesPage.categoryArcade"),
       cover: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80",
-      description: "Điều phối kho, xe giao hàng và đơn khẩn trong một vòng chơi tốc độ.",
+      description: t("pages.gamesPage.game7Description"),
       players: 1190,
       rating: 4.5,
       plays: 15100,
@@ -210,11 +299,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "memory-lab",
-      title: "Memory Lab",
+      title: t("pages.gamesPage.game8Title"),
       category: "puzzle",
-      categoryLabel: "Giải đố",
+      categoryLabel: t("pages.gamesPage.categoryPuzzle"),
       cover: "https://images.unsplash.com/photo-1607706189992-eae578626c86?auto=format&fit=crop&w=1200&q=80",
-      description: "Ghi nhớ chuỗi biểu tượng, mở khoá phòng thí nghiệm và tăng combo.",
+      description: t("pages.gamesPage.game8Description"),
       players: 604,
       rating: 4.6,
       plays: 8800,
@@ -232,11 +321,11 @@ export const useMockGamesData = () => {
     },
     {
       id: "penalty-master",
-      title: "Penalty Master",
+      title: t("pages.gamesPage.game9Title"),
       category: "sport",
-      categoryLabel: "Thể thao",
+      categoryLabel: t("pages.gamesPage.categorySport"),
       cover: "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?auto=format&fit=crop&w=1200&q=80",
-      description: "Canh lực sút, hướng bóng và chuỗi penalty để leo top bảng xếp hạng.",
+      description: t("pages.gamesPage.game9Description"),
       players: 1560,
       rating: 4.4,
       plays: 17600,
@@ -254,10 +343,22 @@ export const useMockGamesData = () => {
     },
   ]
 
-  const achievements = [
-    { title: "First Play", description: "Hoàn thành lượt chơi đầu tiên.", progress: 100 },
-    { title: "Top 10%", description: "Đạt điểm cao hơn 90% người chơi.", progress: 68 },
-    { title: "Daily Streak", description: "Chơi 5 ngày liên tiếp.", progress: 40 },
+  const achievements: GameAchievement[] = [
+    {
+      title: t("pages.gamesPage.achievement1Title"),
+      description: t("pages.gamesPage.achievement1Description"),
+      progress: 100,
+    },
+    {
+      title: t("pages.gamesPage.achievement2Title"),
+      description: t("pages.gamesPage.achievement2Description"),
+      progress: 68,
+    },
+    {
+      title: t("pages.gamesPage.achievement3Title"),
+      description: t("pages.gamesPage.achievement3Description"),
+      progress: 40,
+    },
   ]
 
   return {
@@ -267,6 +368,3 @@ export const useMockGamesData = () => {
     achievements,
   }
 }
-
-export const formatGameNumber = (value: number) =>
-  new Intl.NumberFormat("vi-VN", { notation: value >= 10000 ? "compact" : "standard" }).format(value)

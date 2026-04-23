@@ -648,8 +648,22 @@ Vai trò:
 - game listing, modal play, filters
 
 Nhận xét migrate:
-- `GamePlayModal.vue` nên chuẩn hóa bằng modal shell
-- `GamesFilters.vue` là điểm hợp để dùng `VueUse`
+- `GameCard.vue`, `GamesHero.vue`, `GamesSidebar.vue` đã chuyển khỏi flow div/button thủ công:
+  - dùng `UCard`, `UBadge`, `UButton`, `UAlert`, `UProgress`
+  - `GameCard.vue` đã đổi ảnh public sang `NuxtImg`, có selected/save/new state rõ hơn và CTA `play/preview/save` dễ bấm hơn trên mobile
+  - `GamesHero.vue` và `GamesSidebar.vue` đã bám theo filter/game đang xem thay vì chỉ render banner/sidebar tĩnh
+- `GamePlayModal.vue` đã được chuẩn hóa bằng shell nền:
+  - dùng `FoundationModalShell` thay cho `Teleport` modal tự dựng
+  - bỏ `Date.now()` trực tiếp trong setup để timer SSR-safe hơn
+  - có state `idle/loading/success/error`, feedback inline rõ và flow `play again`/`finish` ổn định hơn
+- `GamesFilters.vue` đã dùng `watchDebounced` + `@nuxt/ui` đúng vai trò:
+  - search/category/result state không còn là native input/button đơn giản
+  - filter status có alert riêng và reset action bám theo URL state
+- `GamesPage.vue` và `/games` route đã được nâng để đáp ứng 3 tiêu chí:
+  - `SEO` được dời về page-level ở `/games` bằng `useSeoMeta()` + canonical + Open Graph
+  - query `q/tab/category/game` đã sync với route và tự normalize giá trị không hợp lệ
+  - default state/selection/timer đã ổn định hơn cho `SSR` và hydration
+- `useMockGamesData.ts` đã bổ sung helper `filter/normalize/query-read`, đồng thời đưa dữ liệu `games` sang `i18n` qua `pages.gamesPage`
 
 ### `go-pro` - 6 files
 
