@@ -1,41 +1,79 @@
 <template>
-  <aside class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-    <div class="flex items-center justify-between gap-3">
-      <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t("pages.livePage.streamsEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.livePage.streamsTitle") }}</h2>
+  <aside class="surface-card flex flex-col overflow-hidden border-none ring-1 ring-secondary-100 shadow-xl bg-white p-6">
+    <div class="flex items-center justify-between gap-4 mb-6 px-1">
+      <div class="space-y-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
+          {{ $t("pages.livePage.streamsEyebrow") }}
+        </p>
+        <h2 class="text-xl font-black tracking-tight text-secondary-900 leading-none">
+          {{ $t("pages.livePage.streamsTitle") }}
+        </h2>
       </div>
-      <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">
+      <UBadge
+        variant="soft"
+        color="primary"
+        class="rounded-full font-black text-[10px] uppercase tracking-widest px-3 py-1 ring-1 ring-inset ring-primary-100"
+      >
         {{ streams.length }}
-      </span>
+      </UBadge>
     </div>
 
-    <div class="mt-4 space-y-3">
+    <div class="space-y-4 overflow-y-auto pr-1 scrollbar-hide">
       <button
         v-for="stream in streams"
         :key="stream.id"
-        class="w-full rounded-[22px] border p-2 text-left transition"
-        :class="stream.id === selectedId ? 'border-[var(--border-strong)] bg-[var(--color-primary-50)]' : 'border-[var(--border-default)] bg-white hover:bg-[var(--bg-surface-hover)]'"
+        class="w-full text-left transition-all duration-300 group/item relative"
         type="button"
         @click="$emit('select', stream.id)"
       >
-        <div class="relative h-28 overflow-hidden rounded-[18px]">
-          <img :alt="stream.title" class="h-full w-full object-cover" :src="stream.cover">
-          <div class="absolute inset-0 bg-black/28" />
-          <span class="absolute left-2 top-2 rounded-[var(--radius-full)] px-2.5 py-1 text-[11px] font-extrabold text-white" :class="stream.status === 'live' ? 'bg-[var(--color-error)]' : 'bg-black/50'">
-            {{ stream.status === "live" ? $t("pages.livePage.statusLiveUpper") : stream.status === "scheduled" ? $t("pages.livePage.statusScheduledUpper") : $t("pages.livePage.statusEndedUpper") }}
-          </span>
-          <span class="absolute bottom-2 right-2 rounded-[var(--radius-full)] bg-black/52 px-2.5 py-1 text-[11px] font-bold text-white">
-            {{ stream.duration }}
-          </span>
-        </div>
-        <div class="mt-3 flex gap-3">
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white" :style="{ background: stream.host.gradient }">
-            {{ stream.host.initials }}
+        <div 
+          class="surface-card p-3 ring-1 ring-secondary-100 shadow-sm group-hover/item:shadow-xl group-hover/item:ring-primary-500/30 group-hover/item:-translate-y-1 transition-all duration-500"
+          :class="stream.id === selectedId ? 'bg-primary-50/40 ring-primary-500/40 shadow-xl' : 'bg-white'"
+        >
+          <div class="relative h-40 overflow-hidden rounded-2xl mb-4 group/img">
+            <img 
+              :alt="stream.title" 
+              class="h-full w-full object-cover transition-transform duration-500 group-hover/img:scale-110" 
+              :src="stream.cover"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+            
+            <div class="absolute left-3 top-3 flex gap-2">
+              <UBadge
+                variant="solid"
+                :color="stream.status === 'live' ? 'rose' : 'black'"
+                class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2.5 py-1 shadow-lg"
+                :class="{ 'animate-pulse': stream.status === 'live' }"
+              >
+                {{ stream.status === "live" ? $t("pages.livePage.statusLiveUpper") : stream.status === "scheduled" ? $t("pages.livePage.statusScheduledUpper") : $t("pages.livePage.statusEndedUpper") }}
+              </UBadge>
+            </div>
+
+            <span class="absolute bottom-3 right-3 rounded-lg bg-black/60 px-2.5 py-1 text-[10px] font-black tracking-widest text-white backdrop-blur-md border border-white/10 shadow-lg">
+              {{ stream.duration }}
+            </span>
           </div>
-          <div class="min-w-0">
-            <h3 class="line-clamp-2 text-[14px] font-extrabold leading-5 text-[var(--text-primary)]">{{ stream.title }}</h3>
-            <p class="mt-1 truncate text-[12px] font-semibold text-[var(--text-secondary)]">{{ stream.host.name }} · {{ $t("pages.livePage.viewerCountShort", { count: stream.viewers }) }}</p>
+
+          <div class="flex gap-4 px-1">
+            <UAvatar
+              :src="`https://ui-avatars.com/api/?name=${stream.host.name}&background=0000ff&color=fff`"
+              :alt="stream.host.name"
+              size="sm"
+              class="ring-2 ring-white shadow-sm shrink-0"
+              :ui="{ rounded: 'rounded-[12px]' }"
+            />
+            <div class="min-w-0 space-y-1">
+              <h3 class="line-clamp-2 text-[13px] font-black leading-tight text-secondary-900 group-hover/item:text-primary-600 transition-colors uppercase tracking-tight">{{ stream.title }}</h3>
+              <div class="flex items-center gap-2">
+                <p class="truncate text-[10px] font-bold text-secondary-400">
+                  {{ stream.host.name }}
+                </p>
+                <span class="h-1 w-1 rounded-full bg-secondary-200" />
+                <p class="text-[10px] font-black text-primary-500 uppercase tracking-widest">
+                  {{ $t("pages.livePage.viewerCountShort", { count: stream.viewers }) }}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </button>

@@ -454,21 +454,24 @@ Nhận xét migrate:
 - [x] emoji picker implemented with `UPopover`
 - [x] smooth transitions for info panel in `MessagesPage.vue`
 
-### `live` - 5 files
+### `live` - 5 files [DONE]
 
 Files:
-- `GoLiveModal.vue`
-- `LiveChat.vue`
-- `LiveHero.vue`
-- `LivePlayer.vue`
-- `LiveStreamList.vue`
+- `GoLiveModal.vue` [DONE]
+- `LiveChat.vue` [DONE]
+- `LiveHero.vue` [DONE]
+- `LivePlayer.vue` [DONE]
+- `LiveStreamList.vue` [DONE]
 
 Vai trò:
 - live streaming UI
 
 Nhận xét migrate:
-- `GoLiveModal.vue` nên đi theo chuẩn `UModal`
-- `LiveChat.vue` hợp với `VueUse` cho scroll/input behavior
+- [x] `GoLiveModal.vue` chuyển sang chuẩn `UModal` + `UForm`
+- [x] `LiveChat.vue` tích hợp mượt mà với tự động cuộn và thiết kế bong bóng chat mới
+- [x] `LivePlayer.vue` nâng cấp giao diện premium với glassmorphism và statistics bar chuyên nghiệp
+- [x] `LiveHero.vue` đồng bộ thiết kế với các module khác, bổ sung stats summary
+
 
 ### `memories` - 2 files [DONE]
 
