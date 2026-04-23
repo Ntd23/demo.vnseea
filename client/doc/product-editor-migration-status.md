@@ -575,10 +575,65 @@ Vai trò:
 - crowdfunding list/detail/create/donate
 
 Nhận xét migrate:
-- `CreateFundingForm.vue` còn native form nhiều
-- `FundingDonateModal.vue` nên chuyển sang `UModal` + `UForm`
-- `FundingFilters.vue` nên thêm `watchDebounced`
-- hợp để dùng `UInputNumber`, `UFileUpload`, `UProgress`, `UAlert`
+- đợt 1 đã hoàn tất cho:
+  - `CreateFundingForm.vue`
+  - `FundingDonateModal.vue`
+  - `FundingFilters.vue`
+  - `FundingProgress.vue`
+- `CreateFundingForm.vue` đã chuyển sang flow `@nuxt/ui` rõ trạng thái hơn:
+  - dùng `UForm`, `UFormField`, `UInput`, `USelect`, `UInputNumber`, `UTextarea`
+  - dùng lại `FormsFormSection`, `FormsUploader`, `FormsSubmitBar`
+  - có state `idle`, `loading`, `success`, `error`, validate field-level và local preview SSR-safe hơn
+- `FundingDonateModal.vue` đã bỏ modal thủ công:
+  - dùng `UModal`, `UForm`, `UInputNumber`, `USelect`, `UTextarea`, `UAlert`, `UButton`
+  - có preset amount, inline validation, toast và feedback submit rõ ràng
+- `FundingFilters.vue` + `FundingProgress.vue` đã được chuẩn hóa:
+  - filter dùng `watchDebounced`, `UInput`, `USelect`, `UAlert`, `UBadge`
+  - progress dùng `UProgress`, guard goal/percent ổn định hơn và có aria label
+- page-level route cho funding đã đáp ứng tốt hơn 3 nhóm tiêu chí:
+  - `/funding`, `/create_funding`, `/show_fund/[id]` đã dời `SEO` về page-level bằng `useSeoMeta()` + canonical + Open Graph
+  - query `q/category/status` đã sync với route và normalize giá trị không hợp lệ để URL public ổn định hơn
+  - empty/default state trong listing/detail/create đã an toàn hơn cho SSR/hydration
+- `useMockFundingData.ts` đã bổ sung helper filter/normalize/query-read để contract dữ liệu ổn định hơn thay vì nhét logic vào component
+- đã bổ sung locale `pages.fundingPage`, `pages.createFundingPage`, `pages.showFundPage` để tránh render raw translation key ở flow public
+- đợt 2 đã hoàn tất cho:
+  - `FundingCard.vue`
+  - `FundingHero.vue`
+  - `FundingSidebar.vue`
+- `FundingCard.vue` đã chuyển sang card flow rõ hơn:
+  - dùng `UCard`, `UBadge`, `UButton`
+  - ảnh listing đã đổi sang `NuxtImg` để public card tối ưu tải tốt hơn
+  - status/featured/owner badge rõ hơn, CTA donate/detail dễ bấm hơn trên mobile
+- `FundingHero.vue` và `FundingSidebar.vue` đã đồng bộ theo state listing hiện tại:
+  - hero hiển thị chip cho `query/category/status` thay vì chỉ banner tĩnh
+  - sidebar có filter status alert, reset action, category state rõ và keyboard-safe hơn
+  - stat trong hero/sidebar đã bám vào listing đang hiển thị thay vì tổng data thô
+- `FundingPage.vue` đã nối feedback tốt hơn cho đợt 2:
+  - donate mock sẽ cập nhật trực tiếp `raisedAmount`, `backers`, `donors`, `status` của campaign hiện tại
+  - category breakdown đã bám theo `search/status` hiện tại để đỡ gây hiểu nhầm khi filter
+- đợt 3 đã hoàn tất cho:
+  - `FundingDetailHero.vue`
+  - `FundingDetailMain.vue`
+  - `FundingDetailSidebar.vue`
+- `FundingDetailHero.vue` đã nâng thành detail hero đúng chuẩn public page hơn:
+  - dùng `NuxtImg`, `UCard`, `UBadge`, `UButton`, `UAlert`
+  - thể hiện rõ category/status/featured/owner badge
+  - hero đã gắn progress + raised/goal summary ngay trong fold đầu
+- `FundingDetailMain.vue` đã tách rõ các cụm thông tin:
+  - progress summary
+  - campaign background
+  - impact list
+  - rewards/update commitments
+  - các khối đều dùng `UCard` và trạng thái/status context rõ hơn
+- `FundingDetailSidebar.vue` đã có feedback quản trị/detail rõ hơn:
+  - donor list có empty state ổn định
+  - owner actions có state `idle`, `loading`, `success`, `error`, kèm `UAlert` + toast
+  - donate CTA và owner meta không còn là button/div thủ công đơn giản
+- `ShowFundPage.vue` đã ổn định hơn cho SSR/UI flow:
+  - not-found dùng `FoundationEmptyState`
+  - detail page clone campaign state cục bộ để donation cập nhật trực tiếp `raisedAmount/backers/donors/status`
+  - helper clone/apply donation đã được kéo về `useMockFundingData.ts` để contract data nhất quán hơn giữa list/detail
+- cụm `funding` hiện đã hoàn tất cả 3 đợt cho đủ 10 file
 
 ### `games` - 5 files
 
