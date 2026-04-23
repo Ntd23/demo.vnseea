@@ -1878,6 +1878,257 @@
       "resultHeading": "Products people are browsing right now",
       "distanceKm": "{value} km"
     },
+    "popularPage": {
+      "seoTitle": "Popular Posts | VNSEEA",
+      "seoDescription": "Explore the posts getting the most traction on VNSEEA with compact filters, clearer ranking, and a sidebar that highlights hot hashtags and creators.",
+      "heroEyebrow": "Community pulse",
+      "heroTitle": "The conversations gaining the most momentum right now",
+      "heroDescription": "Popular brings together the posts with the strongest engagement so you can quickly see what is heating up and who is driving the discussion forward.",
+      "primaryCta": "Back to feed",
+      "secondaryCta": "Open search",
+      "searchPlaceholder": "Search creators, topics, or high-signal posts",
+      "openLink": "Open now",
+      "resultEyebrow": "Ranking board",
+      "resultCount": "{count} posts currently appear in the popular ranking",
+      "resetFilters": "Reset filters",
+      "emptyTitle": "No popular posts match yet",
+      "emptyDescription": "Try another keyword or switch back to all categories to see the posts attracting stronger engagement.",
+      "rankLabel": "Rank {rank}",
+      "scoreCount": "{count} engagement points",
+      "sidebarHashtagsEyebrow": "Hot hashtags",
+      "sidebarHashtagsTitle": "Trending topics",
+      "sidebarCreatorsEyebrow": "Top creators",
+      "sidebarCreatorsTitle": "Who is setting the pace",
+      "sidebarLinksEyebrow": "Continue with",
+      "sidebarLinksTitle": "Related sections",
+      "statPosts": "Popular posts",
+      "statPostsDescription": "How many posts are currently present in the ranked popular list after the active filters.",
+      "statInteractions": "Total engagement",
+      "statInteractionsDescription": "Likes, comments, and shares combined from the current popular list.",
+      "statCreators": "Active creators",
+      "statCreatorsDescription": "How many distinct authors are represented in the current popular ranking.",
+      "statComments": "Comments driving discussion",
+      "statCommentsDescription": "The total comment volume across the high-ranking posts on this route.",
+      "resultHeadingAll": "The posts leading the conversation",
+      "resultHeadingCategory": "Top posts in {label}",
+      "categories": [
+        {
+          "label": "All",
+          "value": "all",
+          "icon": "i-ph-squares-four-bold"
+        },
+        {
+          "label": "Community",
+          "value": "community",
+          "icon": "i-ph-users-three-bold"
+        },
+        {
+          "label": "Product",
+          "value": "product",
+          "icon": "i-ph-cube-bold"
+        },
+        {
+          "label": "Business",
+          "value": "business",
+          "icon": "i-ph-briefcase-bold"
+        },
+        {
+          "label": "Design",
+          "value": "design",
+          "icon": "i-ph-palette-bold"
+        },
+        {
+          "label": "Technology",
+          "value": "technology",
+          "icon": "i-ph-cpu-bold"
+        }
+      ],
+      "quickLinks": [
+        {
+          "title": "Watch featured videos",
+          "description": "Jump to Watch and continue with the sessions drawing attention now.",
+          "to": "/watch",
+          "icon": "i-ph-play-circle-bold",
+          "accent": "linear-gradient(135deg,#2563eb 0%,#60a5fa 100%)"
+        },
+        {
+          "title": "Follow live streams",
+          "description": "Open the live sessions currently broadcasting across the community.",
+          "to": "/live",
+          "icon": "i-ph-broadcast-bold",
+          "accent": "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)"
+        },
+        {
+          "title": "Read deeper blog posts",
+          "description": "Move to the blog for longer-form pieces that have been edited more intentionally.",
+          "to": "/blogs",
+          "icon": "i-ph-newspaper-bold",
+          "accent": "linear-gradient(135deg,#7c3aed 0%,#c084fc 100%)"
+        },
+        {
+          "title": "Explore the marketplace",
+          "description": "See the product listings currently attracting the most attention.",
+          "to": "/products",
+          "icon": "i-ph-storefront-bold",
+          "accent": "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)"
+        }
+      ],
+      "posts": [
+        {
+          "id": "popular-community-1",
+          "author": "Thu Ha",
+          "role": "Community lead",
+          "audience": "Public",
+          "time": "12 minutes ago",
+          "text": "The team just locked the rollout order for public pages: stable routes, SSR-safe state, and clear action feedback now take priority over surface-level UI swaps.",
+          "tags": ["migration", "community", "nuxt"],
+          "stats": {
+            "likes": 124,
+            "comments": 28,
+            "shares": 7
+          },
+          "media": "double",
+          "comments": [
+            {
+              "id": 11,
+              "author": "Nam Pham",
+              "role": "Frontend",
+              "text": "If the shell and route state stay stable, the next pages will move much faster."
+            },
+            {
+              "id": 12,
+              "author": "Linh Dao",
+              "role": "Product",
+              "text": "That priority order makes sense because it reduces the feeling that the app freezes during navigation."
+            }
+          ],
+          "category": "community",
+          "trendLabel": "Rising fast"
+        },
+        {
+          "id": "popular-product-1",
+          "author": "Bao Tram",
+          "role": "Marketplace curator",
+          "audience": "Members",
+          "time": "35 minutes ago",
+          "text": "The new marketplace mock is showing that product cards need to prioritize price, location, and a tighter CTA. One extra badge layer is enough to make the whole thing noisy.",
+          "tags": ["marketplace", "product", "ux"],
+          "stats": {
+            "likes": 96,
+            "comments": 19,
+            "shares": 5
+          },
+          "media": "single",
+          "comments": [
+            {
+              "id": 21,
+              "author": "Quynh Lan",
+              "role": "Designer",
+              "text": "Exactly. The media area should lead the eye into price and state before anything else."
+            },
+            {
+              "id": 22,
+              "author": "Phuc An",
+              "role": "Seller",
+              "text": "Compact CTAs read much better than floating action icons."
+            }
+          ],
+          "category": "product",
+          "trendLabel": "Heavy discussion"
+        },
+        {
+          "id": "popular-business-1",
+          "author": "Minh Quan",
+          "role": "Startup operator",
+          "audience": "Public",
+          "time": "1 hour ago",
+          "text": "If a route can crash because data is not ready, that is not only a data issue. It is a contract issue. The page should keep a fallback shape so people can still move away cleanly.",
+          "tags": ["business", "ssr", "contract"],
+          "stats": {
+            "likes": 141,
+            "comments": 33,
+            "shares": 12
+          },
+          "comments": [
+            {
+              "id": 31,
+              "author": "Gia Linh",
+              "role": "People Ops",
+              "text": "Right. The whole app should not get stuck just because one detail page throws at runtime."
+            },
+            {
+              "id": 32,
+              "author": "Hai Nam",
+              "role": "Tech lead",
+              "text": "Composable guards plus page fallbacks are the pragmatic way to harden this."
+            }
+          ],
+          "category": "business",
+          "trendLabel": "Spreading quickly"
+        },
+        {
+          "id": "popular-design-1",
+          "author": "Anh Thu",
+          "role": "Product designer",
+          "audience": "Public",
+          "time": "2 hours ago",
+          "text": "Popular should feel curated, not just like the feed sorted differently. The hero, quick links, and sidebar need to signal that this is where the most worth-seeing content gets gathered.",
+          "tags": ["design", "curation", "popular"],
+          "stats": {
+            "likes": 88,
+            "comments": 17,
+            "shares": 9
+          },
+          "media": "single",
+          "comments": [
+            {
+              "id": 41,
+              "author": "Kim Ngan",
+              "role": "Content strategist",
+              "text": "Exactly. If the visual rhythm does not change, people will not distinguish it from the home feed."
+            },
+            {
+              "id": 42,
+              "author": "Duc Minh",
+              "role": "Frontend engineer",
+              "text": "The creator and hashtag sidebar is already doing a good job of summarizing momentum."
+            }
+          ],
+          "category": "design",
+          "trendLabel": "Saved often"
+        },
+        {
+          "id": "popular-technology-1",
+          "author": "Duc Minh",
+          "role": "Frontend engineer",
+          "audience": "Members",
+          "time": "3 hours ago",
+          "text": "When a locale is missing an entire namespace, the route should still render from internal fallback data instead of waiting for the user to hard-refresh out of a broken state.",
+          "tags": ["technology", "i18n", "runtime"],
+          "stats": {
+            "likes": 167,
+            "comments": 26,
+            "shares": 18
+          },
+          "comments": [
+            {
+              "id": 51,
+              "author": "Bao Tram",
+              "role": "Frontend",
+              "text": "This kind of fallback removes a lot of route demo failures during migration."
+            },
+            {
+              "id": 52,
+              "author": "Thu Ha",
+              "role": "Community lead",
+              "text": "As long as the real copy still gets restored in locale, this is the right tradeoff."
+            }
+          ],
+          "category": "technology",
+          "trendLabel": "Hot today"
+        }
+      ]
+    },
     "watchPage": {
       "seoTitle": "Watch | VNSEEA",
       "seoDescription": "Follow the videos people are watching on VNSEEA with a clearer player, compact filters, and an easier watch-next flow.",
