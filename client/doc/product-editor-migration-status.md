@@ -479,28 +479,31 @@ Nhận xét migrate:
   - `UCollapsible` hoặc `UAccordion`
   - `VueUse` cho `useBreakpoints`, `useScroll`, `onClickOutside`
 
-### `navigation` - 11 files
+### `navigation` - 11 files [DONE]
 
 Files:
-- `ChatWidget.vue`
-- `HeaderBar.vue`
-- `HeaderIconNav.vue`
-- `HeaderLogo.vue`
-- `HeaderSearchInput.vue`
-- `HeaderUserMenu.vue`
-- `LeftSidebar.vue`
-- `MobileMenu.vue`
-- `RightSidebar.vue`
-- `SidebarMenuItem.vue`
-- `WidgetCard.vue`
+- `ChatWidget.vue` [DONE]
+- `HeaderBar.vue` [DONE]
+- `HeaderIconNav.vue` [DONE]
+- `HeaderLogo.vue` [DONE]
+- `HeaderSearchInput.vue` [DONE]
+- `HeaderUserMenu.vue` [DONE]
+- `LeftSidebar.vue` [DONE]
+- `MobileMenu.vue` [DONE]
+- `RightSidebar.vue` [DONE]
+- `SidebarMenuItem.vue` [DONE]
+- `WidgetCard.vue` [DONE]
 
 Vai trò:
 - app navigation, header, sidebar, widgets
 
 Nhận xét migrate:
-- nên chuẩn hóa menu/search/user menu bằng `@nuxt/ui`
-- `HeaderSearchInput.vue` hợp để thêm `watchDebounced`
-- `MobileMenu.vue` hợp với `UDrawer`
+- [x] chuẩn hóa menu/search/user menu bằng `@nuxt/ui`
+- [x] `HeaderSearchInput.vue` đã thêm `watchDebounced`
+- [x] `MobileMenu.vue` đã dùng `UDrawer`
+- [x] fixed missing tag in `WidgetCard.vue`
+- [x] improved `HeaderUserMenu.vue` with `UDropdown`
+
 
 ### `orders` - 9 files [DONE]
 

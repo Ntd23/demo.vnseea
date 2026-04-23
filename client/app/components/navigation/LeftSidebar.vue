@@ -12,6 +12,7 @@
           :to="item.to"
           :label="$t(item.label)"
           :icon="item.icon"
+          :active="isItemActive(item.to)"
         />
 
         <!-- Expandable section -->
@@ -22,14 +23,16 @@
             :to="item.to"
             :label="$t(item.label)"
             :icon="item.icon"
+            :active="isItemActive(item.to)"
           />
         </template>
       </div>
 
       <!-- Show More Toggle -->
-      <button
-        class="group flex w-full items-center gap-3.5 rounded-xl px-3 py-2.5 text-left transition-all duration-300 hover:bg-secondary-50"
-        type="button"
+      <UButton
+        variant="ghost"
+        color="white"
+        class="group flex w-full items-center gap-3.5 rounded-xl px-3 py-3 transition-all duration-300 hover:bg-secondary-50 shadow-none ring-0 h-auto"
         @click="expanded = !expanded"
       >
         <span
@@ -43,7 +46,7 @@
         <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 group-hover:text-primary-600 transition-colors leading-none">
           {{ expanded ? $t('navigation.leftSidebar.showLess') : $t('navigation.leftSidebar.showMore') }}
         </span>
-      </button>
+      </UButton>
     </nav>
   </div>
 </template>
@@ -53,35 +56,35 @@ const route = useRoute()
 const expanded = ref(false)
 
 const sidebarNav = [
-  { label: "navigation.leftSidebar.items.feed", icon: "i-ph-house-simple", to: "/" },
-  { label: "navigation.leftSidebar.items.photos", icon: "i-ph-images", to: "/photos" },
-  { label: "navigation.leftSidebar.items.watch", icon: "i-ph-play-circle", to: "/watch" },
-  { label: "navigation.leftSidebar.items.reels", icon: "i-ph-film-strip", to: "/reels" },
-  { label: "navigation.leftSidebar.items.savedPosts", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
-  { label: "navigation.leftSidebar.items.popularPosts", icon: "i-ph-fire", to: "/popular" },
-  { label: "navigation.leftSidebar.items.memories", icon: "i-ph-clock-counter-clockwise", to: "/memories" },
-  { label: "navigation.leftSidebar.items.poke", icon: "i-ph-hand-waving", to: "/poke" },
-  { label: "navigation.leftSidebar.items.myGroups", icon: "i-ph-users-three", to: "/groups" },
-  { label: "navigation.leftSidebar.items.myPages", icon: "i-ph-file-text", to: "/pages" },
+  { label: "navigation.leftSidebar.items.feed", icon: "i-ph-house-simple-fill", to: "/" },
+  { label: "navigation.leftSidebar.items.photos", icon: "i-ph-images-fill", to: "/photos" },
+  { label: "navigation.leftSidebar.items.watch", icon: "i-ph-play-circle-fill", to: "/watch" },
+  { label: "navigation.leftSidebar.items.reels", icon: "i-ph-film-strip-fill", to: "/reels" },
+  { label: "navigation.leftSidebar.items.savedPosts", icon: "i-ph-bookmark-simple-fill", to: "/saved-posts" },
+  { label: "navigation.leftSidebar.items.popularPosts", icon: "i-ph-fire-fill", to: "/popular" },
+  { label: "navigation.leftSidebar.items.memories", icon: "i-ph-clock-counter-clockwise-fill", to: "/memories" },
+  { label: "navigation.leftSidebar.items.poke", icon: "i-ph-hand-waving-fill", to: "/poke" },
+  { label: "navigation.leftSidebar.items.myGroups", icon: "i-ph-users-three-fill", to: "/groups" },
+  { label: "navigation.leftSidebar.items.myPages", icon: "i-ph-file-text-fill", to: "/pages" },
 ]
 
 const sidebarNavMore = [
-  { label: "navigation.leftSidebar.items.blog", icon: "i-ph-newspaper", to: "/blogs" },
-  { label: "navigation.leftSidebar.items.marketplace", icon: "i-ph-storefront", to: "/products" },
-  { label: "navigation.leftSidebar.items.directory", icon: "i-ph-squares-four", to: "/directory" },
-  { label: "navigation.leftSidebar.items.events", icon: "i-ph-calendar-dots", to: "/events" },
-  { label: "navigation.leftSidebar.items.live", icon: "i-ph-broadcast", to: "/live" },
-  { label: "navigation.leftSidebar.items.forum", icon: "i-ph-chats-circle", to: "/forum" },
-  { label: "navigation.leftSidebar.items.movies", icon: "i-ph-popcorn", to: "/movies" },
-  { label: "navigation.leftSidebar.items.jobs", icon: "i-ph-briefcase", to: "/jobs" },
-  { label: "navigation.leftSidebar.items.deals", icon: "i-ph-tag", to: "/deals" },
-  { label: "navigation.leftSidebar.items.findFriends", icon: "i-ph-user-plus", to: "/find-friends" },
-  { label: "navigation.leftSidebar.items.games", icon: "i-ph-game-controller", to: "/games" },
-  { label: "navigation.leftSidebar.items.goPro", icon: "i-ph-crown-simple", to: "/go-pro" },
-  { label: "navigation.leftSidebar.items.wallet", icon: "i-ph-wallet", to: "/wallet" },
-  { label: "navigation.leftSidebar.items.withdrawal", icon: "i-ph-money-wavy", to: "/withdrawal" },
-  { label: "navigation.leftSidebar.items.trending", icon: "i-ph-trend-up", to: "/trending" },
-  { label: "navigation.leftSidebar.items.funding", icon: "i-ph-hand-heart", to: "/funding" },
+  { label: "navigation.leftSidebar.items.blog", icon: "i-ph-newspaper-fill", to: "/blogs" },
+  { label: "navigation.leftSidebar.items.marketplace", icon: "i-ph-storefront-fill", to: "/products" },
+  { label: "navigation.leftSidebar.items.directory", icon: "i-ph-squares-four-fill", to: "/directory" },
+  { label: "navigation.leftSidebar.items.events", icon: "i-ph-calendar-dots-fill", to: "/events" },
+  { label: "navigation.leftSidebar.items.live", icon: "i-ph-broadcast-fill", to: "/live" },
+  { label: "navigation.leftSidebar.items.forum", icon: "i-ph-chats-circle-fill", to: "/forum" },
+  { label: "navigation.leftSidebar.items.movies", icon: "i-ph-popcorn-fill", to: "/movies" },
+  { label: "navigation.leftSidebar.items.jobs", icon: "i-ph-briefcase-fill", to: "/jobs" },
+  { label: "navigation.leftSidebar.items.deals", icon: "i-ph-tag-fill", to: "/deals" },
+  { label: "navigation.leftSidebar.items.findFriends", icon: "i-ph-user-plus-fill", to: "/find-friends" },
+  { label: "navigation.leftSidebar.items.games", icon: "i-ph-game-controller-fill", to: "/games" },
+  { label: "navigation.leftSidebar.items.goPro", icon: "i-ph-crown-simple-fill", to: "/go-pro" },
+  { label: "navigation.leftSidebar.items.wallet", icon: "i-ph-wallet-fill", to: "/wallet" },
+  { label: "navigation.leftSidebar.items.withdrawal", icon: "i-ph-money-wavy-fill", to: "/withdrawal" },
+  { label: "navigation.leftSidebar.items.trending", icon: "i-ph-trend-up-fill", to: "/trending" },
+  { label: "navigation.leftSidebar.items.funding", icon: "i-ph-hand-heart-fill", to: "/funding" },
 ]
 
 const isMarketplaceRoute = () =>
@@ -97,6 +100,7 @@ const isMarketplaceRoute = () =>
 const isEventsRoute = () =>
   route.path === "/events"
   || route.path.startsWith("/events/")
+
 const isGroupsRoute = () =>
   route.path === "/groups"
   || route.path === "/suggested-groups"
@@ -113,8 +117,9 @@ const isPagesRoute = () =>
   || route.path.startsWith("/p/")
   || route.path.startsWith("/page-setting/")
 
-const isActive = (to: string) => {
+const isItemActive = (to: string) => {
   const normalized = to.split("#")[0]
+  if (normalized === "/") return route.path === "/" || route.path === "/home"
   if (normalized === "/products") return isMarketplaceRoute()
   if (normalized === "/events") return isEventsRoute()
   if (normalized === "/groups") return isGroupsRoute()

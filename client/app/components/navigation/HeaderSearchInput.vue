@@ -28,6 +28,8 @@
 </template>
 
 <script setup lang="ts">
+import { watchDebounced } from "@vueuse/core"
+
 function readQueryValue(value: unknown) {
   if (Array.isArray(value)) return String(value[0] || "")
   return typeof value === "string" ? value : ""
@@ -37,12 +39,28 @@ const route = useRoute()
 const router = useRouter()
 const search = ref(readQueryValue(route.query.q))
 
+// Sync search input with route query
 watch(
   () => route.query.q,
   (value) => {
     const nextValue = readQueryValue(value)
     if (nextValue !== search.value) search.value = nextValue
   },
+)
+
+// Automatic search update with debounce (only when already on search page)
+watchDebounced(
+  search,
+  (newValue) => {
+    if (route.path === "/search") {
+      const keyword = newValue.trim()
+      const nextQuery = keyword ? { q: keyword } : {}
+      
+      // Update query without pushing new history entry for every keystroke
+      void router.replace({ path: "/search", query: nextQuery })
+    }
+  },
+  { debounce: 500, maxWait: 1000 },
 )
 
 function submitSearch() {

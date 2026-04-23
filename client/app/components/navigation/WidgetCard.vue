@@ -11,11 +11,16 @@
     </div>
 
     <div class="space-y-3">
-      <div v-for="item in items" :key="item.title" class="surface-card p-4 ring-1 ring-secondary-100 bg-secondary-50/10 group-hover:bg-white transition-all duration-300 hover:ring-primary-100">
+      <div 
+        v-for="item in items" 
+        :key="item.title" 
+        class="surface-card p-4 ring-1 ring-secondary-100 bg-secondary-50/10 group-hover:bg-white transition-all duration-300 hover:ring-primary-100 shadow-sm hover:shadow-md"
+      >
         <p class="text-sm font-black text-secondary-900 group-hover:text-primary-700 transition-colors">{{ item.title }}</p>
         <p class="mt-2 text-[11px] font-medium leading-relaxed text-secondary-500">{{ item.subtitle }}</p>
       </div>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
