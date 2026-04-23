@@ -77,13 +77,10 @@ const sidebarNavMore = [
   { label: "navigation.leftSidebar.items.forum", icon: "i-ph-chats-circle-fill", to: "/forum" },
   { label: "navigation.leftSidebar.items.movies", icon: "i-ph-popcorn-fill", to: "/movies" },
   { label: "navigation.leftSidebar.items.jobs", icon: "i-ph-briefcase-fill", to: "/jobs" },
-  { label: "navigation.leftSidebar.items.deals", icon: "i-ph-tag-fill", to: "/deals" },
-  { label: "navigation.leftSidebar.items.findFriends", icon: "i-ph-user-plus-fill", to: "/find-friends" },
   { label: "navigation.leftSidebar.items.games", icon: "i-ph-game-controller-fill", to: "/games" },
   { label: "navigation.leftSidebar.items.goPro", icon: "i-ph-crown-simple-fill", to: "/go-pro" },
   { label: "navigation.leftSidebar.items.wallet", icon: "i-ph-wallet-fill", to: "/wallet" },
   { label: "navigation.leftSidebar.items.withdrawal", icon: "i-ph-money-wavy-fill", to: "/withdrawal" },
-  { label: "navigation.leftSidebar.items.trending", icon: "i-ph-trend-up-fill", to: "/trending" },
   { label: "navigation.leftSidebar.items.funding", icon: "i-ph-hand-heart-fill", to: "/funding" },
 ]
 
