@@ -1,16 +1,15 @@
 <template>
   <div 
-    class="flex flex-col animate-in fade-in slide-in-from-bottom-2 duration-500" 
-    :class="isMine ? 'items-end' : 'items-start'"
+    class="flex w-full flex-col animate-in fade-in slide-in-from-bottom-2 duration-500"
   >
-    <div v-if="showTime" class="self-center my-6">
-      <span class="px-4 py-1 rounded-full bg-secondary-100/50 text-[9px] font-black uppercase tracking-[0.2em] text-secondary-400">
+    <div v-if="showTime" class="my-3 self-center sm:my-4">
+      <span class="rounded-full bg-white/92 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.24em] text-primary-500 ring-1 ring-secondary-100 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
         {{ time }}
       </span>
     </div>
 
-    <div class="flex max-w-[85%] items-end gap-3 sm:max-w-[75%]">
-      <div v-if="!isMine" class="shrink-0 mb-1">
+    <div class="flex w-full items-end gap-3" :class="isMine ? 'justify-end' : 'justify-start'">
+      <div v-if="!isMine" class="mb-1 shrink-0 self-end">
         <UAvatar
           v-if="isLast"
           :src="avatar || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80'"
@@ -21,19 +20,17 @@
         <div v-else class="w-8" />
       </div>
 
-      <div class="group relative">
+      <div class="group relative w-fit max-w-[84%] sm:max-w-[74%] lg:max-w-[42rem]">
         <div 
-          class="relative whitespace-pre-wrap px-5 py-3.5 text-sm leading-relaxed shadow-md transition-all duration-300" 
+          class="relative whitespace-pre-wrap px-5 py-3.5 text-[15px] leading-7 shadow-md transition-all duration-300" 
           :class="[
             isMine 
-              ? 'rounded-[20px] rounded-br-md bg-gradient-to-br from-primary-600 to-primary-700 text-white font-medium ring-1 ring-primary-500/50 hover:shadow-primary-500/20' 
-              : 'rounded-[20px] rounded-bl-md bg-white text-secondary-800 font-medium ring-1 ring-secondary-100 hover:ring-primary-500/20'
+              ? 'rounded-[24px] rounded-br-lg bg-gradient-to-br from-primary-500 via-primary-600 to-emerald-600 text-white font-medium ring-1 ring-primary-500/40 shadow-[0_16px_34px_rgba(34,197,94,0.22)] hover:shadow-[0_20px_40px_rgba(34,197,94,0.25)]' 
+              : 'rounded-[24px] rounded-bl-lg bg-white/96 text-secondary-800 font-medium ring-1 ring-secondary-100 shadow-[0_16px_34px_rgba(15,23,42,0.06)] hover:ring-primary-500/20'
           ]"
         >
           {{ text }}
         </div>
-        
-        <!-- Hover actions could go here -->
       </div>
     </div>
   </div>
