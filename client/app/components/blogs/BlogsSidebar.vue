@@ -1,15 +1,23 @@
 <template>
   <aside class="space-y-4">
-    <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+    <UCard
+      class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
+      :ui="{ body: 'p-4' }"
+    >
+      <p id="blogs-sidebar-topics-title" class="text-label-secondary text-[var(--color-primary-600)]">
         {{ $t("pages.blogsPage.featuredTopics") }}
       </p>
-      <div class="mt-4 space-y-2.5">
-        <button
+      <div class="mt-4 space-y-2.5" role="list" aria-labelledby="blogs-sidebar-topics-title">
+        <UButton
           v-for="topic in trendingTopics"
           :key="topic.value"
-          class="flex w-full items-center justify-between rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-3 py-3 text-left transition hover:border-[var(--border-strong)] hover:bg-[var(--color-primary-50)]"
+          color="neutral"
+          variant="outline"
+          size="lg"
+          class="w-full justify-between rounded-[18px] border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-3 py-3 text-left transition hover:border-[var(--border-strong)] hover:bg-[var(--color-primary-50)]"
           type="button"
+          :aria-label="topic.label"
+          role="listitem"
           @click="$emit('selectCategory', topic.value)"
         >
           <span class="flex min-w-0 items-center gap-2">
@@ -18,22 +26,28 @@
               {{ topic.label }}
             </span>
           </span>
-          <span class="text-[12px] font-bold text-[var(--text-tertiary)]">
-            {{ topic.count }}
-          </span>
-        </button>
+          <template #trailing>
+            <UBadge color="neutral" variant="soft" class="rounded-full px-2.5 py-1 text-[12px] font-bold text-[var(--text-tertiary)]">
+              {{ topic.count }}
+            </UBadge>
+          </template>
+        </UButton>
       </div>
-    </section>
+    </UCard>
 
-    <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-surface)_0%,var(--color-primary-50)_100%)] p-4 shadow-[var(--shadow-md)]">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+    <UCard
+      class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-surface)_0%,var(--color-primary-50)_100%)] shadow-[var(--shadow-md)]"
+      :ui="{ body: 'p-4' }"
+    >
+      <p id="blogs-sidebar-authors-title" class="text-label-secondary text-[var(--color-primary-600)]">
         {{ $t("pages.blogsPage.authorsThisWeek") }}
       </p>
-      <div class="mt-4 space-y-3">
+      <div class="mt-4 space-y-3" role="list" aria-labelledby="blogs-sidebar-authors-title">
         <div
           v-for="author in featuredAuthors"
           :key="author.name"
-          class="flex items-center gap-3"
+          class="flex items-center gap-3 rounded-[18px] border border-[var(--border-default)] bg-white/70 px-3 py-3"
+          role="listitem"
         >
           <div class="avatar-md text-white" :style="{ background: author.gradient }">
             {{ author.initials }}
@@ -46,9 +60,12 @@
               {{ $t("pages.blogsPage.authorArticleTopic", { count: author.count, topic: author.topic }) }}
             </p>
           </div>
+          <UBadge color="primary" variant="subtle" class="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold">
+            {{ author.count }}
+          </UBadge>
         </div>
       </div>
-    </section>
+    </UCard>
   </aside>
 </template>
 

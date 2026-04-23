@@ -55,22 +55,16 @@ export const useMockPhotosData = () => {
   const { tm, rt } = useI18n()
   const localized = <T>(key: string) =>
     resolveI18nMessage(tm(key), message => rt(message as never)) as T
+  const localizedList = <T>(key: string) =>
+    computed(() => {
+      const value = localized<ReadonlyArray<T> | null | undefined>(key)
+      return Array.isArray(value) ? [...value] : []
+    })
 
-  const categories = computed(() =>
-    localized<PhotoCategory[]>("pages.photosPage.categories"),
-  )
-
-  const photos = computed(() =>
-    localized<MockPhoto[]>("pages.photosPage.photos"),
-  )
-
-  const albums = computed(() =>
-    localized<PhotoAlbum[]>("pages.photosPage.albums"),
-  )
-
-  const quickLinks = computed(() =>
-    localized<PhotoQuickLink[]>("pages.photosPage.quickLinks"),
-  )
+  const categories = localizedList<PhotoCategory>("pages.photosPage.categories")
+  const photos = localizedList<MockPhoto>("pages.photosPage.photos")
+  const albums = localizedList<PhotoAlbum>("pages.photosPage.albums")
+  const quickLinks = localizedList<PhotoQuickLink>("pages.photosPage.quickLinks")
 
   return {
     categories,

@@ -8,7 +8,25 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-useHead({
+const route = useRoute()
+const requestURL = useRequestURL()
+
+const canonicalUrl = computed(() => new URL(route.fullPath || "/blogs", requestURL.origin).toString())
+
+useSeoMeta({
   title: () => t("pages.blogsPage.seoTitle"),
+  description: () => t("pages.blogsPage.seoDescription"),
+  ogTitle: () => t("pages.blogsPage.seoTitle"),
+  ogDescription: () => t("pages.blogsPage.seoDescription"),
+  ogUrl: () => canonicalUrl.value,
+})
+
+useHead({
+  link: [
+    {
+      rel: "canonical",
+      href: canonicalUrl,
+    },
+  ],
 })
 </script>

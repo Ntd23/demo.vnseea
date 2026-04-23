@@ -36,10 +36,6 @@
 const { t } = useI18n()
 
 const { posts } = useMockSocialData()
-useSeoMeta({
-  title: () => t("pages.homeFeedPage.seoTitle"),
-  description: () => t("pages.homeFeedPage.seoDescription"),
-})
 
 const newPostsCount = ref(0)
 let newPostTimer: ReturnType<typeof setTimeout>

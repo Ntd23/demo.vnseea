@@ -1,72 +1,66 @@
 <template>
-  <section class="surface-card p-6 ring-1 ring-secondary-100 shadow-xl relative overflow-hidden">
-    <!-- Visual Decor -->
-    <div class="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+  <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
+    <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+      {{ t("pages.pageDetailPage.actionEyebrow") }}
+    </p>
+    <h3 class="mt-2 text-[1.15rem] font-black tracking-[-0.04em] text-[#243b63]">
+      {{ t("pages.pageDetailPage.actionTitle") }}
+    </h3>
+    <p class="mt-2 text-[13px] leading-6 text-slate-500">
+      {{ t("pages.pageDetailPage.actionDescription", { response: responseLabel }) }}
+    </p>
 
-    <div class="relative z-10 space-y-2 mb-6">
-      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
-        {{ t("pages.pageDetailPage.actionEyebrow") }}
-      </p>
-      <h3 class="text-xl font-black tracking-tighter text-secondary-900 leading-none">
-        {{ t("pages.pageDetailPage.actionTitle") }}
-      </h3>
-      <p class="text-xs font-medium leading-relaxed text-secondary-500 max-w-[280px]">
-        {{ t("pages.pageDetailPage.actionDescription", { response: page.responseLabel }) }}
-      </p>
-    </div>
-
-    <div class="relative z-10 grid gap-3 sm:grid-cols-2 mb-6">
+    <div class="mt-4 grid gap-3 sm:grid-cols-2">
       <UButton
-        size="xl"
-        class="h-12 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-500/20 transition-all active:scale-95 px-6"
+        color="primary"
+        variant="solid"
+        size="lg"
+        :loading="followState === 'loading'"
+        :disabled="followState === 'loading' || isFollowing"
+        class="justify-center rounded-[16px] px-4 text-[13px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.22)]"
+        @click="emit('follow')"
       >
-        <template #leading>
-          <Icon name="i-ph-bell-simple-ringing-duotone" class="h-5 w-5" />
-        </template>
-        {{ page.ctaLabel || t("pages.pageDetailPage.followFallback") }}
+        <Icon name="i-ph-bell-simple-ringing-bold" class="mr-2 h-4 w-4" />
+        {{ followButtonLabel }}
       </UButton>
 
       <UButton
-        variant="soft"
-        size="xl"
-        class="h-12 rounded-2xl bg-secondary-50 text-secondary-600 ring-1 ring-secondary-100 hover:bg-secondary-100 hover:text-secondary-900 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95"
+        color="neutral"
+        variant="outline"
+        size="lg"
+        :loading="messageState === 'loading'"
+        :disabled="messageState === 'loading'"
+        class="justify-center rounded-[16px] px-4 text-[13px] font-bold"
+        @click="emit('message')"
       >
-        <template #leading>
-          <Icon name="i-ph-chat-circle-dots-duotone" class="h-5 w-5" />
-        </template>
-        {{ t("pages.pageDetailPage.messageButton") }}
+        <Icon name="i-ph-chat-circle-dots-bold" class="mr-2 h-4 w-4" />
+        {{ messageButtonLabel }}
       </UButton>
     </div>
 
-    <div class="relative z-10 grid gap-3 sm:grid-cols-2 mb-6">
-      <div class="rounded-2xl bg-secondary-50/50 p-4 ring-1 ring-secondary-100/50 transition-all hover:ring-primary-100/50">
-        <p class="text-[9px] font-black uppercase tracking-widest text-primary-500 mb-1.5">{{ t("pages.pageDetailPage.followStat") }}</p>
-        <p class="text-2xl font-black text-secondary-900 tracking-tighter leading-none">{{ followerCountLabel }}</p>
+    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+      <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.followStat") }}</p>
+        <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ followerCountLabel }}</p>
       </div>
-      <div class="rounded-2xl bg-secondary-50/50 p-4 ring-1 ring-secondary-100/50 transition-all hover:ring-primary-100/50">
-        <p class="text-[9px] font-black uppercase tracking-widest text-primary-500 mb-1.5">{{ t("pages.pageDetailPage.likeStat") }}</p>
-        <p class="text-2xl font-black text-secondary-900 tracking-tighter leading-none">{{ likeCountLabel }}</p>
+      <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.likeStat") }}</p>
+        <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ likeCountLabel }}</p>
       </div>
     </div>
 
-    <div v-if="page.canManage" class="relative z-10 rounded-2xl bg-primary-50/50 p-5 ring-1 ring-primary-100/50 space-y-4">
-      <div class="space-y-1.5">
-        <p class="text-[10px] font-black text-primary-700 uppercase tracking-widest px-1">{{ t("pages.pageDetailPage.manageTitle") }}</p>
-        <p class="text-[11px] font-medium leading-relaxed text-primary-600/80 px-1">
-          {{ t("pages.pageDetailPage.manageDescription") }}
-        </p>
-      </div>
-      <UButton
+    <div v-if="page.canManage" class="mt-4 rounded-[18px] border border-[#dbe3f2] bg-white px-4 py-3">
+      <p class="text-[12px] font-semibold text-[#243b63]">{{ t("pages.pageDetailPage.manageTitle") }}</p>
+      <p class="mt-1 text-[12px] leading-5 text-slate-500">
+        {{ t("pages.pageDetailPage.manageDescription") }}
+      </p>
+      <NuxtLink
+        class="mt-3 inline-flex h-10 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[12px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
         :to="pageSettingsPath"
-        variant="soft"
-        size="md"
-        class="w-full h-10 rounded-xl bg-white/60 text-primary-700 font-black text-[10px] uppercase tracking-widest ring-1 ring-primary-100/50 hover:bg-white hover:text-primary-600 transition-all shadow-sm"
       >
-        <template #leading>
-          <Icon name="i-ph-gear-six-duotone" class="h-4 w-4" />
-        </template>
+        <Icon name="i-ph-gear-six-bold" class="mr-1.5 h-4 w-4" />
         {{ t("pages.pageDetailPage.settingsButton") }}
-      </UButton>
+      </NuxtLink>
     </div>
   </section>
 </template>
@@ -79,16 +73,40 @@ import {
 import type { CommunityPageRecord } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
 const props = defineProps<{
   page: CommunityPageRecord
   followerCountLabel: string
   likeCountLabel: string
+  followState?: "idle" | "loading" | "success" | "error"
+  messageState?: "idle" | "loading" | "success" | "error"
+  isFollowing?: boolean
+}>()
+
+const emit = defineEmits<{
+  follow: []
+  message: []
 }>()
 
 const route = useRoute()
 
 const pageSettingsPath = computed(() =>
   appendCommunityQuery(getCommunityPageSettingsPath(props.page.slug), route.query),
+)
+
+const responseLabel = computed(() =>
+  translateText(props.page.responseLabel),
+)
+
+const followButtonLabel = computed(() => {
+  if (props.isFollowing) return t("pages.pageDetailPage.followingButton")
+  return translateText(props.page.ctaLabel, t("pages.pageDetailPage.followFallback"))
+})
+
+const messageButtonLabel = computed(() =>
+  props.messageState === "success"
+    ? t("pages.pageDetailPage.messageSentButton")
+    : t("pages.pageDetailPage.messageButton"),
 )
 </script>

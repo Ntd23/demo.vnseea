@@ -3,84 +3,61 @@
     eyebrow="community.settings.controls.eyebrow"
     title="community.settings.controls.title"
     description="community.settings.controls.desc"
-    icon="i-ph-shield-check-duotone"
+    icon="i-ph-shield-check-bold"
   >
     <template #trailing>
-      <UBadge
-        variant="soft"
-        class="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 py-1.5 bg-primary-50 text-primary-600 ring-1 ring-primary-100"
-      >
+      <UBadge color="neutral" variant="soft" class="rounded-full px-4 py-2 text-[12px] font-semibold text-[#243b63]">
         {{ $t(selectedPrivacyLabel) }}
       </UBadge>
     </template>
 
-    <div class="space-y-8">
-      <!-- Privacy Selection Grid -->
-      <div class="grid gap-4 lg:grid-cols-3">
+    <div class="space-y-5">
+      <div class="grid gap-3 lg:grid-cols-3" role="radiogroup" :aria-label="$t('community.settings.controls.privacyFallback')">
         <button
           v-for="option in communityPrivacyOptions"
           :key="option.value"
-          class="relative flex flex-col items-start rounded-3xl border p-6 text-left transition-all duration-300 group"
+          class="rounded-[22px] border px-4 py-4 text-left transition"
           :class="model.privacy === option.value
-            ? 'border-primary-200 bg-primary-50/50 ring-2 ring-primary-500 shadow-xl shadow-primary-500/10'
-            : 'border-secondary-100 bg-white hover:border-primary-200 hover:bg-secondary-50/50 hover:shadow-lg'"
+            ? 'border-[#0000ff]/22 bg-[#eef0ff] shadow-[0_12px_24px_rgba(0,0,255,0.08)]'
+            : 'border-[#dbe3f2] bg-white hover:border-[#c5caff] hover:bg-[#f8fbff]'"
           type="button"
+          :aria-pressed="model.privacy === option.value"
           @click="model.privacy = option.value as CommunityPrivacy"
         >
-          <div 
-            class="flex h-12 w-12 items-center justify-center rounded-2xl shadow-sm transition-all duration-500 group-hover:scale-110"
-            :class="model.privacy === option.value ? 'bg-primary-600 text-white' : 'bg-secondary-50 text-primary-600 ring-1 ring-secondary-100'"
-          >
-            <Icon :name="(option.icon || 'i-ph-circle-fill').replace('-bold', '-duotone')" class="h-6 w-6" />
+          <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.05)]">
+            <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
           </div>
-          
-          <div class="mt-6 space-y-2">
-            <p class="text-[12px] font-black uppercase tracking-widest" :class="model.privacy === option.value ? 'text-primary-600' : 'text-secondary-900'">
-              {{ $t(option.label) }}
-            </p>
-            <p class="text-[11px] font-medium leading-relaxed" :class="model.privacy === option.value ? 'text-primary-600/70' : 'text-secondary-500'">
-              {{ $t(option.description) }}
-            </p>
-          </div>
-
-          <!-- Selection Indicator -->
-          <div v-if="model.privacy === option.value" class="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-primary-600 flex items-center justify-center text-white shadow-xl ring-4 ring-white">
-            <Icon name="i-ph-check-bold" class="h-3 w-3" />
-          </div>
+          <p class="mt-4 text-[14px] font-black text-[#243b63]">
+            {{ $t(option.label) }}
+          </p>
+          <p class="mt-2 text-[12px] leading-5 text-slate-500">
+            {{ $t(option.description) }}
+          </p>
         </button>
       </div>
 
-      <!-- Detail Box -->
-      <div class="rounded-2xl bg-secondary-50/50 p-5 ring-1 ring-secondary-100/50">
-        <p class="text-[9px] font-black uppercase tracking-widest text-primary-500 mb-2 px-1">
-          {{ $t('community.settings.controls.logic') }}
-        </p>
-        <p class="text-xs font-medium leading-relaxed text-secondary-600 px-1">
-          {{ $t(selectedPrivacyDescription) }}
-        </p>
-      </div>
+      <UAlert
+        color="neutral"
+        variant="subtle"
+        icon="i-ph-info-fill"
+        :title="$t('community.settings.controls.logic')"
+        :description="$t(selectedPrivacyDescription)"
+        class="rounded-[20px]"
+      />
 
-      <!-- Controls Toggles -->
-      <div class="grid gap-6 lg:grid-cols-2">
-        <div v-for="control in [
-          { key: 'joinApproval', label: 'community.settings.controls.toggles.join.label', desc: 'community.settings.controls.toggles.join.desc' },
-          { key: 'postApproval', label: 'community.settings.controls.toggles.post.label', desc: 'community.settings.controls.toggles.post.desc' },
-          { key: 'allowMemberInvites', label: 'community.settings.controls.toggles.invite.label', desc: 'community.settings.controls.toggles.invite.desc' },
-          { key: 'showMemberDirectory', label: 'community.settings.controls.toggles.directory.label', desc: 'community.settings.controls.toggles.directory.desc' },
-          { key: 'welcomePostEnabled', label: 'community.settings.controls.toggles.welcome.label', desc: 'community.settings.controls.toggles.welcome.desc' }
-        ]" :key="control.key" class="flex items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-secondary-50 shadow-sm hover:border-primary-100 transition-colors group">
-          <div class="space-y-1">
-            <p class="text-[11px] font-black uppercase tracking-widest text-secondary-900 group-hover:text-primary-600 transition-colors">{{ $t(control.label) }}</p>
-            <p class="text-[10px] font-medium text-secondary-500 leading-relaxed">{{ $t(control.desc) }}</p>
-          </div>
-          <UToggle
-            v-model="model[control.key as keyof CommunityGroupSettingsDraft]"
+      <div class="grid gap-3 lg:grid-cols-2">
+        <div
+          v-for="toggle in toggleItems"
+          :key="toggle.key"
+          class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-4"
+        >
+          <USwitch
+            v-model="model[toggle.key]"
+            color="primary"
             size="lg"
-            :ui="{ 
-              active: 'bg-primary-600',
-              inactive: 'bg-secondary-200',
-              container: { base: 'rounded-full ring-2 ring-transparent transition-all group-hover:ring-primary-100' }
-            }"
+            :label="toggle.label"
+            :description="toggle.description"
+            class="items-start"
           />
         </div>
       </div>
@@ -100,6 +77,7 @@ import type {
 } from "../../../types/community"
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
+const { t } = useI18n()
 
 const selectedPrivacyLabel = computed(() =>
   getCommunityOptionLabel(communityPrivacyOptions, model.value.privacy, "community.settings.controls.privacyFallback"),
@@ -108,4 +86,32 @@ const selectedPrivacyLabel = computed(() =>
 const selectedPrivacyDescription = computed(() =>
   getCommunityOptionDescription(communityPrivacyOptions, model.value.privacy, "community.settings.controls.noPrivacy"),
 )
+
+const toggleItems = computed(() => [
+  {
+    key: "joinApproval" as const,
+    label: t("community.settings.controls.toggles.join.label"),
+    description: t("community.settings.controls.toggles.join.desc"),
+  },
+  {
+    key: "postApproval" as const,
+    label: t("community.settings.controls.toggles.post.label"),
+    description: t("community.settings.controls.toggles.post.desc"),
+  },
+  {
+    key: "allowMemberInvites" as const,
+    label: t("community.settings.controls.toggles.invite.label"),
+    description: t("community.settings.controls.toggles.invite.desc"),
+  },
+  {
+    key: "showMemberDirectory" as const,
+    label: t("community.settings.controls.toggles.directory.label"),
+    description: t("community.settings.controls.toggles.directory.desc"),
+  },
+  {
+    key: "welcomePostEnabled" as const,
+    label: t("community.settings.controls.toggles.welcome.label"),
+    description: t("community.settings.controls.toggles.welcome.desc"),
+  },
+])
 </script>

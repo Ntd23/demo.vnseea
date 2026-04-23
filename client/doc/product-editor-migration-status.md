@@ -72,13 +72,13 @@ Thang đánh giá:
 
 | Module | SEO impact | UX impact | SSR risk | Ghi chú |
 | --- | --- | --- | --- | --- |
-| `auth` | Medium | High | Medium | Form đăng nhập/đăng ký quan trọng cho conversion, cần form UX tốt và SSR-safe |
-| `blogs` | High | High | Medium | Blog là content public, ảnh hưởng SEO rõ nhất |
-| `checkout` | Low | High | High | SEO không quan trọng, nhưng form/state SSR rất dễ lỗi |
-| `community` | High | High | Medium | Group/page create/settings và listing đều quan trọng |
-| `directory` | High | Medium | Medium | Filter/listing nên sync URL tốt để hỗ trợ SEO |
-| `events` | High | High | Medium | Page public + create flow + filters |
-| `explore` | Medium | Low | Low | Module nhỏ |
+|x `auth` | Medium | High | Medium | Form đăng nhập/đăng ký quan trọng cho conversion, cần form UX tốt và SSR-safe |
+|x `blogs` | High | High | Medium | Blog là content public, ảnh hưởng SEO rõ nhất |
+|x `checkout` | Low | High | High | SEO không quan trọng, nhưng form/state SSR rất dễ lỗi |
+|x `community` | High | High | Medium | Group/page create/settings và listing đều quan trọng |
+|x `directory` | High | Medium | Medium | Filter/listing nên sync URL tốt để hỗ trợ SEO |
+|x `events` | High | High | Medium | Page public + create flow + filters |
+|x `explore` | Medium | Low | Low | Module nhỏ |
 | `feed` | Medium | High | Medium | Interaction-heavy, ảnh hưởng UX lớn |
 | `forms` | Low | High | Low | Là tầng primitive, ảnh hưởng dây chuyền |
 | `forum` | High | High | Medium | Forum list/detail là public content |
@@ -124,9 +124,27 @@ Vai trò:
 - shell và hero dùng cho login/register/forgot password
 
 Nhận xét migrate:
-- shell ổn
-- form thật hiện nằm chủ yếu ở `pages/RegisterPage.vue`, `pages/WelcomePage.vue`, `pages/ForgotPasswordPage.vue`
-- cần migrate các form auth sang `@nuxt/ui`
+- `AuthSplitShell.vue` hiện là shell thật của `guest layout` cho `login/register/forgot-password`
+- shell đã giữ đúng scope layout:
+  - mobile-first, chỉ hiện hero từ `lg`
+  - có mobile brand/header rõ ràng
+  - không đụng browser API nên an toàn cho SSR
+- `AuthHeroPanel.vue` đã được nâng lên theo hướng reusable hơn:
+  - dùng `NuxtImg` thay cho `<img>` thường
+  - có fallback preview nội bộ khi ảnh remote lỗi hoặc không có ảnh
+  - không đụng vào browser API nên an toàn cho SSR
+- `WelcomePage.vue` đã migrate sang `@nuxt/ui`:
+  - dùng `UForm`, `UFormField`, `UInput`, `UButton`, `UAlert`
+  - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
+  - `SEO` đã được dời lên page-level route
+- `RegisterPage.vue` đã migrate sang `@nuxt/ui`:
+  - dùng `UForm`, `UFormField`, `UInput`, `USelect`, `URadioGroup`, `UButton`, `UAlert`
+  - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
+  - `SEO` đã được dời lên page-level route
+- `ForgotPasswordPage.vue` đã migrate sang `@nuxt/ui`:
+  - dùng `UForm`, `UFormField`, `UInput`, `UCheckbox`, `UButton`, `UAlert`
+  - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
+  - `SEO` đã được dời lên page-level route
 
 ### `blogs` - 12 files
 
@@ -149,10 +167,40 @@ Vai trò:
 
 Nhận xét migrate:
 - đã có cấu trúc component tốt
+- `BlogArticleCard.vue` đã chuyển ảnh card sang `NuxtImg` và fallback reactive:
+  - không còn mutate DOM trực tiếp khi ảnh lỗi
+  - an toàn hơn cho SSR/hydration
+- `BlogsEmptyState.vue` đã đổi CTA chính sang `UButton`
+- `BlogsFilters.vue` đã nâng phần action/search lên `@nuxt/ui`:
+  - dùng `UInput`, `UButton`
+  - bổ sung `aria-label`, `aria-pressed`, `aria-live` cho các điểm tương tác chính
+- `BlogsHero.vue`, `BlogsPagination.vue`, `BlogsResultsHeader.vue` đã chuẩn hóa action chính bằng `@nuxt/ui`:
+  - dùng `UButton`, `UBadge`, `UCard` ở các vùng điều hướng/trạng thái quan trọng
+  - pagination không còn button CSS thủ công riêng
+  - phần heading/status có landmark và live feedback rõ hơn
+- `BlogsSidebar.vue` đã chuyển các block phụ sang `UCard`, `UButton`, `UBadge`:
+  - topic list và author list có semantics rõ hơn (`role="list"`, `role="listitem"`)
+  - CTA/filter phụ không còn là button tự dựng bằng CSS thuần
+- `CreateBlogHero.vue` và `CreateBlogSidebar.vue` đã chuẩn hóa theo `@nuxt/ui`:
+  - hero action dùng `UButton`
+  - stat/preview/checklist block dùng `UCard`, `UBadge`
+  - preview sidebar có `aria-live` để phản ánh trạng thái preview/checklist rõ hơn
+- `ReadBlogHero.vue`, `ReadBlogMain.vue`, `ReadBlogSidebar.vue` đã được chuẩn hóa lại:
+  - hero detail dùng `NuxtImg` thay cho `<img>` thường và fallback không còn mutate DOM trực tiếp
+  - action bar, content block, comment area, author/related sidebar đã chuyển sang `UCard`, `UButton`, `UBadge`, `UTextarea`
+  - detail view có semantics và live feedback rõ hơn ở share/comment state
+- `/blogs` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + canonical + Open Graph
+  - query `search/category/sort/mine/page` đã sync với route cho listing public
+- `/create-blog` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + canonical
+  - route create flow để `noindex, nofollow`, tránh index nhầm page thao tác nội bộ
+- `/read-blog/[slug]` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + canonical + `ogImage`
+  - slug không hợp lệ sẽ bị `noindex, nofollow` để tránh index sai route detail
+- đã có `i18n` cho `blogsPage`, `createBlogPage`, `readBlogPage` để tránh render raw key ở listing/read/create support
 - `CreateBlogPage.vue` vẫn là form native lớn
-- filters/pagination/card có thể tận dụng thêm `@nuxt/ui`
 - chưa có `VueUse` cho draft/search/filter persistence
-- chưa có `i18n`
 
 ### `checkout` - 3 files
 
@@ -165,11 +213,23 @@ Vai trò:
 - flow checkout marketplace
 
 Nhận xét migrate:
-- layout đã tách gọn
-- `ShippingAddressFormUI.vue` vẫn là form native lớn
-- `CheckoutSummary.vue` nên chuẩn hóa button/input bằng `@nuxt/ui`
-- hợp để thêm `useStorage` cho address draft
-- hợp để đưa cart/checkout state sang `Pinia`
+- `/checkout` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + Open Graph + canonical
+  - route checkout được để `noindex, nofollow` để tránh index nhầm flow giao dịch
+- `CheckoutLayout.vue` đã được nâng thêm semantics cho flow:
+  - có progress header và landmark rõ cho vùng địa chỉ giao hàng / tóm tắt đơn
+  - layout sticky summary vẫn giữ ổn trên mobile-first và desktop
+- `ShippingAddressFormUI.vue` đã migrate sang `@nuxt/ui`:
+  - dùng `UForm`, `UFormField`, `UInput`, `UTextarea`, `UAlert`, `UProgress`, `UButton`, `UBadge`
+  - có state rõ `idle`, `loading`, `success`, `error`, `disabled`
+  - có validate field-level, autosave draft bằng `useStorage()` với `initOnMounted` để giữ SSR/hydration ổn định
+- `CheckoutSummary.vue` đã chuẩn hóa action chính bằng `@nuxt/ui`:
+  - dùng `UButton`, `UAlert`, `UBadge`
+  - CTA chính phụ thuộc rõ vào `cart/address/wallet` thay vì button tĩnh
+  - quantity/remove action có `aria-label` và disabled state phù hợp
+- bước tiếp theo hợp lý:
+  - cân nhắc đưa cart/checkout state sang `Pinia`
+  - nếu checkout có API thật, nên tách submit/top-up ra composable riêng để reuse và test dễ hơn
 
 ### `community` - 25 files
 
@@ -208,7 +268,53 @@ Nhận xét migrate:
 - `CreationForm.vue`, `GroupSettingsBasicsCard.vue`, `PageSettingsBasicsCard.vue` còn native form nhiều
 - `GroupsFilterBar.vue` phù hợp để thêm `VueUse` cho debounce/filter persistence
 - nên chuẩn hóa form system của community bằng `UForm`, `UInput`, `UTextarea`, `USelect`, `USwitch`
-- chưa có `i18n`
+- community đã có `i18n` khá đầy đủ, nhưng ghi chú cũ này cần bỏ vì không còn đúng
+- nên chia migration thành 3 đợt để tránh patch quá dài:
+  - đợt 1: create + settings
+    - `CreationForm.vue`
+    - `CreationHeaderCard.vue`
+    - `CreationInsightsPanel.vue`
+    - `GroupSettingsBasicsCard.vue`
+    - `GroupSettingsControlsCard.vue`
+    - `GroupSettingsSidebar.vue`
+    - `PageSettingsBasicsCard.vue`
+    - `PageSettingsControlsCard.vue`
+    - `PageSettingsSidebar.vue`
+    - `SettingsSectionCard.vue`
+  - đợt 2: listing + filter + tab bar
+    - `CommunityGroupCard.vue`
+    - `GroupsFilterBar.vue`
+    - `GroupTabsBar.vue`
+    - `PageCard.vue`
+    - `PageDirectoryTabsBar.vue`
+  - đợt 3: detail/read-only cards
+    - `GroupAboutCard.vue`
+    - `GroupAdminCard.vue`
+    - `GroupFeedSection.vue`
+    - `GroupHeroBanner.vue`
+    - `GroupMembersCard.vue`
+    - `GroupTopicsCard.vue`
+    - `PageAboutCard.vue`
+    - `PageActionCard.vue`
+    - `PageFeedSection.vue`
+    - `PageHeroBanner.vue`
+- đợt 1 đã xử lý:
+  - đưa SEO của `create-group`, `create-page`, `group-setting/[group]`, `page-setting/[page]` về page-level route
+  - thêm draft persistence SSR-safe cho create/settings
+  - thêm state `idle/loading/success/error`, `UAlert`, `useToast`, disabled/loading CTA rõ ràng
+  - thay native input/toggle chính bằng `UForm`, `UFormField`, `UInput`, `UTextarea`, `USelect`, `USwitch`
+- đợt 2 đã xử lý:
+  - migrate `CommunityGroupCard.vue`, `GroupsFilterBar.vue`, `GroupTabsBar.vue`, `PageCard.vue`, `PageDirectoryTabsBar.vue`
+  - đưa SEO của `groups`, `suggested-groups`, `joined_groups`, `pages`, `suggested-pages`, `liked-pages` về page-level route
+  - sync keyword filter của group/page listing với route query `q`
+  - thêm debounce + local persistence cho keyword filter bằng `watchDebounced` + `useStorage`
+  - sửa card listing để render text i18n thực tế thay vì lộ translation key ở `name/summary/tags`
+- đợt 3 đã xử lý:
+  - migrate `GroupAboutCard.vue`, `GroupAdminCard.vue`, `GroupFeedSection.vue`, `GroupHeroBanner.vue`, `GroupMembersCard.vue`, `GroupTopicsCard.vue`, `PageAboutCard.vue`, `PageActionCard.vue`, `PageFeedSection.vue`, `PageHeroBanner.vue`
+  - đưa SEO của `g/[name]` và `p/[name]` về page-level route, thêm canonical và `robots` phù hợp cho detail/preview
+  - sync tab detail với query `tab` để route shareable hơn và tránh state local rời route
+  - thêm action state `idle/loading/success/error` + `useToast` cho join/invite/follow/share/message
+  - sửa detail pages để render text i18n an toàn với cả translation key lẫn query text preview, đồng thời bổ sung locale `pages.groupDetailPage` và `pages.pageDetailPage`
 
 ### `directory` - 4 files
 
@@ -224,6 +330,12 @@ Vai trò:
 Nhận xét migrate:
 - `DirectoryFilters.vue` là điểm nên migrate trước
 - hợp để dùng `UInput`, `USelect`, `watchDebounced`, `useStorage`
+- đã xử lý:
+  - migrate `DirectoryCard.vue`, `DirectoryFilters.vue`, `DirectoryHero.vue`, `DirectorySidebar.vue`
+  - đưa SEO của `/directory` về page-level route trong `pages/directory/index.vue`
+  - sync filter của directory với route query `q` và `category`
+  - thêm local persistence SSR-safe bằng `useStorage(..., { initOnMounted: true })`
+  - bổ sung đầy đủ locale `pages.directoryPage` cho copy UI và mock data categories/items
 
 ### `events` - 9 files
 
@@ -245,6 +357,30 @@ Nhận xét migrate:
 - create flow và filters là điểm nên chuyển sang `@nuxt/ui`
 - event create hợp với `UForm`, `UInputDate`, `UTextarea`, `USelect`
 - filters hợp với `VueUse`
+- nên chia migration thành 2 đợt để giữ patch vừa phải:
+  - đợt 1: listing + create
+    - `CreateEventComposer.vue`
+    - `CreateEventHero.vue`
+    - `EventCard.vue`
+    - `EventsFilters.vue`
+    - `EventsHero.vue`
+    - `EventsSidebar.vue`
+  - đợt 2: detail
+    - `EventDetailHero.vue`
+    - `EventDetailMain.vue`
+    - `EventDetailSidebar.vue`
+- đợt 1 đã xử lý:
+  - migrate `CreateEventComposer.vue`, `CreateEventHero.vue`, `EventCard.vue`, `EventsFilters.vue`, `EventsHero.vue`, `EventsSidebar.vue`
+  - đưa SEO của `/events` và `/events/create-event` về page-level route
+  - sync listing filter của events với route query `q`, `tab`, `category`, `city`, `sort`
+  - thêm local persistence SSR-safe cho listing filter và create draft bằng `useStorage(..., { initOnMounted: true })`
+  - thêm state rõ `idle/loading/success/error`, `UAlert`, `UProgress`, `useToast`, disabled/loading CTA cho create flow và RSVP/listing actions
+  - bổ sung đầy đủ locale `pages.eventsPage`, `pages.createEventPage`, `pages.eventDetailPage` để tránh render raw key cho mock data và page copy
+- đợt 2 đã xử lý:
+  - migrate `EventDetailHero.vue`, `EventDetailMain.vue`, `EventDetailSidebar.vue`
+  - đưa SEO của `/events/[id]` về page-level route với `useSeoMeta()`, canonical sạch không giữ query và `robots` theo trạng thái event
+  - gom action state `idle/loading/success/error` cho RSVP, share, invite và owner actions ở detail page, kèm `UAlert`, `useToast`, disabled/loading CTA rõ ràng
+  - thay ảnh cover/related event sang `NuxtImg` với fallback ổn định để tránh render placeholder vô nghĩa và giảm rủi ro hydration lệch
 
 ### `explore` - 1 file
 
@@ -255,48 +391,72 @@ Vai trò:
 - card spotlight ở explore
 
 Nhận xét migrate:
-- module nhỏ, ưu tiên thấp
+- `UserSpotlightCard.vue` đã chuyển action chính sang `UButton`, `UBadge`, `UAlert`
+- card có state rõ `idle/loading/success/error`, `useToast`, disabled/loading CTA và reset state an toàn khi đổi user
+- `/explore` đã dời `SEO` về page-level route với `useSeoMeta()`, Open Graph, canonical và query `view` được chuẩn hóa ở canonical
+- đã bổ sung đầy đủ locale `pages.explorePage` để tránh render raw key cho hero/filter/card/mock data
 
 ### `feed` - 11 files
 
 Files:
-- `CommentComposer.vue`
-- `CommentItem.vue`
-- `CommentList.vue`
-- `FeedPublisherBox.vue`
-- `LightboxViewer.vue`
-- `PostCard.vue`
-- `PostHeader.vue`
-- `PostMediaGrid.vue`
-- `PublisherBox.vue`
-- `ShareModal.vue`
-- `StoryCarousel.vue`
+- `[x]` `CommentComposer.vue`
+- `[x]` `CommentItem.vue`
+- `[x]` `CommentList.vue`
+- `[x]` `FeedPublisherBox.vue`
+- `[x]` `LightboxViewer.vue`
+- `[x]` `PostCard.vue`
+- `[x]` `PostHeader.vue`
+- `[x]` `PostMediaGrid.vue`
+- `[x]` `PublisherBox.vue` -> đổi tên thành `PublisherComposerPanel.vue` để tránh collision auto-import với `FeedPublisherBox.vue`
+- `[x]` `ShareModal.vue`
+- `[x]` `StoryCarousel.vue`
 
 Vai trò:
 - feed, post card, comment, publisher, share modal, story
 
 Nhận xét migrate:
-- `CommentComposer.vue` là một trong số ít file đã dùng `i18n`
-- còn nhiều button/panel native
-- `ShareModal.vue` nên chuẩn hóa với `UModal`
-- `PublisherBox.vue`/`FeedPublisherBox.vue` đang có warning trùng tên component
-- feed là khu tốt để tận dụng `UAvatar`, `UDropdownMenu`, `UTooltip`, `UTextarea`
+- nên chia migration thành 2 đợt để giữ patch vừa phải:
+  - đợt 1: comment + post interaction + share
+    - `CommentComposer.vue`
+    - `CommentItem.vue`
+    - `CommentList.vue`
+    - `PostCard.vue`
+    - `PostHeader.vue`
+    - `ShareModal.vue`
+  - đợt 2: publisher + media + story
+    - `FeedPublisherBox.vue`
+    - `LightboxViewer.vue`
+    - `PostMediaGrid.vue`
+    - `PublisherBox.vue`
+    - `StoryCarousel.vue`
+- đợt 1 đã xử lý:
+  - migrate `CommentComposer.vue`, `CommentItem.vue`, `CommentList.vue`, `PostCard.vue`, `PostHeader.vue`, `ShareModal.vue`
+  - chuẩn hóa action comment/share/menu bằng `UButton`, `UTextarea`, `UAlert`, `useToast`, disabled/loading CTA rõ ràng
+  - bỏ bớt state thủ công không ổn định bằng local state có reset rõ cho comment, like, share, quick action và share destination
+  - thêm locale cho flow comment/share để tránh render raw key khi hiển thị feedback
+- đợt 2 đã xử lý:
+  - migrate `FeedPublisherBox.vue`, `LightboxViewer.vue`, `PostMediaGrid.vue`, `StoryCarousel.vue`
+  - đổi `PublisherBox.vue` thành `PublisherComposerPanel.vue` để hết warning trùng tên `FeedPublisherBox`
+  - `FeedPublisherBox.vue` có draft local SSR-safe, `idle/loading/success/error`, `UAlert`, `UProgress`, advanced panel và feedback rõ cho live/share/reset
+  - `PostMediaGrid.vue` render media mock ổn định hơn, có label mở media rõ ràng và được nối với `FeedLightboxViewer`
+  - `StoryCarousel.vue` có keyboard/swipe navigation, state feedback cho like/comment/share và metrics local không lệch shape khi SSR
+  - dời `SEO` home feed về page-level cho `/` và `/home`
 
 ### `forms` - 12 files
 
 Files:
-- `CheckboxField.vue`
-- `FormSection.vue`
-- `MediaPreviewList.vue`
-- `PasswordInput.vue`
-- `RadioGroupField.vue`
-- `SearchInput.vue`
-- `SelectBox.vue`
-- `SubmitBar.vue`
-- `TextareaAutoResize.vue`
-- `TextInput.vue`
-- `ToggleSwitch.vue`
-- `Uploader.vue`
+- `[x]` `CheckboxField.vue`
+- `[x]` `FormSection.vue`
+- `[x]` `MediaPreviewList.vue`
+- `[x]` `PasswordInput.vue`
+- `[x]` `RadioGroupField.vue`
+- `[x]` `SearchInput.vue`
+- `[x]` `SelectBox.vue`
+- `[x]` `SubmitBar.vue`
+- `[x]` `TextareaAutoResize.vue`
+- `[x]` `TextInput.vue`
+- `[x]` `ToggleSwitch.vue`
+- `[x]` `Uploader.vue`
 
 Vai trò:
 - shared form primitives tự build
@@ -307,7 +467,30 @@ Nhận xét migrate:
 - nên phân loại:
   - cái nào giữ lại vì có business styling riêng
   - cái nào bỏ dần để thay bằng `UInput`, `USelect`, `UCheckbox`, `USwitch`, `UFileUpload`
-- hiện `SubmitBar.vue` đã được migrate tốt
+- nên chia thành 2 đợt:
+  - đợt 1: primitive input/control
+    - `CheckboxField.vue`
+    - `PasswordInput.vue`
+    - `RadioGroupField.vue`
+    - `SearchInput.vue`
+    - `SelectBox.vue`
+    - `TextareaAutoResize.vue`
+    - `TextInput.vue`
+    - `ToggleSwitch.vue`
+  - đợt 2: wrapper/media pattern
+    - `FormSection.vue`
+    - `MediaPreviewList.vue`
+    - `SubmitBar.vue`
+    - `Uploader.vue`
+- đợt 1 đã xử lý:
+  - đổi 8 primitive input/control sang ruột `@nuxt/ui` nhưng giữ wrapper API cũ để không phải chase rộng toàn app
+  - thêm `description`, `hint`, `error`, `disabled` cho shared wrapper để form state rõ hơn thay vì chỉ render native input
+  - `SearchInput.vue` có clear action + `Esc` clear, `PasswordInput.vue` dùng trailing toggle chuẩn hơn, `TextareaAutoResize.vue` bỏ resize thủ công để dùng `UTextarea` autoresize SSR-safe hơn
+- đợt 2 đã xử lý:
+  - giữ `FormSection.vue` như shared wrapper nhưng nâng thành card section có header, badge, hint alert và slot `actions/footer` rõ hơn
+  - `MediaPreviewList.vue` có empty state, preview state, remove action và status `idle/uploading/ready/error` thay vì chỉ vẽ box mock
+  - `Uploader.vue` có hidden input + event emit `select/select-image/select-video`, alert trạng thái rõ và nối trực tiếp với `FormsMediaPreviewList`
+  - `SubmitBar.vue` có contract rõ hơn cho `save/submit`: `disabled`, `loading`, `status`, `progress`, save button tuỳ chọn và feedback inline đồng nhất với `UForm`
 
 ### `forum` - 6 files
 
@@ -323,8 +506,26 @@ Vai trò:
 - forum list/detail/create thread
 
 Nhận xét migrate:
-- `CreateThreadModal.vue` nên dùng `UModal` + `UForm`
-- `ForumFilters.vue` nên thêm `VueUse`
+- `/forum` đã dời `SEO` về page-level route:
+  - có `useSeoMeta()` + canonical + Open Graph
+  - query `q/section/thread` đã sync với route để listing/detail public có URL quay lại được
+  - query không hợp lệ sẽ được normalize về state ổn định hơn để tránh SEO/canonical sai
+- `CreateThreadModal.vue` đã chuyển sang flow `@nuxt/ui`:
+  - dùng `UModal`, `UForm`, `UFormField`, `UInput`, `USelect`, `UTextarea`, `UAlert`, `UButton`
+  - có state rõ `idle`, `loading`, `success`, `error`
+  - có validate field-level và feedback toast/inline cho create thread
+- `ForumFilters.vue`, `ForumHero.vue`, `ForumStatsSidebar.vue` đã chuẩn hóa action/filter theo `@nuxt/ui`:
+  - dùng `UCard`, `UInput`, `UButton`, `UBadge`, `UAlert`
+  - filter status và context public rõ hơn, mobile-first tốt hơn
+  - filter/query/result state không còn là HTML button/input thủ công
+- `ForumThreadCard.vue` và `ForumThreadDetail.vue` đã được nâng lại:
+  - card có trạng thái selected rõ, badge/status/action thống nhất hơn
+  - detail/reply flow dùng `UCard`, `UForm`, `UTextarea`, `UAlert`, `UButton`
+  - reply form có state rõ `idle`, `loading`, `success`, `error` và empty state ổn định
+- đã bổ sung `i18n` cho `pages.forumPage` để tránh render raw key ở listing/detail/create thread
+- state của `ForumPage.vue` đã ổn định hơn cho SSR:
+  - không còn phụ thuộc non-null assertion để tìm selected thread
+  - default state đủ shape khi filter không có kết quả hoặc query thread không hợp lệ
 
 ### `foundation` - 8 files
 
@@ -342,8 +543,19 @@ Vai trò:
 - UI shell/foundation layer
 
 Nhận xét migrate:
-- đây là khu đã tận dụng `@nuxt/ui` tốt nhất ngoài product
-- nên tiếp tục dùng làm pattern chung cho app
+- `ModalShell.vue` và `DrawerShell.vue` đã không còn là wrapper mỏng:
+  - có contract chung cho `open/update:open/close/cancel/confirm`
+  - có footer mặc định, loading guard cho dismiss, và `UAlert` trạng thái `idle/loading/success/error`
+  - hợp hơn để chuẩn hóa modal/drawer ở `jobs`, `funding`, `games`, `go-pro`
+- `DropdownShell.vue` đã có trigger accessible mặc định:
+  - typed items tốt hơn thay vì `unknown[]`
+  - có `searchTerm`, filter, empty state và event `update:open/update:searchTerm`
+  - không còn phụ thuộc hoàn toàn vào trigger slot để dùng được
+- `EmptyState.vue`, `LoadingSkeleton.vue`, `PageHeader.vue`, `PageSection.vue`, `ResponsiveContainer.vue` đã được nâng thành pattern nền:
+  - dùng `UCard` / `UContainer` rõ hơn thay vì div wrapper thuần
+  - mobile-first, có slot/action/header/footer rõ hơn
+  - state/shape SSR ổn định, không đọc browser API trong setup
+- `foundation` hiện phù hợp làm baseline cho các module khác thay vì mỗi nơi tự bọc `@nuxt/ui` theo một kiểu riêng
 
 ### `funding` - 10 files
 
@@ -363,10 +575,65 @@ Vai trò:
 - crowdfunding list/detail/create/donate
 
 Nhận xét migrate:
-- `CreateFundingForm.vue` còn native form nhiều
-- `FundingDonateModal.vue` nên chuyển sang `UModal` + `UForm`
-- `FundingFilters.vue` nên thêm `watchDebounced`
-- hợp để dùng `UInputNumber`, `UFileUpload`, `UProgress`, `UAlert`
+- đợt 1 đã hoàn tất cho:
+  - `CreateFundingForm.vue`
+  - `FundingDonateModal.vue`
+  - `FundingFilters.vue`
+  - `FundingProgress.vue`
+- `CreateFundingForm.vue` đã chuyển sang flow `@nuxt/ui` rõ trạng thái hơn:
+  - dùng `UForm`, `UFormField`, `UInput`, `USelect`, `UInputNumber`, `UTextarea`
+  - dùng lại `FormsFormSection`, `FormsUploader`, `FormsSubmitBar`
+  - có state `idle`, `loading`, `success`, `error`, validate field-level và local preview SSR-safe hơn
+- `FundingDonateModal.vue` đã bỏ modal thủ công:
+  - dùng `UModal`, `UForm`, `UInputNumber`, `USelect`, `UTextarea`, `UAlert`, `UButton`
+  - có preset amount, inline validation, toast và feedback submit rõ ràng
+- `FundingFilters.vue` + `FundingProgress.vue` đã được chuẩn hóa:
+  - filter dùng `watchDebounced`, `UInput`, `USelect`, `UAlert`, `UBadge`
+  - progress dùng `UProgress`, guard goal/percent ổn định hơn và có aria label
+- page-level route cho funding đã đáp ứng tốt hơn 3 nhóm tiêu chí:
+  - `/funding`, `/create_funding`, `/show_fund/[id]` đã dời `SEO` về page-level bằng `useSeoMeta()` + canonical + Open Graph
+  - query `q/category/status` đã sync với route và normalize giá trị không hợp lệ để URL public ổn định hơn
+  - empty/default state trong listing/detail/create đã an toàn hơn cho SSR/hydration
+- `useMockFundingData.ts` đã bổ sung helper filter/normalize/query-read để contract dữ liệu ổn định hơn thay vì nhét logic vào component
+- đã bổ sung locale `pages.fundingPage`, `pages.createFundingPage`, `pages.showFundPage` để tránh render raw translation key ở flow public
+- đợt 2 đã hoàn tất cho:
+  - `FundingCard.vue`
+  - `FundingHero.vue`
+  - `FundingSidebar.vue`
+- `FundingCard.vue` đã chuyển sang card flow rõ hơn:
+  - dùng `UCard`, `UBadge`, `UButton`
+  - ảnh listing đã đổi sang `NuxtImg` để public card tối ưu tải tốt hơn
+  - status/featured/owner badge rõ hơn, CTA donate/detail dễ bấm hơn trên mobile
+- `FundingHero.vue` và `FundingSidebar.vue` đã đồng bộ theo state listing hiện tại:
+  - hero hiển thị chip cho `query/category/status` thay vì chỉ banner tĩnh
+  - sidebar có filter status alert, reset action, category state rõ và keyboard-safe hơn
+  - stat trong hero/sidebar đã bám vào listing đang hiển thị thay vì tổng data thô
+- `FundingPage.vue` đã nối feedback tốt hơn cho đợt 2:
+  - donate mock sẽ cập nhật trực tiếp `raisedAmount`, `backers`, `donors`, `status` của campaign hiện tại
+  - category breakdown đã bám theo `search/status` hiện tại để đỡ gây hiểu nhầm khi filter
+- đợt 3 đã hoàn tất cho:
+  - `FundingDetailHero.vue`
+  - `FundingDetailMain.vue`
+  - `FundingDetailSidebar.vue`
+- `FundingDetailHero.vue` đã nâng thành detail hero đúng chuẩn public page hơn:
+  - dùng `NuxtImg`, `UCard`, `UBadge`, `UButton`, `UAlert`
+  - thể hiện rõ category/status/featured/owner badge
+  - hero đã gắn progress + raised/goal summary ngay trong fold đầu
+- `FundingDetailMain.vue` đã tách rõ các cụm thông tin:
+  - progress summary
+  - campaign background
+  - impact list
+  - rewards/update commitments
+  - các khối đều dùng `UCard` và trạng thái/status context rõ hơn
+- `FundingDetailSidebar.vue` đã có feedback quản trị/detail rõ hơn:
+  - donor list có empty state ổn định
+  - owner actions có state `idle`, `loading`, `success`, `error`, kèm `UAlert` + toast
+  - donate CTA và owner meta không còn là button/div thủ công đơn giản
+- `ShowFundPage.vue` đã ổn định hơn cho SSR/UI flow:
+  - not-found dùng `FoundationEmptyState`
+  - detail page clone campaign state cục bộ để donation cập nhật trực tiếp `raisedAmount/backers/donors/status`
+  - helper clone/apply donation đã được kéo về `useMockFundingData.ts` để contract data nhất quán hơn giữa list/detail
+- cụm `funding` hiện đã hoàn tất cả 3 đợt cho đủ 10 file
 
 ### `games` - 5 files
 
@@ -381,8 +648,22 @@ Vai trò:
 - game listing, modal play, filters
 
 Nhận xét migrate:
-- `GamePlayModal.vue` nên chuẩn hóa bằng modal shell
-- `GamesFilters.vue` là điểm hợp để dùng `VueUse`
+- `GameCard.vue`, `GamesHero.vue`, `GamesSidebar.vue` đã chuyển khỏi flow div/button thủ công:
+  - dùng `UCard`, `UBadge`, `UButton`, `UAlert`, `UProgress`
+  - `GameCard.vue` đã đổi ảnh public sang `NuxtImg`, có selected/save/new state rõ hơn và CTA `play/preview/save` dễ bấm hơn trên mobile
+  - `GamesHero.vue` và `GamesSidebar.vue` đã bám theo filter/game đang xem thay vì chỉ render banner/sidebar tĩnh
+- `GamePlayModal.vue` đã được chuẩn hóa bằng shell nền:
+  - dùng `FoundationModalShell` thay cho `Teleport` modal tự dựng
+  - bỏ `Date.now()` trực tiếp trong setup để timer SSR-safe hơn
+  - có state `idle/loading/success/error`, feedback inline rõ và flow `play again`/`finish` ổn định hơn
+- `GamesFilters.vue` đã dùng `watchDebounced` + `@nuxt/ui` đúng vai trò:
+  - search/category/result state không còn là native input/button đơn giản
+  - filter status có alert riêng và reset action bám theo URL state
+- `GamesPage.vue` và `/games` route đã được nâng để đáp ứng 3 tiêu chí:
+  - `SEO` được dời về page-level ở `/games` bằng `useSeoMeta()` + canonical + Open Graph
+  - query `q/tab/category/game` đã sync với route và tự normalize giá trị không hợp lệ
+  - default state/selection/timer đã ổn định hơn cho `SSR` và hydration
+- `useMockGamesData.ts` đã bổ sung helper `filter/normalize/query-read`, đồng thời đưa dữ liệu `games` sang `i18n` qua `pages.gamesPage`
 
 ### `go-pro` - 6 files
 
@@ -398,9 +679,25 @@ Vai trò:
 - pricing/paywall/plan compare
 
 Nhận xét migrate:
-- `BillingToggle.vue` hợp với `USwitch` hoặc `URadioGroup`
-- `CheckoutModal.vue` nên chuẩn hóa với `UModal`
-- `ComparisonTable.vue` có thể cân nhắc `UTable`
+- `BillingToggle.vue` đã chuyển sang `URadioGroup` + `UAlert`:
+  - chu kỳ `monthly/yearly` có state rõ hơn, keyboard-safe hơn
+  - trạng thái pricing đang xem không còn là 2 button thủ công đơn giản
+- `CheckoutModal.vue` đã bỏ `Teleport` modal tự dựng:
+  - dùng `FoundationModalShell` + `UForm` + `URadioGroup` + `UCheckbox`
+  - có state `idle/loading/success/error`, validate inline, toast và dismiss guard rõ hơn
+- `PlanCard.vue`, `GoProHero.vue`, `GoProSidebar.vue` đã chuyển khỏi flow HTML/Tailwind thuần:
+  - dùng `UCard`, `UBadge`, `UButton`, `UAlert`
+  - card giá có selected/recommended state rõ, CTA tốt hơn trên mobile
+  - hero/sidebar bám theo chu kỳ billing và gói đang xem thay vì render tĩnh
+- `ComparisonTable.vue` đã được chuẩn hóa lại:
+  - vẫn giữ semantic table để so sánh public pricing nhưng bọc `UCard` + `UAlert`
+  - cột gói đang xem được highlight rõ hơn, status compare không còn mơ hồ
+- `GoProPage.vue` và `/go-pro` route đã đáp ứng tốt hơn 3 nhóm tiêu chí:
+  - `SEO` được dời về page-level bằng `useSeoMeta()` + canonical + Open Graph
+  - query `billing/plan` đã sync với route và normalize giá trị không hợp lệ
+  - modal open/selection state không còn gắn chặt vào route theo cách gây rối UX
+- `useMockGoProData.ts` đã có helper `read/normalize/getPrice/getSavings` để contract dữ liệu ổn định hơn
+- đã bổ sung đầy đủ locale `pages.goProPage` cho pricing, comparison, checkout và mock subscription/payment state
 
 ### `jobs` - 9 files
 
@@ -419,8 +716,10 @@ Vai trò:
 - job list/detail/apply/post
 
 Nhận xét migrate:
-- `JobApplyModal.vue`, `JobPostModal.vue` là ứng viên rõ để dùng `UModal` + `UForm`
-- `JobsFilters.vue` nên thêm `VueUse`
+- `JobApplyModal.vue`, `JobPostModal.vue` đã chuyển sang `FoundationModalShell` + `UForm`, có validate, `idle/loading/success/error`, toast và feedback inline rõ ràng
+- `JobCard.vue`, `JobDetailPanel.vue`, `JobsHero.vue`, `JobsResultsHeader.vue`, `JobsSidebar.vue`, `JobsEmptyState.vue` đã chuẩn hóa về `@nuxt/ui` và `FoundationEmptyState`
+- SEO/query sync được dời về `pages/jobs.vue` với `q/category/location/type/sort/saved/job`
+- `useMockJobsData.ts` đã có normalize/filter/query helper ổn định cho SSR và locale `pages.jobsPage` đầy đủ cho vi/en
 
 ### `lightbox` - 1 file
 
@@ -431,7 +730,7 @@ Vai trò:
 - lightbox modal riêng
 
 Nhận xét migrate:
-- cần rà xem có thể hợp nhất với `foundation/ModalShell.vue` hay không
+- `LightboxModal.vue` đã chuyển sang `UModal`, dùng `NuxtImg` cho ảnh, normalize index an toàn hơn cho SSR và thêm keyboard navigation bằng phím mũi tên
 
 ### `messages` - 7 files [DONE]
 
@@ -861,7 +1160,6 @@ Nên ưu tiên store cho:
 - `pages/RegisterPage.vue`
 - `pages/WelcomePage.vue`
 - `pages/ForgotPasswordPage.vue`
-- `checkout/ShippingAddressFormUI.vue`
 - `pages/ProductsPage.vue`
 
 ### Ưu tiên 2
@@ -892,17 +1190,50 @@ Nên ưu tiên store cho:
 
 ### Task B: Checkout migration
 
-- migrate `ShippingAddressFormUI.vue`
-- chuẩn hóa `CheckoutSummary.vue`
-- thêm `useStorage` cho draft address
-- cân nhắc `Pinia` cho cart state
+- đã migrate `ShippingAddressFormUI.vue`, `CheckoutSummary.vue`, `CheckoutLayout.vue`
+- đã đưa `SEO` của `/checkout` về page-level route
+- còn lại nên cân nhắc `Pinia` cho cart state
+- nếu nối API thật, nên tách submit/top-up/address persistence ra composable riêng
 
 ### Task C: Community migration
 
-- migrate `CreationForm.vue`
-- migrate `GroupSettingsBasicsCard.vue`
-- migrate `PageSettingsBasicsCard.vue`
-- thêm draft persistence bằng `VueUse`
+- đợt 1:
+  - migrate `CreationForm.vue`
+  - migrate `CreationHeaderCard.vue`
+  - migrate `CreationInsightsPanel.vue`
+  - migrate `GroupSettingsBasicsCard.vue`
+  - migrate `GroupSettingsControlsCard.vue`
+  - migrate `GroupSettingsSidebar.vue`
+  - migrate `PageSettingsBasicsCard.vue`
+  - migrate `PageSettingsControlsCard.vue`
+  - migrate `PageSettingsSidebar.vue`
+  - migrate `SettingsSectionCard.vue`
+  - thêm draft persistence bằng `VueUse`
+  - kéo SEO create/settings về page-level route
+- đợt 2:
+  - migrate `CommunityGroupCard.vue`
+  - migrate `GroupsFilterBar.vue`
+  - migrate `GroupTabsBar.vue`
+  - migrate `PageCard.vue`
+  - migrate `PageDirectoryTabsBar.vue`
+  - kéo SEO listing pages về page-level route
+  - sync keyword filter với query `q`
+  - thêm debounce + persistence cho filter listing
+- đợt 3:
+  - migrate `GroupAboutCard.vue`
+  - migrate `GroupAdminCard.vue`
+  - migrate `GroupFeedSection.vue`
+  - migrate `GroupHeroBanner.vue`
+  - migrate `GroupMembersCard.vue`
+  - migrate `GroupTopicsCard.vue`
+  - migrate `PageAboutCard.vue`
+  - migrate `PageActionCard.vue`
+  - migrate `PageFeedSection.vue`
+  - migrate `PageHeroBanner.vue`
+  - kéo SEO detail routes `g/[name]`, `p/[name]` về page-level route
+  - sync tab detail với query `tab`
+  - thêm loading/success/error feedback cho join/invite/follow/share/message
+  - bổ sung locale detail page và chặn lộ translation key ở UI detail
 
 ### Task D: Blog + Funding migration
 

@@ -1,122 +1,186 @@
 <template>
-  <article class="surface-card group overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ring-1 ring-secondary-200/50 hover:ring-primary-500/20 relative">
-    <div class="h-1.5 w-full bg-gradient-to-r from-primary-400 to-primary-600 shadow-sm" />
-
-    <div class="p-6 space-y-6 bg-white">
+  <article>
+    <UCard
+      class="flex h-full flex-col rounded-[30px] border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
+      :class="cardClass"
+      :ui="{ body: 'p-5' }"
+    >
       <div class="flex items-start gap-4">
         <div
-          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl text-[15px] font-black text-white shadow-xl transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-primary-500/20"
+          class="avatar-lg shrink-0 text-white shadow-[var(--shadow-md)]"
           :style="{ background: job.companyGradient }"
         >
           {{ job.companyInitials }}
         </div>
-        <div class="min-w-0 flex-1 space-y-4">
+
+        <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="rounded-xl bg-primary-50 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-primary-600 ring-1 ring-primary-100">
+            <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-bold">
               {{ job.categoryLabel }}
-            </span>
-            <span
+            </UBadge>
+
+            <UBadge
+              v-if="selected"
+              color="success"
+              variant="subtle"
+              class="rounded-full px-3 py-1 text-[11px] font-bold"
+            >
+              {{ $t("pages.jobsPage.selectedBadge") }}
+            </UBadge>
+
+            <UBadge
               v-if="job.isFeatured"
-              class="rounded-xl bg-orange-50 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-orange-600 ring-1 ring-orange-100"
+              color="warning"
+              variant="subtle"
+              class="rounded-full px-3 py-1 text-[11px] font-bold"
             >
               {{ $t("pages.jobsPage.featuredBadge") }}
-            </span>
-            <span
+            </UBadge>
+
+            <UBadge
               v-if="job.isOwner"
-              class="rounded-xl bg-secondary-50 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-secondary-500 ring-1 ring-secondary-100"
+              color="neutral"
+              variant="subtle"
+              class="rounded-full px-3 py-1 text-[11px] font-bold"
             >
               {{ $t("pages.jobsPage.myBadge") }}
-            </span>
+            </UBadge>
+
+            <UBadge
+              v-if="job.isRemote"
+              color="info"
+              variant="subtle"
+              class="rounded-full px-3 py-1 text-[11px] font-bold"
+            >
+              {{ $t("pages.jobsPage.remoteBadge") }}
+            </UBadge>
           </div>
 
-          <div class="space-y-1">
-            <h3 class="line-clamp-2 text-xl font-black tracking-tight text-secondary-900 group-hover:text-primary-600 transition-colors leading-tight">
-              {{ job.title }}
-            </h3>
-            <p class="text-[11px] font-black uppercase tracking-widest text-secondary-500">
-              {{ job.company }} <span class="mx-1 text-secondary-300">·</span> {{ job.typeLabel }}
-            </p>
-          </div>
+          <h3 class="mt-4 line-clamp-2 text-[1.2rem] font-black leading-tight tracking-[-0.04em] text-[var(--text-primary)]">
+            {{ job.title }}
+          </h3>
+          <p class="mt-1 text-[13px] font-bold text-[var(--text-secondary)]">
+            {{ job.company }} · {{ job.typeLabel }}
+          </p>
+          <p class="mt-2 text-[12px] font-semibold text-[var(--text-tertiary)]">
+            {{ job.postedAt }}
+          </p>
         </div>
       </div>
 
-      <p class="text-[13px] font-medium leading-relaxed text-secondary-600 line-clamp-3 min-h-[3.75rem] px-1 italic">
-        "{{ job.description }}"
+      <p class="mt-5 min-h-[72px] text-[13px] leading-6 text-[var(--text-secondary)]">
+        {{ job.description }}
       </p>
 
-      <div class="grid gap-3 text-[11px] font-black uppercase tracking-widest text-secondary-500 sm:grid-cols-2 bg-secondary-50/50 p-4 rounded-2xl ring-1 ring-secondary-100">
-        <div class="flex items-center gap-2.5 px-1 truncate">
-          <Icon name="i-ph-map-pin-duotone" class="h-4.5 w-4.5 text-primary-500 shrink-0" />
-          <span class="truncate">{{ job.location }}</span>
+      <div class="mt-5 grid gap-3 sm:grid-cols-2">
+        <div class="rounded-[20px] bg-[var(--bg-surface-hover)] px-3 py-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            {{ $t("pages.jobsPage.jobLocationLabel") }}
+          </p>
+          <p class="mt-1 text-[13px] font-extrabold text-[var(--text-primary)]">
+            {{ job.location }}
+          </p>
         </div>
-        <div class="flex items-center gap-2.5 px-1 truncate">
-          <Icon name="i-ph-money-duotone" class="h-4.5 w-4.5 text-primary-500 shrink-0" />
-          <span class="truncate">{{ job.salary }}</span>
+
+        <div class="rounded-[20px] bg-[var(--bg-surface-hover)] px-3 py-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            {{ $t("pages.jobsPage.jobSalaryLabel") }}
+          </p>
+          <p class="mt-1 text-[13px] font-extrabold text-[var(--text-primary)]">
+            {{ job.salary }}
+          </p>
         </div>
-        <div class="flex items-center gap-2.5 px-1 truncate">
-          <Icon name="i-ph-briefcase-duotone" class="h-4.5 w-4.5 text-primary-500 shrink-0" />
-          <span class="truncate">{{ job.experience }}</span>
+
+        <div class="rounded-[20px] bg-[var(--bg-surface-hover)] px-3 py-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            {{ $t("pages.jobsPage.jobExperienceLabel") }}
+          </p>
+          <p class="mt-1 text-[13px] font-extrabold text-[var(--text-primary)]">
+            {{ job.experience }}
+          </p>
         </div>
-        <div class="flex items-center gap-2.5 px-1 truncate">
-          <Icon name="i-ph-users-three-duotone" class="h-4.5 w-4.5 text-primary-500 shrink-0" />
-          <span class="truncate">{{ $t("pages.jobsPage.applicantCount", { count: job.applicants }) }}</span>
+
+        <div class="rounded-[20px] bg-[var(--bg-surface-hover)] px-3 py-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            {{ $t("pages.jobsPage.jobApplicantsLabel") }}
+          </p>
+          <p class="mt-1 text-[13px] font-extrabold text-[var(--text-primary)]">
+            {{ $t("pages.jobsPage.applicantCount", { count: job.applicants }) }}
+          </p>
         </div>
       </div>
 
-      <div class="flex flex-wrap gap-2 pt-2 px-1">
-        <span
+      <div class="mt-5 flex flex-wrap gap-2">
+        <UBadge
           v-for="skill in job.skills"
           :key="skill"
-          class="inline-flex items-center rounded-lg border border-secondary-100 bg-white px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-primary-600 hover:border-primary-100 cursor-default"
+          color="neutral"
+          variant="soft"
+          class="rounded-full px-3 py-1 text-[11px] font-semibold"
         >
           #{{ skill }}
-        </span>
+        </UBadge>
       </div>
 
-      <div class="flex flex-col gap-3 pt-4 sm:flex-row border-t border-secondary-50">
+      <div class="mt-6 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
         <UButton
-          size="xl"
-          class="flex-1 h-11 rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-500/20 transition-all active:scale-95 border-none"
-          @click="$emit('apply', job)"
-        >
-          <template #leading>
-            <Icon name="i-ph-paper-plane-tilt-duotone" class="h-4.5 w-4.5" />
-          </template>
-          {{ $t("pages.jobsPage.applyNow") }}
-        </UButton>
-
-        <UButton
-          variant="soft"
-          size="xl"
-          class="flex-1 h-11 rounded-2xl bg-secondary-50 text-secondary-600 ring-1 ring-secondary-100 hover:bg-white hover:text-primary-600 hover:border-primary-100 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 shadow-sm"
-          @click="$emit('view', job)"
-        >
-          {{ $t("pages.jobsPage.viewDetails") }}
-        </UButton>
-
-        <button
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-secondary-50 text-secondary-500 ring-1 ring-secondary-100 transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 active:scale-95"
           type="button"
-          @click="$emit('toggleSave', job.id)"
+          color="primary"
+          size="lg"
+          class="justify-center rounded-full"
+          @click="emit('apply', job)"
         >
-          <Icon :name="saved ? 'i-ph-bookmark-simple-fill' : 'i-ph-bookmark-simple-duotone'" class="h-5 w-5" />
-        </button>
+          <Icon name="i-ph-paper-plane-tilt-fill" class="mr-1.5 h-4 w-4" />
+          {{ $t("pages.jobsPage.apply") }}
+        </UButton>
+
+        <UButton
+          type="button"
+          :color="selected ? 'success' : 'neutral'"
+          :variant="selected ? 'solid' : 'outline'"
+          size="lg"
+          class="justify-center rounded-full"
+          @click="emit('view', job)"
+        >
+          {{ selected ? $t("pages.jobsPage.viewingDetail") : $t("pages.jobsPage.viewDetail") }}
+        </UButton>
+
+        <UButton
+          type="button"
+          color="neutral"
+          variant="outline"
+          size="lg"
+          class="justify-center rounded-full"
+          :aria-pressed="saved"
+          @click="emit('toggleSave', job.id)"
+        >
+          <Icon :name="saved ? 'i-ph-bookmark-simple-fill' : 'i-ph-bookmark-simple'" class="h-5 w-5" />
+        </UButton>
       </div>
-    </div>
+    </UCard>
   </article>
 </template>
 
 <script setup lang="ts">
 import type { MockJob } from "~/composables/useMockJobsData"
 
-defineProps<{
+const props = withDefaults(defineProps<{
   job: MockJob
   saved: boolean
-}>()
+  selected?: boolean
+}>(), {
+  selected: false,
+})
 
-defineEmits<{
+const emit = defineEmits<{
   apply: [job: MockJob]
   view: [job: MockJob]
   toggleSave: [id: string]
 }>()
+
+const cardClass = computed(() =>
+  props.selected
+    ? "border-[var(--color-success)] ring-4 ring-emerald-50 shadow-[var(--shadow-xl)]"
+    : "border-[var(--border-default)] shadow-[var(--shadow-md)]",
+)
 </script>

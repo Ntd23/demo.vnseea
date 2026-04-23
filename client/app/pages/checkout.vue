@@ -3,13 +3,31 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
-
 definePageMeta({
   layout: "default",
 })
 
+const { t } = useI18n()
+const route = useRoute()
+const requestURL = useRequestURL()
+
+const canonicalUrl = computed(() => new URL(route.fullPath || "/checkout", requestURL.origin).toString())
+
+useSeoMeta({
+  title: () => t("checkout.page.title"),
+  description: () => t("checkout.page.description"),
+  ogTitle: () => t("checkout.page.title"),
+  ogDescription: () => t("checkout.page.description"),
+  ogUrl: () => canonicalUrl.value,
+  robots: "noindex, nofollow",
+})
+
 useHead({
-  title: `${t("checkout.page.title")}`,
+  link: [
+    {
+      rel: "canonical",
+      href: canonicalUrl,
+    },
+  ],
 })
 </script>

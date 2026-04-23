@@ -1,61 +1,148 @@
 <template>
-  <article class="group overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]">
-    <NuxtLink :to="`/show_fund/${campaign.id}`" class="block">
-      <div class="relative aspect-[16/9] overflow-hidden bg-[var(--color-secondary-100)]">
+  <article>
+    <UCard
+      class="group h-full overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
+      :ui="{ body: 'p-0' }"
+    >
+      <div class="relative aspect-[16/10] overflow-hidden bg-[var(--bg-surface-hover)]">
         <div class="absolute inset-0" :style="{ background: campaign.coverFallback }" />
-        <img :src="campaign.cover" :alt="campaign.title" class="relative h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]" loading="lazy" @error="hideImage">
-        <div class="absolute inset-0 bg-[linear-gradient(180deg,transparent_20%,rgba(15,23,42,0.72)_100%)]" />
-        <div class="absolute left-3 top-3 flex flex-wrap gap-2">
-          <span class="rounded-[10px] bg-[#101828]/82 px-2.5 py-1 text-[11px] font-bold text-white">{{ campaign.categoryLabel }}</span>
-          <span v-if="campaign.isOwner" class="rounded-[10px] bg-white/18 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-[4px]">{{ $t("pages.fundingPage.ownerBadge") }}</span>
+
+        <NuxtImg
+          v-if="showCover"
+          :src="campaign.cover"
+          :alt="campaign.title"
+          width="960"
+          height="600"
+          loading="lazy"
+          format="webp"
+          densities="x1 x2"
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          class="relative h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+          @error="showCover = false"
+        />
+
+        <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.02)_10%,rgba(15,23,42,0.82)_100%)]" />
+
+        <div class="absolute left-4 top-4 flex max-w-[calc(100%-2rem)] flex-wrap gap-2">
+          <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/12 px-3 py-1.5 text-[11px] font-bold text-white">
+            {{ campaign.categoryLabel }}
+          </UBadge>
+          <UBadge :color="statusColor" variant="solid" class="rounded-full px-3 py-1.5 text-[11px] font-bold">
+            {{ statusLabel }}
+          </UBadge>
+          <UBadge
+            v-if="campaign.isFeatured"
+            color="warning"
+            variant="solid"
+            class="rounded-full px-3 py-1.5 text-[11px] font-bold"
+          >
+            {{ t("pages.fundingPage.featuredBadge") }}
+          </UBadge>
+          <UBadge
+            v-if="campaign.isOwner"
+            color="neutral"
+            variant="soft"
+            class="rounded-full border border-white/15 bg-white/12 px-3 py-1.5 text-[11px] font-bold text-white"
+          >
+            {{ t("pages.fundingPage.ownerBadge") }}
+          </UBadge>
         </div>
-        <div class="absolute bottom-3 left-3 right-3">
-          <h3 class="line-clamp-2 text-[1.12rem] font-black leading-tight text-white">{{ campaign.title }}</h3>
-          <p class="mt-1 text-[12px] font-semibold text-white/78">{{ campaign.owner }} · {{ campaign.location }}</p>
+
+        <div class="absolute inset-x-4 bottom-4">
+          <NuxtLink :to="detailHref" class="inline-block max-w-full">
+            <h3 class="line-clamp-2 text-[1.2rem] font-black leading-tight text-white">
+              {{ campaign.title }}
+            </h3>
+          </NuxtLink>
+          <p class="mt-2 text-[12px] font-semibold text-white/78">
+            {{ campaign.owner }} · {{ campaign.location }}
+          </p>
         </div>
       </div>
-    </NuxtLink>
 
-    <div class="p-4">
-      <p class="min-h-[48px] text-[13px] leading-6 text-[var(--text-secondary)]">{{ campaign.summary }}</p>
-      <FundingProgress class="mt-4" :raised="campaign.raisedAmount" :goal="campaign.goalAmount" />
+      <div class="space-y-5 p-4 sm:p-5">
+        <p class="min-h-[72px] text-[13px] font-semibold leading-6 text-[var(--text-secondary)]">
+          {{ campaign.summary }}
+        </p>
 
-      <div class="mt-4 grid grid-cols-3 gap-2 text-center">
-        <div class="rounded-[16px] bg-[var(--color-secondary-100)] p-2">
-          <p class="text-[13px] font-black text-[var(--text-primary)]">{{ campaign.backers }}</p>
-          <p class="text-[11px] font-semibold text-[var(--text-tertiary)]">{{ $t("pages.fundingPage.backersLabel") }}</p>
+        <div class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4">
+          <FundingProgress :raised="campaign.raisedAmount" :goal="campaign.goalAmount" />
         </div>
-        <div class="rounded-[16px] bg-[var(--color-secondary-100)] p-2">
-          <p class="text-[13px] font-black text-[var(--text-primary)]">{{ campaign.daysLeft }}</p>
-          <p class="text-[11px] font-semibold text-[var(--text-tertiary)]">{{ $t("pages.fundingPage.daysLabel") }}</p>
+
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3">
+            <p class="text-[13px] font-black text-[var(--text-primary)]">{{ campaign.backers }}</p>
+            <p class="text-[11px] font-semibold text-[var(--text-tertiary)]">{{ t("pages.fundingPage.backersLabel") }}</p>
+          </div>
+          <div class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3">
+            <p class="text-[13px] font-black text-[var(--text-primary)]">{{ campaign.daysLeft }}</p>
+            <p class="text-[11px] font-semibold text-[var(--text-tertiary)]">{{ t("pages.fundingPage.daysLabel") }}</p>
+          </div>
+          <div class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3">
+            <p class="text-[13px] font-black text-[var(--text-primary)]">{{ campaign.donors.length }}</p>
+            <p class="text-[11px] font-semibold text-[var(--text-tertiary)]">{{ t("pages.fundingPage.donorsLabel") }}</p>
+          </div>
         </div>
-        <div class="rounded-[16px] bg-[var(--color-secondary-100)] p-2">
-          <p class="text-[13px] font-black text-[var(--text-primary)]">{{ campaign.donors.length }}</p>
-          <p class="text-[11px] font-semibold text-[var(--text-tertiary)]">{{ $t("pages.fundingPage.donorsLabel") }}</p>
+
+        <div class="grid gap-2 sm:grid-cols-2">
+          <UButton
+            type="button"
+            color="primary"
+            size="lg"
+            class="justify-center rounded-[18px]"
+            @click="emit('donate', campaign)"
+          >
+            <Icon name="i-ph-hand-heart-fill" class="mr-1.5 h-4 w-4" />
+            {{ t("pages.fundingPage.donate") }}
+          </UButton>
+
+          <UButton
+            :to="detailHref"
+            color="neutral"
+            variant="outline"
+            size="lg"
+            class="justify-center rounded-[18px]"
+          >
+            {{ t("pages.fundingPage.detail") }}
+          </UButton>
         </div>
       </div>
-
-      <div class="mt-4 grid gap-2 sm:grid-cols-2">
-        <button class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary-500)] text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5" type="button" @click="$emit('donate', campaign)">
-          <Icon name="i-ph-hand-heart-fill" class="h-4 w-4" />
-          {{ $t("pages.fundingPage.donate") }}
-        </button>
-        <NuxtLink :to="`/show_fund/${campaign.id}`" class="inline-flex h-11 items-center justify-center rounded-[18px] border border-[var(--border-default)] bg-white text-[13px] font-extrabold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]">
-          {{ $t("pages.fundingPage.detail") }}
-        </NuxtLink>
-      </div>
-    </div>
+    </UCard>
   </article>
 </template>
 
 <script setup lang="ts">
 import type { MockFundingCampaign } from "~/composables/useMockFundingData"
 
-defineProps<{ campaign: MockFundingCampaign }>()
+type StatusColor = "primary" | "warning" | "success"
 
-defineEmits<{ donate: [campaign: MockFundingCampaign] }>()
+const props = defineProps<{ campaign: MockFundingCampaign }>()
 
-const hideImage = (event: Event) => {
-  ;(event.target as HTMLImageElement).style.display = "none"
-}
+const emit = defineEmits<{ donate: [campaign: MockFundingCampaign] }>()
+
+const { t } = useI18n()
+
+const showCover = ref(true)
+
+const detailHref = computed(() => `/show_fund/${props.campaign.id}`)
+
+const statusLabel = computed(() => {
+  if (props.campaign.status === "ending") return t("pages.fundingPage.statusEnding")
+  if (props.campaign.status === "funded") return t("pages.fundingPage.statusFunded")
+  return t("pages.fundingPage.statusActive")
+})
+
+const statusColor = computed<StatusColor>(() => {
+  if (props.campaign.status === "ending") return "warning"
+  if (props.campaign.status === "funded") return "success"
+  return "primary"
+})
+
+watch(
+  () => props.campaign.id,
+  () => {
+    showCover.value = true
+  },
+  { immediate: true },
+)
 </script>

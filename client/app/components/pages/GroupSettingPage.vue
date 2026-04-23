@@ -9,7 +9,13 @@
     />
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.08fr)_340px]">
-      <section class="min-w-0 space-y-4">
+      <UForm
+        :state="draft"
+        :validate="validateDraft"
+        class="min-w-0 space-y-4"
+        @submit="handleSave"
+        @error="handleSaveError"
+      >
         <CommunityGroupSettingsBasicsCard
           v-model="draft"
           :group-path="groupPath"
@@ -23,31 +29,51 @@
           description="community.settings.finish.desc"
           icon="i-ph-floppy-disk-back-bold"
         >
-          <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div class="flex flex-col gap-4">
             <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-500">
               {{ $t('community.settings.finish.status', { enabled: enabledPolicies, total: totalPolicies, privacy: $t(selectedPrivacyLabel).toLowerCase() }) }}
             </div>
 
-            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center">
-              <NuxtLink
+            <UAlert
+              v-if="statusAlert"
+              :color="statusAlert.color"
+              variant="subtle"
+              :icon="statusAlert.icon"
+              :title="statusAlert.title"
+              :description="statusAlert.description"
+              class="rounded-[20px]"
+              aria-live="polite"
+            />
+
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <UButton
                 :to="groupPath"
-                class="inline-flex h-12 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-5 text-[14px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+                color="neutral"
+                variant="outline"
+                size="xl"
+                :disabled="isBusy"
+                class="justify-center rounded-full"
               >
                 <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
-                {{ $t('community.settings.finish.back') }}
-              </NuxtLink>
+                {{ $t("community.settings.finish.back") }}
+              </UButton>
 
-              <button
-                class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-                type="button"
+              <UButton
+                type="submit"
+                color="primary"
+                variant="solid"
+                size="xl"
+                :loading="isBusy"
+                :disabled="isSaveDisabled"
+                class="justify-center rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
               >
                 <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
-                {{ $t('community.settings.finish.save') }}
-              </button>
+                {{ $t("community.settings.finish.save") }}
+              </UButton>
             </div>
           </div>
         </CommunitySettingsSectionCard>
-      </section>
+      </UForm>
 
       <CommunityGroupSettingsSidebar
         :group="previewGroup"
@@ -76,7 +102,7 @@
           to="/groups"
           class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
         >
-          {{ $t('community.settings.empty.back') }}
+          {{ $t("community.settings.empty.back") }}
         </NuxtLink>
       </div>
     </section>
@@ -84,10 +110,12 @@
 </template>
 
 <script setup lang="ts">
+import { useStorage, watchDebounced } from "@vueuse/core"
 import {
   communityCategoryOptions,
   communityPrivacyOptions,
   createCommunityGroupSettingsDraft,
+  createCommunitySlug,
   getCommunityGroupPath,
   getCommunityOptionDescription,
   getCommunityOptionLabel,
@@ -97,8 +125,16 @@ import type {
   CommunityGroupSettingsDraft,
 } from "../../../types/community"
 
-const { t, locale } = useI18n()
+type GroupSettingsState = "idle" | "loading" | "success" | "error"
+
+type GroupSettingsError = {
+  name?: keyof CommunityGroupSettingsDraft
+  message: string
+}
+
+const { t } = useI18n()
 const route = useRoute()
+const toast = useToast()
 
 const {
   group,
@@ -109,20 +145,17 @@ const {
 const draft = ref<CommunityGroupSettingsDraft>(
   createCommunityGroupSettingsDraft(),
 )
+const saveState = ref<GroupSettingsState>("idle")
+const draftRestored = ref(false)
+const storageHydrated = ref(false)
+const isSyncingDraft = ref(false)
 
-const syncDraftWithGroup = () => {
-  if (group.value) {
-    draft.value = createCommunityGroupSettingsDraft(group.value)
-    draft.value.name = t(group.value.name)
-    draft.value.summary = t(group.value.summary)
-    draft.value.locationLabel = t(group.value.locationLabel)
-    draft.value.tags = group.value.tags.map(tag => t(tag)).join(", ")
-    draft.value.guidelines = group.value.guidelines.map(rule => t(rule)).join("\n")
-  }
-}
-
-watch(group, syncDraftWithGroup, { immediate: true })
-watch(locale, syncDraftWithGroup)
+const draftStorage = useStorage<CommunityGroupSettingsDraft | null>(
+  `community:group-settings:${String(route.params.group || "")}`,
+  null,
+  undefined,
+  { initOnMounted: true },
+)
 
 const normalizedTags = computed(() =>
   draft.value.tags
@@ -158,26 +191,32 @@ const previewGroup = computed<CommunityGroupRecord | null>(() => {
 })
 
 const selectedPrivacyLabel = computed(() =>
-  getCommunityOptionLabel(
-    communityPrivacyOptions,
-    draft.value.privacy,
-    "community.settings.controls.privacyFallback",
+  t(
+    getCommunityOptionLabel(
+      communityPrivacyOptions,
+      draft.value.privacy,
+      "community.settings.controls.privacyFallback",
+    ),
   ),
 )
 
 const selectedPrivacyDescription = computed(() =>
-  getCommunityOptionDescription(
-    communityPrivacyOptions,
-    draft.value.privacy,
-    "community.settings.controls.noPrivacy",
+  t(
+    getCommunityOptionDescription(
+      communityPrivacyOptions,
+      draft.value.privacy,
+      "community.settings.controls.noPrivacy",
+    ),
   ),
 )
 
 const selectedCategoryLabel = computed(() =>
-  getCommunityOptionLabel(
-    communityCategoryOptions,
-    draft.value.category,
-    "community.groups.card.noCategory",
+  t(
+    getCommunityOptionLabel(
+      communityCategoryOptions,
+      draft.value.category,
+      "community.groups.card.noCategory",
+    ),
   ),
 )
 
@@ -201,12 +240,231 @@ const groupPath = computed(() =>
   group.value ? getCommunityGroupPath(group.value.slug) : "/groups",
 )
 
-useSeoMeta({
-  title: computed(() =>
-    group.value ? `${t('community.settings.title', { name: t(group.value.name) })} | VNSEEA` : `${t('community.settings.eyebrow')} | VNSEEA`,
-  ),
-  description: computed(() =>
-    group.value ? t(group.value.summary) : t('community.settings.desc'),
-  ),
+const isBusy = computed(() => saveState.value === "loading")
+const isSaveDisabled = computed(() =>
+  isBusy.value
+  || !draft.value.name.trim()
+  || !draft.value.slug.trim()
+  || draft.value.summary.trim().length < 24
+  || !draft.value.category,
+)
+
+const statusAlert = computed(() => {
+  if (saveState.value === "loading") {
+    return {
+      color: "primary" as const,
+      icon: "i-ph-spinner-gap-bold",
+      title: t("community.settings.finish.statusSavingTitle"),
+      description: t("community.settings.finish.statusSavingDescription"),
+    }
+  }
+
+  if (saveState.value === "success") {
+    return {
+      color: "success" as const,
+      icon: "i-ph-check-circle-fill",
+      title: t("community.settings.finish.statusSuccessTitle"),
+      description: t("community.settings.finish.statusSuccessDescription"),
+    }
+  }
+
+  if (saveState.value === "error") {
+    return {
+      color: "error" as const,
+      icon: "i-ph-warning-circle-fill",
+      title: t("community.settings.finish.statusErrorTitle"),
+      description: t("community.settings.finish.statusErrorDescription"),
+    }
+  }
+
+  if (draftRestored.value) {
+    return {
+      color: "primary" as const,
+      icon: "i-ph-clock-counter-clockwise-fill",
+      title: t("community.settings.finish.draftRestoredTitle"),
+      description: t("community.settings.finish.draftRestoredDescription"),
+    }
+  }
+
+  return null
 })
+
+watch(group, syncDraftFromGroup, { immediate: true })
+
+watchDebounced(
+  () => normalizeDraft(draft.value),
+  (value) => {
+    if (!storageHydrated.value || !group.value) {
+      return
+    }
+
+    draftStorage.value = { ...value }
+  },
+  {
+    debounce: 250,
+    maxWait: 1000,
+  },
+)
+
+watch(
+  () => ({ ...draft.value }),
+  () => {
+    if (isSyncingDraft.value) {
+      return
+    }
+
+    if (saveState.value !== "loading") {
+      saveState.value = "idle"
+    }
+
+    draftRestored.value = false
+  },
+)
+
+onMounted(async () => {
+  storageHydrated.value = true
+  await nextTick()
+  syncDraftFromGroup()
+})
+
+async function handleSave() {
+  saveState.value = "loading"
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    const normalized = normalizeDraft(draft.value)
+
+    draft.value = { ...normalized }
+    draftStorage.value = { ...normalized }
+    draftRestored.value = false
+    saveState.value = "success"
+
+    toast.add({
+      title: t("community.settings.finish.statusSuccessTitle"),
+      description: t("community.settings.finish.statusSuccessDescription"),
+      color: "success",
+    })
+  }
+  catch {
+    saveState.value = "error"
+
+    toast.add({
+      title: t("community.settings.finish.statusErrorTitle"),
+      description: t("community.settings.finish.statusErrorDescription"),
+      color: "error",
+    })
+  }
+}
+
+function handleSaveError() {
+  saveState.value = "error"
+}
+
+function syncDraftFromGroup() {
+  if (!group.value) {
+    return
+  }
+
+  const baseDraft = createLocalizedDraft(group.value)
+  const restoredDraft = storageHydrated.value && draftStorage.value
+    ? normalizeDraft(draftStorage.value)
+    : null
+
+  applyDraft(
+    restoredDraft && !isSameDraft(restoredDraft, baseDraft)
+      ? { ...baseDraft, ...restoredDraft }
+      : baseDraft,
+    Boolean(restoredDraft && !isSameDraft(restoredDraft, baseDraft)),
+  )
+}
+
+function applyDraft(value: CommunityGroupSettingsDraft, restored: boolean) {
+  isSyncingDraft.value = true
+  draft.value = value
+  draftRestored.value = restored
+  saveState.value = "idle"
+
+  nextTick(() => {
+    isSyncingDraft.value = false
+  })
+}
+
+function createLocalizedDraft(value: CommunityGroupRecord): CommunityGroupSettingsDraft {
+  return {
+    ...createCommunityGroupSettingsDraft(value),
+    name: t(value.name),
+    summary: t(value.summary),
+    locationLabel: value.locationLabel ? t(value.locationLabel) : "",
+    tags: value.tags.map(tag => t(tag)).join(", "),
+    guidelines: (value.guidelines ?? []).map(rule => t(rule)).join("\n"),
+  }
+}
+
+function normalizeDraft(value: CommunityGroupSettingsDraft): CommunityGroupSettingsDraft {
+  return {
+    ...value,
+    name: value.name.trim(),
+    slug: value.slug.trim(),
+    summary: value.summary.trim(),
+    website: value.website.trim(),
+    locationLabel: value.locationLabel.trim(),
+    category: value.category.trim(),
+    tags: value.tags
+      .split(",")
+      .map(tag => tag.trim())
+      .filter(Boolean)
+      .join(", "),
+    guidelines: value.guidelines
+      .split("\n")
+      .map(rule => rule.trim())
+      .filter(Boolean)
+      .join("\n"),
+  }
+}
+
+function isSameDraft(first: CommunityGroupSettingsDraft, second: CommunityGroupSettingsDraft) {
+  return JSON.stringify(normalizeDraft(first)) === JSON.stringify(normalizeDraft(second))
+}
+
+const validateDraft = (state: CommunityGroupSettingsDraft): GroupSettingsError[] => {
+  const errors: GroupSettingsError[] = []
+  const slug = state.slug.trim()
+
+  if (!state.name.trim()) {
+    errors.push({
+      name: "name",
+      message: t("community.creation.common.validationNameRequired"),
+    })
+  }
+
+  if (!slug) {
+    errors.push({
+      name: "slug",
+      message: t("community.creation.common.validationSlugRequired"),
+    })
+  }
+  else if (slug.length < 3 || createCommunitySlug(slug) !== slug) {
+    errors.push({
+      name: "slug",
+      message: t("community.creation.common.validationSlugInvalid"),
+    })
+  }
+
+  if (state.summary.trim().length < 24) {
+    errors.push({
+      name: "summary",
+      message: t("community.creation.common.validationDescriptionRequired"),
+    })
+  }
+
+  if (!state.category) {
+    errors.push({
+      name: "category",
+      message: t("community.creation.common.validationCategoryRequired"),
+    })
+  }
+
+  return errors
+}
 </script>

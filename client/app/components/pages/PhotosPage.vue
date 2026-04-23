@@ -147,6 +147,24 @@ const accentPalette = [
   "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)",
 ]
 
+const fallbackPhoto: MockPhoto = {
+  id: "photos-fallback",
+  title: "VNSEEA Photos",
+  category: "community",
+  albumTitle: "VNSEEA",
+  photographer: "VNSEEA",
+  photographerRole: "Mock gallery",
+  location: "VNSEEA",
+  timeLabel: "",
+  likes: 0,
+  comments: 0,
+  image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
+  accent: "linear-gradient(135deg,#2563eb 0%,#60a5fa 100%)",
+  tags: [],
+  frame: "landscape",
+  companionTo: "/photos",
+}
+
 const { t, locale } = useI18n()
 const { categories, photos, albums, quickLinks } = useMockPhotosData()
 
@@ -158,7 +176,17 @@ useSeoMeta({
 const search = ref("")
 const selectedCategory = ref<PhotoCategoryKey>("all")
 const lightboxOpen = ref(false)
-const currentPhotoId = ref(photos.value[0]?.id ?? "")
+const currentPhotoId = ref("")
+
+watch(
+  photos,
+  (items) => {
+    if (!currentPhotoId.value || !items.some(photo => photo.id === currentPhotoId.value)) {
+      currentPhotoId.value = items[0]?.id ?? fallbackPhoto.id
+    }
+  },
+  { immediate: true },
+)
 
 const categoryLabelMap = computed(() =>
   Object.fromEntries(
@@ -178,7 +206,7 @@ const filteredPhotos = computed(() => {
       photo.photographerRole,
       photo.location,
       ...photo.tags,
-      categoryLabelMap.value[photo.category],
+      categoryLabelMap.value[photo.category] ?? "",
     ].some(field => field.toLowerCase().includes(keyword))
 
     return matchesCategory && matchesKeyword
@@ -193,13 +221,15 @@ watch(filteredPhotos, (items) => {
 
 const heroPhoto = computed<MockPhoto>(() =>
   filteredPhotos.value[0]
-  ?? photos.value[0]!,
+  ?? photos.value[0]
+  ?? fallbackPhoto,
 )
 
 const currentPhoto = computed<MockPhoto>(() =>
   filteredPhotos.value.find(photo => photo.id === currentPhotoId.value)
   ?? photos.value.find(photo => photo.id === currentPhotoId.value)
-  ?? photos.value[0]!,
+  ?? photos.value[0]
+  ?? fallbackPhoto,
 )
 
 const heroStats = computed(() => [
@@ -307,6 +337,7 @@ const currentLightboxIndex = computed(() => {
 })
 
 const openPhoto = (id: string) => {
+  if (!photos.value.some(photo => photo.id === id)) return
   currentPhotoId.value = id
   lightboxOpen.value = true
 }
@@ -314,7 +345,7 @@ const openPhoto = (id: string) => {
 const resetFilters = () => {
   search.value = ""
   selectedCategory.value = "all"
-  currentPhotoId.value = photos.value[0]?.id ?? ""
+  currentPhotoId.value = photos.value[0]?.id ?? fallbackPhoto.id
 }
 
 const noop = () => {}

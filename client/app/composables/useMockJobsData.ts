@@ -1,6 +1,11 @@
+import { computed } from "vue"
+import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
+
 export type JobCategoryKey = "engineering" | "design" | "marketing" | "sales" | "operations" | "finance"
+export type JobCategoryFilter = "all" | JobCategoryKey
 export type JobLocationKey = "all" | "ho-chi-minh" | "ha-noi" | "da-nang" | "remote"
 export type JobTypeKey = "all" | "full-time" | "part-time" | "contract" | "internship"
+export type JobSortKey = "latest" | "salary" | "applicants"
 
 export type JobOption<T extends string = string> = {
   label: string
@@ -56,253 +61,186 @@ export type JobPostPayload = {
   description: string
 }
 
+export type JobFilterInput = {
+  search?: string
+  category?: JobCategoryFilter
+  location?: JobLocationKey
+  type?: JobTypeKey
+  sort?: JobSortKey
+  savedOnly?: boolean
+  savedById?: Record<string, boolean>
+}
+
+export const defaultJobCategory: JobCategoryFilter = "all"
+export const defaultJobLocation: JobLocationKey = "all"
+export const defaultJobType: JobTypeKey = "all"
+export const defaultJobSort: JobSortKey = "latest"
+
+export const jobCategoryKeys = [
+  "engineering",
+  "design",
+  "marketing",
+  "sales",
+  "operations",
+  "finance",
+] as const satisfies JobCategoryKey[]
+
+export const jobCategoryFilterKeys = [
+  "all",
+  ...jobCategoryKeys,
+] as const satisfies JobCategoryFilter[]
+
+export const jobLocationKeys = [
+  "all",
+  "ho-chi-minh",
+  "ha-noi",
+  "da-nang",
+  "remote",
+] as const satisfies JobLocationKey[]
+
+export const jobTypeKeys = [
+  "all",
+  "full-time",
+  "part-time",
+  "contract",
+  "internship",
+] as const satisfies JobTypeKey[]
+
+export const jobSortKeys = [
+  "latest",
+  "salary",
+  "applicants",
+] as const satisfies JobSortKey[]
+
+export const readJobQueryValue = (value: unknown) => {
+  if (Array.isArray(value)) return String(value[0] || "")
+  return typeof value === "string" ? value : ""
+}
+
+export const normalizeJobCategory = (value: string): JobCategoryFilter => {
+  if (jobCategoryFilterKeys.includes(value as JobCategoryFilter)) {
+    return value as JobCategoryFilter
+  }
+
+  return defaultJobCategory
+}
+
+export const normalizeJobLocation = (value: string): JobLocationKey => {
+  if (jobLocationKeys.includes(value as JobLocationKey)) {
+    return value as JobLocationKey
+  }
+
+  return defaultJobLocation
+}
+
+export const normalizeJobType = (value: string): JobTypeKey => {
+  if (jobTypeKeys.includes(value as JobTypeKey)) {
+    return value as JobTypeKey
+  }
+
+  return defaultJobType
+}
+
+export const normalizeJobSort = (value: string): JobSortKey => {
+  if (jobSortKeys.includes(value as JobSortKey)) {
+    return value as JobSortKey
+  }
+
+  return defaultJobSort
+}
+
+export const normalizeJobSavedFlag = (value: string) =>
+  ["1", "true", "saved", "yes"].includes(value.trim().toLowerCase())
+
+export const rankJobSalary = (salary: string) => {
+  const numbers = salary.match(/\d+/g)?.map(Number) ?? []
+  return numbers.length > 0 ? Math.max(...numbers) : 0
+}
+
+export const filterMockJobs = (
+  jobs: ReadonlyArray<MockJob>,
+  filters: JobFilterInput = {},
+) => {
+  const keyword = filters.search?.trim().toLowerCase() ?? ""
+  const category = filters.category ?? defaultJobCategory
+  const location = filters.location ?? defaultJobLocation
+  const type = filters.type ?? defaultJobType
+  const sort = filters.sort ?? defaultJobSort
+  const savedOnly = filters.savedOnly ?? false
+  const savedById = filters.savedById ?? {}
+
+  const filtered = jobs.filter((job) => {
+    const matchesKeyword = keyword.length === 0 || [
+      job.title,
+      job.company,
+      job.categoryLabel,
+      job.location,
+      job.salary,
+      job.description,
+      ...job.skills,
+      ...job.requirements,
+      ...job.benefits,
+    ].some(field => field.toLowerCase().includes(keyword))
+
+    const matchesCategory = category === defaultJobCategory || job.category === category
+    const matchesLocation = location === defaultJobLocation || job.locationKey === location
+    const matchesType = type === defaultJobType || job.type === type
+    const matchesSaved = !savedOnly || Boolean(savedById[job.id] ?? job.isSaved)
+
+    return matchesKeyword && matchesCategory && matchesLocation && matchesType && matchesSaved
+  })
+
+  return filtered.slice().sort((left, right) => {
+    if (sort === "salary") return rankJobSalary(right.salary) - rankJobSalary(left.salary)
+    if (sort === "applicants") return right.applicants - left.applicants
+    return jobs.indexOf(left) - jobs.indexOf(right)
+  })
+}
+
+export const formatJobCompactNumber = (value: number, locale = "vi") =>
+  new Intl.NumberFormat(locale.toLowerCase().startsWith("en") ? "en-US" : "vi-VN").format(value)
+
 export const useMockJobsData = () => {
-  const { t } = useI18n()
+  const { tm, rt } = useI18n()
+  const localized = <T>(key: string) =>
+    resolveI18nMessage(tm(key), message => rt(message as never)) as T
 
-  const jobCategories: JobOption<"all" | JobCategoryKey>[] = [
-    { label: t("pages.jobsPage.categoryAll"), value: "all", icon: "i-ph-squares-four-fill" },
-    { label: t("pages.jobsPage.categoryEngineering"), value: "engineering", icon: "i-ph-code-fill" },
-    { label: t("pages.jobsPage.categoryDesign"), value: "design", icon: "i-ph-paint-brush-fill" },
-    { label: t("pages.jobsPage.categoryMarketing"), value: "marketing", icon: "i-ph-megaphone-fill" },
-    { label: t("pages.jobsPage.categorySales"), value: "sales", icon: "i-ph-handshake-fill" },
-    { label: t("pages.jobsPage.categoryOperations"), value: "operations", icon: "i-ph-gear-six-fill" },
-    { label: t("pages.jobsPage.categoryFinance"), value: "finance", icon: "i-ph-chart-line-up-fill" },
-  ]
+  const jobCategories = computed(() =>
+    localized<JobOption<JobCategoryFilter>[]>("pages.jobsPage.categories"),
+  )
 
-  const jobLocations: JobOption<JobLocationKey>[] = [
-    { label: t("pages.jobsPage.locationAll"), value: "all", icon: "i-ph-map-pin-fill" },
-    { label: t("pages.jobsPage.locationHoChiMinh"), value: "ho-chi-minh", icon: "i-ph-buildings-fill" },
-    { label: t("pages.jobsPage.locationHaNoi"), value: "ha-noi", icon: "i-ph-bank-fill" },
-    { label: t("pages.jobsPage.locationDaNang"), value: "da-nang", icon: "i-ph-waves-fill" },
-    { label: t("pages.jobsPage.locationRemote"), value: "remote", icon: "i-ph-globe-hemisphere-east-fill" },
-  ]
+  const jobLocations = computed(() =>
+    localized<JobOption<JobLocationKey>[]>("pages.jobsPage.locations"),
+  )
 
-  const jobTypes: JobOption<JobTypeKey>[] = [
-    { label: t("pages.jobsPage.typeAll"), value: "all", icon: "i-ph-briefcase-fill" },
-    { label: t("pages.jobsPage.typeFullTime"), value: "full-time", icon: "i-ph-clock-fill" },
-    { label: t("pages.jobsPage.typePartTime"), value: "part-time", icon: "i-ph-clock-afternoon-fill" },
-    { label: t("pages.jobsPage.typeContract"), value: "contract", icon: "i-ph-file-text-fill" },
-    { label: t("pages.jobsPage.typeInternship"), value: "internship", icon: "i-ph-student-fill" },
-  ]
+  const jobTypes = computed(() =>
+    localized<JobOption<JobTypeKey>[]>("pages.jobsPage.types"),
+  )
 
-  const jobs: MockJob[] = [
-    {
-      id: "frontend-engineer-vnseea-labs",
-      title: "Frontend Engineer",
-      company: "VNSEEA Labs",
-      companyInitials: "VL",
-      companyGradient: "linear-gradient(135deg,var(--color-primary-500),var(--color-info))",
-      category: "engineering",
-      categoryLabel: t("pages.jobsPage.categoryEngineering"),
-      locationKey: "ho-chi-minh",
-      location: t("pages.jobsPage.job1Location"),
-      type: "full-time",
-      typeLabel: t("pages.jobsPage.typeFullTime"),
-      salary: t("pages.jobsPage.job1Salary"),
-      postedAt: t("pages.jobsPage.job1PostedAt"),
-      deadline: "30/05/2026",
-      experience: t("pages.jobsPage.job1Experience"),
-      applicants: 38,
-      views: 1280,
-      description: t("pages.jobsPage.job1Description"),
-      requirements: [
-        t("pages.jobsPage.job1Requirement1"),
-        t("pages.jobsPage.job1Requirement2"),
-        t("pages.jobsPage.job1Requirement3"),
-      ],
-      benefits: [
-        t("pages.jobsPage.job1Benefit1"),
-        t("pages.jobsPage.job1Benefit2"),
-        t("pages.jobsPage.job1Benefit3"),
-      ],
-      skills: ["Vue", "Nuxt", "TypeScript", "Tailwind"],
-      isRemote: false,
-      isFeatured: true,
-      isSaved: true,
-      isOwner: false,
-    },
-    {
-      id: "product-designer-community",
-      title: "Product Designer",
-      company: "Community Studio",
-      companyInitials: "CS",
-      companyGradient: "linear-gradient(135deg,var(--color-accent-500),var(--color-primary-600))",
-      category: "design",
-      categoryLabel: t("pages.jobsPage.categoryDesign"),
-      locationKey: "remote",
-      location: t("pages.jobsPage.job2Location"),
-      type: "contract",
-      typeLabel: t("pages.jobsPage.typeContract"),
-      salary: t("pages.jobsPage.job2Salary"),
-      postedAt: t("pages.jobsPage.job2PostedAt"),
-      deadline: "18/05/2026",
-      experience: t("pages.jobsPage.job2Experience"),
-      applicants: 21,
-      views: 940,
-      description: t("pages.jobsPage.job2Description"),
-      requirements: [
-        t("pages.jobsPage.job2Requirement1"),
-        t("pages.jobsPage.job2Requirement2"),
-        t("pages.jobsPage.job2Requirement3"),
-      ],
-      benefits: [
-        t("pages.jobsPage.job2Benefit1"),
-        t("pages.jobsPage.job2Benefit2"),
-        t("pages.jobsPage.job2Benefit3"),
-      ],
-      skills: ["Figma", "Prototype", "Design System"],
-      isRemote: true,
-      isFeatured: true,
-      isSaved: false,
-      isOwner: false,
-    },
-    {
-      id: "growth-marketing-specialist",
-      title: "Growth Marketing Specialist",
-      company: "Hanoi Startup Circle",
-      companyInitials: "HS",
-      companyGradient: "linear-gradient(135deg,var(--color-success),var(--color-accent-500))",
-      category: "marketing",
-      categoryLabel: t("pages.jobsPage.categoryMarketing"),
-      locationKey: "ha-noi",
-      location: t("pages.jobsPage.job3Location"),
-      type: "full-time",
-      typeLabel: t("pages.jobsPage.typeFullTime"),
-      salary: t("pages.jobsPage.job3Salary"),
-      postedAt: t("pages.jobsPage.job3PostedAt"),
-      deadline: "25/05/2026",
-      experience: t("pages.jobsPage.job3Experience"),
-      applicants: 44,
-      views: 1510,
-      description: t("pages.jobsPage.job3Description"),
-      requirements: [
-        t("pages.jobsPage.job3Requirement1"),
-        t("pages.jobsPage.job3Requirement2"),
-        t("pages.jobsPage.job3Requirement3"),
-      ],
-      benefits: [
-        t("pages.jobsPage.job3Benefit1"),
-        t("pages.jobsPage.job3Benefit2"),
-        t("pages.jobsPage.job3Benefit3"),
-      ],
-      skills: ["Growth", "Content", "Analytics"],
-      isRemote: false,
-      isFeatured: false,
-      isSaved: false,
-      isOwner: false,
-    },
-    {
-      id: "business-development-executive",
-      title: "Business Development Executive",
-      company: "Market Bridge",
-      companyInitials: "MB",
-      companyGradient: "linear-gradient(135deg,var(--color-primary-700),var(--color-success))",
-      category: "sales",
-      categoryLabel: t("pages.jobsPage.categorySales"),
-      locationKey: "da-nang",
-      location: t("pages.jobsPage.job4Location"),
-      type: "full-time",
-      typeLabel: t("pages.jobsPage.typeFullTime"),
-      salary: t("pages.jobsPage.job4Salary"),
-      postedAt: t("pages.jobsPage.job4PostedAt"),
-      deadline: "12/06/2026",
-      experience: t("pages.jobsPage.job4Experience"),
-      applicants: 17,
-      views: 760,
-      description: t("pages.jobsPage.job4Description"),
-      requirements: [
-        t("pages.jobsPage.job4Requirement1"),
-        t("pages.jobsPage.job4Requirement2"),
-        t("pages.jobsPage.job4Requirement3"),
-      ],
-      benefits: [
-        t("pages.jobsPage.job4Benefit1"),
-        t("pages.jobsPage.job4Benefit2"),
-        t("pages.jobsPage.job4Benefit3"),
-      ],
-      skills: ["B2B", "CRM", "Partnership"],
-      isRemote: false,
-      isFeatured: false,
-      isSaved: true,
-      isOwner: false,
-    },
-    {
-      id: "finance-operations-analyst",
-      title: "Finance Operations Analyst",
-      company: "Green Fund",
-      companyInitials: "GF",
-      companyGradient: "linear-gradient(135deg,var(--color-success),var(--color-info))",
-      category: "finance",
-      categoryLabel: t("pages.jobsPage.categoryFinance"),
-      locationKey: "ho-chi-minh",
-      location: t("pages.jobsPage.job5Location"),
-      type: "part-time",
-      typeLabel: t("pages.jobsPage.typePartTime"),
-      salary: t("pages.jobsPage.job5Salary"),
-      postedAt: t("pages.jobsPage.job5PostedAt"),
-      deadline: "05/06/2026",
-      experience: t("pages.jobsPage.job5Experience"),
-      applicants: 12,
-      views: 520,
-      description: t("pages.jobsPage.job5Description"),
-      requirements: [
-        t("pages.jobsPage.job5Requirement1"),
-        t("pages.jobsPage.job5Requirement2"),
-        t("pages.jobsPage.job5Requirement3"),
-      ],
-      benefits: [
-        t("pages.jobsPage.job5Benefit1"),
-        t("pages.jobsPage.job5Benefit2"),
-        t("pages.jobsPage.job5Benefit3"),
-      ],
-      skills: ["Finance", "Excel", "Reporting"],
-      isRemote: false,
-      isFeatured: false,
-      isSaved: false,
-      isOwner: true,
-    },
-    {
-      id: "community-operations-intern",
-      title: "Community Operations Intern",
-      company: "VNSEEA Community",
-      companyInitials: "VC",
-      companyGradient: "linear-gradient(135deg,var(--color-primary-500),var(--color-accent-500))",
-      category: "operations",
-      categoryLabel: t("pages.jobsPage.categoryOperations"),
-      locationKey: "remote",
-      location: t("pages.jobsPage.job6Location"),
-      type: "internship",
-      typeLabel: t("pages.jobsPage.typeInternship"),
-      salary: t("pages.jobsPage.job6Salary"),
-      postedAt: t("pages.jobsPage.job6PostedAt"),
-      deadline: "01/06/2026",
-      experience: t("pages.jobsPage.job6Experience"),
-      applicants: 57,
-      views: 1880,
-      description: t("pages.jobsPage.job6Description"),
-      requirements: [
-        t("pages.jobsPage.job6Requirement1"),
-        t("pages.jobsPage.job6Requirement2"),
-        t("pages.jobsPage.job6Requirement3"),
-      ],
-      benefits: [
-        t("pages.jobsPage.job6Benefit1"),
-        t("pages.jobsPage.job6Benefit2"),
-        t("pages.jobsPage.job6Benefit3"),
-      ],
-      skills: ["Community", "Ops", "Notion"],
-      isRemote: true,
-      isFeatured: false,
-      isSaved: false,
-      isOwner: true,
-    },
-  ]
+  const jobs = computed(() =>
+    localized<MockJob[]>("pages.jobsPage.jobs"),
+  )
+
+  const createdJobRequirements = computed(() =>
+    localized<string[]>("pages.jobsPage.createdJobRequirements"),
+  )
+
+  const createdJobBenefits = computed(() =>
+    localized<string[]>("pages.jobsPage.createdJobBenefits"),
+  )
+
+  const createdJobSkills = computed(() =>
+    localized<string[]>("pages.jobsPage.createdJobSkills"),
+  )
 
   return {
     jobs,
     jobCategories,
     jobLocations,
     jobTypes,
-    findJobById: (id: string) => jobs.find(job => job.id === id),
+    createdJobRequirements,
+    createdJobBenefits,
+    createdJobSkills,
+    findJobById: (id: string) => jobs.value.find(job => job.id === id),
   }
 }

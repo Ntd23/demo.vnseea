@@ -11,11 +11,6 @@
 <script setup lang="ts">
 const { t } = useI18n()
 
-useSeoMeta({
-  title: () => t("pages.createEventPage.seoTitle"),
-  description: () => t("pages.createEventPage.seoDescription"),
-})
-
 const quickFillSeed = ref(0)
 
 const heroStats = computed(() => [

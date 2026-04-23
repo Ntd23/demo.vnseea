@@ -1,92 +1,84 @@
 <template>
-  <section class="surface-card overflow-hidden ring-1 ring-secondary-100 shadow-2xl relative">
-    <!-- Hero Banner with Premium Overlays -->
-    <div class="relative min-h-[320px] overflow-hidden px-8 py-10 text-white flex flex-col justify-end" :style="{ background: group.banner }">
-      <!-- Premium Overlays -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-      <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[80px] -mr-32 -mt-32 pointer-events-none animate-pulse" />
-      
-      <div class="relative z-10 space-y-8">
-        <!-- Badge row -->
-        <div class="flex flex-wrap items-center gap-2">
-          <UBadge
-            v-for="label in [privacyLabel, categoryLabel, group.foundedLabel]"
-            :key="label"
-            variant="soft"
-            class="rounded-lg font-black text-[10px] uppercase tracking-[0.2em] px-3 py-1.5 bg-white/20 text-white backdrop-blur-md ring-1 ring-white/30"
-          >
-            {{ $t(label) }}
+  <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
+    <div class="relative min-h-[220px] overflow-hidden px-5 py-6 text-white sm:min-h-[260px] sm:px-7">
+      <div class="absolute inset-0" :style="{ background: group.banner }" />
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.32),transparent_38%),linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.36))]" />
+
+      <div class="relative flex h-full flex-col justify-between gap-6">
+        <div class="flex flex-wrap items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-white/88">
+          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+            {{ privacyLabel }}
+          </UBadge>
+          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+            {{ categoryLabel }}
+          </UBadge>
+          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+            {{ foundedLabel }}
           </UBadge>
         </div>
 
-        <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div class="flex flex-col sm:flex-row items-start sm:items-end gap-6">
-            <!-- Initials Avatar -->
-            <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-[28px] bg-white/10 text-3xl font-black text-white shadow-2xl ring-2 ring-white/20 backdrop-blur-xl group cursor-pointer transition-transform duration-500 hover:scale-110">
+        <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div class="flex items-end gap-4">
+            <div class="flex h-24 w-24 shrink-0 items-center justify-center rounded-[28px] border border-white/18 bg-white/12 text-[1.55rem] font-black text-white shadow-[0_16px_30px_rgba(15,23,42,0.22)] backdrop-blur sm:h-28 sm:w-28 sm:text-[1.8rem]">
               {{ avatarLabel }}
             </div>
 
-            <div class="min-w-0 pb-1 space-y-3">
-              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-400">
+            <div class="min-w-0 pb-1">
+              <p class="text-[12px] font-bold uppercase tracking-[0.24em] text-white/70">
                 {{ t("pages.groupDetailPage.heroTypeLabel") }}
               </p>
-              <h1 class="text-4xl sm:text-5xl font-black tracking-tighter text-white leading-none">
-                {{ group.name }}
+              <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-white sm:text-[2.5rem]">
+                {{ groupName }}
               </h1>
-              <p class="max-w-[760px] text-sm font-medium leading-relaxed text-white/70 line-clamp-2">
-                {{ group.summary }}
+              <p class="mt-2 max-w-[760px] text-[14px] leading-7 text-white/82">
+                {{ groupSummary }}
               </p>
-              
-              <div class="flex flex-wrap items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/50">
-                <div class="flex items-center gap-2">
-                  <Icon name="i-ph-users-duotone" class="h-4 w-4 text-primary-400" />
-                  <span class="text-white">{{ $t('community.groups.format.members', { count: memberCountLabel }) }}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                  <span class="text-white">{{ onlineCountLabel }}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 text-primary-400" />
-                  <span class="text-white/70">{{ group.locationLabel }}</span>
-                </div>
+              <div class="mt-3 flex flex-wrap items-center gap-2 text-[12px] font-semibold text-white/82">
+                <span>{{ memberCountLabel }}</span>
+                <span class="text-white/30">•</span>
+                <span>{{ onlineCountLabel }}</span>
+                <span class="text-white/30">•</span>
+                <span>{{ locationLabel }}</span>
               </div>
             </div>
           </div>
 
-          <!-- Actions -->
           <div class="flex flex-wrap items-center gap-3">
             <UButton
-              size="xl"
+              color="neutral"
               variant="soft"
-              class="h-12 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-md px-6 transition-all"
+              size="xl"
+              :loading="joinState === 'loading'"
+              :disabled="joinState === 'loading' || joined"
+              class="rounded-[16px] border border-white/16 bg-white/12 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-white/18 disabled:bg-white/12"
+              @click="emit('join')"
             >
-              <template #leading>
-                <Icon name="i-ph-user-plus-duotone" class="h-5 w-5" />
-              </template>
-              {{ group.joinLabel || t("pages.groupDetailPage.joinFallback") }}
+              <Icon name="i-ph-user-plus-bold" class="mr-2 h-4 w-4" />
+              {{ joinButtonLabel }}
             </UButton>
 
             <UButton
+              color="neutral"
+              variant="solid"
               size="xl"
-              class="h-12 rounded-2xl bg-white text-primary-600 font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-black/20 hover:scale-105 transition-all px-8"
+              :loading="inviteState === 'loading'"
+              :disabled="inviteState === 'loading'"
+              class="rounded-[16px] bg-white px-5 text-[14px] font-extrabold text-[#1d4ed8] shadow-[0_12px_24px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
+              @click="emit('invite')"
             >
-              <template #leading>
-                <Icon name="i-ph-user-circle-plus-duotone" class="h-5 w-5" />
-              </template>
-              {{ group.inviteLabel || t("pages.groupDetailPage.inviteFallback") }}
+              <Icon name="i-ph-user-circle-plus-bold" class="mr-2 h-4 w-4" />
+              {{ inviteButtonLabel }}
             </UButton>
 
             <UButton
               v-if="group.canManage"
               :to="settingsPath"
-              size="xl"
+              color="neutral"
               variant="soft"
-              class="h-12 rounded-2xl bg-black/40 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/10 hover:bg-black/60 backdrop-blur-md px-6"
+              size="xl"
+              class="rounded-[16px] border border-white/16 bg-[#0f172a]/26 px-5 text-[14px] font-bold text-white backdrop-blur transition hover:bg-[#0f172a]/40"
             >
-              <template #leading>
-                <Icon name="i-ph-gear-six-duotone" class="h-5 w-5" />
-              </template>
+              <Icon name="i-ph-gear-six-bold" class="mr-2 h-4 w-4" />
               {{ t("pages.groupDetailPage.settingsButton") }}
             </UButton>
           </div>
@@ -104,6 +96,7 @@ import {
 import type { CommunityGroupRecord } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
 const props = defineProps<{
   group: CommunityGroupRecord
@@ -111,13 +104,47 @@ const props = defineProps<{
   onlineCountLabel: string
   privacyLabel: string
   categoryLabel: string
+  joinState?: "idle" | "loading" | "success" | "error"
+  inviteState?: "idle" | "loading" | "success" | "error"
+  joined?: boolean
+}>()
+
+const emit = defineEmits<{
+  join: []
+  invite: []
 }>()
 
 const avatarLabel = computed(() =>
-  getCommunityInitials(props.group.name),
+  getCommunityInitials(translateText(props.group.name)),
 )
 
 const settingsPath = computed(() =>
   getCommunityGroupSettingsPath(props.group.slug),
 )
+
+const groupName = computed(() =>
+  translateText(props.group.name),
+)
+
+const groupSummary = computed(() =>
+  translateText(props.group.summary),
+)
+
+const foundedLabel = computed(() =>
+  translateText(props.group.foundedLabel),
+)
+
+const locationLabel = computed(() =>
+  translateText(props.group.locationLabel),
+)
+
+const joinButtonLabel = computed(() => {
+  if (props.joined) return t("pages.groupDetailPage.joinedButton")
+  return translateText(props.group.joinLabel, t("pages.groupDetailPage.joinFallback"))
+})
+
+const inviteButtonLabel = computed(() => {
+  if (props.inviteState === "success") return t("pages.groupDetailPage.invitedButton")
+  return translateText(props.group.inviteLabel, t("pages.groupDetailPage.inviteFallback"))
+})
 </script>

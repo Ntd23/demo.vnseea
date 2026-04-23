@@ -1,11 +1,14 @@
 <template>
-  <section class="relative z-10 overflow-hidden rounded-[30px] border border-white/70 bg-white/95 p-4 shadow-[var(--shadow-xl)] backdrop-blur sm:p-5">
+  <section
+    class="relative z-10 overflow-hidden rounded-[30px] border border-white/70 bg-white/95 p-4 shadow-[var(--shadow-xl)] backdrop-blur sm:p-5"
+    aria-labelledby="blogs-filters-title"
+  >
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
         <p class="text-label-secondary text-[var(--color-primary-600)]">
           {{ $t("pages.blogsPage.filtersEyebrow") }}
         </p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">
+        <h2 id="blogs-filters-title" class="mt-1 text-heading text-[var(--text-primary)]">
           {{ $t("pages.blogsPage.filtersTitle") }}
         </h2>
         <p class="mt-1 max-w-[620px] text-body-secondary">
@@ -13,31 +16,40 @@
         </p>
       </div>
 
-      <NuxtLink
+      <UButton
         to="/create-blog"
-        class="inline-flex h-14 items-center justify-center gap-2 rounded-[20px] bg-[var(--color-primary-500)] px-6 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 lg:min-w-[190px]"
+        color="primary"
+        variant="solid"
+        size="xl"
+        class="h-14 rounded-[20px] px-6 text-[14px] font-extrabold shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 lg:min-w-[190px]"
       >
         <Icon name="i-ph-note-pencil-fill" class="h-5 w-5" />
         {{ $t("pages.blogsPage.createArticle") }}
-      </NuxtLink>
+      </UButton>
     </div>
 
-    <label class="relative mt-5 block">
+    <label class="relative mt-5 block" for="blogs-search-input">
+      <span class="sr-only">{{ $t("pages.blogsPage.searchLabel") }}</span>
       <Icon
         name="i-ph-magnifying-glass"
         class="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-tertiary)]"
       />
-      <input
-        :value="search"
-        class="h-16 w-full rounded-[22px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-14 pr-5 text-[15px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:font-medium placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-200)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]"
+      <UInput
+        id="blogs-search-input"
+        :model-value="search"
         :placeholder="$t('pages.blogsPage.searchPlaceholder')"
         type="search"
-        @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
-      >
+        autocomplete="off"
+        size="xl"
+        color="primary"
+        class="w-full"
+        :ui="searchInputUi"
+        @update:model-value="$emit('update:search', String($event ?? ''))"
+      />
     </label>
 
     <div class="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">
-      <div>
+      <div role="group" :aria-label="$t('pages.blogsPage.categoryFilterLabel')">
         <div class="flex items-center justify-between gap-3 px-1">
           <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
             {{ $t("pages.blogsPage.topic") }}
@@ -56,6 +68,8 @@
               ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
               : 'bg-[var(--color-secondary-100)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
             type="button"
+            :aria-label="category.label"
+            :aria-pressed="selectedCategory === category.value"
             @click="$emit('update:selectedCategory', category.value)"
           >
             <span class="inline-flex min-w-0 items-center gap-2 text-[13px] font-extrabold">
@@ -67,7 +81,7 @@
       </div>
 
       <div class="space-y-4">
-        <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3">
+        <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3" role="group" :aria-label="$t('pages.blogsPage.sortFilterLabel')">
           <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
             {{ $t("pages.blogsPage.sort") }}
           </p>
@@ -80,6 +94,8 @@
                 ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
                 : 'bg-white text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
               type="button"
+              :aria-label="option.label"
+              :aria-pressed="sortBy === option.value"
               @click="$emit('update:sortBy', option.value)"
             >
               <span class="inline-flex items-center gap-2">
@@ -101,6 +117,8 @@
             ? 'border-[var(--color-primary-200)] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]'
             : 'border-[var(--border-default)] bg-white text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]'"
           type="button"
+          :aria-label="$t('pages.blogsPage.mineToggleLabel')"
+          :aria-pressed="mineOnly"
           @click="$emit('update:mineOnly', !mineOnly)"
         >
           <span>
@@ -114,7 +132,11 @@
       </div>
     </div>
 
-    <div class="mt-5 flex flex-col gap-3 rounded-[24px] border border-[var(--border-default)] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      class="mt-5 flex flex-col gap-3 rounded-[24px] border border-[var(--border-default)] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+      role="status"
+      aria-live="polite"
+    >
       <div class="inline-flex items-center gap-2 text-[13px] font-bold text-[var(--text-secondary)]">
         <Icon name="i-ph-funnel-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
         {{ $t("pages.blogsPage.matchingArticles", { count: articleCount }) }}
@@ -152,6 +174,10 @@ defineEmits<{
   "update:sortBy": [value: string]
   "update:mineOnly": [value: boolean]
 }>()
+
+const searchInputUi = {
+  base: 'h-16 rounded-[22px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-14 pr-5 text-[15px] font-semibold text-[var(--text-primary)] transition placeholder:font-medium placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-200)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]',
+}
 
 const activeSummary = computed(() => {
   const category = props.categories.find(item => item.value === props.selectedCategory)?.label ?? t("pages.blogsPage.categoryAll")

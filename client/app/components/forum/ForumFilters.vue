@@ -1,31 +1,101 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-    <div class="grid gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
-      <label class="relative block">
-        <Icon name="i-ph-magnifying-glass-bold" class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-tertiary)]" />
-        <input
-          :value="search"
-          class="h-12 w-full rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-12 pr-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white"
-          :placeholder="t('pages.forumPage.searchPlaceholder')"
-          @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
-        >
-      </label>
+  <UCard
+    class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
+    :ui="{ body: 'p-5 sm:p-6' }"
+  >
+    <div class="space-y-5">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="max-w-[640px]">
+          <p class="text-label-secondary text-[var(--color-primary-600)]">
+            {{ t("pages.forumPage.filtersEyebrow") }}
+          </p>
+          <h2 class="mt-1 text-heading text-[var(--text-primary)]">
+            {{ t("pages.forumPage.filtersTitle") }}
+          </h2>
+          <p class="mt-1 text-body-secondary">
+            {{ t("pages.forumPage.filtersDescription") }}
+          </p>
+        </div>
 
-      <div class="flex flex-wrap gap-2">
-        <button
-          v-for="section in sections"
-          :key="section.value"
-          class="inline-flex h-11 items-center gap-2 rounded-[var(--radius-full)] px-4 text-[13px] font-extrabold transition"
-          :class="selectedSection === section.value ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]' : 'bg-[var(--bg-surface-hover)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)]'"
-          type="button"
-          @click="$emit('update:selectedSection', section.value)"
+        <div class="flex flex-wrap items-center gap-2">
+          <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
+            {{ t("pages.forumPage.resultMeta", { count: resultCount }) }}
+          </UBadge>
+          <UButton
+            v-if="canReset"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            class="rounded-full"
+            @click="emit('reset')"
+          >
+            <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-1.5 h-4 w-4" />
+            {{ t("pages.forumPage.resetFilters") }}
+          </UButton>
+        </div>
+      </div>
+
+      <UAlert
+        color="neutral"
+        variant="subtle"
+        icon="i-ph-faders-horizontal-bold"
+        :title="t('pages.forumPage.filterStatusTitle')"
+        :description="statusLabel"
+        class="rounded-[24px]"
+      />
+
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <UInput
+          v-model="searchModel"
+          :placeholder="t('pages.forumPage.searchPlaceholder')"
+          :aria-label="t('pages.forumPage.searchPlaceholder')"
+          icon="i-ph-magnifying-glass-bold"
+          size="xl"
+          class="flex-1"
+        />
+
+        <UButton
+          v-if="searchModel"
+          color="neutral"
+          variant="outline"
+          size="xl"
+          class="rounded-full"
+          :aria-label="t('pages.forumPage.clearSearch')"
+          @click="searchModel = ''"
         >
-          <Icon :name="messageText(section.icon)" class="h-4 w-4" />
-          {{ messageText(section.label) }}
-        </button>
+          <Icon name="i-ph-x-bold" class="h-4 w-4" />
+        </UButton>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center justify-between gap-3 px-1">
+          <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            {{ t("pages.forumPage.sectionsTitle") }}
+          </p>
+          <span class="text-[12px] font-bold text-[var(--text-tertiary)]">
+            {{ t("pages.forumPage.sectionCount", { count: Math.max(sections.length - 1, 0) }) }}
+          </span>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <UButton
+            v-for="section in sections"
+            :key="section.value"
+            :color="selectedSectionModel === section.value ? 'primary' : 'neutral'"
+            :variant="selectedSectionModel === section.value ? 'solid' : 'soft'"
+            size="md"
+            class="rounded-full px-4 text-[13px] font-bold"
+            type="button"
+            :aria-pressed="selectedSectionModel === section.value"
+            @click="selectedSectionModel = section.value"
+          >
+            <Icon :name="messageText(section.icon)" class="mr-2 h-4 w-4" />
+            <span>{{ messageText(section.label) }}</span>
+          </UButton>
+        </div>
       </div>
     </div>
-  </section>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -34,14 +104,22 @@ import type { ForumSection, ForumSectionKey } from "~/composables/useMockForumDa
 const { t, rt } = useI18n()
 
 defineProps<{
-  search: string
-  selectedSection: ForumSectionKey
   sections: ReadonlyArray<ForumSection>
+  resultCount: number
+  statusLabel: string
+  canReset?: boolean
 }>()
 
-defineEmits<{
-  "update:search": [value: string]
-  "update:selectedSection": [value: ForumSectionKey]
+const searchModel = defineModel<string>("search", {
+  default: "",
+})
+
+const selectedSectionModel = defineModel<ForumSectionKey>("selectedSection", {
+  default: "all",
+})
+
+const emit = defineEmits<{
+  reset: []
 }>()
 
 const messageText = (value: unknown) =>

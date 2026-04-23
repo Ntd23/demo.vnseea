@@ -85,11 +85,6 @@ import type { FundingCreatePayload } from "~/composables/useMockFundingData"
 const { t } = useI18n()
 const { fundingCategories } = useMockFundingData()
 
-useSeoMeta({
-  title: () => t("pages.createFundingPage.seoTitle"),
-  description: () => t("pages.createFundingPage.seoDescription"),
-})
-
 const createdCount = ref(0)
 
 const recordCreatedCampaign = (_payload: FundingCreatePayload) => {

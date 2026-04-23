@@ -1,125 +1,222 @@
 <template>
-  <Teleport to="body">
-    <div
-      v-if="open"
-      class="fixed inset-0 z-50 flex items-end justify-center bg-black/40 px-3 py-4 backdrop-blur-[2px] sm:items-center"
-      @click.self="$emit('close')"
-    >
-      <form
-        class="max-h-[92vh] w-full max-w-[720px] overflow-y-auto rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-xl)]"
-        @submit.prevent="submit"
-      >
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <p class="text-label-secondary text-[var(--color-primary-600)]">
-              {{ $t("pages.jobsPage.postEyebrow") }}
-            </p>
-            <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-              {{ $t("pages.jobsPage.postTitle") }}
-            </h2>
-            <p class="mt-1 text-body-secondary">
-              {{ $t("pages.jobsPage.postDescription") }}
-            </p>
-          </div>
-          <button
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] bg-[var(--color-secondary-100)] text-[var(--text-secondary)] transition hover:text-[var(--color-primary-600)]"
-            type="button"
-            @click="$emit('close')"
-          >
-            <Icon name="i-ph-x-bold" class="h-4 w-4" />
-          </button>
-        </div>
+  <FoundationModalShell
+    :open="open"
+    :title="$t('pages.jobsPage.postTitle')"
+    :description="$t('pages.jobsPage.postDescription')"
+    size="xl"
+    :status="submitStatus"
+    :status-title="statusTitle"
+    :status-description="statusDescription"
+    body-class="space-y-5"
+    @close="emit('close')"
+  >
+    <UForm :state="form" class="space-y-5" @submit="submit">
+      <div class="space-y-2">
+        <p class="text-label-secondary text-[var(--color-primary-600)]">
+          {{ $t("pages.jobsPage.postEyebrow") }}
+        </p>
+        <p class="text-body-secondary">
+          {{ $t("pages.jobsPage.postHelper") }}
+        </p>
+      </div>
 
-        <div class="mt-5 grid gap-4 sm:grid-cols-2">
-          <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.roleTitle") }}</span>
-            <input v-model="form.title" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.roleTitlePlaceholder')">
-          </label>
-          <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.company") }}</span>
-            <input v-model="form.company" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.companyPlaceholder')">
-          </label>
-          <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.category") }}</span>
-            <select v-model="form.category" class="job-input mt-2">
-              <option
-                v-for="category in categories.filter(item => item.value !== 'all')"
-                :key="category.value"
-                :value="category.value"
-              >
-                {{ category.label }}
-              </option>
-            </select>
-          </label>
-          <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.type") }}</span>
-            <select v-model="form.type" class="job-input mt-2">
-              <option
-                v-for="type in types.filter(item => item.value !== 'all')"
-                :key="type.value"
-                :value="type.value"
-              >
-                {{ type.label }}
-              </option>
-            </select>
-          </label>
-          <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.location") }}</span>
-            <select v-model="form.locationKey" class="job-input mt-2">
-              <option
-                v-for="location in locations.filter(item => item.value !== 'all')"
-                :key="location.value"
-                :value="location.value"
-              >
-                {{ location.label }}
-              </option>
-            </select>
-          </label>
-          <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.displayLocation") }}</span>
-            <input v-model="form.location" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.displayLocationPlaceholder')">
-          </label>
-          <label class="block sm:col-span-2">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.salary") }}</span>
-            <input v-model="form.salary" required class="job-input mt-2" :placeholder="$t('pages.jobsPage.salaryPlaceholder')">
-          </label>
-        </div>
-
-        <label class="mt-4 block">
-          <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.jobsPage.jobDescription") }}</span>
-          <textarea v-model="form.description" required class="job-input mt-2 min-h-[140px] resize-y py-3" :placeholder="$t('pages.jobsPage.jobDescriptionPlaceholder')" />
-        </label>
-
-        <div
-          v-if="created"
-          class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]"
+      <div class="grid gap-5 sm:grid-cols-2">
+        <UFormField
+          name="title"
+          :label="$t('pages.jobsPage.roleTitle')"
+          required
+          size="xl"
+          class="space-y-2"
+          :error="fieldErrors.title || undefined"
         >
-          {{ $t("pages.jobsPage.postSuccess") }}
-        </div>
+          <UInput
+            v-model="form.title"
+            size="xl"
+            color="primary"
+            class="w-full"
+            :disabled="isBusy"
+            :placeholder="$t('pages.jobsPage.roleTitlePlaceholder')"
+            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
+          />
+        </UFormField>
 
-        <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button
-            class="inline-flex h-11 items-center justify-center rounded-[18px] border border-[var(--border-default)] bg-white px-4 text-[13px] font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
-            type="button"
-            @click="$emit('close')"
-          >
-            {{ $t("pages.jobsPage.close") }}
-          </button>
-          <button
-            class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
-            type="submit"
-          >
-            <Icon name="i-ph-briefcase-fill" class="h-4 w-4" />
-            {{ $t("pages.jobsPage.postJob") }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </Teleport>
+        <UFormField
+          name="company"
+          :label="$t('pages.jobsPage.company')"
+          required
+          size="xl"
+          class="space-y-2"
+          :error="fieldErrors.company || undefined"
+        >
+          <UInput
+            v-model="form.company"
+            size="xl"
+            color="primary"
+            class="w-full"
+            :disabled="isBusy"
+            :placeholder="$t('pages.jobsPage.companyPlaceholder')"
+            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
+          />
+        </UFormField>
+
+        <UFormField
+          name="category"
+          :label="$t('pages.jobsPage.category')"
+          required
+          size="xl"
+          class="space-y-2"
+          :error="fieldErrors.category || undefined"
+        >
+          <USelect
+            v-model="form.category"
+            :items="categoryOptions"
+            value-key="value"
+            label-key="label"
+            size="xl"
+            color="primary"
+            class="w-full"
+            :disabled="isBusy"
+            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
+          />
+        </UFormField>
+
+        <UFormField
+          name="type"
+          :label="$t('pages.jobsPage.type')"
+          required
+          size="xl"
+          class="space-y-2"
+          :error="fieldErrors.type || undefined"
+        >
+          <USelect
+            v-model="form.type"
+            :items="typeOptions"
+            value-key="value"
+            label-key="label"
+            size="xl"
+            color="primary"
+            class="w-full"
+            :disabled="isBusy"
+            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
+          />
+        </UFormField>
+
+        <UFormField
+          name="locationKey"
+          :label="$t('pages.jobsPage.location')"
+          required
+          size="xl"
+          class="space-y-2"
+          :error="fieldErrors.locationKey || undefined"
+        >
+          <USelect
+            v-model="form.locationKey"
+            :items="locationOptions"
+            value-key="value"
+            label-key="label"
+            size="xl"
+            color="primary"
+            class="w-full"
+            :disabled="isBusy"
+            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
+          />
+        </UFormField>
+
+        <UFormField
+          name="location"
+          :label="$t('pages.jobsPage.displayLocation')"
+          required
+          size="xl"
+          class="space-y-2"
+          :error="fieldErrors.location || undefined"
+        >
+          <UInput
+            v-model="form.location"
+            size="xl"
+            color="primary"
+            class="w-full"
+            :disabled="isBusy"
+            :placeholder="$t('pages.jobsPage.displayLocationPlaceholder')"
+            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
+          />
+        </UFormField>
+      </div>
+
+      <UFormField
+        name="salary"
+        :label="$t('pages.jobsPage.salary')"
+        required
+        size="xl"
+        class="space-y-2"
+        :error="fieldErrors.salary || undefined"
+      >
+        <UInput
+          v-model="form.salary"
+          size="xl"
+          color="primary"
+          class="w-full"
+          :disabled="isBusy"
+          :placeholder="$t('pages.jobsPage.salaryPlaceholder')"
+          :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
+        />
+      </UFormField>
+
+      <UFormField
+        name="description"
+        :label="$t('pages.jobsPage.jobDescription')"
+        required
+        size="xl"
+        class="space-y-2"
+        :error="fieldErrors.description || undefined"
+      >
+        <UTextarea
+          v-model="form.description"
+          autoresize
+          :rows="6"
+          size="xl"
+          color="primary"
+          class="w-full"
+          :disabled="isBusy"
+          :placeholder="$t('pages.jobsPage.jobDescriptionPlaceholder')"
+          :ui="{ base: 'min-h-[180px] rounded-[20px] px-4 py-3 text-[14px] leading-7' }"
+        />
+      </UFormField>
+
+      <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <UButton
+          type="button"
+          color="neutral"
+          variant="outline"
+          size="lg"
+          class="justify-center rounded-full"
+          :disabled="isBusy"
+          @click="emit('close')"
+        >
+          {{ $t("pages.jobsPage.close") }}
+        </UButton>
+
+        <UButton
+          type="submit"
+          color="primary"
+          size="lg"
+          class="justify-center rounded-full"
+          :loading="isBusy"
+          :disabled="isBusy"
+        >
+          <Icon name="i-ph-briefcase-fill" class="mr-1.5 h-4 w-4" />
+          {{ $t("pages.jobsPage.postJob") }}
+        </UButton>
+      </div>
+    </UForm>
+  </FoundationModalShell>
 </template>
 
 <script setup lang="ts">
 import type { JobCategoryKey, JobLocationKey, JobOption, JobPostPayload, JobTypeKey } from "~/composables/useMockJobsData"
+
+type PostStatus = "idle" | "loading" | "success" | "error"
+
+type PostFormState = JobPostPayload
 
 const props = defineProps<{
   open: boolean
@@ -133,8 +230,22 @@ const emit = defineEmits<{
   create: [payload: JobPostPayload]
 }>()
 
-const created = ref(false)
-const form = reactive<JobPostPayload>({
+const { t } = useI18n()
+const toast = useToast()
+
+const categoryOptions = computed(() =>
+  props.categories.filter(item => item.value !== "all") as JobOption<JobCategoryKey>[],
+)
+
+const locationOptions = computed(() =>
+  props.locations.filter(item => item.value !== "all") as JobOption<Exclude<JobLocationKey, "all">>[],
+)
+
+const typeOptions = computed(() =>
+  props.types.filter(item => item.value !== "all") as JobOption<Exclude<JobTypeKey, "all">>[],
+)
+
+const form = reactive<PostFormState>({
   title: "",
   company: "",
   category: "engineering",
@@ -145,33 +256,138 @@ const form = reactive<JobPostPayload>({
   description: "",
 })
 
-watch(() => props.open, (open) => {
-  if (open) created.value = false
+const fieldErrors = reactive<Record<keyof PostFormState, string>>({
+  title: "",
+  company: "",
+  category: "",
+  locationKey: "",
+  location: "",
+  type: "",
+  salary: "",
+  description: "",
 })
 
-const submit = () => {
-  created.value = true
-  emit("create", { ...form })
+const submitStatus = ref<PostStatus>("idle")
+const isBusy = computed(() => submitStatus.value === "loading")
+
+const statusTitle = computed(() => {
+  if (submitStatus.value === "loading") return t("pages.jobsPage.postStatusLoadingTitle")
+  if (submitStatus.value === "success") return t("pages.jobsPage.postStatusSuccessTitle")
+  if (submitStatus.value === "error") return t("pages.jobsPage.postStatusErrorTitle")
+  return ""
+})
+
+const statusDescription = computed(() => {
+  if (submitStatus.value === "loading") return t("pages.jobsPage.postStatusLoadingDescription")
+  if (submitStatus.value === "success") return t("pages.jobsPage.postStatusSuccessDescription")
+  if (submitStatus.value === "error") return t("pages.jobsPage.postStatusErrorDescription")
+  return ""
+})
+
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      submitStatus.value = "idle"
+      clearErrors()
+      return
+    }
+
+    resetForm()
+    clearErrors()
+    submitStatus.value = "idle"
+  },
+)
+
+watch(
+  () => [form.title, form.company, form.category, form.locationKey, form.location, form.type, form.salary, form.description],
+  () => {
+    if (submitStatus.value !== "loading") {
+      submitStatus.value = "idle"
+    }
+
+    clearErrors()
+  },
+)
+
+async function submit() {
+  clearErrors()
+
+  if (form.title.trim().length < 4) {
+    fieldErrors.title = t("pages.jobsPage.roleTitleError")
+  }
+
+  if (form.company.trim().length < 2) {
+    fieldErrors.company = t("pages.jobsPage.companyError")
+  }
+
+  if (form.location.trim().length < 2) {
+    fieldErrors.location = t("pages.jobsPage.displayLocationError")
+  }
+
+  if (form.salary.trim().length < 3) {
+    fieldErrors.salary = t("pages.jobsPage.salaryError")
+  }
+
+  if (form.description.trim().length < 40) {
+    fieldErrors.description = t("pages.jobsPage.jobDescriptionError")
+  }
+
+  if (Object.values(fieldErrors).some(Boolean)) {
+    submitStatus.value = "error"
+    return
+  }
+
+  submitStatus.value = "loading"
+
+  await new Promise(resolve => setTimeout(resolve, 360))
+
+  emit("create", {
+    title: form.title.trim(),
+    company: form.company.trim(),
+    category: form.category,
+    locationKey: form.locationKey,
+    location: form.location.trim(),
+    type: form.type,
+    salary: form.salary.trim(),
+    description: form.description.trim(),
+  })
+
+  submitStatus.value = "success"
+
+  toast.add({
+    title: t("pages.jobsPage.postToastTitle"),
+    description: t("pages.jobsPage.postToastDescription", {
+      title: form.title.trim(),
+    }),
+    color: "success",
+    icon: "i-ph-check-circle-fill",
+  })
+
+  setTimeout(() => {
+    emit("close")
+  }, 220)
+}
+
+function clearErrors() {
+  fieldErrors.title = ""
+  fieldErrors.company = ""
+  fieldErrors.category = ""
+  fieldErrors.locationKey = ""
+  fieldErrors.location = ""
+  fieldErrors.type = ""
+  fieldErrors.salary = ""
+  fieldErrors.description = ""
+}
+
+function resetForm() {
+  form.title = ""
+  form.company = ""
+  form.category = categoryOptions.value[0]?.value ?? "engineering"
+  form.locationKey = locationOptions.value[0]?.value ?? "ho-chi-minh"
+  form.location = ""
+  form.type = typeOptions.value[0]?.value ?? "full-time"
+  form.salary = ""
+  form.description = ""
 }
 </script>
-
-<style scoped>
-.job-input {
-  width: 100%;
-  border: 1px solid var(--border-default);
-  border-radius: 18px;
-  background: var(--color-secondary-100);
-  padding: 0 14px;
-  min-height: 46px;
-  color: var(--text-primary);
-  font-size: 14px;
-  outline: none;
-  transition: all var(--duration-fast) var(--ease-default);
-}
-
-.job-input:focus {
-  border-color: var(--color-primary-200);
-  background: var(--bg-surface);
-  box-shadow: 0 0 0 4px var(--bg-surface-active);
-}
-</style>

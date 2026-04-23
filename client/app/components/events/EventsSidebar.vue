@@ -1,66 +1,95 @@
 <template>
   <aside class="space-y-4">
-    <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
-      <div class="flex items-center justify-between gap-3">
+    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+      <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-label-secondary text-[var(--color-primary-600)]">
             {{ $t("pages.eventsPage.latestSchedule") }}
           </p>
-          <h2 class="mt-1 text-title-primary">
+          <h2 class="mt-1 text-heading text-[var(--text-primary)]">
             {{ nextEvent?.title || $t("pages.eventsPage.noSchedule") }}
           </h2>
         </div>
-        <div class="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]">
-          <Icon name="i-ph-calendar-star-fill" class="h-6 w-6" />
-        </div>
-      </div>
-      <p class="mt-3 text-[13px] leading-6 text-[var(--text-secondary)]">
-        {{ nextEvent?.dateLabel }} · {{ nextEvent?.timeLabel }}
-      </p>
-      <NuxtLink
-        v-if="nextEvent"
-        :to="`/events/${nextEvent.id}`"
-        class="mt-4 inline-flex h-11 w-full items-center justify-center rounded-[18px] bg-[var(--color-primary-500)] text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
-      >
-        {{ $t("pages.eventsPage.viewDetail") }}
-      </NuxtLink>
-    </section>
 
-    <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
+        <UButton
+          v-if="hasActiveFilters"
+          color="neutral"
+          variant="outline"
+          size="sm"
+          class="rounded-full"
+          @click="emit('reset')"
+        >
+          {{ $t("pages.eventsPage.reset") }}
+        </UButton>
+      </div>
+
+      <UAlert
+        class="mt-4 rounded-[22px]"
+        color="neutral"
+        variant="subtle"
+        icon="i-ph-calendar-star-fill"
+        :title="$t('pages.eventsPage.status')"
+        :description="statusLabel"
+      />
+
+      <div class="mt-4 rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4">
+        <p class="text-[13px] font-semibold text-[var(--text-secondary)]">
+          {{ nextEvent?.dateLabel }}<span v-if="nextEvent"> · {{ nextEvent?.timeLabel }}</span>
+        </p>
+        <UButton
+          v-if="nextEvent"
+          :to="`/events/${nextEvent.id}`"
+          color="primary"
+          size="sm"
+          block
+          class="mt-4 rounded-full"
+        >
+          {{ $t("pages.eventsPage.viewDetail") }}
+        </UButton>
+      </div>
+    </UCard>
+
+    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
         {{ $t("pages.eventsPage.featuredCategories") }}
       </p>
+
       <div class="mt-4 space-y-2">
-        <button
+        <UButton
           v-for="category in categories.slice(1)"
           :key="category.value"
-          class="flex w-full items-center justify-between rounded-[18px] px-3 py-3 text-left transition"
-          :class="selectedCategory === category.value
-            ? 'bg-[var(--color-primary-50)] text-[var(--color-primary-600)]'
-            : 'bg-[var(--color-secondary-100)] text-[var(--text-secondary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
+          :color="selectedCategory === category.value ? 'primary' : 'neutral'"
+          :variant="selectedCategory === category.value ? 'solid' : 'soft'"
+          size="lg"
+          class="w-full justify-between rounded-[20px] px-3 py-3 text-left"
           type="button"
-          @click="$emit('selectCategory', category.value)"
+          @click="emit('selectCategory', category.value)"
         >
-          <span class="inline-flex items-center gap-2 text-[13px] font-bold">
-            <Icon :name="category.icon" class="h-4 w-4" />
-            {{ category.label }}
+          <span class="inline-flex min-w-0 items-center gap-2 text-[13px] font-bold">
+            <Icon :name="category.icon" class="h-4 w-4 shrink-0" />
+            <span class="truncate">{{ category.label }}</span>
           </span>
-          <span class="text-[12px] font-black">
-            {{ countByCategory(category.value) }}
-          </span>
-        </button>
+          <UBadge
+            :color="selectedCategory === category.value ? 'neutral' : 'primary'"
+            :variant="selectedCategory === category.value ? 'soft' : 'subtle'"
+            class="rounded-full px-2.5 py-1 text-[11px] font-bold"
+          >
+            {{ counts[category.value] ?? 0 }}
+          </UBadge>
+        </UButton>
       </div>
-    </section>
+    </UCard>
 
-    <section class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)]">
+    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <p class="text-label-secondary text-[var(--color-primary-600)]">
         {{ $t("pages.eventsPage.recentAttendees") }}
       </p>
+
       <div class="mt-4 space-y-3">
         <div
           v-for="attendee in recentAttendees"
           :key="attendee.id"
-          class="flex items-center gap-3"
+          class="flex items-center gap-3 rounded-[20px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3"
         >
           <div
             class="avatar-sm text-white"
@@ -78,22 +107,30 @@
           </div>
         </div>
       </div>
-    </section>
+    </UCard>
   </aside>
 </template>
 
 <script setup lang="ts">
-import type { EventAttendee, EventCategory, MockEvent } from "~/composables/useMockEventsData"
+import type {
+  EventAttendee,
+  EventCategory,
+  EventCategoryKey,
+  MockEvent,
+} from "~/composables/useMockEventsData"
 
 defineProps<{
   nextEvent?: MockEvent
   categories: EventCategory[]
-  selectedCategory: string
+  selectedCategory: EventCategoryKey
+  counts: Record<string, number>
   recentAttendees: EventAttendee[]
-  countByCategory: (category: string) => number
+  statusLabel: string
+  hasActiveFilters?: boolean
 }>()
 
-defineEmits<{
-  selectCategory: [value: string]
+const emit = defineEmits<{
+  selectCategory: [value: EventCategoryKey]
+  reset: []
 }>()
 </script>

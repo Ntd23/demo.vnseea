@@ -1,65 +1,114 @@
 <template>
-  <section class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 text-white shadow-2xl group/hero">
-    <!-- Premium Decorations -->
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.1),transparent_40%)]" />
-    <div class="button-shadow-sm absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+  <section class="relative overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,var(--color-primary-700)_0%,var(--color-primary-500)_58%,var(--color-accent-500)_132%)] px-5 pb-8 pt-7 text-white shadow-[var(--shadow-xl)] sm:px-7 lg:px-8">
+    <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-20" />
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.16)_100%)]" />
 
-    <div class="relative z-10 flex flex-col gap-10 px-8 py-12 sm:px-12 lg:px-16 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-[780px] space-y-6">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-300/80 pl-1">
+    <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+      <div class="max-w-[780px]">
+        <p class="text-label-secondary text-white/72">
           {{ $t("pages.jobsPage.heroEyebrow") }}
         </p>
-        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight text-white">
+        <h1 class="mt-4 text-display text-[2.2rem] leading-[0.95] text-white sm:text-[3rem]">
           {{ $t("pages.jobsPage.heroTitle") }}
         </h1>
-        <p class="text-base font-medium leading-relaxed text-white/78 sm:text-lg pl-0.5 max-w-2xl">
+        <p class="mt-4 max-w-[680px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
           {{ $t("pages.jobsPage.heroDescription") }}
         </p>
 
-        <div class="flex flex-wrap items-center gap-4 pt-4">
+        <div class="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <UButton
-            size="xl"
-            class="h-14 rounded-2xl bg-white text-primary-950 hover:bg-primary-50 font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-white/10 transition-all active:scale-95 px-10"
+            type="button"
+            color="neutral"
+            size="lg"
+            class="justify-center rounded-full bg-white text-[var(--color-primary-600)]"
             @click="$emit('openPost')"
           >
-            <template #leading>
-              <Icon name="i-ph-briefcase-duotone" class="h-5 w-5" />
-            </template>
+            <Icon name="i-ph-briefcase-fill" class="mr-1.5 h-4 w-4" />
             {{ $t("pages.jobsPage.postJob") }}
           </UButton>
 
           <UButton
-            variant="soft"
-            size="xl"
-            class="h-14 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-xl transition-all active:scale-95 px-8"
+            type="button"
+            color="neutral"
+            :variant="savedOnly ? 'solid' : 'outline'"
+            size="lg"
+            class="justify-center rounded-full border-white/25 text-white"
             @click="$emit('toggleSaved')"
           >
-            <template #leading>
-              <Icon :name="savedOnly ? 'i-ph-bookmark-simple-fill' : 'i-ph-bookmark-simple-duotone'" class="h-5 w-5" />
-            </template>
-            {{ $t("pages.jobsPage.savedJobs") }}
+            <Icon name="i-ph-bookmark-simple-fill" class="mr-1.5 h-4 w-4" />
+            {{ savedOnly ? $t("pages.jobsPage.showAllJobs") : $t("pages.jobsPage.savedJobs") }}
           </UButton>
 
-          <div class="inline-flex h-14 items-center gap-3 rounded-2xl border border-white/5 bg-white/5 px-6 text-[11px] font-black uppercase tracking-widest text-white/90 backdrop-blur-md">
-            <Icon name="i-ph-list-magnifying-glass-duotone" class="h-5 w-5 text-primary-300" />
+          <UButton
+            v-if="hasActiveFilters"
+            type="button"
+            color="neutral"
+            variant="outline"
+            size="lg"
+            class="justify-center rounded-full border-white/25 text-white"
+            @click="$emit('reset')"
+          >
+            <Icon name="i-ph-arrow-counter-clockwise" class="mr-1.5 h-4 w-4" />
+            {{ $t("pages.jobsPage.reset") }}
+          </UButton>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-4 py-2 text-[12px] font-semibold text-white">
             {{ $t("pages.jobsPage.jobCount", { count: jobCount }) }}
-          </div>
+          </UBadge>
+
+          <UBadge
+            v-if="searchTerm"
+            color="neutral"
+            variant="soft"
+            class="rounded-full bg-white/12 px-4 py-2 text-[12px] font-semibold text-white"
+          >
+            {{ $t("pages.jobsPage.heroSearchChip", { query: searchTerm }) }}
+          </UBadge>
+
+          <UBadge
+            v-if="activeCategoryLabel"
+            color="neutral"
+            variant="soft"
+            class="rounded-full bg-white/12 px-4 py-2 text-[12px] font-semibold text-white"
+          >
+            {{ activeCategoryLabel }}
+          </UBadge>
+
+          <UBadge
+            v-if="selectedJobTitle"
+            color="neutral"
+            variant="soft"
+            class="rounded-full bg-white/12 px-4 py-2 text-[12px] font-semibold text-white"
+          >
+            {{ $t("pages.jobsPage.heroSelectedJob", { title: selectedJobTitle }) }}
+          </UBadge>
+        </div>
+
+        <div class="mt-5 rounded-[24px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-[6px]">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-white/62">
+            {{ $t("pages.jobsPage.filterStatusTitle") }}
+          </p>
+          <p class="mt-2 text-sm leading-6 text-white/88">
+            {{ statusLabel }}
+          </p>
         </div>
       </div>
 
-      <div class="grid gap-4 sm:grid-cols-3 xl:w-[420px] xl:grid-cols-1">
+      <div class="grid gap-3 sm:grid-cols-3 xl:w-[430px] xl:grid-cols-1">
         <div
           v-for="item in stats"
           :key="item.label"
-          class="group/stat rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/10"
+          class="rounded-[var(--radius-xl)] border border-white/15 bg-white/10 p-4 backdrop-blur-[6px]"
         >
-          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
             {{ item.label }}
           </p>
-          <p class="mt-4 text-4xl font-black text-white leading-none tracking-tight">
+          <p class="mt-2 text-[1.6rem] font-black leading-none text-white">
             {{ item.value }}
           </p>
-          <p class="mt-2 text-[10px] font-bold text-white/40 group-hover/stat:text-white/60">
+          <p class="mt-1 text-[13px] leading-5 text-white/74">
             {{ item.description }}
           </p>
         </div>
@@ -69,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+withDefaults(defineProps<{
   jobCount: number
   savedOnly: boolean
   stats: ReadonlyArray<{
@@ -77,10 +126,21 @@ defineProps<{
     value: string | number
     description: string
   }>
-}>()
+  statusLabel: string
+  hasActiveFilters?: boolean
+  searchTerm?: string
+  activeCategoryLabel?: string
+  selectedJobTitle?: string
+}>(), {
+  hasActiveFilters: false,
+  searchTerm: "",
+  activeCategoryLabel: "",
+  selectedJobTitle: "",
+})
 
 defineEmits<{
   openPost: []
   toggleSaved: []
+  reset: []
 }>()
 </script>

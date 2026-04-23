@@ -1,38 +1,34 @@
 <template>
-  <section class="surface-card p-6 ring-1 ring-secondary-100 shadow-xl relative overflow-hidden">
-    <!-- Visual Decor -->
-    <div class="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-
-    <div class="relative z-10 flex items-start justify-between gap-4 mb-8">
-      <div class="space-y-1.5">
-        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+  <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
           {{ compact ? t("pages.pageDetailPage.aboutCompactEyebrow") : t("pages.pageDetailPage.aboutEyebrow") }}
         </p>
-        <h3 class="text-2xl font-black tracking-tight text-secondary-900">
-          {{ compact ? t("pages.pageDetailPage.aboutCompactTitle") : page.name }}
+        <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
+          {{ compact ? t("pages.pageDetailPage.aboutCompactTitle") : pageName }}
         </h3>
       </div>
 
-      <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm transition-transform duration-500 hover:scale-110">
-        <Icon :name="compact ? 'i-ph-info-duotone' : 'i-ph-megaphone-simple-duotone'" class="h-7 w-7" />
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[#eef3ff] text-[#0000ff]">
+        <Icon :name="compact ? 'i-ph-info-bold' : 'i-ph-megaphone-simple-bold'" class="h-5 w-5" />
       </div>
     </div>
 
-    <p class="relative z-10 text-xs font-medium leading-relaxed text-secondary-600 mb-6 px-1">
-      {{ page.summary }}
+    <p class="mt-4 text-[14px] leading-7 text-slate-600">
+      {{ pageSummary }}
     </p>
 
-    <!-- Detail Grid -->
-    <div class="relative z-10 grid gap-4 sm:grid-cols-2 mb-8">
-      <div class="rounded-2xl bg-secondary-50/50 p-5 ring-1 ring-secondary-100/50 transition-all hover:bg-white hover:ring-primary-100/50 group/item">
-        <p class="text-[9px] font-black uppercase tracking-widest text-primary-500 mb-2">{{ t("pages.pageDetailPage.categoryTitle") }}</p>
-        <p class="text-[11px] font-black uppercase tracking-widest text-secondary-900 leading-none truncate">{{ categoryLabel }}</p>
-        <p class="mt-2.5 text-[10px] font-medium leading-relaxed text-secondary-400 group-hover/item:text-secondary-500 truncate">{{ page.ownerLabel }}</p>
+    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+      <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.categoryTitle") }}</p>
+        <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ categoryLabel }}</p>
+        <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ ownerLabel }}</p>
       </div>
-      <div class="rounded-2xl bg-secondary-50/50 p-5 ring-1 ring-secondary-100/50 transition-all hover:bg-white hover:ring-primary-100/50 group/item">
-        <p class="text-[9px] font-black uppercase tracking-widest text-primary-500 mb-2">{{ t("pages.pageDetailPage.interactionTitle") }}</p>
-        <p class="text-[11px] font-black uppercase tracking-widest text-secondary-900 leading-none truncate">{{ page.responseLabel }}</p>
-        <p class="mt-2.5 text-[10px] font-medium leading-relaxed text-secondary-400 group-hover/item:text-secondary-500 truncate">
+      <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ t("pages.pageDetailPage.interactionTitle") }}</p>
+        <p class="mt-1 text-[13px] font-semibold text-[#243b63]">{{ responseLabel }}</p>
+        <p class="mt-1 text-[12px] leading-5 text-slate-500">
           {{
             [
               showFollowerCount ? followerCountLabel : "",
@@ -43,41 +39,45 @@
       </div>
     </div>
 
-    <!-- Info Rows -->
-    <div class="relative z-10 space-y-4 pt-2 pb-6 border-b border-secondary-50 px-1">
-      <div v-if="page.locationLabel" class="flex items-center gap-3 group">
-        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary-50 text-primary-600 ring-1 ring-secondary-100/50">
-          <Icon name="i-ph-map-pin-duotone" class="h-4 w-4" />
-        </span>
-        <span class="text-[11px] font-bold uppercase tracking-widest text-secondary-500 group-hover:text-secondary-900 transition-colors">{{ page.locationLabel }}</span>
+    <div class="mt-4 space-y-2 text-[13px] text-slate-500">
+      <div v-if="page.locationLabel" class="flex items-start gap-2">
+        <Icon name="i-ph-map-pin-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <span>{{ locationLabel }}</span>
       </div>
-      <div v-if="page.website" class="flex items-center gap-3 group">
-        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary-50 text-primary-600 ring-1 ring-secondary-100/50">
-          <Icon name="i-ph-link-simple-duotone" class="h-4 w-4" />
-        </span>
-        <span class="text-[11px] font-bold uppercase tracking-widest text-secondary-500 group-hover:text-secondary-900 transition-colors">{{ page.website }}</span>
+      <div v-if="page.website" class="flex items-start gap-2">
+        <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <a
+          :href="websiteHref"
+          class="break-all text-[#1d4ed8] underline decoration-[#bfdbfe] underline-offset-4 transition hover:text-[#0000ff]"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          {{ page.website }}
+        </a>
       </div>
-      <div v-if="page.foundedLabel" class="flex items-center gap-3 group">
-        <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-secondary-50 text-primary-600 ring-1 ring-secondary-100/50">
-          <Icon name="i-ph-calendar-blank-duotone" class="h-4 w-4" />
-        </span>
-        <span class="text-[11px] font-bold uppercase tracking-widest text-secondary-500 group-hover:text-secondary-900 transition-colors truncate">{{ page.foundedLabel }}</span>
+      <div v-if="page.foundedLabel" class="flex items-start gap-2">
+        <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <span>{{ foundedLabel }}</span>
+      </div>
+      <div v-if="showFollowerCount" class="flex items-start gap-2">
+        <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
+        <span>{{ followerCountLabel }}</span>
       </div>
     </div>
 
-    <!-- Topics Content -->
-    <div v-if="!compact" class="relative z-10 mt-6 space-y-4">
-      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 px-1">
+    <div v-if="!compact" class="mt-5">
+      <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
         {{ t("pages.pageDetailPage.mainTopicsTitle") }}
       </p>
-      <div class="flex flex-wrap gap-2">
+      <div class="mt-3 flex flex-wrap gap-2">
         <UBadge
           v-for="tag in page.tags"
           :key="tag"
+          color="neutral"
           variant="soft"
-          class="rounded-lg font-black text-[10px] uppercase tracking-widest px-3 py-1.5 bg-primary-50 text-primary-600 ring-1 ring-primary-100/50 hover:bg-primary-600 hover:text-white transition-all cursor-default"
+          class="rounded-full px-3 py-1.5 text-[12px] font-semibold text-[#243b63]"
         >
-          #{{ tag }}
+          #{{ translateText(tag) }}
         </UBadge>
       </div>
     </div>
@@ -88,8 +88,9 @@
 import type { CommunityPageRecord } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   page: CommunityPageRecord
   categoryLabel: string
   followerCountLabel: string
@@ -101,5 +102,34 @@ withDefaults(defineProps<{
   compact: false,
   showFollowerCount: true,
   showLikeCount: true,
+})
+
+const pageSummary = computed(() =>
+  translateText(props.page.summary),
+)
+
+const pageName = computed(() =>
+  translateText(props.page.name),
+)
+
+const ownerLabel = computed(() =>
+  translateText(props.page.ownerLabel),
+)
+
+const responseLabel = computed(() =>
+  translateText(props.page.responseLabel),
+)
+
+const locationLabel = computed(() =>
+  translateText(props.page.locationLabel),
+)
+
+const foundedLabel = computed(() =>
+  translateText(props.page.foundedLabel),
+)
+
+const websiteHref = computed(() => {
+  if (!props.page.website) return "#"
+  return props.page.website.startsWith("http") ? props.page.website : `https://${props.page.website}`
 })
 </script>

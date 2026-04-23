@@ -211,11 +211,6 @@ type BlogCategoryValue =
 
 const { t } = useI18n()
 
-useSeoMeta({
-  title: () => t("pages.createBlogPage.seoTitle"),
-  description: () => t("pages.createBlogPage.seoDescription"),
-})
-
 const title = ref("")
 const content = ref("")
 const category = ref<BlogCategoryValue>("business")

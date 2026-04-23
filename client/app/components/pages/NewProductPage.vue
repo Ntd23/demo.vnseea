@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-10 pb-28 px-4 sm:px-6">
+  <div class="space-y-5 pb-10">
     <ProductHeroBanner
       variant="create"
       :badge="$t('pages.newProductPage.badge')"
@@ -10,52 +10,31 @@
       @secondary-action="quickFillDemo"
     />
 
-    <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
-      <section class="lg:col-span-8 space-y-10">
-        <!-- Completion Summary Card -->
-        <div class="surface-card p-8 sm:p-10 space-y-8 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/summary">
-          <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/summary:opacity-100 transition-opacity duration-1000" />
-          
-          <div class="relative z-10 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
-            <div class="space-y-3">
-              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.06fr)_360px]">
+      <section class="space-y-5">
+        <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-4 sm:p-5' }">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
                 {{ $t("pages.productEditor.editSectionEyebrow") }}
               </p>
-              <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
+              <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
                 {{ $t("pages.newProductPage.sectionTitle") }}
               </h2>
-              <p class="text-base font-medium leading-relaxed text-secondary-500 max-w-[520px] italic">
-                "{{ $t("pages.newProductPage.sectionDescription") }}"
+              <p class="mt-1 text-[14px] leading-6 text-slate-500">
+                {{ $t("pages.newProductPage.sectionDescription") }}
               </p>
             </div>
 
-            <UBadge
-              variant="soft"
-              size="lg"
-              class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm"
-            >
-              <template #leading>
-                <Icon name="i-ph-seal-check-duotone" class="h-5 w-5 mr-3" />
-              </template>
+            <UBadge color="primary" variant="subtle" class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-semibold">
+              <Icon name="i-ph-seal-check-fill" class="h-4 w-4 text-[#0000ff]" />
               {{ completionText }}
             </UBadge>
           </div>
-          
-          <div class="relative z-10 space-y-4">
-            <div class="flex justify-between text-[11px] font-black text-secondary-400 uppercase tracking-[0.2em] px-1">
-              <span>{{ $t('pages.productEditor.completionLabel') || 'Độ hoàn thiện' }}</span>
-              <span class="text-primary-600">{{ Math.round(completionPercent) }}%</span>
-            </div>
-            <div class="h-3 w-full rounded-full bg-secondary-50 ring-1 ring-secondary-100 overflow-hidden shadow-inner">
-              <div 
-                class="h-full bg-primary-500 transition-all duration-1000 shadow-[0_0_12px_rgba(var(--color-primary-500-rgb),0.5)]" 
-                :style="{ width: `${completionPercent}%` }" 
-              />
-            </div>
-          </div>
-        </div>
+          <UProgress :model-value="completionPercent" color="primary" class="mt-4" />
+        </UCard>
 
-        <UForm :state="draft.fields" class="space-y-10">
+        <UForm :state="draft.fields" class="space-y-5">
           <ProductEditorFields
             v-model:title="draft.fields.title"
             v-model:price="draft.fields.price"
@@ -65,7 +44,7 @@
             v-model:location="draft.fields.location"
             v-model:currency="draft.fields.currency"
             v-model:stock="draft.fields.stock"
-            :description-label="$t('pages.productEditor.descriptionLabel') || 'Sự mô tả'"
+            description-label="Sự mô tả"
             :category-options="categoryOptions"
             :condition-options="conditionOptions"
             :currency-options="currencyOptions"
@@ -82,14 +61,13 @@
 
         <FormsSubmitBar
           :hint="saveHint"
-          :cta="$t('pages.newProductPage.submitCta') || 'Đăng sản phẩm'"
-          class="rounded-[2.5rem] p-4 bg-white/90 backdrop-blur-3xl ring-1 ring-secondary-200/50 shadow-[0_-32px_64px_-16px_rgba(0,0,0,0.1)] transition-all hover:shadow-[0_-48px_80px_-24px_rgba(0,0,0,0.15)]"
+          cta="Đăng sản phẩm"
           @save="saveDraft"
           @submit="submitMock"
         />
       </section>
 
-      <aside class="lg:col-span-4 space-y-8">
+      <aside class="space-y-5">
         <ProductPreviewCard
           :preview-background="previewBackground"
           :preview-icon="previewIcon"
@@ -97,20 +75,23 @@
           :condition-label="previewConditionLabel"
           :currency-label="previewCurrencyLabel"
           :title="draft.fields.title"
-          :empty-title="$t('pages.newProductPage.emptyPreviewTitle') || 'Tên sản phẩm của bạn sẽ hiển thị ở đây'"
+          empty-title="Tên sản phẩm của bạn sẽ hiển thị ở đây"
           :description="previewDescription"
           :price="previewPrice"
           :stock-label="stockLabel"
           :location="draft.fields.location"
           :image-count="imageCount"
-          leading-icon="i-ph-chat-circle-text"
-          trailing-icon="i-ph-shopping-cart-simple"
+          leading-icon="i-ph-chat-circle-text-fill"
+          trailing-icon="i-ph-shopping-cart-simple-fill"
           :status-label="$t('pages.newProductPage.statusReady')"
         />
 
         <ProductChecklistCard :items="checklistItems" />
 
-        <ProductTipsCard :tips="sellingTips" />
+        <ProductTipsCard
+          :title="$t('pages.newProductPage.tipsTitle')"
+          :items="sellingTips"
+        />
       </aside>
     </div>
   </div>
@@ -200,10 +181,16 @@ const heroStats = computed<ProductHeroStat[]>(() => [
   },
 ])
 
-const previewBackground = computed(() => categoryMeta[draft.value.fields.category].background)
-const previewIcon = computed(() => categoryMeta[draft.value.fields.category].icon)
-const previewCategoryLabel = computed(() => categoryMeta[draft.value.fields.category].label)
-const previewConditionLabel = computed(() => conditionMap[draft.value.fields.condition])
+const activeCategoryMeta = computed(() =>
+  categoryMeta.value[draft.value.fields.category] ?? categoryMeta.value.vehicles,
+)
+
+const previewBackground = computed(() => activeCategoryMeta.value.background)
+const previewIcon = computed(() => activeCategoryMeta.value.icon)
+const previewCategoryLabel = computed(() => activeCategoryMeta.value.label)
+const previewConditionLabel = computed(() =>
+  conditionMap.value[draft.value.fields.condition] ?? conditionMap.value.new,
+)
 const previewCurrencyLabel = computed(() => currencyMeta[draft.value.fields.currency].label)
 const previewDescription = computed(() =>
   draft.value.fields.description.trim()
@@ -229,27 +216,43 @@ const saveHint = computed(() =>
 
 const checklistItems = computed<ProductChecklistItem[]>(() => [
   {
-    label: t('pages.productEditor.checkTitlePrice') || "Tên và giá bán",
+    label: "Tên và giá bán",
+    description: "Điền đủ tên sản phẩm và giá bán để card hiển thị đầy đủ.",
     done: draft.value.fields.title.trim().length > 0 && Number(draft.value.fields.price) > 0,
   },
   {
-    label: t('pages.productEditor.checkDescription') || "Mô tả rõ ràng",
+    label: "Mô tả rõ ràng",
+    description: "Nội dung nên đủ dài để người mua hiểu nhanh sản phẩm.",
     done: draft.value.fields.description.trim().length >= 20,
   },
   {
-    label: t('pages.productEditor.checkClassification') || "Phân loại",
+    label: "Phân loại",
+    description: "Chọn loại, loại hình và tiền tệ đúng với tin đăng.",
     done: Boolean(draft.value.fields.category && draft.value.fields.condition && draft.value.fields.currency),
   },
   {
-    label: t('pages.productEditor.checkLocationStock') || "Địa điểm, tồn kho và ảnh",
+    label: "Địa điểm, tồn kho và ảnh",
+    description: "Hoàn thiện khu vực, số lượng còn lại và ít nhất một ảnh local.",
     done: draft.value.fields.location.trim().length > 0 && Number(draft.value.fields.stock) > 0 && imageCount.value > 0,
   },
 ])
 
-const sellingTips = computed<string[]>(() => [
-  t("pages.newProductPage.tipNameDescription"),
-  t("pages.newProductPage.tipPriceDescription"),
-  "Uploader local đã sẵn để kiểm tra preview trước khi nối upload thật.",
+const sellingTips = computed<ProductTipItem[]>(() => [
+  {
+    title: t("pages.newProductPage.tipName"),
+    description: t("pages.newProductPage.tipNameDescription"),
+    icon: "i-ph-text-t-fill",
+  },
+  {
+    title: t("pages.newProductPage.tipPrice"),
+    description: t("pages.newProductPage.tipPriceDescription"),
+    icon: "i-ph-currency-circle-dollar-fill",
+  },
+  {
+    title: t("pages.newProductPage.tipImage"),
+    description: t("pages.newProductPage.tipImageDescription"),
+    icon: "i-ph-image-square-fill",
+  },
 ])
 
 const quickFillDemo = () => {

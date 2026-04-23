@@ -1,5 +1,8 @@
 <template>
-  <section class="relative overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-white p-5 shadow-[0_18px_40px_rgba(15,35,110,0.08)] sm:p-6">
+  <section
+    class="relative overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-white p-5 shadow-[0_18px_40px_rgba(15,35,110,0.08)] sm:p-6"
+    aria-labelledby="checkout-summary-title"
+  >
     <div class="pointer-events-none absolute bottom-[-88px] left-[-42px] h-[250px] w-[250px] rounded-full border-[18px] border-[#cbeed1]/40" />
     <div class="pointer-events-none absolute bottom-[-126px] left-[112px] h-[220px] w-[220px] rounded-full bg-[#e4f5e7]/75" />
 
@@ -11,7 +14,7 @@
           </div>
 
           <div>
-            <h2 class="text-[2rem] font-black tracking-[-0.05em] text-[#2f3542]">
+            <h2 id="checkout-summary-title" class="text-[2rem] font-black tracking-[-0.05em] text-[#2f3542]">
               {{ $t("checkout.summary.title") }}
             </h2>
             <p class="text-[15px] text-slate-500">
@@ -20,16 +23,60 @@
           </div>
         </div>
 
-        <NuxtLink
+        <UButton
           to="/products"
-          class="inline-flex items-center gap-2 self-start text-[15px] font-medium text-slate-500 transition hover:text-[#243b63]"
+          color="neutral"
+          variant="outline"
+          leading-icon="i-ph-arrow-left"
+          class="self-start rounded-full"
         >
-          <Icon name="i-ph-arrow-left" class="h-4 w-4" />
           {{ $t("checkout.summary.backToStore") }}
-        </NuxtLink>
+        </UButton>
       </div>
 
+      <UAlert
+        v-if="statusAlert"
+        :color="statusAlert.color"
+        variant="subtle"
+        :icon="statusAlert.icon"
+        :title="statusAlert.title"
+        :description="statusAlert.description"
+        class="mt-6 rounded-[20px]"
+        aria-live="polite"
+      />
+
       <div v-if="items.length" class="mt-8 space-y-7">
+        <section class="grid gap-3 sm:grid-cols-3" aria-live="polite">
+          <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              {{ $t("checkout.summary.cartStatusLabel") }}
+            </p>
+            <p class="mt-1 text-[18px] font-black text-[#243b63]">
+              {{ itemLabel }}
+            </p>
+          </div>
+
+          <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              {{ $t("checkout.summary.addressStatusLabel") }}
+            </p>
+            <p class="mt-1 text-[18px] font-black text-[#243b63]">
+              {{ addressReady ? $t("checkout.summary.addressReady") : $t("checkout.summary.addressMissing") }}
+            </p>
+          </div>
+
+          <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              {{ $t("checkout.summary.walletStatusLabel") }}
+            </p>
+            <p class="mt-1 text-[18px] font-black text-[#243b63]">
+              {{ walletShortage > 0
+                ? $t("checkout.summary.walletShortage", { amount: formatVnd(walletShortage) })
+                : $t("checkout.summary.walletReady") }}
+            </p>
+          </div>
+        </section>
+
         <div class="flex flex-wrap gap-6">
           <article
             v-for="item in items"
@@ -43,17 +90,24 @@
               />
               <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_28%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.2)_100%)]" />
 
-              <div class="absolute left-3 top-3 rounded-full bg-black/45 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-[5px]">
+              <UBadge
+                color="neutral"
+                variant="soft"
+                class="absolute left-3 top-3 rounded-full bg-black/45 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-[5px]"
+              >
                 {{ $t("checkout.summary.marketplace") }}
-              </div>
+              </UBadge>
 
-              <button
-                class="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-full bg-black/58 text-white backdrop-blur-[6px] transition hover:bg-black/70"
-                type="button"
+              <UButton
+                color="neutral"
+                variant="solid"
+                square
+                class="absolute right-3 top-3 h-11 w-11 rounded-full bg-black/58 text-white backdrop-blur-[6px] transition hover:bg-black/70"
+                :aria-label="$t('checkout.summary.removeItemAria', { name: item.name })"
                 @click="emit('removeItem', item.id)"
               >
                 <Icon name="i-ph-x-bold" class="h-5 w-5" />
-              </button>
+              </UButton>
 
               <div class="absolute bottom-3 right-3 rounded-full bg-[#111827]/85 px-4 py-2 text-[13px] font-black text-white shadow-[0_12px_24px_rgba(17,24,39,0.2)]">
                 {{ formatVnd(item.price) }}
@@ -68,43 +122,42 @@
               <div class="flex items-center gap-3 text-[1rem] font-black text-[#2f3542]">
                 <span>{{ $t("checkout.summary.qty") }}</span>
 
-                <button
-                  class="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#eef0f3] text-[#2f3542] transition hover:bg-[#e5e7eb]"
-                  type="button"
+                <UButton
+                  color="neutral"
+                  variant="outline"
+                  square
+                  class="h-10 w-10 rounded-[14px]"
+                  :disabled="item.quantity <= 1 || isBusy"
+                  :aria-label="$t('checkout.summary.decreaseQuantityAria', { name: item.name })"
                   @click="emit('decreaseQuantity', item.id)"
                 >
                   <Icon name="i-ph-minus-bold" class="h-4 w-4" />
-                </button>
+                </UButton>
 
-                <span class="min-w-[18px] text-center text-[1.15rem]">
+                <span
+                  class="min-w-[22px] text-center text-[1.15rem]"
+                  :aria-label="$t('checkout.summary.quantityValue', { count: item.quantity })"
+                >
                   {{ item.quantity }}
                 </span>
 
-                <button
-                  class="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[#eef0f3] text-[#2f3542] transition hover:bg-[#e5e7eb]"
-                  type="button"
+                <UButton
+                  color="neutral"
+                  variant="outline"
+                  square
+                  class="h-10 w-10 rounded-[14px]"
+                  :disabled="isBusy"
+                  :aria-label="$t('checkout.summary.increaseQuantityAria', { name: item.name })"
                   @click="emit('increaseQuantity', item.id)"
                 >
                   <Icon name="i-ph-plus-bold" class="h-4 w-4" />
-                </button>
+                </UButton>
               </div>
             </div>
           </article>
         </div>
 
         <div class="h-px bg-[#e3e8f3]" />
-
-        <div
-          v-if="walletShortage > 0"
-          class="rounded-[20px] border border-[#fecaca] bg-[#fff1f1] px-4 py-4 text-[#ef4444]"
-        >
-          <div class="flex items-start gap-3">
-            <Icon name="i-ph-warning-circle-fill" class="mt-0.5 h-5 w-5 shrink-0" />
-            <p class="text-[14px] font-semibold leading-6">
-              {{ $t("checkout.summary.insufficientBalance") }}
-            </p>
-          </div>
-        </div>
 
         <section class="relative overflow-hidden rounded-[26px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf7_100%)] px-5 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
           <div class="pointer-events-none absolute bottom-[-70px] left-[-40px] h-[180px] w-[180px] rounded-full border-[14px] border-[#bfe8c8]/45" />
@@ -144,15 +197,18 @@
                 </p>
               </div>
 
-              <button
-                class="inline-flex h-14 items-center justify-center rounded-[18px] px-6 text-[15px] font-extrabold shadow-[0_14px_28px_rgba(143,212,154,0.24)] transition hover:-translate-y-0.5"
-                :class="walletShortage > 0
-                  ? 'bg-[#fde7b2] text-[#9a5b00] shadow-[0_14px_28px_rgba(245,158,11,0.18)]'
-                  : 'bg-[#9ad89f] text-[#1f4d26]'"
-                type="button"
+              <UButton
+                color="primary"
+                variant="solid"
+                :loading="isBusy"
+                loading-icon="i-lucide-loader-2"
+                :disabled="ctaDisabled"
+                class="h-14 rounded-[18px] px-6 text-[15px] font-extrabold shadow-[0_14px_28px_rgba(0,0,255,0.18)]"
+                :icon="walletShortage > 0 ? 'i-ph-wallet-fill' : 'i-ph-credit-card-fill'"
+                @click="emit('submit')"
               >
                 {{ ctaLabel }}
-              </button>
+              </UButton>
             </div>
           </div>
         </section>
@@ -171,12 +227,14 @@
         <p class="mt-2 text-[14px] leading-7 text-slate-500">
           {{ $t("checkout.summary.emptyCartHint") }}
         </p>
-        <NuxtLink
+        <UButton
           to="/products"
-          class="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5"
+          color="primary"
+          variant="solid"
+          class="mt-5 rounded-full px-5 text-[14px] font-extrabold shadow-[0_10px_22px_rgba(0,0,255,0.2)]"
         >
           {{ $t("checkout.summary.backToMarketplace") }}
-        </NuxtLink>
+        </UButton>
       </div>
     </div>
   </section>
@@ -189,23 +247,30 @@ const props = withDefaults(defineProps<{
   items: CheckoutLineItem[]
   walletBalance: number
   shippingFee?: number
+  addressReady?: boolean
+  checkoutState?: "idle" | "loading" | "success" | "error"
 }>(), {
   shippingFee: 0,
+  addressReady: false,
+  checkoutState: "idle",
 })
 
 const emit = defineEmits<{
   increaseQuantity: [itemId: string]
   decreaseQuantity: [itemId: string]
   removeItem: [itemId: string]
+  submit: []
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const defaultCardBackground = [
   "radial-gradient(circle at 78% 12%, rgba(255,214,182,0.5), transparent 18%)",
   "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.26), transparent 22%)",
   "linear-gradient(150deg, #243b63 0%, #f1959b 42%, #f8c184 100%)",
 ].join(", ")
+
+const currencyFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US"))
 
 const subtotal = computed(() =>
   props.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
@@ -219,8 +284,74 @@ const itemLabel = computed(() => {
 })
 
 const walletShortage = computed(() => Math.max(total.value - props.walletBalance, 0))
+const isBusy = computed(() => props.checkoutState === "loading")
+
+const statusAlert = computed(() => {
+  if (props.items.length === 0) {
+    return null
+  }
+
+  if (props.checkoutState === "success") {
+    return {
+      color: "success" as const,
+      icon: "i-ph-check-circle-fill",
+      title: t("checkout.summary.purchaseSuccessTitle"),
+      description: t("checkout.summary.purchaseSuccessDescription"),
+    }
+  }
+
+  if (props.checkoutState === "error") {
+    return {
+      color: "error" as const,
+      icon: "i-ph-warning-circle-fill",
+      title: t("checkout.summary.purchaseErrorTitle"),
+      description: t("checkout.summary.purchaseErrorDescription"),
+    }
+  }
+
+  if (!props.addressReady) {
+    return {
+      color: "warning" as const,
+      icon: "i-ph-map-pin-fill",
+      title: t("checkout.summary.addressRequiredTitle"),
+      description: t("checkout.summary.addressRequiredDescription"),
+    }
+  }
+
+  if (walletShortage.value > 0) {
+    return {
+      color: "warning" as const,
+      icon: "i-ph-wallet-fill",
+      title: t("checkout.summary.walletAttentionTitle"),
+      description: t("checkout.summary.insufficientBalance"),
+    }
+  }
+
+  return {
+    color: "success" as const,
+    icon: "i-ph-seal-check-fill",
+    title: t("checkout.summary.readyTitle"),
+    description: t("checkout.summary.readyDescription"),
+  }
+})
 
 const ctaLabel = computed(() => {
+  if (!props.addressReady) {
+    return t("checkout.summary.saveAddressFirst")
+  }
+
+  if (props.checkoutState === "loading") {
+    return t("checkout.summary.processing")
+  }
+
+  if (props.checkoutState === "success") {
+    return t("checkout.summary.orderPlaced")
+  }
+
+  if (props.checkoutState === "error") {
+    return t("checkout.summary.retry")
+  }
+
   if (walletShortage.value > 0) {
     return t("checkout.summary.addFunds")
   }
@@ -228,7 +359,18 @@ const ctaLabel = computed(() => {
   return t("checkout.summary.buy")
 })
 
+const ctaDisabled = computed(() =>
+  props.items.length === 0
+  || !props.addressReady
+  || props.checkoutState === "loading"
+  || props.checkoutState === "success",
+)
+
 const paymentHint = computed(() => {
+  if (!props.addressReady) {
+    return t("checkout.summary.addressMissingHint")
+  }
+
   if (walletShortage.value > 0) {
     return t("checkout.summary.walletBalance", {
       balance: formatVnd(props.walletBalance),
@@ -242,6 +384,6 @@ const paymentHint = computed(() => {
 })
 
 function formatVnd(value: number) {
-  return `VND${value.toLocaleString("en-US")}`
+  return `VND${currencyFormatter.value.format(value)}`
 }
 </script>

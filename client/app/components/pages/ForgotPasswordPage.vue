@@ -1,83 +1,209 @@
 <template>
-  <AuthSplitShell :hero-props="heroProps">
-    <template #right>
-      <div class="w-full max-w-[420px] mx-auto space-y-10">
-        <section class="space-y-3">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
-            {{ $t('pages.forgotPasswordPage.recoveryEyebrow') || 'Security' }}
-          </p>
-          <h1 class="text-5xl font-black leading-[0.9] tracking-tighter text-secondary-900 sm:text-6xl">
-            {{ $t('pages.forgotPasswordPage.title') }}
-          </h1>
-          <p class="text-base font-medium leading-relaxed text-secondary-500 sm:text-lg">
-            {{ $t('pages.forgotPasswordPage.subtitle') || 'Enter your email to recover your account.' }}
-          </p>
-        </section>
+  <div class="mx-auto w-full max-w-[720px]">
+    <section class="flex flex-col gap-2">
+      <p class="text-[13px] font-extrabold tracking-[0.32em] text-[#0000ff]">{{ $t('pages.forgotPasswordPage.eyebrow') }}</p>
+      <h1 class="text-[2.35rem] font-black leading-[0.95] tracking-[-0.08em] text-[#0000ff] sm:text-[2.7rem]">{{ $t('pages.forgotPasswordPage.title') }}</h1>
+      <p class="max-w-[38rem] text-[1rem] leading-7 text-slate-500">{{ $t('pages.forgotPasswordPage.subtitle') }}</p>
+    </section>
 
-        <section class="space-y-6">
-          <div class="space-y-5">
-            <UFormGroup
-              :label="$t('pages.forgotPasswordPage.emailLabel')"
-              label-class="text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2"
-            >
-              <UInput
-                id="reset-email"
-                v-model="email"
-                size="xl"
-                icon="i-ph-envelope-duotone"
-                autocomplete="email"
-                :ui="{
-                  base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
-                  icon: { leading: { pointer: 'pointer-events-none', base: 'text-primary-500' } }
-                }"
-              />
-            </UFormGroup>
+    <UForm
+      :state="form"
+      :validate="validateForm"
+      class="mt-8 flex flex-col gap-5"
+      @submit="handleReset"
+      @error="handleFormError"
+    >
+      <UAlert
+        v-if="statusAlert"
+        :color="statusAlert.color"
+        variant="subtle"
+        :icon="statusAlert.icon"
+        :title="statusAlert.title"
+        :description="statusAlert.description"
+        class="rounded-[20px]"
+      />
 
-            <!-- Captcha Section -->
-            <div class="p-1 rounded-2xl bg-secondary-50 transition-all hover:bg-white ring-1 ring-secondary-100">
-              <div class="flex h-14 items-center justify-between gap-3 px-4">
-                <label class="flex items-center gap-3 cursor-pointer group">
-                  <input type="checkbox" class="h-5 w-5 rounded-lg border-secondary-200 text-primary-600 focus:ring-primary-500 transition-all">
-                  <span class="text-[11px] font-black uppercase tracking-widest text-secondary-500 group-hover:text-primary-600 transition-colors">{{ $t('pages.forgotPasswordPage.captchaLabel') }}</span>
-                </label>
-                <div class="flex flex-col items-center justify-center">
-                  <div class="h-6 w-6 rounded-lg bg-primary-600 shadow-sm flex items-center justify-center">
-                    <Icon name="i-ph-shield-check-fill" class="h-4 w-4 text-white" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <UFormField
+        name="emailOrPhone"
+        :label="$t('pages.forgotPasswordPage.emailLabel')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
+        <UInput
+          v-model="form.emailOrPhone"
+          autocomplete="username"
+          size="xl"
+          color="primary"
+          :placeholder="$t('pages.forgotPasswordPage.emailPlaceholder')"
+          class="w-full"
+          :ui="inputUi"
+        />
+      </UFormField>
 
-          <UButton
+      <UFormField
+        name="captchaConfirmed"
+        size="xl"
+        class="space-y-2"
+      >
+        <div class="flex items-center justify-between gap-4 rounded-[1.45rem] border border-[#d5e4f0] bg-white px-4 py-4 shadow-sm transition focus-within:border-[#0000ff] focus-within:shadow-[0_0_0_4px_rgba(0,0,255,0.08)]">
+          <UCheckbox
+            v-model="form.captchaConfirmed"
+            name="captchaConfirmed"
             size="xl"
-            block
-            class="h-14 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/30 transition-all active:scale-[0.98]"
-          >
-            <template #leading>
-              <Icon name="i-ph-paper-plane-tilt-duotone" class="h-5 w-5" />
-            </template>
-            {{ $t('pages.forgotPasswordPage.submit') }}
-          </UButton>
+            color="primary"
+            :label="$t('pages.forgotPasswordPage.captchaLabel')"
+            :ui="captchaCheckboxUi"
+          />
 
-          <div class="flex items-center justify-center gap-1.5 py-2">
-            <p class="text-xs font-medium text-secondary-400">{{ $t('pages.forgotPasswordPage.readyQuestion') }}</p>
-            <NuxtLink class="text-xs font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest decoration-primary-600/30 decoration-2 underline-offset-4 hover:underline" to="/welcome">
-              {{ $t('pages.forgotPasswordPage.login') }}
-            </NuxtLink>
+          <div class="flex shrink-0 flex-col items-center justify-center text-[10px] leading-none text-slate-500">
+            <div class="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#d7e3ef] bg-[#f7fbff]">
+              <Icon name="i-ph-shield-check-fill" class="h-4.5 w-4.5 text-[#0000ff]" />
+            </div>
+            <span class="mt-1">{{ $t('pages.forgotPasswordPage.captchaBrand') }}</span>
           </div>
-        </section>
-      </div>
-    </template>
-  </AuthSplitShell>
+        </div>
+      </UFormField>
+
+      <UButton
+        type="submit"
+        loading-auto
+        loading-icon="i-lucide-loader-2"
+        color="primary"
+        variant="solid"
+        block
+        size="xl"
+        :disabled="isSubmitDisabled"
+        class="mt-1 h-[3.95rem] rounded-[1.45rem] text-[1.05rem] font-black shadow-[0_14px_32px_rgba(0,0,255,0.18)]"
+      >
+        {{ submitLabel }}
+      </UButton>
+
+      <p class="pt-1 text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
+        {{ $t('pages.forgotPasswordPage.readyQuestion') }}
+        <NuxtLink to="/welcome" class="font-extrabold text-[#0000ff]">{{ $t('pages.forgotPasswordPage.login') }}</NuxtLink>
+      </p>
+    </UForm>
+  </div>
 </template>
 
 <script setup lang="ts">
-const email = ref('')
+type ForgotPasswordFormState = {
+  emailOrPhone: string
+  captchaConfirmed: boolean
+}
+
+type ForgotPasswordFormError = {
+  name?: keyof ForgotPasswordFormState
+  message: string
+}
+
+const form = reactive<ForgotPasswordFormState>({
+  emailOrPhone: '',
+  captchaConfirmed: false,
+})
+
+const inputUi = {
+  base: 'h-[3.85rem] rounded-[1.45rem] px-5 text-[1rem]',
+}
+
+const captchaCheckboxUi = {
+  root: 'flex-1 items-center gap-3',
+  wrapper: 'flex-1 text-[1rem]',
+  label: 'text-[0.98rem] font-medium text-slate-700',
+  base: 'size-5 rounded-[6px] ring-[#cbd9ea] bg-white data-[state=checked]:ring-[#0000ff]',
+}
+
+const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
 const { t } = useI18n()
-const heroProps = computed(() => ({
-  title: t('pages.forgotPasswordPage.heroTitle'),
-  subtitle: t('pages.forgotPasswordPage.heroSubtitle'),
-}))
-useSeoMeta({ title: () => t('pages.forgotPasswordPage.seoTitle') })
+
+const hasValidIdentity = (value: string) => {
+  const normalized = value.trim()
+
+  if (!normalized) {
+    return false
+  }
+
+  if (normalized.includes('@')) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)
+  }
+
+  return normalized.replace(/\D/g, '').length >= 8
+}
+
+const validateForm = (state: ForgotPasswordFormState): ForgotPasswordFormError[] => {
+  const errors: ForgotPasswordFormError[] = []
+
+  if (!state.emailOrPhone.trim()) {
+    errors.push({
+      name: 'emailOrPhone',
+      message: t('pages.forgotPasswordPage.validationEmailRequired'),
+    })
+  }
+  else if (!hasValidIdentity(state.emailOrPhone)) {
+    errors.push({
+      name: 'emailOrPhone',
+      message: t('pages.forgotPasswordPage.validationEmailInvalid'),
+    })
+  }
+
+  if (!state.captchaConfirmed) {
+    errors.push({
+      name: 'captchaConfirmed',
+      message: t('pages.forgotPasswordPage.validationCaptchaRequired'),
+    })
+  }
+
+  return errors
+}
+
+const isSubmitDisabled = computed(() =>
+  submitState.value === 'loading'
+  || !form.emailOrPhone.trim()
+  || !form.captchaConfirmed,
+)
+
+const submitLabel = computed(() =>
+  submitState.value === 'loading'
+    ? t('pages.forgotPasswordPage.submitting')
+    : t('pages.forgotPasswordPage.submit'),
+)
+
+const statusAlert = computed(() => {
+  if (submitState.value === 'success') {
+    return {
+      color: 'success' as const,
+      icon: 'i-ph-check-circle-fill',
+      title: t('pages.forgotPasswordPage.statusSuccessTitle'),
+      description: t('pages.forgotPasswordPage.statusSuccessDescription'),
+    }
+  }
+
+  if (submitState.value === 'error') {
+    return {
+      color: 'error' as const,
+      icon: 'i-ph-warning-circle-fill',
+      title: t('pages.forgotPasswordPage.statusErrorTitle'),
+      description: t('pages.forgotPasswordPage.statusErrorDescription'),
+    }
+  }
+
+  return null
+})
+
+const handleReset = async () => {
+  submitState.value = 'loading'
+  await new Promise(resolve => setTimeout(resolve, 500))
+  submitState.value = 'success'
+}
+
+const handleFormError = () => {
+  submitState.value = 'error'
+}
+
+watch(() => [form.emailOrPhone, form.captchaConfirmed], () => {
+  if (submitState.value !== 'loading') {
+    submitState.value = 'idle'
+  }
+})
 </script>

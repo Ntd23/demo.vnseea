@@ -7,7 +7,17 @@
       <div>
         <div class="flex items-center gap-1.5">
           <p class="text-[13px] font-bold text-slate-900 sm:text-sm">{{ author }}</p>
-          <button class="text-[11px] font-bold text-[#0000ff] hover:underline" type="button">{{ t("feed.postHeader.follow") }}</button>
+          <UButton
+            color="primary"
+            variant="ghost"
+            size="xs"
+            class="rounded-full"
+            :loading="followStatus === 'loading'"
+            :disabled="followStatus === 'loading'"
+            @click="toggleFollow"
+          >
+            {{ followLabel }}
+          </UButton>
         </div>
         <div class="flex items-center gap-1.5 text-[11px] text-slate-400 sm:text-xs">
           <span>{{ role }}</span>
@@ -25,6 +35,7 @@
         class="rounded-full p-2 text-slate-400 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]"
         :class="{ 'bg-[#0000ff]/5 text-[#0000ff]': open }"
         type="button"
+        :aria-label="t('feed.postHeader.menuOpenLabel')"
         @click="open = !open"
       >
         <Icon name="i-lucide-more-horizontal" class="h-5 w-5" />
@@ -46,11 +57,11 @@
           <div class="py-1.5">
             <button
               v-for="item in menuItems"
-              :key="item.label"
+              :key="item.key"
               class="group/item flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-[#0000ff]/4"
               :class="item.danger ? 'hover:bg-red-50' : ''"
               type="button"
-              @click="item.action"
+              @click="handleMenuAction(item)"
             >
               <span
                 class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0000ff]/6 text-[#0000ff]/70 transition group-hover/item:bg-[#0000ff]/10 group-hover/item:text-[#0000ff]"
@@ -76,13 +87,22 @@
 </template>
 
 <script setup lang="ts">
+import { onClickOutside } from "@vueuse/core"
+
 const { t } = useI18n()
+const toast = useToast()
 
 const props = defineProps<{
   author: string
   role: string
   time: string
   audience: string
+  postUrl?: string
+}>()
+
+const emit = defineEmits<{
+  menuAction: [action: string]
+  follow: [followed: boolean]
 }>()
 
 const initials = computed(() =>
@@ -106,50 +126,90 @@ const audienceIcon = computed(() => {
 })
 
 const open = ref(false)
-const menuRef = ref<HTMLElement>()
+const menuRef = ref<HTMLElement | null>(null)
+const followed = ref(false)
+const followStatus = ref<"idle" | "loading">("idle")
+
+const followLabel = computed(() => {
+  if (followStatus.value === "loading") return t("feed.postHeader.following")
+  if (followed.value) return t("feed.postHeader.followed")
+  return t("feed.postHeader.follow")
+})
 
 const menuItems = computed(() => [
   {
+    key: "delete",
     label: t("feed.postHeader.menuDeleteLabel"),
     desc: t("feed.postHeader.menuDeleteDescription"),
     icon: "i-lucide-trash-2",
     danger: true,
-    action: () => { open.value = false },
   },
   {
+    key: "save",
     label: t("feed.postHeader.menuSaveLabel"),
     desc: t("feed.postHeader.menuSaveDescription"),
     icon: "i-lucide-bookmark",
     danger: false,
-    action: () => { open.value = false },
   },
   {
+    key: "report",
     label: t("feed.postHeader.menuReportLabel"),
     desc: t("feed.postHeader.menuReportDescription"),
     icon: "i-lucide-flag",
     danger: false,
-    action: () => { open.value = false },
   },
   {
+    key: "open",
     label: t("feed.postHeader.menuOpenLabel"),
     desc: t("feed.postHeader.menuOpenDescription"),
     icon: "i-lucide-external-link",
     danger: false,
-    action: () => { window.open(window.location.href, "_blank"); open.value = false },
   },
   {
+    key: "hide",
     label: t("feed.postHeader.menuHideLabel"),
     desc: t("feed.postHeader.menuHideDescription"),
     icon: "i-lucide-eye-off",
     danger: false,
-    action: () => { open.value = false },
   },
 ])
 
-// Close on outside click
-onMounted(() => document.addEventListener("mousedown", onOutside))
-onUnmounted(() => document.removeEventListener("mousedown", onOutside))
-const onOutside = (e: MouseEvent) => {
-  if (menuRef.value && !menuRef.value.contains(e.target as Node)) open.value = false
+onClickOutside(menuRef, () => {
+  open.value = false
+})
+
+async function toggleFollow() {
+  if (followStatus.value === "loading") return
+
+  followStatus.value = "loading"
+  await new Promise(resolve => setTimeout(resolve, 200))
+  followed.value = !followed.value
+  followStatus.value = "idle"
+
+  toast.add({
+    color: "success",
+    icon: "i-ph-check-circle-fill",
+    title: props.author,
+    description: followed.value ? t("feed.postHeader.followed") : t("feed.postHeader.follow"),
+  })
+
+  emit("follow", followed.value)
+}
+
+function handleMenuAction(item: { key: string; label: string; danger: boolean }) {
+  open.value = false
+
+  if (item.key === "open" && props.postUrl && import.meta.client) {
+    window.open(props.postUrl, "_blank", "noopener,noreferrer")
+  }
+
+  toast.add({
+    color: item.danger ? "warning" : "primary",
+    icon: item.danger ? "i-ph-warning-circle-fill" : "i-ph-check-circle-fill",
+    title: props.author,
+    description: item.label,
+  })
+
+  emit("menuAction", item.key)
 }
 </script>

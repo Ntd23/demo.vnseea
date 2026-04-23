@@ -1,54 +1,150 @@
 <template>
-  <Teleport to="body">
-    <div v-if="open" class="fixed inset-0 z-50 flex items-end justify-center bg-black/42 px-3 py-4 backdrop-blur-[2px] sm:items-center" @click.self="$emit('close')">
-      <form class="w-full max-w-[620px] rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-xl)]" @submit.prevent="submit">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <p class="text-label-secondary text-[var(--color-primary-600)]">{{ t("pages.forumPage.modalEyebrow") }}</p>
-            <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.forumPage.modalTitle") }}</h2>
-            <p class="mt-1 text-body-secondary">{{ t("pages.forumPage.modalDescription") }}</p>
-          </div>
-          <button class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] bg-[var(--bg-surface-hover)] text-[var(--text-secondary)]" type="button" @click="$emit('close')">
-            <Icon name="i-ph-x-bold" class="h-4 w-4" />
-          </button>
+  <UModal
+    :open="open"
+    :title="t('pages.forumPage.modalTitle')"
+    class="sm:max-w-2xl"
+    @update:open="handleOpenChange"
+  >
+    <template #body>
+      <UForm :state="form" class="space-y-5" @submit="submit">
+        <div class="space-y-2">
+          <p class="text-label-secondary text-[var(--color-primary-600)]">
+            {{ t("pages.forumPage.modalEyebrow") }}
+          </p>
+          <p class="text-body-secondary">
+            {{ t("pages.forumPage.modalDescription") }}
+          </p>
         </div>
 
-        <div class="mt-5 grid gap-4">
-          <label>
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.forumPage.modalTitleLabel") }}</span>
-            <input v-model="form.title" required class="forum-input mt-2" :placeholder="t('pages.forumPage.modalTitlePlaceholder')">
-          </label>
-          <label>
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.forumPage.modalSectionLabel") }}</span>
-            <select v-model="form.section" class="forum-input mt-2">
-              <option v-for="section in sections.filter(item => item.value !== 'all')" :key="section.value" :value="section.value">{{ section.label }}</option>
-            </select>
-          </label>
-          <label>
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.forumPage.modalMessageLabel") }}</span>
-            <textarea v-model="form.message" required class="forum-input mt-2 min-h-[150px] resize-y py-3" :placeholder="t('pages.forumPage.modalMessagePlaceholder')" />
-          </label>
+        <UAlert
+          v-if="statusAlert"
+          :color="statusAlert.color"
+          variant="subtle"
+          :icon="statusAlert.icon"
+          :title="statusAlert.title"
+          :description="statusAlert.description"
+          class="rounded-[22px]"
+          aria-live="polite"
+        />
+
+        <div class="grid gap-4">
+          <UFormField
+            name="title"
+            :label="t('pages.forumPage.modalTitleLabel')"
+            required
+            size="xl"
+            class="space-y-2"
+            :error="fieldErrors.title || undefined"
+          >
+            <UInput
+              v-model="form.title"
+              :placeholder="t('pages.forumPage.modalTitlePlaceholder')"
+              :disabled="isBusy"
+              color="primary"
+              size="xl"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField
+            name="section"
+            :label="t('pages.forumPage.modalSectionLabel')"
+            required
+            size="xl"
+            class="space-y-2"
+            :error="fieldErrors.section || undefined"
+          >
+            <USelect
+              v-model="form.section"
+              :items="sectionOptions"
+              value-key="value"
+              label-key="label"
+              :disabled="isBusy || sectionOptions.length === 0"
+              color="primary"
+              size="xl"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField
+            name="message"
+            :label="t('pages.forumPage.modalMessageLabel')"
+            required
+            size="xl"
+            class="space-y-2"
+            :error="fieldErrors.message || undefined"
+          >
+            <UTextarea
+              v-model="form.message"
+              autoresize
+              :rows="6"
+              :placeholder="t('pages.forumPage.modalMessagePlaceholder')"
+              :disabled="isBusy"
+              color="primary"
+              size="xl"
+              class="w-full"
+              :ui="{
+                base: 'min-h-[160px] resize-y rounded-[20px] border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 py-3 text-[14px] leading-6 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
+              }"
+            />
+          </UFormField>
         </div>
 
-        <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button class="h-11 rounded-[18px] border border-[var(--border-default)] bg-white px-5 text-[13px] font-bold text-[var(--text-secondary)]" type="button" @click="$emit('close')">{{ t("pages.forumPage.modalClose") }}</button>
-          <button class="h-11 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="submit">{{ t("pages.forumPage.modalSubmit") }}</button>
+        <div class="flex flex-col gap-3 rounded-[22px] bg-[var(--bg-surface-hover)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p class="text-[12px] font-semibold leading-5 text-[var(--text-secondary)]">
+            {{ t("pages.forumPage.modalHelper") }}
+          </p>
+          <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
+            {{ t("pages.forumPage.modalCharCount", { count: form.message.trim().length }) }}
+          </UBadge>
         </div>
-      </form>
-    </div>
-  </Teleport>
+
+        <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <UButton
+            type="button"
+            color="neutral"
+            variant="outline"
+            size="lg"
+            class="rounded-full"
+            :disabled="isBusy"
+            @click="emit('close')"
+          >
+            {{ t("pages.forumPage.modalClose") }}
+          </UButton>
+          <UButton
+            type="submit"
+            color="primary"
+            size="lg"
+            class="rounded-full"
+            :loading="isBusy"
+            :disabled="isBusy || sectionOptions.length === 0"
+          >
+            {{ t("pages.forumPage.modalSubmit") }}
+          </UButton>
+        </div>
+      </UForm>
+    </template>
+  </UModal>
 </template>
 
 <script setup lang="ts">
-import type { ForumSection, ForumThreadPayload } from "~/composables/useMockForumData"
+import type { ForumSection, ForumSectionKey, ForumThreadPayload } from "~/composables/useMockForumData"
+
+type ModalSubmitStatus = "idle" | "loading" | "success" | "error"
 
 const props = defineProps<{
   open: boolean
   sections: ReadonlyArray<ForumSection>
+  defaultSection?: Exclude<ForumSectionKey, "all">
 }>()
 
 const { t } = useI18n()
-const emit = defineEmits<{ close: []; create: [payload: ForumThreadPayload] }>()
+const toast = useToast()
+
+const emit = defineEmits<{
+  close: []
+  create: [payload: ForumThreadPayload]
+}>()
 
 const form = reactive<ForumThreadPayload>({
   title: "",
@@ -56,30 +152,150 @@ const form = reactive<ForumThreadPayload>({
   message: "",
 })
 
-watch(() => props.open, (open) => {
-  if (!open) return
-  form.title = ""
-  form.section = "support"
-  form.message = ""
+const fieldErrors = reactive<Record<keyof ForumThreadPayload, string>>({
+  title: "",
+  section: "",
+  message: "",
 })
 
-const submit = () => {
-  emit("create", { ...form })
+const submitStatus = ref<ModalSubmitStatus>("idle")
+
+const sectionOptions = computed(() =>
+  props.sections
+    .filter(section => section.value !== "all")
+    .map(section => ({
+      label: section.label,
+      value: section.value,
+    })),
+)
+
+const resolvedDefaultSection = computed<Exclude<ForumSectionKey, "all">>(() => {
+  if (props.defaultSection) return props.defaultSection
+  return sectionOptions.value[0]?.value ?? "support"
+})
+
+const isBusy = computed(() => submitStatus.value === "loading")
+
+const statusAlert = computed(() => {
+  if (submitStatus.value === "idle") return null
+
+  if (submitStatus.value === "loading") {
+    return {
+      color: "primary" as const,
+      icon: "i-ph-spinner-gap-bold",
+      title: t("pages.forumPage.modalStatusLoadingTitle"),
+      description: t("pages.forumPage.modalStatusLoadingDescription"),
+    }
+  }
+
+  if (submitStatus.value === "success") {
+    return {
+      color: "success" as const,
+      icon: "i-ph-check-circle-fill",
+      title: t("pages.forumPage.modalStatusSuccessTitle"),
+      description: t("pages.forumPage.modalStatusSuccessDescription"),
+    }
+  }
+
+  return {
+    color: "warning" as const,
+    icon: "i-ph-warning-circle-fill",
+    title: t("pages.forumPage.modalStatusErrorTitle"),
+    description: t("pages.forumPage.modalStatusErrorDescription"),
+  }
+})
+
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) {
+      clearErrors()
+      submitStatus.value = "idle"
+      return
+    }
+
+    resetForm()
+  },
+)
+
+watch(
+  () => [form.title, form.section, form.message],
+  () => {
+    if (submitStatus.value !== "loading") {
+      submitStatus.value = "idle"
+    }
+
+    clearErrors()
+  },
+)
+
+function handleOpenChange(nextOpen: boolean) {
+  if (!nextOpen) {
+    emit("close")
+  }
+}
+
+function clearErrors() {
+  fieldErrors.title = ""
+  fieldErrors.section = ""
+  fieldErrors.message = ""
+}
+
+function resetForm() {
+  form.title = ""
+  form.section = resolvedDefaultSection.value
+  form.message = ""
+  clearErrors()
+  submitStatus.value = "idle"
+}
+
+function validateForm() {
+  clearErrors()
+
+  const title = form.title.trim()
+  const message = form.message.trim()
+
+  form.title = title
+  form.message = message
+
+  if (title.length < 8) {
+    fieldErrors.title = t("pages.forumPage.modalTitleError")
+  }
+
+  if (!sectionOptions.value.some(option => option.value === form.section)) {
+    fieldErrors.section = t("pages.forumPage.modalSectionError")
+  }
+
+  if (message.length < 20) {
+    fieldErrors.message = t("pages.forumPage.modalMessageError")
+  }
+
+  return !fieldErrors.title && !fieldErrors.section && !fieldErrors.message
+}
+
+async function submit() {
+  if (!validateForm()) {
+    submitStatus.value = "error"
+    return
+  }
+
+  submitStatus.value = "loading"
+
+  await new Promise(resolve => setTimeout(resolve, 240))
+
+  emit("create", {
+    title: form.title,
+    section: form.section,
+    message: form.message,
+  })
+
+  submitStatus.value = "success"
+
+  toast.add({
+    color: "success",
+    icon: "i-ph-check-circle-fill",
+    title: t("pages.forumPage.modalStatusSuccessTitle"),
+    description: t("pages.forumPage.modalStatusSuccessDescription"),
+  })
 }
 </script>
-
-<style scoped>
-.forum-input {
-  width: 100%;
-  min-height: 46px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  background: var(--bg-surface-hover);
-  padding-left: 14px;
-  padding-right: 14px;
-  color: var(--text-primary);
-  font-size: 14px;
-  font-weight: 600;
-  outline: none;
-}
-</style>

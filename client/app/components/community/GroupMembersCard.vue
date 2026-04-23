@@ -1,54 +1,58 @@
 <template>
-  <section class="surface-card p-6 ring-1 ring-secondary-100 shadow-xl relative overflow-hidden">
-    <!-- Visual Decor -->
-    <div class="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />
-
-    <div class="relative z-10 flex items-center justify-between gap-4 mb-6">
-      <div class="space-y-1">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 px-1">
+  <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
           {{ t("pages.groupDetailPage.membersEyebrow") }}
         </p>
-        <h3 class="text-xl font-black text-secondary-900 tracking-tighter">
-          {{ $t('community.groups.format.members', { count: memberCountLabel }) }}
+        <h3 class="mt-2 text-[1.15rem] font-black tracking-[-0.04em] text-[#243b63]">
+          {{ memberCountLabel }}
         </h3>
       </div>
 
       <UButton
-        variant="soft"
+        color="neutral"
+        variant="outline"
         size="md"
-        class="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 bg-primary-50 text-primary-600 ring-1 ring-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-sm active:scale-95"
+        class="rounded-full"
+        :loading="inviteState === 'loading'"
+        :disabled="inviteState === 'loading'"
+        @click="emit('invite')"
       >
-        <template #leading>
-          <Icon name="i-ph-user-circle-plus-duotone" class="h-4 w-4" />
-        </template>
-        {{ t("pages.groupDetailPage.inviteMore") }}
+        <Icon name="i-ph-user-circle-plus-bold" class="mr-1.5 h-4 w-4" />
+        {{ inviteButtonLabel }}
       </UButton>
     </div>
 
-    <div class="relative z-10 space-y-3">
+    <div class="mt-4 space-y-3">
       <div
         v-for="member in members"
         :key="member.id"
-        class="flex items-center gap-4 rounded-2xl bg-secondary-50/50 p-3.5 ring-1 ring-secondary-100/50 transition-all hover:ring-primary-100/50 hover:bg-white group"
+        class="flex items-center gap-3 rounded-[18px] bg-[#fbfcff] px-3.5 py-3"
       >
         <div class="relative shrink-0">
-          <div class="flex h-11 w-11 items-center justify-center rounded-[14px] bg-gradient-to-br from-primary-50 to-primary-100 text-[13px] font-black text-primary-600 shadow-sm ring-1 ring-primary-200 transition-transform group-hover:scale-105">
+          <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#dbeafe_0%,#eef2ff_100%)] text-[13px] font-black text-[#1d4ed8]">
             {{ member.initials }}
           </div>
           <span
-            class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-white shadow-sm"
-            :class="member.online ? 'bg-green-500' : 'bg-secondary-300'"
+            class="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white"
+            :class="member.online ? 'bg-[#31a24c]' : 'bg-[#cbd5e1]'"
           />
         </div>
 
-        <div class="min-w-0 flex-1 space-y-0.5">
-          <p class="truncate text-[13px] font-black uppercase tracking-widest text-secondary-900 group-hover:text-primary-600 transition-colors">{{ member.name }}</p>
-          <div class="flex items-center gap-2">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-primary-600/70">{{ member.role }}</p>
-            <span class="h-1 w-1 rounded-full bg-secondary-300" />
-            <p class="truncate text-[10px] font-bold uppercase tracking-widest text-secondary-400">{{ member.meta }}</p>
-          </div>
+        <div class="min-w-0 flex-1">
+          <p class="truncate text-[13px] font-semibold text-[#243b63]">{{ member.name }}</p>
+          <p class="mt-0.5 text-[12px] text-slate-500">{{ translateText(member.role) }}</p>
+          <p class="mt-0.5 truncate text-[11px] text-slate-400">{{ translateText(member.meta) }}</p>
         </div>
+
+        <UBadge
+          color="neutral"
+          :variant="member.online ? 'subtle' : 'outline'"
+          class="rounded-full px-3 py-1 text-[11px] font-semibold"
+        >
+          {{ member.online ? t("pages.groupDetailPage.memberOnline") : t("pages.groupDetailPage.memberOffline") }}
+        </UBadge>
       </div>
     </div>
   </section>
@@ -58,9 +62,21 @@
 import type { CommunityGroupMember } from "../../../types/community"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
-defineProps<{
+const props = defineProps<{
   members: CommunityGroupMember[]
   memberCountLabel: string
+  inviteState?: "idle" | "loading" | "success" | "error"
 }>()
+
+const emit = defineEmits<{
+  invite: []
+}>()
+
+const inviteButtonLabel = computed(() =>
+  props.inviteState === "success"
+    ? t("pages.groupDetailPage.invitedButton")
+    : t("pages.groupDetailPage.inviteMore"),
+)
 </script>

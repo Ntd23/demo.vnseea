@@ -1,10 +1,15 @@
 <template>
-  <div class="flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white/95 px-4 py-4 shadow-[var(--shadow-md)] sm:flex-row sm:items-center sm:justify-between">
+  <div
+    class="flex flex-col gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white/95 px-4 py-4 shadow-[var(--shadow-md)] sm:flex-row sm:items-center sm:justify-between"
+    role="region"
+    aria-labelledby="blogs-results-heading"
+    aria-live="polite"
+  >
     <div>
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em]">
         {{ $t("pages.blogsPage.results") }}
-      </p>
-      <h2 class="mt-1 text-heading text-[var(--text-primary)]">
+      </UBadge>
+      <h2 id="blogs-results-heading" class="mt-1 text-heading text-[var(--text-primary)]">
         {{ heading }}
       </h2>
       <p class="mt-1 text-body-secondary">
@@ -13,14 +18,17 @@
     </div>
 
     <div class="flex flex-wrap items-center gap-2">
-      <button
-        class="inline-flex h-11 items-center justify-center gap-2 rounded-[18px] border border-[var(--border-default)] bg-white px-3 text-[13px] font-semibold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
+      <UButton
+        color="neutral"
+        variant="outline"
+        size="md"
+        class="rounded-[18px] px-3 text-[13px] font-semibold"
         type="button"
         @click="$emit('reset')"
       >
         <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
         {{ $t("pages.blogsPage.reset") }}
-      </button>
+      </UButton>
     </div>
     </div>
 </template>

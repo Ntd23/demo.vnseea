@@ -1,5 +1,4 @@
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
-import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
 import { useMockSocialData } from "./useMockSocialData"
 import {
   createCommunitySlug,
@@ -28,18 +27,16 @@ export function useCommunityPageDetail(
   slugSource: MaybeRefOrGetter<string>,
   querySource?: MaybeRefOrGetter<Record<string, unknown>>,
 ) {
-  const { t, tm, rt, locale } = useI18n()
+  const { t, te, locale } = useI18n()
   const { posts } = useMockSocialData()
-  const localized = <T>(key: string) =>
-    resolveI18nMessage(tm(key), message => rt(message as never)) as T
+  const translateValue = (value?: string, fallback = "") => {
+    if (!value) return fallback
+    return te(value) ? t(value) : value
+  }
 
   const slug = computed(() => String(toValue(slugSource) || "").trim())
   const query = computed(() =>
     querySource ? (toValue(querySource) as Record<string, unknown>) : {},
-  )
-
-  const pageDictionary = computed(() =>
-    localized<Record<string, Partial<CommunityPageRecord>>>("pages.pageDetailPage.pages"),
   )
 
   const page = computed<CommunityPageRecord | null>(() => {
@@ -66,38 +63,31 @@ export function useCommunityPageDetail(
       || basePage?.category
       || "local-business"
 
-    const localizedBasePage = basePage
-      ? {
-          ...basePage,
-          ...(pageDictionary.value?.[basePage.slug] ?? {}),
-        }
-      : null
-
     return {
-      id: localizedBasePage?.id ?? 0,
+      id: basePage?.id ?? 0,
       name: resolvedName || t("pages.pageDetailPage.newPageName"),
       slug: resolvedSlug,
       summary:
         queryDescription
-        || localizedBasePage?.summary
+        || basePage?.summary
         || t("pages.pageDetailPage.previewSummary"),
       category: resolvedCategory,
       banner:
-        localizedBasePage?.banner
+        basePage?.banner
         || "linear-gradient(135deg,#0f172a_0%,#0000ff_42%,#93c5fd_100%)",
-      accent: localizedBasePage?.accent || "#0000ff",
-      followers: localizedBasePage?.followers ?? 0,
-      likes: localizedBasePage?.likes ?? 0,
-      ownerLabel: localizedBasePage?.ownerLabel || t("pages.pageDetailPage.previewOwnerLabel"),
-      responseLabel: localizedBasePage?.responseLabel || t("pages.pageDetailPage.previewResponseLabel"),
-      website: localizedBasePage?.website || `vnseea.vn/p/${resolvedSlug}`,
-      locationLabel: localizedBasePage?.locationLabel || t("pages.pageDetailPage.previewLocationLabel"),
-      foundedLabel: localizedBasePage?.foundedLabel || t("pages.pageDetailPage.previewFoundedLabel"),
-      ctaLabel: localizedBasePage?.ctaLabel || t("pages.pageDetailPage.previewCtaLabel"),
-      canManage: localizedBasePage?.canManage ?? true,
+      accent: basePage?.accent || "#0000ff",
+      followers: basePage?.followers ?? 0,
+      likes: basePage?.likes ?? 0,
+      ownerLabel: basePage?.ownerLabel || t("pages.pageDetailPage.previewOwnerLabel"),
+      responseLabel: basePage?.responseLabel || t("pages.pageDetailPage.previewResponseLabel"),
+      website: basePage?.website || `vnseea.vn/p/${resolvedSlug}`,
+      locationLabel: basePage?.locationLabel || t("pages.pageDetailPage.previewLocationLabel"),
+      foundedLabel: basePage?.foundedLabel || t("pages.pageDetailPage.previewFoundedLabel"),
+      ctaLabel: basePage?.ctaLabel || t("pages.pageDetailPage.previewCtaLabel"),
+      canManage: basePage?.canManage ?? true,
       tags:
-        localizedBasePage?.tags?.length
-          ? localizedBasePage.tags
+        basePage?.tags?.length
+          ? basePage.tags
           : [resolvedCategory, "fanpage", "community"].filter(Boolean),
     }
   })
@@ -122,16 +112,19 @@ export function useCommunityPageDetail(
     if (!page.value) return []
 
     return posts.slice(0, 3).map((post, index) => {
-      const tag = page.value?.tags[index % Math.max(page.value.tags.length, 1)] || "fanpage"
+      const pageName = translateValue(page.value?.name)
+      const pageOwnerLabel = translateValue(page.value?.ownerLabel)
+      const localizedTags = page.value.tags.map(tag => translateValue(tag)).filter(Boolean)
+      const tag = localizedTags[index % Math.max(localizedTags.length, 1)] || "fanpage"
 
       return {
         ...post,
         id: page.value.id * 100 + index + 1,
-        author: page.value.name,
+        author: pageName,
         role: index === 0
-          ? page.value.ownerLabel
+          ? pageOwnerLabel
           : t("pages.pageDetailPage.postRole", { category: categoryLabel.value }),
-        audience: page.value.name,
+        audience: pageName,
         time: index === 0
           ? t("pages.pageDetailPage.postTime1")
           : index === 1
@@ -139,14 +132,14 @@ export function useCommunityPageDetail(
             : t("pages.pageDetailPage.postTime3"),
         text:
           index === 0
-            ? t("pages.pageDetailPage.postText1", { page: page.value.name, tag })
+            ? t("pages.pageDetailPage.postText1", { page: pageName, tag })
             : index === 1
-              ? t("pages.pageDetailPage.postText2", { page: page.value.name })
-              : t("pages.pageDetailPage.postText3", { page: page.value.name }),
+              ? t("pages.pageDetailPage.postText2", { page: pageName })
+              : t("pages.pageDetailPage.postText3", { page: pageName }),
         tags: Array.from(
           new Set([
             `#${tag}`,
-            ...page.value.tags.map(item => `#${item}`),
+            ...localizedTags.map(item => `#${item}`),
             ...post.tags,
           ]),
         ).slice(0, 4),

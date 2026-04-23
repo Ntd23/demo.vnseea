@@ -3,195 +3,236 @@
     :eyebrow="$t('community.pageSettings.basics.eyebrow')"
     :title="$t('community.pageSettings.basics.title')"
     :description="$t('community.pageSettings.basics.desc')"
-    icon="i-ph-identification-card-duotone"
+    icon="i-ph-identification-card-bold"
   >
     <template #trailing>
       <UButton
         :to="pagePath"
-        variant="soft"
+        color="neutral"
+        variant="outline"
         size="md"
-        class="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 bg-secondary-50 text-secondary-600 ring-1 ring-secondary-100 hover:bg-secondary-100 hover:text-secondary-900 transition-all shadow-sm"
+        class="rounded-full"
       >
-        <template #leading>
-          <Icon name="i-ph-arrow-square-out-bold" class="h-4 w-4" />
-        </template>
-        {{ $t('community.pageSettings.basics.viewPage') }}
+        <Icon name="i-ph-arrow-square-out-bold" class="mr-1.5 h-4 w-4" />
+        {{ $t("community.pageSettings.basics.viewPage") }}
       </UButton>
     </template>
 
-    <div class="space-y-8">
-      <div class="grid gap-6 lg:grid-cols-2">
-        <UFormGroup :label="$t('community.pageSettings.basics.fields.name')" name="name" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
+    <div class="space-y-5">
+      <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.82fr)]">
+        <UFormField
+          name="name"
+          :label="$t('community.pageSettings.basics.fields.name')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
           <UInput
             v-model="model.name"
-            size="xl"
             :placeholder="$t('community.pageSettings.basics.fields.namePlaceholder')"
-            :ui="{ 
-              base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pl-4',
-              placeholder: 'text-secondary-400 font-medium'
-            }"
-          />
-        </UFormGroup>
-
-        <UFormGroup :label="$t('community.pageSettings.basics.fields.url')" name="slug" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
-          <UInput
-            v-model="model.slug"
+            color="primary"
             size="xl"
-            :placeholder="$t('community.pageSettings.basics.fields.slugPlaceholder')"
-            :ui="{ 
-              base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pl-[124px]',
-              placeholder: 'text-secondary-400 font-medium'
-            }"
-          >
-            <template #leading>
-              <span class="pl-4 text-[13px] font-bold text-secondary-400">{{ urlPrefix }}</span>
-            </template>
-          </UInput>
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
 
-          <div class="mt-3 flex flex-wrap items-center gap-3">
-            <UBadge variant="soft" class="rounded-lg font-black text-[9px] uppercase tracking-widest px-3 py-1.5 bg-secondary-100 text-secondary-500 ring-1 ring-secondary-200">
-              {{ $t('community.pageSettings.basics.fields.urlSuggested', { slug: suggestedSlug || t('community.pageSettings.basics.fields.slugPlaceholder') }) }}
+        <UFormField
+          name="slug"
+          :label="$t('community.pageSettings.basics.fields.url')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <div class="relative">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-[13px] font-semibold text-slate-500">
+              {{ urlPrefix }}
+            </div>
+            <UInput
+              v-model="model.slug"
+              :placeholder="$t('community.pageSettings.basics.fields.slugPlaceholder')"
+              color="primary"
+              size="xl"
+              class="w-full"
+              :ui="slugInputUi"
+            />
+          </div>
+
+          <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
+            <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-medium text-[#243b63]">
+              {{ $t("community.pageSettings.basics.fields.urlSuggested", { slug: suggestedSlug || $t("community.pageSettings.basics.fields.slugPlaceholder") }) }}
             </UBadge>
-            <button
+            <UButton
               v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
-              class="rounded-lg border border-secondary-200 bg-white px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-primary-600 transition hover:bg-primary-50 hover:border-primary-200 shadow-sm active:scale-95"
               type="button"
+              color="neutral"
+              variant="outline"
+              size="sm"
+              class="rounded-full"
               @click="model.slug = suggestedSlug"
             >
-              {{ $t('community.pageSettings.basics.fields.urlUseSuggestion') }}
-            </button>
+              {{ $t("community.pageSettings.basics.fields.urlUseSuggestion") }}
+            </UButton>
           </div>
-        </UFormGroup>
+        </UFormField>
       </div>
 
-      <UFormGroup :label="$t('community.pageSettings.basics.fields.summary')" name="summary" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
+      <UFormField
+        name="summary"
+        :label="$t('community.pageSettings.basics.fields.summary')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
         <UTextarea
           v-model="model.summary"
-          size="xl"
-          :rows="6"
           :placeholder="$t('community.pageSettings.basics.fields.summaryPlaceholder')"
-          :ui="{ 
-            base: 'rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 p-4 leading-relaxed',
-            placeholder: 'text-secondary-400 font-medium'
-          }"
+          color="primary"
+          size="xl"
+          autoresize
+          :rows="6"
+          class="w-full"
+          :ui="textareaUi"
         />
-      </UFormGroup>
+      </UFormField>
 
-      <div class="grid gap-6 lg:grid-cols-2">
-        <UFormGroup :label="$t('community.pageSettings.basics.fields.category')" name="category" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
-          <USelectMenu
+      <div class="grid gap-5 lg:grid-cols-2">
+        <UFormField
+          name="category"
+          :label="$t('community.pageSettings.basics.fields.category')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <USelect
             v-model="model.category"
+            :items="categoryItems"
+            value-key="value"
+            label-key="label"
+            color="primary"
             size="xl"
-            :options="communityPageCategoryOptions"
-            value-attribute="value"
-            option-attribute="label"
-            :uiMenu="{ rounded: 'rounded-2xl', ring: 'ring-1 ring-secondary-100', shadow: 'shadow-2xl', base: 'p-1' }"
-          >
-            <template #default="{ open }">
-              <UButton
-                size="xl"
-                class="w-full h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 justify-between text-secondary-900 font-medium transition-all"
-                variant="ghost"
-              >
-                {{ $t(communityPageCategoryOptions.find(o => o.value === model.category)?.label || '') }}
-                <Icon name="i-ph-caret-down" class="h-4 w-4 text-secondary-400 transition-transform" :class="open ? 'rotate-180' : ''" />
-              </UButton>
-            </template>
-          </USelectMenu>
-        </UFormGroup>
+            class="w-full"
+            :ui="selectUi"
+          />
+        </UFormField>
 
-        <UFormGroup :label="$t('community.pageSettings.basics.fields.location')" name="location" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
+        <UFormField
+          name="locationLabel"
+          :label="$t('community.pageSettings.basics.fields.location')"
+          size="xl"
+          class="space-y-2"
+        >
           <UInput
             v-model="model.locationLabel"
-            size="xl"
-            icon="i-ph-map-pin-duotone"
             :placeholder="$t('community.pageSettings.basics.fields.locationPlaceholder')"
-            :ui="{ 
-              base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pl-4',
-              placeholder: 'text-secondary-400 font-medium'
-            }"
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
           />
-        </UFormGroup>
+        </UFormField>
       </div>
 
-      <div class="grid gap-6 lg:grid-cols-2">
-        <UFormGroup :label="$t('community.pageSettings.basics.fields.website')" name="website" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
+      <div class="grid gap-5 lg:grid-cols-2">
+        <UFormField
+          name="website"
+          :label="$t('community.pageSettings.basics.fields.website')"
+          size="xl"
+          class="space-y-2"
+        >
           <UInput
             v-model="model.website"
-            size="xl"
-            icon="i-ph-link-duotone"
             :placeholder="$t('community.pageSettings.basics.fields.websitePlaceholder')"
-            :ui="{ 
-              base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pl-4',
-              placeholder: 'text-secondary-400 font-medium'
-            }"
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup :label="$t('community.pageSettings.basics.fields.ownerLabel')" name="owner" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
+        <UFormField
+          name="ownerLabel"
+          :label="$t('community.pageSettings.basics.fields.ownerLabel')"
+          size="xl"
+          class="space-y-2"
+        >
           <UInput
             v-model="model.ownerLabel"
-            size="xl"
-            icon="i-ph-user-focus-duotone"
             :placeholder="$t('community.pageSettings.basics.fields.ownerPlaceholder')"
-            :ui="{ 
-              base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pl-4',
-              placeholder: 'text-secondary-400 font-medium'
-            }"
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
           />
-        </UFormGroup>
+        </UFormField>
       </div>
 
-      <div class="grid gap-6 lg:grid-cols-2">
-        <UFormGroup :label="$t('community.pageSettings.basics.fields.responseLabel')" name="response" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
+      <div class="grid gap-5 lg:grid-cols-2">
+        <UFormField
+          name="responseLabel"
+          :label="$t('community.pageSettings.basics.fields.responseLabel')"
+          size="xl"
+          class="space-y-2"
+        >
           <UInput
             v-model="model.responseLabel"
-            size="xl"
-            icon="i-ph-timer-duotone"
             :placeholder="$t('community.pageSettings.basics.fields.responsePlaceholder')"
-            :ui="{ 
-              base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pl-4',
-              placeholder: 'text-secondary-400 font-medium'
-            }"
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup :label="$t('community.pageSettings.basics.fields.ctaLabel')" name="cta" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
+        <UFormField
+          name="ctaLabel"
+          :label="$t('community.pageSettings.basics.fields.ctaLabel')"
+          size="xl"
+          class="space-y-2"
+        >
           <UInput
             v-model="model.ctaLabel"
-            size="xl"
-            icon="i-ph-cursor-click-duotone"
             :placeholder="$t('community.pageSettings.basics.fields.ctaPlaceholder')"
-            :ui="{ 
-              base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pl-4',
-              placeholder: 'text-secondary-400 font-medium'
-            }"
+            color="primary"
+            size="xl"
+            class="w-full"
+            :ui="inputUi"
           />
-        </UFormGroup>
+        </UFormField>
       </div>
 
-      <UFormGroup :label="$t('community.pageSettings.basics.fields.tags')" name="tags" :ui="{ label: { base: 'text-[11px] font-black uppercase tracking-widest text-secondary-900 mb-2 pl-1' } }">
+      <UFormField
+        name="tags"
+        :label="$t('community.pageSettings.basics.fields.tags')"
+        size="xl"
+        class="space-y-2"
+      >
         <UInput
           v-model="model.tags"
-          size="xl"
-          icon="i-ph-tag-duotone"
           :placeholder="$t('community.pageSettings.basics.fields.tagsPlaceholder')"
-          :ui="{ 
-            base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pl-4',
-            placeholder: 'text-secondary-400 font-medium'
-          }"
+          color="primary"
+          size="xl"
+          class="w-full"
+          :ui="inputUi"
         />
-      </UFormGroup>
+      </UFormField>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div v-for="stat in [
-          { label: 'community.pageSettings.basics.fields.summary', value: $t('community.pageSettings.basics.stats.summaryLength', { count: model.summary.trim().length }) },
-          { label: 'community.pageSettings.basics.stats.topicsLabel', value: $t('community.pageSettings.basics.stats.tagCount', { count: tagCount }) },
-          { label: 'community.pageSettings.basics.stats.ctaLabel', value: model.ctaLabel.trim() || $t('community.pageSettings.basics.stats.ctaFallback') },
-          { label: 'community.pageSettings.basics.stats.publicLinkLabel', value: model.website.trim() ? $t('community.pageSettings.basics.stats.websiteYes') : $t('community.pageSettings.basics.stats.websiteNo') }
-        ]" :key="stat.label" class="rounded-2xl bg-secondary-50/50 p-4 ring-1 ring-secondary-100/50 transition-all hover:ring-primary-100/50">
-          <p class="text-[9px] font-black uppercase tracking-widest text-primary-500 mb-2">{{ $t(stat.label) }}</p>
-          <p class="text-[11px] font-black uppercase tracking-widest text-secondary-900 leading-none truncate">{{ stat.value }}</p>
+      <div class="grid gap-3 sm:grid-cols-4">
+        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.fields.summary") }}</p>
+          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.pageSettings.basics.stats.summaryLength", { count: model.summary.trim().length }) }}</p>
+        </div>
+        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.topicsLabel") }}</p>
+          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.pageSettings.basics.stats.tagCount", { count: tagCount }) }}</p>
+        </div>
+        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.ctaLabel") }}</p>
+          <p class="mt-1 truncate text-[15px] font-black text-[#243b63]">{{ model.ctaLabel.trim() || $t("community.pageSettings.basics.stats.ctaFallback") }}</p>
+        </div>
+        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.publicLinkLabel") }}</p>
+          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ model.website.trim() ? $t("community.pageSettings.basics.stats.websiteYes") : $t("community.pageSettings.basics.stats.websiteNo") }}</p>
         </div>
       </div>
     </div>
@@ -204,7 +245,6 @@ import {
   communityPageUrlPrefix,
   createCommunitySlug,
 } from "../../../types/community"
-import { computed } from "vue"
 import type { CommunityPageSettingsDraft } from "../../../types/community"
 
 const model = defineModel<CommunityPageSettingsDraft>({ required: true })
@@ -214,7 +254,30 @@ defineProps<{
   pagePath: string
 }>()
 
+const inputUi = {
+  base: "h-14 rounded-[18px] px-4 text-[15px]",
+}
+
+const slugInputUi = {
+  base: "h-14 rounded-[18px] pl-[8.1rem] pr-4 text-[15px]",
+}
+
+const textareaUi = {
+  base: "min-h-[160px] rounded-[18px] px-4 py-3 text-[15px] leading-7",
+}
+
+const selectUi = {
+  base: "h-14 rounded-[18px] px-4 text-[15px]",
+}
+
 const urlPrefix = communityPageUrlPrefix.replace("https://", "")
+
+const categoryItems = computed(() =>
+  communityPageCategoryOptions.map(option => ({
+    value: option.value,
+    label: t(option.label),
+  })),
+)
 
 const suggestedSlug = computed(() =>
   createCommunitySlug(model.value.name),

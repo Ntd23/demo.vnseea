@@ -1,5 +1,13 @@
 export type EventTabKey = "upcoming" | "my" | "going" | "invited" | "interested" | "past"
 export type EventRsvpState = "none" | "going" | "interested" | "not_interested" | "invited"
+export type EventCategoryKey = "all" | "community" | "education" | "business" | "culture" | "technology"
+export type EventCityKey = "all" | "ho-chi-minh" | "ha-noi" | "da-nang" | "online"
+export type EventSortKey = "soonest" | "going" | "interested"
+
+export const eventTabKeys: EventTabKey[] = ["upcoming", "my", "going", "invited", "interested", "past"]
+export const eventCategoryKeys: EventCategoryKey[] = ["all", "community", "education", "business", "culture", "technology"]
+export const eventCityKeys: EventCityKey[] = ["all", "ho-chi-minh", "ha-noi", "da-nang", "online"]
+export const eventSortKeys: EventSortKey[] = ["soonest", "going", "interested"]
 
 export type EventTab = {
   key: EventTabKey
@@ -8,9 +16,14 @@ export type EventTab = {
 }
 
 export type EventCategory = {
-  value: string
+  value: EventCategoryKey
   label: string
   icon: string
+}
+
+export type EventCity = {
+  value: EventCityKey
+  label: string
 }
 
 export type EventAttendee = {
@@ -25,14 +38,14 @@ export type EventAttendee = {
 export type MockEvent = {
   id: string
   title: string
-  category: string
+  category: Exclude<EventCategoryKey, "all">
   categoryLabel: string
   host: string
   hostRole: string
   hostInitials: string
   hostGradient: string
   location: string
-  city: string
+  city: Exclude<EventCityKey, "all">
   startsAt: string
   endsAt: string
   dateLabel: string
@@ -82,7 +95,7 @@ export const useMockEventsData = () => {
     { value: "technology", label: t("pages.eventsPage.categoryTechnology"), icon: "i-ph-cpu" },
   ]
 
-  const eventCities = [
+  const eventCities: EventCity[] = [
     { value: "all", label: t("pages.eventsPage.anywhere") },
     { value: "ho-chi-minh", label: t("pages.eventsPage.cityHoChiMinh") },
     { value: "ha-noi", label: t("pages.eventsPage.cityHaNoi") },

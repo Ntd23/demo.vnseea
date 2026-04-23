@@ -1,44 +1,43 @@
 <template>
-  <section class="surface-card group overflow-hidden p-8 sm:p-12 ring-1 ring-secondary-200/50 shadow-2xl relative bg-white">
-    <!-- Premium Decorations -->
-    <div class="pointer-events-none absolute right-[-5%] top-[-30%] h-96 w-96 rounded-full bg-primary-100/30 blur-[120px] transition-transform duration-1000 group-hover:scale-110" />
-    <div class="pointer-events-none absolute bottom-[-40%] left-[5%] h-80 w-80 rounded-full bg-emerald-100/20 blur-[120px] transition-transform duration-1000 group-hover:-translate-x-4" />
+  <section class="relative overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-[linear-gradient(135deg,#ffffff_0%,#f7f9ff_52%,#eef3ff_100%)] px-5 py-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:px-7">
+    <div class="pointer-events-none absolute right-[-8%] top-[-20%] h-44 w-44 rounded-full bg-[#0000ff]/8 blur-3xl" />
+    <div class="pointer-events-none absolute bottom-[-34%] left-[12%] h-40 w-40 rounded-full bg-[#9ad89f]/18 blur-3xl" />
 
-    <div class="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-8">
-        <!-- Main Icon Container -->
-        <div class="flex h-20 w-20 sm:h-24 sm:w-24 shrink-0 items-center justify-center rounded-[32px] bg-gradient-to-br from-primary-600 to-primary-700 text-white shadow-2xl shadow-primary-500/30 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
-          <Icon :name="icon.includes('duotone') ? icon : icon.replace('-fill', '-duotone')" class="h-10 w-10 sm:h-12 sm:w-12" />
+    <div class="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex items-center gap-4">
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[#0000ff] text-white shadow-[0_14px_28px_rgba(0,0,255,0.24)]">
+          <Icon :name="icon" class="h-7 w-7" />
         </div>
 
-        <div class="min-w-0 space-y-2.5">
+        <div class="min-w-0">
           <p
             v-if="eyebrow"
-            class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1"
+            class="text-[11px] font-bold uppercase tracking-[0.24em] text-[#0000ff]/60"
           >
             {{ $t(eyebrow) }}
           </p>
-          <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-secondary-900 leading-none">
+          <h1 class="text-[1.9rem] font-black tracking-[-0.05em] text-[#141414] sm:text-[2.15rem]">
             {{ $t(title) }}
           </h1>
           <p
             v-if="description"
-            class="text-base font-medium leading-relaxed text-secondary-500 max-w-2xl pl-1 italic"
+            class="mt-1 text-[14px] leading-6 text-slate-500"
           >
-            "{{ $t(description) }}"
+            {{ $t(description) }}
           </p>
         </div>
       </div>
 
-      <!-- Highlights/Badges Container -->
-      <div class="flex flex-wrap gap-3 pt-6 lg:pt-0">
-        <div
+      <div class="flex flex-wrap gap-2">
+        <UBadge
           v-for="highlight in normalizedHighlights"
           :key="highlight"
-          class="rounded-2xl border border-secondary-100 bg-secondary-50/50 px-6 py-3 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100/50 hover:shadow-md hover:-translate-y-1 active:scale-95"
+          color="neutral"
+          variant="soft"
+          class="rounded-full border border-[#dbe3f2] bg-white/85 px-3.5 py-2 text-[12px] font-semibold text-slate-600 shadow-[0_8px_18px_rgba(15,35,110,0.04)] backdrop-blur-[8px]"
         >
           {{ $t(highlight) }}
-        </div>
+        </UBadge>
       </div>
     </div>
   </section>

@@ -1,155 +1,452 @@
 <template>
-  <AuthSplitShell :hero-props="heroProps">
-    <template #right>
-      <div class="w-full max-w-[420px] mx-auto space-y-10">
-        <section class="space-y-3">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
-            {{ $t('pages.registerPage.eyebrow') }}
-          </p>
-          <h1 class="text-5xl font-black leading-[0.9] tracking-tighter text-secondary-900 sm:text-6xl">
-            {{ $t('pages.registerPage.title') }}
-          </h1>
-          <p class="text-base font-medium leading-relaxed text-secondary-500 sm:text-lg">
-            {{ $t('pages.registerPage.subtitle') }}
-          </p>
-        </section>
+  <div class="mx-auto w-full max-w-[720px]">
+    <section class="flex flex-col gap-2">
+      <p class="text-[13px] font-extrabold tracking-[0.32em] text-[#0000ff]">{{ $t('pages.registerPage.eyebrow') }}</p>
+      <h1 class="text-[2.35rem] font-black leading-[0.95] tracking-[-0.08em] text-[#0000ff] sm:text-[2.7rem]">{{ $t('pages.registerPage.title') }}</h1>
+      <p class="max-w-[38rem] text-[1rem] leading-7 text-slate-500">{{ $t('pages.registerPage.subtitle') }}</p>
+    </section>
 
-        <section class="space-y-5">
-          <div class="grid grid-cols-2 gap-4">
-            <UFormGroup
-              :label="$t('pages.registerPage.firstName')"
-              label-class="text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2"
-            >
-              <UInput
-                id="register-firstname"
-                size="xl"
-                :placeholder="$t('pages.registerPage.firstNamePlaceholder')"
-                :ui="{
-                  base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
-                }"
-              />
-            </UFormGroup>
-            <UFormGroup
-              :label="$t('pages.registerPage.lastName')"
-              label-class="text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2"
-            >
-              <UInput
-                id="register-lastname"
-                size="xl"
-                :placeholder="$t('pages.registerPage.lastNamePlaceholder')"
-                :ui="{
-                  base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
-                }"
-              />
-            </UFormGroup>
-          </div>
+    <UForm
+      :state="form"
+      :validate="validateForm"
+      class="mt-8 flex flex-col gap-5"
+      @submit="handleRegister"
+      @error="handleFormError"
+    >
+      <UAlert
+        v-if="statusAlert"
+        :color="statusAlert.color"
+        variant="subtle"
+        :icon="statusAlert.icon"
+        :title="statusAlert.title"
+        :description="statusAlert.description"
+        class="rounded-[20px]"
+      />
 
-          <UFormGroup
-            :label="$t('pages.registerPage.emailOrPhone')"
-            label-class="text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2"
-          >
-            <UInput
-              id="register-email"
-              size="xl"
-              icon="i-ph-envelope-duotone"
-              autocomplete="username"
-              :ui="{
-                base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
-                icon: { leading: { pointer: 'pointer-events-none', base: 'text-primary-500' } }
-              }"
-            />
-          </UFormGroup>
+      <div class="grid gap-4 md:grid-cols-2">
+        <UFormField
+          name="firstName"
+          :label="$t('pages.registerPage.firstName')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <UInput
+            v-model="form.firstName"
+            autocomplete="given-name"
+            size="xl"
+            color="primary"
+            :placeholder="$t('pages.registerPage.firstNamePlaceholder')"
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
 
-          <UFormGroup
-            :label="$t('pages.registerPage.newPassword')"
-            label-class="text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2"
-          >
-            <UInput
-              id="register-password"
-              v-model="password"
-              size="xl"
-              :type="showPassword ? 'text' : 'password'"
-              icon="i-ph-lock-duotone"
-              autocomplete="new-password"
-              :ui="{
-                base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 pr-12',
-                icon: { leading: { pointer: 'pointer-events-none', base: 'text-primary-500' } }
-              }"
-            >
-              <template #trailing>
-                <button type="button" class="flex items-center justify-center h-10 w-10 text-secondary-400 hover:text-primary-600 transition-colors" @click="showPassword = !showPassword">
-                  <Icon :name="showPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'" class="h-5 w-5" />
-                </button>
-              </template>
-            </UInput>
-          </UFormGroup>
-
-          <UFormGroup
-            :label="$t('pages.registerPage.birthday')"
-            label-class="text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2"
-          >
-            <div class="flex gap-3">
-              <select class="h-14 flex-1 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 px-4 text-xs font-black uppercase tracking-widest appearance-none outline-none transition-all duration-300">
-                <option value="">{{ $t('pages.registerPage.day') }}</option>
-                <option v-for="d in 31" :key="d" :value="d">{{ d }}</option>
-              </select>
-              <select class="h-14 flex-1 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 px-4 text-xs font-black uppercase tracking-widest appearance-none outline-none transition-all duration-300">
-                <option value="">{{ $t('pages.registerPage.month') }}</option>
-                <option v-for="m in 12" :key="m" :value="m">{{ $t('pages.registerPage.monthShort', { month: m }) }}</option>
-              </select>
-              <select class="h-14 flex-1 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 px-4 text-xs font-black uppercase tracking-widest appearance-none outline-none transition-all duration-300">
-                <option value="">{{ $t('pages.registerPage.year') }}</option>
-                <option v-for="y in 50" :key="y" :value="2026 - y">{{ 2026 - y }}</option>
-              </select>
-            </div>
-          </UFormGroup>
-
-          <UFormGroup
-            :label="$t('pages.registerPage.gender')"
-            label-class="text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2"
-          >
-            <div class="flex gap-3">
-              <label v-for="g in ['female', 'male', 'custom']" :key="g" class="flex-1 cursor-pointer group">
-                <input class="sr-only peer" name="gender" type="radio" :value="g">
-                <div class="h-14 flex items-center justify-center rounded-2xl bg-secondary-50/50 border border-secondary-100 transition-all duration-300 peer-checked:bg-primary-600 peer-checked:border-primary-600 peer-checked:text-white peer-checked:shadow-lg peer-checked:shadow-primary-500/20 group-hover:border-primary-500/50">
-                  <span class="text-[10px] font-black uppercase tracking-widest">{{ $t(`pages.registerPage.${g}`) }}</span>
-                </div>
-              </label>
-            </div>
-          </UFormGroup>
-
-          <div class="pt-4 space-y-6">
-            <UButton
-              size="xl"
-              block
-              class="h-14 rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-primary-500/30 transition-all active:scale-[0.98]"
-            >
-              <template #leading>
-                <Icon name="i-ph-user-plus-duotone" class="h-5 w-5" />
-              </template>
-              {{ $t('pages.registerPage.submit') }}
-            </UButton>
-
-            <div class="flex items-center justify-center gap-1.5 py-2">
-              <p class="text-xs font-medium text-secondary-400">{{ $t('pages.registerPage.hasAccount') }}</p>
-              <NuxtLink class="text-xs font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest decoration-primary-600/30 decoration-2 underline-offset-4 hover:underline" to="/welcome">
-                {{ $t('pages.registerPage.login') }}
-              </NuxtLink>
-            </div>
-          </div>
-        </section>
+        <UFormField
+          name="lastName"
+          :label="$t('pages.registerPage.lastName')"
+          required
+          size="xl"
+          class="space-y-2"
+        >
+          <UInput
+            v-model="form.lastName"
+            autocomplete="family-name"
+            size="xl"
+            color="primary"
+            :placeholder="$t('pages.registerPage.lastNamePlaceholder')"
+            class="w-full"
+            :ui="inputUi"
+          />
+        </UFormField>
       </div>
-    </template>
-  </AuthSplitShell>
+
+      <UFormField
+        name="emailOrPhone"
+        :label="$t('pages.registerPage.emailOrPhone')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
+        <UInput
+          v-model="form.emailOrPhone"
+          autocomplete="username"
+          size="xl"
+          color="primary"
+          :placeholder="$t('pages.registerPage.emailOrPhonePlaceholder')"
+          class="w-full"
+          :ui="inputUi"
+        />
+      </UFormField>
+
+      <UFormField
+        name="password"
+        :label="$t('pages.registerPage.newPassword')"
+        required
+        size="xl"
+        class="space-y-2"
+      >
+        <UInput
+          v-model="form.password"
+          name="password"
+          :type="showPassword ? 'text' : 'password'"
+          autocomplete="new-password"
+          size="xl"
+          color="primary"
+          :placeholder="$t('pages.registerPage.newPasswordPlaceholder')"
+          class="w-full"
+          :ui="passwordInputUi"
+        >
+          <template #trailing>
+            <button
+              type="button"
+              class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[#0000ff]"
+              :aria-label="showPassword ? $t('pages.registerPage.hidePassword') : $t('pages.registerPage.showPassword')"
+              @click="showPassword = !showPassword"
+            >
+              <Icon :name="showPassword ? 'i-ph-eye-slash-bold' : 'i-ph-eye-bold'" class="h-5 w-5" />
+            </button>
+          </template>
+        </UInput>
+      </UFormField>
+
+      <div class="space-y-2">
+        <p class="text-[0.95rem] font-medium text-slate-700">
+          {{ $t('pages.registerPage.birthday') }}
+        </p>
+
+        <div class="grid gap-3 md:grid-cols-3">
+          <UFormField name="birthdayDay" class="space-y-2">
+            <USelect
+              v-model="form.birthdayDay"
+              :items="dayOptions"
+              value-key="value"
+              label-key="label"
+              size="xl"
+              color="primary"
+              :placeholder="$t('pages.registerPage.day')"
+              :aria-label="$t('pages.registerPage.day')"
+              class="w-full"
+              :ui="selectUi"
+            />
+          </UFormField>
+
+          <UFormField name="birthdayMonth" class="space-y-2">
+            <USelect
+              v-model="form.birthdayMonth"
+              :items="monthOptions"
+              value-key="value"
+              label-key="label"
+              size="xl"
+              color="primary"
+              :placeholder="$t('pages.registerPage.month')"
+              :aria-label="$t('pages.registerPage.month')"
+              class="w-full"
+              :ui="selectUi"
+            />
+          </UFormField>
+
+          <UFormField name="birthdayYear" class="space-y-2">
+            <USelect
+              v-model="form.birthdayYear"
+              :items="yearOptions"
+              value-key="value"
+              label-key="label"
+              size="xl"
+              color="primary"
+              :placeholder="$t('pages.registerPage.year')"
+              :aria-label="$t('pages.registerPage.year')"
+              class="w-full"
+              :ui="selectUi"
+            />
+          </UFormField>
+        </div>
+      </div>
+
+      <UFormField
+        name="gender"
+        :label="$t('pages.registerPage.gender')"
+        required
+        size="xl"
+        class="space-y-3"
+      >
+        <URadioGroup
+          v-model="form.gender"
+          :items="genderOptions"
+          value-key="value"
+          label-key="label"
+          color="primary"
+          variant="card"
+          indicator="end"
+          size="xl"
+          :ui="radioGroupUi"
+        />
+      </UFormField>
+
+      <UButton
+        type="submit"
+        loading-auto
+        loading-icon="i-lucide-loader-2"
+        color="primary"
+        variant="solid"
+        block
+        size="xl"
+        :disabled="isSubmitDisabled"
+        class="mt-1 h-[3.95rem] rounded-[1.45rem] text-[1.05rem] font-black shadow-[0_14px_32px_rgba(0,0,255,0.18)]"
+      >
+        {{ submitLabel }}
+      </UButton>
+
+      <p class="text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
+        {{ $t('pages.registerPage.hasAccount') }}
+        <NuxtLink class="font-extrabold text-[#0000ff]" to="/welcome">{{ $t('pages.registerPage.login') }}</NuxtLink>
+      </p>
+    </UForm>
+  </div>
 </template>
 
 <script setup lang="ts">
-const password = ref('')
+type RegisterGender = 'female' | 'male' | 'custom'
+
+type RegisterFormState = {
+  firstName: string
+  lastName: string
+  emailOrPhone: string
+  password: string
+  birthdayDay?: string
+  birthdayMonth?: string
+  birthdayYear?: string
+  gender?: RegisterGender
+}
+
+type RegisterFormError = {
+  name?: keyof RegisterFormState
+  message: string
+}
+
+const form = reactive<RegisterFormState>({
+  firstName: '',
+  lastName: '',
+  emailOrPhone: '',
+  password: '',
+  birthdayDay: undefined,
+  birthdayMonth: undefined,
+  birthdayYear: undefined,
+  gender: undefined,
+})
+
+const inputUi = {
+  base: 'h-[3.85rem] rounded-[1.45rem] px-5 text-[1rem]',
+}
+
+const passwordInputUi = {
+  base: 'h-[3.85rem] rounded-[1.45rem] px-5 pe-14 text-[1rem]',
+}
+
+const selectUi = {
+  base: 'h-[3.85rem] rounded-[1.45rem] px-5 text-[1rem]',
+}
+
+const radioGroupUi = {
+  fieldset: 'grid grid-cols-1 gap-3 md:grid-cols-3',
+  item: 'min-h-[4.85rem] items-center rounded-[1.45rem] border px-4 py-4 transition hover:border-[#c8d9ef]',
+  container: 'h-full',
+  wrapper: 'flex-1',
+  label: 'text-[1rem] font-semibold text-slate-700',
+  base: 'size-5 ring-[#cbd9ea] bg-white data-[state=checked]:ring-[#0000ff]',
+}
+
 const showPassword = ref(false)
+const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
 const { t } = useI18n()
-const heroProps = computed(() => ({
-  title: t('pages.registerPage.heroTitle'),
-  subtitle: t('pages.registerPage.subtitle'),
-}))
-useSeoMeta({ title: () => t('pages.registerPage.seoTitle') })
+const currentYear = new Date().getFullYear()
+
+const dayOptions = computed(() =>
+  Array.from({ length: 31 }, (_, index) => {
+    const value = String(index + 1)
+
+    return {
+      label: value,
+      value,
+    }
+  }),
+)
+
+const monthOptions = computed(() =>
+  Array.from({ length: 12 }, (_, index) => {
+    const value = String(index + 1)
+
+    return {
+      label: t('pages.registerPage.monthShort', { month: index + 1 }),
+      value,
+    }
+  }),
+)
+
+const yearOptions = computed(() =>
+  Array.from({ length: 100 }, (_, index) => {
+    const year = String(currentYear - index)
+
+    return {
+      label: year,
+      value: year,
+    }
+  }),
+)
+
+const genderOptions = computed(() => {
+  const selectedClass = 'border-[#0000ff] bg-[#eef3ff] shadow-[0_10px_20px_rgba(0,0,255,0.08)]'
+  const defaultClass = 'border-[#d5e4f0] bg-white shadow-sm'
+
+  return [
+    {
+      label: t('pages.registerPage.female'),
+      value: 'female',
+      class: form.gender === 'female' ? selectedClass : defaultClass,
+    },
+    {
+      label: t('pages.registerPage.male'),
+      value: 'male',
+      class: form.gender === 'male' ? selectedClass : defaultClass,
+    },
+    {
+      label: t('pages.registerPage.custom'),
+      value: 'custom',
+      class: form.gender === 'custom' ? selectedClass : defaultClass,
+    },
+  ] satisfies Array<{ label: string, value: RegisterGender, class: string }>
+})
+
+const validateForm = (state: RegisterFormState): RegisterFormError[] => {
+  const errors: RegisterFormError[] = []
+
+  if (!state.firstName.trim()) {
+    errors.push({
+      name: 'firstName',
+      message: t('pages.registerPage.validationFirstNameRequired'),
+    })
+  }
+
+  if (!state.lastName.trim()) {
+    errors.push({
+      name: 'lastName',
+      message: t('pages.registerPage.validationLastNameRequired'),
+    })
+  }
+
+  if (!state.emailOrPhone.trim()) {
+    errors.push({
+      name: 'emailOrPhone',
+      message: t('pages.registerPage.validationEmailOrPhoneRequired'),
+    })
+  }
+
+  if (!state.password.trim()) {
+    errors.push({
+      name: 'password',
+      message: t('pages.registerPage.validationPasswordRequired'),
+    })
+  }
+  else if (state.password.trim().length < 6) {
+    errors.push({
+      name: 'password',
+      message: t('pages.registerPage.validationPasswordLength'),
+    })
+  }
+
+  if (!state.birthdayDay) {
+    errors.push({
+      name: 'birthdayDay',
+      message: t('pages.registerPage.validationBirthdayRequired'),
+    })
+  }
+
+  if (!state.birthdayMonth) {
+    errors.push({
+      name: 'birthdayMonth',
+      message: t('pages.registerPage.validationBirthdayRequired'),
+    })
+  }
+
+  if (!state.birthdayYear) {
+    errors.push({
+      name: 'birthdayYear',
+      message: t('pages.registerPage.validationBirthdayRequired'),
+    })
+  }
+
+  if (!state.gender) {
+    errors.push({
+      name: 'gender',
+      message: t('pages.registerPage.validationGenderRequired'),
+    })
+  }
+
+  return errors
+}
+
+const isSubmitDisabled = computed(() =>
+  submitState.value === 'loading'
+  || !form.firstName.trim()
+  || !form.lastName.trim()
+  || !form.emailOrPhone.trim()
+  || !form.password.trim()
+  || !form.birthdayDay
+  || !form.birthdayMonth
+  || !form.birthdayYear
+  || !form.gender,
+)
+
+const submitLabel = computed(() =>
+  submitState.value === 'loading'
+    ? t('pages.registerPage.submitting')
+    : t('pages.registerPage.submit'),
+)
+
+const statusAlert = computed(() => {
+  if (submitState.value === 'success') {
+    return {
+      color: 'success' as const,
+      icon: 'i-ph-check-circle-fill',
+      title: t('pages.registerPage.statusSuccessTitle'),
+      description: t('pages.registerPage.statusSuccessDescription'),
+    }
+  }
+
+  if (submitState.value === 'error') {
+    return {
+      color: 'error' as const,
+      icon: 'i-ph-warning-circle-fill',
+      title: t('pages.registerPage.statusErrorTitle'),
+      description: t('pages.registerPage.statusErrorDescription'),
+    }
+  }
+
+  return null
+})
+
+const handleRegister = async () => {
+  submitState.value = 'loading'
+  await new Promise(resolve => setTimeout(resolve, 500))
+  submitState.value = 'success'
+}
+
+const handleFormError = () => {
+  submitState.value = 'error'
+}
+
+watch(() => [
+  form.firstName,
+  form.lastName,
+  form.emailOrPhone,
+  form.password,
+  form.birthdayDay,
+  form.birthdayMonth,
+  form.birthdayYear,
+  form.gender,
+], () => {
+  if (submitState.value !== 'loading') {
+    submitState.value = 'idle'
+  }
+})
 </script>

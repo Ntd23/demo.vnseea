@@ -666,6 +666,16 @@ export function createCommunityGroupSettingsDraft(
   }
 }
 
+export function createCommunityGroupDraft(group?: CommunityGroupRecord): CommunityDraft {
+  return {
+    name: group?.name ?? "",
+    slug: group?.slug ?? "",
+    description: group?.summary ?? "",
+    privacy: group?.privacy ?? "public",
+    category: group?.category ?? communityCategoryOptions[0]?.value ?? "auto",
+  }
+}
+
 export function createCommunityPageSettingsDraft(
   page?: CommunityPageRecord,
 ): CommunityPageSettingsDraft {

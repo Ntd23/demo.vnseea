@@ -57,6 +57,113 @@ export type FundingCreatePayload = {
   description: string
 }
 
+export type FundingDonationPresentation = {
+  supporterName: string
+  supporterInitials: string
+  fallbackMessage: string
+  donatedAt: string
+  gradient?: string
+}
+
+export const fundingCategoryKeys = [
+  "community",
+  "education",
+  "health",
+  "environment",
+  "startup",
+] as const satisfies FundingCategoryKey[]
+
+export const fundingStatusKeys = [
+  "all",
+  "active",
+  "ending",
+  "funded",
+  "mine",
+] as const satisfies FundingStatusKey[]
+
+export const readFundingQueryValue = (value: unknown) => {
+  if (Array.isArray(value)) return String(value[0] || "")
+  return typeof value === "string" ? value : ""
+}
+
+export const normalizeFundingCategory = (value: string): "all" | FundingCategoryKey => {
+  if (fundingCategoryKeys.includes(value as FundingCategoryKey)) {
+    return value as FundingCategoryKey
+  }
+
+  return "all"
+}
+
+export const normalizeFundingStatus = (value: string): FundingStatusKey => {
+  if (fundingStatusKeys.includes(value as FundingStatusKey)) {
+    return value as FundingStatusKey
+  }
+
+  return "all"
+}
+
+export const filterFundingCampaigns = (
+  campaigns: ReadonlyArray<MockFundingCampaign>,
+  search: string,
+  category: "all" | FundingCategoryKey,
+  status: FundingStatusKey,
+) => {
+  const keyword = search.trim().toLowerCase()
+
+  return campaigns.filter((campaign) => {
+    const matchesKeyword = keyword.length === 0 || [
+      campaign.title,
+      campaign.owner,
+      campaign.location,
+      campaign.categoryLabel,
+      campaign.summary,
+      campaign.description,
+      ...campaign.impact,
+    ].some(field => field.toLowerCase().includes(keyword))
+
+    const matchesCategory = category === "all" || campaign.category === category
+    const matchesStatus = status === "all"
+      || (status === "mine" ? campaign.isOwner : campaign.status === status)
+
+    return matchesKeyword && matchesCategory && matchesStatus
+  })
+}
+
+export const cloneFundingCampaign = (campaign: MockFundingCampaign): MockFundingCampaign => ({
+  ...campaign,
+  impact: [...campaign.impact],
+  rewards: [...campaign.rewards],
+  donors: campaign.donors.map(donor => ({ ...donor })),
+})
+
+export const applyFundingDonation = (
+  campaign: MockFundingCampaign,
+  payload: DonationPayload,
+  presentation: FundingDonationPresentation,
+) => {
+  campaign.raisedAmount += payload.amount
+  campaign.backers += 1
+  campaign.status = campaign.raisedAmount >= campaign.goalAmount
+    ? "funded"
+    : campaign.daysLeft <= 10
+      ? "ending"
+      : "active"
+  campaign.donors = [
+    {
+      id: Date.now(),
+      name: presentation.supporterName,
+      initials: presentation.supporterInitials,
+      gradient: presentation.gradient ?? "linear-gradient(135deg,var(--color-primary-500),var(--color-accent-500))",
+      amount: payload.amount,
+      message: payload.message.trim() || presentation.fallbackMessage,
+      donatedAt: presentation.donatedAt,
+    },
+    ...campaign.donors,
+  ]
+
+  return campaign
+}
+
 export const useMockFundingData = () => {
   const { t } = useI18n()
 
