@@ -1,29 +1,28 @@
-<template>
-  <div class="rounded-[18px] border border-[#0000ff]/10 bg-white p-5 shadow-[0_2px_12px_rgba(0,0,255,0.04)]">
-    <h3 class="text-heading text-[18px]">{{ t("pages.profilePage.aboutCard.title") }}</h3>
+  <div class="surface-card p-6 space-y-6">
+    <h3 class="text-sm font-black text-secondary-900 tracking-tight">{{ t("pages.profilePage.aboutCard.title") }}</h3>
 
-    <!-- Overview -->
-    <div class="mt-4 space-y-4">
-      <div v-for="section in sections" :key="section.title">
-        <h4 class="text-caption-primary mb-2 flex items-center gap-2">
-          <span class="flex h-7 w-7 items-center justify-center rounded-full border-4 border-[#0000ff]/8 bg-[#0000ff]/5 text-[#0000ff]/60">
-            <Icon :name="section.icon" class="h-3.5 w-3.5" />
-          </span>
+    <!-- Overview Categories -->
+    <div class="divide-y divide-secondary-100 border border-secondary-100 rounded-2xl overflow-hidden bg-secondary-50/20">
+      <div v-for="section in sections" :key="section.title" class="p-5 space-y-4 transition-colors hover:bg-white/40 group">
+        <h4 class="text-[10px] font-bold uppercase tracking-widest text-secondary-400 flex items-center gap-3">
+          <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary-100 text-secondary-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+            <Icon :name="section.icon" class="h-4 w-4" />
+          </div>
           {{ section.title }}
         </h4>
-        <div class="space-y-2 pl-9">
-          <div v-for="item in section.items" :key="item.value" class="flex items-start gap-2">
-            <Icon :name="item.icon" class="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
-            <div>
-              <p class="text-body-primary text-[13px] font-medium">{{ item.value }}</p>
-              <p v-if="item.sub" class="text-caption-secondary">{{ item.sub }}</p>
+        
+        <div class="space-y-4 pl-11">
+          <div v-for="item in section.items" :key="item.value" class="flex items-start gap-4">
+            <Icon :name="item.icon" class="mt-1 h-5 w-5 shrink-0 text-secondary-300 group-hover:text-primary-400 transition-colors" />
+            <div class="space-y-0.5">
+              <p class="text-sm font-black text-secondary-900 leading-tight group-hover:text-primary-700 transition-colors">{{ item.value }}</p>
+              <p v-if="item.sub" class="text-[11px] font-medium text-secondary-500">{{ item.sub }}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</template>
 
 <script setup lang="ts">
 const { t } = useI18n()

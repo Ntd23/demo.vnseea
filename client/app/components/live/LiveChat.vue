@@ -1,57 +1,100 @@
 <template>
-  <section ref="chatPanel" class="flex min-h-[520px] flex-col rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
-    <div class="border-b border-[var(--border-default)] p-4">
-      <div class="flex items-center justify-between gap-3">
-        <div>
-          <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t("pages.livePage.chatEyebrow") }}</p>
-          <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.livePage.chatTitle") }}</h2>
+  <section class="surface-card flex min-h-[620px] flex-col overflow-hidden border-none ring-1 ring-secondary-100 shadow-xl">
+    <div class="shrink-0 bg-white px-6 py-5 border-b border-secondary-50 shadow-sm relative z-10">
+      <div class="flex items-center justify-between gap-4">
+        <div class="space-y-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
+            {{ $t("pages.livePage.chatEyebrow") }}
+          </p>
+          <h2 class="text-xl font-black tracking-tight text-secondary-900 leading-none">
+            {{ $t("pages.livePage.chatTitle") }}
+          </h2>
         </div>
-        <span class="inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">
-          <span class="h-2 w-2 rounded-full bg-[var(--color-success)]" />
+        <UBadge
+          variant="soft"
+          color="primary"
+          class="rounded-full font-black text-[10px] uppercase tracking-widest px-4 py-1.5 ring-1 ring-inset ring-primary-100"
+        >
+          <template #leading>
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          </template>
           {{ $t("pages.livePage.commentCount", { count: comments.length }) }}
-        </span>
+        </UBadge>
       </div>
     </div>
 
-    <div class="flex-1 space-y-3 overflow-y-auto p-4">
+    <!-- Scrollable Comments Area -->
+    <div 
+      ref="scrollEl"
+      class="flex-1 space-y-4 overflow-y-auto bg-secondary-50/20 px-6 py-6 scrollbar-hide"
+    >
       <div
         v-for="comment in comments"
         :key="comment.id"
-        class="flex gap-3 rounded-[22px] bg-[var(--bg-surface-hover)] p-3"
+        class="flex gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500"
       >
-        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-500)] text-[12px] font-black text-white">
-          {{ comment.initials }}
-        </div>
-        <div class="min-w-0 flex-1">
+        <UAvatar
+          :src="`https://ui-avatars.com/api/?name=${comment.author}&background=0000ff&color=fff`"
+          :alt="comment.author"
+          size="sm"
+          class="shrink-0 shadow-sm ring-2 ring-white"
+          :ui="{ rounded: 'rounded-[12px]' }"
+        />
+        <div class="flex-1 min-w-0 space-y-1.5 pt-0.5">
           <div class="flex flex-wrap items-center gap-2">
-            <p class="text-[13px] font-extrabold text-[var(--text-primary)]">{{ comment.author }}</p>
-            <span v-if="comment.isHost" class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2 py-0.5 text-[10px] font-black uppercase text-[var(--color-primary-600)]">{{ $t("pages.livePage.hostBadge") }}</span>
-            <span class="text-[11px] font-semibold text-[var(--text-tertiary)]">{{ comment.time }}</span>
+            <span class="text-[12px] font-black uppercase tracking-widest text-secondary-900">{{ comment.author }}</span>
+            <UBadge
+              v-if="comment.isHost"
+              variant="solid"
+              size="xs"
+              color="primary"
+              class="rounded-md font-black text-[8px] uppercase tracking-widest px-2 py-0.5"
+            >
+              {{ $t("pages.livePage.hostBadge") }}
+            </UBadge>
+            <span class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">{{ comment.time }}</span>
           </div>
-          <p class="mt-1 text-[13px] font-semibold leading-5 text-[var(--text-secondary)]">{{ comment.message }}</p>
+          <div class="rounded-2xl rounded-tl-none bg-white px-5 py-3.5 ring-1 ring-secondary-100 shadow-sm">
+            <p class="text-[13px] font-medium leading-relaxed text-secondary-700">{{ comment.message }}</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <form class="border-t border-[var(--border-default)] p-4" @submit.prevent="submit">
-      <label class="sr-only" for="live-message">{{ $t("pages.livePage.chatInputLabel") }}</label>
-      <div class="flex gap-2">
-        <input
-          id="live-message"
-          v-model="message"
-          class="h-12 min-w-0 flex-1 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 text-[14px] font-semibold text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-strong)] focus:bg-white"
-          :placeholder="$t('pages.livePage.chatPlaceholder')"
-        >
-        <button
-          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)] disabled:opacity-50"
-          :disabled="message.trim().length === 0"
-          type="submit"
-        >
-          <Icon name="i-ph-paper-plane-tilt-fill" class="h-5 w-5" />
-        </button>
-      </div>
-      <p class="mt-2 text-[11px] font-semibold text-[var(--text-tertiary)]">{{ $t("pages.livePage.chatHint") }}</p>
-    </form>
+    <!-- Input Footer -->
+    <div class="shrink-0 bg-white p-6 border-t border-secondary-50 relative z-10">
+      <form class="space-y-4" @submit.prevent="submit">
+        <label class="sr-only" for="live-message">{{ $t("pages.livePage.chatInputLabel") }}</label>
+        <div class="flex gap-3">
+          <UInput
+            id="live-message"
+            ref="inputRef"
+            v-model="message"
+            size="xl"
+            class="flex-1"
+            :placeholder="$t('pages.livePage.chatPlaceholder')"
+            :ui="{
+              base: 'h-12 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 px-6',
+            }"
+          />
+          <UButton
+            type="submit"
+            size="xl"
+            :disabled="message.trim().length === 0"
+            class="h-12 w-12 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-500/20 transition-all active:scale-95 justify-center"
+            square
+          >
+            <Icon name="i-ph-paper-plane-tilt-bold" class="h-6 w-6" />
+          </UButton>
+        </div>
+        <div class="flex items-center gap-2 px-1">
+          <Icon name="i-ph-info-bold" class="h-3.5 w-3.5 text-secondary-400" />
+          <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
+            {{ $t("pages.livePage.chatHint") }}
+          </p>
+        </div>
+      </form>
+    </div>
   </section>
 </template>
 
@@ -65,7 +108,8 @@ const props = defineProps<{
 const emit = defineEmits<{ send: [message: string] }>()
 
 const message = ref("")
-const chatPanel = ref<HTMLElement>()
+const scrollEl = ref<HTMLElement | null>(null)
+const inputRef = ref<any>(null)
 
 const submit = () => {
   const value = message.value.trim()
@@ -74,15 +118,26 @@ const submit = () => {
   message.value = ""
 }
 
+// Auto scroll on new comments
 watch(() => props.comments.length, async () => {
   await nextTick()
-  const scrollArea = chatPanel.value?.querySelector(".overflow-y-auto")
-  if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight
+  if (scrollEl.value) {
+    scrollEl.value.scrollTo({
+      top: scrollEl.value.scrollHeight,
+      behavior: 'smooth'
+    })
+  }
+})
+
+onMounted(() => {
+  if (scrollEl.value) {
+    scrollEl.value.scrollTop = scrollEl.value.scrollHeight
+  }
 })
 
 defineExpose({
   focusInput: () => {
-    chatPanel.value?.querySelector<HTMLInputElement>("#live-message")?.focus()
+    inputRef.value?.input?.focus()
   },
 })
 </script>

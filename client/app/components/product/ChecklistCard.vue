@@ -1,33 +1,66 @@
 <template>
-  <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-5' }">
-    <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-      {{ title || $t("pages.productEditor.checklist") }}
-    </p>
-    <UProgress :model-value="donePercent" color="success" size="sm" class="mt-4" />
-    <div class="mt-4 space-y-3">
-      <UCard
-        v-for="item in items"
-        :key="item.label"
-        class="rounded-[18px] border"
-        :class="item.done ? 'border-[#b8f0c9] bg-[#f2fcf5]' : 'border-[#dbe3f2] bg-[#f8fbff]'"
-        :ui="{ body: 'flex items-start gap-3 px-3.5 py-3' }"
-      >
-        <div
-          class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-          :class="item.done ? 'bg-[#16a34a] text-white' : 'border border-[#dbe3f2] bg-white text-slate-300'"
+  <UCard 
+    class="surface-card group ring-1 ring-secondary-200/50 shadow-2xl bg-white transition-all duration-500 hover:shadow-3xl"
+    :ui="{ body: { padding: 'p-8 sm:p-10' } }"
+  >
+    <div class="space-y-8">
+      <div class="flex items-center justify-between">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+          {{ $t('pages.productEditor.checklistLabel') }}
+        </p>
+        <Icon name="i-ph-list-checks-duotone" class="h-6 w-6 text-primary-300" />
+      </div>
+
+      <div class="space-y-5">
+        <div 
+          v-for="item in items" 
+          :key="item.label" 
+          class="flex items-center gap-4 group/item"
         >
-          <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-dot-outline'" class="h-3.5 w-3.5" />
+          <div 
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-500"
+            :class="item.done 
+              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
+              : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100'"
+          >
+            <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle-duotone'" class="h-5 w-5" />
+          </div>
+          <div class="space-y-0.5">
+            <span 
+              class="text-[11px] font-black uppercase tracking-widest text-secondary-500 transition-colors group-hover/item:text-secondary-900"
+              :class="{ 'line-through text-secondary-300': item.done }"
+            >
+              {{ item.label }}
+            </span>
+            <p v-if="!item.done" class="text-[10px] font-bold text-secondary-400 opacity-60">
+              {{ $t('pages.productEditor.required') }}
+            </p>
+          </div>
         </div>
-        <div>
-          <p class="text-[13px] font-semibold text-[#243b63]">{{ item.label }}</p>
-          <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ item.description }}</p>
+      </div>
+
+      <div class="pt-6 border-t border-secondary-50">
+        <div class="flex items-center justify-between px-1">
+          <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
+            {{ $t('pages.productEditor.completionLabel') }}
+          </p>
+          <p class="text-[14px] font-black text-primary-600">
+            {{ Math.round(donePercent) }}%
+          </p>
         </div>
-      </UCard>
+        <div class="mt-4 h-2 w-full rounded-full bg-secondary-50 ring-1 ring-secondary-100 overflow-hidden">
+          <div 
+            class="h-full bg-primary-500 transition-all duration-1000 shadow-[0_0_12px_rgba(var(--color-primary-500-rgb),0.5)]" 
+            :style="{ width: `${donePercent}%` }" 
+          />
+        </div>
+      </div>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
 import type { ProductChecklistItem } from "../../../types/product-editor"
 
 const props = withDefaults(defineProps<{

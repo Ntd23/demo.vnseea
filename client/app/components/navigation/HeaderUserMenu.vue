@@ -1,19 +1,63 @@
 <template>
-  <details class="group relative">
-    <summary class="flex list-none cursor-pointer items-center gap-2 rounded-full border border-white/20 bg-white/12 px-2 py-1.5 text-white transition hover:border-white/35 hover:bg-white/18">
-      <div class="flex h-8 w-8 items-center justify-center rounded-full bg-white text-xs font-bold text-[#0000ff]">
+  <UDropdown
+    :items="items"
+    :ui="{
+      width: 'w-64',
+      item: {
+        active: 'bg-primary-50 text-primary-600',
+        inactive: 'text-secondary-600 hover:bg-primary-50/50 hover:text-primary-600',
+        base: 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-black transition-all group/item',
+        padding: 'px-3 py-2.5',
+        icon: {
+          base: 'flex h-8 w-8 items-center justify-center rounded-lg bg-secondary-50 group-hover/item:bg-white border border-secondary-100 transition-colors h-4.5 w-4.5',
+        }
+      },
+      container: 'surface-card p-2 ring-1 ring-secondary-100 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-300'
+    }"
+    :popper="{ placement: 'bottom-end', offsetDistance: 12 }"
+  >
+    <button class="flex list-none cursor-pointer items-center gap-3 rounded-2xl border border-secondary-100 bg-secondary-50/50 px-3 py-1.5 transition-all hover:bg-white hover:ring-2 hover:ring-primary-500/20 focus:ring-2 focus:ring-primary-500/20 outline-none">
+      <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-700 text-[10px] font-black text-white shadow-lg shadow-primary-500/20 ring-2 ring-white">
         VN
       </div>
-      <div class="hidden text-left lg:block">
-        <p class="text-xs font-semibold text-white">Van Nguyen</p>
-        <p class="text-[10px] text-white/70">Mock user</p>
+      <div class="hidden text-left xl:block">
+        <p class="text-xs font-black text-secondary-900 tracking-tight">Van Nguyen</p>
+        <p class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">Mock User</p>
       </div>
-      <Icon name="i-lucide-chevron-down" class="h-4 w-4 text-white/70 transition group-open:rotate-180" />
-    </summary>
-    <div class="absolute right-0 top-[calc(100%+0.55rem)] z-20 w-52 rounded-[20px] border border-[#d8e1ff] bg-white p-2 shadow-[0_14px_34px_rgba(15,35,110,0.12)]">
-      <NuxtLink class="block rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-[#f2f5ff] hover:text-[#0000ff]" to="/">Bang tin</NuxtLink>
-      <NuxtLink class="block rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-[#f2f5ff] hover:text-[#0000ff]" to="/messages">Tin nhan</NuxtLink>
-      <NuxtLink class="block rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-[#f2f5ff] hover:text-[#0000ff]" to="/welcome">Dang xuat mock</NuxtLink>
-    </div>
-  </details>
+      <Icon name="i-ph-caret-down-bold" class="h-3.5 w-3.5 text-secondary-400 transition-transform duration-300 group-open:rotate-180" />
+    </button>
+
+    <template #item="{ item }">
+      <div class="flex items-center gap-3 w-full" :class="item.label === 'Dang xuat' ? 'text-rose-500' : ''">
+        <div 
+          class="flex h-8 w-8 items-center justify-center rounded-lg transition-colors border"
+          :class="item.label === 'Dang xuat' ? 'bg-rose-50 border-rose-100' : 'bg-secondary-50 border-secondary-100 group-hover/item:bg-white'"
+        >
+          <Icon :name="item.icon" class="h-4.5 w-4.5" />
+        </div>
+        <span class="uppercase tracking-widest">{{ $t(item.label) || item.label }}</span>
+      </div>
+    </template>
+  </UDropdown>
 </template>
+
+<script setup lang="ts">
+const { t } = useI18n()
+
+const items = [
+  [{
+    label: "navigation.headerBar.home",
+    to: "/home",
+    icon: "i-ph-house-duotone"
+  }, {
+    label: "navigation.headerBar.messages",
+    to: "/messages",
+    icon: "i-ph-chat-circle-dots-duotone"
+  }],
+  [{
+    label: "Dang xuat",
+    to: "/welcome",
+    icon: "i-ph-sign-out-duotone"
+  }]
+]
+</script>

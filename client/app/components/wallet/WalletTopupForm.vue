@@ -1,44 +1,83 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.walletPage.topupEyebrow") }}</p>
-    <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.topupTitle") }}</h2>
-    <p class="mt-1 text-body-secondary">{{ t("pages.walletPage.topupDescription") }}</p>
-
-    <div class="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
-      <button
-        v-for="amount in presetAmounts"
-        :key="amount"
-        class="h-11 rounded-[var(--radius-full)] text-[13px] font-extrabold transition"
-        :class="form.amount === amount ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]' : 'bg-[var(--bg-surface-hover)] text-[var(--color-primary-900)]'"
-        type="button"
-        @click="form.amount = amount"
-      >
-        {{ formatWalletCurrency(amount, locale.value) }}
-      </button>
+  <section class="surface-card p-6 sm:p-8">
+    <div class="space-y-1">
+      <p class="text-label-primary text-secondary-500 uppercase tracking-widest text-[10px]">{{ t("pages.walletPage.topupEyebrow") }}</p>
+      <h2 class="text-2xl font-black text-secondary-900 leading-tight">{{ t("pages.walletPage.topupTitle") }}</h2>
+      <p class="text-body-secondary text-sm">{{ t("pages.walletPage.topupDescription") }}</p>
     </div>
 
-    <label class="mt-4 block">
-      <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ t("pages.walletPage.otherAmountLabel") }}</span>
-      <input v-model.number="form.amount" class="wallet-input mt-2" min="10000" type="number">
-    </label>
+    <div class="mt-8 space-y-6">
+      <!-- Preset Amounts -->
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <UButton
+          v-for="amount in presetAmounts"
+          :key="amount"
+          :color="form.amount === amount ? 'primary' : 'gray'"
+          :variant="form.amount === amount ? 'solid' : 'soft'"
+          size="lg"
+          class="rounded-xl font-bold justify-center"
+          @click="form.amount = amount"
+        >
+          {{ formatWalletCurrency(amount, locale.value) }}
+        </UButton>
+      </div>
 
-    <div class="mt-4 grid gap-2 sm:grid-cols-3">
-      <button
-        v-for="method in methods"
-        :key="method.value"
-        class="rounded-[20px] border p-4 text-left transition"
-        :class="form.method === method.value ? 'border-[var(--border-strong)] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]' : 'border-[var(--border-default)] bg-white text-[var(--text-secondary)]'"
-        type="button"
-        @click="form.method = method.value"
+      <!-- Custom Amount -->
+      <UFormGroup :label="t('pages.walletPage.otherAmountLabel')">
+        <UInput
+          v-model.number="form.amount"
+          type="number"
+          size="xl"
+          variant="outline"
+          class="font-black text-lg"
+          min="10000"
+          :ui="{ icon: { trailing: { pointer: '' } } }"
+        >
+          <template #trailing>
+            <span class="text-secondary-400 font-bold px-2">VND</span>
+          </template>
+        </UInput>
+      </UFormGroup>
+
+      <!-- Payment Methods -->
+      <div class="grid gap-4 sm:grid-cols-3">
+        <button
+          v-for="method in methods"
+          :key="method.value"
+          class="group relative flex flex-col items-center justify-center rounded-2xl border-2 p-5 transition-all duration-300"
+          :class="form.method === method.value 
+            ? 'border-primary-500 bg-primary-50/50 ring-4 ring-primary-500/10' 
+            : 'border-secondary-100 bg-white hover:border-primary-200 hover:bg-secondary-50/50'"
+          type="button"
+          @click="form.method = method.value"
+        >
+          <div 
+            :class="form.method === method.value ? 'bg-primary-500 text-white' : 'bg-secondary-100 text-secondary-500 group-hover:bg-primary-100 group-hover:text-primary-600'"
+            class="flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
+          >
+            <Icon :name="method.icon" class="h-6 w-6" />
+          </div>
+          <p class="mt-4 text-[13px] font-black text-secondary-900">{{ method.label }}</p>
+          
+          <div 
+            v-if="form.method === method.value"
+            class="absolute top-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary-500 text-white"
+          >
+            <Icon name="i-ph-check-bold" class="h-3 w-3" />
+          </div>
+        </button>
+      </div>
+
+      <UButton
+        block
+        size="xl"
+        color="primary"
+        class="rounded-full font-black px-10 shadow-lg shadow-primary-500/20"
+        @click="submit"
       >
-        <Icon :name="method.icon" class="h-6 w-6" />
-        <p class="mt-3 text-[13px] font-extrabold">{{ method.label }}</p>
-      </button>
+        {{ t("pages.walletPage.topupSubmit") }}
+      </UButton>
     </div>
-
-    <button class="mt-5 h-12 w-full rounded-[var(--radius-full)] bg-[var(--color-primary-500)] text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="button" @click="submit">
-      {{ t("pages.walletPage.topupSubmit") }}
-    </button>
   </section>
 </template>
 

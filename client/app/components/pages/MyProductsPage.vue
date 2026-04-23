@@ -1,95 +1,116 @@
 <template>
-  <div class="space-y-5 pb-10">
-    <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-4 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-5">
-      <div class="flex items-center gap-3">
-        <div class="flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#eef0ff] text-[#0000ff] shadow-[0_8px_18px_rgba(0,0,255,0.08)]">
-          <Icon name="i-ph-storefront-fill" class="h-6 w-6" />
-        </div>
-        <div>
-          <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-            {{ $t("pages.myProductsPage.eyebrow") }}
-          </p>
-          <h1 class="mt-1 text-[1.55rem] font-black tracking-[-0.05em] text-[#243b63]">
-            {{ $t("pages.myProductsPage.title") }}
-          </h1>
-        </div>
-      </div>
-    </section>
-
-    <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-3 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div class="flex flex-wrap gap-2">
-          <button
-            class="inline-flex h-11 items-center justify-center rounded-full border border-[#0000ff]/15 bg-[#eef0ff] px-4 text-[14px] font-bold text-[#0000ff] shadow-[inset_0_-2px_0_rgba(0,0,255,0.18)]"
-            type="button"
-          >
-            {{ $t("pages.myProductsPage.myProducts") }}
-          </button>
-          <button
-            class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-4 text-[14px] font-semibold text-slate-500 transition hover:border-[#c5caff] hover:text-[#243b63]"
-            type="button"
-          >
-            {{ $t("pages.myProductsPage.purchased") }}
-          </button>
-          <NuxtLink
-            to="/products"
-            class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-4 text-[14px] font-semibold text-slate-500 transition hover:border-[#c5caff] hover:text-[#243b63]"
-          >
-            {{ $t("pages.myProductsPage.marketplace") }}
-          </NuxtLink>
+  <div class="mx-auto max-w-[1280px] space-y-10 pb-20 px-4 sm:px-6 pt-4">
+    <!-- Header Section -->
+    <section class="surface-card p-8 sm:p-10 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/header">
+      <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none" />
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+        <div class="flex items-center gap-6">
+          <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 shadow-lg shadow-primary-500/10 ring-1 ring-primary-100/50 group-hover/header:scale-110 transition-transform duration-500">
+            <Icon name="i-ph-storefront-duotone" class="h-8 w-8" />
+          </div>
+          <div>
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+              {{ $t("pages.myProductsPage.eyebrow") }}
+            </p>
+            <h1 class="mt-2 text-4xl font-black tracking-tight text-secondary-900 leading-none">
+              {{ $t("pages.myProductsPage.title") }}
+            </h1>
+          </div>
         </div>
 
         <NuxtLink
           to="/new-product"
-          class="inline-flex h-11 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5"
+          class="inline-flex h-14 items-center justify-center rounded-2xl bg-primary-600 px-8 text-sm font-black text-white hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all active:scale-95 group/btn"
         >
-          <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
+          <Icon name="i-ph-plus-bold" class="mr-3 h-5 w-5 group-hover/btn:rotate-90 transition-transform" />
           {{ $t("pages.myProductsPage.create") }}
         </NuxtLink>
       </div>
     </section>
 
-    <div class="grid gap-3 md:grid-cols-3">
+    <!-- Navigation Section -->
+    <section class="surface-card p-3 rounded-full bg-white/80 backdrop-blur-3xl ring-1 ring-secondary-200/50 shadow-xl inline-flex w-full md:w-auto">
+      <div class="flex flex-col md:flex-row w-full gap-2">
+        <button
+          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full bg-primary-600 px-6 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary-600/20 active:scale-95 transition-all"
+        >
+          <Icon name="i-ph-shopping-bag-duotone" class="mr-3 h-4 w-4" />
+          {{ $t("pages.myProductsPage.myProducts") }}
+        </button>
+        
+        <button
+          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full border border-secondary-200/50 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-secondary-500 hover:text-secondary-900 hover:bg-secondary-50 transition-all active:scale-95"
+        >
+          <Icon name="i-ph-receipt-duotone" class="mr-3 h-4 w-4" />
+          {{ $t("pages.myProductsPage.purchased") }}
+        </button>
+
+        <NuxtLink
+          to="/products"
+          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full border border-secondary-200/50 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-secondary-500 hover:text-secondary-900 hover:bg-secondary-50 transition-all active:scale-95"
+        >
+          <Icon name="i-ph-planet-duotone" class="mr-3 h-4 w-4" />
+          {{ $t("pages.myProductsPage.marketplace") }}
+        </NuxtLink>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <div class="grid gap-6 md:grid-cols-3">
       <div
         v-for="card in overviewCards"
         :key="card.label"
-        class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-[0_8px_20px_rgba(15,35,110,0.05)]"
+        class="surface-card p-8 sm:p-10 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/stats hover:shadow-3xl transition-all duration-500"
       >
-        <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">
-          {{ card.label }}
-        </p>
-        <p class="mt-2 text-[1.8rem] font-black leading-none text-[#243b63]">
-          {{ card.value }}
-        </p>
-        <p class="mt-2 text-[13px] leading-6 text-slate-500">
-          {{ card.description }}
-        </p>
+        <div class="absolute -right-4 -top-4 text-primary-500/5 group-hover/stats:scale-125 transition-transform duration-700">
+          <Icon :name="card.icon" class="h-24 w-24" />
+        </div>
+
+        <div class="relative z-10 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="h-1.5 w-1.5 rounded-full bg-primary-500" />
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-400">
+              {{ card.label }}
+            </p>
+          </div>
+          <p class="text-5xl font-black text-secondary-900 tracking-tighter">
+            {{ card.value }}
+          </p>
+          <p class="text-sm font-medium leading-relaxed text-secondary-500 italic">
+            {{ card.description }}
+          </p>
+        </div>
       </div>
     </div>
 
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-[#f5f8ff]/80 px-5 py-12 shadow-[0_14px_34px_rgba(15,35,110,0.05)] sm:px-8 sm:py-16">
-      <div class="mx-auto flex max-w-[560px] flex-col items-center text-center">
-        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-[#dfe7f3] text-[#8da1b6]">
-          <Icon name="i-ph-shopping-cart-simple-fill" class="h-10 w-10" />
+    <!-- Empty State Section -->
+    <section class="surface-card p-16 sm:p-24 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden">
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(var(--color-primary-500-rgb),0.05)_0%,_transparent_70%)]" />
+      
+      <div class="relative z-10 mx-auto flex max-w-[560px] flex-col items-center text-center">
+        <div class="flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-secondary-50 text-secondary-300 ring-4 ring-secondary-50/50 relative">
+          <Icon name="i-ph-shopping-cart-simple-duotone" class="h-12 w-12" />
         </div>
-        <h2 class="mt-6 text-[1.5rem] font-black tracking-[-0.05em] text-[#243b63]">
+        
+        <h2 class="mt-10 text-3xl font-black tracking-tight text-secondary-900 leading-tight">
           {{ $t("pages.myProductsPage.emptyTitle") }}
         </h2>
-        <p class="mt-3 text-[14px] leading-7 text-slate-500 sm:text-[15px]">
+        <p class="mt-4 text-base font-medium leading-relaxed text-secondary-500 max-w-[420px]">
           {{ $t("pages.myProductsPage.emptyDescription") }}
         </p>
 
-        <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
           <NuxtLink
             to="/new-product"
-            class="inline-flex h-12 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5"
+            class="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-2xl bg-primary-600 px-8 text-sm font-black text-white shadow-lg shadow-primary-600/20 active:scale-95 transition-all"
           >
-            <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
+            <Icon name="i-ph-plus-bold" class="mr-3 h-5 w-5" />
             {{ $t("pages.myProductsPage.createFirst") }}
           </NuxtLink>
+          
           <NuxtLink
             to="/products"
-            class="inline-flex h-12 items-center justify-center rounded-full border border-[#dbe3f2] bg-white px-5 text-[14px] font-semibold text-slate-600 transition hover:border-[#c5caff] hover:text-[#243b63]"
+            class="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-2xl border border-secondary-200/50 bg-white px-8 text-sm font-black text-secondary-600 hover:bg-secondary-50 active:scale-95 transition-all"
           >
             {{ $t("pages.myProductsPage.viewMarketplace") }}
           </NuxtLink>
@@ -111,16 +132,19 @@ const overviewCards = computed(() => [
   {
     label: t("pages.myProductsPage.activeListings"),
     value: "0",
+    icon: "i-ph-tag-duotone",
     description: t("pages.myProductsPage.activeListingsDescription"),
   },
   {
     label: t("pages.myProductsPage.drafts"),
     value: "0",
+    icon: "i-ph-note-blank-duotone",
     description: t("pages.myProductsPage.draftsDescription"),
   },
   {
     label: t("pages.myProductsPage.sold"),
     value: "0",
+    icon: "i-ph-check-circle-duotone",
     description: t("pages.myProductsPage.soldDescription"),
   },
 ] as const)

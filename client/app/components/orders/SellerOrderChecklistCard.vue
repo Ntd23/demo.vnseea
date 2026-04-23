@@ -1,91 +1,100 @@
 <template>
-  <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-6">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-      <div>
-        <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+  <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-secondary-50 pb-6">
+      <div class="space-y-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
           {{ $t("orders.detail.operating") }}
         </p>
-        <h3 class="mt-1 text-[1.2rem] font-black tracking-[-0.04em] text-[#243b63]">
+        <h3 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
           {{ $t("orders.detail.checklist") }}
         </h3>
       </div>
 
-      <div
-        :class="statusMeta.panelClass"
+      <UBadge
+        variant="soft"
+        class="rounded-lg font-black text-[10px] uppercase tracking-widest px-3 py-1.5 ring-1 ring-inset"
+        :class="statusMeta.badgeClass"
       >
+        <template #leading>
+          <Icon :name="statusMeta.icon.includes('duotone') ? statusMeta.icon : statusMeta.icon.replace('-fill', '-duotone')" class="h-3.5 w-3.5 mr-1" />
+        </template>
         {{ $t(statusMeta.label) }}
-      </div>
+      </UBadge>
     </div>
 
     <div
       v-if="order.status === 'cancelled'"
-      class="mt-5 rounded-[20px] border border-[#fecdd3] bg-[#fff1f3] px-4 py-3 text-[13px] leading-6 text-[#be123c]"
+      class="surface-card p-5 bg-rose-50 border border-rose-100 text-rose-600 text-xs font-black uppercase tracking-widest leading-relaxed text-center"
     >
+      <Icon name="i-ph-warning-duotone" class="h-4 w-4 mr-2" />
       {{ $t("orders.detail.cancelledWarning") }}
     </div>
 
-    <div v-else class="mt-5 grid gap-3 sm:grid-cols-2">
-      <button
-        type="button"
-        class="rounded-[20px] border px-4 py-4 text-left transition"
+    <div v-else class="grid gap-4 sm:grid-cols-2">
+      <UButton
+        variant="soft"
+        color="white"
+        class="surface-card block p-6 text-left transition-all duration-300 group/stage active:scale-[0.98] ring-1"
         :class="shippingStageClass"
       >
-        <p class="text-[11px] font-bold uppercase tracking-[0.18em]">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
           {{ $t("orders.detail.shippedLabel") }}
         </p>
-        <p class="mt-2 text-[15px] font-black">
+        <p class="mt-2 text-base font-black tracking-tight">
           {{ $t("orders.detail.shippedTitle") }}
         </p>
-        <p class="mt-2 text-[13px] leading-6 opacity-80">
+        <p class="mt-2 text-[11px] font-medium leading-relaxed opacity-80">
           {{ $t("orders.detail.shippedDesc") }}
         </p>
-      </button>
+      </UButton>
 
-      <button
-        type="button"
-        class="rounded-[20px] border px-4 py-4 text-left transition"
+      <UButton
+        variant="soft"
+        color="white"
+        class="surface-card block p-6 text-left transition-all duration-300 group/stage active:scale-[0.98] ring-1"
         :class="completedStageClass"
       >
-        <p class="text-[11px] font-bold uppercase tracking-[0.18em]">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
           {{ $t("orders.detail.completedLabel") }}
         </p>
-        <p class="mt-2 text-[15px] font-black">
+        <p class="mt-2 text-base font-black tracking-tight">
           {{ $t("orders.detail.completedTitle") }}
         </p>
-        <p class="mt-2 text-[13px] leading-6 opacity-80">
+        <p class="mt-2 text-[11px] font-medium leading-relaxed opacity-80">
           {{ $t("orders.detail.completedDesc") }}
         </p>
-      </button>
+      </UButton>
     </div>
 
-    <div class="mt-5 space-y-3">
+    <div class="space-y-4">
       <div
         v-for="task in order.tasks"
         :key="task.key"
-        class="rounded-[22px] border p-4"
-        :class="task.done ? 'border-[#d7e3ff] bg-[#f8fbff]' : 'border-[#eef2f8] bg-[#fbfcff]'"
+        class="surface-card p-5 ring-1 transition-all duration-300 group/task"
+        :class="task.done ? 'bg-primary-50/20 ring-primary-50' : 'bg-white ring-secondary-100'"
       >
-        <div class="flex items-start gap-3">
+        <div class="flex items-start gap-4">
           <div
-            class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-            :class="task.done ? 'bg-[#0000ff] text-white' : 'bg-[#eef2f8] text-slate-400'"
+            class="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-all duration-500"
+            :class="task.done ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30 ring-1 ring-primary-500' : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100 group-hover/task:bg-secondary-100'"
           >
-            <Icon :name="task.done ? 'i-ph-check-bold' : 'i-ph-hourglass-medium-bold'" class="h-4.5 w-4.5" />
+            <Icon :name="task.done ? 'i-ph-check-bold' : 'i-ph-hourglass-duotone'" class="h-5 w-5" />
           </div>
 
-          <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-2">
-              <p class="text-[14px] font-black text-[#243b63]">
+          <div class="min-w-0 flex-1 space-y-2">
+            <div class="flex flex-wrap items-center gap-3">
+              <p class="text-sm font-black text-secondary-900 group-hover/task:text-primary-700 transition-colors">
                 {{ $t(task.label) }}
               </p>
-              <span
-                class="rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider"
-                :class="task.done ? 'bg-[#dbe7ff] text-[#1d4ed8]' : 'bg-[#eef2f8] text-slate-500'"
+              <UBadge
+                variant="soft"
+                class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2.5 py-1 ring-1 ring-inset"
+                :class="task.done ? 'bg-primary-50 text-primary-600 ring-primary-100' : 'bg-secondary-50 text-secondary-400 ring-secondary-100'"
               >
                 {{ $t(task.done ? 'orders.detail.taskStatus.done' : 'orders.detail.taskStatus.pending') }}
-              </span>
+              </UBadge>
             </div>
-            <p class="mt-2 text-[13px] leading-6 text-slate-500">
+            <p class="text-xs font-medium leading-relaxed text-secondary-500">
               {{ $t(task.description) }}
             </p>
           </div>
@@ -107,17 +116,17 @@ const { statusMeta } = useOrderPresentation(computed(() => props.order))
 
 const shippingStageClass = computed(() => {
   if (props.order.status === "shipping" || props.order.status === "delivered") {
-    return "border-[#cfe0ff] bg-[#eef4ff] text-[#1d4ed8]"
+    return "ring-primary-100 bg-primary-50/50 text-primary-700"
   }
 
-  return "border-[#eef2f8] bg-white text-slate-500 hover:border-[#cfdaf0] hover:text-[#243b63]"
+  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-primary-700"
 })
 
 const completedStageClass = computed(() => {
   if (props.order.status === "delivered") {
-    return "border-[#c7ebd0] bg-[#effaf3] text-[#1f7a38]"
+    return "ring-green-100 bg-green-50/50 text-green-700"
   }
 
-  return "border-[#eef2f8] bg-white text-slate-500 hover:border-[#cfdaf0] hover:text-[#243b63]"
+  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-primary-700"
 })
 </script>

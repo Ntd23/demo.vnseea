@@ -1,23 +1,25 @@
 <template>
-  <nav class="bg-white py-2.5 shadow-sm">
+  <nav class="bg-white py-2.5 shadow-sm border-b border-secondary-100">
     <div class="flex items-center justify-around gap-2 px-3">
       <NuxtLink
         v-for="item in items"
         :key="item.label"
         :to="item.to"
-        class="relative flex h-11 w-11 items-center justify-center rounded-full border-4 transition"
+        class="relative flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 group"
         :class="item.active
-          ? 'border-[#0000ff] bg-[#0000ff]/8 text-[#0000ff]'
-          : 'border-slate-200 bg-white text-slate-500 hover:border-[#0000ff]/30 hover:text-[#0000ff]'"
+          ? 'border-primary-600 bg-primary-50 text-primary-600 shadow-lg shadow-primary-500/10'
+          : 'border-secondary-100 bg-white text-secondary-400 hover:border-primary-400 hover:text-primary-600'"
         :aria-label="$t(item.label)"
       >
-        <Icon :name="item.icon" class="h-5 w-5" />
+        <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5 transition-transform group-hover:scale-110" />
         <span
           v-if="item.logoBadge"
-          class="absolute -right-1.5 -top-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full border border-white bg-[#0000ff] px-1 text-[9px] font-black text-white shadow-[0_6px_12px_rgba(0,0,255,0.22)]"
+          class="absolute -right-2 -top-2 inline-flex h-5 min-w-5 items-center justify-center rounded-lg border border-white bg-primary-600 px-1 text-[9px] font-black text-white shadow-lg shadow-primary-500/20"
         >
           {{ item.logoBadge }}
         </span>
+        
+        <div v-if="item.active" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary-600" />
       </NuxtLink>
     </div>
   </nav>

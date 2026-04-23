@@ -1,37 +1,54 @@
 <template>
-  <article class="overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.08)]">
-    <div class="border-b border-[#eef2fb] px-5 py-4">
-      <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <div class="flex flex-wrap items-center gap-2 text-[12px] font-semibold">
-            <span class="inline-flex items-center rounded-full bg-[#eef3ff] px-3 py-1.5 text-[#243b63]">
-              <Icon name="i-ph-clock-counter-clockwise-bold" class="mr-1.5 h-4 w-4 text-[#0000ff]" />
+  <article class="surface-card group overflow-hidden ring-1 ring-secondary-100 shadow-xl transition-all duration-500 hover:shadow-2xl hover:ring-primary-200/50">
+    <!-- Memory Header -->
+    <div class="border-b border-secondary-50 bg-secondary-50/30 px-6 py-5">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <UBadge
+              variant="soft"
+              color="primary"
+              class="rounded-full font-black text-[10px] uppercase tracking-widest px-4 py-1.5 ring-1 ring-inset ring-primary-100 shadow-sm"
+            >
+              <template #leading>
+                <Icon name="i-ph-clock-counter-clockwise-duotone" class="h-4 w-4" />
+              </template>
               {{ entry.memoryLabel }}
-            </span>
+            </UBadge>
 
-            <span class="inline-flex items-center rounded-full border border-[#dbe3f2] bg-white px-3 py-1.5 text-slate-500">
+            <UBadge
+              variant="outline"
+              color="white"
+              class="rounded-full font-black text-[10px] uppercase tracking-widest px-4 py-1.5 border-secondary-200 text-secondary-500 bg-white"
+            >
               {{ entry.happenedOnLabel }}
-            </span>
+            </UBadge>
           </div>
 
-          <p class="mt-3 max-w-[760px] text-[14px] leading-6 text-slate-500">
+          <p class="max-w-[760px] text-sm font-medium leading-relaxed text-secondary-600 line-clamp-2">
             {{ entry.reflection }}
           </p>
         </div>
 
-        <button
-          class="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-[#0000ff] px-4 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(0,0,255,0.22)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-          type="button"
+        <UButton
+          size="xl"
+          :color="shared ? 'primary' : 'primary'"
+          :variant="shared ? 'solid' : 'solid'"
+          class="rounded-2xl font-black text-[11px] uppercase tracking-widest px-8 h-12 shadow-xl transition-all active:scale-95 flex-shrink-0 justify-center"
+          :class="shared ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20' : 'bg-primary-600 hover:bg-primary-700 shadow-primary-500/20'"
           @click="$emit('share', entry.id)"
         >
-          <Icon :name="shared ? 'i-ph-check-bold' : 'i-ph-share-network-bold'" class="mr-2 h-4 w-4" />
+          <template #leading>
+            <Icon :name="shared ? 'i-ph-check-bold' : 'i-ph-share-network-duotone'" class="h-5 w-5" />
+          </template>
           {{ shared ? t("pages.memoriesPage.sharedAction") : t("pages.memoriesPage.shareAction") }}
-        </button>
+        </UButton>
       </div>
     </div>
 
-    <div class="px-4 py-4 sm:px-5 sm:py-5">
-      <FeedPostCard :post="entry.post" />
+    <!-- The Original Post Content -->
+    <div class="p-4 sm:p-8 bg-white/50">
+      <FeedPostCard :post="entry.post" class="!shadow-none !ring-secondary-50 !bg-white/40" />
     </div>
   </article>
 </template>

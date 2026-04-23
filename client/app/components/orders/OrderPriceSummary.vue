@@ -1,41 +1,42 @@
 <template>
   <div :class="cardClass">
-    <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
       {{ $t("orders.summary.totalPayment") }}
     </p>
 
-    <div class="mt-4 space-y-3 text-[13px] text-slate-500">
-      <div class="flex items-center justify-between gap-3">
-        <span>{{ $t("orders.summary.subtotal") }}</span>
-        <span class="font-semibold text-[#243b63]">{{ formatOrderCurrency(subtotal) }}</span>
+    <div class="mt-5 space-y-4">
+      <div class="flex items-center justify-between gap-4">
+        <span class="text-xs font-black uppercase tracking-widest text-secondary-500">{{ $t("orders.summary.subtotal") }}</span>
+        <span class="text-sm font-black text-secondary-900">{{ formatOrderCurrency(subtotal) }}</span>
       </div>
-      <div class="flex items-center justify-between gap-3">
-        <span>{{ $t("orders.summary.shippingFee") }}</span>
-        <span class="font-semibold text-[#243b63]">
+      <div class="flex items-center justify-between gap-4">
+        <span class="text-xs font-black uppercase tracking-widest text-secondary-500">{{ $t("orders.summary.shippingFee") }}</span>
+        <span class="text-sm font-black text-secondary-900">
           {{ order.shippingFee > 0 ? formatOrderCurrency(order.shippingFee) : $t("orders.summary.free") }}
         </span>
       </div>
     </div>
 
-    <div class="mt-4 h-px bg-[#e8edf7]" />
+    <div class="mt-6 border-t border-secondary-100" />
 
-    <div class="mt-4 flex items-end justify-between gap-3">
-      <div>
-        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+    <div class="mt-6 flex items-end justify-between gap-4">
+      <div class="space-y-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
           {{ $t("orders.summary.totalOrder") }}
         </p>
-        <p class="mt-1 text-[1.7rem] font-black tracking-[-0.05em] text-[#2f3542]">
+        <p class="text-3xl font-black tracking-tight text-primary-600 leading-none">
           {{ formatOrderCurrency(order.total) }}
         </p>
       </div>
 
-      <div
+      <UBadge
         v-if="statusMeta"
-        :class="statusMeta.panelClass"
-        class="rounded-full px-3 py-1.5 text-[11px] font-bold"
+        variant="soft"
+        class="rounded-lg font-black text-[10px] uppercase tracking-widest px-3 py-1.5 ring-1 ring-inset"
+        :class="statusMeta.badgeClass || statusMeta.panelClass"
       >
         {{ $t(statusMeta.label) }}
-      </div>
+      </UBadge>
     </div>
   </div>
 </template>
@@ -43,6 +44,7 @@
 <script setup lang="ts">
 import { useOrderPresentation } from "../../composables/useOrderPresentation"
 import { formatOrderCurrency } from "../../../types/orders"
+import { computed } from "vue"
 import type { OrderPresentationShape } from "../../../types/orders"
 
 const props = withDefaults(defineProps<{

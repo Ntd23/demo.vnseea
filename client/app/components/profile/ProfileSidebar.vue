@@ -1,17 +1,33 @@
 <template>
-  <aside class="min-w-0 space-y-3">
-    <ProfileInfoCard :title="t('pages.profilePage.sidebarInfoTitle')" icon="i-ph-info-fill" :rows="infoRows" />
+  <aside class="min-w-0 space-y-6">
+    <ProfileInfoCard :title="t('pages.profilePage.sidebarInfoTitle')" icon="i-ph-info-duotone" :rows="infoRows" />
 
-    <div class="surface-card rounded-[18px] border border-[#0000ff]/10 p-3 shadow-[0_2px_14px_rgba(0,0,255,0.05)]">
+    <div class="surface-card p-4 space-y-4">
       <div class="flex items-center justify-between">
-        <p class="text-title-primary text-[14px]">{{ t("pages.profilePage.sidebarMutualFriendsTitle") }}</p>
-        <button class="text-[12px] font-semibold text-[#0000ff] hover:underline" type="button">{{ t("pages.profilePage.sidebarSeeAll") }}</button>
+        <p class="text-sm font-black text-secondary-900 tracking-tight">{{ t("pages.profilePage.sidebarMutualFriendsTitle") }}</p>
+        <UButton
+          variant="ghost"
+          color="primary"
+          size="xs"
+          class="font-bold -mr-2"
+        >
+          {{ t("pages.profilePage.sidebarSeeAll") }}
+        </UButton>
       </div>
-      <div class="mt-3 grid grid-cols-2 gap-2">
-        <div v-for="item in mutualFriends" :key="item.name" class="rounded-[14px] bg-[#f7f9ff] p-2 text-center">
-          <div class="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-[#0000ff] text-[11px] font-semibold text-white">{{ item.initials }}</div>
-          <p class="mt-1.5 truncate text-[12px] font-semibold text-slate-700">{{ item.name }}</p>
-          <p class="text-[11px] text-slate-500">{{ item.meta }}</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div v-for="item in mutualFriends" :key="item.name" class="rounded-2xl bg-secondary-50 p-3 text-center transition-colors hover:bg-secondary-100/50">
+          <UAvatar
+            :text="item.initials"
+            size="md"
+            class="mx-auto"
+            :ui="{ 
+              rounded: 'rounded-xl',
+              background: 'bg-primary-600',
+              text: 'text-white font-black'
+            }"
+          />
+          <p class="mt-2 truncate text-xs font-black text-secondary-900">{{ item.name }}</p>
+          <p class="text-[10px] font-medium text-secondary-500">{{ item.meta }}</p>
         </div>
       </div>
     </div>

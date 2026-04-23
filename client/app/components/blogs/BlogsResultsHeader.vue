@@ -30,7 +30,7 @@
         {{ $t("pages.blogsPage.reset") }}
       </UButton>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">

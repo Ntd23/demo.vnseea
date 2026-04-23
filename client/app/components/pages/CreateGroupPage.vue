@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
+  <div class="mx-auto max-w-[1280px] space-y-8 pb-20">
     <CommunityCreationHeaderCard
       :eyebrow="$t('community.creation.group.eyebrow')"
       :title="$t('community.creation.group.title')"

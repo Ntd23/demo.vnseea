@@ -1,37 +1,59 @@
 <template>
-  <aside class="rounded-[26px] border border-[var(--border-default)] bg-white p-3.5 shadow-[var(--shadow-md)] sm:rounded-[30px] sm:p-4">
-    <div class="flex items-center justify-between gap-3">
+  <aside class="surface-card p-5 sm:p-6">
+    <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.watchPage.relatedEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.watchPage.relatedTitle") }}</h2>
+        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.watchPage.relatedEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.watchPage.relatedTitle") }}</h2>
       </div>
-      <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">
-        {{ videos.length }}
-      </span>
+      <UBadge
+        :label="videos.length.toString()"
+        size="md"
+        variant="subtle"
+        color="primary"
+        class="rounded-full px-3 font-bold"
+      />
     </div>
 
-    <div class="mt-4 space-y-3">
+    <div class="mt-6 space-y-4">
       <button
         v-for="video in videos"
         :key="video.id"
-        class="w-full rounded-[20px] border p-2 text-left transition sm:rounded-[22px]"
-        :class="video.id === selectedId ? 'border-[var(--border-strong)] bg-[var(--color-primary-50)]' : 'border-[var(--border-default)] bg-white hover:bg-[var(--bg-surface-hover)]'"
+        class="group w-full rounded-2xl border p-2.5 text-left transition-all duration-300"
+        :class="video.id === selectedId 
+          ? 'border-primary-500 bg-primary-50 ring-1 ring-primary-500' 
+          : 'border-secondary-100 bg-white hover:border-primary-200 hover:bg-secondary-50/50'"
         type="button"
         @click="$emit('select', video.id)"
       >
-        <div class="grid grid-cols-[112px_minmax(0,1fr)] gap-3 sm:grid-cols-[140px_minmax(0,1fr)] xl:grid-cols-1">
-          <div class="relative h-24 overflow-hidden rounded-[18px] sm:h-full xl:h-28">
-            <img :alt="video.title" class="h-full w-full object-cover" :src="video.cover">
-            <span class="absolute bottom-2 right-2 rounded-[var(--radius-full)] bg-black/60 px-2 py-1 text-[11px] font-bold text-white">
+        <div class="grid grid-cols-[120px_minmax(0,1fr)] gap-4 sm:grid-cols-[160px_minmax(0,1fr)] xl:grid-cols-1">
+          <div class="relative aspect-video overflow-hidden rounded-xl border border-secondary-100/50">
+            <NuxtImg
+              :alt="video.title"
+              class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+              :src="video.cover"
+              loading="lazy"
+              format="webp"
+            />
+            <span class="absolute bottom-2 right-2 rounded-lg bg-black/70 px-1.5 py-0.5 text-[10px] font-black text-white backdrop-blur-sm">
               {{ video.duration }}
             </span>
           </div>
-          <div class="min-w-0">
-            <h3 class="line-clamp-2 text-[14px] font-extrabold leading-5 text-[var(--text-primary)]">{{ video.title }}</h3>
-            <p class="mt-1 text-[12px] font-semibold text-[var(--text-secondary)]">{{ video.author }}</p>
-            <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }} · {{ video.date }}</p>
-            <div class="mt-2 flex flex-wrap gap-1.5">
-              <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2 py-1 text-[10px] font-black text-[var(--color-primary-600)]">{{ video.categoryLabel }}</span>
+          <div class="min-w-0 py-1 flex flex-col justify-center xl:justify-start">
+            <h3 class="line-clamp-2 text-sm sm:text-base font-black leading-snug text-secondary-900 group-hover:text-primary-600 transition-colors">{{ video.title }}</h3>
+            <p class="mt-1 text-xs font-bold text-secondary-400 uppercase tracking-tight">{{ video.author }}</p>
+            <div class="mt-2 flex items-center gap-2 text-[11px] font-semibold text-secondary-400">
+              <span>{{ t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }}</span>
+              <span class="text-secondary-200">•</span>
+              <span>{{ video.date }}</span>
+            </div>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <UBadge
+                :label="video.categoryLabel"
+                size="xs"
+                variant="soft"
+                color="primary"
+                class="rounded-full px-2 font-black text-[9px] uppercase"
+              />
             </div>
           </div>
         </div>

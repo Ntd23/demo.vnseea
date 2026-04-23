@@ -1,86 +1,122 @@
 <template>
-  <section class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-[var(--color-secondary-900)] text-white shadow-[var(--shadow-xl)]">
-    <div class="relative min-h-[360px] overflow-hidden sm:min-h-[500px]">
+  <section class="surface-card group overflow-hidden border-none ring-1 ring-secondary-100 shadow-2xl bg-secondary-900 text-white relative">
+    <div class="relative min-h-[420px] overflow-hidden sm:min-h-[580px]">
       <img
         :alt="stream.title"
-        class="absolute inset-0 h-full w-full object-cover"
+        class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         :src="stream.cover"
       >
-      <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.34),rgba(15,23,42,0.82))]" />
+      <div class="absolute inset-0 bg-gradient-to-t from-secondary-950 via-secondary-950/40 to-secondary-950/20" />
 
-      <div class="absolute left-4 top-4 flex flex-wrap gap-2">
-        <span
-          class="inline-flex items-center gap-2 rounded-[var(--radius-full)] px-3 py-2 text-[12px] font-extrabold uppercase tracking-[0.12em]"
-          :class="statusClasses"
+      <!-- Top Overlay -->
+      <div class="absolute left-6 top-6 flex flex-wrap gap-3 z-10">
+        <UBadge
+          variant="solid"
+          :color="stream.status === 'live' ? 'rose' : stream.status === 'scheduled' ? 'amber' : 'white'"
+          class="rounded-full font-black text-[10px] uppercase tracking-[0.2em] px-4 py-2 shadow-lg"
+          :class="{ 'animate-pulse': stream.status === 'live' }"
         >
-          <span class="h-2 w-2 rounded-full bg-current" />
+          <template #leading>
+            <span class="h-1.5 w-1.5 rounded-full bg-current" />
+          </template>
           {{ statusLabel }}
-        </span>
-        <span class="rounded-[var(--radius-full)] bg-white/16 px-3 py-2 text-[12px] font-bold backdrop-blur">
+        </UBadge>
+        
+        <UBadge
+          variant="soft"
+          color="white"
+          class="rounded-full font-black text-[10px] uppercase tracking-widest px-4 py-2 bg-white/20 backdrop-blur-md text-white border-none shadow-lg"
+        >
           {{ stream.category }}
-        </span>
+        </UBadge>
       </div>
 
-      <div class="absolute right-4 top-4 rounded-[var(--radius-full)] bg-black/40 px-3 py-2 text-[12px] font-extrabold backdrop-blur">
+      <div class="absolute right-6 top-6 rounded-full bg-black/60 px-4 py-2 text-[11px] font-black tracking-widest backdrop-blur-md border border-white/10 shadow-lg z-10">
         {{ stream.duration }}
       </div>
 
-      <div class="absolute inset-x-0 bottom-0 p-4 sm:p-6">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-3xl">
-            <p class="text-[13px] font-bold text-white/74">{{ stream.startedAt }}</p>
-            <h2 class="mt-2 text-2xl font-black leading-tight sm:text-4xl">{{ stream.title }}</h2>
-            <p class="mt-3 max-w-2xl text-[14px] font-semibold leading-6 text-white/78">{{ stream.description }}</p>
-            <div class="mt-4 flex flex-wrap gap-2">
-              <span v-for="tag in stream.tags" :key="tag" class="rounded-[var(--radius-full)] bg-white/16 px-3 py-1.5 text-[12px] font-extrabold text-white">
-                {{ tag }}
-              </span>
+      <!-- Play Button -->
+      <div class="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xl border border-white/30 shadow-2xl cursor-pointer hover:scale-110 transition-transform duration-300 z-10 group/play">
+        <div class="h-20 w-20 flex items-center justify-center rounded-full bg-white text-primary-600 transition-colors group-hover/play:bg-primary-50">
+          <Icon name="i-ph-play-fill" class="h-10 w-10 translate-x-1" />
+        </div>
+      </div>
+
+      <!-- Bottom Content -->
+      <div class="absolute inset-x-0 bottom-0 p-6 sm:p-10 z-10">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="max-w-3xl space-y-3">
+            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-white/60">{{ stream.startedAt }}</p>
+            <h2 class="text-3xl font-black tracking-tight sm:text-5xl leading-tight">{{ stream.title }}</h2>
+            <p class="max-w-2xl text-[14px] font-medium leading-relaxed text-white/80 line-clamp-2">{{ stream.description }}</p>
+            <div class="flex flex-wrap gap-2 pt-2">
+              <UBadge
+                v-for="tag in stream.tags"
+                :key="tag"
+                variant="outline"
+                color="white"
+                class="rounded-full font-black text-[9px] uppercase tracking-widest px-3 py-1 bg-white/10 border-white/20 text-white/90"
+              >
+                #{{ tag }}
+              </UBadge>
             </div>
           </div>
 
-          <div class="flex gap-2">
-            <button
-              class="inline-flex h-12 min-w-[120px] items-center justify-center gap-2 rounded-[var(--radius-full)] bg-white px-4 text-[14px] font-extrabold text-[var(--color-primary-600)]"
-              type="button"
+          <div class="flex gap-3">
+            <UButton
+              size="xl"
+              variant="soft"
+              color="white"
+              class="rounded-2xl font-black text-xs uppercase tracking-widest px-8 h-14 bg-white/15 backdrop-blur-md text-white border-none hover:bg-white/30 transition-all shadow-xl"
               @click="$emit('toggleMute')"
             >
-              <Icon :name="muted ? 'i-ph-speaker-x-fill' : 'i-ph-speaker-high-fill'" class="h-5 w-5" />
+              <template #leading>
+                <Icon :name="muted ? 'i-ph-speaker-x-duotone' : 'i-ph-speaker-high-duotone'" class="h-6 w-6" />
+              </template>
               {{ muted ? $t("pages.livePage.unmute") : $t("pages.livePage.mute") }}
-            </button>
-            <button
-              class="inline-flex h-12 min-w-[110px] items-center justify-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-4 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)]"
-              type="button"
+            </UButton>
+            
+            <UButton
+              size="xl"
+              class="rounded-2xl font-black text-xs uppercase tracking-widest px-10 h-14 shadow-xl shadow-rose-500/30 bg-rose-600 hover:bg-rose-700 transition-all active:scale-95"
               @click="$emit('like')"
             >
-              <Icon name="i-ph-heart-fill" class="h-5 w-5" />
+              <template #leading>
+                <Icon name="i-ph-heart-duotone" class="h-6 w-6" />
+              </template>
               {{ stream.likes + localLikes }}
-            </button>
+            </UButton>
           </div>
         </div>
       </div>
-
-      <div class="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/18 text-white backdrop-blur">
-        <Icon name="i-ph-play-fill" class="h-9 w-9 translate-x-0.5" />
-      </div>
     </div>
 
-    <div class="grid border-t border-white/10 bg-[var(--color-secondary-900)] sm:grid-cols-3">
-      <div class="flex items-center gap-3 border-b border-white/10 px-5 py-4 sm:border-b-0 sm:border-r">
-        <div class="flex h-11 w-11 items-center justify-center rounded-full text-[13px] font-black text-white" :style="{ background: stream.host.gradient }">
-          {{ stream.host.initials }}
-        </div>
-        <div>
-          <p class="text-[14px] font-extrabold">{{ stream.host.name }}</p>
-          <p class="text-[12px] font-semibold text-white/58">{{ stream.host.role }}</p>
+    <!-- Stats Bar -->
+    <div class="grid border-t border-white/10 bg-secondary-950/50 backdrop-blur-lg sm:grid-cols-3 divide-x divide-white/10">
+      <div class="flex items-center gap-4 px-8 py-6">
+        <UAvatar
+          :src="`https://ui-avatars.com/api/?name=${stream.host.name}&background=0000ff&color=fff`"
+          :alt="stream.host.name"
+          size="lg"
+          class="ring-2 ring-white/20"
+          :ui="{ rounded: 'rounded-[14px]' }"
+        />
+        <div class="min-w-0">
+          <p class="text-[13px] font-black uppercase tracking-widest text-white truncate">{{ stream.host.name }}</p>
+          <p class="text-[10px] font-bold text-white/60 uppercase tracking-widest">{{ stream.host.role }}</p>
         </div>
       </div>
-      <div class="flex items-center gap-2 border-b border-white/10 px-5 py-4 text-[14px] font-bold text-white/78 sm:border-b-0 sm:border-r">
-        <Icon name="i-ph-eye-fill" class="h-5 w-5 text-white" />
-        {{ $t("pages.livePage.currentViewers", { count: stream.viewers + joinedViewers }) }}
+      
+      <div class="flex items-center gap-3 px-8 py-6 text-sm font-black uppercase tracking-widest">
+        <Icon name="i-ph-eye-duotone" class="h-6 w-6 text-white" />
+        <span class="text-white/80">
+          {{ $t("pages.livePage.currentViewers", { count: stream.viewers + joinedViewers }) }}
+        </span>
       </div>
-      <div class="flex items-center gap-2 px-5 py-4 text-[14px] font-bold text-white/78">
-        <Icon name="i-ph-broadcast-fill" class="h-5 w-5 text-[var(--color-error)]" />
-        {{ $t("pages.livePage.playerReady") }}
+      
+      <div class="flex items-center gap-3 px-8 py-6 text-sm font-black uppercase tracking-widest">
+        <Icon name="i-ph-broadcast-duotone" class="h-6 w-6 text-rose-500" />
+        <span class="text-white/80">{{ $t("pages.livePage.playerReady") }}</span>
       </div>
     </div>
   </section>
@@ -104,11 +140,5 @@ const statusLabel = computed(() => {
   if (props.stream.status === "live") return t("pages.livePage.statusLive")
   if (props.stream.status === "scheduled") return t("pages.livePage.statusScheduled")
   return t("pages.livePage.statusEnded")
-})
-
-const statusClasses = computed(() => {
-  if (props.stream.status === "live") return "bg-[var(--color-error)] text-white"
-  if (props.stream.status === "scheduled") return "bg-[var(--color-warning)] text-white"
-  return "bg-white/16 text-white"
 })
 </script>

@@ -66,7 +66,7 @@
         {{ status === "loading" ? $t("feed.commentComposer.submitLoading") : $t("feed.commentComposer.submit") }}
       </UButton>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">

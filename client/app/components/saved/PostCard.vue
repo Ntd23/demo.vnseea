@@ -1,44 +1,60 @@
 <template>
-  <article class="overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.08)]">
-    <div class="border-b border-[#eef2fb] px-5 py-4">
-      <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <div class="flex flex-wrap items-center gap-2 text-[12px] font-semibold">
-            <span class="inline-flex items-center rounded-full bg-[#eef3ff] px-3 py-1.5 text-[#243b63]">
-              <Icon name="i-ph-bookmark-simple-fill" class="mr-1.5 h-4 w-4 text-[#0000ff]" />
-              {{ entry.savedAtLabel }}
-            </span>
-
-            <NuxtLink
-              :to="entry.sourceTo"
-              class="inline-flex items-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-3 py-1.5 text-[#4b5f82] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+  <article class="surface-card group/saved overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-white hover:shadow-3xl transition-all duration-500 rounded-3xl">
+    <div class="border-b border-secondary-100/50 px-8 py-8 bg-secondary-50/30">
+      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div class="space-y-5">
+          <div class="flex flex-wrap items-center gap-3">
+            <UBadge
+              variant="soft"
+              size="lg"
+              class="rounded-2xl px-4 py-2 font-black uppercase tracking-widest bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm"
             >
-              {{ entry.sourceLabel }}
-            </NuxtLink>
+              <template #leading>
+                <Icon name="i-ph-bookmark-simple-duotone" class="h-4 w-4 mr-2" />
+              </template>
+              {{ entry.savedAtLabel }}
+            </UBadge>
 
-            <span class="inline-flex items-center rounded-full border border-[#dbe3f2] bg-white px-3 py-1.5 text-slate-500">
-              {{ entry.collectionLabel }}
-            </span>
+            <UButton
+              :to="entry.sourceTo"
+              variant="soft"
+              class="rounded-2xl px-4 h-9 font-black text-[10px] uppercase tracking-widest bg-secondary-100 text-secondary-600 ring-1 ring-secondary-200/50 hover:bg-secondary-200 transition-all border-none"
+            >
+              <template #leading>
+                <Icon name="i-ph-link-duotone" class="h-4 w-4 mr-1" />
+              </template>
+              {{ entry.sourceLabel }}
+            </UButton>
+
+            <div class="flex items-center gap-2 px-4 h-9 rounded-2xl bg-white/50 ring-1 ring-secondary-200/50 transition-all group-hover/saved:ring-primary-200">
+               <Icon name="i-ph-folder-simple-duotone" class="h-4 w-4 text-secondary-400 group-hover/saved:text-primary-500" />
+               <span class="text-[10px] font-black uppercase tracking-widest text-secondary-500 group-hover/saved:text-primary-600">{{ entry.collectionLabel }}</span>
+            </div>
           </div>
 
-          <p class="mt-3 max-w-[760px] text-[14px] leading-6 text-slate-500">
-            {{ entry.note }}
+          <p class="text-base font-medium leading-relaxed text-secondary-500 italic max-w-3xl border-l-4 border-primary-500/20 pl-6 group-hover/saved:border-primary-500 transition-all duration-500">
+            "{{ entry.note }}"
           </p>
         </div>
 
-        <button
-          class="inline-flex h-11 shrink-0 items-center justify-center rounded-full border border-rose-200 bg-rose-50 px-4 text-[13px] font-bold text-rose-600 transition hover:-translate-y-0.5 hover:border-rose-300 hover:bg-rose-100"
-          type="button"
+        <UButton
+          size="xl"
+          class="h-14 rounded-2xl bg-secondary-50 text-red-500 ring-1 ring-red-100 hover:bg-red-50 hover:text-red-700 hover:ring-red-200 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 shadow-sm px-8"
           @click="$emit('remove', entry.id)"
         >
-          <Icon name="i-ph-bookmark-simple" class="mr-2 h-4 w-4" />
+          <template #leading>
+            <Icon name="i-ph-bookmark-simple" class="h-5 w-5 mr-2" />
+          </template>
           {{ t("pages.savedPostsPage.remove") }}
-        </button>
+        </UButton>
       </div>
     </div>
 
-    <div class="px-4 py-4 sm:px-5 sm:py-5">
-      <FeedPostCard :post="entry.post" />
+    <div class="p-8 sm:p-12 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/saved:opacity-100 transition-opacity duration-1000" />
+      <div class="relative z-10">
+        <FeedPostCard :post="entry.post" class="shadow-none ring-0 bg-transparent" />
+      </div>
     </div>
   </article>
 </template>

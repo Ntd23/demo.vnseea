@@ -1,42 +1,70 @@
 <template>
-  <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 px-4 pb-4 sm:px-5 sm:pb-5">
-    <div class="min-w-0 max-w-[360px] pb-10 sm:pb-0">
-      <div class="flex items-center gap-3">
-        <img :src="reel.avatar" :alt="reel.author" class="h-10 w-10 rounded-full border-2 border-white object-cover shadow-lg sm:h-11 sm:w-11">
-        <div class="min-w-0">
-          <p class="truncate text-[0.98rem] font-bold leading-tight text-white">{{ reel.author }}</p>
-          <p class="truncate text-[0.8rem] text-white/70">{{ reel.subtitle }}</p>
+  <div class="absolute inset-x-0 bottom-0 flex h-full items-end justify-between p-8 pb-12 sm:p-10 sm:pb-16 pointer-events-none">
+    <div class="flex-1 min-w-0 pr-16 pointer-events-auto">
+      <div class="flex items-center gap-4">
+        <div class="p-0.5 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 shadow-2xl">
+          <UAvatar
+            :src="reel.avatar"
+            :alt="reel.author"
+            size="lg"
+            class="rounded-[14px] ring-2 ring-black/20"
+          />
+        </div>
+        <div class="min-w-0 space-y-0.5">
+          <p class="truncate text-base font-black text-white tracking-tight uppercase">{{ reel.author }}</p>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-white/60 uppercase tracking-widest">{{ reel.subtitle }}</span>
+            <span class="h-1 w-1 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(37,99,235,1)]"></span>
+          </div>
         </div>
       </div>
 
-      <h1 class="mt-4 text-[1.05rem] font-black leading-tight text-white sm:text-[1.25rem]">
-        {{ reel.title }}
-      </h1>
-      <p class="mt-2 text-[0.92rem] leading-7 text-white/82 sm:max-w-[330px]">
-        {{ reel.description }}
-      </p>
+      <div class="mt-6 space-y-3">
+        <h2 class="text-2xl font-black text-white leading-tight tracking-tight drop-shadow-2xl">
+          {{ reel.title }}
+        </h2>
+        <p class="line-clamp-2 text-[13px] font-medium leading-relaxed text-white/80 sm:max-w-md drop-shadow-lg italic">
+          "{{ reel.description }}"
+        </p>
+      </div>
+
+      <!-- Progressive Tags -->
+      <div class="mt-6 flex flex-wrap gap-2 opacity-80">
+        <span v-for="tag in ['#trending', '#reel']" :key="tag" class="text-[10px] font-black uppercase tracking-widest text-primary-400 bg-black/40 px-3 py-1 rounded-lg backdrop-blur-md border border-white/5">
+          {{ tag }}
+        </span>
+      </div>
     </div>
 
-    <div class="flex w-[76px] flex-col items-center justify-end gap-2 pb-1 sm:w-[82px] sm:gap-3">
-      <button class="fb-action-button text-[#ff4d5a]" type="button" :aria-label="$t('pages.reelsPage.like')">
-        <Icon name="i-ph-heart-fill" class="h-6 w-6" />
-      </button>
-      <span class="fb-action-count">{{ reel.likes }}</span>
+    <!-- Actions Sidebar -->
+    <div class="flex flex-col items-center gap-6 pb-2 pointer-events-auto">
+      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-primary-600 group-hover/action:scale-110 group-hover/action:-rotate-6 group-hover/action:ring-primary-400">
+          <Icon name="i-ph-heart-duotone" class="h-7 w-7 transition-colors group-hover/action:text-white" />
+        </div>
+        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ reel.likes }}</span>
+      </div>
 
-      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.comment')">
-        <Icon name="i-ph-chat-circle-text-fill" class="h-6 w-6" />
-      </button>
-      <span class="fb-action-count">{{ reel.comments }}</span>
+      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:rotate-6">
+          <Icon name="i-ph-chat-circle-text-duotone" class="h-7 w-7" />
+        </div>
+        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ reel.comments }}</span>
+      </div>
 
-      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.share')">
-        <Icon name="i-ph-share-network-fill" class="h-6 w-6" />
-      </button>
-      <span class="fb-action-count">{{ $t('pages.reelsPage.share') }}</span>
+      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:-rotate-6">
+          <Icon name="i-ph-share-network-duotone" class="h-7 w-7" />
+        </div>
+        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ $t('pages.reelsPage.share') }}</span>
+      </div>
 
-      <button class="fb-action-button" type="button" :aria-label="$t('pages.reelsPage.save')">
-        <Icon name="i-ph-bookmark-simple-fill" class="h-6 w-6" />
-      </button>
-      <span class="fb-action-count">{{ $t('pages.reelsPage.save') }}</span>
+      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
+        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:rotate-6">
+          <Icon name="i-ph-bookmark-simple-duotone" class="h-7 w-7" />
+        </div>
+        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ $t('pages.reelsPage.save') }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -44,6 +72,7 @@
 <script setup lang="ts">
 defineProps<{
   reel: {
+    id: number
     title: string
     author: string
     subtitle: string
@@ -54,32 +83,3 @@ defineProps<{
   }
 }>()
 </script>
-
-<style scoped>
-.fb-action-button {
-  display: flex;
-  height: 44px;
-  width: 44px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  backdrop-filter: blur(10px);
-  transition: background-color 0.15s ease, transform 0.15s ease;
-}
-
-.fb-action-button:hover {
-  background: rgba(255, 255, 255, 0.18);
-  transform: translateY(-1px);
-}
-
-.fb-action-count {
-  min-height: 14px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  line-height: 1;
-  color: rgba(255, 255, 255, 0.82);
-  text-align: center;
-}
-</style>

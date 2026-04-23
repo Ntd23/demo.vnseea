@@ -1,6 +1,6 @@
 <template>
   <div class="phone-safe min-h-screen bg-[#f1f4fb]" :class="isReelsPage ? 'overflow-hidden bg-black' : ''">
-    <NavigationHeaderBar @toggle-menu="menuOpen = !menuOpen" />
+    <NavigationHeaderBar v-model:menu-open="menuOpen" />
 
     <div class="w-full" :class="isReelsPage ? 'h-[calc(100vh-56px)]' : ''">
       <div
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Mobile: Full page menu -->
-    <NavigationMobileMenu :open="menuOpen" @close="menuOpen = false" />
+    <NavigationMobileMenu v-model="menuOpen" />
 
     <!-- Mobile: Floating chat button -->
     <Teleport to="body">

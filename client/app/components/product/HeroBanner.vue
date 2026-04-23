@@ -1,63 +1,68 @@
 <template>
-  <section :class="theme.container">
-    <div class="pointer-events-none absolute inset-x-[-10%] top-[26%] h-[220px] rounded-[50%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.18),transparent_65%)]" />
-    <div class="pointer-events-none absolute right-[-6%] top-[-14%] h-[260px] w-[260px] rounded-full bg-white/10 blur-2xl" />
+  <section :class="[theme.container, 'surface-card group relative overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl transition-all duration-700']">
+    <!-- Premium Decorations -->
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.05),transparent_40%)]" />
+    <div class="pointer-events-none absolute right-[-10%] top-[-30%] h-[500px] w-[500px] rounded-full bg-white/5 blur-[120px] transition-transform duration-1000 group-hover:scale-110" />
     <div :class="theme.bottomGlow" />
 
-    <div class="relative z-10 flex flex-col gap-8 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-[760px]">
-        <p class="text-[12px] font-extrabold uppercase tracking-[0.32em] text-white/70">
-          {{ badge }}
-        </p>
-        <h1 class="mt-3 text-display text-[2.2rem] leading-[0.92] text-white sm:text-[2.85rem]">
-          {{ title }}
-        </h1>
-        <p class="mt-3 max-w-[580px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-          {{ description }}
-        </p>
+    <div class="relative z-10 flex flex-col gap-12 px-8 py-16 sm:px-12 lg:px-16 lg:flex-row lg:items-end lg:justify-between">
+      <div class="max-w-[780px] space-y-8">
+        <div class="space-y-4">
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-300/80 pl-1">
+            {{ badge }}
+          </p>
+          <h1 class="text-5xl sm:text-7xl font-black leading-none tracking-tight text-white transition-colors group-hover:text-primary-100">
+            {{ title }}
+          </h1>
+          <p class="text-base font-medium leading-relaxed text-white/70 sm:text-lg pl-1 max-w-2xl italic">
+            "{{ description }}"
+          </p>
+        </div>
 
-        <div class="mt-6 flex flex-wrap gap-3">
+        <div class="flex flex-wrap items-center gap-4 pt-4">
           <UButton
             to="/my-products"
-            color="neutral"
             variant="soft"
-            size="lg"
-            leading-icon="i-ph-arrow-left"
-            class="rounded-full"
+            size="xl"
+            class="h-14 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-xl transition-all active:scale-95 px-8"
           >
-            Quay lại sản phẩm của tôi
+            <template #leading>
+              <Icon name="i-ph-arrow-left-duotone" class="h-5 w-5" />
+            </template>
+            {{ $t("pages.productsPage.backToMyProducts") || "Back" }}
           </UButton>
 
           <UButton
-            :color="props.variant === 'edit' ? 'primary' : 'warning'"
-            variant="solid"
-            size="lg"
-            class="rounded-full"
+            size="xl"
+            class="h-14 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl transition-all active:scale-95 px-10 border-none"
             :class="theme.secondaryAction"
             @click="$emit('secondaryAction')"
           >
+            <template #leading>
+              <Icon name="i-ph-sparkle-duotone" class="h-6 w-6" />
+            </template>
             {{ secondaryActionLabel }}
           </UButton>
         </div>
       </div>
 
-      <div class="grid gap-3 sm:grid-cols-3 xl:w-[430px] xl:grid-cols-1">
-        <UCard
+      <!-- Hero Stats -->
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:w-[380px]">
+        <div
           v-for="item in stats"
           :key="item.label"
-          class="rounded-[22px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
-          :ui="{ body: 'p-4' }"
+          class="group/stat rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/10"
         >
-          <UBadge color="neutral" variant="soft" class="bg-white/15 text-white">
+          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
             {{ item.label }}
-          </UBadge>
-          <p class="mt-3 text-[1.7rem] font-black leading-none text-white">
+          </p>
+          <p class="mt-4 text-3xl font-black text-white leading-none tracking-tight">
             {{ item.value }}
           </p>
-          <p class="mt-1 text-[13px] text-white/72">
+          <p class="mt-2 text-[10px] font-bold text-white/40 group-hover/stat:text-white/60 line-clamp-1">
             {{ item.description }}
           </p>
-        </UCard>
+        </div>
       </div>
     </div>
   </section>
@@ -82,16 +87,16 @@ defineEmits<{
 const theme = computed(() => {
   if (props.variant === "edit") {
     return {
-      container: "relative overflow-hidden rounded-[30px] bg-[linear-gradient(135deg,#243b63_0%,#1d4ed8_42%,#38bdf8_110%)] px-5 pb-10 pt-6 text-white shadow-[0_16px_40px_rgba(29,78,216,0.22)] sm:px-7 sm:pt-8 lg:px-8",
-      bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[220px] w-[220px] rounded-full bg-[#0f172a]/30 blur-3xl",
-      secondaryAction: "bg-[#dbeafe] px-5 text-[14px] font-extrabold text-[#1d4ed8] shadow-[0_10px_26px_rgba(219,234,254,0.24)] transition hover:-translate-y-0.5",
+      container: "bg-gradient-to-br from-secondary-950 via-primary-900 to-secondary-900",
+      bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[300px] w-[300px] rounded-full bg-primary-400/10 blur-3xl",
+      secondaryAction: "bg-primary-600 text-white hover:bg-primary-700 shadow-primary-500/40",
     }
   }
 
   return {
-    container: "relative overflow-hidden rounded-[30px] bg-[linear-gradient(135deg,#9d2e43_0%,#d95d93_44%,#f59e0b_120%)] px-5 pb-10 pt-6 text-white shadow-[0_16px_40px_rgba(157,46,67,0.22)] sm:px-7 sm:pt-8 lg:px-8",
-    bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[220px] w-[220px] rounded-full bg-[#243b63]/30 blur-3xl",
-    secondaryAction: "bg-[#fde7b2] px-5 text-[14px] font-extrabold text-[#9d2e43] shadow-[0_10px_26px_rgba(253,231,178,0.24)] transition hover:-translate-y-0.5",
+    container: "bg-gradient-to-br from-orange-950 via-amber-900 to-rose-900",
+    bottomGlow: "pointer-events-none absolute bottom-[-22%] left-[-8%] h-[300px] w-[300px] rounded-full bg-amber-500/10 blur-3xl",
+    secondaryAction: "bg-white text-amber-900 hover:bg-amber-50 shadow-white/20",
   }
 })
 </script>

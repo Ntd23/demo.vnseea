@@ -1,115 +1,120 @@
 <template>
-  <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_18px_40px_rgba(15,35,110,0.08)]">
-    <div class="relative overflow-hidden px-5 pb-6 pt-6 sm:px-7">
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(29,78,216,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(0,0,255,0.08),transparent_30%)]" />
+  <section class="surface-card overflow-hidden">
+    <div class="relative px-6 py-8 sm:px-8">
+      <!-- Background decoration -->
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-from),transparent_34%),radial-gradient(circle_at_bottom_left,var(--tw-gradient-to),transparent_30%)] from-primary-500/10 to-primary-600/5" />
 
-      <div class="relative">
-        <div class="flex flex-col gap-5">
-          <div class="max-w-3xl">
-            <p class="text-[12px] font-black uppercase tracking-[0.22em] text-[#0000ff]/65">
-              {{ $t('community.search.controls.eyebrow') }}
-            </p>
-            <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[2.3rem]">
-              {{ $t('community.search.controls.title') }}
-            </h1>
-            <p class="mt-2 text-[14px] leading-7 text-slate-500">
-              {{ $t('community.search.controls.desc') }}
-            </p>
-          </div>
+      <div class="relative space-y-8">
+        <div class="max-w-3xl">
+          <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
+            {{ $t('community.search.controls.eyebrow') }}
+          </p>
+          <h1 class="text-display mt-2 text-3xl font-black text-secondary-900 sm:text-4xl">
+            {{ $t('community.search.controls.title') }}
+          </h1>
+          <p class="text-body-secondary mt-2 text-sm leading-relaxed">
+            {{ $t('community.search.controls.desc') }}
+          </p>
+        </div>
 
-          <label class="block space-y-3">
-            <span class="text-[13px] font-bold uppercase tracking-[0.14em] text-[#243b63]/65">
-              {{ $t('community.search.controls.keywordParams.label') }}
-            </span>
+        <div class="grid gap-6">
+          <UFormGroup
+            :label="$t('community.search.controls.keywordParams.label')"
+            class="w-full"
+          >
+            <UInput
+              v-model="keywordModel"
+              icon="i-ph-magnifying-glass-bold"
+              size="xl"
+              class="font-semibold"
+              variant="outline"
+              :placeholder="$t('community.search.controls.keywordParams.placeholder')"
+              @keydown.enter.prevent="$emit('submit')"
+            />
+          </UFormGroup>
 
-            <div class="relative">
-              <Icon
-                name="i-ph-magnifying-glass-bold"
-                class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8090d8]"
-              />
-
-              <input
-                v-model="keywordModel"
-                class="h-14 w-full rounded-[20px] border border-[#dbe3f2] bg-[#f8faff] pl-12 pr-4 text-[15px] font-medium text-slate-900 outline-none transition placeholder:text-[#90a0d5] focus:border-[#0000ff] focus:bg-white focus:ring-4 focus:ring-[#dfe3ff]"
-                :placeholder="$t('community.search.controls.keywordParams.placeholder')"
-                type="search"
-                @keydown.enter.prevent="$emit('submit')"
-              >
-            </div>
-          </label>
-
-          <div class="grid gap-3 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-end">
-            <div class="grid gap-3 md:grid-cols-2">
-              <FormsSelectBox
+          <div class="grid gap-4 xl:grid-cols-[1fr_1fr_200px] xl:items-end">
+            <UFormGroup :label="$t('community.search.controls.typeLabel')">
+              <USelectMenu
                 v-model="typeModel"
-                :label="$t('community.search.controls.typeLabel')"
                 :options="translatedTypeOptions"
+                value-attribute="value"
+                size="lg"
+                class="font-semibold"
               />
-              <FormsSelectBox
-                v-model="sortModel"
-                :label="$t('community.search.controls.sortLabel')"
-                :options="translatedSortOptions"
-              />
-            </div>
+            </UFormGroup>
 
-            <button
-              class="inline-flex h-[52px] w-full items-center justify-center self-end rounded-[20px] bg-[linear-gradient(135deg,#6d7dff_0%,#9c79ff_100%)] px-6 text-[15px] font-black text-white shadow-[0_16px_30px_rgba(109,125,255,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_34px_rgba(109,125,255,0.34)]"
-              type="button"
+            <UFormGroup :label="$t('community.search.controls.sortLabel')">
+              <USelectMenu
+                v-model="sortModel"
+                :options="translatedSortOptions"
+                value-attribute="value"
+                size="lg"
+                class="font-semibold"
+              />
+            </UFormGroup>
+
+            <UButton
+              color="primary"
+              size="xl"
+              class="rounded-xl font-bold px-8 shadow-lg shadow-primary-500/20"
               @click="$emit('submit')"
             >
-              <Icon name="i-ph-magnifying-glass-bold" class="mr-2 h-4.5 w-4.5" />
+              <template #leading>
+                <Icon name="i-ph-magnifying-glass-bold" class="h-5 w-5" />
+              </template>
               {{ $t('community.search.controls.submit') }}
-            </button>
+            </UButton>
+          </div>
+        </div>
+
+        <div class="space-y-6 pt-6 border-t border-secondary-100/50">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="text-micro font-bold uppercase tracking-wider text-secondary-400">
+              {{ $t('community.search.controls.quickSuggestions') }}
+            </span>
+
+            <UButton
+              v-for="item in quickKeywords"
+              :key="item"
+              variant="soft"
+              color="gray"
+              size="xs"
+              class="rounded-full px-3 font-bold"
+              @click="$emit('quick-search', item)"
+            >
+              {{ item }}
+            </UButton>
           </div>
 
-          <div class="space-y-3 border-t border-[#eef2fb] pt-4">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="text-[12px] font-bold uppercase tracking-[0.16em] text-[#243b63]/55">
-                {{ $t('community.search.controls.quickSuggestions') }}
-              </span>
-
-              <button
-                v-for="item in quickKeywords"
-                :key="item"
-                class="inline-flex h-9 items-center rounded-full border border-[#dbe3f2] bg-[#fbfcff] px-3 text-[12px] font-semibold text-[#4b5f82] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-                type="button"
-                @click="$emit('quick-search', item)"
-              >
-                {{ item }}
-              </button>
-            </div>
-
-            <div class="grid gap-2 lg:grid-cols-5">
-              <button
-                v-for="tab in tabs"
-                :key="tab.value"
-                class="flex min-h-[88px] flex-col items-start rounded-[22px] border px-4 py-4 text-left transition"
-                :class="typeModel === tab.value
-                  ? 'border-[#0000ff]/25 bg-[linear-gradient(180deg,rgba(238,243,255,0.95)_0%,rgba(255,255,255,0.98)_100%)] shadow-[0_12px_28px_rgba(0,0,255,0.08)]'
-                  : 'border-[#edf2fb] bg-[#fcfdff] hover:border-[#d8e4ff] hover:bg-white'"
-                type="button"
-                @click="typeModel = tab.value"
-              >
-                <div class="flex w-full items-center justify-between gap-3">
-                  <div
-                    class="flex h-11 w-11 items-center justify-center rounded-[16px]"
-                    :class="typeModel === tab.value ? 'bg-[#0000ff] text-white' : 'bg-[#eef3ff] text-[#0000ff]'"
-                  >
-                    <Icon :name="tab.icon" class="h-5 w-5" />
-                  </div>
-                  <span class="text-[1.05rem] font-black tracking-[-0.04em] text-[#243b63]">
-                    {{ tab.count }}
-                  </span>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <button
+              v-for="tab in tabs"
+              :key="tab.value"
+              class="group flex min-h-[100px] flex-col items-start rounded-2xl border p-5 text-left transition-all duration-300"
+              :class="typeModel === tab.value
+                ? 'border-primary-500 bg-primary-50 ring-2 ring-primary-500/10'
+                : 'border-secondary-100 bg-white hover:border-primary-200 hover:bg-secondary-50/50'"
+              type="button"
+              @click="typeModel = tab.value"
+            >
+              <div class="flex w-full items-center justify-between gap-4">
+                <div
+                  class="flex h-12 w-12 items-center justify-center rounded-xl shadow-sm border border-secondary-100/30 transition-transform group-hover:scale-110"
+                  :class="typeModel === tab.value ? 'bg-primary-500 text-white' : 'bg-secondary-50 text-secondary-500 group-hover:bg-primary-100 group-hover:text-primary-600'"
+                >
+                  <Icon :name="tab.icon" class="h-6 w-6" />
                 </div>
+                <span class="text-xl font-black text-secondary-900 tabular-nums">
+                  {{ tab.count }}
+                </span>
+              </div>
 
-                <p class="mt-3 text-[14px] font-black tracking-[-0.02em] text-[#243b63]">
-                  {{ $t(`community.search.tabs.${tab.value}.label`) }}
-                </p>
-                <p class="mt-1 text-[12px] leading-5 text-slate-500">
-                  {{ $t(`community.search.tabs.${tab.value}.desc`) }}
-                </p>
-              </button>
-            </div>
+              <div class="mt-4">
+                <p class="text-sm font-black text-secondary-900">{{ $t(`community.search.tabs.${tab.value}.label`) }}</p>
+                <p class="text-[11px] font-semibold text-secondary-400 leading-tight mt-1">{{ $t(`community.search.tabs.${tab.value}.desc`) }}</p>
+              </div>
+            </button>
           </div>
         </div>
       </div>

@@ -1,13 +1,13 @@
 <template>
-  <div class="space-y-5 pb-10">
+  <div class="space-y-8 pb-20 px-4 sm:px-6">
     <LiveHero
       :stats="heroStats"
       @focus-chat="focusChat"
       @go-live="goLiveOpen = true"
     />
 
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <div class="space-y-5">
+    <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
+      <div class="space-y-8 min-w-0">
         <LivePlayer
           :joined-viewers="joinedViewers"
           :local-likes="localLikesById[selectedStream.id] ?? 0"
@@ -17,34 +17,43 @@
           @toggle-mute="muted = !muted"
         />
 
-        <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-label-secondary text-[var(--text-tertiary)]">{{ $t("pages.livePage.setupEyebrow") }}</p>
-              <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.livePage.setupTitle") }}</h2>
-              <p class="mt-1 text-body-secondary">{{ $t("pages.livePage.setupDescription") }}</p>
+        <!-- Readiness Section -->
+        <section class="surface-card p-8 sm:p-10 group overflow-hidden border-none ring-1 ring-secondary-100 shadow-xl relative bg-white">
+          <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between relative z-10 mb-10 pb-8 border-b border-secondary-50">
+            <div class="space-y-2">
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">{{ $t("pages.livePage.setupEyebrow") }}</p>
+              <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">{{ $t("pages.livePage.setupTitle") }}</h2>
+              <p class="text-sm font-medium text-secondary-500">{{ $t("pages.livePage.setupDescription") }}</p>
             </div>
-            <button
-              class="inline-flex h-11 items-center justify-center gap-2 rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[13px] font-extrabold text-[var(--color-primary-600)] transition hover:bg-[var(--color-primary-50)]"
-              type="button"
+            <UButton
+              size="xl"
+              class="rounded-2xl font-black text-xs uppercase tracking-widest px-10 h-14 shadow-xl shadow-primary-500/20 bg-primary-600 hover:bg-primary-700 transition-all active:scale-95 shrink-0"
               @click="goLiveOpen = true"
             >
-              <Icon name="i-ph-video-camera-fill" class="h-4 w-4" />
+              <template #leading>
+                <Icon name="i-ph-video-camera-duotone" class="h-6 w-6" />
+              </template>
               {{ $t("pages.livePage.goLive") }}
-            </button>
+            </UButton>
           </div>
 
-          <div class="mt-5 grid gap-3 md:grid-cols-3">
-            <div v-for="item in readiness" :key="item.label" class="rounded-[22px] bg-[var(--bg-surface-hover)] p-4">
-              <Icon :name="item.icon" class="h-6 w-6 text-[var(--color-primary-600)]" />
-              <p class="mt-3 text-[14px] font-extrabold text-[var(--text-primary)]">{{ item.label }}</p>
-              <p class="mt-1 text-[12px] font-semibold leading-5 text-[var(--text-secondary)]">{{ item.description }}</p>
+          <div class="grid gap-6 md:grid-cols-3 relative z-10">
+            <div 
+              v-for="item in readiness" 
+              :key="item.label" 
+              class="surface-card p-6 ring-1 ring-secondary-50 bg-secondary-50/10 hover:bg-white hover:ring-primary-100 hover:shadow-xl transition-all duration-500 group/readiness"
+            >
+              <div class="h-12 w-12 flex items-center justify-center rounded-2xl bg-white text-primary-500 shadow-sm ring-1 ring-secondary-100 mb-6 group-hover/readiness:scale-110 transition-transform duration-500">
+                <Icon :name="item.icon.replace('-fill', '-duotone')" class="h-7 w-7" />
+              </div>
+              <p class="text-[14px] font-black uppercase tracking-wider text-secondary-900 mb-2">{{ item.label }}</p>
+              <p class="text-[12px] font-medium leading-relaxed text-secondary-400 group-hover/readiness:text-secondary-500 transition-colors">{{ item.description }}</p>
             </div>
           </div>
         </section>
       </div>
 
-      <div class="space-y-5">
+      <div class="space-y-8">
         <LiveStreamList
           :selected-id="selectedStreamId"
           :streams="allStreams"
@@ -58,10 +67,10 @@
       </div>
     </div>
 
+    <!-- Go Live Modal -->
     <LiveGoLiveModal
+      v-model:open="goLiveOpen"
       :categories="categories"
-      :open="goLiveOpen"
-      @close="goLiveOpen = false"
       @create="createStream"
     />
   </div>
@@ -174,14 +183,14 @@ const createStream = (payload: GoLivePayload) => {
         : payload.privacy === "members"
           ? t("pages.livePage.hostRoleMembers")
           : t("pages.livePage.hostRolePrivate"),
-      gradient: "linear-gradient(135deg,var(--color-primary-500),var(--color-accent-500))",
+      gradient: "linear-gradient(135deg,#0000ff,#6366f1)",
     },
     viewers: 1,
     likes: 0,
     startedAt: t("pages.livePage.startedJustNow"),
     duration: "00:01",
     description: payload.description || t("pages.livePage.newStreamDescription"),
-    tags: ["#live", "#vnseea", `#${payload.category.toLowerCase().replace(/\s+/g, "")}`],
+    tags: ["live", "vnseea", payload.category.toLowerCase().replace(/\s+/g, "")],
     comments: [
       {
         id: Date.now() + 1,
@@ -197,6 +206,7 @@ const createStream = (payload: GoLivePayload) => {
   createdStreams.value = [stream, ...createdStreams.value]
   selectedStreamId.value = stream.id
   joinedViewers.value += 1
+  goLiveOpen.value = false
 }
 
 const focusChat = () => {

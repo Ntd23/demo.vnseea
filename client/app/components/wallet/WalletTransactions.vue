@@ -1,26 +1,39 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <div class="flex items-center justify-between gap-3">
+  <section class="surface-card p-6">
+    <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.walletPage.historyEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.historyTitle") }}</h2>
+        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.walletPage.historyEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.walletPage.historyTitle") }}</h2>
       </div>
-      <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">{{ transactions.length }}</span>
+      <UBadge
+        :label="transactions.length.toString()"
+        size="md"
+        variant="subtle"
+        color="primary"
+        class="rounded-full px-3 font-bold"
+      />
     </div>
 
-    <div class="mt-5 space-y-3">
-      <div v-for="transaction in transactions" :key="transaction.id" class="flex items-center justify-between gap-4 rounded-[22px] bg-[var(--bg-surface-hover)] p-4">
-        <div class="flex min-w-0 items-center gap-3">
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full" :class="iconClass(transaction.amount)">
-            <Icon :name="iconName(transaction.type)" class="h-5 w-5" />
+    <div class="mt-8 space-y-4">
+      <div v-for="transaction in transactions" :key="transaction.id" class="group flex items-center justify-between gap-4 rounded-2xl bg-secondary-50/50 p-5 border border-secondary-100/30 transition hover:bg-secondary-50">
+        <div class="flex min-w-0 items-center gap-4">
+          <div 
+            :class="iconClass(transaction.amount)"
+            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-sm border border-secondary-100/30 transition-transform group-hover:scale-110"
+          >
+            <Icon :name="iconName(transaction.type)" class="h-6 w-6" />
           </div>
-          <div class="min-w-0">
-            <p class="truncate text-[14px] font-extrabold text-[var(--text-primary)]">{{ transaction.title }}</p>
-            <p class="mt-1 truncate text-[12px] font-semibold text-[var(--text-secondary)]">{{ transaction.description }}</p>
-            <p class="mt-1 text-[11px] font-semibold text-[var(--text-tertiary)]">{{ transaction.time }} · {{ statusLabel(transaction.status) }}</p>
+          <div class="min-w-0 space-y-1">
+            <p class="truncate text-[15px] font-black text-secondary-900">{{ transaction.title }}</p>
+            <p class="truncate text-xs font-semibold text-secondary-400">{{ transaction.description }}</p>
+            <div class="flex items-center gap-2 text-[10px] font-bold text-secondary-400 uppercase tracking-wider">
+              <span>{{ transaction.time }}</span>
+              <span class="text-secondary-200">•</span>
+              <span :class="statusColorClass(transaction.status)">{{ statusLabel(transaction.status) }}</span>
+            </div>
           </div>
         </div>
-        <p class="shrink-0 text-[14px] font-black" :class="transaction.amount >= 0 ? 'text-[var(--color-success)]' : 'text-[var(--color-error)]'">
+        <p class="shrink-0 text-lg font-black tabular-nums" :class="transaction.amount >= 0 ? 'text-emerald-600' : 'text-red-600'">
           {{ transaction.amount >= 0 ? "+" : "-" }}{{ formatWalletCurrency(Math.abs(transaction.amount), locale.value) }}
         </p>
       </div>
@@ -50,6 +63,12 @@ const statusLabel = (status: WalletTransaction["status"]) => {
   return t("pages.walletPage.statusFailed")
 }
 
+const statusColorClass = (status: WalletTransaction["status"]) => {
+  if (status === "completed") return "text-emerald-500"
+  if (status === "pending") return "text-amber-500"
+  return "text-red-500"
+}
+
 const iconClass = (amount: number) =>
-  amount >= 0 ? "bg-[var(--color-success)]/10 text-[var(--color-success)]" : "bg-[var(--color-error)]/10 text-[var(--color-error)]"
+  amount >= 0 ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-red-50 text-red-600 border-red-100"
 </script>

@@ -1,32 +1,41 @@
 <template>
-  <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-    <div class="flex items-center justify-between gap-3">
+  <section class="surface-card p-6">
+    <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.withdrawalPage.historyEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.withdrawalPage.historyTitle") }}</h2>
+        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.withdrawalPage.historyEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.withdrawalPage.historyTitle") }}</h2>
       </div>
-      <span class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--color-primary-600)]">
-        {{ items.length }}
-      </span>
+      <UBadge
+        :label="items.length.toString()"
+        size="md"
+        variant="subtle"
+        color="primary"
+        class="rounded-full px-3"
+      />
     </div>
 
-    <div class="mt-5 space-y-3">
+    <div class="mt-6 space-y-4">
       <div
         v-for="item in items"
         :key="item.id"
-        class="flex flex-col gap-4 rounded-[22px] bg-[var(--bg-surface-hover)] p-4 sm:flex-row sm:items-center sm:justify-between"
+        class="group flex flex-col gap-4 rounded-2xl bg-secondary-50/50 p-5 transition hover:bg-secondary-50 sm:flex-row sm:items-center sm:justify-between border border-secondary-100/30"
       >
-        <div class="min-w-0">
-          <p class="text-[15px] font-black text-[var(--text-primary)]">{{ formatWithdrawalCurrency(item.amount, locale) }}</p>
-          <p class="mt-1 text-[13px] font-bold text-[var(--text-secondary)]">{{ item.method }} · {{ item.account }}</p>
-          <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">{{ item.time }}</p>
+        <div class="min-w-0 space-y-1">
+          <p class="text-lg font-black text-secondary-900">{{ formatWithdrawalCurrency(item.amount, locale) }}</p>
+          <div class="flex items-center gap-2 text-body-secondary text-sm">
+            <span class="font-bold text-secondary-600">{{ item.method }}</span>
+            <span class="text-secondary-300">•</span>
+            <span>{{ item.account }}</span>
+          </div>
+          <p class="text-caption-secondary text-xs">{{ item.time }}</p>
         </div>
-        <span
-          :class="statusClass(item.status)"
-          class="w-fit rounded-[var(--radius-full)] px-3 py-1.5 text-[12px] font-extrabold"
-        >
-          {{ statusLabel(item.status) }}
-        </span>
+        <UBadge
+          :label="statusLabel(item.status)"
+          :color="statusColor(item.status)"
+          variant="subtle"
+          size="sm"
+          class="w-fit font-bold px-3"
+        />
       </div>
     </div>
   </section>
@@ -46,9 +55,9 @@ const statusLabel = (status: WithdrawalHistoryItem["status"]) => {
   return t("pages.withdrawalPage.statusPending")
 }
 
-const statusClass = (status: WithdrawalHistoryItem["status"]) => {
-  if (status === "approved") return "bg-emerald-50 text-emerald-600"
-  if (status === "rejected") return "bg-red-50 text-red-600"
-  return "bg-amber-50 text-amber-600"
+const statusColor = (status: WithdrawalHistoryItem["status"]) => {
+  if (status === "approved") return "emerald"
+  if (status === "rejected") return "red"
+  return "amber"
 }
 </script>

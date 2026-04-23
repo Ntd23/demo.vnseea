@@ -1,72 +1,126 @@
 <template>
-  <Teleport to="body">
-    <div v-if="open" class="fixed inset-0 z-50 flex items-end justify-center bg-black/42 px-3 py-4 backdrop-blur-[2px] sm:items-center" @click.self="$emit('close')">
-      <form class="w-full max-w-[620px] rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-xl)]" @submit.prevent="submit">
+  <UModal v-model="isOpen" :ui="{ rounded: 'rounded-[32px]', width: 'max-w-xl' }">
+    <div class="surface-card p-6 sm:p-8 overflow-hidden relative border-none ring-0">
+      <!-- Background Glow -->
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(var(--color-primary-500),0.08),transparent_40%)]" />
+
+      <div class="relative space-y-8">
         <div class="flex items-start justify-between gap-4">
-          <div>
-            <p class="text-label-secondary text-[var(--color-primary-600)]">{{ $t("pages.livePage.modalEyebrow") }}</p>
-            <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.livePage.modalTitle") }}</h2>
-            <p class="mt-1 text-body-secondary">{{ $t("pages.livePage.modalDescription") }}</p>
+          <div class="space-y-1">
+            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
+              {{ $t("pages.livePage.modalEyebrow") }}
+            </p>
+            <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
+              {{ $t("pages.livePage.modalTitle") }}
+            </h2>
+            <p class="text-[11px] font-bold uppercase tracking-widest text-secondary-400">
+              {{ $t("pages.livePage.modalDescription") }}
+            </p>
           </div>
-          <button
-            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[16px] bg-[var(--bg-surface-hover)] text-[var(--text-secondary)]"
-            type="button"
-            @click="$emit('close')"
-          >
-            <Icon name="i-ph-x-bold" class="h-4 w-4" />
-          </button>
+          <UButton
+            color="white"
+            variant="soft"
+            icon="i-ph-x-bold"
+            class="rounded-xl shadow-none ring-0 h-10 w-10 justify-center bg-secondary-50 text-secondary-400 hover:text-secondary-900"
+            @click="isOpen = false"
+          />
         </div>
 
-        <div class="mt-5 grid gap-4 sm:grid-cols-2">
-          <label class="block sm:col-span-2">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.livePage.modalTitleLabel") }}</span>
-            <input v-model="form.title" class="live-input mt-2" required :placeholder="$t('pages.livePage.modalTitlePlaceholder')">
-          </label>
+        <UForm :state="form" class="space-y-6" @submit="submit">
+          <div class="grid gap-6 sm:grid-cols-2">
+            <UFormGroup :label="$t('pages.livePage.modalTitleLabel')" class="sm:col-span-2">
+              <UInput
+                v-model="form.title"
+                size="xl"
+                color="white"
+                :placeholder="$t('pages.livePage.modalTitlePlaceholder')"
+                class="rounded-2xl"
+                :ui="{ base: 'bg-secondary-50/50 font-black tracking-wider uppercase text-[11px] h-12 shadow-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500' }"
+                required
+              />
+            </UFormGroup>
 
-          <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.livePage.modalCategoryLabel") }}</span>
-            <select v-model="form.category" class="live-input mt-2">
-              <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
-            </select>
-          </label>
+            <UFormGroup :label="$t('pages.livePage.modalCategoryLabel')">
+              <USelectMenu
+                v-model="form.category"
+                size="xl"
+                :options="categories"
+                class="rounded-2xl"
+                :ui="{ trigger: 'bg-secondary-50/50 font-black tracking-wider uppercase text-[11px] h-12 shadow-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500' }"
+              />
+            </UFormGroup>
 
-          <label class="block">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.livePage.modalPrivacyLabel") }}</span>
-            <select v-model="form.privacy" class="live-input mt-2">
-              <option value="public">{{ $t("pages.livePage.privacyPublic") }}</option>
-              <option value="members">{{ $t("pages.livePage.privacyMembers") }}</option>
-              <option value="private">{{ $t("pages.livePage.privacyPrivate") }}</option>
-            </select>
-          </label>
+            <UFormGroup :label="$t('pages.livePage.modalPrivacyLabel')">
+              <USelectMenu
+                v-model="form.privacy"
+                value-attribute="value"
+                option-attribute="label"
+                :options="[
+                  { label: $t('pages.livePage.privacyPublic'), value: 'public' },
+                  { label: $t('pages.livePage.privacyMembers'), value: 'members' },
+                  { label: $t('pages.livePage.privacyPrivate'), value: 'private' }
+                ]"
+                size="xl"
+                class="rounded-2xl"
+                :ui="{ trigger: 'bg-secondary-50/50 font-black tracking-wider uppercase text-[11px] h-12 shadow-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500' }"
+              />
+            </UFormGroup>
 
-          <label class="block sm:col-span-2">
-            <span class="text-[12px] font-bold text-[var(--text-secondary)]">{{ $t("pages.livePage.modalDescriptionLabel") }}</span>
-            <textarea v-model="form.description" class="live-input mt-2 min-h-[130px] resize-y py-3" :placeholder="$t('pages.livePage.modalDescriptionPlaceholder')" />
-          </label>
-        </div>
+            <UFormGroup :label="$t('pages.livePage.modalDescriptionLabel')" class="sm:col-span-2">
+              <UTextarea
+                v-model="form.description"
+                size="xl"
+                :rows="4"
+                :placeholder="$t('pages.livePage.modalDescriptionPlaceholder')"
+                class="rounded-2xl"
+                :ui="{ base: 'bg-secondary-50/50 font-semibold text-[13px] shadow-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 resize-none' }"
+              />
+            </UFormGroup>
+          </div>
 
-        <div v-if="submitted" class="mt-4 rounded-[18px] bg-[var(--color-primary-50)] px-4 py-3 text-[13px] font-bold text-[var(--color-primary-600)]">
-          {{ $t("pages.livePage.modalSuccess") }}
-        </div>
+          <UAlert
+            v-if="submitted"
+            icon="i-ph-check-circle-duotone"
+            color="primary"
+            variant="subtle"
+            class="rounded-2xl border-none ring-1 ring-primary-100 font-extrabold text-[11px] uppercase tracking-widest py-4 px-6"
+            :title="$t('pages.livePage.modalSuccess')"
+          />
 
-        <div class="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button class="h-11 rounded-[18px] border border-[var(--border-default)] bg-white px-5 text-[13px] font-bold text-[var(--text-secondary)]" type="button" @click="$emit('close')">{{ $t("pages.livePage.close") }}</button>
-          <button class="h-11 rounded-[18px] bg-[var(--color-primary-500)] px-5 text-[13px] font-extrabold text-white shadow-[var(--shadow-brand)]" type="submit">{{ $t("pages.livePage.startLive") }}</button>
-        </div>
-      </form>
+          <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end pt-4">
+            <UButton
+              variant="soft"
+              color="white"
+              size="xl"
+              class="rounded-2xl font-black text-xs uppercase tracking-widest px-8 h-12 bg-white text-secondary-500 ring-1 ring-secondary-200 hover:ring-primary-500 transition-all shadow-sm"
+              @click="isOpen = false"
+            >
+              {{ $t("pages.livePage.close") }}
+            </UButton>
+            <UButton
+              type="submit"
+              size="xl"
+              class="rounded-2xl font-black text-xs uppercase tracking-widest px-10 h-12 shadow-xl shadow-primary-500/20 bg-primary-600 hover:bg-primary-700 transition-all active:scale-95"
+            >
+              {{ $t("pages.livePage.startLive") }}
+            </UButton>
+          </div>
+        </UForm>
+      </div>
     </div>
-  </Teleport>
+  </UModal>
 </template>
 
 <script setup lang="ts">
 import type { GoLivePayload } from "~/composables/useMockLiveData"
 
+const isOpen = defineModel<boolean>('open', { default: false })
+
 const props = defineProps<{
-  open: boolean
   categories: ReadonlyArray<string>
 }>()
 
-const emit = defineEmits<{ close: []; create: [payload: GoLivePayload] }>()
+const emit = defineEmits<{ create: [payload: GoLivePayload] }>()
 const { t } = useI18n()
 
 const submitted = ref(false)
@@ -77,25 +131,13 @@ const form = reactive<GoLivePayload>({
   description: "",
 })
 
-watch(() => props.open, (open) => {
-  if (open) submitted.value = false
-})
-
 const submit = () => {
   submitted.value = true
   emit("create", { ...form })
+  // Auto close could be handled here or by parent
 }
-</script>
 
-<style scoped>
-.live-input {
-  width: 100%;
-  min-height: 46px;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-lg);
-  background: var(--bg-surface-hover);
-  padding: 0 14px;
-  color: var(--text-primary);
-  outline: none;
-}
-</style>
+watch(isOpen, (val) => {
+  if (val) submitted.value = false
+})
+</script>
