@@ -2882,12 +2882,12 @@
       "paymentProfiles": [
         { "label": "Default Bank", "value": "Vietcombank - 1023...889" },
         { "label": "MoMo Wallet", "value": "0987...543" },
-        { "label": "PayPal ID", "value": "user{'@'}example.com" }
+        { "label": "PayPal ID", "value": "user-paypal-example.com" }
       ],
       "history": [
         {
           "id": "1",
-          "amount": 500000,
+          "amount": "500000",
           "method": "Local Bank",
           "account": "1023...889",
           "time": "2 days ago",
@@ -2895,11 +2895,81 @@
         },
         {
           "id": "2",
-          "amount": 200000,
+          "amount": "200000",
           "method": "MoMo Wallet",
           "account": "0987...543",
           "time": "1 week ago",
           "status": "rejected"
+        }
+      ]
+    },
+    "walletPage": {
+      "seoTitle": "Wallet - VNSEEA",
+      "seoDescription": "Manage your balance, top up, and transfer funds quickly within the VNSEEA ecosystem.",
+      "heroEyebrow": "VNSEEA Wallet",
+      "heroTitle": "Smart E-Wallet for Community",
+      "heroDescription": "Use VNSEEA Wallet to top up quickly, gift friends, pay for services, and withdraw funds flexibly.",
+      "balanceLabel": "Current Balance",
+      "statTransactions": "Transactions",
+      "statTopups": "Top-ups",
+      "topupEyebrow": "Top Up",
+      "topupTitle": "Add Funds",
+      "topupDescription": "Select a preset amount or enter a custom amount to top up via supported payment gateways.",
+      "otherAmountLabel": "Other Amount",
+      "topupSubmit": "Proceed to Top Up",
+      "sendEyebrow": "Transfer",
+      "sendTitle": "Gifts and Transfers",
+      "currentBalance": "Balance: {amount}",
+      "recipientLabel": "Recipient",
+      "recipientPlaceholder": "username or recipient name",
+      "amountLabel": "Amount",
+      "noteLabel": "Note",
+      "notePlaceholder": "Enter an optional note",
+      "sendSubmit": "Confirm Transfer",
+      "errorRecipient": "Please enter a recipient.",
+      "errorAmount": "Invalid amount or exceeds balance.",
+      "historyEyebrow": "Logs",
+      "historyTitle": "Recent Activity",
+      "statusCompleted": "Completed",
+      "statusPending": "Processing",
+      "statusFailed": "Failed",
+      "topupTransactionTitle": "Wallet Top-up",
+      "topupTransactionDescription": "Via {method}",
+      "sendTransactionTitle": "Transfer to {recipient}",
+      "sendTransactionDescription": "Quick transfer",
+      "justNow": "Just now",
+      "methods": [
+        { "label": "Bank Transfer", "value": "bank", "icon": "i-ph-bank" },
+        { "label": "Credit Card", "value": "card", "icon": "i-ph-credit-card" },
+        { "label": "MoMo Wallet", "value": "momo", "icon": "i-ph-wallet" }
+      ],
+      "transactions": [
+        {
+          "id": "1",
+          "type": "topup",
+          "title": "Wallet Top-up",
+          "description": "Via Local Bank",
+          "amount": "1000000",
+          "time": "2 hours ago",
+          "status": "completed"
+        },
+        {
+          "id": "2",
+          "type": "send",
+          "title": "Transfer to hoangnm",
+          "description": "Birthday gift",
+          "amount": "-200000",
+          "time": "Yesterday",
+          "status": "completed"
+        },
+        {
+          "id": "3",
+          "type": "receive",
+          "title": "Received from lananh",
+          "description": "Lunch refund",
+          "amount": "50000",
+          "time": "3 days ago",
+          "status": "completed"
         }
       ]
     }
