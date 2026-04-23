@@ -55,4 +55,5 @@
         <Icon name="i-ph-caret-right-bold" class="h-3 w-3 text-secondary-300 group-hover:text-primary-500 transition-all group-hover:translate-x-1" />
       </button>
     </div>
+  </div>
 </template>

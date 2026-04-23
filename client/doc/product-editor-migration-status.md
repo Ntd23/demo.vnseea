@@ -433,6 +433,27 @@ Vai trò:
 Nhận xét migrate:
 - cần rà xem có thể hợp nhất với `foundation/ModalShell.vue` hay không
 
+### `messages` - 7 files [DONE]
+
+Files:
+- `ChatBubble.vue` [DONE]
+- `ChatInput.vue` [DONE]
+- `ChatList.vue` [DONE]
+- `ChatListItem.vue` [DONE]
+- `ChatMessageList.vue` [DONE]
+- `ChatWindow.vue` [DONE]
+- `MessageEmojiPicker.vue` [DONE]
+
+Vai trò:
+- chat system messaging
+
+Nhận xét migrate:
+- [x] re-architected into 7 reusable components
+- [x] chat flow optimized with `scroll-to-bottom` in `ChatMessageList.vue`
+- [x] `ChatBubble.vue` synchronized with feed post design tokens
+- [x] emoji picker implemented with `UPopover`
+- [x] smooth transitions for info panel in `MessagesPage.vue`
+
 ### `live` - 5 files
 
 Files:
