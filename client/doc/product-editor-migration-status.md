@@ -716,8 +716,10 @@ Vai trò:
 - job list/detail/apply/post
 
 Nhận xét migrate:
-- `JobApplyModal.vue`, `JobPostModal.vue` là ứng viên rõ để dùng `UModal` + `UForm`
-- `JobsFilters.vue` nên thêm `VueUse`
+- `JobApplyModal.vue`, `JobPostModal.vue` đã chuyển sang `FoundationModalShell` + `UForm`, có validate, `idle/loading/success/error`, toast và feedback inline rõ ràng
+- `JobCard.vue`, `JobDetailPanel.vue`, `JobsHero.vue`, `JobsResultsHeader.vue`, `JobsSidebar.vue`, `JobsEmptyState.vue` đã chuẩn hóa về `@nuxt/ui` và `FoundationEmptyState`
+- SEO/query sync được dời về `pages/jobs.vue` với `q/category/location/type/sort/saved/job`
+- `useMockJobsData.ts` đã có normalize/filter/query helper ổn định cho SSR và locale `pages.jobsPage` đầy đủ cho vi/en
 
 ### `lightbox` - 1 file
 

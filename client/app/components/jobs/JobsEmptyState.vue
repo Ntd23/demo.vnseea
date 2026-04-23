@@ -1,23 +1,12 @@
 <template>
-  <section class="rounded-[30px] border border-dashed border-[var(--border-strong)] bg-white/90 px-6 py-12 text-center shadow-[var(--shadow-md)]">
-    <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]">
-      <Icon name="i-ph-briefcase-fill" class="h-8 w-8" />
-    </div>
-    <h3 class="mt-4 text-[1.35rem] font-black tracking-[-0.04em] text-[var(--text-primary)]">
-      {{ $t("pages.jobsPage.emptyTitle") }}
-    </h3>
-    <p class="mx-auto mt-2 max-w-[480px] text-body-secondary">
-      {{ $t("pages.jobsPage.emptyDescription") }}
-    </p>
-    <button
-      class="mt-5 inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-5 py-3 text-[14px] font-bold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
-      type="button"
-      @click="$emit('reset')"
-    >
-      <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-      {{ $t("pages.jobsPage.viewAll") }}
-    </button>
-  </section>
+  <FoundationEmptyState
+    icon="i-ph-briefcase-fill"
+    :eyebrow="$t('pages.jobsPage.emptyEyebrow')"
+    :title="$t('pages.jobsPage.emptyTitle')"
+    :description="$t('pages.jobsPage.emptyDescription')"
+    :primary-label="$t('pages.jobsPage.viewAll')"
+    @primary="$emit('reset')"
+  />
 </template>
 
 <script setup lang="ts">
