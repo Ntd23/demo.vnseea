@@ -1,3 +1,4 @@
+<template>
   <div class="flex h-full w-full flex-col justify-between gap-12 lg:gap-0 relative overflow-hidden">
     <!-- Background Decor -->
     <div class="absolute -top-24 -left-24 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
@@ -40,7 +41,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-primary-950/40 to-transparent" />
       </div>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">

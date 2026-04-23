@@ -1,3 +1,4 @@
+<template>
   <CommunitySettingsSectionCard
     eyebrow="community.settings.basics.eyebrow"
     title="community.settings.basics.title"
@@ -166,7 +167,6 @@
       </div>
     </div>
   </CommunitySettingsSectionCard>
-  </CommunitySettingsSectionCard>
 </template>
 
 <script setup lang="ts">
@@ -174,6 +174,7 @@ import {
   communityCategoryOptions,
   createCommunitySlug,
 } from "../../../types/community"
+import { computed } from "vue"
 import type { CommunityGroupSettingsDraft } from "../../../types/community"
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })

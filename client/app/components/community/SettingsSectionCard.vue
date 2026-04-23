@@ -1,3 +1,4 @@
+<template>
   <section class="surface-card p-6 sm:p-8 relative overflow-hidden ring-1 ring-secondary-100 shadow-xl group">
     <!-- Decorative background element -->
     <div class="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none group-hover:bg-primary-500/10 transition-colors duration-700" />

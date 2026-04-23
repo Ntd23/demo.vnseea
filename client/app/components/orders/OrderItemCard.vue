@@ -1,3 +1,4 @@
+<template>
   <article
     v-if="variant === 'detail'"
     class="surface-card group grid gap-6 p-5 transition-all duration-500 hover:bg-white hover:ring-primary-100 md:grid-cols-[140px_minmax(0,1fr)] md:items-start ring-1 ring-secondary-100 bg-secondary-50/10"

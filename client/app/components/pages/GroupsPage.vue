@@ -1,3 +1,4 @@
+<template>
   <div class="mx-auto max-w-[1280px] space-y-8 pb-20">
     <!-- Premium Header Card -->
     <header class="surface-card p-8 sm:p-10 relative overflow-hidden ring-1 ring-secondary-100 shadow-2xl group/header">
@@ -122,7 +123,6 @@
         :action-label="mode === 'suggested' ? 'community.groups.action.explore' : 'community.groups.action.viewUpdates'"
       />
     </div>
-  </div>
   </div>
 </template>
 

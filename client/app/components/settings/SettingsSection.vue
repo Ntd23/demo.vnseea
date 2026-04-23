@@ -1,3 +1,4 @@
+<template>
   <section class="surface-card p-8 sm:p-10 space-y-10 ring-1 ring-secondary-100 shadow-xl overflow-hidden relative">
     <!-- Visual Decor -->
     <div class="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16" />

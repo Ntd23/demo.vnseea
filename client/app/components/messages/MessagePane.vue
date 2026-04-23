@@ -1,3 +1,4 @@
+<template>
   <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white ring-1 ring-secondary-100 shadow-xl">
     <!-- Chat Header -->
     <div class="shrink-0 bg-white px-6 py-4 border-b border-secondary-100 shadow-sm relative z-10">
@@ -140,7 +141,6 @@
         </UButton>
       </div>
     </div>
-  </div>
   </div>
 </template>
 

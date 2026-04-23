@@ -1,3 +1,4 @@
+<template>
   <UCard
     class="surface-card group/editor ring-1 ring-secondary-100 shadow-2xl bg-white transition-all duration-500 hover:shadow-3xl"
     :ui="{ body: { padding: 'p-8 sm:p-12' }, base: 'overflow-hidden' }"

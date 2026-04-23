@@ -1,3 +1,4 @@
+<template>
   <div class="grid grid-cols-1 gap-12 xl:grid-cols-[minmax(0,1fr)_380px]">
     <div class="space-y-12">
       <!-- Header Info Section -->

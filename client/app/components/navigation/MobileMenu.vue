@@ -1,3 +1,4 @@
+<template>
   <Teleport to="body">
     <Transition
       enter-active-class="transition duration-500 cubic-bezier(0.4, 0, 0.2, 1)"
@@ -139,8 +140,6 @@
           </div>
         </div>
       </div>
-    </Transition>
-  </Teleport>
     </Transition>
   </Teleport>
 </template>

@@ -1,3 +1,4 @@
+<template>
   <div :class="cardClass">
     <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
       {{ $t("orders.summary.totalPayment") }}
@@ -43,6 +44,7 @@
 <script setup lang="ts">
 import { useOrderPresentation } from "../../composables/useOrderPresentation"
 import { formatOrderCurrency } from "../../../types/orders"
+import { computed } from "vue"
 import type { OrderPresentationShape } from "../../../types/orders"
 
 const props = withDefaults(defineProps<{

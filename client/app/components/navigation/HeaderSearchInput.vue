@@ -1,3 +1,4 @@
+<template>
   <form class="relative w-full group" @submit.prevent="submitSearch">
     <UInput
       v-model="search"

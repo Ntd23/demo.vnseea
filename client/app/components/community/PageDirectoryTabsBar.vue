@@ -1,3 +1,4 @@
+<template>
   <section class="surface-card p-4 sm:p-5 ring-1 ring-secondary-100 shadow-lg">
     <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
       <!-- Tabs Container -->

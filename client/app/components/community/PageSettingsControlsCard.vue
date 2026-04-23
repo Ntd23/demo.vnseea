@@ -1,3 +1,4 @@
+<template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.controls.eyebrow')"
     :title="$t('community.pageSettings.controls.title')"

@@ -1,3 +1,4 @@
+<template>
   <div class="mx-auto max-w-[1280px] space-y-8 pb-20 px-4 sm:px-6">
     <PopularHero
       :eyebrow="t('pages.popularPage.heroEyebrow')"

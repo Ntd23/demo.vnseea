@@ -1,3 +1,4 @@
+<template>
   <div class="flex h-full w-full flex-col overflow-y-auto bg-white scrollbar-hide py-8 px-6 ring-1 ring-secondary-100 shadow-xl">
     <!-- User Profile Header -->
     <div class="flex flex-col items-center border-b border-secondary-100 pb-10">
@@ -54,5 +55,4 @@
         <Icon name="i-ph-caret-right-bold" class="h-3 w-3 text-secondary-300 group-hover:text-primary-500 transition-all group-hover:translate-x-1" />
       </button>
     </div>
-  </div>
 </template>

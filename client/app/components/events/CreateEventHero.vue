@@ -1,3 +1,4 @@
+<template>
   <section class="surface-card group overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-gradient-to-br from-secondary-950 via-primary-900 to-secondary-900 text-white relative">
     <!-- Premium Decorations -->
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.05),transparent_40%)]" />
@@ -62,6 +63,7 @@
       </div>
     </div>
   </section>
+</template>
 
 <script setup lang="ts">
 defineProps<{

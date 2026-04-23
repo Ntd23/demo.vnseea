@@ -12,5 +12,4 @@
       <USkeleton class="h-4 w-[92%]" />
       <USkeleton class="h-4 w-[74%]" />
     </div>
-  </div>
 </template>

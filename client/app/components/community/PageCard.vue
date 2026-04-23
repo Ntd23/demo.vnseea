@@ -1,3 +1,4 @@
+<template>
   <article class="surface-card group overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ring-1 ring-secondary-100 hover:ring-primary-500/20">
     <!-- Page Banner Layer -->
     <div class="relative h-[200px] overflow-hidden flex flex-col justify-end" :style="{ background: page.banner }">
@@ -108,7 +109,6 @@
       </div>
     </div>
   </article>
-  </article>
 </template>
 
 <script setup lang="ts">
@@ -120,6 +120,7 @@ import {
   getCommunityPagePath,
   getCommunityPageSettingsPath,
 } from "../../../types/community"
+import { computed } from "vue"
 import type { CommunityPageRecord } from "../../../types/community"
 
 const props = withDefaults(defineProps<{

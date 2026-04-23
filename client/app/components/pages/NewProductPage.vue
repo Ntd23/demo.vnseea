@@ -1,3 +1,4 @@
+<template>
   <div class="mx-auto max-w-[1280px] space-y-10 pb-28 px-4 sm:px-6">
     <ProductHeroBanner
       variant="create"

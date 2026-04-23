@@ -1,3 +1,4 @@
+<template>
   <div class="surface-card p-5 space-y-5">
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="space-y-1">
@@ -26,6 +27,7 @@
       </UBadge>
     </div>
   </div>
+</template>
 
 <script setup lang="ts">
 const { t } = useI18n()

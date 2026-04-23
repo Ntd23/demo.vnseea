@@ -1,3 +1,4 @@
+<template>
   <div class="surface-card p-2 ring-1 ring-secondary-100 shadow-xl overflow-hidden relative">
     <!-- Visual Decor -->
     <div class="absolute top-0 right-0 w-24 h-24 bg-primary-500/5 rounded-full blur-2xl -mr-12 -mt-12 pointer-events-none" />

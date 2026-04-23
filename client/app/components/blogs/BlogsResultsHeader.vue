@@ -22,7 +22,7 @@
         {{ $t("pages.blogsPage.reset") }}
       </button>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">

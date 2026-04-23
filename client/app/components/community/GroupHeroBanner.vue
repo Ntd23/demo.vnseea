@@ -1,3 +1,4 @@
+<template>
   <section class="surface-card overflow-hidden ring-1 ring-secondary-100 shadow-2xl relative">
     <!-- Hero Banner with Premium Overlays -->
     <div class="relative min-h-[320px] overflow-hidden px-8 py-10 text-white flex flex-col justify-end" :style="{ background: group.banner }">

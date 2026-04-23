@@ -1,3 +1,4 @@
+<template>
   <div class="space-y-6 pb-20 pt-4 px-4 sm:px-6 max-w-[1440px] mx-auto">
     <ProfileHero />
 

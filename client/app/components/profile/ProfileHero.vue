@@ -1,3 +1,4 @@
+<template>
   <div class="surface-card overflow-hidden">
     <!-- Cover Identity -->
     <div class="relative min-h-[220px] overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 sm:min-h-[280px]">

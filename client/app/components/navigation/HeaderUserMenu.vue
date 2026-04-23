@@ -1,3 +1,4 @@
+<template>
   <details class="group relative">
     <summary class="flex list-none cursor-pointer items-center gap-3 rounded-2xl border border-secondary-100 bg-secondary-50/50 px-3 py-1.5 transition-all hover:bg-white hover:ring-2 hover:ring-primary-500/20 group-open:ring-2 group-open:ring-primary-500/20">
       <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-primary-700 text-[10px] font-black text-white shadow-lg shadow-primary-500/20 ring-2 ring-white">

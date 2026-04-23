@@ -55,19 +55,3 @@ defineEmits<{
   display: none;
 }
 </style>
-
-defineEmits<{
-  "update:search": [value: string]
-  "update:selectedCategory": [value: PopularCategoryKey]
-}>()
-</script>
-
-<style scoped>
-.scrollbar-hide {
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-</style>

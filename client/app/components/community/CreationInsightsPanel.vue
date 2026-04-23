@@ -1,3 +1,4 @@
+<template>
 <div class="space-y-6 xl:sticky xl:top-[100px]">
     <section class="surface-card overflow-hidden ring-1 ring-secondary-100 shadow-2xl group/panel">
       <!-- Preview Section -->

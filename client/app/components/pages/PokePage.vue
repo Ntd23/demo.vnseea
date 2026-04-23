@@ -1,3 +1,4 @@
+<template>
   <div class="mx-auto max-w-[1280px] space-y-10 pb-20 px-4 sm:px-6 pt-4">
     <!-- Hero Section -->
     <section class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-secondary-950 via-secondary-900 to-primary-950 text-white shadow-2xl group/hero">
@@ -110,8 +111,6 @@
           @poke="pokeBack"
         />
       </div>
-    </section>
-  </div>
     </section>
   </div>
 </template>

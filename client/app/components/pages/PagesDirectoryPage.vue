@@ -1,3 +1,4 @@
+<template>
   <div class="mx-auto max-w-7xl space-y-8 pb-20 px-4 sm:px-6">
     <!-- Premium Hero Section -->
     <header class="surface-card p-10 relative overflow-hidden ring-1 ring-white/10 shadow-2xl bg-gradient-to-br from-primary-700 via-primary-600 to-primary-800 group/header">
@@ -81,7 +82,6 @@
         :action-label="actionLabel"
       />
     </div>
-  </div>
   </div>
 </template>
 

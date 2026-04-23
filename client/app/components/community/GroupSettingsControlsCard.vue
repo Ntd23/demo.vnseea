@@ -1,3 +1,4 @@
+<template>
   <CommunitySettingsSectionCard
     eyebrow="community.settings.controls.eyebrow"
     title="community.settings.controls.title"

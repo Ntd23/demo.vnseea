@@ -1,3 +1,4 @@
+<template>
   <aside class="surface-card p-6 xl:w-[360px] xl:max-w-[360px] xl:shrink-0 flex flex-col ring-1 ring-secondary-100 shadow-xl min-h-[600px]">
     <div class="px-2 space-y-4 mb-8">
       <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500">

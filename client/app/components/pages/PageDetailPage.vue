@@ -1,3 +1,4 @@
+<template>
   <div v-if="page" class="mx-auto max-w-7xl space-y-8 pb-20 pt-4 px-4 sm:px-6">
     <CommunityPageHeroBanner
       :page="page"

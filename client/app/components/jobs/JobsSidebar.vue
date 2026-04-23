@@ -1,3 +1,4 @@
+<template>
   <aside class="space-y-6">
     <section class="surface-card p-6 sm:p-8 ring-1 ring-secondary-200/50 shadow-xl bg-white space-y-6 group/stats">
       <div class="space-y-1">
@@ -48,6 +49,7 @@
       </div>
     </section>
   </aside>
+</template>
 
 <script setup lang="ts">
 defineProps<{

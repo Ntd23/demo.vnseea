@@ -1,3 +1,4 @@
+<template>
   <div class="surface-card p-4 space-y-4">
     <div class="flex items-center gap-3">
       <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 shadow-sm border border-primary-100">
@@ -42,6 +43,7 @@
       </div>
     </div>
   </div>
+</template>
 
 <script setup lang="ts">
 defineProps<{

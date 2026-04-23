@@ -1,3 +1,4 @@
+<template>
   <section class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary-950 via-primary-900 to-primary-800 text-white shadow-2xl group/hero">
     <!-- Premium Decorations -->
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.1),transparent_40%)]" />

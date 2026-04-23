@@ -1,3 +1,4 @@
+<template>
   <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
     <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
       {{ $t("orders.card.orderProgress") }}

@@ -1,3 +1,4 @@
+<template>
   <section class="surface-card p-6 ring-1 ring-secondary-100 shadow-xl relative overflow-hidden">
     <!-- Visual Decor -->
     <div class="absolute top-0 right-0 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
@@ -69,6 +70,7 @@
             </p>
           </div>
         </div>
+      </div>
     </div>
   </section>
 </template>

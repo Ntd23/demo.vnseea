@@ -1,3 +1,4 @@
+<template>
   <article class="surface-card group overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ring-1 ring-secondary-200/50 hover:ring-primary-500/20 relative">
     <div class="h-1.5 w-full bg-gradient-to-r from-primary-400 to-primary-600 shadow-sm" />
 

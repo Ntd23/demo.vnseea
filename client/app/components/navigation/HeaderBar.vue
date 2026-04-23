@@ -1,3 +1,4 @@
+<template>
   <header class="sticky top-0 z-40">
     <!-- Desktop Header -->
     <div class="hidden xl:block">

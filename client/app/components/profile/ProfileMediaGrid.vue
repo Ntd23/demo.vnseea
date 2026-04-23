@@ -1,3 +1,4 @@
+<template>
   <div class="surface-card p-4 space-y-4">
     <div class="flex items-center justify-between">
       <p class="text-sm font-black text-secondary-900 tracking-tight">{{ title }}</p>
@@ -14,6 +15,7 @@
       <div v-for="item in items" :key="item" class="aspect-square rounded-2xl transition-transform hover:scale-[1.02] cursor-pointer" :class="tileClass" />
     </div>
   </div>
+</template>
 
 <script setup lang="ts">
 defineProps<{

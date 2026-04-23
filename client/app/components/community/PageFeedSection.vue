@@ -1,3 +1,4 @@
+<template>
   <div class="space-y-6">
     <section class="surface-card p-6 ring-1 ring-secondary-100 shadow-xl relative overflow-hidden">
       <!-- Visual Decor -->

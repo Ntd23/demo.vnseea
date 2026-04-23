@@ -1,3 +1,4 @@
+<template>
   <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white border-r border-secondary-100 ring-1 ring-secondary-100 shadow-xl">
     <!-- Header Search & Tabs -->
     <div class="shrink-0 bg-white px-6 py-6 border-b border-secondary-100">

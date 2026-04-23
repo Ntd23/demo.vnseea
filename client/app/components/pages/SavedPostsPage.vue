@@ -1,3 +1,4 @@
+<template>
   <div class="mx-auto max-w-[1280px] space-y-10 pb-24 px-4 sm:px-6 pt-4">
     <!-- Hero Section -->
     <section class="surface-card overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-gradient-to-br from-secondary-950 via-secondary-900 to-primary-950 text-white relative group/hero">

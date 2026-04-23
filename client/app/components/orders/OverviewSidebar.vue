@@ -1,3 +1,4 @@
+<template>
   <div class="space-y-6">
     <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 shadow-xl">
       <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">

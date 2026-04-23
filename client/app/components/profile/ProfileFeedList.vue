@@ -1,6 +1,8 @@
+<template>
   <div class="space-y-6">
     <FeedPostCard v-for="post in posts" :key="post.id" :post="post" />
   </div>
+</template>
 
 <script setup lang="ts">
 defineProps<{

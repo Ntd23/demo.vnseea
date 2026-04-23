@@ -1,3 +1,4 @@
+<template>
   <div class="min-w-0 space-y-8">
     <nav class="space-y-1">
       <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-3 mb-4">

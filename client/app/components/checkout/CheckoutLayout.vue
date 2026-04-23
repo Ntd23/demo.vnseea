@@ -1,3 +1,4 @@
+<template>
   <div class="space-y-10">
     <section class="max-w-4xl space-y-2 pl-1">
       <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
@@ -24,7 +25,7 @@
         <slot name="right" />
       </aside>
     </div>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">

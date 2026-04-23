@@ -1,4 +1,5 @@
-<UCard 
+<template>
+  <UCard 
     class="surface-card group ring-1 ring-secondary-200/50 shadow-2xl bg-white transition-all duration-500 hover:shadow-3xl"
     :ui="{ body: { padding: 'p-8 sm:p-10' } }"
   >
@@ -56,8 +57,10 @@
       </div>
     </div>
   </UCard>
+</template>
 
 <script setup lang="ts">
+import { computed } from "vue"
 import type { ProductChecklistItem } from "../../../types/product-editor"
 
 const props = withDefaults(defineProps<{

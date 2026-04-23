@@ -1,3 +1,4 @@
+<template>
   <div class="surface-card group p-5 sm:p-6 space-y-6 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
     <div class="flex items-center justify-between border-b border-secondary-50 pb-5">
       <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">{{ title }}</h3>
@@ -15,7 +16,6 @@
         <p class="mt-2 text-[11px] font-medium leading-relaxed text-secondary-500">{{ item.subtitle }}</p>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">

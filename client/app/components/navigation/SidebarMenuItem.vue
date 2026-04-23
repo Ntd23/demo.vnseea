@@ -1,3 +1,4 @@
+<template>
   <NuxtLink
     :to="to"
     class="group flex min-w-0 items-center gap-3.5 rounded-xl px-3 py-2.5 transition-all duration-300"

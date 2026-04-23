@@ -1,3 +1,4 @@
+<template>
   <div class="absolute inset-x-0 bottom-0 flex h-full items-end justify-between p-8 pb-12 sm:p-10 sm:pb-16 pointer-events-none">
     <div class="flex-1 min-w-0 pr-16 pointer-events-auto">
       <div class="flex items-center gap-4">
@@ -13,7 +14,7 @@
           <p class="truncate text-base font-black text-white tracking-tight uppercase">{{ reel.author }}</p>
           <div class="flex items-center gap-2">
             <span class="text-[10px] font-bold text-white/60 uppercase tracking-widest">{{ reel.subtitle }}</span>
-            <span class="h-1 w-1 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(37,99,235,1)]" />
+            <span class="h-1 w-1 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(37,99,235,1)]"></span>
           </div>
         </div>
       </div>
@@ -66,3 +67,19 @@
       </div>
     </div>
   </div>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  reel: {
+    id: number
+    title: string
+    author: string
+    subtitle: string
+    description: string
+    likes: number
+    comments: number
+    avatar: string
+  }
+}>()
+</script>

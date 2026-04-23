@@ -1,3 +1,4 @@
+<template>
   <article class="surface-card overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:ring-2 hover:ring-primary-500/20 group ring-1 ring-secondary-100 shadow-xl">
     <!-- Banner Section -->
     <div class="relative overflow-hidden px-6 pb-8 pt-8 text-white min-h-[180px] flex flex-col justify-end" :style="{ background: group.banner }">
@@ -94,7 +95,6 @@
         </UButton>
       </div>
     </div>
-  </article>
   </article>
 </template>
 

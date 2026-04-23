@@ -1,3 +1,4 @@
+<template>
   <section class="surface-card p-6 sm:p-10 ring-1 ring-secondary-200/50 shadow-2xl bg-white/60 backdrop-blur-3xl space-y-10 group/filters">
     <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between border-b border-secondary-100/50 pb-10">
       <div class="space-y-2">
