@@ -1878,6 +1878,211 @@
       "resultHeading": "Products people are browsing right now",
       "distanceKm": "{value} km"
     },
+    "watchPage": {
+      "seoTitle": "Watch | VNSEEA",
+      "seoDescription": "Follow the videos people are watching on VNSEEA with a clearer player, compact filters, and an easier watch-next flow.",
+      "heroEyebrow": "Featured video",
+      "heroTitle": "Catch up with the content the community is watching",
+      "heroDescription": "Browse highlighted videos, filter by topic, and continue watching without losing context while moving between sessions.",
+      "searchPlaceholder": "Search videos, creators, or topics",
+      "relatedEyebrow": "Watch next",
+      "relatedTitle": "Related videos",
+      "commentsEyebrow": "Discussion",
+      "commentsTitle": "Recent comments",
+      "commentPlaceholder": "Write your comment...",
+      "playerReady": "Player is ready",
+      "statVideos": "Available videos",
+      "statVideosDescription": "How many videos are currently available in this mock watch route.",
+      "statViews": "Combined views",
+      "statViewsDescription": "The total view count across the videos visible in Watch right now.",
+      "statComments": "Fresh comments",
+      "statCommentsDescription": "Comments added during your current watch session.",
+      "share": "Share",
+      "shareSuccess": "The video link was copied in the mock flow.",
+      "creatorMeta": "Featured creator",
+      "viewsCount": "{count} views",
+      "you": "You",
+      "youInitials": "YO",
+      "viewerRole": "Viewer",
+      "justNow": "Just now",
+      "emptyEyebrow": "Watch is empty",
+      "emptyTitle": "No videos are ready to display",
+      "emptyDescription": "The current watch list does not have valid data yet. Try another filter or come back when the video feed is available.",
+      "categories": [
+        {
+          "label": "All",
+          "value": "all",
+          "icon": "i-ph-squares-four-bold"
+        },
+        {
+          "label": "Community",
+          "value": "community",
+          "icon": "i-ph-users-three-bold"
+        },
+        {
+          "label": "Education",
+          "value": "education",
+          "icon": "i-ph-graduation-cap-bold"
+        },
+        {
+          "label": "Business",
+          "value": "business",
+          "icon": "i-ph-briefcase-bold"
+        },
+        {
+          "label": "Events",
+          "value": "events",
+          "icon": "i-ph-calendar-blank-bold"
+        },
+        {
+          "label": "Technology",
+          "value": "technology",
+          "icon": "i-ph-cpu-bold"
+        }
+      ],
+      "videos": [
+        {
+          "id": "watch-community-demo",
+          "title": "Community demo day this month",
+          "category": "community",
+          "categoryLabel": "Community",
+          "author": "VNSEEA Team",
+          "authorInitials": "VT",
+          "authorGradient": "from-primary-500 to-secondary-500",
+          "date": "24 minutes ago",
+          "duration": "24:18",
+          "views": 1938,
+          "likes": 126,
+          "shares": 19,
+          "cover": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1600&q=80",
+          "description": "A quick live recap of community updates, active workstreams, and the next items people should keep an eye on this week.",
+          "tags": ["#community", "#demo-day", "#updates"],
+          "comments": [
+            {
+              "id": 101,
+              "author": "Lan Huong",
+              "initials": "LH",
+              "role": "Member",
+              "message": "Today's roadmap recap felt much tighter and easier to follow.",
+              "time": "8 minutes ago"
+            },
+            {
+              "id": 102,
+              "author": "Minh Quan",
+              "initials": "MQ",
+              "role": "Moderator",
+              "message": "Could the team pin the follow-up doc at the end of the session?",
+              "time": "5 minutes ago"
+            }
+          ]
+        },
+        {
+          "id": "watch-founder-office-hours",
+          "title": "Founder office hours: keeping product delivery on pace",
+          "category": "business",
+          "categoryLabel": "Business",
+          "author": "Tuan Anh",
+          "authorInitials": "TA",
+          "authorGradient": "from-secondary-500 to-primary-500",
+          "date": "11 minutes ago",
+          "duration": "18:42",
+          "views": 1420,
+          "likes": 88,
+          "shares": 12,
+          "cover": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=80",
+          "description": "A short discussion on choosing priorities, keeping review loops compact, and preventing small teams from getting stuck mid-rollout.",
+          "tags": ["#founder", "#product", "#execution"],
+          "comments": [
+            {
+              "id": 201,
+              "author": "Gia Linh",
+              "initials": "GL",
+              "role": "People Ops",
+              "message": "The weekly review cadence breakdown feels very grounded in small-team reality.",
+              "time": "6 minutes ago"
+            },
+            {
+              "id": 202,
+              "author": "Phuc An",
+              "initials": "PA",
+              "role": "Founder",
+              "message": "Would love more detail on trimming scope when a deadline gets compressed.",
+              "time": "2 minutes ago"
+            }
+          ]
+        },
+        {
+          "id": "watch-education-workshop",
+          "title": "Learning workshop: taking notes that stick longer",
+          "category": "education",
+          "categoryLabel": "Education",
+          "author": "Hai Nam",
+          "authorInitials": "HN",
+          "authorGradient": "from-amber-500 to-primary-500",
+          "date": "Today",
+          "duration": "32:05",
+          "views": 860,
+          "likes": 64,
+          "shares": 9,
+          "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
+          "description": "A session focused on note-taking, topic-based review, and building a study rhythm that stays consistent without becoming overwhelming.",
+          "tags": ["#education", "#learning", "#notes"],
+          "comments": [
+            {
+              "id": 301,
+              "author": "Thao Vy",
+              "initials": "TV",
+              "role": "Content Lead",
+              "message": "The Cornell notes example is practical enough to use immediately.",
+              "time": "14 minutes ago"
+            },
+            {
+              "id": 302,
+              "author": "Kim Ngan",
+              "initials": "KN",
+              "role": "Mentor",
+              "message": "A sample note template would make this session even stronger.",
+              "time": "9 minutes ago"
+            }
+          ]
+        },
+        {
+          "id": "watch-tech-review",
+          "title": "This week's live tech review",
+          "category": "technology",
+          "categoryLabel": "Technology",
+          "author": "Duc Minh",
+          "authorInitials": "DM",
+          "authorGradient": "from-slate-700 to-blue-500",
+          "date": "1 hour ago",
+          "duration": "15:27",
+          "views": 2240,
+          "likes": 152,
+          "shares": 27,
+          "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
+          "description": "A fast pass through notable frontend changes, AI coding tools worth testing, and the platform updates that actually matter this week.",
+          "tags": ["#tech", "#frontend", "#ai"],
+          "comments": [
+            {
+              "id": 401,
+              "author": "Bao Tram",
+              "initials": "BT",
+              "role": "Frontend Engineer",
+              "message": "The comparison between the old and new tools was easy to follow.",
+              "time": "18 minutes ago"
+            },
+            {
+              "id": 402,
+              "author": "Anh Thu",
+              "initials": "AT",
+              "role": "Designer",
+              "message": "Can you reshare the demo repo link at the end?",
+              "time": "12 minutes ago"
+            }
+          ]
+        }
+      ]
+    },
     "livePage": {
       "seoTitle": "Live | VNSEEA",
       "seoDescription": "Follow live community streams on VNSEEA, jump into chat instantly, and start a new session with a clearer setup flow.",

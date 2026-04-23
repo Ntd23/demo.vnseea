@@ -1878,6 +1878,211 @@
       "resultHeading": "Danh sách sản phẩm đang được quan tâm",
       "distanceKm": "{value} km"
     },
+    "watchPage": {
+      "seoTitle": "Watch | VNSEEA",
+      "seoDescription": "Theo dõi video đang được quan tâm trên VNSEEA với trình phát rõ ràng, bộ lọc gọn và danh sách xem tiếp dễ duyệt.",
+      "heroEyebrow": "Video nổi bật",
+      "heroTitle": "Xem lại những nội dung đang được cộng đồng quan tâm",
+      "heroDescription": "Theo dõi các video nổi bật, lọc theo chủ đề và tiếp tục xem mà không bị đứt mạch khi chuyển giữa các phiên nội dung.",
+      "searchPlaceholder": "Tìm video, tác giả hoặc chủ đề",
+      "relatedEyebrow": "Xem tiếp",
+      "relatedTitle": "Video liên quan",
+      "commentsEyebrow": "Thảo luận",
+      "commentsTitle": "Bình luận gần đây",
+      "commentPlaceholder": "Viết bình luận của bạn...",
+      "playerReady": "Trình phát đã sẵn sàng",
+      "statVideos": "Video đang có",
+      "statVideosDescription": "Số video hiện có trong danh sách watch mock của route này.",
+      "statViews": "Lượt xem tích lũy",
+      "statViewsDescription": "Tổng lượt xem của các video đang hiện trong khu watch.",
+      "statComments": "Bình luận mới",
+      "statCommentsDescription": "Số bình luận vừa thêm trong phiên xem hiện tại của bạn.",
+      "share": "Chia sẻ",
+      "shareSuccess": "Đã sao chép liên kết video ở flow mô phỏng.",
+      "creatorMeta": "Người đăng nổi bật",
+      "viewsCount": "{count} lượt xem",
+      "you": "Bạn",
+      "youInitials": "B",
+      "viewerRole": "Người xem",
+      "justNow": "Vừa xong",
+      "emptyEyebrow": "Watch trống",
+      "emptyTitle": "Chưa có video nào để hiển thị",
+      "emptyDescription": "Danh sách watch hiện chưa có dữ liệu hợp lệ. Hãy đổi bộ lọc hoặc thử lại sau khi dữ liệu video sẵn sàng hơn.",
+      "categories": [
+        {
+          "label": "Tất cả",
+          "value": "all",
+          "icon": "i-ph-squares-four-bold"
+        },
+        {
+          "label": "Cộng đồng",
+          "value": "community",
+          "icon": "i-ph-users-three-bold"
+        },
+        {
+          "label": "Giáo dục",
+          "value": "education",
+          "icon": "i-ph-graduation-cap-bold"
+        },
+        {
+          "label": "Kinh doanh",
+          "value": "business",
+          "icon": "i-ph-briefcase-bold"
+        },
+        {
+          "label": "Sự kiện",
+          "value": "events",
+          "icon": "i-ph-calendar-blank-bold"
+        },
+        {
+          "label": "Công nghệ",
+          "value": "technology",
+          "icon": "i-ph-cpu-bold"
+        }
+      ],
+      "videos": [
+        {
+          "id": "watch-community-demo",
+          "title": "Demo Day cộng đồng tháng này",
+          "category": "community",
+          "categoryLabel": "Cộng đồng",
+          "author": "VNSEEA Team",
+          "authorInitials": "VT",
+          "authorGradient": "from-primary-500 to-secondary-500",
+          "date": "24 phút trước",
+          "duration": "24:18",
+          "views": 1938,
+          "likes": 126,
+          "shares": 19,
+          "cover": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1600&q=80",
+          "description": "Buổi live tổng hợp cập nhật mới của cộng đồng, những phần đang triển khai và các điểm cần mọi người cùng theo dõi trong tuần này.",
+          "tags": ["#community", "#demo-day", "#updates"],
+          "comments": [
+            {
+              "id": 101,
+              "author": "Lan Hương",
+              "initials": "LH",
+              "role": "Thành viên",
+              "message": "Phần recap roadmap hôm nay gọn và dễ theo dõi hơn hẳn.",
+              "time": "8 phút trước"
+            },
+            {
+              "id": 102,
+              "author": "Minh Quân",
+              "initials": "MQ",
+              "role": "Moderator",
+              "message": "Team có thể ghim luôn tài liệu follow-up ở cuối buổi không?",
+              "time": "5 phút trước"
+            }
+          ]
+        },
+        {
+          "id": "watch-founder-office-hours",
+          "title": "Office hours cho founder: giữ nhịp ship sản phẩm",
+          "category": "business",
+          "categoryLabel": "Kinh doanh",
+          "author": "Tuấn Anh",
+          "authorInitials": "TA",
+          "authorGradient": "from-secondary-500 to-primary-500",
+          "date": "11 phút trước",
+          "duration": "18:42",
+          "views": 1420,
+          "likes": 88,
+          "shares": 12,
+          "cover": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=80",
+          "description": "Trao đổi nhanh về cách chọn ưu tiên, giữ flow review gọn và tránh để team nhỏ bị nghẽn khi rollout nhiều hạng mục cùng lúc.",
+          "tags": ["#founder", "#product", "#execution"],
+          "comments": [
+            {
+              "id": 201,
+              "author": "Gia Linh",
+              "initials": "GL",
+              "role": "People Ops",
+              "message": "Phần nói về cadence weekly review khá sát với thực tế team nhỏ.",
+              "time": "6 phút trước"
+            },
+            {
+              "id": 202,
+              "author": "Phúc An",
+              "initials": "PA",
+              "role": "Founder",
+              "message": "Mong anh nói thêm về cách cắt bớt scope khi deadline bị chèn.",
+              "time": "2 phút trước"
+            }
+          ]
+        },
+        {
+          "id": "watch-education-workshop",
+          "title": "Workshop học tập: tối ưu cách ghi chú để nhớ lâu hơn",
+          "category": "education",
+          "categoryLabel": "Giáo dục",
+          "author": "Hải Nam",
+          "authorInitials": "HN",
+          "authorGradient": "from-amber-500 to-primary-500",
+          "date": "Hôm nay",
+          "duration": "32:05",
+          "views": 860,
+          "likes": 64,
+          "shares": 9,
+          "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
+          "description": "Một buổi chia sẻ tập trung vào note-taking, ôn tập theo cụm chủ đề và cách giữ được nhịp học đều mà không quá tải.",
+          "tags": ["#education", "#learning", "#notes"],
+          "comments": [
+            {
+              "id": 301,
+              "author": "Thảo Vy",
+              "initials": "TV",
+              "role": "Content Lead",
+              "message": "Ví dụ về Cornell notes khá dễ áp dụng luôn.",
+              "time": "14 phút trước"
+            },
+            {
+              "id": 302,
+              "author": "Kim Ngân",
+              "initials": "KN",
+              "role": "Mentor",
+              "message": "Nếu có template note mẫu thì buổi này sẽ càng trọn vẹn hơn.",
+              "time": "9 phút trước"
+            }
+          ]
+        },
+        {
+          "id": "watch-tech-review",
+          "title": "Live review công nghệ tuần này",
+          "category": "technology",
+          "categoryLabel": "Công nghệ",
+          "author": "Đức Minh",
+          "authorInitials": "DM",
+          "authorGradient": "from-slate-700 to-blue-500",
+          "date": "1 giờ trước",
+          "duration": "15:27",
+          "views": 2240,
+          "likes": 152,
+          "shares": 27,
+          "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
+          "description": "Đi nhanh qua các cập nhật đáng chú ý trong hệ sinh thái frontend, công cụ AI hỗ trợ code và những thay đổi mới đáng thử.",
+          "tags": ["#tech", "#frontend", "#ai"],
+          "comments": [
+            {
+              "id": 401,
+              "author": "Bảo Trâm",
+              "initials": "BT",
+              "role": "Frontend Engineer",
+              "message": "Đoạn so sánh giữa tool cũ và mới khá dễ hình dung.",
+              "time": "18 phút trước"
+            },
+            {
+              "id": 402,
+              "author": "Anh Thư",
+              "initials": "AT",
+              "role": "Designer",
+              "message": "Cho xin lại link repo demo ở cuối buổi nhé.",
+              "time": "12 phút trước"
+            }
+          ]
+        }
+      ]
+    },
     "livePage": {
       "seoTitle": "Live | VNSEEA",
       "seoDescription": "Theo dõi các buổi phát trực tiếp của cộng đồng VNSEEA, mở chat tức thì và bắt đầu một phiên live mới với thiết lập rõ ràng.",
