@@ -4,60 +4,173 @@
       :payments="paymentHistory"
       :stats="heroStats"
       :subscription="subscriptionState"
+      :billing-label="activeBillingLabel"
+      :selected-plan-name="focusedPlan?.name"
+      :has-active-selection="hasRouteState"
+      @select-featured="selectFeaturedPlan"
+      @reset="resetSelection"
     />
 
-    <GoProBillingToggle v-model="billingCycle" />
+    <GoProBillingToggle
+      v-model="billingCycle"
+      :status-label="selectionStatusLabel"
+      :yearly-savings-percent="featuredPlanSavingsPercent"
+    />
 
-    <section class="rounded-[30px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)]">
-      <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.goProPage.plansEyebrow") }}</p>
-          <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.goProPage.plansTitle") }}</h2>
-          <p class="mt-1 text-body-secondary">{{ t("pages.goProPage.plansDescription") }}</p>
-        </div>
-      </div>
+    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
+      <section class="space-y-4">
+        <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p class="text-label-secondary text-[var(--color-primary-600)]">
+                {{ t("pages.goProPage.plansEyebrow") }}
+              </p>
+              <h2 class="mt-1 text-heading text-[var(--text-primary)]">
+                {{ t("pages.goProPage.plansTitle") }}
+              </h2>
+              <p class="mt-1 text-body-secondary">
+                {{ t("pages.goProPage.plansDescription") }}
+              </p>
+            </div>
 
-      <div class="mt-5 grid gap-5 xl:grid-cols-3">
-        <GoProPlanCard
-          v-for="plan in plans"
-          :key="plan.id"
+            <UButton
+              v-if="hasRouteState"
+              type="button"
+              color="neutral"
+              variant="outline"
+              class="justify-center rounded-full"
+              @click="resetSelection"
+            >
+              {{ t("pages.goProPage.resetSelection") }}
+            </UButton>
+          </div>
+
+          <UAlert
+            class="mt-4 rounded-[22px]"
+            :color="hasRouteState ? 'primary' : 'neutral'"
+            variant="subtle"
+            icon="i-ph-crown-simple-fill"
+            :title="t('pages.goProPage.plansStatusTitle')"
+            :description="selectionStatusLabel"
+          />
+
+          <div class="mt-5 grid gap-5 xl:grid-cols-3">
+            <GoProPlanCard
+              v-for="plan in plans"
+              :key="plan.id"
+              :billing-cycle="billingCycle"
+              :plan="plan"
+              :selected="focusedPlan?.id === plan.id"
+              @select="selectPlan"
+            />
+          </div>
+        </UCard>
+
+        <GoProComparisonTable
           :billing-cycle="billingCycle"
-          :plan="plan"
-          @select="selectPlan"
+          :plans="plans"
+          :rows="comparisonRows"
+          :selected-plan-id="focusedPlanId || ''"
         />
-      </div>
-    </section>
+      </section>
 
-    <GoProComparisonTable
-      :plans="plans"
-      :rows="comparisonRows"
-    />
+      <GoProSidebar
+        :subscription="subscriptionState"
+        :payments="paymentHistory"
+        :stats="sidebarStats"
+        :status-label="selectionStatusLabel"
+        :selected-plan="focusedPlan"
+        :has-active-selection="hasRouteState"
+        @reset="resetSelection"
+      />
+    </div>
 
     <GoProCheckoutModal
       :billing-cycle="billingCycle"
       :payment-methods="paymentMethods"
-      :plan="selectedPlan"
+      :plan="checkoutPlan"
       @checkout="recordCheckout"
-      @close="selectedPlan = undefined"
+      @close="closeCheckout"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { BillingCycle, ProCheckoutPayload, ProPlan } from "~/composables/useMockGoProData"
-import { formatProCurrency } from "~/composables/useMockGoProData"
+import type { LocationQueryRaw } from "vue-router"
+import type { BillingCycle, ProCheckoutPayload, ProPlan, ProPlanKey } from "~/composables/useMockGoProData"
+import {
+  defaultBillingCycle,
+  formatProCurrency,
+  getProPlanPrice,
+  getProSavingsPercent,
+  normalizeBillingCycle,
+  normalizeProPlanKey,
+  readGoProQueryValue,
+  useMockGoProData,
+} from "~/composables/useMockGoProData"
 
 const { plans, comparisonRows, paymentMethods, currentSubscription } = useMockGoProData()
 const { t, locale } = useI18n()
+const route = useRoute()
+const router = useRouter()
 
-useSeoMeta({
-  title: () => t("pages.goProPage.seoTitle"),
-  description: () => t("pages.goProPage.seoDescription"),
-})
-
-const billingCycle = ref<BillingCycle>("yearly")
-const selectedPlan = ref<ProPlan>()
+const billingCycle = ref<BillingCycle>(
+  normalizeBillingCycle(readGoProQueryValue(route.query.billing)),
+)
+const focusedPlanId = ref<ProPlanKey | "">(
+  normalizeProPlanKey(readGoProQueryValue(route.query.plan)),
+)
+const checkoutPlanId = ref<ProPlanKey | null>(null)
 const checkouts = ref<ProCheckoutPayload[]>([])
+
+const activeBillingLabel = computed(() =>
+  billingCycle.value === "monthly"
+    ? t("pages.goProPage.monthly")
+    : t("pages.goProPage.yearlySavings"),
+)
+
+const featuredPlan = computed(() =>
+  plans.value.find(plan => plan.highlight) ?? plans.value[1] ?? plans.value[0] ?? null,
+)
+
+const featuredPlanSavingsPercent = computed(() =>
+  featuredPlan.value ? getProSavingsPercent(featuredPlan.value) : 0,
+)
+
+const focusedPlan = computed<ProPlan | null>(() =>
+  plans.value.find(plan => plan.id === focusedPlanId.value) ?? null,
+)
+
+const checkoutPlan = computed<ProPlan | null>(() =>
+  plans.value.find(plan => plan.id === checkoutPlanId.value) ?? null,
+)
+
+const hasRouteState = computed(() =>
+  billingCycle.value !== defaultBillingCycle || Boolean(focusedPlanId.value),
+)
+
+const selectionStatusLabel = computed(() => {
+  if (focusedPlan.value && billingCycle.value !== defaultBillingCycle) {
+    return t("pages.goProPage.selectionStatusPlanBilling", {
+      plan: focusedPlan.value.name,
+      billing: activeBillingLabel.value,
+    })
+  }
+
+  if (focusedPlan.value) {
+    return t("pages.goProPage.selectionStatusPlan", {
+      plan: focusedPlan.value.name,
+    })
+  }
+
+  if (billingCycle.value !== defaultBillingCycle) {
+    return t("pages.goProPage.selectionStatusBilling", {
+      billing: activeBillingLabel.value,
+    })
+  }
+
+  return t("pages.goProPage.selectionStatusDefault")
+})
 
 const subscriptionState = computed(() => {
   const latest = checkouts.value[0]
@@ -67,7 +180,9 @@ const subscriptionState = computed(() => {
   return {
     plan: plan?.name ?? t("pages.goProPage.subscriptionFallbackPlan"),
     status: t("pages.goProPage.subscriptionActive"),
-    renewsAt: latest.billingCycle === "monthly" ? t("pages.goProPage.renewsMonthly") : t("pages.goProPage.renewsYearly"),
+    renewsAt: latest.billingCycle === "monthly"
+      ? t("pages.goProPage.renewsMonthly")
+      : t("pages.goProPage.renewsYearly"),
   }
 })
 
@@ -93,7 +208,9 @@ const heroStats = computed(() => [
   },
   {
     label: t("pages.goProPage.statSavings"),
-    value: t("pages.goProPage.statSavingsValue"),
+    value: t("pages.goProPage.statSavingsValue", {
+      percent: featuredPlanSavingsPercent.value,
+    }),
     description: t("pages.goProPage.statSavingsDescription"),
   },
   {
@@ -103,11 +220,105 @@ const heroStats = computed(() => [
   },
 ])
 
-const selectPlan = (plan: ProPlan) => {
-  selectedPlan.value = plan
+const sidebarStats = computed(() => {
+  const plan = focusedPlan.value ?? featuredPlan.value
+  const price = plan ? getProPlanPrice(plan, billingCycle.value) : 0
+
+  return [
+    {
+      label: t("pages.goProPage.sidebarBilling"),
+      value: activeBillingLabel.value,
+    },
+    {
+      label: t("pages.goProPage.sidebarPrice"),
+      value: formatProCurrency(price, locale.value),
+    },
+    {
+      label: t("pages.goProPage.sidebarPayments"),
+      value: paymentHistory.value.length,
+    },
+  ]
+})
+
+watch(
+  () => route.query.billing,
+  (value) => {
+    const nextBilling = normalizeBillingCycle(readGoProQueryValue(value))
+    if (nextBilling !== billingCycle.value) {
+      billingCycle.value = nextBilling
+    }
+  },
+)
+
+watch(
+  () => route.query.plan,
+  (value) => {
+    const nextPlan = normalizeProPlanKey(readGoProQueryValue(value))
+    if (nextPlan !== focusedPlanId.value) {
+      focusedPlanId.value = nextPlan
+    }
+  },
+)
+
+watch(billingCycle, syncRoute)
+watch(focusedPlanId, syncRoute)
+
+onMounted(() => {
+  syncRoute()
+})
+
+function selectPlan(plan: ProPlan) {
+  focusedPlanId.value = plan.id
+  checkoutPlanId.value = plan.id
 }
 
-const recordCheckout = (payload: ProCheckoutPayload) => {
+function selectFeaturedPlan() {
+  if (!featuredPlan.value) return
+  selectPlan(featuredPlan.value)
+}
+
+function closeCheckout() {
+  checkoutPlanId.value = null
+}
+
+function recordCheckout(payload: ProCheckoutPayload) {
   checkouts.value = [payload, ...checkouts.value]
+  focusedPlanId.value = payload.planId
+  closeCheckout()
+}
+
+function resetSelection() {
+  billingCycle.value = defaultBillingCycle
+  focusedPlanId.value = ""
+  closeCheckout()
+}
+
+function syncRoute() {
+  const currentRawBilling = readGoProQueryValue(route.query.billing)
+  const currentRawPlan = readGoProQueryValue(route.query.plan)
+  const nextBilling = billingCycle.value === defaultBillingCycle ? "" : billingCycle.value
+  const nextPlan = focusedPlanId.value
+
+  if (currentRawBilling === nextBilling && currentRawPlan === nextPlan) {
+    return
+  }
+
+  const nextQuery: LocationQueryRaw = { ...route.query }
+
+  if (nextBilling) {
+    nextQuery.billing = nextBilling
+  }
+  else {
+    delete nextQuery.billing
+  }
+
+  if (nextPlan) {
+    nextQuery.plan = nextPlan
+  }
+  else {
+    delete nextQuery.plan
+  }
+
+  void router.replace({ path: "/go-pro", query: nextQuery })
 }
 </script>

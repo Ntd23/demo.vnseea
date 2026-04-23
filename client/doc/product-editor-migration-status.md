@@ -679,9 +679,25 @@ Vai trò:
 - pricing/paywall/plan compare
 
 Nhận xét migrate:
-- `BillingToggle.vue` hợp với `USwitch` hoặc `URadioGroup`
-- `CheckoutModal.vue` nên chuẩn hóa với `UModal`
-- `ComparisonTable.vue` có thể cân nhắc `UTable`
+- `BillingToggle.vue` đã chuyển sang `URadioGroup` + `UAlert`:
+  - chu kỳ `monthly/yearly` có state rõ hơn, keyboard-safe hơn
+  - trạng thái pricing đang xem không còn là 2 button thủ công đơn giản
+- `CheckoutModal.vue` đã bỏ `Teleport` modal tự dựng:
+  - dùng `FoundationModalShell` + `UForm` + `URadioGroup` + `UCheckbox`
+  - có state `idle/loading/success/error`, validate inline, toast và dismiss guard rõ hơn
+- `PlanCard.vue`, `GoProHero.vue`, `GoProSidebar.vue` đã chuyển khỏi flow HTML/Tailwind thuần:
+  - dùng `UCard`, `UBadge`, `UButton`, `UAlert`
+  - card giá có selected/recommended state rõ, CTA tốt hơn trên mobile
+  - hero/sidebar bám theo chu kỳ billing và gói đang xem thay vì render tĩnh
+- `ComparisonTable.vue` đã được chuẩn hóa lại:
+  - vẫn giữ semantic table để so sánh public pricing nhưng bọc `UCard` + `UAlert`
+  - cột gói đang xem được highlight rõ hơn, status compare không còn mơ hồ
+- `GoProPage.vue` và `/go-pro` route đã đáp ứng tốt hơn 3 nhóm tiêu chí:
+  - `SEO` được dời về page-level bằng `useSeoMeta()` + canonical + Open Graph
+  - query `billing/plan` đã sync với route và normalize giá trị không hợp lệ
+  - modal open/selection state không còn gắn chặt vào route theo cách gây rối UX
+- `useMockGoProData.ts` đã có helper `read/normalize/getPrice/getSavings` để contract dữ liệu ổn định hơn
+- đã bổ sung đầy đủ locale `pages.goProPage` cho pricing, comparison, checkout và mock subscription/payment state
 
 ### `jobs` - 9 files
 
