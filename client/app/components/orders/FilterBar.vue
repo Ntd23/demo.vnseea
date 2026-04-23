@@ -19,34 +19,38 @@
           icon="i-ph-magnifying-glass-duotone"
           size="xl"
           :placeholder="$t('orders.filter.placeholder')"
-          class="rounded-2xl"
-          :ui="{ rounded: 'rounded-2xl', size: { xl: 'h-[56px] px-6 text-base' }, base: 'bg-secondary-50/50 hover:bg-white focus:bg-white ring-1 ring-secondary-200 focus:ring-primary-500 transition-all' }"
+          :ui="{ 
+            rounded: 'rounded-2xl', 
+            size: { xl: 'h-[56px] px-6 text-base' }, 
+            base: 'bg-secondary-50/50 hover:bg-white focus:bg-white ring-1 ring-secondary-200 focus:ring-primary-500 transition-all duration-300' 
+          }"
         />
       </div>
     </div>
 
     <!-- Filter Buttons Grid -->
     <div class="flex flex-wrap gap-2.5">
-      <button
+      <UButton
         v-for="filter in filters"
         :key="filter.key"
-        class="inline-flex items-center gap-2.5 rounded-xl px-4 py-2.5 text-xs font-black uppercase tracking-widest transition-all active:scale-95 border"
+        variant="soft"
+        size="md"
+        class="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 py-2.5 transition-all active:scale-95 border"
         :class="activeFilterModel === filter.key
           ? 'bg-primary-600 text-white border-primary-500 shadow-lg shadow-primary-500/30'
           : 'bg-white text-secondary-500 border-secondary-100 hover:border-primary-200 hover:bg-primary-50/10 hover:text-primary-600'"
-        type="button"
         @click="activeFilterModel = filter.key"
       >
         <span>{{ $t(filter.label) }}</span>
         <UBadge
           variant="soft"
           :color="activeFilterModel === filter.key ? 'white' : 'primary'"
-          class="rounded-lg font-black text-[10px] min-w-[24px] justify-center transition-colors px-1.5 py-0.5"
+          class="rounded-lg font-black text-[9px] min-w-[20px] justify-center transition-colors px-1.5 py-0.5"
           :class="activeFilterModel === filter.key ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'"
         >
           {{ filter.count }}
         </UBadge>
-      </button>
+      </UButton>
     </div>
   </section>
 </template>

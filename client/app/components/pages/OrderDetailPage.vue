@@ -7,96 +7,105 @@
     >
       <template #left>
         <div v-if="order" class="space-y-5">
-          <section class="rounded-[30px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-6">
-            <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-              <div>
-                <div class="flex flex-wrap items-center gap-2">
-                  <p class="text-[12px] font-bold uppercase tracking-[0.24em] text-[#0000ff]/70">
+          <section class="surface-card p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
+            <div class="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between border-b border-secondary-50 pb-6">
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-3">
+                  <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
                     {{ order.orderNumber }}
                   </p>
-                  <span
-                    class="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-[11px] font-bold"
+                  <UBadge
+                    variant="soft"
+                    class="rounded-lg font-black text-[10px] uppercase tracking-widest px-3 py-1 ring-1 ring-inset"
                     :class="statusMeta.badgeClass"
                   >
-                    <Icon :name="statusMeta.icon" class="h-3.5 w-3.5" />
+                    <template #leading>
+                      <Icon :name="statusMeta.icon.includes('duotone') ? statusMeta.icon : statusMeta.icon.replace('-fill', '-duotone')" class="h-3.5 w-3.5 mr-1" />
+                    </template>
                     {{ $t(statusMeta.label) }}
-                  </span>
+                  </UBadge>
                 </div>
 
-                <h2 class="mt-2 text-[1.55rem] font-black tracking-[-0.05em] text-[#243b63]">
+                <h2 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
                   {{ $t("orders.card.orderedFrom", { seller: order.seller, price: formatOrderCurrency(order.total) }).split(' • ')[0] }}
                 </h2>
-                <p class="mt-2 max-w-[700px] text-[14px] leading-7 text-slate-500">
+                <p class="text-sm font-medium leading-relaxed text-secondary-500 max-w-2xl">
                   {{ $t(statusMeta.description) }}
                 </p>
               </div>
 
-              <div class="flex flex-wrap gap-2">
-                <div class="rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
+              <div class="flex flex-wrap gap-2 pt-2 xl:pt-1">
+                <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
                   {{ order.placedAt }}
-                </div>
-                <div class="rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
+                </UBadge>
+                <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
                   {{ $t("orders.card.items", { count: totalItems }) }}
-                </div>
+                </UBadge>
               </div>
             </div>
 
-            <div class="mt-5 grid gap-3 md:grid-cols-3">
-              <div class="rounded-[20px] border border-[#eef2f8] bg-[#fbfcff] p-4">
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+            <div class="grid gap-4 sm:grid-cols-3">
+              <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/info hover:bg-white transition-colors duration-500">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
                   {{ $t("orders.detail.recipient") }}
                 </p>
-                <p class="mt-2 text-[15px] font-black text-[#243b63]">
-                  {{ order.recipientName }}
-                </p>
-                <p class="mt-1 text-[13px] text-slate-500">
-                  {{ order.recipientPhone }}
-                </p>
+                <div class="space-y-1">
+                  <p class="text-sm font-black text-secondary-900 group-hover/info:text-primary-700 transition-colors">
+                    {{ order.recipientName }}
+                  </p>
+                  <p class="text-[11px] font-medium leading-relaxed text-secondary-500">
+                    {{ order.recipientPhone }}
+                  </p>
+                </div>
               </div>
 
-              <div class="rounded-[20px] border border-[#eef2f8] bg-[#fbfcff] p-4">
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/ship-provider hover:bg-white transition-colors duration-500">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
                   {{ $t("orders.detail.shippingProvider") }}
                 </p>
-                <p class="mt-2 text-[15px] font-black text-[#243b63]">
-                  {{ order.shippingProvider }}
-                </p>
-                <p class="mt-2 text-[12px] text-slate-500">
-                  {{ $t("orders.detail.trackingCodeLabel", { code: $t(order.trackingCode) }) }}
-                </p>
+                <div class="space-y-1">
+                  <p class="text-sm font-black text-secondary-900 group-hover/ship-provider:text-primary-700 transition-colors">
+                    {{ order.shippingProvider }}
+                  </p>
+                  <p class="text-[11px] font-medium leading-relaxed text-secondary-500 uppercase tracking-widest">
+                    #{{ $t(order.trackingCode) }}
+                  </p>
+                </div>
               </div>
 
-              <div class="rounded-[20px] border border-[#eef2f8] bg-[#fbfcff] p-4">
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/est hover:bg-white transition-colors duration-500">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
                   {{ $t("orders.detail.estimatedProcess") }}
                 </p>
-                <p class="mt-2 text-[15px] font-black text-[#243b63]">
-                  {{ $t(order.deliveryWindow) }}
-                </p>
-                <p class="mt-1 text-[13px] text-slate-500">
-                  {{ $t(order.paymentMethod) }}
-                </p>
+                <div class="space-y-1">
+                  <p class="text-sm font-black text-secondary-900 group-hover/est:text-primary-700 transition-colors">
+                    {{ $t(order.deliveryWindow) }}
+                  </p>
+                  <p class="text-[11px] font-medium leading-relaxed text-secondary-500 italic">
+                    {{ $t(order.paymentMethod) }}
+                  </p>
+                </div>
               </div>
             </div>
           </section>
 
-          <section class="rounded-[30px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-6">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+          <section class="surface-card p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-secondary-50 pb-6">
+              <div class="space-y-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
                   {{ $t("orders.card.productsInOrder") }}
                 </p>
-                <h2 class="mt-1 text-[1.3rem] font-black tracking-[-0.04em] text-[#243b63]">
+                <h3 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
                   {{ $t("orders.card.productsSummary", { count: totalItems }) }}
-                </h2>
+                </h3>
               </div>
 
-              <div class="rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
+              <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
                 {{ $t("orders.card.total", { total: formatOrderCurrency(order.total) }) }}
-              </div>
+              </UBadge>
             </div>
 
-            <div class="mt-5 space-y-3">
+            <div class="space-y-4">
               <OrdersOrderItemCard
                 v-for="item in order.items"
                 :key="item.id"
@@ -109,26 +118,26 @@
           </section>
 
           <div class="grid gap-5 xl:grid-cols-2">
-            <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-6">
-              <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+            <section class="surface-card p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
                 {{ $t("orders.detail.deliveryAndNotes") }}
               </p>
 
-              <div class="mt-5 grid gap-4">
-                <div class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
-                  <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              <div class="grid gap-4">
+                <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-3 group/address hover:bg-white transition-colors duration-500">
+                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
                     {{ $t("orders.card.shippingAddress") }}
                   </p>
-                  <p class="mt-2 text-[14px] leading-7 text-slate-600">
+                  <p class="text-sm font-semibold leading-relaxed text-secondary-600 group-hover/address:text-secondary-900 transition-colors">
                     {{ order.shippingAddress }}
                   </p>
                 </div>
 
-                <div class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
-                  <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-3 group/note hover:bg-white transition-colors duration-500">
+                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
                     {{ $t("orders.detail.orderNote") }}
                   </p>
-                  <p class="mt-2 text-[14px] leading-7 text-slate-600">
+                  <p class="text-sm font-semibold leading-relaxed text-secondary-600 group-hover/note:text-secondary-900 transition-colors italic">
                     {{ order.note || $t("orders.detail.noNote") }}
                   </p>
                 </div>
@@ -155,20 +164,23 @@
 
         <section
           v-else
-          class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]"
+          class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl"
         >
-          <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
             {{ $t("orders.sidebar.tasks") }}
           </p>
-          <p class="mt-3 text-[14px] leading-7 text-slate-500">
+          <p class="text-sm font-medium leading-relaxed text-secondary-500">
             {{ $t("orders.sidebar.tasksAction") }}
           </p>
-          <NuxtLink
+          <UButton
             to="/orders"
-            class="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-[#243b63] px-5 text-[14px] font-extrabold text-white shadow-[0_10px_22px_rgba(36,59,99,0.18)] transition hover:-translate-y-0.5"
+            size="xl"
+            block
+            icon="i-ph-arrow-left-duotone"
+            class="rounded-2xl bg-secondary-900 hover:bg-black text-white font-black text-xs uppercase tracking-widest h-12 shadow-xl shadow-secondary-900/10 transition-all active:scale-95 mt-2"
           >
             {{ $t("orders.sidebar.backToOrders") }}
-          </NuxtLink>
+          </UButton>
         </section>
       </template>
     </CheckoutLayout>
@@ -198,4 +210,9 @@ const pageTitle = computed(() =>
     ? t("orders.page.detailTitle", { id: order.value.orderNumber })
     : t("orders.page.detailFallbackTitle"),
 )
+
+useSeoMeta({
+  title: pageTitle,
+  description: t("orders.page.detailDescription"),
+})
 </script>

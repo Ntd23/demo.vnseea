@@ -13,8 +13,11 @@
       <UBadge
         variant="soft"
         class="rounded-lg font-black text-[10px] uppercase tracking-widest px-3 py-1.5 ring-1 ring-inset"
-        :class="statusMeta.badgeClass || statusMeta.panelClass"
+        :class="statusMeta.badgeClass"
       >
+        <template #leading>
+          <Icon :name="statusMeta.icon.includes('duotone') ? statusMeta.icon : statusMeta.icon.replace('-fill', '-duotone')" class="h-3.5 w-3.5 mr-1" />
+        </template>
         {{ $t(statusMeta.label) }}
       </UBadge>
     </div>
@@ -28,9 +31,10 @@
     </div>
 
     <div v-else class="grid gap-4 sm:grid-cols-2">
-      <button
-        type="button"
-        class="surface-card p-6 text-left transition-all duration-300 group/stage active:scale-[0.98]"
+      <UButton
+        variant="soft"
+        color="white"
+        class="surface-card block p-6 text-left transition-all duration-300 group/stage active:scale-[0.98] ring-1"
         :class="shippingStageClass"
       >
         <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
@@ -42,11 +46,12 @@
         <p class="mt-2 text-[11px] font-medium leading-relaxed opacity-80">
           {{ $t("orders.detail.shippedDesc") }}
         </p>
-      </button>
+      </UButton>
 
-      <button
-        type="button"
-        class="surface-card p-6 text-left transition-all duration-300 group/stage active:scale-[0.98]"
+      <UButton
+        variant="soft"
+        color="white"
+        class="surface-card block p-6 text-left transition-all duration-300 group/stage active:scale-[0.98] ring-1"
         :class="completedStageClass"
       >
         <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
@@ -58,15 +63,15 @@
         <p class="mt-2 text-[11px] font-medium leading-relaxed opacity-80">
           {{ $t("orders.detail.completedDesc") }}
         </p>
-      </button>
+      </UButton>
     </div>
 
     <div class="space-y-4">
       <div
         v-for="task in order.tasks"
         :key="task.key"
-        class="surface-card p-5 ring-1 ring-secondary-100 transition-all duration-300 group/task"
-        :class="task.done ? 'bg-primary-50/20 ring-primary-50' : 'bg-white'"
+        class="surface-card p-5 ring-1 transition-all duration-300 group/task"
+        :class="task.done ? 'bg-primary-50/20 ring-primary-50' : 'bg-white ring-secondary-100'"
       >
         <div class="flex items-start gap-4">
           <div
@@ -111,17 +116,17 @@ const { statusMeta } = useOrderPresentation(computed(() => props.order))
 
 const shippingStageClass = computed(() => {
   if (props.order.status === "shipping" || props.order.status === "delivered") {
-    return "border-[#cfe0ff] bg-[#eef4ff] text-[#1d4ed8]"
+    return "ring-primary-100 bg-primary-50/50 text-primary-700"
   }
 
-  return "border-[#eef2f8] bg-white text-slate-500 hover:border-[#cfdaf0] hover:text-[#243b63]"
+  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-primary-700"
 })
 
 const completedStageClass = computed(() => {
   if (props.order.status === "delivered") {
-    return "border-[#c7ebd0] bg-[#effaf3] text-[#1f7a38]"
+    return "ring-green-100 bg-green-50/50 text-green-700"
   }
 
-  return "border-[#eef2f8] bg-white text-slate-500 hover:border-[#cfdaf0] hover:text-[#243b63]"
+  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-primary-700"
 })
 </script>

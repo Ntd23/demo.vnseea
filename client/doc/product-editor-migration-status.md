@@ -502,25 +502,27 @@ Nhận xét migrate:
 - `HeaderSearchInput.vue` hợp để thêm `watchDebounced`
 - `MobileMenu.vue` hợp với `UDrawer`
 
-### `orders` - 9 files
+### `orders` - 9 files [DONE]
 
 Files:
-- `BuyerOrderCard.vue`
-- `DetailSidebar.vue`
-- `DetailTimelineCard.vue`
-- `FilterBar.vue`
-- `OrderItemCard.vue`
-- `OrderPriceSummary.vue`
-- `OverviewSidebar.vue`
-- `SellerOrderChecklistCard.vue`
-- `SellerOrderSidebar.vue`
+- `BuyerOrderCard.vue` [DONE]
+- `DetailSidebar.vue` [DONE]
+- `DetailTimelineCard.vue` [DONE]
+- `FilterBar.vue` [DONE]
+- `OrderItemCard.vue` [DONE]
+- `OrderPriceSummary.vue` [DONE]
+- `OverviewSidebar.vue` [DONE]
+- `SellerOrderChecklistCard.vue` [DONE]
+- `SellerOrderSidebar.vue` [DONE]
 
 Vai trò:
 - orders list/detail/buyer/seller
 
 Nhận xét migrate:
-- `FilterBar.vue` nên dùng `UInput`, `USelect`, `watchDebounced`
-- detail/checklist/sidebar có thể tận dụng `UCard`, `UBadge`, `UProgress`
+- [x] `FilterBar.vue` nên dùng `UInput`, `USelect`, `watchDebounced`
+- [x] detail/checklist/sidebar có thể tận dụng `UCard`, `UBadge`, `UProgress`
+- [x] added useSeoMeta to OrderDetailPage.vue
+
 
 ### `pages` - 49 files
 
