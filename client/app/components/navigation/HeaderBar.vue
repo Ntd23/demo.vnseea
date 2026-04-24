@@ -52,36 +52,35 @@
 
     <!-- Mobile Header -->
     <div class="xl:hidden">
-      <div class="relative overflow-hidden bg-primary-950 px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
+      <div class="relative overflow-hidden border-b border-[var(--border-light)] bg-white/95 px-4 py-3 shadow-[0_8px_24px_rgba(0,0,255,0.08)] backdrop-blur-[18px]">
         <!-- Visual Decor -->
-        <div class="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-950 to-secondary-950 z-0 opacity-50" />
-        <div class="absolute top-0 right-0 w-32 h-32 bg-primary-600/20 rounded-full blur-3xl -mr-16 -mt-16" />
+        <div class="absolute inset-x-0 top-0 z-0 h-px bg-[var(--progress-gradient)] opacity-80" />
+        <div class="absolute -right-12 -top-16 h-32 w-32 rounded-full bg-primary-100/70 blur-3xl" />
         
         <div class="relative z-10 flex items-center justify-between gap-3">
           <NuxtLink
             to="/home"
-            class="focus-ring flex h-10 min-w-0 items-center gap-2 rounded-xl bg-white/10 px-3 text-white ring-1 ring-white/10 transition-all hover:bg-white/15"
+            class="focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--color-primary-100)] bg-[var(--color-primary-50)] text-primary-600 shadow-sm transition-all hover:bg-white"
             :aria-label="$t('navigation.headerBar.home')"
           >
-            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-white text-[10px] font-black text-primary-700">V</span>
-            <span class="hidden text-[11px] font-black uppercase tracking-[0.18em] sm:inline">VNSEEA</span>
+            <Icon name="i-ph-house-fill" class="h-5.5 w-5.5" />
           </NuxtLink>
 
           <div class="ml-auto flex min-w-0 items-center gap-2">
             <button
               type="button"
-              class="focus-ring relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-white/70 ring-1 ring-white/10 transition-all active:scale-95 hover:bg-white/15 hover:text-white"
+              class="focus-ring relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-primary-50)] text-primary-600 ring-1 ring-[var(--color-primary-100)] transition-all active:scale-95 hover:bg-white"
               :aria-label="$t('navigation.headerBar.notifications')"
             >
               <Icon name="i-ph-bell-duotone" class="h-5.5 w-5.5" />
-              <span class="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-rose-500 px-1 text-[8px] font-black text-white shadow-xl ring-1 ring-white/20">
+              <span class="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-rose-500 px-1 text-[8px] font-black text-white shadow-xl ring-1 ring-white">
                 3
               </span>
             </button>
             <NavigationLocaleSwitcher compact />
             <button
               type="button"
-              class="focus-ring relative z-20 flex h-10 w-10 shrink-0 touch-manipulation items-center justify-center rounded-xl bg-white/10 text-white ring-1 ring-white/10 transition-all active:scale-95 hover:bg-white/15"
+              class="focus-ring relative z-20 flex h-10 w-10 shrink-0 touch-manipulation items-center justify-center rounded-xl bg-primary-600 text-white ring-1 ring-primary-500/20 shadow-lg shadow-primary-500/20 transition-all active:scale-95 hover:bg-primary-700"
               :aria-label="$t('navigation.headerBar.account')"
               :aria-expanded="mobileMenuOpen"
               aria-controls="mobile-navigation-menu"

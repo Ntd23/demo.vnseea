@@ -10,27 +10,27 @@
       >
         <button
           type="button"
-          class="absolute inset-0 bg-primary-950/60 backdrop-blur-md"
+          class="absolute inset-0 bg-slate-950/20 backdrop-blur-md"
           aria-label="Close mobile navigation"
           @click="handleOpenChange(false)"
         />
 
-        <aside id="mobile-navigation-menu" class="absolute inset-y-0 right-0 z-10 flex h-full w-[85vw] max-w-[400px] flex-col overflow-hidden bg-primary-950 text-white shadow-[-12px_0_40px_rgba(0,0,0,0.5)]">
+        <aside id="mobile-navigation-menu" class="absolute inset-y-0 right-0 z-10 flex h-full w-[85vw] max-w-[400px] flex-col overflow-hidden bg-white text-[var(--text-primary)] shadow-[-12px_0_40px_rgba(0,0,0,0.5)]">
         <!-- Decor Backgrounds -->
-        <div class="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-primary-600/10 to-transparent pointer-events-none z-0" />
-        <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-500/20 rounded-full blur-[100px] pointer-events-none z-0" />
+        <div class="pointer-events-none absolute left-0 top-0 z-0 h-px w-full bg-[var(--progress-gradient)]" />
+        <div class="pointer-events-none absolute -right-24 -top-24 z-0 h-64 w-64 rounded-full bg-primary-100/80 blur-[100px]" />
 
         <!-- Header -->
-        <div class="sticky top-0 z-20 flex items-center justify-between border-b border-white/5 bg-primary-950/80 px-6 py-5 backdrop-blur-xl">
+        <div class="sticky top-0 z-20 flex items-center justify-between border-b border-[var(--border-light)] bg-white/90 px-6 py-5 backdrop-blur-xl">
           <div class="flex items-center gap-3">
             <div class="rounded-xl bg-primary-600 p-2 shadow-lg shadow-primary-500/20">
               <Icon name="i-ph-list-bold" class="h-5 w-5 text-white" />
             </div>
-            <span id="mobile-navigation-menu-title" class="text-sm font-black uppercase tracking-[0.2em] text-white">{{ $t("navigation.mobileMenu.title") }}</span>
+            <span id="mobile-navigation-menu-title" class="text-sm font-black uppercase tracking-[0.2em] text-[var(--text-primary)]">{{ $t("navigation.mobileMenu.title") }}</span>
           </div>
           <button
             type="button"
-            class="pressable focus-ring flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white/60 transition-all shadow-none hover:bg-white/10 hover:text-white"
+            class="pressable focus-ring pressable flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-secondary-50)] text-[var(--text-secondary)] transition-all shadow-none ring-1 ring-[var(--border-light)] hover:bg-[var(--color-primary-50)] hover:text-primary-600"
             :aria-label="$t('common.close')"
             @click="handleOpenChange(false)"
           >
@@ -42,19 +42,19 @@
         <div class="relative z-10 flex-1 overflow-y-auto no-scrollbar">
           <!-- User Profile & Stats Panel -->
           <div class="p-6">
-            <div class="relative overflow-hidden rounded-[24px] border border-white/10 bg-white/5 p-6 backdrop-blur-sm shadow-2xl">
+            <div class="relative overflow-hidden rounded-[24px] border border-[var(--border-light)] bg-[linear-gradient(180deg,#ffffff_0%,#f8faff_100%)] p-6 shadow-[var(--shadow-md)]">
               <div class="relative z-10 flex flex-col gap-5">
                 <div class="flex items-center gap-4">
                   <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 p-0.5 shadow-xl shadow-primary-500/30">
-                    <div class="flex h-full w-full items-center justify-center rounded-[14px] border border-white/10 bg-primary-950">
-                      <span class="text-xs font-black">VN</span>
+                    <div class="flex h-full w-full items-center justify-center rounded-[14px] border border-[var(--border-light)] bg-white">
+                      <span class="text-xs font-black text-primary-600">VN</span>
                     </div>
                   </div>
                   <div class="space-y-0.5">
-                    <p class="text-base font-black tracking-tight text-white">{{ $t("navigation.mobileMenu.adminTitle") }}</p>
+                    <p class="text-base font-black tracking-tight text-[var(--text-primary)]">{{ $t("navigation.mobileMenu.adminTitle") }}</p>
                     <div class="flex items-center gap-2">
                       <div class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
-                      <p class="text-[10px] font-black uppercase tracking-widest text-white/50">Online Now</p>
+                      <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">Online Now</p>
                     </div>
                   </div>
                 </div>
@@ -62,17 +62,17 @@
                 <div class="grid grid-cols-2 gap-3">
                   <NuxtLink
                     to="/wallet"
-                    class="group flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/5 p-4 transition-all hover:bg-white/10"
+                    class="group flex flex-col gap-2 rounded-2xl border border-[var(--border-light)] bg-white p-4 transition-all hover:bg-[var(--color-primary-50)]"
                     @click="handleOpenChange(false)"
                   >
-                    <Icon name="i-ph-wallet-duotone" class="h-5 w-5 text-primary-400 transition-transform group-hover:scale-110" />
-                    <p class="text-[9px] font-black uppercase tracking-widest text-white/40">Balance</p>
-                    <p class="truncate text-xs font-black text-white">VND 9.9B</p>
+                    <Icon name="i-ph-wallet-duotone" class="h-5 w-5 text-primary-600 transition-transform group-hover:scale-110" />
+                    <p class="text-[9px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">Balance</p>
+                    <p class="truncate text-xs font-black text-[var(--text-primary)]">VND 9.9B</p>
                   </NuxtLink>
-                  <div class="group flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/5 p-4 transition-all hover:bg-white/10">
+                  <div class="group flex flex-col gap-2 rounded-2xl border border-[var(--border-light)] bg-white p-4 transition-all hover:bg-[var(--color-primary-50)]">
                     <Icon name="i-ph-fire-duotone" class="h-5 w-5 text-amber-400 transition-transform group-hover:scale-110" />
-                    <p class="text-[9px] font-black uppercase tracking-widest text-white/40">Points</p>
-                    <p class="text-xs font-black text-white">50 XP</p>
+                    <p class="text-[9px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">Points</p>
+                    <p class="text-xs font-black text-[var(--text-primary)]">50 XP</p>
                   </div>
                 </div>
 
@@ -87,75 +87,75 @@
           <div class="space-y-8 px-4 pb-12">
             <!-- Main Nav -->
             <div>
-              <p class="mb-4 pl-4 text-[9px] font-black uppercase tracking-[0.4em] text-white/30">Navigation</p>
+              <p class="mb-4 pl-4 text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-tertiary)]">Navigation</p>
               <div class="space-y-1">
                 <NuxtLink
                   v-for="item in mainNav"
                   :key="`${item.label}-${item.to}`"
                   :to="item.to"
-                  class="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:bg-white/5"
-                  :class="isNavItemActive(item.to) ? 'bg-primary-600/12 ring-1 ring-primary-500/30' : ''"
+                  class="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:bg-[var(--color-primary-50)]"
+                  :class="isNavItemActive(item.to) ? 'bg-[var(--color-primary-50)] ring-1 ring-[var(--color-primary-100)]' : ''"
                   @click="handleOpenChange(false)"
                 >
                   <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-white/5 transition-all group-hover:border-primary-500/50 group-hover:bg-primary-600/10"
-                    :class="isNavItemActive(item.to) ? 'border-primary-500/50 bg-primary-600/10' : ''"
+                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-light)] bg-white transition-all group-hover:border-primary-200 group-hover:bg-white"
+                    :class="isNavItemActive(item.to) ? 'border-primary-200 bg-white' : ''"
                   >
                     <Icon
                       :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')"
-                      class="h-5 w-5 text-white/40 group-hover:text-primary-400"
-                      :class="isNavItemActive(item.to) ? 'text-primary-400' : ''"
+                      class="h-5 w-5 text-[var(--icon-primary)] group-hover:text-primary-600"
+                      :class="isNavItemActive(item.to) ? 'text-primary-600' : ''"
                     />
                   </div>
                   <span
-                    class="text-xs font-black uppercase tracking-widest text-white/70 group-hover:text-white"
-                    :class="isNavItemActive(item.to) ? 'text-primary-300' : ''"
+                    class="text-xs font-black uppercase tracking-widest text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]"
+                    :class="isNavItemActive(item.to) ? 'text-primary-600' : ''"
                   >{{ $t(item.label) }}</span>
                 </NuxtLink>
               </div>
             </div>
 
             <!-- Settings -->
-            <div class="border-t border-white/5 pt-4">
-              <p class="mb-4 pl-4 text-[9px] font-black uppercase tracking-[0.4em] text-white/30">Settings & Care</p>
+            <div class="border-t border-[var(--border-light)] pt-4">
+              <p class="mb-4 pl-4 text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-tertiary)]">Settings & Care</p>
               <div class="space-y-1">
                 <NuxtLink
                   v-for="item in settingsNav"
                   :key="item.label"
                   :to="item.to"
-                  class="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:bg-white/5"
-                  :class="item.label.includes('logout') ? 'hover:bg-rose-500/10' : (isNavItemActive(item.to) ? 'bg-primary-600/12 ring-1 ring-primary-500/30' : '')"
+                  class="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:bg-[var(--color-primary-50)]"
+                  :class="item.label.includes('logout') ? 'hover:bg-rose-50' : (isNavItemActive(item.to) ? 'bg-[var(--color-primary-50)] ring-1 ring-[var(--color-primary-100)]' : '')"
                   @click="handleOpenChange(false)"
                 >
                   <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-white/5 transition-all"
-                    :class="item.label.includes('logout') ? 'group-hover:border-rose-500/50 group-hover:text-rose-400' : (isNavItemActive(item.to) ? 'border-primary-500/50 bg-primary-600/10 text-primary-400' : 'group-hover:border-primary-500/50 group-hover:text-primary-400')"
+                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-light)] bg-white text-[var(--icon-primary)] transition-all"
+                    :class="item.label.includes('logout') ? 'group-hover:border-rose-200 group-hover:bg-rose-50 group-hover:text-rose-500' : (isNavItemActive(item.to) ? 'border-primary-200 bg-white text-primary-600' : 'group-hover:border-primary-200 group-hover:bg-white group-hover:text-primary-600')"
                   >
                     <Icon
                       :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')"
-                      class="h-5 w-5 text-white/40"
-                      :class="!item.label.includes('logout') && isNavItemActive(item.to) ? 'text-primary-400' : ''"
+                      class="h-5 w-5"
+                      :class="item.label.includes('logout') ? 'text-current' : (!item.label.includes('logout') && isNavItemActive(item.to) ? 'text-primary-600' : 'text-current')"
                     />
                   </div>
                   <span
-                    class="text-xs font-black uppercase tracking-widest text-white/70"
-                    :class="item.label.includes('logout') ? 'group-hover:text-rose-400' : (isNavItemActive(item.to) ? 'text-primary-300' : 'group-hover:text-white')"
+                    class="text-xs font-black uppercase tracking-widest text-[var(--text-secondary)]"
+                    :class="item.label.includes('logout') ? 'group-hover:text-rose-500' : (isNavItemActive(item.to) ? 'text-primary-600' : 'group-hover:text-[var(--text-primary)]')"
                   >{{ $t(item.label) }}</span>
                 </NuxtLink>
               </div>
             </div>
 
             <!-- Bottom Actions -->
-            <div class="grid grid-cols-3 gap-2 border-t border-white/5 pt-4">
+            <div class="grid grid-cols-3 gap-2 border-t border-[var(--border-light)] pt-4">
               <UButton
                 v-for="item in bottomActions"
                 :key="item.label"
                 variant="soft"
-                color="white"
-                class="group flex h-auto flex-col items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4 transition-all shadow-none ring-0 hover:bg-white/10"
+                color="neutral"
+                class="group flex h-auto flex-col items-center gap-3 rounded-2xl border border-[var(--border-light)] bg-white p-4 transition-all shadow-none ring-0 hover:bg-[var(--color-primary-50)]"
               >
-                <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5 w-5 text-white/40 group-hover:text-primary-400" />
-                <span class="text-center text-[8px] font-black uppercase tracking-widest leading-tight text-white/30 group-hover:text-white/60">{{ $t(item.label) }}</span>
+                <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5 w-5 text-[var(--icon-primary)] group-hover:text-primary-600" />
+                <span class="text-center text-[8px] font-black uppercase leading-tight tracking-widest text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)]">{{ $t(item.label) }}</span>
               </UButton>
             </div>
           </div>

@@ -1,14 +1,15 @@
 <template>
-  <nav class="bg-white py-2.5 shadow-sm border-b border-secondary-100">
+  <nav class="relative overflow-hidden border-b border-[var(--border-light)] bg-white/92 py-2.5 shadow-[0_10px_28px_rgba(0,0,255,0.06)] backdrop-blur-[18px]">
+    <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-[var(--progress-gradient)] opacity-70" />
     <div class="flex items-center justify-around gap-2 px-3">
       <NuxtLink
         v-for="item in items"
         :key="item.label"
         :to="item.to"
-        class="relative flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 group"
+        class="group relative flex h-11 w-11 items-center justify-center rounded-2xl border transition-all duration-300"
         :class="item.active
-          ? 'border-primary-600 bg-primary-50 text-primary-600 shadow-lg shadow-primary-500/10'
-          : 'border-secondary-100 bg-white text-[var(--icon-primary)] hover:border-primary-400 hover:text-primary-600'"
+          ? 'border-[var(--color-primary-100)] bg-[var(--color-primary-50)] text-primary-600 shadow-lg shadow-primary-500/10 ring-1 ring-primary-100'
+          : 'border-[var(--border-light)] bg-white text-[var(--icon-primary)] hover:border-primary-200 hover:bg-[var(--color-primary-50)] hover:text-primary-600'"
         :aria-label="$t(item.label)"
       >
         <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5 transition-transform group-hover:scale-110" />
@@ -19,7 +20,7 @@
           {{ item.logoBadge }}
         </span>
         
-        <div v-if="item.active" class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary-600" />
+        <div v-if="item.active" class="absolute -bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-primary-600 shadow-[0_0_0_4px_rgba(0,0,255,0.08)]" />
       </NuxtLink>
     </div>
   </nav>
