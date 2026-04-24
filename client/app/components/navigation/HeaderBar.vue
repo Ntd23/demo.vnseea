@@ -65,6 +65,13 @@
           >
             <Icon name="i-ph-house-fill" class="h-5.5 w-5.5" />
           </NuxtLink>
+          <NuxtLink
+            to="/search"
+            class="focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--border-light)] bg-white text-[var(--icon-primary)] shadow-sm transition-all hover:border-primary-200 hover:bg-[var(--color-primary-50)] hover:text-primary-600"
+            :aria-label="$t('navigation.headerBar.search')"
+          >
+            <Icon name="i-ph-magnifying-glass-bold" class="h-5.5 w-5.5" />
+          </NuxtLink>
 
           <div class="ml-auto flex min-w-0 items-center gap-2">
             <button
