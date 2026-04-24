@@ -232,7 +232,7 @@ export const useBuyerOrders = () => {
           price: 520000,
           imageStyle: [
             "radial-gradient(circle at 24% 18%, rgba(255,255,255,0.3), transparent 18%)",
-            "linear-gradient(140deg, #0f766e 0%, #14b8a6 45%, #99f6e4 100%)",
+            "linear-gradient(140deg, #0369a1 0%, #38bdf8 45%, #bae6fd 100%)",
           ].join(", "),
         },
       ],

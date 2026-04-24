@@ -124,7 +124,7 @@ const shippingStageClass = computed(() => {
 
 const completedStageClass = computed(() => {
   if (props.order.status === "delivered") {
-    return "ring-green-100 bg-green-50/50 text-green-700"
+    return "ring-sky-100 bg-sky-50/50 text-sky-700"
   }
 
   return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-primary-700"

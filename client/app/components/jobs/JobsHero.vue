@@ -32,7 +32,10 @@
             color="neutral"
             :variant="savedOnly ? 'solid' : 'outline'"
             size="lg"
-            class="justify-center rounded-full border-white/25 text-white"
+            class="justify-center rounded-full border shadow-[0_12px_30px_rgba(15,23,42,0.14)] transition-colors"
+            :class="savedOnly
+              ? 'border-white/85 bg-white text-[var(--color-primary-700)] hover:bg-white/92'
+              : 'border-white/28 bg-white/12 text-white hover:bg-white/18'"
             @click="$emit('toggleSaved')"
           >
             <Icon name="i-ph-bookmark-simple-fill" class="mr-1.5 h-4 w-4" />

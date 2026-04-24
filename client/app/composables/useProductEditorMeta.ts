@@ -51,12 +51,12 @@ export const useProductEditorMeta = () => {
     beauty: {
       label: t("pages.productEditor.categoryBeauty"),
       icon: "i-ph-drop-fill",
-      background: "linear-gradient(135deg,#0f766e 0%,#14b8a6 45%,#99f6e4 100%)",
+      background: "linear-gradient(135deg,#0369a1 0%,#38bdf8 45%,#bae6fd 100%)",
     },
     books: {
       label: t("pages.productEditor.categoryBooks"),
       icon: "i-ph-book-open-text-fill",
-      background: "linear-gradient(135deg,#14532d 0%,#16a34a 38%,#bbf7d0 100%)",
+      background: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 38%,#bfdbfe 100%)",
     },
     vehicles: {
       label: t("pages.productEditor.categoryVehicles"),

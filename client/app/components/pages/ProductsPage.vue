@@ -250,7 +250,7 @@
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
               <div class="min-w-0 space-y-3 sm:max-w-[55%]">
                 <div class="inline-flex max-w-full items-center gap-2.5 rounded-[1.1rem] border border-white/5 bg-black/40 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-xl backdrop-blur-xl">
-                  <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 shrink-0 text-emerald-400" />
+                  <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 shrink-0 text-sky-400" />
                   <span class="truncate">{{ product.location }}</span>
                 </div>
                 <div class="inline-flex rounded-[1.1rem] border border-white/20 bg-white/20 px-4 py-3 text-[10px] font-black text-white shadow-xl backdrop-blur-xl">
@@ -260,7 +260,7 @@
 
               <div class="w-full rounded-[1.7rem] bg-white px-5 py-4 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl sm:w-auto sm:min-w-[250px] sm:rounded-[1.9rem] sm:px-6">
                 <p class="mb-2 text-[10px] font-black uppercase tracking-widest leading-none text-secondary-400">{{ $t("pages.productsPage.priceLabel") }}</p>
-                <p class="truncate text-[1.7rem] font-black leading-none text-emerald-600 sm:text-[2rem]">{{ formatCurrency(product.price) }}</p>
+                <p class="truncate text-[1.7rem] font-black leading-none text-sky-600 sm:text-[2rem]">{{ formatCurrency(product.price) }}</p>
               </div>
             </div>
           </div>
@@ -308,7 +308,7 @@
 
           <div class="mt-auto flex items-center justify-between gap-4 border-t border-secondary-50 pt-6 transition-colors group-hover:border-primary-100">
             <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2 rounded-2xl bg-emerald-50 px-5 py-3 text-[12px] font-black text-emerald-700 ring-1 ring-emerald-100 shadow-sm">
+              <div class="flex items-center gap-2 rounded-2xl bg-sky-50 px-5 py-3 text-[12px] font-black text-sky-700 ring-1 ring-sky-100 shadow-sm">
                 <Icon name="i-ph-star-duotone" class="h-4 w-4" />
                 {{ product.rating.toFixed(1) }}
               </div>
@@ -478,7 +478,7 @@ const products = computed(() => [
     categoryLabel: t("pages.productsPage.categoryBeauty"),
     condition: t("pages.productsPage.conditionBestSeller"),
     description: t("pages.productsPage.product3Description"),
-    background: "linear-gradient(135deg,#0f766e 0%,#14b8a6 45%,#99f6e4 100%)",
+    background: "linear-gradient(135deg,#0369a1 0%,#38bdf8 45%,#bae6fd 100%)",
     icon: "i-ph-drop-fill",
     postedHoursAgo: 4,
     postedLabel: t("pages.productsPage.postedHoursAgo", { count: 4 }),
@@ -495,7 +495,7 @@ const products = computed(() => [
     categoryLabel: t("pages.productsPage.categoryBooks"),
     condition: t("pages.productsPage.conditionNewPost"),
     description: t("pages.productsPage.product4Description"),
-    background: "linear-gradient(135deg,#14532d 0%,#16a34a 38%,#bbf7d0 100%)",
+    background: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 38%,#bfdbfe 100%)",
     icon: "i-ph-book-open-text-fill",
     postedHoursAgo: 1,
     postedLabel: t("pages.productsPage.postedOneHourAgo"),

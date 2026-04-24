@@ -36,7 +36,7 @@
       </div>
 
       <UButton
-        class="h-12 w-12 shrink-0 rounded-[18px] bg-gradient-to-r from-primary-600 to-emerald-600 text-white shadow-[0_16px_28px_rgba(34,197,94,0.24)] transition-all hover:-translate-y-0.5 hover:from-primary-700 hover:to-emerald-700 active:scale-95 justify-center"
+        class="h-12 w-12 shrink-0 rounded-[18px] bg-gradient-to-r from-primary-600 to-sky-600 text-white shadow-[0_16px_28px_rgba(14,165,233,0.24)] transition-all hover:-translate-y-0.5 hover:from-primary-700 hover:to-sky-700 active:scale-95 justify-center"
         square
         @click="onSend"
       >

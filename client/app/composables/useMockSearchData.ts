@@ -138,11 +138,11 @@ export function useMockSearchData() {
   const accentPalette = [
     "#1d4ed8",
     "#0000ff",
-    "#0f766e",
+    "#0369a1",
     "#92400e",
     "#7c3aed",
     "#c2410c",
-    "#0f766e",
+    "#0369a1",
     "#4338ca",
   ]
 

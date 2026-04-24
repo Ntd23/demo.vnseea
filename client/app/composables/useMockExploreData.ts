@@ -62,7 +62,7 @@ function getPostScore(post: SocialPost) {
 
 const accentPalette = [
   "#2563eb",
-  "#0f766e",
+  "#0369a1",
   "#7c3aed",
   "#ea580c",
   "#0891b2",

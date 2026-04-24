@@ -1,6 +1,6 @@
 <template>
   <button
-    class="group flex w-full items-center justify-between gap-3 rounded-[24px] border border-white/80 bg-white/92 px-4 py-4 text-left shadow-[0_16px_38px_rgba(15,23,42,0.07)] ring-1 ring-secondary-100/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-100 hover:shadow-[0_22px_46px_rgba(34,197,94,0.12)]"
+    class="group flex w-full items-center justify-between gap-3 rounded-[24px] border border-white/80 bg-white/92 px-4 py-4 text-left shadow-[0_16px_38px_rgba(15,23,42,0.07)] ring-1 ring-secondary-100/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary-100 hover:shadow-[0_22px_46px_rgba(14,165,233,0.12)]"
     type="button"
     @click="$emit('click')"
   >
@@ -15,13 +15,13 @@
         />
         <span 
           class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-white shadow-sm"
-          :class="isOnline ? 'bg-green-500' : 'bg-secondary-300'"
+          :class="isOnline ? 'bg-sky-500' : 'bg-secondary-300'"
         />
       </div>
       <div class="min-w-0 space-y-1">
         <p class="truncate text-[12px] font-black uppercase tracking-[0.08em] text-secondary-900 transition-colors group-hover:text-primary-600">{{ name }}</p>
         <div class="flex items-center gap-2 text-secondary-400">
-          <span class="h-1.5 w-1.5 rounded-full" :class="isOnline ? 'bg-green-500' : 'bg-secondary-300'" />
+          <span class="h-1.5 w-1.5 rounded-full" :class="isOnline ? 'bg-sky-500' : 'bg-secondary-300'" />
           <p class="truncate text-[11px] font-semibold tracking-normal">{{ status }}</p>
         </div>
       </div>

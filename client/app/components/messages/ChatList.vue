@@ -23,7 +23,7 @@
         </div>
         <UButton
           size="xl"
-          class="h-14 w-14 rounded-[20px] bg-gradient-to-br from-primary-500 via-primary-600 to-emerald-600 text-white font-black shadow-[0_18px_32px_rgba(34,197,94,0.25)] transition-all hover:-translate-y-0.5 active:scale-95 justify-center"
+          class="h-14 w-14 rounded-[20px] bg-gradient-to-br from-primary-500 via-primary-600 to-sky-600 text-white font-black shadow-[0_18px_32px_rgba(14,165,233,0.25)] transition-all hover:-translate-y-0.5 active:scale-95 justify-center"
           square
         >
           <Icon name="i-ph-user-plus-duotone" class="h-6 w-6" />
@@ -36,7 +36,7 @@
           :key="tab.id"
           class="flex min-w-0 items-center justify-center gap-2 rounded-[18px] h-12 px-3 transition-all duration-300 border font-black text-[10px] uppercase tracking-[0.22em]"
           :class="activeTab === tab.id 
-            ? 'bg-primary-50 border-primary-100 text-primary-700 shadow-[0_12px_28px_rgba(34,197,94,0.10)]' 
+            ? 'bg-primary-50 border-primary-100 text-primary-700 shadow-[0_12px_28px_rgba(14,165,233,0.10)]' 
             : 'bg-secondary-50/80 border-secondary-100/70 text-secondary-400 hover:bg-white hover:text-secondary-700 hover:border-secondary-200'"
           type="button"
           @click="activeTab = tab.id"
@@ -48,16 +48,16 @@
     </div>
 
     <div class="min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(180deg,rgba(248,251,255,0.98),rgba(242,247,255,0.98))] px-5 py-5 sm:px-6 space-y-6 scrollbar-hide">
-      <div class="relative overflow-hidden rounded-[30px] border border-white/70 bg-[radial-gradient(circle_at_top_right,rgba(34,197,94,0.12),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,250,255,0.98))] p-5 shadow-[0_24px_52px_rgba(15,23,42,0.07)]">
+      <div class="relative overflow-hidden rounded-[30px] border border-white/70 bg-[radial-gradient(circle_at_top_right,rgba(14,165,233,0.12),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.98),rgba(246,250,255,0.98))] p-5 shadow-[0_24px_52px_rgba(15,23,42,0.07)]">
         <div class="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-primary-200/80 to-transparent" />
 
         <div class="relative space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="space-y-2">
               <p class="text-[11px] font-black uppercase tracking-[0.2em] text-primary-700">{{ $t('pages.messagesPage.composeTitle') }}</p>
-              <div class="h-1.5 w-[86px] rounded-full bg-gradient-to-r from-primary-500 via-emerald-500 to-primary-300" />
+              <div class="h-1.5 w-[86px] rounded-full bg-gradient-to-r from-primary-500 via-sky-500 to-primary-300" />
             </div>
-            <span class="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-primary-50/90 px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-primary-700 shadow-[0_10px_24px_rgba(34,197,94,0.08)]">
+            <span class="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-primary-50/90 px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-primary-700 shadow-[0_10px_24px_rgba(14,165,233,0.08)]">
               <span class="h-2 w-2 rounded-full bg-primary-500" />
               {{ tabs.find(tab => tab.id === activeTab)?.label }}
             </span>
@@ -74,7 +74,7 @@
                   icon="i-ph-users-duotone"
                   :placeholder="$t('pages.messagesPage.recipientPlaceholder')"
                   :ui="{
-                    base: 'h-[3.5rem] w-full rounded-[22px] bg-white/98 px-3 ring-1 ring-secondary-200/75 shadow-[0_8px_20px_rgba(148,163,184,0.06)] transition-all duration-300 text-sm font-semibold text-secondary-900 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300/70 focus:shadow-[0_12px_28px_rgba(34,197,94,0.10)]',
+                    base: 'h-[3.5rem] w-full rounded-[22px] bg-white/98 px-3 ring-1 ring-secondary-200/75 shadow-[0_8px_20px_rgba(148,163,184,0.06)] transition-all duration-300 text-sm font-semibold text-secondary-900 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300/70 focus:shadow-[0_12px_28px_rgba(14,165,233,0.10)]',
                     icon: { leading: { pointer: 'pointer-events-none', base: 'text-primary-500' } }
                   }"
                 />
@@ -89,7 +89,7 @@
                   :rows="4"
                   :placeholder="$t('pages.messagesPage.messagePlaceholder')"
                   :ui="{
-                    base: 'min-h-[152px] w-full resize-none rounded-[22px] bg-white/98 px-4 py-3 ring-1 ring-secondary-200/75 shadow-[0_8px_20px_rgba(148,163,184,0.06)] transition-all duration-300 text-sm font-medium leading-6 text-secondary-900 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300/70 focus:shadow-[0_12px_28px_rgba(34,197,94,0.10)]',
+                    base: 'min-h-[152px] w-full resize-none rounded-[22px] bg-white/98 px-4 py-3 ring-1 ring-secondary-200/75 shadow-[0_8px_20px_rgba(148,163,184,0.06)] transition-all duration-300 text-sm font-medium leading-6 text-secondary-900 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300/70 focus:shadow-[0_12px_28px_rgba(14,165,233,0.10)]',
                   }"
                 />
               </UFormGroup>
@@ -126,7 +126,7 @@
 
               <UButton
                 size="xl"
-                class="h-12 w-full justify-center rounded-[20px] bg-gradient-to-r from-primary-600 via-emerald-500 to-primary-600 px-5 text-[11px] font-black uppercase tracking-[0.14em] text-white shadow-[0_18px_30px_rgba(34,197,94,0.22)] transition-all hover:-translate-y-0.5 active:scale-[0.98] whitespace-nowrap"
+                class="h-12 w-full justify-center rounded-[20px] bg-gradient-to-r from-primary-600 via-sky-500 to-primary-600 px-5 text-[11px] font-black uppercase tracking-[0.14em] text-white shadow-[0_18px_30px_rgba(14,165,233,0.22)] transition-all hover:-translate-y-0.5 active:scale-[0.98] whitespace-nowrap"
                 @click="$emit('send')"
               >
                 <template #leading>

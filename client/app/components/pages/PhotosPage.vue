@@ -142,7 +142,7 @@ import { formatPhotoNumber, getPhotoEngagement } from "~/composables/useMockPhot
 
 const accentPalette = [
   "linear-gradient(135deg,#2563eb 0%,#60a5fa 100%)",
-  "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",
+  "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
   "linear-gradient(135deg,#7c3aed 0%,#c084fc 100%)",
   "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)",
 ]

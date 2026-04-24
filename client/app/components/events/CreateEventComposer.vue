@@ -442,9 +442,9 @@ const draftStorage = useStorage<CreateEventForm | null>(
 )
 
 const coverFallbacks = [
-  "linear-gradient(135deg,#0f766e 0%,#0000ff 58%,#f59e0b 120%)",
-  "linear-gradient(135deg,#0ea5e9 0%,#16a34a 60%,#f59e0b 120%)",
-  "linear-gradient(135deg,#111827 0%,#0000ff 58%,#10b981 120%)",
+  "linear-gradient(135deg,#0369a1 0%,#0000ff 58%,#f59e0b 120%)",
+  "linear-gradient(135deg,#0ea5e9 0%,#2563eb 60%,#f59e0b 120%)",
+  "linear-gradient(135deg,#111827 0%,#0000ff 58%,#0ea5e9 120%)",
 ]
 
 const inputUi = {

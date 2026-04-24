@@ -1,7 +1,7 @@
 <template>
   <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)] sm:rounded-[32px]">
     <div class="relative overflow-hidden">
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.16),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.16),transparent_28%)]" />
+      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.16),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(14,165,233,0.16),transparent_28%)]" />
 
       <div class="relative grid gap-5 p-4 sm:p-6 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-center">
         <div class="min-w-0">

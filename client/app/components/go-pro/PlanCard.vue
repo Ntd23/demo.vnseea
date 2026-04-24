@@ -139,7 +139,7 @@ const monthlyEquivalent = computed(() => Math.round(props.plan.yearlyPrice / 12)
 
 const cardClass = computed(() =>
   props.selected
-    ? "border-[var(--color-success)] ring-4 ring-emerald-50 shadow-[var(--shadow-xl)]"
+    ? "border-[var(--color-success)] ring-4 ring-sky-50 shadow-[var(--shadow-xl)]"
     : props.plan.highlight
       ? "border-[var(--color-primary-500)] shadow-[var(--shadow-xl)]"
       : "border-[var(--border-default)] shadow-[var(--shadow-md)]",

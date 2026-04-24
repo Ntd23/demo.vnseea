@@ -6,7 +6,7 @@
         <!-- Abstract Background -->
         <div class="pointer-events-none absolute inset-0 opacity-40">
           <div class="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-primary-500/10 blur-[100px]" />
-          <div class="absolute -left-20 -bottom-20 h-96 w-96 rounded-full bg-emerald-500/10 blur-[100px]" />
+          <div class="absolute -left-20 -bottom-20 h-96 w-96 rounded-full bg-sky-500/10 blur-[100px]" />
         </div>
 
         <div class="relative space-y-8">

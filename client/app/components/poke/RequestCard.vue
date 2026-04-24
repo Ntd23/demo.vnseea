@@ -15,7 +15,7 @@
 
             <div
               v-if="record.online"
-              class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-white bg-emerald-500 shadow-lg shadow-emerald-500/20"
+              class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-white bg-sky-500 shadow-lg shadow-sky-500/20"
             />
           </div>
 

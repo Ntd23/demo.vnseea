@@ -28,7 +28,7 @@
       <!-- Location Info -->
       <div class="absolute bottom-6 left-6 flex items-center gap-3">
         <div class="flex items-center gap-2.5 rounded-xl bg-black/40 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white backdrop-blur-xl border border-white/5 shadow-xl">
-          <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 text-emerald-400" />
+          <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 text-sky-400" />
           {{ location || locationPlaceholder || $t("pages.productEditor.previewLocationPlaceholder") }}
         </div>
         <div class="rounded-xl bg-white/20 px-4 py-2.5 text-[9px] font-black text-white backdrop-blur-xl border border-white/20 shadow-xl">
@@ -65,13 +65,13 @@
       <div class="flex items-center justify-between gap-4 pt-6 border-t border-secondary-50 transition-colors group-hover:border-primary-100">
         <div class="space-y-1">
           <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-300 leading-none pl-0.5">{{ $t("pages.productEditor.priceLabel") }}</p>
-          <p class="text-2xl font-black text-emerald-600 tracking-tight leading-none pt-1">
+          <p class="text-2xl font-black text-sky-600 tracking-tight leading-none pt-1">
             {{ price }}
           </p>
         </div>
 
         <div class="flex flex-col items-end gap-2 text-right">
-          <div class="inline-flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2 text-[10px] font-black text-emerald-700 ring-1 ring-emerald-100 shadow-sm uppercase tracking-widest">
+          <div class="inline-flex items-center gap-2 rounded-xl bg-sky-50 px-4 py-2 text-[10px] font-black text-sky-700 ring-1 ring-sky-100 shadow-sm uppercase tracking-widest">
             <Icon name="i-ph-check-circle-duotone" class="h-4 w-4" />
             {{ statusLabel }}
           </div>
