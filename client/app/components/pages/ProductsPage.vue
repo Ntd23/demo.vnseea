@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1400px] space-y-12 pb-24 px-4 sm:px-6">
+  <div class="mx-auto max-w-[1520px] space-y-12 pb-24 px-4 sm:px-6">
     <!-- Hero Marketplace -->
     <section class="surface-card group overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-gradient-to-br from-secondary-950 via-primary-900 to-secondary-900 text-white relative">
       <!-- Premium Decorations -->
@@ -216,15 +216,15 @@
 
     <div
       v-if="visibleProducts.length > 0"
-      class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4"
+      class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3"
     >
       <article
         v-for="product in visibleProducts"
         :key="product.id"
-        class="surface-card group cursor-pointer overflow-hidden transition-all duration-500 hover:shadow-[0_48px_80px_-32px_rgba(0,0,0,0.15)] hover:-translate-y-3 ring-1 ring-secondary-100 hover:ring-primary-500/50 bg-white"
+        class="surface-card group flex h-full cursor-pointer flex-col overflow-hidden rounded-[2.5rem] bg-white ring-1 ring-secondary-100 transition-all duration-500 hover:-translate-y-2 hover:ring-primary-500/50 hover:shadow-[0_40px_80px_-28px_rgba(0,0,0,0.16)]"
       >
         <!-- Product Media Layer -->
-        <div class="relative h-[280px] overflow-hidden">
+        <div class="relative h-[300px] overflow-hidden sm:h-[340px] xl:h-[380px]">
           <!-- Background with Premium Decorations -->
           <div class="absolute inset-0 transition-transform duration-1000 group-hover:scale-110" :style="{ background: product.background }" />
           <div class="absolute inset-0 bg-gradient-to-t from-secondary-950/80 via-transparent to-transparent opacity-60" />
@@ -235,16 +235,8 @@
             <Icon :name="product.icon + '-duotone'" class="h-full w-full" />
           </div>
 
-          <!-- Price Badge -->
-          <div class="absolute right-6 bottom-6 group-hover:scale-110 transition-transform duration-500">
-            <div class="rounded-2xl bg-white px-5 py-3 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl">
-              <p class="text-[9px] font-black uppercase tracking-widest text-secondary-400 mb-1 leading-none">{{ $t("pages.productsPage.priceLabel") }}</p>
-              <p class="text-xl font-black text-emerald-600 leading-none">{{ formatCurrency(product.price) }}</p>
-            </div>
-          </div>
-
           <!-- Categories/Status Badges -->
-          <div class="absolute left-6 top-6 flex flex-wrap gap-3">
+          <div class="absolute left-6 top-6 z-10 flex max-w-[calc(100%-3rem)] flex-wrap gap-3">
             <div class="rounded-xl bg-secondary-950/60 text-white font-black text-[9px] uppercase tracking-widest backdrop-blur-xl px-4 py-2 border border-white/10 shadow-xl">
               {{ product.categoryLabel }}
             </div>
@@ -253,60 +245,74 @@
             </div>
           </div>
 
-          <!-- Location/Distance Layer -->
-          <div class="absolute bottom-6 left-6 flex items-center gap-3">
-            <div class="flex items-center gap-2.5 rounded-xl bg-black/40 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white backdrop-blur-xl border border-white/5 shadow-xl">
-              <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 text-emerald-400" />
-              {{ product.location }}
-            </div>
-            <div class="rounded-xl bg-white/20 px-4 py-2.5 text-[9px] font-black text-white backdrop-blur-xl border border-white/20 shadow-xl">
-              {{ formatDistance(product.distanceKm) }}
+          <!-- Location, Distance, Price -->
+          <div class="absolute inset-x-5 bottom-5 z-10 space-y-3 sm:inset-x-6 sm:bottom-6">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+              <div class="min-w-0 space-y-3 sm:max-w-[55%]">
+                <div class="inline-flex max-w-full items-center gap-2.5 rounded-[1.1rem] border border-white/5 bg-black/40 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-white shadow-xl backdrop-blur-xl">
+                  <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 shrink-0 text-emerald-400" />
+                  <span class="truncate">{{ product.location }}</span>
+                </div>
+                <div class="inline-flex rounded-[1.1rem] border border-white/20 bg-white/20 px-4 py-3 text-[10px] font-black text-white shadow-xl backdrop-blur-xl">
+                  {{ formatDistance(product.distanceKm) }}
+                </div>
+              </div>
+
+              <div class="w-full rounded-[1.7rem] bg-white px-5 py-4 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl sm:w-auto sm:min-w-[250px] sm:rounded-[1.9rem] sm:px-6">
+                <p class="mb-2 text-[10px] font-black uppercase tracking-widest leading-none text-secondary-400">{{ $t("pages.productsPage.priceLabel") }}</p>
+                <p class="truncate text-[1.7rem] font-black leading-none text-emerald-600 sm:text-[2rem]">{{ formatCurrency(product.price) }}</p>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Product Details Layer -->
-        <div class="relative p-8 space-y-6">
-          <!-- Floating Action Buttons -->
-          <div class="absolute -top-10 right-8 flex items-center gap-4">
+        <div class="flex flex-1 flex-col p-7 sm:p-8 xl:p-9">
+          <div class="min-w-0 space-y-3">
+            <div class="space-y-2">
+              <p class="pl-0.5 text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 transition-colors group-hover:text-primary-500">
+                {{ product.seller }}
+              </p>
+              <h3 class="line-clamp-2 min-h-[4.2rem] text-[1.85rem] font-black leading-[1.02] tracking-tight text-secondary-950 transition-colors group-hover:text-primary-950 sm:min-h-[4.8rem] sm:text-[2.1rem] xl:text-[2.3rem]">
+                {{ product.title }}
+              </h3>
+            </div>
+          </div>
+
+          <p class="mt-4 min-h-[4.8rem] text-[15px] font-medium italic leading-7 text-secondary-500 line-clamp-3 sm:mt-5 sm:min-h-[5.4rem] sm:text-base sm:leading-8">
+            "{{ product.description }}"
+          </p>
+
+          <div class="mt-7 grid gap-3 sm:grid-cols-2">
             <UButton
               color="white"
               variant="solid"
               size="lg"
-              class="h-14 w-14 rounded-2xl shadow-2xl hover:bg-primary-50 hover:text-primary-600 transition-all active:scale-90 flex items-center justify-center border-none"
+              class="h-13 justify-center rounded-2xl border border-secondary-100 bg-white px-5 text-[11px] font-black uppercase tracking-widest text-secondary-900 shadow-sm transition-all active:scale-[0.98] hover:bg-primary-50 hover:text-primary-600 sm:h-14"
               icon="i-ph-chat-circle-text-duotone"
               :aria-label="$t('pages.productsPage.messageSeller')"
-              :ui="{ icon: { base: 'h-6 w-6' } }"
-            />
+              :ui="{ icon: { base: 'h-5 w-5' } }"
+            >
+              {{ $t('pages.productsPage.messageSeller') }}
+            </UButton>
             <UButton
               size="lg"
-              class="h-14 w-14 rounded-2xl bg-primary-600 text-white shadow-2xl shadow-primary-500/40 active:scale-90 transition-all flex items-center justify-center border-none"
+              class="h-13 justify-center rounded-2xl border-none bg-primary-600 px-5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary-500/30 transition-all active:scale-[0.98] hover:bg-primary-700 sm:h-14"
               icon="i-ph-shopping-cart-simple-duotone"
               :aria-label="$t('pages.productsPage.addToCart')"
-              :ui="{ icon: { base: 'h-7 w-7' } }"
-            />
+              :ui="{ icon: { base: 'h-5 w-5' } }"
+            >
+              {{ $t('pages.productsPage.addToCart') }}
+            </UButton>
           </div>
 
-          <div class="space-y-2">
-            <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 group-hover:text-primary-500 transition-colors pl-0.5">
-              {{ product.seller }}
-            </p>
-            <h3 class="text-2xl font-black leading-tight tracking-tight text-secondary-950 group-hover:text-primary-950 transition-colors line-clamp-1">
-              {{ product.title }}
-            </h3>
-          </div>
-
-          <p class="text-sm font-medium leading-relaxed text-secondary-500 line-clamp-2 min-h-[2.5rem] italic pr-4">
-            "{{ product.description }}"
-          </p>
-
-          <div class="flex items-center justify-between gap-4 pt-4 border-t border-secondary-50 transition-colors group-hover:border-primary-100">
+          <div class="mt-auto flex items-center justify-between gap-4 border-t border-secondary-50 pt-6 transition-colors group-hover:border-primary-100">
             <div class="flex items-center gap-4">
-              <div class="flex items-center gap-2 rounded-xl bg-emerald-50 px-4 py-2.5 text-[11px] font-black text-emerald-700 ring-1 ring-emerald-100 shadow-sm">
+              <div class="flex items-center gap-2 rounded-2xl bg-emerald-50 px-5 py-3 text-[12px] font-black text-emerald-700 ring-1 ring-emerald-100 shadow-sm">
                 <Icon name="i-ph-star-duotone" class="h-4 w-4" />
                 {{ product.rating.toFixed(1) }}
               </div>
-              <p class="text-[10px] font-black text-secondary-300 uppercase tracking-widest">
+              <p class="text-[11px] font-black uppercase tracking-widest text-secondary-300">
                 {{ product.postedLabel }}
               </p>
             </div>

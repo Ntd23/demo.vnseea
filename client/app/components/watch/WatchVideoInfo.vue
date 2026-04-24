@@ -4,7 +4,7 @@
       <div class="min-w-0 space-y-2">
         <h2 class="text-2xl sm:text-3xl font-black text-secondary-900 leading-tight">{{ video.title }}</h2>
         <div class="flex items-center gap-2 text-sm font-semibold text-secondary-500">
-          <span>{{ t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }}</span>
+          <span>{{ $t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }}</span>
           <span class="text-secondary-300">•</span>
           <span>{{ video.date }}</span>
         </div>
@@ -34,7 +34,7 @@
           <template #leading>
             <Icon name="i-ph-share-network-fill" class="h-5 w-5" />
           </template>
-          {{ t("pages.watchPage.share") }}
+          {{ $t("pages.watchPage.share") }}
         </UButton>
       </div>
     </div>
@@ -50,7 +50,7 @@
       />
       <div class="min-w-0 flex-1">
         <p class="truncate text-[15px] font-black text-secondary-900">{{ video.author }}</p>
-        <p class="text-[12px] font-bold text-secondary-400 uppercase tracking-wider">{{ t("pages.watchPage.creatorMeta") }}</p>
+        <p class="text-[12px] font-bold text-secondary-400 uppercase tracking-wider">{{ $t("pages.watchPage.creatorMeta") }}</p>
       </div>
       <UButton
         color="primary"
@@ -94,7 +94,7 @@
 import type { WatchVideo } from "~/composables/useMockWatchData"
 import { formatWatchNumber } from "~/composables/useMockWatchData"
 
-const { t, locale } = useI18n()
+const { locale } = useI18n()
 
 defineProps<{
   video: WatchVideo

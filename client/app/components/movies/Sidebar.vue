@@ -60,10 +60,10 @@
 
     <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] shadow-[var(--shadow-md)]">
       <div class="bg-[linear-gradient(135deg,#09144c_0%,#0000ff_56%,#60a5fa_100%)] p-4 text-white">
-        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-white/72">{{ t("pages.moviesPage.sidebarRoutingEyebrow") }}</p>
-        <h3 class="mt-2 text-[1.25rem] font-black leading-tight">{{ t("pages.moviesPage.sidebarRoutingTitle") }}</h3>
+        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-white/72">{{ $t("pages.moviesPage.sidebarRoutingEyebrow") }}</p>
+        <h3 class="mt-2 text-[1.25rem] font-black leading-tight">{{ $t("pages.moviesPage.sidebarRoutingTitle") }}</h3>
         <p class="mt-2 text-[13px] font-semibold leading-6 text-white/76">
-          {{ t("pages.moviesPage.sidebarRoutingDescription") }}
+          {{ $t("pages.moviesPage.sidebarRoutingDescription") }}
         </p>
 
         <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
@@ -87,8 +87,6 @@
 
 <script setup lang="ts">
 import type { MockMovie, UpcomingMovie } from "~/composables/useMockMoviesData"
-
-const { t } = useI18n()
 
 defineProps<{
   activeMovieId: string

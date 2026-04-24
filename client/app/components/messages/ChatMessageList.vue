@@ -1,37 +1,38 @@
 <template>
   <div 
     ref="listContainer"
-    class="flex-1 min-h-0 overflow-y-auto bg-secondary-50/20 px-6 py-8 space-y-2 scrollbar-hide"
+    class="scrollbar-hide flex-1 min-h-0 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.06),transparent_22%),linear-gradient(180deg,rgba(248,251,255,0.98),rgba(244,248,255,0.95))] px-4 py-6 sm:px-6"
   >
-    <div class="flex justify-center pb-4">
-      <UButton
-        variant="soft"
-        size="sm"
-        class="rounded-full font-black text-[9px] uppercase tracking-[0.2em] px-6 bg-white text-secondary-400 ring-1 ring-secondary-100/50 hover:bg-primary-50 hover:text-primary-600 transition-all shadow-sm"
-        @click="$emit('load-more')"
-      >
-        {{ $t('pages.messagesPage.loadOlder') }}
-      </UButton>
-    </div>
+    <div class="mx-auto flex w-full max-w-[1080px] flex-col gap-3">
+      <div class="flex justify-center pb-2">
+        <UButton
+          variant="soft"
+          size="sm"
+          class="rounded-full bg-white/90 px-6 text-[9px] font-black uppercase tracking-[0.24em] text-secondary-500 ring-1 ring-secondary-100/80 transition-all shadow-[0_12px_24px_rgba(15,23,42,0.05)] hover:bg-primary-50 hover:text-primary-600"
+          @click="$emit('load-more')"
+        >
+          {{ $t('pages.messagesPage.loadOlder') }}
+        </UButton>
+      </div>
 
-    <MessagesChatBubble
-      v-for="(msg, idx) in messages"
-      :key="idx"
-      v-bind="msg"
-    />
-
-    <!-- Typing Indicator -->
-    <div v-if="isTyping" class="flex items-center gap-3 pt-4">
-      <UAvatar
-        src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80"
-        size="xs"
-        class="ring-1 ring-white shadow-sm"
-        :ui="{ rounded: 'rounded-[8px]' }"
+      <MessagesChatBubble
+        v-for="(msg, idx) in messages"
+        :key="idx"
+        v-bind="msg"
       />
-      <div class="flex h-9 items-center gap-1.5 rounded-[18px] rounded-bl-md bg-white px-4 ring-1 ring-secondary-100 shadow-sm">
-        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-400" style="animation-delay: 0ms"></span>
-        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-500" style="animation-delay: 150ms"></span>
-        <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-600" style="animation-delay: 300ms"></span>
+
+      <div v-if="isTyping" class="flex items-end gap-3 pt-2">
+        <UAvatar
+          src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80"
+          size="xs"
+          class="ring-1 ring-white shadow-sm"
+          :ui="{ rounded: 'rounded-[8px]' }"
+        />
+        <div class="flex h-10 items-center gap-1.5 rounded-[20px] rounded-bl-md bg-white/96 px-4 ring-1 ring-secondary-100 shadow-[0_12px_24px_rgba(15,23,42,0.05)]">
+          <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-400" style="animation-delay: 0ms"></span>
+          <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-500" style="animation-delay: 150ms"></span>
+          <span class="h-1.5 w-1.5 animate-bounce rounded-full bg-primary-600" style="animation-delay: 300ms"></span>
+        </div>
       </div>
     </div>
   </div>

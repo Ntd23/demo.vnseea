@@ -96,7 +96,7 @@
             <Icon name="i-ph-hand-pointing-duotone" class="h-5 w-5" />
           </div>
           <div class="pr-4">
-            <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400 leading-none mb-1">Pending</p>
+            <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400 leading-none mb-1">{{ t("pages.pokePage.pendingLabel") }}</p>
             <p class="text-lg font-black text-secondary-900 leading-none">{{ formatCount(pendingPokeCount) }}</p>
           </div>
         </div>
