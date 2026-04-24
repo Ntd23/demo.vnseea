@@ -7,7 +7,10 @@
         class="mx-auto grid w-full grid-cols-1 gap-4 xl:items-start"
         :class="shellClass"
       >
-        <aside v-if="showLeftSidebar && !isReelsPage" class="hidden min-w-0 xl:sticky xl:top-[74px] xl:block">
+        <aside
+          v-if="showLeftSidebar && !isReelsPage"
+          class="hidden min-w-0 xl:sticky xl:top-[74px] xl:block xl:h-[calc(100dvh-98px)] xl:overflow-hidden"
+        >
           <NavigationLeftSidebar />
         </aside>
 

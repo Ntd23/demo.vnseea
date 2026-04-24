@@ -1,6 +1,6 @@
 <template>
-  <div class="min-w-0 space-y-8">
-    <nav class="space-y-1">
+  <div class="min-w-0 space-y-8 xl:flex xl:h-full xl:flex-col">
+    <nav class="space-y-1 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-contain xl:pr-1 scrollbar-hide">
       <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-3 mb-4">
         {{ $t("navigation.leftSidebar.menu") || 'Menu' }}
       </p>
@@ -77,13 +77,10 @@ const sidebarNavMore = [
   { label: "navigation.leftSidebar.items.forum", icon: "i-ph-chats-circle-fill", to: "/forum" },
   { label: "navigation.leftSidebar.items.movies", icon: "i-ph-popcorn-fill", to: "/movies" },
   { label: "navigation.leftSidebar.items.jobs", icon: "i-ph-briefcase-fill", to: "/jobs" },
-  { label: "navigation.leftSidebar.items.deals", icon: "i-ph-tag-fill", to: "/deals" },
-  { label: "navigation.leftSidebar.items.findFriends", icon: "i-ph-user-plus-fill", to: "/find-friends" },
   { label: "navigation.leftSidebar.items.games", icon: "i-ph-game-controller-fill", to: "/games" },
   { label: "navigation.leftSidebar.items.goPro", icon: "i-ph-crown-simple-fill", to: "/go-pro" },
   { label: "navigation.leftSidebar.items.wallet", icon: "i-ph-wallet-fill", to: "/wallet" },
   { label: "navigation.leftSidebar.items.withdrawal", icon: "i-ph-money-wavy-fill", to: "/withdrawal" },
-  { label: "navigation.leftSidebar.items.trending", icon: "i-ph-trend-up-fill", to: "/trending" },
   { label: "navigation.leftSidebar.items.funding", icon: "i-ph-hand-heart-fill", to: "/funding" },
 ]
 

@@ -23,10 +23,13 @@
             <p class="truncate text-lg font-black tracking-tight text-secondary-900 group-hover:text-primary-600 transition-colors">
               {{ record.name }}
             </p>
+            <p class="truncate text-sm font-semibold text-secondary-500">
+              {{ record.role }}
+            </p>
             <div class="flex items-center gap-2">
               <Icon name="i-ph-clock-duotone" class="h-3 w-3 text-primary-400" />
               <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500">
-                {{ record.time }}
+                {{ record.timeLabel }}
               </p>
             </div>
           </div>
@@ -36,23 +39,26 @@
           variant="soft" 
           class="rounded-xl font-black text-[9px] uppercase tracking-widest px-3 py-2 bg-secondary-50 text-secondary-500 ring-1 ring-secondary-100 group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:ring-primary-200 transition-all shadow-sm"
         >
-          {{ record.mutual }}
+          {{ record.mutualLabel }}
         </UBadge>
       </div>
 
       <div class="rounded-2xl bg-secondary-50/50 p-6 space-y-4 ring-1 ring-secondary-100/50 transition-all group-hover:bg-white group-hover:ring-primary-100 group-hover:shadow-lg group-hover:shadow-primary-500/5">
         <div class="flex items-center justify-between gap-2 border-b border-secondary-100/50 pb-4">
           <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-400">{{ t("pages.pokePage.pokeCountLabel") }}</p>
-          <div class="flex items-center gap-2 font-black text-sm text-secondary-900">
-            <Icon name="i-ph-hand-pointing-duotone" class="h-5 w-5 text-primary-500" />
-            {{ record.count }}
-          </div>
+          <p class="text-[11px] font-black uppercase tracking-widest text-secondary-900 truncate">
+            {{ record.online ? t("pages.pokePage.activeNow") : record.role }}
+          </p>
         </div>
         
         <div class="flex items-center justify-between gap-2">
           <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-400">{{ t("pages.pokePage.pokeActionLabel") }}</p>
-          <p class="text-[11px] font-black uppercase tracking-widest text-primary-600 truncate italic">"{{ record.action }}"</p>
+          <p class="text-[11px] font-black uppercase tracking-widest text-primary-600 truncate italic">"{{ record.contextLabel }}"</p>
         </div>
+
+        <p class="text-sm font-medium leading-relaxed text-secondary-500">
+          {{ record.note }}
+        </p>
       </div>
 
       <div class="flex flex-col gap-3 pt-2">

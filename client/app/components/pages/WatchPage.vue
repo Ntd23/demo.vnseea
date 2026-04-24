@@ -2,13 +2,13 @@
   <div class="space-y-4 pb-10 sm:space-y-5">
     <section class="sm:hidden surface-card p-5">
       <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
-        {{ t("pages.watchPage.heroEyebrow") }}
+        {{ $t("pages.watchPage.heroEyebrow") }}
       </p>
       <h1 class="mt-2 text-3xl font-black leading-tight text-secondary-900">
-        {{ t("pages.watchPage.heroTitle") }}
+        {{ $t("pages.watchPage.heroTitle") }}
       </h1>
       <p class="mt-2 text-sm font-medium leading-relaxed text-secondary-500">
-        {{ t("pages.watchPage.heroDescription") }}
+        {{ $t("pages.watchPage.heroDescription") }}
       </p>
 
       <div class="scrollbar-hide -mx-1 mt-6 flex gap-3 overflow-x-auto pb-1 px-1">
@@ -35,7 +35,7 @@
       @update:search="searchQuery = $event"
     />
 
-    <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+    <div v-if="selectedVideo" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
       <main class="space-y-6">
         <WatchPlayer
           :elapsed="elapsed"
@@ -66,6 +66,20 @@
         @select="selectVideo"
       />
     </div>
+
+    <section v-else class="surface-card p-6 sm:p-8">
+      <div class="max-w-xl space-y-3">
+        <p class="text-label-primary text-primary-600 uppercase tracking-widest">
+          {{ $t("pages.watchPage.emptyEyebrow") }}
+        </p>
+        <h2 class="text-heading text-secondary-900">
+          {{ $t("pages.watchPage.emptyTitle") }}
+        </h2>
+        <p class="text-body-secondary leading-relaxed text-secondary-500">
+          {{ $t("pages.watchPage.emptyDescription") }}
+        </p>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -73,17 +87,17 @@
 import type { WatchCategoryKey, WatchComment, WatchVideo } from "~/composables/useMockWatchData"
 import { formatWatchNumber } from "~/composables/useMockWatchData"
 
-const { t, locale } = useI18n()
+const { t: translate, locale } = useI18n()
 const { categories, videos } = useMockWatchData()
 const { searchQuery, debouncedSearchQuery } = useDebouncedSearch()
 
 useSeoMeta({
-  title: () => t("pages.watchPage.seoTitle"),
-  description: () => t("pages.watchPage.seoDescription"),
+  title: () => translate("pages.watchPage.seoTitle"),
+  description: () => translate("pages.watchPage.seoDescription"),
 })
 
 const selectedCategory = ref<WatchCategoryKey>("all")
-const selectedVideoId = ref(videos.value[0]?.id ?? "")
+const selectedVideoId = ref("")
 const playing = ref(false)
 const progress = ref(28)
 const localLikesById = ref<Record<string, number>>({})
@@ -108,21 +122,32 @@ const filteredVideos = computed(() => {
   })
 })
 
-watch(filteredVideos, (items) => {
+watch([videos, filteredVideos], ([allVideos, items]) => {
+  const fallbackId = items[0]?.id ?? allVideos[0]?.id ?? ""
   if (!items.some(video => video.id === selectedVideoId.value)) {
-    selectedVideoId.value = items[0]?.id ?? videos.value[0]!.id
+    selectedVideoId.value = fallbackId
   }
+}, { immediate: true })
+
+const selectedVideo = computed<WatchVideo | null>(() =>
+  videos.value.find(video => video.id === selectedVideoId.value) ?? videos.value[0] ?? null,
+)
+
+const activeComments = computed(() => {
+  const video = selectedVideo.value
+  if (!video) return []
+
+  return [
+    ...video.comments,
+    ...(localCommentsById.value[video.id] ?? []),
+  ]
 })
 
-const selectedVideo = computed<WatchVideo>(() => videos.value.find(video => video.id === selectedVideoId.value) ?? videos.value[0]!)
-
-const activeComments = computed(() => [
-  ...selectedVideo.value.comments,
-  ...(localCommentsById.value[selectedVideo.value.id] ?? []),
-])
-
 const elapsed = computed(() => {
-  const totalSeconds = parseDuration(selectedVideo.value.duration)
+  const video = selectedVideo.value
+  if (!video) return "00:00"
+
+  const totalSeconds = parseDuration(video.duration)
   const current = Math.round(totalSeconds * progress.value / 100)
   const minutes = Math.floor(current / 60).toString().padStart(2, "0")
   const seconds = (current % 60).toString().padStart(2, "0")
@@ -131,19 +156,19 @@ const elapsed = computed(() => {
 
 const heroStats = computed(() => [
   {
-    label: t("pages.watchPage.statVideos"),
+    label: translate("pages.watchPage.statVideos"),
     value: videos.value.length,
-    description: t("pages.watchPage.statVideosDescription"),
+    description: translate("pages.watchPage.statVideosDescription"),
   },
   {
-    label: t("pages.watchPage.statViews"),
+    label: translate("pages.watchPage.statViews"),
     value: formatWatchNumber(videos.value.reduce((sum, video) => sum + video.views, 0), locale.value),
-    description: t("pages.watchPage.statViewsDescription"),
+    description: translate("pages.watchPage.statViewsDescription"),
   },
   {
-    label: t("pages.watchPage.statComments"),
+    label: translate("pages.watchPage.statComments"),
     value: Object.values(localCommentsById.value).reduce((sum, comments) => sum + comments.length, 0),
-    description: t("pages.watchPage.statCommentsDescription"),
+    description: translate("pages.watchPage.statCommentsDescription"),
   },
 ])
 
@@ -174,6 +199,8 @@ const parseDuration = (duration: string) => {
 }
 
 const selectVideo = (id: string) => {
+  if (!videos.value.some(video => video.id === id)) return
+
   selectedVideoId.value = id
   playing.value = false
   progress.value = 8
@@ -185,7 +212,10 @@ const togglePlay = () => {
 }
 
 const toggleLike = () => {
-  const id = selectedVideo.value.id
+  const video = selectedVideo.value
+  if (!video) return
+
+  const id = video.id
   const liked = likedById.value[id] ?? false
   likedById.value = { ...likedById.value, [id]: !liked }
   localLikesById.value = {
@@ -195,18 +225,22 @@ const toggleLike = () => {
 }
 
 const shareVideo = () => {
-  shareMessage.value = t("pages.watchPage.shareSuccess")
+  if (!selectedVideo.value) return
+  shareMessage.value = translate("pages.watchPage.shareSuccess")
 }
 
 const sendComment = (message: string) => {
-  const id = selectedVideo.value.id
+  const video = selectedVideo.value
+  if (!video) return
+
+  const id = video.id
   const comment: WatchComment = {
     id: Date.now(),
-    author: t("pages.watchPage.you"),
-    initials: t("pages.watchPage.youInitials"),
-    role: t("pages.watchPage.viewerRole"),
+    author: translate("pages.watchPage.you"),
+    initials: translate("pages.watchPage.youInitials"),
+    role: translate("pages.watchPage.viewerRole"),
     message,
-    time: t("pages.watchPage.justNow"),
+    time: translate("pages.watchPage.justNow"),
   }
 
   localCommentsById.value = {

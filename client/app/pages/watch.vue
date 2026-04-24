@@ -7,9 +7,9 @@ definePageMeta({
   layout: "default",
 })
 
-const { t } = useI18n()
+const { t: translate } = useI18n()
 
 useHead({
-  title: () => t("pages.watchPage.seoTitle"),
+  title: () => translate("pages.watchPage.seoTitle"),
 })
 </script>

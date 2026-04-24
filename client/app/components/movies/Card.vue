@@ -9,10 +9,10 @@
         <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.02),rgba(15,23,42,0.72))]" />
         <div class="absolute left-3 top-3 flex flex-wrap gap-2">
           <span v-if="movie.isPremiere" class="rounded-full bg-[#fffbeb]/92 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#b45309]">
-            {{ t("pages.moviesPage.badgePremiere") }}
+            {{ $t("pages.moviesPage.badgePremiere") }}
           </span>
           <span v-if="movie.isEditorsPick" class="rounded-full bg-white/88 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[var(--color-primary-700)]">
-            {{ t("pages.moviesPage.badgeEditorsPick") }}
+            {{ $t("pages.moviesPage.badgeEditorsPick") }}
           </span>
         </div>
         <div class="absolute inset-x-0 bottom-0 p-4">
@@ -82,8 +82,6 @@
 
 <script setup lang="ts">
 import type { MockMovie } from "~/composables/useMockMoviesData"
-
-const { t } = useI18n()
 
 defineProps<{
   categoryLabel: string

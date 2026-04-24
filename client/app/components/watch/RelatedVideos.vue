@@ -2,8 +2,8 @@
   <aside class="surface-card p-5 sm:p-6">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.watchPage.relatedEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.watchPage.relatedTitle") }}</h2>
+        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ $t("pages.watchPage.relatedEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-secondary-900">{{ $t("pages.watchPage.relatedTitle") }}</h2>
       </div>
       <UBadge
         :label="videos.length.toString()"
@@ -42,7 +42,7 @@
             <h3 class="line-clamp-2 text-sm sm:text-base font-black leading-snug text-secondary-900 group-hover:text-primary-600 transition-colors">{{ video.title }}</h3>
             <p class="mt-1 text-xs font-bold text-secondary-400 uppercase tracking-tight">{{ video.author }}</p>
             <div class="mt-2 flex items-center gap-2 text-[11px] font-semibold text-secondary-400">
-              <span>{{ t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }}</span>
+              <span>{{ $t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }}</span>
               <span class="text-secondary-200">•</span>
               <span>{{ video.date }}</span>
             </div>
@@ -66,7 +66,7 @@
 import type { WatchVideo } from "~/composables/useMockWatchData"
 import { formatWatchNumber } from "~/composables/useMockWatchData"
 
-const { t, locale } = useI18n()
+const { locale } = useI18n()
 
 defineProps<{
   videos: ReadonlyArray<WatchVideo>

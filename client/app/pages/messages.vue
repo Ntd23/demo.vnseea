@@ -8,7 +8,8 @@
 definePageMeta({ layout: "messages" })
 
 const { t } = useI18n()
-useHead({
+useSeoMeta({
   title: () => t('pages.messagesPage.seoTitle'),
+  description: () => t('pages.messagesPage.seoDescription'),
 })
 </script>
