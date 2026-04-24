@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex h-full w-full items-center justify-center p-0 sm:p-5"
+    class="relative flex h-full min-h-0 w-full touch-pan-y items-center justify-center overscroll-contain"
     @touchstart.passive="onTouchStart"
     @touchend.passive="onTouchEnd"
     @wheel.passive="onWheel"
@@ -16,42 +16,48 @@
     >
       <div
         :key="reel.id"
-        class="relative h-full w-full overflow-hidden bg-black shadow-[0_0_80px_rgba(0,0,0,0.8)] sm:max-w-[460px] sm:rounded-[40px] sm:h-[calc(100dvh-100px)] lg:max-w-[420px] ring-1 ring-white/10 group/reel"
+        class="group/reel relative h-full max-h-full w-full overflow-hidden bg-black shadow-[0_0_80px_rgba(0,0,0,0.75)] ring-1 ring-white/10 sm:aspect-[9/16] sm:w-auto sm:max-w-[min(460px,calc(100vw-40px))] sm:rounded-[34px]"
       >
         <img
           :src="reel.cover"
           :alt="reel.title"
-          class="h-full w-full object-cover select-none transition-transform duration-[2000ms] group-hover/reel:scale-110"
+          class="h-full w-full select-none object-cover transition-transform duration-[1600ms] group-hover/reel:scale-[1.04]"
         >
         
-        <!-- Premium Gradient Overlays -->
-        <div class="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/80 via-black/30 to-transparent pointer-events-none" />
-        <div class="absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-black/75 via-black/24 to-transparent" />
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-[58%] bg-gradient-to-t from-black/92 via-black/46 to-transparent" />
 
-        <!-- Status Badge -->
-        <div class="absolute left-6 top-6 flex items-center gap-2.5 rounded-2xl bg-black/40 px-4 py-2 text-white backdrop-blur-xl border border-white/10 transition-all group-hover/reel:bg-black/60">
-          <span class="relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-500"></span>
+        <div class="absolute left-4 top-4 flex max-w-[calc(100%-88px)] items-center gap-2 rounded-full border border-white/12 bg-black/42 px-3 py-2 text-white shadow-[0_10px_30px_rgba(0,0,0,0.22)] backdrop-blur-md sm:left-5 sm:top-5">
+          <span class="relative flex h-2 w-2 shrink-0">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-400 opacity-70" />
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-primary-500" />
           </span>
-          <span class="text-[9px] font-black uppercase tracking-[0.4em]">{{ $t('pages.reelsPage.playing') }}</span>
+          <span class="truncate text-[11px] font-extrabold uppercase tracking-[0.16em]">{{ $t('pages.reelsPage.playing') }}</span>
+          <span class="text-[11px] font-bold text-white/45">{{ currentIndex + 1 }}/{{ total }}</span>
         </div>
 
         <UButton
           icon="i-ph-dots-three-outline-vertical-duotone"
           variant="soft"
-          class="absolute right-6 top-6 h-10 w-10 rounded-2xl bg-black/40 text-white hover:bg-black/60 hover:text-primary-400 backdrop-blur-xl border border-white/10 transition-all flex items-center justify-center p-0"
+          class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-black/42 p-0 text-white shadow-[0_10px_30px_rgba(0,0,0,0.22)] backdrop-blur-md transition-all hover:bg-black/62 hover:text-primary-300 sm:right-5 sm:top-5"
           :aria-label="$t('pages.reelsPage.more')"
           size="md"
         />
 
         <ReelsOverlay :reel="reel" />
+
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-white/10">
+          <div
+            class="h-full bg-primary-400 transition-[width] duration-300"
+            :style="{ width: progressWidth }"
+          />
+        </div>
       </div>
     </Transition>
 
-    <div class="pointer-events-none absolute bottom-12 left-1/2 hidden -translate-x-1/2 md:block">
-      <div class="rounded-full bg-white/5 px-6 py-2.5 backdrop-blur-md border border-white/10 ring-1 ring-white/5 shadow-2xl">
-        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/50">
+    <div class="pointer-events-none absolute bottom-5 left-1/2 hidden -translate-x-1/2 md:block">
+      <div class="rounded-full border border-white/10 bg-white/7 px-5 py-2 backdrop-blur-md">
+        <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/55">
           {{ $t('pages.reelsPage.swipeHint') }}
         </p>
       </div>
@@ -71,9 +77,15 @@ const props = defineProps<{
     description: string
     likes: number
     comments: number
+    shares: number
+    views: number
+    music: string
+    tags: string[]
     cover: string
     avatar: string
   }
+  currentIndex: number
+  total: number
 }>()
 
 const emit = defineEmits<{
@@ -83,6 +95,8 @@ const emit = defineEmits<{
 
 const touchStartY = ref<number | null>(null)
 const wheelLock = ref(false)
+
+const progressWidth = computed(() => `${((props.currentIndex + 1) / props.total) * 100}%`)
 
 const onTouchStart = (event: TouchEvent) => {
   touchStartY.value = event.changedTouches[0]?.clientY ?? null
@@ -111,6 +125,29 @@ const onWheel = (event: WheelEvent) => {
 
   window.setTimeout(() => {
     wheelLock.value = false
-  }, 350)
+  }, 520)
 }
+
+const onKeydown = (event: KeyboardEvent) => {
+  const target = event.target as HTMLElement | null
+  if (target?.closest('input, textarea, select, [contenteditable="true"]')) return
+
+  if (event.key === 'ArrowDown' || event.key === 'PageDown') {
+    event.preventDefault()
+    emit('next')
+  }
+
+  if (event.key === 'ArrowUp' || event.key === 'PageUp') {
+    event.preventDefault()
+    emit('prev')
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', onKeydown)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', onKeydown)
+})
 </script>
