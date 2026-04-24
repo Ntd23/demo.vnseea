@@ -1,99 +1,68 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-6 px-4 pb-16 pt-4 sm:px-6">
+  <div class="mx-auto max-w-[1320px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
     <section
-      class="saved-posts-hero relative overflow-hidden rounded-[32px] px-6 py-7 text-white shadow-[var(--shadow-xl)] sm:px-8 lg:px-10"
+      class="overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-white shadow-[0_10px_28px_rgba(15,35,110,0.05)]"
       aria-labelledby="saved-posts-hero-title"
     >
-      <div class="absolute inset-0 saved-posts-hero-bg" />
-      <div class="pointer-events-none absolute inset-0 opacity-20 saved-posts-hero-grid" />
-      <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.12)_100%)]" />
-
-      <div class="relative z-10">
-        <div class="grid gap-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-stretch">
-          <div class="max-w-[760px]">
-            <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 backdrop-blur-[4px]">
-              <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15">
-                <Icon name="i-ph-bookmark-simple-fill" class="h-3.5 w-3.5 text-[#fde7b2]" />
-              </span>
-              <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-white/70">
-                {{ t("pages.savedPostsPage.heroEyebrow") }}
-              </p>
-            </div>
-
+      <div class="grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
+        <div class="max-w-3xl space-y-4">
+          <p class="inline-flex h-8 items-center rounded-full bg-primary-50 px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+            {{ t("pages.savedPostsPage.heroEyebrow") }}
+          </p>
+          <div class="space-y-3">
             <h1
               id="saved-posts-hero-title"
-              class="mt-5 font-['Be_Vietnam_Pro',sans-serif] text-[2.15rem] font-black leading-[0.98] tracking-[-0.04em] text-white sm:text-[2.9rem] lg:text-[3.15rem]"
+              class="text-[30px] font-black leading-tight text-[var(--text-primary)] sm:text-[38px]"
             >
               {{ t("pages.savedPostsPage.heroTitle") }}
             </h1>
-            <p class="mt-4 max-w-[620px] text-[14.5px] leading-[1.75] text-white/80 sm:text-[16px]">
+            <p class="max-w-2xl text-[14px] font-medium leading-7 text-slate-600 sm:text-[15px]">
               {{ t("pages.savedPostsPage.heroDescription") }}
             </p>
           </div>
 
-          <div class="rounded-[24px] border border-white/14 bg-white/10 p-4 backdrop-blur-[6px] lg:self-end">
-            <div class="flex items-start gap-3">
-              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-white text-[var(--color-primary-700)] shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
-                <Icon name="i-ph-bookmarks-fill" class="h-5 w-5" />
-              </span>
-              <div class="min-w-0">
-                <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-white/60">
-                  {{ t("pages.savedPostsPage.listEyebrow") }}
-                </p>
-                <p class="mt-1 font-['Be_Vietnam_Pro',sans-serif] text-[1.65rem] font-black leading-none text-white">
-                  {{ formatCount(visibleSavedPosts.length) }}
-                </p>
-                <p class="mt-1.5 text-[12.5px] leading-[1.5] text-white/70">
-                  {{ t("pages.savedPostsPage.listDescription") }}
-                </p>
-              </div>
-            </div>
+          <div class="flex flex-col gap-2 pt-1 sm:flex-row">
+            <NuxtLink
+              to="/home"
+              class="inline-flex h-11 items-center justify-center rounded-[14px] border border-secondary-200 bg-white px-4 text-[13px] font-extrabold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
+            >
+              <Icon name="i-ph-house-line-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
+              {{ t("pages.savedPostsPage.backToFeed") }}
+            </NuxtLink>
 
-            <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-              <UButton
-                to="/home"
-                color="neutral"
-                variant="solid"
-                size="lg"
-                class="h-11 justify-center rounded-[var(--radius-full)] bg-[#fde7b2] px-5 text-[13.5px] font-bold text-[#27345f] shadow-[0_4px_16px_rgba(0,0,0,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
-              >
-                <Icon name="i-ph-house-line-fill" class="h-4 w-4" />
-                {{ t("pages.savedPostsPage.backToFeed") }}
-              </UButton>
-
-              <UButton
-                v-if="visibleSavedPosts.length > 0"
-                type="button"
-                color="neutral"
-                variant="solid"
-                size="lg"
-                class="h-11 justify-center rounded-[var(--radius-full)] bg-white px-5 text-[13.5px] font-bold text-red-600 shadow-[0_4px_16px_rgba(0,0,0,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-50 hover:shadow-[0_8px_24px_rgba(0,0,0,0.24)]"
-                @click="removeAll"
-              >
-                <Icon name="i-ph-trash-fill" class="h-4 w-4" />
-                {{ t("pages.savedPostsPage.removeAll") }}
-              </UButton>
-            </div>
+            <button
+              v-if="visibleSavedPosts.length > 0"
+              type="button"
+              class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-extrabold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:bg-primary-700 active:scale-95"
+              @click="removeAll"
+            >
+              <Icon name="i-ph-trash-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
+              {{ t("pages.savedPostsPage.removeAll") }}
+            </button>
+            <NuxtLink
+              v-else
+              to="/explore"
+              class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-extrabold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:bg-primary-700 active:scale-95"
+            >
+              <Icon name="i-ph-compass-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
+              {{ t("pages.savedPostsPage.goToExplore") }}
+            </NuxtLink>
           </div>
         </div>
 
-        <div class="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid grid-cols-2 gap-x-5 gap-y-5 border-t border-secondary-100 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
           <article
             v-for="item in summaryStats"
             :key="item.label"
-            class="rounded-[20px] border border-white/12 bg-white/10 p-3 backdrop-blur-[6px] sm:p-4"
+            class="min-w-0"
           >
-            <div class="flex items-center gap-2">
-              <Icon :name="item.icon" class="h-3.5 w-3.5 text-white/60" />
-              <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-white/60">
-                {{ item.label }}
-              </p>
-            </div>
-
-            <p class="mt-1.5 font-['Be_Vietnam_Pro',sans-serif] text-[1.65rem] font-black leading-none text-white sm:text-[2rem]">
+            <p class="text-[11px] font-extrabold uppercase text-slate-500">
+              {{ item.label }}
+            </p>
+            <p class="mt-2 text-[28px] font-black leading-none text-[var(--text-primary)]">
               {{ item.value }}
             </p>
-            <p class="mt-1 hidden text-[12px] leading-[1.5] text-white/70 sm:block">
+            <p class="mt-2 text-[12px] font-medium leading-5 text-slate-500">
               {{ item.description }}
             </p>
           </article>
@@ -222,25 +191,21 @@ const summaryStats = computed(() => {
     {
       label: t("pages.savedPostsPage.statSaved"),
       value: formatCount(visibleSavedPosts.value.length),
-      icon: "i-ph-bookmarks-duotone",
       description: t("pages.savedPostsPage.statSavedDescription"),
     },
     {
       label: t("pages.savedPostsPage.statAuthors"),
       value: formatCount(authors.size),
-      icon: "i-ph-users-three-duotone",
       description: t("pages.savedPostsPage.statAuthorsDescription"),
     },
     {
       label: t("pages.savedPostsPage.statCollections"),
       value: formatCount(collections.size),
-      icon: "i-ph-folder-star-duotone",
       description: t("pages.savedPostsPage.statCollectionsDescription"),
     },
     {
       label: t("pages.savedPostsPage.statInteractions"),
       value: formatCount(interactionCount),
-      icon: "i-ph-sparkle-duotone",
       description: t("pages.savedPostsPage.statInteractionsDescription"),
     },
   ]
@@ -264,16 +229,3 @@ useSeoMeta({
   description: () => t("pages.savedPostsPage.seoDescription"),
 })
 </script>
-
-<style scoped>
-.saved-posts-hero-bg {
-  background: linear-gradient(135deg, #1a1f8e 0%, #2d3ed4 30%, #4f46e5 62%, #7c3aed 100%);
-}
-
-.saved-posts-hero-grid {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
-  background-size: 40px 40px;
-}
-</style>
