@@ -27,7 +27,7 @@ const createMockSvg = (label: string, start: string, end: string) =>
 const mockPalette = [
   ["#1d4ed8", "#38bdf8"],
   ["#7c3aed", "#ec4899"],
-  ["#0f766e", "#14b8a6"],
+  ["#0369a1", "#38bdf8"],
   ["#b45309", "#f59e0b"],
 ] as const
 

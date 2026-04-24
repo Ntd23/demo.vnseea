@@ -20,7 +20,7 @@
           <div 
             class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl transition-all duration-500"
             :class="item.done 
-              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' 
+              ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' 
               : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100'"
           >
             <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle-duotone'" class="h-5 w-5" />

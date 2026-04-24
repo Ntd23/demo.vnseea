@@ -16,7 +16,7 @@
           class="rounded-full font-black text-[10px] uppercase tracking-widest px-4 py-1.5 ring-1 ring-inset ring-primary-100"
         >
           <template #leading>
-            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
           </template>
           {{ $t("pages.livePage.commentCount", { count: comments.length }) }}
         </UBadge>

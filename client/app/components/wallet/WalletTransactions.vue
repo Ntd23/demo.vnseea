@@ -33,7 +33,7 @@
             </div>
           </div>
         </div>
-        <p class="shrink-0 text-lg font-black tabular-nums" :class="transaction.amount >= 0 ? 'text-emerald-600' : 'text-red-600'">
+        <p class="shrink-0 text-lg font-black tabular-nums" :class="transaction.amount >= 0 ? 'text-sky-600' : 'text-red-600'">
           {{ transaction.amount >= 0 ? "+" : "-" }}{{ formatWalletCurrency(Math.abs(transaction.amount), locale.value) }}
         </p>
       </div>
@@ -64,11 +64,11 @@ const statusLabel = (status: WalletTransaction["status"]) => {
 }
 
 const statusColorClass = (status: WalletTransaction["status"]) => {
-  if (status === "completed") return "text-emerald-500"
+  if (status === "completed") return "text-sky-500"
   if (status === "pending") return "text-amber-500"
   return "text-red-500"
 }
 
 const iconClass = (amount: number) =>
-  amount >= 0 ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-red-50 text-red-600 border-red-100"
+  amount >= 0 ? "bg-sky-50 text-sky-600 border-sky-100" : "bg-red-50 text-red-600 border-red-100"
 </script>

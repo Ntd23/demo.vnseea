@@ -1,5 +1,5 @@
 <template>
-  <UCard class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-[linear-gradient(135deg,#0f766e_0%,var(--color-primary-600)_58%,var(--color-accent-500)_130%)] text-white shadow-[var(--shadow-xl)]" :ui="{ body: 'relative p-5 sm:p-7 lg:p-8' }">
+  <UCard class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-[linear-gradient(135deg,#0369a1_0%,var(--color-primary-600)_58%,var(--color-accent-500)_130%)] text-white shadow-[var(--shadow-xl)]" :ui="{ body: 'relative p-5 sm:p-7 lg:p-8' }">
     <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
     <div class="pointer-events-none absolute right-[-7%] top-[-24%] h-[280px] w-[280px] rounded-full bg-white/12 blur-3xl" />
     <div class="pointer-events-none absolute bottom-[-20%] left-[-8%] h-[240px] w-[240px] rounded-full bg-[#f59e0b]/24 blur-3xl" />

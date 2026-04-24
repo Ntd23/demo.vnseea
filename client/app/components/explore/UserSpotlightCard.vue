@@ -15,7 +15,7 @@
 
             <span
               v-if="user.online"
-              class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-white bg-emerald-500"
+              class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-white bg-sky-500"
             />
           </div>
 

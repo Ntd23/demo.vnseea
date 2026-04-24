@@ -48,7 +48,7 @@
                   <div class="space-y-0.5">
                     <p class="text-base font-black tracking-tight text-white">{{ $t("navigation.mobileMenu.adminTitle") }}</p>
                     <div class="flex items-center gap-2">
-                      <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <div class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
                       <p class="text-[10px] font-black uppercase tracking-widest text-white/50">Online Now</p>
                     </div>
                   </div>

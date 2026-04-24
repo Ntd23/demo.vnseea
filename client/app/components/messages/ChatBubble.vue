@@ -25,7 +25,7 @@
           class="relative whitespace-pre-wrap px-5 py-3.5 text-[15px] leading-7 shadow-md transition-all duration-300" 
           :class="[
             isMine 
-              ? 'rounded-[24px] rounded-br-lg bg-gradient-to-br from-primary-500 via-primary-600 to-emerald-600 text-white font-medium ring-1 ring-primary-500/40 shadow-[0_16px_34px_rgba(34,197,94,0.22)] hover:shadow-[0_20px_40px_rgba(34,197,94,0.25)]' 
+              ? 'rounded-[24px] rounded-br-lg bg-gradient-to-br from-primary-500 via-primary-600 to-sky-600 text-white font-medium ring-1 ring-primary-500/40 shadow-[0_16px_34px_rgba(14,165,233,0.22)] hover:shadow-[0_20px_40px_rgba(14,165,233,0.25)]' 
               : 'rounded-[24px] rounded-bl-lg bg-white/96 text-secondary-800 font-medium ring-1 ring-secondary-100 shadow-[0_16px_34px_rgba(15,23,42,0.06)] hover:ring-primary-500/20'
           ]"
         >

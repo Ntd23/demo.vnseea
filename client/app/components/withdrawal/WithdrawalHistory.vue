@@ -56,7 +56,7 @@ const statusLabel = (status: WithdrawalHistoryItem["status"]) => {
 }
 
 const statusColor = (status: WithdrawalHistoryItem["status"]) => {
-  if (status === "approved") return "emerald"
+  if (status === "approved") return "primary"
   if (status === "rejected") return "red"
   return "amber"
 }

@@ -35,7 +35,7 @@
           :color="shared ? 'primary' : 'primary'"
           :variant="shared ? 'solid' : 'solid'"
           class="rounded-2xl font-black text-[11px] uppercase tracking-widest px-8 h-12 shadow-xl transition-all active:scale-95 flex-shrink-0 justify-center"
-          :class="shared ? 'bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20' : 'bg-primary-600 hover:bg-primary-700 shadow-primary-500/20'"
+          :class="shared ? 'bg-sky-600 hover:bg-sky-700 shadow-sky-500/20' : 'bg-primary-600 hover:bg-primary-700 shadow-primary-500/20'"
           @click="$emit('share', entry.id)"
         >
           <template #leading>

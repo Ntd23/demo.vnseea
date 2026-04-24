@@ -1,6 +1,6 @@
 <template>
   <UCard
-    class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-[linear-gradient(135deg,#0f766e_0%,#14532d_38%,#1447e6_100%)] text-white shadow-[var(--shadow-xl)]"
+    class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-[linear-gradient(135deg,#0369a1_0%,#1e3a8a_38%,#1447e6_100%)] text-white shadow-[var(--shadow-xl)]"
     :ui="{ body: 'relative p-5 sm:p-7 lg:p-8' }"
   >
     <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />

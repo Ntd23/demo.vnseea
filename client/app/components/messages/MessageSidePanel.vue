@@ -8,11 +8,11 @@
           class="ring-4 ring-white shadow-xl transition-transform duration-500 group-hover:scale-105"
           :ui="{ rounded: 'rounded-[24px]' }"
         />
-        <span class="absolute bottom-0 right-0 h-6 w-6 rounded-full border-4 border-white bg-green-500 shadow-sm" />
+        <span class="absolute bottom-0 right-0 h-6 w-6 rounded-full border-4 border-white bg-sky-500 shadow-sm" />
       </div>
       <h3 class="text-[15px] font-black uppercase tracking-[0.18em] leading-none text-secondary-900">{{ $t('pages.messagesPage.contactName') }}</h3>
       <div class="mt-2 flex items-center gap-2">
-        <span class="h-1.5 w-1.5 rounded-full bg-green-500" />
+        <span class="h-1.5 w-1.5 rounded-full bg-sky-500" />
         <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-secondary-400">{{ $t('pages.messagesPage.activeNow') }}</p>
       </div>
 

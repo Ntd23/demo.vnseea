@@ -242,7 +242,7 @@ const editorActions = computed(() => [
 ] as const)
 
 const thumbnailBackgrounds = [
-  "linear-gradient(135deg,#14532d 0%,#16a34a 46%,#bbf7d0 100%)",
+  "linear-gradient(135deg,#1e3a8a 0%,#2563eb 46%,#bfdbfe 100%)",
   "linear-gradient(135deg,#172554 0%,#1d4ed8 46%,#7dd3fc 100%)",
   "linear-gradient(135deg,#111827 0%,#4f46e5 42%,#c4b5fd 100%)",
   "linear-gradient(135deg,#9f1239 0%,#fb7185 100%)",

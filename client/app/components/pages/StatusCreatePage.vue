@@ -3,7 +3,7 @@
     <section class="relative overflow-hidden rounded-[30px] bg-[linear-gradient(135deg,#0f172a_0%,#1d4ed8_44%,#38bdf8_100%)] px-5 pb-10 pt-6 text-white shadow-[0_16px_40px_rgba(29,78,216,0.24)] sm:px-7 sm:pt-8 lg:px-8">
       <div class="pointer-events-none absolute inset-x-[-10%] top-[26%] h-[220px] rounded-[50%] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.18),transparent_65%)]" />
       <div class="pointer-events-none absolute right-[-6%] top-[-14%] h-[260px] w-[260px] rounded-full bg-white/10 blur-2xl" />
-      <div class="pointer-events-none absolute bottom-[-22%] left-[-8%] h-[220px] w-[220px] rounded-full bg-[#22c55e]/20 blur-3xl" />
+      <div class="pointer-events-none absolute bottom-[-22%] left-[-8%] h-[220px] w-[220px] rounded-full bg-[#3b82f6]/20 blur-3xl" />
 
       <div class="relative z-10">
         <div class="max-w-[760px]">
@@ -28,7 +28,7 @@
             </NuxtLink>
 
             <button
-              class="inline-flex h-12 items-center justify-center rounded-full bg-[#d9f99d] px-5 text-[14px] font-extrabold text-[#14532d] shadow-[0_10px_26px_rgba(217,249,157,0.22)] transition hover:-translate-y-0.5"
+              class="inline-flex h-12 items-center justify-center rounded-full bg-[#dbeafe] px-5 text-[14px] font-extrabold text-[#1e3a8a] shadow-[0_10px_26px_rgba(219,234,254,0.22)] transition hover:-translate-y-0.5"
               type="button"
               @click="openPicker"
             >

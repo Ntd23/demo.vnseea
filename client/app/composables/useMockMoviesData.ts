@@ -111,7 +111,7 @@ const defaultMovies: MockMovie[] = [
     summary: "Theo chân một workshop học tập thực chiến, bộ phim biến những mẹo note-taking và ôn tập thành một hành trình dễ áp dụng hơn cho người học bận rộn.",
     cover: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=900&q=80",
     backdrop: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
-    accent: "linear-gradient(135deg,#059669 0%,#34d399 100%)",
+    accent: "linear-gradient(135deg,#0284c7 0%,#60a5fa 100%)",
     tags: ["Education", "Workshop", "Learning"],
     isPremiere: false,
     isEditorsPick: false,
@@ -130,7 +130,7 @@ const defaultMovies: MockMovie[] = [
     summary: "Từ ảnh sản phẩm đến cách trả lời khách, bộ phim tài liệu này gom lại những nhịp rất thật phía sau một listing trông tưởng như đơn giản.",
     cover: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=900&q=80",
     backdrop: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
-    accent: "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",
+    accent: "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
     tags: ["Documentary", "Seller", "Marketplace"],
     isPremiere: false,
     isEditorsPick: true,
@@ -178,7 +178,7 @@ const defaultCollections: MovieCollection[] = [
     description: "Chuyển sang live để bắt các phiên đang phát và nối mạch từ phim sang trò chuyện trực tiếp.",
     icon: "i-ph-broadcast-bold",
     to: "/live",
-    accent: "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",
+    accent: "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
   },
 ]
 

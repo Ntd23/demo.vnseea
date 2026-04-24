@@ -5,7 +5,7 @@
       <div>
         <span class="block text-lg font-black text-secondary-900 tracking-tight">{{ $t("navigation.chatWidget.title") }}</span>
         <div class="flex items-center gap-2 mt-0.5">
-          <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
           <span class="block text-[10px] font-black uppercase tracking-widest text-secondary-400">{{ $t("navigation.chatWidget.onlineCount", { count: onlineCount }) }}</span>
         </div>
       </div>
@@ -155,14 +155,14 @@
             <div class="h-10 w-10 relative">
               <img v-if="contact.avatarUrl" :src="contact.avatarUrl" class="h-full w-full rounded-2xl object-cover ring-2 ring-white shadow-md">
               <div v-else class="flex h-full w-full items-center justify-center rounded-2xl text-[11px] font-black text-white shadow-md ring-2 ring-white" :style="{ background: avatarColor(contact.id) }">{{ contact.avatar }}</div>
-              <div class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-[2.5px] border-white z-10" :class="contact.online ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-secondary-300'" />
+              <div class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-[2.5px] border-white z-10" :class="contact.online ? 'bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.5)]' : 'bg-secondary-300'" />
             </div>
           </div>
 
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
               <span class="truncate text-sm font-black text-secondary-900 group-hover/contact:text-primary-700 transition-colors">{{ contact.name }}</span>
-              <UBadge v-if="contact.online" variant="soft" color="emerald" class="rounded-lg font-black text-[8px] uppercase tracking-widest px-1.5 py-0.5">Live</UBadge>
+              <UBadge v-if="contact.online" variant="soft" color="primary" class="rounded-lg font-black text-[8px] uppercase tracking-widest px-1.5 py-0.5">Live</UBadge>
             </div>
             <p class="truncate text-[11px] font-medium text-secondary-400 group-hover/contact:text-secondary-500 transition-colors italic">{{ contact.status || $t("navigation.chatWidget.readyToChat") }}</p>
           </div>
@@ -224,8 +224,8 @@
           <div class="min-w-0">
             <p class="truncate text-[13px] font-black text-secondary-900 tracking-tight">{{ miniChat.title }}</p>
             <div class="flex items-center gap-1.5 mt-0.5">
-              <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <p class="text-[10px] font-black uppercase tracking-widest text-emerald-600">{{ $t("navigation.chatWidget.miniChatActive") }}</p>
+              <div class="h-1.5 w-1.5 rounded-full bg-sky-500" />
+              <p class="text-[10px] font-black uppercase tracking-widest text-sky-600">{{ $t("navigation.chatWidget.miniChatActive") }}</p>
             </div>
           </div>
           <UButton
@@ -313,7 +313,7 @@ const extendedContacts = computed(() => contacts.map((c, i) => {
   return { ...c, avatarUrl: img, status: c.online ? t('navigation.chatWidget.onlineStatus') : t('navigation.chatWidget.offlineToday') }
 }))
 
-const palette = ['#4f46e5', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+const palette = ['#4f46e5', '#3b82f6', '#0ea5e9', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
 function avatarColor(id: number) { return palette[(id - 1) % palette.length] }
 
 const miniChat = reactive<{ open: boolean; title: string; message: string; kind: 'direct' | 'group' }>({

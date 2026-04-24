@@ -157,7 +157,7 @@ const defaultPopularQuickLinks: PopularQuickLink[] = [
     description: "Mở nhanh các buổi live đang lên sóng trong cộng đồng.",
     to: "/live",
     icon: "i-ph-broadcast-bold",
-    accent: "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",
+    accent: "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
   },
   {
     title: "Đọc blog sâu hơn",

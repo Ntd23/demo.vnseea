@@ -502,7 +502,7 @@
           "meta": "Fresh openings",
           "count": "21 roles",
           "href": "/jobs",
-          "accent": "linear-gradient(135deg,#0f172a 0%,#0f766e 50%,#99f6e4 100%)",
+          "accent": "linear-gradient(135deg,#0f172a 0%,#0369a1 50%,#bae6fd 100%)",
           "tags": ["Hiring", "Career", "Remote"],
           "featured": false
         },
@@ -567,7 +567,7 @@
           "meta": "New playable items",
           "count": "11 games",
           "href": "/games",
-          "accent": "linear-gradient(135deg,#1f2937 0%,#16a34a 48%,#86efac 100%)",
+          "accent": "linear-gradient(135deg,#1f2937 0%,#2563eb 48%,#93c5fd 100%)",
           "tags": ["Arcade", "Mini Game", "Play"],
           "featured": false
         },
@@ -1230,7 +1230,7 @@
           "count": 32,
           "badge": "Community",
           "to": "/memories",
-          "accent": "linear-gradient(135deg,#0f766e 0%,#10b981 100%)"
+          "accent": "linear-gradient(135deg,#0369a1 0%,#0ea5e9 100%)"
         },
         {
           "title": "Product photo essay",
@@ -1306,7 +1306,7 @@
           "likes": 11900,
           "comments": 274,
           "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80",
-          "accent": "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)",
+          "accent": "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
           "tags": ["#product", "#studio", "#brand"],
           "frame": "landscape",
           "companionTo": "/blogs"
@@ -1393,7 +1393,7 @@
           "description": "Browse more photos by timeline and community albums already grouped by activity runs.",
           "to": "/memories",
           "icon": "i-ph-clock-counter-clockwise-fill",
-          "accent": "linear-gradient(135deg,#0f766e 0%,#14b8a6 100%)"
+          "accent": "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)"
         },
         {
           "title": "Read the blogs backstage notes",
@@ -1956,7 +1956,7 @@
           "description": "Open the live sessions currently broadcasting across the community.",
           "to": "/live",
           "icon": "i-ph-broadcast-bold",
-          "accent": "linear-gradient(135deg,#0f766e 0%,#2dd4bf 100%)"
+          "accent": "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)"
         },
         {
           "title": "Read deeper blog posts",

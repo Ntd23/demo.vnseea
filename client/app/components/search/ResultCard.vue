@@ -97,7 +97,7 @@ const avatarBackground = computed(() =>
 )
 
 const badgeColor = computed(() => {
-  if (props.result.badge === "Online") return "emerald"
+  if (props.result.badge === "Online") return "primary"
   if (props.result.kind === "posts") return "violet"
   if (props.result.kind === "pages") return "amber"
   if (props.result.kind === "groups") return "cyan"

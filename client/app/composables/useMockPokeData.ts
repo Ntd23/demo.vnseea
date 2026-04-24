@@ -22,7 +22,7 @@ function createProfilePath(name: string) {
 
 const accentPalette = [
   "#2563eb",
-  "#0f766e",
+  "#0369a1",
   "#ea580c",
   "#7c3aed",
   "#0891b2",
