@@ -1,68 +1,99 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-10 pb-24 px-4 sm:px-6 pt-4">
-    <!-- Hero Section -->
-    <section class="surface-card overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-gradient-to-br from-secondary-950 via-secondary-900 to-primary-950 text-white relative group/hero">
-      <!-- Premium Decorations -->
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(var(--color-primary-500-rgb),0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.2),transparent_40%)]" />
-      <div class="absolute top-0 right-0 w-80 h-80 bg-primary-500/10 rounded-full blur-[100px] -mr-40 -mt-40 pointer-events-none transition-transform duration-1000 group-hover/hero:scale-110" />
+  <div class="mx-auto max-w-[1280px] space-y-6 px-4 pb-16 pt-4 sm:px-6">
+    <section
+      class="saved-posts-hero relative overflow-hidden rounded-[32px] px-6 py-7 text-white shadow-[var(--shadow-xl)] sm:px-8 lg:px-10"
+      aria-labelledby="saved-posts-hero-title"
+    >
+      <div class="absolute inset-0 saved-posts-hero-bg" />
+      <div class="pointer-events-none absolute inset-0 opacity-20 saved-posts-hero-grid" />
+      <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-[linear-gradient(180deg,transparent_0%,rgba(0,0,0,0.12)_100%)]" />
 
-      <div class="relative px-8 py-14 sm:px-12 lg:px-16 space-y-14">
-        <div class="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-[820px] space-y-6">
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-400 pl-1">
-              {{ t("pages.savedPostsPage.heroEyebrow") }}
-            </p>
-            <h1 class="text-5xl sm:text-6xl font-black leading-none tracking-tight text-white italic">
+      <div class="relative z-10">
+        <div class="grid gap-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-stretch">
+          <div class="max-w-[760px]">
+            <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 backdrop-blur-[4px]">
+              <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/15">
+                <Icon name="i-ph-bookmark-simple-fill" class="h-3.5 w-3.5 text-[#fde7b2]" />
+              </span>
+              <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-white/70">
+                {{ t("pages.savedPostsPage.heroEyebrow") }}
+              </p>
+            </div>
+
+            <h1
+              id="saved-posts-hero-title"
+              class="mt-5 font-['Be_Vietnam_Pro',sans-serif] text-[2.15rem] font-black leading-[0.98] tracking-[-0.04em] text-white sm:text-[2.9rem] lg:text-[3.15rem]"
+            >
               {{ t("pages.savedPostsPage.heroTitle") }}
             </h1>
-            <p class="text-base font-medium leading-relaxed text-secondary-300 sm:text-lg pl-0.5 max-w-2xl italic">
-              "{{ t("pages.savedPostsPage.heroDescription") }}"
+            <p class="mt-4 max-w-[620px] text-[14.5px] leading-[1.75] text-white/80 sm:text-[16px]">
+              {{ t("pages.savedPostsPage.heroDescription") }}
             </p>
           </div>
 
-          <div class="flex flex-wrap gap-4 pt-4 lg:pt-0">
-            <UButton
-              to="/home"
-              size="xl"
-              class="h-14 rounded-2xl bg-white/5 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/10 backdrop-blur-xl transition-all active:scale-95 px-8"
-            >
-              <template #leading>
-                <Icon name="i-ph-house-line-duotone" class="h-5 w-5" />
-              </template>
-              {{ t("pages.savedPostsPage.backToFeed") }}
-            </UButton>
+          <div class="rounded-[24px] border border-white/14 bg-white/10 p-4 backdrop-blur-[6px] lg:self-end">
+            <div class="flex items-start gap-3">
+              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-white text-[var(--color-primary-700)] shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
+                <Icon name="i-ph-bookmarks-fill" class="h-5 w-5" />
+              </span>
+              <div class="min-w-0">
+                <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-white/60">
+                  {{ t("pages.savedPostsPage.listEyebrow") }}
+                </p>
+                <p class="mt-1 font-['Be_Vietnam_Pro',sans-serif] text-[1.65rem] font-black leading-none text-white">
+                  {{ formatCount(visibleSavedPosts.length) }}
+                </p>
+                <p class="mt-1.5 text-[12.5px] leading-[1.5] text-white/70">
+                  {{ t("pages.savedPostsPage.listDescription") }}
+                </p>
+              </div>
+            </div>
 
-            <UButton
-              v-if="visibleSavedPosts.length > 0"
-              size="xl"
-              class="h-14 rounded-2xl bg-red-600 text-white font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-red-500/20 transition-all hover:bg-red-700 active:scale-95 px-8"
-              @click="removeAll"
-            >
-              <template #leading>
-                <Icon name="i-ph-trash-duotone" class="h-5 w-5" />
-              </template>
-              {{ t("pages.savedPostsPage.removeAll") }}
-            </UButton>
+            <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
+              <UButton
+                to="/home"
+                color="neutral"
+                variant="solid"
+                size="lg"
+                class="h-11 justify-center rounded-[var(--radius-full)] bg-[#fde7b2] px-5 text-[13.5px] font-bold text-[#27345f] shadow-[0_4px_16px_rgba(0,0,0,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
+              >
+                <Icon name="i-ph-house-line-fill" class="h-4 w-4" />
+                {{ t("pages.savedPostsPage.backToFeed") }}
+              </UButton>
+
+              <UButton
+                v-if="visibleSavedPosts.length > 0"
+                type="button"
+                color="neutral"
+                variant="solid"
+                size="lg"
+                class="h-11 justify-center rounded-[var(--radius-full)] bg-white px-5 text-[13.5px] font-bold text-red-600 shadow-[0_4px_16px_rgba(0,0,0,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-50 hover:shadow-[0_8px_24px_rgba(0,0,0,0.24)]"
+                @click="removeAll"
+              >
+                <Icon name="i-ph-trash-fill" class="h-4 w-4" />
+                {{ t("pages.savedPostsPage.removeAll") }}
+              </UButton>
+            </div>
           </div>
         </div>
 
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <article
             v-for="item in summaryStats"
             :key="item.label"
-            class="group/stat surface-card rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-3xl ring-1 ring-white/10 transition-all duration-500 hover:bg-white/10 hover:ring-primary-400/30"
+            class="rounded-[20px] border border-white/12 bg-white/10 p-3 backdrop-blur-[6px] sm:p-4"
           >
-            <div class="flex items-center justify-between">
-              <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
+            <div class="flex items-center gap-2">
+              <Icon :name="item.icon" class="h-3.5 w-3.5 text-white/60" />
+              <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-white/60">
                 {{ item.label }}
               </p>
-              <Icon :name="item.icon" class="h-4 w-4 text-white/20 group-hover/stat:text-primary-400 transition-all" />
             </div>
-            
-            <p class="mt-8 text-4xl font-black text-white leading-none tracking-tighter">
+
+            <p class="mt-1.5 font-['Be_Vietnam_Pro',sans-serif] text-[1.65rem] font-black leading-none text-white sm:text-[2rem]">
               {{ item.value }}
             </p>
-            <p class="mt-4 text-[10px] font-bold text-white/30 group-hover/stat:text-white/50 italic line-clamp-1">
+            <p class="mt-1 hidden text-[12px] leading-[1.5] text-white/70 sm:block">
               {{ item.description }}
             </p>
           </article>
@@ -118,40 +149,43 @@
     <!-- List Section -->
     <section
       v-else
-      class="surface-card overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-white group/list relative"
+      class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]"
     >
-      <div class="absolute inset-0 bg-gradient-to-b from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/list:opacity-100 transition-opacity duration-1000" />
-      
-      <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 p-10 sm:p-12 sm:flex-row sm:items-center sm:justify-between">
-        <div class="space-y-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
-            {{ t("pages.savedPostsPage.listEyebrow") }}
-          </p>
-          <h2 class="text-4xl font-black text-[var(--text-primary)] tracking-tight leading-none">
+      <div class="flex flex-col gap-4 border-b border-[var(--border-light)] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex h-5 w-5 items-center justify-center rounded-[7px] bg-[var(--color-primary-50)]">
+              <Icon name="i-ph-bookmarks-fill" class="h-3 w-3 text-[var(--color-primary-600)]" />
+            </span>
+            <p class="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+              {{ t("pages.savedPostsPage.listEyebrow") }}
+            </p>
+          </div>
+          <h2 class="mt-1 text-[1.55rem] font-extrabold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[1.9rem]">
             {{ t("pages.savedPostsPage.listTitle", { count: visibleSavedPosts.length }) }}
           </h2>
-          <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] italic max-w-2xl px-0.5 opacity-70">
+          <p class="mt-1.5 max-w-2xl text-[13.5px] leading-[1.65] text-[var(--text-secondary)]">
             {{ t("pages.savedPostsPage.listDescription") }}
           </p>
         </div>
 
         <UButton
           to="/search"
-          size="xl"
-          class="h-14 rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-600/20 transition-all hover:bg-primary-700 active:scale-95 px-10"
+          color="primary"
+          variant="solid"
+          size="lg"
+          class="h-11 shrink-0 rounded-[var(--radius-full)] px-5 text-[13.5px] font-bold shadow-[var(--shadow-brand)] transition-all duration-200 hover:-translate-y-0.5"
         >
-          <template #leading>
-            <Icon name="i-ph-magnifying-glass-duotone" class="h-5 w-5" />
-          </template>
+          <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />
           {{ t("pages.savedPostsPage.findMore") }}
         </UButton>
       </div>
 
-      <div class="relative z-10 divide-y divide-secondary-100/30">
+      <div class="divide-y divide-[var(--border-light)]">
         <div 
           v-for="item in visibleSavedPosts" 
           :key="item.id"
-          class="p-6 sm:p-12 transition-all hover:bg-primary-50/10 group/item"
+          class="p-4 transition-all hover:bg-[var(--color-primary-50)]/40 sm:p-5"
         >
           <SavedPostCard
             :entry="item"
@@ -230,3 +264,16 @@ useSeoMeta({
   description: () => t("pages.savedPostsPage.seoDescription"),
 })
 </script>
+
+<style scoped>
+.saved-posts-hero-bg {
+  background: linear-gradient(135deg, #1a1f8e 0%, #2d3ed4 30%, #4f46e5 62%, #7c3aed 100%);
+}
+
+.saved-posts-hero-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+</style>
