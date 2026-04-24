@@ -89,12 +89,23 @@
                   :key="`${item.label}-${item.to}`"
                   :to="item.to"
                   class="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:bg-white/5"
+                  :class="isNavItemActive(item.to) ? 'bg-primary-600/12 ring-1 ring-primary-500/30' : ''"
                   @click="handleOpenChange(false)"
                 >
-                  <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-white/5 transition-all group-hover:border-primary-500/50 group-hover:bg-primary-600/10">
-                    <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5 w-5 text-white/40 group-hover:text-primary-400" />
+                  <div
+                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-white/5 transition-all group-hover:border-primary-500/50 group-hover:bg-primary-600/10"
+                    :class="isNavItemActive(item.to) ? 'border-primary-500/50 bg-primary-600/10' : ''"
+                  >
+                    <Icon
+                      :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')"
+                      class="h-5 w-5 text-white/40 group-hover:text-primary-400"
+                      :class="isNavItemActive(item.to) ? 'text-primary-400' : ''"
+                    />
                   </div>
-                  <span class="text-xs font-black uppercase tracking-widest text-white/70 group-hover:text-white">{{ $t(item.label) }}</span>
+                  <span
+                    class="text-xs font-black uppercase tracking-widest text-white/70 group-hover:text-white"
+                    :class="isNavItemActive(item.to) ? 'text-primary-300' : ''"
+                  >{{ $t(item.label) }}</span>
                 </NuxtLink>
               </div>
             </div>
@@ -108,18 +119,22 @@
                   :key="item.label"
                   :to="item.to"
                   class="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:bg-white/5"
-                  :class="item.label.includes('logout') ? 'hover:bg-rose-500/10' : ''"
+                  :class="item.label.includes('logout') ? 'hover:bg-rose-500/10' : (isNavItemActive(item.to) ? 'bg-primary-600/12 ring-1 ring-primary-500/30' : '')"
                   @click="handleOpenChange(false)"
                 >
                   <div
                     class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/5 bg-white/5 transition-all"
-                    :class="item.label.includes('logout') ? 'group-hover:border-rose-500/50 group-hover:text-rose-400' : 'group-hover:border-primary-500/50 group-hover:text-primary-400'"
+                    :class="item.label.includes('logout') ? 'group-hover:border-rose-500/50 group-hover:text-rose-400' : (isNavItemActive(item.to) ? 'border-primary-500/50 bg-primary-600/10 text-primary-400' : 'group-hover:border-primary-500/50 group-hover:text-primary-400')"
                   >
-                    <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5 w-5 text-white/40" />
+                    <Icon
+                      :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')"
+                      class="h-5 w-5 text-white/40"
+                      :class="!item.label.includes('logout') && isNavItemActive(item.to) ? 'text-primary-400' : ''"
+                    />
                   </div>
                   <span
                     class="text-xs font-black uppercase tracking-widest text-white/70"
-                    :class="item.label.includes('logout') ? 'group-hover:text-rose-400' : 'group-hover:text-white'"
+                    :class="item.label.includes('logout') ? 'group-hover:text-rose-400' : (isNavItemActive(item.to) ? 'text-primary-300' : 'group-hover:text-white')"
                   >{{ $t(item.label) }}</span>
                 </NuxtLink>
               </div>
@@ -146,6 +161,7 @@
 </template>
 
 <script setup lang="ts">
+const route = useRoute()
 const modelValue = defineModel<boolean>({ default: false })
 const props = defineProps<{
   open?: boolean
@@ -161,6 +177,19 @@ const { isWide } = useAppBreakpoints()
 const controlledOpen = computed(() => props.open ?? modelValue.value)
 
 const drawerOpen = computed(() => Boolean(controlledOpen.value) && !isWide.value)
+
+function isNavItemActive(to: string) {
+  const normalized = to.split("?")[0].split("#")[0]
+
+  if (normalized === "/home") return route.path === "/" || route.path === "/home"
+  if (normalized === "/products") return route.path === "/products" || route.path === "/my-products" || route.path === "/new-product" || route.path.startsWith("/edit-product/")
+  if (normalized === "/events") return route.path === "/events" || route.path.startsWith("/events/")
+  if (normalized === "/groups") return route.path === "/groups" || route.path === "/suggested-groups" || route.path === "/joined_groups" || route.path === "/create-group" || route.path.startsWith("/g/") || route.path.startsWith("/group-setting/")
+  if (normalized === "/pages") return route.path === "/pages" || route.path === "/suggested-pages" || route.path === "/liked-pages" || route.path === "/create-page" || route.path.startsWith("/p/") || route.path.startsWith("/page-setting/")
+  if (to.includes("mine=1")) return route.path === "/blogs" && route.query.mine === "1"
+
+  return route.path === normalized
+}
 
 function handleOpenChange(value: boolean) {
   modelValue.value = value
