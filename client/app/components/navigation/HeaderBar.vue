@@ -68,7 +68,7 @@
               :aria-label="$t(item.label)"
             >
               <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5" />
-              <span v-if="item.logoBadge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-white px-1 text-[8px] font-black text-primary-600 shadow-xl ring-1 ring-white/20">
+              <span v-if="item.logoBadge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-white px-1 text-[8px] font-black text-secondary-900 shadow-xl ring-1 ring-white/20">
                 {{ item.logoBadge }}
               </span>
               <span v-if="item.badge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-rose-500 px-1 text-[8px] font-black text-white shadow-xl ring-1 ring-white/20">

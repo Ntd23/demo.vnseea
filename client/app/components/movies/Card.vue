@@ -11,7 +11,7 @@
           <span v-if="movie.isPremiere" class="rounded-full bg-[#fffbeb]/92 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#b45309]">
             {{ $t("pages.moviesPage.badgePremiere") }}
           </span>
-          <span v-if="movie.isEditorsPick" class="rounded-full bg-white/88 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[var(--color-primary-700)]">
+          <span v-if="movie.isEditorsPick" class="rounded-full bg-white/88 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[var(--text-primary)]">
             {{ $t("pages.moviesPage.badgeEditorsPick") }}
           </span>
         </div>
@@ -47,7 +47,7 @@
       </p>
 
       <div class="mt-3 flex flex-wrap gap-2">
-        <span v-for="tag in movie.tags" :key="tag" class="rounded-full bg-[var(--color-primary-50)] px-3 py-1.5 text-[11px] font-black text-[var(--color-primary-600)]">
+        <span v-for="tag in movie.tags" :key="tag" class="rounded-full bg-[var(--color-primary-50)] px-3 py-1.5 text-[11px] font-black text-[var(--text-primary)]">
           {{ tag }}
         </span>
       </div>
@@ -57,7 +57,7 @@
           <p class="text-[10px] font-black uppercase tracking-[0.16em] text-[var(--text-tertiary)]">{{ directorLabel }}</p>
           <p class="truncate text-[13px] font-extrabold text-[var(--text-primary)]">{{ movie.director }}</p>
         </div>
-        <Icon name="i-ph-clapperboard-fill" class="h-5 w-5 shrink-0 text-[var(--color-primary-600)]" />
+        <Icon name="i-ph-clapperboard-fill" class="h-5 w-5 shrink-0 text-[var(--text-primary)]" />
       </div>
 
       <div class="mt-4 flex flex-col gap-2 sm:flex-row">
@@ -70,7 +70,7 @@
         </NuxtLink>
         <NuxtLink
           :to="movie.companionTo"
-          class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-4 text-[12px] font-black text-[var(--color-primary-700)] sm:flex-1"
+          class="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-4 text-[12px] font-black text-[var(--text-primary)] sm:flex-1"
         >
           <Icon name="i-ph-newspaper-fill" class="h-4 w-4" />
           {{ secondaryLabel }}

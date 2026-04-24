@@ -50,7 +50,7 @@
       </div>
 
       <div class="space-y-2">
-        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 group-hover:text-primary-500 transition-colors pl-0.5">
+        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 group-hover:text-secondary-900 transition-colors pl-0.5">
           {{ currencyLabel }}
         </p>
         <h3 class="pr-20 text-2xl font-black leading-tight tracking-tight text-secondary-950 group-hover:text-primary-950 transition-colors line-clamp-1">

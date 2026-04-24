@@ -15,7 +15,7 @@
 
       <div class="min-w-0 flex-1 pt-1">
         <div class="flex flex-wrap items-center gap-2">
-          <h3 class="text-lg font-black text-secondary-900 tracking-tight group-hover:text-primary-600 transition-colors">
+          <h3 class="text-lg font-black text-secondary-900 tracking-tight group-hover:text-secondary-900 transition-colors">
             {{ result.title }}
           </h3>
 
@@ -29,7 +29,7 @@
           />
         </div>
 
-        <p class="mt-1 text-[11px] font-bold uppercase tracking-widest text-primary-600">
+        <p class="mt-1 text-[11px] font-bold uppercase tracking-widest text-secondary-900">
           {{ result.subtitle }}
         </p>
       </div>
@@ -71,7 +71,7 @@
           size="xs"
           variant="ghost"
           color="primary"
-          class="rounded-full px-0 font-black text-[10px] uppercase group-hover:text-primary-600"
+          class="rounded-full px-0 font-black text-[10px] uppercase group-hover:text-secondary-900"
         />
       </div>
     </div>

@@ -31,11 +31,11 @@
         size="xl"
         :ui="{
           trigger: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-black text-xs uppercase tracking-widest text-secondary-900',
-          icon: { base: 'text-primary-500 h-5 w-5' }
+          icon: { base: 'text-secondary-900 h-5 w-5' }
         }"
       >
         <template #leading>
-          <Icon name="i-ph-list-bullets-duotone" class="h-5 w-5 text-primary-500" />
+          <Icon name="i-ph-list-bullets-duotone" class="h-5 w-5 text-secondary-900" />
         </template>
       </USelectMenu>
 
@@ -51,7 +51,7 @@
         }"
       >
         <template #leading>
-          <Icon :name="field.key.includes('password') ? 'i-ph-lock-duotone' : (field.key.includes('email') ? 'i-ph-envelope-duotone' : 'i-ph-pencil-duotone')" class="h-5 w-5 text-primary-500" />
+          <Icon :name="field.key.includes('password') ? 'i-ph-lock-duotone' : (field.key.includes('email') ? 'i-ph-envelope-duotone' : 'i-ph-pencil-duotone')" class="h-5 w-5 text-secondary-900" />
         </template>
       </UInput>
     </UFormGroup>

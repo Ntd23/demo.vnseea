@@ -124,7 +124,7 @@
       
       <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 p-10 sm:p-12 sm:flex-row sm:items-center sm:justify-between">
         <div class="space-y-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
             {{ t("pages.savedPostsPage.listEyebrow") }}
           </p>
           <h2 class="text-4xl font-black text-secondary-900 tracking-tight leading-none">

@@ -1,11 +1,11 @@
 <template>
   <aside class="surface-card p-6 xl:w-[360px] xl:max-w-[360px] xl:shrink-0 flex flex-col ring-1 ring-secondary-100 shadow-xl min-h-[600px]">
     <div class="px-2 space-y-4 mb-8">
-      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500">
+      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)]">
         {{ t("pages.settingsPage.sidebarEyebrow") || 'Account Center' }}
       </p>
       <div class="space-y-1">
-        <h2 class="text-3xl font-black text-secondary-900 tracking-tighter leading-none">
+        <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter leading-none">
           {{ t("pages.settingsPage.sidebarTitle") }}
         </h2>
         <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
@@ -22,10 +22,10 @@
         class="group flex w-full min-w-0 items-center gap-4 rounded-2xl px-4 py-4 transition-all duration-300 border border-transparent"
         :class="page.slug === activeSlug 
           ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm shadow-primary-500/5' 
-          : 'text-secondary-500 hover:bg-secondary-50 hover:text-primary-600'"
+          : 'text-[var(--text-primary)] hover:bg-secondary-50 hover:text-primary-600'"
       >
         <div 
-          :class="page.slug === activeSlug ? 'bg-white border-primary-200 text-primary-600 shadow-md ring-1 ring-primary-100' : 'bg-white border-secondary-100 text-secondary-400 group-hover:border-primary-200 group-hover:text-primary-600'"
+          :class="page.slug === activeSlug ? 'bg-white border-primary-200 text-[var(--icon-primary)] shadow-md ring-1 ring-primary-100' : 'bg-white border-secondary-100 text-[var(--icon-primary)] group-hover:border-primary-200 group-hover:text-primary-600'"
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] transition-all duration-300 border shadow-sm"
         >
           <Icon :name="page.slug === activeSlug ? page.icon : page.icon.replace('-fill', '-duotone')" class="h-6 w-6" />

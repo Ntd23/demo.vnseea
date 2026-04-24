@@ -5,7 +5,7 @@
   >
     <div class="space-y-8">
       <div class="flex items-center justify-between">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
           {{ title }}
         </p>
         <Icon name="i-ph-lightbulb-duotone" class="h-6 w-6 text-primary-300" />

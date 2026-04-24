@@ -21,7 +21,7 @@
         <section class="surface-card p-8 sm:p-10 group overflow-hidden border-none ring-1 ring-secondary-100 shadow-xl relative bg-white">
           <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between relative z-10 mb-10 pb-8 border-b border-secondary-50">
             <div class="space-y-2">
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">{{ $t("pages.livePage.setupEyebrow") }}</p>
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900">{{ $t("pages.livePage.setupEyebrow") }}</p>
               <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">{{ $t("pages.livePage.setupTitle") }}</h2>
               <p class="text-sm font-medium text-secondary-500">{{ $t("pages.livePage.setupDescription") }}</p>
             </div>
@@ -43,7 +43,7 @@
               :key="item.label" 
               class="surface-card p-6 ring-1 ring-secondary-50 bg-secondary-50/10 hover:bg-white hover:ring-primary-100 hover:shadow-xl transition-all duration-500 group/readiness"
             >
-              <div class="h-12 w-12 flex items-center justify-center rounded-2xl bg-white text-primary-500 shadow-sm ring-1 ring-secondary-100 mb-6 group-hover/readiness:scale-110 transition-transform duration-500">
+              <div class="h-12 w-12 flex items-center justify-center rounded-2xl bg-white text-secondary-900 shadow-sm ring-1 ring-secondary-100 mb-6 group-hover/readiness:scale-110 transition-transform duration-500">
                 <Icon :name="item.icon.replace('-fill', '-duotone')" class="h-7 w-7" />
               </div>
               <p class="text-[14px] font-black uppercase tracking-wider text-secondary-900 mb-2">{{ item.label }}</p>

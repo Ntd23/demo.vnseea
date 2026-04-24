@@ -20,7 +20,7 @@
             type="button"
             color="neutral"
             size="lg"
-            class="justify-center rounded-full bg-white text-[var(--color-primary-600)]"
+            class="justify-center rounded-full bg-white text-[var(--text-primary)]"
             @click="$emit('openPost')"
           >
             <Icon name="i-ph-briefcase-fill" class="mr-1.5 h-4 w-4" />

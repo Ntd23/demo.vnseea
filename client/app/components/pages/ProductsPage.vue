@@ -83,7 +83,7 @@
             :ui="{ 
               rounded: 'rounded-[2.5rem]', 
               base: 'h-18 lg:h-20 text-xl font-bold bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-primary-500 hover:ring-primary-200 transition-all pl-16 px-10',
-              icon: { leading: { wrapper: 'left-6', base: 'h-7 w-7 text-primary-500' } }
+              icon: { leading: { wrapper: 'left-6', base: 'h-7 w-7 text-secondary-900' } }
             }"
             :placeholder="$t('pages.productsPage.searchPlaceholder')"
           />
@@ -99,7 +99,7 @@
               :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
             >
               <template #leading>
-                <Icon name="i-ph-sort-ascending-duotone" class="h-6 w-6 text-primary-500" />
+                <Icon name="i-ph-sort-ascending-duotone" class="h-6 w-6 text-secondary-900" />
               </template>
             </USelectMenu>
 
@@ -113,7 +113,7 @@
               :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
             >
               <template #leading>
-                <Icon name="i-ph-tag-duotone" class="h-6 w-6 text-primary-500" />
+                <Icon name="i-ph-tag-duotone" class="h-6 w-6 text-secondary-900" />
               </template>
             </USelectMenu>
 
@@ -127,7 +127,7 @@
               :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
             >
               <template #leading>
-                <Icon name="i-ph-navigation-arrow-duotone" class="h-6 w-6 text-primary-500" />
+                <Icon name="i-ph-navigation-arrow-duotone" class="h-6 w-6 text-secondary-900" />
               </template>
             </USelectMenu>
 
@@ -172,7 +172,7 @@
       <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/results:opacity-100 transition-opacity duration-1000" />
       
       <div class="relative z-10 space-y-3">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
           {{ $t("pages.productsPage.results") }}
         </p>
         <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
@@ -180,11 +180,11 @@
         </h2>
         <div class="flex items-center gap-4 text-[11px] font-black uppercase tracking-widest text-secondary-400 pl-1">
           <span class="flex items-center gap-2">
-            <Icon name="i-ph-package-duotone" class="h-4 w-4 text-primary-500" />
+            <Icon name="i-ph-package-duotone" class="h-4 w-4 text-secondary-900" />
             {{ visibleProducts.length }} {{ $t("pages.productsPage.matchingProducts", { count: visibleProducts.length, sort: '' }).split(' ')[1] }}
           </span>
           <span class="w-1.5 h-1.5 rounded-full bg-secondary-200" />
-          <span class="text-primary-600">{{ currentSortLabel }}</span>
+          <span class="text-secondary-900">{{ currentSortLabel }}</span>
         </div>
       </div>
 
@@ -270,7 +270,7 @@
         <div class="flex flex-1 flex-col p-7 sm:p-8 xl:p-9">
           <div class="min-w-0 space-y-3">
             <div class="space-y-2">
-              <p class="pl-0.5 text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 transition-colors group-hover:text-primary-500">
+              <p class="pl-0.5 text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 transition-colors group-hover:text-secondary-900">
                 {{ product.seller }}
               </p>
               <h3 class="line-clamp-2 min-h-[4.2rem] text-[1.85rem] font-black leading-[1.02] tracking-tight text-secondary-950 transition-colors group-hover:text-primary-950 sm:min-h-[4.8rem] sm:text-[2.1rem] xl:text-[2.3rem]">
@@ -288,7 +288,7 @@
               color="white"
               variant="solid"
               size="lg"
-              class="h-13 justify-center rounded-2xl border border-secondary-100 bg-white px-5 text-[11px] font-black uppercase tracking-widest text-secondary-900 shadow-sm transition-all active:scale-[0.98] hover:bg-primary-50 hover:text-primary-600 sm:h-14"
+              class="h-13 justify-center rounded-2xl border border-secondary-100 bg-white px-5 text-[11px] font-black uppercase tracking-widest text-secondary-900 shadow-sm transition-all active:scale-[0.98] hover:bg-primary-50 hover:text-secondary-900 sm:h-14"
               icon="i-ph-chat-circle-text-duotone"
               :aria-label="$t('pages.productsPage.messageSeller')"
               :ui="{ icon: { base: 'h-5 w-5' } }"
@@ -317,7 +317,7 @@
               </p>
             </div>
 
-            <Icon name="i-ph-arrow-right-duotone" class="h-6 w-6 text-secondary-200 transition-all group-hover:translate-x-2 group-hover:text-primary-500" />
+            <Icon name="i-ph-arrow-right-duotone" class="h-6 w-6 text-secondary-200 transition-all group-hover:translate-x-2 group-hover:text-secondary-900" />
           </div>
         </div>
       </article>

@@ -22,7 +22,7 @@
         :key="item.label"
         class="surface-card p-6 border-secondary-100 flex flex-col justify-center"
       >
-        <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
+        <p class="text-micro font-bold uppercase tracking-[0.2em] text-secondary-900">
           {{ item.label }}
         </p>
         <div class="mt-2 flex items-baseline gap-2">
@@ -97,7 +97,7 @@
       <section class="surface-card p-6 sm:p-8 border-secondary-100/50">
         <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div class="space-y-1">
-            <p class="text-micro font-bold uppercase tracking-widest text-primary-600">
+            <p class="text-micro font-bold uppercase tracking-widest text-secondary-900">
               {{ $t('community.search.results.label') }}
             </p>
             <h2 class="text-2xl font-black text-secondary-900 leading-tight">
@@ -167,7 +167,7 @@
             v-for="link in primaryFooterLinks"
             :key="link.label"
             :to="link.to || '/home'"
-            class="transition hover:text-primary-600"
+            class="transition hover:text-secondary-900"
           >
             {{ $t(link.label) }}
           </NuxtLink>
@@ -177,7 +177,7 @@
           variant="ghost"
           color="gray"
           size="sm"
-          class="rounded-full font-black text-secondary-500 hover:text-primary-600"
+          class="rounded-full font-black text-secondary-500 hover:text-secondary-900"
         >
           <template #leading>
             <Icon name="i-ph-globe-hemisphere-west-fill" class="h-4 w-4" />

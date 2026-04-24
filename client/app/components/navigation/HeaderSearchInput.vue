@@ -8,12 +8,12 @@
       icon="i-ph-magnifying-glass-duotone"
       :ui="{
         wrapper: 'relative',
-        base: 'h-12 w-full pl-12 pr-12 rounded-2xl border-none ring-1 ring-secondary-100 bg-secondary-50/50 text-secondary-900 transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:bg-white focus:shadow-lg focus:shadow-primary-500/10 placeholder:text-secondary-400 font-medium',
+        base: 'h-12 w-full pl-12 pr-12 rounded-2xl border-none ring-1 ring-secondary-100 bg-secondary-50/50 text-[var(--text-primary)] transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:bg-white focus:shadow-lg focus:shadow-primary-500/10 placeholder:text-secondary-400 font-medium',
         icon: {
           leading: {
             wrapper: 'absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none',
             pointer: 'pointer-events-none',
-            base: 'text-primary-500 h-5.5 w-5.5 transition-colors group-focus-within:text-primary-600'
+            base: 'text-[var(--icon-primary)] h-5.5 w-5.5 transition-colors group-focus-within:text-[var(--icon-primary)]'
           }
         }
       }"

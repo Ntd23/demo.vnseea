@@ -4,7 +4,7 @@
       class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
       :ui="{ body: 'p-4' }"
     >
-      <p id="blogs-sidebar-topics-title" class="text-label-secondary text-[var(--color-primary-600)]">
+      <p id="blogs-sidebar-topics-title" class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.blogsPage.featuredTopics") }}
       </p>
       <div class="mt-4 space-y-2.5" role="list" aria-labelledby="blogs-sidebar-topics-title">
@@ -21,7 +21,7 @@
           @click="$emit('selectCategory', topic.value)"
         >
           <span class="flex min-w-0 items-center gap-2">
-            <Icon :name="topic.icon" class="h-4 w-4 shrink-0 text-[var(--color-primary-600)]" />
+            <Icon :name="topic.icon" class="h-4 w-4 shrink-0 text-[var(--text-primary)]" />
             <span class="truncate text-[13px] font-bold text-[var(--text-primary)]">
               {{ topic.label }}
             </span>
@@ -39,7 +39,7 @@
       class="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[linear-gradient(180deg,var(--bg-surface)_0%,var(--color-primary-50)_100%)] shadow-[var(--shadow-md)]"
       :ui="{ body: 'p-4' }"
     >
-      <p id="blogs-sidebar-authors-title" class="text-label-secondary text-[var(--color-primary-600)]">
+      <p id="blogs-sidebar-authors-title" class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.blogsPage.authorsThisWeek") }}
       </p>
       <div class="mt-4 space-y-3" role="list" aria-labelledby="blogs-sidebar-authors-title">

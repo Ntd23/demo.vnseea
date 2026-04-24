@@ -31,9 +31,9 @@
             <div class="flex h-14 w-14 items-center justify-center rounded-2xl text-white shadow-xl transition-transform group-hover:scale-110 group-hover:rotate-6 shadow-primary-500/20" :style="{ background: item.accent }">
               <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-bold', '-duotone').replace('-fill', '-duotone')" class="h-6 w-6" />
             </div>
-            <h3 class="mt-6 text-xl font-black text-secondary-900 group-hover:text-primary-600 transition-colors">{{ item.title }}</h3>
+            <h3 class="mt-6 text-xl font-black text-secondary-900 group-hover:text-secondary-900 transition-colors">{{ item.title }}</h3>
             <p class="mt-2 text-[13px] font-medium leading-relaxed text-secondary-500 italic">{{ item.description }}</p>
-            <div class="mt-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-primary-500">
+            <div class="mt-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900">
               {{ t("pages.popularPage.openLink") }}
               <Icon name="i-ph-arrow-up-right-duotone" class="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
             </div>
@@ -43,7 +43,7 @@
         <section class="surface-card p-6 sm:p-8 ring-1 ring-secondary-200/50 shadow-2xl space-y-8">
           <div class="flex flex-col gap-6 border-b border-secondary-100/50 pb-8 sm:flex-row sm:items-center sm:justify-between">
             <div class="space-y-2">
-              <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+              <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
                 {{ t("pages.popularPage.resultEyebrow") }}
               </p>
               <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
@@ -81,7 +81,7 @@
                 <span class="inline-flex h-8 items-center rounded-xl bg-orange-50 px-4 text-[10px] font-black uppercase tracking-widest text-orange-600 ring-1 ring-orange-100">
                   {{ post.trendLabel }}
                 </span>
-                <div class="inline-flex h-8 items-center gap-1.5 rounded-xl bg-white px-4 text-[10px] font-black uppercase tracking-widest text-primary-500 ring-1 ring-secondary-100 shadow-sm">
+                <div class="inline-flex h-8 items-center gap-1.5 rounded-xl bg-white px-4 text-[10px] font-black uppercase tracking-widest text-secondary-900 ring-1 ring-secondary-100 shadow-sm">
                   <Icon name="i-ph-chart-line-up-duotone" class="h-3.5 w-3.5" />
                   {{ t("pages.popularPage.scoreCount", { count: formatPopularNumber(getPopularPostScore(post), locale.value) }) }}
                 </div>

@@ -50,7 +50,7 @@
               @click="$emit('focusChat')"
             >
               <template #leading>
-                <Icon name="i-ph-chat-circle-dots-duotone" class="h-6 w-6 text-primary-600" />
+                <Icon name="i-ph-chat-circle-dots-duotone" class="h-6 w-6 text-secondary-900" />
               </template>
               {{ $t("pages.livePage.openChat") }}
             </UButton>
@@ -65,7 +65,7 @@
           :key="item.label" 
           class="surface-card p-6 ring-1 ring-secondary-50 bg-white/60 hover:bg-white hover:ring-primary-200 hover:shadow-xl transition-all duration-500 group/stat"
         >
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 mb-3 transition-transform group-hover/stat:translate-x-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 mb-3 transition-transform group-hover/stat:translate-x-1">
             {{ item.label }}
           </p>
           <p class="text-3xl font-black tracking-tight text-secondary-900 mb-1">

@@ -80,7 +80,7 @@
       
       <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 pb-12 sm:flex-row sm:items-center sm:justify-between">
         <div class="space-y-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
             {{ t("pages.pokePage.listEyebrow") }}
           </p>
           <h2 class="text-4xl font-black tracking-tight text-secondary-900 leading-none">
@@ -92,7 +92,7 @@
         </div>
         
         <div class="flex items-center gap-3 bg-secondary-50 p-2 rounded-2xl ring-1 ring-secondary-100/50">
-          <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-white text-primary-600 shadow-sm">
+          <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-white text-secondary-900 shadow-sm">
             <Icon name="i-ph-hand-pointing-duotone" class="h-5 w-5" />
           </div>
           <div class="pr-4">

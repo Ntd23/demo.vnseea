@@ -8,7 +8,7 @@
         <UButton
           variant="soft"
           size="sm"
-          class="rounded-full bg-white/90 px-6 text-[9px] font-black uppercase tracking-[0.24em] text-secondary-500 ring-1 ring-secondary-100/80 transition-all shadow-[0_12px_24px_rgba(15,23,42,0.05)] hover:bg-primary-50 hover:text-primary-600"
+          class="rounded-full bg-white/90 px-6 text-[9px] font-black uppercase tracking-[0.24em] text-secondary-500 ring-1 ring-secondary-100/80 transition-all shadow-[0_12px_24px_rgba(15,23,42,0.05)] hover:bg-primary-50 hover:text-secondary-900"
           @click="$emit('load-more')"
         >
           {{ $t('pages.messagesPage.loadOlder') }}

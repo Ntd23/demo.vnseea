@@ -9,7 +9,7 @@
             <Icon name="i-ph-storefront-duotone" class="h-8 w-8" />
           </div>
           <div>
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
               {{ $t("pages.myProductsPage.eyebrow") }}
             </p>
             <h1 class="mt-2 text-4xl font-black tracking-tight text-secondary-900 leading-none">
@@ -62,7 +62,7 @@
         :key="card.label"
         class="surface-card p-8 sm:p-10 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/stats hover:shadow-3xl transition-all duration-500"
       >
-        <div class="absolute -right-4 -top-4 text-primary-500/5 group-hover/stats:scale-125 transition-transform duration-700">
+        <div class="absolute -right-4 -top-4 text-secondary-900/5 group-hover/stats:scale-125 transition-transform duration-700">
           <Icon :name="card.icon" class="h-24 w-24" />
         </div>
 

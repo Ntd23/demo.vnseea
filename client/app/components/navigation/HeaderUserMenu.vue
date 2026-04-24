@@ -4,8 +4,8 @@
     :ui="{
       width: 'w-64',
       item: {
-        active: 'bg-primary-50 text-primary-600',
-        inactive: 'text-secondary-600 hover:bg-primary-50/50 hover:text-primary-600',
+        active: 'bg-primary-50 text-secondary-900',
+        inactive: 'text-secondary-600 hover:bg-primary-50/50 hover:text-secondary-900',
         base: 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-black transition-all group/item',
         padding: 'px-3 py-2.5',
         icon: {

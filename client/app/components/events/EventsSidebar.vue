@@ -3,7 +3,7 @@
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ $t("pages.eventsPage.latestSchedule") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -50,7 +50,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.eventsPage.featuredCategories") }}
       </p>
 
@@ -81,7 +81,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.eventsPage.recentAttendees") }}
       </p>
 

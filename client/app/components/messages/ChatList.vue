@@ -10,7 +10,7 @@
             :placeholder="$t('pages.messagesPage.searchPlaceholder')"
             :ui="{
               base: 'h-14 rounded-[20px] bg-secondary-50/75 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-semibold text-secondary-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]',
-              icon: { leading: { pointer: 'pointer-events-none', base: 'text-primary-500' } }
+              icon: { leading: { pointer: 'pointer-events-none', base: 'text-secondary-900' } }
             }"
           >
             <template #trailing>
@@ -36,7 +36,7 @@
           :key="tab.id"
           class="flex min-w-0 items-center justify-center gap-2 rounded-[18px] h-12 px-3 transition-all duration-300 border font-black text-[10px] uppercase tracking-[0.22em]"
           :class="activeTab === tab.id 
-            ? 'bg-primary-50 border-primary-100 text-primary-700 shadow-[0_12px_28px_rgba(14,165,233,0.10)]' 
+            ? 'bg-primary-50 border-primary-100 text-secondary-900 shadow-[0_12px_28px_rgba(14,165,233,0.10)]' 
             : 'bg-secondary-50/80 border-secondary-100/70 text-secondary-400 hover:bg-white hover:text-secondary-700 hover:border-secondary-200'"
           type="button"
           @click="activeTab = tab.id"
@@ -54,10 +54,10 @@
         <div class="relative space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="space-y-2">
-              <p class="text-[11px] font-black uppercase tracking-[0.2em] text-primary-700">{{ $t('pages.messagesPage.composeTitle') }}</p>
+              <p class="text-[11px] font-black uppercase tracking-[0.2em] text-secondary-900">{{ $t('pages.messagesPage.composeTitle') }}</p>
               <div class="h-1.5 w-[86px] rounded-full bg-gradient-to-r from-primary-500 via-sky-500 to-primary-300" />
             </div>
-            <span class="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-primary-50/90 px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-primary-700 shadow-[0_10px_24px_rgba(14,165,233,0.08)]">
+            <span class="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-primary-50/90 px-4 py-2 text-[10px] font-black uppercase tracking-[0.08em] text-secondary-900 shadow-[0_10px_24px_rgba(14,165,233,0.08)]">
               <span class="h-2 w-2 rounded-full bg-primary-500" />
               {{ tabs.find(tab => tab.id === activeTab)?.label }}
             </span>
@@ -75,7 +75,7 @@
                   :placeholder="$t('pages.messagesPage.recipientPlaceholder')"
                   :ui="{
                     base: 'h-[3.5rem] w-full rounded-[22px] bg-white/98 px-3 ring-1 ring-secondary-200/75 shadow-[0_8px_20px_rgba(148,163,184,0.06)] transition-all duration-300 text-sm font-semibold text-secondary-900 placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300/70 focus:shadow-[0_12px_28px_rgba(14,165,233,0.10)]',
-                    icon: { leading: { pointer: 'pointer-events-none', base: 'text-primary-500' } }
+                    icon: { leading: { pointer: 'pointer-events-none', base: 'text-secondary-900' } }
                   }"
                 />
               </UFormGroup>
@@ -116,11 +116,11 @@
                 :options="[$t('pages.messagesPage.important'), $t('pages.messagesPage.work')]"
                 :ui="{
                   trigger: 'h-12 rounded-[18px] bg-secondary-50/75 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 px-1 text-sm font-semibold text-secondary-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]',
-                  icon: { base: 'text-primary-500 h-5 w-5' }
+                  icon: { base: 'text-secondary-900 h-5 w-5' }
                 }"
               >
                 <template #leading>
-                  <Icon name="i-ph-tag-duotone" class="h-5 w-5 text-primary-500" />
+                  <Icon name="i-ph-tag-duotone" class="h-5 w-5 text-secondary-900" />
                 </template>
               </USelectMenu>
 
@@ -143,7 +143,7 @@
         <div class="rounded-[22px] bg-white/75 px-4 py-4 ring-1 ring-secondary-100/80 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
           <div class="space-y-3">
             <div class="min-w-0 space-y-1.5">
-              <p class="text-[10px] font-black uppercase tracking-[0.28em] text-primary-500">{{ $t('pages.messagesPage.users') }}</p>
+              <p class="text-[10px] font-black uppercase tracking-[0.28em] text-secondary-900">{{ $t('pages.messagesPage.users') }}</p>
               <h3 class="text-[1.65rem] font-black leading-[1.05] text-secondary-900 tracking-tighter">{{ $t('pages.messagesPage.resultCount', { count: users.length }) }}</h3>
             </div>
             <UButton

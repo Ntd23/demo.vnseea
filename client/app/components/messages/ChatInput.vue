@@ -4,7 +4,7 @@
       <div class="hidden shrink-0 items-center gap-2 rounded-[18px] bg-secondary-50/80 p-1.5 ring-1 ring-secondary-100 sm:flex">
         <UButton
           variant="soft"
-          class="h-10 w-10 shrink-0 rounded-[14px] bg-white text-secondary-400 ring-1 ring-secondary-100 transition-all shadow-none hover:bg-primary-50 hover:text-primary-600 justify-center"
+          class="h-10 w-10 shrink-0 rounded-[14px] bg-white text-secondary-400 ring-1 ring-secondary-100 transition-all shadow-none hover:bg-primary-50 hover:text-secondary-900 justify-center"
           square
         >
           <Icon name="i-ph-plus-circle-duotone" class="h-5 w-5" />
@@ -13,7 +13,7 @@
           v-for="icon in ['i-ph-image-duotone', 'i-ph-chat-circle-dots-duotone', 'i-ph-gif-duotone']"
           :key="icon"
           variant="soft"
-          class="h-10 w-10 rounded-[14px] bg-transparent text-secondary-400 transition-all shadow-none hover:bg-white hover:text-primary-600 justify-center"
+          class="h-10 w-10 rounded-[14px] bg-transparent text-secondary-400 transition-all shadow-none hover:bg-white hover:text-secondary-900 justify-center"
           square
         >
           <Icon :name="icon" class="h-4 w-4" />

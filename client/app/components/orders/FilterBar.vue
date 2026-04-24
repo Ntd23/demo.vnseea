@@ -2,7 +2,7 @@
   <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl">
     <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between border-b border-secondary-50 pb-6">
       <div class="space-y-1">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
           {{ $t("orders.filter.title") }}
         </p>
         <h2 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
@@ -38,7 +38,7 @@
         class="rounded-xl font-black text-[10px] uppercase tracking-widest px-4 py-2.5 transition-all active:scale-95 border"
         :class="activeFilterModel === filter.key
           ? 'bg-primary-600 text-white border-primary-500 shadow-lg shadow-primary-500/30'
-          : 'bg-white text-secondary-500 border-secondary-100 hover:border-primary-200 hover:bg-primary-50/10 hover:text-primary-600'"
+          : 'bg-white text-secondary-500 border-secondary-100 hover:border-primary-200 hover:bg-primary-50/10 hover:text-secondary-900'"
         @click="activeFilterModel = filter.key"
       >
         <span>{{ $t(filter.label) }}</span>
@@ -46,7 +46,7 @@
           variant="soft"
           :color="activeFilterModel === filter.key ? 'white' : 'primary'"
           class="rounded-lg font-black text-[9px] min-w-[20px] justify-center transition-colors px-1.5 py-0.5"
-          :class="activeFilterModel === filter.key ? 'bg-white/20 text-white' : 'bg-primary-50 text-primary-600'"
+          :class="activeFilterModel === filter.key ? 'bg-white/20 text-white' : 'bg-primary-50 text-secondary-900'"
         >
           {{ filter.count }}
         </UBadge>

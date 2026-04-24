@@ -12,7 +12,7 @@
   >
     <UForm :state="form" class="space-y-5" @submit="submit">
       <div class="space-y-2">
-        <p class="text-label-secondary text-[var(--color-primary-600)]">
+        <p class="text-label-secondary text-[var(--text-primary)]">
           {{ $t("pages.jobsPage.postEyebrow") }}
         </p>
         <p class="text-body-secondary">

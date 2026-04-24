@@ -13,7 +13,7 @@
             <span class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-white bg-sky-500 shadow-sm" />
           </div>
           <div class="min-w-0 space-y-1">
-            <h3 class="truncate text-[13px] font-black uppercase tracking-[0.18em] text-secondary-900 transition-colors group-hover:text-primary-600">{{ $t('pages.messagesPage.contactName') }}</h3>
+            <h3 class="truncate text-[13px] font-black uppercase tracking-[0.18em] text-secondary-900 transition-colors group-hover:text-secondary-900">{{ $t('pages.messagesPage.contactName') }}</h3>
             <div class="flex items-center gap-2">
               <span class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
               <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-secondary-400">{{ $t('pages.messagesPage.activeNow') }}</p>

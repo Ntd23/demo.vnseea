@@ -11,7 +11,7 @@
             <div class="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between border-b border-secondary-50 pb-6">
               <div class="space-y-1">
                 <div class="flex flex-wrap items-center gap-3">
-                  <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+                  <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
                     {{ order.orderNumber }}
                   </p>
                   <UBadge
@@ -46,11 +46,11 @@
 
             <div class="grid gap-4 sm:grid-cols-3">
               <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/info hover:bg-white transition-colors duration-500">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
                   {{ $t("orders.detail.recipient") }}
                 </p>
                 <div class="space-y-1">
-                  <p class="text-sm font-black text-secondary-900 group-hover/info:text-primary-700 transition-colors">
+                  <p class="text-sm font-black text-secondary-900 group-hover/info:text-secondary-900 transition-colors">
                     {{ order.recipientName }}
                   </p>
                   <p class="text-[11px] font-medium leading-relaxed text-secondary-500">
@@ -60,11 +60,11 @@
               </div>
 
               <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/ship-provider hover:bg-white transition-colors duration-500">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
                   {{ $t("orders.detail.shippingProvider") }}
                 </p>
                 <div class="space-y-1">
-                  <p class="text-sm font-black text-secondary-900 group-hover/ship-provider:text-primary-700 transition-colors">
+                  <p class="text-sm font-black text-secondary-900 group-hover/ship-provider:text-secondary-900 transition-colors">
                     {{ order.shippingProvider }}
                   </p>
                   <p class="text-[11px] font-medium leading-relaxed text-secondary-500 uppercase tracking-widest">
@@ -74,11 +74,11 @@
               </div>
 
               <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/est hover:bg-white transition-colors duration-500">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
                   {{ $t("orders.detail.estimatedProcess") }}
                 </p>
                 <div class="space-y-1">
-                  <p class="text-sm font-black text-secondary-900 group-hover/est:text-primary-700 transition-colors">
+                  <p class="text-sm font-black text-secondary-900 group-hover/est:text-secondary-900 transition-colors">
                     {{ $t(order.deliveryWindow) }}
                   </p>
                   <p class="text-[11px] font-medium leading-relaxed text-secondary-500 italic">
@@ -92,7 +92,7 @@
           <section class="surface-card p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-secondary-50 pb-6">
               <div class="space-y-1">
-                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
                   {{ $t("orders.card.productsInOrder") }}
                 </p>
                 <h3 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
@@ -119,7 +119,7 @@
 
           <div class="grid gap-5 xl:grid-cols-2">
             <section class="surface-card p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
                 {{ $t("orders.detail.deliveryAndNotes") }}
               </p>
 
@@ -166,7 +166,7 @@
           v-else
           class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl"
         >
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
             {{ $t("orders.sidebar.tasks") }}
           </p>
           <p class="text-sm font-medium leading-relaxed text-secondary-500">

@@ -32,7 +32,7 @@
           <span
             v-for="tag in tagList"
             :key="tag"
-            class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2.5 py-1 text-[11px] font-bold text-[var(--color-primary-600)]"
+            class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2.5 py-1 text-[11px] font-bold text-[var(--text-primary)]"
           >
             #{{ tag }}
           </span>
@@ -44,7 +44,7 @@
       class="rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
       :ui="{ body: 'p-5' }"
     >
-      <p id="create-blog-checklist-title" class="text-label-secondary text-[var(--color-primary-600)]">
+      <p id="create-blog-checklist-title" class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.createBlogPage.checklist") }}
       </p>
       <div class="mt-4 space-y-3" role="list" aria-labelledby="create-blog-checklist-title">

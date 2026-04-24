@@ -32,7 +32,7 @@
             }"
           />
         </div>
-        <p class="truncate text-[11px] font-black text-secondary-700 group-hover:text-primary-600 transition-colors leading-none pb-1">{{ friend.name }}</p>
+        <p class="truncate text-[11px] font-black text-secondary-700 group-hover:text-secondary-900 transition-colors leading-none pb-1">{{ friend.name }}</p>
       </div>
     </div>
   </div>

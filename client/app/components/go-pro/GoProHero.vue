@@ -40,7 +40,7 @@
             color="neutral"
             variant="solid"
             size="xl"
-            class="rounded-full bg-white text-[var(--color-primary-600)]"
+            class="rounded-full bg-white text-[var(--text-primary)]"
             @click="emit('selectFeatured')"
           >
             <Icon name="i-ph-crown-simple-fill" class="mr-2 h-4 w-4" />

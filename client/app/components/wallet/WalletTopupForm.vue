@@ -52,7 +52,7 @@
           @click="form.method = method.value"
         >
           <div 
-            :class="form.method === method.value ? 'bg-primary-500 text-white' : 'bg-secondary-100 text-secondary-500 group-hover:bg-primary-100 group-hover:text-primary-600'"
+            :class="form.method === method.value ? 'bg-primary-500 text-white' : 'bg-secondary-100 text-secondary-500 group-hover:bg-primary-100 group-hover:text-secondary-900'"
             class="flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
           >
             <Icon :name="method.icon" class="h-6 w-6" />

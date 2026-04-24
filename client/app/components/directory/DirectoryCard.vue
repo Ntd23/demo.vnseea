@@ -59,7 +59,7 @@
           <p class="text-[12px] font-semibold text-[var(--text-secondary)]">
             {{ item.categoryLabel }}
           </p>
-          <span class="inline-flex items-center gap-1 text-[13px] font-bold text-[var(--color-primary-600)]">
+          <span class="inline-flex items-center gap-1 text-[13px] font-bold text-[var(--text-primary)]">
             {{ t("pages.directoryPage.openDirectory") }}
             <Icon name="i-ph-arrow-right-bold" class="h-4 w-4 transition group-hover:translate-x-0.5" />
           </span>

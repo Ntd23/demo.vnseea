@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between border-b border-secondary-50 pb-6">
       <div class="space-y-1">
         <div class="flex flex-wrap items-center gap-3">
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
             {{ order.orderNumber }}
           </p>
           <UBadge
@@ -46,7 +46,7 @@
         <!-- Products Section -->
         <section class="surface-card p-6 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-6 group/section hover:bg-white transition-colors duration-500">
           <div class="flex items-center justify-between gap-4 border-b border-secondary-100 pb-4">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
               {{ $t("orders.card.productsInOrder") }}
             </p>
             <p class="text-[11px] font-black uppercase tracking-tight text-secondary-400 group-hover/section:text-secondary-900 transition-colors">
@@ -65,11 +65,11 @@
 
         <!-- Shipping Section -->
         <section class="surface-card p-6 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-4 group/section hover:bg-white transition-colors duration-500">
-          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
             {{ $t("orders.card.shippingAddress") }}
           </p>
           <div class="flex gap-3 items-start">
-            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-secondary-100 text-primary-600">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-secondary-100 text-secondary-900">
               <Icon name="i-ph-map-pin-duotone" class="h-4 w-4" />
             </div>
             <p class="text-sm font-semibold leading-relaxed text-secondary-600 group-hover/section:text-secondary-900 transition-colors">
@@ -88,7 +88,7 @@
 
         <!-- Progress Tracking -->
         <section class="surface-card p-6 ring-1 ring-secondary-100 bg-white space-y-6">
-          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
             {{ $t("orders.card.orderProgress") }}
           </p>
 

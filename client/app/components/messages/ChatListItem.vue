@@ -19,7 +19,7 @@
         />
       </div>
       <div class="min-w-0 space-y-1">
-        <p class="truncate text-[12px] font-black uppercase tracking-[0.08em] text-secondary-900 transition-colors group-hover:text-primary-600">{{ name }}</p>
+        <p class="truncate text-[12px] font-black uppercase tracking-[0.08em] text-secondary-900 transition-colors group-hover:text-secondary-900">{{ name }}</p>
         <div class="flex items-center gap-2 text-secondary-400">
           <span class="h-1.5 w-1.5 rounded-full" :class="isOnline ? 'bg-sky-500' : 'bg-secondary-300'" />
           <p class="truncate text-[11px] font-semibold tracking-normal">{{ status }}</p>

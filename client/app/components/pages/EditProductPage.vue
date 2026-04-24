@@ -18,7 +18,7 @@
           
           <div class="relative z-10 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
             <div class="space-y-3">
-              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
                 {{ $t("pages.productEditor.editSectionEyebrow") }}
               </p>
               <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
@@ -44,7 +44,7 @@
           <div class="relative z-10 space-y-4">
             <div class="flex justify-between text-[11px] font-black text-secondary-400 uppercase tracking-[0.2em] px-1">
               <span>{{ $t('pages.productEditor.completionLabel') || 'Độ hoàn thiện' }}</span>
-              <span class="text-primary-600">{{ Math.round(completionPercent) }}%</span>
+              <span class="text-secondary-900">{{ Math.round(completionPercent) }}%</span>
             </div>
             <div class="h-3 w-full rounded-full bg-secondary-50 ring-1 ring-secondary-100 overflow-hidden shadow-inner">
               <div 

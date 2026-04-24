@@ -39,7 +39,7 @@
             </span>
           </div>
           <div class="min-w-0 py-1 flex flex-col justify-center xl:justify-start">
-            <h3 class="line-clamp-2 text-sm sm:text-base font-black leading-snug text-secondary-900 group-hover:text-primary-600 transition-colors">{{ video.title }}</h3>
+            <h3 class="line-clamp-2 text-sm sm:text-base font-black leading-snug text-secondary-900 group-hover:text-secondary-900 transition-colors">{{ video.title }}</h3>
             <p class="mt-1 text-xs font-bold text-secondary-400 uppercase tracking-tight">{{ video.author }}</p>
             <div class="mt-2 flex items-center gap-2 text-[11px] font-semibold text-secondary-400">
               <span>{{ $t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }}</span>

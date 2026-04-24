@@ -3,7 +3,7 @@
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5 sm:p-6' }">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ $t("pages.eventDetailPage.infoEyebrow") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -81,7 +81,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5 sm:p-6' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.eventDetailPage.agendaEyebrow") }}
       </p>
       <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -96,7 +96,7 @@
           :ui="{ body: 'p-4' }"
         >
           <div class="grid gap-3 sm:grid-cols-[82px_minmax(0,1fr)]">
-            <div class="inline-flex h-10 w-fit items-center justify-center rounded-[16px] bg-[var(--color-primary-50)] px-3 text-[13px] font-black text-[var(--color-primary-600)]">
+            <div class="inline-flex h-10 w-fit items-center justify-center rounded-[16px] bg-[var(--color-primary-50)] px-3 text-[13px] font-black text-[var(--text-primary)]">
               {{ agendaItem.time }}
             </div>
             <div>
@@ -115,7 +115,7 @@
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5 sm:p-6' }">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ $t("pages.eventDetailPage.attendeesEyebrow") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">

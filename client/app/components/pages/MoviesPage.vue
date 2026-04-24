@@ -29,7 +29,7 @@
             </div>
             <h3 class="mt-4 text-[1.05rem] font-black text-[var(--text-primary)]">{{ item.title }}</h3>
             <p class="mt-2 text-[13px] font-semibold leading-6 text-[var(--text-secondary)]">{{ item.description }}</p>
-            <div class="mt-4 inline-flex items-center gap-2 text-[12px] font-black text-[var(--color-primary-700)]">
+            <div class="mt-4 inline-flex items-center gap-2 text-[12px] font-black text-[var(--text-primary)]">
               {{ $t("pages.moviesPage.openLink") }}
               <Icon name="i-ph-arrow-up-right-bold" class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </div>
@@ -44,7 +44,7 @@
               <p class="mt-1 text-body-secondary">{{ $t("pages.moviesPage.resultCount", { count: filteredMovies.length }) }}</p>
             </div>
             <button
-              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-5 text-[13px] font-extrabold text-[var(--color-primary-600)] sm:w-auto"
+              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[var(--border-default)] bg-white px-5 text-[13px] font-extrabold text-[var(--text-primary)] sm:w-auto"
               type="button"
               @click="resetFilters"
             >
@@ -69,7 +69,7 @@
         </div>
 
         <div v-else class="rounded-[30px] border border-dashed border-[var(--border-default)] bg-white p-6 text-center shadow-[var(--shadow-md)] sm:p-8">
-          <Icon name="i-ph-popcorn-fill" class="mx-auto h-12 w-12 text-[var(--color-primary-600)]" />
+          <Icon name="i-ph-popcorn-fill" class="mx-auto h-12 w-12 text-[var(--text-primary)]" />
           <h3 class="mt-3 text-xl font-black text-[var(--text-primary)]">{{ $t("pages.moviesPage.emptyTitle") }}</h3>
           <p class="mt-2 text-body-secondary">{{ $t("pages.moviesPage.emptyDescription") }}</p>
         </div>

@@ -42,7 +42,7 @@
               base: 'absolute top-[4px] left-[4px] bottom-[4px] rounded-lg bg-white shadow-sm ring-1 ring-secondary-100'
             },
             tab: {
-              active: 'text-primary-600',
+              active: 'text-secondary-900',
               inactive: 'text-secondary-400 hover:text-secondary-900',
               size: 'text-xs',
               font: 'font-black uppercase tracking-widest'
@@ -60,7 +60,7 @@
     <div class="flex-1 overflow-y-auto no-scrollbar relative">
       <!-- Send Message Tab -->
       <div v-if="activeTab === 'send'" class="flex flex-col gap-5 px-5 py-6">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">{{ $t("navigation.chatWidget.content") }}</p>
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">{{ $t("navigation.chatWidget.content") }}</p>
 
         <UFormGroup :label="$t('navigation.chatWidget.sendToLabel')" class="space-y-2">
           <UInput
@@ -94,8 +94,8 @@
         <UFormGroup :label="$t('navigation.chatWidget.attachLabel')" class="space-y-2">
           <div class="flex items-center overflow-hidden rounded-xl border border-dashed border-primary-200 bg-primary-50/20 py-1 px-1">
             <label class="flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-white px-4 shadow-sm ring-1 ring-primary-100 transition hover:bg-primary-50 active:scale-95">
-              <Icon name="i-ph-paperclip-duotone" class="h-4.5 w-4.5 text-primary-600" />
-              <span class="text-xs font-black uppercase tracking-widest text-primary-700">{{ $t("navigation.chatWidget.chooseFile") }}</span>
+              <Icon name="i-ph-paperclip-duotone" class="h-4.5 w-4.5 text-secondary-900" />
+              <span class="text-xs font-black uppercase tracking-widest text-secondary-900">{{ $t("navigation.chatWidget.chooseFile") }}</span>
               <input class="hidden" type="file" @change="onFile">
             </label>
             <span class="px-3 text-[11px] font-semibold text-secondary-500 truncate italic flex-1">
@@ -161,7 +161,7 @@
 
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
-              <span class="truncate text-sm font-black text-secondary-900 group-hover/contact:text-primary-700 transition-colors">{{ contact.name }}</span>
+              <span class="truncate text-sm font-black text-secondary-900 group-hover/contact:text-secondary-900 transition-colors">{{ contact.name }}</span>
               <UBadge v-if="contact.online" variant="soft" color="primary" class="rounded-lg font-black text-[8px] uppercase tracking-widest px-1.5 py-0.5">Live</UBadge>
             </div>
             <p class="truncate text-[11px] font-medium text-secondary-400 group-hover/contact:text-secondary-500 transition-colors italic">{{ contact.status || $t("navigation.chatWidget.readyToChat") }}</p>

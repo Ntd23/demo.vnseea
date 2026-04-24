@@ -47,7 +47,7 @@
 
           <div class="space-y-4 p-4 sm:p-5">
             <div class="space-y-2">
-              <p class="text-label-secondary text-[var(--color-primary-600)]">
+              <p class="text-label-secondary text-[var(--text-primary)]">
                 {{ t("pages.gamesPage.modalPlayAreaEyebrow") }}
               </p>
               <p class="text-body-secondary">
@@ -63,7 +63,7 @@
                 <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
                   {{ t("pages.gamesPage.modalCurrentScoreLabel") }}
                 </p>
-                <p class="mt-3 text-[3rem] font-black leading-none text-[var(--color-primary-600)]">
+                <p class="mt-3 text-[3rem] font-black leading-none text-[var(--text-primary)]">
                   {{ score }}
                 </p>
                 <p class="mt-2 text-[14px] font-semibold text-[var(--text-secondary)]">
@@ -132,7 +132,7 @@
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
             {{ t("pages.gamesPage.modalStatusLabel") }}
           </p>
-          <p class="mt-2 text-[1.45rem] font-black text-[var(--color-primary-600)]">
+          <p class="mt-2 text-[1.45rem] font-black text-[var(--text-primary)]">
             {{ sessionStateLabel }}
           </p>
         </div>

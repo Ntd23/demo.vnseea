@@ -5,7 +5,7 @@
   >
     <div class="space-y-8">
       <div class="flex items-center justify-between">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
           {{ $t('pages.productEditor.checklistLabel') }}
         </p>
         <Icon name="i-ph-list-checks-duotone" class="h-6 w-6 text-primary-300" />
@@ -44,7 +44,7 @@
           <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
             {{ $t('pages.productEditor.completionLabel') }}
           </p>
-          <p class="text-[14px] font-black text-primary-600">
+          <p class="text-[14px] font-black text-secondary-900">
             {{ Math.round(donePercent) }}%
           </p>
         </div>

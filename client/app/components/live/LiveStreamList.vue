@@ -2,7 +2,7 @@
   <aside class="surface-card flex flex-col overflow-hidden border-none ring-1 ring-secondary-100 shadow-xl bg-white p-6">
     <div class="flex items-center justify-between gap-4 mb-6 px-1">
       <div class="space-y-1">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900">
           {{ $t("pages.livePage.streamsEyebrow") }}
         </p>
         <h2 class="text-xl font-black tracking-tight text-secondary-900 leading-none">
@@ -63,13 +63,13 @@
               :ui="{ rounded: 'rounded-[12px]' }"
             />
             <div class="min-w-0 space-y-1">
-              <h3 class="line-clamp-2 text-[13px] font-black leading-tight text-secondary-900 group-hover/item:text-primary-600 transition-colors uppercase tracking-tight">{{ stream.title }}</h3>
+              <h3 class="line-clamp-2 text-[13px] font-black leading-tight text-secondary-900 group-hover/item:text-secondary-900 transition-colors uppercase tracking-tight">{{ stream.title }}</h3>
               <div class="flex items-center gap-2">
                 <p class="truncate text-[10px] font-bold text-secondary-400">
                   {{ stream.host.name }}
                 </p>
                 <span class="h-1 w-1 rounded-full bg-secondary-200" />
-                <p class="text-[10px] font-black text-primary-500 uppercase tracking-widest">
+                <p class="text-[10px] font-black text-secondary-900 uppercase tracking-widest">
                   {{ $t("pages.livePage.viewerCountShort", { count: stream.viewers }) }}
                 </p>
               </div>

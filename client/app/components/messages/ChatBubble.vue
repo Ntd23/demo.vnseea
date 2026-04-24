@@ -3,7 +3,7 @@
     class="flex w-full flex-col animate-in fade-in slide-in-from-bottom-2 duration-500"
   >
     <div v-if="showTime" class="my-3 self-center sm:my-4">
-      <span class="rounded-full bg-white/92 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.24em] text-primary-500 ring-1 ring-secondary-100 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
+      <span class="rounded-full bg-white/92 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.24em] text-secondary-900 ring-1 ring-secondary-100 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
         {{ time }}
       </span>
     </div>

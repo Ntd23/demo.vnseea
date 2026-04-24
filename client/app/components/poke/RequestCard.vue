@@ -20,7 +20,7 @@
           </div>
 
           <div class="min-w-0 space-y-1">
-            <p class="truncate text-lg font-black tracking-tight text-secondary-900 group-hover:text-primary-600 transition-colors">
+            <p class="truncate text-lg font-black tracking-tight text-secondary-900 group-hover:text-secondary-900 transition-colors">
               {{ record.name }}
             </p>
             <p class="truncate text-sm font-semibold text-secondary-500">
@@ -28,7 +28,7 @@
             </p>
             <div class="flex items-center gap-2">
               <Icon name="i-ph-clock-duotone" class="h-3 w-3 text-primary-400" />
-              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900">
                 {{ record.timeLabel }}
               </p>
             </div>
@@ -53,7 +53,7 @@
         
         <div class="flex items-center justify-between gap-2">
           <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-400">{{ t("pages.pokePage.pokeActionLabel") }}</p>
-          <p class="text-[11px] font-black uppercase tracking-widest text-primary-600 truncate italic">"{{ record.contextLabel }}"</p>
+          <p class="text-[11px] font-black uppercase tracking-widest text-secondary-900 truncate italic">"{{ record.contextLabel }}"</p>
         </div>
 
         <p class="text-sm font-medium leading-relaxed text-secondary-500">

@@ -5,7 +5,7 @@
     <div class="divide-y divide-secondary-100 border border-secondary-100 rounded-2xl overflow-hidden bg-secondary-50/20">
       <div v-for="section in sections" :key="section.title" class="p-5 space-y-4 transition-colors hover:bg-white/40 group">
         <h4 class="text-[10px] font-bold uppercase tracking-widest text-secondary-400 flex items-center gap-3">
-          <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary-100 text-secondary-500 group-hover:bg-primary-50 group-hover:text-primary-600 transition-colors">
+          <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-secondary-100 text-secondary-500 group-hover:bg-primary-50 group-hover:text-secondary-900 transition-colors">
             <Icon :name="section.icon" class="h-4 w-4" />
           </div>
           {{ section.title }}
@@ -15,7 +15,7 @@
           <div v-for="item in section.items" :key="item.value" class="flex items-start gap-4">
             <Icon :name="item.icon" class="mt-1 h-5 w-5 shrink-0 text-secondary-300 group-hover:text-primary-400 transition-colors" />
             <div class="space-y-0.5">
-              <p class="text-sm font-black text-secondary-900 leading-tight group-hover:text-primary-700 transition-colors">{{ item.value }}</p>
+              <p class="text-sm font-black text-secondary-900 leading-tight group-hover:text-secondary-900 transition-colors">{{ item.value }}</p>
               <p v-if="item.sub" class="text-[11px] font-medium text-secondary-500">{{ item.sub }}</p>
             </div>
           </div>

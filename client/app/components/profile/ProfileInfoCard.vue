@@ -9,7 +9,7 @@
 
     <div class="overflow-hidden rounded-2xl border border-secondary-100 bg-secondary-50/20 divide-y divide-secondary-100/50">
       <div v-for="row in rows" :key="row.label" class="flex items-center gap-4 px-4 py-3.5 group transition-colors hover:bg-white/60">
-        <Icon :name="row.icon" class="h-5 w-5 text-secondary-400 group-hover:text-primary-500 transition-colors" />
+        <Icon :name="row.icon" class="h-5 w-5 text-secondary-400 group-hover:text-secondary-900 transition-colors" />
         <span v-if="row.left" class="flex-1 text-sm font-semibold text-secondary-800">{{ row.left }}</span>
         <template v-else>
           <span v-if="row.center" class="flex-1 text-center text-sm font-bold text-secondary-900">{{ row.center }}</span>
@@ -26,7 +26,7 @@
       <div class="absolute inset-0 flex items-center justify-center">
         <div class="relative">
           <div class="animate-ping absolute -inset-1 rounded-full bg-primary-400 opacity-30"></div>
-          <Icon name="i-ph-map-pin-fill" class="relative h-10 w-10 text-primary-600 drop-shadow-lg" />
+          <Icon name="i-ph-map-pin-fill" class="relative h-10 w-10 text-secondary-900 drop-shadow-lg" />
         </div>
       </div>
 

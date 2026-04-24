@@ -172,7 +172,7 @@
                 :disabled="!hasCurrentItem"
                 @click="emit('comment')"
               >
-                <Icon name="i-ph-chat-circle-text-fill" class="mr-2 h-4 w-4 text-[var(--color-primary-600)]" />
+                <Icon name="i-ph-chat-circle-text-fill" class="mr-2 h-4 w-4 text-[var(--text-primary)]" />
                 {{ t("feed.lightboxModal.actionComment") }}
               </UButton>
 
@@ -185,7 +185,7 @@
                 :disabled="!hasCurrentItem"
                 @click="emit('share')"
               >
-                <Icon name="i-ph-share-network-fill" class="mr-2 h-4 w-4 text-[var(--color-primary-600)]" />
+                <Icon name="i-ph-share-network-fill" class="mr-2 h-4 w-4 text-[var(--text-primary)]" />
                 {{ t("feed.lightboxModal.actionShare") }}
               </UButton>
             </div>

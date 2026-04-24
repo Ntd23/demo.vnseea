@@ -3,10 +3,10 @@
     <section class="surface-card p-6 ring-1 ring-secondary-100 shadow-xl group/hashtags">
       <div class="flex items-start justify-between gap-4">
         <div class="space-y-1">
-          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">{{ hashtagsEyebrow }}</p>
-          <h2 class="text-xl font-black tracking-tight text-secondary-900">{{ hashtagsTitle }}</h2>
+          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">{{ hashtagsEyebrow }}</p>
+          <h2 class="text-xl font-black tracking-tight text-[var(--text-primary)]">{{ hashtagsTitle }}</h2>
         </div>
-        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600 ring-1 ring-primary-100 transition-transform group-hover/hashtags:rotate-12">
+        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-[var(--icon-primary)] ring-1 ring-primary-100 transition-transform group-hover/hashtags:rotate-12">
           <Icon name="i-ph-hash-duotone" class="h-5 w-5" />
         </div>
       </div>
@@ -16,10 +16,10 @@
           v-for="item in hashtags"
           :key="item.to"
           :to="item.to"
-          class="inline-flex items-center gap-2.5 rounded-xl border border-secondary-100 bg-secondary-50/50 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-secondary-500 transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:-translate-y-0.5"
+          class="inline-flex items-center gap-2.5 rounded-xl border border-secondary-100 bg-secondary-50/50 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:-translate-y-0.5"
         >
           <span>{{ item.label }}</span>
-          <span class="rounded-lg bg-secondary-100/50 px-2 py-0.5 text-[9px] font-black text-secondary-400 group-hover:bg-primary-100 group-hover:text-primary-500">{{ item.score }}</span>
+          <span class="rounded-lg bg-secondary-100/50 px-2 py-0.5 text-[9px] font-black text-secondary-400 group-hover:bg-primary-100 group-hover:text-[var(--text-primary)]">{{ item.score }}</span>
         </NuxtLink>
       </div>
     </section>
@@ -27,8 +27,8 @@
     <section class="surface-card p-6 ring-1 ring-secondary-100 shadow-xl group/creators">
       <div class="flex items-start justify-between gap-4">
         <div class="space-y-1">
-          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">{{ creatorsEyebrow }}</p>
-          <h2 class="text-xl font-black tracking-tight text-secondary-900">{{ creatorsTitle }}</h2>
+          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">{{ creatorsEyebrow }}</p>
+          <h2 class="text-xl font-black tracking-tight text-[var(--text-primary)]">{{ creatorsTitle }}</h2>
         </div>
         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-600 ring-1 ring-orange-100 transition-transform group-hover/creators:scale-110">
           <Icon name="i-ph-fire-duotone" class="h-5 w-5" />
@@ -48,10 +48,10 @@
             {{ item.initials }}
           </div>
           <div class="min-w-0 flex-1 space-y-0.5">
-            <p class="truncate text-[13px] font-black uppercase tracking-widest text-secondary-900 group-hover/item:text-primary-600 transition-colors">{{ item.name }}</p>
+            <p class="truncate text-[13px] font-black uppercase tracking-widest text-[var(--text-primary)] group-hover/item:text-[var(--text-primary)] transition-colors">{{ item.name }}</p>
             <p class="truncate text-[10px] font-bold uppercase tracking-widest text-secondary-400">{{ item.role }}</p>
           </div>
-          <span class="shrink-0 self-start rounded-xl bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-primary-600 ring-1 ring-secondary-100 shadow-sm sm:self-auto">
+          <span class="shrink-0 self-start rounded-xl bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] ring-1 ring-secondary-100 shadow-sm sm:self-auto">
             {{ item.score }}
           </span>
         </article>

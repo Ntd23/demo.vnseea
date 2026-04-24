@@ -43,7 +43,7 @@
             </UBadge>
           </div>
 
-          <p class="mt-4 text-label-secondary text-[var(--color-primary-600)]">
+          <p class="mt-4 text-label-secondary text-[var(--text-primary)]">
             {{ $t("pages.jobsPage.detailEyebrow") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -146,7 +146,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.jobsPage.requirements") }}
       </p>
       <ul class="mt-4 space-y-3">
@@ -162,7 +162,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.jobsPage.benefits") }}
       </p>
       <ul class="mt-4 space-y-3">

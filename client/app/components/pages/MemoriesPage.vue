@@ -36,7 +36,7 @@
                 class="rounded-2xl font-black text-xs uppercase tracking-widest px-6 h-12 ring-1 ring-secondary-200 hover:ring-primary-500 transition-all bg-white shadow-sm"
               >
                 <template #leading>
-                  <Icon name="i-ph-house-line-duotone" class="h-5 w-5 text-primary-600" />
+                  <Icon name="i-ph-house-line-duotone" class="h-5 w-5 text-secondary-900" />
                 </template>
                 {{ t("pages.memoriesPage.homeFeed") }}
               </UButton>
@@ -64,7 +64,7 @@
               :key="item.label"
               class="surface-card p-6 ring-1 ring-secondary-50 bg-secondary-50/10 hover:bg-white hover:ring-primary-100 hover:shadow-xl transition-all duration-500 group/stat"
             >
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 mb-4 transition-transform group-hover/stat:translate-x-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 mb-4 transition-transform group-hover/stat:translate-x-1">
                 {{ item.label }}
               </p>
               <p class="text-3xl font-black tracking-tight text-secondary-900 mb-2">
@@ -84,7 +84,7 @@
       <div class="flex flex-col gap-4 border-b border-secondary-100 pb-8 sm:flex-row sm:items-center sm:justify-between px-2">
         <div class="space-y-2">
           <div class="flex items-center gap-3">
-            <Icon name="i-ph-calendar-duotone" class="h-6 w-6 text-primary-600" />
+            <Icon name="i-ph-calendar-duotone" class="h-6 w-6 text-secondary-900" />
             <h2 class="text-2xl font-black tracking-tight text-secondary-900">
               {{ t("pages.memoriesPage.sectionTitle", { count: memoryEntries.length }) }}
             </h2>
@@ -99,7 +99,7 @@
           size="lg"
           variant="soft"
           color="white"
-          class="rounded-xl font-black text-[10px] uppercase tracking-widest px-6 h-11 bg-white text-secondary-600 ring-1 ring-secondary-200 hover:border-primary-500 hover:text-primary-600 transition-all shadow-sm"
+          class="rounded-xl font-black text-[10px] uppercase tracking-widest px-6 h-11 bg-white text-secondary-600 ring-1 ring-secondary-200 hover:border-primary-500 hover:text-secondary-900 transition-all shadow-sm"
         >
           <template #leading>
             <Icon name="i-ph-bookmark-simple-duotone" class="h-4.5 w-4.5" />

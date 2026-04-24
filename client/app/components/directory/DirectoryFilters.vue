@@ -3,7 +3,7 @@
     <div class="space-y-4">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div class="max-w-[640px]">
-          <p class="text-label-secondary text-[var(--color-primary-600)]">{{ t("pages.directoryPage.filtersEyebrow") }}</p>
+          <p class="text-label-secondary text-[var(--text-primary)]">{{ t("pages.directoryPage.filtersEyebrow") }}</p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.directoryPage.filtersTitle") }}</h2>
           <p class="mt-1 text-body-secondary">{{ t("pages.directoryPage.filtersDescription") }}</p>
         </div>

@@ -6,7 +6,7 @@
   >
     <div
       v-if="!compact"
-      class="flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.3em] text-primary-500"
+      class="flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900"
     >
       <Icon name="i-ph-translate-duotone" class="h-4 w-4" />
       <span>Language</span>
@@ -23,7 +23,7 @@
           compact ? 'min-w-[40px] justify-center' : 'w-full justify-start py-3 px-4',
           activeLocale === item.code 
             ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' 
-            : 'bg-white text-secondary-500 border border-secondary-100 hover:border-primary-200 hover:text-primary-600'
+            : 'bg-white text-secondary-500 border border-secondary-100 hover:border-primary-200 hover:text-secondary-900'
         ]"
         @click="changeLocale(item.code)"
       >

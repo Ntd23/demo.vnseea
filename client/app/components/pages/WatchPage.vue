@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4 pb-10 sm:space-y-5">
     <section class="sm:hidden surface-card p-5">
-      <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
+      <p class="text-micro font-bold uppercase tracking-[0.2em] text-secondary-900">
         {{ $t("pages.watchPage.heroEyebrow") }}
       </p>
       <h1 class="mt-2 text-3xl font-black leading-tight text-secondary-900">
@@ -69,7 +69,7 @@
 
     <section v-else class="surface-card p-6 sm:p-8">
       <div class="max-w-xl space-y-3">
-        <p class="text-label-primary text-primary-600 uppercase tracking-widest">
+        <p class="text-label-primary text-secondary-900 uppercase tracking-widest">
           {{ $t("pages.watchPage.emptyEyebrow") }}
         </p>
         <h2 class="text-heading text-secondary-900">

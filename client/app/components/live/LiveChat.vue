@@ -3,7 +3,7 @@
     <div class="shrink-0 bg-white px-6 py-5 border-b border-secondary-50 shadow-sm relative z-10">
       <div class="flex items-center justify-between gap-4">
         <div class="space-y-1">
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900">
             {{ $t("pages.livePage.chatEyebrow") }}
           </p>
           <h2 class="text-xl font-black tracking-tight text-secondary-900 leading-none">

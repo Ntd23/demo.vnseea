@@ -1,6 +1,6 @@
 <template>
   <div :class="cardClass">
-    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
       {{ $t("orders.summary.totalPayment") }}
     </p>
 
@@ -24,7 +24,7 @@
         <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
           {{ $t("orders.summary.totalOrder") }}
         </p>
-        <p class="text-3xl font-black tracking-tight text-primary-600 leading-none">
+        <p class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
           {{ formatOrderCurrency(order.total) }}
         </p>
       </div>

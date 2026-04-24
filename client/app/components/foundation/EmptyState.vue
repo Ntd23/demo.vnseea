@@ -24,7 +24,7 @@
         >
           <p
             v-if="eyebrow"
-            class="text-label-secondary text-[var(--color-primary-600)]"
+            class="text-label-secondary text-[var(--text-primary)]"
           >
             {{ eyebrow }}
           </p>
@@ -146,7 +146,7 @@ const wrapperClass = computed(() => [
 ])
 
 const iconWrapperClass = computed(() => [
-  "flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-primary-50)] text-[var(--color-primary-600)]",
+  "flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-primary-50)] text-[var(--text-primary)]",
   props.align === "center" ? "mx-auto" : "",
 ])
 

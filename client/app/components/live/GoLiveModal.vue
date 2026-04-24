@@ -7,7 +7,7 @@
       <div class="relative space-y-8">
         <div class="flex items-start justify-between gap-4">
           <div class="space-y-1">
-            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
+            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900">
               {{ $t("pages.livePage.modalEyebrow") }}
             </p>
             <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
