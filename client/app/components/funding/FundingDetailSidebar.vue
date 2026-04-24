@@ -10,7 +10,7 @@
         </div>
 
         <div class="min-w-0">
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ t("pages.showFundPage.ownerEyebrow") }}
           </p>
           <p class="truncate text-[18px] font-black text-[var(--text-primary)]">
@@ -51,7 +51,7 @@
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ t("pages.showFundPage.donorsEyebrow") }}
           </p>
           <p class="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -113,7 +113,7 @@
       class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
       :ui="{ body: 'p-4' }"
     >
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.showFundPage.managementEyebrow") }}
       </p>
       <p class="mt-2 text-sm leading-6 text-[var(--text-secondary)]">

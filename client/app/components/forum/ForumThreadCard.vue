@@ -79,7 +79,7 @@
               >
                 #{{ tag }}
               </UBadge>
-              <span class="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--color-primary-600)]">
+              <span class="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--text-primary)]">
                 <Icon name="i-ph-arrow-right-bold" class="h-3.5 w-3.5" />
                 {{ selected ? t("pages.forumPage.selectedThreadAction") : t("pages.forumPage.openThreadAction") }}
               </span>

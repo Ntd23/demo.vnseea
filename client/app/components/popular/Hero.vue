@@ -8,13 +8,13 @@
       <div class="relative flex flex-col gap-10">
         <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div class="max-w-3xl space-y-3">
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
               {{ eyebrow }}
             </p>
-            <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-secondary-900 leading-[1.1]">
+            <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-[var(--text-primary)] leading-[1.1]">
               {{ title }}
             </h1>
-            <p class="text-[15px] font-medium leading-relaxed text-secondary-500 max-w-2xl pl-0.5">
+            <p class="text-[15px] font-medium leading-relaxed text-[var(--text-primary)] max-w-2xl pl-0.5">
               {{ description }}
             </p>
           </div>
@@ -22,7 +22,7 @@
           <div class="flex flex-col gap-4 sm:flex-row">
             <NuxtLink
               :to="primaryTo"
-              class="h-12 inline-flex items-center justify-center rounded-2xl border border-secondary-100 bg-white/60 px-6 text-[11px] font-black uppercase tracking-widest text-secondary-600 backdrop-blur-xl transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:shadow-lg active:scale-95"
+              class="h-12 inline-flex items-center justify-center rounded-2xl border border-secondary-100 bg-white/60 px-6 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] backdrop-blur-xl transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:shadow-lg active:scale-95"
             >
               <Icon name="i-ph-house-line-duotone" class="mr-2.5 h-4.5 w-4.5" />
               {{ primaryLabel }}
@@ -44,13 +44,13 @@
             :key="item.label"
             class="surface-card p-5 bg-secondary-50/50 group/stat hover:bg-white ring-1 ring-secondary-100 transition-all duration-500"
           >
-            <p class="text-[9px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+            <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
               {{ item.label }}
             </p>
-            <p class="mt-4 text-3xl font-black tracking-tight text-secondary-900 group-hover/stat:text-primary-600 transition-colors">
+            <p class="mt-4 text-3xl font-black tracking-tight text-[var(--text-primary)] group-hover/stat:text-[var(--text-primary)] transition-colors">
               {{ item.value }}
             </p>
-            <p class="mt-3 text-[12px] font-medium leading-relaxed text-secondary-400 italic px-1">
+            <p class="mt-3 text-[12px] font-medium leading-relaxed text-[var(--text-primary)] italic px-1">
               {{ item.description }}
             </p>
           </article>

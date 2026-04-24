@@ -6,7 +6,7 @@
           <p class="text-label-secondary text-[var(--text-tertiary)]">{{ upcomingEyebrow }}</p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ upcomingTitle }}</h2>
         </div>
-        <span class="rounded-full bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-black text-[var(--color-primary-600)]">
+        <span class="rounded-full bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-black text-[var(--text-primary)]">
           {{ upcoming.length }}
         </span>
       </div>
@@ -20,7 +20,7 @@
             </div>
             <div class="w-fit rounded-[18px] bg-white px-3 py-2 text-left shadow-[0_8px_18px_rgba(15,23,42,0.04)] sm:text-right">
               <p class="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">{{ item.dayLabel }}</p>
-              <p class="mt-1 text-[13px] font-black text-[var(--color-primary-700)]">{{ item.timeLabel }}</p>
+              <p class="mt-1 text-[13px] font-black text-[var(--text-primary)]">{{ item.timeLabel }}</p>
             </div>
           </div>
           <p class="mt-3 text-[12px] font-semibold leading-5 text-[var(--text-secondary)]">{{ item.note }}</p>
@@ -34,7 +34,7 @@
           <p class="text-label-secondary text-[var(--text-tertiary)]">{{ picksEyebrow }}</p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ picksTitle }}</h2>
         </div>
-        <Icon name="i-ph-star-four-fill" class="h-5 w-5 text-[var(--color-primary-600)]" />
+        <Icon name="i-ph-star-four-fill" class="h-5 w-5 text-[var(--text-primary)]" />
       </div>
 
       <div class="mt-4 space-y-2.5">
@@ -67,7 +67,7 @@
         </p>
 
         <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <NuxtLink to="/watch" class="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-white px-4 text-[12px] font-black text-[var(--color-primary-700)] sm:justify-start">
+          <NuxtLink to="/watch" class="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-white px-4 text-[12px] font-black text-[var(--text-primary)] sm:justify-start">
             <Icon name="i-ph-play-fill" class="h-4 w-4" />
             /watch
           </NuxtLink>

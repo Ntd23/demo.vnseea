@@ -3,7 +3,7 @@
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ t("pages.showFundPage.progressEyebrow") }}
           </p>
           <p class="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -69,7 +69,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.showFundPage.descriptionEyebrow") }}
       </p>
       <p class="mt-3 text-[15px] leading-8 text-[var(--text-secondary)]">
@@ -78,7 +78,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.showFundPage.impactEyebrow") }}
       </p>
       <ul class="mt-4 space-y-3">
@@ -94,7 +94,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.showFundPage.rewardsEyebrow") }}
       </p>
       <h2 class="mt-2 text-xl font-black tracking-[-0.03em] text-[var(--text-primary)]">
@@ -111,7 +111,7 @@
           class="rounded-[20px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4"
         >
           <div class="flex gap-3">
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-50)] text-[var(--color-primary-600)]">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-50)] text-[var(--text-primary)]">
               <Icon name="i-ph-gift-fill" class="h-5 w-5" />
             </div>
             <p class="text-[14px] font-semibold leading-7 text-[var(--text-secondary)]">

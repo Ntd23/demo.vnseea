@@ -100,7 +100,7 @@
   --leading-relaxed: 1.75;
 
   /* Text colors: primary = chính, secondary = phụ */
-  --text-primary: var(--color-secondary-900);     /* #0f172a */
+  --text-primary: #000000;
   --text-secondary: var(--color-secondary-500);    /* #64748b */
   --text-tertiary: var(--color-secondary-400);     /* #94a3b8 */
   --text-inverse: #ffffff;
@@ -124,7 +124,7 @@
   --icon-xl: 32px;
 
   /* Icon colors */
-  --icon-primary: var(--color-secondary-700);     /* #334155 — đậm */
+  --icon-primary: #000000;
   --icon-secondary: var(--color-secondary-400);   /* #94a3b8 — nhạt */
   --icon-brand: var(--color-primary-500);          /* #0000ff */
   --icon-inverse: #ffffff;

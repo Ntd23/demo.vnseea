@@ -2,8 +2,8 @@
   <div class="surface-card p-5 space-y-5">
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="space-y-1">
-        <h3 class="text-sm font-black text-secondary-900 tracking-tight">{{ t("pages.profilePage.completionTitle") }}</h3>
-        <p class="text-xs font-medium text-secondary-500 leading-relaxed">{{ t("pages.profilePage.completionDescription") }}</p>
+        <h3 class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.completionTitle") }}</h3>
+        <p class="text-xs font-medium text-[var(--text-primary)] leading-relaxed">{{ t("pages.profilePage.completionDescription") }}</p>
       </div>
       <UButton
         color="gray"

@@ -1,8 +1,8 @@
 <template>
   <section class="surface-card p-6 sm:p-8">
     <div class="space-y-1">
-      <p class="text-label-primary text-secondary-500 uppercase tracking-widest text-[10px]">{{ t("pages.walletPage.sendEyebrow") }}</p>
-      <h2 class="text-2xl font-black text-secondary-900 leading-tight">{{ t("pages.walletPage.sendTitle") }}</h2>
+      <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest text-[10px]">{{ t("pages.walletPage.sendEyebrow") }}</p>
+      <h2 class="text-2xl font-black text-[var(--text-primary)] leading-tight">{{ t("pages.walletPage.sendTitle") }}</h2>
       <p class="text-body-secondary text-sm">{{ t("pages.walletPage.currentBalance", { amount: formatWalletCurrency(balance, locale.value) }) }}</p>
     </div>
 
@@ -28,7 +28,7 @@
           min="10000"
         >
           <template #trailing>
-            <span class="text-secondary-400 font-bold px-2">VND</span>
+            <span class="text-[var(--text-primary)] font-bold px-2">VND</span>
           </template>
         </UInput>
       </UFormGroup>

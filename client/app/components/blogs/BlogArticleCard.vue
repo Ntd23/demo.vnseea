@@ -67,12 +67,12 @@
             <span
               v-for="tag in article.tags"
               :key="tag"
-              class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2.5 py-1 text-[11px] font-bold text-[var(--color-primary-600)]"
+              class="rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-2.5 py-1 text-[11px] font-bold text-[var(--text-primary)]"
             >
               #{{ tag }}
             </span>
           </div>
-          <span class="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--color-primary-600)]">
+          <span class="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--text-primary)]">
             {{ $t("pages.blogsPage.continueReading") }}
             <Icon name="i-ph-arrow-right-bold" class="h-3.5 w-3.5" />
           </span>

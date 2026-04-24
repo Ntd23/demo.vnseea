@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
       <div class="max-w-[680px]">
-        <p class="text-label-secondary text-[var(--color-primary-600)]">
+        <p class="text-label-secondary text-[var(--text-primary)]">
           {{ t("pages.goProPage.billingEyebrow") }}
         </p>
         <h2 class="mt-1 text-heading text-[var(--text-primary)]">

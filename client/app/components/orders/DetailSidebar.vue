@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
         {{ $t("orders.sidebar.overview") }}
       </p>
 
@@ -16,7 +16,7 @@
             {{ $t("orders.summary.totalPayment") }}
           </p>
           <div class="flex flex-col gap-2">
-            <p class="text-sm font-black text-secondary-900 group-hover/info:text-primary-700 transition-colors">
+            <p class="text-sm font-black text-secondary-900 group-hover/info:text-secondary-900 transition-colors">
               {{ $t(order.paymentMethod) }}
             </p>
             <div class="flex flex-wrap items-center gap-3">
@@ -39,7 +39,7 @@
             {{ $t("orders.detail.shippingProvider") }}
           </p>
           <div class="space-y-2">
-            <p class="text-sm font-black text-secondary-900 group-hover/ship:text-primary-700 transition-colors">
+            <p class="text-sm font-black text-secondary-900 group-hover/ship:text-secondary-900 transition-colors">
               {{ order.shippingProvider }}
             </p>
             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary-50 border border-secondary-100">
@@ -61,7 +61,7 @@
     </section>
 
     <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
         {{ $t("orders.sidebar.tasks") }}
       </p>
 

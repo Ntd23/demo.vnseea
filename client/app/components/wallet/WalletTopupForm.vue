@@ -1,8 +1,8 @@
 <template>
   <section class="surface-card p-6 sm:p-8">
     <div class="space-y-1">
-      <p class="text-label-primary text-secondary-500 uppercase tracking-widest text-[10px]">{{ t("pages.walletPage.topupEyebrow") }}</p>
-      <h2 class="text-2xl font-black text-secondary-900 leading-tight">{{ t("pages.walletPage.topupTitle") }}</h2>
+      <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest text-[10px]">{{ t("pages.walletPage.topupEyebrow") }}</p>
+      <h2 class="text-2xl font-black text-[var(--text-primary)] leading-tight">{{ t("pages.walletPage.topupTitle") }}</h2>
       <p class="text-body-secondary text-sm">{{ t("pages.walletPage.topupDescription") }}</p>
     </div>
 
@@ -34,7 +34,7 @@
           :ui="{ icon: { trailing: { pointer: '' } } }"
         >
           <template #trailing>
-            <span class="text-secondary-400 font-bold px-2">VND</span>
+            <span class="text-[var(--text-primary)] font-bold px-2">VND</span>
           </template>
         </UInput>
       </UFormGroup>
@@ -52,12 +52,12 @@
           @click="form.method = method.value"
         >
           <div 
-            :class="form.method === method.value ? 'bg-primary-500 text-white' : 'bg-secondary-100 text-secondary-500 group-hover:bg-primary-100 group-hover:text-primary-600'"
+            :class="form.method === method.value ? 'bg-primary-500 text-white' : 'bg-secondary-100 text-[var(--text-primary)] group-hover:bg-primary-100 group-hover:text-primary-600'"
             class="flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
           >
             <Icon :name="method.icon" class="h-6 w-6" />
           </div>
-          <p class="mt-4 text-[13px] font-black text-secondary-900">{{ method.label }}</p>
+          <p class="mt-4 text-[13px] font-black text-[var(--text-primary)]">{{ method.label }}</p>
           
           <div 
             v-if="form.method === method.value"

@@ -68,7 +68,7 @@
                   color="neutral"
                   variant="solid"
                   size="xl"
-                  class="rounded-full bg-white text-[var(--color-primary-600)]"
+                  class="rounded-full bg-white text-[var(--text-primary)]"
                   @click="emit('donate', campaign)"
                 >
                   <Icon name="i-ph-hand-heart-fill" class="mr-2 h-4 w-4" />

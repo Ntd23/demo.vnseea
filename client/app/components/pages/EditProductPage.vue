@@ -18,13 +18,13 @@
           
           <div class="relative z-10 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
             <div class="space-y-3">
-              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
                 {{ $t("pages.productEditor.editSectionEyebrow") }}
               </p>
-              <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
+              <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">
                 {{ $t("pages.editProductPage.sectionTitle") }}
               </h2>
-              <p class="text-base font-medium leading-relaxed text-secondary-500 max-w-[520px] italic">
+              <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] max-w-[520px] italic">
                 "{{ $t("pages.editProductPage.sectionDescription") }}"
               </p>
             </div>
@@ -32,7 +32,7 @@
             <UBadge
               variant="soft"
               size="lg"
-              class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm"
+              class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-[var(--text-primary)] ring-1 ring-primary-100 shadow-sm"
             >
               <template #leading>
                 <Icon name="i-ph-seal-check-duotone" class="h-5 w-5 mr-3" />
@@ -42,9 +42,9 @@
           </div>
           
           <div class="relative z-10 space-y-4">
-            <div class="flex justify-between text-[11px] font-black text-secondary-400 uppercase tracking-[0.2em] px-1">
+            <div class="flex justify-between text-[11px] font-black text-[var(--text-primary)] uppercase tracking-[0.2em] px-1">
               <span>{{ $t('pages.productEditor.completionLabel') || 'Độ hoàn thiện' }}</span>
-              <span class="text-primary-600">{{ Math.round(completionPercent) }}%</span>
+              <span class="text-[var(--text-primary)]">{{ Math.round(completionPercent) }}%</span>
             </div>
             <div class="h-3 w-full rounded-full bg-secondary-50 ring-1 ring-secondary-100 overflow-hidden shadow-inner">
               <div 

@@ -2,8 +2,8 @@
   <section class="surface-card p-6">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.withdrawalPage.requestEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.withdrawalPage.requestTitle") }}</h2>
+        <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest">{{ t("pages.withdrawalPage.requestEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.withdrawalPage.requestTitle") }}</h2>
         <p class="mt-2 text-body-secondary">
           {{ t("pages.withdrawalPage.requestDescription", { amount: formatWithdrawalCurrency(minimumAmount, locale) }) }}
         </p>
@@ -31,13 +31,13 @@
         @click="form.method = method.value"
       >
         <div 
-          :class="form.method === method.value ? 'bg-primary-500 text-white' : 'bg-secondary-100 text-secondary-500 group-hover:bg-primary-100 group-hover:text-primary-600'"
+          :class="form.method === method.value ? 'bg-primary-500 text-white' : 'bg-secondary-100 text-[var(--text-primary)] group-hover:bg-primary-100 group-hover:text-primary-600'"
           class="flex h-10 w-10 items-center justify-center rounded-xl transition-colors"
         >
           <Icon :name="messageText(method.icon)" class="h-6 w-6" />
         </div>
-        <p class="mt-4 text-[14px] font-black text-secondary-900">{{ messageText(method.label) }}</p>
-        <p class="mt-1 text-[12px] font-medium text-secondary-500 leading-normal">{{ messageText(method.description) }}</p>
+        <p class="mt-4 text-[14px] font-black text-[var(--text-primary)]">{{ messageText(method.label) }}</p>
+        <p class="mt-1 text-[12px] font-medium text-[var(--text-primary)] leading-normal">{{ messageText(method.description) }}</p>
         
         <!-- Selection Checkmark -->
         <div 

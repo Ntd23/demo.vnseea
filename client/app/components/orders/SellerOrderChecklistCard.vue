@@ -2,7 +2,7 @@
   <section class="surface-card group p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-secondary-50 pb-6">
       <div class="space-y-1">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
           {{ $t("orders.detail.operating") }}
         </p>
         <h3 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
@@ -83,7 +83,7 @@
 
           <div class="min-w-0 flex-1 space-y-2">
             <div class="flex flex-wrap items-center gap-3">
-              <p class="text-sm font-black text-secondary-900 group-hover/task:text-primary-700 transition-colors">
+              <p class="text-sm font-black text-secondary-900 group-hover/task:text-secondary-900 transition-colors">
                 {{ $t(task.label) }}
               </p>
               <UBadge
@@ -116,10 +116,10 @@ const { statusMeta } = useOrderPresentation(computed(() => props.order))
 
 const shippingStageClass = computed(() => {
   if (props.order.status === "shipping" || props.order.status === "delivered") {
-    return "ring-primary-100 bg-primary-50/50 text-primary-700"
+    return "ring-primary-100 bg-primary-50/50 text-secondary-900"
   }
 
-  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-primary-700"
+  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-secondary-900"
 })
 
 const completedStageClass = computed(() => {
@@ -127,6 +127,6 @@ const completedStageClass = computed(() => {
     return "ring-sky-100 bg-sky-50/50 text-sky-700"
   }
 
-  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-primary-700"
+  return "ring-secondary-100 bg-white text-secondary-400 hover:ring-primary-100 hover:text-secondary-900"
 })
 </script>

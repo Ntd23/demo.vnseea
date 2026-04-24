@@ -1,8 +1,8 @@
   <div class="surface-card p-5 space-y-4">
     <div class="flex items-center justify-between">
       <div class="space-y-0.5">
-        <h3 class="text-sm font-black text-secondary-900 tracking-tight">{{ t("pages.profilePage.friendsGrid.title") }}</h3>
-        <p class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">{{ t("pages.profilePage.friendsGrid.friendCount", { count: friendCount }) }}</p>
+        <h3 class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.friendsGrid.title") }}</h3>
+        <p class="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-widest">{{ t("pages.profilePage.friendsGrid.friendCount", { count: friendCount }) }}</p>
       </div>
       <UButton
         variant="ghost"
@@ -28,11 +28,11 @@
             :ui="{ 
               rounded: 'rounded-none',
               background: 'bg-secondary-50',
-              text: 'text-secondary-400 font-bold text-lg'
+              text: 'text-[var(--text-primary)] font-bold text-lg'
             }"
           />
         </div>
-        <p class="truncate text-[11px] font-black text-secondary-700 group-hover:text-primary-600 transition-colors leading-none pb-1">{{ friend.name }}</p>
+        <p class="truncate text-[11px] font-black text-[var(--text-primary)] group-hover:text-secondary-900 transition-colors leading-none pb-1">{{ friend.name }}</p>
       </div>
     </div>
   </div>

@@ -10,7 +10,7 @@
         <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)] sm:p-5">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p class="text-label-secondary text-[var(--color-primary-600)]">
+              <p class="text-label-secondary text-[var(--text-primary)]">
                 {{ $t("pages.createBlogPage.editorEyebrow") }}
               </p>
               <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -21,7 +21,7 @@
               </p>
             </div>
 
-            <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-2 text-[12px] font-bold text-[var(--color-primary-600)]">
+            <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-2 text-[12px] font-bold text-[var(--text-primary)]">
               <Icon name="i-ph-seal-check-fill" class="h-4 w-4" />
               {{ completionText }}
             </div>
@@ -49,7 +49,7 @@
                 <button
                   v-for="action in editorActions"
                   :key="action.label"
-                  class="inline-flex h-9 items-center gap-1.5 rounded-[14px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-3 text-[12px] font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]"
+                  class="inline-flex h-9 items-center gap-1.5 rounded-[14px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-3 text-[12px] font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
                   type="button"
                   @click="applyEditorToken(action.token)"
                 >
@@ -99,7 +99,7 @@
             <span
               v-for="tag in tagList"
               :key="tag"
-              class="inline-flex items-center rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-bold text-[var(--color-primary-600)]"
+              class="inline-flex items-center rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-bold text-[var(--text-primary)]"
             >
               #{{ tag }}
             </span>
@@ -123,7 +123,7 @@
                   @change="onThumbnailChange"
                 >
                 <span>
-                  <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-white text-[var(--color-primary-600)] shadow-[var(--shadow-sm)]">
+                  <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-white text-[var(--text-primary)] shadow-[var(--shadow-sm)]">
                     <Icon name="i-ph-image-square-fill" class="h-8 w-8" />
                   </span>
                   <span class="mt-3 block text-[13px] font-bold text-[var(--text-primary)]">
@@ -164,7 +164,7 @@
           </p>
           <div class="flex flex-wrap gap-3">
             <button
-              class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[14px] font-bold text-[var(--color-primary-600)] transition hover:border-[var(--border-strong)]"
+              class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[14px] font-bold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
               type="button"
               @click="saveDraft"
             >

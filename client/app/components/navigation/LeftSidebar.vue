@@ -1,7 +1,7 @@
 <template>
   <div class="min-w-0 space-y-8 xl:flex xl:h-full xl:flex-col">
     <nav class="space-y-1 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-contain xl:pr-1 scrollbar-hide">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-3 mb-4">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-3 mb-4">
         {{ $t("navigation.leftSidebar.menu") || 'Menu' }}
       </p>
 
@@ -36,14 +36,14 @@
         @click="expanded = !expanded"
       >
         <span
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-secondary-100 bg-white text-secondary-400 transition-all duration-300 group-hover:border-primary-200 group-hover:text-primary-600 shadow-sm"
+          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-secondary-100 bg-white text-[var(--icon-primary)] transition-all duration-300 group-hover:border-primary-200 group-hover:text-primary-600 shadow-sm"
         >
           <Icon
             :name="expanded ? 'i-ph-caret-up-bold' : 'i-ph-caret-down-bold'"
             class="h-3.5 w-3.5"
           />
         </span>
-        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-500 group-hover:text-primary-600 transition-colors leading-none">
+        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] group-hover:text-primary-600 transition-colors leading-none">
           {{ expanded ? $t('navigation.leftSidebar.showLess') : $t('navigation.leftSidebar.showMore') }}
         </span>
       </UButton>

@@ -7,7 +7,7 @@
     >
       <div class="flex items-center justify-between gap-3">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ $t("pages.eventDetailPage.inviteEyebrow") }}
           </p>
           <h2 class="mt-1 text-title-primary">
@@ -93,7 +93,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.eventDetailPage.locationEyebrow") }}
       </p>
       <h2 class="mt-1 text-title-primary">
@@ -101,7 +101,7 @@
       </h2>
       <div class="mt-4 flex min-h-[180px] items-center justify-center rounded-[22px] bg-[linear-gradient(135deg,var(--color-primary-50),#ecfeff)] text-center">
         <div>
-          <Icon name="i-ph-map-trifold-fill" class="mx-auto h-10 w-10 text-[var(--color-primary-600)]" />
+          <Icon name="i-ph-map-trifold-fill" class="mx-auto h-10 w-10 text-[var(--text-primary)]" />
           <p class="mt-3 text-[13px] font-semibold text-[var(--text-secondary)]">
             {{ $t("pages.eventDetailPage.mapPlaceholder") }}
           </p>
@@ -114,7 +114,7 @@
       class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
       :ui="{ body: 'p-4' }"
     >
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.eventDetailPage.managementEyebrow") }}
       </p>
 
@@ -158,7 +158,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.eventDetailPage.relatedEvents") }}
       </p>
       <div class="mt-4 space-y-3">

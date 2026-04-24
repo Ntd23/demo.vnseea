@@ -46,7 +46,7 @@
             color="neutral"
             variant="solid"
             size="xl"
-            class="rounded-full bg-white text-[var(--color-primary-600)]"
+            class="rounded-full bg-white text-[var(--text-primary)]"
             @click="$emit('createThread')"
           >
             <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />

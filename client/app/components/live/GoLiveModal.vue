@@ -7,13 +7,13 @@
       <div class="relative space-y-8">
         <div class="flex items-start justify-between gap-4">
           <div class="space-y-1">
-            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500">
+            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">
               {{ $t("pages.livePage.modalEyebrow") }}
             </p>
-            <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
+            <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">
               {{ $t("pages.livePage.modalTitle") }}
             </h2>
-            <p class="text-[11px] font-bold uppercase tracking-widest text-secondary-400">
+            <p class="text-[11px] font-bold uppercase tracking-widest text-[var(--text-primary)]">
               {{ $t("pages.livePage.modalDescription") }}
             </p>
           </div>
@@ -21,7 +21,7 @@
             color="white"
             variant="soft"
             icon="i-ph-x-bold"
-            class="rounded-xl shadow-none ring-0 h-10 w-10 justify-center bg-secondary-50 text-secondary-400 hover:text-secondary-900"
+            class="rounded-xl shadow-none ring-0 h-10 w-10 justify-center bg-secondary-50 text-[var(--text-primary)] hover:text-secondary-900"
             @click="isOpen = false"
           />
         </div>
@@ -92,7 +92,7 @@
               variant="soft"
               color="white"
               size="xl"
-              class="rounded-2xl font-black text-xs uppercase tracking-widest px-8 h-12 bg-white text-secondary-500 ring-1 ring-secondary-200 hover:ring-primary-500 transition-all shadow-sm"
+              class="rounded-2xl font-black text-xs uppercase tracking-widest px-8 h-12 bg-white text-[var(--text-primary)] ring-1 ring-secondary-200 hover:ring-primary-500 transition-all shadow-sm"
               @click="isOpen = false"
             >
               {{ $t("pages.livePage.close") }}

@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 shadow-xl">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
         {{ $t("orders.sidebar.overview") }}
       </p>
 
@@ -35,7 +35,7 @@
     </section>
 
     <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 shadow-xl">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
         {{ $t("orders.sidebar.trackRecent") }}
       </p>
 
@@ -58,7 +58,7 @@
           </div>
 
           <div class="space-y-1">
-            <p class="text-sm font-black text-secondary-900 group-hover/recent:text-primary-700 transition-colors">
+            <p class="text-sm font-black text-secondary-900 group-hover/recent:text-secondary-900 transition-colors">
               {{ nextOrder.seller }}
             </p>
             <p class="text-xs font-medium text-secondary-500 leading-relaxed italic">
@@ -91,13 +91,13 @@
         <Icon name="i-ph-shopping-cart-duotone" class="h-32 w-32 -mr-12 -mt-12" />
       </div>
 
-      <p class="relative z-10 text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+      <p class="relative z-10 text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
         {{ $t("orders.sidebar.currentFilter") }}
       </p>
       
       <div class="relative z-10 space-y-5">
         <div class="surface-card p-5 bg-white ring-1 ring-primary-100 shadow-sm space-y-2">
-          <p class="text-sm font-black text-primary-600">
+          <p class="text-sm font-black text-secondary-900">
             {{ $t(activeFilterLabel) }}
           </p>
           <p class="text-[11px] font-medium leading-relaxed text-secondary-500">
@@ -107,13 +107,13 @@
 
         <div class="space-y-3">
           <div class="flex gap-3 items-start p-3 rounded-xl bg-white/50 border border-primary-50">
-            <Icon name="i-ph-info-duotone" class="h-4 w-4 shrink-0 text-primary-500 mt-0.5" />
+            <Icon name="i-ph-info-duotone" class="h-4 w-4 shrink-0 text-secondary-900 mt-0.5" />
             <p class="text-[11px] font-medium leading-relaxed text-secondary-600">
               {{ $t("orders.sidebar.flowHintReal") }}
             </p>
           </div>
           <div class="flex gap-3 items-start p-3 rounded-xl bg-white/50 border border-primary-50">
-            <Icon name="i-ph-lightbulb-duotone" class="h-4 w-4 shrink-0 text-primary-500 mt-0.5" />
+            <Icon name="i-ph-lightbulb-duotone" class="h-4 w-4 shrink-0 text-secondary-900 mt-0.5" />
             <p class="text-[11px] font-medium leading-relaxed text-secondary-600">
               {{ $t("orders.sidebar.flowHintMarketplace") }}
             </p>

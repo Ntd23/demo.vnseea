@@ -4,7 +4,7 @@
 
     <div class="surface-card p-4 space-y-4">
       <div class="flex items-center justify-between">
-        <p class="text-sm font-black text-secondary-900 tracking-tight">{{ t("pages.profilePage.sidebarMutualFriendsTitle") }}</p>
+        <p class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.sidebarMutualFriendsTitle") }}</p>
         <UButton
           variant="ghost"
           color="primary"
@@ -26,8 +26,8 @@
               text: 'text-white font-black'
             }"
           />
-          <p class="mt-2 truncate text-xs font-black text-secondary-900">{{ item.name }}</p>
-          <p class="text-[10px] font-medium text-secondary-500">{{ item.meta }}</p>
+          <p class="mt-2 truncate text-xs font-black text-[var(--text-primary)]">{{ item.name }}</p>
+          <p class="text-[10px] font-medium text-[var(--text-primary)]">{{ item.meta }}</p>
         </div>
       </div>
     </div>

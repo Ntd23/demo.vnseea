@@ -6,7 +6,7 @@
 
       <div class="relative space-y-8">
         <div class="max-w-3xl">
-          <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
+          <p class="text-micro font-bold uppercase tracking-[0.2em] text-secondary-900">
             {{ $t('community.search.controls.eyebrow') }}
           </p>
           <h1 class="text-display mt-2 text-3xl font-black text-secondary-900 sm:text-4xl">
@@ -101,7 +101,7 @@
               <div class="flex w-full items-center justify-between gap-4">
                 <div
                   class="flex h-12 w-12 items-center justify-center rounded-xl shadow-sm border border-secondary-100/30 transition-transform group-hover:scale-110"
-                  :class="typeModel === tab.value ? 'bg-primary-500 text-white' : 'bg-secondary-50 text-secondary-500 group-hover:bg-primary-100 group-hover:text-primary-600'"
+                  :class="typeModel === tab.value ? 'bg-primary-500 text-white' : 'bg-secondary-50 text-secondary-500 group-hover:bg-primary-100 group-hover:text-secondary-900'"
                 >
                   <Icon :name="tab.icon" class="h-6 w-6" />
                 </div>

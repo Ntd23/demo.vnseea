@@ -8,7 +8,7 @@
         class="relative flex h-11 w-11 items-center justify-center rounded-2xl border-2 transition-all duration-300 group"
         :class="item.active
           ? 'border-primary-600 bg-primary-50 text-primary-600 shadow-lg shadow-primary-500/10'
-          : 'border-secondary-100 bg-white text-secondary-400 hover:border-primary-400 hover:text-primary-600'"
+          : 'border-secondary-100 bg-white text-[var(--icon-primary)] hover:border-primary-400 hover:text-primary-600'"
         :aria-label="$t(item.label)"
       >
         <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5 transition-transform group-hover:scale-110" />

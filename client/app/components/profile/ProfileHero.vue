@@ -28,7 +28,7 @@
         color="white"
         variant="solid"
         size="md"
-        class="absolute right-6 top-6 rounded-2xl bg-white/90 hover:bg-white shadow-lg text-secondary-700 active:scale-95 transition-transform"
+        class="absolute right-6 top-6 rounded-2xl bg-white/90 hover:bg-white shadow-lg text-[var(--text-primary)] active:scale-95 transition-transform"
       />
 
       <!-- Content Overlay -->
@@ -105,7 +105,7 @@
         variant="ghost"
         color="gray"
         size="sm"
-        class="rounded-full px-5 py-2.5 font-bold text-secondary-600 hover:text-primary-600 hover:bg-primary-50/50 flex-shrink-0 transition-all border border-transparent hover:border-primary-100"
+        class="rounded-full px-5 py-2.5 font-bold text-[var(--text-primary)] hover:text-primary-600 hover:bg-primary-50/50 flex-shrink-0 transition-all border border-transparent hover:border-primary-100"
       >
         <template #leading>
           <div class="h-1.5 w-1.5 rounded-full bg-primary-500/40" />

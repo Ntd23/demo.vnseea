@@ -41,7 +41,7 @@
     <div class="relative p-8 space-y-6">
       <!-- Preview Action Icons (Mock) -->
       <div class="absolute -top-10 right-8 flex items-center gap-4">
-        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-white text-secondary-400 shadow-2xl ring-1 ring-secondary-100 transition-all hover:bg-primary-50 hover:text-primary-600 active:scale-90 border-none">
+        <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-white text-[var(--text-primary)] shadow-2xl ring-1 ring-secondary-100 transition-all hover:bg-primary-50 hover:text-primary-600 active:scale-90 border-none">
           <Icon :name="leadingIcon + '-duotone'" class="h-7 w-7" />
         </div>
         <div class="h-14 w-14 flex items-center justify-center rounded-2xl bg-primary-600 text-white shadow-2xl shadow-primary-500/40 active:scale-90 transition-all border-none">
@@ -50,7 +50,7 @@
       </div>
 
       <div class="space-y-2">
-        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 group-hover:text-primary-500 transition-colors pl-0.5">
+        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] group-hover:text-secondary-900 transition-colors pl-0.5">
           {{ currencyLabel }}
         </p>
         <h3 class="pr-20 text-2xl font-black leading-tight tracking-tight text-secondary-950 group-hover:text-primary-950 transition-colors line-clamp-1">
@@ -58,7 +58,7 @@
         </h3>
       </div>
 
-      <p class="text-sm font-medium leading-relaxed text-secondary-500 line-clamp-2 min-h-[2.5rem] italic pr-4">
+      <p class="text-sm font-medium leading-relaxed text-[var(--text-primary)] line-clamp-2 min-h-[2.5rem] italic pr-4">
         "{{ description }}"
       </p>
 

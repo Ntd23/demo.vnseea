@@ -22,7 +22,7 @@
         <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p class="text-label-secondary text-[var(--color-primary-600)]">
+              <p class="text-label-secondary text-[var(--text-primary)]">
                 {{ t("pages.goProPage.plansEyebrow") }}
               </p>
               <h2 class="mt-1 text-heading text-[var(--text-primary)]">

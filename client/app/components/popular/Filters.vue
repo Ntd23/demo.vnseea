@@ -2,10 +2,10 @@
   <section class="surface-card p-4 sm:p-5 ring-1 ring-secondary-100 shadow-xl bg-white/60 backdrop-blur-xl">
     <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
       <label class="relative block">
-        <Icon name="i-ph-magnifying-glass-duotone" class="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-primary-500" />
+        <Icon name="i-ph-magnifying-glass-duotone" class="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--icon-primary)]" />
         <input
           :value="search"
-          class="h-12 w-full rounded-2xl border border-secondary-100 bg-secondary-50/50 py-3 pl-13 pr-5 text-[13px] font-black uppercase tracking-widest text-secondary-900 outline-none transition placeholder:text-secondary-400 placeholder:font-medium placeholder:normal-case placeholder:tracking-normal focus:border-primary-100 focus:bg-white focus:ring-4 focus:ring-primary-500/5 group"
+          class="h-12 w-full rounded-2xl border border-secondary-100 bg-secondary-50/50 py-3 pl-13 pr-5 text-[13px] font-black uppercase tracking-widest text-[var(--text-primary)] outline-none transition placeholder:text-secondary-400 placeholder:font-medium placeholder:normal-case placeholder:tracking-normal focus:border-primary-100 focus:bg-white focus:ring-4 focus:ring-primary-500/5 group"
           :placeholder="placeholder"
           @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
         >
@@ -18,7 +18,7 @@
           class="inline-flex h-12 shrink-0 items-center gap-2.5 rounded-2xl px-5 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95"
           :class="selectedCategory === category.value 
             ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm' 
-            : 'bg-white text-secondary-500 ring-1 ring-secondary-100 hover:bg-white hover:text-primary-600 hover:border-primary-100'"
+            : 'bg-white text-[var(--text-primary)] ring-1 ring-secondary-100 hover:bg-white hover:text-primary-600 hover:border-primary-100'"
           type="button"
           @click="$emit('update:selectedCategory', category.value)"
         >

@@ -14,7 +14,7 @@
       >
         <p
           v-if="eyebrow"
-          class="text-label-secondary text-[var(--color-primary-600)]"
+          class="text-label-secondary text-[var(--text-primary)]"
         >
           {{ eyebrow }}
         </p>
@@ -39,7 +39,7 @@
         <div
           v-if="icon"
           :class="[
-            'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-primary-50)] text-[var(--color-primary-600)]',
+            'flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-primary-50)] text-[var(--text-primary)]',
             align === 'center' ? 'mx-auto' : '',
           ]"
         >

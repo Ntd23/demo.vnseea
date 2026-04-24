@@ -1,19 +1,19 @@
 <template>
   <div class="surface-card p-4 space-y-4">
     <div class="flex items-center gap-3">
-      <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 shadow-sm border border-primary-100">
+      <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary-50 text-[var(--text-primary)] shadow-sm border border-primary-100">
         <Icon :name="icon" class="h-5 w-5" />
       </div>
-      <p class="text-base font-black text-secondary-900 tracking-tight">{{ title }}</p>
+      <p class="text-base font-black text-[var(--text-primary)] tracking-tight">{{ title }}</p>
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-secondary-100 bg-secondary-50/20 divide-y divide-secondary-100/50">
       <div v-for="row in rows" :key="row.label" class="flex items-center gap-4 px-4 py-3.5 group transition-colors hover:bg-white/60">
-        <Icon :name="row.icon" class="h-5 w-5 text-secondary-400 group-hover:text-primary-500 transition-colors" />
-        <span v-if="row.left" class="flex-1 text-sm font-semibold text-secondary-800">{{ row.left }}</span>
+        <Icon :name="row.icon" class="h-5 w-5 text-[var(--text-primary)] group-hover:text-secondary-900 transition-colors" />
+        <span v-if="row.left" class="flex-1 text-sm font-semibold text-[var(--text-primary)]">{{ row.left }}</span>
         <template v-else>
-          <span v-if="row.center" class="flex-1 text-center text-sm font-bold text-secondary-900">{{ row.center }}</span>
-          <span v-if="row.right" :class="[row.rightClass || 'text-secondary-600', 'text-sm font-bold']">{{ row.right }}</span>
+          <span v-if="row.center" class="flex-1 text-center text-sm font-bold text-[var(--text-primary)]">{{ row.center }}</span>
+          <span v-if="row.right" :class="[row.rightClass || 'text-[var(--text-primary)]', 'text-sm font-bold']">{{ row.right }}</span>
         </template>
       </div>
     </div>
@@ -26,12 +26,12 @@
       <div class="absolute inset-0 flex items-center justify-center">
         <div class="relative">
           <div class="animate-ping absolute -inset-1 rounded-full bg-primary-400 opacity-30"></div>
-          <Icon name="i-ph-map-pin-fill" class="relative h-10 w-10 text-primary-600 drop-shadow-lg" />
+          <Icon name="i-ph-map-pin-fill" class="relative h-10 w-10 text-[var(--text-primary)] drop-shadow-lg" />
         </div>
       </div>
 
       <div class="absolute bottom-3 left-1/2 -translate-x-1/2">
-        <UBadge color="white" variant="solid" size="xs" class="rounded-full shadow-sm font-bold px-3 text-secondary-500 border border-secondary-200">
+        <UBadge color="white" variant="solid" size="xs" class="rounded-full shadow-sm font-bold px-3 text-[var(--text-primary)] border border-secondary-200">
           Google Maps
         </UBadge>
       </div>

@@ -27,8 +27,8 @@
             </UButton>
 
             <div class="flex items-center gap-2 px-4 h-9 rounded-2xl bg-white/50 ring-1 ring-secondary-200/50 transition-all group-hover/saved:ring-primary-200">
-               <Icon name="i-ph-folder-simple-duotone" class="h-4 w-4 text-secondary-400 group-hover/saved:text-primary-500" />
-               <span class="text-[10px] font-black uppercase tracking-widest text-secondary-500 group-hover/saved:text-primary-600">{{ entry.collectionLabel }}</span>
+               <Icon name="i-ph-folder-simple-duotone" class="h-4 w-4 text-secondary-400 group-hover/saved:text-secondary-900" />
+               <span class="text-[10px] font-black uppercase tracking-widest text-secondary-500 group-hover/saved:text-secondary-900">{{ entry.collectionLabel }}</span>
             </div>
           </div>
 

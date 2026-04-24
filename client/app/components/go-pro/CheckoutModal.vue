@@ -12,7 +12,7 @@
   >
     <UForm :state="form" class="space-y-5" @submit="submit">
       <div class="space-y-2">
-        <p class="text-label-secondary text-[var(--color-primary-600)]">
+        <p class="text-label-secondary text-[var(--text-primary)]">
           {{ t("pages.goProPage.checkoutEyebrow") }}
         </p>
         <p class="text-body-secondary">
@@ -83,7 +83,7 @@
 
           <template #label="{ item }">
             <span class="inline-flex items-center gap-2 text-[0.98rem] font-semibold text-[var(--text-primary)]">
-              <Icon :name="item.icon" class="h-5 w-5 shrink-0 text-[var(--color-primary-600)]" />
+              <Icon :name="item.icon" class="h-5 w-5 shrink-0 text-[var(--text-primary)]" />
               {{ item.label }}
             </span>
           </template>

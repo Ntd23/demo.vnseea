@@ -37,7 +37,7 @@
 
       <!-- Play Button -->
       <div class="absolute left-1/2 top-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-xl border border-white/30 shadow-2xl cursor-pointer hover:scale-110 transition-transform duration-300 z-10 group/play">
-        <div class="h-20 w-20 flex items-center justify-center rounded-full bg-white text-primary-600 transition-colors group-hover/play:bg-primary-50">
+        <div class="h-20 w-20 flex items-center justify-center rounded-full bg-white text-[var(--text-primary)] transition-colors group-hover/play:bg-primary-50">
           <Icon name="i-ph-play-fill" class="h-10 w-10 translate-x-1" />
         </div>
       </div>

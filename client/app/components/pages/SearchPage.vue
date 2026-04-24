@@ -22,16 +22,16 @@
         :key="item.label"
         class="surface-card p-6 border-secondary-100 flex flex-col justify-center"
       >
-        <p class="text-micro font-bold uppercase tracking-[0.2em] text-primary-600">
+        <p class="text-micro font-bold uppercase tracking-[0.2em] text-[var(--text-primary)]">
           {{ item.label }}
         </p>
         <div class="mt-2 flex items-baseline gap-2">
-          <p class="text-3xl font-black text-secondary-900 leading-none">
+          <p class="text-3xl font-black text-[var(--text-primary)] leading-none">
             {{ item.value }}
           </p>
-          <span class="text-xs font-bold text-secondary-400">results</span>
+          <span class="text-xs font-bold text-[var(--text-primary)]">results</span>
         </div>
-        <p class="mt-3 text-xs font-medium text-secondary-500 leading-relaxed">
+        <p class="mt-3 text-xs font-medium text-[var(--text-primary)] leading-relaxed">
           {{ item.description }}
         </p>
       </article>
@@ -43,10 +43,10 @@
       class="surface-card p-12 sm:p-20 border-secondary-100"
     >
       <div class="flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
-        <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary-50 text-3xl font-black text-primary-600 border border-primary-100 shadow-sm mb-8">
+        <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary-50 text-3xl font-black text-[var(--text-primary)] border border-primary-100 shadow-sm mb-8">
           {{ idleMonogram }}
         </div>
-        <h2 class="text-2xl font-black text-secondary-900 tracking-tight">
+        <h2 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">
           {{ $t('community.search.emptyState.title') }}
         </h2>
         <p class="mt-3 text-body-secondary text-base leading-relaxed">
@@ -97,10 +97,10 @@
       <section class="surface-card p-6 sm:p-8 border-secondary-100/50">
         <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div class="space-y-1">
-            <p class="text-micro font-bold uppercase tracking-widest text-primary-600">
+            <p class="text-micro font-bold uppercase tracking-widest text-[var(--text-primary)]">
               {{ $t('community.search.results.label') }}
             </p>
-            <h2 class="text-2xl font-black text-secondary-900 leading-tight">
+            <h2 class="text-2xl font-black text-[var(--text-primary)] leading-tight">
               {{ resultHeading }}
             </h2>
             <p class="text-body-secondary text-sm">
@@ -128,7 +128,7 @@
       >
         <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between border-b border-secondary-100/50 pb-6">
           <div class="space-y-1">
-            <p class="text-label-primary text-secondary-900 uppercase tracking-widest text-xs font-black">
+            <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest text-xs font-black">
               {{ $t(`community.search.tabs.${section.kind}.label`) }}
             </p>
             <p class="text-body-secondary text-sm">
@@ -161,13 +161,13 @@
     <!-- Footer -->
     <footer class="surface-card p-6 sm:p-8 border-secondary-100/50">
       <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm font-bold text-secondary-400">
-          <span class="text-secondary-900">© 2026 VNSEEA</span>
+        <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm font-bold text-[var(--text-primary)]">
+          <span class="text-[var(--text-primary)]">© 2026 VNSEEA</span>
           <NuxtLink
             v-for="link in primaryFooterLinks"
             :key="link.label"
             :to="link.to || '/home'"
-            class="transition hover:text-primary-600"
+            class="transition hover:text-secondary-900"
           >
             {{ $t(link.label) }}
           </NuxtLink>
@@ -177,7 +177,7 @@
           variant="ghost"
           color="gray"
           size="sm"
-          class="rounded-full font-black text-secondary-500 hover:text-primary-600"
+          class="rounded-full font-black text-[var(--text-primary)] hover:text-secondary-900"
         >
           <template #leading>
             <Icon name="i-ph-globe-hemisphere-west-fill" class="h-4 w-4" />

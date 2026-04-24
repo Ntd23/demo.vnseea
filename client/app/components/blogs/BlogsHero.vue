@@ -26,7 +26,7 @@
             size="lg"
             class="h-12 rounded-[var(--radius-full)] px-5 text-[14px] font-extrabold shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
             :class="mineOnly
-              ? 'bg-white text-[var(--color-primary-600)]'
+              ? 'bg-white text-[var(--text-primary)]'
               : 'bg-[#fde7b2] text-[#27345f]'"
             :aria-pressed="mineOnly"
             @click="$emit('toggleMine')"
@@ -40,7 +40,7 @@
             color="neutral"
             variant="solid"
             size="lg"
-            class="h-12 rounded-[var(--radius-full)] bg-white px-5 text-[14px] font-extrabold text-[var(--color-primary-600)] shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
+            class="h-12 rounded-[var(--radius-full)] bg-white px-5 text-[14px] font-extrabold text-[var(--text-primary)] shadow-[var(--shadow-lg)] transition hover:-translate-y-0.5"
           >
             <Icon name="i-ph-pencil-simple-line-fill" class="h-4 w-4" />
             {{ $t("pages.blogsPage.writeBlog") }}

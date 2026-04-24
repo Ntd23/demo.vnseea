@@ -83,7 +83,7 @@
             :ui="{ 
               rounded: 'rounded-[2.5rem]', 
               base: 'h-18 lg:h-20 text-xl font-bold bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-primary-500 hover:ring-primary-200 transition-all pl-16 px-10',
-              icon: { leading: { wrapper: 'left-6', base: 'h-7 w-7 text-primary-500' } }
+              icon: { leading: { wrapper: 'left-6', base: 'h-7 w-7 text-[var(--text-primary)]' } }
             }"
             :placeholder="$t('pages.productsPage.searchPlaceholder')"
           />
@@ -99,7 +99,7 @@
               :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
             >
               <template #leading>
-                <Icon name="i-ph-sort-ascending-duotone" class="h-6 w-6 text-primary-500" />
+                <Icon name="i-ph-sort-ascending-duotone" class="h-6 w-6 text-[var(--text-primary)]" />
               </template>
             </USelectMenu>
 
@@ -113,7 +113,7 @@
               :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
             >
               <template #leading>
-                <Icon name="i-ph-tag-duotone" class="h-6 w-6 text-primary-500" />
+                <Icon name="i-ph-tag-duotone" class="h-6 w-6 text-[var(--text-primary)]" />
               </template>
             </USelectMenu>
 
@@ -127,7 +127,7 @@
               :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
             >
               <template #leading>
-                <Icon name="i-ph-navigation-arrow-duotone" class="h-6 w-6 text-primary-500" />
+                <Icon name="i-ph-navigation-arrow-duotone" class="h-6 w-6 text-[var(--text-primary)]" />
               </template>
             </USelectMenu>
 
@@ -155,7 +155,7 @@
             class="rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all px-6 border-none h-12"
             :class="selectedCategory === chip.value
               ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-200 shadow-lg shadow-primary-500/10'
-              : 'text-secondary-400 hover:bg-secondary-50 hover:text-secondary-900 ring-1 ring-transparent hover:ring-secondary-100'"
+              : 'text-[var(--text-primary)] hover:bg-secondary-50 hover:text-secondary-900 ring-1 ring-transparent hover:ring-secondary-100'"
             @click="selectedCategory = chip.value"
           >
             <template #leading>
@@ -172,19 +172,19 @@
       <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/results:opacity-100 transition-opacity duration-1000" />
       
       <div class="relative z-10 space-y-3">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
           {{ $t("pages.productsPage.results") }}
         </p>
-        <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
+        <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">
           {{ resultHeading }}
         </h2>
-        <div class="flex items-center gap-4 text-[11px] font-black uppercase tracking-widest text-secondary-400 pl-1">
+        <div class="flex items-center gap-4 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] pl-1">
           <span class="flex items-center gap-2">
-            <Icon name="i-ph-package-duotone" class="h-4 w-4 text-primary-500" />
+            <Icon name="i-ph-package-duotone" class="h-4 w-4 text-[var(--text-primary)]" />
             {{ visibleProducts.length }} {{ $t("pages.productsPage.matchingProducts", { count: visibleProducts.length, sort: '' }).split(' ')[1] }}
           </span>
           <span class="w-1.5 h-1.5 rounded-full bg-secondary-200" />
-          <span class="text-primary-600">{{ currentSortLabel }}</span>
+          <span class="text-[var(--text-primary)]">{{ currentSortLabel }}</span>
         </div>
       </div>
 
@@ -192,7 +192,7 @@
         <UBadge
           variant="soft"
           size="lg"
-          class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-primary-600 ring-1 ring-primary-100"
+          class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-[var(--text-primary)] ring-1 ring-primary-100"
         >
           <template #leading>
             <Icon name="i-ph-funnel-duotone" class="h-5 w-5 mr-3" />
@@ -259,7 +259,7 @@
               </div>
 
               <div class="w-full rounded-[1.7rem] bg-white px-5 py-4 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl sm:w-auto sm:min-w-[250px] sm:rounded-[1.9rem] sm:px-6">
-                <p class="mb-2 text-[10px] font-black uppercase tracking-widest leading-none text-secondary-400">{{ $t("pages.productsPage.priceLabel") }}</p>
+                <p class="mb-2 text-[10px] font-black uppercase tracking-widest leading-none text-[var(--text-primary)]">{{ $t("pages.productsPage.priceLabel") }}</p>
                 <p class="truncate text-[1.7rem] font-black leading-none text-sky-600 sm:text-[2rem]">{{ formatCurrency(product.price) }}</p>
               </div>
             </div>
@@ -270,7 +270,7 @@
         <div class="flex flex-1 flex-col p-7 sm:p-8 xl:p-9">
           <div class="min-w-0 space-y-3">
             <div class="space-y-2">
-              <p class="pl-0.5 text-[9px] font-black uppercase tracking-[0.4em] text-secondary-400 transition-colors group-hover:text-primary-500">
+              <p class="pl-0.5 text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] transition-colors group-hover:text-secondary-900">
                 {{ product.seller }}
               </p>
               <h3 class="line-clamp-2 min-h-[4.2rem] text-[1.85rem] font-black leading-[1.02] tracking-tight text-secondary-950 transition-colors group-hover:text-primary-950 sm:min-h-[4.8rem] sm:text-[2.1rem] xl:text-[2.3rem]">
@@ -279,7 +279,7 @@
             </div>
           </div>
 
-          <p class="mt-4 min-h-[4.8rem] text-[15px] font-medium italic leading-7 text-secondary-500 line-clamp-3 sm:mt-5 sm:min-h-[5.4rem] sm:text-base sm:leading-8">
+          <p class="mt-4 min-h-[4.8rem] text-[15px] font-medium italic leading-7 text-[var(--text-primary)] line-clamp-3 sm:mt-5 sm:min-h-[5.4rem] sm:text-base sm:leading-8">
             "{{ product.description }}"
           </p>
 
@@ -288,7 +288,7 @@
               color="white"
               variant="solid"
               size="lg"
-              class="h-13 justify-center rounded-2xl border border-secondary-100 bg-white px-5 text-[11px] font-black uppercase tracking-widest text-secondary-900 shadow-sm transition-all active:scale-[0.98] hover:bg-primary-50 hover:text-primary-600 sm:h-14"
+              class="h-13 justify-center rounded-2xl border border-secondary-100 bg-white px-5 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] shadow-sm transition-all active:scale-[0.98] hover:bg-primary-50 hover:text-secondary-900 sm:h-14"
               icon="i-ph-chat-circle-text-duotone"
               :aria-label="$t('pages.productsPage.messageSeller')"
               :ui="{ icon: { base: 'h-5 w-5' } }"
@@ -317,7 +317,7 @@
               </p>
             </div>
 
-            <Icon name="i-ph-arrow-right-duotone" class="h-6 w-6 text-secondary-200 transition-all group-hover:translate-x-2 group-hover:text-primary-500" />
+            <Icon name="i-ph-arrow-right-duotone" class="h-6 w-6 text-secondary-200 transition-all group-hover:translate-x-2 group-hover:text-secondary-900" />
           </div>
         </div>
       </article>
@@ -330,15 +330,15 @@
     >
       <div class="absolute inset-0 bg-gradient-to-b from-primary-50/50 to-transparent pointer-events-none" />
       
-      <div class="relative mx-auto flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-primary-50 text-primary-600 shadow-2xl shadow-primary-500/10 transition-transform duration-700 group-hover/empty:scale-110 group-hover/empty:rotate-12">
+      <div class="relative mx-auto flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-primary-50 text-[var(--text-primary)] shadow-2xl shadow-primary-500/10 transition-transform duration-700 group-hover/empty:scale-110 group-hover/empty:rotate-12">
         <Icon name="i-ph-storefront-duotone" class="h-12 w-12" />
       </div>
 
       <div class="relative space-y-3 max-w-lg mx-auto px-6">
-        <h3 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
+        <h3 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">
           {{ $t("pages.productsPage.emptyTitle") }}
         </h3>
-        <p class="text-base font-medium leading-relaxed text-secondary-500 italic">
+        <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] italic">
           "{{ $t("pages.productsPage.emptyDescription") }}"
         </p>
       </div>

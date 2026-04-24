@@ -2,8 +2,8 @@
   <section class="surface-card p-6">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.withdrawalPage.historyEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.withdrawalPage.historyTitle") }}</h2>
+        <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest">{{ t("pages.withdrawalPage.historyEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.withdrawalPage.historyTitle") }}</h2>
       </div>
       <UBadge
         :label="items.length.toString()"
@@ -21,9 +21,9 @@
         class="group flex flex-col gap-4 rounded-2xl bg-secondary-50/50 p-5 transition hover:bg-secondary-50 sm:flex-row sm:items-center sm:justify-between border border-secondary-100/30"
       >
         <div class="min-w-0 space-y-1">
-          <p class="text-lg font-black text-secondary-900">{{ formatWithdrawalCurrency(item.amount, locale) }}</p>
+          <p class="text-lg font-black text-[var(--text-primary)]">{{ formatWithdrawalCurrency(item.amount, locale) }}</p>
           <div class="flex items-center gap-2 text-body-secondary text-sm">
-            <span class="font-bold text-secondary-600">{{ item.method }}</span>
+            <span class="font-bold text-[var(--text-primary)]">{{ item.method }}</span>
             <span class="text-secondary-300">•</span>
             <span>{{ item.account }}</span>
           </div>

@@ -3,7 +3,7 @@
     class="flex w-full flex-col animate-in fade-in slide-in-from-bottom-2 duration-500"
   >
     <div v-if="showTime" class="my-3 self-center sm:my-4">
-      <span class="rounded-full bg-white/92 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.24em] text-primary-500 ring-1 ring-secondary-100 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
+      <span class="rounded-full bg-white/92 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.24em] text-[var(--text-primary)] ring-1 ring-secondary-100 shadow-[0_10px_24px_rgba(15,23,42,0.05)]">
         {{ time }}
       </span>
     </div>
@@ -26,7 +26,7 @@
           :class="[
             isMine 
               ? 'rounded-[24px] rounded-br-lg bg-gradient-to-br from-primary-500 via-primary-600 to-sky-600 text-white font-medium ring-1 ring-primary-500/40 shadow-[0_16px_34px_rgba(14,165,233,0.22)] hover:shadow-[0_20px_40px_rgba(14,165,233,0.25)]' 
-              : 'rounded-[24px] rounded-bl-lg bg-white/96 text-secondary-800 font-medium ring-1 ring-secondary-100 shadow-[0_16px_34px_rgba(15,23,42,0.06)] hover:ring-primary-500/20'
+              : 'rounded-[24px] rounded-bl-lg bg-white/96 text-[var(--text-primary)] font-medium ring-1 ring-secondary-100 shadow-[0_16px_34px_rgba(15,23,42,0.06)] hover:ring-primary-500/20'
           ]"
         >
           {{ text }}

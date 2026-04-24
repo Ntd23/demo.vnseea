@@ -22,10 +22,10 @@
           </UBadge>
 
           <div class="space-y-4">
-            <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-secondary-900 leading-[1.05]">
+            <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-[var(--text-primary)] leading-[1.05]">
               {{ $t("pages.livePage.heroTitle") }}
             </h1>
-            <p class="max-w-[620px] text-base font-medium leading-relaxed text-secondary-500">
+            <p class="max-w-[620px] text-base font-medium leading-relaxed text-[var(--text-primary)]">
               {{ $t("pages.livePage.heroDescription") }}
             </p>
           </div>
@@ -50,7 +50,7 @@
               @click="$emit('focusChat')"
             >
               <template #leading>
-                <Icon name="i-ph-chat-circle-dots-duotone" class="h-6 w-6 text-primary-600" />
+                <Icon name="i-ph-chat-circle-dots-duotone" class="h-6 w-6 text-[var(--text-primary)]" />
               </template>
               {{ $t("pages.livePage.openChat") }}
             </UButton>
@@ -65,13 +65,13 @@
           :key="item.label" 
           class="surface-card p-6 ring-1 ring-secondary-50 bg-white/60 hover:bg-white hover:ring-primary-200 hover:shadow-xl transition-all duration-500 group/stat"
         >
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 mb-3 transition-transform group-hover/stat:translate-x-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] mb-3 transition-transform group-hover/stat:translate-x-1">
             {{ item.label }}
           </p>
-          <p class="text-3xl font-black tracking-tight text-secondary-900 mb-1">
+          <p class="text-3xl font-black tracking-tight text-[var(--text-primary)] mb-1">
             {{ item.value }}
           </p>
-          <p class="text-[11px] font-bold tracking-wide text-secondary-400 uppercase">
+          <p class="text-[11px] font-bold tracking-wide text-[var(--text-primary)] uppercase">
             {{ item.description }}
           </p>
         </div>

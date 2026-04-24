@@ -16,7 +16,7 @@
     <div class="min-w-0 flex-1 space-y-4">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="min-w-0 space-y-1">
-          <p class="text-lg font-black text-secondary-900 tracking-tight group-hover:text-primary-700 transition-colors">
+          <p class="text-lg font-black text-secondary-900 tracking-tight group-hover:text-secondary-900 transition-colors">
             {{ $t(item.name) }}
           </p>
           <div class="flex items-center gap-2">
@@ -27,7 +27,7 @@
           </div>
         </div>
 
-        <p class="text-xl font-black text-primary-600 tracking-tight">
+        <p class="text-xl font-black text-secondary-900 tracking-tight">
           {{ formatOrderCurrency(item.price * item.quantity) }}
         </p>
       </div>
@@ -60,10 +60,10 @@
     <div class="min-w-0 flex-1 space-y-1">
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
-          <p class="truncate text-sm font-black text-secondary-900 group-hover:text-primary-700 transition-colors">
+          <p class="truncate text-sm font-black text-secondary-900 group-hover:text-secondary-900 transition-colors">
             {{ $t(item.name) }}
           </p>
-          <p class="text-[10px] font-black uppercase tracking-widest text-primary-500">
+          <p class="text-[10px] font-black uppercase tracking-widest text-secondary-900">
             {{ $t("orders.card.qtyCompact", { count: item.quantity }) }}
           </p>
         </div>

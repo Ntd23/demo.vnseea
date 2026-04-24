@@ -3,7 +3,7 @@
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ t("pages.gamesPage.sidebarOverview") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -54,7 +54,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.gamesPage.leaderboardEyebrow") }}
       </p>
       <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -78,7 +78,7 @@
               {{ player.name }}
             </p>
           </div>
-          <p class="text-[13px] font-black text-[var(--color-primary-600)]">
+          <p class="text-[13px] font-black text-[var(--text-primary)]">
             {{ formatGameNumber(player.score, locale) }}
           </p>
         </div>
@@ -96,7 +96,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ t("pages.gamesPage.achievementsEyebrow") }}
       </p>
       <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -113,7 +113,7 @@
             <p class="text-[13px] font-extrabold text-[var(--text-primary)]">
               {{ item.title }}
             </p>
-            <p class="text-[12px] font-black text-[var(--color-primary-600)]">
+            <p class="text-[12px] font-black text-[var(--text-primary)]">
               {{ item.progress }}%
             </p>
           </div>

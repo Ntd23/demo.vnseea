@@ -19,7 +19,7 @@
           >
             <p
               v-if="eyebrow"
-              class="text-label-secondary text-[var(--color-primary-600)]"
+              class="text-label-secondary text-[var(--text-primary)]"
             >
               {{ eyebrow }}
             </p>
@@ -37,7 +37,7 @@
           <div class="flex items-start gap-3">
             <div
               v-if="icon"
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-primary-50)] text-[var(--color-primary-600)]"
+              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--color-primary-50)] text-[var(--text-primary)]"
             >
               <Icon :name="icon" class="h-5 w-5" />
             </div>

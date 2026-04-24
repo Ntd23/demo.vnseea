@@ -1,7 +1,7 @@
 <template>
   <div class="surface-card p-4 space-y-4">
     <div class="flex items-center justify-between">
-      <p class="text-sm font-black text-secondary-900 tracking-tight">{{ title }}</p>
+      <p class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ title }}</p>
       <UButton
         variant="ghost"
         color="primary"

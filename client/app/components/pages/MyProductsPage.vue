@@ -5,14 +5,14 @@
       <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none" />
       <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
         <div class="flex items-center gap-6">
-          <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 shadow-lg shadow-primary-500/10 ring-1 ring-primary-100/50 group-hover/header:scale-110 transition-transform duration-500">
+          <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-50 text-[var(--text-primary)] shadow-lg shadow-primary-500/10 ring-1 ring-primary-100/50 group-hover/header:scale-110 transition-transform duration-500">
             <Icon name="i-ph-storefront-duotone" class="h-8 w-8" />
           </div>
           <div>
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-500 pl-1">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
               {{ $t("pages.myProductsPage.eyebrow") }}
             </p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-secondary-900 leading-none">
+            <h1 class="mt-2 text-4xl font-black tracking-tight text-[var(--text-primary)] leading-none">
               {{ $t("pages.myProductsPage.title") }}
             </h1>
           </div>
@@ -39,7 +39,7 @@
         </button>
         
         <button
-          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full border border-secondary-200/50 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-secondary-500 hover:text-secondary-900 hover:bg-secondary-50 transition-all active:scale-95"
+          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full border border-secondary-200/50 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] hover:text-secondary-900 hover:bg-secondary-50 transition-all active:scale-95"
         >
           <Icon name="i-ph-receipt-duotone" class="mr-3 h-4 w-4" />
           {{ $t("pages.myProductsPage.purchased") }}
@@ -47,7 +47,7 @@
 
         <NuxtLink
           to="/products"
-          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full border border-secondary-200/50 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-secondary-500 hover:text-secondary-900 hover:bg-secondary-50 transition-all active:scale-95"
+          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full border border-secondary-200/50 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] hover:text-secondary-900 hover:bg-secondary-50 transition-all active:scale-95"
         >
           <Icon name="i-ph-planet-duotone" class="mr-3 h-4 w-4" />
           {{ $t("pages.myProductsPage.marketplace") }}
@@ -62,21 +62,21 @@
         :key="card.label"
         class="surface-card p-8 sm:p-10 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/stats hover:shadow-3xl transition-all duration-500"
       >
-        <div class="absolute -right-4 -top-4 text-primary-500/5 group-hover/stats:scale-125 transition-transform duration-700">
+        <div class="absolute -right-4 -top-4 text-secondary-900/5 group-hover/stats:scale-125 transition-transform duration-700">
           <Icon :name="card.icon" class="h-24 w-24" />
         </div>
 
         <div class="relative z-10 space-y-4">
           <div class="flex items-center gap-3">
             <div class="h-1.5 w-1.5 rounded-full bg-primary-500" />
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-400">
+            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)]">
               {{ card.label }}
             </p>
           </div>
-          <p class="text-5xl font-black text-secondary-900 tracking-tighter">
+          <p class="text-5xl font-black text-[var(--text-primary)] tracking-tighter">
             {{ card.value }}
           </p>
-          <p class="text-sm font-medium leading-relaxed text-secondary-500 italic">
+          <p class="text-sm font-medium leading-relaxed text-[var(--text-primary)] italic">
             {{ card.description }}
           </p>
         </div>
@@ -92,10 +92,10 @@
           <Icon name="i-ph-shopping-cart-simple-duotone" class="h-12 w-12" />
         </div>
         
-        <h2 class="mt-10 text-3xl font-black tracking-tight text-secondary-900 leading-tight">
+        <h2 class="mt-10 text-3xl font-black tracking-tight text-[var(--text-primary)] leading-tight">
           {{ $t("pages.myProductsPage.emptyTitle") }}
         </h2>
-        <p class="mt-4 text-base font-medium leading-relaxed text-secondary-500 max-w-[420px]">
+        <p class="mt-4 text-base font-medium leading-relaxed text-[var(--text-primary)] max-w-[420px]">
           {{ $t("pages.myProductsPage.emptyDescription") }}
         </p>
 
@@ -110,7 +110,7 @@
           
           <NuxtLink
             to="/products"
-            class="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-2xl border border-secondary-200/50 bg-white px-8 text-sm font-black text-secondary-600 hover:bg-secondary-50 active:scale-95 transition-all"
+            class="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-2xl border border-secondary-200/50 bg-white px-8 text-sm font-black text-[var(--text-primary)] hover:bg-secondary-50 active:scale-95 transition-all"
           >
             {{ $t("pages.myProductsPage.viewMarketplace") }}
           </NuxtLink>

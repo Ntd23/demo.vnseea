@@ -34,9 +34,9 @@
           <UBadge
             v-for="tag in article.tags"
             :key="tag"
-            color="primary"
-            variant="subtle"
-            class="rounded-[var(--radius-full)] px-2.5 py-1 text-[11px] font-bold"
+            color="neutral"
+            variant="soft"
+            class="rounded-[var(--radius-full)] px-2.5 py-1 text-[11px] font-bold text-[var(--text-primary)]"
           >
             #{{ tag }}
           </UBadge>
@@ -80,7 +80,7 @@
     >
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ $t("pages.readBlogPage.comments") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">

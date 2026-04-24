@@ -44,7 +44,7 @@
         <Icon
           :name="selected ? 'i-ph-check-circle-fill' : plan.highlight ? 'i-ph-star-fill' : 'i-ph-crown-simple-fill'"
           class="h-7 w-7 shrink-0"
-          :class="selected ? 'text-[var(--color-success)]' : plan.highlight ? 'text-[var(--color-accent-500)]' : 'text-[var(--color-primary-500)]'"
+          :class="selected ? 'text-[var(--color-success)]' : plan.highlight ? 'text-[var(--color-accent-500)]' : 'text-[var(--text-primary)]'"
         />
       </div>
 

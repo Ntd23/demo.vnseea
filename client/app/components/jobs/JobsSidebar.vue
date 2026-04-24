@@ -3,7 +3,7 @@
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ $t("pages.jobsPage.sidebarStatusEyebrow") }}
           </p>
           <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -35,7 +35,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.jobsPage.sidebarQuickStats") }}
       </p>
 
@@ -56,7 +56,7 @@
     </UCard>
 
     <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
-      <p class="text-label-secondary text-[var(--color-primary-600)]">
+      <p class="text-label-secondary text-[var(--text-primary)]">
         {{ $t("pages.jobsPage.sidebarHiringCategories") }}
       </p>
       <p class="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
@@ -75,7 +75,7 @@
           @click="$emit('selectCategory', category.value)"
         >
           <span class="inline-flex min-w-0 items-center gap-2 text-left">
-            <Icon :name="category.icon" class="h-4 w-4 shrink-0 text-[var(--color-primary-600)]" />
+            <Icon :name="category.icon" class="h-4 w-4 shrink-0 text-[var(--text-primary)]" />
             <span class="truncate">{{ category.label }}</span>
           </span>
           <UBadge color="primary" variant="subtle" class="rounded-full px-2.5 py-1 text-[11px] font-bold">

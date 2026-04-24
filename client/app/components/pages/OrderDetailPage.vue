@@ -11,7 +11,7 @@
             <div class="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between border-b border-secondary-50 pb-6">
               <div class="space-y-1">
                 <div class="flex flex-wrap items-center gap-3">
-                  <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+                  <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-1">
                     {{ order.orderNumber }}
                   </p>
                   <UBadge
@@ -26,19 +26,19 @@
                   </UBadge>
                 </div>
 
-                <h2 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
+                <h2 class="text-2xl font-black tracking-tight text-[var(--text-primary)] leading-tight">
                   {{ $t("orders.card.orderedFrom", { seller: order.seller, price: formatOrderCurrency(order.total) }).split(' • ')[0] }}
                 </h2>
-                <p class="text-sm font-medium leading-relaxed text-secondary-500 max-w-2xl">
+                <p class="text-sm font-medium leading-relaxed text-[var(--text-primary)] max-w-2xl">
                   {{ $t(statusMeta.description) }}
                 </p>
               </div>
 
               <div class="flex flex-wrap gap-2 pt-2 xl:pt-1">
-                <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
+                <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-[var(--text-primary)] shadow-sm">
                   {{ order.placedAt }}
                 </UBadge>
-                <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
+                <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-[var(--text-primary)] shadow-sm">
                   {{ $t("orders.card.items", { count: totalItems }) }}
                 </UBadge>
               </div>
@@ -46,42 +46,42 @@
 
             <div class="grid gap-4 sm:grid-cols-3">
               <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/info hover:bg-white transition-colors duration-500">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] pl-1">
                   {{ $t("orders.detail.recipient") }}
                 </p>
                 <div class="space-y-1">
-                  <p class="text-sm font-black text-secondary-900 group-hover/info:text-primary-700 transition-colors">
+                  <p class="text-sm font-black text-[var(--text-primary)] group-hover/info:text-secondary-900 transition-colors">
                     {{ order.recipientName }}
                   </p>
-                  <p class="text-[11px] font-medium leading-relaxed text-secondary-500">
+                  <p class="text-[11px] font-medium leading-relaxed text-[var(--text-primary)]">
                     {{ order.recipientPhone }}
                   </p>
                 </div>
               </div>
 
               <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/ship-provider hover:bg-white transition-colors duration-500">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] pl-1">
                   {{ $t("orders.detail.shippingProvider") }}
                 </p>
                 <div class="space-y-1">
-                  <p class="text-sm font-black text-secondary-900 group-hover/ship-provider:text-primary-700 transition-colors">
+                  <p class="text-sm font-black text-[var(--text-primary)] group-hover/ship-provider:text-secondary-900 transition-colors">
                     {{ order.shippingProvider }}
                   </p>
-                  <p class="text-[11px] font-medium leading-relaxed text-secondary-500 uppercase tracking-widest">
+                  <p class="text-[11px] font-medium leading-relaxed text-[var(--text-primary)] uppercase tracking-widest">
                     #{{ $t(order.trackingCode) }}
                   </p>
                 </div>
               </div>
 
               <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-4 group/est hover:bg-white transition-colors duration-500">
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] pl-1">
                   {{ $t("orders.detail.estimatedProcess") }}
                 </p>
                 <div class="space-y-1">
-                  <p class="text-sm font-black text-secondary-900 group-hover/est:text-primary-700 transition-colors">
+                  <p class="text-sm font-black text-[var(--text-primary)] group-hover/est:text-secondary-900 transition-colors">
                     {{ $t(order.deliveryWindow) }}
                   </p>
-                  <p class="text-[11px] font-medium leading-relaxed text-secondary-500 italic">
+                  <p class="text-[11px] font-medium leading-relaxed text-[var(--text-primary)] italic">
                     {{ $t(order.paymentMethod) }}
                   </p>
                 </div>
@@ -92,15 +92,15 @@
           <section class="surface-card p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b border-secondary-50 pb-6">
               <div class="space-y-1">
-                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-1">
                   {{ $t("orders.card.productsInOrder") }}
                 </p>
-                <h3 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
+                <h3 class="text-2xl font-black tracking-tight text-[var(--text-primary)] leading-tight">
                   {{ $t("orders.card.productsSummary", { count: totalItems }) }}
                 </h3>
               </div>
 
-              <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
+              <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-[var(--text-primary)] shadow-sm">
                 {{ $t("orders.card.total", { total: formatOrderCurrency(order.total) }) }}
               </UBadge>
             </div>
@@ -119,25 +119,25 @@
 
           <div class="grid gap-5 xl:grid-cols-2">
             <section class="surface-card p-6 sm:p-8 space-y-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500">
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-1">
                 {{ $t("orders.detail.deliveryAndNotes") }}
               </p>
 
               <div class="grid gap-4">
                 <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-3 group/address hover:bg-white transition-colors duration-500">
-                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
+                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] pl-1">
                     {{ $t("orders.card.shippingAddress") }}
                   </p>
-                  <p class="text-sm font-semibold leading-relaxed text-secondary-600 group-hover/address:text-secondary-900 transition-colors">
+                  <p class="text-sm font-semibold leading-relaxed text-[var(--text-primary)] group-hover/address:text-secondary-900 transition-colors">
                     {{ order.shippingAddress }}
                   </p>
                 </div>
 
                 <div class="surface-card p-5 bg-secondary-50/50 ring-1 ring-secondary-100 space-y-3 group/note hover:bg-white transition-colors duration-500">
-                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-400 pl-1">
+                  <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] pl-1">
                     {{ $t("orders.detail.orderNote") }}
                   </p>
-                  <p class="text-sm font-semibold leading-relaxed text-secondary-600 group-hover/note:text-secondary-900 transition-colors italic">
+                  <p class="text-sm font-semibold leading-relaxed text-[var(--text-primary)] group-hover/note:text-secondary-900 transition-colors italic">
                     {{ order.note || $t("orders.detail.noNote") }}
                   </p>
                 </div>
@@ -166,10 +166,10 @@
           v-else
           class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl"
         >
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary-500 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-1">
             {{ $t("orders.sidebar.tasks") }}
           </p>
-          <p class="text-sm font-medium leading-relaxed text-secondary-500">
+          <p class="text-sm font-medium leading-relaxed text-[var(--text-primary)]">
             {{ $t("orders.sidebar.tasksAction") }}
           </p>
           <UButton

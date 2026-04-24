@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div>
-        <p class="text-label-secondary text-[var(--color-primary-600)]">
+        <p class="text-label-secondary text-[var(--text-primary)]">
           {{ $t("pages.blogsPage.filtersEyebrow") }}
         </p>
         <h2 id="blogs-filters-title" class="mt-1 text-heading text-[var(--text-primary)]">
@@ -66,7 +66,7 @@
             class="flex min-h-12 items-center justify-between gap-3 rounded-[18px] px-3 py-2 text-left transition"
             :class="selectedCategory === category.value
               ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-              : 'bg-[var(--color-secondary-100)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
+              : 'bg-[var(--color-secondary-100)] text-[var(--text-primary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--text-primary)]'"
             type="button"
             :aria-label="category.label"
             :aria-pressed="selectedCategory === category.value"
@@ -92,7 +92,7 @@
               class="flex h-12 items-center justify-between rounded-[18px] px-3 text-left text-[13px] font-extrabold transition"
               :class="sortBy === option.value
                 ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-                : 'bg-white text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
+                : 'bg-white text-[var(--text-primary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--text-primary)]'"
               type="button"
               :aria-label="option.label"
               :aria-pressed="sortBy === option.value"
@@ -114,8 +114,8 @@
         <button
           class="flex min-h-[76px] w-full items-center justify-between gap-4 rounded-[24px] border px-4 text-left transition"
           :class="mineOnly
-            ? 'border-[var(--color-primary-200)] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]'
-            : 'border-[var(--border-default)] bg-white text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--color-primary-600)]'"
+            ? 'border-[var(--color-primary-200)] bg-[var(--color-primary-50)] text-[var(--text-primary)]'
+            : 'border-[var(--border-default)] bg-white text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]'"
           type="button"
           :aria-label="$t('pages.blogsPage.mineToggleLabel')"
           :aria-pressed="mineOnly"
@@ -125,7 +125,7 @@
             <span class="block text-[13px] font-extrabold">{{ $t("pages.blogsPage.myArticles") }}</span>
             <span class="mt-1 block text-[12px] font-semibold opacity-75">{{ $t("pages.blogsPage.mineFilterDescription") }}</span>
           </span>
-          <span class="inline-flex h-10 w-10 items-center justify-center rounded-[16px] bg-white text-[var(--color-primary-600)] shadow-[var(--shadow-sm)]">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-[16px] bg-white text-[var(--text-primary)] shadow-[var(--shadow-sm)]">
             <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-toggle-left-fill'" class="h-6 w-6" />
           </span>
         </button>
@@ -138,7 +138,7 @@
       aria-live="polite"
     >
       <div class="inline-flex items-center gap-2 text-[13px] font-bold text-[var(--text-secondary)]">
-        <Icon name="i-ph-funnel-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
+        <Icon name="i-ph-funnel-fill" class="h-4 w-4 text-[var(--text-primary)]" />
         {{ $t("pages.blogsPage.matchingArticles", { count: articleCount }) }}
       </div>
       <div class="text-[13px] font-semibold text-[var(--text-tertiary)]">

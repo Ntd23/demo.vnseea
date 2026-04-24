@@ -4,7 +4,7 @@
       <UCard class="rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5 sm:p-6' }">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <p class="text-label-secondary text-[var(--color-primary-600)]">
+            <p class="text-label-secondary text-[var(--text-primary)]">
               {{ $t("pages.createEventPage.editorEyebrow") }}
             </p>
             <h2 class="mt-1 text-heading text-[var(--text-primary)]">
@@ -15,7 +15,7 @@
             </p>
           </div>
 
-          <div class="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary-50)] px-3 py-2 text-[12px] font-bold text-[var(--color-primary-600)]">
+          <div class="inline-flex items-center gap-2 rounded-full bg-[var(--color-primary-50)] px-3 py-2 text-[12px] font-bold text-[var(--text-primary)]">
             <Icon name="i-ph-seal-check-fill" class="h-4 w-4" />
             {{ completionText }}
           </div>
@@ -216,7 +216,7 @@
         <UCard class="rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5 sm:p-6' }">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p class="text-label-secondary text-[var(--color-primary-600)]">
+              <p class="text-label-secondary text-[var(--text-primary)]">
                 {{ $t("pages.createEventPage.coverImage") }}
               </p>
               <p class="mt-1 text-body-secondary">
@@ -243,7 +243,7 @@
               >
 
               <span>
-                <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-white text-[var(--color-primary-600)] shadow-[var(--shadow-sm)]">
+                <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-white text-[var(--text-primary)] shadow-[var(--shadow-sm)]">
                   <Icon name="i-ph-image-square-fill" class="h-8 w-8" />
                 </span>
                 <span class="mt-3 block text-[13px] font-bold text-[var(--text-primary)]">
@@ -348,11 +348,11 @@
         <div class="p-4">
           <div class="space-y-3 text-[13px] font-semibold text-[var(--text-secondary)]">
             <div class="flex items-center gap-2">
-              <Icon name="i-ph-calendar-check-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
+              <Icon name="i-ph-calendar-check-fill" class="h-4 w-4 text-[var(--text-primary)]" />
               <span>{{ dateSummary }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <Icon name="i-ph-map-pin-fill" class="h-4 w-4 text-[var(--color-primary-600)]" />
+              <Icon name="i-ph-map-pin-fill" class="h-4 w-4 text-[var(--text-primary)]" />
               <span>{{ form.location || $t("pages.createEventPage.locationFallback") }}</span>
             </div>
           </div>
@@ -365,7 +365,7 @@
 
       <UCard class="rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
         <div class="flex items-center justify-between gap-3">
-          <p class="text-label-secondary text-[var(--color-primary-600)]">
+          <p class="text-label-secondary text-[var(--text-primary)]">
             {{ $t("pages.createEventPage.checklist") }}
           </p>
           <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">

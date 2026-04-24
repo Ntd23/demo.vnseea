@@ -4,7 +4,7 @@
     role="status"
     aria-live="polite"
   >
-    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-[var(--color-primary-50)] text-[var(--color-primary-600)]">
+    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-[var(--color-primary-50)] text-[var(--text-primary)]">
       <Icon name="i-ph-newspaper-clipping-fill" class="h-7 w-7" />
     </div>
     <h3 class="mt-4 text-[1.3rem] font-black tracking-[-0.04em] text-[var(--text-primary)]">
