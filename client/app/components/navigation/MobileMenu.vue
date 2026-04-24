@@ -1,17 +1,21 @@
 <template>
-  <UDrawer
-    :open="drawerOpen"
-    direction="right"
-    class="w-[85vw] max-w-[400px]"
-    :ui="{
-      overlay: {
-        base: 'fixed inset-0 z-[60] bg-primary-950/60 backdrop-blur-md',
-      }
-    }"
-    @update:open="handleOpenChange"
-  >
-    <template #body>
-      <div class="relative flex h-full flex-col overflow-hidden bg-primary-950 text-white shadow-[-12px_0_40px_rgba(0,0,0,0.5)]">
+  <Teleport to="body">
+    <Transition name="mobile-menu">
+      <div
+        v-if="drawerOpen"
+        class="fixed inset-0 z-[var(--z-modal)] xl:hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mobile-navigation-menu-title"
+      >
+        <button
+          type="button"
+          class="absolute inset-0 bg-primary-950/60 backdrop-blur-md"
+          aria-label="Close mobile navigation"
+          @click="handleOpenChange(false)"
+        />
+
+        <aside id="mobile-navigation-menu" class="absolute inset-y-0 right-0 z-10 flex h-full w-[85vw] max-w-[400px] flex-col overflow-hidden bg-primary-950 text-white shadow-[-12px_0_40px_rgba(0,0,0,0.5)]">
         <!-- Decor Backgrounds -->
         <div class="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-primary-600/10 to-transparent pointer-events-none z-0" />
         <div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-500/20 rounded-full blur-[100px] pointer-events-none z-0" />
@@ -22,15 +26,16 @@
             <div class="rounded-xl bg-primary-600 p-2 shadow-lg shadow-primary-500/20">
               <Icon name="i-ph-list-bold" class="h-5 w-5 text-white" />
             </div>
-            <span class="text-sm font-black uppercase tracking-[0.2em] text-white">{{ $t("navigation.mobileMenu.title") }}</span>
+            <span id="mobile-navigation-menu-title" class="text-sm font-black uppercase tracking-[0.2em] text-white">{{ $t("navigation.mobileMenu.title") }}</span>
           </div>
-          <UButton
-            color="white"
-            variant="ghost"
-            icon="i-ph-x-bold"
-            class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white/60 transition-all shadow-none hover:bg-white/10 hover:text-white"
+          <button
+            type="button"
+            class="pressable focus-ring flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-white/60 transition-all shadow-none hover:bg-white/10 hover:text-white"
+            :aria-label="$t('common.close')"
             @click="handleOpenChange(false)"
-          />
+          >
+            <Icon name="i-ph-x-bold" class="h-5 w-5" />
+          </button>
         </div>
 
         <!-- Scrollable Content -->
@@ -155,9 +160,10 @@
             </div>
           </div>
         </div>
+        </aside>
       </div>
-    </template>
-  </UDrawer>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -172,11 +178,9 @@ const emit = defineEmits<{
   "update:open": [value: boolean]
 }>()
 
-const { isWide } = useAppBreakpoints()
-
 const controlledOpen = computed(() => props.open ?? modelValue.value)
 
-const drawerOpen = computed(() => Boolean(controlledOpen.value) && !isWide.value)
+const drawerOpen = computed(() => Boolean(controlledOpen.value))
 
 function isNavItemActive(to: string) {
   const normalized = to.split("?")[0].split("#")[0]
@@ -199,12 +203,6 @@ function handleOpenChange(value: boolean) {
     emit("close")
   }
 }
-
-watch(isWide, (value) => {
-  if (value && controlledOpen.value) {
-    handleOpenChange(false)
-  }
-})
 
 const mainNav = [
   { label: "navigation.mobileMenu.mainNav.search", icon: "i-ph-magnifying-glass", to: "/search" },
@@ -247,3 +245,25 @@ const bottomActions = [
   { label: "navigation.mobileMenu.bottomActions.darkMode", icon: "i-ph-moon" },
 ]
 </script>
+
+<style scoped>
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+  transition: opacity 180ms ease;
+}
+
+.mobile-menu-enter-active #mobile-navigation-menu,
+.mobile-menu-leave-active #mobile-navigation-menu {
+  transition: transform 220ms ease;
+}
+
+.mobile-menu-enter-from,
+.mobile-menu-leave-to {
+  opacity: 0;
+}
+
+.mobile-menu-enter-from #mobile-navigation-menu,
+.mobile-menu-leave-to #mobile-navigation-menu {
+  transform: translateX(24px);
+}
+</style>
