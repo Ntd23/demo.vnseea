@@ -6,9 +6,9 @@
       class="w-full"
       :ui="{
         label: {
-          base: 'text-[10px] font-black uppercase tracking-widest text-secondary-400 pl-1 mb-2'
+          base: 'text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] pl-1 mb-2'
         },
-        help: 'text-[10px] font-medium text-secondary-400 pl-1 mt-1.5'
+        help: 'text-[10px] font-medium text-[var(--text-primary)] pl-1 mt-1.5'
       }"
     >
       <!-- Textarea -->
@@ -19,7 +19,7 @@
         size="xl"
         :rows="4"
         :ui="{
-          base: 'rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
+          base: 'rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-[var(--text-primary)]',
         }"
       />
 
@@ -30,12 +30,12 @@
         :options="field.options ?? []"
         size="xl"
         :ui="{
-          trigger: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-black text-xs uppercase tracking-widest text-secondary-900',
-          icon: { base: 'text-secondary-900 h-5 w-5' }
+          trigger: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-black text-xs uppercase tracking-widest text-[var(--text-primary)]',
+          icon: { base: 'text-[var(--text-primary)] h-5 w-5' }
         }"
       >
         <template #leading>
-          <Icon name="i-ph-list-bullets-duotone" class="h-5 w-5 text-secondary-900" />
+          <Icon name="i-ph-list-bullets-duotone" class="h-5 w-5 text-[var(--text-primary)]" />
         </template>
       </USelectMenu>
 
@@ -47,11 +47,11 @@
         :placeholder="field.placeholder"
         size="xl"
         :ui="{
-          base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900',
+          base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-[var(--text-primary)]',
         }"
       >
         <template #leading>
-          <Icon :name="field.key.includes('password') ? 'i-ph-lock-duotone' : (field.key.includes('email') ? 'i-ph-envelope-duotone' : 'i-ph-pencil-duotone')" class="h-5 w-5 text-secondary-900" />
+          <Icon :name="field.key.includes('password') ? 'i-ph-lock-duotone' : (field.key.includes('email') ? 'i-ph-envelope-duotone' : 'i-ph-pencil-duotone')" class="h-5 w-5 text-[var(--icon-primary)]" />
         </template>
       </UInput>
     </UFormGroup>

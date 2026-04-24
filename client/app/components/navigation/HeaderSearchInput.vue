@@ -20,7 +20,7 @@
     >
       <template #trailing>
         <div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-white ring-1 ring-secondary-100 shadow-sm opacity-60 group-focus-within:opacity-100 transition-opacity">
-          <kbd class="text-[10px] font-black font-sans text-secondary-500 uppercase tracking-widest">K</kbd>
+          <kbd class="text-[10px] font-black font-sans text-[var(--text-primary)] uppercase tracking-widest">K</kbd>
         </div>
       </template>
     </UInput>

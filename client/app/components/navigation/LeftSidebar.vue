@@ -1,7 +1,7 @@
 <template>
   <div class="min-w-0 space-y-8 xl:flex xl:h-full xl:flex-col">
     <nav class="space-y-1 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-contain xl:pr-1 scrollbar-hide">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-3 mb-4">
+      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-3 mb-4">
         {{ $t("navigation.leftSidebar.menu") || 'Menu' }}
       </p>
 

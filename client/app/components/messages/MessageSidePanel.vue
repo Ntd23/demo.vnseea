@@ -10,10 +10,10 @@
         />
         <span class="absolute bottom-0 right-0 h-6 w-6 rounded-full border-4 border-white bg-sky-500 shadow-sm" />
       </div>
-      <h3 class="text-[15px] font-black uppercase tracking-[0.18em] leading-none text-secondary-900">{{ $t('pages.messagesPage.contactName') }}</h3>
+      <h3 class="text-[15px] font-black uppercase tracking-[0.18em] leading-none text-[var(--text-primary)]">{{ $t('pages.messagesPage.contactName') }}</h3>
       <div class="mt-2 flex items-center gap-2">
         <span class="h-1.5 w-1.5 rounded-full bg-sky-500" />
-        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-secondary-400">{{ $t('pages.messagesPage.activeNow') }}</p>
+        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--text-primary)]">{{ $t('pages.messagesPage.activeNow') }}</p>
       </div>
 
       <div class="mt-8 flex gap-4">
@@ -24,7 +24,7 @@
             { icon: 'i-ph-magnifying-glass-duotone', label: $t('pages.messagesPage.search') }
           ]"
           :key="action.label"
-          class="group flex flex-col items-center gap-2 text-secondary-400 transition-all hover:text-secondary-900"
+          class="group flex flex-col items-center gap-2 text-[var(--text-primary)] transition-all hover:text-secondary-900"
         >
           <span class="flex h-11 w-11 items-center justify-center rounded-[18px] bg-secondary-50 ring-1 ring-secondary-100 transition-all group-hover:bg-primary-50 group-hover:ring-primary-100 group-hover:shadow-lg group-hover:shadow-primary-500/10">
             <Icon :name="action.icon" class="h-5 w-5" />
@@ -43,10 +43,10 @@
           $t('pages.messagesPage.privacySupport')
         ]"
         :key="section"
-        class="group flex w-full items-center justify-between rounded-[22px] border border-transparent bg-white/70 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-secondary-900 transition-all duration-300 hover:border-primary-100 hover:bg-secondary-50 hover:text-secondary-900"
+        class="group flex w-full items-center justify-between rounded-[22px] border border-transparent bg-white/70 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-primary)] transition-all duration-300 hover:border-primary-100 hover:bg-secondary-50 hover:text-secondary-900"
       >
         <span class="flex items-center gap-3">
-          <Icon name="i-ph-folder-simple-duotone" class="h-4 w-4 text-secondary-900 group-hover:scale-110 transition-transform" />
+          <Icon name="i-ph-folder-simple-duotone" class="h-4 w-4 text-[var(--text-primary)] group-hover:scale-110 transition-transform" />
           {{ section }}
         </span>
         <Icon name="i-ph-caret-right-bold" class="h-3 w-3 text-secondary-300 group-hover:text-secondary-900 transition-all group-hover:translate-x-1" />

@@ -44,7 +44,7 @@
           <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <NuxtLink
               :to="movie.to"
-              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-5 text-[13px] font-black text-[var(--color-primary-700)] shadow-[0_10px_30px_rgba(255,255,255,0.18)] transition hover:-translate-y-0.5 sm:w-auto"
+              class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-white px-5 text-[13px] font-black text-[var(--text-primary)] shadow-[0_10px_30px_rgba(255,255,255,0.18)] transition hover:-translate-y-0.5 sm:w-auto"
             >
               <Icon name="i-ph-play-fill" class="h-4 w-4" />
               {{ primaryLabel }}

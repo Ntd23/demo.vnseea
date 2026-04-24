@@ -9,7 +9,7 @@
     <div>
       <p
         class="text-[10px] font-semibold uppercase tracking-[0.28em]"
-        :class="inverted ? 'text-white/70' : 'text-secondary-900'"
+        :class="inverted ? 'text-white/70' : 'text-[var(--icon-primary)]'"
       >
         {{ $t("navigation.headerLogo.tagline") }}
       </p>

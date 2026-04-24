@@ -8,7 +8,7 @@
         <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter leading-none">
           {{ t("pages.settingsPage.sidebarTitle") }}
         </h2>
-        <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
+        <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
           {{ t("pages.settingsPage.sidebarCount", { count: pages.length }) }}
         </p>
       </div>
@@ -32,7 +32,7 @@
         </div>
         <div class="min-w-0 flex-1">
           <p class="truncate text-[11px] font-black uppercase tracking-widest leading-none">{{ page.label }}</p>
-          <p class="truncate text-[9px] font-bold uppercase tracking-widest text-secondary-400 transition-colors group-hover:text-primary-400 mt-1.5">{{ page.description }}</p>
+          <p class="truncate text-[9px] font-bold uppercase tracking-widest text-[var(--text-primary)] transition-colors group-hover:text-primary-400 mt-1.5">{{ page.description }}</p>
         </div>
       </NuxtLink>
     </nav>

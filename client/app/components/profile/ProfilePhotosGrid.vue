@@ -1,6 +1,6 @@
   <div class="surface-card p-5 space-y-4">
     <div class="flex items-center justify-between">
-      <h3 class="text-sm font-black text-secondary-900 tracking-tight">{{ $t("pages.profilePage.photosGrid.title") }}</h3>
+      <h3 class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ $t("pages.profilePage.photosGrid.title") }}</h3>
       <UButton
         variant="ghost"
         color="primary"

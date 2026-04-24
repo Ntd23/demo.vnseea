@@ -9,7 +9,7 @@
             <NuxtLink 
               to="/home"
               class="flex items-center gap-2.5 px-4 py-2 rounded-xl transition-all duration-300 group"
-              :class="isHome ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' : 'text-secondary-500 hover:text-primary-600 hover:bg-white'"
+              :class="isHome ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' : 'text-[var(--text-primary)] hover:text-primary-600 hover:bg-white'"
             >
               <Icon :name="isHome ? 'i-ph-house-fill' : 'i-ph-house-duotone'" class="h-5 w-5 transition-transform group-hover:scale-110" />
               <span class="text-[11px] font-black uppercase tracking-[0.2em]">{{ $t("navigation.headerBar.home") }}</span>
@@ -32,7 +32,7 @@
                 :key="action.label"
                 :to="action.to"
                 class="relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-500 group"
-                :class="action.to === route.path || (action.label === 'navigation.headerBar.notifications' && false) ? 'bg-white text-primary-600 shadow-sm ring-1 ring-secondary-100' : 'text-secondary-400 hover:text-primary-600 hover:bg-white'"
+                :class="action.to === route.path || (action.label === 'navigation.headerBar.notifications' && false) ? 'bg-white text-primary-600 shadow-sm ring-1 ring-secondary-100' : 'text-[var(--icon-primary)] hover:text-primary-600 hover:bg-white'"
                 :type="action.to ? undefined : 'button'"
                 :aria-label="$t(action.label)"
               >
@@ -68,7 +68,7 @@
               :aria-label="$t(item.label)"
             >
               <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5" />
-              <span v-if="item.logoBadge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-white px-1 text-[8px] font-black text-secondary-900 shadow-xl ring-1 ring-white/20">
+              <span v-if="item.logoBadge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-white px-1 text-[8px] font-black text-[var(--text-primary)] shadow-xl ring-1 ring-white/20">
                 {{ item.logoBadge }}
               </span>
               <span v-if="item.badge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-rose-500 px-1 text-[8px] font-black text-white shadow-xl ring-1 ring-white/20">

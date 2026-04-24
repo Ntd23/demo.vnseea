@@ -6,7 +6,7 @@
   >
     <div
       v-if="!compact"
-      class="flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900"
+      class="flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]"
     >
       <Icon name="i-ph-translate-duotone" class="h-4 w-4" />
       <span>Language</span>
@@ -23,14 +23,14 @@
           compact ? 'min-w-[40px] justify-center' : 'w-full justify-start py-3 px-4',
           activeLocale === item.code 
             ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' 
-            : 'bg-white text-secondary-500 border border-secondary-100 hover:border-primary-200 hover:text-secondary-900'
+            : 'bg-white text-[var(--text-primary)] border border-secondary-100 hover:border-primary-200 hover:text-secondary-900'
         ]"
         @click="changeLocale(item.code)"
       >
         <template v-if="!compact">
           <div class="flex w-full items-center justify-between gap-4">
             <span class="text-xs">{{ item.short }}</span>
-            <span class="text-[10px] font-medium normal-case text-secondary-400 group-hover:text-primary-400">{{ item.name }}</span>
+            <span class="text-[10px] font-medium normal-case text-[var(--text-primary)] group-hover:text-primary-400">{{ item.name }}</span>
           </div>
         </template>
         <template v-else>

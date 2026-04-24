@@ -2,8 +2,8 @@
   <section class="surface-card p-6">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ t("pages.walletPage.historyEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-secondary-900">{{ t("pages.walletPage.historyTitle") }}</h2>
+        <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest">{{ t("pages.walletPage.historyEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.historyTitle") }}</h2>
       </div>
       <UBadge
         :label="transactions.length.toString()"
@@ -24,9 +24,9 @@
             <Icon :name="iconName(transaction.type)" class="h-6 w-6" />
           </div>
           <div class="min-w-0 space-y-1">
-            <p class="truncate text-[15px] font-black text-secondary-900">{{ transaction.title }}</p>
-            <p class="truncate text-xs font-semibold text-secondary-400">{{ transaction.description }}</p>
-            <div class="flex items-center gap-2 text-[10px] font-bold text-secondary-400 uppercase tracking-wider">
+            <p class="truncate text-[15px] font-black text-[var(--text-primary)]">{{ transaction.title }}</p>
+            <p class="truncate text-xs font-semibold text-[var(--text-primary)]">{{ transaction.description }}</p>
+            <div class="flex items-center gap-2 text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-wider">
               <span>{{ transaction.time }}</span>
               <span class="text-secondary-200">•</span>
               <span :class="statusColorClass(transaction.status)">{{ statusLabel(transaction.status) }}</span>

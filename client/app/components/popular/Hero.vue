@@ -14,7 +14,7 @@
             <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-[var(--text-primary)] leading-[1.1]">
               {{ title }}
             </h1>
-            <p class="text-[15px] font-medium leading-relaxed text-secondary-500 max-w-2xl pl-0.5">
+            <p class="text-[15px] font-medium leading-relaxed text-[var(--text-primary)] max-w-2xl pl-0.5">
               {{ description }}
             </p>
           </div>
@@ -50,7 +50,7 @@
             <p class="mt-4 text-3xl font-black tracking-tight text-[var(--text-primary)] group-hover/stat:text-[var(--text-primary)] transition-colors">
               {{ item.value }}
             </p>
-            <p class="mt-3 text-[12px] font-medium leading-relaxed text-secondary-400 italic px-1">
+            <p class="mt-3 text-[12px] font-medium leading-relaxed text-[var(--text-primary)] italic px-1">
               {{ item.description }}
             </p>
           </article>

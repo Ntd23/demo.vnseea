@@ -82,10 +82,10 @@
           <Icon name="i-ph-bookmark-simple-duotone" class="h-12 w-12" />
         </div>
 
-        <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-tight">
+        <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-tight">
           {{ t('pages.savedPostsPage.emptyTitle') }}
         </h2>
-        <p class="mt-4 text-base font-medium leading-relaxed text-secondary-500 max-w-md mx-auto">
+        <p class="mt-4 text-base font-medium leading-relaxed text-[var(--text-primary)] max-w-md mx-auto">
           {{ t('pages.savedPostsPage.emptyDescription') }}
         </p>
 
@@ -104,7 +104,7 @@
           <UButton
             to="/explore"
             size="xl"
-            class="h-14 rounded-2xl bg-white text-secondary-600 ring-1 ring-secondary-200 hover:bg-secondary-50 hover:text-secondary-900 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 px-10"
+            class="h-14 rounded-2xl bg-white text-[var(--text-primary)] ring-1 ring-secondary-200 hover:bg-secondary-50 hover:text-secondary-900 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 px-10"
           >
             <template #leading>
               <Icon name="i-ph-compass-duotone" class="h-5 w-5" />
@@ -124,13 +124,13 @@
       
       <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 p-10 sm:p-12 sm:flex-row sm:items-center sm:justify-between">
         <div class="space-y-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
             {{ t("pages.savedPostsPage.listEyebrow") }}
           </p>
-          <h2 class="text-4xl font-black text-secondary-900 tracking-tight leading-none">
+          <h2 class="text-4xl font-black text-[var(--text-primary)] tracking-tight leading-none">
             {{ t("pages.savedPostsPage.listTitle", { count: visibleSavedPosts.length }) }}
           </h2>
-          <p class="text-base font-medium leading-relaxed text-secondary-500 italic max-w-2xl px-0.5 opacity-70">
+          <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] italic max-w-2xl px-0.5 opacity-70">
             {{ t("pages.savedPostsPage.listDescription") }}
           </p>
         </div>

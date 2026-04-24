@@ -6,9 +6,9 @@
     <!-- Header Section -->
     <div class="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between border-b border-secondary-100 pb-8">
       <div class="space-y-3">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">{{ kindLabel }}</p>
-        <h2 class="text-3xl font-black text-secondary-900 tracking-tighter leading-none">{{ section.title }}</h2>
-        <p class="text-base font-medium text-secondary-500 max-w-xl leading-relaxed">{{ section.description }}</p>
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">{{ kindLabel }}</p>
+        <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter leading-none">{{ section.title }}</h2>
+        <p class="text-base font-medium text-[var(--text-primary)] max-w-xl leading-relaxed">{{ section.description }}</p>
       </div>
       
       <UButton
@@ -42,8 +42,8 @@
         class="flex items-center justify-between gap-6 rounded-2xl bg-secondary-50/30 p-6 border border-secondary-100/50 transition-all duration-300 hover:bg-white hover:ring-2 hover:ring-primary-500/20 group"
       >
         <div class="space-y-1.5">
-          <p class="text-xs font-black uppercase tracking-widest text-secondary-900 group-hover:text-secondary-900 transition-colors">{{ toggle.label }}</p>
-          <p class="text-[11px] font-medium leading-relaxed text-secondary-400 max-w-[200px]">{{ toggle.description }}</p>
+          <p class="text-xs font-black uppercase tracking-widest text-[var(--text-primary)] group-hover:text-secondary-900 transition-colors">{{ toggle.label }}</p>
+          <p class="text-[11px] font-medium leading-relaxed text-[var(--text-primary)] max-w-[200px]">{{ toggle.description }}</p>
         </div>
         <USwitch
           :model-value="currentToggle(toggle.label, toggle.enabled)"
@@ -62,22 +62,22 @@
       <div v-for="item in section.items" :key="item.title" class="flex flex-col gap-6 rounded-2xl border border-secondary-100 bg-secondary-50/20 p-6 transition-all duration-300 hover:bg-white hover:shadow-xl hover:ring-2 hover:ring-primary-500/10 sm:flex-row sm:items-center sm:justify-between group">
         <div class="space-y-2">
           <div class="flex flex-wrap items-center gap-3">
-            <h3 class="text-sm font-black uppercase tracking-widest text-secondary-900 group-hover:text-secondary-900 transition-colors">{{ item.title }}</h3>
+            <h3 class="text-sm font-black uppercase tracking-widest text-[var(--text-primary)] group-hover:text-secondary-900 transition-colors">{{ item.title }}</h3>
             <UBadge 
               v-if="item.meta" 
               variant="soft" 
-              class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2 py-0.5 bg-primary-100 text-primary-600 ring-1 ring-primary-200"
+              class="rounded-lg font-black text-[9px] uppercase tracking-widest px-2 py-0.5 bg-primary-100 text-[var(--text-primary)] ring-1 ring-primary-200"
             >
               {{ item.meta }}
             </UBadge>
           </div>
-          <p class="text-xs font-medium text-secondary-500 leading-relaxed max-w-lg">{{ item.description }}</p>
+          <p class="text-xs font-medium text-[var(--text-primary)] leading-relaxed max-w-lg">{{ item.description }}</p>
         </div>
         <UButton
           v-if="item.action"
           size="md"
           variant="soft"
-          class="rounded-xl font-black text-[10px] uppercase tracking-widest px-6 bg-primary-50 text-primary-600 ring-1 ring-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-sm active:scale-95"
+          class="rounded-xl font-black text-[10px] uppercase tracking-widest px-6 bg-primary-50 text-[var(--text-primary)] ring-1 ring-primary-100 hover:bg-primary-600 hover:text-white transition-all shadow-sm active:scale-95"
           @click="saved = true"
         >
           {{ item.action }}
@@ -119,7 +119,7 @@
       class="rounded-2xl border-none ring-1 ring-primary-100 bg-primary-50 text-primary-900 animate-in fade-in slide-in-from-bottom-4 duration-500"
       :ui="{
         title: 'text-[11px] font-black uppercase tracking-widest',
-        icon: 'text-secondary-900'
+        icon: 'text-[var(--text-primary)]'
       }"
       icon="i-ph-check-circle-duotone"
       :title="t('pages.settingsPage.saveSuccess')"

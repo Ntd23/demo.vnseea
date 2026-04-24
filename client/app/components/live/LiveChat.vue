@@ -3,10 +3,10 @@
     <div class="shrink-0 bg-white px-6 py-5 border-b border-secondary-50 shadow-sm relative z-10">
       <div class="flex items-center justify-between gap-4">
         <div class="space-y-1">
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900">
+          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">
             {{ $t("pages.livePage.chatEyebrow") }}
           </p>
-          <h2 class="text-xl font-black tracking-tight text-secondary-900 leading-none">
+          <h2 class="text-xl font-black tracking-tight text-[var(--text-primary)] leading-none">
             {{ $t("pages.livePage.chatTitle") }}
           </h2>
         </div>
@@ -42,7 +42,7 @@
         />
         <div class="flex-1 min-w-0 space-y-1.5 pt-0.5">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="text-[12px] font-black uppercase tracking-widest text-secondary-900">{{ comment.author }}</span>
+            <span class="text-[12px] font-black uppercase tracking-widest text-[var(--text-primary)]">{{ comment.author }}</span>
             <UBadge
               v-if="comment.isHost"
               variant="solid"
@@ -52,10 +52,10 @@
             >
               {{ $t("pages.livePage.hostBadge") }}
             </UBadge>
-            <span class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">{{ comment.time }}</span>
+            <span class="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-widest">{{ comment.time }}</span>
           </div>
           <div class="rounded-2xl rounded-tl-none bg-white px-5 py-3.5 ring-1 ring-secondary-100 shadow-sm">
-            <p class="text-[13px] font-medium leading-relaxed text-secondary-700">{{ comment.message }}</p>
+            <p class="text-[13px] font-medium leading-relaxed text-[var(--text-primary)]">{{ comment.message }}</p>
           </div>
         </div>
       </div>
@@ -74,7 +74,7 @@
             class="flex-1"
             :placeholder="$t('pages.livePage.chatPlaceholder')"
             :ui="{
-              base: 'h-12 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-secondary-900 px-6',
+              base: 'h-12 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-[var(--text-primary)] px-6',
             }"
           />
           <UButton
@@ -88,8 +88,8 @@
           </UButton>
         </div>
         <div class="flex items-center gap-2 px-1">
-          <Icon name="i-ph-info-bold" class="h-3.5 w-3.5 text-secondary-400" />
-          <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
+          <Icon name="i-ph-info-bold" class="h-3.5 w-3.5 text-[var(--text-primary)]" />
+          <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
             {{ $t("pages.livePage.chatHint") }}
           </p>
         </div>

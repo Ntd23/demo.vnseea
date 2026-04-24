@@ -13,9 +13,9 @@
 
       <div class="grid gap-4 sm:grid-cols-3 xl:w-[540px]">
         <div v-for="item in stats" :key="item.label" class="rounded-2xl bg-secondary-50/50 p-5 border border-secondary-100/30">
-          <p class="text-micro font-bold uppercase tracking-wider text-secondary-400">{{ item.label }}</p>
+          <p class="text-micro font-bold uppercase tracking-wider text-[var(--text-primary)]">{{ item.label }}</p>
           <p class="mt-2 text-3xl font-black text-[var(--text-primary)] leading-none">{{ item.value }}</p>
-          <p class="mt-1 text-xs font-semibold text-secondary-500">{{ item.description }}</p>
+          <p class="mt-1 text-xs font-semibold text-[var(--text-primary)]">{{ item.description }}</p>
         </div>
       </div>
     </div>

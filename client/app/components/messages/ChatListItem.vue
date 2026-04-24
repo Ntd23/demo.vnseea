@@ -19,8 +19,8 @@
         />
       </div>
       <div class="min-w-0 space-y-1">
-        <p class="truncate text-[12px] font-black uppercase tracking-[0.08em] text-secondary-900 transition-colors group-hover:text-secondary-900">{{ name }}</p>
-        <div class="flex items-center gap-2 text-secondary-400">
+        <p class="truncate text-[12px] font-black uppercase tracking-[0.08em] text-[var(--text-primary)] transition-colors group-hover:text-secondary-900">{{ name }}</p>
+        <div class="flex items-center gap-2 text-[var(--text-primary)]">
           <span class="h-1.5 w-1.5 rounded-full" :class="isOnline ? 'bg-sky-500' : 'bg-secondary-300'" />
           <p class="truncate text-[11px] font-semibold tracking-normal">{{ status }}</p>
         </div>
@@ -30,7 +30,7 @@
     <UButton
       size="sm"
       variant="soft"
-      class="h-10 shrink-0 rounded-full bg-primary-50 px-4 text-[10px] font-black uppercase tracking-[0.08em] text-primary-600 ring-1 ring-primary-100 transition-all shadow-none hover:bg-primary-600 hover:text-white active:scale-95 whitespace-nowrap"
+      class="h-10 shrink-0 rounded-full bg-primary-50 px-4 text-[10px] font-black uppercase tracking-[0.08em] text-[var(--text-primary)] ring-1 ring-primary-100 transition-all shadow-none hover:bg-primary-600 hover:text-white active:scale-95 whitespace-nowrap"
     >
       <template #leading>
         <Icon name="i-ph-chat-circle-dots-duotone" class="h-4 w-4" />

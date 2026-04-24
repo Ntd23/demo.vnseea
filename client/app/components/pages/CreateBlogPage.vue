@@ -164,7 +164,7 @@
           </p>
           <div class="flex flex-wrap gap-3">
             <button
-              class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[14px] font-bold text-[var(--color-primary-600)] transition hover:border-[var(--border-strong)]"
+              class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[14px] font-bold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
               type="button"
               @click="saveDraft"
             >

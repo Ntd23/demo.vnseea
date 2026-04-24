@@ -4,8 +4,8 @@
     :ui="{
       width: 'w-64',
       item: {
-        active: 'bg-primary-50 text-secondary-900',
-        inactive: 'text-secondary-600 hover:bg-primary-50/50 hover:text-secondary-900',
+        active: 'bg-primary-50 text-[var(--text-primary)]',
+        inactive: 'text-[var(--text-primary)] hover:bg-primary-50/50 hover:text-secondary-900',
         base: 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-black transition-all group/item',
         padding: 'px-3 py-2.5',
         icon: {
@@ -21,10 +21,10 @@
         VN
       </div>
       <div class="hidden text-left xl:block">
-        <p class="text-xs font-black text-secondary-900 tracking-tight">Van Nguyen</p>
-        <p class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">Mock User</p>
+        <p class="text-xs font-black text-[var(--text-primary)] tracking-tight">Van Nguyen</p>
+        <p class="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-widest">Mock User</p>
       </div>
-      <Icon name="i-ph-caret-down-bold" class="h-3.5 w-3.5 text-secondary-400 transition-transform duration-300 group-open:rotate-180" />
+      <Icon name="i-ph-caret-down-bold" class="h-3.5 w-3.5 text-[var(--text-primary)] transition-transform duration-300 group-open:rotate-180" />
     </button>
 
     <template #item="{ item }">

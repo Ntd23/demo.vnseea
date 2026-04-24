@@ -2,8 +2,8 @@
   <section class="surface-card p-5 sm:p-6">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-label-primary text-secondary-500 uppercase tracking-widest">{{ $t("pages.watchPage.commentsEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-secondary-900">{{ $t("pages.watchPage.commentsTitle") }}</h2>
+        <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest">{{ $t("pages.watchPage.commentsEyebrow") }}</p>
+        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ $t("pages.watchPage.commentsTitle") }}</h2>
       </div>
       <UBadge
         :label="comments.length.toString()"
@@ -45,11 +45,11 @@
         />
         <div class="min-w-0 flex-1">
           <div class="flex flex-wrap items-center gap-2">
-            <p class="text-sm font-black text-secondary-900">{{ comment.author }}</p>
+            <p class="text-sm font-black text-[var(--text-primary)]">{{ comment.author }}</p>
             <UBadge :label="comment.role" size="xs" variant="subtle" color="gray" class="font-bold text-[10px] uppercase tracking-wider" />
-            <span class="text-xs font-semibold text-secondary-400">· {{ comment.time }}</span>
+            <span class="text-xs font-semibold text-[var(--text-primary)]">· {{ comment.time }}</span>
           </div>
-          <p class="mt-1.5 text-sm font-medium leading-relaxed text-secondary-600">{{ comment.message }}</p>
+          <p class="mt-1.5 text-sm font-medium leading-relaxed text-[var(--text-primary)]">{{ comment.message }}</p>
         </div>
       </div>
     </div>

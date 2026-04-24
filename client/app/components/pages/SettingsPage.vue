@@ -11,11 +11,11 @@
 
       <main class="min-w-0 flex-1 space-y-5">
         <section class="surface-card p-6 sm:p-8 flex items-center gap-6">
-          <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 border border-primary-100 shadow-sm transition hover:scale-105">
+          <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-[var(--text-primary)] border border-primary-100 shadow-sm transition hover:scale-105">
             <Icon :name="activePage.icon" class="h-8 w-8" />
           </div>
           <div class="space-y-1">
-            <h1 class="text-3xl font-black text-secondary-900 leading-tight">{{ activePage.label }}</h1>
+            <h1 class="text-3xl font-black text-[var(--text-primary)] leading-tight">{{ activePage.label }}</h1>
             <p class="text-body-secondary text-sm">{{ activePage.description }}</p>
           </div>
         </section>

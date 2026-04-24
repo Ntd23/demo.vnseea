@@ -6,24 +6,24 @@
 
     <div class="relative z-10 flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
       <div class="space-y-4">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
           {{ $t("pages.settingsPage.heroEyebrow") }}
         </p>
-        <h1 class="text-5xl font-black leading-[0.9] tracking-tighter text-secondary-900 sm:text-6xl max-w-2xl">
+        <h1 class="text-5xl font-black leading-[0.9] tracking-tighter text-[var(--text-primary)] sm:text-6xl max-w-2xl">
           {{ $t("pages.settingsPage.heroTitle") }}
         </h1>
-        <p class="max-w-xl text-base font-medium leading-relaxed text-secondary-500 sm:text-lg">
+        <p class="max-w-xl text-base font-medium leading-relaxed text-[var(--text-primary)] sm:text-lg">
           {{ $t("pages.settingsPage.heroDescription") }}
         </p>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 lg:w-[520px]">
         <div v-for="item in stats" :key="item.label" class="surface-card p-5 group transition-all duration-300 hover:ring-primary-200 ring-1 ring-secondary-100/50 bg-secondary-50/10">
-          <p class="text-[9px] font-black uppercase tracking-widest text-secondary-400 group-hover:text-secondary-900 transition-colors">{{ item.label }}</p>
+          <p class="text-[9px] font-black uppercase tracking-widest text-[var(--text-primary)] group-hover:text-secondary-900 transition-colors">{{ item.label }}</p>
           <div class="mt-3 flex items-baseline gap-1">
-            <p class="text-3xl font-black text-secondary-900 leading-none tracking-tighter">{{ item.value }}</p>
+            <p class="text-3xl font-black text-[var(--text-primary)] leading-none tracking-tighter">{{ item.value }}</p>
           </div>
-          <p class="mt-2 text-[10px] font-bold text-secondary-500 uppercase tracking-widest leading-tight">{{ item.description }}</p>
+          <p class="mt-2 text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-widest leading-tight">{{ item.description }}</p>
         </div>
       </div>
     </div>

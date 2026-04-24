@@ -19,7 +19,7 @@
           class="inline-flex items-center gap-2.5 rounded-xl border border-secondary-100 bg-secondary-50/50 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:-translate-y-0.5"
         >
           <span>{{ item.label }}</span>
-          <span class="rounded-lg bg-secondary-100/50 px-2 py-0.5 text-[9px] font-black text-secondary-400 group-hover:bg-primary-100 group-hover:text-[var(--text-primary)]">{{ item.score }}</span>
+          <span class="rounded-lg bg-secondary-100/50 px-2 py-0.5 text-[9px] font-black text-[var(--text-primary)] group-hover:bg-primary-100 group-hover:text-[var(--text-primary)]">{{ item.score }}</span>
         </NuxtLink>
       </div>
     </section>
@@ -49,7 +49,7 @@
           </div>
           <div class="min-w-0 flex-1 space-y-0.5">
             <p class="truncate text-[13px] font-black uppercase tracking-widest text-[var(--text-primary)] group-hover/item:text-[var(--text-primary)] transition-colors">{{ item.name }}</p>
-            <p class="truncate text-[10px] font-bold uppercase tracking-widest text-secondary-400">{{ item.role }}</p>
+            <p class="truncate text-[10px] font-bold uppercase tracking-widest text-[var(--text-primary)]">{{ item.role }}</p>
           </div>
           <span class="shrink-0 self-start rounded-xl bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] ring-1 ring-secondary-100 shadow-sm sm:self-auto">
             {{ item.score }}

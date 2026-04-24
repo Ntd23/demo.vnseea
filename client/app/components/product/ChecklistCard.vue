@@ -5,7 +5,7 @@
   >
     <div class="space-y-8">
       <div class="flex items-center justify-between">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
           {{ $t('pages.productEditor.checklistLabel') }}
         </p>
         <Icon name="i-ph-list-checks-duotone" class="h-6 w-6 text-primary-300" />
@@ -27,12 +27,12 @@
           </div>
           <div class="space-y-0.5">
             <span 
-              class="text-[11px] font-black uppercase tracking-widest text-secondary-500 transition-colors group-hover/item:text-secondary-900"
+              class="text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] transition-colors group-hover/item:text-secondary-900"
               :class="{ 'line-through text-secondary-300': item.done }"
             >
               {{ item.label }}
             </span>
-            <p v-if="!item.done" class="text-[10px] font-bold text-secondary-400 opacity-60">
+            <p v-if="!item.done" class="text-[10px] font-bold text-[var(--text-primary)] opacity-60">
               {{ $t('pages.productEditor.required') }}
             </p>
           </div>
@@ -41,10 +41,10 @@
 
       <div class="pt-6 border-t border-secondary-50">
         <div class="flex items-center justify-between px-1">
-          <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400">
+          <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
             {{ $t('pages.productEditor.completionLabel') }}
           </p>
-          <p class="text-[14px] font-black text-secondary-900">
+          <p class="text-[14px] font-black text-[var(--text-primary)]">
             {{ Math.round(donePercent) }}%
           </p>
         </div>

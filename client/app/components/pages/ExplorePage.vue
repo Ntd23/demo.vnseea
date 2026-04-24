@@ -9,13 +9,13 @@
         <div class="relative z-10 flex flex-col gap-10">
           <div class="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div class="max-w-3xl space-y-3">
-              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
+              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
                 {{ t("pages.explorePage.heroEyebrow") }}
               </p>
-              <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-secondary-900 leading-[1.1]">
+              <h1 class="text-4xl sm:text-5xl font-black tracking-tight text-[var(--text-primary)] leading-[1.1]">
                 {{ t("pages.explorePage.heroTitle") }}
               </h1>
-              <p class="text-[15px] font-medium leading-relaxed text-secondary-500 max-w-2xl pl-0.5">
+              <p class="text-[15px] font-medium leading-relaxed text-[var(--text-primary)] max-w-2xl pl-0.5">
                 {{ t("pages.explorePage.heroDescription") }}
               </p>
             </div>
@@ -23,7 +23,7 @@
             <div class="flex flex-col gap-4 sm:flex-row">
               <NuxtLink
                 to="/search"
-                class="inline-flex h-12 items-center justify-center rounded-2xl border border-secondary-100 bg-white/60 px-6 text-[11px] font-black uppercase tracking-widest text-secondary-600 backdrop-blur-xl transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:shadow-lg active:scale-95 px-6"
+                class="inline-flex h-12 items-center justify-center rounded-2xl border border-secondary-100 bg-white/60 px-6 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] backdrop-blur-xl transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:shadow-lg active:scale-95 px-6"
               >
                 <Icon name="i-ph-magnifying-glass-duotone" class="mr-2.5 h-4.5 w-4.5" />
                 {{ t("pages.explorePage.openSearch") }}
@@ -47,20 +47,20 @@
             >
               <div class="flex items-start justify-between gap-4">
                 <div class="space-y-1">
-                  <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
+                  <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
                     {{ item.label }}
                   </p>
-                  <p class="text-3xl font-black tracking-tight text-secondary-900">
+                  <p class="text-3xl font-black tracking-tight text-[var(--text-primary)]">
                     {{ item.value }}
                   </p>
                 </div>
 
-                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-secondary-900 shadow-sm ring-1 ring-secondary-100 transition-transform duration-500 group-hover/card:scale-110 group-hover/card:rotate-6">
+                <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-[var(--text-primary)] shadow-sm ring-1 ring-secondary-100 transition-transform duration-500 group-hover/card:scale-110 group-hover/card:rotate-6">
                   <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-bold', '-duotone')" class="h-6 w-6" />
                 </div>
               </div>
 
-              <p class="mt-4 text-[13px] font-medium leading-relaxed text-secondary-500 italic px-1">
+              <p class="mt-4 text-[13px] font-medium leading-relaxed text-[var(--text-primary)] italic px-1">
                 {{ item.description }}
               </p>
             </article>
@@ -70,13 +70,13 @@
           <div class="surface-card p-6 bg-white/60 backdrop-blur-xl ring-1 ring-secondary-100 shadow-sm">
             <div class="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
               <div class="space-y-2">
-                <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
+                <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
                   {{ t("pages.explorePage.filterEyebrow") }}
                 </p>
-                <h2 class="text-2xl font-black tracking-tight text-secondary-900 leading-none">
+                <h2 class="text-2xl font-black tracking-tight text-[var(--text-primary)] leading-none">
                   {{ activeViewOption.label }}
                 </h2>
-                <p class="text-[13px] font-medium leading-relaxed text-secondary-500 max-w-2xl px-0.5">
+                <p class="text-[13px] font-medium leading-relaxed text-[var(--text-primary)] max-w-2xl px-0.5">
                   {{ activeViewOption.description }}
                 </p>
               </div>
@@ -88,7 +88,7 @@
                   class="h-11 inline-flex items-center justify-center rounded-2xl border px-5 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95"
                   :class="activeView === option.value
                     ? 'border-primary-100 bg-primary-50 text-secondary-900 shadow-sm'
-                    : 'border-secondary-100 bg-white text-secondary-500 hover:border-primary-100 hover:text-secondary-900'"
+                    : 'border-secondary-100 bg-white text-[var(--text-primary)] hover:border-primary-100 hover:text-secondary-900'"
                   type="button"
                   @click="setView(option.value)"
                 >
@@ -103,10 +103,10 @@
                 v-for="item in trendingHashtags"
                 :key="item.slug"
                 :to="item.to"
-                class="inline-flex items-center gap-2.5 rounded-xl border border-secondary-100 bg-white/40 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-secondary-500 transition-all hover:bg-primary-50 hover:text-primary-600 hover:border-primary-100 hover:-translate-y-0.5"
+                class="inline-flex items-center gap-2.5 rounded-xl border border-secondary-100 bg-white/40 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] transition-all hover:bg-primary-50 hover:text-primary-600 hover:border-primary-100 hover:-translate-y-0.5"
               >
                 <span>{{ formatHashtagLabel(item.label) }}</span>
-                <span class="rounded-lg bg-secondary-100/50 px-2.5 py-1 text-[9px] font-black text-secondary-400 transition-colors group-hover:bg-primary-100 group-hover:text-secondary-900">{{ item.score }}</span>
+                <span class="rounded-lg bg-secondary-100/50 px-2.5 py-1 text-[9px] font-black text-[var(--text-primary)] transition-colors group-hover:bg-primary-100 group-hover:text-secondary-900">{{ item.score }}</span>
               </NuxtLink>
             </div>
           </div>
@@ -136,7 +136,7 @@
 
           <NuxtLink
             to="/search"
-            class="h-12 inline-flex items-center justify-center rounded-2xl border border-secondary-100 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-secondary-600 transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:shadow-lg active:scale-95"
+            class="h-12 inline-flex items-center justify-center rounded-2xl border border-secondary-100 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:shadow-lg active:scale-95"
           >
             {{ t("pages.explorePage.goToSearch") }}
           </NuxtLink>
@@ -151,20 +151,20 @@
     >
       <div class="flex flex-col gap-6 border-b border-secondary-100/50 pb-8 sm:flex-row sm:items-center sm:justify-between">
         <div class="space-y-2">
-          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
+          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
             {{ section.label }}
           </p>
-          <h2 class="text-3xl font-black tracking-tight text-secondary-900 leading-none">
+          <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">
             {{ section.countLabel }}
           </h2>
-          <p class="text-[13px] font-medium leading-relaxed text-secondary-500 max-w-2xl px-0.5 italic">
+          <p class="text-[13px] font-medium leading-relaxed text-[var(--text-primary)] max-w-2xl px-0.5 italic">
             {{ section.description }}
           </p>
         </div>
 
         <button
           v-if="activeView === 'all'"
-          class="h-10 inline-flex items-center justify-center rounded-xl border border-secondary-100 bg-secondary-50/50 px-5 text-[10px] font-black uppercase tracking-widest text-secondary-500 transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:shadow-md active:scale-95"
+          class="h-10 inline-flex items-center justify-center rounded-xl border border-secondary-100 bg-secondary-50/50 px-5 text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100 hover:shadow-md active:scale-95"
           type="button"
           @click="setView(section.kind)"
         >

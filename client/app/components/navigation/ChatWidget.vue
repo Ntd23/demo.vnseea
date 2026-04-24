@@ -3,10 +3,10 @@
     <!-- Header -->
     <div class="flex shrink-0 items-center justify-between border-b border-secondary-50 px-4 py-4">
       <div>
-        <span class="block text-lg font-black text-secondary-900 tracking-tight">{{ $t("navigation.chatWidget.title") }}</span>
+        <span class="block text-lg font-black text-[var(--text-primary)] tracking-tight">{{ $t("navigation.chatWidget.title") }}</span>
         <div class="flex items-center gap-2 mt-0.5">
           <div class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
-          <span class="block text-[10px] font-black uppercase tracking-widest text-secondary-400">{{ $t("navigation.chatWidget.onlineCount", { count: onlineCount }) }}</span>
+          <span class="block text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">{{ $t("navigation.chatWidget.onlineCount", { count: onlineCount }) }}</span>
         </div>
       </div>
       <div class="flex items-center gap-1.5">
@@ -15,7 +15,7 @@
           variant="soft"
           icon="i-ph-user-plus-duotone"
           size="xs"
-          class="rounded-lg bg-secondary-50 text-secondary-600 hover:bg-secondary-100 ring-1 ring-secondary-100 shadow-none h-8 w-8 justify-center"
+          class="rounded-lg bg-secondary-50 text-[var(--text-primary)] hover:bg-secondary-100 ring-1 ring-secondary-100 shadow-none h-8 w-8 justify-center"
           :title="$t('navigation.chatWidget.actionCreateGroup')"
         />
         <UButton
@@ -23,7 +23,7 @@
           variant="soft"
           icon="i-ph-gear-duotone"
           size="xs"
-          class="rounded-lg bg-secondary-50 text-secondary-600 hover:bg-secondary-100 ring-1 ring-secondary-100 shadow-none h-8 w-8 justify-center"
+          class="rounded-lg bg-secondary-50 text-[var(--text-primary)] hover:bg-secondary-100 ring-1 ring-secondary-100 shadow-none h-8 w-8 justify-center"
           :title="$t('navigation.chatWidget.actionSettings')"
         />
       </div>
@@ -42,8 +42,8 @@
               base: 'absolute top-[4px] left-[4px] bottom-[4px] rounded-lg bg-white shadow-sm ring-1 ring-secondary-100'
             },
             tab: {
-              active: 'text-secondary-900',
-              inactive: 'text-secondary-400 hover:text-secondary-900',
+              active: 'text-[var(--text-primary)]',
+              inactive: 'text-[var(--text-primary)] hover:text-secondary-900',
               size: 'text-xs',
               font: 'font-black uppercase tracking-widest'
             }
@@ -60,7 +60,7 @@
     <div class="flex-1 overflow-y-auto no-scrollbar relative">
       <!-- Send Message Tab -->
       <div v-if="activeTab === 'send'" class="flex flex-col gap-5 px-5 py-6">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">{{ $t("navigation.chatWidget.content") }}</p>
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-1">{{ $t("navigation.chatWidget.content") }}</p>
 
         <UFormGroup :label="$t('navigation.chatWidget.sendToLabel')" class="space-y-2">
           <UInput
@@ -94,11 +94,11 @@
         <UFormGroup :label="$t('navigation.chatWidget.attachLabel')" class="space-y-2">
           <div class="flex items-center overflow-hidden rounded-xl border border-dashed border-primary-200 bg-primary-50/20 py-1 px-1">
             <label class="flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-white px-4 shadow-sm ring-1 ring-primary-100 transition hover:bg-primary-50 active:scale-95">
-              <Icon name="i-ph-paperclip-duotone" class="h-4.5 w-4.5 text-secondary-900" />
-              <span class="text-xs font-black uppercase tracking-widest text-secondary-900">{{ $t("navigation.chatWidget.chooseFile") }}</span>
+              <Icon name="i-ph-paperclip-duotone" class="h-4.5 w-4.5 text-[var(--text-primary)]" />
+              <span class="text-xs font-black uppercase tracking-widest text-[var(--text-primary)]">{{ $t("navigation.chatWidget.chooseFile") }}</span>
               <input class="hidden" type="file" @change="onFile">
             </label>
-            <span class="px-3 text-[11px] font-semibold text-secondary-500 truncate italic flex-1">
+            <span class="px-3 text-[11px] font-semibold text-[var(--text-primary)] truncate italic flex-1">
               {{ attachFile ? attachFile.name : $t("navigation.chatWidget.noFileSelected") }}
             </span>
           </div>
@@ -110,7 +110,7 @@
             :label="$t('navigation.chatWidget.selectAll')"
             :ui="{ 
               rounded: 'rounded-md', 
-              label: 'text-xs font-black uppercase tracking-widest text-secondary-500 cursor-pointer',
+              label: 'text-xs font-black uppercase tracking-widest text-[var(--text-primary)] cursor-pointer',
               border: 'border-secondary-300 checked:bg-primary-600'
             }"
           />
@@ -161,13 +161,13 @@
 
           <div class="min-w-0 flex-1 text-left">
             <div class="flex items-center gap-2">
-              <span class="truncate text-sm font-black text-secondary-900 group-hover/contact:text-secondary-900 transition-colors">{{ contact.name }}</span>
+              <span class="truncate text-sm font-black text-[var(--text-primary)] group-hover/contact:text-secondary-900 transition-colors">{{ contact.name }}</span>
               <UBadge v-if="contact.online" variant="soft" color="primary" class="rounded-lg font-black text-[8px] uppercase tracking-widest px-1.5 py-0.5">Live</UBadge>
             </div>
-            <p class="truncate text-[11px] font-medium text-secondary-400 group-hover/contact:text-secondary-500 transition-colors italic">{{ contact.status || $t("navigation.chatWidget.readyToChat") }}</p>
+            <p class="truncate text-[11px] font-medium text-[var(--text-primary)] group-hover/contact:text-secondary-500 transition-colors italic">{{ contact.status || $t("navigation.chatWidget.readyToChat") }}</p>
           </div>
 
-          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white border border-secondary-100 text-secondary-400 shadow-sm transition-all group-hover/contact:bg-primary-600 group-hover/contact:text-white group-hover/contact:border-primary-500 group-hover/contact:shadow-lg group-hover/contact:shadow-primary-600/20">
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white border border-secondary-100 text-[var(--text-primary)] shadow-sm transition-all group-hover/contact:bg-primary-600 group-hover/contact:text-white group-hover/contact:border-primary-500 group-hover/contact:shadow-lg group-hover/contact:shadow-primary-600/20">
             <Icon name="i-ph-chat-circle-dots-duotone" class="h-4.5 w-4.5" />
           </div>
         </UButton>
@@ -186,8 +186,8 @@
             <Icon name="i-ph-users-three-duotone" class="h-6 w-6" />
           </div>
           <div class="min-w-0 flex-1 text-left">
-            <p class="truncate text-sm font-black text-secondary-900 group-hover/group:text-indigo-600 transition-colors">{{ group.name }}</p>
-            <p class="text-[11px] font-medium text-secondary-400 uppercase tracking-widest">{{ $t("navigation.chatWidget.groupMembers", { count: group.members }) }} members</p>
+            <p class="truncate text-sm font-black text-[var(--text-primary)] group-hover/group:text-indigo-600 transition-colors">{{ group.name }}</p>
+            <p class="text-[11px] font-medium text-[var(--text-primary)] uppercase tracking-widest">{{ $t("navigation.chatWidget.groupMembers", { count: group.members }) }} members</p>
           </div>
           <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-secondary-300 opacity-0 group-hover/group:opacity-100 transition-opacity">
             <Icon name="i-ph-arrow-right-bold" class="h-4 w-4" />
@@ -222,7 +222,7 @@
       <div v-if="miniChat.open" class="absolute inset-x-3 bottom-16 z-20 rounded-[24px] border border-primary-100 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden">
         <div class="flex items-center justify-between border-b border-secondary-50 bg-secondary-50/50 px-4 py-3">
           <div class="min-w-0">
-            <p class="truncate text-[13px] font-black text-secondary-900 tracking-tight">{{ miniChat.title }}</p>
+            <p class="truncate text-[13px] font-black text-[var(--text-primary)] tracking-tight">{{ miniChat.title }}</p>
             <div class="flex items-center gap-1.5 mt-0.5">
               <div class="h-1.5 w-1.5 rounded-full bg-sky-500" />
               <p class="text-[10px] font-black uppercase tracking-widest text-sky-600">{{ $t("navigation.chatWidget.miniChatActive") }}</p>
@@ -233,7 +233,7 @@
             variant="ghost"
             icon="i-ph-x-bold"
             size="xs"
-            class="rounded-lg h-7 w-7 text-secondary-400 hover:text-secondary-900 transition-colors shadow-none"
+            class="rounded-lg h-7 w-7 text-[var(--text-primary)] hover:text-secondary-900 transition-colors shadow-none"
             @click="miniChat.open = false"
           />
         </div>
@@ -243,7 +243,7 @@
             <div class="max-w-[85%] rounded-2xl rounded-tr-sm bg-primary-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-primary-500/10">{{ miniSample }}</div>
           </div>
           <div class="flex justify-start">
-            <div class="max-w-[85%] rounded-2xl rounded-tl-sm bg-secondary-50 border border-secondary-100 px-4 py-2.5 text-xs font-semibold text-secondary-700 shadow-sm">{{ miniReply }}</div>
+            <div class="max-w-[85%] rounded-2xl rounded-tl-sm bg-secondary-50 border border-secondary-100 px-4 py-2.5 text-xs font-semibold text-[var(--text-primary)] shadow-sm">{{ miniReply }}</div>
           </div>
         </div>
 
@@ -251,7 +251,7 @@
           <div class="flex items-center gap-2 rounded-xl bg-secondary-50/50 p-1 ring-1 ring-secondary-100 focus-within:ring-primary-500 transition-all">
             <input 
               v-model="miniChat.message" 
-              class="flex-1 bg-transparent px-3 text-[13px] font-semibold text-secondary-900 placeholder:text-secondary-400 outline-none" 
+              class="flex-1 bg-transparent px-3 text-[13px] font-semibold text-[var(--text-primary)] placeholder:text-secondary-400 outline-none" 
               :placeholder="$t('navigation.chatWidget.miniInputPlaceholder')" 
               type="text"
               @keyup.enter="miniChat.message = ''"

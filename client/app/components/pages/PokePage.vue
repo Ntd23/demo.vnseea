@@ -80,24 +80,24 @@
       
       <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 pb-12 sm:flex-row sm:items-center sm:justify-between">
         <div class="space-y-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-secondary-900 pl-1">
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
             {{ t("pages.pokePage.listEyebrow") }}
           </p>
-          <h2 class="text-4xl font-black tracking-tight text-secondary-900 leading-none">
+          <h2 class="text-4xl font-black tracking-tight text-[var(--text-primary)] leading-none">
             {{ t("pages.pokePage.listTitle", { count: pokeRecords.length }) }}
           </h2>
-          <p class="text-base font-medium leading-relaxed text-secondary-500 italic max-w-2xl px-0.5 opacity-70">
+          <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] italic max-w-2xl px-0.5 opacity-70">
             {{ t("pages.pokePage.listDescription") }}
           </p>
         </div>
         
         <div class="flex items-center gap-3 bg-secondary-50 p-2 rounded-2xl ring-1 ring-secondary-100/50">
-          <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-white text-secondary-900 shadow-sm">
+          <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-white text-[var(--text-primary)] shadow-sm">
             <Icon name="i-ph-hand-pointing-duotone" class="h-5 w-5" />
           </div>
           <div class="pr-4">
-            <p class="text-[10px] font-black uppercase tracking-widest text-secondary-400 leading-none mb-1">{{ t("pages.pokePage.pendingLabel") }}</p>
-            <p class="text-lg font-black text-secondary-900 leading-none">{{ formatCount(pendingPokeCount) }}</p>
+            <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] leading-none mb-1">{{ t("pages.pokePage.pendingLabel") }}</p>
+            <p class="text-lg font-black text-[var(--text-primary)] leading-none">{{ formatCount(pendingPokeCount) }}</p>
           </div>
         </div>
       </div>

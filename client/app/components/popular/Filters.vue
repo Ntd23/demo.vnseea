@@ -18,7 +18,7 @@
           class="inline-flex h-12 shrink-0 items-center gap-2.5 rounded-2xl px-5 text-[11px] font-black uppercase tracking-widest transition-all active:scale-95"
           :class="selectedCategory === category.value 
             ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm' 
-            : 'bg-white text-secondary-500 ring-1 ring-secondary-100 hover:bg-white hover:text-primary-600 hover:border-primary-100'"
+            : 'bg-white text-[var(--text-primary)] ring-1 ring-secondary-100 hover:bg-white hover:text-primary-600 hover:border-primary-100'"
           type="button"
           @click="$emit('update:selectedCategory', category.value)"
         >

@@ -3,7 +3,7 @@
     <UButton
       variant="soft"
       color="white"
-      class="h-10 w-10 flex items-center justify-center text-secondary-400 hover:text-secondary-900 transition-colors shadow-none p-0"
+      class="h-10 w-10 flex items-center justify-center text-[var(--text-primary)] hover:text-secondary-900 transition-colors shadow-none p-0"
       square
     >
       <Icon name="i-ph-smiley-duotone" class="h-6 w-6" />

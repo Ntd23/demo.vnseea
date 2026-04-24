@@ -2,8 +2,8 @@
   <section class="surface-card p-5 sm:p-6">
     <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
       <div class="min-w-0 space-y-2">
-        <h2 class="text-2xl sm:text-3xl font-black text-secondary-900 leading-tight">{{ video.title }}</h2>
-        <div class="flex items-center gap-2 text-sm font-semibold text-secondary-500">
+        <h2 class="text-2xl sm:text-3xl font-black text-[var(--text-primary)] leading-tight">{{ video.title }}</h2>
+        <div class="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
           <span>{{ $t("pages.watchPage.viewsCount", { count: formatWatchNumber(video.views, locale) }) }}</span>
           <span class="text-secondary-300">•</span>
           <span>{{ video.date }}</span>
@@ -49,8 +49,8 @@
         :text="video.authorInitials"
       />
       <div class="min-w-0 flex-1">
-        <p class="truncate text-[15px] font-black text-secondary-900">{{ video.author }}</p>
-        <p class="text-[12px] font-bold text-secondary-400 uppercase tracking-wider">{{ $t("pages.watchPage.creatorMeta") }}</p>
+        <p class="truncate text-[15px] font-black text-[var(--text-primary)]">{{ video.author }}</p>
+        <p class="text-[12px] font-bold text-[var(--text-primary)] uppercase tracking-wider">{{ $t("pages.watchPage.creatorMeta") }}</p>
       </div>
       <UButton
         color="primary"
