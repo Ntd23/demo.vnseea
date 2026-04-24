@@ -6,7 +6,7 @@
     aria-live="polite"
   >
     <div>
-      <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em]">
+      <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-primary)]">
         {{ $t("pages.blogsPage.results") }}
       </UBadge>
       <h2 id="blogs-results-heading" class="mt-1 text-heading text-[var(--text-primary)]">

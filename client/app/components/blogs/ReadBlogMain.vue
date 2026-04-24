@@ -34,9 +34,9 @@
           <UBadge
             v-for="tag in article.tags"
             :key="tag"
-            color="primary"
-            variant="subtle"
-            class="rounded-[var(--radius-full)] px-2.5 py-1 text-[11px] font-bold"
+            color="neutral"
+            variant="soft"
+            class="rounded-[var(--radius-full)] px-2.5 py-1 text-[11px] font-bold text-[var(--text-primary)]"
           >
             #{{ tag }}
           </UBadge>

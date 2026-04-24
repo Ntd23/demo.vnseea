@@ -16,7 +16,7 @@
             {{ article.author }}
           </p>
           <p class="mt-1">
-            <UBadge color="primary" variant="subtle" class="rounded-full px-2.5 py-1 text-[11px] font-bold">
+            <UBadge color="neutral" variant="soft" class="rounded-full px-2.5 py-1 text-[11px] font-bold text-[var(--text-primary)]">
               {{ article.categoryLabel }}
             </UBadge>
           </p>

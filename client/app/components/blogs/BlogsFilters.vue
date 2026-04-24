@@ -66,7 +66,7 @@
             class="flex min-h-12 items-center justify-between gap-3 rounded-[18px] px-3 py-2 text-left transition"
             :class="selectedCategory === category.value
               ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-              : 'bg-[var(--color-secondary-100)] text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--text-primary)]'"
+              : 'bg-[var(--color-secondary-100)] text-[var(--text-primary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--text-primary)]'"
             type="button"
             :aria-label="category.label"
             :aria-pressed="selectedCategory === category.value"
@@ -92,7 +92,7 @@
               class="flex h-12 items-center justify-between rounded-[18px] px-3 text-left text-[13px] font-extrabold transition"
               :class="sortBy === option.value
                 ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-                : 'bg-white text-[var(--color-primary-900)] hover:bg-[var(--color-primary-50)] hover:text-[var(--text-primary)]'"
+                : 'bg-white text-[var(--text-primary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--text-primary)]'"
               type="button"
               :aria-label="option.label"
               :aria-pressed="sortBy === option.value"

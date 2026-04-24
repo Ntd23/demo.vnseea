@@ -27,7 +27,7 @@
             </span>
           </span>
           <template #trailing>
-            <UBadge color="neutral" variant="soft" class="rounded-full px-2.5 py-1 text-[12px] font-bold text-[var(--text-tertiary)]">
+            <UBadge color="neutral" variant="soft" class="rounded-full px-2.5 py-1 text-[12px] font-bold text-[var(--text-primary)]">
               {{ topic.count }}
             </UBadge>
           </template>
@@ -60,7 +60,7 @@
               {{ $t("pages.blogsPage.authorArticleTopic", { count: author.count, topic: author.topic }) }}
             </p>
           </div>
-          <UBadge color="primary" variant="subtle" class="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold">
+          <UBadge color="neutral" variant="soft" class="ml-auto shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold text-[var(--text-primary)]">
             {{ author.count }}
           </UBadge>
         </div>
