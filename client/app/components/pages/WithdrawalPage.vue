@@ -23,8 +23,14 @@
 </template>
 
 <script setup lang="ts">
-import type { WithdrawalHistoryItem, WithdrawalRequestPayload } from "~/composables/useMockWithdrawalData"
-import { formatWithdrawalCurrency } from "~/composables/useMockWithdrawalData"
+import type {
+  WithdrawalHistoryItem,
+  WithdrawalRequestPayload
+} from "~/composables/useMockWithdrawalData"
+
+import {
+  formatWithdrawalCurrency
+} from "~/composables/useMockWithdrawalData"
 
 const { t, locale } = useI18n()
 
@@ -46,7 +52,14 @@ const availableBalanceState = ref(availableBalance)
 const pendingAmountState = ref(pendingAmount)
 const localHistory = ref<WithdrawalHistoryItem[]>([])
 
-const allHistory = computed(() => [...localHistory.value, ...history.value])
+/**
+ * ✅ FIX CHÍNH Ở ĐÂY
+ * đảm bảo history.value luôn là array
+ */
+const allHistory = computed(() => [
+  ...localHistory.value,
+  ...(Array.isArray(history.value) ? history.value : []),
+])
 
 const withdrawalStats = computed(() => [
   {
@@ -61,8 +74,10 @@ const withdrawalStats = computed(() => [
 
 const handleRequest = (payload: WithdrawalRequestPayload) => {
   const method = methods.value.find(item => item.value === payload.method)
+
   availableBalanceState.value -= payload.amount
   pendingAmountState.value += payload.amount
+
   localHistory.value = [
     {
       id: `wd-${Date.now()}`,

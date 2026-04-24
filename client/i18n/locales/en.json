@@ -3634,6 +3634,153 @@
       "tipRemoveOldDescription": "Only keep the images that still match the current product so the listing does not create confusion.",
       "tipPreview": "Review the preview before saving",
       "tipPreviewDescription": "Check the card on the right to confirm the price, description, and images still match what you want to publish."
+    },
+    "withdrawalPage": {
+      "seoTitle": "Withdrawal - VNSEEA",
+      "seoDescription": "Manage your balance and request withdrawals from your VNSEEA account.",
+      "heroEyebrow": "Balance Management",
+      "heroTitle": "Withdraw Funds",
+      "heroDescription": "You can request a withdrawal to your bank account or e-wallet once your balance reaches the minimum threshold.",
+      "availableBalance": "Available Balance",
+      "statPending": "Pending Approval",
+      "statRequests": "Request Count",
+      "requestEyebrow": "New Request",
+      "requestTitle": "Send Withdrawal Request",
+      "requestDescription": "Minimum withdrawal is {amount}. Please select a method and enter accurate details.",
+      "availableBadge": "Available: {amount}",
+      "amountLabel": "Withdrawal Amount",
+      "amountPlaceholder": "Enter amount to withdraw",
+      "accountNameLabel": "Account Name / Holder",
+      "accountNamePlaceholder": "JOHN DOE",
+      "accountNumberLabel": "Account Number / Wallet Email",
+      "accountNumberPlaceholder": "e.g., 0123456789",
+      "noteLabel": "Note (optional)",
+      "notePlaceholder": "Add a note if needed",
+      "submit": "Submit Request Now",
+      "errorMinimum": "Minimum withdrawal amount is {amount}.",
+      "errorMaximum": "Amount exceeds available balance.",
+      "fallbackMethod": "Unknown",
+      "submittedNow": "Just now",
+      "historyEyebrow": "Logs",
+      "historyTitle": "Transaction History",
+      "statusApproved": "Approved",
+      "statusRejected": "Rejected",
+      "statusPending": "Pending",
+      "paymentInfoEyebrow": "Payment Info",
+      "paymentInfoTitle": "Your Profiles",
+      "methods": [
+        {
+          "label": "Local Bank",
+          "value": "bank",
+          "icon": "i-ph-bank",
+          "description": "Direct bank transfer through Vietnamese banking system."
+        },
+        {
+          "label": "MoMo Wallet",
+          "value": "momo",
+          "icon": "i-ph-wallet",
+          "description": "Fast withdrawal to your personal MoMo e-wallet."
+        },
+        {
+          "label": "PayPal",
+          "value": "paypal",
+          "icon": "i-ph-paypal-logo",
+          "description": "International withdrawal via PayPal payment gateway."
+        }
+      ],
+      "paymentProfiles": [
+        { "label": "Default Bank", "value": "Vietcombank - 1023...889" },
+        { "label": "MoMo Wallet", "value": "0987...543" },
+        { "label": "PayPal ID", "value": "user-paypal-example.com" }
+      ],
+      "history": [
+        {
+          "id": "1",
+          "amount": "500000",
+          "method": "Local Bank",
+          "account": "1023...889",
+          "time": "2 days ago",
+          "status": "approved"
+        },
+        {
+          "id": "2",
+          "amount": "200000",
+          "method": "MoMo Wallet",
+          "account": "0987...543",
+          "time": "1 week ago",
+          "status": "rejected"
+        }
+      ]
+    },
+    "walletPage": {
+      "seoTitle": "Wallet - VNSEEA",
+      "seoDescription": "Manage your balance, top up, and transfer funds quickly within the VNSEEA ecosystem.",
+      "heroEyebrow": "VNSEEA Wallet",
+      "heroTitle": "Smart E-Wallet for Community",
+      "heroDescription": "Use VNSEEA Wallet to top up quickly, gift friends, pay for services, and withdraw funds flexibly.",
+      "balanceLabel": "Current Balance",
+      "statTransactions": "Transactions",
+      "statTopups": "Top-ups",
+      "topupEyebrow": "Top Up",
+      "topupTitle": "Add Funds",
+      "topupDescription": "Select a preset amount or enter a custom amount to top up via supported payment gateways.",
+      "otherAmountLabel": "Other Amount",
+      "topupSubmit": "Proceed to Top Up",
+      "sendEyebrow": "Transfer",
+      "sendTitle": "Gifts and Transfers",
+      "currentBalance": "Balance: {amount}",
+      "recipientLabel": "Recipient",
+      "recipientPlaceholder": "username or recipient name",
+      "amountLabel": "Amount",
+      "noteLabel": "Note",
+      "notePlaceholder": "Enter an optional note",
+      "sendSubmit": "Confirm Transfer",
+      "errorRecipient": "Please enter a recipient.",
+      "errorAmount": "Invalid amount or exceeds balance.",
+      "historyEyebrow": "Logs",
+      "historyTitle": "Recent Activity",
+      "statusCompleted": "Completed",
+      "statusPending": "Processing",
+      "statusFailed": "Failed",
+      "topupTransactionTitle": "Wallet Top-up",
+      "topupTransactionDescription": "Via {method}",
+      "sendTransactionTitle": "Transfer to {recipient}",
+      "sendTransactionDescription": "Quick transfer",
+      "justNow": "Just now",
+      "methods": [
+        { "label": "Bank Transfer", "value": "bank", "icon": "i-ph-bank" },
+        { "label": "Credit Card", "value": "card", "icon": "i-ph-credit-card" },
+        { "label": "MoMo Wallet", "value": "momo", "icon": "i-ph-wallet" }
+      ],
+      "transactions": [
+        {
+          "id": "1",
+          "type": "topup",
+          "title": "Wallet Top-up",
+          "description": "Via Local Bank",
+          "amount": "1000000",
+          "time": "2 hours ago",
+          "status": "completed"
+        },
+        {
+          "id": "2",
+          "type": "send",
+          "title": "Transfer to hoangnm",
+          "description": "Birthday gift",
+          "amount": "-200000",
+          "time": "Yesterday",
+          "status": "completed"
+        },
+        {
+          "id": "3",
+          "type": "receive",
+          "title": "Received from lananh",
+          "description": "Lunch refund",
+          "amount": "50000",
+          "time": "3 days ago",
+          "status": "completed"
+        }
+      ]
     }
   },
   "feed": {

@@ -3634,6 +3634,153 @@
       "tipRemoveOldDescription": "Chỉ giữ lại các ảnh còn đúng sản phẩm hiện tại để listing không gây hiểu nhầm.",
       "tipPreview": "Xem lại preview trước khi lưu",
       "tipPreviewDescription": "Kiểm tra card bên phải để chắc giá, mô tả và ảnh còn khớp với nội dung bạn muốn hiển thị."
+    },
+    "withdrawalPage": {
+      "seoTitle": "Rút tiền - VNSEEA",
+      "seoDescription": "Quản lý số dư và gửi yêu cầu rút tiền từ tài khoản VNSEEA của bạn.",
+      "heroEyebrow": "Quản lý số dư",
+      "heroTitle": "Rút tiền về tài khoản",
+      "heroDescription": "Bạn có thể gửi yêu cầu rút tiền về tài khoản ngân hàng hoặc ví điện tử khi số dư đạt mức tối thiểu.",
+      "availableBalance": "Số dư khả dụng",
+      "statPending": "Đang chờ duyệt",
+      "statRequests": "Yêu cầu đã gửi",
+      "requestEyebrow": "Yêu cầu mới",
+      "requestTitle": "Gửi yêu cầu rút tiền",
+      "requestDescription": "Mức rút tối thiểu là {amount}. Vui lòng chọn phương thức và nhập chính xác thông tin.",
+      "availableBadge": "Khả dụng: {amount}",
+      "amountLabel": "Số tiền rút",
+      "amountPlaceholder": "Nhập số tiền muốn rút",
+      "accountNameLabel": "Tên tài khoản / Chủ thẻ",
+      "accountNamePlaceholder": "NHUYEN VAN A",
+      "accountNumberLabel": "Số tài khoản / Email ví",
+      "accountNumberPlaceholder": "Ví dụ: 0123456789",
+      "noteLabel": "Ghi chú (tùy chọn)",
+      "notePlaceholder": "Nhập ghi chú thêm nếu cần",
+      "submit": "Gửi yêu cầu ngay",
+      "errorMinimum": "Số tiền tối thiểu để rút là {amount}.",
+      "errorMaximum": "Số tiền rút vượt quá số dư khả dụng.",
+      "fallbackMethod": "Không rõ",
+      "submittedNow": "Vừa xong",
+      "historyEyebrow": "Nhật ký",
+      "historyTitle": "Lịch sử giao dịch",
+      "statusApproved": "Đã duyệt",
+      "statusRejected": "Từ chối",
+      "statusPending": "Đang chờ",
+      "paymentInfoEyebrow": "Thông tin thanh toán",
+      "paymentInfoTitle": "Hồ sơ của bạn",
+      "methods": [
+        {
+          "label": "Ngân hàng nội địa",
+          "value": "bank",
+          "icon": "i-ph-bank",
+          "description": "Chuyển khoản trực tiếp qua hệ thống ngân hàng Việt Nam."
+        },
+        {
+          "label": "Ví MoMo",
+          "value": "momo",
+          "icon": "i-ph-wallet",
+          "description": "Rút tiền nhanh về ví điện tử MoMo cá nhân."
+        },
+        {
+          "label": "PayPal",
+          "value": "paypal",
+          "icon": "i-ph-paypal-logo",
+          "description": "Rút tiền quốc tế qua cổng thanh toán PayPal."
+        }
+      ],
+      "paymentProfiles": [
+        { "label": "Ngân hàng mặc định", "value": "Vietcombank - 1023...889" },
+        { "label": "Ví MoMo", "value": "0987...543" },
+        { "label": "PayPal ID", "value": "user-paypal-example.com" }
+      ],
+      "history": [
+        {
+          "id": "1",
+          "amount": "500000",
+          "method": "Ngân hàng nội địa",
+          "account": "1023...889",
+          "time": "2 ngày trước",
+          "status": "approved"
+        },
+        {
+          "id": "2",
+          "amount": "200000",
+          "method": "Ví MoMo",
+          "account": "0987...543",
+          "time": "1 tuần trước",
+          "status": "rejected"
+        }
+      ]
+    },
+    "walletPage": {
+      "seoTitle": "Ví điện tử - VNSEEA",
+      "seoDescription": "Quản lý số dư, nạp tiền và chuyển tiền nhanh chóng trong hệ sinh thái VNSEEA.",
+      "heroEyebrow": "Ví VNSEEA",
+      "heroTitle": "Ví điện tử thông minh cho cộng đồng",
+      "heroDescription": "Sử dụng ví VNSEEA để nạp tiền nhanh, tặng quà cho bạn bè, thanh toán dịch vụ và rút tiền về tài khoản linh hoạt.",
+      "balanceLabel": "Số dư hiện tại",
+      "statTransactions": "Giao dịch",
+      "statTopups": "Lượt nạp",
+      "topupEyebrow": "Nạp tiền",
+      "topupTitle": "Bổ sung số dư",
+      "topupDescription": "Chọn mức tiền hoặc nhập số tiền tùy chỉnh để nạp vào ví qua các cổng thanh toán hỗ trợ.",
+      "otherAmountLabel": "Số tiền khác",
+      "topupSubmit": "Tiến hành nạp tiền",
+      "sendEyebrow": "Chuyển tiền",
+      "sendTitle": "Tặng quà và Chuyển khoản",
+      "currentBalance": "Số dư: {amount}",
+      "recipientLabel": "Người nhận",
+      "recipientPlaceholder": "username hoặc tên người nhận",
+      "amountLabel": "Số tiền",
+      "noteLabel": "Lời nhắn",
+      "notePlaceholder": "Nhập lời nhắn gửi kèm (tùy chọn)",
+      "sendSubmit": "Xác nhận chuyển",
+      "errorRecipient": "Vui lòng nhập người nhận.",
+      "errorAmount": "Số tiền không hợp lệ hoặc vượt quá số dư.",
+      "historyEyebrow": "Lịch sử",
+      "historyTitle": "Hoạt động gần đây",
+      "statusCompleted": "Hoàn tất",
+      "statusPending": "Đang xử lý",
+      "statusFailed": "Thất bại",
+      "topupTransactionTitle": "Nạp tiền vào ví",
+      "topupTransactionDescription": "Nạp qua {method}",
+      "sendTransactionTitle": "Chuyển tiền cho {recipient}",
+      "sendTransactionDescription": "Chuyển tiền nhanh",
+      "justNow": "Vừa xong",
+      "methods": [
+        { "label": "Ngân hàng", "value": "bank", "icon": "i-ph-bank" },
+        { "label": "Thẻ quốc tế", "value": "card", "icon": "i-ph-credit-card" },
+        { "label": "Ví MoMo", "value": "momo", "icon": "i-ph-wallet" }
+      ],
+      "transactions": [
+        {
+          "id": "1",
+          "type": "topup",
+          "title": "Nạp tiền vào ví",
+          "description": "Nạp qua Ngân hàng nội địa",
+          "amount": "1000000",
+          "time": "2 giờ trước",
+          "status": "completed"
+        },
+        {
+          "id": "2",
+          "type": "send",
+          "title": "Chuyển tiền cho hoangnm",
+          "description": "Tặng quà sinh nhật",
+          "amount": "-200000",
+          "time": "Hôm qua",
+          "status": "completed"
+        },
+        {
+          "id": "3",
+          "type": "receive",
+          "title": "Nhận tiền từ lananh",
+          "description": "Hoàn tiền ăn trưa",
+          "amount": "50000",
+          "time": "3 ngày trước",
+          "status": "completed"
+        }
+      ]
     }
   },
   "feed": {

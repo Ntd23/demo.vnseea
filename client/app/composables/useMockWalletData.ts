@@ -31,18 +31,21 @@ export const useMockWalletData = () => {
 
   const initialBalance = 9999999
 
-  const topupMethods = computed(() =>
-    localized<Array<{ label: string; value: WalletTopupPayload["method"]; icon: string }>>("pages.walletPage.methods"),
-  )
+  const topupMethods = computed(() => {
+    const raw = localized<Array<{ label: string; value: WalletTopupPayload["method"]; icon: string }>>("pages.walletPage.methods")
+    return Array.isArray(raw) ? raw : []
+  })
 
-  const transactions = computed(() =>
-    localized<Array<Omit<WalletTransaction, "amount"> & { amount: number | string }>>("pages.walletPage.transactions").map(
+  const transactions = computed(() => {
+    const raw = localized<Array<Omit<WalletTransaction, "amount"> & { amount: number | string }>>("pages.walletPage.transactions")
+    if (!Array.isArray(raw)) return []
+    return raw.map(
       transaction => ({
         ...transaction,
         amount: Number(transaction.amount),
       }),
-    ),
-  )
+    )
+  })
 
   return {
     initialBalance,
