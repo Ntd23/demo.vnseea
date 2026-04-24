@@ -92,7 +92,6 @@
               :aria-expanded="mobileMenuOpen"
               aria-controls="mobile-navigation-menu"
               @click.stop.prevent="openMobileMenu"
-              @touchend.stop.prevent="openMobileMenu"
             >
               <Icon name="i-ph-user-duotone" class="h-5.5 w-5.5" />
             </button>

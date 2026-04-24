@@ -3,7 +3,7 @@
     <Transition name="mobile-menu">
       <div
         v-if="drawerOpen"
-        class="fixed inset-0 z-[var(--z-modal)] xl:hidden"
+        class="fixed inset-0 z-[1000] xl:hidden"
         role="dialog"
         aria-modal="true"
         aria-labelledby="mobile-navigation-menu-title"
