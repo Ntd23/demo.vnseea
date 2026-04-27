@@ -1,6 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1440px] space-y-8 px-4 pb-20 pt-6 sm:px-6">
-    <!-- GoPro Style Hero -->
+  <div class="space-y-6 pb-10">
     <EventsHero
       :my-events-active="activeTab === 'my'"
       :total-events="events.length"
@@ -9,58 +8,87 @@
       @show-my-events="activeTab = 'my'"
     />
 
-    <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
-      <main class="space-y-8 min-w-0">
-        <!-- Filters & Navigation -->
-        <EventsFilters
-          v-model:search="search"
-          v-model:active-tab="activeTab"
-          v-model:selected-category="selectedCategory"
-          v-model:selected-city="selectedCity"
-          v-model:selected-sort="selectedSort"
-          :tabs="eventTabs"
-          :tab-counts="tabCounts"
-          :categories="eventCategories"
-          :cities="eventCities"
-          :result-count="visibleEvents.length"
-          :status-label="filtersStatusLabel"
-          :can-reset="hasActiveFilters"
-          @reset="resetFilters"
-        />
+    <EventsFilters
+      v-model:search="search"
+      v-model:active-tab="activeTab"
+      v-model:selected-category="selectedCategory"
+      v-model:selected-city="selectedCity"
+      v-model:selected-sort="selectedSort"
+      :tabs="eventTabs"
+      :tab-counts="tabCounts"
+      :categories="eventCategories"
+      :cities="eventCities"
+      :result-count="visibleEvents.length"
+      :status-label="filtersStatusLabel"
+      :can-reset="hasActiveFilters"
+      @reset="resetFilters"
+    />
 
-        <!-- Results Header Card -->
-        <div class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-xl p-6 sm:p-8">
-          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <div class="h-1.5 w-6 rounded-full bg-primary-500" />
-                <p class="text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
-                  {{ $t("pages.eventsPage.results") }}
-                </p>
-              </div>
-              <h2 class="text-[28px] font-black tracking-tight text-[#0f172a] sm:text-[34px]">
+    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <section class="space-y-4">
+        <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p class="text-label-secondary text-[var(--text-primary)]">
+                {{ $t("pages.eventsPage.results") }}
+              </p>
+              <h2 class="mt-1 text-heading text-[var(--text-primary)]">
                 {{ resultHeading }}
               </h2>
-              <p class="text-[14px] font-bold text-slate-400">
+              <p class="mt-1 text-body-secondary">
                 {{ $t("pages.eventsPage.resultMeta", { count: visibleEvents.length, tab: activeTabLabel }) }}
               </p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <UBadge color="primary" variant="solid" class="rounded-xl px-4 py-2 font-black text-[11px] uppercase tracking-wider shadow-lg shadow-primary-500/20">
+              <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
                 {{ activeTabLabel }}
               </UBadge>
-              <UBadge v-if="search" color="gray" variant="soft" class="rounded-xl px-4 py-2 font-black text-[11px] uppercase tracking-wider">
+              <UBadge
+                v-if="search"
+                color="neutral"
+                variant="soft"
+                class="rounded-full px-3 py-1.5 text-[12px] font-semibold"
+              >
                 {{ search }}
               </UBadge>
+              <UBadge
+                v-if="selectedCategory !== 'all'"
+                color="neutral"
+                variant="soft"
+                class="rounded-full px-3 py-1.5 text-[12px] font-semibold"
+              >
+                {{ activeCategoryLabel }}
+              </UBadge>
+              <UBadge
+                v-if="selectedCity !== 'all'"
+                color="neutral"
+                variant="soft"
+                class="rounded-full px-3 py-1.5 text-[12px] font-semibold"
+              >
+                {{ activeCityLabel }}
+              </UBadge>
+              <UBadge color="neutral" variant="outline" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
+                {{ activeSortLabel }}
+              </UBadge>
+              <UButton
+                v-if="hasActiveFilters"
+                color="neutral"
+                variant="outline"
+                size="sm"
+                class="rounded-full"
+                @click="resetFilters"
+              >
+                <Icon name="i-ph-arrow-counter-clockwise" class="mr-1.5 h-4 w-4" />
+                {{ $t("pages.eventsPage.reset") }}
+              </UButton>
             </div>
           </div>
-        </div>
+        </UCard>
 
-        <!-- Event Cards Grid -->
         <div
           v-if="visibleEvents.length > 0"
-          class="grid gap-6 lg:grid-cols-2"
+          class="grid gap-4 lg:grid-cols-2"
         >
           <EventsEventCard
             v-for="event in visibleEvents"
@@ -71,26 +99,23 @@
           />
         </div>
 
-        <!-- Empty State -->
-        <div
+        <UAlert
           v-else
-          class="rounded-[32px] border border-[#dbe3f2] bg-white p-12 text-center shadow-lg lg:p-24"
+          color="neutral"
+          variant="subtle"
+          icon="i-ph-calendar-x-fill"
+          :title="$t('pages.eventsPage.emptyTitle')"
+          :description="$t('pages.eventsPage.emptyDescription')"
+          class="rounded-[30px]"
         >
-          <div class="mx-auto max-w-sm space-y-8">
-            <div class="flex h-20 w-20 mx-auto items-center justify-center rounded-[30px] bg-slate-50 text-slate-300">
-              <Icon name="i-ph-calendar-x-duotone" class="h-10 w-10" />
-            </div>
-            <div class="space-y-3">
-              <h3 class="text-2xl font-black text-[#0f172a]">{{ $t('pages.eventsPage.emptyTitle') }}</h3>
-              <p class="text-sm font-medium text-slate-500 leading-relaxed">{{ $t('pages.eventsPage.emptyDescription') }}</p>
-            </div>
-            <div class="flex flex-wrap justify-center gap-3">
+          <template #actions>
+            <div class="flex flex-wrap gap-2">
               <UButton
                 v-if="hasActiveFilters"
-                color="gray"
-                variant="ghost"
-                size="lg"
-                class="h-12 rounded-xl px-6 font-black ring-1 ring-slate-200"
+                color="neutral"
+                variant="outline"
+                size="sm"
+                class="rounded-full"
                 @click="resetFilters"
               >
                 {{ $t("pages.eventsPage.reset") }}
@@ -98,15 +123,15 @@
               <UButton
                 to="/events/create-event"
                 color="primary"
-                size="lg"
-                class="h-12 rounded-xl px-8 font-black shadow-lg shadow-primary-500/30"
+                size="sm"
+                class="rounded-full"
               >
                 {{ $t("pages.eventsPage.createEvent") }}
               </UButton>
             </div>
-          </div>
-        </div>
-      </main>
+          </template>
+        </UAlert>
+      </section>
 
       <EventsSidebar
         :next-event="nextEvent"
@@ -122,7 +147,6 @@
     </div>
   </div>
 </template>
-
 
 <script setup lang="ts">
 import { useStorage, watchDebounced } from "@vueuse/core"

@@ -1,98 +1,101 @@
 <template>
-  <aside class="hidden xl:block space-y-6">
-    <!-- Categories Card -->
-    <div class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-lg p-6 sm:p-8">
-      <div class="flex items-center justify-between mb-6">
-        <div class="space-y-1">
-          <p class="text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
-            {{ t("pages.directoryPage.sidebarCategoriesEyebrow") }}
-          </p>
-          <h2 class="text-xl font-black tracking-tight text-[#0f172a]">
-            {{ t("pages.directoryPage.sidebarCategoriesTitle") }}
-          </h2>
+  <aside class="space-y-4">
+    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.sidebarCategoriesEyebrow") }}</p>
+          <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.directoryPage.sidebarCategoriesTitle") }}</h2>
         </div>
+
         <UButton
           v-if="hasActiveFilters"
-          variant="ghost"
-          color="gray"
+          color="neutral"
+          variant="outline"
           size="sm"
-          class="rounded-xl h-8 w-8 p-0 flex items-center justify-center"
-          icon="i-ph-arrows-counter-clockwise-bold"
+          class="rounded-full"
           @click="emit('reset')"
-        />
+        >
+          {{ t("pages.directoryPage.resetFilters") }}
+        </UButton>
       </div>
 
-      <div class="space-y-2">
-        <button
+      <UAlert
+        class="mt-4 rounded-[24px]"
+        color="neutral"
+        variant="subtle"
+        icon="i-ph-chart-bar-bold"
+        :title="t('pages.directoryPage.filtersStatusTitle')"
+        :description="statusLabel"
+      />
+
+      <div class="mt-4 space-y-2">
+        <UButton
           v-for="category in categories"
           :key="category.value"
-          class="group w-full flex items-center justify-between p-4 rounded-2xl transition-all"
-          :class="selectedCategory === category.value ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30' : 'bg-slate-50 text-[#0f172a] hover:bg-slate-100'"
+          :color="selectedCategory === category.value ? 'primary' : 'neutral'"
+          :variant="selectedCategory === category.value ? 'solid' : 'soft'"
+          size="lg"
+          class="w-full justify-between rounded-[20px] px-3 py-3 text-left"
+          type="button"
           @click="emit('selectCategory', category.value)"
         >
-          <div class="flex items-center gap-3">
-            <div
-              class="h-10 w-10 flex items-center justify-center rounded-xl transition-colors"
-              :class="selectedCategory === category.value ? 'bg-white/20' : 'bg-white shadow-sm ring-1 ring-slate-100 group-hover:bg-slate-50'"
-            >
-              <Icon :name="category.icon" class="h-5 w-5" />
-            </div>
-            <div class="text-left">
-              <span class="block text-[13px] font-black leading-tight">{{ category.label }}</span>
-              <span class="block text-[10px] font-bold opacity-60 mt-0.5">{{ category.description }}</span>
-            </div>
-          </div>
-          <span
-            class="text-[11px] font-black px-2 py-1 rounded-lg"
-            :class="selectedCategory === category.value ? 'bg-white/20' : 'bg-slate-200/50 text-slate-500'"
+          <span class="flex min-w-0 items-center gap-3">
+            <Icon :name="category.icon" class="h-5 w-5 shrink-0" />
+            <span class="min-w-0">
+              <span class="block truncate text-[13px] font-extrabold">{{ category.label }}</span>
+              <span class="block truncate text-[11px] font-semibold opacity-70">{{ category.description }}</span>
+            </span>
+          </span>
+          <UBadge
+            :color="selectedCategory === category.value ? 'neutral' : 'primary'"
+            :variant="selectedCategory === category.value ? 'soft' : 'subtle'"
+            class="rounded-full px-2.5 py-1 text-[11px] font-bold"
           >
             {{ counts[category.value] ?? 0 }}
-          </span>
-        </button>
+          </UBadge>
+        </UButton>
       </div>
-    </div>
+    </UCard>
 
-    <!-- Featured Card -->
-    <div class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-lg p-6 sm:p-8">
-      <div class="space-y-1 mb-6">
-        <p class="text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
-          {{ t("pages.directoryPage.sidebarFeaturedEyebrow") }}
-        </p>
-        <h2 class="text-xl font-black tracking-tight text-[#0f172a]">
-          {{ t("pages.directoryPage.sidebarFeaturedTitle") }}
-        </h2>
-      </div>
+    <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4' }">
+      <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.sidebarFeaturedEyebrow") }}</p>
+      <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.directoryPage.sidebarFeaturedTitle") }}</h2>
 
-      <div v-if="featured.length > 0" class="space-y-4">
+      <div v-if="featured.length > 0" class="mt-4 space-y-2">
         <NuxtLink
           v-for="item in featured"
           :key="item.id"
           :to="item.href"
-          class="group block p-4 rounded-2xl bg-slate-50 ring-1 ring-slate-100 hover:bg-white hover:shadow-xl hover:ring-primary-100 transition-all"
+          class="block rounded-[20px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3 transition hover:border-[var(--border-strong)] hover:bg-[var(--color-primary-50)]"
         >
-          <div class="flex items-start justify-between mb-3">
-            <h3 class="text-[14px] font-black text-[#0f172a] group-hover:text-primary-600 transition-colors">{{ item.title }}</h3>
-            <Icon name="i-ph-arrow-up-right-bold" class="h-4 w-4 text-slate-300 group-hover:text-primary-500" />
-          </div>
-          <p class="text-[12px] font-medium text-slate-500 line-clamp-2 leading-relaxed mb-4">
-            {{ item.description }}
-          </p>
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] font-black uppercase tracking-widest text-primary-600 bg-primary-50 px-2 py-1 rounded-lg">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <p class="truncate text-[13px] font-extrabold text-[var(--text-primary)]">{{ item.title }}</p>
+              <p class="mt-1 line-clamp-2 text-[12px] font-semibold leading-5 text-[var(--text-secondary)]">{{ item.description }}</p>
+            </div>
+
+            <UBadge color="primary" variant="subtle" class="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold">
               {{ item.categoryLabel }}
-            </span>
-            <span class="text-[11px] font-bold text-slate-400">
-              {{ item.count }} interactions
-            </span>
+            </UBadge>
+          </div>
+
+          <div class="mt-3 flex items-center justify-between gap-3 text-[11px] font-semibold text-[var(--text-tertiary)]">
+            <span>{{ item.count }}</span>
+            <span class="truncate">{{ item.meta }}</span>
           </div>
         </NuxtLink>
       </div>
 
-      <div v-else class="py-12 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-        <Icon name="i-ph-star-duotone" class="h-8 w-8 text-slate-300 mx-auto mb-3" />
-        <p class="text-[12px] font-bold text-slate-400 px-4">{{ t('pages.directoryPage.sidebarFeaturedEmptyTitle') }}</p>
-      </div>
-    </div>
+      <UAlert
+        v-else
+        class="mt-4 rounded-[24px]"
+        color="neutral"
+        variant="subtle"
+        icon="i-ph-star-four-bold"
+        :title="t('pages.directoryPage.sidebarFeaturedEmptyTitle')"
+        :description="t('pages.directoryPage.sidebarFeaturedEmptyDescription')"
+      />
+    </UCard>
   </aside>
 </template>
 

@@ -1,75 +1,74 @@
 <template>
-  <div class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-xl p-2 lg:p-3">
-    <div class="space-y-6 p-4 sm:p-6">
-      <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div class="max-w-[640px] space-y-2">
-          <div class="flex items-center gap-2">
-            <div class="h-1 w-4 rounded-full bg-primary-600" />
-            <p class="text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
-              {{ t("pages.directoryPage.filtersEyebrow") }}
-            </p>
-          </div>
-          <h2 class="text-[32px] font-black tracking-tight text-[#0f172a] sm:text-[42px]">
-            {{ t("pages.directoryPage.filtersTitle") }}
-          </h2>
-          <p class="text-[15px] font-medium text-slate-500 leading-relaxed">
-            {{ t("pages.directoryPage.filtersDescription") }}
-          </p>
+  <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-4 sm:p-5' }">
+    <div class="space-y-4">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div class="max-w-[640px]">
+          <p class="text-label-secondary text-[var(--text-primary)]">{{ t("pages.directoryPage.filtersEyebrow") }}</p>
+          <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.directoryPage.filtersTitle") }}</h2>
+          <p class="mt-1 text-body-secondary">{{ t("pages.directoryPage.filtersDescription") }}</p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
-          <UBadge color="primary" variant="soft" class="rounded-xl px-4 py-2 font-black text-[11px] uppercase tracking-wider text-primary-600 ring-1 ring-primary-100 shadow-sm">
+        <div class="flex flex-wrap items-center gap-2">
+          <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
             {{ t("pages.directoryPage.matchingItems", { count: resultCount }) }}
           </UBadge>
           <UButton
             v-if="canReset"
-            variant="ghost"
-            color="gray"
-            size="md"
-            class="rounded-xl font-black text-[12px] uppercase tracking-wider h-11 px-6 border border-slate-200"
+            color="neutral"
+            variant="outline"
+            size="sm"
+            class="rounded-full"
             @click="emit('reset')"
           >
-            <template #leading>
-              <Icon name="i-ph-arrows-counter-clockwise-bold" class="h-4 w-4" />
-            </template>
+            <Icon name="i-ph-x-circle-bold" class="mr-1.5 h-4 w-4" />
             {{ t("pages.directoryPage.resetFilters") }}
           </UButton>
         </div>
       </div>
 
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <div class="relative flex-1">
-          <UInput
-            v-model="searchModel"
-            :placeholder="t('pages.directoryPage.searchPlaceholder')"
-            color="primary"
-            size="xl"
-            class="w-full"
-            :ui="searchInputUi"
-          >
-            <template #leading>
-              <Icon name="i-ph-magnifying-glass-bold" class="h-5 w-5 text-primary-600" />
-            </template>
-            <template #trailing>
-              <button
-                v-if="searchModel"
-                class="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600"
-                @click="searchModel = ''"
-              >
-                <Icon name="i-ph-x-bold" class="h-3 w-3" />
-              </button>
-            </template>
-          </UInput>
-        </div>
+      <UAlert
+        color="neutral"
+        variant="subtle"
+        icon="i-ph-faders-horizontal-bold"
+        :title="t('pages.directoryPage.filtersStatusTitle')"
+        :description="statusLabel"
+        class="rounded-[24px]"
+      />
+
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <UInput
+          v-model="searchModel"
+          :placeholder="t('pages.directoryPage.searchPlaceholder')"
+          :aria-label="t('pages.directoryPage.searchLabel')"
+          icon="i-ph-magnifying-glass-bold"
+          size="xl"
+          class="flex-1"
+        />
+
+        <UButton
+          v-if="searchModel"
+          color="neutral"
+          variant="outline"
+          size="xl"
+          class="rounded-full"
+          @click="searchModel = ''"
+        >
+          <Icon name="i-ph-x-bold" class="mr-1.5 h-4 w-4" />
+          {{ t("pages.directoryPage.clearSearch") }}
+        </UButton>
       </div>
 
-      <div class="flex flex-wrap items-center gap-2" role="tablist">
+      <div class="flex flex-wrap gap-2" role="tablist" :aria-label="t('pages.directoryPage.categoryTabsAria')">
         <UButton
           v-for="category in categories"
           :key="category.value"
-          variant="ghost"
-          class="h-12 rounded-2xl px-6 font-black text-[13px] uppercase tracking-wider transition-all"
-          :class="selectedCategoryModel === category.value ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30' : 'bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-[#0f172a] ring-1 ring-slate-100'"
+          :color="selectedCategoryModel === category.value ? 'primary' : 'neutral'"
+          :variant="selectedCategoryModel === category.value ? 'solid' : 'soft'"
+          size="md"
+          class="rounded-full px-4 text-[13px] font-bold"
+          type="button"
+          role="tab"
+          :aria-selected="selectedCategoryModel === category.value"
           @click="selectedCategoryModel = category.value"
         >
           <Icon :name="category.icon" class="mr-2 h-4 w-4" />
@@ -77,15 +76,7 @@
         </UButton>
       </div>
     </div>
-
-    <!-- Bottom Status Info -->
-    <div class="mt-4 flex items-center gap-3 border-t border-slate-50 px-8 py-4">
-      <div class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-      <p class="text-[12px] font-bold text-slate-400">
-        {{ statusLabel }}
-      </p>
-    </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -111,8 +102,4 @@ const selectedCategoryModel = defineModel<DirectoryCategoryKey>("selectedCategor
 const emit = defineEmits<{
   reset: []
 }>()
-
-const searchInputUi = {
-  base: "h-14 rounded-2xl px-12 text-[15px] font-bold bg-slate-50 border-none ring-1 ring-slate-100 focus:ring-2 focus:ring-primary-500 shadow-inner",
-}
 </script>

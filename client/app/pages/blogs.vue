@@ -1,10 +1,8 @@
 <template>
-  <BlogsRoutePage />
+  <PagesBlogsPage />
 </template>
 
 <script setup lang="ts">
-import BlogsRoutePage from "../components/pages/BlogsPage.vue"
-
 definePageMeta({
   layout: "default",
 })

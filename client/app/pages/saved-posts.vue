@@ -1,14 +1,15 @@
 <template>
-  <SavedRoutePage />
+  <PagesSavedPostsPage />
 </template>
 
 <script setup lang="ts">
-import { useSavedSeo } from "../../src/saved/application/composables/useSavedSeo"
-import SavedRoutePage from "../components/pages/SavedPostsPage.vue"
+const { t } = useI18n()
 
 definePageMeta({
   layout: "default",
 })
 
-useSavedSeo()
+useHead({
+  title: () => t("pages.savedPostsPage.seoTitle"),
+})
 </script>

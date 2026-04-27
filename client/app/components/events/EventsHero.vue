@@ -1,81 +1,76 @@
 <template>
-  <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_20px_50px_rgba(15,35,110,0.08)]">
-    <div class="grid gap-8 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_480px] xl:items-stretch">
-      <div class="flex min-w-0 flex-col justify-between gap-10 rounded-[28px] bg-[#0f172a] p-6 text-white sm:p-10">
-        <div class="space-y-6">
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="inline-flex h-9 items-center rounded-2xl bg-white/10 px-4 text-[12px] font-black uppercase tracking-[0.15em] text-white backdrop-blur-xl border border-white/20">
-              {{ $t("pages.eventsPage.heroEyebrow") }}
-            </span>
-            <span class="inline-flex h-9 items-center rounded-2xl bg-primary-600 px-4 text-[12px] font-black uppercase tracking-[0.15em] text-white shadow-lg shadow-primary-600/30">
-              EXPLORE EVENTS
-            </span>
-          </div>
+  <UCard class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-[linear-gradient(135deg,#0369a1_0%,var(--color-primary-600)_58%,var(--color-accent-500)_130%)] text-white shadow-[var(--shadow-xl)]" :ui="{ body: 'relative p-5 sm:p-7 lg:p-8' }">
+    <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
+    <div class="pointer-events-none absolute right-[-7%] top-[-24%] h-[280px] w-[280px] rounded-full bg-white/12 blur-3xl" />
+    <div class="pointer-events-none absolute bottom-[-20%] left-[-8%] h-[240px] w-[240px] rounded-full bg-[#f59e0b]/24 blur-3xl" />
 
-          <div class="space-y-4">
-            <h1 class="max-w-[720px] text-[38px] font-black leading-tight tracking-tight sm:text-[56px]">
-              {{ $t("pages.eventsPage.heroTitle") }}
-            </h1>
-            <p class="max-w-xl text-[16px] font-medium leading-relaxed text-white/60">
-              {{ $t("pages.eventsPage.heroDescription") }}
-            </p>
-          </div>
+    <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+      <div class="max-w-[780px]">
+        <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+          {{ $t("pages.eventsPage.heroEyebrow") }}
+        </UBadge>
+        <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
+          {{ $t("pages.eventsPage.heroTitle") }}
+        </h1>
+        <p class="mt-4 max-w-[630px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
+          {{ $t("pages.eventsPage.heroDescription") }}
+        </p>
 
-          <div class="flex flex-wrap items-center gap-3">
-            <span class="rounded-xl bg-white/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-white border border-white/10">
-              {{ statusLabel }}
-            </span>
-            <span class="rounded-xl bg-white/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-white border border-white/10">
-              {{ totalEvents }} ACTIVE EVENTS
-            </span>
-          </div>
+        <div class="mt-5 flex flex-wrap gap-2">
+          <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white">
+            {{ statusLabel }}
+          </UBadge>
+          <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white">
+            {{ $t("pages.eventsPage.sampleEvents", { count: totalEvents }) }}
+          </UBadge>
         </div>
 
-        <div class="flex flex-wrap items-center gap-4">
+        <div class="mt-7 flex flex-wrap items-center gap-3">
           <UButton
             to="/events/create-event"
+            color="neutral"
+            variant="solid"
             size="xl"
-            class="h-14 rounded-2xl bg-white px-8 font-black text-[#0f172a] transition-all hover:bg-primary-50 active:scale-95 shadow-2xl"
+            class="rounded-full bg-white text-[var(--text-primary)]"
           >
-            <template #leading>
-              <Icon name="i-ph-plus-bold" class="h-5 w-5" />
-            </template>
+            <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />
             {{ $t("pages.eventsPage.createEvent") }}
           </UButton>
-          
-          <button
-            class="flex h-14 items-center gap-3 rounded-2xl bg-white/10 px-6 text-[13px] font-black uppercase tracking-widest text-white backdrop-blur-xl border border-white/20 hover:bg-white/20 transition-all"
+
+          <UButton
+            color="neutral"
+            :variant="myEventsActive ? 'solid' : 'soft'"
+            size="xl"
+            class="rounded-full border border-white/20 bg-[#fde7b2] text-[#27345f] data-[state=open]:bg-[#fde7b2]"
+            type="button"
             @click="$emit('showMyEvents')"
           >
-            <Icon name="i-ph-user-circle-check-fill" class="h-6 w-6" />
+            <Icon name="i-ph-user-circle-check-fill" class="mr-2 h-4 w-4" />
             {{ $t("pages.eventsPage.myEvents") }}
-          </button>
+          </UButton>
         </div>
       </div>
 
-      <div class="grid gap-4">
-        <div v-for="(item, index) in stats" :key="item.label" 
-          class="rounded-[28px] p-8 transition-all hover:shadow-xl border border-slate-100"
-          :class="index === 0 ? 'bg-primary-600 text-white shadow-2xl shadow-primary-600/20' : 'bg-slate-50 text-[#0f172a] shadow-inner'"
+      <div class="grid gap-3 sm:grid-cols-3 xl:w-[430px] xl:grid-cols-1">
+        <UCard
+          v-for="item in stats"
+          :key="item.label"
+          class="rounded-[24px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
+          :ui="{ body: 'p-4' }"
         >
-          <div class="relative flex items-start justify-between">
-            <div class="space-y-1">
-              <p class="text-[11px] font-black uppercase tracking-widest" :class="index === 0 ? 'text-white/70' : 'text-slate-400'">
-                {{ item.label }}
-              </p>
-              <p class="text-[38px] font-black leading-none">
-                {{ item.value }}
-              </p>
-            </div>
-            <div class="flex h-12 w-12 items-center justify-center rounded-xl" :class="index === 0 ? 'bg-white/20' : 'bg-white shadow-md'">
-              <Icon :name="index === 0 ? 'i-ph-calendar-fill' : index === 1 ? 'i-ph-users-three-fill' : 'i-ph-envelope-simple-fill'" class="h-6 w-6" />
-            </div>
-          </div>
-          <p class="mt-4 text-[13px] font-bold" :class="index === 0 ? 'text-white/80' : 'text-slate-500'">{{ item.description }}</p>
-        </div>
+          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
+            {{ item.label }}
+          </p>
+          <p class="mt-2 text-[1.6rem] font-black leading-none text-white">
+            {{ item.value }}
+          </p>
+          <p class="mt-1 text-[13px] leading-5 text-white/74">
+            {{ item.description }}
+          </p>
+        </UCard>
       </div>
     </div>
-  </section>
+  </UCard>
 </template>
 
 <script setup lang="ts">
