@@ -1,116 +1,105 @@
 <template>
   <article>
     <UCard
-      class="relative flex h-full flex-col overflow-hidden rounded-[30px] border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
+      class="relative flex h-full flex-col overflow-hidden rounded-[24px] border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(15,35,110,0.09)]"
       :class="cardClass"
-      :ui="{ body: 'p-6' }"
+      :ui="{ body: 'p-5' }"
     >
-      <div class="pointer-events-none absolute inset-x-0 top-0 h-1 rounded-t-[30px]" :class="plan.highlight ? 'bg-[linear-gradient(90deg,var(--color-primary-500),var(--color-accent-500))]' : 'bg-[var(--bg-surface-hover)]'" />
+      <div class="pointer-events-none absolute inset-x-0 top-0 h-1" :class="selected ? 'bg-emerald-500' : plan.highlight ? 'bg-primary-600' : 'bg-secondary-100'" />
 
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
+      <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0 space-y-3">
           <div class="flex flex-wrap items-center gap-2">
-            <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[11px] font-bold">
+            <span class="inline-flex h-7 items-center rounded-full bg-primary-50 px-3 text-[11px] font-extrabold text-primary-700 ring-1 ring-primary-100">
               {{ plan.badge }}
-            </UBadge>
-
-            <UBadge
+            </span>
+            <span
               v-if="selected"
-              color="success"
-              variant="subtle"
-              class="rounded-full px-3 py-1.5 text-[11px] font-bold"
+              class="inline-flex h-7 items-center rounded-full bg-emerald-50 px-3 text-[11px] font-extrabold text-emerald-700 ring-1 ring-emerald-100"
             >
               {{ t("pages.goProPage.selectedPlan") }}
-            </UBadge>
-
-            <UBadge
+            </span>
+            <span
               v-else-if="plan.highlight"
-              color="warning"
-              variant="subtle"
-              class="rounded-full px-3 py-1.5 text-[11px] font-bold"
+              class="inline-flex h-7 items-center rounded-full bg-amber-50 px-3 text-[11px] font-extrabold text-amber-700 ring-1 ring-amber-100"
             >
               {{ t("pages.goProPage.bestValueBadge") }}
-            </UBadge>
+            </span>
           </div>
 
-          <h3 class="mt-4 text-2xl font-black text-[var(--text-primary)]">
+          <h3 class="text-[26px] font-black leading-none text-[var(--text-primary)]">
             {{ plan.name }}
           </h3>
-          <p class="mt-2 min-h-[48px] text-[13px] font-semibold leading-6 text-[var(--text-secondary)]">
-            {{ plan.description }}
-          </p>
         </div>
 
-        <Icon
-          :name="selected ? 'i-ph-check-circle-fill' : plan.highlight ? 'i-ph-star-fill' : 'i-ph-crown-simple-fill'"
-          class="h-7 w-7 shrink-0"
-          :class="selected ? 'text-[var(--color-success)]' : plan.highlight ? 'text-[var(--color-accent-500)]' : 'text-[var(--text-primary)]'"
-        />
+        <div
+          class="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[18px]"
+          :class="selected ? 'bg-emerald-50 text-emerald-700' : plan.highlight ? 'bg-primary-600 text-white' : 'bg-secondary-50 text-[var(--text-primary)]'"
+        >
+          <Icon :name="planIcon" class="h-6 w-6" />
+        </div>
       </div>
 
-      <UCard
-        class="mt-6 rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]"
-        :ui="{ body: 'p-4' }"
-      >
-        <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="mt-6 rounded-[20px] border border-[#dbe3f2] bg-secondary-50/50 p-4">
+        <div class="flex flex-wrap items-end justify-between gap-2">
           <div>
-            <p class="break-words text-[1.8rem] font-black leading-tight text-[var(--text-primary)] 2xl:text-[2.15rem]">
+            <p class="break-words text-[30px] font-black leading-none text-[var(--text-primary)]">
               {{ formatProCurrency(price, locale) }}
             </p>
-            <p class="mt-1 text-[12px] font-semibold text-[var(--text-tertiary)]">
+            <p class="mt-1 text-[12px] font-bold text-slate-500">
               {{ billingCycle === "monthly" ? t("pages.goProPage.billedMonthly") : t("pages.goProPage.billedYearly") }}
             </p>
           </div>
 
-          <UBadge
+          <span
             v-if="billingCycle === 'yearly' && savingsPercent > 0"
-            color="warning"
-            variant="subtle"
-            class="rounded-full px-3 py-1.5 text-[11px] font-bold"
+            class="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-black text-amber-700"
           >
             {{ t("pages.goProPage.savePercent", { percent: savingsPercent }) }}
-          </UBadge>
+          </span>
         </div>
 
-        <p v-if="billingCycle === 'yearly'" class="mt-3 text-[12px] font-semibold text-[var(--text-secondary)]">
+        <p v-if="billingCycle === 'yearly'" class="mt-3 text-[12px] font-semibold text-slate-500">
           {{ t("pages.goProPage.perMonthEquivalent", { amount: formatProCurrency(monthlyEquivalent, locale) }) }}
         </p>
-      </UCard>
+      </div>
 
-      <ul class="mt-6 grid gap-3">
+      <ul class="mt-5 grid gap-2.5">
         <li
-          v-for="feature in plan.features"
+          v-for="feature in visibleFeatures"
           :key="feature"
-          class="flex gap-2 text-[13px] font-semibold leading-5 text-[var(--text-secondary)]"
+          class="flex gap-2 text-[13px] font-bold leading-5 text-[var(--text-primary)]"
         >
-          <Icon name="i-ph-check-circle-fill" class="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-success)]" />
+          <Icon name="i-ph-check-circle-fill" class="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
           {{ feature }}
         </li>
       </ul>
 
-      <div class="mt-6 grid gap-2">
+      <div class="mt-5 grid gap-2">
         <div
-          v-for="item in plan.limits"
+          v-for="item in visibleLimits"
           :key="item.label"
-          class="flex items-center justify-between rounded-[18px] bg-[var(--bg-surface-hover)] px-3 py-2"
+          class="flex items-center justify-between gap-3 rounded-[16px] bg-secondary-50 px-3 py-2"
         >
-          <span class="text-[12px] font-bold text-[var(--text-tertiary)]">{{ item.label }}</span>
-          <span class="text-[12px] font-black text-[var(--text-primary)]">{{ item.value }}</span>
+          <span class="truncate text-[12px] font-bold text-slate-500">{{ item.label }}</span>
+          <span class="shrink-0 text-[12px] font-black text-[var(--text-primary)]">{{ item.value }}</span>
         </div>
       </div>
 
-      <UButton
+      <button
         type="button"
-        :color="selected ? 'success' : plan.highlight ? 'primary' : 'neutral'"
-        :variant="selected ? 'solid' : plan.highlight ? 'solid' : 'outline'"
-        size="lg"
-        class="mt-auto justify-center rounded-full"
+        class="mt-6 inline-flex h-12 items-center justify-center rounded-[16px] px-5 text-[14px] font-black transition active:scale-95"
+        :class="selected
+          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+          : plan.highlight
+            ? 'bg-primary-600 text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] hover:bg-primary-700'
+            : 'border border-secondary-200 bg-white text-[var(--text-primary)] hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700'"
         :aria-pressed="selected"
         @click="emit('select', plan)"
       >
-        <Icon :name="selected ? 'i-ph-check-circle-fill' : 'i-ph-crown-simple-fill'" class="mr-1.5 h-5 w-5" />
+        <Icon :name="selected ? 'i-ph-check-circle-fill' : 'i-ph-crown-simple-duotone'" class="mr-2 h-5 w-5" />
         {{ selected ? t("pages.goProPage.selectedPlanAction") : t("pages.goProPage.selectPlan") }}
-      </UButton>
+      </button>
     </UCard>
   </article>
 </template>
@@ -137,11 +126,21 @@ const savingsPercent = computed(() => getProSavingsPercent(props.plan))
 
 const monthlyEquivalent = computed(() => Math.round(props.plan.yearlyPrice / 12))
 
+const visibleFeatures = computed(() => props.plan.features.slice(0, 3))
+
+const visibleLimits = computed(() => props.plan.limits.slice(0, 2))
+
+const planIcon = computed(() => {
+  if (props.selected) return "i-ph-check-circle-fill"
+  if (props.plan.highlight) return "i-ph-star-four-fill"
+  return "i-ph-crown-simple-duotone"
+})
+
 const cardClass = computed(() =>
   props.selected
-    ? "border-[var(--color-success)] ring-4 ring-sky-50 shadow-[var(--shadow-xl)]"
+    ? "border-emerald-300 ring-4 ring-emerald-50 shadow-[0_18px_38px_rgba(16,185,129,0.10)]"
     : props.plan.highlight
-      ? "border-[var(--color-primary-500)] shadow-[var(--shadow-xl)]"
-      : "border-[var(--border-default)] shadow-[var(--shadow-md)]",
+      ? "border-primary-300 ring-4 ring-primary-50 shadow-[0_18px_38px_rgba(37,99,235,0.12)]"
+      : "border-[#dbe3f2] shadow-[0_10px_28px_rgba(15,35,110,0.04)]",
 )
 </script>
