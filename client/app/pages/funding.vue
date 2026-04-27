@@ -1,5 +1,5 @@
 <template>
-  <PagesFundingPage />
+  <FundingPresentationFundingPage />
 </template>
 
 <script setup lang="ts">
@@ -8,7 +8,9 @@ import {
   normalizeFundingCategory,
   normalizeFundingStatus,
   readFundingQueryValue,
-} from "~/composables/useMockFundingData"
+  useFundingCatalog,
+} from "../../src/funding/infrastructure/mocks/fundingCatalog"
+import FundingPresentationFundingPage from "../../src/funding/presentation/pages/FundingPage.vue"
 
 definePageMeta({
   layout: "default",
@@ -17,7 +19,7 @@ definePageMeta({
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
-const { campaigns, fundingCategories, fundingStatuses } = useMockFundingData()
+const { campaigns, fundingCategories, fundingStatuses } = useFundingCatalog()
 
 const searchQuery = computed(() =>
   readFundingQueryValue(route.query.q).trim(),

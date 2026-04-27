@@ -83,6 +83,7 @@
 </template>
 
 <script setup lang="ts">
+import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityGroupTabsBar from "../components/GroupTabsBar.vue"
 import CommunityPageAboutCard from "../components/PageAboutCard.vue"
 import CommunityPageActionCard from "../components/PageActionCard.vue"

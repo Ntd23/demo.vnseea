@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import AuthSplitShell from "../../src/auth/presentation/components/AuthSplitShell.vue"
+
 const { t } = useI18n()
 const route = useRoute()
 

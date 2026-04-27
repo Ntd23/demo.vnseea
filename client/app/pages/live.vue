@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import PagesLivePage from "../../src/live/presentation/pages/LivePage.vue"
 definePageMeta({
   layout: "default",
 })

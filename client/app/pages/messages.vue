@@ -1,10 +1,12 @@
 <template>
   <div class="h-full min-h-0">
-    <PagesMessagesPage />
+    <MessagesPresentationMessagesPage />
   </div>
 </template>
 
 <script setup lang="ts">
+import MessagesPresentationMessagesPage from "../../src/messages/presentation/pages/MessagesPage.vue"
+
 definePageMeta({ layout: "messages" })
 
 const { t } = useI18n()

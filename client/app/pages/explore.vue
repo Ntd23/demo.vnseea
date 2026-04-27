@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import PagesExplorePage from "../../src/pages/presentation/pages/ExplorePage.vue"
 import type { ExploreView } from "~/composables/useMockExploreData"
 
 function readQueryValue(value: unknown) {

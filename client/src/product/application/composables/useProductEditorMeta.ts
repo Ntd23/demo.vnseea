@@ -5,7 +5,7 @@ import type {
   ProductCategoryMeta,
   ProductCurrencyMeta,
   ProductOption,
-} from "../../../../types/product-editor"
+} from "../../domain/types/product-editor.types"
 
 const currencyOptions = [
   { label: "USD ($)", value: "USD" },

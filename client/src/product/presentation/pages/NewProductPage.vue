@@ -103,7 +103,7 @@ import type {
   ProductEditorDraft,
   ProductHeroStat,
   ProductTipItem,
-} from "../../../../types/product-editor"
+} from "../../domain/types/product-editor.types"
 import { useTimeAgo, watchDebounced } from "@vueuse/core"
 import ProductChecklistCard from "../components/ChecklistCard.vue"
 import ProductCreateMediaField from "../components/CreateMediaField.vue"

@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import PagesBlogsPage from "../../src/pages/presentation/pages/BlogsPage.vue"
 definePageMeta({
   layout: "default",
 })

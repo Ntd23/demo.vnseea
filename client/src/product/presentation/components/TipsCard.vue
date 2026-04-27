@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductTipItem } from "../../../../types/product-editor"
+import type { ProductTipItem } from "../../domain/types/product-editor.types"
 
 defineProps<{
   title: string

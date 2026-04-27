@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import PagesHomeFeedPage from "../../src/pages/presentation/pages/HomeFeedPage.vue"
 const { t } = useI18n()
 const requestURL = useRequestURL()
 

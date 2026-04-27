@@ -157,6 +157,7 @@
 
 <script setup lang="ts">
 import { useStorage, watchDebounced } from "@vueuse/core"
+import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityGroupCard from "../components/CommunityGroupCard.vue"
 import CommunityGroupsFilterBar from "../components/GroupsFilterBar.vue"
 import {

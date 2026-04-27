@@ -1,4 +1,4 @@
-import type { ProductCurrentImage } from "../../../../types/product-editor"
+import type { ProductCurrentImage } from "../../domain/types/product-editor.types"
 
 const encodeSvg = (svg: string) => `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
 

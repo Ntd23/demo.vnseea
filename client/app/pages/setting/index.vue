@@ -3,6 +3,8 @@
 </template>
 
 <script setup lang="ts">
+import PagesSettingsPage from "../../../src/settings/presentation/pages/SettingsPage.vue"
+
 definePageMeta({
   layout: "default",
 })

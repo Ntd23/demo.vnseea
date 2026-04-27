@@ -93,6 +93,7 @@
 </template>
 
 <script setup lang="ts">
+import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityGroupAboutCard from "../components/GroupAboutCard.vue"
 import CommunityGroupAdminCard from "../components/GroupAdminCard.vue"
 import CommunityGroupFeedSection from "../components/GroupFeedSection.vue"

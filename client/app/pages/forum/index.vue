@@ -1,5 +1,5 @@
 <template>
-  <PagesForumPage />
+  <ForumPresentationForumPage />
 </template>
 
 <script setup lang="ts">
@@ -7,7 +7,9 @@ import {
   filterForumThreads,
   normalizeForumSection,
   readForumQueryValue,
-} from "~/composables/useMockForumData"
+  useForumCatalog,
+} from "../../../src/forum/infrastructure/mocks/forumCatalog"
+import ForumPresentationForumPage from "../../../src/forum/presentation/pages/ForumPage.vue"
 
 definePageMeta({
   layout: "default",
@@ -16,7 +18,7 @@ definePageMeta({
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
-const { sections, threads } = useMockForumData()
+const { sections, threads } = useForumCatalog()
 
 const searchQuery = computed(() =>
   readForumQueryValue(route.query.q).trim(),

@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import PagesWelcomePage from "../../src/pages/presentation/pages/WelcomePage.vue"
 definePageMeta({
   layout: "guest",
 })

@@ -1,8 +1,11 @@
 <template>
-  <PagesEventDetailPage />
+  <EventsPresentationEventDetailPage />
 </template>
 
 <script setup lang="ts">
+import { useEventsCatalog } from "../../../src/events/infrastructure/mocks/eventsCatalog"
+import EventsPresentationEventDetailPage from "../../../src/events/presentation/pages/EventDetailPage.vue"
+
 definePageMeta({
   layout: "default",
 })
@@ -10,7 +13,7 @@ definePageMeta({
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
-const { findEventById } = useMockEventsData()
+const { findEventById } = useEventsCatalog()
 
 const routeId = computed(() => String(route.params.id || ""))
 const event = computed(() => findEventById(routeId.value))

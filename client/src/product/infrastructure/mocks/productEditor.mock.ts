@@ -1,7 +1,7 @@
 import type {
   ProductCurrentImage,
   ProductEditorDraft,
-} from "../../../../types/product-editor"
+} from "../../domain/types/product-editor.types"
 import { createProductMockImage } from "./productMockMedia"
 
 export type EditableProductMock = {

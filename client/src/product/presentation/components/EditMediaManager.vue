@@ -85,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductCurrentImage } from "../../../../types/product-editor"
+import type { ProductCurrentImage } from "../../domain/types/product-editor.types"
 
 defineProps<{
   currentImages: ProductCurrentImage[]

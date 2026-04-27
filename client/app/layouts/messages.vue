@@ -11,6 +11,9 @@
 </template>
 
 <script setup>
+import NavigationHeaderBar from "../../src/navigation/presentation/components/HeaderBar.vue"
+import NavigationMobileMenu from "../../src/navigation/presentation/components/MobileMenu.vue"
+
 const menuOpen = ref(false)
 const route = useRoute()
 watch(() => route.fullPath, () => { menuOpen.value = false })

@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import PagesProfilePage from "../../src/profile/presentation/pages/ProfilePage.vue"
+
 definePageMeta({
   layout: "default",
 })

@@ -1,15 +1,16 @@
 <template>
-  <PagesGoProPage />
+  <GoProRuntimePage />
 </template>
 
 <script setup lang="ts">
+import GoProRuntimePage from "../../src/go-pro/presentation/pages/GoProPage.vue"
 import {
   defaultBillingCycle,
   normalizeBillingCycle,
   normalizeProPlanKey,
   readGoProQueryValue,
   useMockGoProData,
-} from "~/composables/useMockGoProData"
+} from "../../src/go-pro/infrastructure/mocks/goProCatalog"
 
 definePageMeta({
   layout: "default",
@@ -110,7 +111,7 @@ useHead({
   link: [
     {
       rel: "canonical",
-      href: canonicalUrl,
+      href: () => canonicalUrl.value,
     },
   ],
 })
