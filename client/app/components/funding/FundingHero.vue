@@ -1,101 +1,113 @@
 <template>
-  <UCard
-    class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-[linear-gradient(135deg,#0369a1_0%,#1e3a8a_38%,#1447e6_100%)] text-white shadow-[var(--shadow-xl)]"
-    :ui="{ body: 'relative p-5 sm:p-7 lg:p-8' }"
-  >
-    <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-25" />
-    <div class="pointer-events-none absolute right-[-10%] top-[-20%] h-[260px] w-[260px] rounded-full bg-white/12 blur-3xl" />
-    <div class="pointer-events-none absolute bottom-[-24%] left-[-6%] h-[220px] w-[220px] rounded-full bg-[#38bdf8]/20 blur-3xl" />
+  <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
+    <!-- Grid: Strictly matching GoProHero padding and columns -->
+    <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
+      <!-- Left Content Box: Matching GoProHero structure but with Funding theme -->
+      <div class="relative flex min-w-0 flex-col justify-between gap-8 overflow-hidden rounded-[24px] bg-[linear-gradient(135deg,#0f172a_0%,#1e3a8a_45%,#2563eb_100%)] p-5 ring-1 ring-white/10 sm:p-7">
+        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent)]" />
 
-    <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-[760px]">
-        <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">
-          {{ t("pages.fundingPage.heroEyebrow") }}
-        </UBadge>
+        <div class="relative z-10 space-y-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex h-8 items-center rounded-full bg-white/10 px-3 text-[11px] font-bold uppercase tracking-wider text-white ring-1 ring-white/20 backdrop-blur-sm">
+              {{ t("pages.fundingPage.heroEyebrow") }}
+            </span>
+            <span v-if="searchTerm" class="inline-flex h-8 items-center rounded-full bg-blue-500 px-3 text-[11px] font-bold uppercase tracking-wider text-white shadow-lg">
+              {{ t("pages.fundingPage.queryBadge", { query: searchTerm }) }}
+            </span>
+            <span v-if="activeCategoryLabel" class="inline-flex h-8 items-center rounded-full bg-white/5 px-3 text-[11px] font-bold uppercase tracking-wider text-white/80 ring-1 ring-white/10">
+              {{ activeCategoryLabel }}
+            </span>
+          </div>
 
-        <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
-          {{ t("pages.fundingPage.heroTitle") }}
-        </h1>
-        <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-          {{ t("pages.fundingPage.heroDescription") }}
-        </p>
-
-        <div class="mt-5 flex flex-wrap gap-2">
-          <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white">
-            {{ t("pages.fundingPage.campaignCount", { count: campaignCount }) }}
-          </UBadge>
-          <UBadge
-            v-if="activeCategoryLabel"
-            color="neutral"
-            variant="soft"
-            class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white"
-          >
-            {{ activeCategoryLabel }}
-          </UBadge>
-          <UBadge
-            v-if="activeStatusLabel"
-            color="neutral"
-            variant="soft"
-            class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white"
-          >
-            {{ activeStatusLabel }}
-          </UBadge>
-          <UBadge
-            v-if="searchTerm"
-            color="neutral"
-            variant="soft"
-            class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white"
-          >
-            {{ t("pages.fundingPage.queryBadge", { query: searchTerm }) }}
-          </UBadge>
+          <div class="space-y-3">
+            <h1 class="max-w-[680px] text-[34px] font-black leading-tight text-white sm:text-[48px]">
+              {{ t("pages.fundingPage.heroTitle") }}
+            </h1>
+            <p class="max-w-xl text-[15px] font-medium leading-7 text-white/70">
+              {{ t("pages.fundingPage.heroDescription") }}
+            </p>
+          </div>
         </div>
 
-        <div class="mt-7 flex flex-wrap gap-3">
+        <div class="relative z-10 grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
           <UButton
             to="/create_funding"
-            color="neutral"
             variant="solid"
-            size="xl"
-            class="rounded-full bg-white text-[var(--text-primary)]"
+            class="inline-flex h-12 items-center justify-center rounded-[16px] bg-white px-5 text-[14px] font-black text-primary-900 shadow-[0_14px_26px_rgba(255,255,255,0.1)] transition hover:bg-slate-100 hover:text-primary-800 active:scale-95"
           >
-            <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />
+            <Icon name="i-ph-plus-circle-fill" class="mr-2 h-5 w-5 shrink-0" />
             {{ t("pages.fundingPage.createCampaign") }}
           </UButton>
 
           <UButton
             v-if="hasActiveFilters"
-            type="button"
-            color="neutral"
             variant="outline"
-            size="xl"
-            class="rounded-full border-white/20 bg-white/10 text-white hover:bg-white/20"
+            class="inline-flex h-12 items-center justify-center rounded-[16px] border border-white/20 bg-white/5 px-5 text-[14px] font-black text-white transition hover:bg-white/10 active:scale-95"
             @click="emit('reset')"
           >
+            <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-5 w-5 shrink-0" />
             {{ t("pages.fundingPage.reset") }}
           </UButton>
+
+          <span class="px-2 text-[13px] font-extrabold text-white/50">
+            {{ t("pages.fundingPage.campaignCount", { count: campaignCount }) }}
+          </span>
         </div>
       </div>
 
-      <div class="grid gap-3 sm:grid-cols-3 xl:w-[460px] xl:grid-cols-1">
-        <UCard
-          v-for="item in stats"
-          :key="item.label"
-          class="rounded-[24px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
-          :ui="{ body: 'p-4' }"
-        >
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
-            {{ item.label }}
-          </p>
-          <p class="mt-2 text-[1.6rem] font-black leading-none text-white">
-            {{ item.value }}
-          </p>
-          <p class="mt-1 text-[13px] leading-5 text-white/74">
-            {{ item.description }}
-          </p>
-        </UCard>
+      <!-- Right Sidebar: Optimized Sidebar Stats matching GoProHero architecture -->
+      <div class="grid gap-3">
+        <!-- Focal Card: Matches GoProHero's Dark Card -->
+        <div v-if="stats[1]" class="relative overflow-hidden rounded-[24px] border border-white/10 bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)] group">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-600/15 to-transparent pointer-events-none" />
+          <div class="relative z-10 flex items-start justify-between gap-4">
+            <div>
+              <p class="text-[11px] font-extrabold uppercase tracking-widest text-white/40">
+                {{ stats[1].label }}
+              </p>
+              <h2 class="mt-2 text-[32px] font-black leading-none tracking-tight">
+                {{ stats[1].value }}
+              </h2>
+              <p class="mt-2 text-[13px] font-semibold text-white/60">
+                {{ stats[1].description }}
+              </p>
+            </div>
+
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white/5 text-blue-400 ring-1 ring-white/10 group-hover:rotate-6 transition-transform">
+              <Icon name="i-ph-chart-line-up-bold" class="h-7 w-7" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Mini Grid: Matches GoProHero's Mini Stats Architecture -->
+        <div class="grid gap-3 sm:grid-cols-2">
+          <article
+            v-if="stats[0]"
+            class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-sm"
+          >
+            <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+              {{ stats[0].label }}
+            </p>
+            <p class="mt-2 text-[24px] font-black leading-none text-[var(--text-primary)]">
+              {{ stats[0].value }}
+            </p>
+          </article>
+
+          <article
+            v-if="stats[2]"
+            class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-sm"
+          >
+            <p class="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">
+              {{ stats[2].label }}
+            </p>
+            <p class="mt-2 text-[24px] font-black leading-none text-[var(--text-primary)]">
+              {{ stats[2].value }}
+            </p>
+          </article>
+        </div>
       </div>
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
