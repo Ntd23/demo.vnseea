@@ -3,6 +3,8 @@
 </template>
 
 <script setup lang="ts">
+import PagesOrderDetailPage from "../../../src/orders/presentation/pages/OrderDetailPage.vue"
+
 definePageMeta({
   layout: "default",
 })

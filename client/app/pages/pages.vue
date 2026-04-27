@@ -1,9 +1,9 @@
 <template>
-  <PagesDirectoryPage />
+  <CommunityPresentationPagesDirectoryPage />
 </template>
 
 <script setup lang="ts">
-import PagesDirectoryPage from "../components/pages/PagesDirectoryPage.vue"
+import CommunityPresentationPagesDirectoryPage from "../../src/community/presentation/pages/PagesDirectoryPage.vue"
 
 definePageMeta({ layout: "default" })
 

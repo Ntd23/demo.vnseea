@@ -113,6 +113,7 @@
 
 <script setup lang="ts">
 import { useStorage, watchDebounced } from "@vueuse/core"
+import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityCreationHeaderCard from "../components/CreationHeaderCard.vue"
 import CommunityPageSettingsBasicsCard from "../components/PageSettingsBasicsCard.vue"
 import CommunityPageSettingsControlsCard from "../components/PageSettingsControlsCard.vue"

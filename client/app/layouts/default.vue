@@ -45,6 +45,11 @@
 </template>
 
 <script setup>
+import NavigationHeaderBar from "../../src/navigation/presentation/components/HeaderBar.vue"
+import NavigationHeaderIconNav from "../../src/navigation/presentation/components/HeaderIconNav.vue"
+import NavigationLeftSidebar from "../../src/navigation/presentation/components/LeftSidebar.vue"
+import NavigationRightSidebar from "../../src/navigation/presentation/components/RightSidebar.vue"
+
 const chatOpen = ref(false)
 
 const route = useRoute()

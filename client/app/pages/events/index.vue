@@ -1,12 +1,14 @@
 <template>
-  <PagesEventsPage />
+  <EventsPresentationEventsPage />
 </template>
 
 <script setup lang="ts">
+import EventsPresentationEventsPage from "../../../src/events/presentation/pages/EventsPage.vue"
+import type { EventTabKey } from "../../../src/events/domain/types/events.types"
 import {
   eventTabKeys,
-  type EventTabKey,
-} from "~/composables/useMockEventsData"
+  useEventsCatalog,
+} from "../../../src/events/infrastructure/mocks/eventsCatalog"
 
 definePageMeta({
   layout: "default",
@@ -26,7 +28,7 @@ function normalizeTab(value: string): EventTabKey {
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
-const { eventTabs } = useMockEventsData()
+const { eventTabs } = useEventsCatalog()
 
 const searchQuery = computed(() =>
   readQueryValue(route.query.q).trim(),

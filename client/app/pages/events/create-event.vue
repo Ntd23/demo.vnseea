@@ -1,8 +1,10 @@
 <template>
-  <PagesCreateEventPage />
+  <EventsPresentationCreateEventPage />
 </template>
 
 <script setup lang="ts">
+import EventsPresentationCreateEventPage from "../../../src/events/presentation/pages/CreateEventPage.vue"
+
 definePageMeta({
   layout: "default",
 })

@@ -165,6 +165,7 @@
 
 <script setup lang="ts">
 import { useStorage, watchDebounced } from "@vueuse/core"
+import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityPageCard from "../components/PageCard.vue"
 import CommunityPageDirectoryTabsBar from "../components/PageDirectoryTabsBar.vue"
 import {

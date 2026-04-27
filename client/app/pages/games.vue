@@ -1,8 +1,9 @@
 <template>
-  <PagesGamesPage />
+  <GamesRuntimePage />
 </template>
 
 <script setup lang="ts">
+import GamesRuntimePage from "../../src/games/presentation/pages/GamesPage.vue"
 import {
   defaultGameTab,
   filterMockGames,
@@ -10,7 +11,7 @@ import {
   normalizeGameTab,
   readGameQueryValue,
   useMockGamesData,
-} from "~/composables/useMockGamesData"
+} from "../../src/games/infrastructure/mocks/gamesCatalog"
 
 definePageMeta({
   layout: "default",
@@ -191,7 +192,7 @@ useHead({
   link: [
     {
       rel: "canonical",
-      href: canonicalUrl,
+      href: () => canonicalUrl.value,
     },
   ],
 })

@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import PagesMemoriesPage from "../../src/pages/presentation/pages/MemoriesPage.vue"
 definePageMeta({
   layout: "default",
 })

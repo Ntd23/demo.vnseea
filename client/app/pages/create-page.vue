@@ -1,8 +1,10 @@
 <template>
-  <PagesCreatePagePage />
+  <CommunityPresentationCreatePagePage />
 </template>
 
 <script setup lang="ts">
+import CommunityPresentationCreatePagePage from "../../src/community/presentation/pages/CreatePagePage.vue"
+
 definePageMeta({ layout: "default" })
 
 const { t } = useI18n()

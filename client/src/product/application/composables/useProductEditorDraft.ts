@@ -5,7 +5,7 @@ import type {
   ConditionValue,
   CurrencyValue,
   ProductEditorDraft,
-} from "../../../../types/product-editor"
+} from "../../domain/types/product-editor.types"
 
 const cloneDraft = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 

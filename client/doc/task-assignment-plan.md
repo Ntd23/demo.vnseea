@@ -418,3 +418,18 @@ Các module dưới đây đã có owner nhưng chưa nên mở cùng lúc trong
 Riêng `navigation`, `forms`, `pages` là support modules:
 - chỉ đụng khi context đang migrate thật sự cần
 - ưu tiên PR riêng hoặc sync trước khi sửa
+
+## Status update
+
+- `Dev 3`:
+  - done `product`, `community`, `jobs`, `directory`, `events`, `forum`, `foundation`, `funding`, `games`, `go-pro`, `live`, `navigation`, `pages`, `poke`, `forms`
+  - `product` deep cleanup da xong
+  - co the dong scope runtime migration
+
+- `Dev 1`:
+  - done `checkout`, `orders`, `wallet`, `withdrawal`, `auth`, `settings`, `profile`
+  - legacy `app/components/*`, `app/composables/*`, duplicate `src/pages/*` cua nhom nay da duoc xoa
+
+- remaining practical scopes sau cap nhat nay:
+  - `Dev 2`: `search`, `blogs`, `explore`, `feed`, `popular`, `saved`, `reels`, `watch`, `photos`, `lightbox`, `movies`, `memories`
+  - deeper domain cleanup chi mo khi thuc su can, khong con la blocker cho runtime migration

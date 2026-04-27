@@ -1,8 +1,10 @@
 <template>
-  <PagesCreateFundingPage />
+  <FundingPresentationCreateFundingPage />
 </template>
 
 <script setup lang="ts">
+import FundingPresentationCreateFundingPage from "../../src/funding/presentation/pages/CreateFundingPage.vue"
+
 definePageMeta({
   layout: "default",
 })

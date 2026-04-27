@@ -1,8 +1,11 @@
 <template>
-  <PagesShowFundPage />
+  <FundingPresentationShowFundPage />
 </template>
 
 <script setup lang="ts">
+import { useFundingCatalog } from "../../../src/funding/infrastructure/mocks/fundingCatalog"
+import FundingPresentationShowFundPage from "../../../src/funding/presentation/pages/ShowFundPage.vue"
+
 definePageMeta({
   layout: "default",
 })
@@ -10,7 +13,7 @@ definePageMeta({
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
-const { findCampaignById } = useMockFundingData()
+const { findCampaignById } = useFundingCatalog()
 
 const fundingId = computed(() => {
   const value = route.params.id

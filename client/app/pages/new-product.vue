@@ -1,8 +1,10 @@
 <template>
-  <PagesNewProductPage />
+  <ProductPresentationNewProductPage />
 </template>
 
 <script setup lang="ts">
+import ProductPresentationNewProductPage from "../../src/product/presentation/pages/NewProductPage.vue"
+
 definePageMeta({
   layout: "default",
 })

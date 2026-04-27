@@ -1,8 +1,10 @@
 <template>
-  <PagesJobsPage />
+  <JobsPresentationJobsPage />
 </template>
 
 <script setup lang="ts">
+import JobsPresentationJobsPage from "../../src/jobs/presentation/pages/JobsPage.vue"
+
 import {
   defaultJobCategory,
   defaultJobLocation,

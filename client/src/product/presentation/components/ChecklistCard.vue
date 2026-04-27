@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
-import type { ProductChecklistItem } from "../../../../types/product-editor"
+import type { ProductChecklistItem } from "../../domain/types/product-editor.types"
 
 const props = withDefaults(defineProps<{
   title?: string

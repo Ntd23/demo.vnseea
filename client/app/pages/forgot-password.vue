@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import PagesForgotPasswordPage from "../../src/auth/presentation/pages/ForgotPasswordPage.vue"
 definePageMeta({
   layout: "guest",
 })

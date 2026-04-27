@@ -136,7 +136,7 @@ import type {
   ConditionValue,
   CurrencyValue,
   ProductOption,
-} from "../../../../types/product-editor"
+} from "../../domain/types/product-editor.types"
 
 const props = withDefaults(defineProps<{
   categoryOptions: ProductOption<CategoryValue>[]

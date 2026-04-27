@@ -1,8 +1,10 @@
 <template>
-  <PagesGroupsPage mode="suggested" />
+  <CommunityPresentationGroupsPage mode="suggested" />
 </template>
 
 <script setup lang="ts">
+import CommunityPresentationGroupsPage from "../../src/community/presentation/pages/GroupsPage.vue"
+
 definePageMeta({ layout: "default" })
 
 const { t } = useI18n()

@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import PagesCheckoutPage from "../../src/checkout/presentation/pages/CheckoutPage.vue"
 definePageMeta({
   layout: "default",
 })

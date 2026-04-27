@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductHeroStat } from "../../../../types/product-editor"
+import type { ProductHeroStat } from "../../domain/types/product-editor.types"
 
 const props = defineProps<{
   variant: "create" | "edit"

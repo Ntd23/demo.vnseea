@@ -1,9 +1,11 @@
 <template>
-  <PagesDirectoryIndexPage />
+  <DirectoryPresentationDirectoryIndexPage />
 </template>
 
 <script setup lang="ts">
-import type { DirectoryCategoryKey } from "~/composables/useMockDirectoryData"
+import type { DirectoryCategoryKey } from "../../../src/directory/domain/types/directory.types"
+import { useDirectoryCatalog } from "../../../src/directory/infrastructure/mocks/directoryCatalog"
+import DirectoryPresentationDirectoryIndexPage from "../../../src/directory/presentation/pages/DirectoryIndexPage.vue"
 
 definePageMeta({
   layout: "default",
@@ -23,7 +25,7 @@ function normalizeCategory(value: string, availableCategories: DirectoryCategory
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
-const { categories } = useMockDirectoryData()
+const { categories } = useDirectoryCatalog()
 
 const searchQuery = computed(() =>
   readQueryValue(route.query.q).trim(),

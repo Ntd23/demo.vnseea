@@ -1,8 +1,10 @@
 <template>
-  <PagesEditProductPage :product-id="productId" />
+  <ProductPresentationEditProductPage :product-id="productId" />
 </template>
 
 <script setup lang="ts">
+import ProductPresentationEditProductPage from "../../../src/product/presentation/pages/EditProductPage.vue"
+
 definePageMeta({
   layout: "default",
 })
