@@ -1,53 +1,78 @@
 <template>
-  <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]" :ui="{ body: 'p-5 sm:p-7' }">
-    <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-[760px]">
-        <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em]">
-          {{ t("pages.directoryPage.heroEyebrow") }}
-        </UBadge>
-        <h1 class="mt-2 text-display text-[2.15rem] leading-tight text-[var(--text-primary)] sm:text-[3rem]">
-          {{ t("pages.directoryPage.heroTitle") }}
-        </h1>
-        <p class="mt-3 text-[15px] font-semibold leading-7 text-[var(--text-secondary)]">
-          {{ t("pages.directoryPage.heroDescription") }}
-        </p>
+  <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_20px_50px_rgba(15,35,110,0.08)]">
+    <div class="grid gap-8 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_480px] xl:items-stretch">
+      <div class="flex min-w-0 flex-col justify-between gap-10 rounded-[28px] bg-[#0f172a] p-6 text-white sm:p-10">
+        <div class="space-y-6">
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="inline-flex h-9 items-center rounded-2xl bg-white/10 px-4 text-[12px] font-black uppercase tracking-[0.15em] text-white backdrop-blur-xl border border-white/20">
+              {{ t("pages.directoryPage.heroEyebrow") }}
+            </span>
+            <span v-if="activeCategoryLabel" class="inline-flex h-9 items-center rounded-2xl bg-primary-600 px-4 text-[12px] font-black uppercase tracking-[0.15em] text-white shadow-lg shadow-primary-600/30">
+              {{ activeCategoryLabel }}
+            </span>
+          </div>
 
-        <div class="mt-4 flex flex-wrap gap-2">
-          <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
-            {{ statusLabel }}
-          </UBadge>
-          <UBadge
-            v-if="activeCategoryLabel"
+          <div class="space-y-4">
+            <h1 class="max-w-[720px] text-[38px] font-black leading-tight tracking-tight sm:text-[56px]">
+              {{ t("pages.directoryPage.heroTitle") }}
+            </h1>
+            <p class="max-w-xl text-[16px] font-medium leading-relaxed text-white/60">
+              {{ t("pages.directoryPage.heroDescription") }}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-4">
+          <UButton
             color="primary"
-            variant="subtle"
-            class="rounded-full px-3 py-1.5 text-[12px] font-semibold"
+            size="xl"
+            class="h-14 rounded-2xl px-8 font-black shadow-2xl shadow-primary-500/40 hover:-translate-y-1 transition-all"
           >
-            {{ activeCategoryLabel }}
-          </UBadge>
-          <UBadge
-            v-if="searchTerm"
-            color="neutral"
-            variant="outline"
-            class="rounded-full px-3 py-1.5 text-[12px] font-semibold"
-          >
-            {{ t("pages.directoryPage.queryBadge", { query: searchTerm }) }}
-          </UBadge>
+            <template #leading>
+              <Icon name="i-ph-lightning-fill" class="h-5 w-5" />
+            </template>
+            {{ t("pages.directoryPage.heroPrimaryCta") }}
+          </UButton>
+          
+          <button class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-white backdrop-blur-xl border border-white/20 hover:bg-white/20 transition-all">
+            <Icon name="i-ph-share-network-duotone" class="h-6 w-6" />
+          </button>
         </div>
       </div>
-      <div class="grid gap-3 sm:grid-cols-3 xl:w-[520px]">
-        <UCard
-          v-for="item in stats"
-          :key="item.label"
-          class="rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]"
-          :ui="{ body: 'p-4' }"
-        >
-          <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--text-tertiary)]">{{ item.label }}</p>
-          <p class="mt-2 text-[1.55rem] font-black leading-none text-[var(--text-primary)]">{{ item.value }}</p>
-          <p class="mt-1 text-[12px] font-semibold text-[var(--text-secondary)]">{{ item.description }}</p>
-        </UCard>
+
+      <div class="grid gap-4">
+        <div class="rounded-[28px] bg-slate-50 p-8 text-[#0f172a] shadow-inner relative overflow-hidden group border border-slate-100">
+          <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary-500/5 blur-3xl transition-transform group-hover:scale-150" />
+          
+          <div class="relative flex items-start justify-between">
+            <div class="space-y-1">
+              <p class="text-[11px] font-black uppercase tracking-widest text-slate-400">
+                {{ statusLabel }}
+              </p>
+              <p class="text-[38px] font-black leading-none">
+                {{ stats[1].value }}
+              </p>
+            </div>
+            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-xl">
+              <Icon name="i-ph-squares-four-fill" class="h-7 w-7 text-primary-600" />
+            </div>
+          </div>
+          <p class="mt-4 text-[13px] font-bold text-slate-500">{{ t("pages.directoryPage.heroDescription") }}</p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div v-for="stat in [stats[0], stats[2]]" :key="stat.label" class="rounded-[24px] border border-[#dbe3f2] bg-white p-6 shadow-sm">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              {{ stat.label }}
+            </p>
+            <p class="mt-2 text-[28px] font-black text-[#0f172a]">
+              {{ stat.value }}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-5 pb-10">
+  <div class="mx-auto max-w-[1440px] space-y-8 px-4 pb-20 pt-6 sm:px-6">
+    <!-- GoPro Style Hero -->
     <DirectoryHero
       :stats="heroStats"
       :status-label="heroStatusLabel"
@@ -7,54 +8,66 @@
       :search-term="search"
     />
 
-    <DirectoryFilters
-      v-model:search="search"
-      v-model:selected-category="selectedCategory"
-      :categories="categories"
-      :result-count="filteredItems.length"
-      :status-label="filtersStatusLabel"
-      :can-reset="hasActiveFilters"
-      @reset="resetFilters"
-    />
+    <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+      <main class="space-y-8 min-w-0">
+        <!-- Filters Section -->
+        <DirectoryFilters
+          v-model:search="search"
+          v-model:selected-category="selectedCategory"
+          :categories="categories"
+          :result-count="filteredItems.length"
+          :status-label="filtersStatusLabel"
+          :can-reset="hasActiveFilters"
+          @reset="resetFilters"
+        />
 
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
-      <main class="space-y-4">
-        <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.resultsEyebrow") }}</p>
-              <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ resultHeading }}</h2>
-              <p class="mt-1 text-body-secondary">{{ t("pages.directoryPage.matchingItems", { count: filteredItems.length }) }}</p>
+        <!-- Results Header Card -->
+        <div class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-xl p-6 sm:p-8">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <div class="h-1.5 w-6 rounded-full bg-primary-500" />
+                <p class="text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
+                  {{ t("pages.directoryPage.resultsEyebrow") }}
+                </p>
+              </div>
+              <h2 class="text-[28px] font-black tracking-tight text-[#0f172a] sm:text-[34px]">
+                {{ resultHeading }}
+              </h2>
+              <p class="text-[14px] font-bold text-slate-400">
+                {{ t("pages.directoryPage.matchingItems", { count: filteredItems.length }) }}
+              </p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
+              <UBadge
+                v-if="selectedCategory !== 'all'"
+                color="primary"
+                variant="solid"
+                class="rounded-xl px-4 py-2 font-black text-[11px] uppercase tracking-wider shadow-lg shadow-primary-500/20"
+              >
                 {{ activeCategoryLabel }}
               </UBadge>
-              <UBadge
-                v-if="search"
-                color="neutral"
-                variant="soft"
-                class="rounded-full px-3 py-1.5 text-[12px] font-semibold"
-              >
-                {{ t("pages.directoryPage.queryBadge", { query: search }) }}
-              </UBadge>
+              
               <UButton
                 v-if="hasActiveFilters"
-                color="neutral"
-                variant="outline"
-                size="sm"
-                class="rounded-full"
+                color="gray"
+                variant="soft"
+                size="md"
+                class="rounded-xl font-black text-[12px] uppercase tracking-wider"
                 @click="resetFilters"
               >
-                <Icon name="i-ph-x-circle-bold" class="mr-1.5 h-4 w-4" />
+                <template #leading>
+                  <Icon name="i-ph-x-circle-bold" class="h-4 w-4" />
+                </template>
                 {{ t("pages.directoryPage.resetFilters") }}
               </UButton>
             </div>
           </div>
-        </UCard>
+        </div>
 
-        <div v-if="filteredItems.length > 0" class="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+        <!-- Items Grid -->
+        <div v-if="filteredItems.length > 0" class="grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
           <DirectoryCard
             v-for="item in filteredItems"
             :key="item.id"
@@ -62,28 +75,31 @@
           />
         </div>
 
-        <UAlert
+        <!-- Empty State -->
+        <div
           v-else
-          color="neutral"
-          variant="subtle"
-          icon="i-ph-squares-four-fill"
-          :title="t('pages.directoryPage.emptyTitle')"
-          :description="t('pages.directoryPage.emptyDescription')"
-          class="rounded-[30px]"
+          class="rounded-[32px] border border-[#dbe3f2] bg-white p-12 text-center shadow-lg lg:p-24"
         >
-          <template #actions>
+          <div class="mx-auto max-w-sm space-y-6">
+            <div class="flex h-20 w-20 mx-auto items-center justify-center rounded-[30px] bg-slate-50 text-slate-300">
+              <Icon name="i-ph-squares-four-duotone" class="h-10 w-10" />
+            </div>
+            <div class="space-y-2">
+              <h3 class="text-xl font-black text-[#0f172a]">{{ t('pages.directoryPage.emptyTitle') }}</h3>
+              <p class="text-sm font-medium text-slate-500">{{ t('pages.directoryPage.emptyDescription') }}</p>
+            </div>
             <UButton
               v-if="hasActiveFilters"
-              color="neutral"
-              variant="outline"
-              size="sm"
-              class="rounded-full"
+              color="primary"
+              variant="solid"
+              size="lg"
+              class="h-12 rounded-xl px-8 font-black shadow-lg"
               @click="resetFilters"
             >
               {{ t("pages.directoryPage.resetFilters") }}
             </UButton>
-          </template>
-        </UAlert>
+          </div>
+        </div>
       </main>
 
       <DirectorySidebar
@@ -99,6 +115,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { useStorage, watchDebounced } from "@vueuse/core"
