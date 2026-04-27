@@ -82,6 +82,31 @@ client/
 └─ doc/
 ```
 
+## Trạng thái chuyển tiếp cần hiểu đúng
+
+Trong giai đoạn refactor:
+
+- `app/pages/*` vẫn là route entry thật của Nuxt
+- `app/components/*` vẫn có thể còn là runtime hiện tại của nhiều màn
+- `src/*` là target structure mới theo DDD
+
+Refactor sẽ diễn ra theo hướng:
+
+```txt
+URL
+-> app/pages/*
+-> src/<bounded-context>/presentation/pages/*
+-> src/<bounded-context>/presentation/components/*
+-> src/<bounded-context>/application/*
+-> src/<bounded-context>/domain/*
+-> src/<bounded-context>/infrastructure/*
+```
+
+Tức là:
+- không bỏ `app/pages/*`
+- mà biến `app/pages/*` thành wrapper mỏng
+- rồi dần dần thay runtime cũ trong `app/components/pages/*` bằng page mới trong `src/*`
+
 ## Structure bên trong mỗi bounded context
 
 ```txt
