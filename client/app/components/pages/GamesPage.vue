@@ -515,3 +515,9 @@ function syncRoute() {
   void router.replace({ path: "/games", query: nextQuery })
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

@@ -184,3 +184,9 @@ useSeoMeta({
       : t("pages.hashtagPage.seoDescriptionEmpty", { tag: hashtagLabel.value }),
 })
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

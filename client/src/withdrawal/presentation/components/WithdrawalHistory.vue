@@ -78,3 +78,9 @@ const statusColor = {
   failed: "bg-rose-500",
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

@@ -187,3 +187,9 @@ function isDefaultDraft(value: CommunityDraft) {
     && value.category === defaultDraft.category
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

@@ -111,3 +111,9 @@ const props = defineProps<{
 
 const { paymentMeta, statusMeta } = useOrderPresentation(computed(() => props.order))
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

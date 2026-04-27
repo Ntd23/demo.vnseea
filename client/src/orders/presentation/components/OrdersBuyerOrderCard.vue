@@ -187,3 +187,9 @@ const progressSteps = [
 
 const repeatActionLabel = computed(() => getRepeatOrderActionLabel(props.order.status))
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

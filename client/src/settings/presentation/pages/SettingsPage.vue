@@ -57,3 +57,9 @@ useSeoMeta({
   title: () => t("pages.settingsPage.seoTitle", { page: activePage.value?.label }),
 })
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

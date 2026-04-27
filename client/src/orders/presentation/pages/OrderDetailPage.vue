@@ -217,3 +217,9 @@ useSeoMeta({
   description: t("orders.page.detailDescription"),
 })
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

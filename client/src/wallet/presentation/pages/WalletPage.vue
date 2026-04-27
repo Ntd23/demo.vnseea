@@ -38,3 +38,9 @@ useSeoMeta({
   description: t("pages.walletPage.seoDescription"),
 })
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

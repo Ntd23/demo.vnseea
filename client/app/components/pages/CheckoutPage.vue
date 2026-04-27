@@ -9,3 +9,9 @@ import CheckoutPresentationPage from "../../../src/checkout/presentation/pages/C
  * Runtime has been moved to src/checkout/presentation/pages/CheckoutPage.vue
  */
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

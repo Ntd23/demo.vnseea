@@ -545,3 +545,9 @@ const selectCategory = (value: string) => {
   selectedCategory.value = value as BlogCategory
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

@@ -36,3 +36,9 @@ function onSelectUser(user: any) {
   // Logic to load conversation
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

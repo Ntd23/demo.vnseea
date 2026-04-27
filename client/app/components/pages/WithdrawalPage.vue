@@ -8,4 +8,9 @@ import WithdrawalPresentationPage from "../../../src/withdrawal/presentation/pag
  * Legacy wrapper for WithdrawalPage.
  * Runtime has been moved to src/withdrawal/presentation/pages/WithdrawalPage.vue
  */
-</script>
+</script>
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

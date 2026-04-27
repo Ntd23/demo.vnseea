@@ -387,3 +387,9 @@ function formatVnd(value: number) {
   return `VND${currencyFormatter.value.format(value)}`
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

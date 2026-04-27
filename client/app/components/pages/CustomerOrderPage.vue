@@ -264,3 +264,9 @@ const pageTitle = computed(() =>
     : t("orders.page.customerFallbackTitle"),
 )
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

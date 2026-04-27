@@ -82,3 +82,9 @@ const prevReel = () => {
   activeIndex.value = (activeIndex.value - 1 + reels.value.length) % reels.value.length
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

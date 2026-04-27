@@ -13,3 +13,9 @@ defineProps<{
  * Runtime and logic moved to src/settings/presentation/pages/SettingsPage.vue
  */
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

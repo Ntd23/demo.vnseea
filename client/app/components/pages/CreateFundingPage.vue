@@ -91,3 +91,9 @@ const recordCreatedCampaign = (_payload: FundingCreatePayload) => {
   createdCount.value += 1
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

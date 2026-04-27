@@ -67,3 +67,9 @@ defineProps<{
 const searchModel = defineModel<string>("search", { required: true })
 const activeFilterModel = defineModel<BuyerOrderFilter>("activeFilter", { required: true })
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

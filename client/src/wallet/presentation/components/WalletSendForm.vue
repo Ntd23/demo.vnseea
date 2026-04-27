@@ -121,3 +121,7 @@ const handleSubmit = () => {
   payload.note = ""
 }
 </script>
+
+<style scoped>
+/** Added style block to ensure Vite loader separates script and style correctly */
+</style>

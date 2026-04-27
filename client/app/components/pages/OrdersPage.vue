@@ -9,3 +9,9 @@ import OrdersPresentationPage from "../../../src/orders/presentation/pages/Order
  * Runtime has been moved to src/orders/presentation/pages/OrdersPage.vue
  */
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

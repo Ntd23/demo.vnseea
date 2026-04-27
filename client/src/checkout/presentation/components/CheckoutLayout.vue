@@ -89,3 +89,9 @@ const props = withDefaults(defineProps<{
 
 const hasProgress = computed(() => props.progressLabel.length > 0)
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

@@ -35,3 +35,9 @@ defineProps<{
   stats: Array<{ label: string; value: string | number }>
 }>()
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

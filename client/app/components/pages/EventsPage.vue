@@ -603,3 +603,9 @@ function syncRoute() {
   router.replace({ query: nextQuery })
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

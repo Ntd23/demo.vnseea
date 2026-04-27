@@ -316,3 +316,9 @@ const resetFilters = () => {
   selectedCategory.value = "all"
 }
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

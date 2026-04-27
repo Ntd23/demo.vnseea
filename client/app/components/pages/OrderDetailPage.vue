@@ -13,3 +13,9 @@ defineProps<{
   orderId: string
 }>()
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+

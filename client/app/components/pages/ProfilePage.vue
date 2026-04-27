@@ -15,3 +15,9 @@ import ProfilePresentationPage from "../../../src/profile/presentation/pages/Pro
  */
 const { posts } = useMockSocialData()
 </script>
+
+
+<style scoped>
+/** Fixed CSS parsing error by providing explicit style block */
+</style>
+
