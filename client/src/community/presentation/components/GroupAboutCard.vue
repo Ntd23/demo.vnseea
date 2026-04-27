@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CommunityGroupRecord } from "../../../../types/community"
+import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 const { t } = useI18n()
 const translateText = useMaybeTranslatedText()

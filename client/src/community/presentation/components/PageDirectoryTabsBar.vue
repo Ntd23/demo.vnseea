@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CommunityPageTab } from "../../../../types/community"
+import type { CommunityPageTab } from "../../domain/types/community.types"
 
 const search = defineModel<string>("search", { default: "" })
 

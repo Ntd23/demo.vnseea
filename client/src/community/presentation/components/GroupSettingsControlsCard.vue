@@ -68,14 +68,14 @@
 <script setup lang="ts">
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
 import {
-  communityPrivacyOptions,
   getCommunityOptionDescription,
   getCommunityOptionLabel,
-} from "../../../../types/community"
+} from "../../domain/services/community-helpers.service"
 import type {
   CommunityGroupSettingsDraft,
   CommunityPrivacy,
-} from "../../../../types/community"
+} from "../../domain/types/community.types"
+import { communityPrivacyOptions } from "../../domain/constants/community-options"
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
 const { t } = useI18n()

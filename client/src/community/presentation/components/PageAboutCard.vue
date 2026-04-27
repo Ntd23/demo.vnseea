@@ -85,7 +85,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CommunityPageRecord } from "../../../../types/community"
+import type { CommunityPageRecord } from "../../domain/types/community.types"
 
 const { t } = useI18n()
 const translateText = useMaybeTranslatedText()

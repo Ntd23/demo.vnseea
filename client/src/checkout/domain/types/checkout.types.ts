@@ -15,6 +15,10 @@ export interface ShippingAddress {
   streetAddress: string
 }
 
+export interface ShippingAddressForm extends ShippingAddress {}
+
+export interface SavedShippingAddress extends ShippingAddress {}
+
 export interface CheckoutSnapshot {
   items: CheckoutLineItem[]
   shippingAddress: ShippingAddress | null

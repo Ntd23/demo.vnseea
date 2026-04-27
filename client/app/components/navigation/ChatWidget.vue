@@ -62,7 +62,7 @@
       <div v-if="activeTab === 'send'" class="flex flex-col gap-5 px-5 py-6">
         <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-1">{{ $t("navigation.chatWidget.content") }}</p>
 
-        <UFormGroup :label="$t('navigation.chatWidget.sendToLabel')" class="space-y-2">
+        <UFormField :label="$t('navigation.chatWidget.sendToLabel')" class="space-y-2">
           <UInput
             v-model="sendTo"
             size="xl"
@@ -74,9 +74,9 @@
               base: 'bg-secondary-50/30 font-semibold focus:bg-white transition-all ring-1 ring-secondary-100 focus:ring-primary-500' 
             }"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup class="space-y-2">
+        <UFormField class="space-y-2">
           <UTextarea
             v-model="sendMessage"
             size="xl"
@@ -89,9 +89,9 @@
               base: 'bg-secondary-50/30 font-semibold focus:bg-white transition-all ring-1 ring-secondary-100 focus:ring-primary-500' 
             }"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup :label="$t('navigation.chatWidget.attachLabel')" class="space-y-2">
+        <UFormField :label="$t('navigation.chatWidget.attachLabel')" class="space-y-2">
           <div class="flex items-center overflow-hidden rounded-xl border border-dashed border-primary-200 bg-primary-50/20 py-1 px-1">
             <label class="flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-white px-4 shadow-sm ring-1 ring-primary-100 transition hover:bg-primary-50 active:scale-95">
               <Icon name="i-ph-paperclip-duotone" class="h-4.5 w-4.5 text-[var(--text-primary)]" />
@@ -102,7 +102,7 @@
               {{ attachFile ? attachFile.name : $t("navigation.chatWidget.noFileSelected") }}
             </span>
           </div>
-        </UFormGroup>
+        </UFormField>
 
         <div class="flex items-center justify-between gap-4">
           <UCheckbox

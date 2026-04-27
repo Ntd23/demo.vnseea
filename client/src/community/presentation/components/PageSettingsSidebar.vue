@@ -84,8 +84,8 @@
 
 <script setup lang="ts">
 import CommunityPageAboutCard from "./PageAboutCard.vue"
-import { getCommunityInitials } from "../../../../types/community"
-import type { CommunityPageRecord } from "../../../../types/community"
+import { getCommunityInitials } from "../../domain/services/community-helpers.service"
+import type { CommunityPageRecord } from "../../domain/types/community.types"
 
 const props = defineProps<{
   page: CommunityPageRecord

@@ -1,22 +1,22 @@
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
 import { resolveI18nMessage } from "../../../../app/utils/resolveI18nMessage"
-import { useMockSocialData } from "../../../../app/composables/useMockSocialData"
 import { formatCommunityCount } from "../../domain/services/community-metrics.service"
 import {
   findCommunityGroupBySlug,
   findCommunityGroupMembers,
 } from "../../infrastructure/adapters/communityDirectory.adapter"
-import type { CommunityGroupRecord } from "../../../../types/community"
+import { createCommunityFeedBasePosts } from "../../infrastructure/mocks/communityFeed.mock"
+import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 export function useCommunityGroupDetail(slugSource: MaybeRefOrGetter<string>) {
   const { t, tm, rt, locale, te } = useI18n()
-  const { posts } = useMockSocialData()
   const localized = <T>(key: string) =>
     resolveI18nMessage(tm(key), message => rt(message as never)) as T
   const translateValue = (value?: string, fallback = "") => {
     if (!value) return fallback
     return te(value) ? t(value) : value
   }
+  const posts = computed(() => createCommunityFeedBasePosts(t))
 
   const slug = computed(() => String(toValue(slugSource) || ""))
   const rawGroup = computed(() => findCommunityGroupBySlug(slug.value))
@@ -62,7 +62,7 @@ export function useCommunityGroupDetail(slugSource: MaybeRefOrGetter<string>) {
   const groupPosts = computed(() => {
     if (!group.value) return []
 
-    return posts.slice(0, 3).map((post, index) => {
+    return posts.value.slice(0, 3).map((post, index) => {
       const member = members.value[index % Math.max(members.value.length, 1)]
       const groupName = translateValue(group.value?.name)
       const activityLabel = translateValue(group.value?.activityLabel)

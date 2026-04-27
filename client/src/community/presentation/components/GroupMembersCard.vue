@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CommunityGroupMember } from "../../../../types/community"
+import type { CommunityGroupMember } from "../../domain/types/community.types"
 
 const { t } = useI18n()
 const translateText = useMaybeTranslatedText()

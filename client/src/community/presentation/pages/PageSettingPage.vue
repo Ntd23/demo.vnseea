@@ -119,18 +119,18 @@ import CommunityPageSettingsControlsCard from "../components/PageSettingsControl
 import CommunityPageSettingsSidebar from "../components/PageSettingsSidebar.vue"
 import CommunitySettingsSectionCard from "../components/SettingsSectionCard.vue"
 import { useCommunityPageDetail } from "../../application/composables/useCommunityPageDetail"
+import { createCommunityPageSettingsDraft } from "../../application/factories/community-drafts"
+import { communityPageCategoryOptions } from "../../domain/constants/community-options"
 import {
   appendCommunityQuery,
-  communityPageCategoryOptions,
-  createCommunityPageSettingsDraft,
   createCommunitySlug,
   getCommunityOptionLabel,
   getCommunityPagePath,
-} from "../../../../types/community"
+} from "../../domain/services/community-helpers.service"
 import type {
   CommunityPageRecord,
   CommunityPageSettingsDraft,
-} from "../../../../types/community"
+} from "../../domain/types/community.types"
 
 type PageSettingsState = "idle" | "loading" | "success" | "error"
 

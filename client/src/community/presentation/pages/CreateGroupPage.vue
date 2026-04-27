@@ -1,0 +1,137 @@
+<template>
+  <div class="mx-auto max-w-[1280px] space-y-8 pb-20">
+    <CommunityCreationHeaderCard
+      :eyebrow="$t('community.creation.group.eyebrow')"
+      :title="$t('community.creation.group.title')"
+      :description="$t('community.creation.group.description')"
+      icon="i-ph-users-four-fill"
+      :highlights="highlights"
+    />
+
+    <CommunityCreationForm
+      v-model="draft"
+      entity-label="community.creation.common.entityLabelGroup"
+      :privacy-options="communityPrivacyOptions"
+      :category-options="communityCategoryOptions"
+      :name-label="$t('community.creation.group.nameLabel')"
+      :name-placeholder="$t('community.creation.group.namePlaceholder')"
+      :url-label="$t('community.creation.common.urlLabel')"
+      :slug-placeholder="$t('community.creation.group.slugPlaceholder')"
+      :description-label="$t('community.creation.common.descriptionLabel')"
+      :description-placeholder="$t('community.creation.group.description')"
+      :privacy-label="$t('community.creation.group.privacyLabel')"
+      :category-label="$t('community.creation.common.categoryLabel')"
+      back-to="/groups"
+      :submit-label="$t('community.creation.common.create')"
+      :submit-state="submitState"
+      :submit-disabled="isSubmitDisabled"
+      :draft-restored="draftRestored"
+      @submit="handleCreateGroup"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useStorage } from "@vueuse/core"
+import CommunityCreationForm from "../components/CreationForm.vue"
+import CommunityCreationHeaderCard from "../components/CreationHeaderCard.vue"
+import { createCommunityGroupDraft } from "../../application/factories/community-drafts"
+import {
+  communityCategoryOptions,
+  communityPrivacyOptions,
+} from "../../domain/constants/community-options"
+import type { CommunityDraft } from "../../domain/types/community.types"
+
+type CommunityCreationState = "idle" | "loading" | "success" | "error"
+
+const { t } = useI18n()
+const toast = useToast()
+
+const draft = useStorage<CommunityDraft>(
+  "community:create-group-draft",
+  createCommunityGroupDraft(),
+  undefined,
+  {
+    mergeDefaults: true,
+    initOnMounted: true,
+  },
+)
+
+const submitState = ref<CommunityCreationState>("idle")
+const draftRestored = ref(false)
+
+const highlights = computed(() => [
+  t("community.creation.group.highlights[0]"),
+  t("community.creation.group.highlights[1]"),
+  t("community.creation.group.highlights[2]"),
+])
+
+const isSubmitDisabled = computed(() =>
+  submitState.value === "loading"
+  || !draft.value.name.trim()
+  || !draft.value.slug.trim()
+  || draft.value.description.trim().length < 24
+  || !draft.value.privacy
+  || !draft.value.category,
+)
+
+onMounted(async () => {
+  await nextTick()
+  draftRestored.value = !isDefaultDraft(draft.value)
+})
+
+watch(
+  () => ({ ...draft.value }),
+  () => {
+    if (submitState.value !== "loading") {
+      submitState.value = "idle"
+    }
+
+    draftRestored.value = false
+  },
+)
+
+async function handleCreateGroup() {
+  submitState.value = "loading"
+
+  try {
+    await new Promise(resolve => setTimeout(resolve, 550))
+
+    submitState.value = "success"
+
+    toast.add({
+      title: t("community.creation.common.statusSuccessTitle", {
+        entity: t("community.creation.common.entityLabelGroup"),
+      }),
+      description: t("community.creation.common.statusSuccessDescription", {
+        entity: t("community.creation.common.entityLabelGroup"),
+      }),
+      color: "success",
+    })
+
+    draft.value = createCommunityGroupDraft()
+    draftRestored.value = false
+
+    await navigateTo("/groups")
+  }
+  catch {
+    submitState.value = "error"
+
+    toast.add({
+      title: t("community.creation.common.statusErrorTitle"),
+      description: t("community.creation.common.statusErrorDescription"),
+      color: "error",
+    })
+  }
+}
+
+function isDefaultDraft(value: CommunityDraft) {
+  const defaultDraft = createCommunityGroupDraft()
+
+  return value.name === defaultDraft.name
+    && value.slug === defaultDraft.slug
+    && value.description === defaultDraft.description
+    && value.privacy === defaultDraft.privacy
+    && value.category === defaultDraft.category
+}
+</script>

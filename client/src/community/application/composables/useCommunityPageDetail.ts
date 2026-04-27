@@ -1,11 +1,11 @@
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
-import { useMockSocialData } from "../../../../app/composables/useMockSocialData"
 import { formatCommunityCount } from "../../domain/services/community-metrics.service"
 import {
   createCommunityPageSlug,
   findCommunityPageBySlug,
 } from "../../infrastructure/adapters/communityDirectory.adapter"
-import type { CommunityPageRecord } from "../../../../types/community"
+import { createCommunityFeedBasePosts } from "../../infrastructure/mocks/communityFeed.mock"
+import type { CommunityPageRecord } from "../../domain/types/community.types"
 
 function readQueryValue(value: unknown) {
   if (Array.isArray(value)) return String(value[0] || "")
@@ -25,11 +25,11 @@ export function useCommunityPageDetail(
   querySource?: MaybeRefOrGetter<Record<string, unknown>>,
 ) {
   const { t, te, locale } = useI18n()
-  const { posts } = useMockSocialData()
   const translateValue = (value?: string, fallback = "") => {
     if (!value) return fallback
     return te(value) ? t(value) : value
   }
+  const posts = computed(() => createCommunityFeedBasePosts(t))
 
   const slug = computed(() => String(toValue(slugSource) || "").trim())
   const query = computed(() =>
@@ -108,7 +108,7 @@ export function useCommunityPageDetail(
   const pagePosts = computed(() => {
     if (!page.value) return []
 
-    return posts.slice(0, 3).map((post, index) => {
+    return posts.value.slice(0, 3).map((post, index) => {
       const pageName = translateValue(page.value?.name)
       const pageOwnerLabel = translateValue(page.value?.ownerLabel)
       const localizedTags = page.value.tags.map(tag => translateValue(tag)).filter(Boolean)

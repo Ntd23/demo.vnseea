@@ -391,23 +391,23 @@
 
 <script setup lang="ts">
 import { useStorage, watchDebounced } from "@vueuse/core"
-import type { ShippingAddress } from "../../domain/types/checkout.types"
+import type { SavedShippingAddress, ShippingAddressForm } from "../../domain/types/checkout.types"
 
 type ShippingFormStatus = "idle" | "loading" | "success" | "error"
 
 type ShippingFormError = {
-  name?: keyof ShippingAddress
+  name?: keyof ShippingAddressForm
   message: string
 }
 
 const props = withDefaults(defineProps<{
-  initialAddress?: ShippingAddress | null
+  initialAddress?: SavedShippingAddress | null
 }>(), {
   initialAddress: null,
 })
 
 const emit = defineEmits<{
-  submit: [address: ShippingAddress]
+  submit: [address: SavedShippingAddress]
 }>()
 
 const { t } = useI18n()
@@ -423,7 +423,7 @@ const textareaUi = {
   base: "min-h-[120px] rounded-[18px] px-4 py-3 text-[15px] leading-7",
 }
 
-const createEmptyForm = (): ShippingAddress => ({
+const createEmptyForm = (): ShippingAddressForm => ({
   fullName: "",
   phone: "",
   country: "",
@@ -432,7 +432,7 @@ const createEmptyForm = (): ShippingAddress => ({
   streetAddress: "",
 })
 
-const normalizeAddress = (address: ShippingAddress): ShippingAddress => ({
+const normalizeAddress = (address: ShippingAddressForm): SavedShippingAddress => ({
   fullName: address.fullName.trim(),
   phone: address.phone.trim(),
   country: address.country.trim(),
@@ -441,12 +441,12 @@ const normalizeAddress = (address: ShippingAddress): ShippingAddress => ({
   streetAddress: address.streetAddress.trim(),
 })
 
-const hasAnyField = (address: ShippingAddress | null | undefined) =>
+const hasAnyField = (address: ShippingAddressForm | SavedShippingAddress | null | undefined) =>
   Boolean(address) && Object.values(address).some(value => value.trim().length > 0)
 
 const isSameAddress = (
-  first: ShippingAddress | null | undefined,
-  second: ShippingAddress | null | undefined,
+  first: ShippingAddressForm | SavedShippingAddress | null | undefined,
+  second: ShippingAddressForm | SavedShippingAddress | null | undefined,
 ) => {
   if (!first || !second) {
     return false
@@ -456,17 +456,17 @@ const isSameAddress = (
   const normalizedSecond = normalizeAddress(second)
 
   return Object.entries(normalizedFirst).every(([key, value]) =>
-    normalizedSecond[key as keyof ShippingAddress] === value,
+    normalizedSecond[key as keyof SavedShippingAddress] === value,
   )
 }
 
-const form = reactive<ShippingAddress>(createEmptyForm())
-const latestSavedAddress = ref<ShippingAddress | null>(null)
+const form = reactive<ShippingAddressForm>(createEmptyForm())
+const latestSavedAddress = ref<SavedShippingAddress | null>(null)
 const submitState = ref<ShippingFormStatus>("idle")
 const draftRestored = ref(false)
 const storageHydrated = ref(false)
 
-const draftStorage = useStorage<ShippingAddress>(
+const draftStorage = useStorage<ShippingAddressForm>(
   "checkout:shipping-address-draft",
   createEmptyForm(),
   undefined,
@@ -627,7 +627,7 @@ watch(
   },
 )
 
-const validateForm = (state: ShippingAddress): ShippingFormError[] => {
+const validateForm = (state: ShippingAddressForm): ShippingFormError[] => {
   const errors: ShippingFormError[] = []
 
   if (!state.fullName.trim()) {

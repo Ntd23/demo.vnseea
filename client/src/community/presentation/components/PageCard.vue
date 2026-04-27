@@ -105,14 +105,14 @@
 
 <script setup lang="ts">
 import {
-  communityPageCategoryOptions,
   formatCommunityFollowerCount,
   formatCommunityLikeCount,
   getCommunityOptionLabel,
   getCommunityPagePath,
   getCommunityPageSettingsPath,
-} from "../../../../types/community"
-import type { CommunityPageRecord } from "../../../../types/community"
+} from "../../domain/services/community-helpers.service"
+import { communityPageCategoryOptions } from "../../domain/constants/community-options"
+import type { CommunityPageRecord } from "../../domain/types/community.types"
 
 const props = withDefaults(defineProps<{
   page: CommunityPageRecord

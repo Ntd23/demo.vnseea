@@ -93,8 +93,8 @@ import {
   appendCommunityQuery,
   getCommunityInitials,
   getCommunityPageSettingsPath,
-} from "../../../../types/community"
-import type { CommunityPageRecord } from "../../../../types/community"
+} from "../../domain/services/community-helpers.service"
+import type { CommunityPageRecord } from "../../domain/types/community.types"
 
 const { t } = useI18n()
 const translateText = useMaybeTranslatedText()

@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-2">
-    <UFormGroup
+    <UFormField
       :label="field.label"
       :help="field.description"
       class="w-full"
@@ -54,7 +54,7 @@
           <Icon :name="field.key.includes('password') ? 'i-ph-lock-duotone' : (field.key.includes('email') ? 'i-ph-envelope-duotone' : 'i-ph-pencil-duotone')" class="h-5 w-5 text-[var(--icon-primary)]" />
         </template>
       </UInput>
-    </UFormGroup>
+    </UFormField>
   </div>
 </template>
 

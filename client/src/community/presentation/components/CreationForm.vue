@@ -311,14 +311,14 @@
 import CommunityCreationInsightsPanel from "./CreationInsightsPanel.vue"
 import {
   createCommunitySlug,
-  communityUrlPrefix,
   getCommunityCompletionCount,
   getCommunityCompletionTotal,
-} from "../../../../types/community"
+} from "../../domain/services/community-helpers.service"
 import type {
   CommunityDraft,
   CommunityOption,
-} from "../../../../types/community"
+} from "../../domain/types/community.types"
+import { communityUrlPrefix } from "../../domain/constants/community-options"
 
 type CreationSubmitState = "idle" | "loading" | "success" | "error"
 
