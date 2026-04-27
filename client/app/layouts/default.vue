@@ -1,8 +1,8 @@
 <template>
   <div class="phone-safe min-h-screen bg-[#f1f4fb]" :class="isReelsPage ? 'overflow-hidden bg-black' : ''">
-    <NavigationHeaderBar v-model:menu-open="menuOpen" />
+    <NavigationHeaderBar />
 
-    <div class="w-full" :class="isReelsPage ? 'h-[calc(100vh-56px)]' : ''">
+    <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden xl:h-[calc(100dvh-73px)]' : ''">
       <div
         class="mx-auto grid w-full grid-cols-1 gap-4 xl:items-start"
         :class="shellClass"
@@ -29,9 +29,6 @@
       </div>
     </div>
 
-    <!-- Mobile: Full page menu -->
-    <NavigationMobileMenu v-model="menuOpen" />
-
     <!-- Mobile: Floating chat button -->
     <Teleport to="body">
       <button
@@ -48,7 +45,6 @@
 </template>
 
 <script setup>
-const menuOpen = ref(false)
 const chatOpen = ref(false)
 
 const route = useRoute()
@@ -73,7 +69,7 @@ const showHeaderIconNav = computed(() =>
 
 const shellClass = computed(() => {
   if (isReelsPage.value) {
-    return 'max-w-[1880px] px-5 h-full grid-cols-1 gap-0 xl:grid-cols-1'
+    return 'h-full max-w-none grid-cols-1 gap-0 px-0 xl:grid-cols-1'
   }
 
   if (isCheckoutPage.value) {
@@ -87,7 +83,7 @@ const shellClass = computed(() => {
 
 const mainClass = computed(() => {
   if (isReelsPage.value) {
-    return 'h-full xl:sticky xl:top-[74px]'
+    return 'h-full min-h-0 overflow-hidden'
   }
 
   if (isCheckoutPage.value) {
@@ -106,7 +102,6 @@ const mainClass = computed(() => {
 })
 
 watch(() => route.fullPath, () => {
-  menuOpen.value = false
   if (route.path !== '/reels') chatOpen.value = false
 })
 </script>

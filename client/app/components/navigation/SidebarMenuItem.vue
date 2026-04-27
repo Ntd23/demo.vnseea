@@ -2,11 +2,11 @@
   <NuxtLink
     :to="to"
     class="group flex min-w-0 items-center gap-3.5 rounded-xl px-3 py-2.5 transition-all duration-300"
-    :class="isActive ? 'bg-primary-50 text-[var(--text-primary)] ring-1 ring-primary-100 shadow-sm shadow-primary-500/5' : 'text-[var(--text-primary)] hover:bg-secondary-50 hover:text-primary-600'"
+    :class="isActive ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm shadow-primary-500/5' : 'text-[var(--text-primary)] hover:bg-secondary-50 hover:text-primary-600'"
   >
     <span
       class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-300"
-      :class="isActive ? 'border-primary-200 bg-white text-[var(--icon-primary)] shadow-sm' : 'border-secondary-100 bg-white text-[var(--icon-primary)] group-hover:border-primary-200 group-hover:text-primary-600'"
+      :class="isActive ? 'border-primary-200 bg-white text-primary-600 shadow-sm' : 'border-secondary-100 bg-white text-[var(--icon-primary)] group-hover:border-primary-200 group-hover:text-primary-600'"
     >
       <Icon :name="isActive ? icon : icon.replace('-fill', '-duotone')" class="h-4.5 w-4.5" />
     </span>

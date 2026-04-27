@@ -1,68 +1,68 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-10 pb-24 px-4 sm:px-6 pt-4">
-    <!-- Hero Section -->
-    <section class="surface-card overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-gradient-to-br from-secondary-950 via-secondary-900 to-primary-950 text-white relative group/hero">
-      <!-- Premium Decorations -->
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(var(--color-primary-500-rgb),0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.2),transparent_40%)]" />
-      <div class="absolute top-0 right-0 w-80 h-80 bg-primary-500/10 rounded-full blur-[100px] -mr-40 -mt-40 pointer-events-none transition-transform duration-1000 group-hover/hero:scale-110" />
-
-      <div class="relative px-8 py-14 sm:px-12 lg:px-16 space-y-14">
-        <div class="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-[820px] space-y-6">
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-400 pl-1">
-              {{ t("pages.savedPostsPage.heroEyebrow") }}
-            </p>
-            <h1 class="text-5xl sm:text-6xl font-black leading-none tracking-tight text-white italic">
+  <div class="mx-auto max-w-[1320px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
+    <section
+      class="overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-white shadow-[0_10px_28px_rgba(15,35,110,0.05)]"
+      aria-labelledby="saved-posts-hero-title"
+    >
+      <div class="grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
+        <div class="max-w-3xl space-y-4">
+          <p class="inline-flex h-8 items-center rounded-full bg-primary-50 px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+            {{ t("pages.savedPostsPage.heroEyebrow") }}
+          </p>
+          <div class="space-y-3">
+            <h1
+              id="saved-posts-hero-title"
+              class="text-[30px] font-black leading-tight text-[var(--text-primary)] sm:text-[38px]"
+            >
               {{ t("pages.savedPostsPage.heroTitle") }}
             </h1>
-            <p class="text-base font-medium leading-relaxed text-secondary-300 sm:text-lg pl-0.5 max-w-2xl italic">
-              "{{ t("pages.savedPostsPage.heroDescription") }}"
+            <p class="max-w-2xl text-[14px] font-medium leading-7 text-slate-600 sm:text-[15px]">
+              {{ t("pages.savedPostsPage.heroDescription") }}
             </p>
           </div>
 
-          <div class="flex flex-wrap gap-4 pt-4 lg:pt-0">
-            <UButton
+          <div class="flex flex-col gap-2 pt-1 sm:flex-row">
+            <NuxtLink
               to="/home"
-              size="xl"
-              class="h-14 rounded-2xl bg-white/5 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/10 backdrop-blur-xl transition-all active:scale-95 px-8"
+              class="inline-flex h-11 items-center justify-center rounded-[14px] border border-secondary-200 bg-white px-4 text-[13px] font-extrabold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
-              <template #leading>
-                <Icon name="i-ph-house-line-duotone" class="h-5 w-5" />
-              </template>
+              <Icon name="i-ph-house-line-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
               {{ t("pages.savedPostsPage.backToFeed") }}
-            </UButton>
+            </NuxtLink>
 
-            <UButton
+            <button
               v-if="visibleSavedPosts.length > 0"
-              size="xl"
-              class="h-14 rounded-2xl bg-red-600 text-white font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-red-500/20 transition-all hover:bg-red-700 active:scale-95 px-8"
+              type="button"
+              class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-extrabold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:bg-primary-700 active:scale-95"
               @click="removeAll"
             >
-              <template #leading>
-                <Icon name="i-ph-trash-duotone" class="h-5 w-5" />
-              </template>
+              <Icon name="i-ph-trash-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
               {{ t("pages.savedPostsPage.removeAll") }}
-            </UButton>
+            </button>
+            <NuxtLink
+              v-else
+              to="/explore"
+              class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-extrabold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:bg-primary-700 active:scale-95"
+            >
+              <Icon name="i-ph-compass-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
+              {{ t("pages.savedPostsPage.goToExplore") }}
+            </NuxtLink>
           </div>
         </div>
 
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="grid grid-cols-2 gap-x-5 gap-y-5 border-t border-secondary-100 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
           <article
             v-for="item in summaryStats"
             :key="item.label"
-            class="group/stat surface-card rounded-[2rem] border border-white/10 bg-white/5 p-8 backdrop-blur-3xl ring-1 ring-white/10 transition-all duration-500 hover:bg-white/10 hover:ring-primary-400/30"
+            class="min-w-0"
           >
-            <div class="flex items-center justify-between">
-              <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
-                {{ item.label }}
-              </p>
-              <Icon :name="item.icon" class="h-4 w-4 text-white/20 group-hover/stat:text-primary-400 transition-all" />
-            </div>
-            
-            <p class="mt-8 text-4xl font-black text-white leading-none tracking-tighter">
+            <p class="text-[11px] font-extrabold uppercase text-slate-500">
+              {{ item.label }}
+            </p>
+            <p class="mt-2 text-[28px] font-black leading-none text-[var(--text-primary)]">
               {{ item.value }}
             </p>
-            <p class="mt-4 text-[10px] font-bold text-white/30 group-hover/stat:text-white/50 italic line-clamp-1">
+            <p class="mt-2 text-[12px] font-medium leading-5 text-slate-500">
               {{ item.description }}
             </p>
           </article>
@@ -118,40 +118,43 @@
     <!-- List Section -->
     <section
       v-else
-      class="surface-card overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-white group/list relative"
+      class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]"
     >
-      <div class="absolute inset-0 bg-gradient-to-b from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/list:opacity-100 transition-opacity duration-1000" />
-      
-      <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 p-10 sm:p-12 sm:flex-row sm:items-center sm:justify-between">
-        <div class="space-y-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
-            {{ t("pages.savedPostsPage.listEyebrow") }}
-          </p>
-          <h2 class="text-4xl font-black text-[var(--text-primary)] tracking-tight leading-none">
+      <div class="flex flex-col gap-4 border-b border-[var(--border-light)] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex h-5 w-5 items-center justify-center rounded-[7px] bg-[var(--color-primary-50)]">
+              <Icon name="i-ph-bookmarks-fill" class="h-3 w-3 text-[var(--color-primary-600)]" />
+            </span>
+            <p class="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+              {{ t("pages.savedPostsPage.listEyebrow") }}
+            </p>
+          </div>
+          <h2 class="mt-1 text-[1.55rem] font-extrabold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[1.9rem]">
             {{ t("pages.savedPostsPage.listTitle", { count: visibleSavedPosts.length }) }}
           </h2>
-          <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] italic max-w-2xl px-0.5 opacity-70">
+          <p class="mt-1.5 max-w-2xl text-[13.5px] leading-[1.65] text-[var(--text-secondary)]">
             {{ t("pages.savedPostsPage.listDescription") }}
           </p>
         </div>
 
         <UButton
           to="/search"
-          size="xl"
-          class="h-14 rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-600/20 transition-all hover:bg-primary-700 active:scale-95 px-10"
+          color="primary"
+          variant="solid"
+          size="lg"
+          class="h-11 shrink-0 rounded-[var(--radius-full)] px-5 text-[13.5px] font-bold shadow-[var(--shadow-brand)] transition-all duration-200 hover:-translate-y-0.5"
         >
-          <template #leading>
-            <Icon name="i-ph-magnifying-glass-duotone" class="h-5 w-5" />
-          </template>
+          <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />
           {{ t("pages.savedPostsPage.findMore") }}
         </UButton>
       </div>
 
-      <div class="relative z-10 divide-y divide-secondary-100/30">
+      <div class="divide-y divide-[var(--border-light)]">
         <div 
           v-for="item in visibleSavedPosts" 
           :key="item.id"
-          class="p-6 sm:p-12 transition-all hover:bg-primary-50/10 group/item"
+          class="p-4 transition-all hover:bg-[var(--color-primary-50)]/40 sm:p-5"
         >
           <SavedPostCard
             :entry="item"
@@ -188,25 +191,21 @@ const summaryStats = computed(() => {
     {
       label: t("pages.savedPostsPage.statSaved"),
       value: formatCount(visibleSavedPosts.value.length),
-      icon: "i-ph-bookmarks-duotone",
       description: t("pages.savedPostsPage.statSavedDescription"),
     },
     {
       label: t("pages.savedPostsPage.statAuthors"),
       value: formatCount(authors.size),
-      icon: "i-ph-users-three-duotone",
       description: t("pages.savedPostsPage.statAuthorsDescription"),
     },
     {
       label: t("pages.savedPostsPage.statCollections"),
       value: formatCount(collections.size),
-      icon: "i-ph-folder-star-duotone",
       description: t("pages.savedPostsPage.statCollectionsDescription"),
     },
     {
       label: t("pages.savedPostsPage.statInteractions"),
       value: formatCount(interactionCount),
-      icon: "i-ph-sparkle-duotone",
       description: t("pages.savedPostsPage.statInteractionsDescription"),
     },
   ]

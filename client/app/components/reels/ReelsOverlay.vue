@@ -1,76 +1,78 @@
 <template>
-  <div class="absolute inset-x-0 bottom-0 flex h-full items-end justify-between p-8 pb-12 sm:p-10 sm:pb-16 pointer-events-none">
-    <div class="flex-1 min-w-0 pr-16 pointer-events-auto">
-      <div class="flex items-center gap-4">
-        <div class="p-0.5 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 shadow-2xl">
+  <div class="pointer-events-none absolute inset-0 flex items-end">
+    <div class="grid w-full grid-cols-[minmax(0,1fr)_56px] items-end gap-2 px-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:grid-cols-[minmax(0,1fr)_76px] sm:gap-3 sm:px-5 sm:pb-6">
+      <div class="pointer-events-auto min-w-0 pb-1 sm:pb-2">
+        <div class="flex min-w-0 items-center gap-3">
           <UAvatar
             :src="reel.avatar"
             :alt="reel.author"
-            size="lg"
-            class="rounded-[14px] ring-2 ring-black/20"
+            size="md"
+            class="shrink-0 rounded-full ring-2 ring-primary-500"
           />
-        </div>
-        <div class="min-w-0 space-y-0.5">
-          <p class="truncate text-base font-black text-white tracking-tight uppercase">{{ reel.author }}</p>
-          <div class="flex items-center gap-2">
-            <span class="text-[10px] font-bold text-white/60 uppercase tracking-widest">{{ reel.subtitle }}</span>
-            <span class="h-1 w-1 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(37,99,235,1)]"></span>
+
+          <div class="min-w-0">
+            <div class="flex min-w-0 items-center gap-2">
+              <p class="truncate text-[14px] font-extrabold text-white">
+                {{ reel.author }}
+              </p>
+              <button
+                class="shrink-0 rounded-full border border-white/16 bg-white/14 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-md transition hover:bg-white hover:text-[var(--text-primary)] sm:px-3"
+                type="button"
+              >
+                {{ $t("pages.reelsPage.follow") }}
+              </button>
+            </div>
+            <p class="mt-0.5 truncate text-[12px] font-semibold text-white/62">
+              {{ reel.subtitle }}
+            </p>
           </div>
         </div>
-      </div>
 
-      <div class="mt-6 space-y-3">
-        <h2 class="text-2xl font-black text-white leading-tight tracking-tight drop-shadow-2xl">
+        <h2 class="mt-3 line-clamp-2 max-w-[min(100%,360px)] text-[1.18rem] font-black leading-[1.08] text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)] sm:mt-4 sm:text-[1.65rem]">
           {{ reel.title }}
         </h2>
-        <p class="line-clamp-2 text-[13px] font-medium leading-relaxed text-white/80 sm:max-w-md drop-shadow-lg italic">
-          "{{ reel.description }}"
+        <p class="mt-1.5 line-clamp-2 max-w-[min(100%,340px)] text-[12px] font-medium leading-[1.45] text-white/78 drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)] sm:mt-2 sm:text-[13px] sm:leading-[1.55]">
+          {{ reel.description }}
         </p>
-      </div>
 
-      <!-- Progressive Tags -->
-      <div class="mt-6 flex flex-wrap gap-2 opacity-80">
-        <span v-for="tag in ['#trending', '#reel']" :key="tag" class="text-[10px] font-black uppercase tracking-widest text-primary-400 bg-black/40 px-3 py-1 rounded-lg backdrop-blur-md border border-white/5">
-          {{ tag }}
-        </span>
-      </div>
-    </div>
-
-    <!-- Actions Sidebar -->
-    <div class="flex flex-col items-center gap-6 pb-2 pointer-events-auto">
-      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
-        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-primary-600 group-hover/action:scale-110 group-hover/action:-rotate-6 group-hover/action:ring-primary-400">
-          <Icon name="i-ph-heart-duotone" class="h-7 w-7 transition-colors group-hover/action:text-white" />
+        <div class="mt-2.5 flex max-w-[min(100%,340px)] items-center gap-2 rounded-full border border-white/10 bg-black/28 px-3 py-1.5 text-[11px] font-semibold text-white/75 backdrop-blur-md sm:mt-3 sm:py-2 sm:text-[12px]">
+          <Icon name="i-ph-music-notes-fill" class="h-3.5 w-3.5 shrink-0 text-primary-300" />
+          <span class="truncate">{{ reel.music }}</span>
         </div>
-        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ reel.likes }}</span>
+
+        <div class="mt-2.5 hidden flex-wrap gap-2 min-[390px]:flex sm:mt-3">
+          <span
+            v-for="tag in reel.tags"
+            :key="tag"
+            class="rounded-full bg-white/12 px-3 py-1 text-[11px] font-bold text-white/86 backdrop-blur-md"
+          >
+            {{ tag }}
+          </span>
+        </div>
       </div>
 
-      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
-        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:rotate-6">
-          <Icon name="i-ph-chat-circle-text-duotone" class="h-7 w-7" />
-        </div>
-        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ reel.comments }}</span>
-      </div>
-
-      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
-        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:-rotate-6">
-          <Icon name="i-ph-share-network-duotone" class="h-7 w-7" />
-        </div>
-        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ $t('pages.reelsPage.share') }}</span>
-      </div>
-
-      <div class="flex flex-col items-center gap-2 group/action cursor-pointer">
-        <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-black/40 text-white backdrop-blur-2xl ring-1 ring-white/10 shadow-2xl transition-all duration-300 group-hover/action:bg-white group-hover/action:text-secondary-900 group-hover/action:scale-110 group-hover/action:rotate-6">
-          <Icon name="i-ph-bookmark-simple-duotone" class="h-7 w-7" />
-        </div>
-        <span class="text-[10px] font-black text-white uppercase tracking-widest drop-shadow-2xl">{{ $t('pages.reelsPage.save') }}</span>
+      <div class="pointer-events-auto flex flex-col items-center gap-2 pb-1 sm:gap-3">
+        <button
+          v-for="item in actionItems"
+          :key="item.label"
+          class="group/action flex w-12 flex-col items-center gap-1 sm:w-[64px] sm:gap-1.5"
+          type="button"
+          :aria-label="item.label"
+        >
+          <span class="flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-black/36 text-white shadow-[0_8px_26px_rgba(0,0,0,0.25)] backdrop-blur-md transition-all duration-200 group-hover/action:-translate-y-0.5 group-hover/action:bg-white group-hover/action:text-[var(--text-primary)] sm:h-12 sm:w-12">
+            <Icon :name="item.icon" class="h-4.5 w-4.5 sm:h-5.5 sm:w-5.5" />
+          </span>
+          <span class="max-w-12 truncate text-center text-[10px] font-extrabold leading-none text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] sm:max-w-[64px] sm:text-[11px]">
+            {{ item.value }}
+          </span>
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   reel: {
     id: number
     title: string
@@ -79,7 +81,43 @@ defineProps<{
     description: string
     likes: number
     comments: number
+    shares: number
+    views: number
     avatar: string
+    music: string
+    tags: string[]
   }
 }>()
+
+const { t, locale } = useI18n()
+
+const compactFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+}))
+
+const formatCompact = (value: number) => compactFormatter.value.format(value)
+
+const actionItems = computed(() => [
+  {
+    label: t("pages.reelsPage.like"),
+    value: formatCompact(props.reel.likes),
+    icon: "i-ph-heart-fill",
+  },
+  {
+    label: t("pages.reelsPage.comment"),
+    value: formatCompact(props.reel.comments),
+    icon: "i-ph-chat-circle-text-fill",
+  },
+  {
+    label: t("pages.reelsPage.share"),
+    value: formatCompact(props.reel.shares),
+    icon: "i-ph-share-network-fill",
+  },
+  {
+    label: t("pages.reelsPage.save"),
+    value: t("pages.reelsPage.save"),
+    icon: "i-ph-bookmark-simple-fill",
+  },
+])
 </script>

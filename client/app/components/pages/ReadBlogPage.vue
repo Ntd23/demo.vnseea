@@ -1,13 +1,26 @@
 <template>
-  <div class="space-y-5 pb-10">
-    <article class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]">
+  <div class="pb-10">
+    <!-- Reading progress bar -->
+    <div
+      class="fixed left-0 top-0 z-50 h-[3px] bg-[linear-gradient(90deg,var(--color-primary-500),#7c3aed)] transition-all duration-100"
+      :style="{ width: `${readingProgress}%` }"
+      role="progressbar"
+      :aria-valuenow="readingProgress"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-label="Reading progress"
+    />
+
+    <!-- Hero (full-bleed, no outer card border) -->
+    <div class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]">
       <BlogsReadBlogHero
         :article="article"
         :article-not-found="articleNotFound"
         :format-compact="formatCompact"
       />
 
-      <div class="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:p-6">
+      <!-- Body grid -->
+      <div class="grid gap-5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:p-6">
         <BlogsReadBlogMain
           v-model:comment-text="commentText"
           :article="article"
@@ -27,7 +40,7 @@
           :related-articles="relatedArticles"
         />
       </div>
-    </article>
+    </div>
   </div>
 </template>
 
@@ -115,4 +128,22 @@ const addComment = () => {
   })
   commentText.value = ""
 }
+
+// Reading progress bar
+const readingProgress = ref(0)
+
+const updateProgress = () => {
+  const scrollTop = window.scrollY || document.documentElement.scrollTop
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight
+  readingProgress.value = docHeight > 0 ? Math.min(100, Math.round((scrollTop / docHeight) * 100)) : 0
+}
+
+onMounted(() => {
+  window.addEventListener("scroll", updateProgress, { passive: true })
+  updateProgress()
+})
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", updateProgress)
+})
 </script>

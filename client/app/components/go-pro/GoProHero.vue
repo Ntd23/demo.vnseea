@@ -1,175 +1,120 @@
 <template>
-  <UCard
-    class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-[linear-gradient(135deg,#0f172a_0%,#0369a1_40%,#2563eb_100%)] text-white shadow-[var(--shadow-xl)]"
-    :ui="{ body: 'relative p-5 sm:p-7 lg:p-8' }"
-  >
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_34%),radial-gradient(circle_at_bottom_left,rgba(56,189,248,0.18),transparent_30%)]" />
-    <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:44px_44px] opacity-20" />
+  <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
+    <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
+      <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
+        <div class="space-y-4">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+              {{ t("pages.goProPage.heroEyebrow") }}
+            </span>
+            <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+              {{ billingLabel }}
+            </span>
+            <span
+              v-if="selectedPlanName"
+              class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-[var(--text-primary)] ring-1 ring-secondary-100"
+            >
+              {{ t("pages.goProPage.selectedPlanBadgeShort", { plan: selectedPlanName }) }}
+            </span>
+          </div>
 
-    <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-      <div class="max-w-[760px]">
-        <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">
-          {{ t("pages.goProPage.heroEyebrow") }}
-        </UBadge>
-
-        <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
-          {{ t("pages.goProPage.heroTitle") }}
-        </h1>
-        <p class="mt-4 max-w-[640px] text-[15px] leading-7 text-white/88 sm:text-[17px]">
-          {{ t("pages.goProPage.heroDescription") }}
-        </p>
-
-        <div class="mt-5 flex flex-wrap gap-2">
-          <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white">
-            {{ billingLabel }}
-          </UBadge>
-
-          <UBadge
-            v-if="selectedPlanName"
-            color="neutral"
-            variant="soft"
-            class="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[12px] font-semibold text-white"
-          >
-            {{ t("pages.goProPage.selectedPlanBadge", { plan: selectedPlanName }) }}
-          </UBadge>
+          <div class="space-y-3">
+            <h1 class="max-w-[680px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+              {{ t("pages.goProPage.heroShortTitle") }}
+            </h1>
+            <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
+              {{ t("pages.goProPage.heroShortDescription") }}
+            </p>
+          </div>
         </div>
 
-        <div class="mt-7 flex flex-wrap gap-3">
-          <UButton
+        <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
+          <button
+            class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
             type="button"
-            color="neutral"
-            variant="solid"
-            size="xl"
-            class="rounded-full bg-white text-[var(--text-primary)]"
             @click="emit('selectFeatured')"
           >
-            <Icon name="i-ph-crown-simple-fill" class="mr-2 h-4 w-4" />
+            <Icon name="i-ph-crown-simple-duotone" class="mr-2 h-5 w-5 shrink-0" />
             {{ t("pages.goProPage.heroPrimaryCta") }}
-          </UButton>
+          </button>
 
-          <UButton
+          <a
+            class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
+            href="#go-pro-plans"
+          >
+            <Icon name="i-ph-chart-bar-duotone" class="mr-2 h-5 w-5 shrink-0" />
+            {{ t("pages.goProPage.heroSecondaryCta") }}
+          </a>
+
+          <button
             v-if="hasActiveSelection"
+            class="inline-flex h-12 items-center justify-center rounded-[16px] px-4 text-[13px] font-extrabold text-slate-500 transition hover:bg-white hover:text-primary-700 active:scale-95"
             type="button"
-            color="neutral"
-            variant="outline"
-            size="xl"
-            class="rounded-full border-white/20 bg-white/10 text-white hover:bg-white/20"
             @click="emit('reset')"
           >
             {{ t("pages.goProPage.resetSelection") }}
-          </UButton>
+          </button>
         </div>
       </div>
 
-      <div class="grid gap-3 sm:grid-cols-3 xl:w-[460px] xl:grid-cols-1">
-        <UCard
-          v-for="item in stats"
-          :key="item.label"
-          class="rounded-[24px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
-          :ui="{ body: 'p-4' }"
-        >
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
-            {{ item.label }}
-          </p>
-          <p class="mt-2 text-[1.6rem] font-black leading-none text-white">
-            {{ item.value }}
-          </p>
-          <p class="mt-1 text-[13px] leading-5 text-white/74">
-            {{ item.description }}
-          </p>
-        </UCard>
-      </div>
-    </div>
-
-    <div class="relative z-10 mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-      <UCard
-        class="rounded-[28px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
-        :ui="{ body: 'p-5' }"
-      >
-        <div class="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p class="text-label-secondary text-white/72">
-              {{ t("pages.goProPage.currentPlanLabel") }}
-            </p>
-            <h2 class="mt-1 text-2xl font-black text-white">
-              {{ subscription.plan }}
-            </h2>
-            <p class="mt-1 text-[13px] font-semibold text-white/78">
-              {{ subscription.status }}
-            </p>
-          </div>
-
-          <div class="flex h-14 w-14 items-center justify-center rounded-[20px] bg-white/12 text-white">
-            <Icon name="i-ph-crown-simple-fill" class="h-7 w-7" />
-          </div>
-        </div>
-
-        <div class="mt-4 grid gap-3 sm:grid-cols-2">
-          <div class="rounded-[20px] border border-white/10 bg-white/10 p-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-white/60">
-              {{ t("pages.goProPage.renewsAtLabel") }}
-            </p>
-            <p class="mt-1 text-[14px] font-black text-white">
-              {{ subscription.renewsAt }}
-            </p>
-          </div>
-
-          <div class="rounded-[20px] border border-white/10 bg-white/10 p-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-white/60">
-              {{ t("pages.goProPage.paymentsLabel") }}
-            </p>
-            <p class="mt-1 text-[14px] font-black text-white">
-              {{ t("pages.goProPage.transactionCount", { count: payments.length }) }}
-            </p>
-          </div>
-        </div>
-      </UCard>
-
-      <UCard
-        class="rounded-[28px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
-        :ui="{ body: 'p-5' }"
-      >
-        <div class="flex items-center justify-between gap-3">
-          <div>
-            <p class="text-label-secondary text-white/72">
-              {{ t("pages.goProPage.recentLabel") }}
-            </p>
-            <h3 class="mt-1 text-[18px] font-black text-white">
-              {{ t("pages.goProPage.mockHistoryTitle") }}
-            </h3>
-          </div>
-          <Icon name="i-ph-receipt-fill" class="h-6 w-6 text-white" />
-        </div>
-
-        <div v-if="payments.length > 0" class="mt-4 space-y-2">
-          <div
-            v-for="item in payments.slice(0, 2)"
-            :key="item.id"
-            class="rounded-[18px] border border-white/10 bg-white/10 p-3"
-          >
-            <div class="flex items-center justify-between gap-3">
-              <p class="text-[13px] font-extrabold text-white">
-                {{ item.plan }}
+      <div class="grid gap-3">
+        <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-[11px] font-extrabold uppercase text-white/52">
+                {{ t("pages.goProPage.currentPlanShort") }}
               </p>
-              <p class="text-[12px] font-black text-white">
-                {{ item.amount }}
+              <h2 class="mt-2 text-[28px] font-black leading-none">
+                {{ subscription.plan }}
+              </h2>
+              <p class="mt-2 text-[13px] font-semibold text-white/68">
+                {{ subscription.status }}
               </p>
             </div>
-            <p class="mt-1 text-[12px] font-semibold text-white/72">
-              {{ item.method }} · {{ item.time }}
-            </p>
+
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0f172a]">
+              <Icon name="i-ph-crown-simple-fill" class="h-7 w-7" />
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-[18px] bg-white/10 p-3 ring-1 ring-white/10">
+              <p class="text-[10px] font-extrabold uppercase text-white/48">
+                {{ t("pages.goProPage.renewsAtLabel") }}
+              </p>
+              <p class="mt-1 text-[13px] font-black">
+                {{ subscription.renewsAt }}
+              </p>
+            </div>
+
+            <div class="rounded-[18px] bg-white/10 p-3 ring-1 ring-white/10">
+              <p class="text-[10px] font-extrabold uppercase text-white/48">
+                {{ t("pages.goProPage.paymentsLabel") }}
+              </p>
+              <p class="mt-1 text-[13px] font-black">
+                {{ t("pages.goProPage.transactionCount", { count: payments.length }) }}
+              </p>
+            </div>
           </div>
         </div>
 
-        <p
-          v-else
-          class="mt-4 rounded-[18px] border border-white/10 bg-white/10 p-3 text-[13px] font-semibold text-white/78"
-        >
-          {{ t("pages.goProPage.emptyPayments") }}
-        </p>
-      </UCard>
+        <div class="grid gap-3 sm:grid-cols-3">
+          <article
+            v-for="item in stats"
+            :key="item.label"
+            class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
+          >
+            <p class="text-[10px] font-extrabold uppercase text-slate-500">
+              {{ item.label }}
+            </p>
+            <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
+              {{ item.value }}
+            </p>
+          </article>
+        </div>
+      </div>
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">

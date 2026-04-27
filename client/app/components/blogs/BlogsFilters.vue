@@ -1,149 +1,121 @@
 <template>
   <section
-    class="relative z-10 overflow-hidden rounded-[30px] border border-white/70 bg-white/95 p-4 shadow-[var(--shadow-xl)] backdrop-blur sm:p-5"
+    class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]"
     aria-labelledby="blogs-filters-title"
   >
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-      <div>
-        <p class="text-label-secondary text-[var(--text-primary)]">
+    <!-- Header row -->
+    <div class="flex items-center justify-between gap-4 border-b border-[var(--border-light)] px-5 py-4">
+      <div class="min-w-0">
+        <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
           {{ $t("pages.blogsPage.filtersEyebrow") }}
         </p>
-        <h2 id="blogs-filters-title" class="mt-1 text-heading text-[var(--text-primary)]">
+        <h2 id="blogs-filters-title" class="mt-0.5 text-[17px] font-extrabold tracking-[-0.02em] text-[var(--text-primary)]">
           {{ $t("pages.blogsPage.filtersTitle") }}
         </h2>
-        <p class="mt-1 max-w-[620px] text-body-secondary">
-          {{ $t("pages.blogsPage.filtersDescription") }}
-        </p>
       </div>
 
       <UButton
         to="/create-blog"
         color="primary"
         variant="solid"
-        size="xl"
-        class="h-14 rounded-[20px] px-6 text-[14px] font-extrabold shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5 lg:min-w-[190px]"
+        size="md"
+        class="shrink-0 rounded-[14px] px-4 py-2.5 text-[13px] font-bold shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
       >
-        <Icon name="i-ph-note-pencil-fill" class="h-5 w-5" />
+        <Icon name="i-ph-note-pencil-fill" class="h-4 w-4" />
         {{ $t("pages.blogsPage.createArticle") }}
       </UButton>
     </div>
 
-    <label class="relative mt-5 block" for="blogs-search-input">
-      <span class="sr-only">{{ $t("pages.blogsPage.searchLabel") }}</span>
+    <!-- Search bar -->
+    <div class="relative border-b border-[var(--border-light)] px-4 py-3">
       <Icon
         name="i-ph-magnifying-glass"
-        class="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--text-tertiary)]"
+        class="pointer-events-none absolute left-8 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-[var(--text-tertiary)]"
       />
-      <UInput
+      <input
         id="blogs-search-input"
-        :model-value="search"
-        :placeholder="$t('pages.blogsPage.searchPlaceholder')"
+        :value="search"
         type="search"
         autocomplete="off"
-        size="xl"
-        color="primary"
-        class="w-full"
-        :ui="searchInputUi"
-        @update:model-value="$emit('update:search', String($event ?? ''))"
+        :placeholder="$t('pages.blogsPage.searchPlaceholder')"
+        class="blogs-search-input w-full rounded-[16px] border border-[var(--border-default)] bg-[var(--color-secondary-50)] py-3 pl-11 pr-4 text-[14px] font-medium text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] transition focus:border-[var(--color-primary-300)] focus:bg-white focus:outline-none focus:ring-3 focus:ring-[var(--color-primary-100)]"
+        @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
       />
-    </label>
+    </div>
 
-    <div class="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)]">
-      <div role="group" :aria-label="$t('pages.blogsPage.categoryFilterLabel')">
-        <div class="flex items-center justify-between gap-3 px-1">
-          <p class="text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            {{ $t("pages.blogsPage.topic") }}
-          </p>
-          <span class="text-[12px] font-bold text-[var(--text-tertiary)]">
-            {{ $t("pages.blogsPage.categoryCount", { count: categories.length }) }}
-          </span>
-        </div>
-
-        <div class="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-          <button
-            v-for="category in categories"
-            :key="category.value"
-            class="flex min-h-12 items-center justify-between gap-3 rounded-[18px] px-3 py-2 text-left transition"
-            :class="selectedCategory === category.value
-              ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-              : 'bg-[var(--color-secondary-100)] text-[var(--text-primary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--text-primary)]'"
-            type="button"
-            :aria-label="category.label"
-            :aria-pressed="selectedCategory === category.value"
-            @click="$emit('update:selectedCategory', category.value)"
-          >
-            <span class="inline-flex min-w-0 items-center gap-2 text-[13px] font-extrabold">
-              <Icon :name="category.icon" class="h-4 w-4 shrink-0" />
-              <span class="truncate">{{ category.label }}</span>
-            </span>
-          </button>
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <div class="rounded-[24px] bg-[var(--color-secondary-50)] p-3" role="group" :aria-label="$t('pages.blogsPage.sortFilterLabel')">
-          <p class="px-1 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            {{ $t("pages.blogsPage.sort") }}
-          </p>
-          <div class="mt-3 grid gap-2">
-            <button
-              v-for="option in sortOptions"
-              :key="option.value"
-              class="flex h-12 items-center justify-between rounded-[18px] px-3 text-left text-[13px] font-extrabold transition"
-              :class="sortBy === option.value
-                ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
-                : 'bg-white text-[var(--text-primary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--text-primary)]'"
-              type="button"
-              :aria-label="option.label"
-              :aria-pressed="sortBy === option.value"
-              @click="$emit('update:sortBy', option.value)"
-            >
-              <span class="inline-flex items-center gap-2">
-                <Icon :name="sortIcon(option.value)" class="h-4 w-4" />
-                {{ option.label }}
-              </span>
-              <Icon
-                v-if="sortBy === option.value"
-                name="i-ph-check-circle-fill"
-                class="h-4 w-4"
-              />
-            </button>
-          </div>
-        </div>
-
+    <!-- Category chips (horizontal scroll) -->
+    <div class="border-b border-[var(--border-light)] px-4 py-3" role="group" :aria-label="$t('pages.blogsPage.categoryFilterLabel')">
+      <p class="mb-2.5 px-0.5 text-[10.5px] font-bold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
+        {{ $t("pages.blogsPage.topic") }}
+      </p>
+      <div class="blogs-chips-scroll flex gap-2 overflow-x-auto pb-1">
         <button
-          class="flex min-h-[76px] w-full items-center justify-between gap-4 rounded-[24px] border px-4 text-left transition"
-          :class="mineOnly
-            ? 'border-[var(--color-primary-200)] bg-[var(--color-primary-50)] text-[var(--text-primary)]'
-            : 'border-[var(--border-default)] bg-white text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]'"
+          v-for="category in categories"
+          :key="category.value"
+          class="blogs-chip shrink-0 inline-flex items-center gap-1.5 rounded-[12px] px-3.5 py-2 text-[12.5px] font-bold transition-all duration-150"
+          :class="selectedCategory === category.value
+            ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
+            : 'bg-[var(--color-secondary-100)] text-[var(--text-secondary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
           type="button"
-          :aria-label="$t('pages.blogsPage.mineToggleLabel')"
-          :aria-pressed="mineOnly"
-          @click="$emit('update:mineOnly', !mineOnly)"
+          :aria-pressed="selectedCategory === category.value"
+          @click="$emit('update:selectedCategory', category.value)"
         >
-          <span>
-            <span class="block text-[13px] font-extrabold">{{ $t("pages.blogsPage.myArticles") }}</span>
-            <span class="mt-1 block text-[12px] font-semibold opacity-75">{{ $t("pages.blogsPage.mineFilterDescription") }}</span>
-          </span>
-          <span class="inline-flex h-10 w-10 items-center justify-center rounded-[16px] bg-white text-[var(--text-primary)] shadow-[var(--shadow-sm)]">
-            <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-toggle-left-fill'" class="h-6 w-6" />
-          </span>
+          <Icon :name="category.icon" class="h-3.5 w-3.5" />
+          {{ category.label }}
         </button>
       </div>
     </div>
 
+    <!-- Sort + Mine toggle row -->
+    <div class="flex flex-wrap items-center gap-3 px-4 py-3">
+      <!-- Sort options -->
+      <div class="flex flex-wrap gap-1.5" role="group" :aria-label="$t('pages.blogsPage.sortFilterLabel')">
+        <button
+          v-for="option in sortOptions"
+          :key="option.value"
+          class="inline-flex items-center gap-1.5 rounded-[10px] px-3 py-1.5 text-[12px] font-bold transition-all duration-150"
+          :class="sortBy === option.value
+            ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
+            : 'bg-[var(--color-secondary-100)] text-[var(--text-secondary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
+          type="button"
+          :aria-pressed="sortBy === option.value"
+          @click="$emit('update:sortBy', option.value)"
+        >
+          <Icon :name="sortIcon(option.value)" class="h-3.5 w-3.5" />
+          {{ option.label }}
+        </button>
+      </div>
+
+      <!-- Spacer -->
+      <div class="flex-1" />
+
+      <!-- Mine toggle -->
+      <button
+        class="inline-flex items-center gap-2 rounded-[12px] border px-3 py-1.5 text-[12px] font-bold transition-all duration-150"
+        :class="mineOnly
+          ? 'border-[var(--color-primary-300)] bg-[var(--color-primary-50)] text-[var(--color-primary-700)]'
+          : 'border-[var(--border-default)] bg-[var(--color-secondary-50)] text-[var(--text-secondary)] hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]'"
+        type="button"
+        :aria-pressed="mineOnly"
+        @click="$emit('update:mineOnly', !mineOnly)"
+      >
+        <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-toggle-left'" class="h-4 w-4" />
+        {{ $t("pages.blogsPage.myArticles") }}
+      </button>
+    </div>
+
+    <!-- Active filters summary -->
     <div
-      class="mt-5 flex flex-col gap-3 rounded-[24px] border border-[var(--border-default)] bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+      class="flex items-center gap-2 border-t border-[var(--border-light)] bg-[var(--color-secondary-50)] px-5 py-2.5"
       role="status"
       aria-live="polite"
     >
-      <div class="inline-flex items-center gap-2 text-[13px] font-bold text-[var(--text-secondary)]">
-        <Icon name="i-ph-funnel-fill" class="h-4 w-4 text-[var(--text-primary)]" />
+      <Icon name="i-ph-funnel-fill" class="h-3.5 w-3.5 shrink-0 text-[var(--text-tertiary)]" />
+      <p class="text-[12px] font-semibold text-[var(--text-secondary)]">
         {{ $t("pages.blogsPage.matchingArticles", { count: articleCount }) }}
-      </div>
-      <div class="text-[13px] font-semibold text-[var(--text-tertiary)]">
+        <span class="mx-1 text-[var(--border-strong)]">·</span>
         {{ activeSummary }}
-      </div>
+      </p>
     </div>
   </section>
 </template>
@@ -175,10 +147,6 @@ defineEmits<{
   "update:mineOnly": [value: boolean]
 }>()
 
-const searchInputUi = {
-  base: 'h-16 rounded-[22px] border border-[var(--border-default)] bg-[var(--color-secondary-100)] pl-14 pr-5 text-[15px] font-semibold text-[var(--text-primary)] transition placeholder:font-medium placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-200)] focus:bg-white focus:ring-4 focus:ring-[var(--bg-surface-active)]',
-}
-
 const activeSummary = computed(() => {
   const category = props.categories.find(item => item.value === props.selectedCategory)?.label ?? t("pages.blogsPage.categoryAll")
   const sort = props.sortOptions.find(item => item.value === props.sortBy)?.label ?? t("pages.blogsPage.sortLatest")
@@ -194,3 +162,26 @@ const sortIcon = (value: string) => {
   return "i-ph-clock-countdown-fill"
 }
 </script>
+
+<style scoped>
+.blogs-chips-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.blogs-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.blogs-chip {
+  white-space: nowrap;
+}
+
+.blogs-search-input::-webkit-search-cancel-button {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.focus\:ring-3:focus {
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+</style>

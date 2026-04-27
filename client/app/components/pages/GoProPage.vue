@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5 pb-10">
+  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-12 sm:px-5 lg:px-6">
     <GoProHero
       :payments="paymentHistory"
       :stats="heroStats"
@@ -17,42 +17,28 @@
       :yearly-savings-percent="featuredPlanSavingsPercent"
     />
 
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
-      <section class="space-y-4">
-        <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <div id="go-pro-plans" class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
+      <section class="min-w-0 space-y-5">
+        <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-label-secondary text-[var(--text-primary)]">
+              <p class="text-[11px] font-extrabold uppercase text-slate-500">
                 {{ t("pages.goProPage.plansEyebrow") }}
               </p>
-              <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-                {{ t("pages.goProPage.plansTitle") }}
+              <h2 class="mt-1 text-[26px] font-black leading-tight text-[var(--text-primary)]">
+                {{ t("pages.goProPage.plansShortTitle") }}
               </h2>
-              <p class="mt-1 text-body-secondary">
-                {{ t("pages.goProPage.plansDescription") }}
-              </p>
             </div>
 
-            <UButton
+            <button
               v-if="hasRouteState"
               type="button"
-              color="neutral"
-              variant="outline"
-              class="justify-center rounded-full"
+              class="inline-flex h-10 items-center justify-center rounded-[14px] border border-secondary-200 bg-white px-4 text-[12px] font-extrabold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
               @click="resetSelection"
             >
               {{ t("pages.goProPage.resetSelection") }}
-            </UButton>
+            </button>
           </div>
-
-          <UAlert
-            class="mt-4 rounded-[22px]"
-            :color="hasRouteState ? 'primary' : 'neutral'"
-            variant="subtle"
-            icon="i-ph-crown-simple-fill"
-            :title="t('pages.goProPage.plansStatusTitle')"
-            :description="selectionStatusLabel"
-          />
 
           <div class="mt-5 grid gap-5 xl:grid-cols-3">
             <GoProPlanCard
@@ -64,7 +50,7 @@
               @select="selectPlan"
             />
           </div>
-        </UCard>
+        </section>
 
         <GoProComparisonTable
           :billing-cycle="billingCycle"

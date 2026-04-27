@@ -52,52 +52,66 @@
 
     <!-- Mobile Header -->
     <div class="xl:hidden">
-      <div class="relative overflow-hidden bg-primary-950 px-4 py-3 shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
+      <div class="relative overflow-hidden border-b border-[var(--border-light)] bg-white/95 px-4 py-3 shadow-[0_8px_24px_rgba(0,0,255,0.08)] backdrop-blur-[18px]">
         <!-- Visual Decor -->
-        <div class="absolute inset-0 bg-gradient-to-br from-primary-900 via-primary-950 to-secondary-950 z-0 opacity-50" />
-        <div class="absolute top-0 right-0 w-32 h-32 bg-primary-600/20 rounded-full blur-3xl -mr-16 -mt-16" />
+        <div class="absolute inset-x-0 top-0 z-0 h-px bg-[var(--progress-gradient)] opacity-80" />
+        <div class="absolute -right-12 -top-16 h-32 w-32 rounded-full bg-primary-100/70 blur-3xl" />
         
-        <div class="relative z-10 flex items-center justify-between gap-2 overflow-x-auto scrollbar-hide no-scrollbar">
-          <div class="flex items-center gap-1">
-            <NuxtLink
-              v-for="item in mobileIconItems.slice(0, -1)"
-              :key="item.label"
-              :to="item.to"
-              class="relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-300"
-              :class="item.active ? 'bg-white/15 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] ring-1 ring-white/10' : 'text-white/60 hover:text-white hover:bg-white/5'"
-              :aria-label="$t(item.label)"
-            >
-              <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5" />
-              <span v-if="item.logoBadge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-white px-1 text-[8px] font-black text-[var(--text-primary)] shadow-xl ring-1 ring-white/20">
-                {{ item.logoBadge }}
-              </span>
-              <span v-if="item.badge" class="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-rose-500 px-1 text-[8px] font-black text-white shadow-xl ring-1 ring-white/20">
-                {{ item.badge }}
-              </span>
-            </NuxtLink>
-          </div>
+        <div class="relative z-10 flex items-center justify-between gap-3">
+          <NuxtLink
+            to="/home"
+            class="focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--color-primary-100)] bg-[var(--color-primary-50)] text-primary-600 shadow-sm transition-all hover:bg-white"
+            :aria-label="$t('navigation.headerBar.home')"
+          >
+            <Icon name="i-ph-house-fill" class="h-5.5 w-5.5" />
+          </NuxtLink>
+          <NuxtLink
+            to="/search"
+            class="focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--border-light)] bg-white text-[var(--icon-primary)] shadow-sm transition-all hover:border-primary-200 hover:bg-[var(--color-primary-50)] hover:text-primary-600"
+            :aria-label="$t('navigation.headerBar.search')"
+          >
+            <Icon name="i-ph-magnifying-glass-bold" class="h-5.5 w-5.5" />
+          </NuxtLink>
 
-          <div class="flex items-center gap-2 pl-2 border-l border-white/10">
+          <div class="ml-auto flex min-w-0 items-center gap-2">
+            <button
+              type="button"
+              class="focus-ring relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-primary-50)] text-primary-600 ring-1 ring-[var(--color-primary-100)] transition-all active:scale-95 hover:bg-white"
+              :aria-label="$t('navigation.headerBar.notifications')"
+            >
+              <Icon name="i-ph-bell-duotone" class="h-5.5 w-5.5" />
+              <span class="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-rose-500 px-1 text-[8px] font-black text-white shadow-xl ring-1 ring-white">
+                3
+              </span>
+            </button>
             <NavigationLocaleSwitcher compact />
-            <UButton
-              color="white"
-              variant="ghost"
-              icon="i-ph-user-duotone"
-              class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white transition-all active:scale-95 ring-1 ring-white/10 shadow-none"
+            <button
+              type="button"
+              class="focus-ring relative z-20 flex h-10 w-10 shrink-0 touch-manipulation items-center justify-center rounded-xl bg-primary-600 text-white ring-1 ring-primary-500/20 shadow-lg shadow-primary-500/20 transition-all active:scale-95 hover:bg-primary-700"
               :aria-label="$t('navigation.headerBar.account')"
-              @click="menuOpen = !menuOpen"
-            />
+              :aria-expanded="mobileMenuOpen"
+              aria-controls="mobile-navigation-menu"
+              @click.stop.prevent="openMobileMenu"
+            >
+              <Icon name="i-ph-user-duotone" class="h-5.5 w-5.5" />
+            </button>
           </div>
         </div>
       </div>
     </div>
   </header>
+
+  <NavigationMobileMenu
+    :open="mobileMenuOpen"
+    @update:open="mobileMenuOpen = $event"
+    @close="mobileMenuOpen = false"
+  />
 </template>
 
 <script setup lang="ts">
 import { NuxtLink } from "#components"
 
-const menuOpen = defineModel<boolean>("menuOpen", { default: false })
+const mobileMenuOpen = ref(false)
 
 const route = useRoute()
 const isHome = computed(() => route.path === "/" || route.path === "/home")
@@ -108,14 +122,9 @@ const desktopActions = [
   { label: "navigation.headerBar.notifications", icon: "i-ph-bell-fill", badge: 3 },
 ]
 
-const mobileIconItems = computed(() => [
-  { label: "navigation.headerBar.home", to: "/home", icon: "i-ph-house-fill", active: route.path === "/" || route.path === "/home" },
-  { label: "navigation.headerBar.search", to: "/search", icon: "i-ph-magnifying-glass-bold", active: route.path === "/search" },
-  { label: "navigation.headerBar.reels", to: "/reels", icon: "i-ph-film-strip-fill", active: route.path === "/reels", logoBadge: "V" },
-  { label: "navigation.headerBar.video", to: "/watch", icon: "i-ph-video-camera-fill", active: route.path === "/watch" },
-  { label: "navigation.headerBar.notifications", to: "/home", icon: "i-ph-bell-fill", active: false },
-  { label: "navigation.headerBar.profile", to: "/@me", icon: "i-ph-handshake-fill", active: route.path.includes("/@") },
-])
+function openMobileMenu() {
+  mobileMenuOpen.value = true
+}
 </script>
 
 <style scoped>

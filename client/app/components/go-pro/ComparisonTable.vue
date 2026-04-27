@@ -1,61 +1,46 @@
 <template>
-  <UCard
-    class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
-    :ui="{ body: 'p-0' }"
-  >
-    <div class="border-b border-[var(--border-default)] p-5">
-      <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+  <section class="overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-white shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
+    <div class="border-b border-secondary-100 p-5">
+      <div class="flex items-center justify-between gap-3">
         <div>
-          <p class="text-label-secondary text-[var(--text-primary)]">
+          <p class="text-[11px] font-extrabold uppercase text-slate-500">
             {{ t("pages.goProPage.comparisonEyebrow") }}
           </p>
-          <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-            {{ t("pages.goProPage.comparisonTitle") }}
+          <h2 class="mt-1 text-[24px] font-black text-[var(--text-primary)]">
+            {{ t("pages.goProPage.comparisonShortTitle") }}
           </h2>
-          <p class="mt-1 text-body-secondary">
-            {{ t("pages.goProPage.comparisonDescription") }}
-          </p>
         </div>
 
-        <UAlert
-          color="primary"
-          variant="subtle"
-          icon="i-ph-table-fill"
-          :title="t('pages.goProPage.comparisonStatusTitle')"
-          :description="statusLabel"
-          class="max-w-[420px] rounded-[22px]"
-        />
+        <Icon name="i-ph-table-duotone" class="h-7 w-7 text-primary-600" />
       </div>
     </div>
 
     <div class="overflow-x-auto">
       <table class="w-full min-w-[760px] text-left">
-        <thead class="bg-[var(--bg-surface-hover)]">
+        <thead class="bg-secondary-50/70">
           <tr>
-            <th class="px-5 py-4 text-[12px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+            <th class="px-5 py-4 text-[11px] font-black uppercase text-slate-500">
               {{ t("pages.goProPage.featureColumn") }}
             </th>
             <th
               v-for="plan in plans"
               :key="plan.id"
               class="px-5 py-4 align-top"
-              :class="selectedPlanId === plan.id ? 'bg-[var(--color-primary-50)]' : ''"
+              :class="selectedPlanId === plan.id ? 'bg-primary-50' : ''"
             >
-              <div class="space-y-1">
+              <div class="space-y-1.5">
                 <div class="flex items-center gap-2">
-                  <p class="text-[12px] font-black uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+                  <p class="text-[12px] font-black uppercase text-slate-500">
                     {{ plan.name }}
                   </p>
-                  <UBadge
+                  <span
                     v-if="selectedPlanId === plan.id"
-                    color="primary"
-                    variant="subtle"
-                    class="rounded-full px-2.5 py-0.5 text-[10px] font-bold"
+                    class="rounded-full bg-primary-600 px-2 py-0.5 text-[10px] font-black text-white"
                   >
                     {{ t("pages.goProPage.selectedPlan") }}
-                  </UBadge>
+                  </span>
                 </div>
-                <p class="text-[1rem] font-black text-[var(--text-primary)]">
+                <p class="text-[16px] font-black text-[var(--text-primary)]">
                   {{ formatProCurrency(getProPlanPrice(plan, billingCycle), locale) }}
                 </p>
               </div>
@@ -66,7 +51,7 @@
           <tr
             v-for="row in rows"
             :key="row.label"
-            class="border-t border-[var(--border-default)]"
+            class="border-t border-secondary-100"
           >
             <td class="px-5 py-4 text-[14px] font-extrabold text-[var(--text-primary)]">
               {{ row.label }}
@@ -75,15 +60,15 @@
               v-for="plan in plans"
               :key="plan.id"
               class="px-5 py-4"
-              :class="selectedPlanId === plan.id ? 'bg-[var(--color-primary-50)]/60' : ''"
+              :class="selectedPlanId === plan.id ? 'bg-primary-50/70' : ''"
             >
-              <div class="flex items-center gap-2">
+              <div class="flex items-center">
                 <Icon
                   :name="row[plan.id] ? 'i-ph-check-circle-fill' : 'i-ph-x-circle-fill'"
-                  class="h-5 w-5"
-                  :class="row[plan.id] ? 'text-[var(--color-success)]' : 'text-[var(--text-tertiary)]'"
+                  class="h-6 w-6"
+                  :class="row[plan.id] ? 'text-emerald-600' : 'text-slate-300'"
                 />
-                <span class="text-[12px] font-semibold text-[var(--text-secondary)]">
+                <span class="sr-only">
                   {{ row[plan.id] ? t("pages.goProPage.featureIncluded") : t("pages.goProPage.featureNotIncluded") }}
                 </span>
               </div>
@@ -92,7 +77,7 @@
         </tbody>
       </table>
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -109,18 +94,4 @@ const props = withDefaults(defineProps<{
 })
 
 const { t, locale } = useI18n()
-
-const selectedPlanLabel = computed(() =>
-  props.plans.find(plan => plan.id === props.selectedPlanId)?.name ?? "",
-)
-
-const statusLabel = computed(() => {
-  if (selectedPlanLabel.value) {
-    return t("pages.goProPage.comparisonStatusSelected", {
-      plan: selectedPlanLabel.value,
-    })
-  }
-
-  return t("pages.goProPage.comparisonStatusDefault")
-})
 </script>

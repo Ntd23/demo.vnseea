@@ -1,60 +1,53 @@
 <template>
-  <article class="surface-card group/saved overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-white hover:shadow-3xl transition-all duration-500 rounded-3xl">
-    <div class="border-b border-secondary-100/50 px-8 py-8 bg-secondary-50/30">
-      <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div class="space-y-5">
-          <div class="flex flex-wrap items-center gap-3">
+  <article class="group/saved overflow-hidden rounded-[24px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]">
+    <div class="border-b border-[var(--border-light)] bg-[var(--color-secondary-50)] px-4 py-4 sm:px-5">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="min-w-0 space-y-3">
+          <div class="flex flex-wrap items-center gap-2">
             <UBadge
               variant="soft"
-              size="lg"
-              class="rounded-2xl px-4 py-2 font-black uppercase tracking-widest bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm"
+              class="rounded-[12px] bg-[var(--color-primary-50)] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.1em] text-[var(--color-primary-600)] ring-1 ring-[var(--color-primary-100)]"
             >
-              <template #leading>
-                <Icon name="i-ph-bookmark-simple-duotone" class="h-4 w-4 mr-2" />
-              </template>
+              <Icon name="i-ph-bookmark-simple-fill" class="mr-1.5 h-3.5 w-3.5" />
               {{ entry.savedAtLabel }}
             </UBadge>
 
             <UButton
               :to="entry.sourceTo"
               variant="soft"
-              class="rounded-2xl px-4 h-9 font-black text-[10px] uppercase tracking-widest bg-secondary-100 text-secondary-600 ring-1 ring-secondary-200/50 hover:bg-secondary-200 transition-all border-none"
+              size="xs"
+              class="h-8 rounded-[12px] border-none bg-white px-3 text-[11px] font-bold text-[var(--text-secondary)] ring-1 ring-[var(--border-light)] transition-all hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]"
             >
-              <template #leading>
-                <Icon name="i-ph-link-duotone" class="h-4 w-4 mr-1" />
-              </template>
+              <Icon name="i-ph-link-simple-bold" class="mr-1 h-3.5 w-3.5" />
               {{ entry.sourceLabel }}
             </UButton>
 
-            <div class="flex items-center gap-2 px-4 h-9 rounded-2xl bg-white/50 ring-1 ring-secondary-200/50 transition-all group-hover/saved:ring-primary-200">
-               <Icon name="i-ph-folder-simple-duotone" class="h-4 w-4 text-secondary-400 group-hover/saved:text-secondary-900" />
-               <span class="text-[10px] font-black uppercase tracking-widest text-secondary-500 group-hover/saved:text-secondary-900">{{ entry.collectionLabel }}</span>
+            <div class="flex h-8 items-center gap-1.5 rounded-[12px] bg-white px-3 ring-1 ring-[var(--border-light)] transition-all group-hover/saved:ring-[var(--color-primary-100)]">
+              <Icon name="i-ph-folder-simple-fill" class="h-3.5 w-3.5 text-[var(--text-tertiary)] group-hover/saved:text-[var(--color-primary-600)]" />
+              <span class="text-[11px] font-bold text-[var(--text-secondary)] group-hover/saved:text-[var(--text-primary)]">{{ entry.collectionLabel }}</span>
             </div>
           </div>
 
-          <p class="text-base font-medium leading-relaxed text-secondary-500 italic max-w-3xl border-l-4 border-primary-500/20 pl-6 group-hover/saved:border-primary-500 transition-all duration-500">
-            "{{ entry.note }}"
+          <p class="max-w-3xl border-l-2 border-[var(--color-primary-200)] pl-3 text-[13.5px] leading-[1.65] text-[var(--text-secondary)] transition-all duration-200 group-hover/saved:border-[var(--color-primary-500)]">
+            {{ entry.note }}
           </p>
         </div>
 
         <UButton
-          size="xl"
-          class="h-14 rounded-2xl bg-secondary-50 text-red-500 ring-1 ring-red-100 hover:bg-red-50 hover:text-red-700 hover:ring-red-200 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 shadow-sm px-8"
+          color="neutral"
+          variant="outline"
+          size="md"
+          class="h-10 shrink-0 rounded-[var(--radius-full)] border-red-100 px-4 text-[12px] font-bold text-red-500 transition-all hover:bg-red-50 hover:text-red-700"
           @click="$emit('remove', entry.id)"
         >
-          <template #leading>
-            <Icon name="i-ph-bookmark-simple" class="h-5 w-5 mr-2" />
-          </template>
+          <Icon name="i-ph-bookmark-simple" class="mr-1.5 h-4 w-4" />
           {{ t("pages.savedPostsPage.remove") }}
         </UButton>
       </div>
     </div>
 
-    <div class="p-8 sm:p-12 relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/saved:opacity-100 transition-opacity duration-1000" />
-      <div class="relative z-10">
-        <FeedPostCard :post="entry.post" class="shadow-none ring-0 bg-transparent" />
-      </div>
+    <div class="bg-white p-3 sm:p-4">
+      <FeedPostCard :post="entry.post" class="!rounded-[18px] !border-0 !shadow-none" />
     </div>
   </article>
 </template>
