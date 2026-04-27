@@ -1,8 +1,10 @@
 <template>
-  <PagesSearchPage />
+  <SearchRoutePage />
 </template>
 
 <script setup lang="ts">
+import SearchRoutePage from "../components/pages/SearchPage.vue"
+
 definePageMeta({
   layout: "default",
 })
@@ -10,6 +12,6 @@ definePageMeta({
 const { t } = useI18n()
 
 useHead({
-  title: computed(() => t('community.search.seoTitle')),
+  title: () => t("community.search.seoTitle"),
 })
 </script>

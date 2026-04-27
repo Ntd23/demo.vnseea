@@ -1,15 +1,17 @@
 <template>
-  <div class="h-full min-h-0">
-    <PagesMessagesPage />
-  </div>
+  <MessagesRoutePage />
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: "messages" })
+import MessagesRoutePage from "../components/pages/MessagesPage.vue"
+
+definePageMeta({
+  layout: "messages",
+})
 
 const { t } = useI18n()
 useSeoMeta({
-  title: () => t('pages.messagesPage.seoTitle'),
-  description: () => t('pages.messagesPage.seoDescription'),
+  title: () => t("pages.messagesPage.seoTitle"),
+  description: () => t("pages.messagesPage.seoDescription"),
 })
 </script>
