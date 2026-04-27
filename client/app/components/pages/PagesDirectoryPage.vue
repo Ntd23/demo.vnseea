@@ -1,54 +1,91 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:px-7">
-      <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex items-start gap-4">
-          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#1d4ed8_0%,#0000ff_100%)] text-white shadow-[0_14px_30px_rgba(0,0,255,0.22)]">
-            <Icon name="i-ph-flag-fill" class="h-7 w-7" />
+  <div class="mx-auto max-w-[1440px] space-y-8 px-4 pb-20 pt-6 sm:px-6">
+    <!-- GoPro Style Hero Section -->
+    <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_20px_50px_rgba(15,35,110,0.08)]">
+      <div class="grid gap-8 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_480px] xl:items-stretch">
+        <div class="flex min-w-0 flex-col justify-between gap-10 rounded-[28px] bg-[#0f172a] p-6 text-white sm:p-10">
+          <div class="space-y-6">
+            <div class="flex flex-wrap items-center gap-3">
+              <span class="inline-flex h-9 items-center rounded-2xl bg-white/10 px-4 text-[12px] font-black uppercase tracking-[0.15em] text-white backdrop-blur-xl border border-white/20">
+                {{ $t("community.pagesDirectory.title") }}
+              </span>
+              <span class="inline-flex h-9 items-center rounded-2xl bg-primary-600 px-4 text-[12px] font-black uppercase tracking-[0.15em] text-white shadow-lg shadow-primary-600/30">
+                PRO DIRECTORY
+              </span>
+            </div>
+
+            <div class="space-y-4">
+              <h1 class="max-w-[720px] text-[38px] font-black leading-tight tracking-tight sm:text-[56px]">
+                {{ pageTitle }}
+              </h1>
+              <p class="max-w-xl text-[16px] font-medium leading-relaxed text-white/60">
+                {{ pageDescription }}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <p class="text-[12px] font-bold uppercase tracking-[0.22em] text-[#0000ff]/65">
-              {{ $t("community.pagesDirectory.title") }}
-            </p>
-            <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63]">
-              {{ pageTitle }}
-            </h1>
-            <p class="mt-2 max-w-[720px] text-[14px] leading-7 text-slate-500">
-              {{ pageDescription }}
-            </p>
+          <div class="flex flex-wrap items-center gap-4">
+            <UButton
+              to="/create-page"
+              size="xl"
+              class="h-14 rounded-2xl bg-white px-8 font-black text-[#0f172a] transition-all hover:bg-primary-50 active:scale-95 shadow-2xl"
+            >
+              <template #leading>
+                <Icon name="i-ph-plus-bold" class="h-5 w-5" />
+              </template>
+              {{ $t("community.pagesDirectory.createAction") }}
+            </UButton>
+            
+            <button class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-white backdrop-blur-xl border border-white/20 hover:bg-white/20 transition-all">
+              <Icon name="i-ph-share-network-duotone" class="h-6 w-6" />
+            </button>
           </div>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-3">
-          <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t("community.tabs.pages.suggested") }}
-            </p>
-            <p class="mt-1 text-[1.25rem] font-black text-[#243b63]">
-              {{ suggestedCount }}
-            </p>
+        <div class="grid gap-4">
+          <div class="rounded-[28px] bg-primary-600 p-8 text-white shadow-2xl shadow-primary-600/20 relative overflow-hidden group">
+            <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl transition-transform group-hover:scale-150" />
+            
+            <div class="relative flex items-start justify-between">
+              <div class="space-y-1">
+                <p class="text-[11px] font-black uppercase tracking-widest text-white/70">
+                  {{ $t("community.tabs.pages.suggested") }}
+                </p>
+                <p class="text-[48px] font-black leading-none">
+                  {{ suggestedCount }}
+                </p>
+              </div>
+              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md">
+                <Icon name="i-ph-sparkle-fill" class="h-7 w-7 text-white" />
+              </div>
+            </div>
+            <p class="mt-4 text-[13px] font-bold text-white/80">Discover new opportunities today.</p>
           </div>
-          <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t("community.tabs.pages.favorite") }}
-            </p>
-            <p class="mt-1 text-[1.25rem] font-black text-[#243b63]">
-              {{ favoriteCount }}
-            </p>
-          </div>
-          <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t("community.groups.stats.status") }}
-            </p>
-            <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-              {{ activeTabStatus }}
-            </p>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="rounded-[24px] border border-[#dbe3f2] bg-white p-6 shadow-sm">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                {{ $t("community.tabs.pages.favorite") }}
+              </p>
+              <p class="mt-2 text-[32px] font-black text-[#0f172a]">
+                {{ favoriteCount }}
+              </p>
+            </div>
+            
+            <div class="rounded-[24px] border border-[#dbe3f2] bg-white p-6 shadow-sm">
+              <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                {{ $t("community.groups.stats.status") }}
+              </p>
+              <p class="mt-3 text-[14px] font-black text-primary-600 uppercase tracking-tight">
+                {{ activeTabStatus }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Tab Bar & Search -->
     <CommunityPageDirectoryTabsBar
       v-model:search="search"
       :tabs="tabItems"
@@ -57,67 +94,70 @@
       :status-label="filterStatusLabel"
     />
 
-    <section class="rounded-[28px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/65">
+    <!-- Secondary Info Bar -->
+    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white p-2 shadow-sm lg:p-3">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+        <div class="flex items-center gap-4 px-4 py-3">
+          <div class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <p class="text-[13px] font-black uppercase tracking-widest text-[#0f172a]">
             {{ activeTabLabel }}
           </p>
-          <p class="mt-1 text-[14px] leading-6 text-slate-500">
+          <div class="h-4 w-px bg-slate-200" />
+          <p class="text-[13px] font-bold text-slate-400">
             {{ activeTabHint }}
           </p>
         </div>
 
+        <div class="flex gap-2 p-2">
+          <UButton color="gray" variant="ghost" icon="i-ph-squares-four-bold" class="rounded-xl h-10 w-10" />
+          <UButton color="gray" variant="ghost" icon="i-ph-list-bold" class="rounded-xl h-10 w-10 bg-slate-100" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Empty States -->
+    <section
+      v-if="mode === 'mine' && visiblePages.length === 0"
+      class="rounded-[32px] border border-[#dbe3f2] bg-white p-12 text-center shadow-xl lg:p-24"
+    >
+      <div class="mx-auto max-w-xl space-y-8">
+        <div class="flex h-24 w-24 mx-auto items-center justify-center rounded-[40px] bg-slate-50 text-slate-300 ring-8 ring-slate-50/50">
+          <Icon name="i-ph-flag-duotone" class="h-12 w-12" />
+        </div>
+        <div class="space-y-4">
+          <h2 class="text-3xl font-black tracking-tight text-[#0f172a]">
+            {{ $t('community.pagesDirectory.emptyMineTitle') }}
+          </h2>
+          <p class="text-base font-medium text-slate-500 leading-relaxed">
+            {{ $t('community.pagesDirectory.emptyMineDesc') }}
+          </p>
+        </div>
         <UButton
           to="/create-page"
-          color="neutral"
-          variant="outline"
-          size="lg"
-          class="rounded-full text-[13px] font-bold"
+          size="xl"
+          class="h-14 rounded-2xl bg-primary-600 px-10 font-black text-white shadow-2xl shadow-primary-600/30 transition-all active:scale-95"
         >
-          <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-          {{ $t("community.pagesDirectory.createAction") }}
+          <template #leading>
+            <Icon name="i-ph-plus-bold" class="h-5 w-5" />
+          </template>
+          {{ $t("community.pagesDirectory.createFirst") }}
         </UButton>
       </div>
     </section>
 
     <section
-      v-if="mode === 'mine' && visiblePages.length === 0"
-      class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-12 shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16 lg:min-h-[520px]"
-    >
-      <div class="flex h-full flex-col items-center justify-center text-center">
-        <FoundationEmptyState
-          icon="i-ph-flag-fill"
-          :title="$t('community.pagesDirectory.emptyMineTitle')"
-          :description="$t('community.pagesDirectory.emptyMineDesc')"
-        />
-
-        <div class="mt-6 flex justify-center">
-          <NuxtLink
-            to="/create-page"
-            class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-          >
-            <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-            {{ $t("community.pagesDirectory.createFirst") }}
-          </NuxtLink>
-        </div>
-      </div>
-    </section>
-
-    <section
       v-else-if="visiblePages.length === 0"
-      class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-12 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16"
+      class="rounded-[32px] border border-[#dbe3f2] bg-white p-16 text-center shadow-lg"
     >
-      <div class="mx-auto max-w-xl">
-        <FoundationEmptyState
-          icon="i-ph-magnifying-glass"
-          :title="$t('community.pagesDirectory.emptyOtherTitle')"
-          :description="$t('community.pagesDirectory.emptyOtherDesc')"
-        />
-      </div>
+      <FoundationEmptyState
+        icon="i-ph-magnifying-glass-duotone"
+        :title="$t('community.pagesDirectory.emptyOtherTitle')"
+        :description="$t('community.pagesDirectory.emptyOtherDesc')"
+      />
     </section>
 
-    <div v-else class="grid gap-4 xl:grid-cols-2">
+    <!-- Cards Grid -->
+    <div v-else class="grid gap-6 xl:grid-cols-2">
       <CommunityPageCard
         v-for="page in visiblePages"
         :key="page.id"
