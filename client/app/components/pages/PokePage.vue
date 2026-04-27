@@ -1,74 +1,92 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-10 pb-20 px-4 sm:px-6 pt-4">
+  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-20 sm:px-5 lg:px-6">
     <!-- Hero Section -->
-    <section class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-secondary-950 via-secondary-900 to-primary-950 text-white shadow-2xl group/hero">
-      <!-- Premium Decorations -->
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(var(--color-primary-500-rgb),0.15),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(0,0,0,0.2),transparent_40%)]" />
-      <div class="absolute top-0 right-0 w-80 h-80 bg-primary-500/10 rounded-full blur-[100px] -mr-40 -mt-40 pointer-events-none transition-transform duration-1000 group-hover/hero:scale-110" />
+    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
+      <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
+        <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+                {{ t("pages.pokePage.heroEyebrow") }}
+              </span>
+              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+                {{ heroMainStat.value }} {{ heroMainStat.label }}
+              </span>
+            </div>
 
-      <div class="relative z-10 px-8 py-14 sm:px-12 lg:px-16">
-        <div class="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-          <div class="max-w-3xl space-y-6">
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-400 pl-1">
-              {{ t("pages.pokePage.heroEyebrow") }}
-            </p>
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight text-white italic">
-              {{ t("pages.pokePage.heroTitle") }}
-            </h1>
-            <p class="text-base font-medium leading-relaxed text-secondary-300 sm:text-lg pl-0.5 max-w-2xl italic">
-              "{{ t("pages.pokePage.heroDescription") }}"
-            </p>
+            <div class="space-y-3">
+              <h1 class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+                {{ t("pages.pokePage.heroTitle") }}
+              </h1>
+              <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
+                {{ t("pages.pokePage.heroDescription") }}
+              </p>
+            </div>
           </div>
 
-          <div class="flex flex-wrap gap-4">
-            <UButton
+          <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
+            <NuxtLink
               to="/messages"
-              size="xl"
-              class="h-14 rounded-2xl bg-white/5 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/10 backdrop-blur-xl transition-all active:scale-95 px-8"
+              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
-              <template #leading>
-                <Icon name="i-ph-chat-circle-dots-duotone" class="h-5 w-5" />
-              </template>
+              <Icon name="i-ph-chat-circle-dots-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ t("pages.pokePage.openMessages") }}
-            </UButton>
+            </NuxtLink>
 
-            <UButton
+            <button
               v-if="pokedBackCount > 0"
-              size="xl"
-              class="h-14 rounded-2xl bg-primary-600 text-white hover:bg-primary-700 font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-primary-600/20 transition-all active:scale-95 px-10"
+              type="button"
+              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
               @click="resetPokedBack"
             >
-              <template #leading>
-                <Icon name="i-ph-arrow-counter-clockwise-bold" class="h-5 w-5" />
-              </template>
+              <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-5 w-5 shrink-0" />
               {{ t("pages.pokePage.resetStatus") }}
-            </UButton>
+            </button>
           </div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="mt-16 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          <div
-            v-for="item in summaryCards"
-            :key="item.label"
-            class="group/stat surface-card rounded-[2rem] border border-white/5 bg-white/5 p-8 backdrop-blur-3xl ring-1 ring-white/10 transition-all duration-500 hover:bg-white/10 hover:ring-primary-400/30"
-          >
-            <div class="flex items-center justify-between">
-              <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
-                {{ item.label }}
-              </p>
-              <Icon :name="item.icon" class="h-4 w-4 text-white/20 group-hover/stat:text-primary-400 group-hover/stat:rotate-12 transition-all" />
+        <div class="grid gap-3">
+          <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-[11px] font-extrabold uppercase text-white/52">
+                  {{ heroMainStat.label }}
+                </p>
+                <p class="mt-2 text-[34px] font-black leading-none">
+                  {{ heroMainStat.value }}
+                </p>
+                <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
+                  {{ heroMainStat.description }}
+                </p>
+              </div>
+
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0f172a]">
+                <Icon :name="heroMainStat.icon" class="h-7 w-7" />
+              </div>
             </div>
-            
-            <div class="mt-8 flex items-baseline gap-4">
-              <p class="text-5xl font-black text-white leading-none tracking-tighter">
-                {{ item.value }}
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+            <article
+              v-for="item in heroSecondaryStats"
+              :key="item.label"
+              class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-[10px] font-extrabold uppercase text-slate-500">
+                    {{ item.label }}
+                  </p>
+                  <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
+                    {{ item.value }}
+                  </p>
+                </div>
+                <Icon :name="item.icon" class="h-4 w-4 shrink-0 text-primary-600" />
+              </div>
+              <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
+                {{ item.description }}
               </p>
-              <div class="h-1 w-1 rounded-full bg-primary-500 animate-pulse" />
-            </div>
-            <p class="mt-4 text-[10px] font-bold text-white/30 group-hover/stat:text-white/50 italic">
-              {{ item.description }}
-            </p>
+            </article>
           </div>
         </div>
       </div>
@@ -152,6 +170,9 @@ const summaryCards = computed(() => [
     description: t("pages.pokePage.statPendingDescription"),
   },
 ])
+
+const heroMainStat = computed(() => summaryCards.value[0])
+const heroSecondaryStats = computed(() => summaryCards.value.slice(1))
 
 function pokeBack(id: string) {
   if (pokedBackIds.value.includes(id)) return

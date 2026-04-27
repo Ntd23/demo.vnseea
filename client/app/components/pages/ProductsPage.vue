@@ -1,78 +1,92 @@
 <template>
-  <div class="mx-auto max-w-[1520px] space-y-12 pb-24 px-4 sm:px-6">
+  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-24 sm:px-5 lg:px-6">
     <!-- Hero Marketplace -->
-    <section class="surface-card group overflow-hidden ring-1 ring-secondary-200/50 shadow-2xl bg-gradient-to-br from-secondary-950 via-primary-900 to-secondary-900 text-white relative">
-      <!-- Premium Decorations -->
-      <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.05),transparent_40%)]" />
-      <div class="pointer-events-none absolute right-[-10%] top-[-30%] h-[500px] w-[500px] rounded-full bg-primary-500/10 blur-[120px] transition-transform duration-1000 group-hover:scale-110" />
-
-      <div class="relative z-10 flex flex-col gap-12 px-8 py-16 sm:px-12 lg:px-16 lg:flex-row lg:items-end lg:justify-between">
-        <div class="max-w-[780px] space-y-8">
+    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
+      <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
+        <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
           <div class="space-y-4">
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-300/80 pl-1">
-              {{ $t("pages.productsPage.eyebrow") }}
-            </p>
-            <h1 class="text-5xl sm:text-7xl font-black leading-none tracking-tight text-white transition-colors group-hover:text-primary-100">
-              {{ $t("pages.productsPage.title") }}
-            </h1>
-            <p class="text-base font-medium leading-relaxed text-white/70 sm:text-lg pl-1 max-w-2xl italic">
-              "{{ $t("pages.productsPage.description") }}"
-            </p>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+                {{ $t("pages.productsPage.eyebrow") }}
+              </span>
+              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+                {{ $t("pages.productsPage.nearbyStores", { count: nearbyCount }) }}
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              <h1 class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+                {{ $t("pages.productsPage.title") }}
+              </h1>
+              <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
+                {{ $t("pages.productsPage.description") }}
+              </p>
+            </div>
           </div>
 
-          <div class="flex flex-wrap items-center gap-4 pt-4">
-            <UButton
+          <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
+            <NuxtLink
               to="/new-product"
-              size="xl"
-              class="h-14 rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-2xl shadow-primary-500/40 transition-all hover:bg-primary-700 active:scale-95 px-10 border-none"
+              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
             >
-              <template #leading>
-                <Icon name="i-ph-plus-circle-duotone" class="h-6 w-6" />
-              </template>
+              <Icon name="i-ph-plus-circle-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ $t("pages.productsPage.newListing") }}
-            </UButton>
+            </NuxtLink>
 
-            <UButton
+            <NuxtLink
               to="/my-products"
-              variant="soft"
-              size="xl"
-              class="h-14 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-xl transition-all active:scale-95 px-8"
+              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
-              <template #leading>
-                <Icon name="i-ph-package-duotone" class="h-5 w-5" />
-              </template>
+              <Icon name="i-ph-package-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ $t("pages.productsPage.myProducts") }}
-            </UButton>
-
-            <div class="hidden sm:inline-flex h-14 items-center gap-3 rounded-2xl bg-white/5 px-6 text-[11px] font-black uppercase tracking-widest text-primary-200 border border-white/5 backdrop-blur-md">
-              <Icon name="i-ph-map-pin-duotone" class="h-5 w-5 text-amber-400" />
-              {{ $t("pages.productsPage.nearbyStores", { count: nearbyCount }) }}
-            </div>
+            </NuxtLink>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:w-[380px]">
-          <div
-            v-for="item in heroStats"
-            :key="item.label"
-            class="group/stat rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/10"
-          >
-            <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
-              {{ item.label }}
-            </p>
-            <p class="mt-4 text-3xl font-black text-white leading-none tracking-tight">
-              {{ item.value }}
-            </p>
-            <p class="mt-2 text-[10px] font-bold text-white/40 group-hover/stat:text-white/60 line-clamp-1">
-              {{ item.description }}
-            </p>
+        <div class="grid gap-3">
+          <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-[11px] font-extrabold uppercase text-white/52">
+                  {{ heroMainStat.label }}
+                </p>
+                <p class="mt-2 text-[34px] font-black leading-none">
+                  {{ heroMainStat.value }}
+                </p>
+                <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
+                  {{ heroMainStat.description }}
+                </p>
+              </div>
+
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0f172a]">
+                <Icon name="i-ph-storefront-fill" class="h-7 w-7" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
+            <article
+              v-for="item in heroSecondaryStats"
+              :key="item.label"
+              class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
+            >
+              <p class="text-[10px] font-extrabold uppercase text-slate-500">
+                {{ item.label }}
+              </p>
+              <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
+                {{ item.value }}
+              </p>
+              <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
+                {{ item.description }}
+              </p>
+            </article>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Global Search & Discovery Bar -->
-    <section class="relative z-20 -mt-16 mx-auto w-full px-4 sm:px-12">
+    <section class="relative z-20 mx-auto w-full">
       <div class="rounded-[3rem] border border-secondary-200/50 bg-white/90 p-4 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] backdrop-blur-3xl lg:p-6 transition-all hover:shadow-[0_48px_80px_-24px_rgba(0,0,0,0.15)] ring-1 ring-secondary-100">
         <div class="flex flex-col gap-6 lg:flex-row">
           <UInput
@@ -589,6 +603,9 @@ const heroStats = computed(() => [
     description: t("pages.productsPage.statMineDescription"),
   },
 ])
+
+const heroMainStat = computed(() => heroStats.value[0])
+const heroSecondaryStats = computed(() => heroStats.value.slice(1))
 
 const nearbyCount = computed(() => products.value.filter(item => item.distanceKm <= 5).length)
 

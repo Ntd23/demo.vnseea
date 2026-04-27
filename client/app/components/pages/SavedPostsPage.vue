@@ -1,71 +1,101 @@
 <template>
-  <div class="mx-auto max-w-[1320px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
     <section
-      class="overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-white shadow-[0_10px_28px_rgba(15,35,110,0.05)]"
+      class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]"
       aria-labelledby="saved-posts-hero-title"
     >
-      <div class="grid gap-6 p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
-        <div class="max-w-3xl space-y-4">
-          <p class="inline-flex h-8 items-center rounded-full bg-primary-50 px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
-            {{ t("pages.savedPostsPage.heroEyebrow") }}
-          </p>
-          <div class="space-y-3">
-            <h1
-              id="saved-posts-hero-title"
-              class="text-[30px] font-black leading-tight text-[var(--text-primary)] sm:text-[38px]"
-            >
-              {{ t("pages.savedPostsPage.heroTitle") }}
-            </h1>
-            <p class="max-w-2xl text-[14px] font-medium leading-7 text-slate-600 sm:text-[15px]">
-              {{ t("pages.savedPostsPage.heroDescription") }}
-            </p>
+      <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
+        <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+                {{ t("pages.savedPostsPage.heroEyebrow") }}
+              </span>
+              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+                {{ heroMainStat.value }} {{ heroMainStat.label }}
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              <h1
+                id="saved-posts-hero-title"
+                class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]"
+              >
+                {{ t("pages.savedPostsPage.heroTitle") }}
+              </h1>
+              <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
+                {{ t("pages.savedPostsPage.heroDescription") }}
+              </p>
+            </div>
           </div>
 
-          <div class="flex flex-col gap-2 pt-1 sm:flex-row">
+          <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
             <NuxtLink
               to="/home"
-              class="inline-flex h-11 items-center justify-center rounded-[14px] border border-secondary-200 bg-white px-4 text-[13px] font-extrabold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
+              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
-              <Icon name="i-ph-house-line-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
+              <Icon name="i-ph-house-line-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ t("pages.savedPostsPage.backToFeed") }}
             </NuxtLink>
 
             <button
               v-if="visibleSavedPosts.length > 0"
               type="button"
-              class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-extrabold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:bg-primary-700 active:scale-95"
+              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
               @click="removeAll"
             >
-              <Icon name="i-ph-trash-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
+              <Icon name="i-ph-trash-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ t("pages.savedPostsPage.removeAll") }}
             </button>
             <NuxtLink
               v-else
               to="/explore"
-              class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-extrabold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:bg-primary-700 active:scale-95"
+              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
             >
-              <Icon name="i-ph-compass-duotone" class="mr-2 h-4.5 w-4.5 shrink-0" />
+              <Icon name="i-ph-compass-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ t("pages.savedPostsPage.goToExplore") }}
             </NuxtLink>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-x-5 gap-y-5 border-t border-secondary-100 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-          <article
-            v-for="item in summaryStats"
-            :key="item.label"
-            class="min-w-0"
-          >
-            <p class="text-[11px] font-extrabold uppercase text-slate-500">
-              {{ item.label }}
-            </p>
-            <p class="mt-2 text-[28px] font-black leading-none text-[var(--text-primary)]">
-              {{ item.value }}
-            </p>
-            <p class="mt-2 text-[12px] font-medium leading-5 text-slate-500">
-              {{ item.description }}
-            </p>
-          </article>
+        <div class="grid gap-3">
+          <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-[11px] font-extrabold uppercase text-white/52">
+                  {{ heroMainStat.label }}
+                </p>
+                <p class="mt-2 text-[34px] font-black leading-none">
+                  {{ heroMainStat.value }}
+                </p>
+                <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
+                  {{ heroMainStat.description }}
+                </p>
+              </div>
+
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0f172a]">
+                <Icon name="i-ph-bookmark-simple-fill" class="h-7 w-7" />
+              </div>
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+            <article
+              v-for="item in heroSecondaryStats"
+              :key="item.label"
+              class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
+            >
+              <p class="text-[10px] font-extrabold uppercase text-slate-500">
+                {{ item.label }}
+              </p>
+              <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
+                {{ item.value }}
+              </p>
+              <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
+                {{ item.description }}
+              </p>
+            </article>
+          </div>
         </div>
       </div>
     </section>
@@ -210,6 +240,10 @@ const summaryStats = computed(() => {
     },
   ]
 })
+
+const heroMainStat = computed(() => summaryStats.value[0])
+
+const heroSecondaryStats = computed(() => summaryStats.value.slice(1))
 
 function removeSavedPost(id: string) {
   if (removedIds.value.includes(id)) return

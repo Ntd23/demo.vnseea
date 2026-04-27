@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-[1320px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
     <PopularHero
       :eyebrow="t('pages.popularPage.heroEyebrow')"
       :title="t('pages.popularPage.heroTitle')"

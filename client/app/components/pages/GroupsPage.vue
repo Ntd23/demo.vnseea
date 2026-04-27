@@ -1,49 +1,76 @@
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
-    <section class="overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-      <div class="flex flex-col gap-5 px-5 py-5 sm:px-7 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex items-start gap-4">
-          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#1d4ed8_0%,#0000ff_100%)] text-white shadow-[0_14px_30px_rgba(0,0,255,0.22)]">
-            <Icon name="i-ph-users-three-fill" class="h-7 w-7" />
+  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-10 sm:px-5 lg:px-6">
+    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
+      <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
+        <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+                {{ $t("community.groups.hub") }}
+              </span>
+              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+                {{ heroMainStat.value }} {{ heroMainStat.label }}
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              <h1 class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+                {{ pageTitle }}
+              </h1>
+              <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
+                {{ pageDescription }}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <p class="text-[12px] font-bold uppercase tracking-[0.22em] text-[#0000ff]/65">
-              {{ $t("community.groups.hub") }}
-            </p>
-            <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63]">
-              {{ pageTitle }}
-            </h1>
-            <p class="mt-2 max-w-[720px] text-[14px] leading-7 text-slate-500">
-              {{ pageDescription }}
-            </p>
+          <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
+            <NuxtLink
+              to="/create-group"
+              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
+            >
+              <Icon name="i-ph-plus-bold" class="mr-2 h-5 w-5 shrink-0" />
+              {{ $t("community.groups.action.createNew") }}
+            </NuxtLink>
           </div>
         </div>
 
-        <div class="grid gap-3 sm:grid-cols-3">
-          <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t("community.groups.stats.suggested") }}
-            </p>
-            <p class="mt-1 text-[1.25rem] font-black text-[#243b63]">
-              {{ suggestedCount }}
-            </p>
+        <div class="grid gap-3">
+          <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-[11px] font-extrabold uppercase text-white/52">
+                  {{ heroMainStat.label }}
+                </p>
+                <p class="mt-2 text-[34px] font-black leading-none">
+                  {{ heroMainStat.value }}
+                </p>
+                <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
+                  {{ heroMainStat.description }}
+                </p>
+              </div>
+
+              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0f172a]">
+                <Icon name="i-ph-users-three-fill" class="h-7 w-7" />
+              </div>
+            </div>
           </div>
-          <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t("community.groups.stats.joined") }}
-            </p>
-            <p class="mt-1 text-[1.25rem] font-black text-[#243b63]">
-              {{ joinedCount }}
-            </p>
-          </div>
-          <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-              {{ $t("community.groups.stats.status") }}
-            </p>
-            <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-              {{ activeTabDescription }}
-            </p>
+
+          <div class="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
+            <article
+              v-for="item in heroSecondaryStats"
+              :key="item.label"
+              class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
+            >
+              <p class="text-[10px] font-extrabold uppercase text-slate-500">
+                {{ item.label }}
+              </p>
+              <p class="mt-2 break-words text-[22px] font-black leading-tight text-[var(--text-primary)]">
+                {{ item.value }}
+              </p>
+              <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
+                {{ item.description }}
+              </p>
+            </article>
           </div>
         </div>
       </div>
@@ -231,6 +258,30 @@ const activeTabHint = computed(() => {
   if (props.mode === "suggested") return t("community.groups.hint.suggested")
   return t("community.groups.hint.joined")
 })
+
+const heroMainStat = computed(() => ({
+  label: activeTabLabel.value,
+  value: String(visibleGroups.value.length),
+  description: activeTabHint.value,
+}))
+
+const heroSecondaryStats = computed(() => [
+  {
+    label: t("community.groups.stats.suggested"),
+    value: String(suggestedCount.value),
+    description: t("community.groups.descSuggested"),
+  },
+  {
+    label: t("community.groups.stats.joined"),
+    value: String(joinedCount.value),
+    description: t("community.groups.descJoined"),
+  },
+  {
+    label: t("community.groups.stats.status"),
+    value: activeTabDescription.value,
+    description: activeTabHint.value,
+  },
+])
 
 const filterStatusLabel = computed(() =>
   search.value.trim()
