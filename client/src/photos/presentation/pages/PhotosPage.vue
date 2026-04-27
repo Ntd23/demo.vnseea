@@ -137,7 +137,7 @@
 
 <script setup lang="ts">
 import { usePhotosPage } from "../../application/composables/usePhotosPage"
-import LightboxModal from "../../../../app/components/lightbox/LightboxModal.vue"
+import LightboxModal from "../../../lightbox/presentation/components/LightboxModal.vue"
 import PhotosCard from "../components/Card.vue"
 import PhotosFilters from "../components/Filters.vue"
 import PhotosHero from "../components/Hero.vue"
