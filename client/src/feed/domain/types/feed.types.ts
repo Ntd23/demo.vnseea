@@ -6,7 +6,7 @@ export interface FeedComment {
 }
 
 export interface FeedPost {
-  id: number
+  id: number | string
   author: string
   role: string
   audience: string
