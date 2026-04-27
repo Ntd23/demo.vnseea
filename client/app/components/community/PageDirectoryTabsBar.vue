@@ -1,70 +1,81 @@
 <template>
-  <section class="rounded-[28px] border border-[#dbe3f2] bg-white px-4 py-4 shadow-[0_12px_30px_rgba(15,35,110,0.06)] sm:px-5">
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div class="flex flex-wrap items-center gap-2" role="tablist" :aria-label="$t('community.pagesDirectory.title')">
+  <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-xl p-2 lg:p-3">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <!-- Premium GoPro Style Tabs -->
+      <div class="flex flex-wrap items-center gap-1.5 p-1" role="tablist" :aria-label="$t('community.pagesDirectory.title')">
         <UButton
           v-for="tab in tabs"
           :key="tab.value"
           :to="tab.to"
-          :color="activeTab === tab.value ? 'primary' : 'neutral'"
-          :variant="activeTab === tab.value ? 'soft' : 'ghost'"
-          size="lg"
-          class="rounded-full px-4 text-[14px] font-bold"
+          variant="ghost"
+          class="h-12 rounded-2xl px-6 font-black text-[13px] uppercase tracking-wider transition-all"
+          :class="activeTab === tab.value ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-[#0f172a]'"
           :aria-current="activeTab === tab.value ? 'page' : undefined"
         >
           {{ $t(tab.label) }}
-          <UBadge color="neutral" variant="soft" class="ml-2 rounded-full px-2 py-0.5 text-[11px] font-black text-[#243b63]">
+          <span
+            class="ml-3 flex h-6 min-w-[24px] items-center justify-center rounded-lg bg-white px-1.5 text-[10px] font-black shadow-sm ring-1 ring-slate-100"
+            :class="activeTab === tab.value ? 'text-primary-600' : 'text-slate-400'"
+          >
             {{ tab.count }}
-          </UBadge>
+          </span>
         </UButton>
       </div>
 
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div class="w-full sm:w-[320px]">
+      <!-- Search & Create -->
+      <div class="flex flex-col gap-3 p-1 sm:flex-row sm:items-center">
+        <div class="relative w-full sm:w-[360px]">
           <UInput
             v-model="search"
             :placeholder="$t('community.pagesDirectory.search')"
-            leading-icon="i-ph-magnifying-glass-bold"
             color="primary"
             size="xl"
             class="w-full"
             :ui="searchInputUi"
-          />
+          >
+            <template #leading>
+              <Icon name="i-ph-magnifying-glass-bold" class="h-5 w-5 text-primary-500" />
+            </template>
+            <template #trailing>
+              <button
+                v-if="search.trim()"
+                class="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600"
+                @click="search = ''"
+              >
+                <Icon name="i-ph-x-bold" class="h-3 w-3" />
+              </button>
+            </template>
+          </UInput>
         </div>
 
         <UButton
-          v-if="search.trim()"
-          type="button"
-          color="neutral"
-          variant="outline"
-          size="xl"
-          class="rounded-full"
-          @click="search = ''"
-        >
-          {{ $t("community.pagesDirectory.clearSearch") }}
-        </UButton>
-
-        <UButton
           :to="createTo"
-          color="primary"
-          variant="solid"
           size="xl"
-          class="rounded-[16px] text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
+          class="h-14 rounded-2xl bg-[#0f172a] px-8 font-black text-[13px] uppercase tracking-widest text-white shadow-2xl transition-all hover:-translate-y-1 active:scale-95"
         >
-          <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
+          <template #leading>
+            <Icon name="i-ph-plus-bold" class="h-5 w-5" />
+          </template>
           {{ createLabelText }}
         </UButton>
       </div>
     </div>
 
-    <div class="mt-4 flex flex-col gap-3 border-t border-[#eef2f8] pt-4 sm:flex-row sm:items-center sm:justify-between">
-      <p class="text-[13px] text-slate-500">
-        {{ statusLabel }}
-      </p>
+    <!-- Status Bar -->
+    <div class="mt-2 flex items-center justify-between border-t border-slate-50 px-5 py-3">
+      <div class="flex items-center gap-3">
+        <div class="h-1.5 w-1.5 rounded-full bg-primary-500" />
+        <p class="text-[12px] font-bold text-slate-400">
+          {{ statusLabel }}
+        </p>
+      </div>
 
-      <UBadge color="primary" variant="subtle" class="self-start rounded-full px-3 py-1.5 text-[12px] font-semibold">
-        {{ $t("community.pagesDirectory.searchLabel") }}
-      </UBadge>
+      <div class="flex items-center gap-2">
+        <Icon name="i-ph-funnel-duotone" class="h-4 w-4 text-slate-300" />
+        <span class="text-[11px] font-black uppercase tracking-widest text-slate-400">
+          {{ $t("community.pagesDirectory.searchLabel") }}
+        </span>
+      </div>
     </div>
   </section>
 </template>
@@ -87,7 +98,7 @@ const props = withDefaults(defineProps<{
 const { t } = useI18n()
 
 const searchInputUi = {
-  base: "h-12 rounded-full px-4 text-[14px]",
+  base: "h-14 rounded-2xl px-12 text-[14px] font-bold bg-slate-50 border-none ring-1 ring-slate-100 focus:ring-2 focus:ring-primary-500 shadow-inner",
 }
 
 const createLabelText = computed(() =>
