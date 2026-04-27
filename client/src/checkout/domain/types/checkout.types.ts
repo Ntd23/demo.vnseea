@@ -3,6 +3,7 @@ export interface CheckoutLineItem {
   name: string
   price: number
   quantity: number
+  imageStyle?: string
 }
 
 export interface ShippingAddress {

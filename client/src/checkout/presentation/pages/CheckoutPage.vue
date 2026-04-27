@@ -1,40 +1,60 @@
 <template>
-  <section class="space-y-4">
-    <header>
-      <p class="text-sm font-bold uppercase tracking-[0.2em] text-slate-400">
-        Checkout Context Sample
-      </p>
-      <h1 class="text-3xl font-black text-slate-900">
-        Checkout Page
-      </h1>
-      <p class="text-sm text-slate-500">
-        Sample page under `src/checkout/presentation/pages`.
-      </p>
-    </header>
+  <div class="space-y-5 pb-10">
+    <CheckoutLayout
+      :title="$t('checkout.page.layoutTitle')"
+      :description="$t('checkout.page.layoutDescription')"
+      :left-label="$t('checkout.page.formRegion')"
+      :right-label="$t('checkout.page.summaryRegion')"
+      :progress-label="$t('checkout.page.progressLabel')"
+      :progress-text="progressText"
+      :progress-value="progressValue"
+    >
+      <template #left>
+        <ShippingAddressFormUI
+          :initial-address="snapshot.shippingAddress"
+          @submit="updateShippingAddress"
+        />
+      </template>
 
-    <div class="rounded-2xl border border-slate-200 bg-white p-5">
-      <p class="text-sm text-slate-600">
-        Items: {{ snapshot.items.length }}
-      </p>
-      <p class="mt-2 text-sm text-slate-600">
-        Total: {{ total }}
-      </p>
-      <p class="mt-2 text-sm text-slate-600">
-        Shipping valid: {{ shippingValidation.valid ? "yes" : "no" }}
-      </p>
-      <p class="mt-2 text-sm text-slate-600">
-        Status: {{ status }}
-      </p>
-    </div>
-  </section>
+      <template #right>
+        <CheckoutSummary
+          :items="snapshot.items"
+          :shipping-fee="snapshot.shippingFee"
+          :wallet-balance="snapshot.walletBalance"
+          :address-ready="shippingValidation.valid"
+          :checkout-state="status"
+          @decrease-quantity="decreaseQuantity"
+          @increase-quantity="increaseQuantity"
+          @remove-item="removeItem"
+          @submit="submit"
+        />
+      </template>
+    </CheckoutLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
+import CheckoutLayout from "../components/CheckoutLayout.vue"
+import CheckoutSummary from "../components/CheckoutSummary.vue"
+import ShippingAddressFormUI from "../components/ShippingAddressFormUI.vue"
 import { useCheckoutFlow } from "../../application/composables/useCheckoutFlow"
 import { createCheckoutSnapshot } from "../../application/use-cases/create-checkout-snapshot"
 
-const { snapshot, total, shippingValidation, status } = useCheckoutFlow(
-  "sample:checkout-address",
+const { t } = useI18n()
+
+const {
+  snapshot,
+  status,
+  shippingValidation,
+  progressValue,
+  progressText,
+  updateShippingAddress,
+  increaseQuantity,
+  decreaseQuantity,
+  removeItem,
+  submit,
+} = useCheckoutFlow(
+  "checkout:saved-address",
   createCheckoutSnapshot(),
 )
 </script>
