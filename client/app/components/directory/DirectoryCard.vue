@@ -4,68 +4,78 @@
     class="group block"
     :aria-label="t('pages.directoryPage.openItemAria', { title: item.title })"
   >
-    <UCard class="overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-lg)]" :ui="{ body: 'p-0' }">
-      <div class="relative min-h-[190px] p-5 text-white" :style="{ background: item.accent }">
-        <div class="absolute inset-0 bg-black/10" />
-        <div class="relative z-10 flex h-full flex-col justify-between gap-8">
-          <div class="flex items-start justify-between gap-3">
-            <div class="flex flex-wrap items-center gap-2">
-              <UBadge color="neutral" variant="soft" class="rounded-full bg-white/18 px-3 py-1.5 text-[12px] font-extrabold text-white backdrop-blur">
+    <div class="relative overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-xl transition-all hover:-translate-y-1.5 hover:shadow-2xl">
+      <!-- Action Banner -->
+      <div class="relative h-[180px] p-6 text-white overflow-hidden" :style="{ background: item.accent }">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        
+        <div class="relative z-10 flex h-full flex-col justify-between">
+          <div class="flex items-start justify-between">
+            <div class="flex flex-wrap gap-2">
+              <span class="rounded-xl bg-white/20 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-md border border-white/20">
                 {{ item.categoryLabel }}
-              </UBadge>
-              <UBadge
+              </span>
+              <span
                 v-if="item.featured"
-                color="primary"
-                variant="subtle"
-                class="rounded-full border border-white/20 bg-white/18 px-3 py-1.5 text-[12px] font-extrabold text-white backdrop-blur"
+                class="rounded-xl bg-primary-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg"
               >
-                {{ t("pages.directoryPage.featuredLabel") }}
-              </UBadge>
+                PRO
+              </span>
             </div>
-            <Icon name="i-ph-arrow-up-right-bold" class="h-5 w-5 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#0f172a] shadow-2xl opacity-0 transition-all group-hover:opacity-100 group-hover:scale-110">
+              <Icon name="i-ph-arrow-up-right-bold" class="h-5 w-5" />
+            </div>
           </div>
+          
           <div>
-            <h3 class="text-2xl font-black leading-tight">{{ item.title }}</h3>
-            <p class="mt-2 line-clamp-2 text-[13px] font-semibold leading-5 text-white/80">{{ item.description }}</p>
+            <h3 class="text-[22px] font-black tracking-tight leading-none">{{ item.title }}</h3>
+            <p class="mt-2 line-clamp-1 text-[13px] font-medium text-white/80">{{ item.description }}</p>
           </div>
         </div>
       </div>
 
-      <div class="p-4">
-        <div class="grid grid-cols-2 gap-2">
-          <UCard class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-3' }">
-            <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.directoryPage.metaLabel") }}</p>
-            <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ item.meta }}</p>
-          </UCard>
-          <UCard class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-3' }">
-            <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">{{ t("pages.directoryPage.activityLabel") }}</p>
-            <p class="mt-1 text-[14px] font-black text-[var(--text-primary)]">{{ item.count }}</p>
-          </UCard>
+      <!-- Stats Area -->
+      <div class="p-6 space-y-6">
+        <div class="grid grid-cols-2 gap-3">
+          <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100 group-hover:bg-white group-hover:shadow-md transition-all">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              {{ t("pages.directoryPage.metaLabel") }}
+            </p>
+            <p class="mt-1 truncate text-[14px] font-black text-[#0f172a]">
+              {{ item.meta }}
+            </p>
+          </div>
+          <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100 group-hover:bg-white group-hover:shadow-md transition-all">
+            <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              {{ t("pages.directoryPage.activityLabel") }}
+            </p>
+            <p class="mt-1 truncate text-[14px] font-black text-[#0f172a]">
+              {{ item.count }}
+            </p>
+          </div>
         </div>
 
-        <div class="mt-4 flex flex-wrap gap-2">
-          <UBadge
-            v-for="tag in item.tags"
+        <div class="flex flex-wrap gap-2">
+          <span
+            v-for="tag in item.tags.slice(0, 3)"
             :key="tag"
-            color="primary"
-            variant="subtle"
-            class="rounded-full px-3 py-1.5 text-[12px] font-extrabold"
+            class="text-[11px] font-black uppercase tracking-wider text-slate-400"
           >
-            {{ tag }}
-          </UBadge>
-        </div>
-
-        <div class="mt-4 flex items-center justify-between gap-3">
-          <p class="text-[12px] font-semibold text-[var(--text-secondary)]">
-            {{ item.categoryLabel }}
-          </p>
-          <span class="inline-flex items-center gap-1 text-[13px] font-bold text-[var(--text-primary)]">
-            {{ t("pages.directoryPage.openDirectory") }}
-            <Icon name="i-ph-arrow-right-bold" class="h-4 w-4 transition group-hover:translate-x-0.5" />
+            #{{ tag }}
           </span>
         </div>
+
+        <div class="flex items-center justify-between pt-2 border-t border-slate-50">
+          <span class="text-[12px] font-black text-primary-600 uppercase tracking-widest">
+            {{ item.categoryLabel }}
+          </span>
+          <div class="flex items-center gap-2 text-[13px] font-black text-[#0f172a]">
+            {{ t("pages.directoryPage.openDirectory") }}
+            <Icon name="i-ph-caret-right-bold" class="h-4 w-4" />
+          </div>
+        </div>
       </div>
-    </UCard>
+    </div>
   </NuxtLink>
 </template>
 

@@ -1,85 +1,11 @@
 <template>
-  <div class="space-y-5 pb-10">
-    <WalletHero
-      :balance="balance"
-      :stats="walletStats"
-    />
-
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
-      <main class="space-y-5">
-        <WalletTopupForm
-          :methods="topupMethods"
-          @topup="handleTopup"
-        />
-
-        <WalletTransactions :transactions="allTransactions" />
-      </main>
-
-      <WalletSendForm
-        :balance="balance"
-        @send="handleSend"
-      />
-    </div>
-  </div>
+  <WalletPresentationPage />
 </template>
 
 <script setup lang="ts">
-import type { WalletSendPayload, WalletTopupPayload, WalletTransaction } from "~/composables/useMockWalletData"
-
-const { t } = useI18n()
-const { initialBalance, topupMethods, transactions } = useMockWalletData()
-
-useSeoMeta({
-  title: t("pages.walletPage.seoTitle"),
-  description: t("pages.walletPage.seoDescription"),
-})
-
-const balance = ref(initialBalance)
-const localTransactions = ref<WalletTransaction[]>([])
-
-const allTransactions = computed(() => [...localTransactions.value, ...transactions.value])
-
-const walletStats = computed(() => [
-  {
-    label: t("pages.walletPage.statTransactions"),
-    value: allTransactions.value.length,
-  },
-  {
-    label: t("pages.walletPage.statTopups"),
-    value: localTransactions.value.filter(item => item.type === "topup").length,
-  },
-])
-
-const handleTopup = (payload: WalletTopupPayload) => {
-  const methodLabel = topupMethods.value.find(item => item.value === payload.method)?.label ?? payload.method
-  balance.value += payload.amount
-  localTransactions.value = [
-    {
-      id: `topup-${Date.now()}`,
-      type: "topup",
-      title: t("pages.walletPage.topupTransactionTitle"),
-      description: t("pages.walletPage.topupTransactionDescription", { method: methodLabel }),
-      amount: payload.amount,
-      time: t("pages.walletPage.justNow"),
-      status: "completed",
-    },
-    ...localTransactions.value,
-  ]
-}
-
-const handleSend = (payload: WalletSendPayload) => {
-  balance.value -= payload.amount
-  localTransactions.value = [
-    {
-      id: `send-${Date.now()}`,
-      type: "send",
-      title: t("pages.walletPage.sendTransactionTitle", { recipient: payload.recipient }),
-      description: payload.note || t("pages.walletPage.sendTransactionDescription"),
-      amount: -payload.amount,
-      time: t("pages.walletPage.justNow"),
-      status: "completed",
-    },
-    ...localTransactions.value,
-  ]
-}
+import WalletPresentationPage from "../../../src/wallet/presentation/pages/WalletPage.vue"
+/**
+ * Legacy wrapper for WalletPage.
+ * Runtime has been moved to src/wallet/presentation/pages/WalletPage.vue
+ */
 </script>
