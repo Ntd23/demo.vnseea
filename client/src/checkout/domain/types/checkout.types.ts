@@ -3,6 +3,7 @@ export interface CheckoutLineItem {
   name: string
   price: number
   quantity: number
+  imageStyle?: string
 }
 
 export interface ShippingAddress {
@@ -13,6 +14,10 @@ export interface ShippingAddress {
   postalCode: string
   streetAddress: string
 }
+
+export interface ShippingAddressForm extends ShippingAddress {}
+
+export interface SavedShippingAddress extends ShippingAddress {}
 
 export interface CheckoutSnapshot {
   items: CheckoutLineItem[]

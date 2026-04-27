@@ -206,10 +206,10 @@
 <script setup lang="ts">
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
 import {
-  communityCategoryOptions,
   createCommunitySlug,
-} from "../../../../types/community"
-import type { CommunityGroupSettingsDraft } from "../../../../types/community"
+} from "../../domain/services/community-helpers.service"
+import { communityCategoryOptions } from "../../domain/constants/community-options"
+import type { CommunityGroupSettingsDraft } from "../../domain/types/community.types"
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
 const { t } = useI18n()

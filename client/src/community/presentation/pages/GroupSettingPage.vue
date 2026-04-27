@@ -117,19 +117,21 @@ import CommunityGroupSettingsControlsCard from "../components/GroupSettingsContr
 import CommunityGroupSettingsSidebar from "../components/GroupSettingsSidebar.vue"
 import CommunitySettingsSectionCard from "../components/SettingsSectionCard.vue"
 import { useCommunityGroupDetail } from "../../application/composables/useCommunityGroupDetail"
+import { createCommunityGroupSettingsDraft } from "../../application/factories/community-drafts"
 import {
   communityCategoryOptions,
   communityPrivacyOptions,
-  createCommunityGroupSettingsDraft,
+} from "../../domain/constants/community-options"
+import {
   createCommunitySlug,
   getCommunityGroupPath,
   getCommunityOptionDescription,
   getCommunityOptionLabel,
-} from "../../../../types/community"
+} from "../../domain/services/community-helpers.service"
 import type {
   CommunityGroupRecord,
   CommunityGroupSettingsDraft,
-} from "../../../../types/community"
+} from "../../domain/types/community.types"
 
 type GroupSettingsState = "idle" | "loading" | "success" | "error"
 

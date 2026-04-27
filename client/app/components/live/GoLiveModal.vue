@@ -28,7 +28,7 @@
 
         <UForm :state="form" class="space-y-6" @submit="submit">
           <div class="grid gap-6 sm:grid-cols-2">
-            <UFormGroup :label="$t('pages.livePage.modalTitleLabel')" class="sm:col-span-2">
+            <UFormField :label="$t('pages.livePage.modalTitleLabel')" class="sm:col-span-2">
               <UInput
                 v-model="form.title"
                 size="xl"
@@ -38,9 +38,9 @@
                 :ui="{ base: 'bg-secondary-50/50 font-black tracking-wider uppercase text-[11px] h-12 shadow-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500' }"
                 required
               />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup :label="$t('pages.livePage.modalCategoryLabel')">
+            <UFormField :label="$t('pages.livePage.modalCategoryLabel')">
               <USelectMenu
                 v-model="form.category"
                 size="xl"
@@ -48,9 +48,9 @@
                 class="rounded-2xl"
                 :ui="{ trigger: 'bg-secondary-50/50 font-black tracking-wider uppercase text-[11px] h-12 shadow-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500' }"
               />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup :label="$t('pages.livePage.modalPrivacyLabel')">
+            <UFormField :label="$t('pages.livePage.modalPrivacyLabel')">
               <USelectMenu
                 v-model="form.privacy"
                 value-attribute="value"
@@ -64,9 +64,9 @@
                 class="rounded-2xl"
                 :ui="{ trigger: 'bg-secondary-50/50 font-black tracking-wider uppercase text-[11px] h-12 shadow-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500' }"
               />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup :label="$t('pages.livePage.modalDescriptionLabel')" class="sm:col-span-2">
+            <UFormField :label="$t('pages.livePage.modalDescriptionLabel')" class="sm:col-span-2">
               <UTextarea
                 v-model="form.description"
                 size="xl"
@@ -75,7 +75,7 @@
                 class="rounded-2xl"
                 :ui="{ base: 'bg-secondary-50/50 font-semibold text-[13px] shadow-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 resize-none' }"
               />
-            </UFormGroup>
+            </UFormField>
           </div>
 
           <UAlert

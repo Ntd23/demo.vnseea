@@ -87,11 +87,11 @@
 <script setup lang="ts">
 import CommunityGroupAboutCard from "./GroupAboutCard.vue"
 import CommunityGroupMembersCard from "./GroupMembersCard.vue"
-import { getCommunityInitials } from "../../../../types/community"
+import { getCommunityInitials } from "../../domain/services/community-helpers.service"
 import type {
   CommunityGroupMember,
   CommunityGroupRecord,
-} from "../../../../types/community"
+} from "../../domain/types/community.types"
 
 const props = defineProps<{
   group: CommunityGroupRecord

@@ -65,7 +65,7 @@
 
           <div class="rounded-[24px] bg-[linear-gradient(180deg,rgba(240,247,255,0.92),rgba(255,255,255,0.98))] p-4 ring-1 ring-secondary-100/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]">
             <div class="space-y-4">
-              <UFormGroup
+              <UFormField
                 :label="$t('pages.messagesPage.sendTo')"
                 label-class="mb-2 pl-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-primary)]"
               >
@@ -78,9 +78,9 @@
                     icon: { leading: { pointer: 'pointer-events-none', base: 'text-[var(--text-primary)]' } }
                   }"
                 />
-              </UFormGroup>
+              </UFormField>
 
-              <UFormGroup
+              <UFormField
                 :label="$t('pages.messagesPage.content')"
                 label-class="mb-2 pl-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-primary)]"
               >
@@ -92,7 +92,7 @@
                     base: 'min-h-[152px] w-full resize-none rounded-[22px] bg-white/98 px-4 py-3 ring-1 ring-secondary-200/75 shadow-[0_8px_20px_rgba(148,163,184,0.06)] transition-all duration-300 text-sm font-medium leading-6 text-[var(--text-primary)] placeholder:text-secondary-400 focus:ring-2 focus:ring-primary-300/70 focus:shadow-[0_12px_28px_rgba(14,165,233,0.10)]',
                   }"
                 />
-              </UFormGroup>
+              </UFormField>
             </div>
           </div>
 

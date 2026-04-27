@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCommunityGroupSettingsPath } from "../../../../types/community"
+import { getCommunityGroupSettingsPath } from "../../domain/services/community-helpers.service"
 
 const { t } = useI18n()
 

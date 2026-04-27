@@ -7,7 +7,7 @@
     </div>
 
     <div class="mt-8 space-y-5">
-      <UFormGroup :label="t('pages.walletPage.recipientLabel')">
+      <UFormField :label="t('pages.walletPage.recipientLabel')">
         <UInput
           v-model="form.recipient"
           size="lg"
@@ -16,9 +16,9 @@
           icon="i-ph-user"
           :placeholder="t('pages.walletPage.recipientPlaceholder')"
         />
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup :label="t('pages.walletPage.amountLabel')">
+      <UFormField :label="t('pages.walletPage.amountLabel')">
         <UInput
           v-model.number="form.amount"
           type="number"
@@ -31,9 +31,9 @@
             <span class="text-[var(--text-primary)] font-bold px-2">VND</span>
           </template>
         </UInput>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup :label="t('pages.walletPage.noteLabel')">
+      <UFormField :label="t('pages.walletPage.noteLabel')">
         <UTextarea
           v-model="form.note"
           size="lg"
@@ -42,7 +42,7 @@
           :rows="3"
           :placeholder="t('pages.walletPage.notePlaceholder')"
         />
-      </UFormGroup>
+      </UFormField>
 
       <UAlert
         v-if="error"

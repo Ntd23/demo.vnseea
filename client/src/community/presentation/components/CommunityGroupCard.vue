@@ -102,14 +102,16 @@
 
 <script setup lang="ts">
 import {
-  getCommunityGroupPath,
-  getCommunityGroupSettingsPath,
-  communityCategoryOptions,
-  communityPrivacyOptions,
   getCommunityOptionDescription,
   getCommunityOptionLabel,
-} from "../../../../types/community"
-import type { CommunityGroupRecord } from "../../../../types/community"
+  getCommunityGroupPath,
+  getCommunityGroupSettingsPath,
+} from "../../domain/services/community-helpers.service"
+import {
+  communityCategoryOptions,
+  communityPrivacyOptions,
+} from "../../domain/constants/community-options"
+import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 const { t, locale } = useI18n()
 

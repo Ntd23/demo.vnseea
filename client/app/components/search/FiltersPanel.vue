@@ -18,7 +18,7 @@
         </div>
 
         <div class="grid gap-6">
-          <UFormGroup
+          <UFormField
             :label="$t('community.search.controls.keywordParams.label')"
             class="w-full"
           >
@@ -31,10 +31,10 @@
               :placeholder="$t('community.search.controls.keywordParams.placeholder')"
               @keydown.enter.prevent="$emit('submit')"
             />
-          </UFormGroup>
+          </UFormField>
 
           <div class="grid gap-4 xl:grid-cols-[1fr_1fr_200px] xl:items-end">
-            <UFormGroup :label="$t('community.search.controls.typeLabel')">
+            <UFormField :label="$t('community.search.controls.typeLabel')">
               <USelectMenu
                 v-model="typeModel"
                 :options="translatedTypeOptions"
@@ -42,9 +42,9 @@
                 size="lg"
                 class="font-semibold"
               />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup :label="$t('community.search.controls.sortLabel')">
+            <UFormField :label="$t('community.search.controls.sortLabel')">
               <USelectMenu
                 v-model="sortModel"
                 :options="translatedSortOptions"
@@ -52,7 +52,7 @@
                 size="lg"
                 class="font-semibold"
               />
-            </UFormGroup>
+            </UFormField>
 
             <UButton
               color="primary"

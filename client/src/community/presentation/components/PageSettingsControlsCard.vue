@@ -73,8 +73,8 @@
 
 <script setup lang="ts">
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
-import { communityPageCtaOptions } from "../../../../types/community"
-import type { CommunityPageSettingsDraft } from "../../../../types/community"
+import { communityPageCtaOptions } from "../../domain/constants/community-options"
+import type { CommunityPageSettingsDraft } from "../../domain/types/community.types"
 
 const model = defineModel<CommunityPageSettingsDraft>({ required: true })
 const { t } = useI18n()

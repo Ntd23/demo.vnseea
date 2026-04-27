@@ -58,7 +58,7 @@
       @submit="onSubmit"
     >
       <div class="grid gap-6 md:grid-cols-2">
-        <UFormGroup
+        <UFormField
           :label="t('pages.withdrawalPage.amountLabel')"
           name="amount"
           required
@@ -72,9 +72,9 @@
             :placeholder="t('pages.withdrawalPage.amountPlaceholder')"
             class="font-bold"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup
+        <UFormField
           :label="t('pages.withdrawalPage.accountNameLabel')"
           name="accountName"
           required
@@ -86,9 +86,9 @@
             variant="outline"
             :placeholder="t('pages.withdrawalPage.accountNamePlaceholder')"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup
+        <UFormField
           :label="t('pages.withdrawalPage.accountNumberLabel')"
           name="accountNumber"
           required
@@ -100,9 +100,9 @@
             variant="outline"
             :placeholder="t('pages.withdrawalPage.accountNumberPlaceholder')"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup
+        <UFormField
           :label="t('pages.withdrawalPage.noteLabel')"
           name="note"
         >
@@ -113,7 +113,7 @@
             variant="outline"
             :placeholder="t('pages.withdrawalPage.notePlaceholder')"
           />
-        </UFormGroup>
+        </UFormField>
       </div>
 
       <UAlert

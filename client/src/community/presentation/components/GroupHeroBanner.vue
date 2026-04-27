@@ -92,8 +92,8 @@
 import {
   getCommunityInitials,
   getCommunityGroupSettingsPath,
-} from "../../../../types/community"
-import type { CommunityGroupRecord } from "../../../../types/community"
+} from "../../domain/services/community-helpers.service"
+import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 const { t } = useI18n()
 const translateText = useMaybeTranslatedText()

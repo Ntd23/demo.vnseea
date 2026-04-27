@@ -23,7 +23,7 @@
       </div>
 
       <!-- Custom Amount -->
-      <UFormGroup :label="t('pages.walletPage.otherAmountLabel')">
+      <UFormField :label="t('pages.walletPage.otherAmountLabel')">
         <UInput
           v-model.number="form.amount"
           type="number"
@@ -37,7 +37,7 @@
             <span class="text-[var(--text-primary)] font-bold px-2">VND</span>
           </template>
         </UInput>
-      </UFormGroup>
+      </UFormField>
 
       <!-- Payment Methods -->
       <div class="grid gap-4 sm:grid-cols-3">
