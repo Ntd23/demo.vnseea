@@ -1,5 +1,6 @@
 <template>
-  <div class="space-y-8 pb-20 px-4 sm:px-6">
+  <div class="mx-auto max-w-[1440px] space-y-8 px-4 pb-20 pt-6 sm:px-6">
+    <!-- GoPro Style Hero -->
     <LiveHero
       :stats="heroStats"
       @focus-chat="focusChat"
@@ -8,6 +9,7 @@
 
     <div class="grid gap-8 xl:grid-cols-[minmax(0,1fr)_420px]">
       <div class="space-y-8 min-w-0">
+        <!-- Live Player Section -->
         <LivePlayer
           :joined-viewers="joinedViewers"
           :local-likes="localLikesById[selectedStream.id] ?? 0"
@@ -18,36 +20,46 @@
         />
 
         <!-- Readiness Section -->
-        <section class="surface-card p-8 sm:p-10 group overflow-hidden border-none ring-1 ring-secondary-100 shadow-xl relative bg-white">
-          <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between relative z-10 mb-10 pb-8 border-b border-secondary-50">
+        <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-xl">
+          <div class="flex flex-col gap-6 p-8 sm:p-10 lg:flex-row lg:items-center lg:justify-between border-b border-slate-50">
             <div class="space-y-2">
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">{{ $t("pages.livePage.setupEyebrow") }}</p>
-              <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">{{ $t("pages.livePage.setupTitle") }}</h2>
-              <p class="text-sm font-medium text-[var(--text-primary)]">{{ $t("pages.livePage.setupDescription") }}</p>
+              <div class="flex items-center gap-2">
+                <div class="h-1 w-4 rounded-full bg-rose-600 animate-pulse" />
+                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                  {{ $t("pages.livePage.setupEyebrow") }}
+                </p>
+              </div>
+              <h2 class="text-[32px] font-black tracking-tight text-[#0f172a] leading-none">
+                {{ $t("pages.livePage.setupTitle") }}
+              </h2>
+              <p class="text-[15px] font-medium text-slate-500">
+                {{ $t("pages.livePage.setupDescription") }}
+              </p>
             </div>
+            
             <UButton
               size="xl"
-              class="rounded-2xl font-black text-xs uppercase tracking-widest px-10 h-14 shadow-xl shadow-primary-500/20 bg-primary-600 hover:bg-primary-700 transition-all active:scale-95 shrink-0"
+              class="h-16 rounded-2xl bg-[#0f172a] px-10 font-black text-[13px] uppercase tracking-widest text-white shadow-2xl transition-all hover:-translate-y-1 active:scale-95"
               @click="goLiveOpen = true"
             >
               <template #leading>
-                <Icon name="i-ph-video-camera-duotone" class="h-6 w-6" />
+                <Icon name="i-ph-video-camera-fill" class="h-6 w-6 text-rose-500" />
               </template>
               {{ $t("pages.livePage.goLive") }}
             </UButton>
           </div>
 
-          <div class="grid gap-6 md:grid-cols-3 relative z-10">
+          <div class="grid gap-6 p-8 sm:p-10 md:grid-cols-3 bg-slate-50/50">
             <div 
               v-for="item in readiness" 
               :key="item.label" 
-              class="surface-card p-6 ring-1 ring-secondary-50 bg-secondary-50/10 hover:bg-white hover:ring-primary-100 hover:shadow-xl transition-all duration-500 group/readiness"
+              class="group/item flex flex-col items-center text-center p-6 rounded-[24px] bg-white border border-slate-100 shadow-sm transition-all hover:shadow-xl hover:-translate-y-1"
             >
-              <div class="h-12 w-12 flex items-center justify-center rounded-2xl bg-white text-[var(--text-primary)] shadow-sm ring-1 ring-secondary-100 mb-6 group-hover/readiness:scale-110 transition-transform duration-500">
-                <Icon :name="item.icon.replace('-fill', '-duotone')" class="h-7 w-7" />
+              <div class="h-16 w-16 flex items-center justify-center rounded-[20px] bg-slate-50 text-[#0f172a] mb-6 group-hover/item:bg-primary-600 group-hover/item:text-white transition-colors">
+                <Icon :name="item.icon" class="h-8 w-8" />
               </div>
-              <p class="text-[14px] font-black uppercase tracking-wider text-[var(--text-primary)] mb-2">{{ item.label }}</p>
-              <p class="text-[12px] font-medium leading-relaxed text-[var(--text-primary)] group-hover/readiness:text-secondary-500 transition-colors">{{ item.description }}</p>
+              <p class="text-[14px] font-black uppercase tracking-wider text-[#0f172a] mb-2">{{ item.label }}</p>
+              <p class="text-[12px] font-bold text-slate-400 leading-relaxed">{{ item.description }}</p>
             </div>
           </div>
         </section>
@@ -75,6 +87,7 @@
     />
   </div>
 </template>
+
 
 <script setup lang="ts">
 import type { GoLivePayload, MockLiveComment, MockLiveStream } from "~/composables/useMockLiveData"

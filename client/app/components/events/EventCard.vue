@@ -1,145 +1,134 @@
 <template>
-  <UCard class="group overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]" :ui="{ body: 'p-0' }">
+  <div class="group relative overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_12px_30px_rgba(15,35,110,0.05)] transition-all hover:-translate-y-1.5 hover:shadow-[0_24px_50px_rgba(15,35,110,0.1)]">
     <NuxtLink :to="`/events/${event.id}`" class="block">
-      <div class="relative aspect-[16/9] overflow-hidden bg-[var(--color-secondary-100)]">
+      <div class="relative aspect-[16/9] overflow-hidden bg-slate-100">
         <div class="absolute inset-0" :style="{ background: event.coverFallback }" />
         <NuxtImg
           v-if="!imageFailed"
           :src="event.cover"
           :alt="event.title"
-          class="relative h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
+          class="relative h-full w-full object-cover transition duration-500 group-hover:scale-110"
           loading="lazy"
           @error="imageFailed = true"
         />
-        <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.05)_20%,rgba(15,23,42,0.72)_100%)]" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80" />
 
-        <div class="absolute left-3 top-3 rounded-[18px] bg-white text-center shadow-[var(--shadow-md)]">
-          <p class="rounded-t-[18px] bg-[var(--color-primary-500)] px-3 py-1 text-[11px] font-black uppercase text-white">
+        <!-- Date Badge -->
+        <div class="absolute left-5 top-5 overflow-hidden rounded-2xl bg-white text-center shadow-2xl">
+          <p class="bg-primary-600 px-4 py-1 text-[11px] font-black uppercase tracking-widest text-white">
             {{ event.month }}
           </p>
-          <p class="px-3 py-2 text-[1.45rem] font-black leading-none text-[var(--text-primary)]">
+          <p class="px-4 py-2 text-[24px] font-black leading-none text-[#0f172a]">
             {{ event.day }}
           </p>
         </div>
 
-        <div class="absolute right-3 top-3 flex flex-wrap justify-end gap-2">
-          <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-[#101828]/82 px-2.5 py-1 text-[11px] font-bold text-white">
+        <!-- Top Badges -->
+        <div class="absolute right-5 top-5 flex flex-wrap justify-end gap-2">
+          <span class="rounded-xl bg-white/20 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-md border border-white/20 shadow-xl">
             {{ event.categoryLabel }}
-          </UBadge>
-          <UBadge
+          </span>
+          <span
             v-if="event.isOwner"
-            color="primary"
-            variant="subtle"
-            class="rounded-full border border-white/15 bg-white/18 px-2.5 py-1 text-[11px] font-bold text-white"
+            class="rounded-xl bg-primary-600 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg"
           >
-            {{ $t("pages.eventsPage.ownerBadge") }}
-          </UBadge>
+            HOST
+          </span>
         </div>
 
-        <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
-          <div class="min-w-0">
-            <p class="truncate text-[13px] font-bold text-white/78">
-              {{ event.dateLabel }}
-            </p>
-            <h3 class="mt-1 line-clamp-2 text-[1.1rem] font-black leading-tight text-white">
-              {{ event.title }}
-            </h3>
-          </div>
-          <UBadge color="neutral" variant="soft" class="shrink-0 rounded-full border border-white/15 bg-white/18 px-2.5 py-1.5 text-[11px] font-bold text-white">
-            {{ rsvpLabel }}
-          </UBadge>
+        <!-- Title Overlay -->
+        <div class="absolute bottom-5 left-5 right-5">
+          <p class="text-[12px] font-black uppercase tracking-[0.15em] text-white/70">
+            {{ event.dateLabel }}
+          </p>
+          <h3 class="mt-1 line-clamp-2 text-[20px] font-black tracking-tight text-white leading-tight group-hover:text-primary-300 transition-colors">
+            {{ event.title }}
+          </h3>
         </div>
       </div>
     </NuxtLink>
 
-    <div class="p-4">
-      <div class="flex items-start gap-3">
+    <div class="p-6 space-y-6">
+      <div class="flex items-center gap-3">
         <div
-          class="avatar-md shrink-0 text-white"
+          class="h-10 w-10 flex items-center justify-center rounded-xl text-white font-black text-sm shadow-lg"
           :style="{ background: event.hostGradient }"
         >
           {{ event.hostInitials }}
         </div>
         <div class="min-w-0">
-          <p class="text-title-primary truncate">
+          <p class="text-[14px] font-black text-[#0f172a] truncate">
             {{ event.host }}
           </p>
-          <p class="mt-1 text-caption-secondary">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">
             {{ event.hostRole }} · {{ event.timeLabel }}
           </p>
         </div>
       </div>
 
-      <p class="mt-3 min-h-[48px] text-[13px] leading-6 text-[var(--text-secondary)]">
+      <p class="text-[13px] font-medium leading-relaxed text-slate-500 line-clamp-2">
         {{ event.summary }}
       </p>
 
-      <div class="mt-4 grid gap-2 sm:grid-cols-2">
-        <UCard class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-3' }">
-          <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100 group-hover:bg-white group-hover:shadow-md transition-all">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
             {{ $t("pages.eventsPage.location") }}
           </p>
-          <p class="mt-1 truncate text-[13px] font-semibold text-[var(--text-primary)]">
+          <p class="mt-1 truncate text-[13px] font-black text-[#0f172a]">
             {{ event.location }}
           </p>
-        </UCard>
-        <UCard class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-3' }">
-          <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">
+        </div>
+        <div class="rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100 group-hover:bg-white group-hover:shadow-md transition-all">
+          <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
             {{ $t("pages.eventsPage.status") }}
           </p>
-          <p class="mt-1 text-[13px] font-semibold text-[var(--text-primary)]">
-            {{ $t("pages.eventsPage.attendanceSummary", { going: formatCompact(event.stats.going), interested: formatCompact(event.stats.interested) }) }}
+          <p class="mt-1 truncate text-[13px] font-black text-[#0f172a]">
+            {{ formatCompact(event.stats.going) }} Going
           </p>
-        </UCard>
+        </div>
       </div>
 
-      <div class="mt-4 flex flex-wrap gap-2">
-        <UBadge
-          v-for="tag in event.tags"
+      <div class="flex flex-wrap gap-2">
+        <span
+          v-for="tag in event.tags.slice(0, 3)"
           :key="tag"
-          color="primary"
-          variant="subtle"
-          class="rounded-full px-3 py-1.5 text-[12px] font-bold"
+          class="text-[11px] font-black uppercase tracking-wider text-slate-400"
         >
           #{{ tag }}
-        </UBadge>
+        </span>
       </div>
 
-      <div class="mt-4 grid gap-2 sm:grid-cols-3">
+      <div class="flex gap-2 pt-2 border-t border-slate-50">
         <UButton
           color="primary"
           :variant="rsvpState === 'going' ? 'solid' : 'soft'"
-          size="sm"
-          :disabled="rsvpState === 'going'"
-          class="justify-center rounded-[16px]"
-          :aria-label="`${$t('pages.eventsPage.rsvpGoing')}: ${event.title}`"
+          size="lg"
+          class="flex-1 h-12 rounded-xl font-black text-[13px] uppercase tracking-wider"
           @click="$emit('rsvp', event.id, 'going')"
         >
-          {{ $t("pages.eventsPage.rsvpGoing") }}
+          {{ rsvpState === 'going' ? 'GOING' : 'GO' }}
         </UButton>
         <UButton
-          color="warning"
-          :variant="rsvpState === 'interested' ? 'solid' : 'soft'"
-          size="sm"
-          :disabled="rsvpState === 'interested'"
-          class="justify-center rounded-[16px]"
-          :aria-label="`${$t('pages.eventsPage.rsvpInterested')}: ${event.title}`"
+          color="gray"
+          variant="ghost"
+          size="lg"
+          class="h-12 w-12 rounded-xl flex items-center justify-center p-0 ring-1 ring-slate-200"
+          icon="i-ph-star-bold"
           @click="$emit('rsvp', event.id, 'interested')"
-        >
-          {{ $t("pages.eventsPage.rsvpInterested") }}
-        </UButton>
+        />
         <UButton
           :to="`/events/${event.id}`"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          class="justify-center rounded-[16px]"
+          color="gray"
+          variant="ghost"
+          size="lg"
+          class="h-12 px-4 rounded-xl font-black text-[11px] uppercase tracking-widest ring-1 ring-slate-200"
         >
-          {{ $t("pages.eventsPage.detail") }}
+          DETAILS
         </UButton>
       </div>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
