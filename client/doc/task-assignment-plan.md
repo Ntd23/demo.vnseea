@@ -433,3 +433,15 @@ Riêng `navigation`, `forms`, `pages` là support modules:
 - remaining practical scopes sau cap nhat nay:
   - `Dev 2`: `search`, `blogs`, `explore`, `feed`, `popular`, `saved`, `reels`, `watch`, `photos`, `lightbox`, `movies`, `memories`
   - deeper domain cleanup chi mo khi thuc su can, khong con la blocker cho runtime migration
+
+## Status update 2
+
+- `Dev 2`:
+  - done `search`, `blogs`, `explore`, `feed`, `popular`, `saved`, `reels`, `watch`, `photos`, `lightbox`, `movies`, `memories`
+  - route runtime da chuyen sang `src/*/presentation/pages/*`
+  - legacy `app/components/*`, `app/composables/useMock*.ts`, generic `src/pages/presentation/pages/*` cua nhom nay da duoc xoa
+  - build pass sau cleanup sau cung
+
+- remaining practical scopes sau cap nhat nay:
+  - runtime migration cho `Dev 1`, `Dev 2`, `Dev 3` da co the xem la xong
+  - phan con lai chu yeu la cleanup sau refactor, SSR preview manual, va domain cleanup sau hon theo uu tien

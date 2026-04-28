@@ -1,9 +1,10 @@
 <template>
-  <PagesReadBlogPage />
+  <BlogsPresentationReadBlogPage />
 </template>
 
 <script setup lang="ts">
-import PagesReadBlogPage from "../../../src/pages/presentation/pages/ReadBlogPage.vue"
+import BlogsPresentationReadBlogPage from "../../../src/blogs/presentation/pages/ReadBlogPage.vue"
+import { useMockReadBlogData } from "../../../src/blogs/application/composables/useMockReadBlogData"
 
 definePageMeta({
   layout: "default",

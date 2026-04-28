@@ -1,9 +1,9 @@
 <template>
-  <PagesHomeFeedPage />
+  <FeedPresentationHomeFeedPage />
 </template>
 
 <script setup lang="ts">
-import PagesHomeFeedPage from "../../src/pages/presentation/pages/HomeFeedPage.vue"
+import FeedPresentationHomeFeedPage from "../../src/feed/presentation/pages/HomeFeedPage.vue"
 const { t } = useI18n()
 const requestURL = useRequestURL()
 

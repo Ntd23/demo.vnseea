@@ -1,10 +1,10 @@
 <template>
-  <PagesExplorePage />
+  <ExplorePresentationExplorePage />
 </template>
 
 <script setup lang="ts">
-import PagesExplorePage from "../../src/pages/presentation/pages/ExplorePage.vue"
-import type { ExploreView } from "~/composables/useMockExploreData"
+import ExplorePresentationExplorePage from "../../src/explore/presentation/pages/ExplorePage.vue"
+import type { ExploreView } from "../../src/explore/application/composables/useMockExploreData"
 
 function readQueryValue(value: unknown) {
   if (Array.isArray(value)) return String(value[0] || "")

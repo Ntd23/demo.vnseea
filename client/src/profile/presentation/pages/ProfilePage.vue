@@ -18,6 +18,7 @@
 </template>
 
 <script setup lang="ts">
+import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
 import ProfileCompletionCard from "../components/ProfileCompletionCard.vue"
 import ProfileFeedList from "../components/ProfileFeedList.vue"
 import ProfileHero from "../components/ProfileHero.vue"

@@ -4,6 +4,7 @@
 
 <script setup lang="ts">
 import CommunityPresentationPageDetailPage from "../../../src/community/presentation/pages/PageDetailPage.vue"
+import { useCommunityPageDetail } from "../../../src/community/application/composables/useCommunityPageDetail"
 
 definePageMeta({ layout: "default" })
 

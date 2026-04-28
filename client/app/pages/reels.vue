@@ -1,9 +1,9 @@
 <template>
-  <PagesReelsPage />
+  <ReelsPresentationReelsPage />
 </template>
 
 <script setup lang="ts">
-import PagesReelsPage from "../../src/pages/presentation/pages/ReelsPage.vue"
+import ReelsPresentationReelsPage from "../../src/reels/presentation/pages/ReelsPage.vue"
 definePageMeta({
   layout: 'default',
 })
