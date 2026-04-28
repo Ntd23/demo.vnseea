@@ -1,9 +1,9 @@
 <template>
-  <PagesMemoriesPage />
+  <MemoriesPresentationMemoriesPage />
 </template>
 
 <script setup lang="ts">
-import PagesMemoriesPage from "../../src/pages/presentation/pages/MemoriesPage.vue"
+import MemoriesPresentationMemoriesPage from "../../src/memories/presentation/pages/MemoriesPage.vue"
 definePageMeta({
   layout: "default",
 })

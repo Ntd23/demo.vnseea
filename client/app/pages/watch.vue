@@ -1,9 +1,9 @@
 <template>
-  <PagesWatchPage />
+  <WatchPresentationWatchPage />
 </template>
 
 <script setup lang="ts">
-import PagesWatchPage from "../../src/pages/presentation/pages/WatchPage.vue"
+import WatchPresentationWatchPage from "../../src/watch/presentation/pages/WatchPage.vue"
 definePageMeta({
   layout: "default",
 })

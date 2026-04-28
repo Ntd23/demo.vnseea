@@ -1,9 +1,9 @@
 <template>
-  <PagesPhotosPage />
+  <PhotosPresentationPhotosPage />
 </template>
 
 <script setup lang="ts">
-import PagesPhotosPage from "../../src/pages/presentation/pages/PhotosPage.vue"
+import PhotosPresentationPhotosPage from "../../src/photos/presentation/pages/PhotosPage.vue"
 definePageMeta({
   layout: "default",
 })

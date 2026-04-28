@@ -1,9 +1,9 @@
 <template>
-  <PagesBlogsPage />
+  <BlogsPresentationBlogsPage />
 </template>
 
 <script setup lang="ts">
-import PagesBlogsPage from "../../src/pages/presentation/pages/BlogsPage.vue"
+import BlogsPresentationBlogsPage from "../../src/blogs/presentation/pages/BlogsPage.vue"
 definePageMeta({
   layout: "default",
 })

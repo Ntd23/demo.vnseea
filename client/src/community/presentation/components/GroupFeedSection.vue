@@ -43,6 +43,8 @@
 </template>
 
 <script setup lang="ts">
+import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
+import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
 import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 const { t } = useI18n()

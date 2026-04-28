@@ -1,9 +1,9 @@
 <template>
-  <PagesPopularPage />
+  <PopularPresentationPopularPage />
 </template>
 
 <script setup lang="ts">
-import PagesPopularPage from "../../src/pages/presentation/pages/PopularPage.vue"
+import PopularPresentationPopularPage from "../../src/popular/presentation/pages/PopularPage.vue"
 definePageMeta({
   layout: "default",
 })

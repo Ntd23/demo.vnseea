@@ -1,9 +1,9 @@
 <template>
-  <PagesHashtagPage />
+  <ExplorePresentationHashtagPage />
 </template>
 
 <script setup lang="ts">
-import PagesHashtagPage from "../../../src/pages/presentation/pages/HashtagPage.vue"
+import ExplorePresentationHashtagPage from "../../../src/explore/presentation/pages/HashtagPage.vue"
 
 definePageMeta({
   layout: "default",

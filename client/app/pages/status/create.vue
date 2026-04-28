@@ -1,9 +1,9 @@
 <template>
-  <PagesStatusCreatePage />
+  <FeedPresentationStatusCreatePage />
 </template>
 
 <script setup lang="ts">
-import PagesStatusCreatePage from "../../../src/pages/presentation/pages/StatusCreatePage.vue"
+import FeedPresentationStatusCreatePage from "../../../src/feed/presentation/pages/StatusCreatePage.vue"
 
 definePageMeta({
   layout: "default",

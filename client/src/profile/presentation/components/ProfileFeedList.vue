@@ -5,6 +5,8 @@
 </template>
 
 <script setup lang="ts">
+import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
+
 defineProps<{
   posts: {
     id: number
