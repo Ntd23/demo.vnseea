@@ -1,252 +1,187 @@
 <template>
-  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
+  <main class="saved-posts-page">
     <section
-      class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]"
-      aria-labelledby="saved-posts-hero-title"
+      class="saved-dashboard"
+      aria-labelledby="saved-posts-title"
     >
-      <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
-        <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
-          <div class="space-y-4">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
-                {{ t("pages.savedPostsPage.heroEyebrow") }}
-              </span>
-              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
-                {{ heroMainStat.value }} {{ heroMainStat.label }}
-              </span>
-            </div>
-
-            <div class="space-y-3">
-              <h1
-                id="saved-posts-hero-title"
-                class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]"
-              >
-                {{ t("pages.savedPostsPage.heroTitle") }}
-              </h1>
-              <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
-                {{ t("pages.savedPostsPage.heroDescription") }}
-              </p>
-            </div>
-          </div>
-
-          <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
-            <NuxtLink
-              to="/home"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
-            >
-              <Icon name="i-ph-house-line-duotone" class="mr-2 h-5 w-5 shrink-0" />
-              {{ t("pages.savedPostsPage.backToFeed") }}
-            </NuxtLink>
-
-            <button
-              v-if="visibleSavedPosts.length > 0"
-              type="button"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
-              @click="removeAll"
-            >
-              <Icon name="i-ph-trash-duotone" class="mr-2 h-5 w-5 shrink-0" />
-              {{ t("pages.savedPostsPage.removeAll") }}
-            </button>
-            <NuxtLink
-              v-else
-              to="/explore"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
-            >
-              <Icon name="i-ph-compass-duotone" class="mr-2 h-5 w-5 shrink-0" />
-              {{ t("pages.savedPostsPage.goToExplore") }}
-            </NuxtLink>
-          </div>
-        </div>
-
-        <div class="grid gap-3">
-          <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <p class="text-[11px] font-extrabold uppercase text-white/52">
-                  {{ heroMainStat.label }}
-                </p>
-                <p class="mt-2 text-[34px] font-black leading-none">
-                  {{ heroMainStat.value }}
-                </p>
-                <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
-                  {{ heroMainStat.description }}
-                </p>
-              </div>
-
-              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0f172a]">
-                <Icon name="i-ph-bookmark-simple-fill" class="h-7 w-7" />
-              </div>
-            </div>
-          </div>
-
-          <div class="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-            <article
-              v-for="item in heroSecondaryStats"
-              :key="item.label"
-              class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
-            >
-              <p class="text-[10px] font-extrabold uppercase text-slate-500">
-                {{ item.label }}
-              </p>
-              <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
-                {{ item.value }}
-              </p>
-              <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
-                {{ item.description }}
-              </p>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Empty State -->
-    <section
-      v-if="visibleSavedPosts.length === 0"
-      class="surface-card p-20 sm:p-28 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden"
-    >
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(var(--color-primary-500-rgb),0.05)_0%,_transparent_70%)]" />
-      
-      <div class="relative z-10 mx-auto max-w-2xl text-center">
-        <div class="flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-secondary-50 text-secondary-300 ring-4 ring-secondary-50/50 mx-auto mb-10">
-          <Icon name="i-ph-bookmark-simple-duotone" class="h-12 w-12" />
-        </div>
-
-        <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-tight">
-          {{ t('pages.savedPostsPage.emptyTitle') }}
-        </h2>
-        <p class="mt-4 text-base font-medium leading-relaxed text-[var(--text-primary)] max-w-md mx-auto">
-          {{ t('pages.savedPostsPage.emptyDescription') }}
-        </p>
-
-        <div class="mt-12 flex flex-wrap justify-center gap-4">
-          <UButton
-            size="xl"
-            class="h-14 rounded-2xl bg-primary-600 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-600/20 transition-all active:scale-95 px-12"
-            @click="restoreMockData"
-          >
-            <template #leading>
-              <Icon name="i-ph-arrow-counter-clockwise-bold" class="h-5 w-5" />
-            </template>
-            {{ t("pages.savedPostsPage.restoreMock") }}
-          </UButton>
-
-          <UButton
-            to="/explore"
-            size="xl"
-            class="h-14 rounded-2xl bg-white text-[var(--text-primary)] ring-1 ring-secondary-200 hover:bg-secondary-50 hover:text-secondary-900 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 px-10"
-          >
-            <template #leading>
-              <Icon name="i-ph-compass-duotone" class="h-5 w-5" />
-            </template>
-            {{ t("pages.savedPostsPage.goToExplore") }}
-          </UButton>
-        </div>
-      </div>
-    </section>
-
-    <!-- List Section -->
-    <section
-      v-else
-      class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-lg)]"
-    >
-      <div class="flex flex-col gap-4 border-b border-[var(--border-light)] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <div class="min-w-0">
-          <div class="flex items-center gap-2">
-            <span class="inline-flex h-5 w-5 items-center justify-center rounded-[7px] bg-[var(--color-primary-50)]">
-              <Icon name="i-ph-bookmarks-fill" class="h-3 w-3 text-[var(--color-primary-600)]" />
-            </span>
-            <p class="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
-              {{ t("pages.savedPostsPage.listEyebrow") }}
-            </p>
-          </div>
-          <h2 class="mt-1 text-[1.55rem] font-extrabold tracking-[-0.03em] text-[var(--text-primary)] sm:text-[1.9rem]">
-            {{ t("pages.savedPostsPage.listTitle", { count: visibleSavedPosts.length }) }}
-          </h2>
-          <p class="mt-1.5 max-w-2xl text-[13.5px] leading-[1.65] text-[var(--text-secondary)]">
-            {{ t("pages.savedPostsPage.listDescription") }}
+      <div class="saved-dashboard__header">
+        <div class="saved-dashboard__copy">
+          <h1 id="saved-posts-title" class="saved-dashboard__title">
+            {{ t("pages.savedPostsPage.dashboardTitle") }}
+          </h1>
+          <p class="saved-dashboard__description">
+            {{ t("pages.savedPostsPage.dashboardDescription") }}
           </p>
         </div>
 
-        <UButton
-          to="/search"
-          color="primary"
-          variant="solid"
-          size="lg"
-          class="h-11 shrink-0 rounded-[var(--radius-full)] px-5 text-[13.5px] font-bold shadow-[var(--shadow-brand)] transition-all duration-200 hover:-translate-y-0.5"
-        >
-          <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />
-          {{ t("pages.savedPostsPage.findMore") }}
-        </UButton>
-      </div>
-
-      <div class="divide-y divide-[var(--border-light)]">
-        <div 
-          v-for="item in visibleSavedPosts" 
-          :key="item.id"
-          class="p-4 transition-all hover:bg-[var(--color-primary-50)]/40 sm:p-5"
-        >
-          <SavedPostCard
-            :entry="item"
-            @remove="removeSavedPost"
-          />
+        <div class="saved-dashboard__actions">
+          <NuxtLink
+            to="/home"
+            class="saved-dashboard__button saved-dashboard__button--secondary"
+          >
+            {{ t("pages.savedPostsPage.backToFeed") }}
+          </NuxtLink>
+          <button
+            v-if="visibleSavedPosts.length > 0"
+            type="button"
+            class="saved-dashboard__button saved-dashboard__button--primary"
+            @click="removeAll"
+          >
+            {{ t("pages.savedPostsPage.removeAll") }}
+          </button>
+          <button
+            v-else
+            type="button"
+            class="saved-dashboard__button saved-dashboard__button--primary"
+            @click="restoreMockData"
+          >
+            {{ t("pages.savedPostsPage.restoreMock") }}
+          </button>
         </div>
       </div>
+
+      <div class="saved-dashboard__stats">
+        <article
+          v-for="item in dashboardStats"
+          :key="item.label"
+          class="saved-stat-card"
+        >
+          <span
+            class="saved-stat-card__icon"
+            :class="item.iconClass"
+          >
+            <Icon :name="item.icon" class="saved-stat-card__icon-svg" />
+          </span>
+          <span class="saved-stat-card__body">
+            <span class="saved-stat-card__value">
+              {{ item.value }}
+            </span>
+            <span class="saved-stat-card__label">
+              {{ item.label }}
+            </span>
+          </span>
+        </article>
+      </div>
     </section>
-  </div>
+
+    <section v-if="visibleSavedPosts.length === 0" class="mt-5 rounded-xl border border-[#ccd3df] bg-white p-10 text-center shadow-sm">
+      <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#E7F3FF] text-[#1877F2]">
+        <Icon name="i-ph-bookmark-simple-fill" class="h-8 w-8" />
+      </div>
+      <h2 class="mt-5 text-[22px] font-extrabold text-[#050505]">
+        {{ t("pages.savedPostsPage.emptyTitle") }}
+      </h2>
+      <p class="mx-auto mt-2 max-w-md text-[14px] leading-6 text-[#65676B]">
+        {{ t("pages.savedPostsPage.emptyDescription") }}
+      </p>
+      <button
+        type="button"
+        class="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-[#1877F2] px-4 text-[13px] font-bold text-white transition hover:bg-[#1565C0] active:scale-95"
+        @click="restoreMockData"
+      >
+        {{ t("pages.savedPostsPage.restoreMock") }}
+      </button>
+    </section>
+
+    <section v-else class="saved-posts-content">
+      <nav class="saved-tabs" aria-label="Saved posts filters">
+        <button
+          v-for="tab in tabs"
+          :key="tab.value"
+          type="button"
+          class="saved-tabs__button"
+          :class="{ 'saved-tabs__button--active': activeTab === tab.value }"
+          :aria-pressed="activeTab === tab.value"
+          @click="activeTab = tab.value"
+        >
+          {{ tab.label }}
+        </button>
+      </nav>
+
+      <div v-if="displayedSavedPosts.length === 0" class="mt-5 rounded-xl border border-[#ccd3df] bg-white p-8 text-center shadow-sm">
+        <p class="text-[15px] font-bold text-[#050505]">
+          {{ t("pages.savedPostsPage.noTabResultsTitle") }}
+        </p>
+        <p class="mt-1 text-[13px] text-[#65676B]">
+          {{ t("pages.savedPostsPage.noTabResultsDescription") }}
+        </p>
+      </div>
+
+      <div v-else class="mt-5 space-y-5">
+        <SavedPostCard
+          v-for="item in displayedSavedPosts"
+          :key="item.id"
+          :entry="item"
+          @remove="removeSavedPost"
+        />
+      </div>
+    </section>
+  </main>
 </template>
 
 <script setup lang="ts">
 import SavedPostCard from "../components/PostCard.vue"
 import { useMockSavedPostsData } from "../../application/composables/useMockSavedPostsData"
 
+type SavedPostsTab = "recent" | "feed" | "priority"
+
 const { savedPosts } = useMockSavedPostsData()
 const { t, locale } = useI18n()
 
 const removedIds = ref<string[]>([])
+const activeTab = ref<SavedPostsTab>("recent")
 
 const visibleSavedPosts = computed(() =>
   savedPosts.value.filter(item => !removedIds.value.includes(item.id)),
 )
 
+const displayedSavedPosts = computed(() => {
+  if (activeTab.value === "feed") {
+    return visibleSavedPosts.value.filter(item => item.sourceTo.startsWith("/home"))
+  }
+
+  if (activeTab.value === "priority") {
+    return visibleSavedPosts.value.filter(item => item.collectionLabel === t("pages.savedPostsPage.collectionPriority"))
+  }
+
+  return visibleSavedPosts.value
+})
+
+const tabs = computed(() => [
+  { value: "recent" as const, label: t("pages.savedPostsPage.tabRecent") },
+  { value: "feed" as const, label: t("pages.savedPostsPage.tabFeed") },
+  { value: "priority" as const, label: t("pages.savedPostsPage.tabPriority") },
+])
+
 const formatCount = (value: number) =>
   value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US")
 
-const summaryStats = computed(() => {
-  const authors = new Set(visibleSavedPosts.value.map(item => item.post.author))
-  const collections = new Set(visibleSavedPosts.value.map(item => item.collectionLabel))
-  const interactionCount = visibleSavedPosts.value.reduce(
-    (sum, item) => sum + item.post.stats.likes + item.post.stats.comments + item.post.stats.shares,
-    0,
-  )
-
-  return [
-    {
-      label: t("pages.savedPostsPage.statSaved"),
-      value: formatCount(visibleSavedPosts.value.length),
-      description: t("pages.savedPostsPage.statSavedDescription"),
-    },
-    {
-      label: t("pages.savedPostsPage.statAuthors"),
-      value: formatCount(authors.size),
-      description: t("pages.savedPostsPage.statAuthorsDescription"),
-    },
-    {
-      label: t("pages.savedPostsPage.statCollections"),
-      value: formatCount(collections.size),
-      description: t("pages.savedPostsPage.statCollectionsDescription"),
-    },
-    {
-      label: t("pages.savedPostsPage.statInteractions"),
-      value: formatCount(interactionCount),
-      description: t("pages.savedPostsPage.statInteractionsDescription"),
-    },
-  ]
-})
-
-const heroMainStat = computed(() => summaryStats.value[0])
-
-const heroSecondaryStats = computed(() => summaryStats.value.slice(1))
+const dashboardStats = computed(() => [
+  {
+    label: t("pages.savedPostsPage.statItemsShort"),
+    value: formatCount(120),
+    icon: "i-ph-bookmark-simple-fill",
+    iconClass: "saved-stat-card__icon--blue",
+  },
+  {
+    label: t("pages.savedPostsPage.statAuthorsShort"),
+    value: formatCount(45),
+    icon: "i-ph-users-three-fill",
+    iconClass: "saved-stat-card__icon--orange",
+  },
+  {
+    label: t("pages.savedPostsPage.statCollectionsShort"),
+    value: formatCount(8),
+    icon: "i-ph-folder-simple-fill",
+    iconClass: "saved-stat-card__icon--gray",
+  },
+  {
+    label: t("pages.savedPostsPage.statInteractionsShort"),
+    value: formatCount(342),
+    icon: "i-ph-chart-line-up-duotone",
+    iconClass: "saved-stat-card__icon--gray",
+  },
+])
 
 function removeSavedPost(id: string) {
   if (removedIds.value.includes(id)) return
@@ -259,6 +194,7 @@ function removeAll() {
 
 function restoreMockData() {
   removedIds.value = []
+  activeTab.value = "recent"
 }
 
 useSeoMeta({
@@ -266,3 +202,257 @@ useSeoMeta({
   description: () => t("pages.savedPostsPage.seoDescription"),
 })
 </script>
+
+<style scoped>
+.saved-posts-page {
+  width: min(100%, 980px);
+  margin: 0 auto;
+  padding: 12px 20px 48px;
+  color: #050505;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.saved-dashboard {
+  border: 1px solid #ccd0d5;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.saved-dashboard__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.saved-dashboard__copy {
+  min-width: 0;
+}
+
+.saved-dashboard__title {
+  margin: 0;
+  color: #050505;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.saved-dashboard__description {
+  margin: 4px 0 0;
+  color: #65676b;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.saved-dashboard__actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.saved-dashboard__button {
+  display: inline-flex;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 120ms ease;
+}
+
+.saved-dashboard__button:active {
+  transform: scale(0.98);
+}
+
+.saved-dashboard__button--primary {
+  border: 1px solid #1877f2;
+  background: #1877f2;
+  color: #ffffff;
+}
+
+.saved-dashboard__button--primary:hover {
+  border-color: #1565c0;
+  background: #1565c0;
+}
+
+.saved-dashboard__button--secondary {
+  border: 1px solid #1877f2;
+  background: #ffffff;
+  color: #1877f2;
+}
+
+.saved-dashboard__button--secondary:hover {
+  background: #f0f6ff;
+}
+
+.saved-dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.saved-stat-card {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #ccd0d5;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 12px;
+}
+
+.saved-stat-card__icon {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.saved-stat-card__icon-svg {
+  width: 22px;
+  height: 22px;
+}
+
+.saved-stat-card__body {
+  min-width: 0;
+}
+
+.saved-stat-card__value {
+  display: block;
+  color: #050505;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.saved-stat-card__label {
+  display: block;
+  margin-top: 5px;
+  color: #65676b;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:deep(.saved-stat-card__icon--blue) {
+  background: #e7f3ff;
+  color: #1877f2;
+}
+
+:deep(.saved-stat-card__icon--orange) {
+  background: #ffe4d2;
+  color: #c05621;
+}
+
+:deep(.saved-stat-card__icon--gray) {
+  background: #e4e6eb;
+  color: #65676b;
+}
+
+.saved-posts-content {
+  margin-top: 18px;
+}
+
+.saved-tabs {
+  display: flex;
+  height: 56px;
+  align-items: flex-end;
+  gap: 28px;
+  border-bottom: 1px solid #c7ccd8;
+  padding: 0 10px;
+}
+
+.saved-tabs__button {
+  position: relative;
+  display: inline-flex;
+  height: 56px;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  padding: 0 18px 1px;
+  color: #3f4654;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  transition: color 160ms ease;
+}
+
+.saved-tabs__button::after {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: transparent;
+  content: "";
+}
+
+.saved-tabs__button:hover {
+  color: #1877f2;
+}
+
+.saved-tabs__button--active {
+  color: #1877f2;
+}
+
+.saved-tabs__button--active::after {
+  background: #1877f2;
+}
+
+@media (max-width: 820px) {
+  .saved-dashboard__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .saved-posts-page {
+    padding-inline: 12px;
+  }
+
+  .saved-dashboard__header {
+    flex-direction: column;
+  }
+
+  .saved-dashboard__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .saved-dashboard__button {
+    flex: 1 1 140px;
+  }
+
+  .saved-dashboard__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .saved-tabs {
+    gap: 14px;
+    overflow-x: auto;
+    padding: 0 2px;
+  }
+
+  .saved-tabs__button {
+    flex: 0 0 auto;
+    padding-inline: 12px;
+    font-size: 15px;
+  }
+}
+</style>
