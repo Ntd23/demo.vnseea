@@ -7,7 +7,15 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url))
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
+  alias: {
+    "#shared-kernel": resolve(__dirname, "src/shared-kernel"),
+  },
   css: ["~/assets/css/main.css"],
+  imports: {
+    dirs: [
+      resolve(__dirname, "src/shared-kernel/application/composables"),
+    ],
+  },
   devServer: {
     host: "127.0.0.1",
     port: 3000,

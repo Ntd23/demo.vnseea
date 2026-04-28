@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MockJob } from "~/composables/useMockJobsData"
+import type { MockJob } from "../../application/composables/useMockJobsData"
 
 defineProps<{
   job: MockJob

@@ -1,6 +1,6 @@
 import { computed } from "vue"
 import { createCommunitySlug } from "../../../../types/community"
-import { useMockSocialData } from "../../../../app/composables/useMockSocialData"
+import { useMockSocialData } from "../../../feed/application/composables/useMockSocialData"
 import type { MockPokeRecord } from "../../domain/types/poke.types"
 
 function createProfilePath(name: string) {

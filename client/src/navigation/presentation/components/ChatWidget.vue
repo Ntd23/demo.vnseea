@@ -271,6 +271,8 @@
 </template>
 
 <script setup lang="ts">
+import { useMockSocialData } from "../../../feed/application/composables/useMockSocialData"
+
 const { t } = useI18n()
 
 const { contacts } = useMockSocialData()

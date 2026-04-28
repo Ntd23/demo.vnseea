@@ -206,7 +206,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JobApplicationPayload, MockJob } from "~/composables/useMockJobsData"
+import type { JobApplicationPayload, MockJob } from "../../application/composables/useMockJobsData"
 import FoundationModalShell from "../../../foundation/presentation/components/ModalShell.vue"
 
 type ApplyStatus = "idle" | "loading" | "success" | "error"

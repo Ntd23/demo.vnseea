@@ -1,5 +1,5 @@
 import { computed } from "vue"
-import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
+import { resolveI18nMessage } from "#shared-kernel/application/utils/resolveI18nMessage"
 
 export type PhotoCategoryKey =
   | "all"

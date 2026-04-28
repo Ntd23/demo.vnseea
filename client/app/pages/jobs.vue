@@ -18,7 +18,7 @@ import {
   normalizeJobType,
   readJobQueryValue,
   useMockJobsData,
-} from "~/composables/useMockJobsData"
+} from "../../src/jobs/application/composables/useMockJobsData"
 
 definePageMeta({
   layout: "default",

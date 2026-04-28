@@ -1,4 +1,4 @@
-import { resolveI18nMessage } from "~/utils/resolveI18nMessage"
+import { resolveI18nMessage } from "#shared-kernel/application/utils/resolveI18nMessage"
 
 export type SettingFieldType = "text" | "email" | "tel" | "date" | "select" | "textarea" | "password" | "file" | "number" | "url"
 export type SettingSectionKind = "form" | "toggles" | "list" | "danger" | "summary"
