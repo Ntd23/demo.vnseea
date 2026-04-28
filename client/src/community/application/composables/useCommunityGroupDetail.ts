@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from "vue"
-import { resolveI18nMessage } from "../../../../app/utils/resolveI18nMessage"
+import { resolveI18nMessage } from "#shared-kernel/application/utils/resolveI18nMessage"
 import { formatCommunityCount } from "../../domain/services/community-metrics.service"
 import {
   findCommunityGroupBySlug,

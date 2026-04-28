@@ -212,7 +212,7 @@
 </template>
 
 <script setup lang="ts">
-import type { JobCategoryKey, JobLocationKey, JobOption, JobPostPayload, JobTypeKey } from "~/composables/useMockJobsData"
+import type { JobCategoryKey, JobLocationKey, JobOption, JobPostPayload, JobTypeKey } from "../../application/composables/useMockJobsData"
 import FoundationModalShell from "../../../foundation/presentation/components/ModalShell.vue"
 
 type PostStatus = "idle" | "loading" | "success" | "error"

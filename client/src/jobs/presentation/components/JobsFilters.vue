@@ -157,7 +157,7 @@
 
 <script setup lang="ts">
 import { watchDebounced } from "@vueuse/core"
-import type { JobSortKey } from "~/composables/useMockJobsData"
+import type { JobSortKey } from "../../application/composables/useMockJobsData"
 
 const props = withDefaults(defineProps<{
   search: string

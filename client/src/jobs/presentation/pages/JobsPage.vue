@@ -103,7 +103,7 @@ import type {
   JobPostPayload,
   JobSortKey,
   MockJob,
-} from "~/composables/useMockJobsData"
+} from "../../application/composables/useMockJobsData"
 import {
   defaultJobCategory,
   defaultJobLocation,
@@ -118,7 +118,7 @@ import {
   normalizeJobType,
   readJobQueryValue,
   useMockJobsData,
-} from "~/composables/useMockJobsData"
+} from "../../application/composables/useMockJobsData"
 import JobsEmptyState from "../components/JobsEmptyState.vue"
 import JobsFilters from "../components/JobsFilters.vue"
 import JobsHero from "../components/JobsHero.vue"
