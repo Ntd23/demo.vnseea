@@ -35,6 +35,24 @@
       </button>
     </header>
 
+    <div class="saved-post-card__context" aria-label="Saved post context">
+      <span class="saved-post-card__context-pill">
+        <Icon name="i-ph-bookmark-simple-fill" class="saved-post-card__context-icon" />
+        {{ entry.savedAtLabel }}
+      </span>
+      <NuxtLink
+        :to="entry.sourceTo"
+        class="saved-post-card__context-pill saved-post-card__context-pill--link"
+      >
+        <Icon name="i-ph-link-simple-bold" class="saved-post-card__context-icon" />
+        {{ entry.sourceLabel }}
+      </NuxtLink>
+      <span class="saved-post-card__context-pill">
+        <Icon name="i-ph-folder-simple-fill" class="saved-post-card__context-icon" />
+        {{ entry.collectionLabel }}
+      </span>
+    </div>
+
     <p class="saved-post-card__text">
       {{ entry.post.text }}
     </p>
@@ -65,21 +83,21 @@
           type="button"
           class="saved-post-card__action"
         >
-          <Icon name="i-lucide-thumbs-up" class="saved-post-card__action-icon" />
+          <Icon name="i-ph-thumbs-up-bold" class="saved-post-card__action-icon" />
           <span>{{ formatCount(entry.post.stats.likes) }}</span>
         </button>
         <button
           type="button"
           class="saved-post-card__action"
         >
-          <Icon name="i-lucide-message-square" class="saved-post-card__action-icon" />
+          <Icon name="i-ph-chat-circle-bold" class="saved-post-card__action-icon" />
           <span>{{ formatCount(entry.post.stats.comments) }}</span>
         </button>
         <button
           type="button"
           class="saved-post-card__action"
         >
-          <Icon name="i-lucide-share-2" class="saved-post-card__action-icon" />
+          <Icon name="i-ph-share-network-bold" class="saved-post-card__action-icon" />
           <span>{{ t("pages.savedPostsPage.shareAction") }}</span>
         </button>
       </div>
@@ -137,14 +155,15 @@ function formatTag(tag: string) {
   border: 1px solid #ccd0d5;
   border-radius: 12px;
   background: #ffffff;
-  padding: 16px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-  transition: box-shadow 160ms ease, border-color 160ms ease;
+  padding: 18px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+  transition: box-shadow 160ms ease, border-color 160ms ease, transform 160ms ease;
 }
 
 .saved-post-card:hover {
   border-color: #bec3c9;
-  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
 }
 
 .saved-post-card__header {
@@ -162,12 +181,13 @@ function formatTag(tag: string) {
 }
 
 .saved-post-card__avatar {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   flex-shrink: 0;
   border-radius: 999px;
   object-fit: cover;
-  border: 1px solid #ccd0d5;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px #ccd0d5;
 }
 
 .saved-post-card__author-copy {
@@ -186,7 +206,7 @@ function formatTag(tag: string) {
   margin: 0;
   overflow: hidden;
   color: #050505;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.35;
   text-overflow: ellipsis;
@@ -195,8 +215,8 @@ function formatTag(tag: string) {
 
 .saved-post-card__follow {
   color: #1877f2;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1.35;
 }
 
@@ -216,8 +236,8 @@ function formatTag(tag: string) {
 
 .saved-post-card__menu {
   display: flex;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
@@ -225,6 +245,7 @@ function formatTag(tag: string) {
   border-radius: 999px;
   background: transparent;
   color: #65676b;
+  cursor: pointer;
   transition: background-color 160ms ease, color 160ms ease;
 }
 
@@ -238,10 +259,47 @@ function formatTag(tag: string) {
   height: 20px;
 }
 
+.saved-post-card__context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.saved-post-card__context-pill {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #d7deea;
+  border-radius: 999px;
+  background: #f7f9fc;
+  padding: 0 10px;
+  color: #46546a;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.saved-post-card__context-pill--link {
+  color: #1877f2;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.saved-post-card__context-pill--link:hover {
+  border-color: #c7daf8;
+  background: #eef5ff;
+}
+
+.saved-post-card__context-icon {
+  width: 14px;
+  height: 14px;
+}
+
 .saved-post-card__text {
   margin: 16px 0 0;
   color: #050505;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.55;
 }
 
@@ -256,9 +314,9 @@ function formatTag(tag: string) {
   border-radius: 999px;
   background: #e7f3ff;
   color: #1877f2;
-  padding: 5px 10px;
+  padding: 6px 10px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
   line-height: 1;
   text-transform: uppercase;
   transition: background-color 160ms ease;
@@ -274,12 +332,13 @@ function formatTag(tag: string) {
   border: 1px solid #ccd0d5;
   border-radius: 8px;
   background: #f0f2f5;
+  aspect-ratio: 16 / 9;
 }
 
 .saved-post-card__image {
   display: block;
   width: 100%;
-  height: 360px;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -290,31 +349,32 @@ function formatTag(tag: string) {
   gap: 12px;
   margin-top: 16px;
   border-top: 1px solid #ccd0d5;
-  padding-top: 10px;
+  padding-top: 12px;
 }
 
 .saved-post-card__actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
 }
 
 .saved-post-card__action,
 .saved-post-card__saved {
   display: inline-flex;
-  height: 34px;
+  min-height: 36px;
   align-items: center;
   justify-content: center;
   gap: 8px;
   border: 0;
   border-radius: 6px;
   background: transparent;
-  padding: 0 8px;
+  padding: 0 10px;
   color: #050505;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
+  cursor: pointer;
   transition: background-color 160ms ease;
 }
 
@@ -333,13 +393,20 @@ function formatTag(tag: string) {
   color: #1877f2;
 }
 
+.saved-post-card__action:focus-visible,
+.saved-post-card__saved:focus-visible,
+.saved-post-card__menu:focus-visible {
+  outline: 3px solid rgba(24, 119, 242, 0.2);
+  outline-offset: 2px;
+}
+
 @media (max-width: 640px) {
   .saved-post-card {
     padding: 14px;
   }
 
-  .saved-post-card__image {
-    height: 240px;
+  .saved-post-card__media {
+    aspect-ratio: 4 / 3;
   }
 
   .saved-post-card__footer {

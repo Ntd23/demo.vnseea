@@ -6,12 +6,19 @@
     >
       <div class="saved-dashboard__header">
         <div class="saved-dashboard__copy">
-          <h1 id="saved-posts-title" class="saved-dashboard__title">
-            {{ t("pages.savedPostsPage.dashboardTitle") }}
-          </h1>
-          <p class="saved-dashboard__description">
-            {{ t("pages.savedPostsPage.dashboardDescription") }}
-          </p>
+          <div class="saved-dashboard__title-row">
+            <span class="saved-dashboard__title-icon">
+              <Icon name="i-ph-bookmarks-fill" class="saved-dashboard__title-icon-svg" />
+            </span>
+            <span class="saved-dashboard__title-copy">
+              <h1 id="saved-posts-title" class="saved-dashboard__title">
+                {{ t("pages.savedPostsPage.dashboardTitle") }}
+              </h1>
+              <p class="saved-dashboard__description">
+                {{ t("pages.savedPostsPage.dashboardDescription") }}
+              </p>
+            </span>
+          </div>
         </div>
 
         <div class="saved-dashboard__actions">
@@ -19,6 +26,7 @@
             to="/home"
             class="saved-dashboard__button saved-dashboard__button--secondary"
           >
+            <Icon name="i-ph-house-simple-bold" class="saved-dashboard__button-icon" />
             {{ t("pages.savedPostsPage.backToFeed") }}
           </NuxtLink>
           <button
@@ -27,6 +35,7 @@
             class="saved-dashboard__button saved-dashboard__button--primary"
             @click="removeAll"
           >
+            <Icon name="i-ph-trash-bold" class="saved-dashboard__button-icon" />
             {{ t("pages.savedPostsPage.removeAll") }}
           </button>
           <button
@@ -35,6 +44,7 @@
             class="saved-dashboard__button saved-dashboard__button--primary"
             @click="restoreMockData"
           >
+            <Icon name="i-ph-arrow-clockwise-bold" class="saved-dashboard__button-icon" />
             {{ t("pages.savedPostsPage.restoreMock") }}
           </button>
         </div>
@@ -64,21 +74,22 @@
       </div>
     </section>
 
-    <section v-if="visibleSavedPosts.length === 0" class="mt-5 rounded-xl border border-[#ccd3df] bg-white p-10 text-center shadow-sm">
-      <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#E7F3FF] text-[#1877F2]">
-        <Icon name="i-ph-bookmark-simple-fill" class="h-8 w-8" />
+    <section v-if="visibleSavedPosts.length === 0" class="saved-empty">
+      <div class="saved-empty__icon">
+        <Icon name="i-ph-bookmark-simple-fill" class="saved-empty__icon-svg" />
       </div>
-      <h2 class="mt-5 text-[22px] font-extrabold text-[#050505]">
+      <h2 class="saved-empty__title">
         {{ t("pages.savedPostsPage.emptyTitle") }}
       </h2>
-      <p class="mx-auto mt-2 max-w-md text-[14px] leading-6 text-[#65676B]">
+      <p class="saved-empty__description">
         {{ t("pages.savedPostsPage.emptyDescription") }}
       </p>
       <button
         type="button"
-        class="mt-6 inline-flex h-10 items-center justify-center rounded-lg bg-[#1877F2] px-4 text-[13px] font-bold text-white transition hover:bg-[#1565C0] active:scale-95"
+        class="saved-empty__button"
         @click="restoreMockData"
       >
+        <Icon name="i-ph-arrow-clockwise-bold" class="saved-empty__button-icon" />
         {{ t("pages.savedPostsPage.restoreMock") }}
       </button>
     </section>
@@ -92,22 +103,29 @@
           class="saved-tabs__button"
           :class="{ 'saved-tabs__button--active': activeTab === tab.value }"
           :aria-pressed="activeTab === tab.value"
+          :aria-current="activeTab === tab.value ? 'page' : undefined"
           @click="activeTab = tab.value"
         >
-          {{ tab.label }}
+          <span>{{ tab.label }}</span>
+          <span class="saved-tabs__badge">
+            {{ tab.count }}
+          </span>
         </button>
       </nav>
 
-      <div v-if="displayedSavedPosts.length === 0" class="mt-5 rounded-xl border border-[#ccd3df] bg-white p-8 text-center shadow-sm">
-        <p class="text-[15px] font-bold text-[#050505]">
+      <div v-if="displayedSavedPosts.length === 0" class="saved-empty saved-empty--compact">
+        <div class="saved-empty__icon saved-empty__icon--small">
+          <Icon name="i-ph-funnel-simple-bold" class="saved-empty__icon-svg" />
+        </div>
+        <p class="saved-empty__title saved-empty__title--small">
           {{ t("pages.savedPostsPage.noTabResultsTitle") }}
         </p>
-        <p class="mt-1 text-[13px] text-[#65676B]">
+        <p class="saved-empty__description">
           {{ t("pages.savedPostsPage.noTabResultsDescription") }}
         </p>
       </div>
 
-      <div v-else class="mt-5 space-y-5">
+      <div v-else class="saved-post-list">
         <SavedPostCard
           v-for="item in displayedSavedPosts"
           :key="item.id"
@@ -135,22 +153,30 @@ const visibleSavedPosts = computed(() =>
   savedPosts.value.filter(item => !removedIds.value.includes(item.id)),
 )
 
+const feedPosts = computed(() =>
+  visibleSavedPosts.value.filter(item => item.sourceTo.startsWith("/home")),
+)
+
+const priorityPosts = computed(() =>
+  visibleSavedPosts.value.filter(item => item.collectionLabel === t("pages.savedPostsPage.collectionPriority")),
+)
+
 const displayedSavedPosts = computed(() => {
   if (activeTab.value === "feed") {
-    return visibleSavedPosts.value.filter(item => item.sourceTo.startsWith("/home"))
+    return feedPosts.value
   }
 
   if (activeTab.value === "priority") {
-    return visibleSavedPosts.value.filter(item => item.collectionLabel === t("pages.savedPostsPage.collectionPriority"))
+    return priorityPosts.value
   }
 
   return visibleSavedPosts.value
 })
 
 const tabs = computed(() => [
-  { value: "recent" as const, label: t("pages.savedPostsPage.tabRecent") },
-  { value: "feed" as const, label: t("pages.savedPostsPage.tabFeed") },
-  { value: "priority" as const, label: t("pages.savedPostsPage.tabPriority") },
+  { value: "recent" as const, label: t("pages.savedPostsPage.tabRecent"), count: visibleSavedPosts.value.length },
+  { value: "feed" as const, label: t("pages.savedPostsPage.tabFeed"), count: feedPosts.value.length },
+  { value: "priority" as const, label: t("pages.savedPostsPage.tabPriority"), count: priorityPosts.value.length },
 ])
 
 const formatCount = (value: number) =>
@@ -205,19 +231,31 @@ useSeoMeta({
 
 <style scoped>
 .saved-posts-page {
-  width: min(100%, 980px);
+  width: min(100%, 1040px);
   margin: 0 auto;
-  padding: 12px 20px 48px;
+  padding: 18px 20px 56px;
   color: #050505;
   font-family: Inter, "Segoe UI", Arial, sans-serif;
 }
 
 .saved-dashboard {
+  position: relative;
+  overflow: hidden;
   border: 1px solid #ccd0d5;
   border-radius: 12px;
-  background: #ffffff;
-  padding: 20px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  padding: 22px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.saved-dashboard::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  background: #1877f2;
+  content: "";
 }
 
 .saved-dashboard__header {
@@ -228,6 +266,35 @@ useSeoMeta({
 }
 
 .saved-dashboard__copy {
+  min-width: 0;
+}
+
+.saved-dashboard__title-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.saved-dashboard__title-icon {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #e7f3ff;
+  color: #1877f2;
+  box-shadow: inset 0 0 0 1px rgba(24, 119, 242, 0.12);
+}
+
+.saved-dashboard__title-icon-svg {
+  width: 25px;
+  height: 25px;
+}
+
+.saved-dashboard__title-copy {
   min-width: 0;
 }
 
@@ -260,6 +327,7 @@ useSeoMeta({
   height: 38px;
   align-items: center;
   justify-content: center;
+  gap: 7px;
   border-radius: 8px;
   padding: 0 16px;
   font-size: 13px;
@@ -268,8 +336,18 @@ useSeoMeta({
   transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 120ms ease;
 }
 
+.saved-dashboard__button:focus-visible {
+  outline: 3px solid rgba(24, 119, 242, 0.22);
+  outline-offset: 2px;
+}
+
 .saved-dashboard__button:active {
   transform: scale(0.98);
+}
+
+.saved-dashboard__button-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .saved-dashboard__button--primary {
@@ -309,6 +387,14 @@ useSeoMeta({
   border-radius: 8px;
   background: #ffffff;
   padding: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.saved-stat-card:hover {
+  border-color: #b7c0cf;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.07);
+  transform: translateY(-1px);
 }
 
 .saved-stat-card__icon {
@@ -365,7 +451,7 @@ useSeoMeta({
 }
 
 .saved-posts-content {
-  margin-top: 18px;
+  margin-top: 22px;
 }
 
 .saved-tabs {
@@ -382,6 +468,7 @@ useSeoMeta({
   display: inline-flex;
   height: 56px;
   align-items: center;
+  gap: 8px;
   border: 0;
   background: transparent;
   padding: 0 18px 1px;
@@ -390,6 +477,11 @@ useSeoMeta({
   font-weight: 800;
   line-height: 1;
   transition: color 160ms ease;
+}
+
+.saved-tabs__button:focus-visible {
+  outline: 3px solid rgba(24, 119, 242, 0.2);
+  outline-offset: -8px;
 }
 
 .saved-tabs__button::after {
@@ -407,12 +499,132 @@ useSeoMeta({
   color: #1877f2;
 }
 
+.saved-tabs__badge {
+  display: inline-flex;
+  min-width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #e4e6eb;
+  padding: 0 7px;
+  color: #3f4654;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
 .saved-tabs__button--active {
   color: #1877f2;
 }
 
+.saved-tabs__button--active .saved-tabs__badge {
+  background: #1877f2;
+  color: #ffffff;
+}
+
 .saved-tabs__button--active::after {
   background: #1877f2;
+}
+
+.saved-empty {
+  margin-top: 22px;
+  border: 1px solid #ccd0d5;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 42px 24px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+}
+
+.saved-empty--compact {
+  padding: 32px 24px;
+}
+
+.saved-empty__icon {
+  display: flex;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #e7f3ff;
+  color: #1877f2;
+}
+
+.saved-empty__icon--small {
+  width: 48px;
+  height: 48px;
+}
+
+.saved-empty__icon-svg {
+  width: 30px;
+  height: 30px;
+}
+
+.saved-empty__title {
+  margin: 18px 0 0;
+  color: #050505;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.saved-empty__title--small {
+  font-size: 17px;
+}
+
+.saved-empty__description {
+  max-width: 520px;
+  margin: 8px auto 0;
+  color: #65676b;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.saved-empty__button {
+  display: inline-flex;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 22px;
+  border: 1px solid #1877f2;
+  border-radius: 8px;
+  background: #1877f2;
+  padding: 0 16px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 120ms ease;
+}
+
+.saved-empty__button:hover {
+  border-color: #1565c0;
+  background: #1565c0;
+}
+
+.saved-empty__button:focus-visible {
+  outline: 3px solid rgba(24, 119, 242, 0.22);
+  outline-offset: 2px;
+}
+
+.saved-empty__button:active {
+  transform: scale(0.98);
+}
+
+.saved-empty__button-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.saved-post-list {
+  display: grid;
+  gap: 20px;
+  margin-top: 22px;
 }
 
 @media (max-width: 820px) {
@@ -453,6 +665,10 @@ useSeoMeta({
     flex: 0 0 auto;
     padding-inline: 12px;
     font-size: 15px;
+  }
+
+  .saved-empty {
+    padding: 32px 18px;
   }
 }
 </style>
