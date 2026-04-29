@@ -31,7 +31,7 @@
 
         <div class="relative z-10 grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
           <UButton
-            to="/create_funding"
+            :to="appRoutes.createFunding"
             variant="solid"
             class="inline-flex h-12 items-center justify-center rounded-[16px] bg-white px-5 text-[14px] font-black text-primary-900 shadow-[0_14px_26px_rgba(255,255,255,0.1)] transition hover:bg-slate-100 hover:text-primary-800 active:scale-95"
           >
@@ -111,6 +111,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 const { t } = useI18n()
 
 defineProps<{

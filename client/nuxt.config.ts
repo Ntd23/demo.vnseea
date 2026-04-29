@@ -1,14 +1,41 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { fileURLToPath } from "node:url"
 import { resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url))
+
+process.loadEnvFile?.(resolve(__dirname, ".env"))
+
+function requireEnv(name: string) {
+  const value = process.env[name]?.trim()
+
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`)
+  }
+
+  return value
+}
+
+const publicApiBase = requireEnv("NUXT_PUBLIC_API_BASE")
+const legacyApiBase = requireEnv("NUXT_LEGACY_API_BASE")
+const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL")
+const allowedHosts = requireEnv("NUXT_ALLOWED_HOSTS")
+  .split(",")
+  .map(host => host.trim())
+  .filter(Boolean)
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
   alias: {
     "#shared-kernel": resolve(__dirname, "src/shared-kernel"),
+  },
+  runtimeConfig: {
+    legacyApiBase,
+    public: {
+      apiBase: publicApiBase,
+      siteUrl: publicSiteUrl,
+    },
   },
   css: ["~/assets/css/main.css"],
   imports: {
@@ -17,8 +44,8 @@ export default defineNuxtConfig({
     ],
   },
   devServer: {
-    host: "127.0.0.1",
-    port: 3000,
+    host: process.env.NUXT_DEV_HOST,
+    port: Number(process.env.NUXT_DEV_PORT),
   },
   app: {
     head: {
@@ -32,32 +59,22 @@ export default defineNuxtConfig({
       ],
     },
   },
+  site: {
+    name: "VNSEEA",
+    url: publicSiteUrl,
+    defaultLocale: "vi",
+  },
   ogImage: {
     zeroRuntime: true,
   },
-  hooks: {
-    "pages:extend"(pages) {
-      // Xóa route /[username] tự động (tránh conflict)
-      const idx = pages.findIndex(p => p.name === "username")
-      if (idx !== -1) pages.splice(idx, 1)
-
-      // Thêm route /@username với đường dẫn tuyệt đối
-      pages.push({
-        name: "profile",
-        path: "/@:username",
-        file: resolve(__dirname, "app/pages/[username].vue"),
-      })
-    },
-  },
   vite: {
     server: {
-      allowedHosts: ["demo.vnseea.test"],
+      allowedHosts,
     },
   },
   modules: [
     "@nuxt/ui",
     "@nuxtjs/seo",
-    "@nuxt/fonts",
     "@nuxt/icon",
     "@nuxt/image",
     "@pinia/nuxt",
@@ -73,20 +90,4 @@ export default defineNuxtConfig({
     ],
     strategy: "no_prefix",
   },
-  fonts: {
-    families: [
-      {
-        name: "Inter",
-        provider: "google",
-        weights: [400, 500, 600, 700, 800],
-        subsets: ["latin", "vietnamese"],
-      },
-      {
-        name: "Be Vietnam Pro",
-        provider: "google",
-        weights: [400, 500, 600, 700, 800],
-        subsets: ["latin", "vietnamese"],
-      },
-    ],
-  },
-});
+})

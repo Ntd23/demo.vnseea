@@ -81,13 +81,15 @@
 
       <p class="pt-1 text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
         {{ $t('pages.forgotPasswordPage.readyQuestion') }}
-        <NuxtLink to="/welcome" class="font-extrabold text-[#0000ff]">{{ $t('pages.forgotPasswordPage.login') }}</NuxtLink>
+        <NuxtLink :to="appRoutes.welcome" class="font-extrabold text-[#0000ff]">{{ $t('pages.forgotPasswordPage.login') }}</NuxtLink>
       </p>
     </UForm>
   </div>
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+
 type ForgotPasswordFormState = {
   emailOrPhone: string
   captchaConfirmed: boolean

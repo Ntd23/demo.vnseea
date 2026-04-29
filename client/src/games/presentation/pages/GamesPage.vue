@@ -97,6 +97,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { watchDebounced } from "@vueuse/core"
 import type { LocationQueryRaw } from "vue-router"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
@@ -518,6 +519,6 @@ function syncRoute() {
     delete nextQuery.game
   }
 
-  void router.replace({ path: "/games", query: nextQuery })
+  void router.replace({ path: appRoutes.games, query: nextQuery })
 }
 </script>

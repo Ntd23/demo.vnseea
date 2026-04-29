@@ -155,7 +155,7 @@
 
     <div class="flex justify-start">
       <UButton
-        to="/funding"
+        :to="appRoutes.funding"
         color="neutral"
         variant="outline"
         class="rounded-full"
@@ -178,6 +178,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import FormsFormSection from "../../../forms/presentation/components/FormSection.vue"
 import FormsSubmitBar from "../../../shared-kernel/presentation/components/forms/SubmitBar.vue"
 import FormsUploader from "../../../forms/presentation/components/Uploader.vue"

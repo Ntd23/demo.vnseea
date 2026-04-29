@@ -67,7 +67,7 @@
           </div>
 
           <UButton
-            :to="`/order/${nextOrder.id}`"
+            :to="appRoutes.orderDetail(nextOrder.id)"
             size="xl"
             block
             variant="solid"
@@ -121,7 +121,7 @@
         </div>
 
         <UButton
-          to="/products"
+          :to="appRoutes.products"
           block
           size="xl"
           icon="i-ph-bag-duotone"
@@ -135,6 +135,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { buyerOrderStatusMeta } from "../../domain/types/orders.types"
 import type { BuyerOrder, OrdersOverviewCard } from "../../domain/types/orders.types"
 

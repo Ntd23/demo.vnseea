@@ -18,7 +18,7 @@
       <NuxtLink
         v-for="page in pages"
         :key="page.slug"
-        :to="page.slug === defaultSlug ? '/setting' : `/setting/${page.slug}`"
+        :to="page.slug === defaultSlug ? appRoutes.settings : appRoutes.settingsPage(page.slug)"
         class="group flex w-full min-w-0 items-center gap-4 rounded-2xl px-4 py-4 transition-all duration-300 border border-transparent"
         :class="page.slug === activeSlug 
           ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm shadow-primary-500/5' 
@@ -40,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { SettingPage } from "../../application/composables/useMockSettingsData"
 
 const { t } = useI18n()

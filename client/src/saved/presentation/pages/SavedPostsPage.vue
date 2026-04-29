@@ -31,7 +31,7 @@
 
           <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
             <NuxtLink
-              to="/home"
+              :to="appRoutes.feed"
               class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
               <Icon name="i-ph-house-line-duotone" class="mr-2 h-5 w-5 shrink-0" />
@@ -49,7 +49,7 @@
             </button>
             <NuxtLink
               v-else
-              to="/explore"
+              :to="appRoutes.explore"
               class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
             >
               <Icon name="i-ph-compass-duotone" class="mr-2 h-5 w-5 shrink-0" />
@@ -132,7 +132,7 @@
           </UButton>
 
           <UButton
-            to="/explore"
+            :to="appRoutes.explore"
             size="xl"
             class="h-14 rounded-2xl bg-white text-[var(--text-primary)] ring-1 ring-secondary-200 hover:bg-secondary-50 hover:text-secondary-900 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95 px-10"
           >
@@ -169,7 +169,7 @@
         </div>
 
         <UButton
-          to="/search"
+          :to="appRoutes.search"
           color="primary"
           variant="solid"
           size="lg"
@@ -197,6 +197,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import SavedPostCard from "../components/PostCard.vue"
 import { useMockSavedPostsData } from "../../application/composables/useMockSavedPostsData"
 

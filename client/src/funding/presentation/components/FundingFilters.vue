@@ -37,7 +37,7 @@
         </UButton>
 
         <UButton
-          to="/create_funding"
+          :to="appRoutes.createFunding"
           color="primary"
           size="lg"
           class="justify-center rounded-[20px] font-extrabold"
@@ -134,6 +134,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { watchDebounced } from "@vueuse/core"
 
 const props = withDefaults(defineProps<{

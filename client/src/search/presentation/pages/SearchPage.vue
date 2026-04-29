@@ -166,7 +166,7 @@
           <NuxtLink
             v-for="link in primaryFooterLinks"
             :key="link.label"
-            :to="link.to || '/home'"
+            :to="link.to || appRoutes.feed"
             class="transition hover:text-secondary-900"
           >
             {{ $t(link.label) }}
@@ -190,6 +190,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import SearchFiltersPanel from "../components/FiltersPanel.vue"
 import SearchResultCard from "../components/ResultCard.vue"
@@ -222,12 +223,12 @@ function normalizeKeyword(value: string) {
 }
 
 const footerLinks = [
-  { label: "community.search.footer.home", to: "/home" },
+  { label: "community.search.footer.home", to: appRoutes.feed },
   { label: "community.search.footer.about", to: undefined },
   { label: "community.search.footer.contact", to: undefined },
   { label: "community.search.footer.privacy", to: undefined },
   { label: "community.search.footer.terms", to: undefined },
-  { label: "community.search.footer.blog", to: "/blogs" },
+  { label: "community.search.footer.blog", to: appRoutes.blogs },
   { label: "community.search.footer.developers", to: undefined },
 ]
 
@@ -304,7 +305,7 @@ function commitSearch() {
   if (nextType) nextQuery.type = nextType; else delete nextQuery.type
   if (nextSort) nextQuery.sort = nextSort; else delete nextQuery.sort
 
-  void router.replace({ path: "/search", query: nextQuery })
+  void router.replace({ path: appRoutes.search, query: nextQuery })
 }
 
 watch(selectedType, commitSearch)

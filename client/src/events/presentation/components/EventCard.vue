@@ -1,6 +1,6 @@
 <template>
   <UCard class="group overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]" :ui="{ body: 'p-0' }">
-    <NuxtLink :to="`/events/${event.id}`" class="block">
+    <NuxtLink :to="appRoutes.eventDetail(event.id)" class="block">
       <div class="relative aspect-[16/9] overflow-hidden bg-[var(--color-secondary-100)]">
         <div class="absolute inset-0" :style="{ background: event.coverFallback }" />
         <NuxtImg
@@ -129,7 +129,7 @@
           {{ $t("pages.eventsPage.rsvpInterested") }}
         </UButton>
         <UButton
-          :to="`/events/${event.id}`"
+          :to="appRoutes.eventDetail(event.id)"
           color="neutral"
           variant="outline"
           size="sm"
@@ -143,6 +143,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { EventRsvpState, MockEvent } from "../../domain/types/events.types"
 
 const props = defineProps<{

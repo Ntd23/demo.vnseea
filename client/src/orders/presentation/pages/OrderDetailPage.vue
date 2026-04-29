@@ -193,7 +193,7 @@ import CheckoutLayout from "../../../checkout/presentation/components/CheckoutLa
 import {
   useOrderPresentation,
 } from "../../application/composables/useOrderPresentation"
-import { useBuyerOrders } from "../../application/composables/useBuyerOrders"
+import { useBuyerOrderDetailVM } from "../../application/view-models/useBuyerOrderDetailVM"
 import { formatOrderCurrency } from "../../domain/types/orders.types"
 import OrdersDetailSidebar from "../components/DetailSidebar.vue"
 import OrdersDetailTimelineCard from "../components/DetailTimelineCard.vue"
@@ -203,9 +203,7 @@ const props = defineProps<{
   orderId: string
 }>()
 
-const { findOrderById } = useBuyerOrders()
-
-const order = computed(() => findOrderById(props.orderId))
+const { order } = useBuyerOrderDetailVM(() => props.orderId)
 const { statusMeta, totalItems } = useOrderPresentation(order)
 
 const { t } = useI18n()

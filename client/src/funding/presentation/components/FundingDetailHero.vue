@@ -76,7 +76,7 @@
                 </UButton>
 
                 <UButton
-                  to="/funding"
+                  :to="appRoutes.funding"
                   color="neutral"
                   variant="outline"
                   size="xl"
@@ -132,6 +132,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { MockFundingCampaign } from "../../domain/types/funding.types"
 import { formatFundingCurrency } from "../../infrastructure/mocks/fundingCatalog"
 import FundingProgress from "./FundingProgress.vue"

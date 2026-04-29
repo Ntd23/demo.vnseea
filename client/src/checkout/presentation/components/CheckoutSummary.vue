@@ -24,7 +24,7 @@
         </div>
 
         <UButton
-          to="/products"
+          :to="appRoutes.products"
           color="neutral"
           variant="outline"
           leading-icon="i-ph-arrow-left"
@@ -228,7 +228,7 @@
           {{ $t("checkout.summary.emptyCartHint") }}
         </p>
         <UButton
-          to="/products"
+          :to="appRoutes.products"
           color="primary"
           variant="solid"
           class="mt-5 rounded-full px-5 text-[14px] font-extrabold shadow-[0_10px_22px_rgba(0,0,255,0.2)]"
@@ -241,6 +241,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import type { CheckoutLineItem } from "../../domain/types/checkout.types"
 
 const props = withDefaults(defineProps<{

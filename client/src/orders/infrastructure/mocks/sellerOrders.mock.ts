@@ -1,7 +1,6 @@
 import type { SellerOrder } from "../../domain/types/orders.types"
 
-export const useSellerOrders = () => {
-  const orders = ref<SellerOrder[]>([
+export const sellerOrdersMock: SellerOrder[] = [
     {
       id: "sale-240417-301",
       orderNumber: "SALE-240417-301",
@@ -373,13 +372,4 @@ export const useSellerOrders = () => {
         },
       ],
     },
-  ])
-
-  const findOrderById = (orderId: string) =>
-    orders.value.find(order => order.id === orderId) ?? null
-
-  return {
-    orders,
-    findOrderById,
-  }
-}
+]

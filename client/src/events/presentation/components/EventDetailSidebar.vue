@@ -165,7 +165,7 @@
         <NuxtLink
           v-for="item in relatedEvents"
           :key="item.id"
-          :to="`/events/${item.id}`"
+          :to="appRoutes.eventDetail(item.id)"
           class="block rounded-[18px] border border-[var(--border-default)] p-2 transition hover:border-[var(--border-strong)] hover:bg-[var(--color-primary-50)]"
         >
           <div class="flex gap-3">
@@ -196,6 +196,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { EventAttendee, MockEvent } from "../../domain/types/events.types"
 
 type DetailActionStatus = "idle" | "loading" | "success" | "error"

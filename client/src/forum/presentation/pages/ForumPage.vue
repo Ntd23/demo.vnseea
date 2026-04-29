@@ -127,6 +127,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { watchDebounced } from "@vueuse/core"
 import type { ForumReply, ForumSectionKey, ForumThread, ForumThreadPayload } from "../../domain/types/forum.types"
 import {
@@ -424,7 +425,7 @@ function syncRoute() {
     delete nextQuery.thread
   }
 
-  void router.replace({ path: "/forum", query: nextQuery })
+  void router.replace({ path: appRoutes.forum, query: nextQuery })
 }
 
 function resetFilters() {

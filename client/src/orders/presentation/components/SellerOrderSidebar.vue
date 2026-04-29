@@ -118,7 +118,7 @@
         </UButton>
 
         <UButton
-          to="/my-products"
+          :to="appRoutes.myProducts"
           size="xl"
           icon="i-ph-arrow-left-duotone"
           class="rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-black text-xs uppercase tracking-widest h-12 shadow-xl shadow-primary-500/30 transition-all active:scale-95"
@@ -131,6 +131,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useOrderPresentation } from "../../application/composables/useOrderPresentation"
 import {
   formatOrderCurrency,

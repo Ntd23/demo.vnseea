@@ -34,7 +34,7 @@
               </p>
             </div>
             <NuxtLink
-              to="/create_funding"
+            :to="appRoutes.createFunding"
               class="inline-flex items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary)] px-5 py-3 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
             >
               <Icon name="i-ph-plus-circle-fill" class="h-5 w-5" />
@@ -86,6 +86,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { LocationQueryRaw } from "vue-router"
 import type { DonationPayload, FundingCategoryKey, FundingStatusKey, MockFundingCampaign } from "../../domain/types/funding.types"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
