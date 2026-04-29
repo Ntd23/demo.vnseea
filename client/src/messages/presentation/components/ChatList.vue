@@ -1,9 +1,9 @@
 <template>
-  <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-[32px] border border-white/70 bg-white/86 p-4 shadow-[0_28px_70px_rgba(15,23,42,0.10)] backdrop-blur-sm">
-    <div class="space-y-4 border-b border-secondary-100/80 pb-4">
+  <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+    <div class="space-y-4 border-b border-[#f1f5f9] pb-4">
       <div class="flex items-center justify-between gap-3">
         <div>
-          <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[var(--text-primary)]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ $t('pages.messagesPage.seoTitle') }}
           </p>
           <p class="mt-1 text-sm font-semibold text-[var(--text-secondary)]">
@@ -14,7 +14,7 @@
         <UButton
           color="primary"
           variant="soft"
-          class="rounded-full"
+          class="rounded-xl"
           icon="i-ph-plus-circle-duotone"
         />
       </div>
@@ -25,7 +25,7 @@
           :key="tab.id"
           :color="activeTab === tab.id ? 'primary' : 'neutral'"
           :variant="activeTab === tab.id ? 'solid' : 'soft'"
-          class="shrink-0 rounded-full"
+          class="shrink-0 rounded-xl font-semibold"
           @click="emit('update:activeTab', tab.id)"
         >
           <Icon :name="tab.icon" class="mr-1.5 h-4 w-4" />

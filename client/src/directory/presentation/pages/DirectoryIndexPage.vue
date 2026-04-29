@@ -19,7 +19,7 @@
 
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
       <main class="space-y-4">
-        <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]" :ui="{ body: 'p-5' }">
+        <UCard class="rounded-[18px] border border-[var(--border-default)] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]" :ui="{ body: 'p-5' }">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p class="text-label-secondary text-[var(--text-tertiary)]">{{ t("pages.directoryPage.resultsEyebrow") }}</p>
@@ -44,7 +44,7 @@
                 color="neutral"
                 variant="outline"
                 size="sm"
-                class="rounded-full"
+                class="rounded-xl font-semibold"
                 @click="resetFilters"
               >
                 <Icon name="i-ph-x-circle-bold" class="mr-1.5 h-4 w-4" />
@@ -69,7 +69,7 @@
           icon="i-ph-squares-four-fill"
           :title="t('pages.directoryPage.emptyTitle')"
           :description="t('pages.directoryPage.emptyDescription')"
-          class="rounded-[30px]"
+          class="rounded-[18px]"
         >
           <template #actions>
             <UButton

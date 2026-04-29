@@ -1,271 +1,350 @@
 <template>
   <Teleport to="body">
-    <Transition name="mobile-menu">
+    <!-- Backdrop -->
+    <Transition name="mm-fade">
       <div
-        v-if="drawerOpen"
-        class="fixed inset-0 z-[1000] xl:hidden"
+        v-show="isOpen"
+        class="mm-overlay xl:hidden"
+        aria-hidden="true"
+        @click="close"
+      />
+    </Transition>
+
+    <!-- Drawer panel -->
+    <Transition name="mm-slide">
+      <aside
+        v-show="isOpen"
+        id="mobile-navigation-menu"
+        class="mm xl:hidden"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="mobile-navigation-menu-title"
+        aria-labelledby="mobile-menu-title"
       >
-        <button
-          type="button"
-          class="absolute inset-0 bg-slate-950/20 backdrop-blur-md"
-          aria-label="Close mobile navigation"
-          @click="handleOpenChange(false)"
-        />
-
-        <aside id="mobile-navigation-menu" class="absolute inset-y-0 right-0 z-10 flex h-full w-[85vw] max-w-[400px] flex-col overflow-hidden bg-white text-[var(--text-primary)] shadow-[-12px_0_40px_rgba(0,0,0,0.5)]">
-        <!-- Decor Backgrounds -->
-        <div class="pointer-events-none absolute left-0 top-0 z-0 h-px w-full bg-[var(--progress-gradient)]" />
-        <div class="pointer-events-none absolute -right-24 -top-24 z-0 h-64 w-64 rounded-full bg-primary-100/80 blur-[100px]" />
-
         <!-- Header -->
-        <div class="sticky top-0 z-20 flex items-center justify-between border-b border-[var(--border-light)] bg-white/90 px-6 py-5 backdrop-blur-xl">
-          <div class="flex items-center gap-3">
-            <div class="rounded-xl bg-primary-600 p-2 shadow-lg shadow-primary-500/20">
-              <Icon name="i-ph-list-bold" class="h-5 w-5 text-white" />
+        <div class="mm__header">
+          <div class="mm__admin-card">
+            <div>
+              <p id="mobile-menu-title" class="mm__admin-role">{{ $t("navigation.mobileMenu.adminTitle") }}</p>
             </div>
-            <span id="mobile-navigation-menu-title" class="text-sm font-black uppercase tracking-[0.2em] text-[var(--text-primary)]">{{ $t("navigation.mobileMenu.title") }}</span>
+            <div class="mm__admin-icon">🤝</div>
           </div>
-          <button
-            type="button"
-            class="pressable focus-ring pressable flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--color-secondary-50)] text-[var(--text-secondary)] transition-all shadow-none ring-1 ring-[var(--border-light)] hover:bg-[var(--color-primary-50)] hover:text-primary-600"
-            :aria-label="$t('common.close')"
-            @click="handleOpenChange(false)"
-          >
-            <Icon name="i-ph-x-bold" class="h-5 w-5" />
+          <div class="mm__stats">
+            <div class="mm__stat">
+              <Icon name="i-ph-wallet-fill" class="mm__stat-icon" />
+              <span>{{ $t("navigation.mobileMenu.walletLabel") || 'Ví' }}: VND9.999.999.999</span>
+            </div>
+            <div class="mm__stat">
+              <Icon name="i-ph-circle-half-fill" class="mm__stat-icon" />
+              <span>{{ $t("navigation.mobileMenu.pointsLabel") || 'Điểm' }}: 0</span>
+            </div>
+          </div>
+          <button class="mm__close" type="button" :aria-label="$t('common.close')" @click="close">
+            <Icon name="i-ph-x-bold" class="h-4.5 w-4.5" />
           </button>
         </div>
 
-        <!-- Scrollable Content -->
-        <div class="relative z-10 flex-1 overflow-y-auto no-scrollbar">
-          <!-- User Profile & Stats Panel -->
-          <div class="p-6">
-            <div class="relative overflow-hidden rounded-[24px] border border-[var(--border-light)] bg-[linear-gradient(180deg,#ffffff_0%,#f8faff_100%)] p-6 shadow-[var(--shadow-md)]">
-              <div class="relative z-10 flex flex-col gap-5">
-                <div class="flex items-center gap-4">
-                  <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 p-0.5 shadow-xl shadow-primary-500/30">
-                    <div class="flex h-full w-full items-center justify-center rounded-[14px] border border-[var(--border-light)] bg-white">
-                      <span class="text-xs font-black text-primary-600">VN</span>
-                    </div>
-                  </div>
-                  <div class="space-y-0.5">
-                    <p class="text-base font-black tracking-tight text-[var(--text-primary)]">{{ $t("navigation.mobileMenu.adminTitle") }}</p>
-                    <div class="flex items-center gap-2">
-                      <div class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
-                      <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">Online Now</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                  <NuxtLink
-                    to="/wallet"
-                    class="group flex flex-col gap-2 rounded-2xl border border-[var(--border-light)] bg-white p-4 transition-all hover:bg-[var(--color-primary-50)]"
-                    @click="handleOpenChange(false)"
-                  >
-                    <Icon name="i-ph-wallet-duotone" class="h-5 w-5 text-primary-600 transition-transform group-hover:scale-110" />
-                    <p class="text-[9px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">Balance</p>
-                    <p class="truncate text-xs font-black text-[var(--text-primary)]">VND 9.9B</p>
-                  </NuxtLink>
-                  <div class="group flex flex-col gap-2 rounded-2xl border border-[var(--border-light)] bg-white p-4 transition-all hover:bg-[var(--color-primary-50)]">
-                    <Icon name="i-ph-fire-duotone" class="h-5 w-5 text-amber-400 transition-transform group-hover:scale-110" />
-                    <p class="text-[9px] font-black uppercase tracking-widest text-[var(--text-tertiary)]">Points</p>
-                    <p class="text-xs font-black text-[var(--text-primary)]">50 XP</p>
-                  </div>
-                </div>
-
-                <div class="pt-2">
-                  <NavigationLocaleSwitcher />
-                </div>
-              </div>
-            </div>
+        <!-- Scrollable content -->
+        <div class="mm__content">
+          <div class="mm__nav-group">
+            <NuxtLink
+              v-for="item in mainNav"
+              :key="`${item.label}-${item.to}`"
+              :to="item.to"
+              class="mm__item"
+              :class="isNavItemActive(item.to) ? 'mm__item--active' : ''"
+              @click="close"
+            >
+              <Icon :name="item.icon" class="mm__item-icon" :class="isNavItemActive(item.to) ? 'mm__item-icon--active' : ''" />
+              <span class="mm__item-label" :class="isNavItemActive(item.to) ? 'mm__item-label--active' : ''">{{ $t(item.label) }}</span>
+            </NuxtLink>
           </div>
 
-          <!-- Navigation Groups -->
-          <div class="space-y-8 px-4 pb-12">
-            <!-- Main Nav -->
-            <div>
-              <p class="mb-4 pl-4 text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-tertiary)]">Navigation</p>
-              <div class="space-y-1">
-                <NuxtLink
-                  v-for="item in mainNav"
-                  :key="`${item.label}-${item.to}`"
-                  :to="item.to"
-                  class="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:bg-[var(--color-primary-50)]"
-                  :class="isNavItemActive(item.to) ? 'bg-[var(--color-primary-50)] ring-1 ring-[var(--color-primary-100)]' : ''"
-                  @click="handleOpenChange(false)"
-                >
-                  <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-light)] bg-white transition-all group-hover:border-primary-200 group-hover:bg-white"
-                    :class="isNavItemActive(item.to) ? 'border-primary-200 bg-white' : ''"
-                  >
-                    <Icon
-                      :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')"
-                      class="h-5 w-5 text-[var(--icon-primary)] group-hover:text-primary-600"
-                      :class="isNavItemActive(item.to) ? 'text-primary-600' : ''"
-                    />
-                  </div>
-                  <span
-                    class="text-xs font-black uppercase tracking-widest text-[var(--text-secondary)] group-hover:text-[var(--text-primary)]"
-                    :class="isNavItemActive(item.to) ? 'text-primary-600' : ''"
-                  >{{ $t(item.label) }}</span>
-                </NuxtLink>
-              </div>
-            </div>
+          <div class="mm__divider" />
 
-            <!-- Settings -->
-            <div class="border-t border-[var(--border-light)] pt-4">
-              <p class="mb-4 pl-4 text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-tertiary)]">Settings & Care</p>
-              <div class="space-y-1">
-                <NuxtLink
-                  v-for="item in settingsNav"
-                  :key="item.label"
-                  :to="item.to"
-                  class="group flex items-center gap-4 rounded-2xl px-4 py-3.5 transition-all duration-300 hover:bg-[var(--color-primary-50)]"
-                  :class="item.label.includes('logout') ? 'hover:bg-rose-50' : (isNavItemActive(item.to) ? 'bg-[var(--color-primary-50)] ring-1 ring-[var(--color-primary-100)]' : '')"
-                  @click="handleOpenChange(false)"
-                >
-                  <div
-                    class="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-light)] bg-white text-[var(--icon-primary)] transition-all"
-                    :class="item.label.includes('logout') ? 'group-hover:border-rose-200 group-hover:bg-rose-50 group-hover:text-rose-500' : (isNavItemActive(item.to) ? 'border-primary-200 bg-white text-primary-600' : 'group-hover:border-primary-200 group-hover:bg-white group-hover:text-primary-600')"
-                  >
-                    <Icon
-                      :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')"
-                      class="h-5 w-5"
-                      :class="item.label.includes('logout') ? 'text-current' : (!item.label.includes('logout') && isNavItemActive(item.to) ? 'text-primary-600' : 'text-current')"
-                    />
-                  </div>
-                  <span
-                    class="text-xs font-black uppercase tracking-widest text-[var(--text-secondary)]"
-                    :class="item.label.includes('logout') ? 'group-hover:text-rose-500' : (isNavItemActive(item.to) ? 'text-primary-600' : 'group-hover:text-[var(--text-primary)]')"
-                  >{{ $t(item.label) }}</span>
-                </NuxtLink>
-              </div>
-            </div>
-
-            <!-- Bottom Actions -->
-            <div class="grid grid-cols-3 gap-2 border-t border-[var(--border-light)] pt-4">
-              <UButton
-                v-for="item in bottomActions"
-                :key="item.label"
-                variant="soft"
-                color="neutral"
-                class="group flex h-auto flex-col items-center gap-3 rounded-2xl border border-[var(--border-light)] bg-white p-4 transition-all shadow-none ring-0 hover:bg-[var(--color-primary-50)]"
-              >
-                <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-fill', '-duotone')" class="h-5 w-5 text-[var(--icon-primary)] group-hover:text-primary-600" />
-                <span class="text-center text-[8px] font-black uppercase leading-tight tracking-widest text-[var(--text-tertiary)] group-hover:text-[var(--text-secondary)]">{{ $t(item.label) }}</span>
-              </UButton>
-            </div>
+          <div class="mm__nav-group">
+            <NuxtLink
+              v-for="item in settingsNav"
+              :key="item.label"
+              :to="item.to"
+              class="mm__item"
+              :class="[isNavItemActive(item.to) ? 'mm__item--active' : '', item.danger ? 'mm__item--danger' : '']"
+              @click="close"
+            >
+              <Icon :name="item.icon" class="mm__item-icon" :class="item.danger ? 'mm__item-icon--danger' : ''" />
+              <span class="mm__item-label" :class="item.danger ? 'mm__item-label--danger' : ''">{{ $t(item.label) }}</span>
+            </NuxtLink>
           </div>
+
+          <div class="mm__divider" />
+
+          <button class="mm__switch" type="button">
+            <span>{{ $t("navigation.mobileMenu.bottomActions.switchAccount") }}</span>
+            <Icon name="i-ph-arrows-clockwise" class="h-4 w-4" />
+          </button>
         </div>
-        </aside>
-      </div>
+      </aside>
     </Transition>
   </Teleport>
 </template>
 
 <script setup lang="ts">
-import NavigationLocaleSwitcher from "./LocaleSwitcher.vue"
-
 const route = useRoute()
 const modelValue = defineModel<boolean>({ default: false })
-const props = defineProps<{
-  open?: boolean
-}>()
+
+const props = defineProps<{ open?: boolean }>()
 
 const emit = defineEmits<{
   close: []
-  "update:open": [value: boolean]
+  'update:open': [value: boolean]
 }>()
 
-const controlledOpen = computed(() => props.open ?? modelValue.value)
+const isOpen = ref(false)
 
-const drawerOpen = computed(() => Boolean(controlledOpen.value))
+// Parent → local
+watch(
+  () => props.open ?? modelValue.value,
+  val => { isOpen.value = Boolean(val) },
+  { immediate: true },
+)
+
+// Local → parent (skip the very first sync to avoid triggering close on mount)
+let mounted = false
+watch(isOpen, (val) => {
+  if (!mounted) { mounted = true; return }
+  modelValue.value = val
+  emit('update:open', val)
+  if (!val) emit('close')
+})
+
+onMounted(() => { mounted = true })
+
+function close() {
+  isOpen.value = false
+}
 
 function isNavItemActive(to: string) {
-  const normalized = to.split("?")[0].split("#")[0]
-
-  if (normalized === "/home") return route.path === "/" || route.path === "/home"
-  if (normalized === "/products") return route.path === "/products" || route.path === "/my-products" || route.path === "/new-product" || route.path.startsWith("/edit-product/")
-  if (normalized === "/events") return route.path === "/events" || route.path.startsWith("/events/")
-  if (normalized === "/groups") return route.path === "/groups" || route.path === "/suggested-groups" || route.path === "/joined_groups" || route.path === "/create-group" || route.path.startsWith("/g/") || route.path.startsWith("/group-setting/")
-  if (normalized === "/pages") return route.path === "/pages" || route.path === "/suggested-pages" || route.path === "/liked-pages" || route.path === "/create-page" || route.path.startsWith("/p/") || route.path.startsWith("/page-setting/")
-  if (to.includes("mine=1")) return route.path === "/blogs" && route.query.mine === "1"
-
+  const normalized = to.split('?')[0].split('#')[0]
+  if (normalized === '/home') return route.path === '/' || route.path === '/home'
+  if (normalized === '/products') return ['/products', '/my-products', '/new-product'].includes(route.path) || route.path.startsWith('/edit-product/')
+  if (normalized === '/events') return route.path === '/events' || route.path.startsWith('/events/')
+  if (normalized === '/groups') return ['/groups', '/suggested-groups', '/joined_groups', '/create-group'].includes(route.path) || route.path.startsWith('/g/') || route.path.startsWith('/group-setting/')
+  if (normalized === '/pages') return ['/pages', '/suggested-pages', '/liked-pages', '/create-page'].includes(route.path) || route.path.startsWith('/p/') || route.path.startsWith('/page-setting/')
+  if (to.includes('mine=1')) return route.path === '/blogs' && route.query.mine === '1'
   return route.path === normalized
 }
 
-function handleOpenChange(value: boolean) {
-  modelValue.value = value
-  emit("update:open", value)
-
-  if (!value) {
-    emit("close")
-  }
-}
+watch(() => route.path, () => { isOpen.value = false })
 
 const mainNav = [
-  { label: "navigation.mobileMenu.mainNav.search", icon: "i-ph-magnifying-glass", to: "/search" },
-  { label: "navigation.mobileMenu.mainNav.pages", icon: "i-ph-flag", to: "/pages" },
-  { label: "navigation.mobileMenu.mainNav.myProducts", icon: "i-ph-package", to: "/my-products" },
-  { label: "navigation.mobileMenu.mainNav.marketplace", icon: "i-ph-storefront", to: "/products" },
-  { label: "navigation.mobileMenu.mainNav.blog", icon: "i-ph-newspaper", to: "/blogs" },
-  { label: "navigation.mobileMenu.mainNav.createBlog", icon: "i-ph-pencil-simple-line", to: "/create-blog" },
-  { label: "navigation.mobileMenu.mainNav.myArticles", icon: "i-ph-article", to: "/blogs?mine=1" },
-  { label: "navigation.mobileMenu.mainNav.movies", icon: "i-ph-film-strip", to: "/movies" },
-  { label: "navigation.mobileMenu.mainNav.events", icon: "i-ph-calendar-blank", to: "/events" },
-  { label: "navigation.mobileMenu.mainNav.createEvent", icon: "i-ph-calendar-plus", to: "/events/create-event" },
-  { label: "navigation.mobileMenu.mainNav.live", icon: "i-ph-broadcast", to: "/live" },
-  { label: "navigation.mobileMenu.mainNav.myGroups", icon: "i-ph-users-three", to: "/groups" },
-  { label: "navigation.mobileMenu.mainNav.forum", icon: "i-ph-chats-circle", to: "/forum" },
-  { label: "navigation.mobileMenu.mainNav.photos", icon: "i-ph-images", to: "/photos" },
-  { label: "navigation.mobileMenu.mainNav.watch", icon: "i-ph-play-circle", to: "/watch" },
-  { label: "navigation.mobileMenu.mainNav.savedPosts", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
-  { label: "navigation.mobileMenu.mainNav.poke", icon: "i-ph-hand-waving", to: "/poke" },
-  { label: "navigation.mobileMenu.mainNav.explore", icon: "i-ph-compass", to: "/explore" },
-  { label: "navigation.mobileMenu.mainNav.popularPosts", icon: "i-ph-fire", to: "/popular" },
-  { label: "navigation.mobileMenu.mainNav.games", icon: "i-ph-game-controller", to: "/games" },
-  { label: "navigation.mobileMenu.mainNav.jobs", icon: "i-ph-briefcase", to: "/jobs" },
-  { label: "navigation.mobileMenu.mainNav.goPro", icon: "i-ph-crown-simple", to: "/go-pro" },
-  { label: "navigation.mobileMenu.mainNav.wallet", icon: "i-ph-wallet", to: "/wallet" },
-  { label: "navigation.mobileMenu.mainNav.withdrawal", icon: "i-ph-money-wavy", to: "/withdrawal" },
-  { label: "navigation.mobileMenu.mainNav.directory", icon: "i-ph-squares-four", to: "/directory" },
-  { label: "navigation.mobileMenu.mainNav.funding", icon: "i-ph-hand-heart", to: "/funding" },
-  { label: "navigation.mobileMenu.mainNav.memories", icon: "i-ph-clock-counter-clockwise", to: "/memories" },
+  { label: 'navigation.mobileMenu.mainNav.search', icon: 'i-ph-magnifying-glass-fill', to: '/search' },
+  { label: 'navigation.mobileMenu.mainNav.pages', icon: 'i-ph-flag-fill', to: '/pages' },
+  { label: 'navigation.mobileMenu.mainNav.myProducts', icon: 'i-ph-package-fill', to: '/my-products' },
+  { label: 'navigation.mobileMenu.mainNav.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
+  { label: 'navigation.mobileMenu.mainNav.blog', icon: 'i-ph-newspaper-fill', to: '/blogs' },
+  { label: 'navigation.mobileMenu.mainNav.myArticles', icon: 'i-ph-article-fill', to: '/blogs?mine=1' },
+  { label: 'navigation.mobileMenu.mainNav.movies', icon: 'i-ph-film-strip-fill', to: '/movies' },
+  { label: 'navigation.mobileMenu.mainNav.events', icon: 'i-ph-calendar-blank-fill', to: '/events' },
+  { label: 'navigation.mobileMenu.mainNav.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
+  { label: 'navigation.mobileMenu.mainNav.forum', icon: 'i-ph-chats-circle-fill', to: '/forum' },
+  { label: 'navigation.mobileMenu.mainNav.advertising', icon: 'i-ph-megaphone-fill', to: '/ads' },
+  { label: 'navigation.mobileMenu.mainNav.photos', icon: 'i-ph-images-fill', to: '/photos' },
+  { label: 'navigation.mobileMenu.mainNav.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
+  { label: 'navigation.mobileMenu.mainNav.reels', icon: 'i-ph-film-strip-fill', to: '/reels' },
+  { label: 'navigation.mobileMenu.mainNav.savedPosts', icon: 'i-ph-bookmark-simple-fill', to: '/saved-posts' },
+  { label: 'navigation.mobileMenu.mainNav.poke', icon: 'i-ph-hand-waving-fill', to: '/poke' },
+  { label: 'navigation.mobileMenu.mainNav.explore', icon: 'i-ph-compass-fill', to: '/explore' },
+  { label: 'navigation.mobileMenu.mainNav.popularPosts', icon: 'i-ph-fire-fill', to: '/popular' },
+  { label: 'navigation.mobileMenu.mainNav.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
+  { label: 'navigation.mobileMenu.mainNav.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
+  { label: 'navigation.mobileMenu.mainNav.wallet', icon: 'i-ph-wallet-fill', to: '/wallet' },
+  { label: 'navigation.mobileMenu.mainNav.withdrawal', icon: 'i-ph-money-wavy-fill', to: '/withdrawal' },
+  { label: 'navigation.mobileMenu.mainNav.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' },
+  { label: 'navigation.mobileMenu.mainNav.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
+  { label: 'navigation.mobileMenu.mainNav.deals', icon: 'i-ph-tag-fill', to: '/deals' },
 ]
 
 const settingsNav = [
-  { label: "navigation.mobileMenu.settingsNav.settings", icon: "i-ph-gear", to: "/setting" },
-  { label: "navigation.mobileMenu.settingsNav.logout", icon: "i-ph-sign-out", to: "/welcome" },
-]
-
-const bottomActions = [
-  { label: "navigation.mobileMenu.bottomActions.switchAccount", icon: "i-ph-arrows-left-right" },
-  { label: "navigation.mobileMenu.bottomActions.keyboardShortcuts", icon: "i-ph-keyboard" },
-  { label: "navigation.mobileMenu.bottomActions.darkMode", icon: "i-ph-moon" },
+  { label: 'navigation.mobileMenu.settingsNav.settings', icon: 'i-ph-gear-fill', to: '/setting', danger: false },
+  { label: 'navigation.mobileMenu.settingsNav.registration', icon: 'i-ph-clipboard-text-fill', to: '/register', danger: false },
+  { label: 'navigation.mobileMenu.settingsNav.adminArea', icon: 'i-ph-squares-four-fill', to: '/admin', danger: false },
+  { label: 'navigation.mobileMenu.settingsNav.logout', icon: 'i-ph-sign-out-fill', to: '/welcome', danger: true },
 ]
 </script>
 
 <style scoped>
-.mobile-menu-enter-active,
-.mobile-menu-leave-active {
-  transition: opacity 180ms ease;
+/* ─── Backdrop overlay ─────────────────────────────────── */
+.mm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-.mobile-menu-enter-active #mobile-navigation-menu,
-.mobile-menu-leave-active #mobile-navigation-menu {
-  transition: transform 220ms ease;
+/* ─── Drawer panel ─────────────────────────────────────── */
+.mm {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  width: 85vw;
+  max-width: 340px;
+  background: #ffffff;
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
 }
 
-.mobile-menu-enter-from,
-.mobile-menu-leave-to {
+/* ─── Transitions ──────────────────────────────────────── */
+.mm-fade-enter-active,
+.mm-fade-leave-active {
+  transition: opacity 220ms ease;
+}
+.mm-fade-enter-from,
+.mm-fade-leave-to {
   opacity: 0;
 }
 
-.mobile-menu-enter-from #mobile-navigation-menu,
-.mobile-menu-leave-to #mobile-navigation-menu {
-  transform: translateX(24px);
+.mm-slide-enter-active,
+.mm-slide-leave-active {
+  transition: transform 240ms cubic-bezier(0.32, 0.72, 0, 1);
 }
+.mm-slide-enter-from,
+.mm-slide-leave-to {
+  transform: translateX(100%);
+}
+
+/* ─── Header ───────────────────────────────────────────── */
+.mm__header {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mm__admin-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 12px;
+  background: linear-gradient(135deg, #0000ff 0%, #2233ff 100%);
+  color: #ffffff;
+}
+
+.mm__admin-role {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.mm__admin-icon {
+  font-size: 28px;
+}
+
+.mm__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.mm__close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.mm__stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 16px 12px;
+  background: #f8faff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mm__stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.mm__stat-icon {
+  width: 14px;
+  height: 14px;
+  color: #0000ff;
+}
+
+/* ─── Content ──────────────────────────────────────────── */
+.mm__content {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding-bottom: 24px;
+}
+
+.mm__content::-webkit-scrollbar { display: none; }
+
+.mm__nav-group {
+  padding: 8px;
+}
+
+.mm__divider {
+  height: 1px;
+  margin: 4px 16px;
+  background: #f1f5f9;
+}
+
+/* ─── Nav items ────────────────────────────────────────── */
+.mm__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #334155;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.mm__item:hover { background: rgba(0, 0, 255, 0.04); color: #0000ff; }
+.mm__item--active { background: rgba(0, 0, 255, 0.06); color: #0000ff; }
+.mm__item--danger:hover { background: rgba(220, 38, 38, 0.05); }
+
+.mm__item-icon { width: 18px; height: 18px; flex-shrink: 0; color: #64748b; }
+.mm__item-icon--active { color: #0000ff; }
+.mm__item-icon--danger { color: #dc2626; }
+
+.mm__item-label { font-size: 14px; font-weight: 500; }
+.mm__item-label--active { font-weight: 700; }
+.mm__item-label--danger { color: #dc2626; }
+
+/* ─── Switch account ───────────────────────────────────── */
+.mm__switch {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 22px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.mm__switch:hover { background: #f8fafc; }
 </style>

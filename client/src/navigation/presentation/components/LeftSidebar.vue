@@ -1,11 +1,11 @@
 <template>
-  <div class="min-w-0 space-y-8 xl:flex xl:h-full xl:flex-col">
-    <nav class="space-y-1 xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overscroll-contain xl:pr-1 scrollbar-hide">
-      <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-3 mb-4">
+  <div class="left-sidebar">
+    <nav class="left-sidebar__nav scrollbar-hide">
+      <p class="left-sidebar__section-title">
         {{ $t("navigation.leftSidebar.menu") || 'Menu' }}
       </p>
 
-      <div class="space-y-0.5">
+      <div class="left-sidebar__items">
         <NavigationSidebarMenuItem
           v-for="item in sidebarNav"
           :key="item.label"
@@ -17,6 +17,7 @@
 
         <!-- Expandable section -->
         <template v-if="expanded">
+          <div class="left-sidebar__divider" />
           <NavigationSidebarMenuItem
             v-for="item in sidebarNavMore"
             :key="item.label"
@@ -29,24 +30,21 @@
       </div>
 
       <!-- Show More Toggle -->
-      <UButton
-        variant="ghost"
-        color="white"
-        class="group flex w-full items-center gap-3.5 rounded-xl px-3 py-3 transition-all duration-300 hover:bg-secondary-50 shadow-none ring-0 h-auto"
+      <button
+        class="left-sidebar__toggle"
+        type="button"
         @click="expanded = !expanded"
       >
-        <span
-          class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-secondary-100 bg-white text-[var(--icon-primary)] transition-all duration-300 group-hover:border-primary-200 group-hover:text-primary-600 shadow-sm"
-        >
+        <span class="left-sidebar__toggle-icon">
           <Icon
             :name="expanded ? 'i-ph-caret-up-bold' : 'i-ph-caret-down-bold'"
             class="h-3.5 w-3.5"
           />
         </span>
-        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-primary)] group-hover:text-primary-600 transition-colors leading-none">
+        <span class="left-sidebar__toggle-label">
           {{ expanded ? $t('navigation.leftSidebar.showLess') : $t('navigation.leftSidebar.showMore') }}
         </span>
-      </UButton>
+      </button>
     </nav>
   </div>
 </template>
@@ -126,3 +124,109 @@ const isItemActive = (to: string) => {
   return route.path === normalized
 }
 </script>
+
+<style scoped>
+.left-sidebar {
+  min-width: 0;
+}
+
+@media (min-width: 1280px) {
+  .left-sidebar {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+  }
+}
+
+.left-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@media (min-width: 1280px) {
+  .left-sidebar__nav {
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+  }
+}
+
+.left-sidebar__section-title {
+  padding: 0 10px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+
+.left-sidebar__items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.left-sidebar__divider {
+  height: 1px;
+  margin: 8px 10px;
+  background: #f1f5f9;
+}
+
+.left-sidebar__toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  margin-top: 4px;
+  border-radius: 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.left-sidebar__toggle:hover {
+  background: rgba(0, 0, 255, 0.03);
+}
+
+.left-sidebar__toggle-icon {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.left-sidebar__toggle:hover .left-sidebar__toggle-icon {
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+}
+
+.left-sidebar__toggle-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  transition: color 0.15s ease;
+}
+
+.left-sidebar__toggle:hover .left-sidebar__toggle-label {
+  color: #0000ff;
+}
+
+/* Scrollbar hide */
+.scrollbar-hide {
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+</style>

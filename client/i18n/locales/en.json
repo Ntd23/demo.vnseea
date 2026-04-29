@@ -4073,7 +4073,8 @@
       "search": "Search",
       "reels": "Reels",
       "video": "Video",
-      "profile": "Profile"
+      "profile": "Profile",
+      "photos": "Photos"
     },
     "headerIconNav": {
       "home": "Home",
@@ -4105,6 +4106,8 @@
         "myGroups": "My groups",
         "forum": "Forum",
         "ads": "Ads",
+        "advertising": "Advertising",
+        "reels": "Reels",
         "photos": "Photos",
         "watch": "Watch",
         "reelsShortcut": "Reels",
@@ -4127,9 +4130,14 @@
       "settingsNav": {
         "settings": "Settings",
         "register": "Register",
+        "registration": "Registration",
+        "editProfile": "Edit profile",
+        "generalSettings": "General settings",
         "adminArea": "Admin area",
         "logout": "Log out"
       },
+      "walletLabel": "Wallet",
+      "pointsLabel": "Points",
       "bottomActions": {
         "switchAccount": "Switch account",
         "keyboardShortcuts": "Keyboard shortcuts",
@@ -4223,7 +4231,11 @@
   "auth": {
     "heroPanel": {
       "defaultTitle": "Connect with your community",
-      "defaultSubtitle": "Follow your feed, grow your network, and keep your activity in one place."
+      "defaultSubtitle": "Follow your feed, grow your network, and keep your activity in one place.",
+      "communityLabel": "Community",
+      "communityValue": "People, groups, pages",
+      "activityLabel": "Activity",
+      "activityValue": "Stories, updates, messages"
     }
   },
   "settings": {

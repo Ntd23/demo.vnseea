@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <section
-      class="relative overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f7f9ff_100%)] p-5 shadow-[0_16px_38px_rgba(15,35,110,0.07)] sm:p-6"
+      class="relative overflow-hidden rounded-[18px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f7f9ff_100%)] p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:p-6"
       :aria-labelledby="headerId"
     >
       <div class="pointer-events-none absolute right-[-32px] top-[-44px] h-[180px] w-[180px] rounded-full border-[18px] border-[#d7e7ff]/55" />
@@ -9,10 +9,10 @@
 
       <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
         <div class="px-1 pt-1">
-          <p class="text-[12px] font-extrabold uppercase tracking-[0.28em] text-[#0000ff]/65">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#0000ff]/65">
             {{ eyebrow || $t("checkout.page.eyebrow") }}
           </p>
-          <h1 :id="headerId" class="mt-2 text-display text-[2rem] text-[#2f3542] sm:text-[2.3rem]">
+          <h1 :id="headerId" class="mt-2 text-display text-[2rem] font-extrabold text-[#2f3542] sm:text-[2.3rem]">
             {{ title }}
           </h1>
           <div class="mt-4 h-[5px] w-20 rounded-full bg-[#2f3542]" />
@@ -26,18 +26,18 @@
 
         <div
           v-if="hasProgress"
-          class="w-full max-w-[360px] rounded-[24px] border border-[#dbe3f2] bg-white/90 p-4 shadow-[0_12px_30px_rgba(15,35,110,0.06)] backdrop-blur"
+          class="w-full max-w-[360px] rounded-[16px] border border-[#dbe3f2] bg-white/90 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)] backdrop-blur"
         >
           <div class="flex items-center justify-between gap-3">
-            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               {{ progressLabel }}
             </p>
-            <span class="text-[14px] font-black text-[#243b63]">
+            <span class="text-[14px] font-extrabold text-[#243b63]">
               {{ Math.round(progressValue) }}%
             </span>
           </div>
 
-          <p v-if="progressText" class="mt-2 text-[14px] font-semibold leading-6 text-[#243b63]">
+          <p v-if="progressText" class="mt-2 text-[14px] font-medium leading-6 text-[#243b63]">
             {{ progressText }}
           </p>
 

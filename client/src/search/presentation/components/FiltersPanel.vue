@@ -3,10 +3,10 @@
     <div class="flex flex-col gap-6">
       <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
         <div class="space-y-2">
-          <p class="text-micro font-black uppercase tracking-[0.24em] text-[var(--text-primary)]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ $t("community.search.filters.label") }}
           </p>
-          <h1 class="text-3xl font-black tracking-tight text-[var(--text-primary)]">
+          <h1 class="text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
             {{ $t("community.search.filters.title") }}
           </h1>
           <p class="max-w-2xl text-sm leading-7 text-body-secondary">
@@ -54,14 +54,14 @@
           :key="tab.value"
           color="neutral"
           :variant="typeModel === tab.value ? 'soft' : 'outline'"
-          class="rounded-full px-4 py-2.5 text-left"
+          class="rounded-xl px-4 py-2.5 text-left"
           @click="typeModel = tab.value"
         >
           <div class="flex items-center gap-3">
             <Icon :name="tab.icon" class="h-4 w-4" />
             <div class="flex flex-col items-start">
-              <span class="text-[12px] font-black">{{ tab.label }}</span>
-              <span class="text-[11px] font-medium opacity-70">{{ tab.count }}</span>
+              <span class="text-[12px] font-semibold text-slate-700">{{ tab.label }}</span>
+              <span class="text-[11px] font-medium text-slate-400">{{ tab.count }}</span>
             </div>
           </div>
         </UButton>
@@ -69,7 +69,7 @@
 
       <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex flex-wrap items-center gap-2">
-          <span class="text-[11px] font-black uppercase tracking-[0.18em] text-[var(--text-primary)]/60">
+          <span class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ $t("community.search.filters.quickKeywords") }}
           </span>
           <UButton
@@ -89,14 +89,14 @@
           <UButton
             color="neutral"
             variant="outline"
-            class="rounded-full"
+            class="rounded-xl font-semibold"
             @click="resetFilters"
           >
             {{ $t("community.search.clearFilters") }}
           </UButton>
           <UButton
             color="primary"
-            class="rounded-full px-6"
+            class="rounded-xl px-6 font-semibold"
             @click="emit('submit')"
           >
             <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />

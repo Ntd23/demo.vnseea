@@ -1,70 +1,50 @@
 <template>
-  <div class="pointer-events-none absolute inset-0 flex items-end">
-    <div class="grid w-full grid-cols-[minmax(0,1fr)_56px] items-end gap-2 px-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:grid-cols-[minmax(0,1fr)_76px] sm:gap-3 sm:px-5 sm:pb-6">
-      <div class="pointer-events-auto min-w-0 pb-1 sm:pb-2">
-        <div class="flex min-w-0 items-center gap-3">
-          <UAvatar
-            :src="reel.avatar"
-            :alt="reel.author"
-            size="md"
-            class="shrink-0 rounded-full ring-2 ring-primary-500"
-          />
+  <div class="reel-overlay">
+    <div class="reel-overlay__grid">
+      <!-- Left: author + info -->
+      <div class="reel-overlay__left">
+        <div class="reel-author">
+          <div class="reel-author__avatar">
+            <img :src="reel.avatar" :alt="reel.author" class="reel-author__avatar-img">
+          </div>
 
-          <div class="min-w-0">
-            <div class="flex min-w-0 items-center gap-2">
-              <p class="truncate text-[14px] font-extrabold text-white">
-                {{ reel.author }}
-              </p>
-              <button
-                class="shrink-0 rounded-full border border-white/16 bg-white/14 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-md transition hover:bg-white hover:text-[var(--text-primary)] sm:px-3"
-                type="button"
-              >
+          <div class="reel-author__info">
+            <div class="reel-author__name-row">
+              <p class="reel-author__name">{{ reel.author }}</p>
+              <button class="reel-author__follow" type="button">
                 {{ $t("pages.reelsPage.follow") }}
               </button>
             </div>
-            <p class="mt-0.5 truncate text-[12px] font-semibold text-white/62">
-              {{ reel.subtitle }}
-            </p>
+            <p class="reel-author__subtitle">{{ reel.subtitle }}</p>
           </div>
         </div>
 
-        <h2 class="mt-3 line-clamp-2 max-w-[min(100%,360px)] text-[1.18rem] font-black leading-[1.08] text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.55)] sm:mt-4 sm:text-[1.65rem]">
-          {{ reel.title }}
-        </h2>
-        <p class="mt-1.5 line-clamp-2 max-w-[min(100%,340px)] text-[12px] font-medium leading-[1.45] text-white/78 drop-shadow-[0_2px_14px_rgba(0,0,0,0.55)] sm:mt-2 sm:text-[13px] sm:leading-[1.55]">
-          {{ reel.description }}
-        </p>
+        <h2 class="reel-title">{{ reel.title }}</h2>
+        <p class="reel-desc">{{ reel.description }}</p>
 
-        <div class="mt-2.5 flex max-w-[min(100%,340px)] items-center gap-2 rounded-full border border-white/10 bg-black/28 px-3 py-1.5 text-[11px] font-semibold text-white/75 backdrop-blur-md sm:mt-3 sm:py-2 sm:text-[12px]">
-          <Icon name="i-ph-music-notes-fill" class="h-3.5 w-3.5 shrink-0 text-primary-300" />
-          <span class="truncate">{{ reel.music }}</span>
+        <div class="reel-music">
+          <Icon name="i-ph-music-notes-fill" class="reel-music__icon" />
+          <span class="reel-music__text">{{ reel.music }}</span>
         </div>
 
-        <div class="mt-2.5 hidden flex-wrap gap-2 min-[390px]:flex sm:mt-3">
-          <span
-            v-for="tag in reel.tags"
-            :key="tag"
-            class="rounded-full bg-white/12 px-3 py-1 text-[11px] font-bold text-white/86 backdrop-blur-md"
-          >
-            {{ tag }}
-          </span>
+        <div class="reel-tags">
+          <span v-for="tag in reel.tags" :key="tag" class="reel-tag">{{ tag }}</span>
         </div>
       </div>
 
-      <div class="pointer-events-auto flex flex-col items-center gap-2 pb-1 sm:gap-3">
+      <!-- Right: action buttons -->
+      <div class="reel-overlay__actions">
         <button
           v-for="item in actionItems"
           :key="item.label"
-          class="group/action flex w-12 flex-col items-center gap-1 sm:w-[64px] sm:gap-1.5"
+          class="reel-action"
           type="button"
           :aria-label="item.label"
         >
-          <span class="flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-black/36 text-white shadow-[0_8px_26px_rgba(0,0,0,0.25)] backdrop-blur-md transition-all duration-200 group-hover/action:-translate-y-0.5 group-hover/action:bg-white group-hover/action:text-[var(--text-primary)] sm:h-12 sm:w-12">
-            <Icon :name="item.icon" class="h-4.5 w-4.5 sm:h-5.5 sm:w-5.5" />
+          <span class="reel-action__circle">
+            <Icon :name="item.icon" class="reel-action__icon" />
           </span>
-          <span class="max-w-12 truncate text-center text-[10px] font-extrabold leading-none text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] sm:max-w-[64px] sm:text-[11px]">
-            {{ item.value }}
-          </span>
+          <span class="reel-action__value">{{ item.value }}</span>
         </button>
       </div>
     </div>
@@ -91,33 +71,285 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 
-const compactFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
-  notation: "compact",
+const compactFormatter = computed(() => new Intl.NumberFormat(locale.value === 'vi' ? 'vi-VN' : 'en-US', {
+  notation: 'compact',
   maximumFractionDigits: 1,
 }))
 
 const formatCompact = (value: number) => compactFormatter.value.format(value)
 
 const actionItems = computed(() => [
-  {
-    label: t("pages.reelsPage.like"),
-    value: formatCompact(props.reel.likes),
-    icon: "i-ph-heart-fill",
-  },
-  {
-    label: t("pages.reelsPage.comment"),
-    value: formatCompact(props.reel.comments),
-    icon: "i-ph-chat-circle-text-fill",
-  },
-  {
-    label: t("pages.reelsPage.share"),
-    value: formatCompact(props.reel.shares),
-    icon: "i-ph-share-network-fill",
-  },
-  {
-    label: t("pages.reelsPage.save"),
-    value: t("pages.reelsPage.save"),
-    icon: "i-ph-bookmark-simple-fill",
-  },
+  { label: t('pages.reelsPage.like'), value: formatCompact(props.reel.likes), icon: 'i-ph-heart-fill' },
+  { label: t('pages.reelsPage.comment'), value: formatCompact(props.reel.comments), icon: 'i-ph-chat-circle-text-fill' },
+  { label: t('pages.reelsPage.share'), value: formatCompact(props.reel.shares), icon: 'i-ph-share-network-fill' },
+  { label: t('pages.reelsPage.save'), value: t('pages.reelsPage.save'), icon: 'i-ph-bookmark-simple-fill' },
 ])
 </script>
+
+<style scoped>
+.reel-overlay {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.reel-overlay__grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 0 12px calc(1rem + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 640px) {
+  .reel-overlay__grid {
+    grid-template-columns: minmax(0, 1fr) 76px;
+    gap: 12px;
+    padding: 0 20px 24px;
+  }
+}
+
+/* Author */
+.reel-overlay__left {
+  pointer-events: auto;
+  min-width: 0;
+  padding-bottom: 4px;
+}
+
+.reel-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reel-author__avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid #0000ff;
+  overflow: hidden;
+}
+
+.reel-author__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reel-author__info {
+  min-width: 0;
+}
+
+.reel-author__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.reel-author__name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reel-author__follow {
+  flex-shrink: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.14);
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.15s ease;
+}
+
+.reel-author__follow:hover {
+  background: #ffffff;
+  color: #1e293b;
+}
+
+.reel-author__subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.62);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Title & desc */
+.reel-title {
+  margin-top: 12px;
+  font-size: 1.18rem;
+  font-weight: 800;
+  line-height: 1.08;
+  color: #ffffff;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.55);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: min(100%, 360px);
+}
+
+@media (min-width: 640px) {
+  .reel-title { font-size: 1.65rem; margin-top: 16px; }
+}
+
+.reel-desc {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.78);
+  text-shadow: 0 2px 14px rgba(0,0,0,0.55);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: min(100%, 340px);
+}
+
+@media (min-width: 640px) {
+  .reel-desc { font-size: 13px; line-height: 1.55; margin-top: 8px; }
+}
+
+/* Music row */
+.reel-music {
+  margin-top: 10px;
+  display: flex;
+  max-width: min(100%, 340px);
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.28);
+  padding: 6px 12px;
+  backdrop-filter: blur(8px);
+}
+
+.reel-music__icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #4d88ff;
+}
+
+.reel-music__text {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.75);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tags */
+.reel-tags {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.reel-tag {
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.86);
+  backdrop-filter: blur(8px);
+}
+
+/* Action buttons */
+.reel-overlay__actions {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+@media (min-width: 640px) {
+  .reel-overlay__actions { gap: 12px; }
+}
+
+.reel-action {
+  display: flex;
+  width: 48px;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .reel-action { width: 64px; gap: 6px; }
+}
+
+.reel-action__circle {
+  display: flex;
+  height: 40px;
+  width: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.36);
+  color: #ffffff;
+  box-shadow: 0 8px 26px rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .reel-action__circle { height: 48px; width: 48px; }
+}
+
+.reel-action:hover .reel-action__circle {
+  transform: translateY(-2px);
+  background: #ffffff;
+  color: #1e293b;
+}
+
+.reel-action__icon {
+  width: 18px;
+  height: 18px;
+}
+
+@media (min-width: 640px) {
+  .reel-action__icon { width: 22px; height: 22px; }
+}
+
+.reel-action__value {
+  max-width: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.65);
+}
+
+@media (min-width: 640px) {
+  .reel-action__value { max-width: 64px; font-size: 11px; }
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <section class="surface-card p-6">
-    <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest">{{ t("pages.walletPage.topupEyebrow") }}</p>
+    <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">{{ t("pages.walletPage.topupEyebrow") }}</p>
     <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.topupTitle") }}</h2>
     <p class="mt-3 text-body-secondary">{{ t("pages.walletPage.topupDescription") }}</p>
 
@@ -48,7 +48,7 @@
     </div>
 
     <UButton
-      class="mt-6 h-12 rounded-2xl font-black uppercase tracking-widest"
+      class="mt-6 h-12 rounded-xl font-semibold"
       block
       @click="submit"
     >

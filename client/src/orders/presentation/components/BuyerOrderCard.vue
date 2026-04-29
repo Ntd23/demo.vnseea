@@ -1,14 +1,14 @@
 <template>
-  <article class="surface-card group overflow-hidden p-6 sm:p-8 ring-1 ring-secondary-100 shadow-xl transition-all duration-500 hover:shadow-2xl">
-    <div class="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between border-b border-secondary-50 pb-6">
+  <article class="surface-card group overflow-hidden p-6 sm:p-8 ring-1 ring-secondary-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_12px_32px_rgba(37,99,235,0.12)]">
+    <div class="flex flex-col gap-6 border-b border-secondary-50 pb-6 xl:flex-row xl:items-start xl:justify-between">
       <div class="space-y-1">
         <div class="flex flex-wrap items-center gap-3">
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
+          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ order.orderNumber }}
           </p>
           <UBadge
             variant="soft"
-            class="rounded-lg font-black text-[10px] uppercase tracking-widest px-3 py-1 ring-1 ring-inset"
+            class="rounded-lg px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.06em] ring-1 ring-inset"
             :class="statusMeta.badgeClass"
           >
             <template #leading>
@@ -18,7 +18,7 @@
           </UBadge>
         </div>
 
-        <h3 class="text-2xl font-black tracking-tight text-secondary-900 leading-tight">
+        <h3 class="text-2xl font-extrabold leading-tight tracking-tight text-secondary-900">
           {{ order.seller }}
         </h3>
         <p class="text-sm font-medium leading-relaxed text-secondary-500 max-w-2xl">
@@ -28,13 +28,13 @@
 
       <!-- Quick Stats -->
       <div class="flex flex-wrap gap-2 pt-2 xl:pt-1">
-        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100">
+        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 shadow-sm transition-all hover:border-primary-100 hover:bg-white hover:text-primary-600">
           {{ order.placedAt }}
         </UBadge>
-        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100">
+        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 shadow-sm transition-all hover:border-primary-100 hover:bg-white hover:text-primary-600">
           {{ $t("orders.card.items", { count: totalItems }) }}
         </UBadge>
-        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm transition-all hover:bg-white hover:text-primary-600 hover:border-primary-100">
+        <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 shadow-sm transition-all hover:border-primary-100 hover:bg-white hover:text-primary-600">
           {{ $t(order.paymentMethod) }}
         </UBadge>
       </div>
@@ -46,10 +46,10 @@
         <!-- Products Section -->
         <section class="surface-card p-6 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-6 group/section hover:bg-white transition-colors duration-500">
           <div class="flex items-center justify-between gap-4 border-b border-secondary-100 pb-4">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
+            <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               {{ $t("orders.card.productsInOrder") }}
             </p>
-            <p class="text-[11px] font-black uppercase tracking-tight text-secondary-400 group-hover/section:text-secondary-900 transition-colors">
+            <p class="text-[11px] font-semibold text-slate-400 transition-colors group-hover/section:text-secondary-900">
               {{ $t(order.deliveryWindow) }}
             </p>
           </div>
@@ -65,7 +65,7 @@
 
         <!-- Shipping Section -->
         <section class="surface-card p-6 bg-secondary-50/30 ring-1 ring-secondary-100 space-y-4 group/section hover:bg-white transition-colors duration-500">
-          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
+          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ $t("orders.card.shippingAddress") }}
           </p>
           <div class="flex gap-3 items-start">
@@ -88,7 +88,7 @@
 
         <!-- Progress Tracking -->
         <section class="surface-card p-6 ring-1 ring-secondary-100 bg-white space-y-6">
-          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900 pl-1">
+          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ $t("orders.card.orderProgress") }}
           </p>
 
@@ -99,14 +99,14 @@
               class="flex items-start gap-4"
             >
               <div
-                class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black transition-all duration-500"
+                class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold transition-all duration-500"
                 :class="index <= activeProgressStep ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30 ring-1 ring-primary-500' : 'bg-secondary-50 text-secondary-300 ring-1 ring-secondary-100'"
               >
                 <Icon v-if="index < activeProgressStep" name="i-ph-check-bold" class="h-3 w-3" />
                 <span v-else>{{ index + 1 }}</span>
               </div>
               <div class="min-w-0 space-y-0.5">
-                <p class="text-xs font-black transition-colors" :class="index <= activeProgressStep ? 'text-secondary-900' : 'text-secondary-300'">{{ $t(step.label) }}</p>
+                <p class="text-xs font-semibold transition-colors" :class="index <= activeProgressStep ? 'text-secondary-900' : 'text-secondary-300'">{{ $t(step.label) }}</p>
                 <p class="text-[10px] font-medium leading-relaxed transition-colors" :class="index <= activeProgressStep ? 'text-secondary-500' : 'text-secondary-300'">{{ $t(step.description) }}</p>
               </div>
             </div>
@@ -121,7 +121,7 @@
         :to="appRoutes.orderDetail(order.id)"
         size="xl"
         icon="i-ph-arrow-square-out-duotone"
-        class="rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-black text-xs uppercase tracking-widest px-8 shadow-xl shadow-primary-500/30 transition-all active:scale-95"
+        class="rounded-xl bg-primary-600 px-8 text-xs font-semibold uppercase tracking-[0.06em] text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all hover:bg-primary-700 active:scale-95"
       >
         {{ $t("orders.card.viewDetail") }}
       </UButton>
@@ -131,7 +131,7 @@
         variant="soft"
         size="xl"
         icon="i-ph-chat-circle-dots-duotone"
-        class="rounded-2xl border border-secondary-200 bg-white hover:bg-secondary-50 text-secondary-900 font-black text-xs uppercase tracking-widest px-6 shadow-sm transition-all active:scale-95"
+        class="rounded-xl border border-secondary-200 bg-white px-6 text-xs font-semibold uppercase tracking-[0.06em] text-secondary-900 shadow-sm transition-all hover:bg-secondary-50 active:scale-95"
       >
         {{ $t("orders.card.contactShop") }}
       </UButton>
@@ -142,7 +142,7 @@
         variant="soft"
         size="xl"
         icon="i-ph-shopping-cart-duotone"
-        class="rounded-2xl border border-secondary-200 bg-secondary-50/50 hover:bg-secondary-100 text-secondary-600 font-black text-xs uppercase tracking-widest px-6 transition-all active:scale-95"
+        class="rounded-xl border border-secondary-200 bg-secondary-50/50 px-6 text-xs font-semibold uppercase tracking-[0.06em] text-secondary-600 transition-all hover:bg-secondary-100 active:scale-95"
       >
         {{ $t(repeatActionLabel) }}
       </UButton>

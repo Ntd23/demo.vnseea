@@ -4,19 +4,19 @@
       <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
         <div class="space-y-4">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+            <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-semibold text-primary-700 ring-1 ring-primary-100">
               {{ eyebrow }}
             </span>
             <span
               v-if="mainStat"
-              class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white"
+              class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-semibold text-white"
             >
               {{ mainStat.value }} {{ mainStat.label }}
             </span>
           </div>
 
           <div class="space-y-3">
-            <h1 class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+            <h1 class="max-w-[760px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]">
               {{ title }}
             </h1>
             <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
@@ -28,7 +28,7 @@
         <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
           <NuxtLink
             :to="primaryTo"
-            class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
+            class="inline-flex h-12 items-center justify-center rounded-[12px] border border-secondary-200 bg-white px-5 text-[14px] font-semibold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
           >
             <Icon name="i-ph-house-line-duotone" class="mr-2 h-5 w-5 shrink-0" />
             {{ primaryLabel }}
@@ -36,7 +36,7 @@
 
           <NuxtLink
             :to="secondaryTo"
-            class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
+            class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:bg-primary-700 active:scale-95"
           >
             <Icon name="i-ph-magnifying-glass-duotone" class="mr-2 h-5 w-5 shrink-0" />
             {{ secondaryLabel }}
@@ -51,10 +51,10 @@
         >
           <div class="flex items-start justify-between gap-4">
             <div>
-              <p class="text-[11px] font-extrabold uppercase text-white/52">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/52">
                 {{ mainStat.label }}
               </p>
-              <p class="mt-2 text-[34px] font-black leading-none">
+              <p class="mt-2 text-[34px] font-extrabold leading-none">
                 {{ mainStat.value }}
               </p>
               <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
@@ -74,10 +74,10 @@
             :key="item.label"
             class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
           >
-            <p class="text-[10px] font-extrabold uppercase text-slate-500">
+            <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               {{ item.label }}
             </p>
-            <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
+            <p class="mt-2 text-[26px] font-extrabold leading-none text-[var(--text-primary)]">
               {{ item.value }}
             </p>
             <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">

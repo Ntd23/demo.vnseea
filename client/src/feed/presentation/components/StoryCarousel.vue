@@ -1,68 +1,64 @@
 <template>
-  <div class="relative">
+  <div class="story-rail">
     <div
       ref="scrollRef"
-      class="flex gap-3 overflow-x-auto px-1 pb-3 pt-1.5 scrollbar-hide sm:gap-4"
-      style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;"
+      class="story-rail__scroll scrollbar-hide"
     >
-      <NuxtLink
-        to="/status/create"
-        class="flex shrink-0 flex-col items-center gap-1.5"
-      >
-        <div class="relative flex h-[60px] w-[60px] items-center justify-center rounded-full bg-[#0000ff]/10 sm:h-[68px] sm:w-[68px]">
-          <Icon name="i-ph-plus-bold" class="h-5 w-5 text-[#0000ff]" />
-          <div class="absolute inset-0 rounded-full ring-2 ring-[#0000ff]/30" />
+      <!-- Create story card -->
+      <NuxtLink to="/status/create" class="story-card story-card--create">
+        <div class="story-card__create-icon">
+          <Icon name="i-ph-plus-bold" class="h-5 w-5" />
         </div>
-        <span class="text-[11px] font-semibold text-slate-600">{{ t("feed.storyCarousel.createStory") }}</span>
+        <span class="story-card__create-label">{{ t("feed.storyCarousel.createStory") }}</span>
       </NuxtLink>
 
+      <!-- Story cards -->
       <button
         v-for="story in visibleStories"
         :key="story.id"
-        class="flex shrink-0 flex-col items-center gap-1.5"
+        class="story-card"
+        :style="{ '--story-gradient': story.gradient }"
         type="button"
         :aria-label="t('feed.storyCarousel.openStory', { author: story.author })"
         @click="openStory(story.id)"
       >
-        <div class="relative">
-          <div class="absolute -inset-[3px] rounded-full" :style="{ background: story.gradient }" />
-          <div class="absolute -inset-[1px] rounded-full bg-[#f1f4fb]" />
-          <div
-            class="relative flex h-[60px] w-[60px] items-center justify-center rounded-full text-[16px] font-bold text-white shadow-[0_12px_26px_rgba(15,35,110,0.18)] sm:h-[68px] sm:w-[68px]"
-            :style="{ background: story.gradient }"
-          >
-            {{ story.avatar }}
-          </div>
+        <div class="story-card__bg" :style="{ background: story.gradient }" />
+        <img
+          v-if="story.media"
+          :src="story.media"
+          :alt="story.author"
+          class="story-card__bg-img"
+          loading="lazy"
+        >
+        <div class="story-card__overlay" />
+        <div class="story-card__avatar" :style="{ background: story.gradient }">
+          {{ story.avatar }}
         </div>
-        <span class="w-[64px] truncate text-center text-[11px] font-semibold text-slate-600 sm:w-[72px]">
-          {{ story.author.split(" ").at(-1) }}
-        </span>
+        <p class="story-card__name">{{ story.author.split(" ").at(-1) }}</p>
       </button>
     </div>
 
-    <UButton
+    <!-- Scroll arrows -->
+    <button
       v-if="canScrollLeft"
-      color="neutral"
-      variant="soft"
-      size="sm"
-      class="absolute -left-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 justify-center rounded-full shadow-md sm:inline-flex"
+      class="story-rail__arrow story-rail__arrow--left"
+      type="button"
       :aria-label="t('feed.storyCarousel.previousStory')"
       @click="scroll(-1)"
     >
       <Icon name="i-ph-caret-left-bold" class="h-3.5 w-3.5" />
-    </UButton>
-    <UButton
+    </button>
+    <button
       v-if="canScrollRight"
-      color="neutral"
-      variant="soft"
-      size="sm"
-      class="absolute -right-2 top-10 z-10 hidden h-9 w-9 -translate-y-1/2 justify-center rounded-full shadow-md sm:inline-flex"
+      class="story-rail__arrow story-rail__arrow--right"
+      type="button"
       :aria-label="t('feed.storyCarousel.nextStory')"
       @click="scroll(1)"
     >
       <Icon name="i-ph-caret-right-bold" class="h-3.5 w-3.5" />
-    </UButton>
+    </button>
 
+    <!-- Story viewer modal -->
     <Teleport to="body">
       <Transition
         enter-active-class="transition duration-200 ease-out"
@@ -117,15 +113,13 @@
               </div>
             </div>
 
-            <UButton
-              color="neutral"
-              variant="soft"
-              size="xs"
-              class="absolute right-3 top-5 z-20 rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30 lg:right-4 lg:top-4"
+            <button
+              class="absolute right-3 top-5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition hover:bg-white/30"
+              type="button"
               @click="closeStory"
             >
               <Icon name="i-ph-x-bold" class="h-4 w-4" />
-            </UButton>
+            </button>
 
             <button
               class="absolute inset-y-0 left-0 z-10 w-1/3"
@@ -179,36 +173,30 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                  <UButton
-                    color="neutral"
-                    variant="soft"
-                    size="sm"
-                    class="rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
+                  <button
+                    class="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition hover:bg-white/30"
+                    type="button"
                     :aria-label="$t('feed.storyCarousel.actionLike')"
                     @click.stop="runStoryAction('like')"
                   >
                     <Icon name="i-ph-heart-fill" class="h-4 w-4 text-[#ff4d5a]" />
-                  </UButton>
-                  <UButton
-                    color="neutral"
-                    variant="soft"
-                    size="sm"
-                    class="rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
+                  </button>
+                  <button
+                    class="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition hover:bg-white/30"
+                    type="button"
                     :aria-label="$t('feed.storyCarousel.actionComment')"
                     @click.stop="runStoryAction('comment')"
                   >
                     <Icon name="i-ph-chats-circle-fill" class="h-4 w-4" />
-                  </UButton>
-                  <UButton
-                    color="neutral"
-                    variant="soft"
-                    size="sm"
-                    class="rounded-full bg-white/20 text-white backdrop-blur-sm hover:bg-white/30"
+                  </button>
+                  <button
+                    class="flex h-9 w-9 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition hover:bg-white/30"
+                    type="button"
                     :aria-label="$t('feed.storyCarousel.actionShare')"
                     @click.stop="runStoryAction('share')"
                   >
                     <Icon name="i-ph-share-network-fill" class="h-4 w-4" />
-                  </UButton>
+                  </button>
                 </div>
               </div>
             </div>
@@ -409,6 +397,180 @@ watch(activeStoryId, async (storyId) => {
 </script>
 
 <style scoped>
+.story-rail {
+  position: relative;
+}
+
+.story-rail__scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ---- Story card (small card style) ---- */
+.story-card {
+  position: relative;
+  flex-shrink: 0;
+  width: 110px;
+  height: 160px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .story-card {
+    width: 120px;
+    height: 175px;
+  }
+}
+
+.story-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.story-card__bg {
+  position: absolute;
+  inset: 0;
+}
+
+.story-card__bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.story-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.05) 50%, transparent 100%);
+}
+
+.story-card__avatar {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2.5px solid #ffffff;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.story-card__name {
+  position: absolute;
+  bottom: 10px;
+  left: 8px;
+  right: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* ---- Create story card ---- */
+.story-card--create {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 2px dashed rgba(0, 0, 255, 0.15);
+  text-decoration: none;
+}
+
+.story-card--create:hover {
+  border-color: rgba(0, 0, 255, 0.3);
+  background: rgba(0, 0, 255, 0.02);
+}
+
+.story-card__create-icon {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 255, 0.08);
+  color: #0000ff;
+  transition: all 0.15s ease;
+}
+
+.story-card--create:hover .story-card__create-icon {
+  background: rgba(0, 0, 255, 0.12);
+  transform: scale(1.05);
+}
+
+.story-card__create-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ---- Scroll arrows ---- */
+.story-rail__arrow {
+  display: none;
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 255, 0.08);
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.15s ease;
+}
+
+@media (min-width: 640px) {
+  .story-rail__arrow {
+    display: inline-flex;
+  }
+}
+
+.story-rail__arrow:hover {
+  background: #0000ff;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 255, 0.2);
+}
+
+.story-rail__arrow--left {
+  left: -8px;
+}
+
+.story-rail__arrow--right {
+  right: -8px;
+}
+
+/* Scrollbar hide */
 .scrollbar-hide {
   scrollbar-width: none;
 }

@@ -5,16 +5,16 @@
         <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
           <div class="space-y-4">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-semibold text-primary-700 ring-1 ring-primary-100">
                 {{ $t("community.groups.hub") }}
               </span>
-              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-semibold text-white">
                 {{ heroMainStat.value }} {{ heroMainStat.label }}
               </span>
             </div>
 
             <div class="space-y-3">
-              <h1 class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+              <h1 class="max-w-[760px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]">
                 {{ pageTitle }}
               </h1>
               <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
@@ -26,7 +26,7 @@
           <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
             <NuxtLink
               to="/create-group"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
+              class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:bg-primary-700 active:scale-95"
             >
               <Icon name="i-ph-plus-bold" class="mr-2 h-5 w-5 shrink-0" />
               {{ $t("community.groups.action.createNew") }}
@@ -38,10 +38,10 @@
           <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="text-[11px] font-extrabold uppercase text-white/52">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/52">
                   {{ heroMainStat.label }}
                 </p>
-                <p class="mt-2 text-[34px] font-black leading-none">
+                <p class="mt-2 text-[34px] font-extrabold leading-none">
                   {{ heroMainStat.value }}
                 </p>
                 <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
@@ -61,10 +61,10 @@
               :key="item.label"
               class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
             >
-              <p class="text-[10px] font-extrabold uppercase text-slate-500">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                 {{ item.label }}
               </p>
-              <p class="mt-2 break-words text-[22px] font-black leading-tight text-[var(--text-primary)]">
+              <p class="mt-2 break-words text-[22px] font-extrabold leading-tight text-[var(--text-primary)]">
                 {{ item.value }}
               </p>
               <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
@@ -87,7 +87,7 @@
     <section class="rounded-[28px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/65">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ activeTabLabel }}
           </p>
           <p class="mt-1 text-[14px] leading-6 text-slate-500">
@@ -100,7 +100,7 @@
           color="neutral"
           variant="outline"
           size="lg"
-          class="rounded-full text-[13px] font-bold"
+          class="rounded-xl text-[13px] font-semibold"
         >
           <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
           {{ $t("community.groups.action.createNew") }}
@@ -122,7 +122,7 @@
         <div class="mt-6 flex justify-center">
           <NuxtLink
             to="/create-group"
-            class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
+            class="inline-flex h-12 items-center justify-center rounded-[12px] bg-[#0000ff] px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
           >
             <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
             {{ $t("community.groups.action.createFirst") }}

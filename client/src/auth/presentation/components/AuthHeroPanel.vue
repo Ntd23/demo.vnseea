@@ -1,103 +1,60 @@
 <template>
-  <aside
-    class="relative flex h-full w-full flex-col justify-between gap-6 overflow-hidden lg:gap-0"
-    aria-labelledby="auth-hero-panel-title"
-    aria-describedby="auth-hero-panel-subtitle"
-  >
-    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
-      <div class="absolute -left-12 top-8 h-36 w-36 rounded-full bg-white/10 blur-3xl" />
-      <div class="absolute right-0 top-20 h-44 w-44 rounded-full bg-cyan-300/20 blur-3xl" />
-      <div class="absolute bottom-10 left-[12%] h-28 w-28 rounded-full bg-[#8aa4ff]/20 blur-3xl" />
-      <div class="absolute left-[18%] top-[44%] h-px w-32 -rotate-12 bg-white/20" />
+  <aside class="auth-hero" aria-labelledby="auth-hero-title">
+    <!-- Background effects -->
+    <div class="auth-hero__bg" aria-hidden="true">
+      <span class="auth-hero__orb auth-hero__orb--a" />
+      <span class="auth-hero__orb auth-hero__orb--b" />
+      <span class="auth-hero__orb auth-hero__orb--c" />
+      <span class="auth-hero__grid" />
     </div>
 
-    <header class="relative z-10">
-      <div class="flex items-center gap-3 text-white/90">
-        <div
-          aria-hidden="true"
-          class="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/20 text-[18px] font-bold shadow-[0_10px_30px_rgba(0,0,0,0.15)]"
-        >
-          V
-        </div>
-        <div>
-          <p class="text-[11px] font-semibold tracking-[0.35em] uppercase">{{ brandTagline }}</p>
-          <p class="text-[14px] font-extrabold leading-none">VNSEEA</p>
-        </div>
-      </div>
-
-      <div class="mt-8 max-w-[390px] lg:mt-12 xl:max-w-[420px]">
-        <h2 id="auth-hero-panel-title" class="text-[34px] leading-[0.97] font-black tracking-[-0.07em] sm:text-[44px] xl:text-[54px]">
-          {{ resolvedTitle }}
-        </h2>
-        <p id="auth-hero-panel-subtitle" class="mt-4 max-w-[330px] text-[15px] leading-7 text-white/85 sm:mt-6 sm:text-[16px] sm:leading-7">
-          {{ resolvedSubtitle }}
-        </p>
+    <!-- Brand -->
+    <header class="auth-hero__brand">
+      <div class="auth-hero__brand-icon">V</div>
+      <div>
+        <p class="auth-hero__brand-tag">{{ $t('navigation.headerLogo.tagline') }}</p>
+        <p class="auth-hero__brand-name">VNSEEA</p>
       </div>
     </header>
 
-    <figure class="relative z-10 mx-auto flex w-full max-w-[300px] justify-center pb-1 sm:max-w-[340px] lg:pb-0 xl:max-w-[360px]">
-      <div aria-hidden="true" class="absolute -inset-x-8 bottom-0 h-36 rounded-full bg-white/10 blur-3xl sm:-inset-x-14 sm:h-48" />
-      <div class="group relative w-full overflow-hidden rounded-[22px] border-[7px] border-white/25 bg-white/10 shadow-[0_22px_56px_rgba(0,0,0,0.2)] sm:rounded-[26px] sm:border-[8px]">
-        <div aria-hidden="true" class="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.02)_35%,rgba(8,26,134,0.3)_100%)]" />
+    <!-- Copy -->
+    <div class="auth-hero__copy">
+      <h2 id="auth-hero-title" class="auth-hero__title">
+        {{ resolvedTitle }}
+      </h2>
+      <p class="auth-hero__subtitle">{{ resolvedSubtitle }}</p>
+    </div>
 
-        <NuxtImg
-          v-if="showPreviewImage"
-          :src="resolvedImageSrc"
-          :alt="resolvedImageAlt"
-          width="860"
-          height="980"
-          sizes="(max-width: 639px) 300px, (max-width: 1279px) 340px, 360px"
-          loading="eager"
-          decoding="async"
-          class="relative z-10 h-[220px] w-full object-cover object-center opacity-95 transition motion-safe:duration-500 motion-safe:group-hover:scale-[1.03] sm:h-[260px] lg:h-[320px]"
-          @error="handleImageError"
-        />
-
-        <div
-          v-else
-          aria-hidden="true"
-          class="relative z-10 flex h-[220px] w-full items-end overflow-hidden bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.18),transparent_26%),linear-gradient(145deg,#355cff_0%,#1023a5_55%,#07135d_100%)] sm:h-[260px] lg:h-[320px]"
-        >
-          <div class="absolute right-5 top-5 flex h-14 w-14 items-center justify-center rounded-[20px] border border-white/15 bg-white/10 shadow-[0_14px_30px_rgba(0,0,0,0.16)] backdrop-blur-sm">
-            <Icon aria-hidden="true" name="i-ph-users-three-fill" class="h-7 w-7 text-white/90" />
-          </div>
-          <div class="absolute -left-7 bottom-12 h-24 w-24 rounded-full border border-white/10 bg-white/10" />
-          <div class="absolute right-10 top-20 h-16 w-16 rounded-full border border-white/10 bg-white/10" />
-          <div class="absolute bottom-0 left-0 h-28 w-full bg-gradient-to-t from-[#061050]/70 to-transparent" />
-
-          <div class="relative mt-auto space-y-2 p-5 sm:p-6">
-            <span class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white/80">
-              {{ brandTagline }}
-            </span>
-            <div class="max-w-[240px]">
-              <p class="text-[1.15rem] font-black leading-tight text-white sm:text-[1.35rem]">
-                {{ resolvedTitle }}
-              </p>
-              <p class="mt-1.5 text-[12px] leading-5 text-white/80 sm:text-[13px]">
-                {{ resolvedSubtitle }}
-              </p>
-            </div>
-          </div>
-        </div>
-
+    <!-- Feature cards -->
+    <div class="auth-hero__cards" aria-hidden="true">
+      <div class="auth-hero__card auth-hero__card--main">
+        <span class="auth-hero__card-pill">{{ $t('navigation.headerLogo.tagline') }}</span>
+        <p class="auth-hero__card-title">{{ resolvedTitle }}</p>
+        <p class="auth-hero__card-body">{{ resolvedSubtitle }}</p>
       </div>
 
-      <figcaption
-        aria-hidden="true"
-        class="absolute inset-x-4 bottom-4 z-20 rounded-[18px] border border-white/15 bg-[rgba(8,26,134,0.42)] px-3.5 py-3 shadow-[0_10px_24px_rgba(0,0,0,0.14)] backdrop-blur-md"
-      >
-        <div class="flex items-center justify-between gap-4">
-          <div class="min-w-0">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">{{ brandTagline }}</p>
-            <p class="mt-1 truncate text-[14px] font-extrabold text-white">{{ resolvedTitle }}</p>
-          </div>
-
-          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-white/12 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
-            <Icon aria-hidden="true" name="i-ph-arrow-up-right-bold" class="h-4.5 w-4.5" />
+      <div class="auth-hero__card-row">
+        <div class="auth-hero__card auth-hero__card--mini">
+          <span class="auth-hero__mini-icon">
+            <Icon name="i-ph-users-three-fill" class="h-4 w-4" />
+          </span>
+          <div>
+            <p class="auth-hero__mini-label">{{ $t('auth.heroPanel.communityLabel') }}</p>
+            <p class="auth-hero__mini-value">{{ $t('auth.heroPanel.communityValue') }}</p>
           </div>
         </div>
-      </figcaption>
-    </figure>
+
+        <div class="auth-hero__card auth-hero__card--mini">
+          <span class="auth-hero__mini-icon">
+            <Icon name="i-ph-lightning-fill" class="h-4 w-4" />
+          </span>
+          <div>
+            <p class="auth-hero__mini-label">{{ $t('auth.heroPanel.activityLabel') }}</p>
+            <p class="auth-hero__mini-value">{{ $t('auth.heroPanel.activityValue') }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </aside>
 </template>
 
@@ -113,20 +70,226 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
-const hasImageError = ref(false)
 
-watch(() => props.imageSrc, (value) => {
-  hasImageError.value = !value?.trim()
-}, { immediate: true })
-
-const brandTagline = computed(() => t('navigation.headerLogo.tagline'))
 const resolvedTitle = computed(() => props.title.trim() || t('auth.heroPanel.defaultTitle'))
 const resolvedSubtitle = computed(() => props.subtitle.trim() || t('auth.heroPanel.defaultSubtitle'))
-const resolvedImageSrc = computed(() => props.imageSrc.trim())
-const resolvedImageAlt = computed(() => props.imageAlt.trim())
-const showPreviewImage = computed(() => Boolean(resolvedImageSrc.value) && !hasImageError.value)
-
-const handleImageError = () => {
-  hasImageError.value = true
-}
 </script>
+
+<style scoped>
+/* ─── Hero wrapper ─────────────────────────────────────── */
+.auth-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2.5rem;
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+/* ─── Background ───────────────────────────────────────── */
+.auth-hero__bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.auth-hero__orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(56px);
+  opacity: 0.55;
+}
+
+.auth-hero__orb--a {
+  top: -4%;
+  left: -6%;
+  width: 14rem;
+  height: 14rem;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.auth-hero__orb--b {
+  right: -5%;
+  top: 30%;
+  width: 18rem;
+  height: 18rem;
+  background: rgba(80, 220, 255, 0.15);
+}
+
+.auth-hero__orb--c {
+  left: 20%;
+  bottom: -5%;
+  width: 16rem;
+  height: 16rem;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.auth-hero__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
+
+/* ─── Brand header ─────────────────────────────────────── */
+.auth-hero__brand,
+.auth-hero__copy,
+.auth-hero__cards {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-hero__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.auth-hero__brand-icon {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.2rem;
+  font-weight: 900;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(16px);
+}
+
+.auth-hero__brand-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.auth-hero__brand-name {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  margin-top: 0.05rem;
+}
+
+/* ─── Copy ─────────────────────────────────────────────── */
+.auth-hero__copy {
+  max-width: 32rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-hero__title {
+  font-size: clamp(2.2rem, 4vw, 4.2rem);
+  font-weight: 900;
+  line-height: 0.93;
+  letter-spacing: -0.07em;
+}
+
+.auth-hero__subtitle {
+  margin-top: 1.25rem;
+  max-width: 28rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* ─── Feature cards ────────────────────────────────────── */
+.auth-hero__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.auth-hero__card-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.auth-hero__card {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(20px);
+}
+
+.auth-hero__card--main {
+  border-radius: 1.75rem;
+  padding: 1.4rem 1.5rem;
+}
+
+.auth-hero__card-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.auth-hero__card-title {
+  margin-top: 0.9rem;
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.auth-hero__card-body {
+  margin-top: 0.65rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.auth-hero__card--mini {
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+  border-radius: 1.25rem;
+  padding: 0.9rem 1rem;
+}
+
+.auth-hero__mini-icon {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.auth-hero__mini-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.auth-hero__mini-value {
+  margin-top: 0.2rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+</style>

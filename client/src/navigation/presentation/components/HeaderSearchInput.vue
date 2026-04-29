@@ -8,19 +8,19 @@
       icon="i-ph-magnifying-glass-duotone"
       :ui="{
         wrapper: 'relative',
-        base: 'h-12 w-full pl-12 pr-12 rounded-2xl border-none ring-1 ring-secondary-100 bg-secondary-50/50 text-[var(--text-primary)] transition-all duration-300 focus:ring-2 focus:ring-primary-500 focus:bg-white focus:shadow-lg focus:shadow-primary-500/10 placeholder:text-secondary-400 font-medium',
+        base: 'h-12 w-full pl-12 pr-12 rounded-xl border-none ring-1 ring-secondary-100 bg-secondary-50/50 text-slate-700 transition-all duration-150 focus:ring-2 focus:ring-primary-500 focus:bg-white focus:shadow-lg focus:shadow-primary-500/10 placeholder:text-slate-400 font-medium',
         icon: {
           leading: {
             wrapper: 'absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none',
             pointer: 'pointer-events-none',
-            base: 'text-[var(--icon-primary)] h-5.5 w-5.5 transition-colors group-focus-within:text-[var(--icon-primary)]'
+            base: 'text-slate-400 h-5.5 w-5.5 transition-colors group-focus-within:text-[#0000ff]'
           }
         }
       }"
     >
       <template #trailing>
-        <div class="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-white ring-1 ring-secondary-100 shadow-sm opacity-60 group-focus-within:opacity-100 transition-opacity">
-          <kbd class="text-[10px] font-black font-sans text-[var(--text-primary)] uppercase tracking-widest">K</kbd>
+        <div class="hidden sm:flex items-center gap-1 rounded-lg bg-white px-2 py-1 ring-1 ring-secondary-100 shadow-sm opacity-60 transition-opacity group-focus-within:opacity-100">
+          <kbd class="font-sans text-[10px] font-semibold text-slate-500">K</kbd>
         </div>
       </template>
     </UInput>

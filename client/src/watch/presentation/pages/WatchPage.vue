@@ -1,25 +1,25 @@
 <template>
   <div class="space-y-4 pb-10 sm:space-y-5">
-    <section class="sm:hidden surface-card p-5">
-      <p class="text-micro font-bold uppercase tracking-[0.2em] text-[var(--text-primary)]">
+    <section class="sm:hidden watch-mobile-hero">
+      <p class="watch-mobile-hero__eyebrow">
         {{ $t("pages.watchPage.heroEyebrow") }}
       </p>
-      <h1 class="mt-2 text-3xl font-black leading-tight text-[var(--text-primary)]">
+      <h1 class="watch-mobile-hero__title">
         {{ $t("pages.watchPage.heroTitle") }}
       </h1>
-      <p class="mt-2 text-sm font-medium leading-relaxed text-[var(--text-primary)]">
+      <p class="watch-mobile-hero__desc">
         {{ $t("pages.watchPage.heroDescription") }}
       </p>
 
-      <div class="scrollbar-hide -mx-1 mt-6 flex gap-3 overflow-x-auto pb-1 px-1">
+      <div class="watch-mobile-stats">
         <div
           v-for="item in mobileHeroStats"
           :key="item.label"
-          class="min-w-[140px] shrink-0 rounded-2xl bg-secondary-50/50 border border-secondary-100/50 px-4 py-3"
+          class="watch-mobile-stat"
         >
-          <p class="text-[10px] font-black uppercase tracking-wider text-[var(--text-primary)]">{{ item.label }}</p>
-          <p class="mt-1.5 text-xl font-black leading-none text-[var(--text-primary)]">{{ item.value }}</p>
-          <p class="mt-1 text-[11px] font-semibold text-[var(--text-primary)]">{{ item.description }}</p>
+          <p class="watch-mobile-stat__label">{{ item.label }}</p>
+          <p class="watch-mobile-stat__value">{{ item.value }}</p>
+          <p class="watch-mobile-stat__desc">{{ item.description }}</p>
         </div>
       </div>
     </section>
@@ -69,7 +69,7 @@
 
     <section v-else class="surface-card p-6 sm:p-8">
       <div class="max-w-xl space-y-3">
-        <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
           {{ $t("pages.watchPage.emptyEyebrow") }}
         </p>
         <h2 class="text-heading text-[var(--text-primary)]">
@@ -255,3 +255,83 @@ const sendComment = (message: string) => {
   }
 }
 </script>
+
+<style scoped>
+.watch-mobile-hero {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 255, 0.04);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.watch-mobile-hero__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.watch-mobile-hero__title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.watch-mobile-hero__desc {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+.watch-mobile-stats {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 12px 0 4px;
+  scrollbar-width: none;
+}
+
+.watch-mobile-stats::-webkit-scrollbar {
+  display: none;
+}
+
+.watch-mobile-stat {
+  min-width: 130px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(0, 0, 255, 0.03);
+  border: 1px solid rgba(0, 0, 255, 0.06);
+  padding: 12px 14px;
+}
+
+.watch-mobile-stat__label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+
+.watch-mobile-stat__value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+  margin-top: 4px;
+}
+
+.watch-mobile-stat__desc {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  margin-top: 2px;
+}
+</style>

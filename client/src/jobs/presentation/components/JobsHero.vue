@@ -5,7 +5,7 @@
 
     <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-[780px]">
-        <p class="text-label-secondary text-white/72">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/72">
           {{ $t("pages.jobsPage.heroEyebrow") }}
         </p>
         <h1 class="mt-4 text-display text-[2.2rem] leading-[0.95] text-white sm:text-[3rem]">
@@ -20,7 +20,7 @@
             type="button"
             color="neutral"
             size="lg"
-            class="justify-center rounded-full bg-white text-[var(--text-primary)]"
+            class="justify-center rounded-xl bg-white font-semibold text-[var(--text-primary)]"
             @click="$emit('openPost')"
           >
             <Icon name="i-ph-briefcase-fill" class="mr-1.5 h-4 w-4" />
@@ -32,7 +32,7 @@
             color="neutral"
             :variant="savedOnly ? 'solid' : 'outline'"
             size="lg"
-            class="justify-center rounded-full border shadow-[0_12px_30px_rgba(15,23,42,0.14)] transition-colors"
+            class="justify-center rounded-xl border shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-colors font-semibold"
             :class="savedOnly
               ? 'border-white/85 bg-white text-[var(--color-primary-700)] hover:bg-white/92'
               : 'border-white/28 bg-white/12 text-white hover:bg-white/18'"
@@ -48,7 +48,7 @@
             color="neutral"
             variant="outline"
             size="lg"
-            class="justify-center rounded-full border-white/25 text-white"
+            class="justify-center rounded-xl border-white/25 font-semibold text-white"
             @click="$emit('reset')"
           >
             <Icon name="i-ph-arrow-counter-clockwise" class="mr-1.5 h-4 w-4" />
@@ -89,8 +89,8 @@
           </UBadge>
         </div>
 
-        <div class="mt-5 rounded-[24px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-[6px]">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-white/62">
+        <div class="mt-5 rounded-[18px] border border-white/15 bg-white/10 px-4 py-4 backdrop-blur-[6px]">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/62">
             {{ $t("pages.jobsPage.filterStatusTitle") }}
           </p>
           <p class="mt-2 text-sm leading-6 text-white/88">
@@ -103,12 +103,12 @@
         <div
           v-for="item in stats"
           :key="item.label"
-          class="rounded-[var(--radius-xl)] border border-white/15 bg-white/10 p-4 backdrop-blur-[6px]"
+          class="rounded-[18px] border border-white/15 bg-white/10 p-4 backdrop-blur-[6px]"
         >
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/62">
             {{ item.label }}
           </p>
-          <p class="mt-2 text-[1.6rem] font-black leading-none text-white">
+          <p class="mt-2 text-[1.6rem] font-extrabold leading-none text-white">
             {{ item.value }}
           </p>
           <p class="mt-1 text-[13px] leading-5 text-white/74">

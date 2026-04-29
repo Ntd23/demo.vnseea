@@ -1,30 +1,28 @@
 <template>
-  <div class="flex items-start justify-between gap-3">
-    <div class="flex items-center gap-2.5">
-      <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0000ff] text-[12px] font-bold text-white shadow-[0_4px_12px_rgba(0,0,255,0.2)] sm:h-11 sm:w-11">
+  <div class="post-header">
+    <div class="post-header__left">
+      <div class="post-header__avatar">
         {{ initials }}
       </div>
-      <div>
-        <div class="flex items-center gap-1.5">
-          <p class="text-[13px] font-bold text-slate-900 sm:text-sm">{{ author }}</p>
-          <UButton
-            color="primary"
-            variant="ghost"
-            size="xs"
-            class="rounded-full"
-            :loading="followStatus === 'loading'"
+      <div class="post-header__info">
+        <div class="post-header__name-row">
+          <p class="post-header__name">{{ author }}</p>
+          <button
+            class="post-header__follow"
+            :class="{ 'post-header__follow--active': followed }"
+            type="button"
             :disabled="followStatus === 'loading'"
             @click="toggleFollow"
           >
             {{ followLabel }}
-          </UButton>
+          </button>
         </div>
-        <div class="flex items-center gap-1.5 text-[11px] text-slate-400 sm:text-xs">
+        <div class="post-header__meta">
           <span>{{ role }}</span>
-          <span>•</span>
+          <span class="post-header__dot">·</span>
           <span>{{ time }}</span>
-          <span>•</span>
-          <Icon :name="audienceIcon" class="h-3 w-3" :title="audience" />
+          <span class="post-header__dot">·</span>
+          <Icon :name="audienceIcon" class="post-header__audience-icon" :title="audience" />
         </div>
       </div>
     </div>
@@ -32,8 +30,8 @@
     <!-- 3-dot menu -->
     <div ref="menuRef" class="relative">
       <button
-        class="rounded-full p-2 text-slate-400 transition hover:bg-[#0000ff]/5 hover:text-[#0000ff]"
-        :class="{ 'bg-[#0000ff]/5 text-[#0000ff]': open }"
+        class="post-header__menu-btn"
+        :class="{ 'post-header__menu-btn--open': open }"
         type="button"
         :aria-label="t('feed.postHeader.menuOpenLabel')"
         @click="open = !open"
@@ -52,38 +50,32 @@
       >
         <div
           v-if="open"
-          class="absolute right-0 top-full z-30 mt-1 w-64 overflow-hidden rounded-[18px] border border-[#0000ff]/10 bg-white shadow-[0_12px_40px_rgba(0,0,255,0.13)]"
+          class="post-header__dropdown"
         >
-          <div class="py-1.5">
+          <div class="py-1">
             <button
               v-for="item in menuItems"
               :key="item.key"
-              class="group/item flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-[#0000ff]/4"
-              :class="item.danger ? 'hover:bg-red-50' : ''"
+              class="post-header__dropdown-item"
+              :class="{ 'post-header__dropdown-item--danger': item.danger }"
               type="button"
               @click="handleMenuAction(item)"
             >
-              <span
-                class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0000ff]/6 text-[#0000ff]/70 transition group-hover/item:bg-[#0000ff]/10 group-hover/item:text-[#0000ff]"
-                :class="item.danger ? 'bg-red-50 text-red-400 group-hover/item:bg-red-100 group-hover/item:text-red-500' : ''"
-              >
+              <span class="post-header__dropdown-icon-wrap" :class="{ 'post-header__dropdown-icon-wrap--danger': item.danger }">
                 <Icon :name="item.icon" class="h-4 w-4" />
               </span>
               <div class="min-w-0">
-                <p
-                  class="text-[13px] font-semibold leading-tight text-slate-800 transition"
-                  :class="item.danger ? 'group-hover/item:text-red-600' : 'group-hover/item:text-[#0000ff]'"
-                >
+                <p class="post-header__dropdown-label" :class="{ 'post-header__dropdown-label--danger': item.danger }">
                   {{ item.label }}
                 </p>
-                <p class="mt-0.5 text-[11px] leading-tight text-slate-400">{{ item.desc }}</p>
+                <p class="post-header__dropdown-desc">{{ item.desc }}</p>
               </div>
             </button>
           </div>
         </div>
       </Transition>
     </div>
-    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -213,3 +205,193 @@ function handleMenuAction(item: { key: string; label: string; danger: boolean })
   emit("menuAction", item.key)
 }
 </script>
+
+<style scoped>
+.post-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.post-header__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.post-header__avatar {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.18);
+}
+
+.post-header__info {
+  min-width: 0;
+}
+
+.post-header__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.post-header__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.post-header__follow {
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.post-header__follow:hover {
+  background: rgba(0, 0, 255, 0.12);
+}
+
+.post-header__follow--active {
+  background: rgba(0, 0, 255, 0.08);
+  color: #64748b;
+}
+
+.post-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.post-header__dot {
+  color: #cbd5e1;
+}
+
+.post-header__audience-icon {
+  width: 13px;
+  height: 13px;
+}
+
+/* Menu button */
+.post-header__menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.post-header__menu-btn:hover,
+.post-header__menu-btn--open {
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
+/* Dropdown */
+.post-header__dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 30;
+  margin-top: 4px;
+  width: 260px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 255, 0.08);
+  background: #ffffff;
+  box-shadow: 0 12px 40px rgba(0, 0, 255, 0.1);
+}
+
+.post-header__dropdown-item {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.post-header__dropdown-item:hover {
+  background: rgba(0, 0, 255, 0.03);
+}
+
+.post-header__dropdown-item--danger:hover {
+  background: #fef2f2;
+}
+
+.post-header__dropdown-icon-wrap {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 255, 0.05);
+  color: rgba(0, 0, 255, 0.6);
+  margin-top: 2px;
+  transition: all 0.12s ease;
+}
+
+.post-header__dropdown-item:hover .post-header__dropdown-icon-wrap {
+  background: rgba(0, 0, 255, 0.08);
+  color: #0000ff;
+}
+
+.post-header__dropdown-icon-wrap--danger {
+  background: #fef2f2;
+  color: #f87171;
+}
+
+.post-header__dropdown-item:hover .post-header__dropdown-icon-wrap--danger {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.post-header__dropdown-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.post-header__dropdown-label--danger {
+  color: #dc2626;
+}
+
+.post-header__dropdown-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+</style>

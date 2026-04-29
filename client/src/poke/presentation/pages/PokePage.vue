@@ -6,16 +6,16 @@
         <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
           <div class="space-y-4">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-semibold text-primary-700 ring-1 ring-primary-100">
                 {{ t("pages.pokePage.heroEyebrow") }}
               </span>
-              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-semibold text-white">
                 {{ heroMainStat.value }} {{ heroMainStat.label }}
               </span>
             </div>
 
             <div class="space-y-3">
-              <h1 class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+              <h1 class="max-w-[760px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]">
                 {{ t("pages.pokePage.heroTitle") }}
               </h1>
               <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
@@ -27,7 +27,7 @@
           <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
             <NuxtLink
               :to="appRoutes.messages"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
+              class="inline-flex h-12 items-center justify-center rounded-[12px] border border-secondary-200 bg-white px-5 text-[14px] font-semibold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
               <Icon name="i-ph-chat-circle-dots-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ t("pages.pokePage.openMessages") }}
@@ -36,7 +36,7 @@
             <button
               v-if="pokedBackCount > 0"
               type="button"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
+              class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:bg-primary-700 active:scale-95"
               @click="resetPokedBack"
             >
               <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-5 w-5 shrink-0" />
@@ -49,10 +49,10 @@
           <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="text-[11px] font-extrabold uppercase text-white/52">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/52">
                   {{ heroMainStat.label }}
                 </p>
-                <p class="mt-2 text-[34px] font-black leading-none">
+                <p class="mt-2 text-[34px] font-extrabold leading-none">
                   {{ heroMainStat.value }}
                 </p>
                 <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
@@ -74,10 +74,10 @@
             >
               <div class="flex items-start justify-between gap-3">
                 <div>
-                  <p class="text-[10px] font-extrabold uppercase text-slate-500">
+                  <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                     {{ item.label }}
                   </p>
-                  <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
+                  <p class="mt-2 text-[26px] font-extrabold leading-none text-[var(--text-primary)]">
                     {{ item.value }}
                   </p>
                 </div>
@@ -93,15 +93,15 @@
     </section>
 
     <!-- Main List Section -->
-    <section class="surface-card ring-1 ring-secondary-200/50 shadow-2xl p-8 sm:p-12 space-y-12 bg-white group/list relative overflow-hidden">
+    <section class="surface-card ring-1 ring-secondary-200/50 bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] space-y-12 sm:p-12 group/list relative overflow-hidden">
       <div class="absolute inset-0 bg-gradient-to-b from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/list:opacity-100 transition-opacity duration-1000" />
       
       <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 pb-12 sm:flex-row sm:items-center sm:justify-between">
         <div class="space-y-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
+          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ t("pages.pokePage.listEyebrow") }}
           </p>
-          <h2 class="text-4xl font-black tracking-tight text-[var(--text-primary)] leading-none">
+          <h2 class="text-4xl font-extrabold leading-none tracking-tight text-[var(--text-primary)]">
             {{ t("pages.pokePage.listTitle", { count: pokeRecords.length }) }}
           </h2>
           <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] italic max-w-2xl px-0.5 opacity-70">
@@ -114,8 +114,8 @@
             <Icon name="i-ph-hand-pointing-duotone" class="h-5 w-5" />
           </div>
           <div class="pr-4">
-            <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] leading-none mb-1">{{ t("pages.pokePage.pendingLabel") }}</p>
-            <p class="text-lg font-black text-[var(--text-primary)] leading-none">{{ formatCount(pendingPokeCount) }}</p>
+            <p class="mb-1 text-[11px] font-semibold uppercase tracking-[0.06em] leading-none text-slate-400">{{ t("pages.pokePage.pendingLabel") }}</p>
+            <p class="text-lg font-extrabold leading-none text-[var(--text-primary)]">{{ formatCount(pendingPokeCount) }}</p>
           </div>
         </div>
       </div>

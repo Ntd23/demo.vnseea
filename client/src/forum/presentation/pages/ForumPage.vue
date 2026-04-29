@@ -21,7 +21,7 @@
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
       <main class="space-y-4">
         <UCard
-          class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
+          class="rounded-[18px] border border-[var(--border-default)] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
           :ui="{ body: 'p-5 sm:p-6' }"
         >
           <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -52,7 +52,7 @@
               <UButton
                 color="primary"
                 size="sm"
-                class="rounded-full"
+                class="rounded-xl font-semibold"
                 @click="createOpen = true"
               >
                 <Icon name="i-ph-plus-circle-fill" class="mr-1.5 h-4 w-4" />
@@ -80,7 +80,7 @@
           icon="i-ph-chats-circle-fill"
           :title="t('pages.forumPage.emptyTitle')"
           :description="t('pages.forumPage.emptyDescription')"
-          class="rounded-[30px]"
+          class="rounded-[18px]"
         >
           <template #actions>
             <UButton

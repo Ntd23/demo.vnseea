@@ -25,23 +25,23 @@
             v-for="album in albums"
             :key="album.title"
             :to="album.to"
-            class="group min-w-[240px] shrink-0 overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-white shadow-[0_14px_32px_rgba(15,35,110,0.06)] transition hover:-translate-y-1 sm:min-w-[280px]"
+            class="group min-w-[240px] shrink-0 overflow-hidden rounded-[16px] border border-[rgba(0,0,255,0.06)] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition hover:-translate-y-1 sm:min-w-[280px]"
           >
             <div class="relative h-36 overflow-hidden">
               <img :alt="album.title" :src="album.cover" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]">
               <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.78))]" />
-              <div class="absolute left-4 top-4 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-white" :style="{ background: album.accent }">
+              <div class="absolute left-4 top-4 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold text-white" :style="{ background: album.accent }">
                 {{ album.badge }}
               </div>
-              <div class="absolute right-4 top-4 rounded-full bg-white/88 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#243b63]">
+              <div class="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-semibold text-[#1e293b]">
                 {{ t("pages.photosPage.albumCount", { count: album.count }) }}
               </div>
             </div>
 
             <div class="p-4">
-              <h2 class="text-[1.05rem] font-black text-[#243b63]">{{ album.title }}</h2>
-              <p class="mt-2 text-[13px] font-semibold leading-6 text-slate-500">{{ album.description }}</p>
-              <div class="mt-4 inline-flex items-center gap-2 text-[12px] font-black text-[#0000ff]">
+              <h2 class="text-[1.05rem] font-extrabold text-[#0f172a]">{{ album.title }}</h2>
+              <p class="mt-2 text-[13px] font-medium leading-6 text-[#64748b]">{{ album.description }}</p>
+              <div class="mt-4 inline-flex items-center gap-2 text-[12px] font-semibold text-[#0000ff]">
                 {{ t("pages.photosPage.openLink") }}
                 <Icon name="i-ph-arrow-up-right-bold" class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </div>
@@ -49,22 +49,22 @@
           </NuxtLink>
         </div>
 
-        <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-4 py-4 shadow-[0_14px_32px_rgba(15,35,110,0.06)] sm:px-5 sm:py-5">
+        <section class="rounded-[16px] border border-[rgba(0,0,255,0.06)] bg-white px-4 py-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:px-5 sm:py-5">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#94a3b8]">
                 {{ t("pages.photosPage.resultEyebrow") }}
               </p>
-              <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.04em] text-[#243b63]">
+              <h2 class="mt-2 text-[1.35rem] font-extrabold tracking-[-0.01em] text-[#0f172a]">
                 {{ resultHeading }}
               </h2>
-              <p class="mt-2 text-[14px] leading-6 text-slate-500">
+              <p class="mt-2 text-[13px] font-medium leading-6 text-[#64748b]">
                 {{ t("pages.photosPage.resultCount", { count: filteredPhotos.length }) }}
               </p>
             </div>
 
             <button
-              class="inline-flex h-11 w-full items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff] sm:w-auto"
+              class="inline-flex h-10 w-full items-center justify-center rounded-[12px] border border-[#e2e8f0] bg-white px-4 text-[13px] font-600 text-[#334155] transition hover:border-[rgba(0,0,255,0.2)] hover:text-[#0000ff] sm:w-auto"
               type="button"
               @click="resetFilters"
             >

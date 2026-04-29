@@ -17,21 +17,21 @@
 
       <!-- Badges -->
       <div class="absolute left-6 top-6 flex flex-wrap gap-3">
-        <div class="rounded-xl bg-secondary-950/60 text-white font-black text-[9px] uppercase tracking-widest backdrop-blur-xl px-4 py-2 border border-white/10 shadow-xl">
+        <div class="rounded-xl border border-white/10 bg-secondary-950/60 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-white shadow-xl backdrop-blur-xl">
           {{ categoryLabel }}
         </div>
-        <div class="rounded-xl bg-white/10 text-white font-black text-[9px] uppercase tracking-widest backdrop-blur-xl px-4 py-2 border border-white/20 shadow-xl group-hover:bg-primary-500/30 transition-colors">
+        <div class="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-white shadow-xl backdrop-blur-xl transition-colors group-hover:bg-primary-500/30">
           {{ conditionLabel }}
         </div>
       </div>
 
       <!-- Location Info -->
       <div class="absolute bottom-6 left-6 flex items-center gap-3">
-        <div class="flex items-center gap-2.5 rounded-xl bg-black/40 px-4 py-2.5 text-[9px] font-black uppercase tracking-widest text-white backdrop-blur-xl border border-white/5 shadow-xl">
+        <div class="flex items-center gap-2.5 rounded-xl border border-white/5 bg-black/40 px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-white shadow-xl backdrop-blur-xl">
           <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 text-sky-400" />
           {{ location || locationPlaceholder || $t("pages.productEditor.previewLocationPlaceholder") }}
         </div>
-        <div class="rounded-xl bg-white/20 px-4 py-2.5 text-[9px] font-black text-white backdrop-blur-xl border border-white/20 shadow-xl">
+        <div class="rounded-xl border border-white/20 bg-white/20 px-4 py-2.5 text-[10px] font-semibold text-white shadow-xl backdrop-blur-xl">
           {{ $t("pages.productEditor.imageCount", { count: imageCount }) }}
         </div>
       </div>
@@ -50,10 +50,10 @@
       </div>
 
       <div class="space-y-2">
-        <p class="text-[9px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] group-hover:text-secondary-900 transition-colors pl-0.5">
+        <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400 transition-colors group-hover:text-secondary-900">
           {{ currencyLabel }}
         </p>
-        <h3 class="pr-20 text-2xl font-black leading-tight tracking-tight text-secondary-950 group-hover:text-primary-950 transition-colors line-clamp-1">
+        <h3 class="pr-20 text-2xl font-extrabold leading-tight tracking-tight text-secondary-950 transition-colors line-clamp-1 group-hover:text-primary-950">
           {{ title || emptyTitle }}
         </h3>
       </div>
@@ -64,18 +64,18 @@
 
       <div class="flex items-center justify-between gap-4 pt-6 border-t border-secondary-50 transition-colors group-hover:border-primary-100">
         <div class="space-y-1">
-          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-secondary-300 leading-none pl-0.5">{{ $t("pages.productEditor.priceLabel") }}</p>
-          <p class="text-2xl font-black text-sky-600 tracking-tight leading-none pt-1">
+          <p class="pl-0.5 text-[11px] font-semibold uppercase tracking-[0.06em] leading-none text-slate-400">{{ $t("pages.productEditor.priceLabel") }}</p>
+          <p class="pt-1 text-2xl font-extrabold leading-none tracking-tight text-sky-600">
             {{ price }}
           </p>
         </div>
 
         <div class="flex flex-col items-end gap-2 text-right">
-          <div class="inline-flex items-center gap-2 rounded-xl bg-sky-50 px-4 py-2 text-[10px] font-black text-sky-700 ring-1 ring-sky-100 shadow-sm uppercase tracking-widest">
+          <div class="inline-flex items-center gap-2 rounded-xl bg-sky-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-sky-700 ring-1 ring-sky-100 shadow-sm">
             <Icon name="i-ph-check-circle-duotone" class="h-4 w-4" />
             {{ statusLabel }}
           </div>
-          <p class="text-[10px] font-black text-secondary-300 uppercase tracking-[0.2em] pr-1">
+          <p class="pr-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ stockLabel }}
           </p>
         </div>

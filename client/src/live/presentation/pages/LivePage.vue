@@ -18,16 +18,16 @@
         />
 
         <!-- Readiness Section -->
-        <section class="surface-card p-8 sm:p-10 group overflow-hidden border-none ring-1 ring-secondary-100 shadow-xl relative bg-white">
+        <section class="surface-card relative overflow-hidden border-none bg-white p-8 ring-1 ring-secondary-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] group sm:p-10">
           <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between relative z-10 mb-10 pb-8 border-b border-secondary-50">
             <div class="space-y-2">
-              <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">{{ $t("pages.livePage.setupEyebrow") }}</p>
-              <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">{{ $t("pages.livePage.setupTitle") }}</h2>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">{{ $t("pages.livePage.setupEyebrow") }}</p>
+              <h2 class="text-3xl font-extrabold leading-none tracking-tight text-[var(--text-primary)]">{{ $t("pages.livePage.setupTitle") }}</h2>
               <p class="text-sm font-medium text-[var(--text-primary)]">{{ $t("pages.livePage.setupDescription") }}</p>
             </div>
             <UButton
               size="xl"
-              class="rounded-2xl font-black text-xs uppercase tracking-widest px-10 h-14 shadow-xl shadow-primary-500/20 bg-primary-600 hover:bg-primary-700 transition-all active:scale-95 shrink-0"
+              class="h-14 shrink-0 rounded-xl bg-primary-600 px-10 text-xs font-semibold uppercase tracking-[0.06em] shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all hover:bg-primary-700 active:scale-95"
               @click="goLiveOpen = true"
             >
               <template #leading>
@@ -46,7 +46,7 @@
               <div class="h-12 w-12 flex items-center justify-center rounded-2xl bg-white text-[var(--text-primary)] shadow-sm ring-1 ring-secondary-100 mb-6 group-hover/readiness:scale-110 transition-transform duration-500">
                 <Icon :name="item.icon.replace('-fill', '-duotone')" class="h-7 w-7" />
               </div>
-              <p class="text-[14px] font-black uppercase tracking-wider text-[var(--text-primary)] mb-2">{{ item.label }}</p>
+              <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">{{ item.label }}</p>
               <p class="text-[12px] font-medium leading-relaxed text-[var(--text-primary)] group-hover/readiness:text-secondary-500 transition-colors">{{ item.description }}</p>
             </div>
           </div>

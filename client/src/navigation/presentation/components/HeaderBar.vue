@@ -1,107 +1,124 @@
 <template>
-  <header class="sticky top-0 z-40">
-    <!-- Desktop Header -->
-    <div class="hidden xl:block">
-      <div class="border-b border-secondary-100 bg-white/80 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        <div class="mx-auto flex h-[72px] w-full max-w-[1920px] items-center gap-6 px-8">
-          <!-- Home Navigation Pill -->
-          <div class="flex shrink-0 items-center gap-2 rounded-2xl border border-secondary-100 bg-secondary-50/50 p-1.5 ring-1 ring-inset ring-white/50">
-            <NuxtLink 
-              to="/home"
-              class="flex items-center gap-2.5 px-4 py-2 rounded-xl transition-all duration-300 group"
-              :class="isHome ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' : 'text-[var(--text-primary)] hover:text-primary-600 hover:bg-white'"
-            >
-              <Icon :name="isHome ? 'i-ph-house-fill' : 'i-ph-house-duotone'" class="h-5 w-5 transition-transform group-hover:scale-110" />
-              <span class="text-[11px] font-black uppercase tracking-[0.2em]">{{ $t("navigation.headerBar.home") }}</span>
-            </NuxtLink>
-          </div>
-
-          <!-- Search Input Section -->
-          <div class="min-w-0 max-w-[840px] flex-1">
-            <NavigationHeaderSearchInput />
-          </div>
-
-          <!-- Action Buttons Section -->
-          <div class="ml-auto flex shrink-0 items-center gap-3">
-            <NavigationLocaleSwitcher compact />
-            
-            <div class="flex items-center gap-1.5 p-1 bg-secondary-50/50 border border-secondary-100 rounded-2xl">
-              <component
-                :is="action.to ? NuxtLink : 'button'"
-                v-for="action in desktopActions"
-                :key="action.label"
-                :to="action.to"
-                class="relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-500 group"
-                :class="action.to === route.path || (action.label === 'navigation.headerBar.notifications' && false) ? 'bg-white text-primary-600 shadow-sm ring-1 ring-secondary-100' : 'text-[var(--icon-primary)] hover:text-primary-600 hover:bg-white'"
-                :type="action.to ? undefined : 'button'"
-                :aria-label="$t(action.label)"
-              >
-                <Icon :name="action.icon.includes('duotone') ? action.icon : action.icon.replace('-fill', '-duotone')" class="h-5.5 w-5.5 transition-transform group-hover:scale-110" />
-                <span v-if="action.badge" class="absolute -top-1 -right-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-lg bg-primary-600 px-1 text-[9px] font-black text-white ring-2 ring-white shadow-lg shadow-primary-500/30">
-                  {{ action.badge }}
-                </span>
-              </component>
-            </div>
-
-            <!-- Profile / User Menu -->
-            <NavigationHeaderUserMenu />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mobile Header -->
-    <div class="xl:hidden">
-      <div class="relative overflow-hidden border-b border-[var(--border-light)] bg-white/95 px-4 py-3 shadow-[0_8px_24px_rgba(0,0,255,0.08)] backdrop-blur-[18px]">
-        <!-- Visual Decor -->
-        <div class="absolute inset-x-0 top-0 z-0 h-px bg-[var(--progress-gradient)] opacity-80" />
-        <div class="absolute -right-12 -top-16 h-32 w-32 rounded-full bg-primary-100/70 blur-3xl" />
-        
-        <div class="relative z-10 flex items-center justify-between gap-3">
+  <header class="sticky top-0 z-30">
+    <!-- ─── Desktop header ────────────────────────────────── -->
+    <div class="hidden border-b border-[#dfe6ff] bg-white/95 shadow-[0_10px_26px_rgba(15,35,110,0.08)] backdrop-blur xl:block">
+      <div class="mx-auto flex h-16 w-full max-w-[1880px] items-center gap-4 px-5">
+        <!-- Home pill -->
+        <div class="flex shrink-0 items-center gap-2 rounded-full border border-[#e2e8f0] bg-white p-1">
           <NuxtLink
-            to="/home"
-            class="focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--color-primary-100)] bg-[var(--color-primary-50)] text-primary-600 shadow-sm transition-all hover:bg-white"
+            :to="appRoutes.feed"
+            class="desktop-pill"
+            :class="isHome ? 'desktop-pill--active' : 'desktop-pill--inactive'"
             :aria-label="$t('navigation.headerBar.home')"
           >
-            <Icon name="i-ph-house-fill" class="h-5.5 w-5.5" />
+            <Icon name="i-ph-house-fill" class="h-4.5 w-4.5" />
+            <span>{{ $t("navigation.headerBar.home") }}</span>
           </NuxtLink>
+        </div>
+
+        <!-- Search -->
+        <div class="min-w-0 max-w-[780px] flex-1">
+          <NavigationHeaderSearchInput />
+        </div>
+
+        <!-- Right actions -->
+        <div class="ml-auto flex shrink-0 items-center gap-2">
+          <NavigationLocaleSwitcher compact />
+
+          <button class="header-action-btn" type="button" :aria-label="$t('navigation.headerBar.friendRequests')">
+            <Icon name="i-ph-user-plus-duotone" class="h-[18px] w-[18px]" />
+            <span class="header-action-badge">1</span>
+          </button>
+
           <NuxtLink
-            to="/search"
-            class="focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[var(--border-light)] bg-white text-[var(--icon-primary)] shadow-sm transition-all hover:border-primary-200 hover:bg-[var(--color-primary-50)] hover:text-primary-600"
-            :aria-label="$t('navigation.headerBar.search')"
+            :to="appRoutes.messages"
+            class="header-action-btn"
+            :class="route.path === appRoutes.messages ? 'header-action-btn--active' : ''"
+            :aria-label="$t('navigation.headerBar.messages')"
           >
-            <Icon name="i-ph-magnifying-glass-bold" class="h-5.5 w-5.5" />
+            <Icon
+              :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-fill' : 'i-ph-chat-circle-dots-duotone'"
+              class="h-[18px] w-[18px]"
+            />
           </NuxtLink>
 
-          <div class="ml-auto flex min-w-0 items-center gap-2">
-            <button
-              type="button"
-              class="focus-ring relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--color-primary-50)] text-primary-600 ring-1 ring-[var(--color-primary-100)] transition-all active:scale-95 hover:bg-white"
-              :aria-label="$t('navigation.headerBar.notifications')"
-            >
-              <Icon name="i-ph-bell-duotone" class="h-5.5 w-5.5" />
-              <span class="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-md bg-rose-500 px-1 text-[8px] font-black text-white shadow-xl ring-1 ring-white">
-                3
-              </span>
-            </button>
-            <NavigationLocaleSwitcher compact />
-            <button
-              type="button"
-              class="focus-ring relative z-20 flex h-10 w-10 shrink-0 touch-manipulation items-center justify-center rounded-xl bg-primary-600 text-white ring-1 ring-primary-500/20 shadow-lg shadow-primary-500/20 transition-all active:scale-95 hover:bg-primary-700"
-              :aria-label="$t('navigation.headerBar.account')"
-              :aria-expanded="mobileMenuOpen"
-              aria-controls="mobile-navigation-menu"
-              @click.stop.prevent="openMobileMenu"
-            >
-              <Icon name="i-ph-user-duotone" class="h-5.5 w-5.5" />
-            </button>
-          </div>
+          <button class="header-action-btn" type="button" :aria-label="$t('navigation.headerBar.notifications')">
+            <Icon name="i-ph-bell-duotone" class="h-[18px] w-[18px]" />
+            <span class="header-action-badge">3</span>
+          </button>
+
+          <NavigationHeaderUserMenu />
         </div>
       </div>
     </div>
+
+    <!-- ─── Mobile bar ────────────────────────────────────── -->
+    <div class="mobile-bar xl:hidden">
+      <div class="mobile-bar__inner">
+        <!-- LEFT GROUP: Home + Search -->
+        <div class="mobile-bar__group">
+          <NuxtLink
+            :to="appRoutes.feed"
+            class="mobile-icon-btn"
+            :class="isHome ? 'mobile-icon-btn--active' : ''"
+            :aria-label="$t('navigation.headerBar.home')"
+          >
+            <Icon name="i-ph-house-fill" class="h-[20px] w-[20px]" />
+          </NuxtLink>
+
+          <button
+            class="mobile-icon-btn"
+            :class="mobileSearchOpen ? 'mobile-icon-btn--active' : ''"
+            type="button"
+            :aria-label="$t('navigation.headerBar.search')"
+            @click="mobileSearchOpen = !mobileSearchOpen"
+          >
+            <Icon name="i-ph-magnifying-glass-bold" class="h-[20px] w-[20px]" />
+          </button>
+        </div>
+
+        <!-- RIGHT GROUP: Locale + Avatar -->
+        <div class="mobile-bar__group">
+          <NavigationLocaleSwitcher compact />
+
+          <button
+            class="mobile-icon-btn mobile-icon-btn--avatar"
+            type="button"
+            :aria-label="$t('navigation.headerBar.account')"
+            @click="mobileMenuOpen = true"
+          >
+            <Icon name="i-lucide-circle-user-round" class="h-[20px] w-[20px]" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── Mobile search — drops right below header ──────── -->
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-2"
+    >
+      <div v-if="mobileSearchOpen" class="mobile-search xl:hidden">
+        <NavigationHeaderSearchInput autofocus />
+        <button
+          class="mobile-search__close"
+          type="button"
+          :aria-label="$t('navigation.headerBar.closeSearch')"
+          @click="mobileSearchOpen = false"
+        >
+          <Icon name="i-ph-x-bold" class="h-4 w-4" />
+        </button>
+      </div>
+    </Transition>
   </header>
 
+  <!-- Mobile menu drawer -->
   <NavigationMobileMenu
+    v-model="mobileMenuOpen"
     :open="mobileMenuOpen"
     @update:open="mobileMenuOpen = $event"
     @close="mobileMenuOpen = false"
@@ -109,34 +126,192 @@
 </template>
 
 <script setup lang="ts">
-import { NuxtLink } from "#components"
-import NavigationHeaderSearchInput from "./HeaderSearchInput.vue"
-import NavigationHeaderUserMenu from "./HeaderUserMenu.vue"
-import NavigationLocaleSwitcher from "./LocaleSwitcher.vue"
-import NavigationMobileMenu from "./MobileMenu.vue"
+import { NuxtLink } from '#components'
+import { appRoutes } from '#shared-kernel/application/constants/route-registry'
+import NavigationHeaderSearchInput from './HeaderSearchInput.vue'
+import NavigationHeaderUserMenu from './HeaderUserMenu.vue'
+import NavigationLocaleSwitcher from './LocaleSwitcher.vue'
+import NavigationMobileMenu from './MobileMenu.vue'
 
 const mobileMenuOpen = ref(false)
+const mobileSearchOpen = ref(false)
 
 const route = useRoute()
-const isHome = computed(() => route.path === "/" || route.path === "/home")
+const isHome = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
 
-const desktopActions = [
-  { label: "navigation.headerBar.friendRequests", icon: "i-ph-user-plus-fill", badge: 1 },
-  { label: "navigation.headerBar.messages", icon: "i-ph-chat-circle-dots-fill", to: "/messages" },
-  { label: "navigation.headerBar.notifications", icon: "i-ph-bell-fill", badge: 3 },
-]
-
-function openMobileMenu() {
-  mobileMenuOpen.value = true
-}
+watch(() => route.path, () => {
+  mobileSearchOpen.value = false
+  mobileMenuOpen.value = false
+})
 </script>
 
 <style scoped>
-.scrollbar-hide {
-  scrollbar-width: none;
+/* ─── Desktop pill ─────────────────────────────────────── */
+.desktop-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border-radius: 9999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.15s ease;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.desktop-pill--active {
+  background: linear-gradient(180deg, #2749ff 0%, #0000ff 100%);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(0, 0, 255, 0.22);
+}
+
+.desktop-pill--inactive { color: #334155; }
+
+.desktop-pill--inactive:hover {
+  color: #0000ff;
+  background: #f5f8ff;
+}
+
+/* ─── Desktop action buttons ───────────────────────────── */
+.header-action-btn {
+  position: relative;
+  display: inline-flex;
+  height: 38px;
+  width: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.header-action-btn:hover {
+  border-color: rgba(0, 0, 255, 0.2);
+  color: #0000ff;
+  background: rgba(0, 0, 255, 0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 255, 0.08);
+}
+
+.header-action-btn--active {
+  border-color: #0000ff;
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
+.header-action-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #0000ff;
+  border: 2px solid #ffffff;
+  padding: 0 4px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* ─── Mobile bar ───────────────────────────────────────── */
+.mobile-bar {
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  box-shadow: 0 2px 12px rgba(0, 0, 255, 0.04);
+  padding: 8px 16px;
+}
+
+/* Two-group layout: left flush, right flush */
+.mobile-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Icon button base */
+.mobile-icon-btn {
+  position: relative;
+  display: flex;
+  height: 40px;
+  width: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1px solid #e8edf5;
+  background: #f8fafc;
+  color: #475569;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.mobile-icon-btn:hover {
+  border-color: rgba(0, 0, 255, 0.16);
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
+.mobile-icon-btn--active {
+  border-color: #0000ff;
+  background: #0000ff;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.22);
+}
+
+.mobile-icon-btn--avatar {
+  background: #ffffff;
+}
+
+/* ─── Mobile search — inline, directly below header ───── */
+.mobile-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px 10px;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  box-shadow: 0 4px 16px rgba(0, 0, 255, 0.06);
+}
+
+.mobile-search :deep(> *:first-child) {
+  flex: 1;
+  min-width: 0;
+}
+
+.mobile-search__close {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.mobile-search__close:hover {
+  background: rgba(0, 0, 255, 0.05);
+  border-color: rgba(0, 0, 255, 0.15);
+  color: #0000ff;
 }
 </style>

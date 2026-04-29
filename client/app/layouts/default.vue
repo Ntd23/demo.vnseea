@@ -15,7 +15,7 @@
         </aside>
 
         <main class="min-w-0 w-full" :class="mainClass">
-          <div v-if="showHeaderIconNav" class="sticky top-[56px] z-20 mb-4 mt-2 xl:block">
+          <div v-if="showHeaderIconNav" class="sticky top-[56px] z-20 mb-4 mt-2">
             <div class="overflow-hidden rounded-[1.4rem] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)]">
               <NavigationHeaderIconNav />
             </div>
@@ -57,6 +57,7 @@ const route = useRoute()
 const isReelsPage = computed(() => route.path === appRoutes.reels)
 const isCheckoutPage = computed(() => route.path === appRoutes.checkout)
 const isSearchPage = computed(() => route.path === appRoutes.search)
+const isHomeFeedPage = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
 const isCommunityComposerPage = computed(() =>
   route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
 )
@@ -66,12 +67,15 @@ const showLeftSidebar = computed(() =>
   && !isSearchPage.value,
 )
 const showRightSidebar = computed(() => !isReelsPage.value)
-const showHeaderIconNav = computed(() =>
-  !isReelsPage.value
-  && !isCheckoutPage.value
-  && !isCommunityComposerPage.value
-  && !isSearchPage.value
-)
+// HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.
+// Using a whitelist to avoid it leaking onto Groups, Events, Jobs, etc.
+const iconNavPages = new Set([
+  appRoutes.home,
+  appRoutes.feed,
+  appRoutes.photos,
+  appRoutes.watch,
+])
+const showHeaderIconNav = computed(() => iconNavPages.has(route.path))
 
 const shellClass = computed(() => {
   if (isReelsPage.value) {
@@ -82,9 +86,10 @@ const shellClass = computed(() => {
     return 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_295px]'
   }
 
+  // All content pages share same sidebar widths → no layout shift on navigation
   return showLeftSidebar.value
-    ? 'max-w-[1880px] px-5 xl:grid-cols-[220px_minmax(0,1fr)_250px]'
-    : 'max-w-[1880px] px-5 xl:grid-cols-[minmax(0,1fr)_250px]'
+    ? 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[240px_minmax(0,1fr)_280px] 2xl:grid-cols-[256px_minmax(0,1fr)_300px]'
+    : 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_280px]'
 })
 
 const mainClass = computed(() => {
@@ -104,7 +109,7 @@ const mainClass = computed(() => {
     return 'pb-8'
   }
 
-  return 'xl:sticky xl:top-[74px]'
+  return 'pb-10'
 })
 
 watch(() => route.fullPath, () => {

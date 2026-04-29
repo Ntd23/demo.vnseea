@@ -1,18 +1,13 @@
 <template>
-  <div class="mx-auto w-full max-w-[720px]">
-    <section class="flex flex-col gap-2">
-      <p class="text-[13px] font-extrabold tracking-[0.32em] text-[#0000ff]">{{ $t('pages.forgotPasswordPage.eyebrow') }}</p>
-      <h1 class="text-[2.35rem] font-black leading-[0.95] tracking-[-0.08em] text-[#0000ff] sm:text-[2.7rem]">{{ $t('pages.forgotPasswordPage.title') }}</h1>
-      <p class="max-w-[38rem] text-[1rem] leading-7 text-slate-500">{{ $t('pages.forgotPasswordPage.subtitle') }}</p>
-    </section>
+  <div class="auth-form">
+    <div class="auth-form__head">
+      <p class="auth-form__eyebrow">{{ $t('pages.forgotPasswordPage.eyebrow') }}</p>
+      <h1 class="auth-form__title">{{ $t('pages.forgotPasswordPage.title') }}</h1>
+      <p class="auth-form__subtitle">{{ $t('pages.forgotPasswordPage.subtitle') }}</p>
+    </div>
 
-    <UForm
-      :state="form"
-      :validate="validateForm"
-      class="mt-8 flex flex-col gap-5"
-      @submit="handleReset"
-      @error="handleFormError"
-    >
+    <!-- Status alert -->
+    <Transition name="auth-alert">
       <UAlert
         v-if="statusAlert"
         :color="statusAlert.color"
@@ -20,155 +15,129 @@
         :icon="statusAlert.icon"
         :title="statusAlert.title"
         :description="statusAlert.description"
-        class="rounded-[20px]"
+        class="auth-alert-box"
       />
+    </Transition>
 
+    <UForm
+      :state="state"
+      :validate="validate"
+      class="auth-form__body"
+      @submit="handleReset"
+      @error="onFormError"
+    >
+      <!-- Email / phone -->
       <UFormField
         name="emailOrPhone"
         :label="$t('pages.forgotPasswordPage.emailLabel')"
         required
-        size="xl"
-        class="space-y-2"
       >
         <UInput
-          v-model="form.emailOrPhone"
+          v-model="state.emailOrPhone"
+          type="text"
           autocomplete="username"
           size="xl"
-          color="primary"
           :placeholder="$t('pages.forgotPasswordPage.emailPlaceholder')"
           class="w-full"
           :ui="inputUi"
         />
       </UFormField>
 
-      <UFormField
-        name="captchaConfirmed"
-        size="xl"
-        class="space-y-2"
-      >
-        <div class="flex items-center justify-between gap-4 rounded-[1.45rem] border border-[#d5e4f0] bg-white px-4 py-4 shadow-sm transition focus-within:border-[#0000ff] focus-within:shadow-[0_0_0_4px_rgba(0,0,255,0.08)]">
+      <!-- Captcha -->
+      <UFormField name="captchaConfirmed">
+        <div class="auth-captcha">
           <UCheckbox
-            v-model="form.captchaConfirmed"
+            v-model="state.captchaConfirmed"
             name="captchaConfirmed"
-            size="xl"
             color="primary"
+            size="lg"
             :label="$t('pages.forgotPasswordPage.captchaLabel')"
-            :ui="captchaCheckboxUi"
+            :ui="checkboxUi"
           />
-
-          <div class="flex shrink-0 flex-col items-center justify-center text-[10px] leading-none text-slate-500">
-            <div class="flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#d7e3ef] bg-[#f7fbff]">
-              <Icon name="i-ph-shield-check-fill" class="h-4.5 w-4.5 text-[#0000ff]" />
+          <div class="auth-captcha__brand">
+            <div class="auth-captcha__shield">
+              <Icon name="i-ph-shield-check-fill" class="h-4 w-4 text-[#0000ff]" />
             </div>
-            <span class="mt-1">{{ $t('pages.forgotPasswordPage.captchaBrand') }}</span>
+            <span class="auth-captcha__brand-text">{{ $t('pages.forgotPasswordPage.captchaBrand') }}</span>
           </div>
         </div>
       </UFormField>
 
+      <!-- Submit -->
       <UButton
         type="submit"
-        loading-auto
-        loading-icon="i-lucide-loader-2"
         color="primary"
         variant="solid"
         block
         size="xl"
+        :loading="submitState === 'loading'"
+        loading-icon="i-lucide-loader-2"
         :disabled="isSubmitDisabled"
-        class="mt-1 h-[3.95rem] rounded-[1.45rem] text-[1.05rem] font-black shadow-[0_14px_32px_rgba(0,0,255,0.18)]"
+        class="auth-submit"
       >
-        {{ submitLabel }}
+        {{ $t('pages.forgotPasswordPage.submit') }}
       </UButton>
 
-      <p class="pt-1 text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
+      <p class="auth-form__footer-text">
         {{ $t('pages.forgotPasswordPage.readyQuestion') }}
-        <NuxtLink :to="appRoutes.welcome" class="font-extrabold text-[#0000ff]">{{ $t('pages.forgotPasswordPage.login') }}</NuxtLink>
+        <NuxtLink class="auth-form__footer-link" :to="appRoutes.welcome">
+          {{ $t('pages.forgotPasswordPage.login') }}
+        </NuxtLink>
       </p>
     </UForm>
   </div>
 </template>
 
 <script setup lang="ts">
-import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 
-type ForgotPasswordFormState = {
-  emailOrPhone: string
-  captchaConfirmed: boolean
-}
+const { t } = useI18n()
 
-type ForgotPasswordFormError = {
-  name?: keyof ForgotPasswordFormState
-  message: string
-}
-
-const form = reactive<ForgotPasswordFormState>({
+const state = reactive({
   emailOrPhone: '',
   captchaConfirmed: false,
 })
 
-const inputUi = {
-  base: 'h-[3.85rem] rounded-[1.45rem] px-5 text-[1rem]',
-}
-
-const captchaCheckboxUi = {
-  root: 'flex-1 items-center gap-3',
-  wrapper: 'flex-1 text-[1rem]',
-  label: 'text-[0.98rem] font-medium text-slate-700',
-  base: 'size-5 rounded-[6px] ring-[#cbd9ea] bg-white data-[state=checked]:ring-[#0000ff]',
-}
-
 const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
-const { t } = useI18n()
+
+const inputUi = {
+  base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe]',
+}
+
+const checkboxUi = {
+  root: 'items-center gap-3',
+  label: 'text-[0.95rem] font-medium text-slate-700',
+  base: 'size-5 rounded-[6px]',
+}
 
 const hasValidIdentity = (value: string) => {
   const normalized = value.trim()
-
-  if (!normalized) {
-    return false
-  }
-
-  if (normalized.includes('@')) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)
-  }
-
+  if (!normalized) return false
+  if (normalized.includes('@')) return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)
   return normalized.replace(/\D/g, '').length >= 8
 }
 
-const validateForm = (state: ForgotPasswordFormState): ForgotPasswordFormError[] => {
-  const errors: ForgotPasswordFormError[] = []
+type FieldName = 'emailOrPhone' | 'captchaConfirmed'
+type ValidationError = { name: FieldName; message: string }
 
-  if (!state.emailOrPhone.trim()) {
-    errors.push({
-      name: 'emailOrPhone',
-      message: t('pages.forgotPasswordPage.validationEmailRequired'),
-    })
+const validate = (s: typeof state): ValidationError[] => {
+  const errors: ValidationError[] = []
+  if (!s.emailOrPhone.trim()) {
+    errors.push({ name: 'emailOrPhone', message: t('pages.forgotPasswordPage.validationEmailRequired') })
   }
-  else if (!hasValidIdentity(state.emailOrPhone)) {
-    errors.push({
-      name: 'emailOrPhone',
-      message: t('pages.forgotPasswordPage.validationEmailInvalid'),
-    })
+  else if (!hasValidIdentity(s.emailOrPhone)) {
+    errors.push({ name: 'emailOrPhone', message: t('pages.forgotPasswordPage.validationEmailInvalid') })
   }
-
-  if (!state.captchaConfirmed) {
-    errors.push({
-      name: 'captchaConfirmed',
-      message: t('pages.forgotPasswordPage.validationCaptchaRequired'),
-    })
+  if (!s.captchaConfirmed) {
+    errors.push({ name: 'captchaConfirmed', message: t('pages.forgotPasswordPage.validationCaptchaRequired') })
   }
-
   return errors
 }
 
 const isSubmitDisabled = computed(() =>
   submitState.value === 'loading'
-  || !form.emailOrPhone.trim()
-  || !form.captchaConfirmed,
-)
-
-const submitLabel = computed(() =>
-  submitState.value === 'loading'
-    ? t('pages.forgotPasswordPage.submitting')
-    : t('pages.forgotPasswordPage.submit'),
+  || !state.emailOrPhone.trim()
+  || !state.captchaConfirmed,
 )
 
 const statusAlert = computed(() => {
@@ -180,7 +149,6 @@ const statusAlert = computed(() => {
       description: t('pages.forgotPasswordPage.statusSuccessDescription'),
     }
   }
-
   if (submitState.value === 'error') {
     return {
       color: 'error' as const,
@@ -189,7 +157,6 @@ const statusAlert = computed(() => {
       description: t('pages.forgotPasswordPage.statusErrorDescription'),
     }
   }
-
   return null
 })
 
@@ -199,13 +166,147 @@ const handleReset = async () => {
   submitState.value = 'success'
 }
 
-const handleFormError = () => {
+const onFormError = () => {
   submitState.value = 'error'
 }
 
-watch(() => [form.emailOrPhone, form.captchaConfirmed], () => {
-  if (submitState.value !== 'loading') {
-    submitState.value = 'idle'
-  }
+watch([() => state.emailOrPhone, () => state.captchaConfirmed], () => {
+  if (submitState.value !== 'loading') submitState.value = 'idle'
 })
 </script>
+
+<style scoped>
+.auth-form {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.auth-form__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-form__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #0000ff;
+}
+
+.auth-form__title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  color: #0f172a;
+}
+
+@media (min-width: 640px) {
+  .auth-form__title { font-size: 2.6rem; }
+}
+
+.auth-form__subtitle {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+/* Alert */
+.auth-alert-box {
+  border-radius: 14px !important;
+}
+
+.auth-alert-enter-active,
+.auth-alert-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.auth-alert-enter-from,
+.auth-alert-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.auth-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Captcha row */
+.auth-captcha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 14px;
+  border: 1.5px solid #e2e8f0;
+  background: #fafbfe;
+  padding: 14px 16px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-captcha:focus-within {
+  border-color: #0000ff;
+  box-shadow: 0 0 0 4px rgba(0, 0, 255, 0.07);
+}
+
+.auth-captcha__brand {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.auth-captcha__shield {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f8faff;
+}
+
+.auth-captcha__brand-text {
+  font-size: 9px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+}
+
+/* Submit */
+.auth-submit {
+  border-radius: 14px !important;
+  height: 3.5rem !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  margin-top: 4px;
+  box-shadow: 0 12px 28px rgba(0, 0, 255, 0.2) !important;
+}
+
+.auth-submit:hover:not(:disabled) {
+  box-shadow: 0 16px 36px rgba(0, 0, 255, 0.28) !important;
+  transform: translateY(-1px);
+}
+
+/* Footer */
+.auth-form__footer-text {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.auth-form__footer-link {
+  font-weight: 800;
+  color: #0000ff;
+  text-decoration: none;
+}
+</style>

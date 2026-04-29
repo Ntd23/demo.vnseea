@@ -1,22 +1,19 @@
 <template>
   <NuxtLink
     :to="to"
-    class="group flex min-w-0 items-center gap-3.5 rounded-xl px-3 py-2.5 transition-all duration-300"
-    :class="isActive ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm shadow-primary-500/5' : 'text-[var(--text-primary)] hover:bg-secondary-50 hover:text-primary-600'"
+    class="sidebar-item"
+    :class="{ 'sidebar-item--active': isActive }"
   >
-    <span
-      class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-all duration-300"
-      :class="isActive ? 'border-primary-200 bg-white text-primary-600 shadow-sm' : 'border-secondary-100 bg-white text-[var(--icon-primary)] group-hover:border-primary-200 group-hover:text-primary-600'"
-    >
+    <span class="sidebar-item__icon" :class="{ 'sidebar-item__icon--active': isActive }">
       <Icon :name="isActive ? icon : icon.replace('-fill', '-duotone')" class="h-4.5 w-4.5" />
     </span>
     
-    <span class="truncate text-[10px] font-black uppercase tracking-[0.2em] leading-none">{{ label }}</span>
+    <span class="sidebar-item__label">{{ label }}</span>
     
     <span
       v-if="badge"
-      class="ml-auto inline-flex min-w-5 shrink-0 items-center justify-center rounded-lg px-2 py-1 text-[9px] font-black shadow-sm ring-1 ring-inset"
-      :class="isActive ? 'bg-primary-600 text-white ring-primary-500' : 'bg-primary-100 text-primary-700 ring-primary-200'"
+      class="sidebar-item__badge"
+      :class="{ 'sidebar-item__badge--active': isActive }"
     >
       {{ badge }}
     </span>
@@ -44,3 +41,100 @@ const isActive = computed(() => {
   return route.path === props.to
 })
 </script>
+
+<style scoped>
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.sidebar-item:hover {
+  background: rgba(0, 0, 255, 0.03);
+}
+
+.sidebar-item--active {
+  background: rgba(0, 0, 255, 0.05);
+}
+
+/* Active left accent bar */
+.sidebar-item--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #0000ff;
+}
+
+.sidebar-item__icon {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  transition: all 0.15s ease;
+}
+
+.sidebar-item:hover .sidebar-item__icon {
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+}
+
+.sidebar-item__icon--active {
+  background: #0000ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+}
+
+.sidebar-item__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.sidebar-item--active .sidebar-item__label {
+  color: #0000ff;
+  font-weight: 700;
+}
+
+.sidebar-item:hover .sidebar-item__label {
+  color: #0000ff;
+}
+
+.sidebar-item__badge {
+  margin-left: auto;
+  display: inline-flex;
+  min-width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 0 6px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(0, 0, 255, 0.08);
+  color: #0000ff;
+}
+
+.sidebar-item__badge--active {
+  background: #0000ff;
+  color: #ffffff;
+}
+</style>

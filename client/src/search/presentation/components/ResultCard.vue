@@ -1,21 +1,21 @@
 <template>
   <NuxtLink
     :to="result.href"
-    class="group flex h-full flex-col rounded-[28px] border border-secondary-100 bg-white p-6 shadow-sm shadow-secondary-900/5 transition-all duration-300 hover:-translate-y-1 hover:border-primary-200 hover:shadow-xl hover:shadow-primary-500/10"
+    class="group flex h-full flex-col rounded-[18px] border border-secondary-100 bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300 hover:-translate-y-1 hover:border-primary-200 hover:shadow-[0_12px_32px_rgba(37,99,235,0.12)]"
   >
     <div class="flex items-start gap-4">
       <UAvatar
         :text="result.kind === 'posts' ? '' : result.initials"
         :icon="result.kind === 'posts' ? 'i-ph-newspaper-clipping-fill' : undefined"
         size="xl"
-        class="font-black text-white shadow-lg"
+        class="font-extrabold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)]"
         :ui="{ background: 'bg-primary-500', rounded: 'rounded-2xl' }"
         :style="{ background: avatarBackground }"
       />
 
       <div class="min-w-0 flex-1 pt-1">
         <div class="flex flex-wrap items-center gap-2">
-          <h3 class="text-lg font-black text-secondary-900 tracking-tight group-hover:text-secondary-900 transition-colors">
+          <h3 class="text-lg font-extrabold text-secondary-900 tracking-tight group-hover:text-secondary-900 transition-colors">
             {{ result.title }}
           </h3>
 
@@ -25,11 +25,11 @@
             size="xs"
             variant="soft"
             :color="badgeColor"
-            class="rounded-full font-black px-2 py-0.5 text-[9px] uppercase tracking-wider"
+            class="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em]"
           />
         </div>
 
-        <p class="mt-1 text-[11px] font-bold uppercase tracking-widest text-secondary-900">
+        <p class="mt-1 text-[12px] font-medium text-slate-500">
           {{ result.subtitle }}
         </p>
       </div>
@@ -71,7 +71,7 @@
           size="xs"
           variant="ghost"
           color="primary"
-          class="rounded-full px-0 font-black text-[10px] uppercase group-hover:text-secondary-900"
+          class="rounded-full px-0 text-[10px] font-semibold group-hover:text-secondary-900"
         />
       </div>
     </div>
