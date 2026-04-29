@@ -118,7 +118,7 @@
     <!-- Primary Actions -->
     <div class="mt-10 flex flex-wrap gap-3 border-t border-secondary-50 pt-8">
       <UButton
-        :to="`/order/${order.id}`"
+        :to="appRoutes.orderDetail(order.id)"
         size="xl"
         icon="i-ph-arrow-square-out-duotone"
         class="rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-black text-xs uppercase tracking-widest px-8 shadow-xl shadow-primary-500/30 transition-all active:scale-95"
@@ -137,7 +137,7 @@
       </UButton>
 
       <UButton
-        to="/products"
+        :to="appRoutes.products"
         color="white"
         variant="soft"
         size="xl"
@@ -151,6 +151,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import {
   getRepeatOrderActionLabel,
   useOrderPresentation,

@@ -45,6 +45,7 @@
 </template>
 
 <script setup>
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import NavigationHeaderBar from "../../src/navigation/presentation/components/HeaderBar.vue"
 import NavigationHeaderIconNav from "../../src/navigation/presentation/components/HeaderIconNav.vue"
 import NavigationLeftSidebar from "../../src/navigation/presentation/components/LeftSidebar.vue"
@@ -53,11 +54,11 @@ import NavigationRightSidebar from "../../src/navigation/presentation/components
 const chatOpen = ref(false)
 
 const route = useRoute()
-const isReelsPage = computed(() => route.path === '/reels')
-const isCheckoutPage = computed(() => route.path === '/checkout')
-const isSearchPage = computed(() => route.path === '/search')
+const isReelsPage = computed(() => route.path === appRoutes.reels)
+const isCheckoutPage = computed(() => route.path === appRoutes.checkout)
+const isSearchPage = computed(() => route.path === appRoutes.search)
 const isCommunityComposerPage = computed(() =>
-  route.path === '/create-group' || route.path === '/create-page',
+  route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
 )
 const showLeftSidebar = computed(() =>
   !route.path.startsWith('/@')
@@ -107,6 +108,6 @@ const mainClass = computed(() => {
 })
 
 watch(() => route.fullPath, () => {
-  if (route.path !== '/reels') chatOpen.value = false
+  if (route.path !== appRoutes.reels) chatOpen.value = false
 })
 </script>

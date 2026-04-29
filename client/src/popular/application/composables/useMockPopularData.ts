@@ -1,4 +1,5 @@
 import { computed } from "vue"
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { resolveI18nMessage } from "#shared-kernel/application/utils/resolveI18nMessage"
 
 export type PopularCategoryKey =
@@ -148,28 +149,28 @@ const defaultPopularQuickLinks: PopularQuickLink[] = [
   {
     title: "Xem video nổi bật",
     description: "Đi tiếp sang khu Watch để xem các phiên nội dung đang được quan tâm.",
-    to: "/watch",
+    to: appRoutes.watch,
     icon: "i-ph-play-circle-bold",
     accent: "linear-gradient(135deg,#2563eb 0%,#60a5fa 100%)",
   },
   {
     title: "Theo dõi live",
     description: "Mở nhanh các buổi live đang lên sóng trong cộng đồng.",
-    to: "/live",
+    to: appRoutes.live,
     icon: "i-ph-broadcast-bold",
     accent: "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
   },
   {
     title: "Đọc blog sâu hơn",
     description: "Chuyển sang blog để đọc các bài dài và góc nhìn đã được biên tập.",
-    to: "/blogs",
+    to: appRoutes.blogs,
     icon: "i-ph-newspaper-bold",
     accent: "linear-gradient(135deg,#7c3aed 0%,#c084fc 100%)",
   },
   {
     title: "Khám phá thị trường",
     description: "Xem những listing sản phẩm đang được chú ý trên marketplace.",
-    to: "/products",
+    to: appRoutes.products,
     icon: "i-ph-storefront-bold",
     accent: "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)",
   },

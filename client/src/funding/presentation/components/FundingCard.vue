@@ -112,6 +112,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { MockFundingCampaign } from "../../domain/types/funding.types"
 import FundingProgress from "./FundingProgress.vue"
 
@@ -125,7 +126,7 @@ const { t } = useI18n()
 
 const showCover = ref(true)
 
-const detailHref = computed(() => `/show_fund/${props.campaign.id}`)
+const detailHref = computed(() => appRoutes.showFund(props.campaign.id))
 
 const statusLabel = computed(() => {
   if (props.campaign.status === "ending") return t("pages.fundingPage.statusEnding")

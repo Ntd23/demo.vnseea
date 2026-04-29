@@ -1,3 +1,4 @@
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import {
   communityCategoryOptions,
   communityGroupDirectory,
@@ -58,7 +59,7 @@ function toInitials(value: string, limit = 2) {
 }
 
 function createProfilePath(name: string) {
-  return `/@${createCommunitySlug(name) || "member"}`
+  return appRoutes.profile(createCommunitySlug(name) || "member")
 }
 
 function normalizeTag(value: string) {
@@ -344,7 +345,7 @@ export function useMockSearchData() {
       title: post.author,
       subtitle: t("community.search.mock.posts.subtitle", { time: post.time }),
       description: post.text,
-      href: "/home",
+      href: appRoutes.feed,
       initials: toInitials(post.author),
       badge: post.audience === "Public" ? t("community.search.mock.badge.public") : t("community.search.mock.badge.private"),
       metricLabel: t("community.search.mock.metrics.likes", { count: post.stats.likes }),

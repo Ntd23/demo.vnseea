@@ -19,7 +19,7 @@
             {{ $t("pages.eventsPage.resultMeta", { count: resultCount, tab: activeTabLabel }) }}
           </UBadge>
           <UButton
-            to="/events/create-event"
+            :to="appRoutes.createEvent"
             color="primary"
             size="sm"
             class="rounded-full"
@@ -149,6 +149,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type {
   EventCategory,
   EventCategoryKey,

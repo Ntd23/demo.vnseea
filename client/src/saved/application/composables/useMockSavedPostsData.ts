@@ -1,3 +1,4 @@
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useMockSocialData } from "../../../feed/application/composables/useMockSocialData"
 import { computed } from "vue"
 
@@ -35,14 +36,14 @@ export function useMockSavedPostsData() {
     createSavedPostEntry("saved-post-1", posts[0], {
       savedAtLabel: t("pages.savedPostsPage.savedAtFirst"),
       sourceLabel: t("pages.savedPostsPage.sourceFeed"),
-      sourceTo: "/home",
+      sourceTo: appRoutes.feed,
       collectionLabel: t("pages.savedPostsPage.collectionPriority"),
       note: t("pages.savedPostsPage.noteFirst"),
     }),
     createSavedPostEntry("saved-post-2", posts[1], {
       savedAtLabel: t("pages.savedPostsPage.savedAtSecond"),
       sourceLabel: t("pages.savedPostsPage.sourceExplore"),
-      sourceTo: "/explore?view=posts",
+      sourceTo: `${appRoutes.explore}?view=posts`,
       collectionLabel: t("pages.savedPostsPage.collectionBrandProfile"),
       note: t("pages.savedPostsPage.noteSecond"),
     }),

@@ -231,7 +231,7 @@
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CheckoutLayout from "../../../checkout/presentation/components/CheckoutLayout.vue"
 import { useOrderPresentation } from "../../application/composables/useOrderPresentation"
-import { useSellerOrders } from "../../application/composables/useSellerOrders"
+import { useSellerOrderDetailVM } from "../../application/view-models/useSellerOrderDetailVM"
 import {
   formatOrderCurrency,
   sellerOrderPayoutStatusMeta,
@@ -245,9 +245,7 @@ const props = defineProps<{
   orderId: string
 }>()
 
-const { findOrderById } = useSellerOrders()
-
-const order = computed(() => findOrderById(props.orderId))
+const { order } = useSellerOrderDetailVM(() => props.orderId)
 const { paymentMeta, statusMeta, totalItems } = useOrderPresentation(order)
 
 const payoutMeta = computed(() =>

@@ -1,10 +1,11 @@
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { computed } from "vue"
 import { createCommunitySlug } from "../../../../types/community"
 import { useMockSocialData } from "../../../feed/application/composables/useMockSocialData"
 import type { MockPokeRecord } from "../../domain/types/poke.types"
 
 function createProfilePath(name: string) {
-  return `/@${createCommunitySlug(name) || "member"}`
+  return appRoutes.profile(createCommunitySlug(name) || "member")
 }
 
 const accentPalette = [

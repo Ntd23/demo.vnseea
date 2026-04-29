@@ -1,3 +1,4 @@
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { communityCategoryOptions, communityPageCategoryOptions } from "../constants/community-options"
 import type {
   CommunityDraft,
@@ -65,19 +66,19 @@ export function formatCommunityLikeCount(count: number) {
 }
 
 export function getCommunityGroupPath(slug: string) {
-  return `/g/${slug}`
+  return appRoutes.groupDetail(slug)
 }
 
 export function getCommunityGroupSettingsPath(slug: string) {
-  return `/group-setting/${slug}`
+  return appRoutes.groupSetting(slug)
 }
 
 export function getCommunityPagePath(slug: string) {
-  return `/p/${slug}`
+  return appRoutes.pageDetail(slug)
 }
 
 export function getCommunityPageSettingsPath(slug: string) {
-  return `/page-setting/${slug}`
+  return appRoutes.pageSetting(slug)
 }
 
 export function appendCommunityQuery(path: string, query: Record<string, unknown>) {

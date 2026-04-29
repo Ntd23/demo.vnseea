@@ -26,7 +26,7 @@
 
           <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
             <NuxtLink
-              to="/messages"
+              :to="appRoutes.messages"
               class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
               <Icon name="i-ph-chat-circle-dots-duotone" class="mr-2 h-5 w-5 shrink-0" />
@@ -134,6 +134,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import PokeRequestCard from "../components/RequestCard.vue"
 import { useMockPokeData } from "../../infrastructure/mocks/pokeCatalog"
 

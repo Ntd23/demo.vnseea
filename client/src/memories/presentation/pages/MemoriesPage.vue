@@ -31,7 +31,7 @@
 
           <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
             <NuxtLink
-              to="/home"
+              :to="appRoutes.feed"
               class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
               <Icon name="i-ph-house-line-duotone" class="mr-2 h-5 w-5 shrink-0" />
@@ -39,7 +39,7 @@
             </NuxtLink>
 
             <NuxtLink
-              to="/saved-posts"
+              :to="appRoutes.savedPosts"
               class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
             >
               <Icon name="i-ph-bookmark-simple-duotone" class="mr-2 h-5 w-5 shrink-0" />
@@ -128,6 +128,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import MemoriesMemoryFeed from "../components/MemoryFeed.vue"
 import { useMockMemoriesData } from "../../application/composables/useMockMemoriesData"
 

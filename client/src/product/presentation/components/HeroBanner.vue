@@ -21,7 +21,7 @@
 
         <div class="flex flex-wrap items-center gap-4 pt-4">
           <UButton
-            to="/my-products"
+            :to="appRoutes.myProducts"
             variant="soft"
             size="xl"
             class="h-14 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-xl transition-all active:scale-95 px-8"
@@ -69,6 +69,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { ProductHeroStat } from "../../domain/types/product-editor.types"
 
 const props = defineProps<{

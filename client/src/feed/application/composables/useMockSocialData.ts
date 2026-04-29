@@ -1,3 +1,5 @@
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+
 type NavItem = {
   label: string
   icon: string
@@ -95,11 +97,11 @@ export const useMockSocialData = () => {
   const { t } = useI18n()
 
   const primaryNav: NavItem[] = [
-    { label: "Trang chu", icon: "i-lucide-house", to: "/" },
-    { label: "Tin nhan", icon: "i-lucide-message-square", to: "/messages", badge: 4 },
-    { label: "Kham pha", icon: "i-lucide-compass", to: "/discover" },
-    { label: "Bang tin", icon: "i-lucide-newspaper", to: "/feed" },
-    { label: "Dang xuat", icon: "i-lucide-log-out", to: "/welcome" },
+    { label: "Trang chu", icon: "i-lucide-house", to: appRoutes.home },
+    { label: "Tin nhan", icon: "i-lucide-message-square", to: appRoutes.messages, badge: 4 },
+    { label: "Kham pha", icon: "i-lucide-compass", to: appRoutes.explore },
+    { label: "Bang tin", icon: "i-lucide-newspaper", to: appRoutes.feed },
+    { label: "Dang xuat", icon: "i-lucide-log-out", to: appRoutes.welcome },
   ]
 
   const stories: Story[] = [
@@ -199,34 +201,34 @@ export const useMockSocialData = () => {
 
   const sidebarNav: SidebarNavItem[] = [
     { label: "Nguồn cấp tin tức", icon: "i-ph-house-simple", to: "/" },
-    { label: "Tập ảnh", icon: "i-ph-images", to: "/photos" },
-    { label: "Xem", icon: "i-ph-play-circle", to: "/watch" },
-    { label: "Cuộn phim", icon: "i-ph-film-strip", to: "/reels" },
-    { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: "/saved-posts" },
-    { label: "Bài viết phổ biến", icon: "i-ph-fire", to: "/popular" },
-    { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: "/memories" },
-    { label: "Chọc", icon: "i-ph-hand-waving", to: "/poke" },
-    { label: "Nhóm của tôi", icon: "i-ph-users-three", to: "/groups" },
-    { label: "Trang của tôi", icon: "i-ph-file-text", to: "/pages" },
+    { label: "Tập ảnh", icon: "i-ph-images", to: appRoutes.photos },
+    { label: "Xem", icon: "i-ph-play-circle", to: appRoutes.watch },
+    { label: "Cuộn phim", icon: "i-ph-film-strip", to: appRoutes.reels },
+    { label: "Bài đã lưu", icon: "i-ph-bookmark-simple", to: appRoutes.savedPosts },
+    { label: "Bài viết phổ biến", icon: "i-ph-fire", to: appRoutes.popular },
+    { label: "Ký ức", icon: "i-ph-clock-counter-clockwise", to: appRoutes.memories },
+    { label: "Chọc", icon: "i-ph-hand-waving", to: appRoutes.poke },
+    { label: "Nhóm của tôi", icon: "i-ph-users-three", to: appRoutes.groups },
+    { label: "Trang của tôi", icon: "i-ph-file-text", to: appRoutes.pages },
   ]
 
   const sidebarNavMore: SidebarNavItem[] = [
-    { label: "Blog", icon: "i-ph-newspaper", to: "/blogs" },
-    { label: "Thị trường", icon: "i-ph-storefront", to: "/products" },
-    { label: "Danh mục", icon: "i-ph-squares-four", to: "/directory" },
-    { label: "Sự kiện", icon: "i-ph-calendar-dots", to: "/events" },
-    { label: "Live", icon: "i-ph-broadcast", to: "/live" },
-    { label: "Diễn đàn", icon: "i-ph-chats-circle", to: "/forum" },
-    { label: "Phim", icon: "i-ph-popcorn", to: "/movies" },
-    { label: "Việc làm", icon: "i-ph-briefcase", to: "/jobs" },
-    { label: "Ưu đãi", icon: "i-ph-tag", to: "/deals" },
-    { label: "Tìm bạn", icon: "i-ph-user-plus", to: "/find-friends" },
-    { label: "Trò chơi", icon: "i-ph-game-controller", to: "/games" },
-    { label: "Go Pro", icon: "i-ph-crown-simple", to: "/go-pro" },
-    { label: "Ví VNSEEA", icon: "i-ph-wallet", to: "/wallet" },
-    { label: "Rút tiền", icon: "i-ph-money-wavy", to: "/withdrawal" },
-    { label: "Trending", icon: "i-ph-trend-up", to: "/trending" },
-    { label: "Kinh phí", icon: "i-ph-hand-heart", to: "/funding" },
+    { label: "Blog", icon: "i-ph-newspaper", to: appRoutes.blogs },
+    { label: "Thị trường", icon: "i-ph-storefront", to: appRoutes.products },
+    { label: "Danh mục", icon: "i-ph-squares-four", to: appRoutes.directory },
+    { label: "Sự kiện", icon: "i-ph-calendar-dots", to: appRoutes.events },
+    { label: "Live", icon: "i-ph-broadcast", to: appRoutes.live },
+    { label: "Diễn đàn", icon: "i-ph-chats-circle", to: appRoutes.forum },
+    { label: "Phim", icon: "i-ph-popcorn", to: appRoutes.movies },
+    { label: "Việc làm", icon: "i-ph-briefcase", to: appRoutes.jobs },
+    { label: "Ưu đãi", icon: "i-ph-tag", to: appRoutes.deals },
+    { label: "Tìm bạn", icon: "i-ph-user-plus", to: appRoutes.findFriends },
+    { label: "Trò chơi", icon: "i-ph-game-controller", to: appRoutes.games },
+    { label: "Go Pro", icon: "i-ph-crown-simple", to: appRoutes.goPro },
+    { label: "Ví VNSEEA", icon: "i-ph-wallet", to: appRoutes.wallet },
+    { label: "Rút tiền", icon: "i-ph-money-wavy", to: appRoutes.withdrawal },
+    { label: "Trending", icon: "i-ph-trend-up", to: appRoutes.trending },
+    { label: "Kinh phí", icon: "i-ph-hand-heart", to: appRoutes.funding },
   ]
 
   const contacts: Contact[] = [
@@ -379,3 +381,4 @@ export const useMockSocialData = () => {
     profileChips,
   }
 }
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"

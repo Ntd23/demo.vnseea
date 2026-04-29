@@ -199,13 +199,15 @@
 
       <p class="text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
         {{ $t('pages.registerPage.hasAccount') }}
-        <NuxtLink class="font-extrabold text-[#0000ff]" to="/welcome">{{ $t('pages.registerPage.login') }}</NuxtLink>
+        <NuxtLink class="font-extrabold text-[#0000ff]" :to="appRoutes.welcome">{{ $t('pages.registerPage.login') }}</NuxtLink>
       </p>
     </UForm>
   </div>
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+
 type RegisterGender = 'female' | 'male' | 'custom'
 
 type RegisterFormState = {

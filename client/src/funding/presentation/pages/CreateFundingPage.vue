@@ -4,7 +4,7 @@
       <div class="grid gap-0 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div class="p-6 sm:p-8 lg:p-10">
           <NuxtLink
-            to="/funding"
+            :to="appRoutes.funding"
             class="inline-flex items-center gap-2 rounded-full bg-[var(--color-soft)] px-4 py-2 text-sm font-extrabold text-[var(--color-primary)]"
           >
             <Icon name="i-ph-arrow-left-bold" class="h-4 w-4" />
@@ -58,7 +58,7 @@
             {{ $t("pages.createFundingPage.previewDescription") }}
           </p>
           <NuxtLink
-            to="/funding"
+            :to="appRoutes.funding"
             class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-[18px] border border-[var(--color-border)] px-5 py-3 text-sm font-extrabold text-[var(--color-primary)] transition hover:border-[var(--color-primary)] hover:bg-[var(--color-soft)]"
           >
             {{ $t("pages.createFundingPage.viewFundingList") }}
@@ -80,6 +80,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { FundingCreatePayload } from "../../domain/types/funding.types"
 import { useFundingCatalog } from "../../infrastructure/mocks/fundingCatalog"
 import FundingCreateFundingForm from "../components/CreateFundingForm.vue"

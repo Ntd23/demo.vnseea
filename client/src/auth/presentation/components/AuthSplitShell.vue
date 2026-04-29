@@ -15,7 +15,7 @@
       <div class="w-full min-w-0 max-w-[760px] 2xl:max-w-[840px]">
         <div class="mb-8 flex items-center justify-between lg:hidden">
           <slot name="mobile-brand">
-            <NavigationHeaderLogo :inverted="false" to="/welcome" />
+            <NavigationHeaderLogo :inverted="false" :to="appRoutes.welcome" />
           </slot>
         </div>
 
@@ -28,6 +28,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import AuthHeroPanel from "./AuthHeroPanel.vue"
 import NavigationHeaderLogo from "../../../navigation/presentation/components/HeaderLogo.vue"
 

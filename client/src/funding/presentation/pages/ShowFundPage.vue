@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { DonationPayload, MockFundingCampaign } from "../../domain/types/funding.types"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import { applyFundingDonation, cloneFundingCampaign, useFundingCatalog } from "../../infrastructure/mocks/fundingCatalog"
@@ -82,6 +83,6 @@ watch(fundingId, () => {
 })
 
 function goBackToFunding() {
-  navigateTo("/funding")
+  navigateTo(appRoutes.funding)
 }
 </script>
