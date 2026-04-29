@@ -6,7 +6,7 @@
 
     <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
       <div class="max-w-[780px]">
-        <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+        <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-white">
           {{ $t("pages.eventsPage.heroEyebrow") }}
         </UBadge>
         <h1 class="mt-4 text-display text-[2.25rem] leading-[0.95] text-white sm:text-[3rem]">
@@ -31,7 +31,7 @@
             color="neutral"
             variant="solid"
             size="xl"
-            class="rounded-full bg-white text-[var(--text-primary)]"
+            class="rounded-xl bg-white text-[var(--text-primary)] font-semibold"
           >
             <Icon name="i-ph-plus-circle-fill" class="mr-2 h-4 w-4" />
             {{ $t("pages.eventsPage.createEvent") }}
@@ -41,7 +41,7 @@
             color="neutral"
             :variant="myEventsActive ? 'solid' : 'soft'"
             size="xl"
-            class="rounded-full border border-white/20 bg-[#fde7b2] text-[#27345f] data-[state=open]:bg-[#fde7b2]"
+            class="rounded-xl border border-white/20 bg-[#fde7b2] text-[#27345f] font-semibold data-[state=open]:bg-[#fde7b2]"
             type="button"
             @click="$emit('showMyEvents')"
           >
@@ -55,13 +55,13 @@
         <UCard
           v-for="item in stats"
           :key="item.label"
-          class="rounded-[24px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
+          class="rounded-[18px] border border-white/15 bg-white/10 backdrop-blur-[6px]"
           :ui="{ body: 'p-4' }"
         >
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/62">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/62">
             {{ item.label }}
           </p>
-          <p class="mt-2 text-[1.6rem] font-black leading-none text-white">
+          <p class="mt-2 text-[1.6rem] font-extrabold leading-none text-white">
             {{ item.value }}
           </p>
           <p class="mt-1 text-[13px] leading-5 text-white/74">

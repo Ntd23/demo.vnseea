@@ -4073,7 +4073,8 @@
       "search": "Tìm kiếm",
       "reels": "Reels",
       "video": "Video",
-      "profile": "Trang cá nhân"
+      "profile": "Trang cá nhân",
+      "photos": "Ảnh"
     },
     "headerIconNav": {
       "home": "Trang chủ",
@@ -4105,6 +4106,8 @@
         "myGroups": "Nhóm của tôi",
         "forum": "Diễn đàn",
         "ads": "Quảng cáo",
+        "advertising": "Quảng cáo",
+        "reels": "Cuộn phim",
         "photos": "Tập ảnh",
         "watch": "Xem",
         "reelsShortcut": "Cuộn phim",
@@ -4127,9 +4130,14 @@
       "settingsNav": {
         "settings": "Cài đặt",
         "register": "Đăng ký",
+        "registration": "Đăng ký",
+        "editProfile": "Chỉnh sửa",
+        "generalSettings": "Cài đặt chung",
         "adminArea": "Khu vực quản trị",
         "logout": "Đăng xuất"
       },
+      "walletLabel": "Cái ví",
+      "pointsLabel": "Điểm",
       "bottomActions": {
         "switchAccount": "Chuyển tài khoản",
         "keyboardShortcuts": "Các phím tắt bàn phím",

@@ -36,14 +36,14 @@
               />
 
               <div>
-                <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#0000ff]/50">{{ t("feed.shareModal.shareVia") }}</p>
+                <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/50">{{ t("feed.shareModal.shareVia") }}</p>
                 <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
                   <UButton
                     v-for="platform in platforms"
                     :key="platform.label"
                     color="neutral"
                     variant="outline"
-                    class="flex flex-col items-center gap-1.5 rounded-[16px] py-3 text-[11px] font-medium text-slate-600"
+                    class="flex flex-col items-center gap-1.5 rounded-[16px] py-3 text-[11px] font-medium text-slate-600 shadow-[0_8px_18px_rgba(15,23,42,0.03)]"
                     type="button"
                     @click="platform.action"
                   >
@@ -82,7 +82,7 @@
               </div>
 
               <div>
-                <p class="mb-3 text-[11px] font-bold uppercase tracking-[0.16em] text-[#0000ff]/50">{{ t("feed.shareModal.destinationTitle") }}</p>
+                <p class="mb-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/50">{{ t("feed.shareModal.destinationTitle") }}</p>
                 <div class="grid grid-cols-2 gap-2">
                   <button
                     v-for="dest in destinations"
@@ -102,7 +102,7 @@
               </div>
 
               <div v-if="post" class="rounded-[16px] border border-[#0000ff]/10 bg-[#0000ff]/3 p-3">
-                <p class="mb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/40">{{ t("feed.shareModal.previewLabel") }}</p>
+                <p class="mb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/40">{{ t("feed.shareModal.previewLabel") }}</p>
                 <div class="flex items-start gap-2">
                   <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#0000ff] text-[10px] font-bold text-white">
                     {{ post.author.slice(0, 2).toUpperCase() }}

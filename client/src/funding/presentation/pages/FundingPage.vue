@@ -24,10 +24,10 @@
 
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
       <section class="space-y-4">
-        <div class="rounded-[28px] border border-[var(--color-border)] bg-white p-5 shadow-[var(--shadow-card)]">
+        <div class="rounded-[18px] border border-[var(--color-border)] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-muted)]">{{ $t("pages.fundingPage.results") }}</p>
+              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--color-muted)]">{{ $t("pages.fundingPage.results") }}</p>
               <h2 class="mt-1 text-2xl font-extrabold text-[var(--color-text)]">{{ resultHeading }}</h2>
               <p class="mt-1 text-sm font-semibold text-[var(--color-muted)]">
                 {{ $t("pages.fundingPage.resultsMeta", { count: filteredCampaigns.length }) }}
@@ -35,7 +35,7 @@
             </div>
             <NuxtLink
             :to="appRoutes.createFunding"
-              class="inline-flex items-center justify-center gap-2 rounded-[18px] bg-[var(--color-primary)] px-5 py-3 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5"
+              class="inline-flex items-center justify-center gap-2 rounded-[12px] bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5"
             >
               <Icon name="i-ph-plus-circle-fill" class="h-5 w-5" />
               {{ $t("pages.fundingPage.createCampaign") }}
@@ -54,7 +54,7 @@
 
         <div
           v-else
-          class="rounded-[28px] border border-dashed border-[var(--color-border)] bg-white p-8 text-center shadow-[var(--shadow-card)]"
+          class="rounded-[18px] border border-dashed border-[var(--color-border)] bg-white p-8 text-center shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
         >
           <FoundationEmptyState
             icon="i-ph-hand-heart-fill"

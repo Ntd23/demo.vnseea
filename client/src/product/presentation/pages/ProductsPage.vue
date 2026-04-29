@@ -1,21 +1,21 @@
 <template>
   <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-24 sm:px-5 lg:px-6">
     <!-- Hero Marketplace -->
-    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
+    <section class="overflow-hidden rounded-[18px] border border-secondary-100 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
-        <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
+        <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[16px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-secondary-100 sm:p-7">
           <div class="space-y-4">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-semibold text-primary-700 ring-1 ring-primary-100">
                 {{ $t("pages.productsPage.eyebrow") }}
               </span>
-              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-semibold text-white">
                 {{ $t("pages.productsPage.nearbyStores", { count: nearbyCount }) }}
               </span>
             </div>
 
             <div class="space-y-3">
-              <h1 class="max-w-[760px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+              <h1 class="max-w-[760px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]">
                 {{ $t("pages.productsPage.title") }}
               </h1>
               <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
@@ -27,7 +27,7 @@
           <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
             <NuxtLink
               to="/new-product"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
+              class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:bg-primary-700 active:scale-95"
             >
               <Icon name="i-ph-plus-circle-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ $t("pages.productsPage.newListing") }}
@@ -35,7 +35,7 @@
 
             <NuxtLink
               to="/my-products"
-              class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
+              class="inline-flex h-12 items-center justify-center rounded-[12px] border border-secondary-200 bg-white px-5 text-[14px] font-semibold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             >
               <Icon name="i-ph-package-duotone" class="mr-2 h-5 w-5 shrink-0" />
               {{ $t("pages.productsPage.myProducts") }}
@@ -44,13 +44,13 @@
         </div>
 
         <div class="grid gap-3">
-          <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
+          <div class="rounded-[16px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_12px_30px_rgba(15,23,42,0.12)]">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="text-[11px] font-extrabold uppercase text-white/52">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/52">
                   {{ heroMainStat.label }}
                 </p>
-                <p class="mt-2 text-[34px] font-black leading-none">
+                <p class="mt-2 text-[34px] font-extrabold leading-none">
                   {{ heroMainStat.value }}
                 </p>
                 <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
@@ -68,12 +68,12 @@
             <article
               v-for="item in heroSecondaryStats"
               :key="item.label"
-              class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
+              class="rounded-[16px] border border-[#dbe3f2] bg-white p-4"
             >
-              <p class="text-[10px] font-extrabold uppercase text-slate-500">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-500">
                 {{ item.label }}
               </p>
-              <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
+              <p class="mt-2 text-[26px] font-extrabold leading-none text-[var(--text-primary)]">
                 {{ item.value }}
               </p>
               <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
@@ -87,7 +87,7 @@
 
     <!-- Global Search & Discovery Bar -->
     <section class="relative z-20 mx-auto w-full">
-      <div class="rounded-[3rem] border border-secondary-200/50 bg-white/90 p-4 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] backdrop-blur-3xl lg:p-6 transition-all hover:shadow-[0_48px_80px_-24px_rgba(0,0,0,0.15)] ring-1 ring-secondary-100">
+      <div class="rounded-[18px] border border-secondary-200/50 bg-white/90 p-4 shadow-[0_12px_30px_rgba(0,0,0,0.08)] backdrop-blur-3xl transition-all hover:shadow-[0_16px_36px_rgba(0,0,0,0.1)] ring-1 ring-secondary-100 lg:p-6">
         <div class="flex flex-col gap-6 lg:flex-row">
           <UInput
             v-model="search"
@@ -110,7 +110,7 @@
               option-attribute="label"
               size="xl"
               class="lg:min-w-[200px]"
-              :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
+              :ui="{ rounded: 'rounded-xl', trigger: 'h-18 lg:h-20 font-semibold text-[12px] bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8 text-slate-600' }"
             >
               <template #leading>
                 <Icon name="i-ph-sort-ascending-duotone" class="h-6 w-6 text-[var(--text-primary)]" />
@@ -124,7 +124,7 @@
               option-attribute="label"
               size="xl"
               class="lg:min-w-[200px]"
-              :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
+              :ui="{ rounded: 'rounded-xl', trigger: 'h-18 lg:h-20 font-semibold text-[12px] bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8 text-slate-600' }"
             >
               <template #leading>
                 <Icon name="i-ph-tag-duotone" class="h-6 w-6 text-[var(--text-primary)]" />
@@ -138,7 +138,7 @@
               option-attribute="label"
               size="xl"
               class="lg:min-w-[180px]"
-              :ui="{ rounded: 'rounded-2xl', trigger: 'h-18 lg:h-20 font-black text-[11px] uppercase tracking-widest bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8' }"
+              :ui="{ rounded: 'rounded-xl', trigger: 'h-18 lg:h-20 font-semibold text-[12px] bg-secondary-50/50 ring-1 ring-secondary-100 hover:ring-primary-200 transition-all px-8 text-slate-600' }"
             >
               <template #leading>
                 <Icon name="i-ph-navigation-arrow-duotone" class="h-6 w-6 text-[var(--text-primary)]" />
@@ -147,7 +147,7 @@
 
             <UButton
               size="xl"
-              class="rounded-2xl h-18 lg:h-20 px-10 font-black uppercase tracking-widest justify-center active:scale-95 transition-all shadow-xl"
+              class="h-18 justify-center rounded-xl px-10 font-semibold active:scale-95 transition-all shadow-[0_4px_14px_rgba(0,0,255,0.2)] lg:h-20"
               :color="nearbyOnly ? 'primary' : 'secondary'"
               :variant="nearbyOnly ? 'solid' : 'soft'"
               icon="i-ph-gps-fixed-duotone"
@@ -166,7 +166,7 @@
             :key="chip.value"
             variant="ghost"
             size="lg"
-            class="rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all px-6 border-none h-12"
+            class="h-12 rounded-xl border-none px-6 text-[12px] font-semibold transition-all"
             :class="selectedCategory === chip.value
               ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-200 shadow-lg shadow-primary-500/10'
               : 'text-[var(--text-primary)] hover:bg-secondary-50 hover:text-secondary-900 ring-1 ring-transparent hover:ring-secondary-100'"
@@ -182,17 +182,17 @@
     </section>
 
     <!-- Results Header -->
-    <div class="surface-card p-8 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between ring-1 ring-secondary-100 shadow-xl bg-white relative overflow-hidden group/results">
+    <div class="surface-card relative overflow-hidden bg-white p-8 ring-1 ring-secondary-100 shadow-[0_2px_12px_rgba(0,0,0,0.04)] flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between group/results">
       <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/results:opacity-100 transition-opacity duration-1000" />
       
       <div class="relative z-10 space-y-3">
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
+        <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
           {{ $t("pages.productsPage.results") }}
         </p>
-        <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">
+        <h2 class="text-3xl font-extrabold tracking-tight text-[var(--text-primary)] leading-none">
           {{ resultHeading }}
         </h2>
-        <div class="flex items-center gap-4 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] pl-1">
+        <div class="flex items-center gap-4 pl-1 text-[11px] font-semibold text-slate-500">
           <span class="flex items-center gap-2">
             <Icon name="i-ph-package-duotone" class="h-4 w-4 text-[var(--text-primary)]" />
             {{ visibleProducts.length }} {{ $t("pages.productsPage.matchingProducts", { count: visibleProducts.length, sort: '' }).split(' ')[1] }}
@@ -206,7 +206,7 @@
         <UBadge
           variant="soft"
           size="lg"
-          class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-[var(--text-primary)] ring-1 ring-primary-100"
+          class="h-12 rounded-xl bg-primary-50 px-6 text-[12px] font-semibold text-[var(--text-primary)] ring-1 ring-primary-100"
         >
           <template #leading>
             <Icon name="i-ph-funnel-duotone" class="h-5 w-5 mr-3" />
@@ -217,7 +217,7 @@
           color="gray"
           variant="ghost"
           size="lg"
-          class="rounded-2xl h-12 px-6 font-black text-[11px] uppercase tracking-widest hover:bg-secondary-50 transition-all active:scale-95"
+          class="h-12 rounded-xl px-6 text-[12px] font-semibold hover:bg-secondary-50 transition-all active:scale-95"
           @click="resetFilters"
         >
           <template #leading>

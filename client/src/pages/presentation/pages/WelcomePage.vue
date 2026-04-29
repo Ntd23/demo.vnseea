@@ -1,200 +1,200 @@
 <template>
-  <div class="mx-auto w-full max-w-[720px]">
-    <section class="flex flex-col gap-2">
-      <p class="text-[13px] font-extrabold tracking-[0.32em] text-[#0000ff]">{{ $t('pages.welcomePage.eyebrow') }}</p>
-      <h1 class="text-[2.35rem] font-black leading-[0.95] tracking-[-0.08em] text-[#0000ff] sm:text-[2.7rem]">{{ $t('pages.welcomePage.title') }}</h1>
-      <p class="max-w-[36rem] text-[1rem] leading-7 text-slate-500">{{ $t('pages.welcomePage.subtitle') }}</p>
-    </section>
+  <div class="auth-form">
+    <div class="auth-form__head">
+      <p class="auth-form__eyebrow">{{ $t('pages.welcomePage.eyebrow') }}</p>
+      <h1 class="auth-form__title">{{ $t('pages.welcomePage.title') }}</h1>
+      <p class="auth-form__subtitle">{{ $t('pages.welcomePage.subtitle') }}</p>
+    </div>
 
     <UForm
-      :state="form"
-      :validate="validateForm"
-      class="mt-8 flex flex-col gap-5"
+      :state="state"
+      :validate="validate"
+      class="auth-form__body"
       @submit="handleLogin"
-      @error="handleFormError"
     >
-      <UAlert
-        v-if="statusAlert"
-        :color="statusAlert.color"
-        variant="subtle"
-        :icon="statusAlert.icon"
-        :title="statusAlert.title"
-        :description="statusAlert.description"
-        class="rounded-[20px]"
-      />
-
       <UFormField
         name="login"
         :label="$t('pages.welcomePage.loginLabel')"
-        :hint="$t('pages.welcomePage.loginHint')"
         required
-        size="xl"
-        class="space-y-2"
       >
         <UInput
-          v-model="form.login"
+          v-model="state.login"
+          type="text"
           autocomplete="username"
           size="xl"
-          color="primary"
-          :placeholder="$t('pages.welcomePage.loginPlaceholder')"
+          :placeholder="$t('pages.welcomePage.loginPlaceholder') || 'Email hoặc số điện thoại'"
           class="w-full"
-          :ui="{ base: 'h-[3.85rem] rounded-[1.45rem] px-5 text-[1rem]' }"
+          :ui="inputUi"
         />
       </UFormField>
 
       <UFormField
         name="password"
+        :label="$t('pages.welcomePage.passwordLabel')"
         required
-        size="xl"
-        class="space-y-2"
       >
-        <template #label>
-          {{ $t('pages.welcomePage.passwordLabel') }}
-        </template>
-
         <template #hint>
-          <NuxtLink class="text-[0.95rem] font-bold text-[#0000ff]" to="/forgot-password">{{ $t('pages.welcomePage.forgotPassword') }}</NuxtLink>
+          <NuxtLink class="auth-form__field-link" :to="appRoutes.forgotPassword">
+            {{ $t('pages.welcomePage.forgotPassword') }}
+          </NuxtLink>
         </template>
-
         <UInput
-          v-model="form.password"
-          name="password"
+          v-model="state.password"
           :type="showPassword ? 'text' : 'password'"
           autocomplete="current-password"
           size="xl"
-          color="primary"
-          :placeholder="$t('pages.welcomePage.passwordPlaceholder')"
           class="w-full"
-          :ui="{ base: 'h-[3.85rem] rounded-[1.45rem] px-5 pe-14 text-[1rem]' }"
+          :ui="inputUi"
         >
           <template #trailing>
-            <button
-              type="button"
-              class="flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition hover:bg-[#eef3ff] hover:text-[#0000ff]"
+            <UButton
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              :icon="showPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'"
               :aria-label="showPassword ? $t('pages.welcomePage.hidePassword') : $t('pages.welcomePage.showPassword')"
               @click="showPassword = !showPassword"
-            >
-              <Icon :name="showPassword ? 'i-ph-eye-slash-bold' : 'i-ph-eye-bold'" class="h-5 w-5" />
-            </button>
+            />
           </template>
         </UInput>
       </UFormField>
 
       <UButton
         type="submit"
-        loading-auto
-        loading-icon="i-lucide-loader-2"
         color="primary"
         variant="solid"
         block
         size="xl"
-        :disabled="isSubmitDisabled"
-        class="mt-1 h-[3.95rem] rounded-[1.45rem] text-[1.05rem] font-black shadow-[0_14px_32px_rgba(0,0,255,0.18)]"
+        :loading="loading"
+        loading-icon="i-lucide-loader-2"
+        class="auth-submit"
       >
-        {{ submitLabel }}
+        {{ $t('pages.welcomePage.login') }}
       </UButton>
 
-      <p class="text-center text-[0.95rem] text-slate-500 sm:text-[1rem]">
+      <p class="auth-form__footer-text">
         {{ $t('pages.welcomePage.noAccount') }}
-        <NuxtLink class="font-extrabold text-[#0000ff]" to="/register">{{ $t('pages.welcomePage.register') }}</NuxtLink>
+        <NuxtLink class="auth-form__footer-link" :to="appRoutes.register">
+          {{ $t('pages.welcomePage.register') }}
+        </NuxtLink>
       </p>
     </UForm>
   </div>
 </template>
 
 <script setup lang="ts">
-type WelcomeFormState = {
-  login: string
-  password: string
-}
+import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 
-type WelcomeFormError = {
-  name?: keyof WelcomeFormState
-  message: string
-}
-
-const form = reactive<WelcomeFormState>({
-  login: '',
-  password: '',
-})
-
-const showPassword = ref(false)
-const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
 const { t } = useI18n()
 
-const validateForm = (state: WelcomeFormState): WelcomeFormError[] => {
-  const errors: WelcomeFormError[] = []
+const state = reactive({ login: '', password: '' })
+const showPassword = ref(false)
+const loading = ref(false)
 
-  if (!state.login.trim()) {
-    errors.push({
-      name: 'login',
-      message: t('pages.welcomePage.validationLoginRequired'),
-    })
-  }
+const inputUi = {
+  base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe] focus:border-[#0000ff] focus:ring-4 focus:ring-[rgba(0,0,255,0.07)]',
+}
 
-  if (!state.password.trim()) {
-    errors.push({
-      name: 'password',
-      message: t('pages.welcomePage.validationPasswordRequired'),
-    })
-  }
-  else if (state.password.trim().length < 6) {
-    errors.push({
-      name: 'password',
-      message: t('pages.welcomePage.validationPasswordLength'),
-    })
-  }
+type ValidationError = { name: 'login' | 'password'; message: string }
 
+const validate = (s: typeof state): ValidationError[] => {
+  const errors: ValidationError[] = []
+  if (!s.login.trim()) errors.push({ name: 'login', message: t('pages.welcomePage.validationLoginRequired') || 'Vui lòng nhập email hoặc số điện thoại' })
+  if (!s.password) errors.push({ name: 'password', message: t('pages.welcomePage.validationPasswordRequired') || 'Vui lòng nhập mật khẩu' })
   return errors
 }
 
-const isSubmitDisabled = computed(() =>
-  submitState.value === 'loading'
-  || !form.login.trim()
-  || !form.password.trim(),
-)
-
-const submitLabel = computed(() =>
-  submitState.value === 'loading'
-    ? t('pages.welcomePage.loggingIn')
-    : t('pages.welcomePage.login'),
-)
-
-const statusAlert = computed(() => {
-  if (submitState.value === 'success') {
-    return {
-      color: 'success' as const,
-      icon: 'i-ph-check-circle-fill',
-      title: t('pages.welcomePage.statusSuccessTitle'),
-      description: t('pages.welcomePage.statusSuccessDescription'),
-    }
-  }
-
-  if (submitState.value === 'error') {
-    return {
-      color: 'error' as const,
-      icon: 'i-ph-warning-circle-fill',
-      title: t('pages.welcomePage.statusErrorTitle'),
-      description: t('pages.welcomePage.statusErrorDescription'),
-    }
-  }
-
-  return null
-})
-
 const handleLogin = async () => {
-  submitState.value = 'loading'
-  await new Promise(r => setTimeout(r, 500))
-  submitState.value = 'success'
+  loading.value = true
+  await new Promise(resolve => setTimeout(resolve, 300))
+  loading.value = false
 }
-
-const handleFormError = () => {
-  submitState.value = 'error'
-}
-
-watch(() => [form.login, form.password], () => {
-  if (submitState.value !== 'loading') {
-    submitState.value = 'idle'
-  }
-})
 </script>
+
+<style scoped>
+.auth-form {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.auth-form__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-form__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #0000ff;
+}
+
+.auth-form__title {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  color: #0f172a;
+}
+
+@media (min-width: 640px) {
+  .auth-form__title { font-size: 2.6rem; }
+}
+
+.auth-form__subtitle {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.auth-form__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.auth-form__field-link {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0000ff;
+  text-decoration: none;
+  transition: opacity 0.12s ease;
+}
+
+.auth-form__field-link:hover { opacity: 0.72; }
+
+.auth-submit {
+  border-radius: 14px !important;
+  height: 3.5rem !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  margin-top: 4px;
+  box-shadow: 0 12px 28px rgba(0, 0, 255, 0.2) !important;
+  transition: all 0.2s ease !important;
+}
+
+.auth-submit:hover {
+  box-shadow: 0 16px 36px rgba(0, 0, 255, 0.28) !important;
+  transform: translateY(-1px);
+}
+
+.auth-form__footer-text {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.auth-form__footer-link {
+  font-weight: 800;
+  color: #0000ff;
+  text-decoration: none;
+}
+
+.auth-form__footer-link:hover { opacity: 0.75; }
+</style>

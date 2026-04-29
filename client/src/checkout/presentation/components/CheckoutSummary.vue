@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative overflow-hidden rounded-[30px] border border-[#dbe3f2] bg-white p-5 shadow-[0_18px_40px_rgba(15,35,110,0.08)] sm:p-6"
+    class="relative overflow-hidden rounded-[18px] border border-[#dbe3f2] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:p-6"
     aria-labelledby="checkout-summary-title"
   >
     <div class="pointer-events-none absolute bottom-[-88px] left-[-42px] h-[250px] w-[250px] rounded-full border-[18px] border-[#cbeed1]/40" />
@@ -9,12 +9,12 @@
     <div class="relative z-10">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="flex items-start gap-4">
-          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#2f9bff] text-white shadow-[0_12px_26px_rgba(47,155,255,0.24)]">
+          <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#2f9bff] text-white shadow-[0_4px_12px_rgba(47,155,255,0.2)]">
             <Icon name="i-ph-shopping-cart-simple-fill" class="h-7 w-7" />
           </div>
 
           <div>
-            <h2 id="checkout-summary-title" class="text-[2rem] font-black tracking-[-0.05em] text-[#2f3542]">
+            <h2 id="checkout-summary-title" class="text-[2rem] font-extrabold tracking-[-0.03em] text-[#2f3542]">
               {{ $t("checkout.summary.title") }}
             </h2>
             <p class="text-[15px] text-slate-500">
@@ -41,35 +41,35 @@
         :icon="statusAlert.icon"
         :title="statusAlert.title"
         :description="statusAlert.description"
-        class="mt-6 rounded-[20px]"
+        class="mt-6 rounded-[16px]"
         aria-live="polite"
       />
 
       <div v-if="items.length" class="mt-8 space-y-7">
         <section class="grid gap-3 sm:grid-cols-3" aria-live="polite">
-          <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+          <div class="rounded-[16px] bg-[#f8fbff] px-4 py-3 shadow-[0_2px_10px_rgba(15,35,110,0.04)]">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               {{ $t("checkout.summary.cartStatusLabel") }}
             </p>
-            <p class="mt-1 text-[18px] font-black text-[#243b63]">
+            <p class="mt-1 text-[18px] font-extrabold text-[#243b63]">
               {{ itemLabel }}
             </p>
           </div>
 
-          <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+          <div class="rounded-[16px] bg-[#f8fbff] px-4 py-3 shadow-[0_2px_10px_rgba(15,35,110,0.04)]">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               {{ $t("checkout.summary.addressStatusLabel") }}
             </p>
-            <p class="mt-1 text-[18px] font-black text-[#243b63]">
+            <p class="mt-1 text-[18px] font-extrabold text-[#243b63]">
               {{ addressReady ? $t("checkout.summary.addressReady") : $t("checkout.summary.addressMissing") }}
             </p>
           </div>
 
-          <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+          <div class="rounded-[16px] bg-[#f8fbff] px-4 py-3 shadow-[0_2px_10px_rgba(15,35,110,0.04)]">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               {{ $t("checkout.summary.walletStatusLabel") }}
             </p>
-            <p class="mt-1 text-[18px] font-black text-[#243b63]">
+            <p class="mt-1 text-[18px] font-extrabold text-[#243b63]">
               {{ walletShortage > 0
                 ? $t("checkout.summary.walletShortage", { amount: formatVnd(walletShortage) })
                 : $t("checkout.summary.walletReady") }}
@@ -83,7 +83,7 @@
             :key="item.id"
             class="w-full max-w-[320px]"
           >
-            <div class="relative h-[290px] overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-[#eef1f7] shadow-[0_12px_28px_rgba(15,35,110,0.08)]">
+            <div class="relative h-[290px] overflow-hidden rounded-[16px] border border-[#dbe3f2] bg-[#eef1f7] shadow-[0_2px_12px_rgba(15,35,110,0.06)]">
               <div
                 class="absolute inset-0"
                 :style="{ background: item.imageStyle || defaultCardBackground }"
@@ -109,17 +109,17 @@
                 <Icon name="i-ph-x-bold" class="h-5 w-5" />
               </UButton>
 
-              <div class="absolute bottom-3 right-3 rounded-full bg-[#111827]/85 px-4 py-2 text-[13px] font-black text-white shadow-[0_12px_24px_rgba(17,24,39,0.2)]">
+              <div class="absolute bottom-3 right-3 rounded-full bg-[#111827]/85 px-4 py-2 text-[13px] font-extrabold text-white shadow-[0_8px_18px_rgba(17,24,39,0.18)]">
                 {{ formatVnd(item.price) }}
               </div>
             </div>
 
             <div class="mt-4 space-y-3">
-              <h3 class="text-[1.1rem] font-black tracking-[-0.03em] text-[#2f3542]">
+              <h3 class="text-[1.1rem] font-extrabold tracking-[-0.02em] text-[#2f3542]">
                 {{ item.name }}
               </h3>
 
-              <div class="flex items-center gap-3 text-[1rem] font-black text-[#2f3542]">
+              <div class="flex items-center gap-3 text-[1rem] font-semibold text-[#2f3542]">
                 <span>{{ $t("checkout.summary.qty") }}</span>
 
                 <UButton
@@ -159,26 +159,26 @@
 
         <div class="h-px bg-[#e3e8f3]" />
 
-        <section class="relative overflow-hidden rounded-[26px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf7_100%)] px-5 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+        <section class="relative overflow-hidden rounded-[18px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf7_100%)] px-5 py-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
           <div class="pointer-events-none absolute bottom-[-70px] left-[-40px] h-[180px] w-[180px] rounded-full border-[14px] border-[#bfe8c8]/45" />
           <div class="pointer-events-none absolute bottom-[-82px] left-[85px] h-[145px] w-[145px] rounded-full bg-[#e7f6e9]/85" />
 
           <div class="relative z-10 space-y-5">
             <div class="grid gap-3 text-[13px] text-slate-500 sm:grid-cols-2">
-              <div class="rounded-[18px] bg-white/80 px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              <div class="rounded-[16px] bg-white/80 px-4 py-3 shadow-[0_2px_10px_rgba(15,35,110,0.04)]">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                   {{ $t("checkout.summary.subtotal") }}
                 </p>
-                <p class="mt-1 text-[18px] font-black text-[#243b63]">
+                <p class="mt-1 text-[18px] font-extrabold text-[#243b63]">
                   {{ formatVnd(subtotal) }}
                 </p>
               </div>
 
-              <div class="rounded-[18px] bg-white/80 px-4 py-3 shadow-[0_8px_18px_rgba(15,35,110,0.04)]">
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              <div class="rounded-[16px] bg-white/80 px-4 py-3 shadow-[0_2px_10px_rgba(15,35,110,0.04)]">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                   {{ $t("checkout.summary.shippingFee") }}
                 </p>
-                <p class="mt-1 text-[18px] font-black text-[#243b63]">
+                <p class="mt-1 text-[18px] font-extrabold text-[#243b63]">
                   {{ shippingFee > 0 ? formatVnd(shippingFee) : $t("checkout.summary.free") }}
                 </p>
               </div>
@@ -186,10 +186,10 @@
 
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-slate-400">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                   {{ $t("checkout.summary.totalPayment") }}
                 </p>
-                <p class="mt-2 text-[2.8rem] font-black tracking-[-0.06em] text-[#2f3542]">
+                <p class="mt-2 text-[2.8rem] font-extrabold tracking-[-0.04em] text-[#2f3542]">
                   {{ formatVnd(total) }}
                 </p>
                 <p class="mt-2 max-w-[420px] text-[13px] leading-6 text-slate-500">
@@ -203,7 +203,7 @@
                 :loading="isBusy"
                 loading-icon="i-lucide-loader-2"
                 :disabled="ctaDisabled"
-                class="h-14 rounded-[18px] px-6 text-[15px] font-extrabold shadow-[0_14px_28px_rgba(0,0,255,0.18)]"
+                class="h-14 rounded-[12px] px-6 text-[15px] font-semibold shadow-[0_4px_14px_rgba(0,0,255,0.18)]"
                 :icon="walletShortage > 0 ? 'i-ph-wallet-fill' : 'i-ph-credit-card-fill'"
                 @click="emit('submit')"
               >
@@ -216,12 +216,12 @@
 
       <div
         v-else
-        class="mt-8 rounded-[28px] border border-dashed border-[#dbe3f2] bg-[#f8fbff] px-5 py-12 text-center"
+        class="mt-8 rounded-[18px] border border-dashed border-[#dbe3f2] bg-[#f8fbff] px-5 py-12 text-center"
       >
         <div class="mx-auto flex h-18 w-18 items-center justify-center rounded-full bg-white text-[#0000ff] shadow-[0_12px_24px_rgba(0,0,255,0.08)]">
           <Icon name="i-ph-shopping-cart-simple" class="h-8 w-8" />
         </div>
-        <h3 class="mt-5 text-[1.35rem] font-black tracking-[-0.04em] text-[#243b63]">
+        <h3 class="mt-5 text-[1.35rem] font-extrabold tracking-[-0.02em] text-[#243b63]">
           {{ $t("checkout.summary.emptyCart") }}
         </h3>
         <p class="mt-2 text-[14px] leading-7 text-slate-500">
@@ -231,7 +231,7 @@
           :to="appRoutes.products"
           color="primary"
           variant="solid"
-          class="mt-5 rounded-full px-5 text-[14px] font-extrabold shadow-[0_10px_22px_rgba(0,0,255,0.2)]"
+          class="mt-5 rounded-full px-5 text-[14px] font-semibold shadow-[0_4px_14px_rgba(0,0,255,0.2)]"
         >
           {{ $t("checkout.summary.backToMarketplace") }}
         </UButton>

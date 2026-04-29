@@ -7,7 +7,7 @@
 
       <div class="relative z-10">
         <div class="max-w-[760px]">
-          <p class="text-[12px] font-extrabold uppercase tracking-[0.32em] text-white/70">
+          <p class="text-[12px] font-semibold uppercase tracking-[0.14em] text-white/72">
             P-09 · Story
           </p>
           <h1 class="mt-3 text-display text-[2.2rem] leading-[0.92] text-white sm:text-[2.85rem]">
@@ -21,14 +21,14 @@
           <div class="mt-6 flex flex-wrap gap-3">
             <NuxtLink
               to="/home"
-              class="inline-flex h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 text-[14px] font-bold text-white transition hover:bg-white/15"
+              class="inline-flex h-12 items-center justify-center rounded-xl border border-white/18 bg-white/10 px-5 text-[14px] font-semibold text-white transition hover:bg-white/15"
             >
               <Icon name="i-ph-arrow-left" class="mr-2 h-4 w-4" />
               Quay lại bảng tin
             </NuxtLink>
 
             <button
-              class="inline-flex h-12 items-center justify-center rounded-full bg-[#dbeafe] px-5 text-[14px] font-extrabold text-[#1e3a8a] shadow-[0_10px_26px_rgba(219,234,254,0.22)] transition hover:-translate-y-0.5"
+              class="inline-flex h-12 items-center justify-center rounded-xl bg-[#dbeafe] px-5 text-[14px] font-semibold text-[#1e3a8a] shadow-[0_10px_22px_rgba(219,234,254,0.18)] transition hover:-translate-y-0.5"
               type="button"
               @click="openPicker"
             >
@@ -45,10 +45,10 @@
         <div class="rounded-[28px] border border-[#dbe3f2] bg-white p-4 shadow-[0_14px_34px_rgba(15,35,110,0.07)] sm:p-5">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
-              <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+              <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/70">
                 Upload
               </p>
-              <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
+              <h2 class="mt-1 text-[1.35rem] font-extrabold tracking-[-0.03em] text-[#243b63]">
                 Đăng story bằng file
               </h2>
               <p class="mt-1 text-[14px] leading-6 text-slate-500">
@@ -56,7 +56,7 @@
               </p>
             </div>
 
-            <div class="inline-flex items-center gap-2 rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-600">
+            <div class="inline-flex items-center gap-2 rounded-xl bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-600">
               <Icon name="i-ph-seal-check-fill" class="h-4 w-4 text-[#0000ff]" />
               {{ completionText }}
             </div>
@@ -73,14 +73,14 @@
           >
 
           <button
-            class="group flex w-full flex-col items-center justify-center rounded-[28px] border border-dashed border-[#cfd8f0] bg-[#f8fbff] px-6 py-10 text-center transition hover:border-[#0000ff]/40 hover:bg-[#eef4ff]"
+            class="group flex w-full flex-col items-center justify-center rounded-[24px] border border-dashed border-[#cfd8f0] bg-[#f8fbff] px-6 py-10 text-center transition hover:border-[#0000ff]/35 hover:bg-[#eef4ff]"
             type="button"
             @click="openPicker"
           >
             <div class="flex h-18 w-18 items-center justify-center rounded-[24px] bg-white text-[#0000ff] shadow-[0_10px_24px_rgba(15,35,110,0.10)] transition group-hover:scale-105">
               <Icon :name="selectedFile ? mediaIcon : 'i-ph-upload-simple-fill'" class="h-9 w-9" />
             </div>
-            <p class="mt-5 text-[1.05rem] font-black text-[#243b63]">
+            <p class="mt-5 text-[1.05rem] font-extrabold text-[#243b63]">
               {{ selectedFile ? "Đổi tệp story" : "Chọn ảnh hoặc video" }}
             </p>
             <p class="mt-2 max-w-[520px] text-[13px] leading-6 text-slate-500">
@@ -93,14 +93,14 @@
             class="mt-5 flex flex-col gap-3 rounded-[22px] border border-[#dbe3f2] bg-[#fbfcff] p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div class="min-w-0">
-              <p class="truncate text-[14px] font-black text-[#243b63]">{{ selectedFile.name }}</p>
+              <p class="truncate text-[14px] font-semibold text-[#243b63]">{{ selectedFile.name }}</p>
               <p class="mt-1 text-[12px] text-slate-500">
                 {{ mediaLabel }} • preview local đã sẵn sàng
               </p>
             </div>
 
             <button
-              class="inline-flex h-10 items-center justify-center rounded-full border border-[#dbe3f2] px-4 text-[12px] font-bold text-slate-500 transition hover:border-[#fda4af] hover:text-[#be123c]"
+              class="inline-flex h-10 items-center justify-center rounded-xl border border-[#dbe3f2] px-4 text-[12px] font-semibold text-slate-500 transition hover:border-[#fda4af] hover:text-[#be123c]"
               type="button"
               @click="clearSelectedFile"
             >
@@ -123,7 +123,7 @@
       <aside class="space-y-5">
         <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
           <div class="p-5">
-            <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
+            <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/70">
               Preview
             </p>
             <div class="mt-4 flex justify-center">
@@ -160,11 +160,11 @@
 
                 <div class="absolute left-4 right-4 top-8 flex items-center justify-between gap-3">
                   <div class="flex items-center gap-2">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#0000ff] text-[12px] font-black text-white">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-[#0000ff] text-[12px] font-bold text-white">
                       VN
                     </div>
                     <div>
-                      <p class="text-[13px] font-black text-white">Bạn</p>
+                      <p class="text-[13px] font-semibold text-white">Bạn</p>
                       <p class="text-[11px] text-white/70">Vừa xong</p>
                     </div>
                   </div>
@@ -181,7 +181,7 @@
                   <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[20px] bg-white/16">
                     <Icon name="i-ph-upload-simple-fill" class="h-8 w-8" />
                   </div>
-                  <p class="mt-4 text-[15px] font-black">
+                  <p class="mt-4 text-[15px] font-extrabold">
                     Chưa có tệp story
                   </p>
                   <p class="mt-2 text-[12px] leading-6 text-white/75">
@@ -204,9 +204,9 @@
         </section>
 
         <section class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-          <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-            Gợi ý nhanh
-          </p>
+            <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/70">
+              Gợi ý nhanh
+            </p>
           <div class="mt-4 space-y-3">
             <div
               v-for="tip in publishingTips"

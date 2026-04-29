@@ -1,12 +1,12 @@
 <template>
   <div
     :class="compact
-      ? 'inline-flex items-center gap-1 rounded-2xl border border-secondary-100 bg-secondary-50/50 p-1.5 ring-1 ring-inset ring-white/50 shadow-sm'
+      ? 'inline-flex items-center gap-1 rounded-2xl border border-[#e2e8f0] bg-white p-1.5 shadow-sm'
       : 'surface-card p-4 ring-1 ring-secondary-100 bg-white space-y-4'"
   >
     <div
       v-if="!compact"
-      class="flex items-center gap-2 px-1 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]"
+      class="flex items-center gap-2 px-1 text-[11px] font-semibold text-slate-500"
     >
       <Icon name="i-ph-translate-duotone" class="h-4 w-4" />
       <span>Language</span>
@@ -18,12 +18,12 @@
         :key="item.code"
         variant="soft"
         :color="activeLocale === item.code ? 'primary' : 'white'"
-        class="transition-all duration-300 rounded-xl font-black text-[10px] uppercase tracking-widest px-3 py-1.5"
+        class="rounded-xl border px-3 py-1.5 text-[11px] font-semibold transition-all duration-150"
         :class="[
           compact ? 'min-w-[40px] justify-center' : 'w-full justify-start py-3 px-4',
           activeLocale === item.code 
-            ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/20' 
-            : 'bg-white text-[var(--text-primary)] border border-secondary-100 hover:border-primary-200 hover:text-secondary-900'
+            ? 'border-[#0000ff] bg-[#0000ff] text-white shadow-lg shadow-primary-500/20' 
+            : 'border-[#e2e8f0] bg-[#f8fafc] text-[#475569] hover:border-[rgba(0,0,255,0.16)] hover:bg-[rgba(0,0,255,0.04)] hover:text-[#0000ff]'
         ]"
         @click="changeLocale(item.code)"
       >

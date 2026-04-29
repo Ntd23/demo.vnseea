@@ -1,12 +1,12 @@
 <template>
   <div class="flex gap-2.5">
-    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-600">
+    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">
       {{ initials }}
     </div>
-    <div class="min-w-0 flex-1 rounded-2xl bg-[#f1f4fb] px-3 py-2.5">
+    <div class="min-w-0 flex-1 rounded-[20px] bg-[#f1f4fb] px-3 py-2.5 shadow-[0_8px_18px_rgba(15,23,42,0.04)]">
       <div class="flex flex-wrap items-center gap-2">
-        <p class="text-sm font-bold text-slate-900">{{ author }}</p>
-        <span class="text-[11px] uppercase tracking-[0.16em] text-slate-400">{{ role }}</span>
+        <p class="text-sm font-semibold text-slate-900">{{ author }}</p>
+        <span class="text-[11px] font-medium uppercase tracking-[0.08em] text-slate-400">{{ role }}</span>
       </div>
       <p class="mt-2 text-sm leading-6 text-slate-600">{{ text }}</p>
 
@@ -79,7 +79,7 @@
       >
         <div v-if="showReplies" class="mt-3 space-y-2 border-l border-[#0000ff]/10 pl-3">
           <div v-for="reply in replies" :key="reply.id" class="flex gap-2.5">
-            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[9px] font-bold text-slate-600">
+            <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[9px] font-semibold text-slate-600">
               {{ initialsFrom(reply.author) }}
             </div>
             <UCard class="min-w-0 flex-1 rounded-2xl bg-white" :ui="{ body: 'px-3 py-2' }">
@@ -90,7 +90,7 @@
         </div>
       </Transition>
     </div>
-    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

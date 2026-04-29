@@ -4,22 +4,22 @@
       <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
         <div class="space-y-4">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-primary-700 ring-1 ring-primary-100">
+            <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-semibold text-primary-700 ring-1 ring-primary-100">
               {{ t("pages.goProPage.heroEyebrow") }}
             </span>
-            <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-extrabold text-white">
+            <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-semibold text-white">
               {{ billingLabel }}
             </span>
             <span
               v-if="selectedPlanName"
-              class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-[var(--text-primary)] ring-1 ring-secondary-100"
+              class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-semibold text-[var(--text-primary)] ring-1 ring-secondary-100"
             >
               {{ t("pages.goProPage.selectedPlanBadgeShort", { plan: selectedPlanName }) }}
             </span>
           </div>
 
           <div class="space-y-3">
-            <h1 class="max-w-[680px] text-[34px] font-black leading-tight text-[var(--text-primary)] sm:text-[48px]">
+            <h1 class="max-w-[680px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]">
               {{ t("pages.goProPage.heroShortTitle") }}
             </h1>
             <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
@@ -30,7 +30,7 @@
 
         <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
           <button
-            class="inline-flex h-12 items-center justify-center rounded-[16px] bg-primary-600 px-5 text-[14px] font-black text-white shadow-[0_14px_26px_rgba(37,99,235,0.2)] transition hover:bg-primary-700 active:scale-95"
+            class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:bg-primary-700 active:scale-95"
             type="button"
             @click="emit('selectFeatured')"
           >
@@ -39,7 +39,7 @@
           </button>
 
           <a
-            class="inline-flex h-12 items-center justify-center rounded-[16px] border border-secondary-200 bg-white px-5 text-[14px] font-black text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
+            class="inline-flex h-12 items-center justify-center rounded-[12px] border border-secondary-200 bg-white px-5 text-[14px] font-semibold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
             href="#go-pro-plans"
           >
             <Icon name="i-ph-chart-bar-duotone" class="mr-2 h-5 w-5 shrink-0" />
@@ -48,7 +48,7 @@
 
           <button
             v-if="hasActiveSelection"
-            class="inline-flex h-12 items-center justify-center rounded-[16px] px-4 text-[13px] font-extrabold text-slate-500 transition hover:bg-white hover:text-primary-700 active:scale-95"
+            class="inline-flex h-12 items-center justify-center rounded-[12px] px-4 text-[13px] font-semibold text-slate-500 transition hover:bg-white hover:text-primary-700 active:scale-95"
             type="button"
             @click="emit('reset')"
           >
@@ -61,10 +61,10 @@
         <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <p class="text-[11px] font-extrabold uppercase text-white/52">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/52">
                 {{ t("pages.goProPage.currentPlanShort") }}
               </p>
-              <h2 class="mt-2 text-[28px] font-black leading-none">
+              <h2 class="mt-2 text-[28px] font-extrabold leading-none">
                 {{ subscription.plan }}
               </h2>
               <p class="mt-2 text-[13px] font-semibold text-white/68">
@@ -82,7 +82,7 @@
               <p class="text-[10px] font-extrabold uppercase text-white/48">
                 {{ t("pages.goProPage.renewsAtLabel") }}
               </p>
-              <p class="mt-1 text-[13px] font-black">
+              <p class="mt-1 text-[13px] font-extrabold">
                 {{ subscription.renewsAt }}
               </p>
             </div>
@@ -91,7 +91,7 @@
               <p class="text-[10px] font-extrabold uppercase text-white/48">
                 {{ t("pages.goProPage.paymentsLabel") }}
               </p>
-              <p class="mt-1 text-[13px] font-black">
+              <p class="mt-1 text-[13px] font-extrabold">
                 {{ t("pages.goProPage.transactionCount", { count: payments.length }) }}
               </p>
             </div>
@@ -104,10 +104,10 @@
             :key="item.label"
             class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
           >
-            <p class="text-[10px] font-extrabold uppercase text-slate-500">
+              <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               {{ item.label }}
             </p>
-            <p class="mt-2 text-[26px] font-black leading-none text-[var(--text-primary)]">
+              <p class="mt-2 text-[26px] font-extrabold leading-none text-[var(--text-primary)]">
               {{ item.value }}
             </p>
           </article>

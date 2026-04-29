@@ -1,24 +1,20 @@
 <template>
-  <div class="min-h-svh w-full bg-[linear-gradient(180deg,#f6f8ff_0%,#ffffff_100%)] lg:flex">
-    <section
-      class="hidden overflow-hidden bg-[linear-gradient(160deg,#2747ff_0%,#122ae0_46%,#0916ac_100%)] px-6 py-6 text-white sm:px-8 sm:py-8 lg:flex lg:min-h-svh lg:w-2/5 lg:px-8 lg:py-8 xl:px-10 xl:py-10"
-      aria-label="VNSEEA auth hero"
-    >
+  <div class="auth-shell">
+    <!-- Left: Hero -->
+    <section class="auth-shell__hero" aria-label="VNSEEA hero">
       <slot name="left">
         <AuthHeroPanel v-bind="resolvedHeroProps" />
       </slot>
     </section>
 
-    <main class="relative flex min-w-0 items-center justify-center px-5 py-8 sm:px-8 sm:py-10 lg:min-h-svh lg:flex-1 lg:px-12 xl:px-16 2xl:px-20">
-      <div aria-hidden="true" class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#d8e4ff] to-transparent lg:hidden" />
+    <!-- Right: Form -->
+    <main class="auth-shell__form">
+      <!-- Mobile top bar -->
+      <div class="auth-shell__mobile-top">
+        <NavigationHeaderLogo :inverted="false" :to="appRoutes.welcome" />
+      </div>
 
-      <div class="w-full min-w-0 max-w-[760px] 2xl:max-w-[840px]">
-        <div class="mb-8 flex items-center justify-between lg:hidden">
-          <slot name="mobile-brand">
-            <NavigationHeaderLogo :inverted="false" :to="appRoutes.welcome" />
-          </slot>
-        </div>
-
+      <div class="auth-shell__form-inner">
         <slot name="right">
           <slot />
         </slot>
@@ -28,9 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { appRoutes } from "#shared-kernel/application/constants/route-registry"
-import AuthHeroPanel from "./AuthHeroPanel.vue"
-import NavigationHeaderLogo from "../../../navigation/presentation/components/HeaderLogo.vue"
+import { appRoutes } from '#shared-kernel/application/constants/route-registry'
+import AuthHeroPanel from './AuthHeroPanel.vue'
+import NavigationHeaderLogo from '../../../navigation/presentation/components/HeaderLogo.vue'
 
 const props = withDefaults(defineProps<{
   heroProps?: {
@@ -50,3 +46,102 @@ const resolvedHeroProps = computed(() => ({
   imageAlt: props.heroProps.imageAlt ?? '',
 }))
 </script>
+
+<style scoped>
+/* ─── Shell ────────────────────────────────────────────── */
+.auth-shell {
+  min-height: 100svh;
+  width: 100%;
+  background: #f6f8ff;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .auth-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 56%) minmax(0, 44%);
+    flex-direction: unset;
+  }
+}
+
+@media (min-width: 1280px) {
+  .auth-shell {
+    grid-template-columns: minmax(0, 60%) minmax(0, 40%);
+  }
+}
+
+/* ─── Hero column ──────────────────────────────────────── */
+.auth-shell__hero {
+  display: none;
+  overflow: hidden;
+  background: linear-gradient(160deg, #2747ff 0%, #1122e0 48%, #0911ac 100%);
+}
+
+@media (min-width: 1024px) {
+  .auth-shell__hero {
+    display: flex;
+    min-height: 100svh;
+    position: sticky;
+    top: 0;
+  }
+}
+
+/* ─── Form column ──────────────────────────────────────── */
+.auth-shell__form {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background: #ffffff;
+}
+
+@media (min-width: 1024px) {
+  .auth-shell__form {
+    overflow-y: auto;
+  }
+}
+
+/* Mobile top bar */
+.auth-shell__mobile-top {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px 0;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .auth-shell__mobile-top {
+    display: none;
+  }
+}
+
+/* Form inner */
+.auth-shell__form-inner {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 32px 24px 48px;
+}
+
+@media (min-width: 640px) {
+  .auth-shell__form-inner {
+    padding: 40px 40px 60px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .auth-shell__form-inner {
+    align-items: center;
+    padding: 48px 56px;
+    min-height: 100svh;
+  }
+}
+
+@media (min-width: 1280px) {
+  .auth-shell__form-inner {
+    padding: 64px 72px;
+  }
+}
+</style>

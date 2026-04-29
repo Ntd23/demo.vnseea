@@ -23,10 +23,10 @@
 
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_330px]">
       <section class="space-y-4">
-        <UCard class="rounded-[28px] border border-[var(--color-border)] bg-white shadow-[var(--shadow-card)]" :ui="{ body: 'p-5' }">
+        <UCard class="rounded-[18px] border border-[var(--color-border)] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]" :ui="{ body: 'p-5' }">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-xs font-bold uppercase tracking-[0.18em] text-[var(--color-muted)]">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--color-muted)]">
                 {{ t("pages.gamesPage.results") }}
               </p>
               <h2 class="mt-1 text-2xl font-extrabold text-[var(--color-text)]">
@@ -42,7 +42,7 @@
               type="button"
               color="neutral"
               variant="outline"
-              class="justify-center rounded-full"
+              class="justify-center rounded-xl font-semibold"
               @click="resetFilters"
             >
               <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-1.5 h-4 w-4" />

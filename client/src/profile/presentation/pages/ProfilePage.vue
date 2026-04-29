@@ -1,9 +1,9 @@
 <template>
-  <div class="space-y-6 pb-20 pt-4 px-4 sm:px-6 max-w-[1440px] mx-auto">
+  <div class="mx-auto max-w-[1440px] space-y-5 px-4 pb-16 pt-4 sm:px-6">
     <ProfileHero />
 
-    <div class="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
-      <section class="space-y-6 min-w-0">
+    <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+      <section class="min-w-0 space-y-5">
         <ProfileCompletionCard :items="checklist" />
         <FeedPublisherBox />
         <ProfileFeedList :posts="posts" />

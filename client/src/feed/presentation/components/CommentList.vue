@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-3">
     <div class="flex items-center justify-between">
-      <p class="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#0000ff]/50">{{ t("feed.commentList.title") }}</p>
+      <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/50">{{ t("feed.commentList.title") }}</p>
       <div class="flex items-center gap-2 text-[12px] font-semibold text-slate-500">
         <UButton
           color="neutral"
@@ -47,7 +47,7 @@
       color="neutral"
       variant="outline"
       size="sm"
-      class="mx-auto block rounded-full"
+      class="mx-auto block rounded-xl"
       @click="visibleCount += 3"
     >
       {{ t("feed.commentList.loadMore") }}

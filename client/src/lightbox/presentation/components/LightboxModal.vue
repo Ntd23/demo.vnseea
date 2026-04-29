@@ -25,7 +25,7 @@
               type="button"
               color="neutral"
               variant="outline"
-              class="justify-center rounded-full"
+              class="justify-center rounded-xl"
               :disabled="!hasCurrentItem"
               :aria-label="t('feed.lightboxModal.actionShare')"
               @click="emit('share')"
@@ -37,7 +37,7 @@
               type="button"
               color="neutral"
               variant="outline"
-              class="justify-center rounded-full"
+              class="justify-center rounded-xl"
               :disabled="!hasCurrentItem"
               :aria-label="t('feed.lightboxModal.actionDownload')"
               @click="emit('download')"
@@ -88,10 +88,10 @@
                 :ui="{ body: 'p-8' }"
               >
                 <div class="space-y-3 text-white">
-                  <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
-                    <Icon name="i-ph-image-broken-fill" class="h-7 w-7" />
-                  </div>
-                  <p class="text-lg font-black">
+                    <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
+                      <Icon name="i-ph-image-broken-fill" class="h-7 w-7" />
+                    </div>
+                  <p class="text-lg font-extrabold">
                     {{ t("feed.lightboxModal.empty") }}
                   </p>
                 </div>

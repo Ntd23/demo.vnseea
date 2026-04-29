@@ -4,12 +4,12 @@
 
     <div class="surface-card p-4 space-y-4">
       <div class="flex items-center justify-between">
-        <p class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.sidebarMutualFriendsTitle") }}</p>
+        <p class="text-sm font-extrabold text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.sidebarMutualFriendsTitle") }}</p>
         <UButton
           variant="ghost"
           color="primary"
           size="xs"
-          class="font-bold -mr-2"
+          class="font-semibold -mr-2"
         >
           {{ t("pages.profilePage.sidebarSeeAll") }}
         </UButton>
@@ -23,11 +23,11 @@
             :ui="{ 
               rounded: 'rounded-xl',
               background: 'bg-primary-600',
-              text: 'text-white font-black'
+              text: 'text-white font-extrabold'
             }"
           />
-          <p class="mt-2 truncate text-xs font-black text-[var(--text-primary)]">{{ item.name }}</p>
-          <p class="text-[10px] font-medium text-[var(--text-primary)]">{{ item.meta }}</p>
+          <p class="mt-2 truncate text-xs font-extrabold text-[var(--text-primary)]">{{ item.name }}</p>
+          <p class="text-[10px] font-medium text-slate-500">{{ item.meta }}</p>
         </div>
       </div>
     </div>

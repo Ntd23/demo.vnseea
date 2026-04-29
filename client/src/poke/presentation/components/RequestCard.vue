@@ -1,5 +1,5 @@
 <template>
-  <article class="surface-card group overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-3xl ring-1 ring-secondary-200/50 hover:ring-primary-500/20 relative bg-white rounded-3xl">
+  <article class="surface-card group relative overflow-hidden rounded-[18px] bg-white ring-1 ring-secondary-200/50 transition-all duration-500 hover:-translate-y-2 hover:ring-primary-500/20 hover:shadow-[0_12px_32px_rgba(37,99,235,0.12)]">
     <div class="h-2 w-full bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 shadow-sm" />
 
     <div class="p-8 space-y-8">
@@ -7,7 +7,7 @@
         <div class="flex min-w-0 items-center gap-5">
           <div class="relative shrink-0">
             <div
-              class="flex h-16 w-16 items-center justify-center rounded-2xl text-sm font-black text-white shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-primary-500/30 ring-1 ring-white/20"
+              class="flex h-16 w-16 items-center justify-center rounded-2xl text-sm font-extrabold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ring-1 ring-white/20"
               :style="{ background: accentBackground }"
             >
               {{ record.initials }}
@@ -20,7 +20,7 @@
           </div>
 
           <div class="min-w-0 space-y-1">
-            <p class="truncate text-lg font-black tracking-tight text-secondary-900 group-hover:text-secondary-900 transition-colors">
+            <p class="truncate text-lg font-extrabold tracking-tight text-secondary-900 transition-colors group-hover:text-secondary-900">
               {{ record.name }}
             </p>
             <p class="truncate text-sm font-semibold text-secondary-500">
@@ -28,7 +28,7 @@
             </p>
             <div class="flex items-center gap-2">
               <Icon name="i-ph-clock-duotone" class="h-3 w-3 text-primary-400" />
-              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-secondary-900">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                 {{ record.timeLabel }}
               </p>
             </div>
@@ -37,7 +37,7 @@
 
         <UBadge 
           variant="soft" 
-          class="rounded-xl font-black text-[9px] uppercase tracking-widest px-3 py-2 bg-secondary-50 text-secondary-500 ring-1 ring-secondary-100 group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:ring-primary-200 transition-all shadow-sm"
+          class="rounded-xl bg-secondary-50 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 ring-1 ring-secondary-100 transition-all shadow-sm group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:ring-primary-200"
         >
           {{ record.mutualLabel }}
         </UBadge>
@@ -45,15 +45,15 @@
 
       <div class="rounded-2xl bg-secondary-50/50 p-6 space-y-4 ring-1 ring-secondary-100/50 transition-all group-hover:bg-white group-hover:ring-primary-100 group-hover:shadow-lg group-hover:shadow-primary-500/5">
         <div class="flex items-center justify-between gap-2 border-b border-secondary-100/50 pb-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-400">{{ t("pages.pokePage.pokeCountLabel") }}</p>
-          <p class="text-[11px] font-black uppercase tracking-widest text-secondary-900 truncate">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">{{ t("pages.pokePage.pokeCountLabel") }}</p>
+          <p class="truncate text-[11px] font-semibold text-secondary-900">
             {{ record.online ? t("pages.pokePage.activeNow") : record.role }}
           </p>
         </div>
         
         <div class="flex items-center justify-between gap-2">
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-400">{{ t("pages.pokePage.pokeActionLabel") }}</p>
-          <p class="text-[11px] font-black uppercase tracking-widest text-secondary-900 truncate italic">"{{ record.contextLabel }}"</p>
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">{{ t("pages.pokePage.pokeActionLabel") }}</p>
+          <p class="truncate text-[11px] font-semibold italic text-secondary-900">"{{ record.contextLabel }}"</p>
         </div>
 
         <p class="text-sm font-medium leading-relaxed text-secondary-500">
@@ -64,7 +64,7 @@
       <div class="flex flex-col gap-3 pt-2">
         <UButton
           size="xl"
-          class="h-14 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-600/20 transition-all active:scale-95 border-none"
+          class="h-14 rounded-xl border-none bg-primary-600 text-[11px] font-semibold uppercase tracking-[0.06em] text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all hover:bg-primary-700 active:scale-95"
           @click="$emit('poke', record.id)"
         >
           <template #leading>
@@ -77,7 +77,7 @@
           v-if="!pokedBack"
           variant="soft"
           size="xl"
-          class="h-14 rounded-2xl bg-white text-secondary-500 ring-1 ring-secondary-200/50 hover:bg-secondary-50 hover:text-secondary-900 hover:ring-secondary-300 font-black text-[11px] uppercase tracking-widest transition-all active:scale-95"
+          class="h-14 rounded-xl bg-white text-[11px] font-semibold uppercase tracking-[0.06em] text-secondary-500 ring-1 ring-secondary-200/50 transition-all hover:bg-secondary-50 hover:text-secondary-900 hover:ring-secondary-300 active:scale-95"
         >
           <template #leading>
              <Icon name="i-ph-trash-duotone" class="h-5 w-5 mr-1" />

@@ -1,14 +1,14 @@
 <template>
   <aside class="surface-card p-6 xl:w-[360px] xl:max-w-[360px] xl:shrink-0 flex flex-col ring-1 ring-secondary-100 shadow-xl min-h-[600px]">
     <div class="px-2 space-y-4 mb-8">
-      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)]">
+      <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
         {{ t("pages.settingsPage.sidebarEyebrow") || 'Account Center' }}
       </p>
       <div class="space-y-1">
-        <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter leading-none">
+        <h2 class="text-3xl font-extrabold leading-none tracking-tight text-[var(--text-primary)]">
           {{ t("pages.settingsPage.sidebarTitle") }}
         </h2>
-        <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
           {{ t("pages.settingsPage.sidebarCount", { count: pages.length }) }}
         </p>
       </div>
@@ -31,8 +31,8 @@
           <Icon :name="page.slug === activeSlug ? page.icon : page.icon.replace('-fill', '-duotone')" class="h-6 w-6" />
         </div>
         <div class="min-w-0 flex-1">
-          <p class="truncate text-[11px] font-black uppercase tracking-widest leading-none">{{ page.label }}</p>
-          <p class="truncate text-[9px] font-bold uppercase tracking-widest text-[var(--text-primary)] transition-colors group-hover:text-primary-400 mt-1.5">{{ page.description }}</p>
+          <p class="truncate text-[13px] font-semibold leading-none">{{ page.label }}</p>
+          <p class="mt-1.5 truncate text-[11px] font-medium text-slate-400 transition-colors group-hover:text-primary-400">{{ page.description }}</p>
         </div>
       </NuxtLink>
     </nav>

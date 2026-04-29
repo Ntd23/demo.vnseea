@@ -5,20 +5,20 @@
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_24%_24%,rgba(255,255,255,0.15),transparent_40%),radial-gradient(circle_at_76%_24%,rgba(255,255,255,0.1),transparent_30%)] opacity-60" />
       
       <!-- Top Badges (Status/Role) -->
-      <div class="absolute left-6 top-6 flex items-center gap-4 rounded-2xl bg-white/10 px-4 py-2.5 backdrop-blur-xl border border-white/20 shadow-xl transition-all hover:bg-white/15">
+      <div class="absolute left-6 top-6 flex items-center gap-4 rounded-2xl border border-white/20 bg-white/10 px-4 py-2.5 backdrop-blur-xl shadow-[0_12px_32px_rgba(15,23,42,0.12)] transition-all hover:bg-white/15">
         <UAvatar
           text="QT"
           size="md"
           :ui="{ 
             rounded: 'rounded-xl',
             background: 'bg-white/20',
-            text: 'text-white font-black'
+            text: 'text-white font-extrabold'
           }"
           class="ring-2 ring-white/30"
         />
         <div class="space-y-0.5">
-          <p class="text-sm font-black tracking-tight text-white leading-none">{{ t("pages.profilePage.heroRole") }}</p>
-          <p class="text-[10px] font-bold uppercase tracking-wider text-white/70">{{ t("pages.profilePage.heroStatus") }}</p>
+          <p class="text-sm font-extrabold tracking-tight text-white leading-none">{{ t("pages.profilePage.heroRole") }}</p>
+          <p class="text-[11px] font-semibold text-white/70">{{ t("pages.profilePage.heroStatus") }}</p>
         </div>
       </div>
 
@@ -59,18 +59,18 @@
             </div>
 
             <!-- Identity Info -->
-            <div class="rounded-3xl bg-white/10 p-5 px-6 backdrop-blur-2xl border border-white/20 shadow-2xl space-y-1 sm:max-w-md">
-              <h1 class="text-lg sm:text-xl font-black text-white tracking-tight">{{ t("pages.profilePage.heroHeadline") }}</h1>
-              <p class="text-xs sm:text-sm font-medium text-white/80 leading-relaxed">{{ t("pages.profilePage.heroDescription") }}</p>
+            <div class="rounded-3xl border border-white/20 bg-white/10 p-5 px-6 backdrop-blur-2xl shadow-[0_16px_36px_rgba(15,23,42,0.14)] space-y-1 sm:max-w-md">
+              <h1 class="text-lg font-extrabold tracking-tight text-white sm:text-xl">{{ t("pages.profilePage.heroHeadline") }}</h1>
+              <p class="text-xs font-medium leading-relaxed text-white/80 sm:text-sm">{{ t("pages.profilePage.heroDescription") }}</p>
             </div>
           </div>
 
           <!-- Action Buttons Group -->
-          <div class="flex flex-wrap items-center gap-2.5 rounded-[2rem] bg-white/10 p-2.5 backdrop-blur-2xl border border-white/10 shadow-xl">
+          <div class="flex flex-wrap items-center gap-2.5 rounded-[2rem] border border-white/10 bg-white/10 p-2.5 backdrop-blur-2xl shadow-[0_12px_32px_rgba(15,23,42,0.12)]">
             <UButton
               color="primary"
               size="md"
-              class="rounded-full px-6 font-black shadow-lg shadow-primary-500/30"
+              class="rounded-full px-6 font-semibold shadow-lg shadow-primary-500/30"
             >
               {{ t("pages.profilePage.heroActionEdit") }}
             </UButton>
@@ -86,7 +86,7 @@
                 variant="soft"
                 color="white"
                 size="md"
-                class="rounded-full font-bold px-4 hover:bg-white/20"
+                class="rounded-full px-4 font-semibold hover:bg-white/20"
                 :icon="action.icon"
               >
                 <span class="hidden lg:inline">{{ action.label }}</span>
@@ -105,7 +105,7 @@
         variant="ghost"
         color="gray"
         size="sm"
-        class="rounded-full px-5 py-2.5 font-bold text-[var(--text-primary)] hover:text-primary-600 hover:bg-primary-50/50 flex-shrink-0 transition-all border border-transparent hover:border-primary-100"
+        class="flex-shrink-0 rounded-full border border-transparent px-5 py-2.5 font-semibold text-[var(--text-primary)] transition-all hover:border-primary-100 hover:bg-primary-50/50 hover:text-primary-600"
       >
         <template #leading>
           <div class="h-1.5 w-1.5 rounded-full bg-primary-500/40" />

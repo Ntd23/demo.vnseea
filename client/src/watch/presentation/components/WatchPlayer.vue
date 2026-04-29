@@ -1,50 +1,43 @@
 <template>
-  <section class="overflow-hidden rounded-[30px] border border-secondary-800 bg-secondary-900 text-white shadow-2xl">
-    <div class="relative aspect-video min-h-0 overflow-hidden sm:min-h-[320px]">
+  <section class="watch-player">
+    <div class="watch-player__video">
       <NuxtImg
         :alt="video.title"
-        class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+        class="watch-player__img"
         :src="video.cover"
         loading="lazy"
         format="webp"
       />
-      <div class="absolute inset-0 bg-gradient-to-t from-secondary-900/90 via-secondary-900/10 to-secondary-900/5" />
+      <div class="watch-player__overlay" />
 
-      <!-- Top Overlay -->
-      <div class="absolute left-4 top-4 flex flex-wrap gap-2">
-        <span class="rounded-full bg-black/40 px-3 py-1.5 text-[12px] font-bold backdrop-blur-md border border-white/10 uppercase tracking-wider">
-          {{ video.categoryLabel }}
-        </span>
-        <span class="rounded-full bg-black/40 px-3 py-1.5 text-[12px] font-bold backdrop-blur-md border border-white/10">
-          {{ video.duration }}
-        </span>
+      <!-- Top badges -->
+      <div class="watch-player__badges">
+        <span class="watch-player__badge">{{ video.categoryLabel }}</span>
+        <span class="watch-player__badge">{{ video.duration }}</span>
       </div>
 
-      <!-- Play Button Overlay -->
+      <!-- Play button -->
       <button
-        class="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-lg transition-all duration-300 hover:scale-110 hover:bg-white/30 border border-white/30 shadow-xl"
+        class="watch-player__play-btn"
         type="button"
         @click="$emit('togglePlay')"
       >
-        <Icon 
-          :name="playing ? 'i-ph-pause-fill' : 'i-ph-play-fill'" 
-          class="h-10 w-10" 
-          :class="{ 'translate-x-0.5': !playing }" 
+        <Icon
+          :name="playing ? 'i-ph-pause-fill' : 'i-ph-play-fill'"
+          class="watch-player__play-icon"
+          :class="{ 'watch-player__play-icon--play': !playing }"
         />
       </button>
 
-      <!-- Bottom Player Controls (Simplified) -->
-      <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6 space-y-3">
-        <div class="group relative h-1.5 w-full cursor-pointer overflow-hidden rounded-full bg-white/20 sm:h-2">
-          <div 
-            class="h-full rounded-full bg-primary-500 transition-all duration-300 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
-            :style="{ width: `${progress}%` }" 
-          />
+      <!-- Controls bar -->
+      <div class="watch-player__controls">
+        <div class="watch-player__progress-rail" @click="noop">
+          <div class="watch-player__progress-fill" :style="{ width: `${progress}%` }" />
         </div>
-        <div class="flex items-center justify-between gap-4 text-[12px] font-extrabold text-white/80 tracking-wide uppercase">
-          <span class="tabular-nums">{{ elapsed }}</span>
-          <span class="flex-1 text-center text-white/40 font-bold select-none">{{ $t("pages.watchPage.playerReady") }}</span>
-          <span class="tabular-nums">{{ video.duration }}</span>
+        <div class="watch-player__time-row">
+          <span class="watch-player__time">{{ elapsed }}</span>
+          <span class="watch-player__ready">{{ $t("pages.watchPage.playerReady") }}</span>
+          <span class="watch-player__time">{{ video.duration }}</span>
         </div>
       </div>
     </div>
@@ -52,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import type { WatchVideo } from "../../application/composables/useMockWatchData"
+import type { WatchVideo } from '../../application/composables/useMockWatchData'
 
 defineProps<{
   video: WatchVideo
@@ -62,4 +55,156 @@ defineProps<{
 }>()
 
 defineEmits<{ togglePlay: [] }>()
+
+const noop = () => {}
 </script>
+
+<style scoped>
+.watch-player {
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid #1e293b;
+  background: #0b1120;
+  color: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.watch-player__video {
+  position: relative;
+  aspect-ratio: 16/9;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .watch-player__video { min-height: 320px; }
+}
+
+.watch-player__img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  transition: transform 700ms ease;
+}
+
+.watch-player__img:hover {
+  transform: scale(1.05);
+}
+
+.watch-player__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(11,17,32,0.9), rgba(11,17,32,0.1), rgba(11,17,32,0.05));
+}
+
+/* Badges */
+.watch-player__badges {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.watch-player__badge {
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(0,0,0,0.4);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+/* Play button */
+.watch-player__play-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  width: 80px;
+  height: 80px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.18);
+  color: #ffffff;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: all 0.25s ease;
+}
+
+.watch-player__play-btn:hover {
+  background: rgba(255,255,255,0.28);
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 12px 40px rgba(0,0,255,0.2);
+}
+
+.watch-player__play-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.watch-player__play-icon--play {
+  transform: translateX(2px);
+}
+
+/* Controls */
+.watch-player__controls {
+  position: absolute;
+  inset-x: 0;
+  bottom: 0;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.watch-player__progress-rail {
+  position: relative;
+  height: 6px;
+  width: 100%;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.2);
+}
+
+.watch-player__progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #0000ff;
+  box-shadow: 0 0 10px rgba(0,0,255,0.5);
+  transition: width 0.3s ease;
+}
+
+.watch-player__time-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.watch-player__time {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.8);
+  font-variant-numeric: tabular-nums;
+}
+
+.watch-player__ready {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  user-select: none;
+}
+</style>

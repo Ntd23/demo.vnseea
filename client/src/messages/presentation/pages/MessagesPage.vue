@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full min-h-0 bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.08),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(59,130,246,0.12),transparent_26%),linear-gradient(180deg,#f7faff_0%,#eef4ff_100%)] p-3 lg:p-4">
+  <div class="mx-auto h-full min-h-0 max-w-[1440px] bg-[linear-gradient(180deg,#f7faff_0%,#eef4ff_100%)] p-3 lg:p-4">
     <div
       class="grid h-full min-h-0 gap-4"
       :class="infoPanelOpen ? 'xl:grid-cols-[360px_minmax(0,1fr)_300px]' : 'xl:grid-cols-[360px_minmax(0,1fr)]'"

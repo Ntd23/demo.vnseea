@@ -20,9 +20,22 @@ File này dùng để đánh dấu phần nào của hướng refactor mới đ�
 - `[x]` [refactor-guide.md](/d:/Duong/src/laragon/www/demo.vnseea/client/doc/refactor-guide.md)
 - `[x]` [refactor-blueprint-ddd.md](/d:/Duong/src/laragon/www/demo.vnseea/client/doc/refactor-blueprint-ddd.md)
 - `[x]` [product-editor-migration-status.md](/d:/Duong/src/laragon/www/demo.vnseea/client/doc/product-editor-migration-status.md)
+- `[x]` [ui-parity-baseline.md](/d:/Duong/src/laragon/www/demo.vnseea/client/doc/ui-parity-baseline.md)
+- `[x]` [ui-parity-checklist.md](/d:/Duong/src/laragon/www/demo.vnseea/client/doc/ui-parity-checklist.md)
 - `[x]` [refactor-sample-product.md](/d:/Duong/src/laragon/www/demo.vnseea/client/doc/refactor-sample-product.md)
 - `[x]` [refactor-sample-checkout.md](/d:/Duong/src/laragon/www/demo.vnseea/client/doc/refactor-sample-checkout.md)
 - `[x]` [refactor-sample-community.md](/d:/Duong/src/laragon/www/demo.vnseea/client/doc/refactor-sample-community.md)
+
+## UI parity recovery
+
+- `[x]` chot baseline recovery theo Git history thay vi runtime hien tai
+- `[x]` them tai lieu source of truth cho parity: `ui-parity-baseline.md`
+- `[x]` them checklist bat buoc truoc khi sua presentation: `ui-parity-checklist.md`
+- `[x]` them route manifest uu tien cho parity audit tai `src/shared-kernel/application/constants/ui-parity-routes.ts`
+- `[ ]` chot commit baseline cuoi cung cho tung route uu tien
+- `[ ]` audit desktop/mobile parity cho `welcome`, `register`, `home`, `@username`, `messages`, `products`, `groups`, `blogs`, `search`
+- `[ ]` restore shared shell parity cho `navigation`, `foundation`, `forms`, `feed`, `lightbox`
+- `[ ]` restore page composition parity theo thu tu shell-first
 
 ## Bounded contexts in `src/*`
 

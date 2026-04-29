@@ -8,10 +8,10 @@
     <div class="relative z-10 flex flex-col gap-12 px-8 py-16 sm:px-12 lg:px-16 lg:flex-row lg:items-end lg:justify-between">
       <div class="max-w-[780px] space-y-8">
         <div class="space-y-4">
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-primary-300/80 pl-1">
+          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-primary-200/80">
             {{ badge }}
           </p>
-          <h1 class="text-5xl sm:text-7xl font-black leading-none tracking-tight text-white transition-colors group-hover:text-primary-100">
+          <h1 class="text-5xl sm:text-7xl font-extrabold leading-none tracking-tight text-white transition-colors group-hover:text-primary-100">
             {{ title }}
           </h1>
           <p class="text-base font-medium leading-relaxed text-white/70 sm:text-lg pl-1 max-w-2xl italic">
@@ -24,7 +24,7 @@
             :to="appRoutes.myProducts"
             variant="soft"
             size="xl"
-            class="h-14 rounded-2xl bg-white/10 text-white font-black text-[11px] uppercase tracking-widest ring-1 ring-white/20 hover:bg-white/20 backdrop-blur-xl transition-all active:scale-95 px-8"
+            class="h-14 rounded-xl bg-white/10 px-8 text-[11px] font-semibold text-white ring-1 ring-white/20 backdrop-blur-xl transition-all hover:bg-white/20 active:scale-95"
           >
             <template #leading>
               <Icon name="i-ph-arrow-left-duotone" class="h-5 w-5" />
@@ -34,7 +34,7 @@
 
           <UButton
             size="xl"
-            class="h-14 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-2xl transition-all active:scale-95 px-10 border-none"
+            class="h-14 rounded-xl border-none px-10 text-[11px] font-semibold shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all active:scale-95"
             :class="theme.secondaryAction"
             @click="$emit('secondaryAction')"
           >
@@ -51,12 +51,12 @@
         <div
           v-for="item in stats"
           :key="item.label"
-          class="group/stat rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/10"
+          class="group/stat rounded-[18px] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl transition-all duration-500 hover:bg-white/10 hover:border-white/10"
         >
-          <p class="text-[9px] font-black uppercase tracking-[0.4em] text-white/40 group-hover/stat:text-primary-300 transition-colors">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/45 transition-colors group-hover/stat:text-primary-300">
             {{ item.label }}
           </p>
-          <p class="mt-4 text-3xl font-black text-white leading-none tracking-tight">
+          <p class="mt-4 text-3xl font-extrabold leading-none tracking-tight text-white">
             {{ item.value }}
           </p>
           <p class="mt-2 text-[10px] font-bold text-white/40 group-hover/stat:text-white/60 line-clamp-1">

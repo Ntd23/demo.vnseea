@@ -8,10 +8,10 @@
           </div>
 
           <div class="min-w-0 flex-1">
-            <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-[#0000ff]/70">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
               {{ $t("checkout.shippingForm.shippingAddress") }}
             </p>
-            <h2 class="mt-1 text-[1.25rem] font-black tracking-[-0.04em] text-[#243b63]">
+            <h2 class="mt-1 text-[1.25rem] font-extrabold tracking-[-0.04em] text-[#243b63]">
               {{ hasSavedAddress
                 ? $t("checkout.shippingForm.savedAddressTitle")
                 : $t("checkout.shippingForm.noAddressTitle") }}
@@ -27,10 +27,10 @@
         <div class="mt-5 rounded-[22px] border border-[#eef2f8] bg-[#f7f9ff] p-4">
           <template v-if="latestSavedAddress">
             <div class="flex flex-wrap items-center gap-2">
-              <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em]">
+              <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.06em]">
                 {{ $t("checkout.shippingForm.recipient") }}
               </UBadge>
-              <p class="text-[15px] font-black text-[#243b63]">
+              <p class="text-[15px] font-extrabold text-[#243b63]">
                 {{ latestSavedAddress.fullName }}
               </p>
               <span class="text-slate-300">•</span>
@@ -63,11 +63,11 @@
       </section>
 
       <aside class="rounded-[26px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f7f9ff_100%)] p-5 shadow-[0_14px_32px_rgba(15,35,110,0.05)]">
-        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+        <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
           {{ $t("checkout.shippingForm.progressLabel") }}
         </p>
 
-        <p class="mt-2 text-[22px] font-black tracking-[-0.04em] text-[#243b63]">
+        <p class="mt-2 text-[22px] font-extrabold tracking-[-0.04em] text-[#243b63]">
           {{ $t("checkout.shippingForm.fieldsCount", { filled: filledFieldsCount, total: totalFieldCount }) }}
         </p>
 
@@ -112,10 +112,10 @@
     >
       <div class="flex flex-col gap-4 border-b border-[#eef2f8] pb-5 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-[#0000ff]/70">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
             {{ $t("checkout.shippingForm.formTitle") }}
           </p>
-          <h2 class="mt-1 text-[1.25rem] font-black tracking-[-0.04em] text-[#243b63]">
+          <h2 class="mt-1 text-[1.25rem] font-extrabold tracking-[-0.04em] text-[#243b63]">
             {{ $t("checkout.shippingForm.addAddressTitle") }}
           </h2>
           <p class="mt-2 max-w-[520px] text-[14px] leading-6 text-slate-500">
@@ -148,7 +148,7 @@
                 <Icon name="i-ph-user-circle-fill" class="h-5 w-5" />
               </div>
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                   {{ $t("checkout.shippingForm.recipientInfo") }}
                 </p>
                 <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
@@ -205,7 +205,7 @@
                 <Icon name="i-ph-globe-hemisphere-east-fill" class="h-5 w-5" />
               </div>
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                   {{ $t("checkout.shippingForm.region") }}
                 </p>
                 <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
@@ -280,7 +280,7 @@
                 <Icon name="i-ph-house-line-fill" class="h-5 w-5" />
               </div>
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                   {{ $t("checkout.shippingForm.pointDetail") }}
                 </p>
                 <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
@@ -319,10 +319,10 @@
                 <Icon name="i-ph-eye-fill" class="h-5 w-5" />
               </div>
               <div>
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
                   {{ $t("checkout.shippingForm.quickPreview") }}
                 </p>
-                <p class="mt-1 text-[15px] font-black text-[#243b63]">
+                <p class="mt-1 text-[15px] font-extrabold text-[#243b63]">
                   {{ previewRecipient }}
                 </p>
               </div>

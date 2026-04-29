@@ -1,213 +1,133 @@
 <template>
-  <div class="flex h-full w-full flex-col overflow-hidden rounded-[22px] bg-white shadow-[0_4px_24px_rgba(0,0,255,0.06)] ring-1 ring-secondary-100">
+  <div class="chat-widget">
     <!-- Header -->
-    <div class="flex shrink-0 items-center justify-between border-b border-secondary-50 px-4 py-4">
+    <div class="chat-widget__header">
       <div>
-        <span class="block text-lg font-black text-[var(--text-primary)] tracking-tight">{{ $t("navigation.chatWidget.title") }}</span>
-        <div class="flex items-center gap-2 mt-0.5">
-          <div class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
-          <span class="block text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">{{ $t("navigation.chatWidget.onlineCount", { count: onlineCount }) }}</span>
+        <span class="chat-widget__title">{{ $t("navigation.chatWidget.title") }}</span>
+        <div class="chat-widget__online">
+          <div class="chat-widget__online-dot" />
+          <span>{{ $t("navigation.chatWidget.onlineCount", { count: onlineCount }) }}</span>
         </div>
       </div>
-      <div class="flex items-center gap-1.5">
-        <UButton
-          color="white"
-          variant="soft"
-          icon="i-ph-user-plus-duotone"
-          size="xs"
-          class="rounded-lg bg-secondary-50 text-[var(--text-primary)] hover:bg-secondary-100 ring-1 ring-secondary-100 shadow-none h-8 w-8 justify-center"
-          :title="$t('navigation.chatWidget.actionCreateGroup')"
-        />
-        <UButton
-          color="white"
-          variant="soft"
-          icon="i-ph-gear-duotone"
-          size="xs"
-          class="rounded-lg bg-secondary-50 text-[var(--text-primary)] hover:bg-secondary-100 ring-1 ring-secondary-100 shadow-none h-8 w-8 justify-center"
-          :title="$t('navigation.chatWidget.actionSettings')"
-        />
+      <div class="chat-widget__header-actions">
+        <button class="chat-widget__header-btn" type="button" :title="$t('navigation.chatWidget.actionCreateGroup')">
+          <Icon name="i-ph-user-plus-duotone" class="h-4 w-4" />
+        </button>
+        <button class="chat-widget__header-btn" type="button" :title="$t('navigation.chatWidget.actionSettings')">
+          <Icon name="i-ph-gear-duotone" class="h-4 w-4" />
+        </button>
       </div>
     </div>
 
-    <!-- Tabs Navigation -->
-    <div class="px-4 py-2 border-b border-secondary-50">
-      <UTabs
-        v-model="tabIndex"
-        :items="tabItems"
-        :ui="{
-          wrapper: 'flex flex-col',
-          list: {
-            base: 'relative h-10 p-1 flex items-center justify-center rounded-xl bg-secondary-50/50 ring-1 ring-secondary-100',
-            marker: {
-              base: 'absolute top-[4px] left-[4px] bottom-[4px] rounded-lg bg-white shadow-sm ring-1 ring-secondary-100'
-            },
-            tab: {
-              active: 'text-[var(--text-primary)]',
-              inactive: 'text-[var(--text-primary)] hover:text-secondary-900',
-              size: 'text-xs',
-              font: 'font-black uppercase tracking-widest'
-            }
-          }
-        }"
+    <!-- Tabs -->
+    <div class="chat-widget__tabs">
+      <button
+        v-for="(tab, index) in tabs"
+        :key="tab.value"
+        class="chat-widget__tab"
+        :class="{ 'chat-widget__tab--active': tabIndex === index }"
+        type="button"
+        @click="tabIndex = index"
       >
-        <template #icon="{ item, selected }">
-          <Icon :name="selected ? item.icon.replace('-duotone', '-fill') : item.icon" class="h-5 w-5" />
-        </template>
-      </UTabs>
+        <Icon :name="tabIndex === index ? tab.icon.replace('-duotone', '-fill') : tab.icon" class="h-4 w-4" />
+        <span>{{ $t(tab.label) }}</span>
+      </button>
     </div>
 
-    <!-- Tab Content Area -->
-    <div class="flex-1 overflow-y-auto no-scrollbar relative">
+    <!-- Tab Content -->
+    <div class="chat-widget__content">
       <!-- Send Message Tab -->
-      <div v-if="activeTab === 'send'" class="flex flex-col gap-5 px-5 py-6">
-        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)] pl-1">{{ $t("navigation.chatWidget.content") }}</p>
-
-        <UFormField :label="$t('navigation.chatWidget.sendToLabel')" class="space-y-2">
-          <UInput
+      <div v-if="activeTab === 'send'" class="chat-widget__send">
+        <div class="chat-widget__field">
+          <label class="chat-widget__field-label">{{ $t("navigation.chatWidget.sendToLabel") }}</label>
+          <input
             v-model="sendTo"
-            size="xl"
-            color="white"
-            class="rounded-xl"
+            class="chat-widget__input"
             :placeholder="$t('navigation.chatWidget.recipientPlaceholder')"
-            :ui="{ 
-              rounded: 'rounded-xl',
-              base: 'bg-secondary-50/30 font-semibold focus:bg-white transition-all ring-1 ring-secondary-100 focus:ring-primary-500' 
-            }"
-          />
-        </UFormField>
-
-        <UFormField class="space-y-2">
-          <UTextarea
-            v-model="sendMessage"
-            size="xl"
-            color="white"
-            class="rounded-xl"
-            :rows="4"
-            :placeholder="$t('navigation.chatWidget.messagePlaceholder')"
-            :ui="{ 
-              rounded: 'rounded-2xl',
-              base: 'bg-secondary-50/30 font-semibold focus:bg-white transition-all ring-1 ring-secondary-100 focus:ring-primary-500' 
-            }"
-          />
-        </UFormField>
-
-        <UFormField :label="$t('navigation.chatWidget.attachLabel')" class="space-y-2">
-          <div class="flex items-center overflow-hidden rounded-xl border border-dashed border-primary-200 bg-primary-50/20 py-1 px-1">
-            <label class="flex h-10 cursor-pointer items-center gap-2 rounded-lg bg-white px-4 shadow-sm ring-1 ring-primary-100 transition hover:bg-primary-50 active:scale-95">
-              <Icon name="i-ph-paperclip-duotone" class="h-4.5 w-4.5 text-[var(--text-primary)]" />
-              <span class="text-xs font-black uppercase tracking-widest text-[var(--text-primary)]">{{ $t("navigation.chatWidget.chooseFile") }}</span>
-              <input class="hidden" type="file" @change="onFile">
-            </label>
-            <span class="px-3 text-[11px] font-semibold text-[var(--text-primary)] truncate italic flex-1">
-              {{ attachFile ? attachFile.name : $t("navigation.chatWidget.noFileSelected") }}
-            </span>
-          </div>
-        </UFormField>
-
-        <div class="flex items-center justify-between gap-4">
-          <UCheckbox
-            v-model="selectAll"
-            :label="$t('navigation.chatWidget.selectAll')"
-            :ui="{ 
-              rounded: 'rounded-md', 
-              label: 'text-xs font-black uppercase tracking-widest text-[var(--text-primary)] cursor-pointer',
-              border: 'border-secondary-300 checked:bg-primary-600'
-            }"
-          />
-          
-          <div class="relative min-w-[140px]">
-             <USelect
-              icon="i-ph-tag-duotone"
-              size="sm"
-              :options="[
-                { label: $t('navigation.chatWidget.selectTag'), value: '' },
-                { label: $t('navigation.chatWidget.tagImportant'), value: 'important' },
-                { label: $t('navigation.chatWidget.tagWork'), value: 'work' }
-              ]"
-              :ui="{ 
-                rounded: 'rounded-xl',
-                base: 'bg-secondary-50/50 font-bold border-none ring-1 ring-secondary-100'
-              }"
-            />
-          </div>
+            type="text"
+          >
         </div>
 
-        <UButton
-          block
-          size="xl"
-          icon="i-ph-paper-plane-right-duotone"
-          class="rounded-2xl bg-secondary-900 hover:bg-black text-white font-black text-xs uppercase tracking-widest h-12 shadow-xl shadow-secondary-900/10 transition-all active:scale-95"
-        >
+        <div class="chat-widget__field">
+          <textarea
+            v-model="sendMessage"
+            class="chat-widget__textarea"
+            rows="3"
+            :placeholder="$t('navigation.chatWidget.messagePlaceholder')"
+          />
+        </div>
+
+        <div class="chat-widget__field">
+          <label class="chat-widget__field-label">{{ $t("navigation.chatWidget.attachLabel") }}</label>
+          <label class="chat-widget__file-picker">
+            <Icon name="i-ph-paperclip-bold" class="h-4 w-4" />
+            <span>{{ $t("navigation.chatWidget.chooseFile") }}</span>
+            <input class="hidden" type="file" @change="onFile">
+          </label>
+          <span v-if="attachFile" class="chat-widget__file-name">{{ attachFile.name }}</span>
+        </div>
+
+        <button class="chat-widget__send-btn" type="button">
+          <Icon name="i-ph-paper-plane-right-fill" class="h-4 w-4" />
           {{ $t("navigation.chatWidget.sendMessage") }}
-        </UButton>
+        </button>
       </div>
 
       <!-- Contacts Tab -->
-      <div v-else-if="activeTab === 'contacts'" class="flex flex-col py-3">
-        <UButton
+      <div v-else-if="activeTab === 'contacts'" class="chat-widget__list">
+        <button
           v-for="contact in extendedContacts"
           :key="contact.id"
-          variant="ghost"
-          class="flex w-full items-center gap-4 px-6 py-3 transition-all duration-300 hover:bg-secondary-50 group/contact relative active:bg-secondary-100"
+          class="chat-widget__contact"
+          type="button"
           @click="openMiniChat(contact)"
         >
-          <div class="relative shrink-0">
-            <div class="h-10 w-10 relative">
-              <img v-if="contact.avatarUrl" :src="contact.avatarUrl" class="h-full w-full rounded-2xl object-cover ring-2 ring-white shadow-md">
-              <div v-else class="flex h-full w-full items-center justify-center rounded-2xl text-[11px] font-black text-white shadow-md ring-2 ring-white" :style="{ background: avatarColor(contact.id) }">{{ contact.avatar }}</div>
-              <div class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-[2.5px] border-white z-10" :class="contact.online ? 'bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.5)]' : 'bg-secondary-300'" />
+          <div class="chat-widget__contact-avatar-wrap">
+            <img v-if="contact.avatarUrl" :src="contact.avatarUrl" class="chat-widget__contact-img">
+            <div v-else class="chat-widget__contact-initials" :style="{ background: avatarColor(contact.id) }">{{ contact.avatar }}</div>
+            <div class="chat-widget__contact-status" :class="{ 'chat-widget__contact-status--online': contact.online }" />
+          </div>
+          <div class="chat-widget__contact-info">
+            <div class="chat-widget__contact-name-row">
+              <span class="chat-widget__contact-name">{{ contact.name }}</span>
+              <span v-if="contact.online" class="chat-widget__contact-live">Live</span>
             </div>
+            <p class="chat-widget__contact-status-text">{{ contact.status || $t("navigation.chatWidget.readyToChat") }}</p>
           </div>
-
-          <div class="min-w-0 flex-1 text-left">
-            <div class="flex items-center gap-2">
-              <span class="truncate text-sm font-black text-[var(--text-primary)] group-hover/contact:text-secondary-900 transition-colors">{{ contact.name }}</span>
-              <UBadge v-if="contact.online" variant="soft" color="primary" class="rounded-lg font-black text-[8px] uppercase tracking-widest px-1.5 py-0.5">Live</UBadge>
-            </div>
-            <p class="truncate text-[11px] font-medium text-[var(--text-primary)] group-hover/contact:text-secondary-500 transition-colors italic">{{ contact.status || $t("navigation.chatWidget.readyToChat") }}</p>
-          </div>
-
-          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white border border-secondary-100 text-[var(--text-primary)] shadow-sm transition-all group-hover/contact:bg-primary-600 group-hover/contact:text-white group-hover/contact:border-primary-500 group-hover/contact:shadow-lg group-hover/contact:shadow-primary-600/20">
-            <Icon name="i-ph-chat-circle-dots-duotone" class="h-4.5 w-4.5" />
-          </div>
-        </UButton>
+        </button>
       </div>
 
       <!-- Groups Tab -->
-      <div v-else-if="activeTab === 'groups'" class="flex flex-col py-3">
-        <UButton
+      <div v-else-if="activeTab === 'groups'" class="chat-widget__list">
+        <button
           v-for="group in groups"
           :key="group.id"
-          variant="ghost"
-          class="flex w-full items-center gap-4 px-6 py-3.5 transition-all duration-300 hover:bg-secondary-50 group/group active:bg-secondary-100"
+          class="chat-widget__contact"
+          type="button"
           @click="openMiniGroup(group)"
         >
-          <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-50 to-indigo-100 text-indigo-600 ring-1 ring-indigo-200">
-            <Icon name="i-ph-users-three-duotone" class="h-6 w-6" />
+          <div class="chat-widget__group-icon">
+            <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
           </div>
-          <div class="min-w-0 flex-1 text-left">
-            <p class="truncate text-sm font-black text-[var(--text-primary)] group-hover/group:text-indigo-600 transition-colors">{{ group.name }}</p>
-            <p class="text-[11px] font-medium text-[var(--text-primary)] uppercase tracking-widest">{{ $t("navigation.chatWidget.groupMembers", { count: group.members }) }} members</p>
+          <div class="chat-widget__contact-info">
+            <span class="chat-widget__contact-name">{{ group.name }}</span>
+            <p class="chat-widget__contact-status-text">{{ $t("navigation.chatWidget.groupMembers", { count: group.members }) }} members</p>
           </div>
-          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-secondary-300 opacity-0 group-hover/group:opacity-100 transition-opacity">
-            <Icon name="i-ph-arrow-right-bold" class="h-4 w-4" />
-          </div>
-        </UButton>
+        </button>
       </div>
     </div>
 
     <!-- Search Footer -->
-    <div class="shrink-0 border-t border-secondary-50 p-4 bg-secondary-50/30">
-      <UInput
-        v-model="search"
-        size="lg"
-        icon="i-ph-magnifying-glass-duotone"
-        :placeholder="$t('navigation.chatWidget.searchPlaceholder')"
-        :ui="{
-          rounded: 'rounded-xl',
-          base: 'bg-white font-medium border-none ring-1 ring-secondary-200 focus:ring-primary-500 shadow-sm'
-        }"
-      />
+    <div class="chat-widget__footer">
+      <div class="chat-widget__search-wrap">
+        <Icon name="i-ph-magnifying-glass" class="chat-widget__search-icon" />
+        <input
+          v-model="search"
+          class="chat-widget__search-input"
+          :placeholder="$t('navigation.chatWidget.searchPlaceholder')"
+          type="text"
+        >
+      </div>
     </div>
 
     <!-- Mini Chat Overlay -->
@@ -219,51 +139,40 @@
       leave-from-class="opacity-100 translate-y-0 scale-100" 
       leave-to-class="opacity-0 translate-y-8 scale-95"
     >
-      <div v-if="miniChat.open" class="absolute inset-x-3 bottom-16 z-20 rounded-[24px] border border-primary-100 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden">
-        <div class="flex items-center justify-between border-b border-secondary-50 bg-secondary-50/50 px-4 py-3">
-          <div class="min-w-0">
-            <p class="truncate text-[13px] font-black text-[var(--text-primary)] tracking-tight">{{ miniChat.title }}</p>
-            <div class="flex items-center gap-1.5 mt-0.5">
-              <div class="h-1.5 w-1.5 rounded-full bg-sky-500" />
-              <p class="text-[10px] font-black uppercase tracking-widest text-sky-600">{{ $t("navigation.chatWidget.miniChatActive") }}</p>
+      <div v-if="miniChat.open" class="chat-widget__mini">
+        <div class="chat-widget__mini-header">
+          <div>
+            <p class="chat-widget__mini-title">{{ miniChat.title }}</p>
+            <div class="chat-widget__online" style="margin-top: 2px;">
+              <div class="chat-widget__online-dot" />
+              <span style="font-size: 10px; color: #0ea5e9;">{{ $t("navigation.chatWidget.miniChatActive") }}</span>
             </div>
           </div>
-          <UButton
-            color="white"
-            variant="ghost"
-            icon="i-ph-x-bold"
-            size="xs"
-            class="rounded-lg h-7 w-7 text-[var(--text-primary)] hover:text-secondary-900 transition-colors shadow-none"
-            @click="miniChat.open = false"
-          />
+          <button class="chat-widget__header-btn" type="button" @click="miniChat.open = false">
+            <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+          </button>
         </div>
 
-        <div class="max-h-64 space-y-4 overflow-y-auto p-4 no-scrollbar">
-          <div class="flex justify-end">
-            <div class="max-w-[85%] rounded-2xl rounded-tr-sm bg-primary-600 px-4 py-2.5 text-xs font-semibold text-white shadow-md shadow-primary-500/10">{{ miniSample }}</div>
+        <div class="chat-widget__mini-messages">
+          <div class="chat-widget__mini-row chat-widget__mini-row--sent">
+            <div class="chat-widget__mini-bubble chat-widget__mini-bubble--sent">{{ miniSample }}</div>
           </div>
-          <div class="flex justify-start">
-            <div class="max-w-[85%] rounded-2xl rounded-tl-sm bg-secondary-50 border border-secondary-100 px-4 py-2.5 text-xs font-semibold text-[var(--text-primary)] shadow-sm">{{ miniReply }}</div>
+          <div class="chat-widget__mini-row chat-widget__mini-row--received">
+            <div class="chat-widget__mini-bubble chat-widget__mini-bubble--received">{{ miniReply }}</div>
           </div>
         </div>
 
-        <div class="border-t border-secondary-50 p-3 bg-white">
-          <div class="flex items-center gap-2 rounded-xl bg-secondary-50/50 p-1 ring-1 ring-secondary-100 focus-within:ring-primary-500 transition-all">
-            <input 
-              v-model="miniChat.message" 
-              class="flex-1 bg-transparent px-3 text-[13px] font-semibold text-[var(--text-primary)] placeholder:text-secondary-400 outline-none" 
-              :placeholder="$t('navigation.chatWidget.miniInputPlaceholder')" 
-              type="text"
-              @keyup.enter="miniChat.message = ''"
-            >
-            <UButton
-              color="primary"
-              variant="solid"
-              icon="i-ph-paper-plane-right-duotone"
-              class="rounded-lg shadow-lg shadow-primary-500/20"
-              size="sm"
-            />
-          </div>
+        <div class="chat-widget__mini-input-wrap">
+          <input 
+            v-model="miniChat.message" 
+            class="chat-widget__mini-input" 
+            :placeholder="$t('navigation.chatWidget.miniInputPlaceholder')" 
+            type="text"
+            @keyup.enter="miniChat.message = ''"
+          >
+          <button class="chat-widget__mini-send" type="button">
+            <Icon name="i-ph-paper-plane-right-fill" class="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
     </Transition>
@@ -284,19 +193,12 @@ const tabs = [
   { value: 'groups', icon: 'i-ph-users-three-duotone', label: 'navigation.chatWidget.tabGroups' },
 ]
 
-const tabItems = computed(() => tabs.map(tab => ({
-  label: t(tab.label),
-  icon: tab.icon,
-  value: tab.value
-})))
-
 const activeTab = computed(() => tabs[tabIndex.value].value)
 
 const search = ref('')
 const sendTo = ref('')
 const sendMessage = ref('')
 const attachFile = ref<File | null>(null)
-const selectAll = ref(false)
 const onlineCount = computed(() => contacts.filter(c => c.online).length)
 
 const groups = [
@@ -349,3 +251,497 @@ const onFile = (e: Event) => {
   if (f) attachFile.value = f
 }
 </script>
+
+<style scoped>
+.chat-widget {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Header */
+.chat-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.chat-widget__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.chat-widget__online {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.chat-widget__online-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0ea5e9;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.chat-widget__header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.chat-widget__header-btn {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: none;
+  background: #f1f5f9;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chat-widget__header-btn:hover {
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+}
+
+/* Tabs */
+.chat-widget__tabs {
+  display: flex;
+  gap: 2px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.chat-widget__tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  justify-content: center;
+  padding: 7px 6px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chat-widget__tab:hover {
+  background: #f8fafc;
+  color: #475569;
+}
+
+.chat-widget__tab--active {
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+  font-weight: 700;
+}
+
+/* Content */
+.chat-widget__content {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.chat-widget__content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Send tab */
+.chat-widget__send {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.chat-widget__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chat-widget__field-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.chat-widget__input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fafbfe;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.chat-widget__input:focus {
+  border-color: rgba(0, 0, 255, 0.25);
+}
+
+.chat-widget__textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #fafbfe;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.chat-widget__textarea:focus {
+  border-color: rgba(0, 0, 255, 0.25);
+}
+
+.chat-widget__file-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px dashed #cbd5e1;
+  background: #fafbfe;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.chat-widget__file-picker:hover {
+  color: #0000ff;
+}
+
+.chat-widget__file-name {
+  font-size: 11px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.chat-widget__send-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  transition: all 0.15s ease;
+}
+
+.chat-widget__send-btn:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.chat-widget__send-btn:active {
+  transform: scale(0.98);
+}
+
+/* Contact list */
+.chat-widget__list {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.chat-widget__contact {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease;
+  width: 100%;
+}
+
+.chat-widget__contact:hover {
+  background: #f8fafc;
+}
+
+.chat-widget__contact-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.chat-widget__contact-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.chat-widget__contact-initials {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.chat-widget__contact-status {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: #cbd5e1;
+}
+
+.chat-widget__contact-status--online {
+  background: #0ea5e9;
+  box-shadow: 0 0 6px rgba(14, 165, 233, 0.4);
+}
+
+.chat-widget__contact-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-widget__contact-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chat-widget__contact-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-widget__contact-live {
+  display: inline-flex;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(0, 0, 255, 0.08);
+  font-size: 9px;
+  font-weight: 700;
+  color: #0000ff;
+}
+
+.chat-widget__contact-status-text {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-top: 1px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-widget__group-icon {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+}
+
+/* Search footer */
+.chat-widget__footer {
+  flex-shrink: 0;
+  border-top: 1px solid #f1f5f9;
+  padding: 10px 12px;
+}
+
+.chat-widget__search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.chat-widget__search-icon {
+  width: 16px;
+  height: 16px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.chat-widget__search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #334155;
+  outline: none;
+  font-family: inherit;
+}
+
+/* Mini Chat */
+.chat-widget__mini {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 56px;
+  z-index: 20;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 255, 0.08);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.chat-widget__mini-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafbfe;
+}
+
+.chat-widget__mini-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.chat-widget__mini-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.chat-widget__mini-row {
+  display: flex;
+}
+
+.chat-widget__mini-row--sent {
+  justify-content: flex-end;
+}
+
+.chat-widget__mini-row--received {
+  justify-content: flex-start;
+}
+
+.chat-widget__mini-bubble {
+  max-width: 85%;
+  padding: 8px 14px;
+  border-radius: 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.chat-widget__mini-bubble--sent {
+  background: #0000ff;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-widget__mini-bubble--received {
+  background: #f1f5f9;
+  color: #334155;
+  border-bottom-left-radius: 4px;
+}
+
+.chat-widget__mini-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.chat-widget__mini-input {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #fafbfe;
+  font-size: 12.5px;
+  color: #334155;
+  outline: none;
+  font-family: inherit;
+}
+
+.chat-widget__mini-input:focus {
+  border-color: rgba(0, 0, 255, 0.25);
+}
+
+.chat-widget__mini-send {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: #0000ff;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 255, 0.25);
+  transition: all 0.15s ease;
+}
+
+.chat-widget__mini-send:hover {
+  transform: scale(1.05);
+}
+</style>
