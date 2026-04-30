@@ -1,11 +1,18 @@
 const encodeSegment = (value: string | number) => encodeURIComponent(String(value))
+const encodeQueryValue = (value: string | number) => encodeURIComponent(String(value))
 
 export const appRoutes = {
   home: "/",
   feed: "/home",
+  adminCp: "/admin-cp",
   welcome: "/welcome",
   register: "/register",
   forgotPassword: "/forgot-password",
+  confirmLogin: "/confirm-login",
+  resetPassword: "/reset-password",
+  confirmAccount: "/confirm-account",
+  confirmResetSms: "/confirm-reset-sms",
+  logout: "/logout",
   explore: "/explore",
   hashtag: (tag: string) => `/hashtag/${encodeSegment(tag)}`,
   blogs: "/blogs",
@@ -65,6 +72,16 @@ export const appRoutes = {
 } as const
 
 export const apiRoutes = {
+  auth: {
+    me: "auth/me",
+    login: "auth/login",
+    register: "auth/register",
+    confirmLogin: "auth/confirm-login",
+    confirmAccount: "auth/confirm-account",
+    forgotPassword: "auth/forgot-password",
+    confirmResetSms: "auth/confirm-reset-sms",
+    resetPassword: "auth/reset-password",
+  },
   profile: {
     byUsername: (username: string) => `profile/${encodeSegment(username)}`,
   },
@@ -86,5 +103,17 @@ export const apiRoutes = {
     conversations: "messages/conversations",
     detail: (conversationId: string | number) => `messages/${encodeSegment(conversationId)}`,
     send: "messages/send",
+  },
+} as const
+
+export const backendRoutes = {
+  auth: {
+    logout: "/index.php?link1=logout",
+  },
+  session: {
+    currentUser: (sessionId?: string) =>
+      `/api/v2/endpoints/get-current-user.php${sessionId ? `?session_id=${encodeQueryValue(sessionId)}` : ""}`,
+    setBrowserCookie: (accessToken: string) =>
+      `/api/v2/endpoints/set-browser-cookie.php?access_token=${encodeQueryValue(accessToken)}`,
   },
 } as const

@@ -7,7 +7,7 @@ Rules:
 - Pages and components do not call `$fetch` directly.
 - Application `ViewModel` / use-cases depend on repository interfaces.
 - Frontend infrastructure repositories use `useNuxtApiClient()` to talk to Nuxt business routes under `/api/*`.
-- Nuxt `server/api/*` handlers use `server/utils/legacy-php-client.ts` to talk to legacy PHP endpoints.
+- Nuxt `server/api/*` handlers use `server/utils/backend-api-client.ts` to talk to backend PHP endpoints.
 
 Base URL:
 

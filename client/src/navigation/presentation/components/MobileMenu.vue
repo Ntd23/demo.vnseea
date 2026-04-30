@@ -1,6 +1,5 @@
 <template>
   <Teleport to="body">
-    <!-- Backdrop -->
     <Transition name="mm-fade">
       <div
         v-show="isOpen"
@@ -10,7 +9,6 @@
       />
     </Transition>
 
-    <!-- Drawer panel -->
     <Transition name="mm-slide">
       <aside
         v-show="isOpen"
@@ -20,30 +18,45 @@
         aria-modal="true"
         aria-labelledby="mobile-menu-title"
       >
-        <!-- Header -->
         <div class="mm__header">
           <div class="mm__admin-card">
-            <div>
-              <p id="mobile-menu-title" class="mm__admin-role">{{ $t("navigation.mobileMenu.adminTitle") }}</p>
+            <div class="mm__identity">
+              <div class="mm__avatar">
+                <NuxtImg
+                  v-if="avatarUrl"
+                  :src="avatarUrl"
+                  :alt="currentUser.name"
+                  class="h-full w-full rounded-full object-cover"
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                />
+                <span v-else>{{ userInitials }}</span>
+              </div>
+              <div>
+                <p id="mobile-menu-title" class="mm__admin-role">{{ currentUser?.name || "User" }}</p>
+                <p v-if="identityLabel" class="mm__admin-subtitle">{{ identityLabel }}</p>
+              </div>
             </div>
             <div class="mm__admin-icon">🤝</div>
           </div>
-          <div class="mm__stats">
-            <div class="mm__stat">
+
+          <div v-if="showStats" class="mm__stats">
+            <div v-if="formattedWallet" class="mm__stat">
               <Icon name="i-ph-wallet-fill" class="mm__stat-icon" />
-              <span>{{ $t("navigation.mobileMenu.walletLabel") || 'Ví' }}: VND9.999.999.999</span>
+              <span>{{ $t("navigation.mobileMenu.walletLabel") || "Ví" }}: {{ formattedWallet }}</span>
             </div>
-            <div class="mm__stat">
+            <div v-if="formattedPoints" class="mm__stat">
               <Icon name="i-ph-circle-half-fill" class="mm__stat-icon" />
-              <span>{{ $t("navigation.mobileMenu.pointsLabel") || 'Điểm' }}: 0</span>
+              <span>{{ $t("navigation.mobileMenu.pointsLabel") || "Điểm" }}: {{ formattedPoints }}</span>
             </div>
           </div>
+
           <button class="mm__close" type="button" :aria-label="$t('common.close')" @click="close">
             <Icon name="i-ph-x-bold" class="h-4.5 w-4.5" />
           </button>
         </div>
 
-        <!-- Scrollable content -->
         <div class="mm__content">
           <div class="mm__nav-group">
             <NuxtLink
@@ -62,17 +75,28 @@
           <div class="mm__divider" />
 
           <div class="mm__nav-group">
-            <NuxtLink
-              v-for="item in settingsNav"
-              :key="item.label"
-              :to="item.to"
-              class="mm__item"
-              :class="[isNavItemActive(item.to) ? 'mm__item--active' : '', item.danger ? 'mm__item--danger' : '']"
-              @click="close"
-            >
-              <Icon :name="item.icon" class="mm__item-icon" :class="item.danger ? 'mm__item-icon--danger' : ''" />
-              <span class="mm__item-label" :class="item.danger ? 'mm__item-label--danger' : ''">{{ $t(item.label) }}</span>
-            </NuxtLink>
+            <template v-for="item in settingsNav" :key="item.label">
+              <a
+                v-if="item.external"
+                :href="item.to"
+                class="mm__item"
+                :class="item.danger ? 'mm__item--danger' : ''"
+                @click="close"
+              >
+                <Icon :name="item.icon" class="mm__item-icon" :class="item.danger ? 'mm__item-icon--danger' : ''" />
+                <span class="mm__item-label" :class="item.danger ? 'mm__item-label--danger' : ''">{{ $t(item.label) }}</span>
+              </a>
+              <NuxtLink
+                v-else
+                :to="item.to"
+                class="mm__item"
+                :class="[isNavItemActive(item.to) ? 'mm__item--active' : '', item.danger ? 'mm__item--danger' : '']"
+                @click="close"
+              >
+                <Icon :name="item.icon" class="mm__item-icon" :class="item.danger ? 'mm__item-icon--danger' : ''" />
+                <span class="mm__item-label" :class="item.danger ? 'mm__item-label--danger' : ''">{{ $t(item.label) }}</span>
+              </NuxtLink>
+            </template>
           </div>
 
           <div class="mm__divider" />
@@ -88,6 +112,12 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { useBackendWebUrl } from "#shared-kernel/application/utils/backend-web-url"
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
+
+const { t, locale } = useI18n()
+const currentAuthUserStore = useCurrentAuthUserStore()
 const route = useRoute()
 const modelValue = defineModel<boolean>({ default: false })
 
@@ -99,15 +129,62 @@ const emit = defineEmits<{
 }>()
 
 const isOpen = ref(false)
+const currentUser = computed(() => currentAuthUserStore.user)
+const avatarUrl = computed(() =>
+  typeof currentUser.value?.avatarUrl === "string" && currentUser.value.avatarUrl.length > 0
+    ? currentUser.value.avatarUrl
+    : "",
+)
+const userInitials = computed(() =>
+  currentUser.value?.name
+    ?.split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() ?? "")
+    .join("")
+  || "U",
+)
+const identityLabel = computed(() => {
+  if (!currentUser.value) return ""
+  if (currentUser.value.isAdmin) return t("navigation.mobileMenu.adminTitle")
+  return currentUser.value.username ? `@${currentUser.value.username}` : ""
+})
 
-// Parent → local
+const numberFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US"))
+const formattedWallet = computed(() => {
+  const value = currentUser.value?.wallet
+
+  if (value === undefined || value === null || value === "") {
+    return ""
+  }
+
+  if (typeof value === "number") {
+    return `VND${numberFormatter.value.format(value)}`
+  }
+
+  const normalized = Number(String(value).replace(/,/g, ""))
+
+  return Number.isFinite(normalized)
+    ? `VND${numberFormatter.value.format(normalized)}`
+    : String(value)
+})
+const formattedPoints = computed(() => {
+  const value = currentUser.value?.points
+
+  if (value === undefined || value === null || Number.isNaN(value)) {
+    return ""
+  }
+
+  return numberFormatter.value.format(value)
+})
+const showStats = computed(() => Boolean(formattedWallet.value || formattedPoints.value))
+
 watch(
   () => props.open ?? modelValue.value,
   val => { isOpen.value = Boolean(val) },
   { immediate: true },
 )
 
-// Local → parent (skip the very first sync to avoid triggering close on mount)
 let mounted = false
 watch(isOpen, (val) => {
   if (!mounted) { mounted = true; return }
@@ -163,16 +240,35 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.deals', icon: 'i-ph-tag-fill', to: '/deals' },
 ]
 
-const settingsNav = [
-  { label: 'navigation.mobileMenu.settingsNav.settings', icon: 'i-ph-gear-fill', to: '/setting', danger: false },
-  { label: 'navigation.mobileMenu.settingsNav.registration', icon: 'i-ph-clipboard-text-fill', to: '/register', danger: false },
-  { label: 'navigation.mobileMenu.settingsNav.adminArea', icon: 'i-ph-squares-four-fill', to: '/admin', danger: false },
-  { label: 'navigation.mobileMenu.settingsNav.logout', icon: 'i-ph-sign-out-fill', to: '/welcome', danger: true },
-]
+const adminCpUrl = useBackendWebUrl(appRoutes.adminCp)
+const settingsNav = computed(() => {
+  const items: Array<{ label: string; icon: string; to: string; danger?: boolean; external?: boolean }> = [
+    { label: 'navigation.mobileMenu.settingsNav.settings', icon: 'i-ph-gear-fill', to: appRoutes.settings, danger: false },
+    { label: 'navigation.mobileMenu.settingsNav.registration', icon: 'i-ph-clipboard-text-fill', to: appRoutes.register, danger: false },
+  ]
+
+  if (currentUser.value?.isAdmin) {
+    items.push({
+      label: 'navigation.mobileMenu.settingsNav.adminArea',
+      icon: 'i-ph-squares-four-fill',
+      to: adminCpUrl,
+      danger: false,
+      external: true,
+    })
+  }
+
+  items.push({
+    label: 'navigation.mobileMenu.settingsNav.logout',
+    icon: 'i-ph-sign-out-fill',
+    to: appRoutes.logout,
+    danger: true,
+  })
+
+  return items
+})
 </script>
 
 <style scoped>
-/* ─── Backdrop overlay ─────────────────────────────────── */
 .mm-overlay {
   position: fixed;
   inset: 0;
@@ -182,7 +278,6 @@ const settingsNav = [
   -webkit-backdrop-filter: blur(4px);
 }
 
-/* ─── Drawer panel ─────────────────────────────────────── */
 .mm {
   position: fixed;
   top: 0;
@@ -198,7 +293,6 @@ const settingsNav = [
   overflow: hidden;
 }
 
-/* ─── Transitions ──────────────────────────────────────── */
 .mm-fade-enter-active,
 .mm-fade-leave-active {
   transition: opacity 220ms ease;
@@ -217,7 +311,6 @@ const settingsNav = [
   transform: translateX(100%);
 }
 
-/* ─── Header ───────────────────────────────────────────── */
 .mm__header {
   position: relative;
   flex-shrink: 0;
@@ -225,16 +318,46 @@ const settingsNav = [
 
 .mm__admin-card {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
   padding: 20px 20px 12px;
   background: linear-gradient(135deg, #0000ff 0%, #2233ff 100%);
+  color: #ffffff;
+}
+
+.mm__identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mm__avatar {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  font-size: 14px;
+  font-weight: 800;
   color: #ffffff;
 }
 
 .mm__admin-role {
   font-size: 17px;
   font-weight: 800;
+}
+
+.mm__admin-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .mm__admin-icon {
@@ -286,7 +409,6 @@ const settingsNav = [
   color: #0000ff;
 }
 
-/* ─── Content ──────────────────────────────────────────── */
 .mm__content {
   flex: 1;
   overflow-y: auto;
@@ -306,7 +428,6 @@ const settingsNav = [
   background: #f1f5f9;
 }
 
-/* ─── Nav items ────────────────────────────────────────── */
 .mm__item {
   display: flex;
   align-items: center;
@@ -330,7 +451,6 @@ const settingsNav = [
 .mm__item-label--active { font-weight: 700; }
 .mm__item-label--danger { color: #dc2626; }
 
-/* ─── Switch account ───────────────────────────────────── */
 .mm__switch {
   display: flex;
   width: 100%;

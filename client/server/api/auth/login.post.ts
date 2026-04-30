@@ -1,0 +1,63 @@
+import { createError, readBody } from "h3"
+import { createBackendApiClient } from "../../utils/backend-api-client"
+import { assertBackendApiSuccess } from "../../utils/backend-api-response"
+import type { LoginInput, LoginResult } from "../../../src/auth/domain/types/auth.types"
+
+type BackendLoginResponse = {
+  api_status?: number | string
+  access_token?: string
+  user_id?: number | string
+  user_platform?: string
+  timezone?: string
+  membership?: boolean
+  message?: string
+  errors?: {
+    error_text?: string
+  }
+}
+
+export default defineEventHandler(async (event): Promise<LoginResult> => {
+  const client = createBackendApiClient(event)
+  const body = await readBody<LoginInput>(event)
+  const identity = body.identity?.trim() ?? ""
+  const password = body.password ?? ""
+
+  if (!identity) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Username, email, or phone number is required.",
+    })
+  }
+
+  if (!password) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Password is required.",
+    })
+  }
+
+  const response = assertBackendApiSuccess(
+    await client.post<BackendLoginResponse, Record<string, unknown>>("auth", {
+      username: identity,
+      password,
+      timezone: body.timezone || "UTC",
+      device_type: "windows",
+    }),
+    "Unable to sign in.",
+  )
+
+  const hasAccessToken = Boolean(response.access_token)
+
+  return {
+    success: true,
+    status: hasAccessToken ? "authenticated" : "two_factor_required",
+    message: response.message ?? (hasAccessToken
+      ? "Signed in successfully."
+      : "Please enter your confirmation code."),
+    accessToken: response.access_token,
+    userId: response.user_id ? Number(response.user_id) : undefined,
+    userPlatform: response.user_platform,
+    timezone: response.timezone,
+    membershipRequired: response.membership ?? false,
+  }
+})

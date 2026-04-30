@@ -15,7 +15,7 @@ Toi thieu:
 
 ```env
 NUXT_PUBLIC_API_BASE=/api
-NUXT_LEGACY_API_BASE=https://vnseea.vn/api/v2/endpoints
+NUXT_BACKEND_API_BASE=https://vnseea.vn
 NUXT_PUBLIC_SITE_URL=https://vnseea.vn
 NUXT_DEV_HOST=127.0.0.1
 NUXT_DEV_PORT=3000
@@ -24,7 +24,7 @@ NUXT_ALLOWED_HOSTS=vnseea.vn,www.vnseea.vn
 
 Luu y:
 - `NUXT_PUBLIC_SITE_URL` phai la domain production that.
-- `NUXT_LEGACY_API_BASE` phai tro toi backend PHP that.
+- `NUXT_BACKEND_API_BASE` phai tro toi backend PHP that.
 - `NUXT_DEV_HOST` / `NUXT_DEV_PORT` duoc tai su dung cho Nitro runtime trong phase Node server.
 
 ## 3. Cai dat va build

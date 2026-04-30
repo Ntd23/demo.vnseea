@@ -1,8 +1,8 @@
 import { readBody } from "h3"
-import { createLegacyPhpClient } from "../../utils/legacy-php-client"
+import { createBackendApiClient } from "../../utils/backend-api-client"
 
 export default defineEventHandler(async (event) => {
-  const client = createLegacyPhpClient(event)
+  const client = createBackendApiClient(event)
   const body = await readBody(event)
 
   return client.post("checkout", body, {

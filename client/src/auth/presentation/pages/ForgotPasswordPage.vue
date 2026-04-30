@@ -90,15 +90,18 @@
 
 <script setup lang="ts">
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
+import { useForgotPasswordPageVM } from '../../application/view-models/useForgotPasswordPageVM'
 
 const { t } = useI18n()
-
-const state = reactive({
-  emailOrPhone: '',
-  captchaConfirmed: false,
-})
-
-const submitState = ref<'idle' | 'loading' | 'success' | 'error'>('idle')
+const {
+  state,
+  submitState,
+  isSubmitDisabled,
+  statusAlert,
+  validate,
+  handleReset,
+  onFormError,
+} = useForgotPasswordPageVM()
 
 const inputUi = {
   base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe]',
@@ -109,70 +112,6 @@ const checkboxUi = {
   label: 'text-[0.95rem] font-medium text-slate-700',
   base: 'size-5 rounded-[6px]',
 }
-
-const hasValidIdentity = (value: string) => {
-  const normalized = value.trim()
-  if (!normalized) return false
-  if (normalized.includes('@')) return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)
-  return normalized.replace(/\D/g, '').length >= 8
-}
-
-type FieldName = 'emailOrPhone' | 'captchaConfirmed'
-type ValidationError = { name: FieldName; message: string }
-
-const validate = (s: typeof state): ValidationError[] => {
-  const errors: ValidationError[] = []
-  if (!s.emailOrPhone.trim()) {
-    errors.push({ name: 'emailOrPhone', message: t('pages.forgotPasswordPage.validationEmailRequired') })
-  }
-  else if (!hasValidIdentity(s.emailOrPhone)) {
-    errors.push({ name: 'emailOrPhone', message: t('pages.forgotPasswordPage.validationEmailInvalid') })
-  }
-  if (!s.captchaConfirmed) {
-    errors.push({ name: 'captchaConfirmed', message: t('pages.forgotPasswordPage.validationCaptchaRequired') })
-  }
-  return errors
-}
-
-const isSubmitDisabled = computed(() =>
-  submitState.value === 'loading'
-  || !state.emailOrPhone.trim()
-  || !state.captchaConfirmed,
-)
-
-const statusAlert = computed(() => {
-  if (submitState.value === 'success') {
-    return {
-      color: 'success' as const,
-      icon: 'i-ph-check-circle-fill',
-      title: t('pages.forgotPasswordPage.statusSuccessTitle'),
-      description: t('pages.forgotPasswordPage.statusSuccessDescription'),
-    }
-  }
-  if (submitState.value === 'error') {
-    return {
-      color: 'error' as const,
-      icon: 'i-ph-warning-circle-fill',
-      title: t('pages.forgotPasswordPage.statusErrorTitle'),
-      description: t('pages.forgotPasswordPage.statusErrorDescription'),
-    }
-  }
-  return null
-})
-
-const handleReset = async () => {
-  submitState.value = 'loading'
-  await new Promise(resolve => setTimeout(resolve, 500))
-  submitState.value = 'success'
-}
-
-const onFormError = () => {
-  submitState.value = 'error'
-}
-
-watch([() => state.emailOrPhone, () => state.captchaConfirmed], () => {
-  if (submitState.value !== 'loading') submitState.value = 'idle'
-})
 </script>
 
 <style scoped>

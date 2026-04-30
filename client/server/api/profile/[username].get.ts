@@ -1,9 +1,9 @@
 import { getRouterParam } from "h3"
-import { createLegacyPhpClient } from "../../utils/legacy-php-client"
+import { createBackendApiClient } from "../../utils/backend-api-client"
 
 export default defineEventHandler(async (event) => {
   const username = String(getRouterParam(event, "username") ?? "")
-  const client = createLegacyPhpClient(event)
+  const client = createBackendApiClient(event)
 
   return client.post("get-user-data", {
     username,

@@ -65,7 +65,7 @@
         variant="solid"
         block
         size="xl"
-        :loading="loading"
+        :loading="isSubmitting"
         loading-icon="i-lucide-loader-2"
         class="auth-submit"
       >
@@ -84,30 +84,19 @@
 
 <script setup lang="ts">
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
+import { useLoginPageVM } from "../../../auth/application/view-models/useLoginPageVM"
 
 const { t } = useI18n()
-
-const state = reactive({ login: '', password: '' })
 const showPassword = ref(false)
-const loading = ref(false)
+const {
+  state,
+  isSubmitting,
+  validate,
+  handleSubmit: handleLogin,
+} = useLoginPageVM()
 
 const inputUi = {
   base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe] focus:border-[#0000ff] focus:ring-4 focus:ring-[rgba(0,0,255,0.07)]',
-}
-
-type ValidationError = { name: 'login' | 'password'; message: string }
-
-const validate = (s: typeof state): ValidationError[] => {
-  const errors: ValidationError[] = []
-  if (!s.login.trim()) errors.push({ name: 'login', message: t('pages.welcomePage.validationLoginRequired') || 'Vui lòng nhập email hoặc số điện thoại' })
-  if (!s.password) errors.push({ name: 'password', message: t('pages.welcomePage.validationPasswordRequired') || 'Vui lòng nhập mật khẩu' })
-  return errors
-}
-
-const handleLogin = async () => {
-  loading.value = true
-  await new Promise(resolve => setTimeout(resolve, 300))
-  loading.value = false
 }
 </script>
 

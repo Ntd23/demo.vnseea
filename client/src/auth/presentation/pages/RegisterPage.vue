@@ -12,7 +12,6 @@
       class="auth-form__body"
       @submit="handleSubmit"
     >
-      <!-- First + Last name -->
       <div class="auth-form__row-2">
         <UFormField name="firstName" :label="$t('pages.registerPage.firstName')" required class="min-w-0">
           <UInput
@@ -34,57 +33,19 @@
         </UFormField>
       </div>
 
-      <!-- Email / phone -->
-      <UFormField name="emailOrPhone" :label="$t('pages.registerPage.emailOrPhone')" required>
+      <UFormField name="username" label="Username" required>
         <UInput
-          v-model="state.emailOrPhone"
+          v-model="state.username"
           type="text"
           autocomplete="username"
           size="xl"
           class="w-full"
+          placeholder="Enter your username"
           :ui="inputUi"
         />
       </UFormField>
 
-      <!-- Password -->
-      <UFormField name="password" :label="$t('pages.registerPage.newPassword')" required>
-        <UInput
-          v-model="state.password"
-          :type="showPassword ? 'text' : 'password'"
-          autocomplete="new-password"
-          size="xl"
-          class="w-full"
-          :ui="inputUi"
-        >
-          <template #trailing>
-            <UButton
-              color="neutral"
-              variant="ghost"
-              size="sm"
-              :icon="showPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'"
-              :aria-label="showPassword ? $t('pages.registerPage.hidePassword') : $t('pages.registerPage.showPassword')"
-              @click="showPassword = !showPassword"
-            />
-          </template>
-        </UInput>
-        <!-- Password strength bars -->
-        <div class="auth-strength">
-          <div
-            v-for="i in 4"
-            :key="i"
-            class="auth-strength__bar"
-            :class="{
-              'auth-strength__bar--weak':   strength >= 1 && i === 1,
-              'auth-strength__bar--fair':   strength >= 2 && i <= 2,
-              'auth-strength__bar--good':   strength >= 3 && i <= 3,
-              'auth-strength__bar--strong': strength >= 4,
-            }"
-          />
-        </div>
-      </UFormField>
-
-      <!-- Birthday -->
-      <UFormField :label="$t('pages.registerPage.birthday')">
+      <UFormField name="birthDay" :label="$t('pages.registerPage.birthday')">
         <div class="auth-form__row-3">
           <USelect
             v-model="state.birthDay"
@@ -113,8 +74,7 @@
         </div>
       </UFormField>
 
-      <!-- Gender -->
-      <UFormField :label="$t('pages.registerPage.gender')">
+      <UFormField name="gender" :label="$t('pages.registerPage.gender')">
         <div class="auth-gender">
           <label
             v-for="g in genderOptions"
@@ -134,16 +94,110 @@
         </div>
       </UFormField>
 
-      <!-- Submit -->
+      <UFormField name="email" label="Tên đăng nhập (Địa chỉ email / Số điện thoại)" required>
+        <UInput
+          v-model="state.email"
+          type="text"
+          autocomplete="username"
+          size="xl"
+          placeholder="Nhập địa chỉ email hoặc số điện thoại"
+          class="w-full"
+          :ui="inputUi"
+        />
+      </UFormField>
+
+      <UFormField name="password" :label="$t('pages.registerPage.newPassword')" required>
+        <UInput
+          v-model="state.password"
+          :type="showPassword ? 'text' : 'password'"
+          autocomplete="new-password"
+          size="xl"
+          class="w-full"
+          :ui="inputUi"
+        >
+          <template #trailing>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              :icon="showPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'"
+              :aria-label="showPassword ? $t('pages.registerPage.hidePassword') : $t('pages.registerPage.showPassword')"
+              @click="showPassword = !showPassword"
+            />
+          </template>
+        </UInput>
+        <!-- Password strength bars -->
+        <div class="auth-strength">
+          <div
+            v-for="i in 4"
+            :key="i"
+            class="auth-strength__bar"
+            :class="{
+              'auth-strength__bar--weak':   strength >= 1 && i === 1,
+              'auth-strength__bar--fair':   strength >= 2 && i <= 2,
+              'auth-strength__bar--good':   strength >= 3 && i <= 3,
+              'auth-strength__bar--strong': strength >= 4,
+            }"
+          />
+        </div>
+      </UFormField>
+
+      <UFormField name="confirmPassword" label="Confirm password" required>
+        <UInput
+          v-model="state.confirmPassword"
+          :type="showConfirmPassword ? 'text' : 'password'"
+          autocomplete="new-password"
+          size="xl"
+          class="w-full"
+          :ui="inputUi"
+        >
+          <template #trailing>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="ghost"
+              size="sm"
+              :icon="showConfirmPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'"
+              aria-label="Toggle confirm password visibility"
+              @click="showConfirmPassword = !showConfirmPassword"
+            />
+          </template>
+        </UInput>
+      </UFormField>
+
+      <div class="auth-checklist">
+        <label class="auth-check">
+          <input v-model="state.hasExistingStorefront" class="auth-check__input" type="checkbox">
+          <span class="auth-check__box" />
+          <span class="auth-check__text">Bạn là cửa hàng đã có sẵn địa điểm?</span>
+        </label>
+
+        <UFormField name="acceptTerms" required>
+          <label class="auth-check">
+            <input v-model="state.acceptTerms" class="auth-check__input" type="checkbox">
+            <span class="auth-check__box" />
+            <span class="auth-check__text">
+              Bằng cách tạo tài khoản của bạn, bạn đồng ý với
+              <a class="auth-check__link" :href="termsHref" target="_blank" rel="noreferrer">Điều khoản sử dụng</a>
+              &
+              <a class="auth-check__link" :href="privacyHref" target="_blank" rel="noreferrer">Chính sách bảo mật</a>
+            </span>
+          </label>
+        </UFormField>
+      </div>
+
       <UButton
         type="submit"
         color="primary"
         variant="solid"
         block
         size="xl"
+        :loading="isSubmitting"
+        loading-icon="i-lucide-loader-2"
         class="auth-submit"
       >
-        {{ $t('pages.registerPage.submit') }}
+        {{ isSubmitting ? $t('pages.registerPage.submitting') : $t('pages.registerPage.submit') }}
       </UButton>
 
       <p class="auth-form__footer-text">
@@ -158,20 +212,14 @@
 
 <script setup lang="ts">
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
+import { useRegisterPageVM } from '../../application/view-models/useRegisterPageVM'
 
 const { t } = useI18n()
 const showPassword = ref(false)
-
-const state = reactive({
-  firstName: '',
-  lastName: '',
-  emailOrPhone: '',
-  password: '',
-  birthDay: null as number | null,
-  birthMonth: null as number | null,
-  birthYear: null as number | null,
-  gender: '',
-})
+const showConfirmPassword = ref(false)
+const { state, isSubmitting, validate, handleSubmit } = useRegisterPageVM()
+const termsHref = '#'
+const privacyHref = '#'
 
 const inputUi = {
   base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe]',
@@ -200,22 +248,6 @@ const strength = computed(() => {
   if (/[^A-Za-z0-9]/.test(p)) score++
   return score
 })
-
-type FieldName = 'firstName' | 'lastName' | 'emailOrPhone' | 'password'
-type ValidationError = { name: FieldName; message: string }
-
-const validate = (s: typeof state): ValidationError[] => {
-  const errors: ValidationError[] = []
-  if (!s.firstName.trim()) errors.push({ name: 'firstName', message: t('pages.registerPage.validationFirstNameRequired') || 'Vui lòng nhập tên' })
-  if (!s.lastName.trim()) errors.push({ name: 'lastName', message: t('pages.registerPage.validationLastNameRequired') || 'Vui lòng nhập họ' })
-  if (!s.emailOrPhone.trim()) errors.push({ name: 'emailOrPhone', message: t('pages.registerPage.validationEmailRequired') || 'Vui lòng nhập email hoặc số điện thoại' })
-  if (!s.password) errors.push({ name: 'password', message: t('pages.registerPage.validationPasswordRequired') || 'Vui lòng nhập mật khẩu' })
-  return errors
-}
-
-const handleSubmit = () => {
-  // TODO: gọi API đăng ký
-}
 </script>
 
 <style scoped>
@@ -298,6 +330,56 @@ const handleSubmit = () => {
 .auth-strength__bar--fair   { background: #f59e0b; }
 .auth-strength__bar--good   { background: #22c55e; }
 .auth-strength__bar--strong { background: #0000ff; }
+
+.auth-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.auth-check {
+  display: grid;
+  grid-template-columns: 20px 20px 1fr;
+  gap: 12px;
+  align-items: start;
+  cursor: pointer;
+}
+
+.auth-check__input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.auth-check__box {
+  grid-column: 2;
+  margin-top: 2px;
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid #cbd5e1;
+  background: #fff;
+  transition: all 0.15s ease;
+}
+
+.auth-check__input:checked + .auth-check__box {
+  border-color: #0000ff;
+  background: #0000ff;
+  box-shadow: inset 0 0 0 4px #fff;
+}
+
+.auth-check__text {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #475569;
+}
+
+.auth-check__link {
+  color: #0000ff;
+  font-weight: 700;
+  text-decoration: none;
+}
 
 /* Gender radio pills */
 .auth-gender {

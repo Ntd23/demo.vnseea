@@ -1,103 +1,54 @@
 <template>
   <section
-    class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]"
+    class="blogs-hero relative overflow-hidden rounded-[28px] px-7 py-10 sm:px-10 sm:py-14"
     aria-labelledby="blogs-hero-title"
   >
-    <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
-      <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
-        <div class="space-y-4">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-semibold text-primary-700 ring-1 ring-primary-100">
-              {{ $t("pages.blogsPage.heroEyebrow") }}
-            </span>
-            <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-semibold text-white">
-              {{ $t("pages.blogsPage.visibleArticles", { count: articleCount }) }}
-            </span>
-          </div>
+    <!-- Decorative blur orbs -->
+    <div
+      class="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full blogs-hero-orb-1 blur-[90px]"
+      aria-hidden="true"
+    />
+    <div
+      class="pointer-events-none absolute -bottom-12 left-1/3 h-52 w-52 rounded-full blogs-hero-orb-2 blur-[70px]"
+      aria-hidden="true"
+    />
 
-          <div class="space-y-3">
-            <h1
-              id="blogs-hero-title"
-              class="max-w-[760px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]"
-            >
-              {{ $t("pages.blogsPage.heroTitle") }}
-            </h1>
-            <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
-              {{ $t("pages.blogsPage.heroDescription") }}
-            </p>
-          </div>
-        </div>
+    <div class="relative space-y-5">
+      <h1
+        id="blogs-hero-title"
+        class="max-w-2xl text-[30px] font-extrabold leading-tight tracking-[-0.025em] text-white sm:text-[42px]"
+      >
+        {{ $t("pages.blogsPage.heroTitle") }}
+      </h1>
 
-        <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
-          <button
-            type="button"
-            class="inline-flex h-12 items-center justify-center rounded-[12px] border border-secondary-200 bg-white px-5 text-[14px] font-semibold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
-            :aria-pressed="mineOnly"
-            @click="$emit('toggleMine')"
-          >
-            <Icon name="i-ph-article-fill" class="mr-2 h-5 w-5 shrink-0" />
-            {{ $t("pages.blogsPage.myArticles") }}
-          </button>
-
-          <NuxtLink
-            to="/create-blog"
-            class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:bg-primary-700 active:scale-95"
-          >
-            <Icon name="i-ph-pencil-simple-line-fill" class="mr-2 h-5 w-5 shrink-0" />
-            {{ $t("pages.blogsPage.writeBlog") }}
-          </NuxtLink>
-        </div>
-      </div>
-
-      <div class="grid gap-3">
-        <div
-          v-if="mainStat"
-          class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]"
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          class="inline-flex h-10 items-center gap-2 rounded-[12px] px-4 text-[13px] font-semibold transition-all duration-200 active:scale-95"
+          :class="mineOnly
+            ? 'bg-white text-[#1e1b4b] shadow-[0_4px_14px_rgba(255,255,255,0.22)]'
+            : 'bg-white/15 text-white ring-1 ring-white/20 backdrop-blur-[6px] hover:bg-white/25'"
+          :aria-pressed="mineOnly"
+          @click="$emit('toggleMine')"
         >
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/52">
-                {{ mainStat.label }}
-              </p>
-              <p class="mt-2 text-[34px] font-extrabold leading-none">
-                {{ mainStat.value }}
-              </p>
-              <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
-                {{ mainStat.description }}
-              </p>
-            </div>
+          <Icon name="i-ph-article-fill" class="h-4 w-4 shrink-0" />
+          {{ $t("pages.blogsPage.myArticles") }}
+        </button>
 
-            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0f172a]">
-              <Icon name="i-ph-newspaper-clipping-fill" class="h-7 w-7" />
-            </div>
-          </div>
-        </div>
-
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1" role="list">
-          <article
-            v-for="item in secondaryStats"
-            :key="item.label"
-            class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
-            role="listitem"
-          >
-            <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-              {{ item.label }}
-            </p>
-            <p class="mt-2 text-[26px] font-extrabold leading-none text-[var(--text-primary)]">
-              {{ item.value }}
-            </p>
-            <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
-              {{ item.description }}
-            </p>
-          </article>
-        </div>
+        <NuxtLink
+          to="/create-blog"
+          class="inline-flex h-10 items-center gap-2 rounded-[12px] bg-[var(--color-primary-500)] px-4 text-[13px] font-semibold text-white shadow-[0_4px_16px_rgba(99,102,241,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-primary-400)] active:scale-95"
+        >
+          <Icon name="i-ph-pencil-simple-line-fill" class="h-4 w-4 shrink-0" />
+          {{ $t("pages.blogsPage.writeBlog") }}
+        </NuxtLink>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
+defineProps<{
   articleCount: number
   mineOnly: boolean
   stats: ReadonlyArray<{
@@ -110,7 +61,18 @@ const props = defineProps<{
 defineEmits<{
   toggleMine: []
 }>()
-
-const mainStat = computed(() => props.stats[0])
-const secondaryStats = computed(() => props.stats.slice(1))
 </script>
+
+<style scoped>
+.blogs-hero {
+  background: linear-gradient(130deg, #0f172a 0%, #1e1b4b 45%, #4c1d95 100%);
+}
+.blogs-hero-orb-1 {
+  background: #7c3aed;
+  opacity: 0.22;
+}
+.blogs-hero-orb-2 {
+  background: #4f46e5;
+  opacity: 0.18;
+}
+</style>

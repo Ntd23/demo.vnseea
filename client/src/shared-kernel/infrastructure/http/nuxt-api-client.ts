@@ -12,24 +12,22 @@ export interface NuxtApiRequest<TBody = unknown> {
 
 export function useNuxtApiClient() {
   const runtimeConfig = useRuntimeConfig()
-
-  const client = $fetch.create({
-    baseURL: runtimeConfig.public.apiBase,
-    credentials: "include",
-  })
+  const requestFetch = import.meta.server ? useRequestFetch() : $fetch
 
   const request = async <TResponse, TBody = unknown>(
     endpoint: string,
     options: NuxtApiRequest<TBody> = {},
   ) => {
     const fetchOptions: FetchOptions<"json"> = {
+      baseURL: runtimeConfig.public.apiBase,
+      credentials: "include",
       method: options.method ?? "GET",
       query: options.query,
       body: options.body,
       headers: options.headers,
     }
 
-    return client<TResponse>(endpoint, fetchOptions)
+    return requestFetch<TResponse>(endpoint, fetchOptions)
   }
 
   return {

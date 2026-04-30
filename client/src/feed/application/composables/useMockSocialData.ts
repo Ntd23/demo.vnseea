@@ -101,7 +101,7 @@ export const useMockSocialData = () => {
     { label: "Tin nhan", icon: "i-lucide-message-square", to: appRoutes.messages, badge: 4 },
     { label: "Kham pha", icon: "i-lucide-compass", to: appRoutes.explore },
     { label: "Bang tin", icon: "i-lucide-newspaper", to: appRoutes.feed },
-    { label: "Dang xuat", icon: "i-lucide-log-out", to: appRoutes.welcome },
+    { label: "Dang xuat", icon: "i-lucide-log-out", to: appRoutes.logout },
   ]
 
   const stories: Story[] = [

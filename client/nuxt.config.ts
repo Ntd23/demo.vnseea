@@ -16,9 +16,20 @@ function requireEnv(name: string) {
   return value
 }
 
+function normalizeBackendWebBase(value: string) {
+  return value
+    .trim()
+    .replace(/\/+$/, "")
+    .replace(/\/api\/v2\/endpoints$/i, "")
+    .replace(/\/api-v2\.php$/i, "")
+    .replace(/\/api$/i, "")
+}
+
 const publicApiBase = requireEnv("NUXT_PUBLIC_API_BASE")
-const legacyApiBase = requireEnv("NUXT_LEGACY_API_BASE")
+const backendApiBase = requireEnv("NUXT_BACKEND_API_BASE")
+const backendServerKey = requireEnv("NUXT_BACKEND_SERVER_KEY")
 const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL")
+const backendWebBase = normalizeBackendWebBase(backendApiBase)
 const allowedHosts = requireEnv("NUXT_ALLOWED_HOSTS")
   .split(",")
   .map(host => host.trim())
@@ -27,13 +38,25 @@ const allowedHosts = requireEnv("NUXT_ALLOWED_HOSTS")
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
+  experimental: {
+    // Avoid dev app-manifest build-id mismatches behind the PHP/Nginx proxy.
+    appManifest: false,
+  },
+  features: {
+    inlineStyles: true,
+  },
+  nitro: {
+    apiBaseURL: "/_api",
+  },
   alias: {
     "#shared-kernel": resolve(__dirname, "src/shared-kernel"),
   },
   runtimeConfig: {
-    legacyApiBase,
+    backendApiBase,
+    backendServerKey,
     public: {
       apiBase: publicApiBase,
+      backendWebBase,
       siteUrl: publicSiteUrl,
     },
   },

@@ -18,7 +18,7 @@ $sql_db_pass = "";
 $sql_db_name = "demo.vnseea";
 
 // Site URL
-$site_url = "https://demo.vnseea.test:8443"; // e.g (http://example.com)
+$site_url = "   "; // e.g (http://example.com)
 
 $auto_redirect = true;
 

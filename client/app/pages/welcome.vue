@@ -6,6 +6,7 @@
 import PagesWelcomePage from "../../src/pages/presentation/pages/WelcomePage.vue"
 definePageMeta({
   layout: "guest",
+  middleware: "guest",
 })
 
 const { t } = useI18n()
