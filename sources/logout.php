@@ -21,5 +21,6 @@ setcookie('switched_accounts', '', -1,'/');
 }
 $_SESSION = array();
 unset($_SESSION);
-header("Location: " . $wo['config']['site_url'] . "/?cache=" . time());
+header("Location: " . $wo['config']['site_url'] . "/welcome?cache=" . time());
 exit();
+

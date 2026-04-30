@@ -1,8 +1,8 @@
 import { getRouterParam, readBody } from "h3"
-import { createLegacyPhpClient } from "../../../utils/legacy-php-client"
+import { createBackendApiClient } from "../../../utils/backend-api-client"
 
 export default defineEventHandler(async (event) => {
-  const client = createLegacyPhpClient(event)
+  const client = createBackendApiClient(event)
   const id = String(getRouterParam(event, "id") ?? "")
   const body = await readBody<{ status?: string }>(event)
 

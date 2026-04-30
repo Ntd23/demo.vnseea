@@ -6,6 +6,7 @@
 import PagesForgotPasswordPage from "../../src/auth/presentation/pages/ForgotPasswordPage.vue"
 definePageMeta({
   layout: "guest",
+  middleware: "guest",
 })
 
 const { t } = useI18n()

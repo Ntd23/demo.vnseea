@@ -9,7 +9,7 @@ Current structure:
 - `src/shared-kernel/infrastructure/http/nuxt-api-client.ts`
 - `server/api/orders/*`
 - `server/api/customer-orders/*`
-- `server/utils/legacy-php-client.ts`
+- `server/utils/backend-api-client.ts`
 
 Business-shaped frontend endpoints:
 

@@ -48,11 +48,11 @@
       <p class="mb-2.5 px-0.5 text-[10.5px] font-bold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
         {{ $t("pages.blogsPage.topic") }}
       </p>
-      <div class="blogs-chips-scroll flex gap-2 overflow-x-auto pb-1">
+      <div class="flex flex-wrap gap-2">
         <button
           v-for="category in categories"
           :key="category.value"
-          class="blogs-chip shrink-0 inline-flex items-center gap-1.5 rounded-[12px] px-3.5 py-2 text-[12.5px] font-bold transition-all duration-150"
+          class="inline-flex items-center gap-1.5 rounded-[12px] px-3.5 py-2 text-[12.5px] font-bold transition-all duration-150"
           :class="selectedCategory === category.value
             ? 'bg-[var(--color-primary-500)] text-white shadow-[var(--shadow-brand)]'
             : 'bg-[var(--color-secondary-100)] text-[var(--text-secondary)] hover:bg-[var(--color-primary-50)] hover:text-[var(--color-primary-600)]'"
@@ -164,17 +164,6 @@ const sortIcon = (value: string) => {
 </script>
 
 <style scoped>
-.blogs-chips-scroll {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.blogs-chips-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.blogs-chip {
-  white-space: nowrap;
-}
 
 .blogs-search-input::-webkit-search-cancel-button {
   opacity: 0.5;

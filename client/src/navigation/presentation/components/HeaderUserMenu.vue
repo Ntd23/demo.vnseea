@@ -1,10 +1,21 @@
 <template>
   <div ref="menuRef" class="user-menu-root">
     <button class="user-menu__trigger" type="button" @click="open = !open">
-      <div class="user-menu__avatar">VN</div>
+      <div class="user-menu__avatar">
+        <NuxtImg
+          v-if="avatarUrl"
+          :src="avatarUrl"
+          :alt="currentUser.name"
+          class="h-full w-full rounded-full object-cover"
+          width="34"
+          height="34"
+          loading="lazy"
+        />
+        <span v-else>{{ userInitials }}</span>
+      </div>
       <div class="user-menu__trigger-info">
-        <p class="user-menu__trigger-name">Van Nguyen</p>
-        <p class="user-menu__trigger-role">Mock User</p>
+        <p class="user-menu__trigger-name">{{ currentUser?.name || "User" }}</p>
+        <p v-if="secondaryLabel" class="user-menu__trigger-role">{{ secondaryLabel }}</p>
       </div>
       <Icon name="i-ph-caret-down-bold" class="user-menu__caret" :class="{ 'user-menu__caret--open': open }" />
     </button>
@@ -18,32 +29,29 @@
       leave-to-class="opacity-0 scale-95"
     >
       <div v-if="open" class="user-menu__dropdown">
-        <!-- Admin header card -->
-        <div class="user-menu__admin-card">
-          <div class="user-menu__admin-left">
-            <p class="user-menu__admin-role">{{ $t("navigation.mobileMenu.adminTitle") }}</p>
+        <div class="user-menu__summary">
+          <div class="user-menu__summary-card">
+            <div class="user-menu__summary-head">
+              <p class="user-menu__summary-name">{{ currentUser?.name || "User" }}</p>
+              <Icon name="i-ph-hand-heart-fill" class="user-menu__summary-icon" />
+            </div>
+
+            <div v-if="showStats" class="user-menu__stats">
+              <div v-if="formattedWallet" class="user-menu__stat">
+                <Icon name="i-ph-wallet-fill" class="user-menu__stat-icon" />
+                <span>{{ $t("navigation.mobileMenu.walletLabel") || "Wallet" }}: {{ formattedWallet }}</span>
+              </div>
+              <div v-if="formattedPoints" class="user-menu__stat">
+                <Icon name="i-ph-circle-half-fill" class="user-menu__stat-icon" />
+                <span>{{ $t("navigation.mobileMenu.pointsLabel") || "Points" }}: {{ formattedPoints }}</span>
+              </div>
+            </div>
           </div>
-          <div class="user-menu__admin-icon">🤝</div>
         </div>
 
-        <!-- Wallet + Points -->
-        <div class="user-menu__stats">
-          <div class="user-menu__stat">
-            <Icon name="i-ph-wallet-fill" class="user-menu__stat-icon" />
-            <span>{{ $t("navigation.mobileMenu.walletLabel") || 'Cái ví' }}: VND9.999.999.999</span>
-          </div>
-          <div class="user-menu__stat">
-            <Icon name="i-ph-circle-half-fill" class="user-menu__stat-icon" />
-            <span>{{ $t("navigation.mobileMenu.pointsLabel") || 'Điểm' }}: 0</span>
-          </div>
-        </div>
-
-        <div class="user-menu__divider" />
-
-        <!-- Quick admin actions -->
         <div class="user-menu__section">
           <NuxtLink
-            v-for="item in adminActions"
+            v-for="item in quickActions"
             :key="item.label"
             :to="item.to"
             class="user-menu__item"
@@ -54,26 +62,35 @@
           </NuxtLink>
         </div>
 
-        <div class="user-menu__divider" />
+        <div v-if="systemActions.length > 0" class="user-menu__divider" />
 
-        <!-- System actions -->
         <div class="user-menu__section">
-          <NuxtLink
-            v-for="item in systemActions"
-            :key="item.label"
-            :to="item.to"
-            class="user-menu__item"
-            :class="{ 'user-menu__item--danger': item.danger }"
-            @click="open = false"
-          >
-            <Icon :name="item.icon" class="user-menu__item-icon" />
-            <span class="user-menu__item-label">{{ $t(item.label) }}</span>
-          </NuxtLink>
+          <template v-for="item in systemActions" :key="item.label">
+            <a
+              v-if="item.external"
+              :href="item.to"
+              class="user-menu__item"
+              :class="{ 'user-menu__item--danger': item.danger }"
+              @click="open = false"
+            >
+              <Icon :name="item.icon" class="user-menu__item-icon" />
+              <span class="user-menu__item-label">{{ $t(item.label) }}</span>
+            </a>
+            <NuxtLink
+              v-else
+              :to="item.to"
+              class="user-menu__item"
+              :class="{ 'user-menu__item--danger': item.danger }"
+              @click="open = false"
+            >
+              <Icon :name="item.icon" class="user-menu__item-icon" />
+              <span class="user-menu__item-label">{{ $t(item.label) }}</span>
+            </NuxtLink>
+          </template>
         </div>
 
         <div class="user-menu__divider" />
 
-        <!-- Switch account -->
         <button class="user-menu__switch" type="button">
           <span>{{ $t("navigation.mobileMenu.bottomActions.switchAccount") }}</span>
           <Icon name="i-ph-arrows-clockwise" class="h-4 w-4" />
@@ -85,23 +102,96 @@
 
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core"
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { useBackendWebUrl } from "#shared-kernel/application/utils/backend-web-url"
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 
+const { t, locale } = useI18n()
+const currentAuthUserStore = useCurrentAuthUserStore()
 const open = ref(false)
 const menuRef = ref<HTMLElement | null>(null)
 
 onClickOutside(menuRef, () => { open.value = false })
 
-const adminActions = [
-  { label: "navigation.mobileMenu.mainNav.advertising", icon: "i-ph-megaphone-fill", to: "/ads" },
-  { label: "navigation.mobileMenu.settingsNav.editProfile", icon: "i-ph-pencil-simple-fill", to: "/setting/general" },
-  { label: "navigation.mobileMenu.settingsNav.generalSettings", icon: "i-ph-users-fill", to: "/setting" },
-  { label: "navigation.mobileMenu.settingsNav.registration", icon: "i-ph-clipboard-text-fill", to: "/register" },
-]
+const currentUser = computed(() => currentAuthUserStore.user)
+const avatarUrl = computed(() =>
+  typeof currentUser.value?.avatarUrl === "string" && currentUser.value.avatarUrl.length > 0
+    ? currentUser.value.avatarUrl
+    : "",
+)
+const userInitials = computed(() =>
+  currentUser.value?.name
+    ?.split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() ?? "")
+    .join("")
+  || "U",
+)
+const secondaryLabel = computed(() => {
+  if (!currentUser.value) return ""
+  if (currentUser.value.username) return `@${currentUser.value.username}`
+  return currentUser.value.isAdmin ? t("navigation.mobileMenu.adminTitle") : ""
+})
 
-const systemActions = [
-  { label: "navigation.mobileMenu.settingsNav.adminArea", icon: "i-ph-squares-four-fill", to: "/admin", danger: false },
-  { label: "navigation.mobileMenu.settingsNav.logout", icon: "i-ph-sign-out-fill", to: "/welcome", danger: true },
-]
+const numberFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US"))
+const formattedWallet = computed(() => {
+  const value = currentUser.value?.wallet
+
+  if (value === undefined || value === null || value === "") {
+    return ""
+  }
+
+  if (typeof value === "number") {
+    return `VND${numberFormatter.value.format(value)}`
+  }
+
+  const normalized = Number(String(value).replace(/,/g, ""))
+
+  return Number.isFinite(normalized)
+    ? `VND${numberFormatter.value.format(normalized)}`
+    : String(value)
+})
+const formattedPoints = computed(() => {
+  const value = currentUser.value?.points
+
+  if (value === undefined || value === null || Number.isNaN(value)) {
+    return ""
+  }
+
+  return numberFormatter.value.format(value)
+})
+const showStats = computed(() => Boolean(formattedWallet.value || formattedPoints.value))
+
+const quickActions = computed(() => [
+  { label: "navigation.mobileMenu.mainNav.advertising", icon: "i-ph-megaphone-fill", to: "/ads" },
+  { label: "navigation.mobileMenu.settingsNav.editProfile", icon: "i-ph-pencil-simple-fill", to: appRoutes.settingsPage("general") },
+  { label: "navigation.mobileMenu.settingsNav.generalSettings", icon: "i-ph-users-fill", to: appRoutes.settings },
+  { label: "navigation.mobileMenu.settingsNav.registration", icon: "i-ph-clipboard-text-fill", to: appRoutes.register },
+])
+
+const adminCpUrl = useBackendWebUrl(appRoutes.adminCp)
+const systemActions = computed(() => {
+  const items: Array<{ label: string; icon: string; to: string; danger?: boolean; external?: boolean }> = []
+
+  if (currentUser.value?.isAdmin) {
+    items.push({
+      label: "navigation.mobileMenu.settingsNav.adminArea",
+      icon: "i-ph-squares-four-fill",
+      to: adminCpUrl,
+      external: true,
+    })
+  }
+
+  items.push({
+    label: "navigation.mobileMenu.settingsNav.logout",
+    icon: "i-ph-sign-out-fill",
+    to: appRoutes.logout,
+    danger: true,
+  })
+
+  return items
+})
 </script>
 
 <style scoped>
@@ -122,13 +212,14 @@ const systemActions = [
 }
 
 .user-menu__trigger:hover {
-  border-color: rgba(0, 0, 255, 0.2);
+  border-color: rgba(0, 0, 255, 0.18);
 }
 
 .user-menu__avatar {
   display: flex;
   width: 34px;
   height: 34px;
+  overflow: hidden;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
@@ -174,43 +265,53 @@ const systemActions = [
   transform: rotate(180deg);
 }
 
-/* Dropdown */
 .user-menu__dropdown {
   position: absolute;
   right: 0;
   top: 100%;
   z-index: 50;
   margin-top: 8px;
-  width: 280px;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.06);
-  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.12);
+  width: 318px;
   overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.16);
 }
 
-/* Admin header card */
-.user-menu__admin-card {
+.user-menu__summary {
+  padding: 14px 14px 10px;
+}
+
+.user-menu__summary-card {
+  border-radius: 16px;
+  background: #f5f5f5;
+  padding: 16px;
+}
+
+.user-menu__summary-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 16px 18px;
-  background: linear-gradient(135deg, #0000ff 0%, #2233ff 100%);
-  color: #ffffff;
+  gap: 12px;
 }
 
-.user-menu__admin-role {
-  font-size: 15px;
+.user-menu__summary-name {
+  font-size: 17px;
   font-weight: 800;
+  line-height: 1.25;
+  color: #111827;
 }
 
-.user-menu__admin-icon {
-  font-size: 28px;
+.user-menu__summary-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  color: #f59e0b;
 }
 
-/* Stats */
 .user-menu__stats {
-  padding: 12px 18px;
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -219,34 +320,32 @@ const systemActions = [
 .user-menu__stat {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 12.5px;
   font-weight: 500;
-  color: #475569;
+  color: #5b6472;
 }
 
 .user-menu__stat-icon {
-  width: 16px;
-  height: 16px;
-  color: #64748b;
+  width: 18px;
+  height: 18px;
+  color: #656d7b;
 }
 
 .user-menu__divider {
   height: 1px;
-  background: #f1f5f9;
+  background: #eceff4;
 }
 
-/* Menu items */
 .user-menu__section {
-  padding: 6px;
+  padding: 6px 0;
 }
 
 .user-menu__item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
+  padding: 14px 18px;
   text-decoration: none;
   color: #1e293b;
   font-size: 13px;
@@ -255,7 +354,7 @@ const systemActions = [
 }
 
 .user-menu__item:hover {
-  background: rgba(0, 0, 255, 0.04);
+  background: #f8fafc;
 }
 
 .user-menu__item--danger {
@@ -269,8 +368,8 @@ const systemActions = [
 .user-menu__item-icon {
   width: 18px;
   height: 18px;
-  color: #64748b;
   flex-shrink: 0;
+  color: #64748b;
 }
 
 .user-menu__item--danger .user-menu__item-icon {
@@ -281,13 +380,12 @@ const systemActions = [
   min-width: 0;
 }
 
-/* Switch account */
 .user-menu__switch {
   display: flex;
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px;
+  padding: 16px 18px;
   border: none;
   background: transparent;
   font-size: 13px;

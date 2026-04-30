@@ -87,7 +87,15 @@
             :aria-label="$t('navigation.headerBar.account')"
             @click="mobileMenuOpen = true"
           >
-            <Icon name="i-lucide-circle-user-round" class="h-[20px] w-[20px]" />
+            <NuxtImg
+              v-if="avatarUrl"
+              :src="avatarUrl"
+              :alt="currentUser.name"
+              class="h-[20px] w-[20px] rounded-full object-cover"
+              width="20"
+              height="20"
+            />
+            <span v-else class="mobile-avatar-fallback">{{ currentUserInitials }}</span>
           </button>
         </div>
       </div>
@@ -128,20 +136,50 @@
 <script setup lang="ts">
 import { NuxtLink } from '#components'
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import NavigationHeaderSearchInput from './HeaderSearchInput.vue'
 import NavigationHeaderUserMenu from './HeaderUserMenu.vue'
 import NavigationLocaleSwitcher from './LocaleSwitcher.vue'
 import NavigationMobileMenu from './MobileMenu.vue'
+
+const currentAuthUserStore = useCurrentAuthUserStore()
+await callOnce("current-auth-user", () => currentAuthUserStore.hydrate())
 
 const mobileMenuOpen = ref(false)
 const mobileSearchOpen = ref(false)
 
 const route = useRoute()
 const isHome = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
+const currentUser = computed(() => currentAuthUserStore.user)
+const avatarUrl = computed(() =>
+  typeof currentUser.value?.avatarUrl === "string" && currentUser.value.avatarUrl.length > 0
+    ? currentUser.value.avatarUrl
+    : "",
+)
+const backendSession = useCookie<string | null>("user_id", {
+  default: () => null,
+  sameSite: "lax",
+  path: "/",
+})
+const currentUserInitials = computed(() =>
+  currentUser.value?.name
+    ?.split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() ?? "")
+    .join("")
+  || "U",
+)
 
 watch(() => route.path, () => {
   mobileSearchOpen.value = false
   mobileMenuOpen.value = false
+})
+
+onMounted(() => {
+  if (backendSession.value && !currentAuthUserStore.user) {
+    void currentAuthUserStore.hydrate(true)
+  }
 })
 </script>
 
@@ -276,6 +314,12 @@ watch(() => route.path, () => {
 
 .mobile-icon-btn--avatar {
   background: #ffffff;
+}
+
+.mobile-avatar-fallback {
+  font-size: 11px;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 /* ─── Mobile search — inline, directly below header ───── */

@@ -7,7 +7,9 @@
 <script setup lang="ts">
 import MessagesPresentationMessagesPage from "../../src/messages/presentation/pages/MessagesPage.vue"
 
-definePageMeta({ layout: "messages" })
+definePageMeta({
+  layout: "messages",
+})
 
 const { t } = useI18n()
 useSeoMeta({
