@@ -102,6 +102,7 @@ Reusable frontend skill sources live in:
 - `client/ai/skills/frontend-nuxt-routing/`
 - `client/ai/skills/frontend-bounded-context-refactor/`
 - `client/ai/skills/frontend-testcase/`
+- `client/ai/skills/backend-api-reference/`
 
 These are versioned in the repo so new chats and other agents can reuse the same project guidance.
 

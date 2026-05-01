@@ -3,7 +3,7 @@ import type { ApiQuery } from "../../src/shared-kernel/domain/types/api.types"
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
 
-export interface LegacyPhpRequest<TBody = unknown> {
+export interface BackendApiRequest<TBody = unknown> {
   method?: HttpMethod
   query?: ApiQuery
   body?: TBody
@@ -40,7 +40,7 @@ export const getBackendBaseCandidates = (value: string) => {
   return [...candidates]
 }
 
-const toLegacyBody = (body: unknown) => {
+const toBackendFormBody = (body: unknown) => {
   if (!body || typeof body !== "object" || body instanceof FormData || body instanceof URLSearchParams) {
     return body
   }
@@ -90,9 +90,9 @@ export function createBackendApiClient(event: H3Event) {
 
   const request = async <TResponse, TBody = unknown>(
     endpoint: string,
-    options: LegacyPhpRequest<TBody> = {},
+    options: BackendApiRequest<TBody> = {},
   ) => {
-    const requestBody = toLegacyBody(options.body)
+    const requestBody = toBackendFormBody(options.body)
     const bodyWithServerKey = new URLSearchParams(
       requestBody instanceof URLSearchParams ? requestBody : undefined,
     )

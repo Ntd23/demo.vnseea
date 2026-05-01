@@ -69,7 +69,7 @@ const props = withDefaults(defineProps<{
   statusDescription?: string
   progress?: number | null
 }>(), {
-  hint: "Mock state: form này chưa submit thật.",
+  hint: "",
   cta: "Tiếp tục",
   saveLabel: "Lưu nháp",
   submitLabel: "",

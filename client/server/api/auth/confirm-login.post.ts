@@ -2,6 +2,7 @@ import { createError, readBody } from "h3"
 import type { ConfirmLoginInput, ConfirmLoginResult } from "../../../src/auth/domain/types/auth.types"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
+import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 type BackendConfirmLoginResponse = {
   api_status?: number | string
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event): Promise<ConfirmLoginResult> => 
   }
 
   const response = assertBackendApiSuccess(
-    await client.post<BackendConfirmLoginResponse, Record<string, unknown>>("two-factor", {
+    await client.post<BackendConfirmLoginResponse, Record<string, unknown>>(backendRoutes.api.twoFactor, {
       user_id: Number(body.userId),
       code: body.code.trim(),
       timezone: body.timezone || "UTC",

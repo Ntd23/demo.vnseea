@@ -114,7 +114,7 @@ import type {
   SearchResultType,
   SearchSortKey,
   SearchTabItem,
-} from "../../application/composables/useMockSearchData"
+} from "../../domain/types/search.types"
 
 type SearchPanelTab = SearchTabItem & {
   count: number

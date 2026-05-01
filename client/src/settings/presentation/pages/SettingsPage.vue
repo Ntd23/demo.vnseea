@@ -31,8 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import type { SettingPage } from "../../application/composables/useMockSettingsData"
-import { useMockSettingsData } from "../../application/composables/useMockSettingsData"
+import type { SettingPage } from "../../application/composables/useSettingsData"
+import { useSettingsData } from "../../application/composables/useSettingsData"
 import SettingsHero from "../components/SettingsHero.vue"
 import SettingsSection from "../components/SettingsSection.vue"
 import SettingsSidebar from "../components/SettingsSidebar.vue"
@@ -42,7 +42,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { pages, defaultSlug, findPageBySlug } = useMockSettingsData()
+const { pages, defaultSlug, findPageBySlug } = useSettingsData()
 
 const activePage = computed<SettingPage>(() =>
   findPageBySlug(props.pageSlug || defaultSlug) ?? findPageBySlug(defaultSlug)!,

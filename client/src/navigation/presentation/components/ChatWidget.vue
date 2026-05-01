@@ -180,11 +180,24 @@
 </template>
 
 <script setup lang="ts">
-import { useMockSocialData } from "../../../feed/application/composables/useMockSocialData"
-
 const { t } = useI18n()
 
-const { contacts } = useMockSocialData()
+type ChatContact = {
+  id: number
+  name: string
+  avatar: string
+  avatarUrl?: string
+  online: boolean
+  status?: string
+}
+
+type ChatGroup = {
+  id: number
+  name: string
+  members: number
+}
+
+const contacts = ref<ChatContact[]>([])
 
 const tabIndex = ref(0)
 const tabs = [
@@ -199,21 +212,12 @@ const search = ref('')
 const sendTo = ref('')
 const sendMessage = ref('')
 const attachFile = ref<File | null>(null)
-const onlineCount = computed(() => contacts.filter(c => c.online).length)
+const onlineCount = computed(() => contacts.value.filter(contact => contact.online).length)
 
-const groups = [
-  { id: 1, name: 'Core Design Team', members: 12 },
-  { id: 2, name: 'VNSEEA Marketplace', members: 8 },
-  { id: 3, name: 'Community Support', members: 45 },
-]
+const groups = ref<ChatGroup[]>([])
 
-const extendedContacts = computed(() => contacts.map((c, i) => {
-  let img = ''
-  if (c.name === 'Xu Nguyễn') img = 'https://i.pravatar.cc/150?u=1'
-  if (i === 1) img = 'https://i.pravatar.cc/150?u=2'
-  if (i === 2) img = 'https://i.pravatar.cc/150?u=3'
-  if (i === 4) img = 'https://i.pravatar.cc/150?u=4'
-  if (i === 5) img = 'https://i.pravatar.cc/150?u=5'
+const extendedContacts = computed(() => contacts.value.map((c) => {
+  let img = c.avatarUrl || ''
   return { ...c, avatarUrl: img, status: c.online ? t('navigation.chatWidget.onlineStatus') : t('navigation.chatWidget.offlineToday') }
 }))
 
@@ -235,12 +239,12 @@ const miniReply = computed(() =>
   miniChat.kind === 'group' ? t('navigation.chatWidget.miniGroupReply') : t('navigation.chatWidget.miniChatReply'),
 )
 
-const openMiniChat = (contact: any) => {
+const openMiniChat = (contact: ChatContact) => {
   miniChat.title = contact.name
   miniChat.kind = 'direct'
   miniChat.open = true
 }
-const openMiniGroup = (group: any) => {
+const openMiniGroup = (group: ChatGroup) => {
   miniChat.title = group.name
   miniChat.kind = 'group'
   miniChat.open = true

@@ -2,8 +2,9 @@ import { readBody, createError } from "h3"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import type { ForgotPasswordInput, ForgotPasswordResult } from "../../../src/auth/domain/types/auth.types"
+import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
-type LegacyForgotPasswordResponse = {
+type BackendForgotPasswordResponse = {
   api_status?: number | string
   message?: string
   user_id?: number | string
@@ -27,7 +28,7 @@ export default defineEventHandler(async (event): Promise<ForgotPasswordResult> =
 
   if (isEmailIdentity) {
     const response = assertBackendApiSuccess(
-      await client.post<LegacyForgotPasswordResponse, Record<string, unknown>>("send-reset-password-email", {
+      await client.post<BackendForgotPasswordResponse, Record<string, unknown>>(backendRoutes.api.sendResetPasswordEmail, {
         email: identity,
       }),
       "Unable to send password reset instructions.",
@@ -50,7 +51,7 @@ export default defineEventHandler(async (event): Promise<ForgotPasswordResult> =
   }
 
   const response = assertBackendApiSuccess(
-    await client.post<LegacyForgotPasswordResponse, Record<string, unknown>>("send-reset-password-sms", {
+    await client.post<BackendForgotPasswordResponse, Record<string, unknown>>(backendRoutes.api.sendResetPasswordSms, {
       phone_num: phoneNum,
     }),
     "Unable to send password reset instructions.",

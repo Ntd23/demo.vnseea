@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SearchResultItem } from "../../application/composables/useMockSearchData"
+import type { SearchResultItem } from "../../domain/types/search.types"
 
 const props = defineProps<{
   result: SearchResultItem

@@ -194,13 +194,13 @@ import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import SearchFiltersPanel from "../components/FiltersPanel.vue"
 import SearchResultCard from "../components/ResultCard.vue"
+import { useSearchData } from "../../application/composables/useSearchData"
 import type {
   SearchCollectionType,
   SearchResultItem,
   SearchResultType,
   SearchSortKey,
-} from "../../application/composables/useMockSearchData"
-import { useMockSearchData } from "../../application/composables/useMockSearchData"
+} from "../../domain/types/search.types"
 
 type SearchSection = {
   kind: SearchCollectionType
@@ -238,14 +238,6 @@ const secondaryFooterLinks = footerLinks.filter(link => !link.to)
 const route = useRoute()
 const router = useRouter()
 
-const {
-  quickKeywords,
-  searchTabs,
-  searchTypeOptions,
-  searchSortOptions,
-  resultsByType,
-} = useMockSearchData()
-
 const { t } = useI18n()
 
 const collectionKinds: SearchCollectionType[] = ["users", "pages", "groups", "posts"]
@@ -269,6 +261,14 @@ const { searchQuery: searchText, debouncedSearchQuery } = useDebouncedSearch({
   syncUrl: true,
   queryParamName: "q"
 })
+
+const {
+  quickKeywords,
+  searchTabs,
+  searchTypeOptions,
+  searchSortOptions,
+  resultsByType,
+} = useSearchData(debouncedSearchQuery)
 
 // Other filters (no debounce needed, simple sync)
 const selectedType = ref<SearchResultType>(normalizeType(readQueryValue(route.query.type)))
