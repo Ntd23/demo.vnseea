@@ -104,11 +104,35 @@ export const apiRoutes = {
     detail: (conversationId: string | number) => `messages/${encodeSegment(conversationId)}`,
     send: "messages/send",
   },
+  navigation: {
+    general: "navigation/general",
+  },
+  search: {
+    index: "search",
+  },
+  settings: {
+    me: "settings/me",
+    update: "settings/update",
+  },
 } as const
 
 export const backendRoutes = {
   auth: {
     logout: "/index.php?link1=logout",
+  },
+  api: {
+    auth: "auth",
+    createAccount: "create-account",
+    sendResetPasswordEmail: "send-reset-password-email",
+    sendResetPasswordSms: "send-reset-password-sms",
+    resetPassword: "reset_password",
+    twoFactor: "two-factor",
+    activeAccountSms: "active_account_sms",
+    confirmResetPasswordSms: "confirm-reset-password-sms",
+    search: "search",
+    generalData: "get-general-data",
+    userData: "get-user-data",
+    updateUserData: "update-user-data",
   },
   session: {
     currentUser: (sessionId?: string) =>

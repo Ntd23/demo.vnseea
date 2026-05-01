@@ -1,6 +1,6 @@
 import { createError } from "h3"
 
-type LegacyApiResponse = {
+type BackendApiResponse = {
   api_status?: number | string
   errors?: {
     error_text?: string
@@ -8,7 +8,7 @@ type LegacyApiResponse = {
   message?: string
 }
 
-export function assertBackendApiSuccess<TResponse extends LegacyApiResponse>(
+export function assertBackendApiSuccess<TResponse extends BackendApiResponse>(
   response: TResponse,
   fallbackMessage: string,
 ) {

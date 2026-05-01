@@ -2,8 +2,9 @@ import { readBody, createError } from "h3"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import type { RegisterAccountInput, RegisterAccountResult } from "../../../src/auth/domain/types/auth.types"
+import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
-type LegacyRegisterResponse = {
+type BackendRegisterResponse = {
   api_status?: number | string
   access_token?: string
   user_id?: number | string
@@ -40,7 +41,7 @@ export default defineEventHandler(async (event): Promise<RegisterAccountResult> 
   }
 
   const response = assertBackendApiSuccess(
-    await client.post<LegacyRegisterResponse, Record<string, unknown>>("create-account", {
+    await client.post<BackendRegisterResponse, Record<string, unknown>>(backendRoutes.api.createAccount, {
       username,
       first_name: body.firstName,
       last_name: body.lastName,

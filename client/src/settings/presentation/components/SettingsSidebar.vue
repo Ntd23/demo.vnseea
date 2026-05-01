@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
-import type { SettingPage } from "../../application/composables/useMockSettingsData"
+import type { SettingPage } from "../../application/composables/useSettingsData"
 
 const { t } = useI18n()
 

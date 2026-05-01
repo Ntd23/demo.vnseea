@@ -121,14 +121,16 @@ const currentAuthUserStore = useCurrentAuthUserStore()
 const route = useRoute()
 const modelValue = defineModel<boolean>({ default: false })
 
-const props = defineProps<{ open?: boolean }>()
-
 const emit = defineEmits<{
   close: []
-  'update:open': [value: boolean]
 }>()
 
-const isOpen = ref(false)
+const isOpen = computed({
+  get: () => modelValue.value,
+  set: (value: boolean) => {
+    modelValue.value = value
+  },
+})
 const currentUser = computed(() => currentAuthUserStore.user)
 const avatarUrl = computed(() =>
   typeof currentUser.value?.avatarUrl === "string" && currentUser.value.avatarUrl.length > 0
@@ -179,24 +181,9 @@ const formattedPoints = computed(() => {
 })
 const showStats = computed(() => Boolean(formattedWallet.value || formattedPoints.value))
 
-watch(
-  () => props.open ?? modelValue.value,
-  val => { isOpen.value = Boolean(val) },
-  { immediate: true },
-)
-
-let mounted = false
-watch(isOpen, (val) => {
-  if (!mounted) { mounted = true; return }
-  modelValue.value = val
-  emit('update:open', val)
-  if (!val) emit('close')
-})
-
-onMounted(() => { mounted = true })
-
 function close() {
-  isOpen.value = false
+  modelValue.value = false
+  emit('close')
 }
 
 function isNavItemActive(to: string) {

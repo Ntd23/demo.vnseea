@@ -2,6 +2,7 @@ import { createError, readBody } from "h3"
 import type { ConfirmResetSmsInput, ConfirmResetSmsResult } from "../../../src/auth/domain/types/auth.types"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
+import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 type BackendConfirmResetSmsResponse = {
   api_status?: number | string
@@ -32,7 +33,7 @@ export default defineEventHandler(async (event): Promise<ConfirmResetSmsResult> 
   }
 
   const response = assertBackendApiSuccess(
-    await client.post<BackendConfirmResetSmsResponse, Record<string, unknown>>("confirm-reset-password-sms", {
+    await client.post<BackendConfirmResetSmsResponse, Record<string, unknown>>(backendRoutes.api.confirmResetPasswordSms, {
       user_id: Number(body.userId),
       code: body.code.trim(),
     }),

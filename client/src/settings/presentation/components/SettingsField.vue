@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SettingField } from "../../application/composables/useMockSettingsData"
+import type { SettingField } from "../../application/composables/useSettingsData"
 
 const props = defineProps<{ field: SettingField }>()
 const value = ref(props.field.value)

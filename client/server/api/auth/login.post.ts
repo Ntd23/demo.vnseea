@@ -2,6 +2,7 @@ import { createError, readBody } from "h3"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import type { LoginInput, LoginResult } from "../../../src/auth/domain/types/auth.types"
+import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 type BackendLoginResponse = {
   api_status?: number | string
@@ -37,7 +38,7 @@ export default defineEventHandler(async (event): Promise<LoginResult> => {
   }
 
   const response = assertBackendApiSuccess(
-    await client.post<BackendLoginResponse, Record<string, unknown>>("auth", {
+    await client.post<BackendLoginResponse, Record<string, unknown>>(backendRoutes.api.auth, {
       username: identity,
       password,
       timezone: body.timezone || "UTC",

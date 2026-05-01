@@ -128,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SettingSection } from "../../application/composables/useMockSettingsData"
+import type { SettingSection } from "../../application/composables/useSettingsData"
 import SettingsField from "./SettingsField.vue"
 
 const props = defineProps<{ section: SettingSection }>()

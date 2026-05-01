@@ -27,7 +27,9 @@
 
           <button class="header-action-btn" type="button" :aria-label="$t('navigation.headerBar.friendRequests')">
             <Icon name="i-ph-user-plus-duotone" class="h-[18px] w-[18px]" />
-            <span class="header-action-badge">1</span>
+            <span v-if="navigationSummary.friendRequestCount > 0" class="header-action-badge">
+              {{ navigationSummary.friendRequestCount }}
+            </span>
           </button>
 
           <NuxtLink
@@ -44,7 +46,9 @@
 
           <button class="header-action-btn" type="button" :aria-label="$t('navigation.headerBar.notifications')">
             <Icon name="i-ph-bell-duotone" class="h-[18px] w-[18px]" />
-            <span class="header-action-badge">3</span>
+            <span v-if="navigationSummary.notificationCount > 0" class="header-action-badge">
+              {{ navigationSummary.notificationCount }}
+            </span>
           </button>
 
           <NavigationHeaderUserMenu />
@@ -125,25 +129,28 @@
   </header>
 
   <!-- Mobile menu drawer -->
-  <NavigationMobileMenu
-    v-model="mobileMenuOpen"
-    :open="mobileMenuOpen"
-    @update:open="mobileMenuOpen = $event"
-    @close="mobileMenuOpen = false"
-  />
+  <ClientOnly>
+    <NavigationMobileMenu
+      v-model="mobileMenuOpen"
+      @close="mobileMenuOpen = false"
+    />
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { NuxtLink } from '#components'
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
+import { useNavigationGeneralStore } from "../../application/stores/useNavigationGeneralStore"
 import NavigationHeaderSearchInput from './HeaderSearchInput.vue'
 import NavigationHeaderUserMenu from './HeaderUserMenu.vue'
 import NavigationLocaleSwitcher from './LocaleSwitcher.vue'
 import NavigationMobileMenu from './MobileMenu.vue'
 
 const currentAuthUserStore = useCurrentAuthUserStore()
+const navigationGeneralStore = useNavigationGeneralStore()
 await callOnce("current-auth-user", () => currentAuthUserStore.hydrate())
+await callOnce("navigation-general", () => navigationGeneralStore.hydrate())
 
 const mobileMenuOpen = ref(false)
 const mobileSearchOpen = ref(false)
@@ -151,6 +158,7 @@ const mobileSearchOpen = ref(false)
 const route = useRoute()
 const isHome = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
 const currentUser = computed(() => currentAuthUserStore.user)
+const navigationSummary = computed(() => navigationGeneralStore.summary)
 const avatarUrl = computed(() =>
   typeof currentUser.value?.avatarUrl === "string" && currentUser.value.avatarUrl.length > 0
     ? currentUser.value.avatarUrl
