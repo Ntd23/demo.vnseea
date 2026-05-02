@@ -1,12 +1,14 @@
+// English description: Two-factor login confirmation view model for the backend auth flow.
+
 import type { FormError } from "@nuxt/ui"
-import { appRoutes, backendRoutes } from "../../../shared-kernel/application/constants/route-registry"
-import { useBackendWebUrl } from "../../../shared-kernel/application/utils/backend-web-url"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAuthRepository"
+import { submitBackendBrowserSession } from "../services/backend-browser-session"
 
 type ConfirmLoginFieldName = "code"
 type ConfirmLoginValidationError = FormError<ConfirmLoginFieldName>
 
-const extractErrorMessage = (error: unknown, fallback: string) => {
+const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
     data?: { statusMessage?: string; message?: string }
     statusMessage?: string
@@ -17,12 +19,13 @@ const extractErrorMessage = (error: unknown, fallback: string) => {
     ?? maybeError?.data?.message
     ?? maybeError?.statusMessage
     ?? maybeError?.message
-    ?? fallback
+    ?? defaultMessage
 }
 
 export function useConfirmLoginPageVM(
   repository = createApiAuthRepository(),
 ) {
+  const { t } = useI18n()
   const route = useRoute()
   const submitState = ref<"idle" | "loading" | "success" | "error">("idle")
   const submitMessage = ref("")
@@ -38,14 +41,11 @@ export function useConfirmLoginPageVM(
   })
 
   const pageReady = computed(() => userId.value !== null)
-  const browserSessionUrl = (accessToken: string) =>
-    useBackendWebUrl(backendRoutes.session.setBrowserCookie(accessToken))
-
   const validate = (currentState: typeof state): ConfirmLoginValidationError[] => {
     const errors: ConfirmLoginValidationError[] = []
 
     if (!currentState.code.trim()) {
-      errors.push({ name: "code", message: "Enter the confirmation code." })
+      errors.push({ name: "code", message: t("pages.confirmLoginPage.validationCodeRequired") })
     }
 
     return errors
@@ -54,7 +54,7 @@ export function useConfirmLoginPageVM(
   async function handleSubmit() {
     if (!userId.value) {
       submitState.value = "error"
-      submitMessage.value = "The confirmation request is missing a valid user."
+      submitMessage.value = t("pages.confirmLoginPage.missingUser")
       return
     }
 
@@ -70,11 +70,11 @@ export function useConfirmLoginPageVM(
 
       submitState.value = "success"
       submitMessage.value = result.message
-      await navigateTo(browserSessionUrl(result.accessToken), { external: true })
+      await submitBackendBrowserSession(result.accessToken)
     }
     catch (error) {
       submitState.value = "error"
-      submitMessage.value = extractErrorMessage(error, "Unable to confirm sign in.")
+      submitMessage.value = extractErrorMessage(error, t("pages.confirmLoginPage.statusErrorDescription"))
     }
   }
 

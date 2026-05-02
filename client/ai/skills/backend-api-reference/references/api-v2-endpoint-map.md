@@ -12,7 +12,7 @@ This is a condensed map from the backend API documentation and local migration n
 | Login | `/api/auth` |
 | Social login | `/api/social-login` |
 | Register | `/api/create-account` |
-| Browser session bootstrap | `/api/set-browser-cookie?access_token=...` |
+| Browser session bootstrap | `/api/set-browser-cookie` with `access_token` in POST body |
 | Delete access token | `/api/delete-access-token?access_token=...` |
 | Password reset email | `/api/send-reset-password-email` |
 | Current user data | `/api/get-user-data` or local `get-current-user.php` wrapper |

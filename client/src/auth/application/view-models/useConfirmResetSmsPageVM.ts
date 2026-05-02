@@ -1,3 +1,5 @@
+// English description: SMS password reset confirmation view model for the backend recovery flow.
+
 import type { FormError } from "@nuxt/ui"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAuthRepository"
@@ -5,7 +7,7 @@ import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAu
 type ConfirmResetSmsFieldName = "code"
 type ConfirmResetSmsValidationError = FormError<ConfirmResetSmsFieldName>
 
-const extractErrorMessage = (error: unknown, fallback: string) => {
+const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
     data?: { statusMessage?: string; message?: string }
     statusMessage?: string
@@ -16,12 +18,13 @@ const extractErrorMessage = (error: unknown, fallback: string) => {
     ?? maybeError?.data?.message
     ?? maybeError?.statusMessage
     ?? maybeError?.message
-    ?? fallback
+    ?? defaultMessage
 }
 
 export function useConfirmResetSmsPageVM(
   repository = createApiAuthRepository(),
 ) {
+  const { t } = useI18n()
   const route = useRoute()
   const submitState = ref<"idle" | "loading" | "success" | "error">("idle")
   const submitMessage = ref("")
@@ -42,7 +45,7 @@ export function useConfirmResetSmsPageVM(
     const errors: ConfirmResetSmsValidationError[] = []
 
     if (!currentState.code.trim()) {
-      errors.push({ name: "code", message: "Enter the reset code." })
+      errors.push({ name: "code", message: t("pages.confirmResetSmsPage.validationCodeRequired") })
     }
 
     return errors
@@ -51,7 +54,7 @@ export function useConfirmResetSmsPageVM(
   async function handleSubmit() {
     if (!userId.value) {
       submitState.value = "error"
-      submitMessage.value = "The reset request is missing a valid user."
+      submitMessage.value = t("pages.confirmResetSmsPage.missingUser")
       return
     }
 
@@ -76,7 +79,7 @@ export function useConfirmResetSmsPageVM(
     }
     catch (error) {
       submitState.value = "error"
-      submitMessage.value = extractErrorMessage(error, "Unable to confirm the reset code.")
+      submitMessage.value = extractErrorMessage(error, t("pages.confirmResetSmsPage.statusErrorDescription"))
     }
   }
 

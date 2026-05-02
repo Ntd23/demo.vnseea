@@ -1,10 +1,12 @@
+<!-- English description: Account confirmation presentation for backend account activation. -->
+
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <p class="auth-form__eyebrow">Verify</p>
-      <h1 class="auth-form__title">Confirm your account</h1>
+      <p class="auth-form__eyebrow">{{ $t('pages.confirmAccountPage.eyebrow') }}</p>
+      <h1 class="auth-form__title">{{ $t('pages.confirmAccountPage.title') }}</h1>
       <p class="auth-form__subtitle">
-        Enter the activation code that VNSEEA sent to your email or phone so the backend can activate the account.
+        {{ $t('pages.confirmAccountPage.subtitle') }}
       </p>
     </div>
 
@@ -13,8 +15,8 @@
       color="warning"
       variant="subtle"
       icon="i-ph-warning-circle-fill"
-      title="Invalid verification request"
-      description="This page is missing a valid user identifier. Go back and start the registration flow again."
+      :title="$t('pages.confirmAccountPage.invalidTitle')"
+      :description="$t('pages.confirmAccountPage.invalidDescription')"
       class="rounded-[14px]"
     />
 
@@ -25,13 +27,13 @@
       class="auth-form__body"
       @submit="handleSubmit"
     >
-      <UFormField name="code" label="Verification code" required>
+      <UFormField name="code" :label="$t('pages.confirmAccountPage.codeLabel')" required>
         <UInput
           v-model="state.code"
           type="text"
           autocomplete="one-time-code"
           size="xl"
-          placeholder="Enter the code"
+          :placeholder="$t('pages.confirmAccountPage.codePlaceholder')"
           class="w-full"
           :ui="inputUi"
         />
@@ -42,7 +44,7 @@
         color="error"
         variant="subtle"
         icon="i-ph-warning-circle-fill"
-        title="Verification failed"
+        :title="$t('pages.confirmAccountPage.statusErrorTitle')"
         :description="submitMessage"
         class="rounded-[14px]"
       />
@@ -57,13 +59,13 @@
         loading-icon="i-lucide-loader-2"
         class="auth-submit"
       >
-        Verify account
+        {{ $t('pages.confirmAccountPage.submit') }}
       </UButton>
 
       <p class="auth-form__footer-text">
-        Need to sign in with another account?
+        {{ $t('pages.confirmAccountPage.restartQuestion') }}
         <button type="button" class="auth-form__footer-link auth-form__footer-button" @click="backToWelcome">
-          Back to sign in
+          {{ $t('pages.confirmAccountPage.backToSignIn') }}
         </button>
       </p>
     </UForm>

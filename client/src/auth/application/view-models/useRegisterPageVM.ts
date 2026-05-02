@@ -1,11 +1,13 @@
+// English description: Registration page view model that maps Nuxt form state to the backend account flow.
+
 import type { FormError } from "@nuxt/ui"
 import type {
   RegisterAccountInput,
   RegisterAccountResult,
 } from "../../domain/types/auth.types"
 import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAuthRepository"
-import { appRoutes, backendRoutes } from "../../../shared-kernel/application/constants/route-registry"
-import { useBackendWebUrl } from "../../../shared-kernel/application/utils/backend-web-url"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+import { submitBackendBrowserSession } from "../services/backend-browser-session"
 
 type RegisterFieldName =
   | "firstName"
@@ -50,7 +52,7 @@ const createDefaultState = (): RegisterAccountInput => ({
   acceptTerms: false,
 })
 
-const extractErrorMessage = (error: unknown, fallback: string) => {
+const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
     data?: { statusMessage?: string; message?: string }
     statusMessage?: string
@@ -61,7 +63,7 @@ const extractErrorMessage = (error: unknown, fallback: string) => {
     ?? maybeError?.data?.message
     ?? maybeError?.statusMessage
     ?? maybeError?.message
-    ?? fallback
+    ?? defaultMessage
 }
 
 export function useRegisterPageVM(
@@ -69,8 +71,6 @@ export function useRegisterPageVM(
 ) {
   const { t } = useI18n()
   const toast = useToast()
-  const browserSessionUrl = (accessToken: string) =>
-    useBackendWebUrl(backendRoutes.session.setBrowserCookie(accessToken))
 
   const state = reactive<RegisterAccountInput>(createDefaultState())
   const submitState = ref<"idle" | "loading" | "success" | "error">("idle")
@@ -89,20 +89,20 @@ export function useRegisterPageVM(
     }
 
     if (!currentState.username.trim()) {
-      errors.push({ name: "username", message: "Enter a username." })
+      errors.push({ name: "username", message: t("pages.registerPage.validationUsernameRequired") })
     }
     else if (!USERNAME_REGEX.test(currentState.username.trim())) {
-      errors.push({ name: "username", message: "Username may only contain letters, numbers, and underscores." })
+      errors.push({ name: "username", message: t("pages.registerPage.validationUsernamePattern") })
     }
     else if (currentState.username.trim().length < 5 || currentState.username.trim().length > 32) {
-      errors.push({ name: "username", message: "Username must be between 5 and 32 characters." })
+      errors.push({ name: "username", message: t("pages.registerPage.validationUsernameLength") })
     }
 
     if (!currentState.email.trim()) {
       errors.push({ name: "email", message: "Enter your email address or phone number." })
     }
     else if (!hasValidLoginIdentity(currentState.email)) {
-      errors.push({ name: "email", message: "Enter a valid email address or a phone number with at least 8 digits." })
+      errors.push({ name: "email", message: t("pages.registerPage.validationEmailOrPhoneInvalid") })
     }
 
     if (!currentState.password) {
@@ -113,10 +113,10 @@ export function useRegisterPageVM(
     }
 
     if (!currentState.confirmPassword) {
-      errors.push({ name: "confirmPassword", message: "Confirm your password." })
+      errors.push({ name: "confirmPassword", message: t("pages.registerPage.validationConfirmPasswordRequired") })
     }
     else if (currentState.confirmPassword !== currentState.password) {
-      errors.push({ name: "confirmPassword", message: "Password confirmation does not match." })
+      errors.push({ name: "confirmPassword", message: t("pages.registerPage.validationConfirmPasswordMismatch") })
     }
 
     if (
@@ -132,7 +132,7 @@ export function useRegisterPageVM(
     }
 
     if (!currentState.acceptTerms) {
-      errors.push({ name: "acceptTerms", message: "You must accept the terms and privacy policy." })
+      errors.push({ name: "acceptTerms", message: t("pages.registerPage.validationAcceptTermsRequired") })
     }
 
     return errors
@@ -154,7 +154,7 @@ export function useRegisterPageVM(
       submitMessage.value = result.message
 
       if (result.status === "active" && result.accessToken) {
-        await navigateTo(browserSessionUrl(result.accessToken), { external: true })
+        await submitBackendBrowserSession(result.accessToken)
         return
       }
 
@@ -171,7 +171,7 @@ export function useRegisterPageVM(
         icon: result.status === "verification_required"
           ? "i-ph-envelope-simple-open-fill"
           : "i-ph-check-circle-fill",
-        title: "Registration completed",
+        title: t("pages.registerPage.statusSuccessTitle"),
         description: result.message,
       })
 
@@ -189,7 +189,7 @@ export function useRegisterPageVM(
       toast.add({
         color: "error",
         icon: "i-ph-warning-circle-fill",
-        title: "Sign up failed",
+        title: t("pages.registerPage.statusErrorTitle"),
         description: submitMessage.value,
       })
     }

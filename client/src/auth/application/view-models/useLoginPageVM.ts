@@ -1,13 +1,15 @@
+// English description: Login page view model that submits credentials through the backend API bridge.
+
 import type { FormError } from "@nuxt/ui"
 import type { LoginResult } from "../../domain/types/auth.types"
 import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAuthRepository"
-import { appRoutes, backendRoutes } from "../../../shared-kernel/application/constants/route-registry"
-import { useBackendWebUrl } from "../../../shared-kernel/application/utils/backend-web-url"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+import { submitBackendBrowserSession } from "../services/backend-browser-session"
 
 type LoginFieldName = "login" | "password"
 type LoginValidationError = FormError<LoginFieldName>
 
-const extractErrorMessage = (error: unknown, fallback: string) => {
+const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
     data?: { statusMessage?: string; message?: string }
     statusMessage?: string
@@ -18,7 +20,7 @@ const extractErrorMessage = (error: unknown, fallback: string) => {
     ?? maybeError?.data?.message
     ?? maybeError?.statusMessage
     ?? maybeError?.message
-    ?? fallback
+    ?? defaultMessage
 }
 
 export function useLoginPageVM(
@@ -26,8 +28,6 @@ export function useLoginPageVM(
 ) {
   const { t } = useI18n()
   const toast = useToast()
-  const browserSessionUrl = (accessToken: string) =>
-    useBackendWebUrl(backendRoutes.session.setBrowserCookie(accessToken))
 
   const state = reactive({
     login: "",
@@ -42,11 +42,11 @@ export function useLoginPageVM(
     const errors: LoginValidationError[] = []
 
     if (!currentState.login.trim()) {
-      errors.push({ name: "login", message: t("pages.welcomePage.validationLoginRequired") || "Vui lòng nhập email hoặc số điện thoại" })
+      errors.push({ name: "login", message: t("pages.welcomePage.validationLoginRequired") })
     }
 
     if (!currentState.password) {
-      errors.push({ name: "password", message: t("pages.welcomePage.validationPasswordRequired") || "Vui lòng nhập mật khẩu" })
+      errors.push({ name: "password", message: t("pages.welcomePage.validationPasswordRequired") })
     }
 
     return errors
@@ -70,7 +70,7 @@ export function useLoginPageVM(
       submitMessage.value = result.message
 
       if (result.status === "authenticated" && result.accessToken) {
-        await navigateTo(browserSessionUrl(result.accessToken), { external: true })
+        await submitBackendBrowserSession(result.accessToken)
         return
       }
 
@@ -85,7 +85,7 @@ export function useLoginPageVM(
       toast.add({
         color: "warning",
         icon: "i-ph-warning-circle-fill",
-        title: "Confirmation required",
+        title: t("pages.welcomePage.statusWarningTitle"),
         description: result.message,
       })
     }
@@ -93,13 +93,13 @@ export function useLoginPageVM(
       submitState.value = "error"
       submitMessage.value = extractErrorMessage(
         error,
-        "Unable to sign in with the provided credentials.",
+        t("pages.welcomePage.statusErrorDescription"),
       )
 
       toast.add({
         color: "error",
         icon: "i-ph-warning-circle-fill",
-        title: "Sign in failed",
+        title: t("pages.welcomePage.statusErrorTitle"),
         description: submitMessage.value,
       })
     }

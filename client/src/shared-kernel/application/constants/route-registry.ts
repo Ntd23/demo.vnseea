@@ -1,3 +1,5 @@
+// English description: Centralized route constants for frontend pages, Nuxt API routes, and backend PHP paths.
+
 const encodeSegment = (value: string | number) => encodeURIComponent(String(value))
 const encodeQueryValue = (value: string | number) => encodeURIComponent(String(value))
 
@@ -8,6 +10,8 @@ export const appRoutes = {
   welcome: "/welcome",
   register: "/register",
   forgotPassword: "/forgot-password",
+  termsOfUse: "/terms/terms",
+  privacyPolicy: "/terms/privacy-policy",
   confirmLogin: "/confirm-login",
   resetPassword: "/reset-password",
   confirmAccount: "/confirm-account",
@@ -137,8 +141,7 @@ export const backendRoutes = {
   session: {
     currentUser: (sessionId?: string) =>
       `/api/v2/endpoints/get-current-user.php${sessionId ? `?session_id=${encodeQueryValue(sessionId)}` : ""}`,
-    setBrowserCookie: (accessToken: string) =>
-      `/api/v2/endpoints/set-browser-cookie.php?access_token=${encodeQueryValue(accessToken)}`,
+    setBrowserCookie: "/api/v2/endpoints/set-browser-cookie.php",
   },
   web: {
     requests: "/requests.php",

@@ -14,7 +14,7 @@ Use the source as endpoint documentation only. Keep project code naming neutral 
 - API calls require the site `server_key` in POST data.
 - The API is intended for the site owner building the app, not arbitrary public clients.
 - Login uses `/api/auth` and returns `access_token`.
-- Browser session bootstrap uses `/api/set-browser-cookie?access_token=...`.
+- Browser session bootstrap uses `/api/set-browser-cookie` with `access_token` in the POST body.
 - Logout token deletion uses `/api/delete-access-token?access_token=...`.
 - Error responses use:
 

@@ -13,7 +13,10 @@ export type SettingField = {
   value: string | number | boolean | File
   description?: string
   placeholder?: string
+  accept?: string
   options?: string[]
+  previewUrl?: string
+  previewShape?: "avatar" | "cover" | "image"
   span?: "full"
   readOnly?: boolean
 }
@@ -59,6 +62,18 @@ export type SettingPage = {
   sections: SettingSection[]
 }
 
+type SettingTranslate = ReturnType<typeof useI18n>["t"]
+type SettingOptionDefinition = {
+  labelKey: string
+  value: string
+}
+
+const settingsText = (
+  t: SettingTranslate,
+  key: string,
+  params?: Record<string, string | number | boolean>,
+) => t(`settings.data.${key}`, params ?? {})
+
 const pageIcons: Record<string, string> = {
   general: "i-ph-user-fill",
   profile: "i-ph-identification-card-fill",
@@ -89,80 +104,93 @@ const supportedUpdateSections = new Set<SettingsSectionSlug>([
   "deleteAccount",
 ])
 
-const countryOptions = [
-  { label: "Vietnam", value: "233" },
-  { label: "Singapore", value: "192" },
-  { label: "Thailand", value: "213" },
-  { label: "United States", value: "1" },
+const countryOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.countryVietnam", value: "233" },
+  { labelKey: "options.countrySingapore", value: "192" },
+  { labelKey: "options.countryThailand", value: "213" },
+  { labelKey: "options.countryUnitedStates", value: "1" },
 ]
 
-const genderOptions = [
-  { label: "Male", value: "male" },
-  { label: "Female", value: "female" },
+const genderOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.male", value: "male" },
+  { labelKey: "options.female", value: "female" },
 ]
 
-const relationshipOptions = [
-  { label: "None", value: "0" },
-  { label: "Single", value: "1" },
-  { label: "In a relationship", value: "2" },
-  { label: "Married", value: "3" },
-  { label: "Engaged", value: "4" },
+const relationshipOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.none", value: "0" },
+  { labelKey: "options.single", value: "1" },
+  { labelKey: "options.inRelationship", value: "2" },
+  { labelKey: "options.married", value: "3" },
+  { labelKey: "options.engaged", value: "4" },
 ]
 
-const postPrivacyOptions = [
-  { label: "Everyone", value: "everyone" },
-  { label: "People I follow", value: "ifollow" },
-  { label: "Nobody", value: "nobody" },
+const postPrivacyOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.everyone", value: "everyone" },
+  { labelKey: "options.peopleIFollow", value: "ifollow" },
+  { labelKey: "options.nobody", value: "nobody" },
 ]
 
-const binaryOptions = [
-  { label: "Enabled", value: "1" },
-  { label: "Disabled", value: "0" },
+const binaryOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.enabled", value: "1" },
+  { labelKey: "options.disabled", value: "0" },
 ]
 
-const messagePrivacyOptions = [
-  { label: "Everyone", value: "0" },
-  { label: "People I follow", value: "1" },
-  { label: "Nobody", value: "2" },
+const messagePrivacyOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.everyone", value: "0" },
+  { labelKey: "options.peopleIFollow", value: "1" },
+  { labelKey: "options.nobody", value: "2" },
 ]
 
-const friendPrivacyOptions = [
-  { label: "Everyone", value: "0" },
-  { label: "People I follow", value: "1" },
-  { label: "People following me", value: "2" },
-  { label: "Nobody", value: "3" },
+const friendPrivacyOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.everyone", value: "0" },
+  { labelKey: "options.peopleIFollow", value: "1" },
+  { labelKey: "options.peopleFollowingMe", value: "2" },
+  { labelKey: "options.nobody", value: "3" },
 ]
 
-const designBackgroundOptions = [
-  { label: "Default background", value: "defualt" },
-  { label: "My background", value: "my_background" },
+const designBackgroundOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.defaultBackground", value: "defualt" },
+  { labelKey: "options.myBackground", value: "my_background" },
 ]
 
-const cssStatusOptions = [
-  { label: "Default CSS", value: "1" },
-  { label: "Uploaded CSS", value: "2" },
+const cssStatusOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.defaultCss", value: "1" },
+  { labelKey: "options.uploadedCss", value: "2" },
 ]
 
-const twoFactorOptions = [
-  { label: "Enable", value: "enable" },
-  { label: "Disable", value: "disable" },
+const twoFactorOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.enable", value: "enable" },
+  { labelKey: "options.disable", value: "disable" },
 ]
 
-const twoFactorMethodOptions = [
-  { label: "Email / SMS code", value: "two_factor" },
-  { label: "Google Authenticator", value: "google" },
-  { label: "Authy", value: "authy" },
+const twoFactorMethodOptions: SettingOptionDefinition[] = [
+  { labelKey: "options.emailSmsCode", value: "two_factor" },
+  { labelKey: "options.googleAuthenticator", value: "google" },
+  { labelKey: "options.authy", value: "authy" },
 ]
 
 const optionLabel = (
-  options: Array<{ label: string; value: string }>,
+  t: SettingTranslate,
+  options: SettingOptionDefinition[],
   value: unknown,
-) => options.find(option => option.value === String(value ?? ""))?.label ?? ""
+) => {
+  const option = options.find(option => option.value === String(value ?? ""))
+
+  return option ? settingsText(t, option.labelKey) : ""
+}
 
 const optionValue = (
-  options: Array<{ label: string; value: string }>,
+  t: SettingTranslate,
+  options: SettingOptionDefinition[],
   value: SettingsFieldValue,
-) => options.find(option => option.label === String(value) || option.value === String(value))?.value ?? String(value)
+) => options.find(option =>
+  settingsText(t, option.labelKey) === String(value) || option.value === String(value),
+)?.value ?? String(value)
+
+const optionLabels = (
+  t: SettingTranslate,
+  options: SettingOptionDefinition[],
+) => options.map(option => settingsText(t, option.labelKey))
 
 const toPhpBirthday = (value: SettingsFieldValue) => {
   const textValue = String(value)
@@ -217,27 +245,36 @@ const summaryItem = (title: string, description: string, meta?: string): Setting
   meta,
 })
 
-const generalPage = (user: SettingsUser | null): SettingPage => ({
+const pageText = (t: SettingTranslate, page: string, key: string) =>
+  settingsText(t, `pages.${page}.${key}`)
+
+const fieldText = (t: SettingTranslate, key: string) =>
+  settingsText(t, `fields.${key}`)
+
+const messageText = (t: SettingTranslate, key: string, params?: Record<string, string | number | boolean>) =>
+  settingsText(t, `messages.${key}`, params)
+
+const generalPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "general",
-  label: "General",
+  label: pageText(t, "general", "label"),
   icon: pageIcons.general,
-  description: "Matches the PHP general settings form.",
+  description: pageText(t, "general", "description"),
   sections: [{
-    title: "Account information",
-    description: "Username, contact, birthday, country, verification, and wallet.",
+    title: pageText(t, "general", "sections.account.title"),
+    description: pageText(t, "general", "sections.account.description"),
     kind: "form",
     fields: [
-      field("username", "Username", "text", user?.username ?? ""),
-      field("phone_number", "Phone", "tel", user?.phone ?? ""),
-      field("gender", "Gender", "select", optionLabel(genderOptions, user?.gender), genderOptions.map(option => option.label)),
-      field("email", "E-mail", "email", user?.email ?? "", undefined, { span: "full" }),
-      field("birthday", "Birthday", "date", toHtmlBirthday(user?.birthday)),
-      field("country_id", "Country", "select", optionLabel(countryOptions, user?.countryId), countryOptions.map(option => option.label)),
-      field("verified", "Verification", "verification", user?.verified ?? false, undefined, {
+      field("username", fieldText(t, "username"), "text", user?.username ?? ""),
+      field("phone_number", fieldText(t, "phone"), "tel", user?.phone ?? ""),
+      field("gender", fieldText(t, "gender"), "select", optionLabel(t, genderOptions, user?.gender), optionLabels(t, genderOptions)),
+      field("email", fieldText(t, "email"), "email", user?.email ?? "", undefined, { span: "full" }),
+      field("birthday", fieldText(t, "birthday"), "date", toHtmlBirthday(user?.birthday)),
+      field("country_id", fieldText(t, "country"), "select", optionLabel(t, countryOptions, user?.countryId), optionLabels(t, countryOptions)),
+      field("verified", fieldText(t, "verification"), "verification", user?.verified ?? false, undefined, {
         span: "full",
         readOnly: !hasAdminSettingsRights(user),
       }),
-      field("wallet", "Wallet", "number", user?.wallet ?? "", undefined, {
+      field("wallet", fieldText(t, "wallet"), "number", user?.wallet ?? "", undefined, {
         span: "full",
         readOnly: !hasAdminSettingsRights(user),
       }),
@@ -245,159 +282,174 @@ const generalPage = (user: SettingsUser | null): SettingPage => ({
   }],
 })
 
-const profilePage = (user: SettingsUser | null): SettingPage => ({
+const profilePage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "profile",
-  label: "Profile",
+  label: pageText(t, "profile", "label"),
   icon: pageIcons.profile,
-  description: "Matches the PHP public profile settings form.",
+  description: pageText(t, "profile", "description"),
   sections: [{
-    title: "Public profile",
-    description: "Name, website, bio, work, school, address, and relationship.",
+    title: pageText(t, "profile", "sections.publicProfile.title"),
+    description: pageText(t, "profile", "sections.publicProfile.description"),
     kind: "form",
     fields: [
-      field("first_name", "First name", "text", user?.first_name ?? ""),
-      field("last_name", "Last name", "text", user?.last_name ?? ""),
-      field("website", "Website", "url", user?.website ?? "", undefined, { span: "full" }),
-      field("about", "About", "textarea", user?.about ?? "", undefined, { span: "full" }),
-      field("working", "Working", "text", user?.working ?? ""),
-      field("working_link", "Company website", "url", user?.working_link ?? ""),
-      field("address", "Address", "text", user?.address ?? "", undefined, { span: "full" }),
-      field("school", "School", "text", user?.school ?? ""),
-      field("relationship", "Relationship", "select", optionLabel(relationshipOptions, user?.relationship_id), relationshipOptions.map(option => option.label)),
-      field("completed", "School completed", "select", isTrue(user?.school_completed) ? "Enabled" : "Disabled", binaryOptions.map(option => option.label)),
+      field("first_name", fieldText(t, "firstName"), "text", user?.first_name ?? ""),
+      field("last_name", fieldText(t, "lastName"), "text", user?.last_name ?? ""),
+      field("website", fieldText(t, "website"), "url", user?.website ?? "", undefined, { span: "full" }),
+      field("about", fieldText(t, "about"), "textarea", user?.about ?? "", undefined, { span: "full" }),
+      field("working", fieldText(t, "working"), "text", user?.working ?? ""),
+      field("working_link", fieldText(t, "workingLink"), "url", user?.working_link ?? ""),
+      field("address", fieldText(t, "address"), "text", user?.address ?? "", undefined, { span: "full" }),
+      field("school", fieldText(t, "school"), "text", user?.school ?? ""),
+      field("relationship", fieldText(t, "relationship"), "select", optionLabel(t, relationshipOptions, user?.relationship_id), optionLabels(t, relationshipOptions)),
+      field("completed", fieldText(t, "schoolCompleted"), "select", optionLabel(t, binaryOptions, isTrue(user?.school_completed) ? "1" : "0"), optionLabels(t, binaryOptions)),
     ],
   }],
 })
 
-const privacyPage = (user: SettingsUser | null): SettingPage => ({
+const privacyPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "privacy",
-  label: "Privacy",
+  label: pageText(t, "privacy", "label"),
   icon: pageIcons.privacy,
-  description: "Matches the PHP privacy settings form.",
+  description: pageText(t, "privacy", "description"),
   sections: [{
-    title: "Privacy controls",
-    description: "Who can message, follow, see posts, activity, visits, birthday, and location data.",
+    title: pageText(t, "privacy", "sections.privacyControls.title"),
+    description: pageText(t, "privacy", "sections.privacyControls.description"),
     kind: "form",
     fields: [
-      field("message_privacy", "Who can message me", "select", optionLabel(messagePrivacyOptions, user?.message_privacy), messagePrivacyOptions.map(option => option.label)),
-      field("follow_privacy", "Who can follow me", "select", optionLabel(binaryOptions, user?.follow_privacy), binaryOptions.map(option => option.label)),
-      field("friend_privacy", "Who can see friends", "select", optionLabel(friendPrivacyOptions, user?.friend_privacy), friendPrivacyOptions.map(option => option.label)),
-      field("post_privacy", "Who can see posts", "select", optionLabel(postPrivacyOptions, user?.post_privacy), postPrivacyOptions.map(option => option.label)),
-      field("showlastseen", "Show last seen", "select", optionLabel(binaryOptions, user?.showlastseen), binaryOptions.map(option => option.label)),
-      field("confirm_followers", "Confirm followers", "select", optionLabel(binaryOptions, user?.confirm_followers), binaryOptions.map(option => option.label)),
-      field("show_activities_privacy", "Show activities", "select", optionLabel(binaryOptions, user?.show_activities_privacy), binaryOptions.map(option => option.label)),
-      field("visit_privacy", "Profile visits privacy", "select", optionLabel(binaryOptions, user?.visit_privacy), binaryOptions.map(option => option.label)),
-      field("birth_privacy", "Birthday privacy", "select", optionLabel(messagePrivacyOptions, user?.birth_privacy), messagePrivacyOptions.map(option => option.label)),
-      field("status", "Online status", "select", optionLabel(binaryOptions, user?.status), binaryOptions.map(option => option.label)),
-      field("share_my_location", "Share my location", "select", optionLabel(binaryOptions, user?.share_my_location), binaryOptions.map(option => option.label)),
-      field("share_my_data", "Share my data", "select", optionLabel(binaryOptions, user?.share_my_data), binaryOptions.map(option => option.label)),
+      field("message_privacy", fieldText(t, "messagePrivacy"), "select", optionLabel(t, messagePrivacyOptions, user?.message_privacy), optionLabels(t, messagePrivacyOptions)),
+      field("follow_privacy", fieldText(t, "followPrivacy"), "select", optionLabel(t, binaryOptions, user?.follow_privacy), optionLabels(t, binaryOptions)),
+      field("friend_privacy", fieldText(t, "friendPrivacy"), "select", optionLabel(t, friendPrivacyOptions, user?.friend_privacy), optionLabels(t, friendPrivacyOptions)),
+      field("post_privacy", fieldText(t, "postPrivacy"), "select", optionLabel(t, postPrivacyOptions, user?.post_privacy), optionLabels(t, postPrivacyOptions)),
+      field("showlastseen", fieldText(t, "showLastSeen"), "select", optionLabel(t, binaryOptions, user?.showlastseen), optionLabels(t, binaryOptions)),
+      field("confirm_followers", fieldText(t, "confirmFollowers"), "select", optionLabel(t, binaryOptions, user?.confirm_followers), optionLabels(t, binaryOptions)),
+      field("show_activities_privacy", fieldText(t, "showActivities"), "select", optionLabel(t, binaryOptions, user?.show_activities_privacy), optionLabels(t, binaryOptions)),
+      field("visit_privacy", fieldText(t, "visitPrivacy"), "select", optionLabel(t, binaryOptions, user?.visit_privacy), optionLabels(t, binaryOptions)),
+      field("birth_privacy", fieldText(t, "birthPrivacy"), "select", optionLabel(t, messagePrivacyOptions, user?.birth_privacy), optionLabels(t, messagePrivacyOptions)),
+      field("status", fieldText(t, "onlineStatus"), "select", optionLabel(t, binaryOptions, user?.status), optionLabels(t, binaryOptions)),
+      field("share_my_location", fieldText(t, "shareLocation"), "select", optionLabel(t, binaryOptions, user?.share_my_location), optionLabels(t, binaryOptions)),
+      field("share_my_data", fieldText(t, "shareData"), "select", optionLabel(t, binaryOptions, user?.share_my_data), optionLabels(t, binaryOptions)),
     ],
   }],
 })
 
-const designPage = (user: SettingsUser | null): SettingPage => ({
+const designPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "design",
-  label: "Appearance",
+  label: pageText(t, "design", "label"),
   icon: pageIcons.design,
-  description: "Matches the PHP design settings form for background/CSS status.",
+  description: pageText(t, "design", "description"),
   sections: [{
-    title: "Design",
-    description: "Switch between default and uploaded profile design assets.",
+    title: pageText(t, "design", "sections.appearance.title"),
+    description: pageText(t, "design", "sections.appearance.description"),
     kind: "form",
     fields: [
-      field("background_image_status", "Background image", "select", isTrue(user?.background_image_status) ? "My background" : "Default background", designBackgroundOptions.map(option => option.label)),
-      field("css_status", "CSS file", "select", user?.css_file ? "Uploaded CSS" : "Default CSS", cssStatusOptions.map(option => option.label)),
-      field("background_image", "Upload background image", "file", "", undefined, { span: "full" }),
-      field("css_file", "Upload CSS file", "file", "", undefined, { span: "full" }),
+      field("background_image_status", fieldText(t, "backgroundImage"), "select", optionLabel(t, designBackgroundOptions, isTrue(user?.background_image_status) ? "my_background" : "defualt"), optionLabels(t, designBackgroundOptions)),
+      field("css_status", fieldText(t, "cssFile"), "select", optionLabel(t, cssStatusOptions, user?.css_file ? "2" : "1"), optionLabels(t, cssStatusOptions)),
+      field("background_image", fieldText(t, "uploadBackgroundImage"), "file", "", undefined, {
+        accept: "image/*",
+        previewShape: "cover",
+        span: "full",
+      }),
+      field("css_file", fieldText(t, "uploadCssFile"), "file", "", undefined, {
+        accept: ".css,text/css",
+        span: "full",
+      }),
     ],
   }],
 })
 
-const avatarPage = (user: SettingsUser | null): SettingPage => ({
+const avatarPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "avatar",
-  label: "Avatar",
+  label: pageText(t, "avatar", "label"),
   icon: pageIcons.avatar,
-  description: "Matches the PHP avatar and cover upload form.",
+  description: pageText(t, "avatar", "description"),
   sections: [{
-    title: "Avatar & cover",
-    description: "Choose avatar or cover image and save through the same PHP multipart handler.",
+    title: pageText(t, "avatar", "sections.uploadAvatar.title"),
+    description: pageText(t, "avatar", "sections.uploadAvatar.description"),
     kind: "form",
     fields: [
-      field("avatar", "Avatar image", "file", "", undefined, {
-        description: user?.avatar || "Current avatar URL is not available.",
+      field("avatar", fieldText(t, "avatarImage"), "file", "", undefined, {
+        description: user?.avatar || messageText(t, "avatarUnavailable"),
+        accept: "image/*",
+        previewShape: "avatar",
+        previewUrl: user?.avatar,
         span: "full",
       }),
-      field("cover", "Cover image", "file", "", undefined, {
-        description: user?.cover || "Current cover URL is not available.",
+      field("cover", fieldText(t, "coverImage"), "file", "", undefined, {
+        description: user?.cover || messageText(t, "coverUnavailable"),
+        accept: "image/*",
+        previewShape: "cover",
+        previewUrl: user?.cover,
         span: "full",
       }),
     ],
   }],
 })
 
-const passwordPage = (): SettingPage => ({
+const passwordPage = (t: SettingTranslate): SettingPage => ({
   slug: "password",
-  label: "Password",
+  label: pageText(t, "password", "label"),
   icon: pageIcons.password,
-  description: "Matches the PHP password settings form.",
+  description: pageText(t, "password", "description"),
   sections: [{
-    title: "Change password",
-    description: "Changing password also clears other app sessions in PHP.",
+    title: pageText(t, "password", "sections.changePassword.title"),
+    description: pageText(t, "password", "sections.changePassword.description"),
     kind: "form",
     fields: [
-      field("current_password", "Current password", "password", ""),
-      field("new_password", "New password", "password", ""),
-      field("repeat_new_password", "Confirm password", "password", ""),
+      field("current_password", fieldText(t, "currentPassword"), "password", ""),
+      field("new_password", fieldText(t, "newPassword"), "password", ""),
+      field("repeat_new_password", fieldText(t, "confirmPassword"), "password", ""),
     ],
   }],
 })
 
-const twoFactorPage = (user: SettingsUser | null): SettingPage => ({
+const twoFactorPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "twoFactor",
-  label: "2FA",
+  label: pageText(t, "twoFactor", "label"),
   icon: pageIcons.twoFactor,
-  description: "Matches the PHP two-factor enable/disable/verify code endpoints.",
+  description: pageText(t, "twoFactor", "description"),
   sections: [{
-    title: "Two-factor authentication",
-    description: `Current status: ${isTrue(user?.two_factor) ? "enabled" : "disabled"}.`,
+    title: pageText(t, "twoFactor", "sections.authenticator.title"),
+    description: messageText(t, "twoFactorStatus", {
+      status: settingsText(t, isTrue(user?.two_factor) ? "options.enabled" : "options.disabled"),
+    }),
     kind: "form",
     fields: [
-      field("two_factor", "Action", "select", isTrue(user?.two_factor) ? "Disable" : "Enable", twoFactorOptions.map(option => option.label)),
-      field("phone_number", "Phone for SMS code", "tel", user?.phone ?? ""),
-      field("code", "Verification code", "text", ""),
-      field("factor_method", "Verification method", "select", optionLabel(twoFactorMethodOptions, user?.two_factor_method || "two_factor"), twoFactorMethodOptions.map(option => option.label)),
+      field("two_factor", fieldText(t, "twoFactorAction"), "select", optionLabel(t, twoFactorOptions, isTrue(user?.two_factor) ? "disable" : "enable"), optionLabels(t, twoFactorOptions)),
+      field("phone_number", fieldText(t, "twoFactorPhone"), "tel", user?.phone ?? ""),
+      field("code", fieldText(t, "verificationCode"), "text", ""),
+      field("factor_method", fieldText(t, "verificationMethod"), "select", optionLabel(t, twoFactorMethodOptions, user?.two_factor_method || "two_factor"), optionLabels(t, twoFactorMethodOptions)),
     ],
   }],
 })
 
 const notificationKeys = [
-  ["e_liked", "Likes"],
-  ["e_shared", "Shares"],
-  ["e_wondered", "Wonders"],
-  ["e_commented", "Comments"],
-  ["e_followed", "Followers"],
-  ["e_liked_page", "Page likes"],
-  ["e_visited", "Profile visits"],
-  ["e_mentioned", "Mentions"],
-  ["e_joined_group", "Group joins"],
-  ["e_accepted", "Accepted requests"],
-  ["e_profile_wall_post", "Profile wall posts"],
-  ["e_memory", "Memories"],
+  ["e_liked", "liked"],
+  ["e_shared", "shared"],
+  ["e_wondered", "wondered"],
+  ["e_commented", "commented"],
+  ["e_followed", "followed"],
+  ["e_liked_page", "likedPage"],
+  ["e_visited", "visited"],
+  ["e_mentioned", "mentioned"],
+  ["e_joined_group", "joinedGroup"],
+  ["e_accepted", "accepted"],
+  ["e_profile_wall_post", "profileWallPost"],
+  ["e_memory", "memory"],
 ] as const
 
-const notificationsPage = (user: SettingsUser | null): SettingPage => ({
+const notificationsPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "notifications",
-  label: "Notifications",
+  label: pageText(t, "notifications", "label"),
   icon: pageIcons.notifications,
-  description: "Matches the PHP in-app notification settings form.",
+  description: pageText(t, "notifications", "description"),
   sections: [{
-    title: "In-app notifications",
-    description: "Enable or disable each notification type.",
+    title: pageText(t, "notifications", "sections.inApp.title"),
+    description: pageText(t, "notifications", "sections.inApp.description"),
     kind: "toggles",
-    toggles: notificationKeys.map(([key, label]) => ({
+    toggles: notificationKeys.map(([key, labelKey]) => ({
       key,
-      label,
-      description: `Receive ${label.toLowerCase()} notifications.`,
+      label: settingsText(t, `notificationTypes.${labelKey}.label`),
+      description: settingsText(t, `notificationTypes.${labelKey}.description`),
       enabled: notificationValue(user, key),
     })),
   }],
@@ -405,109 +457,113 @@ const notificationsPage = (user: SettingsUser | null): SettingPage => ({
 
 const emailNotificationKeys = notificationKeys
   .filter(([key]) => key !== "e_memory")
-  .concat([["e_sentme_msg", "Messages"] as const])
+  .concat([["e_sentme_msg", "sentMeMessage"] as const])
 
-const emailNotificationsPage = (user: SettingsUser | null): SettingPage => ({
+const emailNotificationsPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "emailNotifications",
-  label: "Email",
+  label: pageText(t, "emailNotifications", "label"),
   icon: pageIcons.emailNotifications,
-  description: "Matches the PHP email notification settings form.",
+  description: pageText(t, "emailNotifications", "description"),
   sections: [{
-    title: "Email notifications",
-    description: "Choose which emails PHP is allowed to send.",
+    title: pageText(t, "emailNotifications", "sections.email.title"),
+    description: pageText(t, "emailNotifications", "sections.email.description"),
     kind: "toggles",
-    toggles: emailNotificationKeys.map(([key, label]) => ({
+    toggles: emailNotificationKeys.map(([key, labelKey]) => ({
       key,
-      label,
-      description: `Send email for ${label.toLowerCase()}.`,
+      label: settingsText(t, `notificationTypes.${labelKey}.label`),
+      description: settingsText(t, `emailNotificationTypes.${labelKey}.description`),
       enabled: notificationValue(user, key),
     })),
   }],
 })
 
-const socialLinksPage = (user: SettingsUser | null): SettingPage => ({
+const socialLinksPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "socialLinks",
-  label: "Social links",
+  label: pageText(t, "socialLinks", "label"),
   icon: pageIcons.socialLinks,
-  description: "Matches the PHP social links settings form.",
+  description: pageText(t, "socialLinks", "description"),
   sections: [{
-    title: "Social links",
-    description: "Links displayed on the profile.",
+    title: pageText(t, "socialLinks", "sections.socialLinks.title"),
+    description: pageText(t, "socialLinks", "sections.socialLinks.description"),
     kind: "form",
     fields: [
-      field("facebook", "Facebook", "url", user?.facebook ?? ""),
-      field("twitter", "Twitter", "url", user?.twitter ?? ""),
-      field("linkedin", "LinkedIn", "url", user?.linkedin ?? ""),
-      field("instagram", "Instagram", "url", user?.instagram ?? ""),
-      field("youtube", "YouTube", "url", user?.youtube ?? ""),
-      field("vk", "VK", "url", user?.vk ?? ""),
+      field("facebook", fieldText(t, "facebook"), "url", user?.facebook ?? ""),
+      field("twitter", fieldText(t, "twitter"), "url", user?.twitter ?? ""),
+      field("linkedin", fieldText(t, "linkedin"), "url", user?.linkedin ?? ""),
+      field("instagram", fieldText(t, "instagram"), "url", user?.instagram ?? ""),
+      field("youtube", fieldText(t, "youtube"), "url", user?.youtube ?? ""),
+      field("vk", fieldText(t, "vk"), "url", user?.vk ?? ""),
     ],
   }],
 })
 
-const verificationPage = (user: SettingsUser | null): SettingPage => ({
+const verificationPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "verification",
-  label: "Verification",
+  label: pageText(t, "verification", "label"),
   icon: pageIcons.verification,
-  description: "Current verification state from PHP.",
+  description: pageText(t, "verification", "description"),
   sections: [{
-    title: "Verification",
-    description: "Admin/moderator can edit verification in General, matching the phtml general settings form.",
+    title: pageText(t, "verification", "sections.request.title"),
+    description: pageText(t, "verification", "sections.request.description"),
     kind: "summary",
     items: [
-      summaryItem(user?.verified ? "Verified" : "Not verified", "Use General settings to change this state when your backend role allows it."),
+      summaryItem(
+        user?.verified ? fieldText(t, "verified") : fieldText(t, "notVerified"),
+        messageText(t, "verificationSummary"),
+      ),
     ],
   }],
 })
 
-const deleteAccountPage = (): SettingPage => ({
+const deleteAccountPage = (t: SettingTranslate): SettingPage => ({
   slug: "deleteAccount",
-  label: "Delete account",
+  label: pageText(t, "deleteAccount", "label"),
   icon: pageIcons.deleteAccount,
-  description: "Matches the PHP delete account form.",
+  description: pageText(t, "deleteAccount", "description"),
   sections: [{
-    title: "Delete account",
-    description: "This action permanently deletes the current PHP account.",
+    title: pageText(t, "deleteAccount", "sections.deleteAccount.title"),
+    description: pageText(t, "deleteAccount", "sections.deleteAccount.description"),
     kind: "danger",
     fields: [
-      field("password", "Password confirm", "password", ""),
+      field("password", fieldText(t, "passwordConfirm"), "password", ""),
     ],
-    actions: [{ label: "Delete account", icon: "i-ph-trash-duotone", tone: "danger" }],
+    actions: [{ label: pageText(t, "deleteAccount", "sections.deleteAccount.action"), icon: "i-ph-trash-duotone", tone: "danger" }],
   }],
 })
 
-const myPointsPage = (user: SettingsUser | null): SettingPage => ({
+const myPointsPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "myPoints",
-  label: "My points",
+  label: pageText(t, "myPoints", "label"),
   icon: pageIcons.myPoints,
-  description: "Current points loaded from the backend user session.",
+  description: pageText(t, "myPoints", "description"),
   sections: [{
-    title: "Points",
-    description: "This is read from the backend user payload.",
+    title: pageText(t, "myPoints", "sections.myPoints.title"),
+    description: pageText(t, "myPoints", "sections.myPoints.description"),
     kind: "summary",
     items: [
-      summaryItem(`${user?.points ?? 0} points`, "Current balance", "Backend"),
+      summaryItem(messageText(t, "pointsValue", { points: user?.points ?? 0 }), messageText(t, "currentBalance"), messageText(t, "backendSource")),
     ],
   }],
 })
 
-const createPages = (user: SettingsUser | null): SettingPage[] => [
-  generalPage(user),
-  profilePage(user),
-  privacyPage(user),
-  avatarPage(user),
-  designPage(user),
-  passwordPage(),
-  twoFactorPage(user),
-  notificationsPage(user),
-  emailNotificationsPage(user),
-  socialLinksPage(user),
-  verificationPage(user),
-  myPointsPage(user),
-  deleteAccountPage(),
+const createPages = (t: SettingTranslate, user: SettingsUser | null): SettingPage[] => [
+  generalPage(t, user),
+  profilePage(t, user),
+  privacyPage(t, user),
+  avatarPage(t, user),
+  designPage(t, user),
+  passwordPage(t),
+  twoFactorPage(t, user),
+  notificationsPage(t, user),
+  emailNotificationsPage(t, user),
+  socialLinksPage(t, user),
+  verificationPage(t, user),
+  myPointsPage(t, user),
+  deleteAccountPage(t),
 ]
 
 const mapFieldsForSection = (
+  t: SettingTranslate,
   section: string,
   fields: Record<string, SettingsFieldValue>,
 ) => {
@@ -516,26 +572,26 @@ const mapFieldsForSection = (
   for (const [key, value] of Object.entries(fields)) {
     switch (key) {
       case "gender":
-        payload[key] = optionValue(genderOptions, value)
+        payload[key] = optionValue(t, genderOptions, value)
         break
       case "birthday":
         payload[key] = toPhpBirthday(value)
         break
       case "country_id":
-        payload[key] = optionValue(countryOptions, value)
+        payload[key] = optionValue(t, countryOptions, value)
         break
       case "relationship":
-        payload[key] = optionValue(relationshipOptions, value)
+        payload[key] = optionValue(t, relationshipOptions, value)
         break
       case "post_privacy":
-        payload[key] = optionValue(postPrivacyOptions, value)
+        payload[key] = optionValue(t, postPrivacyOptions, value)
         break
       case "message_privacy":
       case "birth_privacy":
-        payload[key] = optionValue(messagePrivacyOptions, value)
+        payload[key] = optionValue(t, messagePrivacyOptions, value)
         break
       case "friend_privacy":
-        payload[key] = optionValue(friendPrivacyOptions, value)
+        payload[key] = optionValue(t, friendPrivacyOptions, value)
         break
       case "follow_privacy":
       case "showlastseen":
@@ -546,19 +602,19 @@ const mapFieldsForSection = (
       case "share_my_location":
       case "share_my_data":
       case "completed":
-        payload[key] = optionValue(binaryOptions, value)
+        payload[key] = optionValue(t, binaryOptions, value)
         break
       case "background_image_status":
-        payload[key] = optionValue(designBackgroundOptions, value)
+        payload[key] = optionValue(t, designBackgroundOptions, value)
         break
       case "css_status":
-        payload[key] = optionValue(cssStatusOptions, value)
+        payload[key] = optionValue(t, cssStatusOptions, value)
         break
       case "two_factor":
-        payload[key] = optionValue(twoFactorOptions, value)
+        payload[key] = optionValue(t, twoFactorOptions, value)
         break
       case "factor_method":
-        payload[key] = optionValue(twoFactorMethodOptions, value)
+        payload[key] = optionValue(t, twoFactorMethodOptions, value)
         break
       default:
         payload[key] = value
@@ -573,6 +629,7 @@ const mapFieldsForSection = (
 }
 
 export const useSettingsData = () => {
+  const { t } = useI18n()
   const user = ref<SettingsUser | null>(null)
   const loading = ref(false)
   const errorMessage = ref("")
@@ -587,7 +644,7 @@ export const useSettingsData = () => {
     }
     catch (error) {
       user.value = null
-      errorMessage.value = error instanceof Error ? error.message : "Unable to load settings."
+      errorMessage.value = error instanceof Error ? error.message : messageText(t, "loadError")
     }
     finally {
       loading.value = false
@@ -598,13 +655,13 @@ export const useSettingsData = () => {
     errorMessage.value = ""
 
     if (!supportedUpdateSections.has(section as SettingsSectionSlug)) {
-      throw new Error("This settings section is read-only because PHP does not expose a matching phtml update handler.")
+      throw new Error(messageText(t, "readOnlySection"))
     }
 
-    const mappedFields = mapFieldsForSection(section, fields)
+    const mappedFields = mapFieldsForSection(t, section, fields)
 
     if (Object.keys(mappedFields).length === 0) {
-      throw new Error("No backend-supported settings fields were changed.")
+      throw new Error(messageText(t, "noChangedFields"))
     }
 
     const updateInput: SettingsUpdateInput = {
@@ -619,7 +676,7 @@ export const useSettingsData = () => {
     return response.message
   }
 
-  const pages = computed<SettingPage[]>(() => createPages(user.value))
+  const pages = computed<SettingPage[]>(() => createPages(t, user.value))
 
   void hydrate()
 

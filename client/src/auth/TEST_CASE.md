@@ -28,7 +28,7 @@ English description: Test cases for the auth bounded context, including backend 
 
 | ID | Status | Man hinh | Case | Cach test | Ky vong |
 | --- | --- | --- | --- | --- | --- |
-| `AUTH-LOGIN-001` | `[ ]` | Desktop `1440x900` va Mobile `390x844`, route `/welcome` | Login dung | Vao `/welcome`, nhap tai khoan dung, bam login | Goi `POST /_api/auth/login`, backend tra `access_token`, trinh duyet di qua `set-browser-cookie.php`, cuoi cung ve `/home`, co cookie `user_id`. |
+| `AUTH-LOGIN-001` | `[ ]` | Desktop `1440x900` va Mobile `390x844`, route `/welcome` | Login dung | Vao `/welcome`, nhap tai khoan dung, bam login | Goi `POST /_api/auth/login`, backend tra `access_token`, trinh duyet submit `POST set-browser-cookie.php`, cuoi cung ve `/home`, co cookie `user_id`, token khong nam tren URL. |
 | `AUTH-LOGIN-002` | `[ ]` | Desktop `1440x900`, route `/welcome` | Login sai password | Vao `/welcome`, nhap password sai | UI hien loi backend, khong tao cookie `user_id`, khong redirect. |
 | `AUTH-LOGIN-003` | `[ ]` | Desktop `1440x900`, route `/welcome -> /confirm-login` | Login tai khoan 2FA | Dung account bat 2FA | Chuyen sang `/confirm-login?userId=...`, chua tao cookie `user_id`. |
 

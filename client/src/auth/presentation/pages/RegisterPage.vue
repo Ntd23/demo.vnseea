@@ -1,3 +1,5 @@
+<!-- English description: Registration form presentation for the backend-backed auth flow. -->
+
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
@@ -33,14 +35,14 @@
         </UFormField>
       </div>
 
-      <UFormField name="username" label="Username" required>
+      <UFormField name="username" :label="$t('pages.registerPage.username')" required>
         <UInput
           v-model="state.username"
           type="text"
           autocomplete="username"
           size="xl"
           class="w-full"
-          placeholder="Enter your username"
+          :placeholder="$t('pages.registerPage.usernamePlaceholder')"
           :ui="inputUi"
         />
       </UFormField>
@@ -94,13 +96,13 @@
         </div>
       </UFormField>
 
-      <UFormField name="email" label="Tên đăng nhập (Địa chỉ email / Số điện thoại)" required>
+      <UFormField name="email" :label="$t('pages.registerPage.loginIdentity')" required>
         <UInput
           v-model="state.email"
           type="text"
           autocomplete="username"
           size="xl"
-          placeholder="Nhập địa chỉ email hoặc số điện thoại"
+          :placeholder="$t('pages.registerPage.loginIdentityPlaceholder')"
           class="w-full"
           :ui="inputUi"
         />
@@ -143,12 +145,13 @@
         </div>
       </UFormField>
 
-      <UFormField name="confirmPassword" label="Confirm password" required>
+      <UFormField name="confirmPassword" :label="$t('pages.registerPage.confirmPassword')" required>
         <UInput
           v-model="state.confirmPassword"
           :type="showConfirmPassword ? 'text' : 'password'"
           autocomplete="new-password"
           size="xl"
+          :placeholder="$t('pages.registerPage.confirmPasswordPlaceholder')"
           class="w-full"
           :ui="inputUi"
         >
@@ -159,7 +162,7 @@
               variant="ghost"
               size="sm"
               :icon="showConfirmPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'"
-              aria-label="Toggle confirm password visibility"
+              :aria-label="$t('pages.registerPage.toggleConfirmPassword')"
               @click="showConfirmPassword = !showConfirmPassword"
             />
           </template>
@@ -170,7 +173,7 @@
         <label class="auth-check">
           <input v-model="state.hasExistingStorefront" class="auth-check__input" type="checkbox">
           <span class="auth-check__box" />
-          <span class="auth-check__text">Bạn là cửa hàng đã có sẵn địa điểm?</span>
+          <span class="auth-check__text">{{ $t('pages.registerPage.storefrontQuestion') }}</span>
         </label>
 
         <UFormField name="acceptTerms" required>
@@ -178,10 +181,10 @@
             <input v-model="state.acceptTerms" class="auth-check__input" type="checkbox">
             <span class="auth-check__box" />
             <span class="auth-check__text">
-              Bằng cách tạo tài khoản của bạn, bạn đồng ý với
-              <a class="auth-check__link" :href="termsHref" target="_blank" rel="noreferrer">Điều khoản sử dụng</a>
-              &
-              <a class="auth-check__link" :href="privacyHref" target="_blank" rel="noreferrer">Chính sách bảo mật</a>
+              {{ $t('pages.registerPage.termsAgreementPrefix') }}
+              <a class="auth-check__link" :href="termsHref" target="_blank" rel="noreferrer">{{ $t('pages.registerPage.terms') }}</a>
+              {{ $t('pages.registerPage.termsConnector') }}
+              <a class="auth-check__link" :href="privacyHref" target="_blank" rel="noreferrer">{{ $t('pages.registerPage.privacy') }}</a>
             </span>
           </label>
         </UFormField>
@@ -218,8 +221,8 @@ const { t } = useI18n()
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 const { state, isSubmitting, validate, handleSubmit } = useRegisterPageVM()
-const termsHref = '#'
-const privacyHref = '#'
+const termsHref = appRoutes.termsOfUse
+const privacyHref = appRoutes.privacyPolicy
 
 const inputUi = {
   base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe]',
@@ -230,7 +233,8 @@ const monthOptions = Array.from({ length: 12 }, (_, i) => ({
   label: t('pages.registerPage.monthShort', { month: i + 1 }),
   value: i + 1,
 }))
-const yearOptions = Array.from({ length: 70 }, (_, i) => ({ label: String(2025 - i), value: 2025 - i }))
+const currentYear = new Date().getFullYear()
+const yearOptions = Array.from({ length: 70 }, (_, i) => ({ label: String(currentYear - i), value: currentYear - i }))
 
 const genderOptions = [
   { value: 'female', labelKey: 'pages.registerPage.female' },

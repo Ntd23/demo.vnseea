@@ -1,3 +1,5 @@
+// English description: Password reset page view model for completing backend recovery requests.
+
 import type { FormError } from "@nuxt/ui"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAuthRepository"
@@ -7,7 +9,7 @@ type ResetPasswordValidationError = FormError<ResetPasswordFieldName>
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const extractErrorMessage = (error: unknown, fallback: string) => {
+const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
     data?: { statusMessage?: string; message?: string }
     statusMessage?: string
@@ -18,12 +20,13 @@ const extractErrorMessage = (error: unknown, fallback: string) => {
     ?? maybeError?.data?.message
     ?? maybeError?.statusMessage
     ?? maybeError?.message
-    ?? fallback
+    ?? defaultMessage
 }
 
 export function useResetPasswordPageVM(
   repository = createApiAuthRepository(),
 ) {
+  const { t } = useI18n()
   const route = useRoute()
   const toast = useToast()
   const state = reactive({
@@ -62,24 +65,24 @@ export function useResetPasswordPageVM(
     const errors: ResetPasswordValidationError[] = []
 
     if (!currentState.email.trim()) {
-      errors.push({ name: "email", message: "Email is required." })
+      errors.push({ name: "email", message: t("pages.resetPasswordPage.validationEmailRequired") })
     }
     else if (!EMAIL_REGEX.test(currentState.email.trim())) {
-      errors.push({ name: "email", message: "Enter a valid email address." })
+      errors.push({ name: "email", message: t("pages.resetPasswordPage.validationEmailInvalid") })
     }
 
     if (!currentState.password) {
-      errors.push({ name: "password", message: "Enter a new password." })
+      errors.push({ name: "password", message: t("pages.resetPasswordPage.validationPasswordRequired") })
     }
     else if (currentState.password.length < 6) {
-      errors.push({ name: "password", message: "Password must be at least 6 characters." })
+      errors.push({ name: "password", message: t("pages.resetPasswordPage.validationPasswordLength") })
     }
 
     if (!currentState.confirmPassword) {
-      errors.push({ name: "confirmPassword", message: "Confirm your new password." })
+      errors.push({ name: "confirmPassword", message: t("pages.resetPasswordPage.validationConfirmPasswordRequired") })
     }
     else if (currentState.confirmPassword !== currentState.password) {
-      errors.push({ name: "confirmPassword", message: "Password confirmation does not match." })
+      errors.push({ name: "confirmPassword", message: t("pages.resetPasswordPage.validationConfirmPasswordMismatch") })
     }
 
     return errors
@@ -88,7 +91,7 @@ export function useResetPasswordPageVM(
   async function handleSubmit() {
     if (!resetCode.value) {
       submitState.value = "error"
-      submitMessage.value = "The reset link is missing or invalid."
+      submitMessage.value = t("pages.resetPasswordPage.missingCode")
       return
     }
 
@@ -108,7 +111,7 @@ export function useResetPasswordPageVM(
       toast.add({
         color: "success",
         icon: "i-ph-check-circle-fill",
-        title: "Password updated",
+        title: t("pages.resetPasswordPage.statusSuccessTitle"),
         description: result.message,
       })
 
@@ -116,7 +119,7 @@ export function useResetPasswordPageVM(
     }
     catch (error) {
       submitState.value = "error"
-      submitMessage.value = extractErrorMessage(error, "Unable to reset the password.")
+      submitMessage.value = extractErrorMessage(error, t("pages.resetPasswordPage.statusErrorDescription"))
     }
   }
 

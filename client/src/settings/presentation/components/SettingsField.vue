@@ -1,3 +1,5 @@
+<!-- English description: Account settings field renderer for Nuxt UI form controls. -->
+
 <template>
   <UFormField
     :label="field.label"
@@ -53,7 +55,7 @@
       :id="`field-${field.key}`"
       v-model="value"
       :items="field.options ?? []"
-      :placeholder="field.placeholder || field.label"
+      :placeholder="field.placeholder"
       :disabled="field.readOnly"
       size="md"
       class="w-full"
@@ -87,14 +89,41 @@
     </div>
 
     <!-- File input: native input so the Nuxt API repository can forward multipart data to PHP. -->
-    <input
+    <div
       v-else-if="field.type === 'file'"
-      :id="`field-${field.key}`"
-      :disabled="field.readOnly"
-      type="file"
-      class="settings-field__file-input"
-      @change="handleFileChange"
+      class="settings-field__file"
     >
+      <div
+        v-if="previewUrl"
+        class="settings-field__preview"
+        :class="previewShapeClass"
+      >
+        <NuxtPicture
+          v-if="canUseNuxtPicturePreview"
+          :src="previewUrl"
+          format="webp"
+          loading="lazy"
+          :img-attrs="{
+            alt: field.label,
+            class: 'settings-field__preview-image',
+          }"
+        />
+        <img
+          v-else
+          :src="previewUrl"
+          :alt="field.label"
+          class="settings-field__preview-image"
+        >
+      </div>
+      <input
+        :id="`field-${field.key}`"
+        :accept="field.accept"
+        :disabled="field.readOnly"
+        type="file"
+        class="settings-field__file-input"
+        @change="handleFileChange"
+      >
+    </div>
 
     <!-- Standard input (text / email / password / tel / date / url / number) -->
     <UInput
@@ -123,8 +152,9 @@ const props = defineProps<{ field: SettingField }>()
 const emit = defineEmits<{
   change: [payload: { key: string; value: SettingField["value"] }]
 }>()
-const { locale } = useI18n()
+const { t } = useI18n()
 const value = ref(props.field.value)
+const objectPreviewUrl = ref("")
 
 watch(() => props.field.value, (v) => {
   value.value = v
@@ -148,8 +178,26 @@ const fieldIcon = computed(() => {
 })
 
 const isVerified = computed(() => value.value === true || value.value === 1 || value.value === "1")
-const verifiedLabel   = computed(() => locale.value.startsWith("vi") ? "Đã xác minh" : "Verified")
-const unverifiedLabel = computed(() => locale.value.startsWith("vi") ? "Chưa xác minh" : "Not verified")
+const verifiedLabel = computed(() => t("settings.data.fields.verified"))
+const unverifiedLabel = computed(() => t("settings.data.fields.notVerified"))
+const previewUrl = computed(() => objectPreviewUrl.value || props.field.previewUrl || "")
+const canUseNuxtPicturePreview = computed(() =>
+  Boolean(previewUrl.value)
+  && !previewUrl.value.startsWith("blob:")
+  && !previewUrl.value.startsWith("data:"),
+)
+const previewShapeClass = computed(() => ({
+  "settings-field__preview--avatar": props.field.previewShape === "avatar",
+  "settings-field__preview--cover": props.field.previewShape === "cover",
+}))
+
+function revokeObjectPreview() {
+  if (objectPreviewUrl.value && typeof URL !== "undefined") {
+    URL.revokeObjectURL(objectPreviewUrl.value)
+  }
+
+  objectPreviewUrl.value = ""
+}
 
 function setVerified(v: boolean) {
   if (props.field.readOnly) {
@@ -164,9 +212,17 @@ function handleFileChange(event: Event) {
   const file = input.files?.[0]
 
   if (file) {
-    emit("change", { key: props.field.key, value: file })
+    revokeObjectPreview()
+
+    if (file.type.startsWith("image/") && typeof URL !== "undefined") {
+      objectPreviewUrl.value = URL.createObjectURL(file)
+    }
+
+    value.value = file
   }
 }
+
+onBeforeUnmount(revokeObjectPreview)
 </script>
 
 <style scoped>
@@ -264,6 +320,53 @@ function handleFileChange(event: Event) {
   border-color: #0000ff;
   background: rgba(0, 0, 255, 0.04);
   color: #0000ff;
+}
+
+.settings-field__file {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-field__preview {
+  overflow: hidden;
+  width: min(100%, 420px);
+  min-height: 150px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+}
+
+.settings-field__preview--avatar {
+  width: 112px;
+  height: 112px;
+  min-height: 112px;
+  border-radius: 999px;
+}
+
+.settings-field__preview--cover {
+  width: min(100%, 520px);
+  aspect-ratio: 16 / 6;
+  min-height: 120px;
+}
+
+.settings-field__preview-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.settings-field__preview :deep(picture),
+.settings-field__preview :deep(img) {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.settings-field__preview :deep(img) {
+  object-fit: cover;
 }
 
 .settings-field__file-input {
