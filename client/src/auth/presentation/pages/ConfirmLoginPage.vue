@@ -1,10 +1,12 @@
+<!-- English description: Login confirmation presentation for two-factor backend auth. -->
+
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <p class="auth-form__eyebrow">Security</p>
-      <h1 class="auth-form__title">Confirm sign in</h1>
+      <p class="auth-form__eyebrow">{{ $t('pages.confirmLoginPage.eyebrow') }}</p>
+      <h1 class="auth-form__title">{{ $t('pages.confirmLoginPage.title') }}</h1>
       <p class="auth-form__subtitle">
-        Enter the confirmation code sent by the backend so the existing PHP session can complete the sign-in flow.
+        {{ $t('pages.confirmLoginPage.subtitle') }}
       </p>
     </div>
 
@@ -13,8 +15,8 @@
       color="warning"
       variant="subtle"
       icon="i-ph-warning-circle-fill"
-      title="Invalid confirmation request"
-      description="This page is missing a valid user identifier. Go back and start the sign-in flow again."
+      :title="$t('pages.confirmLoginPage.invalidTitle')"
+      :description="$t('pages.confirmLoginPage.invalidDescription')"
       class="rounded-[14px]"
     />
 
@@ -25,13 +27,13 @@
       class="auth-form__body"
       @submit="handleSubmit"
     >
-      <UFormField name="code" label="Confirmation code" required>
+      <UFormField name="code" :label="$t('pages.confirmLoginPage.codeLabel')" required>
         <UInput
           v-model="state.code"
           type="text"
           autocomplete="one-time-code"
           size="xl"
-          placeholder="Enter the code"
+          :placeholder="$t('pages.confirmLoginPage.codePlaceholder')"
           class="w-full"
           :ui="inputUi"
         />
@@ -42,7 +44,7 @@
         color="error"
         variant="subtle"
         icon="i-ph-warning-circle-fill"
-        title="Confirmation failed"
+        :title="$t('pages.confirmLoginPage.statusErrorTitle')"
         :description="submitMessage"
         class="rounded-[14px]"
       />
@@ -57,13 +59,13 @@
         loading-icon="i-lucide-loader-2"
         class="auth-submit"
       >
-        Confirm sign in
+        {{ $t('pages.confirmLoginPage.submit') }}
       </UButton>
 
       <p class="auth-form__footer-text">
-        Need to restart the flow?
+        {{ $t('pages.confirmLoginPage.restartQuestion') }}
         <button type="button" class="auth-form__footer-link auth-form__footer-button" @click="backToWelcome">
-          Back to sign in
+          {{ $t('pages.confirmLoginPage.backToSignIn') }}
         </button>
       </p>
     </UForm>

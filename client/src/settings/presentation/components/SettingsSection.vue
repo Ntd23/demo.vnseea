@@ -1,3 +1,5 @@
+<!-- English description: Account settings section renderer with save feedback and field grouping. -->
+
 <template>
   <section class="settings-section" :aria-labelledby="`section-title-${sectionId}`">
     <!-- Section header -->
@@ -128,7 +130,7 @@
           <template #leading>
             <Icon name="i-ph-trash-duotone" class="h-4 w-4" />
           </template>
-          {{ section.actions?.[0]?.label || t("settings.section.deleteAccount") }}
+          {{ section.actions?.[0]?.label }}
         </UButton>
       </div>
     </div>
@@ -169,9 +171,10 @@ import SettingsField from "./SettingsField.vue"
 
 const props = defineProps<{
   section: SettingSection
-  onSave?: (fields: Record<string, SettingFieldValue>) => Promise<string | void>
+  onSave?: (fields: Record<string, SettingFieldValue>) => Promise<string>
 }>()
 const { t } = useI18n()
+const toast = useToast()
 
 const saving = ref(false)
 const savedMessage = ref("")
@@ -245,11 +248,23 @@ async function handleSave() {
     }
 
     const message = await props.onSave(writableValues)
-    savedMessage.value = message || t("settings.section.savedState")
+    savedMessage.value = message
+    toast.add({
+      color: "success",
+      icon: "i-ph-check-circle-fill",
+      title: t("settings.section.savedState"),
+      description: savedMessage.value,
+    })
     setTimeout(() => { savedMessage.value = "" }, 3000)
   }
   catch (error) {
     errorMessage.value = error instanceof Error ? error.message : t("settings.section.saveError")
+    toast.add({
+      color: "error",
+      icon: "i-ph-warning-circle-fill",
+      title: t("settings.section.saveError"),
+      description: errorMessage.value,
+    })
   }
   finally {
     saving.value = false

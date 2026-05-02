@@ -1,10 +1,12 @@
+<!-- English description: SMS reset confirmation presentation for backend password recovery. -->
+
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <p class="auth-form__eyebrow">Recover</p>
-      <h1 class="auth-form__title">Confirm phone reset</h1>
+      <p class="auth-form__eyebrow">{{ $t('pages.confirmResetSmsPage.eyebrow') }}</p>
+      <h1 class="auth-form__title">{{ $t('pages.confirmResetSmsPage.title') }}</h1>
       <p class="auth-form__subtitle">
-        Enter the SMS code sent to your phone. Once confirmed, VNSEEA will open the password reset form for this account.
+        {{ $t('pages.confirmResetSmsPage.subtitle') }}
       </p>
     </div>
 
@@ -13,8 +15,8 @@
       color="warning"
       variant="subtle"
       icon="i-ph-warning-circle-fill"
-      title="Invalid reset request"
-      description="This page is missing a valid user identifier. Go back and start the password recovery flow again."
+      :title="$t('pages.confirmResetSmsPage.invalidTitle')"
+      :description="$t('pages.confirmResetSmsPage.invalidDescription')"
       class="rounded-[14px]"
     />
 
@@ -25,13 +27,13 @@
       class="auth-form__body"
       @submit="handleSubmit"
     >
-      <UFormField name="code" label="SMS code" required>
+      <UFormField name="code" :label="$t('pages.confirmResetSmsPage.codeLabel')" required>
         <UInput
           v-model="state.code"
           type="text"
           autocomplete="one-time-code"
           size="xl"
-          placeholder="Enter the SMS code"
+          :placeholder="$t('pages.confirmResetSmsPage.codePlaceholder')"
           class="w-full"
           :ui="inputUi"
         />
@@ -42,7 +44,7 @@
         color="error"
         variant="subtle"
         icon="i-ph-warning-circle-fill"
-        title="Confirmation failed"
+        :title="$t('pages.confirmResetSmsPage.statusErrorTitle')"
         :description="submitMessage"
         class="rounded-[14px]"
       />
@@ -57,13 +59,13 @@
         loading-icon="i-lucide-loader-2"
         class="auth-submit"
       >
-        Continue to reset password
+        {{ $t('pages.confirmResetSmsPage.submit') }}
       </UButton>
 
       <p class="auth-form__footer-text">
-        Need to restart recovery?
+        {{ $t('pages.confirmResetSmsPage.restartQuestion') }}
         <button type="button" class="auth-form__footer-link auth-form__footer-button" @click="backToForgotPassword">
-          Back to forgot password
+          {{ $t('pages.confirmResetSmsPage.backToForgotPassword') }}
         </button>
       </p>
     </UForm>

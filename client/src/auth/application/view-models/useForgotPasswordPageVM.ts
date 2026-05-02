@@ -1,3 +1,5 @@
+// English description: Forgot password page view model for requesting backend recovery instructions.
+
 import type { FormError } from "@nuxt/ui"
 import type { ForgotPasswordResult } from "../../domain/types/auth.types"
 import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAuthRepository"
@@ -15,7 +17,7 @@ const hasValidIdentity = (value: string) => {
   return normalized.replace(/\D/g, "").length >= 8
 }
 
-const extractErrorMessage = (error: unknown, fallback: string) => {
+const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
     data?: { statusMessage?: string; message?: string }
     statusMessage?: string
@@ -26,7 +28,7 @@ const extractErrorMessage = (error: unknown, fallback: string) => {
     ?? maybeError?.data?.message
     ?? maybeError?.statusMessage
     ?? maybeError?.message
-    ?? fallback
+    ?? defaultMessage
 }
 
 export function useForgotPasswordPageVM(
