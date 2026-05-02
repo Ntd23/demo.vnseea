@@ -149,6 +149,7 @@ const userInitials = computed(() =>
 const identityLabel = computed(() => {
   if (!currentUser.value) return ""
   if (currentUser.value.isAdmin) return t("navigation.mobileMenu.adminTitle")
+  if (currentUser.value.isModerator) return t("navigation.mobileMenu.moderatorTitle")
   return currentUser.value.username ? `@${currentUser.value.username}` : ""
 })
 

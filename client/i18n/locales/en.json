@@ -4087,6 +4087,7 @@
       "title": "Menu",
       "close": "Close menu",
       "adminTitle": "Administrator",
+      "moderatorTitle": "Moderator",
       "walletBalance": "Wallet: {amount}",
       "points": "Points: {points}",
       "mainNav": {
@@ -4218,7 +4219,7 @@
       "tagline": "Social hub"
     },
     "widgetCard": {
-      "mockBadge": "Mock"
+      "mockBadge": "Live"
     }
   },
   "layouts": {
@@ -4257,8 +4258,8 @@
         },
         "api": {
           "label": "API",
-          "value": "Mock",
-          "description": "Backend settings API not connected yet."
+          "value": "Live",
+          "description": "Reading settings data from the backend."
         }
       }
     },
@@ -4274,10 +4275,11 @@
         "danger": "Danger",
         "summary": "Summary"
       },
-      "saveChanges": "Save changes",
-      "dangerMessage": "Danger zone. This action is still mocked and does not call the delete account API yet.",
+      "saveChanges": "Save",
+      "dangerMessage": "Danger zone. The delete account API is not connected in this pass.",
       "deleteAccount": "Delete account",
-      "savedState": "Settings save was mocked. No settings API call yet."
+      "savedState": "Settings updated.",
+      "saveError": "Unable to update settings."
     },
     "data": {
       "options": {
@@ -4362,7 +4364,7 @@
           "sections": {
             "privacyControls": {
               "title": "Privacy controls",
-              "description": "Mock privacy options before wiring the settings API.",
+              "description": "Privacy controls stay read-only until a dedicated settings API is connected.",
               "fields": {
                 "posts": "Who sees posts",
                 "follow": "Who can follow",
@@ -4380,7 +4382,7 @@
           "sections": {
             "uploadAvatar": {
               "title": "Upload & crop avatar",
-              "description": "Choose a new image and mock the crop area.",
+              "description": "Choose a new image and review the crop area.",
               "fields": {
                 "avatar": "Avatar image"
               }
@@ -4431,7 +4433,7 @@
                 },
                 "qr": {
                   "title": "Authenticator QR code",
-                  "description": "Mock QR placeholder for the authenticator app."
+                  "description": "Authenticator setup is shown after the 2FA backend flow is connected."
                 },
                 "backup": {
                   "title": "Backup codes",
@@ -4567,7 +4569,7 @@
           "sections": {
             "deleteAccount": {
               "title": "Delete account",
-              "description": "A dangerous action, currently mocked only.",
+              "description": "This action requires a dedicated backend delete-account endpoint before it can be enabled.",
               "fields": {
                 "passwordConfirm": "Password confirm"
               },
@@ -4591,7 +4593,7 @@
                 },
                 "wallet": {
                   "title": "VNSEEA Wallet",
-                  "description": "Mock balance: VND 9,999,999",
+                  "description": "Wallet balance is loaded from the backend in General settings.",
                   "meta": "Wallet",
                   "action": "Manage"
                 }

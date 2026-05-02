@@ -63,12 +63,16 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
       return null
     }
 
+    const adminLevel = Number(user.admin ?? 0)
+
     return {
       id: Number(user.user_id),
       name: asNonEmptyString(user.name) || "User",
       username: asNonEmptyString(user.username),
       avatarUrl: asNonEmptyString(user.avatar),
-      isAdmin: Number(user.admin ?? 0) === 1,
+      role: adminLevel === 1 ? "admin" : adminLevel === 2 ? "moderator" : "user",
+      isAdmin: adminLevel === 1,
+      isModerator: adminLevel === 2,
       wallet: user.wallet,
       points: user.points !== undefined && user.points !== null
         ? Number(user.points)

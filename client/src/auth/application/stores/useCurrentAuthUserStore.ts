@@ -56,12 +56,14 @@ export const useCurrentAuthUserStore = defineStore("current-auth-user", () => {
   }
 
   const isAdmin = computed(() => user.value?.isAdmin === true)
+  const isModerator = computed(() => user.value?.isModerator === true)
 
   return {
     user,
     loading,
     hydrated,
     isAdmin,
+    isModerator,
     hydrate,
     clear,
   }

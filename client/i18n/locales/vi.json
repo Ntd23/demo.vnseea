@@ -4087,6 +4087,7 @@
       "title": "Menu",
       "close": "Đóng menu",
       "adminTitle": "Quản trị viên",
+      "moderatorTitle": "Điều hành viên",
       "walletBalance": "Ví: {amount}",
       "points": "Điểm: {points}",
       "mainNav": {
@@ -4218,7 +4219,7 @@
       "tagline": "Social hub"
     },
     "widgetCard": {
-      "mockBadge": "Mock"
+      "mockBadge": "Live"
     }
   },
   "layouts": {
@@ -4253,8 +4254,8 @@
         },
         "api": {
           "label": "API",
-          "value": "Mock",
-          "description": "Chưa gọi backend setting."
+          "value": "Live",
+          "description": "Đang lấy dữ liệu từ backend settings."
         }
       }
     },
@@ -4270,10 +4271,11 @@
         "danger": "Nguy hiểm",
         "summary": "Tổng quan"
       },
-      "saveChanges": "Lưu thay đổi",
-      "dangerMessage": "Khu vực nguy hiểm. Hành động này chỉ đang mô phỏng, chưa gọi API xóa tài khoản.",
+      "saveChanges": "Lưu",
+      "dangerMessage": "Khu vực nguy hiểm. API xóa tài khoản chưa được kết nối trong lượt này.",
       "deleteAccount": "Xóa tài khoản",
-      "savedState": "Đã mô phỏng lưu cài đặt. Chưa gọi API setting."
+      "savedState": "Đã lưu cài đặt.",
+      "saveError": "Không thể lưu cài đặt."
     },
     "data": {
       "options": {
@@ -4376,7 +4378,7 @@
           "sections": {
             "uploadAvatar": {
               "title": "Upload & crop avatar",
-              "description": "Chọn ảnh mới và mô phỏng vùng crop.",
+              "description": "Chọn ảnh mới và xem lại vùng crop.",
               "fields": {
                 "avatar": "Hình ảnh đại diện"
               }

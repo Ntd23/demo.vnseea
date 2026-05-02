@@ -1,39 +1,46 @@
 <template>
-  <aside class="surface-card p-6 xl:w-[360px] xl:max-w-[360px] xl:shrink-0 flex flex-col ring-1 ring-secondary-100 shadow-xl min-h-[600px]">
-    <div class="px-2 space-y-4 mb-8">
-      <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-        {{ t("pages.settingsPage.sidebarEyebrow") || 'Account Center' }}
-      </p>
-      <div class="space-y-1">
-        <h2 class="text-3xl font-extrabold leading-none tracking-tight text-[var(--text-primary)]">
-          {{ t("pages.settingsPage.sidebarTitle") }}
-        </h2>
-        <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-          {{ t("pages.settingsPage.sidebarCount", { count: pages.length }) }}
+  <aside class="settings-sidebar" aria-label="Settings navigation">
+    <!-- User mini-profile -->
+    <div class="settings-sidebar__profile">
+      <div class="settings-sidebar__avatar" aria-hidden="true">
+        <span v-if="userInitials">{{ userInitials }}</span>
+        <Icon v-else name="i-ph-user-circle-duotone" class="h-5 w-5" />
+      </div>
+      <div class="settings-sidebar__profile-info">
+        <p class="settings-sidebar__profile-name">{{ t("settings.sidebar.title") }}</p>
+        <p class="settings-sidebar__profile-meta">
+          {{ t("settings.sidebar.subPages", { count: pages.length }) }}
         </p>
       </div>
     </div>
 
-    <nav class="flex-1 space-y-2 overflow-y-auto no-scrollbar">
+    <div class="settings-sidebar__divider" />
+
+    <!-- Navigation -->
+    <nav class="settings-sidebar__nav">
       <NuxtLink
         v-for="page in pages"
         :key="page.slug"
         :to="page.slug === defaultSlug ? appRoutes.settings : appRoutes.settingsPage(page.slug)"
-        class="group flex w-full min-w-0 items-center gap-4 rounded-2xl px-4 py-4 transition-all duration-300 border border-transparent"
-        :class="page.slug === activeSlug 
-          ? 'bg-primary-50 text-primary-600 ring-1 ring-primary-100 shadow-sm shadow-primary-500/5' 
-          : 'text-[var(--text-primary)] hover:bg-secondary-50 hover:text-primary-600'"
+        class="settings-sidebar__item"
+        :class="{ 'settings-sidebar__item--active': page.slug === activeSlug }"
       >
-        <div 
-          :class="page.slug === activeSlug ? 'bg-white border-primary-200 text-[var(--icon-primary)] shadow-md ring-1 ring-primary-100' : 'bg-white border-secondary-100 text-[var(--icon-primary)] group-hover:border-primary-200 group-hover:text-primary-600'"
-          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] transition-all duration-300 border shadow-sm"
+        <span
+          class="settings-sidebar__icon"
+          :class="{ 'settings-sidebar__icon--active': page.slug === activeSlug }"
         >
-          <Icon :name="page.slug === activeSlug ? page.icon : page.icon.replace('-fill', '-duotone')" class="h-6 w-6" />
-        </div>
-        <div class="min-w-0 flex-1">
-          <p class="truncate text-[13px] font-semibold leading-none">{{ page.label }}</p>
-          <p class="mt-1.5 truncate text-[11px] font-medium text-slate-400 transition-colors group-hover:text-primary-400">{{ page.description }}</p>
-        </div>
+          <Icon
+            :name="page.slug === activeSlug ? page.icon : page.icon.replace('-fill', '-duotone')"
+            class="h-4 w-4"
+          />
+        </span>
+        <span class="settings-sidebar__label">{{ page.label }}</span>
+        <Icon
+          v-if="page.slug === activeSlug"
+          name="i-ph-caret-right-bold"
+          class="settings-sidebar__caret"
+          aria-hidden="true"
+        />
       </NuxtLink>
     </nav>
   </aside>
@@ -49,5 +56,143 @@ defineProps<{
   pages: ReadonlyArray<SettingPage>
   activeSlug: string
   defaultSlug: string
+  userInitials?: string
 }>()
 </script>
+
+<style scoped>
+.settings-sidebar {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 255, 0.04);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  padding: 14px;
+  width: 260px;
+  flex-shrink: 0;
+  /* sticky on xl */
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+}
+
+/* ─── Profile section ─────────────────── */
+.settings-sidebar__profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px 10px;
+}
+
+.settings-sidebar__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+}
+
+.settings-sidebar__profile-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.settings-sidebar__profile-meta {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* ─── Divider ─────────────────────────── */
+.settings-sidebar__divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 0 4px 8px;
+}
+
+/* ─── Nav ─────────────────────────────── */
+.settings-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-sidebar__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.settings-sidebar__item:hover {
+  background: rgba(0, 0, 255, 0.03);
+  color: #0000ff;
+}
+
+.settings-sidebar__item--active {
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
+/* ─── Icon container ──────────────────── */
+.settings-sidebar__icon {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #475569;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.settings-sidebar__item:hover .settings-sidebar__icon {
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+}
+
+.settings-sidebar__icon--active {
+  background: #0000ff !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+}
+
+/* ─── Label ───────────────────────────── */
+.settings-sidebar__label {
+  font-size: 13px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-sidebar__item--active .settings-sidebar__label {
+  font-weight: 700;
+}
+
+/* ─── Caret ───────────────────────────── */
+.settings-sidebar__caret {
+  width: 11px;
+  height: 11px;
+  color: #0000ff;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+</style>

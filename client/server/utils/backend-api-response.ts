@@ -18,9 +18,12 @@ export function assertBackendApiSuccess<TResponse extends BackendApiResponse>(
     return response
   }
 
+  const backendMessage = response.errors?.error_text ?? response.message ?? fallbackMessage
+  const isUnauthorized = /not authorized|access_token/i.test(backendMessage)
+
   throw createError({
-    statusCode: 400,
-    statusMessage: response.errors?.error_text ?? response.message ?? fallbackMessage,
+    statusCode: isUnauthorized ? 401 : 400,
+    statusMessage: backendMessage,
     data: response,
   })
 }

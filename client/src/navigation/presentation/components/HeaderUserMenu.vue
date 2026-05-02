@@ -130,8 +130,10 @@ const userInitials = computed(() =>
 )
 const secondaryLabel = computed(() => {
   if (!currentUser.value) return ""
+  if (currentUser.value.isAdmin) return t("navigation.mobileMenu.adminTitle")
+  if (currentUser.value.isModerator) return t("navigation.mobileMenu.moderatorTitle")
   if (currentUser.value.username) return `@${currentUser.value.username}`
-  return currentUser.value.isAdmin ? t("navigation.mobileMenu.adminTitle") : ""
+  return ""
 })
 
 const numberFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US"))

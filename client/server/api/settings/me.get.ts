@@ -1,19 +1,8 @@
-import { createError, getCookie } from "h3"
-import { createBackendApiClient } from "../../utils/backend-api-client"
-import { assertBackendApiSuccess } from "../../utils/backend-api-response"
-import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+// English description: Returns the current PHP-authenticated user settings payload for Nuxt settings pages.
 
-type BackendSettingsUser = Record<string, unknown>
+import { getBackendCurrentUser } from "../../utils/backend-current-user"
 
-type BackendSettingsResponse = {
-  api_status?: number | string
-  user_data?: BackendSettingsUser
-  errors?: {
-    error_text?: string
-  }
-}
-
-export type SettingsMeResponse = {
+export type SettingsMeResponse = Record<string, unknown> & {
   id: number
   name: string
   username?: string
@@ -24,6 +13,8 @@ export type SettingsMeResponse = {
   countryId?: string
   website?: string
   about?: string
+  verified?: boolean
+  wallet?: number | string
 }
 
 const asString = (value: unknown) =>
@@ -31,47 +22,38 @@ const asString = (value: unknown) =>
     ? String(value).trim()
     : undefined
 
+const asBooleanNumber = (value: unknown) =>
+  value === true || value === "1" || value === 1
+
+const roleFromAdminFlag = (value: unknown) => {
+  const flag = Number(value ?? 0)
+
+  if (flag === 1) return "admin"
+  if (flag === 2) return "moderator"
+
+  return "user"
+}
+
 export default defineEventHandler(async (event): Promise<SettingsMeResponse> => {
-  const userSession = getCookie(event, "user_id")
+  const user = await getBackendCurrentUser(event)
 
-  if (!userSession) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: "Authentication is required.",
-    })
-  }
-
-  const client = createBackendApiClient(event)
-  const response = assertBackendApiSuccess(
-    await client.post<BackendSettingsResponse, Record<string, unknown>>(
-      backendRoutes.api.userData,
-      {
-        user_id: userSession,
-        fetch: "user_data",
-      },
-    ),
-    "Unable to load settings user data.",
-  )
-
-  const user = response.user_data
-
-  if (!user) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Current user was not found.",
-    })
-  }
+  const name = asString(user.name) || asString(user.username) || "User"
 
   return {
-    id: Number(user.user_id ?? user.id ?? userSession),
-    name: asString(user.name) || asString(user.username) || "User",
+    ...user,
+    id: Number(user.user_id ?? user.id),
+    name,
     username: asString(user.username),
     email: asString(user.email),
     phone: asString(user.phone_number),
+    phoneNumber: asString(user.phone_number),
     gender: asString(user.gender),
     birthday: asString(user.birthday),
     countryId: asString(user.country_id),
     website: asString(user.website),
     about: asString(user.about),
+    verified: asBooleanNumber(user.verified),
+    wallet: asString(user.wallet),
+    role: roleFromAdminFlag(user.admin),
   }
 })
