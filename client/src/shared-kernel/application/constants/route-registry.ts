@@ -140,4 +140,7 @@ export const backendRoutes = {
     setBrowserCookie: (accessToken: string) =>
       `/api/v2/endpoints/set-browser-cookie.php?access_token=${encodeQueryValue(accessToken)}`,
   },
+  web: {
+    requests: "/requests.php",
+  },
 } as const

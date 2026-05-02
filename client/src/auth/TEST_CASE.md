@@ -21,6 +21,7 @@ English description: Test cases for the auth bounded context, including backend 
 - Can co it nhat:
   - 1 tai khoan active de test login
   - 1 tai khoan admin de test menu/admin gate
+  - 1 tai khoan moderator de test role `admin = 2`
   - tai khoan 2FA/chua active neu muon test confirm flow day du
 
 ## Login
@@ -66,7 +67,7 @@ Dung `x-www-form-urlencoded` cho PHP API.
 | `AUTH-PHP-002` | Postman/API | `POST` | `{{backend_url}}/api/create-account` | `server_key`, `username`, `first_name`, `last_name`, `email`, `password`, `confirm_password`, `gender` | `api_status`, `access_token`, `user_id`, verify status hoac `errors.error_text`. |
 | `AUTH-PHP-003` | Postman/API | `POST` | `{{backend_url}}/api/send-reset-password-email` | `server_key`, `email=<email>` | `api_status`, `message`, `errors.error_text`. |
 | `AUTH-PHP-004` | Postman/API | `POST` | `{{backend_url}}/api/send-reset-password-sms` | `server_key`, `phone_num=<phone>` | `api_status`, `user_id`, `message`, `errors.error_text`. |
-| `AUTH-PHP-005` | Postman/API | `GET` | `{{backend_url}}/api/v2/endpoints/get-current-user.php?session_id={{user_id}}` | Cookie `user_id` neu can | `api_status`, `user_data.user_id`, `user_data.name`, `user_data.admin`. |
+| `AUTH-PHP-005` | Postman/API | `GET` | `{{backend_url}}/api/v2/endpoints/get-current-user.php?session_id={{user_id}}` | Cookie `user_id` neu can | `api_status`, `user_data.user_id`, `user_data.name`, `user_data.admin`; `admin=0` user, `admin=1` admin, `admin=2` moderator. |
 
 ### Nuxt Bridge Requests
 
@@ -89,6 +90,9 @@ Dung `x-www-form-urlencoded` cho PHP API.
 | `user_platform` | `userPlatform` |
 | `membership` | `membershipRequired` |
 | `errors.error_text` | `message` / `statusMessage` |
+| `admin = 0` | `role = "user"`, `isAdmin = false`, `isModerator = false` |
+| `admin = 1` | `role = "admin"`, `isAdmin = true`, `isModerator = false` |
+| `admin = 2` | `role = "moderator"`, `isAdmin = false`, `isModerator = true` |
 
 Luu y: Postman login chi test API bridge. Viec set browser cookie van phai test tren browser vi `set-browser-cookie.php` la browser session flow.
 

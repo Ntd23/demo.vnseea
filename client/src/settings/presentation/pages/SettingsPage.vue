@@ -1,29 +1,37 @@
 <template>
-  <div class="space-y-5 pb-10">
-    <SettingsHero :stats="stats" />
+  <div class="settings-page pb-10">
+    <!-- Compact hero banner -->
+    <SettingsHero />
 
-    <div class="flex min-w-0 flex-col gap-5 xl:flex-row xl:items-start">
+    <!-- Two-column layout -->
+    <div class="settings-page__layout">
+      <!-- Left nav sidebar -->
       <SettingsSidebar
         :active-slug="activePage.slug"
         :default-slug="defaultSlug"
         :pages="pages"
+        :user-initials="userInitials"
       />
 
-      <main class="min-w-0 flex-1 space-y-5">
-        <section class="surface-card flex items-center gap-6 p-6 sm:p-8">
-          <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-[var(--text-primary)] border border-primary-100 shadow-sm transition hover:scale-105">
-            <Icon :name="activePage.icon" class="h-8 w-8" />
+      <!-- Main content -->
+      <main class="settings-page__main">
+        <!-- Active page header (compact, not a full card) -->
+        <div class="settings-page__page-header">
+          <div class="settings-page__page-icon" aria-hidden="true">
+            <Icon :name="activePage.icon" class="h-5 w-5" />
           </div>
-          <div class="space-y-1">
-            <h1 class="text-3xl font-extrabold text-[var(--text-primary)] leading-tight">{{ activePage.label }}</h1>
-            <p class="text-body-secondary text-sm">{{ activePage.description }}</p>
+          <div>
+            <h1 class="settings-page__page-title">{{ activePage.label }}</h1>
+            <p class="settings-page__page-description">{{ activePage.description }}</p>
           </div>
-        </section>
+        </div>
 
+        <!-- Sections -->
         <SettingsSection
           v-for="section in activePage.sections"
           :key="section.title"
           :section="section"
+          :on-save="fields => updateSettings(activePage.slug, fields)"
         />
       </main>
     </div>
@@ -42,44 +50,92 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { pages, defaultSlug, findPageBySlug } = useSettingsData()
+const { pages, user, defaultSlug, findPageBySlug, updateSettings } = useSettingsData()
 
 const activePage = computed<SettingPage>(() =>
   findPageBySlug(props.pageSlug || defaultSlug) ?? findPageBySlug(defaultSlug)!,
 )
 
-const featureCount = computed(() =>
-  pages.value.reduce((sum, page) =>
-    sum
-    + page.sections.reduce((sectionSum, section) =>
-      sectionSum
-      + (section.fields?.length ?? 0)
-      + (section.toggles?.length ?? 0)
-      + (section.items?.length ?? 0)
-      + (section.actions?.length ?? 0), 0),
-  0),
-)
+const userInitials = computed(() => {
+  const name = user.value?.name || user.value?.username || ""
+  const parts = name.trim().split(/\s+/).filter(Boolean)
 
-const stats = computed(() => [
-  {
-    label: t("pages.settingsPage.statsSubpages"),
-    value: pages.value.length,
-    description: t("pages.settingsPage.statsSubpagesDescription"),
-  },
-  {
-    label: t("pages.settingsPage.statsFeatures"),
-    value: featureCount.value,
-    description: t("pages.settingsPage.statsFeaturesDescription"),
-  },
-  {
-    label: t("pages.settingsPage.statsApi"),
-    value: t("pages.settingsPage.statsApiValue"),
-    description: t("pages.settingsPage.statsApiDescription"),
-  },
-])
+  return parts.slice(0, 2).map(part => part[0]?.toUpperCase()).join("")
+})
 
 useSeoMeta({
-  title: () => t("pages.settingsPage.seoTitle", { page: activePage.value.label }),
+  title: () => `${activePage.value.label} | ${t("settings.seo.titleSuffix")}`,
   description: () => activePage.value.description,
 })
 </script>
+
+<style scoped>
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+/* ─── Two-column layout ───────────────── */
+.settings-page__layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+@media (max-width: 1280px) {
+  .settings-page__layout {
+    flex-direction: column;
+  }
+}
+
+/* ─── Main column ─────────────────────── */
+.settings-page__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ─── Active page header ──────────────── */
+.settings-page__page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 255, 0.04);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.settings-page__page-icon {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+  flex-shrink: 0;
+}
+
+.settings-page__page-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.settings-page__page-description {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+}
+</style>

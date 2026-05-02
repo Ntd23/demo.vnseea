@@ -1,4 +1,4 @@
-import { createError, type H3Event } from "h3"
+import { createError, getCookie, type H3Event } from "h3"
 import type { ApiQuery } from "../../src/shared-kernel/domain/types/api.types"
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
@@ -60,6 +60,7 @@ const toBackendFormBody = (body: unknown) => {
 
 export function createBackendApiClient(event: H3Event) {
   const runtimeConfig = useRuntimeConfig(event)
+  const backendAccessToken = getCookie(event, "user_id")
 
   if (!runtimeConfig.backendApiBase) {
     throw createError({
@@ -98,6 +99,12 @@ export function createBackendApiClient(event: H3Event) {
     )
 
     bodyWithServerKey.set("server_key", String(runtimeConfig.backendServerKey))
+    const queryWithAccessToken: ApiQuery = { ...(options.query ?? {}) }
+
+    if (backendAccessToken && queryWithAccessToken.access_token === undefined) {
+      queryWithAccessToken.access_token = backendAccessToken
+    }
+
     const baseCandidates = getBackendBaseCandidates(String(runtimeConfig.backendApiBase))
     let lastError: unknown
 
@@ -111,7 +118,7 @@ export function createBackendApiClient(event: H3Event) {
       try {
         return await client<TResponse>(`api/${normalizeEndpointType(endpoint)}`, {
           method: options.method ?? "GET",
-          query: options.query,
+          query: queryWithAccessToken,
           body: bodyWithServerKey,
           headers: options.headers,
         })

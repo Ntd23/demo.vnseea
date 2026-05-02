@@ -5,7 +5,9 @@ export interface CurrentAuthUser {
   name: string
   username?: string
   avatarUrl?: string
+  role: "user" | "moderator" | "admin"
   isAdmin: boolean
+  isModerator: boolean
   wallet?: number | string
   points?: number
 }

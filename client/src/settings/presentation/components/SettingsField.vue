@@ -1,71 +1,284 @@
 <template>
-  <div class="flex flex-col gap-2">
-    <UFormField
-      :label="field.label"
-      :help="field.description"
+  <UFormField
+    :label="field.label"
+    :help="field.description"
+    class="w-full"
+    :ui="{
+      label: { base: 'text-[11px] font-semibold text-[#64748b] mb-1.5 block' },
+      help: 'text-[11px] font-medium text-[#94a3b8] mt-1 leading-snug',
+    }"
+  >
+    <!-- Textarea -->
+    <UTextarea
+      v-if="field.type === 'textarea'"
+      v-model="value"
+      :placeholder="field.placeholder"
+      :disabled="field.readOnly"
+      :rows="4"
       class="w-full"
       :ui="{
-        label: {
-          base: 'text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)] pl-1 mb-2'
-        },
-        help: 'text-[10px] font-medium text-[var(--text-primary)] pl-1 mt-1.5'
+        base: 'rounded-[10px] border border-[#e2e8f0] bg-[#fafbfe] text-[13px] font-medium text-[#334155] placeholder:text-[#94a3b8] focus:border-[rgba(0,0,255,0.25)] focus:bg-white transition-[border-color,background-color] duration-150 resize-y',
+      }"
+    />
+
+    <!-- Select: ≤3 options → radio pills, >3 options → USelect dropdown -->
+    <div
+      v-else-if="field.type === 'select' && (field.options?.length ?? 0) <= 3"
+      class="settings-field__pills"
+      :class="{ 'settings-field__pills--disabled': field.readOnly }"
+      role="radiogroup"
+      :aria-label="field.label"
+    >
+      <label
+        v-for="opt in (field.options ?? [])"
+        :key="opt"
+        class="settings-field__pill"
+        :class="{ 'settings-field__pill--active': String(value) === opt }"
+      >
+        <input
+          v-model="value"
+          class="settings-field__pill-radio"
+          :disabled="field.readOnly"
+          type="radio"
+          :name="`field-${field.key}`"
+          :value="opt"
+        >
+        <span class="settings-field__pill-label">{{ opt }}</span>
+      </label>
+    </div>
+
+    <!-- Select: >3 options → USelectMenu with search (correct for country etc.) -->
+    <USelectMenu
+      v-else-if="field.type === 'select' && (field.options?.length ?? 0) > 3"
+      :id="`field-${field.key}`"
+      v-model="value"
+      :items="field.options ?? []"
+      :placeholder="field.placeholder || field.label"
+      :disabled="field.readOnly"
+      size="md"
+      class="w-full"
+      :ui="{
+        trigger: 'rounded-[10px] border border-[#e2e8f0] bg-[#fafbfe] text-[13px] font-medium text-[#334155] focus:border-[rgba(0,0,255,0.25)] focus:bg-white transition-[border-color,background-color] duration-150',
+      }"
+    />
+
+    <!-- Verification state — chip buttons -->
+    <div v-else-if="field.type === 'verification'" class="settings-field__verify-group">
+      <button
+        type="button"
+        class="settings-field__verify-btn"
+        :class="{ 'settings-field__verify-btn--active': isVerified }"
+        :disabled="field.readOnly"
+        @click="setVerified(true)"
+      >
+        <Icon :name="isVerified ? 'i-ph-check-circle-fill' : 'i-ph-circle-duotone'" class="h-4 w-4" />
+        {{ verifiedLabel }}
+      </button>
+      <button
+        type="button"
+        class="settings-field__verify-btn"
+        :class="{ 'settings-field__verify-btn--active': !isVerified }"
+        :disabled="field.readOnly"
+        @click="setVerified(false)"
+      >
+        <Icon :name="!isVerified ? 'i-ph-x-circle-fill' : 'i-ph-circle-duotone'" class="h-4 w-4" />
+        {{ unverifiedLabel }}
+      </button>
+    </div>
+
+    <!-- File input: native input so the Nuxt API repository can forward multipart data to PHP. -->
+    <input
+      v-else-if="field.type === 'file'"
+      :id="`field-${field.key}`"
+      :disabled="field.readOnly"
+      type="file"
+      class="settings-field__file-input"
+      @change="handleFileChange"
+    >
+
+    <!-- Standard input (text / email / password / tel / date / url / number) -->
+    <UInput
+      v-else
+      v-model="value"
+      :type="field.type"
+      :placeholder="field.placeholder"
+      :disabled="field.readOnly"
+      size="md"
+      class="w-full"
+      :ui="{
+        base: 'rounded-[10px] border border-[#e2e8f0] bg-[#fafbfe] text-[13px] font-medium text-[#334155] placeholder:text-[#94a3b8] focus:border-[rgba(0,0,255,0.25)] focus:bg-white transition-[border-color,background-color] duration-150',
       }"
     >
-      <!-- Textarea -->
-      <UTextarea
-        v-if="field.type === 'textarea'"
-        v-model="value"
-        :placeholder="field.placeholder"
-        size="xl"
-        :rows="4"
-        :ui="{
-          base: 'rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-[var(--text-primary)]',
-        }"
-      />
-
-      <!-- Select Menu -->
-      <USelectMenu
-        v-else-if="field.type === 'select'"
-        v-model="value"
-        :options="field.options ?? []"
-        size="xl"
-        :ui="{
-          trigger: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-black text-xs uppercase tracking-widest text-[var(--text-primary)]',
-          icon: { base: 'text-[var(--text-primary)] h-5 w-5' }
-        }"
-      >
-        <template #leading>
-          <Icon name="i-ph-list-bullets-duotone" class="h-5 w-5 text-[var(--text-primary)]" />
-        </template>
-      </USelectMenu>
-
-      <!-- Standard Input -->
-      <UInput
-        v-else
-        v-model="value"
-        :type="field.type"
-        :placeholder="field.placeholder"
-        size="xl"
-        :ui="{
-          base: 'h-14 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-[var(--text-primary)]',
-        }"
-      >
-        <template #leading>
-          <Icon :name="field.key.includes('password') ? 'i-ph-lock-duotone' : (field.key.includes('email') ? 'i-ph-envelope-duotone' : 'i-ph-pencil-duotone')" class="h-5 w-5 text-[var(--icon-primary)]" />
-        </template>
-      </UInput>
-    </UFormField>
-  </div>
+      <template #leading>
+        <Icon :name="fieldIcon" class="h-4 w-4 text-[#94a3b8]" />
+      </template>
+    </UInput>
+  </UFormField>
 </template>
 
 <script setup lang="ts">
 import type { SettingField } from "../../application/composables/useSettingsData"
 
 const props = defineProps<{ field: SettingField }>()
+const emit = defineEmits<{
+  change: [payload: { key: string; value: SettingField["value"] }]
+}>()
+const { locale } = useI18n()
 const value = ref(props.field.value)
 
-// Update internal value when the translated prop value changes
-watch(() => props.field.value, (newVal) => {
-  value.value = newVal
+watch(() => props.field.value, (v) => {
+  value.value = v
 })
+
+watch(value, (v) => {
+  emit("change", { key: props.field.key, value: v })
+})
+
+const fieldIcon = computed(() => {
+  const k = props.field.key.toLowerCase()
+  if (k.includes("wallet"))   return "i-ph-wallet-duotone"
+  if (k.includes("password")) return "i-ph-lock-duotone"
+  if (k.includes("email"))    return "i-ph-envelope-duotone"
+  if (k.includes("phone"))    return "i-ph-phone-duotone"
+  if (["website", "facebook", "twitter", "linkedin", "instagram", "youtube"].some(s => k.includes(s)))
+    return "i-ph-link-simple-duotone"
+  if (k.includes("birthday")) return "i-ph-calendar-duotone"
+  if (k.includes("name"))     return "i-ph-user-duotone"
+  return "i-ph-pencil-duotone"
+})
+
+const isVerified = computed(() => value.value === true || value.value === 1 || value.value === "1")
+const verifiedLabel   = computed(() => locale.value.startsWith("vi") ? "Đã xác minh" : "Verified")
+const unverifiedLabel = computed(() => locale.value.startsWith("vi") ? "Chưa xác minh" : "Not verified")
+
+function setVerified(v: boolean) {
+  if (props.field.readOnly) {
+    return
+  }
+
+  value.value = v
+}
+
+function handleFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+
+  if (file) {
+    emit("change", { key: props.field.key, value: file })
+  }
+}
 </script>
+
+<style scoped>
+/* ─── Radio option pills ──────────────── */
+.settings-field__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-field__pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #fafbfe;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.settings-field__pill:hover {
+  border-color: rgba(0, 0, 255, 0.2);
+  background: rgba(0, 0, 255, 0.02);
+}
+
+.settings-field__pills--disabled {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.settings-field__pill--active {
+  border-color: #0000ff;
+  background: rgba(0, 0, 255, 0.04);
+}
+
+/* visually hide the radio but keep it accessible */
+.settings-field__pill-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.settings-field__pill-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.settings-field__pill--active .settings-field__pill-label {
+  color: #0000ff;
+  font-weight: 600;
+}
+
+/* ─── Verification chip buttons ───────── */
+.settings-field__verify-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.settings-field__verify-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  background: #fafbfe;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.settings-field__verify-btn:hover {
+  border-color: rgba(0, 0, 255, 0.2);
+  background: rgba(0, 0, 255, 0.02);
+  color: #334155;
+}
+
+.settings-field__verify-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.settings-field__verify-btn--active {
+  border-color: #0000ff;
+  background: rgba(0, 0, 255, 0.04);
+  color: #0000ff;
+}
+
+.settings-field__file-input {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fafbfe;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.settings-field__file-input:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+</style>
