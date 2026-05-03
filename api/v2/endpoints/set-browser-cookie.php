@@ -1,4 +1,5 @@
 <?php
+// English description: Sets the backend browser session from an API access token and redirects back to the Nuxt app.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -27,7 +28,7 @@ $response_data = array(
     'api_status' => 400,
 );
 
-$access_token = !empty($_GET['access_token']) ? Wo_Secure($_GET['access_token']) : '';
+$access_token = !empty($_POST['access_token']) ? Wo_Secure($_POST['access_token']) : '';
 
 if (empty($access_token)) {
     $response_data = array(

@@ -1,89 +1,41 @@
+<!-- Description: Renders hashtag discovery as a heading plus post results, matching the PHP hashtag page order. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-6 pb-10">
-    <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
-      <div class="relative overflow-hidden px-5 py-6 sm:px-7">
-        <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,255,0.12),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(29,78,216,0.14),transparent_30%)]" />
+  <div class="mx-auto max-w-[1280px] space-y-5 px-3 pb-10 sm:px-5 lg:px-6">
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+            {{ t("pages.hashtagPage.heroEyebrow") }}
+          </p>
+          <h1 class="text-[1.9rem] font-black tracking-[-0.04em] text-[var(--text-primary)] sm:text-[2.2rem]">
+            {{ hashtagLabel }}
+          </h1>
+          <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+            {{ heroDescription }}
+          </p>
+        </div>
 
-        <div class="relative flex flex-col gap-6">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="flex items-start gap-4">
-              <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-[22px] bg-[linear-gradient(135deg,#1738ff_0%,#8b5cf6_100%)] text-white shadow-[0_16px_30px_rgba(37,99,235,0.24)]">
-                <Icon name="i-ph-hash-bold" class="h-8 w-8" />
-              </div>
-
-              <div>
-                <p class="text-[12px] font-black uppercase tracking-[0.22em] text-[#0000ff]/60">
-                  {{ t("pages.hashtagPage.heroEyebrow") }}
-                </p>
-                <h1 class="mt-2 text-[2rem] font-black tracking-[-0.05em] text-[#243b63] sm:text-[2.35rem]">
-                  {{ hashtagLabel }}
-                </h1>
-                <p class="mt-2 max-w-[760px] text-[14px] leading-7 text-slate-500">
-                  {{ heroDescription }}
-                </p>
-              </div>
-            </div>
-
-            <div class="flex flex-col gap-3 sm:flex-row">
-              <NuxtLink
-                :to="{ path: '/search', query: { q: hashtagLabel } }"
-                class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-              >
-                <Icon name="i-ph-magnifying-glass-bold" class="mr-2 h-4 w-4" />
-                {{ t("pages.hashtagPage.searchInSearch") }}
-              </NuxtLink>
-
-              <NuxtLink
-                to="/home"
-                class="inline-flex h-11 items-center justify-center rounded-full bg-[#0000ff] px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(0,0,255,0.22)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
-              >
-                <Icon name="i-ph-house-line-fill" class="mr-2 h-4 w-4" />
-                {{ t("pages.hashtagPage.backToFeed") }}
-              </NuxtLink>
-            </div>
-          </div>
-
-          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <article
-              v-for="item in heroStats"
-              :key="item.label"
-              class="rounded-[24px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-4"
-            >
-              <p class="text-[11px] font-black uppercase tracking-[0.16em] text-[#0000ff]/60">
-                {{ item.label }}
-              </p>
-              <p class="mt-2 text-[1.55rem] font-black tracking-[-0.05em] text-[#243b63]">
-                {{ item.value }}
-              </p>
-              <p class="mt-2 text-[13px] leading-6 text-slate-500">
-                {{ item.description }}
-              </p>
-            </article>
-          </div>
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <article
+            v-for="item in heroStats"
+            :key="item.label"
+            class="rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] p-4"
+          >
+            <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{{ item.label }}</p>
+            <p class="mt-2 text-[1.55rem] font-black text-[var(--text-primary)]">{{ item.value }}</p>
+            <p class="mt-2 text-[13px] leading-6 text-slate-500">{{ item.description }}</p>
+          </article>
         </div>
       </div>
     </section>
 
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_32px_rgba(15,35,110,0.06)]">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
-            {{ hasMatches ? t("pages.hashtagPage.relatedEyebrow") : t("pages.hashtagPage.suggestedEyebrow") }}
-          </p>
-          <p class="mt-1 text-[14px] leading-6 text-slate-500">
-            {{ hasMatches
-              ? t("pages.hashtagPage.relatedDescription")
-              : t("pages.hashtagPage.suggestedDescription") }}
-          </p>
-        </div>
-      </div>
-
-      <div class="mt-4 flex flex-wrap gap-3">
+    <section class="rounded-[22px] border border-[#dbe3f2] bg-white px-5 py-4 shadow-[0_8px_20px_rgba(15,35,110,0.04)]">
+      <div class="flex flex-wrap gap-3">
         <NuxtLink
           v-for="item in visibleHashtags"
           :key="item.slug"
           :to="item.to"
-          class="inline-flex items-center gap-2 rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 py-2 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
+          class="inline-flex items-center gap-2 rounded-full border border-[#dbe3f2] bg-[#f8fafc] px-4 py-2 text-[13px] font-bold text-[var(--text-primary)] transition hover:border-primary-200 hover:text-primary-700"
         >
           <span>{{ formatHashtagLabel(item.label) }}</span>
           <span class="rounded-full bg-white px-2 py-0.5 text-[11px] text-slate-500">{{ item.count }}</span>
@@ -93,13 +45,13 @@
 
     <section
       v-if="hasMatches"
-      class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_14px_32px_rgba(15,35,110,0.06)]"
+      class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]"
     >
-      <div class="flex flex-col gap-2 border-b border-[#eef2fb] pb-4">
-        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#0000ff]/60">
+      <div class="space-y-2 border-b border-[#eef2fb] pb-4">
+        <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
           {{ t("pages.hashtagPage.postsEyebrow") }}
         </p>
-        <h2 class="text-[1.45rem] font-black tracking-[-0.04em] text-[#243b63]">
+        <h2 class="text-[1.45rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
           {{ t("pages.hashtagPage.postsTitle", { count: matchingPosts.length, tag: hashtagLabel }) }}
         </h2>
         <p class="text-[14px] leading-6 text-slate-500">
@@ -118,26 +70,13 @@
 
     <section
       v-else
-      class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-12 shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16"
+      class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
     >
-      <div class="mx-auto max-w-2xl text-center">
-        <FoundationEmptyState
-          icon="i-ph-hash-bold"
-          :title="t('pages.hashtagPage.emptyTitle', { tag: hashtagLabel })"
-          :description="t('pages.hashtagPage.emptyDescription', { tag: hashtagLabel })"
-        />
-
-        <div class="mt-6 flex flex-wrap justify-center gap-3">
-          <NuxtLink
-            v-for="item in visibleHashtags.slice(0, 4)"
-            :key="item.slug"
-            :to="item.to"
-            class="inline-flex h-11 items-center justify-center rounded-full border border-[#dbe3f2] bg-[#f8fbff] px-4 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d6f2] hover:text-[#0000ff]"
-          >
-            {{ formatHashtagLabel(item.label) }}
-          </NuxtLink>
-        </div>
-      </div>
+      <FoundationEmptyState
+        icon="i-ph-hash-bold"
+        :title="t('pages.hashtagPage.emptyTitle', { tag: hashtagLabel })"
+        :description="t('pages.hashtagPage.emptyDescription', { tag: hashtagLabel })"
+      />
     </section>
   </div>
 </template>

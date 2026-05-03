@@ -1,3 +1,4 @@
+<!-- Description: Renders the group hero banner and hides optional backend fields when they are empty. -->
 <template>
   <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
     <div class="relative min-h-[220px] overflow-hidden px-5 py-6 text-white sm:min-h-[260px] sm:px-7">
@@ -12,7 +13,7 @@
           <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
             {{ categoryLabel }}
           </UBadge>
-          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
+          <UBadge v-if="foundedLabel" color="neutral" variant="soft" class="rounded-full bg-white/12 px-3 py-1.5 font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
             {{ foundedLabel }}
           </UBadge>
         </div>
@@ -37,8 +38,10 @@
                 <span>{{ memberCountLabel }}</span>
                 <span class="text-white/30">•</span>
                 <span>{{ onlineCountLabel }}</span>
-                <span class="text-white/30">•</span>
-                <span>{{ locationLabel }}</span>
+                <template v-if="locationLabel">
+                  <span class="text-white/30">•</span>
+                  <span>{{ locationLabel }}</span>
+                </template>
               </div>
             </div>
           </div>

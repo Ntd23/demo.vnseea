@@ -37,6 +37,7 @@ export interface CommunityPageRecord {
   canManage?: boolean
   directoryTabs?: Exclude<CommunityPageTab, "mine">[]
   tags: string[]
+  following?: boolean
 }
 
 export interface CommunityGroupRecord {
@@ -60,6 +61,7 @@ export interface CommunityGroupRecord {
   joinLabel?: string
   inviteLabel?: string
   guidelines?: string[]
+  joined?: boolean
 }
 
 export interface CommunityGroupMember {

@@ -1,3 +1,4 @@
+<!-- Description: Provides the thin Nuxt route wrapper for the profile page runtime. -->
 <template>
   <div>
     <PagesProfilePage />
@@ -12,14 +13,14 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { t } = useI18n()
+
 const username = computed(() => {
   const value = route.params.username
   return Array.isArray(value) ? String(value[0] ?? "") : String(value ?? "")
 })
 
 useSeoMeta({
-  title: () => t("pages.profilePage.seoTitle", { username: username.value }),
-  description: () => t("pages.profilePage.seoDescription"),
+  title: () => `${username.value || "profile"} | VNSEEA`,
+  description: () => "Profile timeline aligned to the legacy PHP cover, tabs, and content order.",
 })
 </script>

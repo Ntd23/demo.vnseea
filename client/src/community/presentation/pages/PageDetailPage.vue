@@ -1,3 +1,4 @@
+<!-- Description: Renders the backend-backed community page detail view without mock share or message fallbacks. -->
 <template>
   <div v-if="page" class="mx-auto max-w-[1280px] space-y-5 pb-10">
     <CommunityPageHeroBanner
@@ -90,6 +91,7 @@ import CommunityPageActionCard from "../components/PageActionCard.vue"
 import CommunityPageFeedSection from "../components/PageFeedSection.vue"
 import CommunityPageHeroBanner from "../components/PageHeroBanner.vue"
 import { useCommunityPageDetail } from "../../application/composables/useCommunityPageDetail"
+import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 type CommunityDetailTab = "posts" | "about"
 type CommunityActionState = "idle" | "loading" | "success" | "error"
@@ -113,6 +115,7 @@ const requestURL = useRequestURL()
 const { t } = useI18n()
 const toast = useToast()
 const translateText = useMaybeTranslatedText()
+const repository = createApiCommunityRepository()
 const activeTab = ref<CommunityDetailTab>(normalizeDetailTab(readQueryValue(route.query.tab)))
 const followState = ref<CommunityActionState>("idle")
 const shareState = ref<CommunityActionState>("idle")
@@ -129,7 +132,8 @@ const {
   followerCountLabel,
   likeCountLabel,
   pagePosts,
-} = useCommunityPageDetail(resolvedSlug, computed(() => route.query))
+  refresh,
+} = useCommunityPageDetail(resolvedSlug)
 
 const localizedPageName = computed(() =>
   page.value ? translateText(page.value.name) : t("pages.pageDetailPage.seoFallbackTitle"),
@@ -166,15 +170,16 @@ watch(activeTab, (value) => {
 
 watch(() => [
   route.path,
-  readQueryValue(route.query.name),
-  readQueryValue(route.query.description),
-  readQueryValue(route.query.category),
 ], () => {
   followState.value = "idle"
   shareState.value = "idle"
   messageState.value = "idle"
-  isFollowing.value = false
+  isFollowing.value = Boolean(page.value?.following)
 })
+
+watch(page, (value) => {
+  isFollowing.value = Boolean(value?.following)
+}, { immediate: true })
 
 async function handleFollowPage() {
   if (!page.value || followState.value === "loading" || isFollowing.value) return
@@ -182,10 +187,11 @@ async function handleFollowPage() {
   followState.value = "loading"
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 480))
+    const updatedPage = await repository.followPage(page.value.slug)
+    await refresh()
 
     followState.value = "success"
-    isFollowing.value = true
+    isFollowing.value = Boolean(updatedPage.following)
 
     toast.add({
       title: t("pages.pageDetailPage.followSuccessTitle"),
@@ -212,12 +218,11 @@ async function handleSharePage() {
   shareState.value = "loading"
 
   try {
-    if (import.meta.client && navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(shareUrl.value)
+    if (!import.meta.client || !navigator.clipboard?.writeText) {
+      throw new Error("Clipboard API is not available.")
     }
-    else {
-      await new Promise(resolve => setTimeout(resolve, 180))
-    }
+
+    await navigator.clipboard.writeText(shareUrl.value)
 
     shareState.value = "success"
 
@@ -246,17 +251,8 @@ async function handleMessagePage() {
   messageState.value = "loading"
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 360))
-
+    await navigateTo("/messages")
     messageState.value = "success"
-
-    toast.add({
-      title: t("pages.pageDetailPage.messageSuccessTitle"),
-      description: t("pages.pageDetailPage.messageSuccessDescription", {
-        page: localizedPageName.value,
-      }),
-      color: "success",
-    })
   }
   catch {
     messageState.value = "error"

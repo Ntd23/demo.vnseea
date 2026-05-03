@@ -1,15 +1,33 @@
+<!-- Description: Renders popular posts as a ranked content list with sidebar, matching the legacy feed-media emphasis. -->
 <template>
-  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
-    <PopularHero
-      :eyebrow="t('pages.popularPage.heroEyebrow')"
-      :title="t('pages.popularPage.heroTitle')"
-      :description="t('pages.popularPage.heroDescription')"
-      :primary-label="t('pages.popularPage.primaryCta')"
-      primary-to="/home"
-      :secondary-label="t('pages.popularPage.secondaryCta')"
-      secondary-to="/search"
-      :stats="summaryCards"
-    />
+  <div class="mx-auto max-w-[1280px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+            {{ t('pages.popularPage.heroEyebrow') }}
+          </p>
+          <h1 class="text-[1.9rem] font-black tracking-[-0.04em] text-[var(--text-primary)] sm:text-[2.2rem]">
+            {{ t('pages.popularPage.heroTitle') }}
+          </h1>
+          <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+            {{ t('pages.popularPage.heroDescription') }}
+          </p>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <article
+            v-for="item in summaryCards"
+            :key="item.label"
+            class="rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] p-4"
+          >
+            <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{{ item.label }}</p>
+            <p class="mt-2 text-[1.55rem] font-black text-[var(--text-primary)]">{{ item.value }}</p>
+            <p class="mt-2 text-[13px] leading-6 text-slate-500">{{ item.description }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
     <PopularFilters
       v-model:search="search"
@@ -18,112 +36,60 @@
       :placeholder="t('pages.popularPage.searchPlaceholder')"
     />
 
-    <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-      <section class="min-w-0 space-y-5">
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <NuxtLink
-            v-for="item in quickLinks"
-            :key="item.title"
-            :to="item.to"
-            class="group flex min-h-[112px] items-start gap-3 rounded-[18px] border border-[#dbe3f2] bg-white p-4 shadow-[0_8px_22px_rgba(15,35,110,0.04)] transition hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-[0_14px_30px_rgba(15,35,110,0.08)]"
+    <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+      <section class="overflow-hidden rounded-[26px] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+        <div class="flex flex-col gap-4 border-b border-[#eef2fb] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="space-y-1">
+            <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+              {{ t("pages.popularPage.resultEyebrow") }}
+            </p>
+            <h2 class="text-[1.45rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
+              {{ resultHeading }}
+            </h2>
+            <p class="text-[14px] leading-6 text-slate-500">
+              {{ t("pages.popularPage.resultCount", { count: rankedPosts.length }) }}
+            </p>
+          </div>
+
+          <button
+            class="inline-flex h-10 items-center justify-center rounded-[14px] border border-[#dbe3f2] bg-white px-4 text-[13px] font-bold text-[var(--text-primary)] transition hover:border-primary-200 hover:text-primary-700"
+            type="button"
+            @click="resetFilters"
           >
-            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] text-white shadow-[0_10px_18px_rgba(37,99,235,0.14)] transition-transform group-hover:scale-105" :style="{ background: item.accent }">
-              <Icon :name="item.icon.includes('duotone') ? item.icon : item.icon.replace('-bold', '-duotone').replace('-fill', '-duotone')" class="h-5 w-5" />
-            </div>
-            <div class="min-w-0 flex-1">
-              <h3 class="text-[14px] font-extrabold leading-snug text-[var(--text-primary)] transition-colors group-hover:text-primary-700">{{ item.title }}</h3>
-              <p class="mt-1 line-clamp-2 text-[12px] font-medium leading-5 text-slate-500">{{ item.description }}</p>
-              <div class="mt-3 inline-flex items-center gap-1.5 text-[11px] font-bold text-primary-600">
-                {{ t("pages.popularPage.openLink") }}
-                <Icon name="i-ph-arrow-up-right-duotone" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </div>
-            </div>
-          </NuxtLink>
+            <Icon name="i-ph-arrow-counter-clockwise-duotone" class="mr-2 h-4 w-4" />
+            {{ t("pages.popularPage.resetFilters") }}
+          </button>
         </div>
 
-        <section class="overflow-hidden rounded-[24px] border border-[#dbe3f2] bg-white shadow-[0_12px_32px_rgba(15,35,110,0.06)]">
-          <div class="flex flex-col gap-4 border-b border-secondary-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-            <div class="space-y-1">
-              <p class="text-[11px] font-extrabold uppercase text-slate-500">
-                {{ t("pages.popularPage.resultEyebrow") }}
-              </p>
-              <h2 class="text-[22px] font-black leading-tight text-[var(--text-primary)] sm:text-[26px]">
-                {{ resultHeading }}
-              </h2>
-              <p class="max-w-2xl text-[13px] font-medium leading-6 text-slate-500">
-                {{ t("pages.popularPage.resultCount", { count: rankedPosts.length }) }}
+        <div v-if="rankedPosts.length === 0" class="px-6 py-14">
+          <FoundationEmptyState
+            icon="i-ph-fire-duotone"
+            :title="t('pages.popularPage.emptyTitle')"
+            :description="t('pages.popularPage.emptyDescription')"
+          />
+        </div>
+
+        <div v-else class="divide-y divide-[#eef2fb]">
+          <article v-for="(post, index) in rankedPosts" :key="post.id" class="space-y-4 p-4 sm:p-5">
+            <div class="flex items-center gap-3 rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3">
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-[14px] text-sm font-black text-white"
+                :class="rankClass(index)"
+              >
+                {{ formatRank(index + 1) }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-black text-[var(--text-primary)]">{{ categoryLabelMap[post.category] }}</p>
+                <p class="text-xs text-slate-500">{{ post.trendLabel }}</p>
+              </div>
+              <p class="text-sm font-bold text-slate-500">
+                {{ t("pages.popularPage.scoreCount", { count: formatPopularNumber(getPopularPostScore(post), locale.value) }) }}
               </p>
             </div>
 
-            <button
-              class="inline-flex h-10 items-center justify-center rounded-[14px] border border-secondary-200 bg-secondary-50 px-4 text-[12px] font-extrabold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-white hover:text-primary-700 active:scale-95"
-              type="button"
-              @click="resetFilters"
-            >
-              <Icon name="i-ph-arrow-counter-clockwise-duotone" class="mr-2 h-4 w-4 shrink-0" />
-              {{ t("pages.popularPage.resetFilters") }}
-            </button>
-          </div>
-
-          <div v-if="rankedPosts.length === 0" class="px-4 py-12">
-            <FoundationEmptyState
-              icon="i-ph-fire-duotone"
-              :title="t('pages.popularPage.emptyTitle')"
-              :description="t('pages.popularPage.emptyDescription')"
-            />
-          </div>
-
-          <div v-else class="divide-y divide-secondary-100">
-            <article v-for="(post, index) in rankedPosts" :key="post.id" class="space-y-3 bg-white px-3 py-4 sm:px-5 sm:py-5">
-              <div class="grid gap-3 rounded-[18px] border border-secondary-100 bg-secondary-50/60 p-3 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
-                <div
-                  class="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-[16px] text-white shadow-lg"
-                  :class="rankClass(index)"
-                >
-                  <span class="text-[10px] font-bold leading-none opacity-80">#</span>
-                  <span class="text-[20px] font-black leading-none">{{ formatRank(index + 1) }}</span>
-                </div>
-
-                <div class="min-w-0 space-y-2">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <span class="inline-flex h-7 items-center rounded-full bg-white px-3 text-[12px] font-extrabold text-[var(--text-primary)] ring-1 ring-secondary-100">
-                      {{ categoryLabelMap[post.category] }}
-                    </span>
-                    <span class="inline-flex h-7 items-center rounded-full bg-orange-50 px-3 text-[12px] font-extrabold text-orange-700 ring-1 ring-orange-100">
-                      {{ post.trendLabel }}
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-white ring-1 ring-secondary-100">
-                      <div class="h-full rounded-full bg-primary-600" :style="{ width: `${postScorePercent(post)}%` }" />
-                    </div>
-                    <div class="inline-flex items-center gap-1.5 text-[12px] font-black text-[var(--text-primary)]">
-                      <Icon name="i-ph-chart-line-up-duotone" class="h-4 w-4 text-primary-600" />
-                      {{ t("pages.popularPage.scoreCount", { count: formatPopularNumber(getPopularPostScore(post), locale.value) }) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2 sm:w-[178px]">
-                  <div class="rounded-[14px] bg-white px-2.5 py-2 text-center ring-1 ring-secondary-100">
-                    <Icon name="i-ph-thumbs-up-duotone" class="mx-auto h-4 w-4 text-primary-600" />
-                    <p class="mt-1 text-[12px] font-black leading-none text-[var(--text-primary)]">{{ formatPopularNumber(post.stats.likes, locale.value) }}</p>
-                  </div>
-                  <div class="rounded-[14px] bg-white px-2.5 py-2 text-center ring-1 ring-secondary-100">
-                    <Icon name="i-ph-chat-circle-text-duotone" class="mx-auto h-4 w-4 text-emerald-600" />
-                    <p class="mt-1 text-[12px] font-black leading-none text-[var(--text-primary)]">{{ formatPopularNumber(post.stats.comments, locale.value) }}</p>
-                  </div>
-                  <div class="rounded-[14px] bg-white px-2.5 py-2 text-center ring-1 ring-secondary-100">
-                    <Icon name="i-ph-share-network-duotone" class="mx-auto h-4 w-4 text-orange-600" />
-                    <p class="mt-1 text-[12px] font-black leading-none text-[var(--text-primary)]">{{ formatPopularNumber(post.stats.shares, locale.value) }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <FeedPostCard :post="post" />
-            </article>
-          </div>
-        </section>
+            <FeedPostCard :post="post" />
+          </article>
+        </div>
       </section>
 
       <PopularSidebar
@@ -146,7 +112,6 @@ import FoundationEmptyState from "../../../foundation/presentation/components/Em
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
 import { createHashtagPath, formatHashtagLabel } from "../../../feed/application/composables/useMockHashtagData"
 import PopularFilters from "../components/Filters.vue"
-import PopularHero from "../components/Hero.vue"
 import PopularSidebar from "../components/Sidebar.vue"
 import type { PopularCategoryKey, PopularPost } from "../../application/composables/useMockPopularData"
 import { formatPopularNumber, getPopularPostScore, useMockPopularData } from "../../application/composables/useMockPopularData"
@@ -190,10 +155,6 @@ const rankedPosts = computed(() =>
   filteredPosts.value
     .slice()
     .sort((left, right) => getPopularPostScore(right) - getPopularPostScore(left)),
-)
-
-const highestScore = computed(() =>
-  rankedPosts.value.reduce((highest, post) => Math.max(highest, getPopularPostScore(post)), 0),
 )
 
 const categoryLabelMap = computed(() =>
@@ -304,16 +265,10 @@ const topCreators = computed(() => {
 const formatRank = (value: number) => String(value).padStart(2, "0")
 
 const rankClass = (index: number) => {
-  if (index === 0) return "bg-primary-600 shadow-primary-500/20"
-  if (index === 1) return "bg-emerald-600 shadow-emerald-500/20"
-  if (index === 2) return "bg-orange-500 shadow-orange-500/20"
-  return "bg-secondary-900 shadow-secondary-900/10"
-}
-
-const postScorePercent = (post: Pick<PopularPost, "stats">) => {
-  if (highestScore.value === 0) return 0
-
-  return Math.max(8, Math.round((getPopularPostScore(post) / highestScore.value) * 100))
+  if (index === 0) return "bg-primary-600"
+  if (index === 1) return "bg-emerald-600"
+  if (index === 2) return "bg-orange-500"
+  return "bg-slate-700"
 }
 
 const resetFilters = () => {

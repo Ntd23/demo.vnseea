@@ -1,3 +1,4 @@
+<!-- Description: Displays a single community group card while hiding optional backend fields when they are not available. -->
 <template>
   <article class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,35,110,0.12)]">
     <div class="relative overflow-hidden px-5 pb-5 pt-6 text-white" :style="{ background: group.banner }">
@@ -44,8 +45,8 @@
         </UBadge>
       </div>
 
-      <div class="grid gap-3 md:grid-cols-2">
-        <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
+      <div v-if="activityLabel || ownerLabel" class="grid gap-3 md:grid-cols-2">
+        <div v-if="activityLabel" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
             {{ $t("community.groups.card.activity") }}
           </p>
@@ -54,7 +55,7 @@
           </p>
         </div>
 
-        <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
+        <div v-if="ownerLabel" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
             {{ $t("community.groups.card.context") }}
           </p>
@@ -67,8 +68,10 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div class="text-[12px] text-slate-500">
           <span class="font-semibold text-[#243b63]">/g/{{ group.slug }}</span>
-          <span class="mx-2 text-slate-300">•</span>
-          <span>{{ privacyDescription }}</span>
+          <template v-if="privacyDescription">
+            <span class="mx-2 text-slate-300">•</span>
+            <span>{{ privacyDescription }}</span>
+          </template>
         </div>
 
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -124,8 +127,8 @@ const props = withDefaults(defineProps<{
 
 const groupName = computed(() => t(props.group.name))
 const groupSummary = computed(() => t(props.group.summary))
-const activityLabel = computed(() => t(props.group.activityLabel))
-const ownerLabel = computed(() => t(props.group.ownerLabel))
+const activityLabel = computed(() => props.group.activityLabel ? t(props.group.activityLabel) : "")
+const ownerLabel = computed(() => props.group.ownerLabel ? t(props.group.ownerLabel) : "")
 
 const localizedTags = computed(() =>
   props.group.tags.map(tag => t(tag)),
@@ -144,7 +147,7 @@ const privacyLabel = computed(() => {
 
 const privacyDescription = computed(() => {
   const desc = getCommunityOptionDescription(communityPrivacyOptions, props.group.privacy, "")
-  return desc ? t(desc) : t("community.groups.card.privacyHint")
+  return desc ? t(desc) : ""
 })
 
 const categoryLabel = computed(() => {

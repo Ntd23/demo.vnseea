@@ -192,6 +192,16 @@
       <script src="<?php echo $wo['config']['theme_url'];?>/javascript/twilio-video.min.js?version=<?php echo $wo['config']['version']; ?>"></script>
       <link rel="stylesheet" href="<?php echo $wo['config']['theme_url'];?>/stylesheet/style.css<?php echo $wo['update_cache']; ?>?version=<?php echo $wo['config']['version']; ?>">
       <?php } ?>
+      <?php if (!empty($wo['is_app_view'])) { ?>
+      <link rel="stylesheet" href="<?php echo $wo['config']['theme_url'];?>/stylesheet/app-view.css<?php echo $wo['update_cache']; ?>?version=<?php echo $wo['config']['version']; ?>">
+      <style>
+        body.app-view {
+          --app-shell-accent: <?php echo !empty($wo['config']['btn_background_color']) ? $wo['config']['btn_background_color'] : '#2563eb'; ?>;
+          --app-shell-surface: #ffffff;
+          --app-shell-ink: #0f172a;
+        }
+      </style>
+      <?php } ?>
       <link rel="stylesheet" href="<?php echo $wo['config']['theme_url'];?>/stylesheet/font-awesome-4.7.0/css/font-awesome.min.css<?php echo $wo['update_cache']; ?>?version=<?php echo $wo['config']['version']; ?>">
 	  
 	  <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -831,11 +841,76 @@
 		<script src="<?php echo $wo['config']['theme_url'];?>/javascript/flatpickr.js?version=<?php echo $wo['config']['version']; ?>"></script>
 		
 		<script src="<?php echo $wo['config']['theme_url'];?>/javascript/circle-progress.min.js"></script>
+      <?php
+      $is_app_view = !empty($wo['is_app_view']);
+      $app_page_slug = trim(strtolower(preg_replace('/[^a-z0-9]+/i', '-', $wo['page'])), '-');
+      $app_is_own_timeline = (
+        $wo['page'] == 'timeline' &&
+        !empty($wo['user_profile']['user_id']) &&
+        !empty($wo['user']['user_id']) &&
+        $wo['user_profile']['user_id'] == $wo['user']['user_id']
+      );
+      $app_search_label = ($wo['config']['website_mode'] == 'instagram' && !empty($wo['lang']['search']))
+        ? $wo['lang']['search']
+        : (!empty($wo['lang']['explore']) ? $wo['lang']['explore'] : (!empty($wo['lang']['search']) ? $wo['lang']['search'] : 'Explore'));
+      $app_site_title = !empty($wo['config']['siteTitle'])
+        ? $wo['config']['siteTitle']
+        : (!empty($wo['config']['site_name']) ? $wo['config']['site_name'] : 'VNSEEA');
+      $app_title = $app_site_title;
+      if ($wo['page'] == 'home' && !empty($wo['lang']['home'])) {
+        $app_title = $wo['lang']['home'];
+      }
+      elseif ($wo['page'] == 'search') {
+        $app_title = $app_search_label;
+      }
+      elseif ($wo['page'] == 'messages' && !empty($wo['lang']['messages'])) {
+        $app_title = $wo['lang']['messages'];
+      }
+      elseif ($wo['page'] == 'timeline' && !empty($wo['user_profile']['name'])) {
+        $app_title = $wo['user_profile']['name'];
+      }
+      elseif ($wo['page'] == 'page' && !empty($wo['page_profile']['page_name'])) {
+        $app_title = $wo['page_profile']['page_name'];
+      }
+      elseif ($wo['page'] == 'group' && !empty($wo['group_profile']['group_name'])) {
+        $app_title = $wo['group_profile']['group_name'];
+      }
+      else {
+        $parsed_app_title = trim(preg_replace('/\s+/', ' ', preg_replace('/\|.*$/', '', strip_tags($wo['title']))));
+        if (!empty($parsed_app_title)) {
+          $app_title = $parsed_app_title;
+        }
+      }
+      $app_body_classes = array();
+      if ($is_app_view) {
+        $app_body_classes[] = 'app-view';
+        if (!empty($app_page_slug)) {
+          $app_body_classes[] = 'page-' . $app_page_slug;
+        }
+        $app_body_classes[] = !empty($wo['loggedin']) ? 'app-logged-in' : 'app-guest';
+      }
+      $wo['app_shell'] = array(
+        'title' => $app_title,
+        'subtitle' => $app_site_title,
+        'show_header' => $is_app_view && !in_array($wo['page'], array('get_news_feed', 'maintenance', 'video-api'), true),
+        'show_bottom_nav' => $is_app_view && !empty($wo['loggedin']) && !in_array($wo['page'], array('maintenance', 'video-api'), true),
+        'show_back' => !$app_is_own_timeline && !in_array($wo['page'], array('home', 'welcome', 'messages', 'search'), true),
+        'show_settings_action' => $is_app_view && !empty($wo['loggedin']) && $wo['page'] != 'setting',
+        'back_url' => $wo['config']['site_url'],
+        'search_label' => $app_search_label,
+        'nav' => array(
+          'home' => $wo['page'] == 'home',
+          'search' => $wo['page'] == 'search',
+          'messages' => $wo['page'] == 'messages',
+          'profile' => $app_is_own_timeline || $wo['page'] == 'setting'
+        )
+      );
+      ?>
    </head>
 
-   <body <?php if ($wo['config']['chatSystem'] == 0) { ?> chat-off="true" <?php } ?>>
+   <body <?php if ($wo['config']['chatSystem'] == 0) { ?> chat-off="true" <?php } ?> class="<?php echo implode(' ', $app_body_classes); ?>">
       <input type="hidden" id="get_no_posts_name" value="<?php echo($wo['lang']['no_more_posts']); ?>">
-    <?php $loadPage = Wo_LoadPage('thirdparty/theme-changer'); echo (!empty($loadPage)) ? $loadPage : '';?>
+    <?php if (empty($wo['is_app_view'])) { $loadPage = Wo_LoadPage('thirdparty/theme-changer'); echo (!empty($loadPage)) ? $loadPage : ''; } ?>
     <div id="focus-overlay"></div>
       <input type="hidden" class="seen_stories_users_ids" value="">
       <input type="hidden" class="main_session" value="<?php echo Wo_CreateMainSession();?>">
@@ -858,24 +933,25 @@
          <div class="ad-placement-header-footer">
             <?php
                $header_ad = Wo_GetAd('header', false);
-               if($wo['page'] != 'admin' && $wo['page'] != 'welcome' && $wo['page'] != 'messages' && $wo['page'] != '404' && !empty($header_ad) && $wo['page'] != 'video-api') {
+               if(empty($wo['is_app_view']) && $wo['page'] != 'admin' && $wo['page'] != 'welcome' && $wo['page'] != 'messages' && $wo['page'] != '404' && !empty($header_ad) && $wo['page'] != 'video-api') {
                  $timeline_ads = ($wo['page'] == 'timeline' || $wo['page'] == 'page' || $wo['page'] == 'group')  ? 'style="margin-top: 20px;"' : '';
                  echo '<div class="contnet" ' . $timeline_ads . '>' . $header_ad . '</div>';
                }
                ?>
          </div>
 		 
-		 <?php if ($wo['loggedin'] == true && Wo_IsMobile() == true) { ?>
+		 <?php if (empty($wo['is_app_view']) && $wo['loggedin'] == true && Wo_IsMobile() == true) { ?>
 			<?php echo Wo_LoadPage( 'sidebar/left-sidebar-mobile'); ?>
 		 <?php } ?>
 		 
          <div id="contnet" class="effect-load"><?php echo $wo['content'];?></div>
          <?php
             $footer_ad = Wo_GetAd('footer', false);
-            if($wo['page'] != 'admin' && $wo['page'] != 'welcome' && $wo['page'] != 'messages' && $wo['page'] != '404' && !empty($footer_ad)) {
+            if(empty($wo['is_app_view']) && $wo['page'] != 'admin' && $wo['page'] != 'welcome' && $wo['page'] != 'messages' && $wo['page'] != '404' && !empty($footer_ad)) {
               echo '<div class="contnet">' . $footer_ad . '</div>';
             }
             ?>
+         <?php if (empty($wo['is_app_view'])) { ?>
          <footer>
             <?php
               if ($wo['page'] != 'welcome' && $wo['page'] != 'register' && $wo['page'] != 'get_news_feed' && $wo['page'] != 'forum' && $wo['page'] != 'messages' && $wo['page'] != 'jobs') {
@@ -890,10 +966,11 @@
                }
             ?>
          </div>
+         <?php } ?>
          <div class="extra">
             <?php
                if ($wo['loggedin'] == true && $wo['page'] != 'maintenance') {
-                 if ($wo['config']['chatSystem'] == 1 && $wo['page'] != 'get_news_feed' && $wo['page'] != 'sharer' && $wo['page'] != 'video-api' && $wo['page'] != 'messages') {
+                 if (empty($wo['is_app_view']) && $wo['config']['chatSystem'] == 1 && $wo['page'] != 'get_news_feed' && $wo['page'] != 'sharer' && $wo['page'] != 'video-api' && $wo['page'] != 'messages') {
                    echo Wo_LoadPage('chat/content');
                  }
                  echo Wo_LoadPage('modals/logged-out');
@@ -903,6 +980,9 @@
                ?>
          </div>
       </div>
+      <?php if (!empty($wo['app_shell']['show_bottom_nav'])) { ?>
+      <?php echo Wo_LoadPage('app/bottom-nav'); ?>
+      <?php } ?>
       <!-- Load modal alerts -->
     <?php echo Wo_LoadPage('modals/site-alerts'); ?>
 
@@ -925,7 +1005,7 @@
       <?php if ($wo['config']['website_mode'] == 'linkedin') { echo Wo_LoadPage('modals/create_hiring'); } ?>
     <div class="lb-preloader"><svg width='50px' height='50px' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid"><rect x="0" y="0" width="100" height="100" fill="none" class="bk"></rect><circle cx="50" cy="50" r="40" stroke="#676d76" fill="none" stroke-width="6" stroke-linecap="round"><animate attributeName="stroke-dashoffset" dur="1.5s" repeatCount="indefinite" from="0" to="502"></animate><animate attributeName="stroke-dasharray" dur="1.5s" repeatCount="indefinite" values="150.6 100.4;1 250;150.6 100.4"></animate></circle></svg></div>
 
-    <?php echo Wo_LoadPage('modals/keyboard-shortcuts'); ?>
+    <?php if (empty($wo['is_app_view'])) { echo Wo_LoadPage('modals/keyboard-shortcuts'); } ?>
     <?php if ($wo['config']['images_credit_system'] == 1 || $wo['config']['text_credit_system'] == 1) { echo Wo_LoadPage('modals/ai_credits');} ?>
     <?php } ?>
 
@@ -1153,7 +1233,7 @@
         });
         <?php echo $wo['config']['footer_cc']; ?>
       </script>
-      <?php if ($wo['page'] != 'get_news_feed') { ?>
+      <?php if ($wo['page'] != 'get_news_feed' && empty($wo['is_app_view'])) { ?>
       <script>
       window.addEventListener("load", function(){
       window.cookieconsent.initialise({
@@ -1174,6 +1254,29 @@
           "href": "<?php echo Wo_SeoLink('index.php?link1=terms&type=privacy-policy');?>"
         }
       })});
+      </script>
+      <?php } ?>
+      <?php if (!empty($wo['is_app_view'])) { ?>
+      <script>
+      window.Wo_AppShellBack = function (fallbackUrl) {
+        var referrer = document.referrer || '';
+        var sameHostReferrer = referrer.indexOf(window.location.host) !== -1;
+        if (sameHostReferrer || window.history.length > 1) {
+          window.history.back();
+          return false;
+        }
+        window.location.href = fallbackUrl;
+        return false;
+      };
+
+      document.addEventListener('click', function (event) {
+        var backTrigger = event.target.closest('[data-app-back]');
+        if (!backTrigger) {
+          return;
+        }
+        event.preventDefault();
+        window.Wo_AppShellBack(backTrigger.getAttribute('data-app-back'));
+      });
       </script>
       <?php } ?>
 

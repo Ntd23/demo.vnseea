@@ -1,3 +1,5 @@
+// Description: Creates normalized community draft objects without UI-only fallback copy.
+
 import { getDefaultCommunityCategory, getDefaultCommunityPageCategory } from "../../domain/services/community-helpers.service"
 import type {
   CommunityDraft,
@@ -48,9 +50,9 @@ export function createCommunityPageSettingsDraft(
     website: page?.website ?? "",
     locationLabel: page?.locationLabel ?? "",
     category: page?.category ?? getDefaultCommunityPageCategory(),
-    ctaLabel: page?.ctaLabel ?? "Theo dõi",
-    responseLabel: page?.responseLabel ?? "Phản hồi trong ngày làm việc",
-    ownerLabel: page?.ownerLabel ?? "Fanpage công khai",
+    ctaLabel: page?.ctaLabel ?? "",
+    responseLabel: page?.responseLabel ?? "",
+    ownerLabel: page?.ownerLabel ?? "",
     tags: page?.tags.join(", ") ?? "",
     allowMessages: true,
     showFollowerCount: true,
