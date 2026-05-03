@@ -1,4 +1,5 @@
 <?php
+// English description: Disable app WebView mode and keep production on the standard web layout.
 // +--------------------------------------\----------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -10,6 +11,13 @@
 // +------------------------------------------------------------------------+
 require_once('assets/init.php');
 decryptConfigData();
+
+if (!empty($_COOKIE['app_view'])) {
+    @setcookie('app_view', '', time() - 3600, '/');
+    $_COOKIE['app_view'] = '';
+}
+
+$wo['is_app_view'] = false;
 
 if (!empty($auto_redirect)) {
     $checkHTTPS = checkHTTPS();
@@ -1450,5 +1458,3 @@ echo Wo_Loadpage('container');
 mysqli_close($sqlConnect);
 unset($wo);
 ?>
-
-

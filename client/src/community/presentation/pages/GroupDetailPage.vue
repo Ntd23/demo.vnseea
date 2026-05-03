@@ -1,3 +1,4 @@
+<!-- Description: Renders the backend-backed community group detail page without mock invite feedback. -->
 <template>
   <div v-if="group" class="mx-auto max-w-[1280px] space-y-5 pb-10">
     <CommunityGroupHeroBanner
@@ -102,6 +103,7 @@ import CommunityGroupMembersCard from "../components/GroupMembersCard.vue"
 import CommunityGroupTabsBar from "../components/GroupTabsBar.vue"
 import CommunityGroupTopicsCard from "../components/GroupTopicsCard.vue"
 import { useCommunityGroupDetail } from "../../application/composables/useCommunityGroupDetail"
+import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 type CommunityDetailTab = "posts" | "about"
 type CommunityActionState = "idle" | "loading" | "success" | "error"
@@ -120,6 +122,7 @@ const router = useRouter()
 const { t } = useI18n()
 const toast = useToast()
 const translateText = useMaybeTranslatedText()
+const repository = createApiCommunityRepository()
 
 const activeTab = ref<CommunityDetailTab>(normalizeDetailTab(readQueryValue(route.query.tab)))
 const joinState = ref<CommunityActionState>("idle")
@@ -135,6 +138,7 @@ const {
   memberCountLabel,
   onlineCountLabel,
   groupPosts,
+  refresh,
 } = useCommunityGroupDetail(computed(() => String(route.params.name || "")))
 
 const localizedGroupName = computed(() =>
@@ -170,8 +174,12 @@ watch(() => route.params.name, () => {
   activeTab.value = normalizeDetailTab(readQueryValue(route.query.tab))
   joinState.value = "idle"
   inviteState.value = "idle"
-  joined.value = false
+  joined.value = Boolean(group.value?.joined)
 })
+
+watch(group, (value) => {
+  joined.value = Boolean(value?.joined)
+}, { immediate: true })
 
 async function handleJoinGroup() {
   if (!group.value || joinState.value === "loading" || joined.value) return
@@ -179,10 +187,11 @@ async function handleJoinGroup() {
   joinState.value = "loading"
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 480))
+    const updatedGroup = await repository.joinGroup(group.value.slug)
+    await refresh()
 
     joinState.value = "success"
-    joined.value = true
+    joined.value = Boolean(updatedGroup.joined)
 
     toast.add({
       title: t("pages.groupDetailPage.joinSuccessTitle"),
@@ -209,17 +218,13 @@ async function handleInviteMembers() {
   inviteState.value = "loading"
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 420))
-
-    inviteState.value = "success"
-
-    toast.add({
-      title: t("pages.groupDetailPage.inviteSuccessTitle"),
-      description: t("pages.groupDetailPage.inviteSuccessDescription", {
-        group: localizedGroupName.value,
-      }),
-      color: "success",
+    await navigateTo({
+      path: "/messages",
+      query: {
+        tab: "multi",
+      },
     })
+    inviteState.value = "success"
   }
   catch {
     inviteState.value = "error"

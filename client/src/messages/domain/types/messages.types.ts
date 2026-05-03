@@ -1,4 +1,6 @@
-export type MessageTabKey = "group" | "user" | "teams"
+// Description: Defines normalized message types for inbox tabs, thread payloads, and backend-backed message actions.
+export type MessageTabKey = "multi" | "user" | "group"
+export type MessageThreadType = "user" | "group" | "page"
 
 export type MessageTab = {
   id: MessageTabKey
@@ -7,12 +9,22 @@ export type MessageTab = {
 }
 
 export type MessageContact = {
-  id: number
+  id: string
   name: string
   status: string
   isOnline: boolean
   avatarUrl: string
   tab: MessageTabKey
+  type: MessageThreadType
+  preview: string
+  time: string
+  unreadCount: number
+  userId?: number
+  groupId?: number
+  pageId?: number
+  recipientId?: number
+  memberCount?: number
+  members?: string[]
 }
 
 export type MessageItem = {
@@ -23,4 +35,20 @@ export type MessageItem = {
   time?: string
   showTime?: boolean
   avatar?: string
+  timestamp?: number
+}
+
+export type MessageThread = {
+  messages: MessageItem[]
+  typing: boolean
+}
+
+export type MultiMessageSendResult = {
+  status: number
+  sentCount: number
+  failedCount: number
+  sentIds: number[]
+  failedIds: number[]
+  invalidFile?: number
+  error?: string
 }

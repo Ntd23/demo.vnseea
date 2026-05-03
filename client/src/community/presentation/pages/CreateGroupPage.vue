@@ -1,12 +1,29 @@
+<!-- Description: Renders the create-group route with a simple heading-first shell and the existing ordered form fields, aligned to the legacy PHP group creation flow. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-8 pb-20">
-    <CommunityCreationHeaderCard
-      :eyebrow="$t('community.creation.group.eyebrow')"
-      :title="$t('community.creation.group.title')"
-      :description="$t('community.creation.group.description')"
-      icon="i-ph-users-four-fill"
-      :highlights="highlights"
-    />
+  <div class="mx-auto max-w-[1280px] space-y-5 pb-20">
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-6">
+      <div class="space-y-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          {{ $t('community.creation.group.eyebrow') }}
+        </p>
+        <h1 class="text-[1.7rem] font-black tracking-[-0.04em] text-[#243b63] sm:text-[2rem]">
+          {{ $t('community.creation.group.title') }}
+        </h1>
+        <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+          {{ $t('community.creation.group.description') }}
+        </p>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span
+          v-for="item in highlights"
+          :key="item"
+          class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]"
+        >
+          {{ item }}
+        </span>
+      </div>
+    </section>
 
     <CommunityCreationForm
       v-model="draft"
@@ -34,18 +51,20 @@
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core"
 import CommunityCreationForm from "../components/CreationForm.vue"
-import CommunityCreationHeaderCard from "../components/CreationHeaderCard.vue"
 import { createCommunityGroupDraft } from "../../application/factories/community-drafts"
 import {
   communityCategoryOptions,
   communityPrivacyOptions,
 } from "../../domain/constants/community-options"
+import { getCommunityGroupPath } from "../../domain/services/community-helpers.service"
 import type { CommunityDraft } from "../../domain/types/community.types"
+import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 type CommunityCreationState = "idle" | "loading" | "success" | "error"
 
 const { t } = useI18n()
 const toast = useToast()
+const repository = createApiCommunityRepository()
 
 const draft = useStorage<CommunityDraft>(
   "community:create-group-draft",
@@ -95,7 +114,7 @@ async function handleCreateGroup() {
   submitState.value = "loading"
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 550))
+    const createdGroup = await repository.createGroup(draft.value)
 
     submitState.value = "success"
 
@@ -112,7 +131,7 @@ async function handleCreateGroup() {
     draft.value = createCommunityGroupDraft()
     draftRestored.value = false
 
-    await navigateTo("/groups")
+    await navigateTo(getCommunityGroupPath(createdGroup.slug))
   }
   catch {
     submitState.value = "error"

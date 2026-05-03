@@ -1,86 +1,27 @@
+<!-- Description: Renders the pages directory as a content-first list shell matching the legacy PHP page order. -->
 <template>
-  <div class="mx-auto max-w-[1440px] space-y-8 px-4 pb-20 pt-6 sm:px-6">
-    <section class="overflow-hidden rounded-[32px] border border-[#dbe3f2] bg-white shadow-[0_20px_50px_rgba(15,35,110,0.08)]">
-      <div class="grid gap-8 p-6 sm:p-10 xl:grid-cols-[minmax(0,1fr)_480px] xl:items-stretch">
-        <div class="flex min-w-0 flex-col justify-between gap-10 rounded-[28px] bg-[#0f172a] p-6 text-white sm:p-10">
-          <div class="space-y-6">
-            <div class="flex flex-wrap items-center gap-3">
-              <span class="inline-flex h-9 items-center rounded-2xl border border-white/20 bg-white/10 px-4 text-[12px] font-black uppercase tracking-[0.15em] text-white backdrop-blur-xl">
-                {{ $t("community.pagesDirectory.title") }}
-              </span>
-              <span class="inline-flex h-9 items-center rounded-2xl bg-primary-600 px-4 text-[12px] font-black uppercase tracking-[0.15em] text-white shadow-lg shadow-primary-600/30">
-                PRO DIRECTORY
-              </span>
-            </div>
-
-            <div class="space-y-4">
-              <h1 class="max-w-[720px] text-[38px] font-black leading-tight tracking-tight sm:text-[56px]">
-                {{ pageTitle }}
-              </h1>
-              <p class="max-w-xl text-[16px] font-medium leading-relaxed text-white/60">
-                {{ pageDescription }}
-              </p>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-4">
-            <UButton
-              to="/create-page"
-              size="xl"
-              class="h-14 rounded-2xl bg-white px-8 font-black text-[#0f172a] shadow-2xl transition-all hover:bg-primary-50 active:scale-95"
-            >
-              <template #leading>
-                <Icon name="i-ph-plus-bold" class="h-5 w-5" />
-              </template>
-              {{ $t("community.pagesDirectory.createAction") }}
-            </UButton>
-
-            <button class="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/10 text-white backdrop-blur-xl transition-all hover:bg-white/20">
-              <Icon name="i-ph-share-network-duotone" class="h-6 w-6" />
-            </button>
-          </div>
+  <div class="mx-auto max-w-[1280px] space-y-5 px-3 pb-10 sm:px-5 lg:px-6">
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+            {{ activeTabLabel }}
+          </p>
+          <h1 class="text-[1.9rem] font-black tracking-[-0.04em] text-[var(--text-primary)] sm:text-[2.3rem]">
+            {{ pageTitle }}
+          </h1>
+          <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+            {{ pageDescription }}
+          </p>
         </div>
 
-        <div class="grid gap-4">
-          <div class="group relative overflow-hidden rounded-[28px] bg-primary-600 p-8 text-white shadow-2xl shadow-primary-600/20">
-            <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl transition-transform group-hover:scale-150" />
-
-            <div class="relative flex items-start justify-between">
-              <div class="space-y-1">
-                <p class="text-[11px] font-black uppercase tracking-widest text-white/70">
-                  {{ $t("community.tabs.pages.suggested") }}
-                </p>
-                <p class="text-[48px] font-black leading-none">
-                  {{ suggestedCount }}
-                </p>
-              </div>
-              <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md">
-                <Icon name="i-ph-sparkle-fill" class="h-7 w-7 text-white" />
-              </div>
-            </div>
-            <p class="mt-4 text-[13px] font-bold text-white/80">Discover new opportunities today.</p>
-          </div>
-
-          <div class="grid gap-4 sm:grid-cols-2">
-            <div class="rounded-[24px] border border-[#dbe3f2] bg-white p-6 shadow-sm">
-              <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                {{ $t("community.tabs.pages.favorite") }}
-              </p>
-              <p class="mt-2 text-[32px] font-black text-[#0f172a]">
-                {{ favoriteCount }}
-              </p>
-            </div>
-
-            <div class="rounded-[24px] border border-[#dbe3f2] bg-white p-6 shadow-sm">
-              <p class="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                {{ $t("community.groups.stats.status") }}
-              </p>
-              <p class="mt-3 text-[14px] font-black uppercase tracking-tight text-primary-600">
-                {{ activeTabStatus }}
-              </p>
-            </div>
-          </div>
-        </div>
+        <NuxtLink
+          to="/create-page"
+          class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:-translate-y-0.5 hover:bg-primary-700"
+        >
+          <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
+          {{ $t("community.pagesDirectory.createAction") }}
+        </NuxtLink>
       </div>
     </section>
 
@@ -92,67 +33,38 @@
       :status-label="filterStatusLabel"
     />
 
-    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white p-2 shadow-sm lg:p-3">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
-        <div class="flex items-center gap-4 px-4 py-3">
-          <div class="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-          <p class="text-[13px] font-black uppercase tracking-widest text-[#0f172a]">
-            {{ activeTabLabel }}
-          </p>
-          <div class="h-4 w-px bg-slate-200" />
-          <p class="text-[13px] font-bold text-slate-400">
-            {{ activeTabHint }}
-          </p>
-        </div>
-
-        <div class="flex gap-2 p-2">
-          <UButton color="gray" variant="ghost" icon="i-ph-squares-four-bold" class="h-10 w-10 rounded-xl" />
-          <UButton color="gray" variant="ghost" icon="i-ph-list-bold" class="h-10 w-10 rounded-xl bg-slate-100" />
-        </div>
-      </div>
+    <section class="rounded-[22px] border border-[#dbe3f2] bg-white px-5 py-4 text-[14px] leading-6 text-slate-500 shadow-[0_8px_20px_rgba(15,35,110,0.04)]">
+      <strong class="mr-2 text-[var(--text-primary)]">{{ activeTabLabel }}</strong>
+      {{ activeTabHint }}
     </section>
 
-    <section
-      v-if="mode === 'mine' && visiblePages.length === 0"
-      class="rounded-[32px] border border-[#dbe3f2] bg-white p-12 text-center shadow-xl lg:p-24"
-    >
-      <div class="mx-auto max-w-xl space-y-8">
-        <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-[40px] bg-slate-50 text-slate-300 ring-8 ring-slate-50/50">
-          <Icon name="i-ph-flag-duotone" class="h-12 w-12" />
+    <div v-if="pending" class="grid gap-4 xl:grid-cols-2">
+      <div
+        v-for="item in 4"
+        :key="item"
+        class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+      >
+        <USkeleton class="h-36 w-full rounded-[22px]" />
+        <div class="mt-4 space-y-3">
+          <USkeleton class="h-6 w-48 rounded-xl" />
+          <USkeleton class="h-4 w-full rounded-xl" />
+          <USkeleton class="h-4 w-2/3 rounded-xl" />
         </div>
-        <div class="space-y-4">
-          <h2 class="text-3xl font-black tracking-tight text-[#0f172a]">
-            {{ $t('community.pagesDirectory.emptyMineTitle') }}
-          </h2>
-          <p class="text-base font-medium leading-relaxed text-slate-500">
-            {{ $t('community.pagesDirectory.emptyMineDesc') }}
-          </p>
-        </div>
-        <UButton
-          to="/create-page"
-          size="xl"
-          class="h-14 rounded-2xl bg-primary-600 px-10 font-black text-white shadow-2xl shadow-primary-600/30 transition-all active:scale-95"
-        >
-          <template #leading>
-            <Icon name="i-ph-plus-bold" class="h-5 w-5" />
-          </template>
-          {{ $t("community.pagesDirectory.createFirst") }}
-        </UButton>
       </div>
-    </section>
+    </div>
 
     <section
       v-else-if="visiblePages.length === 0"
-      class="rounded-[32px] border border-[#dbe3f2] bg-white p-16 text-center shadow-lg"
+      class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-12 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
     >
       <FoundationEmptyState
-        icon="i-ph-magnifying-glass-duotone"
-        :title="$t('community.pagesDirectory.emptyOtherTitle')"
-        :description="$t('community.pagesDirectory.emptyOtherDesc')"
+        :icon="mode === 'mine' ? 'i-ph-flag-duotone' : 'i-ph-magnifying-glass-duotone'"
+        :title="mode === 'mine' ? $t('community.pagesDirectory.emptyMineTitle') : $t('community.pagesDirectory.emptyOtherTitle')"
+        :description="mode === 'mine' ? $t('community.pagesDirectory.emptyMineDesc') : $t('community.pagesDirectory.emptyOtherDesc')"
       />
     </section>
 
-    <div v-else class="grid gap-6 xl:grid-cols-2">
+    <div v-else class="grid gap-4 xl:grid-cols-2">
       <CommunityPageCard
         v-for="page in visiblePages"
         :key="page.id"
@@ -173,11 +85,8 @@ import {
   communityPageTabs,
 } from "../../domain/constants/community-options"
 import { appendCommunityQuery } from "../../domain/services/community-helpers.service"
-import { communityPageDirectory } from "../../infrastructure/mocks/communityDirectory.mock"
-import type {
-  CommunityPageRecord,
-  CommunityPageTab,
-} from "../../domain/types/community.types"
+import type { CommunityPageTab } from "../../domain/types/community.types"
+import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 function readQueryValue(value: unknown) {
   if (Array.isArray(value)) return String(value[0] || "")
@@ -193,6 +102,7 @@ const props = withDefaults(defineProps<{
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+const repository = createApiCommunityRepository()
 
 const search = ref(readQueryValue(route.query.q))
 const storedSearch = useStorage<string>(
@@ -201,6 +111,42 @@ const storedSearch = useStorage<string>(
   undefined,
   { initOnMounted: true },
 )
+
+const { data: pagesData, status } = useAsyncData(
+  () => `community:pages:${props.mode}`,
+  () => repository.getPages(props.mode),
+  {
+    watch: [() => props.mode],
+    default: () => [],
+  },
+)
+
+const { data: countsData } = useAsyncData(
+  "community:pages:counts",
+  async () => {
+    const [mine, suggested, favorite] = await Promise.all([
+      repository.getPages("mine"),
+      repository.getPages("suggested"),
+      repository.getPages("favorite"),
+    ])
+
+    return {
+      mine: mine.length,
+      suggested: suggested.length,
+      favorite: favorite.length,
+    }
+  },
+  {
+    default: () => ({
+      mine: 0,
+      suggested: 0,
+      favorite: 0,
+    }),
+  },
+)
+
+const pending = computed(() => status.value === "pending")
+const pages = computed(() => pagesData.value ?? [])
 
 const pageTitle = computed(() => {
   if (props.mode === "suggested") return t("community.pagesDirectory.titleSuggested")
@@ -214,32 +160,19 @@ const pageDescription = computed(() => {
   return t("community.pagesDirectory.desc")
 })
 
-const suggestedCount = computed(() =>
-  communityPageDirectory.filter(page => page.directoryTabs?.includes("suggested")).length,
-)
-
-const favoriteCount = computed(() =>
-  communityPageDirectory.filter(page => page.directoryTabs?.includes("favorite")).length,
-)
-
-const visiblePages = computed<CommunityPageRecord[]>(() => {
-  const pages =
-    props.mode === "mine"
-      ? []
-      : communityPageDirectory.filter(page => page.directoryTabs?.includes(props.mode))
-
+const visiblePages = computed(() => {
   const keyword = search.value.trim().toLowerCase()
-  if (!keyword) return pages
+  if (!keyword) return pages.value
 
-  return pages.filter((page) => {
+  return pages.value.filter((page) => {
     const searchable = [
-      t(page.name),
+      page.name,
       page.slug,
-      t(page.summary),
-      t(page.ownerLabel),
-      t(page.responseLabel),
-      page.locationLabel ? t(page.locationLabel) : "",
-      ...page.tags.map(tag => t(tag)),
+      page.summary,
+      page.ownerLabel,
+      page.responseLabel,
+      page.locationLabel || "",
+      ...page.tags,
     ].join(" ").toLowerCase()
 
     return searchable.includes(keyword)
@@ -250,10 +183,7 @@ const tabItems = computed(() =>
   communityPageTabs.map(tab => ({
     ...tab,
     to: appendCommunityQuery(communityPageRouteMap[tab.value], { q: search.value.trim() }),
-    count:
-      tab.value === "mine"
-        ? 0
-        : communityPageDirectory.filter(page => page.directoryTabs?.includes(tab.value)).length,
+    count: countsData.value?.[tab.value] ?? 0,
   })),
 )
 
@@ -272,12 +202,6 @@ const activeTabHint = computed(() => {
   if (props.mode === "mine") return t("community.pagesDirectory.hintMine")
   if (props.mode === "suggested") return t("community.pagesDirectory.hintSuggested")
   return t("community.pagesDirectory.hintFavorite")
-})
-
-const activeTabStatus = computed(() => {
-  if (props.mode === "mine") return t("community.pagesDirectory.statusMine")
-  if (props.mode === "suggested") return t("community.pagesDirectory.statusSuggested", { count: suggestedCount.value })
-  return t("community.pagesDirectory.statusFavorite", { count: favoriteCount.value })
 })
 
 const filterStatusLabel = computed(() =>

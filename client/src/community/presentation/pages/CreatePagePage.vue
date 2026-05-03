@@ -1,16 +1,29 @@
+<!-- Description: Renders the create-page route with a heading-first shell and the existing ordered form fields, aligned to the legacy PHP page creation flow. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-10 px-4 pb-24 sm:px-6">
-    <CommunityCreationHeaderCard
-      :eyebrow="$t('community.creation.page.eyebrow')"
-      :title="$t('community.creation.page.title')"
-      :description="$t('community.creation.page.description')"
-      icon="i-ph-megaphone-simple-fill"
-      :highlights="[
-        $t('community.creation.page.highlights.0'),
-        $t('community.creation.page.highlights.1'),
-        $t('community.creation.page.highlights.2')
-      ]"
-    />
+  <div class="mx-auto max-w-[1280px] space-y-5 px-4 pb-24 sm:px-6">
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-6">
+      <div class="space-y-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          {{ $t('community.creation.page.eyebrow') }}
+        </p>
+        <h1 class="text-[1.7rem] font-black tracking-[-0.04em] text-[#243b63] sm:text-[2rem]">
+          {{ $t('community.creation.page.title') }}
+        </h1>
+        <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+          {{ $t('community.creation.page.description') }}
+        </p>
+      </div>
+
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span
+          v-for="item in highlights"
+          :key="item"
+          class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]"
+        >
+          {{ item }}
+        </span>
+      </div>
+    </section>
 
     <CommunityCreationForm
       v-model="draft"
@@ -26,7 +39,7 @@
       :description-placeholder="$t('community.creation.common.introHint', { entity: $t('community.creation.common.entityLabelPage') })"
       :category-label="$t('community.creation.page.categoryLabel')"
       :back-label="$t('community.creation.common.back')"
-      back-to="/home"
+      back-to="/pages"
       :submit-label="$t('community.creation.page.submitLabel')"
       :identity-section-label="$t('community.creation.page.identitySectionLabel')"
       :identity-section-title="$t('community.creation.page.identitySectionTitle')"
@@ -51,7 +64,6 @@
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core"
 import CommunityCreationForm from "../components/CreationForm.vue"
-import CommunityCreationHeaderCard from "../components/CreationHeaderCard.vue"
 import {
   createCommunityPageDraft,
 } from "../../application/factories/community-drafts"
@@ -60,15 +72,16 @@ import {
   communityPageUrlPrefix,
 } from "../../domain/constants/community-options"
 import {
-  createCommunitySlug,
   getCommunityPagePath,
 } from "../../domain/services/community-helpers.service"
 import type { CommunityDraft } from "../../domain/types/community.types"
+import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 type CommunityCreationState = "idle" | "loading" | "success" | "error"
 
 const { t } = useI18n()
 const toast = useToast()
+const repository = createApiCommunityRepository()
 
 const draft = useStorage<CommunityDraft>(
   "community:create-page-draft",
@@ -82,31 +95,11 @@ const draft = useStorage<CommunityDraft>(
 
 const submitState = ref<CommunityCreationState>("idle")
 const draftRestored = ref(false)
-
-const submitPath = computed(() => {
-  const resolvedSlug =
-    draft.value.slug.trim()
-    || createCommunitySlug(draft.value.name)
-    || "fanpage-moi"
-
-  const query = new URLSearchParams()
-
-  if (draft.value.name.trim()) {
-    query.set("name", draft.value.name.trim())
-  }
-
-  if (draft.value.description.trim()) {
-    query.set("description", draft.value.description.trim())
-  }
-
-  if (draft.value.category) {
-    query.set("category", draft.value.category)
-  }
-
-  const queryString = query.toString()
-
-  return `${getCommunityPagePath(resolvedSlug)}${queryString ? `?${queryString}` : ""}`
-})
+const highlights = computed(() => [
+  t("community.creation.page.highlights.0"),
+  t("community.creation.page.highlights.1"),
+  t("community.creation.page.highlights.2"),
+])
 
 const nextSteps = computed(() => [
   {
@@ -151,7 +144,7 @@ async function handleCreatePage() {
   submitState.value = "loading"
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 550))
+    const createdPage = await repository.createPage(draft.value)
 
     submitState.value = "success"
 
@@ -165,12 +158,10 @@ async function handleCreatePage() {
       color: "success",
     })
 
-    const destination = submitPath.value
-
     draft.value = createCommunityPageDraft()
     draftRestored.value = false
 
-    await navigateTo(destination)
+    await navigateTo(getCommunityPagePath(createdPage.slug))
   }
   catch {
     submitState.value = "error"

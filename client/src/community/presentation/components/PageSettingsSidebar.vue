@@ -1,3 +1,4 @@
+<!-- Description: Renders the page settings sidebar preview from normalized backend-backed page data. -->
 <template>
   <div class="space-y-4 xl:sticky xl:top-[84px]">
     <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
@@ -21,7 +22,7 @@
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2 text-[12px] font-semibold">
-            <span class="rounded-full bg-white/14 px-3 py-1.5">{{ $t(categoryLabel) }}</span>
+            <span class="rounded-full bg-white/14 px-3 py-1.5">{{ categoryLabel }}</span>
             <span class="rounded-full bg-white/14 px-3 py-1.5">{{ selectedCtaLabel }}</span>
           </div>
 

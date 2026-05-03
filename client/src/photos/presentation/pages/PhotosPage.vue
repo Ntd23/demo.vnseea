@@ -1,15 +1,33 @@
+<!-- Description: Renders the photos page as a media-first grid with lightweight album navigation, aligned to the legacy media flow. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-5 pb-10 sm:space-y-6">
-    <PhotosHero
-      :eyebrow="t('pages.photosPage.heroEyebrow')"
-      :title="t('pages.photosPage.heroTitle')"
-      :description="t('pages.photosPage.heroDescription')"
-      :photo="heroPhoto"
-      :stats="heroStats"
-      :primary-label="t('pages.photosPage.heroPrimaryAction')"
-      :secondary-label="t('pages.photosPage.heroSecondaryAction')"
-      @open="openPhoto(heroPhoto.id)"
-    />
+  <div class="mx-auto max-w-[1280px] space-y-5 px-3 pb-10 sm:px-5 lg:px-6">
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+      <div class="space-y-4">
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+            {{ t('pages.photosPage.heroEyebrow') }}
+          </p>
+          <h1 class="text-[1.9rem] font-black tracking-[-0.04em] text-[var(--text-primary)] sm:text-[2.2rem]">
+            {{ t('pages.photosPage.heroTitle') }}
+          </h1>
+          <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+            {{ t('pages.photosPage.heroDescription') }}
+          </p>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <article
+            v-for="item in heroStats"
+            :key="item.label"
+            class="rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] p-4"
+          >
+            <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{{ item.label }}</p>
+            <p class="mt-2 text-[1.55rem] font-black text-[var(--text-primary)]">{{ item.value }}</p>
+            <p class="mt-2 text-[13px] leading-6 text-slate-500">{{ item.description }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
 
     <PhotosFilters
       v-model:search="search"
@@ -18,57 +36,43 @@
       :placeholder="t('pages.photosPage.searchPlaceholder')"
     />
 
-    <div class="grid gap-5 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
-      <section class="min-w-0 space-y-4 sm:space-y-5">
-        <div class="scrollbar-hide -mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0 sm:pb-1">
+    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
+      <section class="min-w-0 space-y-5">
+        <div class="scrollbar-hide -mx-4 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
           <NuxtLink
             v-for="album in albums"
             :key="album.title"
             :to="album.to"
-            class="group min-w-[240px] shrink-0 overflow-hidden rounded-[16px] border border-[rgba(0,0,255,0.06)] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition hover:-translate-y-1 sm:min-w-[280px]"
+            class="min-w-[240px] shrink-0 rounded-[18px] border border-[#dbe3f2] bg-white p-4 shadow-[0_8px_20px_rgba(15,35,110,0.04)] transition hover:-translate-y-0.5"
           >
-            <div class="relative h-36 overflow-hidden">
-              <img :alt="album.title" :src="album.cover" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]">
-              <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.78))]" />
-              <div class="absolute left-4 top-4 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold text-white" :style="{ background: album.accent }">
-                {{ album.badge }}
-              </div>
-              <div class="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-semibold text-[#1e293b]">
-                {{ t("pages.photosPage.albumCount", { count: album.count }) }}
-              </div>
-            </div>
-
-            <div class="p-4">
-              <h2 class="text-[1.05rem] font-extrabold text-[#0f172a]">{{ album.title }}</h2>
-              <p class="mt-2 text-[13px] font-medium leading-6 text-[#64748b]">{{ album.description }}</p>
-              <div class="mt-4 inline-flex items-center gap-2 text-[12px] font-semibold text-[#0000ff]">
-                {{ t("pages.photosPage.openLink") }}
-                <Icon name="i-ph-arrow-up-right-bold" class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </div>
-            </div>
+            <h2 class="text-base font-black text-[var(--text-primary)]">{{ album.title }}</h2>
+            <p class="mt-2 text-[13px] leading-6 text-slate-500">{{ album.description }}</p>
+            <p class="mt-3 text-[12px] font-bold text-primary-700">
+              {{ t("pages.photosPage.albumCount", { count: album.count }) }}
+            </p>
           </NuxtLink>
         </div>
 
-        <section class="rounded-[16px] border border-[rgba(0,0,255,0.06)] bg-white px-4 py-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:px-5 sm:py-5">
+        <section class="rounded-[22px] border border-[#dbe3f2] bg-white px-5 py-4 shadow-[0_8px_20px_rgba(15,35,110,0.04)]">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-[11px] font-semibold uppercase tracking-[0.05em] text-[#94a3b8]">
+              <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
                 {{ t("pages.photosPage.resultEyebrow") }}
               </p>
-              <h2 class="mt-2 text-[1.35rem] font-extrabold tracking-[-0.01em] text-[#0f172a]">
+              <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
                 {{ resultHeading }}
               </h2>
-              <p class="mt-2 text-[13px] font-medium leading-6 text-[#64748b]">
+              <p class="mt-1 text-[14px] leading-6 text-slate-500">
                 {{ t("pages.photosPage.resultCount", { count: filteredPhotos.length }) }}
               </p>
             </div>
 
             <button
-              class="inline-flex h-10 w-full items-center justify-center rounded-[12px] border border-[#e2e8f0] bg-white px-4 text-[13px] font-600 text-[#334155] transition hover:border-[rgba(0,0,255,0.2)] hover:text-[#0000ff] sm:w-auto"
+              class="inline-flex h-10 items-center justify-center rounded-[14px] border border-[#dbe3f2] bg-white px-4 text-[13px] font-bold text-[var(--text-primary)] transition hover:border-primary-200 hover:text-primary-700"
               type="button"
               @click="resetFilters"
             >
-              <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-4 w-4" />
+              <Icon name="i-ph-arrow-counter-clockwise-duotone" class="mr-2 h-4 w-4" />
               {{ t("pages.photosPage.resetFilters") }}
             </button>
           </div>
@@ -76,15 +80,13 @@
 
         <section
           v-if="filteredPhotos.length === 0"
-          class="rounded-[30px] border border-[#dbe3f2] bg-white px-5 py-12 shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16"
+          class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
         >
-          <div class="mx-auto max-w-2xl text-center">
-            <FoundationEmptyState
-              icon="i-ph-images-square"
-              :title="t('pages.photosPage.emptyTitle')"
-              :description="t('pages.photosPage.emptyDescription')"
-            />
-          </div>
+          <FoundationEmptyState
+            icon="i-ph-images-square"
+            :title="t('pages.photosPage.emptyTitle')"
+            :description="t('pages.photosPage.emptyDescription')"
+          />
         </section>
 
         <div v-else class="columns-1 gap-4 sm:columns-2 xl:columns-3">
@@ -141,7 +143,6 @@ import { createHashtagPath, formatHashtagLabel } from "../../../feed/application
 import LightboxModal from "../../../lightbox/presentation/components/LightboxModal.vue"
 import PhotosCard from "../components/Card.vue"
 import PhotosFilters from "../components/Filters.vue"
-import PhotosHero from "../components/Hero.vue"
 import PhotosSidebar from "../components/Sidebar.vue"
 import type { MockPhoto, PhotoCategoryKey } from "../../application/composables/useMockPhotosData"
 import { formatPhotoNumber, getPhotoEngagement, useMockPhotosData } from "../../application/composables/useMockPhotosData"
@@ -224,12 +225,6 @@ watch(filteredPhotos, (items) => {
     currentPhotoId.value = items[0]?.id ?? photos.value[0]?.id ?? ""
   }
 })
-
-const heroPhoto = computed<MockPhoto>(() =>
-  filteredPhotos.value[0]
-  ?? photos.value[0]
-  ?? fallbackPhoto,
-)
 
 const currentPhoto = computed<MockPhoto>(() =>
   filteredPhotos.value.find(photo => photo.id === currentPhotoId.value)

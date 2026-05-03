@@ -1,93 +1,139 @@
+<!-- Description: Renders the page settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP page settings structure. -->
 <template>
   <div v-if="page && previewPage" class="mx-auto max-w-[1280px] space-y-5 pb-10">
-    <CommunityCreationHeaderCard
-      :eyebrow="$t('community.pageSettings.eyebrow')"
-      :title="$t('community.pageSettings.title', { name: $t(page.name) })"
-      :description="$t('community.pageSettings.desc')"
-      icon="i-ph-sliders-horizontal-bold"
-      :highlights="[selectedCategoryLabel, selectedCtaLabel, visibilityLabel]"
-    />
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-6">
+      <div class="space-y-3">
+        <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
+          {{ $t('community.pageSettings.eyebrow') }}
+        </p>
+        <h1 class="text-[1.7rem] font-black tracking-[-0.04em] text-[#243b63] sm:text-[2rem]">
+          {{ $t('community.pageSettings.title', { name: translatedPageName }) }}
+        </h1>
+        <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+          {{ $t('community.pageSettings.desc') }}
+        </p>
+      </div>
 
-    <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.08fr)_340px]">
-      <UForm
-        :state="draft"
-        :validate="validateDraft"
-        class="min-w-0 space-y-4"
-        @submit="handleSave"
-        @error="handleSaveError"
-      >
-        <CommunityPageSettingsBasicsCard
-          v-model="draft"
-          :page-path="pagePath"
-        />
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
+          {{ selectedCategoryLabel }}
+        </span>
+        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
+          {{ selectedCtaLabel }}
+        </span>
+        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
+          {{ visibilityLabel }}
+        </span>
+      </div>
+    </section>
 
-        <CommunityPageSettingsControlsCard v-model="draft" />
+    <div class="grid gap-5 xl:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="xl:sticky xl:top-[84px] xl:self-start">
+        <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-4 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
+          <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
+            {{ $t('community.pageSettings.eyebrow') }}
+          </p>
+          <nav class="mt-4 space-y-2">
+            <a
+              v-for="item in settingsNavItems"
+              :key="item.id"
+              :href="`#${item.id}`"
+              class="flex items-center justify-between rounded-[16px] border border-[#e7ecf6] bg-[#fbfcff] px-4 py-3 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d4f5] hover:bg-white"
+            >
+              <span>{{ item.label }}</span>
+              <Icon name="i-ph-caret-right-bold" class="h-3.5 w-3.5 text-slate-400" />
+            </a>
+          </nav>
+        </section>
+      </aside>
 
-        <CommunitySettingsSectionCard
-          :eyebrow="$t('community.pageSettings.finish.eyebrow')"
-          :title="$t('community.pageSettings.finish.title')"
-          :description="$t('community.pageSettings.finish.desc')"
-          icon="i-ph-floppy-disk-back-bold"
+      <div class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px] 2xl:items-start">
+        <UForm
+          :state="draft"
+          :validate="validateDraft"
+          class="min-w-0 space-y-4"
+          @submit="handleSave"
+          @error="handleSaveError"
         >
-          <div class="flex flex-col gap-4">
-            <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-500">
-              <span v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: selectedCtaLabel.toLowerCase() })" />
-            </div>
-
-            <UAlert
-              v-if="statusAlert"
-              :color="statusAlert.color"
-              variant="subtle"
-              :icon="statusAlert.icon"
-              :title="statusAlert.title"
-              :description="statusAlert.description"
-              class="rounded-[20px]"
-              aria-live="polite"
+          <section id="basics" class="scroll-mt-24">
+            <CommunityPageSettingsBasicsCard
+              v-model="draft"
+              :page-path="pagePath"
             />
+          </section>
 
-            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <UButton
-                :to="pagePath"
-                color="neutral"
-                variant="outline"
-                size="xl"
-                :disabled="isBusy"
-                class="justify-center rounded-full"
-              >
-                <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
-                {{ $t("community.pageSettings.finish.back") }}
-              </UButton>
+          <section id="controls" class="scroll-mt-24">
+            <CommunityPageSettingsControlsCard v-model="draft" />
+          </section>
 
-              <UButton
-                type="submit"
-                color="primary"
-                variant="solid"
-                size="xl"
-                :loading="isBusy"
-                :disabled="isSaveDisabled"
-                class="justify-center rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
-              >
-                <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
-                {{ $t("community.pageSettings.finish.save") }}
-              </UButton>
-            </div>
-          </div>
-        </CommunitySettingsSectionCard>
-      </UForm>
+          <section id="finish" class="scroll-mt-24">
+            <CommunitySettingsSectionCard
+              :eyebrow="$t('community.pageSettings.finish.eyebrow')"
+              :title="$t('community.pageSettings.finish.title')"
+              :description="$t('community.pageSettings.finish.desc')"
+              icon="i-ph-floppy-disk-back-bold"
+            >
+              <div class="flex flex-col gap-4">
+                <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-500">
+                  <span v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: selectedCtaLabel.toLowerCase() })" />
+                </div>
 
-      <CommunityPageSettingsSidebar
-        :page="previewPage"
-        :category-label="selectedCategoryLabel"
-        :follower-count-label="followerCountLabel"
-        :like-count-label="likeCountLabel"
-        :selected-cta-label="selectedCtaLabel"
-        :enabled-policies="enabledPolicies"
-        :total-policies="totalPolicies"
-        :show-follower-count="draft.showFollowerCount"
-        :show-like-count="draft.showLikeCount"
-        :allow-messages="draft.allowMessages"
-        :recommend-related-pages="draft.recommendRelatedPages"
-      />
+                <UAlert
+                  v-if="statusAlert"
+                  :color="statusAlert.color"
+                  variant="subtle"
+                  :icon="statusAlert.icon"
+                  :title="statusAlert.title"
+                  :description="statusAlert.description"
+                  class="rounded-[20px]"
+                  aria-live="polite"
+                />
+
+                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <UButton
+                    :to="pagePath"
+                    color="neutral"
+                    variant="outline"
+                    size="xl"
+                    :disabled="isBusy"
+                    class="justify-center rounded-full"
+                  >
+                    <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
+                    {{ $t("community.pageSettings.finish.back") }}
+                  </UButton>
+
+                  <UButton
+                    type="submit"
+                    color="primary"
+                    variant="solid"
+                    size="xl"
+                    :loading="isBusy"
+                    :disabled="isSaveDisabled"
+                    class="justify-center rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
+                  >
+                    <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
+                    {{ $t("community.pageSettings.finish.save") }}
+                  </UButton>
+                </div>
+              </div>
+            </CommunitySettingsSectionCard>
+          </section>
+        </UForm>
+
+        <CommunityPageSettingsSidebar
+          :page="previewPage"
+          :category-label="selectedCategoryLabel"
+          :follower-count-label="followerCountLabel"
+          :like-count-label="likeCountLabel"
+          :selected-cta-label="selectedCtaLabel"
+          :enabled-policies="enabledPolicies"
+          :total-policies="totalPolicies"
+          :show-follower-count="draft.showFollowerCount"
+          :show-like-count="draft.showLikeCount"
+          :allow-messages="draft.allowMessages"
+          :recommend-related-pages="draft.recommendRelatedPages"
+        />
+      </div>
     </div>
   </div>
 
@@ -114,7 +160,6 @@
 <script setup lang="ts">
 import { useStorage, watchDebounced } from "@vueuse/core"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import CommunityCreationHeaderCard from "../components/CreationHeaderCard.vue"
 import CommunityPageSettingsBasicsCard from "../components/PageSettingsBasicsCard.vue"
 import CommunityPageSettingsControlsCard from "../components/PageSettingsControlsCard.vue"
 import CommunityPageSettingsSidebar from "../components/PageSettingsSidebar.vue"
@@ -132,6 +177,7 @@ import type {
   CommunityPageRecord,
   CommunityPageSettingsDraft,
 } from "../../domain/types/community.types"
+import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 type PageSettingsState = "idle" | "loading" | "success" | "error"
 
@@ -143,6 +189,8 @@ type PageSettingsError = {
 const route = useRoute()
 const toast = useToast()
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
+const repository = createApiCommunityRepository()
 
 const {
   page,
@@ -151,7 +199,6 @@ const {
   likeCountLabel,
 } = useCommunityPageDetail(
   computed(() => String(route.params.page || "")),
-  computed(() => route.query),
 )
 
 const draft = ref<CommunityPageSettingsDraft>(
@@ -196,6 +243,10 @@ const previewPage = computed<CommunityPageRecord | null>(() => {
   }
 })
 
+const translatedPageName = computed(() =>
+  page.value ? translateText(page.value.name, page.value.slug) : "",
+)
+
 const selectedCategoryLabel = computed(() =>
   t(
     getCommunityOptionLabel(
@@ -231,6 +282,11 @@ const pagePath = computed(() =>
     ? appendCommunityQuery(getCommunityPagePath(page.value.slug), route.query)
     : "/pages",
 )
+const settingsNavItems = computed(() => [
+  { id: "basics", label: t("community.pageSettings.basics.title") },
+  { id: "controls", label: t("community.pageSettings.controls.title") },
+  { id: "finish", label: t("community.pageSettings.finish.title") },
+])
 
 const isBusy = computed(() => saveState.value === "loading")
 const isSaveDisabled = computed(() =>
@@ -323,9 +379,12 @@ async function handleSave() {
   saveState.value = "loading"
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 500))
+    if (!page.value) {
+      throw new Error("page_missing")
+    }
 
-    const normalized = normalizeDraft(draft.value)
+    const savedPage = await repository.updatePage(page.value.slug, draft.value)
+    const normalized = normalizeDraft(createLocalizedDraft(savedPage))
 
     draft.value = { ...normalized }
     draftStorage.value = { ...normalized }
@@ -385,13 +444,13 @@ function applyDraft(value: CommunityPageSettingsDraft, restored: boolean) {
 function createLocalizedDraft(value: CommunityPageRecord): CommunityPageSettingsDraft {
   return {
     ...createCommunityPageSettingsDraft(value),
-    name: t(value.name),
-    summary: value.summary,
-    locationLabel: value.locationLabel || "",
-    ctaLabel: value.ctaLabel || "",
-    responseLabel: value.responseLabel,
-    ownerLabel: value.ownerLabel,
-    tags: value.tags.join(", "),
+    name: translateText(value.name, value.slug),
+    summary: translateText(value.summary),
+    locationLabel: translateText(value.locationLabel),
+    ctaLabel: translateText(value.ctaLabel),
+    responseLabel: translateText(value.responseLabel),
+    ownerLabel: translateText(value.ownerLabel),
+    tags: value.tags.map(tag => translateText(tag, tag)).join(", "),
   }
 }
 

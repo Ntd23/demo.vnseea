@@ -1,126 +1,61 @@
+<!-- Description: Renders the poke page as a heading plus poke list that matches the PHP order and empty-state placement. -->
 <template>
-  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-20 sm:px-5 lg:px-6">
-    <!-- Hero Section -->
-    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_16px_36px_rgba(15,35,110,0.07)]">
-      <div class="grid gap-6 p-5 sm:p-6 xl:grid-cols-[minmax(0,1fr)_460px] xl:items-stretch">
-        <div class="flex min-w-0 flex-col justify-between gap-8 rounded-[24px] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-5 ring-1 ring-[#dbe3f2] sm:p-7">
-          <div class="space-y-4">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="inline-flex h-8 items-center rounded-full bg-white px-3 text-[12px] font-semibold text-primary-700 ring-1 ring-primary-100">
-                {{ t("pages.pokePage.heroEyebrow") }}
-              </span>
-              <span class="inline-flex h-8 items-center rounded-full bg-primary-600 px-3 text-[12px] font-semibold text-white">
-                {{ heroMainStat.value }} {{ heroMainStat.label }}
-              </span>
-            </div>
-
-            <div class="space-y-3">
-              <h1 class="max-w-[760px] text-[34px] font-extrabold leading-tight text-[var(--text-primary)] sm:text-[48px]">
-                {{ t("pages.pokePage.heroTitle") }}
-              </h1>
-              <p class="max-w-xl text-[15px] font-medium leading-7 text-slate-600">
-                {{ t("pages.pokePage.heroDescription") }}
-              </p>
-            </div>
-          </div>
-
-          <div class="grid gap-3 sm:grid-cols-[auto_auto_1fr] sm:items-center">
-            <NuxtLink
-              :to="appRoutes.messages"
-              class="inline-flex h-12 items-center justify-center rounded-[12px] border border-secondary-200 bg-white px-5 text-[14px] font-semibold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
-            >
-              <Icon name="i-ph-chat-circle-dots-duotone" class="mr-2 h-5 w-5 shrink-0" />
-              {{ t("pages.pokePage.openMessages") }}
-            </NuxtLink>
-
-            <button
-              v-if="pokedBackCount > 0"
-              type="button"
-              class="inline-flex h-12 items-center justify-center rounded-[12px] bg-primary-600 px-5 text-[14px] font-semibold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:bg-primary-700 active:scale-95"
-              @click="resetPokedBack"
-            >
-              <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-5 w-5 shrink-0" />
-              {{ t("pages.pokePage.resetStatus") }}
-            </button>
-          </div>
+  <div class="mx-auto max-w-[1280px] space-y-5 px-3 pb-20 sm:px-5 lg:px-6">
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+            {{ t("pages.pokePage.heroEyebrow") }}
+          </p>
+          <h1 class="text-[1.9rem] font-black tracking-[-0.04em] text-[var(--text-primary)] sm:text-[2.2rem]">
+            {{ t("pages.pokePage.heroTitle") }}
+          </h1>
+          <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+            {{ t("pages.pokePage.heroDescription") }}
+          </p>
         </div>
 
-        <div class="grid gap-3">
-          <div class="rounded-[24px] border border-[#dbe3f2] bg-[#0f172a] p-5 text-white shadow-[0_18px_40px_rgba(15,23,42,0.14)]">
-            <div class="flex items-start justify-between gap-4">
-              <div>
-                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-white/52">
-                  {{ heroMainStat.label }}
-                </p>
-                <p class="mt-2 text-[34px] font-extrabold leading-none">
-                  {{ heroMainStat.value }}
-                </p>
-                <p class="mt-3 max-w-[320px] text-[13px] font-semibold leading-6 text-white/68">
-                  {{ heroMainStat.description }}
-                </p>
-              </div>
+        <div class="flex flex-wrap gap-3">
+          <NuxtLink
+            :to="appRoutes.messages"
+            class="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#dbe3f2] bg-white px-5 text-[13px] font-bold text-[var(--text-primary)] transition hover:border-primary-200 hover:text-primary-700"
+          >
+            <Icon name="i-ph-chat-circle-dots-duotone" class="mr-2 h-4 w-4" />
+            {{ t("pages.pokePage.openMessages") }}
+          </NuxtLink>
 
-              <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0f172a]">
-                <Icon :name="heroMainStat.icon" class="h-7 w-7" />
-              </div>
-            </div>
-          </div>
-
-          <div class="grid gap-3 sm:grid-cols-3 xl:grid-cols-1">
-            <article
-              v-for="item in heroSecondaryStats"
-              :key="item.label"
-              class="rounded-[20px] border border-[#dbe3f2] bg-white p-4"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div>
-                  <p class="text-[10px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-                    {{ item.label }}
-                  </p>
-                  <p class="mt-2 text-[26px] font-extrabold leading-none text-[var(--text-primary)]">
-                    {{ item.value }}
-                  </p>
-                </div>
-                <Icon :name="item.icon" class="h-4 w-4 shrink-0 text-primary-600" />
-              </div>
-              <p class="mt-2 text-[12px] font-semibold leading-5 text-slate-500">
-                {{ item.description }}
-              </p>
-            </article>
-          </div>
+          <button
+            v-if="pokedBackCount > 0"
+            type="button"
+            class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:-translate-y-0.5 hover:bg-primary-700"
+            @click="resetPokedBack"
+          >
+            <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-4 w-4" />
+            {{ t("pages.pokePage.resetStatus") }}
+          </button>
         </div>
       </div>
     </section>
 
-    <!-- Main List Section -->
-    <section class="surface-card ring-1 ring-secondary-200/50 bg-white p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] space-y-12 sm:p-12 group/list relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-b from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/list:opacity-100 transition-opacity duration-1000" />
-      
-      <div class="relative z-10 flex flex-col gap-8 border-b border-secondary-100/50 pb-12 sm:flex-row sm:items-center sm:justify-between">
-        <div class="space-y-4">
-          <p class="pl-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-            {{ t("pages.pokePage.listEyebrow") }}
-          </p>
-          <h2 class="text-4xl font-extrabold leading-none tracking-tight text-[var(--text-primary)]">
-            {{ t("pages.pokePage.listTitle", { count: pokeRecords.length }) }}
-          </h2>
-          <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] italic max-w-2xl px-0.5 opacity-70">
-            {{ t("pages.pokePage.listDescription") }}
-          </p>
-        </div>
-        
-        <div class="flex items-center gap-3 bg-secondary-50 p-2 rounded-2xl ring-1 ring-secondary-100/50">
-          <div class="h-10 w-10 flex items-center justify-center rounded-xl bg-white text-[var(--text-primary)] shadow-sm">
-            <Icon name="i-ph-hand-pointing-duotone" class="h-5 w-5" />
-          </div>
-          <div class="pr-4">
-            <p class="mb-1 text-[11px] font-semibold uppercase tracking-[0.06em] leading-none text-slate-400">{{ t("pages.pokePage.pendingLabel") }}</p>
-            <p class="text-lg font-extrabold leading-none text-[var(--text-primary)]">{{ formatCount(pendingPokeCount) }}</p>
-          </div>
-        </div>
+    <section class="rounded-[22px] border border-[#dbe3f2] bg-white px-5 py-4 text-[14px] leading-6 text-slate-500 shadow-[0_8px_20px_rgba(15,35,110,0.04)]">
+      <strong class="mr-2 text-[var(--text-primary)]">{{ t("pages.pokePage.pendingLabel") }}</strong>
+      {{ formatCount(pendingPokeCount) }}
+    </section>
+
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+      <div class="space-y-2 border-b border-[#eef2fb] pb-4">
+        <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+          {{ t("pages.pokePage.listEyebrow") }}
+        </p>
+        <h2 class="text-[1.45rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
+          {{ t("pages.pokePage.listTitle", { count: pokeRecords.length }) }}
+        </h2>
+        <p class="text-[14px] leading-6 text-slate-500">
+          {{ t("pages.pokePage.listDescription") }}
+        </p>
       </div>
 
-      <div class="relative z-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div class="mt-5 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <PokeRequestCard
           v-for="item in pokeRecords"
           :key="item.id"
@@ -147,36 +82,6 @@ const pokedBackCount = computed(() => pokedBackIds.value.length)
 const pendingPokeCount = computed(() => pokeRecords.value.length - pokedBackCount.value)
 const formatCount = (value: number) =>
   value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US")
-
-const summaryCards = computed(() => [
-  {
-    label: t("pages.pokePage.statNewPokes"),
-    value: formatCount(pokeRecords.value.length),
-    icon: "i-ph-hand-pointing-duotone",
-    description: t("pages.pokePage.statNewPokesDescription"),
-  },
-  {
-    label: t("pages.pokePage.statPokedBack"),
-    value: formatCount(pokedBackCount.value),
-    icon: "i-ph-check-circle-duotone",
-    description: t("pages.pokePage.statPokedBackDescription"),
-  },
-  {
-    label: t("pages.pokePage.statOnline"),
-    value: formatCount(pokeRecords.value.filter(item => item.online).length),
-    icon: "i-ph-broadcast-duotone",
-    description: t("pages.pokePage.statOnlineDescription"),
-  },
-  {
-    label: t("pages.pokePage.statPending"),
-    value: formatCount(pendingPokeCount.value),
-    icon: "i-ph-clock-countdown-duotone",
-    description: t("pages.pokePage.statPendingDescription"),
-  },
-])
-
-const heroMainStat = computed(() => summaryCards.value[0])
-const heroSecondaryStats = computed(() => summaryCards.value.slice(1))
 
 function pokeBack(id: string) {
   if (pokedBackIds.value.includes(id)) return

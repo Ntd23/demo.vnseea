@@ -1,3 +1,4 @@
+<!-- Description: Renders the group settings sidebar preview using normalized backend-backed community data. -->
 <template>
   <div class="space-y-4 xl:sticky xl:top-[84px]">
     <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
@@ -14,18 +15,18 @@
               {{ initials }}
             </div>
             <div class="min-w-0">
-              <p class="truncate text-[1.05rem] font-black">{{ $t(group.name) }}</p>
+              <p class="truncate text-[1.05rem] font-black">{{ groupName }}</p>
               <p class="mt-1 break-all text-[12px] text-white/72">vnseea.vn/g/{{ group.slug }}</p>
             </div>
           </div>
 
           <div class="mt-4 flex flex-wrap gap-2 text-[12px] font-semibold">
-            <span class="rounded-full bg-white/14 px-3 py-1.5">{{ $t(privacyLabel) }}</span>
-            <span class="rounded-full bg-white/14 px-3 py-1.5">{{ $t(categoryLabel) }}</span>
+            <span class="rounded-full bg-white/14 px-3 py-1.5">{{ privacyLabel }}</span>
+            <span class="rounded-full bg-white/14 px-3 py-1.5">{{ categoryLabel }}</span>
           </div>
 
           <p class="mt-4 text-[13px] leading-6 text-white/82">
-            {{ $t(group.summary) }}
+            {{ groupSummary }}
           </p>
         </div>
       </div>
@@ -93,6 +94,8 @@ import type {
   CommunityGroupRecord,
 } from "../../domain/types/community.types"
 
+const translateText = useMaybeTranslatedText()
+
 const props = defineProps<{
   group: CommunityGroupRecord
   members: CommunityGroupMember[]
@@ -107,6 +110,14 @@ const props = defineProps<{
 
 const initials = computed(() =>
   getCommunityInitials(props.group.name),
+)
+
+const groupName = computed(() =>
+  translateText(props.group.name, props.group.slug),
+)
+
+const groupSummary = computed(() =>
+  translateText(props.group.summary),
 )
 
 const policyProgress = computed(() => {

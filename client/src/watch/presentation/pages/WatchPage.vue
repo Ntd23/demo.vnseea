@@ -1,32 +1,21 @@
+<!-- Description: Renders the watch page as a content-first player and related-video layout that matches the PHP watch page order. -->
 <template>
-  <div class="space-y-4 pb-10 sm:space-y-5">
-    <section class="sm:hidden watch-mobile-hero">
-      <p class="watch-mobile-hero__eyebrow">
-        {{ $t("pages.watchPage.heroEyebrow") }}
-      </p>
-      <h1 class="watch-mobile-hero__title">
-        {{ $t("pages.watchPage.heroTitle") }}
-      </h1>
-      <p class="watch-mobile-hero__desc">
-        {{ $t("pages.watchPage.heroDescription") }}
-      </p>
-
-      <div class="watch-mobile-stats">
-        <div
-          v-for="item in mobileHeroStats"
-          :key="item.label"
-          class="watch-mobile-stat"
-        >
-          <p class="watch-mobile-stat__label">{{ item.label }}</p>
-          <p class="watch-mobile-stat__value">{{ item.value }}</p>
-          <p class="watch-mobile-stat__desc">{{ item.description }}</p>
+  <div class="space-y-5 pb-10">
+    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="space-y-2">
+          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+            {{ $t("pages.watchPage.heroEyebrow") }}
+          </p>
+          <h1 class="text-[1.9rem] font-black tracking-[-0.04em] text-[var(--text-primary)] sm:text-[2.2rem]">
+            {{ $t("pages.watchPage.heroTitle") }}
+          </h1>
+          <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+            {{ $t("pages.watchPage.heroDescription") }}
+          </p>
         </div>
       </div>
     </section>
-
-    <div class="hidden sm:block">
-      <WatchHero :stats="heroStats" />
-    </div>
 
     <WatchFilters
       :search="searchQuery"
@@ -35,8 +24,8 @@
       @update:search="searchQuery = $event"
     />
 
-    <div v-if="selectedVideo" class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-      <main class="space-y-6">
+    <div v-if="selectedVideo" class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+      <main class="space-y-5">
         <WatchPlayer
           :elapsed="elapsed"
           :playing="playing"
@@ -87,13 +76,12 @@
 import WatchRelatedVideos from "../components/RelatedVideos.vue"
 import WatchComments from "../components/WatchComments.vue"
 import WatchFilters from "../components/WatchFilters.vue"
-import WatchHero from "../components/WatchHero.vue"
 import WatchPlayer from "../components/WatchPlayer.vue"
 import WatchVideoInfo from "../components/WatchVideoInfo.vue"
 import type { WatchCategoryKey, WatchComment, WatchVideo } from "../../application/composables/useMockWatchData"
-import { formatWatchNumber, useMockWatchData } from "../../application/composables/useMockWatchData"
+import { useMockWatchData } from "../../application/composables/useMockWatchData"
 
-const { t: translate, locale } = useI18n()
+const { t: translate } = useI18n()
 const { categories, videos } = useMockWatchData()
 const { searchQuery, debouncedSearchQuery } = useDebouncedSearch()
 
@@ -159,26 +147,6 @@ const elapsed = computed(() => {
   const seconds = (current % 60).toString().padStart(2, "0")
   return `${minutes}:${seconds}`
 })
-
-const heroStats = computed(() => [
-  {
-    label: translate("pages.watchPage.statVideos"),
-    value: videos.value.length,
-    description: translate("pages.watchPage.statVideosDescription"),
-  },
-  {
-    label: translate("pages.watchPage.statViews"),
-    value: formatWatchNumber(videos.value.reduce((sum, video) => sum + video.views, 0), locale.value),
-    description: translate("pages.watchPage.statViewsDescription"),
-  },
-  {
-    label: translate("pages.watchPage.statComments"),
-    value: Object.values(localCommentsById.value).reduce((sum, comments) => sum + comments.length, 0),
-    description: translate("pages.watchPage.statCommentsDescription"),
-  },
-])
-
-const mobileHeroStats = computed(() => heroStats.value.slice(0, 3))
 
 let progressTimer: ReturnType<typeof setInterval> | undefined
 
@@ -255,83 +223,3 @@ const sendComment = (message: string) => {
   }
 }
 </script>
-
-<style scoped>
-.watch-mobile-hero {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 255, 0.04);
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.watch-mobile-hero__eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #94a3b8;
-}
-
-.watch-mobile-hero__title {
-  font-size: 1.75rem;
-  font-weight: 800;
-  line-height: 1.1;
-  color: #0f172a;
-  letter-spacing: -0.01em;
-}
-
-.watch-mobile-hero__desc {
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.6;
-  color: #64748b;
-}
-
-.watch-mobile-stats {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 12px 0 4px;
-  scrollbar-width: none;
-}
-
-.watch-mobile-stats::-webkit-scrollbar {
-  display: none;
-}
-
-.watch-mobile-stat {
-  min-width: 130px;
-  flex-shrink: 0;
-  border-radius: 12px;
-  background: rgba(0, 0, 255, 0.03);
-  border: 1px solid rgba(0, 0, 255, 0.06);
-  padding: 12px 14px;
-}
-
-.watch-mobile-stat__label {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #94a3b8;
-}
-
-.watch-mobile-stat__value {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #0f172a;
-  line-height: 1.1;
-  margin-top: 4px;
-}
-
-.watch-mobile-stat__desc {
-  font-size: 11px;
-  font-weight: 500;
-  color: #64748b;
-  margin-top: 2px;
-}
-</style>

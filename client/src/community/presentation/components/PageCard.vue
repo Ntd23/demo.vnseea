@@ -1,3 +1,4 @@
+<!-- Description: Displays a single community page card while hiding optional backend fields when they are not available. -->
 <template>
   <article class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,35,110,0.12)]">
     <div class="relative overflow-hidden px-5 pb-5 pt-6 text-white" :style="{ background: page.banner }">
@@ -47,8 +48,8 @@
         </UBadge>
       </div>
 
-      <div class="grid gap-3 md:grid-cols-2">
-        <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
+      <div v-if="ownerLabel || responseLabel" class="grid gap-3 md:grid-cols-2">
+        <div v-if="ownerLabel" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
             {{ $t("community.pagesDirectory.brandLabel") }}
           </p>
@@ -57,7 +58,7 @@
           </p>
         </div>
 
-        <div class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
+        <div v-if="responseLabel" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
             {{ $t("community.pagesDirectory.interactionLabel") }}
           </p>
@@ -70,8 +71,10 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div class="text-[12px] text-slate-500">
           <span class="font-semibold text-[#243b63]">/p/{{ page.slug }}</span>
-          <span class="mx-2 text-slate-300">•</span>
-          <span>{{ locationLabel }}</span>
+          <template v-if="locationLabel">
+            <span class="mx-2 text-slate-300">•</span>
+            <span>{{ locationLabel }}</span>
+          </template>
         </div>
 
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
@@ -125,10 +128,10 @@ const { t } = useI18n()
 
 const pageName = computed(() => t(props.page.name))
 const pageSummary = computed(() => t(props.page.summary))
-const ownerLabel = computed(() => t(props.page.ownerLabel))
-const responseLabel = computed(() => t(props.page.responseLabel))
+const ownerLabel = computed(() => props.page.ownerLabel ? t(props.page.ownerLabel) : "")
+const responseLabel = computed(() => props.page.responseLabel ? t(props.page.responseLabel) : "")
 const locationLabel = computed(() =>
-  props.page.locationLabel ? t(props.page.locationLabel) : t("community.pagesDirectory.publicFallback"),
+  props.page.locationLabel ? t(props.page.locationLabel) : "",
 )
 
 const localizedTags = computed(() =>

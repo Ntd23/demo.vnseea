@@ -1,0 +1,46 @@
+<?php // English description: App shell header for the dedicated mobile WebView mode. ?>
+<?php
+$app_shell = !empty($wo['app_shell']) ? $wo['app_shell'] : array();
+$app_header_title = !empty($app_shell['title']) ? $app_shell['title'] : $wo['config']['site_name'];
+$app_header_subtitle = !empty($app_shell['subtitle']) ? $app_shell['subtitle'] : '';
+$app_show_back = !empty($app_shell['show_back']);
+$app_show_settings_action = !empty($app_shell['show_settings_action']);
+$app_back_url = !empty($app_shell['back_url']) ? $app_shell['back_url'] : $wo['config']['site_url'];
+$app_settings_url = Wo_SeoLink('index.php?link1=setting&page=general-setting');
+$app_brand_mark = strtoupper(substr($wo['config']['site_name'], 0, 1));
+?>
+<div class="app-shell-header">
+  <div class="app-shell-header__inner">
+    <div class="app-shell-header__slot">
+      <?php if ($app_show_back) { ?>
+      <button type="button" class="app-shell-header__button" data-app-back="<?php echo $app_back_url; ?>" aria-label="Go back">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 6l-6 6l6 6"></path>
+        </svg>
+      </button>
+      <?php } else { ?>
+      <a class="app-shell-header__brand" href="<?php echo $wo['config']['site_url']; ?>" data-ajax="?link1=home" aria-label="<?php echo $wo['config']['site_name']; ?>">
+        <span class="app-shell-header__brand-mark"><?php echo $app_brand_mark; ?></span>
+      </a>
+      <?php } ?>
+    </div>
+    <div class="app-shell-header__center">
+      <?php if (!empty($app_header_subtitle)) { ?>
+      <div class="app-shell-header__eyebrow"><?php echo $app_header_subtitle; ?></div>
+      <?php } ?>
+      <div class="app-shell-header__title" title="<?php echo $app_header_title; ?>"><?php echo $app_header_title; ?></div>
+    </div>
+    <div class="app-shell-header__slot app-shell-header__slot--right">
+      <?php if ($app_show_settings_action) { ?>
+      <a class="app-shell-header__button" href="<?php echo $app_settings_url; ?>" data-ajax="?link1=setting&page=general-setting" aria-label="Open settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 8.8A3.2 3.2 0 1 0 12 15.2A3.2 3.2 0 1 0 12 8.8Z"></path>
+          <path d="M19.4 13.5a1.8 1.8 0 0 0 .04-3l-1.13-.65a6.9 6.9 0 0 0-.46-1.1l.22-1.28a1.8 1.8 0 0 0-2.12-2.09l-1.26.22c-.35-.18-.71-.33-1.09-.45l-.66-1.14a1.8 1.8 0 0 0-3.1 0l-.66 1.14c-.38.12-.75.27-1.09.45l-1.26-.22a1.8 1.8 0 0 0-2.12 2.09l.22 1.28c-.18.35-.33.72-.45 1.1l-1.13.65a1.8 1.8 0 0 0 .04 3l1.13.61c.12.4.28.79.48 1.16l-.22 1.23a1.8 1.8 0 0 0 2.12 2.09l1.2-.21c.38.21.78.38 1.2.52l.65 1.08a1.8 1.8 0 0 0 3.1 0l.65-1.08c.42-.14.82-.31 1.2-.52l1.2.21a1.8 1.8 0 0 0 2.12-2.09l-.22-1.23c.2-.37.36-.76.48-1.16Z"></path>
+        </svg>
+      </a>
+      <?php } else { ?>
+      <span class="app-shell-header__ghost"></span>
+      <?php } ?>
+    </div>
+  </div>
+</div>

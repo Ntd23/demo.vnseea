@@ -1,3 +1,5 @@
+// Description: Provides shared community path, formatting, and option helper functions.
+
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { communityCategoryOptions, communityPageCategoryOptions } from "../constants/community-options"
 import type {
@@ -27,7 +29,7 @@ export function getCommunityCompletionTotal(includePrivacy = true) {
 export function getCommunityOptionLabel(
   options: CommunityOption[],
   value: string,
-  fallback = "Chưa chọn",
+  fallback = "",
 ) {
   return options.find(option => option.value === value)?.label ?? fallback
 }
