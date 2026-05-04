@@ -21,7 +21,7 @@
             color="neutral"
             size="lg"
             class="justify-center rounded-xl bg-white font-semibold text-[var(--text-primary)]"
-            @click="$emit('openPost')"
+            @click="emit('open-post')"
           >
             <Icon name="i-ph-briefcase-fill" class="mr-1.5 h-4 w-4" />
             {{ $t("pages.jobsPage.postJob") }}
@@ -36,7 +36,7 @@
             :class="savedOnly
               ? 'border-white/85 bg-white text-[var(--color-primary-700)] hover:bg-white/92'
               : 'border-white/28 bg-white/12 text-white hover:bg-white/18'"
-            @click="$emit('toggleSaved')"
+            @click="emit('toggle-saved')"
           >
             <Icon name="i-ph-bookmark-simple-fill" class="mr-1.5 h-4 w-4" />
             {{ savedOnly ? $t("pages.jobsPage.showAllJobs") : $t("pages.jobsPage.savedJobs") }}
@@ -49,7 +49,7 @@
             variant="outline"
             size="lg"
             class="justify-center rounded-xl border-white/25 font-semibold text-white"
-            @click="$emit('reset')"
+            @click="emit('reset')"
           >
             <Icon name="i-ph-arrow-counter-clockwise" class="mr-1.5 h-4 w-4" />
             {{ $t("pages.jobsPage.reset") }}
@@ -141,9 +141,9 @@ withDefaults(defineProps<{
   selectedJobTitle: "",
 })
 
-defineEmits<{
-  openPost: []
-  toggleSaved: []
+const emit = defineEmits<{
+  "open-post": []
+  "toggle-saved": []
   reset: []
 }>()
 </script>

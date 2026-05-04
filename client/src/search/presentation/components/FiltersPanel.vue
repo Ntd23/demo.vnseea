@@ -4,29 +4,29 @@
       <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
         <div class="space-y-2">
           <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-            {{ $t("community.search.filters.label") }}
+            {{ $t("community.search.controls.eyebrow") }}
           </p>
-          <h1 class="text-3xl font-extrabold tracking-tight text-[var(--text-primary)]">
-            {{ $t("community.search.filters.title") }}
+          <h1 class="text-3xl font-extrabold tracking-tight text-[var(--text-primary)] break-words">
+            {{ $t("community.search.controls.title") }}
           </h1>
           <p class="max-w-2xl text-sm leading-7 text-body-secondary">
-            {{ $t("community.search.filters.description") }}
+            {{ $t("community.search.controls.desc") }}
           </p>
         </div>
 
         <div class="grid gap-3 sm:grid-cols-3 xl:min-w-[560px]">
-          <UFormField :label="$t('community.search.filters.keyword')" name="keyword">
+          <UFormField :label="$t('community.search.controls.keywordParams.label')" name="keyword">
             <UInput
               v-model="keywordModel"
               icon="i-ph-magnifying-glass-bold"
               size="xl"
               class="w-full"
-              :placeholder="$t('community.search.filters.keywordPlaceholder')"
+              :placeholder="$t('community.search.controls.keywordParams.placeholder')"
               @keyup.enter="emit('submit')"
             />
           </UFormField>
 
-          <UFormField :label="$t('community.search.filters.type')" name="type">
+          <UFormField :label="$t('community.search.controls.typeLabel')" name="type">
             <USelect
               v-model="typeModel"
               :items="translatedTypeOptions"
@@ -36,7 +36,7 @@
             />
           </UFormField>
 
-          <UFormField :label="$t('community.search.filters.sort')" name="sort">
+          <UFormField :label="$t('community.search.controls.sortLabel')" name="sort">
             <USelect
               v-model="sortModel"
               :items="translatedSortOptions"
@@ -70,7 +70,7 @@
       <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-            {{ $t("community.search.filters.quickKeywords") }}
+            {{ $t("community.search.controls.quickSuggestions") }}
           </span>
           <UButton
             v-for="keyword in quickKeywords"
@@ -100,7 +100,7 @@
             @click="emit('submit')"
           >
             <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />
-            {{ $t("community.search.filters.submit") }}
+            {{ $t("community.search.controls.submit") }}
           </UButton>
         </div>
       </div>

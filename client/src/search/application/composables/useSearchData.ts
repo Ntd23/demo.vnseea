@@ -1,4 +1,4 @@
-import { ref, watch, type Ref } from "vue"
+import { onMounted, ref, watch, type Ref } from "vue"
 import { createApiSearchRepository } from "../../infrastructure/repositories/ApiSearchRepository"
 import type {
   SearchCollectionType,
@@ -18,7 +18,7 @@ const emptyResults = (): SearchResultsByType => ({
 
 export function useSearchData(keyword: Ref<string>) {
   const resultsByType = ref<SearchResultsByType>(emptyResults())
-  const loading = ref(false)
+  const loading = ref(keyword.value.trim().length > 0)
   const errorMessage = ref("")
   const repository = createApiSearchRepository()
 
@@ -102,11 +102,15 @@ export function useSearchData(keyword: Ref<string>) {
     }
   }
 
-  watch(keyword, () => {
-    void refresh()
-  }, {
-    immediate: true,
-  })
+  if (import.meta.client) {
+    onMounted(() => {
+      void refresh()
+    })
+
+    watch(keyword, () => {
+      void refresh()
+    })
+  }
 
   return {
     quickKeywords,

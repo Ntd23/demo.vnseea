@@ -14,7 +14,7 @@
         <Icon :name="icon" class="h-7 w-7" />
       </div>
 
-      <div class="space-y-3">
+      <div class="min-w-0 space-y-3">
         <div
           v-if="eyebrow || badge"
           :class="[
@@ -40,10 +40,10 @@
         </div>
 
         <div class="space-y-2">
-          <h3 class="text-xl font-black tracking-[-0.03em] text-[var(--text-primary)]">
+          <h3 class="text-xl font-black tracking-[-0.03em] text-[var(--text-primary)] break-words">
             {{ title }}
           </h3>
-          <p class="mx-auto max-w-2xl text-sm leading-6 text-[var(--text-secondary)]">
+          <p class="mx-auto max-w-2xl text-sm leading-6 text-[var(--text-secondary)] break-words">
             {{ description }}
           </p>
         </div>

@@ -14,7 +14,7 @@
 
     <!-- Summary Cards -->
     <section
-      v-if="hasKeyword"
+      v-if="hasKeyword && !loading && !errorMessage"
       class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       <article
@@ -53,6 +53,34 @@
           {{ $t('community.search.emptyState.desc') }}
         </p>
       </div>
+    </section>
+
+    <!-- Loading State -->
+    <section
+      v-else-if="loading"
+      class="surface-card border-secondary-100 p-6 sm:p-8"
+    >
+      <FoundationLoadingSkeleton
+        variant="list"
+        :count="isMobile ? 3 : 4"
+        :rows="3"
+        :label="$t('community.search.loadingResults')"
+      />
+    </section>
+
+    <!-- Error State -->
+    <section
+      v-else-if="errorMessage"
+      class="surface-card border-secondary-100 p-12 sm:p-20"
+    >
+      <FoundationEmptyState
+        icon="i-ph-warning-circle-duotone"
+        :title="$t('community.search.errorTitle')"
+        :description="errorMessage"
+        :primary-label="$t('community.search.clearFilters')"
+        primary-color="warning"
+        @primary="clearFilters"
+      />
     </section>
 
     <!-- No Results found -->
@@ -192,6 +220,7 @@
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
+import FoundationLoadingSkeleton from "../../../foundation/presentation/components/LoadingSkeleton.vue"
 import SearchFiltersPanel from "../components/FiltersPanel.vue"
 import SearchResultCard from "../components/ResultCard.vue"
 import { useSearchData } from "../../application/composables/useSearchData"
@@ -268,6 +297,8 @@ const {
   searchTypeOptions,
   searchSortOptions,
   resultsByType,
+  loading,
+  errorMessage,
 } = useSearchData(debouncedSearchQuery)
 
 // Other filters (no debounce needed, simple sync)
