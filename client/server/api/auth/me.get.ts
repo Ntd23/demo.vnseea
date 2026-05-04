@@ -34,7 +34,7 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
     return null
   }
   const runtimeConfig = useRuntimeConfig(event)
-  const cookie = event.node.req.headers.cookie
+  // const cookie = event.node.req.headers.cookie
 
   try {
     const baseCandidates = getBackendBaseCandidates(
@@ -46,8 +46,8 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
       try {
         response = await $fetch<BackendCurrentUserResponse>(backendRoutes.session.currentUser(backendUserSession), {
           baseURL,
-          headers: cookie ? { cookie } : undefined,
-          credentials: "include",
+          // headers: cookie ? { cookie } : undefined,
+          // credentials: "include",
         })
         break
       }
