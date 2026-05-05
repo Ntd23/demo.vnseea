@@ -1,24 +1,36 @@
+<!-- Description: Renders the feed publisher box with backend post creation and current-user session data instead of local mock submission. -->
 <template>
   <section class="publisher">
-    <!-- Compact mode: click to expand -->
     <div v-if="!expanded" class="publisher__compact" @click="expanded = true">
-      <div class="publisher__compact-avatar">VN</div>
-      <div class="publisher__compact-input">
+      <div class="publisher__compact-avatar">
+        <img v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="publisher__avatar-image">
+        <span v-else>{{ currentUserInitials }}</span>
+      </div>
+      <div class="publisher__compact-input" role="button" tabindex="0">
         {{ t("feed.publisherBox.prompt") }}
       </div>
       <div class="publisher__compact-actions">
-        <button v-for="action in compactActions" :key="action.icon" class="publisher__compact-btn" type="button" @click.stop="expanded = true; draft.action = action.value">
-          <Icon :name="action.icon" class="h-4.5 w-4.5" />
+        <button
+          v-for="action in compactActions"
+          :key="action.icon"
+          class="publisher__compact-btn"
+          :title="action.label"
+          type="button"
+          @click.stop="handleCompactAction(action.value)"
+        >
+          <Icon :name="action.icon" class="h-5 w-5" />
         </button>
       </div>
     </div>
 
-    <!-- Expanded mode: full composer -->
     <div v-else class="publisher__expanded">
       <div class="publisher__head">
-        <div class="publisher__avatar">VN</div>
+        <div class="publisher__avatar">
+          <img v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="publisher__avatar-image">
+          <span v-else>{{ currentUserInitials }}</span>
+        </div>
         <div class="publisher__meta">
-          <p class="publisher__name">{{ t("feed.publisherBox.expandedOpen") }}</p>
+          <p class="publisher__name">{{ currentUserName || t("feed.publisherBox.expandedOpen") }}</p>
           <div class="publisher__audience-row">
             <button
               v-for="audience in audiences"
@@ -42,11 +54,11 @@
       </div>
 
       <textarea
+        ref="textareaEl"
         v-model="draft.text"
         class="publisher__textarea"
-        rows="3"
-        maxlength="280"
         :placeholder="t('feed.publisherBox.composerPlaceholder')"
+        maxlength="280"
       />
 
       <div class="publisher__toolbar">
@@ -65,8 +77,10 @@
         </div>
 
         <div class="publisher__submit-area">
-          <span class="publisher__count">{{ draft.text.length }}/280</span>
-          <button class="publisher__submit-btn" type="button" :disabled="submitting" @click="publish">
+          <span class="publisher__count" :class="{ 'publisher__count--warn': draft.text.length > 240 }">
+            {{ draft.text.length }}/280
+          </span>
+          <button class="publisher__submit-btn" type="button" :disabled="submitting || !draft.text.trim()" @click="publish">
             <Icon v-if="submitting" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
             <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
             {{ submitting ? t("feed.publisherBox.submitLoading") : t("feed.publisherBox.share") }}
@@ -79,13 +93,28 @@
 
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core"
+import { useTextareaAutosize } from "@vueuse/core"
+import type { FeedPostRecord } from "../../domain/types/feed.types"
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
+import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
 type PublisherAction = "image" | "video" | "feeling" | "story" | ""
 type PublisherAudience = "public" | "connections" | "group"
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
+const currentAuthUserStore = useCurrentAuthUserStore()
+const repository = createApiFeedRepository()
+const emit = defineEmits<{
+  created: [post: FeedPostRecord | null]
+}>()
+
+// textarea auto-size via @vueuse/core — input synced to draft.text watcher
+const textareaEl = ref<HTMLTextAreaElement | null>(null)
+const draftTextInput = ref("")
+const { triggerResize } = useTextareaAutosize({ element: textareaEl, input: draftTextInput })
 
 const expanded = ref(false)
 
@@ -108,15 +137,34 @@ const draft = useStorage<{
   },
 )
 
+watch(
+  () => draft.value.text,
+  value => {
+    draftTextInput.value = value
+  },
+  { immediate: true },
+)
+
 const submitting = ref(false)
 const statusMessage = ref("")
 const statusTone = ref<"neutral" | "success" | "warning">("neutral")
 
-const compactActions = [
-  { value: "image" as const, icon: "i-ph-image-bold" },
-  { value: "video" as const, icon: "i-ph-video-camera-bold" },
-  { value: "feeling" as const, icon: "i-ph-smiley-bold" },
-]
+const currentUserName = computed(() => currentAuthUserStore.user?.name || "")
+const currentUserAvatar = computed(() => currentAuthUserStore.user?.avatarUrl || "")
+const currentUserInitials = computed(() =>
+  currentUserName.value
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() || "")
+    .join("") || "VN",
+)
+
+const compactActions = computed(() => [
+  { value: "image" as const, icon: "i-ph-image-bold", label: t("feed.publisherBox.actionImage") },
+  { value: "video" as const, icon: "i-ph-video-camera-bold", label: t("feed.publisherBox.actionVideo") },
+  { value: "story" as const, icon: "i-ph-sparkle-bold", label: t("feed.publisherBox.actionStory") },
+])
 
 const actions = computed(() => [
   { value: "image" as const, label: t("feed.publisherBox.actionImage"), icon: "i-ph-image-bold" },
@@ -131,12 +179,17 @@ const audiences = computed(() => [
   { value: "group" as const, label: t("feed.publisherBox.audienceGroup") },
 ])
 
-function resetDraft() {
-  draft.value.text = ""
-  draft.value.action = ""
-  draft.value.audience = "public"
-  statusMessage.value = ""
-  statusTone.value = "neutral"
+onMounted(async () => {
+  await currentAuthUserStore.hydrate()
+})
+
+function handleCompactAction(value: string) {
+  if (value === "story") {
+    void router.push("/status/create")
+    return
+  }
+  expanded.value = true
+  draft.value.action = value as typeof draft.value.action
 }
 
 async function publish() {
@@ -150,27 +203,39 @@ async function publish() {
   statusTone.value = "neutral"
   statusMessage.value = t("feed.publisherBox.statusLoadingDescription")
 
-  await new Promise(resolve => setTimeout(resolve, 650))
+  try {
+    const response = await repository.createPost({
+      text: draft.value.text,
+      audience: draft.value.audience,
+    })
 
-  submitting.value = false
-  statusTone.value = "success"
-  statusMessage.value = t("feed.publisherBox.statusSuccessDescription")
+    submitting.value = false
+    statusTone.value = "success"
+    statusMessage.value = t("feed.publisherBox.statusSuccessDescription")
 
-  toast.add({
-    color: "success",
-    icon: "i-ph-check-circle-fill",
-    title: t("feed.publisherBox.statusSuccessTitle"),
-    description: t("feed.publisherBox.statusSuccessDescription"),
-  })
+    toast.add({
+      color: "success",
+      icon: "i-ph-check-circle-fill",
+      title: t("feed.publisherBox.statusSuccessTitle"),
+      description: t("feed.publisherBox.statusSuccessDescription"),
+    })
 
-  draft.value.text = ""
-  draft.value.action = ""
-  expanded.value = false
+    draft.value.text = ""
+    draft.value.action = ""
+    expanded.value = false
+    emit("created", response.post)
+  }
+  catch (error) {
+    submitting.value = false
+    statusTone.value = "warning"
+    statusMessage.value = error instanceof Error
+      ? error.message
+      : t("feed.publisherBox.statusErrorDescription")
+  }
 }
 </script>
 
 <style scoped>
-/* ---- Compact mode ---- */
 .publisher__compact {
   display: flex;
   align-items: center;
@@ -189,19 +254,34 @@ async function publish() {
   box-shadow: 0 2px 8px rgba(0, 0, 255, 0.06);
 }
 
-.publisher__compact-avatar {
+.publisher__compact-avatar,
+.publisher__avatar {
   display: flex;
   width: 38px;
   height: 38px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   border-radius: 50%;
   background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
   color: #ffffff;
   font-size: 12px;
   font-weight: 800;
   box-shadow: 0 4px 12px rgba(0, 0, 255, 0.18);
+}
+
+.publisher__avatar {
+  width: 42px;
+  height: 42px;
+  font-size: 13px;
+  box-shadow: 0 6px 18px rgba(0, 0, 255, 0.16);
+}
+
+.publisher__avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .publisher__compact-input {
@@ -222,24 +302,24 @@ async function publish() {
 
 .publisher__compact-btn {
   display: flex;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: #94a3b8;
+  border: 2px solid rgba(0, 0, 255, 0.08);
+  background: rgba(0, 0, 255, 0.03);
+  color: #64748b;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .publisher__compact-btn:hover {
-  background: rgba(0, 0, 255, 0.05);
+  border-color: rgba(0, 0, 255, 0.2);
+  background: rgba(0, 0, 255, 0.06);
   color: #0000ff;
 }
 
-/* ---- Expanded mode ---- */
 .publisher__expanded {
   display: flex;
   flex-direction: column;
@@ -261,21 +341,6 @@ async function publish() {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-}
-
-.publisher__avatar {
-  display: flex;
-  width: 42px;
-  height: 42px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 800;
-  box-shadow: 0 6px 18px rgba(0, 0, 255, 0.16);
 }
 
 .publisher__meta {
@@ -356,8 +421,8 @@ async function publish() {
 
 .publisher__textarea {
   width: 100%;
-  min-height: 100px;
-  resize: vertical;
+  min-height: 96px;
+  resize: none;
   border-radius: 14px;
   border: 1px solid #e2e8f0;
   background: #fafbfe;
@@ -366,8 +431,9 @@ async function publish() {
   line-height: 1.7;
   color: #334155;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, height 0.1s ease;
   font-family: inherit;
+  overflow-y: hidden;
 }
 
 .publisher__textarea:focus {
@@ -442,6 +508,11 @@ async function publish() {
   font-size: 12px;
   font-weight: 600;
   color: #94a3b8;
+  transition: color 0.15s ease;
+}
+
+.publisher__count--warn {
+  color: #dc2626;
 }
 
 .publisher__submit-btn {

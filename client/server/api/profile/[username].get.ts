@@ -4,6 +4,7 @@ import { createError, getRouterParam } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import type { ProfileApiResponse, ProfileConnection } from "../../../src/profile/domain/types/profile.types"
 
 type BackendProfileEntity = Record<string, unknown>
@@ -74,6 +75,7 @@ const toConnection = (entity: BackendProfileEntity): ProfileConnection => {
 
 export default defineEventHandler(async (event): Promise<ProfileApiResponse | null> => {
   const username = String(getRouterParam(event, "username") ?? "").trim()
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
 
   if (!username) {
     throw createError({
@@ -110,8 +112,8 @@ export default defineEventHandler(async (event): Promise<ProfileApiResponse | nu
     displayName,
     headline: firstString(user, ["working", "school"]),
     bio: firstString(user, ["about"]),
-    coverImage: firstString(user, ["cover_full", "cover"]),
-    avatarUrl: firstString(user, ["avatar_full", "avatar"]),
+    coverImage: resolveMediaUrl(firstString(user, ["cover_full", "cover"])),
+    avatarUrl: resolveMediaUrl(firstString(user, ["avatar_full", "avatar"])) || undefined,
     avatarText: createInitials(displayName),
     verified: isTruthy(user.verified),
     isOwner: asNumber(user.user_id ?? user.id) === asNumber(currentUser.user_id),

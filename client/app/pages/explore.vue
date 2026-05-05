@@ -1,10 +1,11 @@
+<!-- Description: Declares the public explore route wrapper and route-level SEO metadata for the API-backed explore page. -->
 <template>
   <ExplorePresentationExplorePage />
 </template>
 
 <script setup lang="ts">
 import ExplorePresentationExplorePage from "../../src/explore/presentation/pages/ExplorePage.vue"
-import type { ExploreView } from "../../src/explore/application/composables/useMockExploreData"
+import type { ExploreView } from "../../src/explore/application/composables/useExploreData"
 
 function readQueryValue(value: unknown) {
   if (Array.isArray(value)) return String(value[0] || "")

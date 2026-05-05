@@ -1,3 +1,4 @@
+<!-- Description: Renders the API-backed memory post list and forwards real share interactions for each memory card. -->
 <template>
   <div class="space-y-8">
     <div v-if="entries.length === 0" class="surface-card flex flex-col items-center justify-center p-20 text-center space-y-6">
@@ -5,8 +6,8 @@
         <Icon name="i-ph-clock-counter-clockwise-duotone" class="h-12 w-12" />
       </div>
       <div class="space-y-2">
-        <h3 class="text-xl font-bold text-secondary-900">{{ $t('pages.memoriesPage.emptyTitle') || 'No memories yet' }}</h3>
-        <p class="text-sm text-secondary-500 max-w-xs mx-auto">{{ $t('pages.memoriesPage.emptyDescription') || "Check back soon for more moments from the past." }}</p>
+        <h3 class="text-xl font-bold text-secondary-900">{{ $t('pages.memoriesPage.emptyTitle') }}</h3>
+        <p class="text-sm text-secondary-500 max-w-xs mx-auto">{{ $t('pages.memoriesPage.emptyDescription') }}</p>
       </div>
     </div>
 
@@ -14,7 +15,6 @@
       v-for="item in entries"
       :key="item.id"
       :entry="item"
-      :shared="sharedIds.includes(item.id)"
       @share="$emit('share', $event)"
     />
   </div>
@@ -22,11 +22,10 @@
 
 <script setup lang="ts">
 import MemoriesMemoryCard from "./MemoryCard.vue"
-import type { MockMemoryEntry } from "../../application/composables/useMockMemoriesData"
+import type { FeedMemoryRecord } from "../../../feed/domain/types/feed.types"
 
 defineProps<{
-  entries: MockMemoryEntry[]
-  sharedIds: string[]
+  entries: FeedMemoryRecord[]
 }>()
 
 defineEmits<{

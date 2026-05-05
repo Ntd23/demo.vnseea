@@ -54,13 +54,32 @@
           class="inline-flex items-center gap-2 rounded-full border border-[#dbe3f2] bg-[#f8fafc] px-4 py-2 text-[13px] font-bold text-[var(--text-primary)] transition hover:border-primary-200 hover:text-primary-700"
         >
           <span>{{ formatHashtagLabel(item.label) }}</span>
-          <span class="rounded-full bg-white px-2 py-0.5 text-[11px] text-slate-500">{{ item.score }}</span>
+          <span class="rounded-full bg-white px-2 py-0.5 text-[11px] text-slate-500">{{ item.count }}</span>
         </NuxtLink>
       </div>
     </section>
 
+    <UAlert
+      v-if="errorMessage"
+      color="warning"
+      variant="subtle"
+      icon="i-ph-warning-circle-fill"
+      class="rounded-[22px]"
+      :description="errorMessage"
+    />
+
     <section
-      v-if="!hasContent"
+      v-if="loading"
+      class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+    >
+      <div class="flex items-center justify-center gap-3 text-sm font-bold text-slate-500">
+        <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
+        <span>{{ t("pages.explorePage.heroEyebrow") }}</span>
+      </div>
+    </section>
+
+    <section
+      v-else-if="!hasContent"
       class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
     >
       <FoundationEmptyState
@@ -119,10 +138,12 @@
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityPageCard from "../../../community/presentation/components/PageCard.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import { formatHashtagLabel } from "../../../feed/application/composables/useMockHashtagData"
+import { formatHashtagLabel } from "../../../feed/application/composables/useHashtagData"
+import type { FeedExploreResponse } from "../../../feed/domain/types/feed.types"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import ExploreUserSpotlightCard from "../components/UserSpotlightCard.vue"
-import type { ExploreView } from "../../application/composables/useMockExploreData"
-import { useMockExploreData } from "../../application/composables/useMockExploreData"
+import type { ExploreView } from "../../application/composables/useExploreData"
+import { useExploreViewOptions } from "../../application/composables/useExploreData"
 
 type ExploreSection = {
   kind: Exclude<ExploreView, "all">
@@ -140,15 +161,17 @@ function readQueryValue(value: unknown) {
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
-
-const {
-  exploreViewOptions,
-  summaryCards,
-  recommendedPosts,
-  recommendedUsers,
-  recommendedPages,
-  trendingHashtags,
-} = useMockExploreData()
+const repository = createApiFeedRepository()
+const exploreViewOptions = useExploreViewOptions()
+const loading = ref(true)
+const errorMessage = ref("")
+const response = ref<FeedExploreResponse>({
+  posts: [],
+  users: [],
+  pages: [],
+  hashtags: [],
+  announcement: null,
+})
 
 const normalizeView = (value: string): ExploreView =>
   exploreViewOptions.value.some(option => option.value === value)
@@ -165,23 +188,46 @@ const sections = computed<ExploreSection[]>(() => [
     label: t("pages.explorePage.sectionPostsLabel"),
     shortLabel: t("pages.explorePage.sectionPostsShort"),
     description: t("pages.explorePage.sectionPostsDescription"),
-    countLabel: t("pages.explorePage.sectionPostsCount", { count: recommendedPosts.value.length }),
+    countLabel: t("pages.explorePage.sectionPostsCount", { count: response.value.posts.length }),
   },
   {
     kind: "users",
     label: t("pages.explorePage.sectionUsersLabel"),
     shortLabel: t("pages.explorePage.sectionUsersShort"),
     description: t("pages.explorePage.sectionUsersDescription"),
-    countLabel: t("pages.explorePage.sectionUsersCount", { count: recommendedUsers.value.length }),
+    countLabel: t("pages.explorePage.sectionUsersCount", { count: response.value.users.length }),
   },
   {
     kind: "pages",
     label: t("pages.explorePage.sectionPagesLabel"),
     shortLabel: t("pages.explorePage.sectionPagesShort"),
     description: t("pages.explorePage.sectionPagesDescription"),
-    countLabel: t("pages.explorePage.sectionPagesCount", { count: recommendedPages.value.length }),
+    countLabel: t("pages.explorePage.sectionPagesCount", { count: response.value.pages.length }),
   },
 ])
+
+const summaryCards = computed(() => [
+  {
+    label: t("pages.explorePage.sectionPostsShort"),
+    value: response.value.posts.length,
+    description: t("pages.explorePage.sectionPostsDescription"),
+  },
+  {
+    label: t("pages.explorePage.sectionUsersShort"),
+    value: response.value.users.length,
+    description: t("pages.explorePage.sectionUsersDescription"),
+  },
+  {
+    label: t("pages.explorePage.sectionPagesShort"),
+    value: response.value.pages.length,
+    description: t("pages.explorePage.sectionPagesDescription"),
+  },
+])
+
+const recommendedPosts = computed(() => response.value.posts)
+const recommendedUsers = computed(() => response.value.users)
+const recommendedPages = computed(() => response.value.pages)
+const trendingHashtags = computed(() => response.value.hashtags)
 
 const visibleSections = computed(() =>
   activeView.value === "all"
@@ -191,11 +237,26 @@ const visibleSections = computed(() =>
 
 const hasContent = computed(() =>
   visibleSections.value.some((section) => {
-    if (section.kind === "posts") return recommendedPosts.value.length > 0
-    if (section.kind === "users") return recommendedUsers.value.length > 0
-    return recommendedPages.value.length > 0
+    if (section.kind === "posts") return response.value.posts.length > 0
+    if (section.kind === "users") return response.value.users.length > 0
+    return response.value.pages.length > 0
   }),
 )
+
+async function fetchExplore() {
+  loading.value = true
+  errorMessage.value = ""
+
+  try {
+    response.value = await repository.getExplore({ limit: 12 })
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.explorePage.emptyDescription")
+  }
+  finally {
+    loading.value = false
+  }
+}
 
 function setView(view: ExploreView) {
   const nextQuery = { ...route.query }
@@ -209,4 +270,6 @@ function setView(view: ExploreView) {
 
   router.replace({ query: nextQuery })
 }
+
+await fetchExplore()
 </script>

@@ -1,4 +1,4 @@
-<!-- Description: Renders the Nuxt home feed in the same section order as the legacy Wowonder home template. -->
+<!-- Description: Renders the home feed in PHP order while sourcing stories, announcement, and posts from real backend bridges instead of mock social data. -->
 <template>
   <div class="home-feed">
     <section class="home-feed__section surface-card">
@@ -26,7 +26,7 @@
     </section>
 
     <div class="home-feed__stories">
-      <FeedStoryCarousel />
+      <FeedStoryCarousel :stories="stories" />
     </div>
 
     <section class="home-feed__section surface-card">
@@ -36,16 +36,16 @@
         </div>
         <div class="home-feed__announcement-copy">
           <p class="home-feed__eyebrow">{{ copy.announcementEyebrow }}</p>
-          <h2 class="home-feed__title">{{ widgets[1]?.title ?? copy.announcementTitle }}</h2>
+          <h2 class="home-feed__title">{{ announcement?.title || copy.announcementTitle }}</h2>
           <p class="home-feed__body">
-            {{ widgets[1]?.items?.[0]?.title ?? copy.announcementMessage }}
+            {{ announcement?.message || copy.announcementMessage }}
           </p>
         </div>
       </div>
     </section>
 
     <div class="home-feed__publisher">
-      <FeedPublisherBox />
+      <FeedPublisherBox @created="handlePostCreated" />
     </div>
 
     <section class="home-feed__section surface-card home-feed__order-card">
@@ -118,90 +118,50 @@
 </template>
 
 <script setup lang="ts">
+import type { FeedAnnouncement, FeedPostRecord, FeedStoryRecord } from "../../domain/types/feed.types"
+import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import FeedPostCard from "../components/PostCard.vue"
 import FeedPublisherBox from "../components/FeedPublisherBox.vue"
 import FeedStoryCarousel from "../components/StoryCarousel.vue"
-import { useMockSocialData } from "../../application/composables/useMockSocialData"
 
 type FeedFilterKey = "all" | "text" | "photos" | "video" | "music"
 type FeedOrderKey = "all" | "following"
 
-const { t, locale } = useI18n()
-const { posts, widgets } = useMockSocialData()
+const { t } = useI18n()
+const repository = createApiFeedRepository()
 
-const copy = computed(() => {
-  if (locale.value === "en") {
-    return {
-      filterEyebrow: "Feed filters",
-      filterTitle: "Choose what appears first",
-      filterHint: "Mirrors the legacy filter row before stories and posts.",
-      announcementEyebrow: "Announcement",
-      announcementTitle: "Platform update",
-      announcementMessage: "Check the latest notice before continuing with stories and feed updates.",
-      orderEyebrow: "Order posts by",
-      orderTitle: "Switch the feed rhythm",
-      greetingEyebrow: "Greeting",
-      morning: "Good morning, welcome back.",
-      afternoon: "Good afternoon, here is what changed today.",
-      evening: "Good evening, catch up with the latest posts.",
-      greetingDescription: "The greeting banner stays above the post stack, just like the PHP timeline flow.",
-      filters: {
-        all: "All",
-        text: "Text",
-        photos: "Photos",
-        video: "Video",
-        music: "Music",
-      },
-      orders: {
-        all: {
-          label: "All posts",
-          description: "Show the full mixed feed.",
-        },
-        following: {
-          label: "People I follow",
-          description: "Focus on people you already follow.",
-        },
-      },
-      extraPostOne: "We have aligned the feed shell to the legacy order so stories, publisher, greeting, and load-more flow now stay in the same visual rhythm.",
-      extraPostTwo: "This mock entry keeps the home timeline populated after filters change, helping the page behave more like the PHP feed with mixed post types.",
-    }
-  }
-
-  return {
-    filterEyebrow: "Bộ lọc bảng tin",
-    filterTitle: "Chọn loại nội dung hiển thị trước",
-    filterHint: "Giữ đúng hàng filter của giao diện PHP trước stories và post list.",
-    announcementEyebrow: "Thông báo",
-    announcementTitle: "Cập nhật hệ thống",
-    announcementMessage: "Xem nhanh thông báo mới trước khi tiếp tục với stories và bảng tin.",
-    orderEyebrow: "Sắp xếp bài viết",
-    orderTitle: "Đổi nhịp hiển thị của feed",
-    greetingEyebrow: "Lời chào",
-    morning: "Chào buổi sáng, mời bạn xem cập nhật mới.",
-    afternoon: "Chào buổi chiều, đây là những gì vừa thay đổi hôm nay.",
-    evening: "Chào buổi tối, cùng xem lại các bài viết mới nhất.",
-    greetingDescription: "Khối chào mừng vẫn nằm ngay trên luồng bài viết, giống nhịp bố cục của timeline PHP.",
-    filters: {
-      all: "Tất cả",
-      text: "Văn bản",
-      photos: "Ảnh",
-      video: "Video",
-      music: "Âm nhạc",
+const copy = computed(() => ({
+  filterEyebrow: t("pages.homeFeedPage.filterEyebrow"),
+  filterTitle: t("pages.homeFeedPage.filterTitle"),
+  filterHint: t("pages.homeFeedPage.filterHint"),
+  announcementEyebrow: t("pages.homeFeedPage.announcementEyebrow"),
+  announcementTitle: t("pages.homeFeedPage.announcementTitle"),
+  announcementMessage: t("pages.homeFeedPage.announcementMessage"),
+  orderEyebrow: t("pages.homeFeedPage.orderEyebrow"),
+  orderTitle: t("pages.homeFeedPage.orderTitle"),
+  greetingEyebrow: t("pages.homeFeedPage.greetingEyebrow"),
+  morning: t("pages.homeFeedPage.greetingMorning"),
+  afternoon: t("pages.homeFeedPage.greetingAfternoon"),
+  evening: t("pages.homeFeedPage.greetingEvening"),
+  greetingDescription: t("pages.homeFeedPage.greetingDescription"),
+  filters: {
+    all: t("pages.homeFeedPage.filters.all"),
+    text: t("pages.homeFeedPage.filters.text"),
+    photos: t("pages.homeFeedPage.filters.photos"),
+    video: t("pages.homeFeedPage.filters.video"),
+    music: t("pages.homeFeedPage.filters.music"),
+  },
+  orders: {
+    all: {
+      label: t("pages.homeFeedPage.orders.allLabel"),
+      description: t("pages.homeFeedPage.orders.allDescription"),
     },
-    orders: {
-      all: {
-        label: "Tất cả bài viết",
-        description: "Hiển thị toàn bộ feed đang có.",
-      },
-      following: {
-        label: "Người tôi theo dõi",
-        description: "Ưu tiên các kết nối bạn đang theo dõi.",
-      },
+    following: {
+      label: t("pages.homeFeedPage.orders.followingLabel"),
+      description: t("pages.homeFeedPage.orders.followingDescription"),
     },
-    extraPostOne: "Home feed đã được kéo lại theo đúng thứ tự của bản PHP để stories, publisher, greeting và load-more nằm cùng một nhịp hiển thị.",
-    extraPostTwo: "Bài mô phỏng này giữ cho bảng tin vẫn có đủ nội dung khi đổi filter, giúp hành vi trang gần hơn với feed Wowonder cũ.",
-  }
-})
+  },
+}))
 
 const filters = computed(() => [
   { key: "all" as const, icon: "i-ph-squares-four-duotone", label: copy.value.filters.all },
@@ -219,108 +179,148 @@ const orderOptions = computed(() => [
 const activeFilter = ref<FeedFilterKey>("all")
 const activeOrder = ref<FeedOrderKey>("all")
 const newPostsCount = ref(0)
-const pageSize = 2
-const page = ref(1)
 const loadingMore = ref(false)
+const posts = ref<FeedPostRecord[]>([])
+const stories = ref<FeedStoryRecord[]>([])
+const announcement = ref<FeedAnnouncement | null>(null)
+const hasMore = ref(false)
+const nextOffset = ref<number | null>(null)
+const initialized = ref(false)
+const pendingCreatedStory = useState<FeedStoryRecord | null>("feed-pending-created-story", () => null)
 
-let newPostTimer: ReturnType<typeof setTimeout>
+const visiblePosts = computed(() => posts.value)
+const allLoaded = computed(() => !hasMore.value)
 
-const feedPosts = computed(() => [
-  ...posts,
-  {
-    id: 101,
-    author: locale.value === "en" ? "VNSEEA Product" : "VNSEEA Product",
-    role: locale.value === "en" ? "Migration note" : "Ghi chú migration",
-    audience: locale.value === "en" ? "Public" : "Công khai",
-    time: locale.value === "en" ? "1 hour ago" : "1 giờ trước",
-    text: copy.value.extraPostOne,
-    tags: ["Home", "Parity"],
-    stats: { likes: 43, comments: 11, shares: 4 },
-    media: "single" as const,
-    comments: [
-      {
-        id: 1011,
-        author: locale.value === "en" ? "Team Shell" : "Team Shell",
-        role: locale.value === "en" ? "Frontend" : "Frontend",
-        text: locale.value === "en"
-          ? "The middle column now follows the same flow as the PHP feed."
-          : "Cột giữa giờ đã đi đúng nhịp hiển thị của feed PHP.",
-      },
-    ],
-  },
-  {
-    id: 102,
-    author: locale.value === "en" ? "Community Desk" : "Bàn cộng đồng",
-    role: locale.value === "en" ? "Daily recap" : "Tổng hợp hằng ngày",
-    audience: locale.value === "en" ? "Members" : "Thành viên",
-    time: locale.value === "en" ? "2 hours ago" : "2 giờ trước",
-    text: copy.value.extraPostTwo,
-    tags: ["Stories", "Filter"],
-    stats: { likes: 28, comments: 7, shares: 2 },
-    comments: [
-      {
-        id: 1021,
-        author: locale.value === "en" ? "QA Review" : "QA Review",
-        role: locale.value === "en" ? "Manual test" : "Manual test",
-        text: locale.value === "en"
-          ? "Good enough for parity checks on section order and load-more placement."
-          : "Đủ để đối chiếu thứ tự section và vị trí load-more khi QA parity.",
-      },
-    ],
-  },
-])
+const resolveGreetingPeriod = () => {
+  const hour = new Date().getHours()
+  if (hour < 12) return "morning" as const
+  if (hour < 18) return "afternoon" as const
+  return "evening" as const
+}
 
-const filteredPosts = computed(() => {
-  const source = activeOrder.value === "following"
-    ? feedPosts.value.filter(post => post.id !== 102)
-    : feedPosts.value
-
-  switch (activeFilter.value) {
-    case "text":
-      return source.filter(post => !post.media)
-    case "photos":
-      return source.filter(post => post.media === "double" || post.media === "single")
-    case "video":
-      return source.filter(post => post.id === 101 || post.id === 2)
-    case "music":
-      return source.filter(post => post.id === 1 || post.id === 102)
-    default:
-      return source
-  }
-})
-
-const visiblePosts = computed(() => filteredPosts.value.slice(0, page.value * pageSize))
-const allLoaded = computed(() => visiblePosts.value.length >= filteredPosts.value.length)
+const greetingPeriod = useState<"morning" | "afternoon" | "evening">(
+  "feed-home-greeting-period",
+  resolveGreetingPeriod,
+)
 
 const greetingTitle = computed(() => {
-  const hour = new Date().getHours()
-  if (hour < 12) return copy.value.morning
-  if (hour < 18) return copy.value.afternoon
+  if (greetingPeriod.value === "morning") return copy.value.morning
+  if (greetingPeriod.value === "afternoon") return copy.value.afternoon
   return copy.value.evening
 })
 
-watch([activeFilter, activeOrder], () => {
-  page.value = 1
-})
+const resolvePostType = (filter: FeedFilterKey) => {
+  if (filter === "all") return ""
+  return filter
+}
 
-onMounted(() => {
-  newPostTimer = setTimeout(() => {
-    newPostsCount.value = 3
-  }, 8000)
-})
+const canDisplayPostInCurrentFeed = (post: FeedPostRecord) => {
+  if (activeOrder.value !== "all" && activeOrder.value !== "following") {
+    return false
+  }
 
-onUnmounted(() => clearTimeout(newPostTimer))
+  if (activeFilter.value === "all") {
+    return true
+  }
+
+  if (activeFilter.value === "text") {
+    return post.primaryMediaType === "text"
+  }
+
+  if (activeFilter.value === "photos") {
+    return post.primaryMediaType === "image"
+  }
+
+  if (activeFilter.value === "video") {
+    return post.primaryMediaType === "video"
+  }
+
+  return false
+}
+
+const mergePendingStory = (records: FeedStoryRecord[]) => {
+  const pendingStory = pendingCreatedStory.value
+
+  if (!pendingStory) {
+    return records
+  }
+
+  if (records.some(story => story.id === pendingStory.id)) {
+    pendingCreatedStory.value = null
+    return records
+  }
+
+  return [pendingStory, ...records]
+}
+
+async function fetchHome(reset = true) {
+  const response = await repository.getHome({
+    limit: 6,
+    afterPostId: reset ? undefined : nextOffset.value ?? undefined,
+    postType: resolvePostType(activeFilter.value),
+    followingOnly: activeOrder.value === "following",
+  })
+
+  stories.value = mergePendingStory(response.stories)
+  announcement.value = response.announcement
+  hasMore.value = response.hasMore
+  nextOffset.value = response.nextOffset
+  posts.value = reset
+    ? response.posts
+    : [...posts.value, ...response.posts.filter(post => !posts.value.some(existing => existing.id === post.id))]
+}
 
 function loadNewPosts() {
   newPostsCount.value = 0
 }
 
 async function loadMore() {
+  if (!hasMore.value || loadingMore.value) return
+
   loadingMore.value = true
-  await new Promise(resolve => setTimeout(resolve, 800))
-  page.value += 1
-  loadingMore.value = false
+
+  try {
+    await fetchHome(false)
+  }
+  finally {
+    loadingMore.value = false
+  }
 }
+
+async function refreshFeed() {
+  newPostsCount.value = 0
+  await fetchHome(true)
+}
+
+async function handlePostCreated(post: FeedPostRecord | null) {
+  if (!post) {
+    await refreshFeed()
+    return
+  }
+
+  newPostsCount.value = 0
+
+  if (!canDisplayPostInCurrentFeed(post)) {
+    return
+  }
+
+  posts.value = [
+    post,
+    ...posts.value.filter(existing => existing.id !== post.id),
+  ]
+}
+
+await fetchHome(true)
+initialized.value = true
+
+onMounted(() => {
+  greetingPeriod.value = resolveGreetingPeriod()
+})
+
+watch([activeFilter, activeOrder], async () => {
+  if (!initialized.value) return
+  await fetchHome(true)
+})
 </script>
 
 <style scoped>

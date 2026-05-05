@@ -1,3 +1,4 @@
+<!-- Description: Renders photos-page filters using normalized API-backed category options. -->
 <template>
   <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)] sm:p-5">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -33,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PhotoCategory, PhotoCategoryKey } from "../../application/composables/useMockPhotosData"
+import type { PhotoCategory, PhotoCategoryKey } from "../../application/composables/usePhotosData"
 
 defineProps<{
   categories: ReadonlyArray<PhotoCategory>

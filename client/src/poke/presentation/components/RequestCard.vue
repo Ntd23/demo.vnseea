@@ -1,3 +1,4 @@
+<!-- Description: Renders one API-backed poke request card and exposes real poke-back and remove actions. -->
 <template>
   <article class="surface-card group relative overflow-hidden rounded-[18px] bg-white ring-1 ring-secondary-200/50 transition-all duration-500 hover:-translate-y-2 hover:ring-primary-500/20 hover:shadow-[0_12px_32px_rgba(37,99,235,0.12)]">
     <div class="h-2 w-full bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 shadow-sm" />
@@ -10,7 +11,8 @@
               class="flex h-16 w-16 items-center justify-center rounded-2xl text-sm font-extrabold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ring-1 ring-white/20"
               :style="{ background: accentBackground }"
             >
-              {{ record.initials }}
+              <img v-if="record.avatarUrl" :src="record.avatarUrl" :alt="record.name" class="h-full w-full rounded-2xl object-cover">
+              <span v-else>{{ record.initials }}</span>
             </div>
 
             <div
@@ -78,6 +80,7 @@
           variant="soft"
           size="xl"
           class="h-14 rounded-xl bg-white text-[11px] font-semibold uppercase tracking-[0.06em] text-secondary-500 ring-1 ring-secondary-200/50 transition-all hover:bg-secondary-50 hover:text-secondary-900 hover:ring-secondary-300 active:scale-95"
+          @click="$emit('remove', record.id)"
         >
           <template #leading>
              <Icon name="i-ph-trash-duotone" class="h-5 w-5 mr-1" />
@@ -90,10 +93,10 @@
 </template>
 
 <script setup lang="ts">
-import type { MockPokeRecord } from "../../domain/types/poke.types"
+import type { PokeRecord } from "../../application/composables/usePokeData"
 
 const props = defineProps<{
-  record: MockPokeRecord
+  record: PokeRecord
   pokedBack: boolean
 }>()
 
@@ -101,6 +104,7 @@ const { t } = useI18n()
 
 defineEmits<{
   poke: [id: string]
+  remove: [id: string]
 }>()
 
 const accentBackground = computed(() =>

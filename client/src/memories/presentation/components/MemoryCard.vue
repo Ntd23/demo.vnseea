@@ -1,3 +1,4 @@
+<!-- Description: Renders one API-backed memory card and exposes a real share action for the original memory post. -->
 <template>
   <article class="surface-card group overflow-hidden ring-1 ring-secondary-100 shadow-xl transition-all duration-500 hover:shadow-2xl hover:ring-primary-200/50">
     <!-- Memory Header -->
@@ -32,16 +33,13 @@
 
         <UButton
           size="xl"
-          :color="shared ? 'primary' : 'primary'"
-          :variant="shared ? 'solid' : 'solid'"
-          class="rounded-2xl font-black text-[11px] uppercase tracking-widest px-8 h-12 shadow-xl transition-all active:scale-95 flex-shrink-0 justify-center"
-          :class="shared ? 'bg-sky-600 hover:bg-sky-700 shadow-sky-500/20' : 'bg-primary-600 hover:bg-primary-700 shadow-primary-500/20'"
+          class="rounded-2xl bg-primary-600 px-8 h-12 flex-shrink-0 justify-center font-black text-[11px] uppercase tracking-widest shadow-xl shadow-primary-500/20 transition-all active:scale-95 hover:bg-primary-700"
           @click="$emit('share', entry.id)"
         >
           <template #leading>
-            <Icon :name="shared ? 'i-ph-check-bold' : 'i-ph-share-network-duotone'" class="h-5 w-5" />
+            <Icon name="i-ph-share-network-duotone" class="h-5 w-5" />
           </template>
-          {{ shared ? t("pages.memoriesPage.sharedAction") : t("pages.memoriesPage.shareAction") }}
+          {{ t("pages.memoriesPage.shareAction") }}
         </UButton>
       </div>
     </div>
@@ -55,11 +53,10 @@
 
 <script setup lang="ts">
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import type { MockMemoryEntry } from "../../application/composables/useMockMemoriesData"
+import type { FeedMemoryRecord } from "../../../feed/domain/types/feed.types"
 
 defineProps<{
-  entry: MockMemoryEntry
-  shared: boolean
+  entry: FeedMemoryRecord
 }>()
 
 const { t } = useI18n()

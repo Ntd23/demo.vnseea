@@ -1,3 +1,4 @@
+<!-- Description: Renders the photos sidebar using API-backed quick links, hashtag rollups, and creator summaries. -->
 <template>
   <aside class="min-w-0 space-y-4">
 
@@ -98,7 +99,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PhotoQuickLink } from "../../application/composables/useMockPhotosData"
+import type { PhotoQuickLink } from "../../application/composables/usePhotosData"
 
 defineProps<{
   hashtags: ReadonlyArray<{ label: string; score: string; to: string }>

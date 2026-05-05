@@ -1,3 +1,4 @@
+<!-- Description: Renders the reels overlay with real author navigation instead of a mock follow action. -->
 <template>
   <div class="reel-overlay">
     <div class="reel-overlay__grid">
@@ -11,9 +12,9 @@
           <div class="reel-author__info">
             <div class="reel-author__name-row">
               <p class="reel-author__name">{{ reel.author }}</p>
-              <button class="reel-author__follow" type="button">
-                {{ $t("pages.reelsPage.follow") }}
-              </button>
+              <NuxtLink :to="reel.authorPath" class="reel-author__follow">
+                {{ $t("pages.explorePage.viewProfile") }}
+              </NuxtLink>
             </div>
             <p class="reel-author__subtitle">{{ reel.subtitle }}</p>
           </div>
@@ -66,6 +67,7 @@ const props = defineProps<{
     avatar: string
     music: string
     tags: string[]
+    authorPath: string
   }
 }>()
 

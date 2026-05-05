@@ -1,3 +1,4 @@
+<!-- Description: Renders one API-backed saved-post entry and forwards unsave actions to the saved posts page. -->
 <template>
   <article class="group/saved overflow-hidden rounded-[24px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]">
     <div class="border-b border-[var(--border-light)] bg-[var(--color-secondary-50)] px-4 py-4 sm:px-5">
@@ -54,10 +55,10 @@
 
 <script setup lang="ts">
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import type { MockSavedPostEntry } from "../../application/composables/useMockSavedPostsData"
+import type { SavedPostEntry } from "../../application/composables/useSavedPostsData"
 
 defineProps<{
-  entry: MockSavedPostEntry
+  entry: SavedPostEntry
 }>()
 
 const { t } = useI18n()

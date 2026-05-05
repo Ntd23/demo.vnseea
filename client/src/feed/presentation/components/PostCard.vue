@@ -1,12 +1,13 @@
+<!-- Description: Renders a normalized feed post with real backend media, like, report, and comment actions instead of mock-local content. -->
 <template>
   <article :id="postAnchorId" class="post-card">
     <div class="post-card__body">
       <FeedPostHeader
         :author="post.author"
+        :author-avatar-url="post.authorAvatarUrl"
         :role="post.role"
         :time="post.time"
         :audience="post.audience"
-        :post-url="shareUrl"
         @menu-action="handleMenuAction"
       />
 
@@ -26,7 +27,6 @@
 
       <FeedPostMediaGrid v-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="onOpenMedia" />
 
-      <!-- Reaction stats -->
       <div class="post-card__stats">
         <div class="post-card__stats-left">
           <div class="post-card__reaction-emojis">
@@ -42,7 +42,6 @@
         </div>
       </div>
 
-      <!-- Action buttons — ghost style -->
       <div class="post-card__actions">
         <button
           class="post-card__action-btn"
@@ -83,11 +82,10 @@
         :description="actionMessage"
       />
 
-      <!-- Peek first comment -->
       <div v-if="localComments.length && !showComments" class="post-card__comment-peek">
         <div class="post-card__comment-peek-row">
           <div class="post-card__comment-avatar">
-            {{ localComments[0]?.author.split(' ').map(w => w[0]).join('') }}
+            {{ localComments[0]?.author.split(" ").map(w => w[0]).join("") }}
           </div>
           <div class="post-card__comment-bubble">
             <p class="post-card__comment-author">{{ localComments[0]?.author }}</p>
@@ -99,7 +97,6 @@
         </button>
       </div>
 
-      <!-- Full comments -->
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
         <div v-if="showComments" class="post-card__comments-full">
           <FeedCommentList :comments="localComments" />
@@ -134,7 +131,10 @@
 </template>
 
 <script setup lang="ts">
-import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useMockHashtagData"
+import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useHashtagData"
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
+import type { FeedCommentRecord, FeedPostRecord } from "../../domain/types/feed.types"
+import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import FeedCommentComposer from "./CommentComposer.vue"
 import FeedCommentList from "./CommentList.vue"
 import FeedLightboxViewer from "./LightboxViewer.vue"
@@ -146,23 +146,11 @@ const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
 const toast = useToast()
-
-type FeedComment = { id: number; author: string; role: string; text: string }
-type FeedPost = {
-  id: number
-  author: string
-  role: string
-  audience: string
-  time: string
-  text: string
-  tags: string[]
-  stats: { likes: number; comments: number; shares: number }
-  media?: "double" | "single"
-  comments: FeedComment[]
-}
+const currentAuthUserStore = useCurrentAuthUserStore()
+const repository = createApiFeedRepository()
 
 const props = defineProps<{
-  post: FeedPost
+  post: FeedPostRecord
 }>()
 
 const showComments = ref(false)
@@ -170,11 +158,14 @@ const showShare = ref(false)
 const liked = ref(false)
 const lightboxOpen = ref(false)
 const currentMediaIndex = ref(0)
-const localComments = ref<FeedComment[]>([])
+const localComments = ref<FeedCommentRecord[]>([])
 const likesCount = ref(0)
 const sharesCount = ref(0)
 const actionState = ref<"idle" | "success" | "error">("idle")
 const actionMessage = ref("")
+const liking = ref(false)
+const commenting = ref(false)
+const reporting = ref(false)
 
 const postAnchorId = computed(() => `feed-post-${props.post.id}`)
 
@@ -199,18 +190,32 @@ watch(
   { deep: true, immediate: true },
 )
 
-const mediaItems = computed(() => {
-  const count = props.post.media === "double" ? 2 : props.post.media ? 1 : 0
-  return Array.from({ length: count }, (_, i) => ({
-    type: "image" as const,
-    src: `https://picsum.photos/seed/${encodeURIComponent(props.post.author)}-${i + 1}/1200/900`,
-    alt: `${props.post.author} media ${i + 1}`,
-  }))
+onMounted(async () => {
+  await currentAuthUserStore.hydrate()
 })
 
-const toggleLike = () => {
-  likesCount.value += liked.value ? -1 : 1
-  liked.value = !liked.value
+const mediaItems = computed(() => props.post.mediaItems)
+
+async function toggleLike() {
+  if (liking.value) return
+
+  liking.value = true
+
+  try {
+    await repository.runPostAction({
+      action: "like",
+      postId: props.post.id,
+    })
+    likesCount.value += liked.value ? -1 : 1
+    liked.value = !liked.value
+  }
+  catch (error) {
+    actionState.value = "error"
+    actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+  }
+  finally {
+    liking.value = false
+  }
 }
 
 const onOpenMedia = (index: number) => {
@@ -219,24 +224,43 @@ const onOpenMedia = (index: number) => {
 }
 
 async function submitComment(message: string) {
-  const comment: FeedComment = {
-    id: Date.now(),
-    author: t("feed.postCard.commentAuthor"),
-    role: t("feed.postCard.commentRole"),
-    text: message,
+  if (commenting.value) return
+
+  commenting.value = true
+
+  try {
+    await repository.runPostAction({
+      action: "comment",
+      postId: props.post.id,
+      text: message,
+    })
+
+    const comment: FeedCommentRecord = {
+      id: Date.now(),
+      author: currentAuthUserStore.user?.name || t("feed.postCard.commentAuthor"),
+      role: currentAuthUserStore.user?.username ? `@${currentAuthUserStore.user.username}` : t("feed.postCard.commentRole"),
+      text: message,
+    }
+
+    localComments.value = [...localComments.value, comment]
+    showComments.value = true
+    actionState.value = "success"
+    actionMessage.value = t("feed.postCard.commentAddedMessage")
+
+    toast.add({
+      color: "success",
+      icon: "i-ph-chat-centered-dots-fill",
+      title: props.post.author,
+      description: actionMessage.value,
+    })
   }
-
-  localComments.value = [...localComments.value, comment]
-  showComments.value = true
-  actionState.value = "success"
-  actionMessage.value = t("feed.postCard.commentAddedMessage")
-
-  toast.add({
-    color: "success",
-    icon: "i-ph-chat-centered-dots-fill",
-    title: props.post.author,
-    description: actionMessage.value,
-  })
+  catch (error) {
+    actionState.value = "error"
+    actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+  }
+  finally {
+    commenting.value = false
+  }
 }
 
 function handleShared() {
@@ -247,6 +271,11 @@ function handleShared() {
 }
 
 async function handleMenuAction(action: string) {
+  if (action === "open" && import.meta.client) {
+    window.open(props.post.sourcePath || shareUrl.value, "_blank", "noopener,noreferrer")
+    return
+  }
+
   if (action === "copy") {
     try {
       if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
@@ -262,9 +291,25 @@ async function handleMenuAction(action: string) {
       actionMessage.value = shareUrl.value
     }
   }
-  else {
-    actionState.value = "success"
-    actionMessage.value = action
+  else if (action === "report") {
+    if (reporting.value) return
+    reporting.value = true
+
+    try {
+      await repository.runPostAction({
+        action: "report",
+        postId: props.post.id,
+      })
+      actionState.value = "success"
+      actionMessage.value = t("feed.postHeader.menuReportLabel")
+    }
+    catch (error) {
+      actionState.value = "error"
+      actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+    }
+    finally {
+      reporting.value = false
+    }
   }
 
   toast.add({
@@ -351,7 +396,6 @@ const downloadMedia = () => {
   margin-top: 14px;
 }
 
-/* Stats row */
 .post-card__stats {
   display: flex;
   align-items: center;
@@ -409,7 +453,6 @@ const downloadMedia = () => {
   color: #94a3b8;
 }
 
-/* Action buttons — ghost style, no border */
 .post-card__actions {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -451,7 +494,6 @@ const downloadMedia = () => {
   flex-shrink: 0;
 }
 
-/* Comment peek */
 .post-card__comment-peek {
   margin-top: 12px;
   padding-top: 12px;
@@ -514,7 +556,6 @@ const downloadMedia = () => {
   color: #0000ff;
 }
 
-/* Full comments */
 .post-card__comments-full {
   margin-top: 12px;
   padding-top: 12px;

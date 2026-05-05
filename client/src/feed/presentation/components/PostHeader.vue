@@ -1,21 +1,19 @@
+<!-- Description: Renders the post header with backend-backed author metadata and a reduced action menu without mock follow behavior. -->
 <template>
   <div class="post-header">
     <div class="post-header__left">
       <div class="post-header__avatar">
-        {{ initials }}
+        <img
+          v-if="authorAvatarUrl"
+          :src="authorAvatarUrl"
+          :alt="author"
+          class="post-header__avatar-image"
+        >
+        <span v-else>{{ initials }}</span>
       </div>
       <div class="post-header__info">
         <div class="post-header__name-row">
           <p class="post-header__name">{{ author }}</p>
-          <button
-            class="post-header__follow"
-            :class="{ 'post-header__follow--active': followed }"
-            type="button"
-            :disabled="followStatus === 'loading'"
-            @click="toggleFollow"
-          >
-            {{ followLabel }}
-          </button>
         </div>
         <div class="post-header__meta">
           <span>{{ role }}</span>
@@ -27,7 +25,6 @@
       </div>
     </div>
 
-    <!-- 3-dot menu -->
     <div ref="menuRef" class="relative">
       <button
         class="post-header__menu-btn"
@@ -39,7 +36,6 @@
         <Icon name="i-lucide-more-horizontal" class="h-5 w-5" />
       </button>
 
-      <!-- Dropdown -->
       <Transition
         enter-active-class="transition duration-150 ease-out origin-top-right"
         enter-from-class="opacity-0 scale-95"
@@ -82,19 +78,17 @@
 import { onClickOutside } from "@vueuse/core"
 
 const { t } = useI18n()
-const toast = useToast()
 
 const props = defineProps<{
   author: string
+  authorAvatarUrl?: string
   role: string
   time: string
   audience: string
-  postUrl?: string
 }>()
 
 const emit = defineEmits<{
   menuAction: [action: string]
-  follow: [followed: boolean]
 }>()
 
 const initials = computed(() =>
@@ -107,42 +101,18 @@ const initials = computed(() =>
 
 const audienceIcon = computed(() => {
   const map: Record<string, string> = {
-    'Công khai': 'i-ph-globe-simple',
-    'Public': 'i-ph-globe-simple',
-    'Bạn bè': 'i-ph-users',
-    'Friends': 'i-ph-users',
-    'Chỉ mình tôi': 'i-ph-lock-simple',
-    'Only me': 'i-ph-lock-simple',
+    Public: "i-ph-globe-simple",
+    Friends: "i-ph-users",
+    Group: "i-ph-users-three",
+    "Only me": "i-ph-lock-simple",
   }
-  return map[props.audience] || 'i-ph-globe-simple'
+  return map[props.audience] || "i-ph-globe-simple"
 })
 
 const open = ref(false)
 const menuRef = ref<HTMLElement | null>(null)
-const followed = ref(false)
-const followStatus = ref<"idle" | "loading">("idle")
-
-const followLabel = computed(() => {
-  if (followStatus.value === "loading") return t("feed.postHeader.following")
-  if (followed.value) return t("feed.postHeader.followed")
-  return t("feed.postHeader.follow")
-})
 
 const menuItems = computed(() => [
-  {
-    key: "delete",
-    label: t("feed.postHeader.menuDeleteLabel"),
-    desc: t("feed.postHeader.menuDeleteDescription"),
-    icon: "i-lucide-trash-2",
-    danger: true,
-  },
-  {
-    key: "save",
-    label: t("feed.postHeader.menuSaveLabel"),
-    desc: t("feed.postHeader.menuSaveDescription"),
-    icon: "i-lucide-bookmark",
-    danger: false,
-  },
   {
     key: "report",
     label: t("feed.postHeader.menuReportLabel"),
@@ -158,10 +128,10 @@ const menuItems = computed(() => [
     danger: false,
   },
   {
-    key: "hide",
-    label: t("feed.postHeader.menuHideLabel"),
-    desc: t("feed.postHeader.menuHideDescription"),
-    icon: "i-lucide-eye-off",
+    key: "copy",
+    label: t("feed.postHeader.menuCopyLabel"),
+    desc: t("feed.postHeader.menuCopyDescription"),
+    icon: "i-lucide-copy",
     danger: false,
   },
 ])
@@ -170,38 +140,8 @@ onClickOutside(menuRef, () => {
   open.value = false
 })
 
-async function toggleFollow() {
-  if (followStatus.value === "loading") return
-
-  followStatus.value = "loading"
-  await new Promise(resolve => setTimeout(resolve, 200))
-  followed.value = !followed.value
-  followStatus.value = "idle"
-
-  toast.add({
-    color: "success",
-    icon: "i-ph-check-circle-fill",
-    title: props.author,
-    description: followed.value ? t("feed.postHeader.followed") : t("feed.postHeader.follow"),
-  })
-
-  emit("follow", followed.value)
-}
-
-function handleMenuAction(item: { key: string; label: string; danger: boolean }) {
+function handleMenuAction(item: { key: string }) {
   open.value = false
-
-  if (item.key === "open" && props.postUrl && import.meta.client) {
-    window.open(props.postUrl, "_blank", "noopener,noreferrer")
-  }
-
-  toast.add({
-    color: item.danger ? "warning" : "primary",
-    icon: item.danger ? "i-ph-warning-circle-fill" : "i-ph-check-circle-fill",
-    title: props.author,
-    description: item.label,
-  })
-
   emit("menuAction", item.key)
 }
 </script>
@@ -228,12 +168,19 @@ function handleMenuAction(item: { key: string; label: string; danger: boolean })
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   border-radius: 50%;
   background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
   color: #ffffff;
   font-size: 13px;
   font-weight: 800;
   box-shadow: 0 4px 14px rgba(0, 0, 255, 0.18);
+}
+
+.post-header__avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .post-header__info {
@@ -250,27 +197,6 @@ function handleMenuAction(item: { key: string; label: string; danger: boolean })
   font-size: 14px;
   font-weight: 700;
   color: #0f172a;
-}
-
-.post-header__follow {
-  padding: 2px 10px;
-  border-radius: 999px;
-  border: none;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
-  font-size: 11.5px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.post-header__follow:hover {
-  background: rgba(0, 0, 255, 0.12);
-}
-
-.post-header__follow--active {
-  background: rgba(0, 0, 255, 0.08);
-  color: #64748b;
 }
 
 .post-header__meta {
@@ -291,7 +217,6 @@ function handleMenuAction(item: { key: string; label: string; danger: boolean })
   height: 13px;
 }
 
-/* Menu button */
 .post-header__menu-btn {
   display: flex;
   align-items: center;
@@ -312,7 +237,6 @@ function handleMenuAction(item: { key: string; label: string; danger: boolean })
   color: #0000ff;
 }
 
-/* Dropdown */
 .post-header__dropdown {
   position: absolute;
   right: 0;
@@ -344,10 +268,6 @@ function handleMenuAction(item: { key: string; label: string; danger: boolean })
   background: rgba(0, 0, 255, 0.03);
 }
 
-.post-header__dropdown-item--danger:hover {
-  background: #fef2f2;
-}
-
 .post-header__dropdown-icon-wrap {
   display: flex;
   width: 32px;
@@ -367,25 +287,11 @@ function handleMenuAction(item: { key: string; label: string; danger: boolean })
   color: #0000ff;
 }
 
-.post-header__dropdown-icon-wrap--danger {
-  background: #fef2f2;
-  color: #f87171;
-}
-
-.post-header__dropdown-item:hover .post-header__dropdown-icon-wrap--danger {
-  background: #fee2e2;
-  color: #ef4444;
-}
-
 .post-header__dropdown-label {
   font-size: 13px;
   font-weight: 600;
   color: #1e293b;
   line-height: 1.3;
-}
-
-.post-header__dropdown-label--danger {
-  color: #dc2626;
 }
 
 .post-header__dropdown-desc {

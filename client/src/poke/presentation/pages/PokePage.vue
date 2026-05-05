@@ -23,26 +23,35 @@
             <Icon name="i-ph-chat-circle-dots-duotone" class="mr-2 h-4 w-4" />
             {{ t("pages.pokePage.openMessages") }}
           </NuxtLink>
-
-          <button
-            v-if="pokedBackCount > 0"
-            type="button"
-            class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:-translate-y-0.5 hover:bg-primary-700"
-            @click="resetPokedBack"
-          >
-            <Icon name="i-ph-arrow-counter-clockwise-bold" class="mr-2 h-4 w-4" />
-            {{ t("pages.pokePage.resetStatus") }}
-          </button>
         </div>
       </div>
     </section>
 
-    <section class="rounded-[22px] border border-[#dbe3f2] bg-white px-5 py-4 text-[14px] leading-6 text-slate-500 shadow-[0_8px_20px_rgba(15,35,110,0.04)]">
+    <UAlert
+      v-if="errorMessage"
+      color="warning"
+      variant="subtle"
+      icon="i-ph-warning-circle-fill"
+      class="rounded-[22px]"
+      :description="errorMessage"
+    />
+
+    <section
+      v-if="loading"
+      class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+    >
+      <div class="flex items-center justify-center gap-3 text-sm font-bold text-slate-500">
+        <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
+        <span>{{ t("pages.pokePage.heroEyebrow") }}</span>
+      </div>
+    </section>
+
+    <section v-else class="rounded-[22px] border border-[#dbe3f2] bg-white px-5 py-4 text-[14px] leading-6 text-slate-500 shadow-[0_8px_20px_rgba(15,35,110,0.04)]">
       <strong class="mr-2 text-[var(--text-primary)]">{{ t("pages.pokePage.pendingLabel") }}</strong>
       {{ formatCount(pendingPokeCount) }}
     </section>
 
-    <section class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+    <section v-if="!loading" class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
       <div class="space-y-2 border-b border-[#eef2fb] pb-4">
         <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
           {{ t("pages.pokePage.listEyebrow") }}
@@ -62,6 +71,7 @@
           :record="item"
           :poked-back="pokedBackIds.includes(item.id)"
           @poke="pokeBack"
+          @remove="removePoke"
         />
       </div>
     </section>
@@ -70,12 +80,14 @@
 
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import type { PokeRecord } from "../../application/composables/usePokeData"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import PokeRequestCard from "../components/RequestCard.vue"
-import { useMockPokeData } from "../../infrastructure/mocks/pokeCatalog"
-
-const { pokeRecords } = useMockPokeData()
+const repository = createApiFeedRepository()
 const { t, locale } = useI18n()
-
+const loading = ref(true)
+const errorMessage = ref("")
+const pokeRecords = ref<PokeRecord[]>([])
 const pokedBackIds = ref<string[]>([])
 
 const pokedBackCount = computed(() => pokedBackIds.value.length)
@@ -83,17 +95,65 @@ const pendingPokeCount = computed(() => pokeRecords.value.length - pokedBackCoun
 const formatCount = (value: number) =>
   value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US")
 
-function pokeBack(id: string) {
-  if (pokedBackIds.value.includes(id)) return
-  pokedBackIds.value = [...pokedBackIds.value, id]
+async function fetchPokes() {
+  loading.value = true
+  errorMessage.value = ""
+
+  try {
+    pokeRecords.value = await repository.getPokes()
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.pokePage.listDescription")
+  }
+  finally {
+    loading.value = false
+  }
 }
 
-function resetPokedBack() {
-  pokedBackIds.value = []
+async function pokeBack(id: string) {
+  if (pokedBackIds.value.includes(id)) return
+
+  const record = pokeRecords.value.find(item => item.id === id)
+  if (!record) return
+
+  errorMessage.value = ""
+
+  try {
+    await repository.runPokeAction({
+      action: "create",
+      userId: record.userId,
+      pokeId: record.pokeId,
+    })
+    pokedBackIds.value = [...pokedBackIds.value, id]
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.pokePage.listDescription")
+  }
+}
+
+async function removePoke(id: string) {
+  const record = pokeRecords.value.find(item => item.id === id)
+  if (!record) return
+
+  errorMessage.value = ""
+
+  try {
+    await repository.runPokeAction({
+      action: "remove",
+      pokeId: record.pokeId,
+    })
+    pokeRecords.value = pokeRecords.value.filter(item => item.id !== id)
+    pokedBackIds.value = pokedBackIds.value.filter(item => item !== id)
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.pokePage.listDescription")
+  }
 }
 
 useSeoMeta({
   title: () => t("pages.pokePage.seoTitle"),
   description: () => t("pages.pokePage.seoDescription"),
 })
+
+await fetchPokes()
 </script>

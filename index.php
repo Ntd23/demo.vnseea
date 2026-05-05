@@ -1,5 +1,5 @@
 <?php
-// English description: Disable app WebView mode and keep production on the standard web layout.
+// English description: Detect app WebView mode from query and app-specific user agent, then expose it to theme containers.
 // +--------------------------------------\----------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -12,12 +12,36 @@
 require_once('assets/init.php');
 decryptConfigData();
 
-if (!empty($_COOKIE['app_view'])) {
+$appViewRequested = (
+    (!empty($_GET['source']) && $_GET['source'] === 'app') ||
+    (!empty($_GET['app_view']) && $_GET['app_view'] === '1')
+);
+$appViewDisabled = (
+    (!empty($_GET['source']) && $_GET['source'] === 'web') ||
+    (isset($_GET['app_view']) && $_GET['app_view'] === '0')
+);
+$isAppUserAgent = (
+    !empty($_SERVER['HTTP_USER_AGENT']) &&
+    stripos($_SERVER['HTTP_USER_AGENT'], 'vnseea-webview') !== false
+);
+
+if ($appViewDisabled) {
     @setcookie('app_view', '', time() - 3600, '/');
     $_COOKIE['app_view'] = '';
 }
 
-$wo['is_app_view'] = false;
+if ($appViewRequested) {
+    @setcookie('app_view', '1', time() + 31556926, '/');
+}
+
+$wo['is_app_view'] = (
+    $appViewRequested ||
+    (
+        $isAppUserAgent &&
+        !empty($_COOKIE['app_view']) &&
+        $_COOKIE['app_view'] === '1'
+    )
+);
 
 if (!empty($auto_redirect)) {
     $checkHTTPS = checkHTTPS();

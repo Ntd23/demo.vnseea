@@ -1,3 +1,4 @@
+<!-- Description: Renders API-backed watch metadata and actions without the previous mock follow control. -->
 <template>
   <section class="watch-info">
     <div class="watch-info__header">
@@ -41,9 +42,9 @@
         <p class="watch-author__name">{{ video.author }}</p>
         <p class="watch-author__role">{{ $t("pages.watchPage.creatorMeta") }}</p>
       </div>
-      <button class="watch-author__follow" type="button">
-        {{ $t("pages.watchPage.follow") || "Follow" }}
-      </button>
+      <NuxtLink :to="video.authorPath" class="watch-author__follow">
+        {{ $t("pages.explorePage.viewProfile") }}
+      </NuxtLink>
     </div>
 
     <!-- Description + tags -->
@@ -64,8 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import type { WatchVideo } from '../../application/composables/useMockWatchData'
-import { formatWatchNumber } from '../../application/composables/useMockWatchData'
+import type { WatchVideo } from "../../application/composables/useWatchData"
+import { formatWatchNumber } from "../../application/composables/useWatchData"
 
 const { locale } = useI18n()
 

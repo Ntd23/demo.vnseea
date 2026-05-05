@@ -23,43 +23,53 @@
             <Icon name="i-ph-house-line-duotone" class="mr-2 h-4 w-4" />
             {{ t("pages.memoriesPage.homeFeed") }}
           </NuxtLink>
-          <button
-            v-if="sharedMemoryCount > 0"
-            type="button"
-            class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:-translate-y-0.5 hover:bg-primary-700"
-            @click="resetSharedMemories"
-          >
-            <Icon name="i-ph-arrow-counter-clockwise-duotone" class="mr-2 h-4 w-4" />
-            {{ t("pages.memoriesPage.resetSharing") }}
-          </button>
         </div>
       </div>
     </section>
 
-    <section class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+    <UAlert
+      v-if="errorMessage"
+      color="warning"
+      variant="subtle"
+      icon="i-ph-warning-circle-fill"
+      class="rounded-[22px]"
+      :description="errorMessage"
+    />
+
+    <section
+      v-if="loading"
+      class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+    >
+      <div class="flex items-center justify-center gap-3 text-sm font-bold text-slate-500">
+        <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
+        <span>{{ t("pages.memoriesPage.heroEyebrow") }}</span>
+      </div>
+    </section>
+
+    <section v-else class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
       <div class="space-y-2">
         <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
           {{ t("pages.memoriesPage.statYears") }}
         </p>
         <h2 class="text-[1.45rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
-          {{ t("pages.memoriesPage.sectionTitle", { count: memoryEntries.length }) }}
+          {{ t("pages.memoriesPage.sectionTitle", { count: memoryFriends.length }) }}
         </h2>
       </div>
 
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <article
-          v-for="entry in memoryEntries"
-          :key="`${entry.id}-friendversary`"
+          v-for="friend in memoryFriends"
+          :key="friend.id"
           class="rounded-[22px] border border-[#e2e8f0] bg-[#f8fafc] p-4"
         >
           <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-            {{ entry.happenedOnLabel }}
+            {{ friend.label }}
           </p>
           <h3 class="mt-2 text-lg font-black text-[var(--text-primary)]">
-            {{ entry.post.author }}
+            {{ friend.name }}
           </h3>
           <p class="mt-2 text-sm leading-6 text-slate-600">
-            {{ entry.reflection }}
+            {{ friend.note }}
           </p>
         </article>
       </div>
@@ -81,7 +91,6 @@
       <div class="mx-auto max-w-4xl px-4 py-5 sm:px-5">
         <MemoriesMemoryFeed
           :entries="memoryEntries"
-          :shared-ids="sharedMemoryIds"
           @share="shareMemory"
         />
       </div>
@@ -91,27 +100,70 @@
 
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import type { FeedMemoryFriendRecord, FeedMemoryRecord } from "../../../feed/domain/types/feed.types"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import MemoriesMemoryFeed from "../components/MemoryFeed.vue"
-import { useMockMemoriesData } from "../../application/composables/useMockMemoriesData"
+const route = useRoute()
+const requestURL = useRequestURL()
+const toast = useToast()
+const repository = createApiFeedRepository()
 
-const { memoryEntries } = useMockMemoriesData()
 const { t } = useI18n()
+const loading = ref(true)
+const errorMessage = ref("")
+const memoryEntries = ref<FeedMemoryRecord[]>([])
+const memoryFriends = ref<FeedMemoryFriendRecord[]>([])
 
-const sharedMemoryIds = ref<string[]>([])
+async function fetchMemories() {
+  loading.value = true
+  errorMessage.value = ""
 
-const sharedMemoryCount = computed(() => sharedMemoryIds.value.length)
-
-function shareMemory(id: string) {
-  if (sharedMemoryIds.value.includes(id)) return
-  sharedMemoryIds.value = [...sharedMemoryIds.value, id]
+  try {
+    const response = await repository.getMemories()
+    memoryEntries.value = response.posts
+    memoryFriends.value = response.friends
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.memoriesPage.sectionDescription")
+  }
+  finally {
+    loading.value = false
+  }
 }
 
-function resetSharedMemories() {
-  sharedMemoryIds.value = []
+async function shareMemory(id: string) {
+  const entry = memoryEntries.value.find(item => item.id === id)
+  if (!entry) return
+
+  const shareUrl = new URL(`${route.path}#memory-post-${entry.post.id}`, requestURL.origin).toString()
+
+  try {
+    if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+      throw new Error("clipboard_unavailable")
+    }
+
+    await navigator.clipboard.writeText(shareUrl)
+    toast.add({
+      color: "success",
+      icon: "i-ph-share-network-fill",
+      title: entry.post.author,
+      description: t("pages.memoriesPage.sharedAction"),
+    })
+  }
+  catch {
+    toast.add({
+      color: "primary",
+      icon: "i-ph-link-bold",
+      title: entry.post.author,
+      description: shareUrl,
+    })
+  }
 }
 
 useSeoMeta({
   title: () => t("pages.memoriesPage.seoTitle"),
   description: () => t("pages.memoriesPage.seoDescription"),
 })
+
+await fetchMemories()
 </script>

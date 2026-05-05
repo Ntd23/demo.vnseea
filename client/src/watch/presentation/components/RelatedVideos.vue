@@ -1,3 +1,4 @@
+<!-- Description: Renders the related watch queue from API-backed video posts. -->
 <template>
   <aside class="related">
     <div class="related__header">
@@ -45,8 +46,8 @@
 </template>
 
 <script setup lang="ts">
-import type { WatchVideo } from '../../application/composables/useMockWatchData'
-import { formatWatchNumber } from '../../application/composables/useMockWatchData'
+import type { WatchVideo } from "../../application/composables/useWatchData"
+import { formatWatchNumber } from "../../application/composables/useWatchData"
 
 const { locale } = useI18n()
 
