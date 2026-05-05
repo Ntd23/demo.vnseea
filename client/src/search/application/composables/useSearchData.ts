@@ -1,6 +1,7 @@
 import { onMounted, ref, watch, type Ref } from "vue"
 import { createApiSearchRepository } from "../../infrastructure/repositories/ApiSearchRepository"
 import type {
+  SearchBackendFilters,
   SearchCollectionType,
   SearchOption,
   SearchResultType,
@@ -16,9 +17,9 @@ const emptyResults = (): SearchResultsByType => ({
   posts: [],
 })
 
-export function useSearchData(keyword: Ref<string>) {
+export function useSearchData(keyword: Ref<string>, filters: Ref<SearchBackendFilters>) {
   const resultsByType = ref<SearchResultsByType>(emptyResults())
-  const loading = ref(keyword.value.trim().length > 0)
+  const loading = ref(true)
   const errorMessage = ref("")
   const repository = createApiSearchRepository()
 
@@ -81,17 +82,11 @@ export function useSearchData(keyword: Ref<string>) {
   async function refresh() {
     const query = keyword.value.trim()
 
-    if (!query) {
-      resultsByType.value = emptyResults()
-      errorMessage.value = ""
-      return
-    }
-
     loading.value = true
     errorMessage.value = ""
 
     try {
-      resultsByType.value = await repository.search(query)
+      resultsByType.value = await repository.search(query, filters.value)
     }
     catch (error) {
       resultsByType.value = emptyResults()
@@ -107,9 +102,23 @@ export function useSearchData(keyword: Ref<string>) {
       void refresh()
     })
 
-    watch(keyword, () => {
-      void refresh()
-    })
+    watch(
+      () => [
+        keyword.value,
+        filters.value.type,
+        filters.value.country,
+        filters.value.filterbyage,
+        filters.value.age_from,
+        filters.value.age_to,
+        filters.value.verified,
+        filters.value.status,
+        filters.value.gender,
+        filters.value.image,
+      ],
+      () => {
+        void refresh()
+      },
+    )
   }
 
   return {

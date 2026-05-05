@@ -66,11 +66,7 @@ if (empty($current_user_id)) {
     );
 } else {
     $current_user = Wo_UserData($current_user_id);
-    $current_user_ = Wo_UpdateUserDetails($current_user, true, true, true);
-
-    if (is_array($current_user_)) {
-        $current_user = $current_user_;
-    }
+    // Keep bootstrap lightweight; profile detail refresh can fail under strict SQL mode and break session hash creation.
 
     $notification_settings = array();
     if (!empty($current_user['notification_settings'])) {

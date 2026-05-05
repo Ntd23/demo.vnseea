@@ -1,4 +1,4 @@
-import { getCookie } from "h3"
+import { createError, getCookie } from "h3"
 import { getBackendBaseCandidates } from "../../utils/backend-api-client"
 import type { CurrentAuthUser } from "../../../src/auth/domain/types/auth.types"
 import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
@@ -31,10 +31,12 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
   const backendUserSession = getCookie(event, "user_id")
 
   if (!backendUserSession) {
-    return null
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Not authenticated",
+    })
   }
   const runtimeConfig = useRuntimeConfig(event)
-  const cookie = event.node.req.headers.cookie
 
   try {
     const baseCandidates = getBackendBaseCandidates(
@@ -46,8 +48,6 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
       try {
         response = await $fetch<BackendCurrentUserResponse>(backendRoutes.session.currentUser(backendUserSession), {
           baseURL,
-          headers: cookie ? { cookie } : undefined,
-          credentials: "include",
         })
         break
       }
@@ -60,7 +60,10 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
     const user = response?.user_data
 
     if (apiStatus < 200 || apiStatus >= 300 || !user?.user_id || !user.name) {
-      return null
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Not authenticated",
+      })
     }
 
     const adminLevel = Number(user.admin ?? 0)
@@ -80,6 +83,9 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
     }
   }
   catch {
-    return null
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Not authenticated",
+    })
   }
 })

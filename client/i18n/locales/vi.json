@@ -4394,7 +4394,11 @@
   "auth": {
     "heroPanel": {
       "defaultTitle": "Kết nối với cộng đồng của bạn",
-      "defaultSubtitle": "Theo dõi bảng tin, mở rộng mạng lưới và giữ mọi hoạt động của bạn ở cùng một nơi."
+      "defaultSubtitle": "Theo dõi bảng tin, mở rộng mạng lưới và giữ mọi hoạt động của bạn ở cùng một nơi.",
+      "communityLabel": "Cộng đồng",
+      "communityValue": "Người dùng, nhóm, trang",
+      "activityLabel": "Hoạt động",
+      "activityValue": "Tin, cập nhật, tin nhắn"
     }
   },
   "settings": {
@@ -5660,6 +5664,8 @@
         "title": "Bạn đang tìm gì vậy?",
         "desc": "Nhập một từ khóa phía trên để tìm người dùng, fanpage, nhóm hoặc bài đăng. Bạn cũng có thể bắt đầu bằng các gợi ý nhanh đang xuất hiện trong bộ lọc."
       },
+      "loadingResults": "Đang tải kết quả tìm kiếm",
+      "errorTitle": "Không tải được kết quả",
       "clearFilters": "Xóa bộ lọc",
       "tryKeyword": "Thử {keyword}",
       "controls": {
@@ -5668,12 +5674,38 @@
         "desc": "Tìm kiếm theo từ khóa, lọc theo loại kết quả và chuyển nhanh giữa những tập dữ liệu đang có sẵn trong mock social graph của VNSEEA.",
         "keywordParams": {
           "label": "Từ khóa",
-          "placeholder": "Tìm kiếm người, trang, nhóm, bài đăng hoặc #hashtags"
+          "placeholder": "Từ khóa"
         },
         "typeLabel": "Loại kết quả",
         "sortLabel": "Sắp xếp",
         "submit": "Tìm kiếm",
         "quickSuggestions": "Gợi ý nhanh"
+      },
+      "filters": {
+        "filter": "Lọc",
+        "country": "Chọn quốc gia",
+        "age": "Tuổi tác",
+        "ageFrom": "Từ tuổi",
+        "ageTo": "Đến tuổi",
+        "verified": "Đã xác minh",
+        "status": "Trạng thái",
+        "gender": "Giới tính",
+        "profilePicture": "Ảnh đại diện",
+        "all": "Tất cả",
+        "yes": "Đúng",
+        "no": "Không",
+        "verifiedOn": "Đã xác minh",
+        "verifiedOff": "Chưa được xác minh",
+        "online": "Trực tuyến",
+        "offline": "Ngoại tuyến",
+        "male": "Nam",
+        "female": "Nữ"
+      },
+      "countries": {
+        "vietnam": "Việt Nam",
+        "singapore": "Singapore",
+        "thailand": "Thái Lan",
+        "unitedStates": "Hoa Kỳ"
       },
       "results": {
         "label": "Kết quả",

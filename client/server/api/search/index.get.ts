@@ -166,19 +166,38 @@ function mapGroups(groups: BackendSearchEntity[] = []): SearchApiResult[] {
 export default defineEventHandler(async (event): Promise<SearchApiResponse> => {
   const query = getQuery(event)
   const keyword = asString(query.q || query.keyword)
+  const filterByAge = asString(query.filterbyage) === "yes" ? "yes" : "no"
 
-  if (!keyword) {
-    return emptyResponse()
+  const payload: Record<string, unknown> = {
+    search_key: keyword,
+    limit: Number(query.limit || 35),
+  }
+
+  const country = asString(query.country)
+  const gender = asString(query.gender)
+  const verified = asString(query.verified)
+  const status = asString(query.status)
+  const image = asString(query.image)
+  const ageFrom = asString(query.age_from)
+  const ageTo = asString(query.age_to)
+
+  if (country) payload.country = country
+  if (gender) payload.gender = gender
+  if (verified) payload.verified = verified
+  if (status) payload.status = status
+  if (image) payload.image = image
+  payload.filterbyage = filterByAge
+
+  if (filterByAge === "yes") {
+    if (ageFrom) payload.age_from = ageFrom
+    if (ageTo) payload.age_to = ageTo
   }
 
   const client = createBackendApiClient(event)
   const response = assertBackendApiSuccess(
     await client.post<BackendSearchResponse, Record<string, unknown>>(
       backendRoutes.api.search,
-      {
-        search_key: keyword,
-        limit: Number(query.limit || 35),
-      },
+      payload,
     ),
     "Unable to search.",
   )
