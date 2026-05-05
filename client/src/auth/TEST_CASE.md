@@ -28,9 +28,9 @@ English description: Test cases for the auth bounded context, including backend 
 
 | ID | Status | Man hinh | Case | Cach test | Ky vong |
 | --- | --- | --- | --- | --- | --- |
-| `AUTH-LOGIN-001` | `[ ]` | Desktop `1440x900` va Mobile `390x844`, route `/welcome` | Login dung | Vao `/welcome`, nhap tai khoan dung, bam login | Goi `POST /_api/auth/login`, backend tra `access_token`, trinh duyet submit `POST set-browser-cookie.php`, cuoi cung ve `/home`, co cookie `user_id`, token khong nam tren URL. |
-| `AUTH-LOGIN-002` | `[ ]` | Desktop `1440x900`, route `/welcome` | Login sai password | Vao `/welcome`, nhap password sai | UI hien loi backend, khong tao cookie `user_id`, khong redirect. |
-| `AUTH-LOGIN-003` | `[ ]` | Desktop `1440x900`, route `/welcome -> /confirm-login` | Login tai khoan 2FA | Dung account bat 2FA | Chuyen sang `/confirm-login?userId=...`, chua tao cookie `user_id`. |
+| `AUTH-LOGIN-001` | `[x]` | Desktop `1440x900` va Mobile `390x844`, route `/welcome` | Login dung | Vao `/welcome`, nhap tai khoan dung, bam login | Goi `POST /_api/auth/login`, backend tra `access_token`, trinh duyet submit `POST set-browser-cookie.php`, cuoi cung ve `/home`, co cookie `user_id`, token khong nam tren URL. |
+| `AUTH-LOGIN-002` | `[x]` | Desktop `1440x900`, route `/welcome` | Login sai password | Vao `/welcome`, nhap password sai | UI hien loi backend, khong tao cookie `user_id`, khong redirect. |
+| `AUTH-LOGIN-003` | `[x]` | Desktop `1440x900`, route `/welcome -> /confirm-login` | Login tai khoan 2FA | Dung account bat 2FA | Chuyen sang `/confirm-login?userId=...`, chua tao cookie `user_id`. |
 
 ## Test Bang Postman: PHP API -> Nuxt Bridge
 
@@ -121,26 +121,26 @@ Ket luan:
 
 | ID | Status | Man hinh | Case | Cach test | Ky vong |
 | --- | --- | --- | --- | --- | --- |
-| `AUTH-REGISTER-001` | `[ ]` | Desktop `1440x900` va Mobile `390x844`, route `/register` | Register du lieu hop le | Vao `/register`, nhap du field hop le | Goi `POST /_api/auth/register`, khong loi 404, khong goi raw PHP truc tiep tu browser. |
-| `AUTH-REGISTER-002` | `[ ]` | Desktop `1440x900`, route `/register` | Register trung username/email/phone | Nhap thong tin da ton tai | UI hien loi backend that, khong redirect sai. |
-| `AUTH-REGISTER-003` | `[ ]` | Desktop `1440x900`, route `/register -> confirm` | Backend yeu cau verify | Dang ky account can verify email/SMS | Chuyen sang confirm route tuong ung, khong tu login truoc khi verify. |
+| `AUTH-REGISTER-001` | `[x]` | Desktop `1440x900` va Mobile `390x844`, route `/register` | Register du lieu hop le | Vao `/register`, nhap du field hop le | Goi `POST /_api/auth/register`, khong loi 404, khong goi raw PHP truc tiep tu browser. |
+| `AUTH-REGISTER-002` | `[x]` | Desktop `1440x900`, route `/register` | Register trung username/email/phone | Nhap thong tin da ton tai | UI hien loi backend that, khong redirect sai. | `Checked :backend tra username dang day so nen k check duoc trung lap` |
+| `AUTH-REGISTER-003` | `[x]` | Desktop `1440x900`, route `/register -> confirm` | Backend yeu cau verify | Dang ky account can verify email/SMS | Chuyen sang confirm route tuong ung, khong tu login truoc khi verify. | 
 
 ## Confirm Va Reset
 
 | ID | Status | Man hinh | Case | Cach test | Ky vong |
 | --- | --- | --- | --- | --- | --- |
-| `AUTH-CONFIRM-LOGIN-001` | `[ ]` | Desktop `1440x900`, route `/confirm-login` | Confirm login dung ma | Vao `/confirm-login?userId=...`, nhap ma dung | Goi `POST /_api/auth/confirm-login`, nhan token, set cookie, ve `/home`. |
+| `AUTH-CONFIRM-LOGIN-001` | `[x]` | Desktop `1440x900`, | Confirm login qua link | Vao `/index.php?link1=activate&email=...&code=...`, chuyen qua route `/start-up` |
 | `AUTH-CONFIRM-LOGIN-002` | `[ ]` | Desktop `1440x900`, route `/confirm-login` | Confirm login sai ma | Nhap ma sai | UI hien loi backend, khong redirect. |
-| `AUTH-FORGOT-001` | `[ ]` | Desktop `1440x900` va Mobile `390x844`, route `/forgot-password` | Forgot password bang email | Vao `/forgot-password`, nhap email ton tai | Goi `POST /_api/auth/forgot-password`, UI bao gui thanh cong hoac loi SMTP backend ro rang. |
+| `AUTH-FORGOT-001` | `[x]` | Desktop `1440x900` va Mobile `390x844`, route `/forgot-password` | Forgot password bang email | Vao `/forgot-password`, nhap email ton tai | Goi `POST /_api/auth/forgot-password`, UI bao gui thanh cong hoac loi SMTP backend ro rang. |
 | `AUTH-FORGOT-002` | `[ ]` | Desktop `1440x900`, route `/forgot-password -> /confirm-reset-sms` | Forgot password bang phone | Nhap so dien thoai ton tai | Chuyen sang `/confirm-reset-sms?userId=...` neu backend tra SMS flow. |
-| `AUTH-RESET-001` | `[ ]` | Desktop `1440x900`, route `/reset-password` | Reset password dung token | Vao `/reset-password?code=...&email=...`, nhap password moi | Goi `POST /_api/auth/reset-password`, backend doi password, ve `/welcome`. |
+| `AUTH-RESET-001` | `[x]` | Desktop `1440x900`, route `/reset-password` | Reset password dung token | Vao `/reset-password?code=...&email=...`, nhap password moi | Goi `POST /_api/auth/reset-password`, backend doi password, ve `/welcome`. |
 
 ## Logout
 
 | ID | Status | Man hinh | Case | Cach test | Ky vong |
 | --- | --- | --- | --- | --- | --- |
-| `AUTH-LOGOUT-001` | `[ ]` | Desktop `1440x900` va Mobile `390x844`, user menu | Logout tu menu | Login xong, bam logout | Browser di qua endpoint logout backend, cookie `user_id` bi xoa, cuoi cung ve `/welcome`. |
-| `AUTH-LOGOUT-002` | `[ ]` | Browser URL bar, route `/home` va `/messages` | Khong vao duoc private sau logout | Sau logout nhap truc tiep `/home`, `/messages` | Bi dua ve `/welcome`, khong render private UI. |
+| `AUTH-LOGOUT-001` | `[x]` | Desktop `1440x900` va Mobile `390x844`, user menu | Logout tu menu | Login xong, bam logout | Browser di qua endpoint logout backend, cookie `user_id` bi xoa, cuoi cung ve `/welcome`. |
+| `AUTH-LOGOUT-002` | `[x]` | Browser URL bar, route `/home` va `/messages` | Khong vao duoc private sau logout | Sau logout nhap truc tiep `/home`, `/messages` | Bi dua ve `/welcome`, khong render private UI. |
 
 ## Route Guard
 
