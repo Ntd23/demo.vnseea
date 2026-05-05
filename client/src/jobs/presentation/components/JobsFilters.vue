@@ -37,7 +37,7 @@
           type="button"
           color="primary"
           class="justify-center rounded-[20px] font-extrabold"
-          @click="$emit('openPost')"
+          @click="emit('open-post')"
         >
           <Icon name="i-ph-plus-circle-fill" class="mr-2 h-5 w-5" />
           {{ $t("pages.jobsPage.postJob") }}
@@ -144,7 +144,7 @@
             :color="sortBy === sortOption.value ? 'primary' : 'neutral'"
             :variant="sortBy === sortOption.value ? 'solid' : 'outline'"
             class="rounded-full"
-            @click="$emit('update:sortBy', sortOption.value)"
+            @click="emit('update:sortBy', sortOption.value)"
           >
             <Icon :name="sortOption.icon" class="mr-1.5 h-4 w-4" />
             {{ sortOption.label }}
@@ -181,7 +181,7 @@ const emit = defineEmits<{
   "update:selectedLocation": [value: string]
   "update:selectedType": [value: string]
   "update:sortBy": [value: JobSortKey]
-  openPost: []
+  "open-post": []
   reset: []
 }>()
 

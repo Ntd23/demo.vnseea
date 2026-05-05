@@ -1,6 +1,22 @@
 export type SearchResultType = "all" | "users" | "pages" | "groups" | "posts"
 export type SearchCollectionType = Exclude<SearchResultType, "all">
 export type SearchSortKey = "relevance" | "popular" | "recent"
+export type SearchAgeFilter = "yes" | "no"
+export type SearchTriStateFilter = "all" | "on" | "off"
+export type SearchGenderFilter = "all" | "male" | "female"
+export type SearchImageFilter = "all" | "yes" | "no"
+
+export interface SearchBackendFilters {
+  type: SearchResultType
+  country: string
+  filterbyage: SearchAgeFilter
+  age_from: string
+  age_to: string
+  verified: SearchTriStateFilter
+  status: SearchTriStateFilter
+  gender: SearchGenderFilter
+  image: SearchImageFilter
+}
 
 export interface SearchOption<T extends string = string> {
   label: string

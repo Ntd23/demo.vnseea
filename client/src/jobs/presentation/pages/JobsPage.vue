@@ -9,7 +9,7 @@
       :active-category-label="selectedCategory !== defaultJobCategory ? activeCategoryLabel : undefined"
       :selected-job-title="selectedJobPinned ? selectedJob?.title : undefined"
       :has-active-filters="hasRouteState"
-      @open-post="postModalOpen = true"
+      @open-post="openPostModal"
       @toggle-saved="savedOnly = !savedOnly"
       @reset="resetFilters"
     />
@@ -26,7 +26,7 @@
       :result-count="filteredJobs.length"
       :status-label="filtersStatusLabel"
       :has-active-filters="hasRouteState"
-      @open-post="postModalOpen = true"
+      @open-post="openPostModal"
       @reset="resetFilters"
     />
 
@@ -38,7 +38,7 @@
           :sort-label="currentSortLabel"
           :status-label="filtersStatusLabel"
           :has-active-filters="hasRouteState"
-          @open-post="postModalOpen = true"
+          @open-post="openPostModal"
           @reset="resetFilters"
         />
 
@@ -562,6 +562,10 @@ const resetFilters = () => {
 
 const selectCategory = (value: string) => {
   selectedCategory.value = normalizeJobCategory(value)
+}
+
+function openPostModal() {
+  postModalOpen.value = true
 }
 
 function syncRoute() {

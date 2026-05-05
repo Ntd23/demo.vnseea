@@ -19,7 +19,7 @@
           color="primary"
           size="lg"
           class="justify-center rounded-full"
-          @click="$emit('openPost')"
+          @click="emit('open-post')"
         >
           <Icon name="i-ph-plus-circle-fill" class="mr-1.5 h-4 w-4" />
           {{ $t("pages.jobsPage.postJob") }}
@@ -32,7 +32,7 @@
           variant="outline"
           size="lg"
           class="justify-center rounded-full"
-          @click="$emit('reset')"
+          @click="emit('reset')"
         >
           <Icon name="i-ph-arrow-counter-clockwise" class="mr-1.5 h-4 w-4" />
           {{ $t("pages.jobsPage.reset") }}
@@ -62,8 +62,8 @@ withDefaults(defineProps<{
   hasActiveFilters: false,
 })
 
-defineEmits<{
-  openPost: []
+const emit = defineEmits<{
+  "open-post": []
   reset: []
 }>()
 </script>

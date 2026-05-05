@@ -1,5 +1,5 @@
-import type { SearchResultsByType } from "../types/search.types"
+import type { SearchBackendFilters, SearchResultsByType } from "../types/search.types"
 
 export interface SearchRepository {
-  search(keyword: string, limit?: number): Promise<SearchResultsByType>
+  search(keyword: string, filters?: Partial<SearchBackendFilters>, limit?: number): Promise<SearchResultsByType>
 }

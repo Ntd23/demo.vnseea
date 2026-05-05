@@ -1,8 +1,9 @@
 // English description: Resolves the current backend-authenticated user from the PHP browser session.
 
-import { createError, deleteCookie, getCookie, type H3Event } from "h3"
+import { createError, getCookie, type H3Event } from "h3"
 import { backendRoutes } from "../../src/shared-kernel/application/constants/route-registry"
 import { getBackendBaseCandidates } from "./backend-api-client"
+import { clearBackendSessionCookie } from "./backend-session-cookie"
 
 export type BackendCurrentUserData = Record<string, unknown> & {
   user_id?: number | string
@@ -55,7 +56,7 @@ export async function getBackendCurrentUser(event: H3Event) {
   const status = Number(currentUserResponse?.api_status ?? 0)
 
   if (status < 200 || status >= 300 || !currentUserId) {
-    deleteCookie(event, "user_id", { path: "/" })
+    clearBackendSessionCookie(event)
 
     throw createError({
       statusCode: 401,
