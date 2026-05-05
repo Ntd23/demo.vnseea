@@ -1,3 +1,4 @@
+<!-- Description: Renders the popular-page sidebar using API-backed quick links, hashtags, and creator summaries. -->
 <template>
   <aside class="min-w-0 space-y-4">
     <section class="rounded-[22px] border border-[#dbe3f2] bg-white p-4 shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
@@ -86,7 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PopularQuickLink } from "../../application/composables/useMockPopularData"
+import type { PopularQuickLink } from "../../application/composables/usePopularData"
 
 defineProps<{
   hashtags: ReadonlyArray<{ label: string; score: string; to: string }>

@@ -1,5 +1,8 @@
-import { createError, getCookie } from "h3"
+// English description: Returns the current authenticated backend user mapped into the shared frontend auth shape.
+
+import { getCookie } from "h3"
 import { getBackendBaseCandidates } from "../../utils/backend-api-client"
+import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import type { CurrentAuthUser } from "../../../src/auth/domain/types/auth.types"
 import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
@@ -29,6 +32,7 @@ const asNonEmptyString = (value: unknown) => {
 
 export default defineEventHandler(async (event): Promise<CurrentAuthUser | null> => {
   const backendUserSession = getCookie(event, "user_id")
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
 
   if (!backendUserSession) {
     throw createError({
@@ -72,7 +76,7 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
       id: Number(user.user_id),
       name: asNonEmptyString(user.name) || "User",
       username: asNonEmptyString(user.username),
-      avatarUrl: asNonEmptyString(user.avatar),
+      avatarUrl: resolveMediaUrl(user.avatar) || undefined,
       role: adminLevel === 1 ? "admin" : adminLevel === 2 ? "moderator" : "user",
       isAdmin: adminLevel === 1,
       isModerator: adminLevel === 2,

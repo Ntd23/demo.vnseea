@@ -1,3 +1,4 @@
+<!-- Description: Renders a mapped photo record from API-backed feed media instead of the previous mock gallery entry type. -->
 <template>
   <article
     class="photo-card group overflow-hidden rounded-[24px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]"
@@ -68,13 +69,13 @@
 </template>
 
 <script setup lang="ts">
-import type { MockPhoto } from "../../application/composables/useMockPhotosData"
-import { formatPhotoNumber, getPhotoEngagement } from "../../application/composables/useMockPhotosData"
+import type { PhotoRecord } from "../../application/composables/usePhotosData"
+import { formatPhotoNumber, getPhotoEngagement } from "../../application/composables/usePhotosData"
 
 const { locale } = useI18n()
 
 const props = defineProps<{
-  photo: MockPhoto
+  photo: PhotoRecord
   photographerLabel: string
   openLabel: string
   detailLabel: string

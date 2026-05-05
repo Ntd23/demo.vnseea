@@ -1015,10 +1015,63 @@
     "homeFeedPage": {
       "seoTitle": "Feed | VNSEEA",
       "seoDescription": "Follow stories, publish quick updates, and catch the latest content from the VNSEEA community network.",
+      "filterEyebrow": "Feed filters",
+      "filterTitle": "Choose what appears first",
+      "filterHint": "Mirrors the legacy filter row before stories and posts.",
+      "announcementEyebrow": "Announcement",
+      "announcementTitle": "Platform update",
+      "announcementMessage": "Check the latest notice before continuing with stories and feed updates.",
+      "orderEyebrow": "Order posts by",
+      "orderTitle": "Switch the feed rhythm",
+      "greetingEyebrow": "Greeting",
+      "greetingMorning": "Good morning, welcome back.",
+      "greetingAfternoon": "Good afternoon, here is what changed today.",
+      "greetingEvening": "Good evening, catch up with the latest posts.",
+      "greetingDescription": "The greeting banner stays above the post stack, just like the PHP timeline flow.",
       "newPostsButton": "Show {count} new posts",
       "loadingMore": "Loading more",
       "loadMore": "Load more posts",
-      "allCaughtUp": "You have reached the end of the current mock feed."
+      "allCaughtUp": "You have reached the end of the current feed.",
+      "filters": {
+        "all": "All",
+        "text": "Text",
+        "photos": "Photos",
+        "video": "Video",
+        "music": "Music"
+      },
+      "orders": {
+        "allLabel": "All posts",
+        "allDescription": "Show the full mixed feed.",
+        "followingLabel": "People I follow",
+        "followingDescription": "Focus on people you already follow."
+      }
+    },
+    "statusCreatePage": {
+      "seoTitle": "Create story | VNSEEA",
+      "seoDescription": "Upload an image or video to create a new VNSEEA story.",
+      "eyebrow": "Story",
+      "title": "Create a new story",
+      "description": "Choose one image or video, preview it, then publish it. This flow keeps the upload-first order from the PHP page.",
+      "backToFeed": "Back to feed",
+      "changeFile": "Change story file",
+      "selectFile": "Choose an image or video",
+      "pickerHint": "Stories only need one media file. Pick the file first, preview it on the right, then upload it directly to the backend.",
+      "submitCta": "Publish story",
+      "previewEyebrow": "Preview",
+      "previewAlt": "Story preview",
+      "previewFallbackName": "You",
+      "previewTimestamp": "Just now",
+      "defaultHintReady": "Your story is ready to upload.",
+      "defaultHintEmpty": "Choose an image or video before publishing the story.",
+      "mediaTypeImage": "Story image",
+      "mediaTypeVideo": "Story video",
+      "mediaTypeDefault": "Story",
+      "previewDescriptionReady": "This story already has a local preview and is ready for publishing.",
+      "previewDescriptionEmpty": "This frame will show your image or video after you choose a file.",
+      "submittingStatus": "Uploading story to the backend.",
+      "successStatus": "Story created successfully.",
+      "errorStatus": "Could not create the story.",
+      "toastTitle": "Story"
     },
     "groupDetailPage": {
       "seoFallbackTitle": "Group Detail",
@@ -1281,7 +1334,7 @@
     },
     "photosPage": {
       "seoTitle": "Photos | VNSEEA",
-      "seoDescription": "A mock VNSEEA photo hub with a gallery hero, filters, album strip, masonry gallery, lightbox, and direct links to hashtags, popular, and memories.",
+      "seoDescription": "A VNSEEA photo hub with a gallery hero, filters, album strip, masonry gallery, lightbox, and direct links to hashtags, popular, and memories.",
       "heroEyebrow": "P-35 · Photos",
       "heroTitle": "Community photo stories people are opening most",
       "heroDescription": "The /photos page gathers themed photo sets, lets you filter by content type, opens directly into a lightbox, and jumps quickly to hashtags, memories, or popular.",
@@ -2015,7 +2068,7 @@
       "postsTitle": "{count} posts for {tag}",
       "postsDescription": "Posts filtered by the current hashtag.",
       "emptyTitle": "No posts for {tag} yet",
-      "emptyDescription": "This hashtag has no post data in the current mock set. Try a suggested hashtag or return to the feed for more content."
+      "emptyDescription": "This hashtag has no post data right now. Try a suggested hashtag or return to the feed for more content."
     },
     "popularPage": {
       "seoTitle": "Popular Posts | VNSEEA",
@@ -2366,7 +2419,7 @@
     },
     "reelsPage": {
       "seoTitle": "Reels | VNSEEA",
-      "seoDescription": "Watch short videos on VNSEEA with a cleaner vertical viewer, complete mock data, and smoother reel navigation.",
+      "seoDescription": "Watch short videos on VNSEEA with a cleaner vertical viewer, complete feed data, and smoother reel navigation.",
       "playing": "Playing",
       "more": "Reel options",
       "swipeHint": "Scroll for next reel",
@@ -2434,7 +2487,7 @@
       "resetStatus": "Reset status",
       "listEyebrow": "Waiting for response",
       "listTitle": "{count} pokes currently shown",
-      "listDescription": "These suggestions come from mock data to simulate a lighter poke flow where people can respond, dismiss, or continue into messaging without losing context.",
+      "listDescription": "These suggestions keep the poke flow light so people can respond, dismiss, or continue into messaging without losing context.",
       "pendingLabel": "Pending",
       "statNewPokes": "New pokes",
       "statNewPokesDescription": "How many poke requests are currently visible in this session.",
@@ -2467,7 +2520,7 @@
       "homeFeed": "Back to feed",
       "resetSharing": "Reset sharing",
       "sectionTitle": "{count} memories brought back",
-      "sectionDescription": "The posts below are grouped from mock data to simulate a lighter memories experience with clearer review and reshare actions.",
+      "sectionDescription": "The posts below are grouped to keep the memories experience lighter, with clearer review and reshare actions.",
       "savedPosts": "Saved posts",
       "statMemories": "Memories",
       "statMemoriesDescription": "How many memory entries are currently shown in this route.",
@@ -2490,15 +2543,15 @@
     },
     "savedPostsPage": {
       "seoTitle": "Saved Posts | VNSEEA",
-      "seoDescription": "Review the posts you saved on VNSEEA with a clearer summary, a cleaner list, and a quick way to restore mock data when needed.",
+      "seoDescription": "Review the posts you saved on VNSEEA with a clearer summary, a cleaner list, and quick ways to revisit more content when needed.",
       "heroEyebrow": "Personal library",
       "heroTitle": "The posts you wanted to revisit more carefully",
       "heroDescription": "Keep important posts close, group them into lightweight collections, and return to the reading flow without losing context or momentum.",
       "backToFeed": "Back to feed",
       "removeAll": "Remove all",
       "emptyTitle": "There are no saved posts left",
-      "emptyDescription": "The list is currently empty. You can restore the mock data or return to discovery areas and save more posts.",
-      "restoreMock": "Restore mock data",
+      "emptyDescription": "The list is currently empty. Return to discovery areas and save more posts to refill it.",
+      "restoreMock": "Reload saved posts",
       "goToExplore": "Go to explore",
       "listEyebrow": "Saved list",
       "listTitle": "{count} posts currently kept",
@@ -2536,13 +2589,13 @@
       "commentPlaceholder": "Write your comment...",
       "playerReady": "Player is ready",
       "statVideos": "Available videos",
-      "statVideosDescription": "How many videos are currently available in this mock watch route.",
+      "statVideosDescription": "How many videos are currently available in this watch route.",
       "statViews": "Combined views",
       "statViewsDescription": "The total view count across the videos visible in Watch right now.",
       "statComments": "Fresh comments",
       "statCommentsDescription": "Comments added during your current watch session.",
       "share": "Share",
-      "shareSuccess": "The video link was copied in the mock flow.",
+      "shareSuccess": "The video link was copied.",
       "creatorMeta": "Featured creator",
       "viewsCount": "{count} views",
       "you": "You",
@@ -4077,56 +4130,9 @@
     },
     "storyCarousel": {
       "createStory": "Create story",
-      "fallbackMeta": "Just now",
       "previousStory": "Previous story",
       "nextStory": "Next story",
-      "openStory": "Open {author}'s story",
-      "storyLabel": "Story",
-      "interactions": "Interactions",
-      "actionLike": "Like story",
-      "actionComment": "Comment on story",
-      "actionShare": "Share story",
-      "actionLikeDone": "Story liked in the mock feed.",
-      "actionCommentDone": "The story reply flow will open in a later integration step.",
-      "actionShareDone": "The story share flow was triggered in the mock experience.",
-      "viewerHint": "Swipe horizontally or use the arrow keys to move through stories. Press Escape to close on desktop.",
-      "stories": {
-        "mine": {
-          "title": "Create a new story",
-          "caption": "Share your moment",
-          "meta": "Story · yours"
-        },
-        "story1": {
-          "title": "A quiet morning for shaping ideas",
-          "caption": "A story viewer styled for the project, keeping a familiar social feel while staying aligned with VNSEEA spacing and palette.",
-          "meta": "Story · 2 minutes ago"
-        },
-        "story2": {
-          "title": "A short chill break in a long day",
-          "caption": "Swipe left or right to move between stories, or use the controls for faster desktop navigation.",
-          "meta": "Story · 15 minutes ago"
-        },
-        "story3": {
-          "title": "A full-screen story mock for mobile-first",
-          "caption": "Works for both images and video, and can later connect to a real story API from the backend.",
-          "meta": "Story · 1 hour ago"
-        },
-        "story4": {
-          "title": "Internal guide story",
-          "caption": "A quick way to highlight announcements and short updates through stories.",
-          "meta": "Story · 3 hours ago"
-        },
-        "story5": {
-          "title": "Travel story",
-          "caption": "A soft travel frame that feels familiar yet still reads as VNSEEA.",
-          "meta": "Story · 5 hours ago"
-        },
-        "story6": {
-          "title": "Product story",
-          "caption": "Focused on one short, clear, and polished message.",
-          "meta": "Story · 7 hours ago"
-        }
-      }
+      "openStory": "Open {author}'s story"
     },
     "postHeader": {
       "follow": "Follow",
@@ -6156,3 +6162,5 @@
     }
   }
 }
+
+

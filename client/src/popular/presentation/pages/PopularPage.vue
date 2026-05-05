@@ -36,6 +36,15 @@
       :placeholder="t('pages.popularPage.searchPlaceholder')"
     />
 
+    <UAlert
+      v-if="errorMessage"
+      color="warning"
+      variant="subtle"
+      icon="i-ph-warning-circle-fill"
+      class="rounded-[22px]"
+      :description="errorMessage"
+    />
+
     <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
       <section class="overflow-hidden rounded-[26px] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
         <div class="flex flex-col gap-4 border-b border-[#eef2fb] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -61,7 +70,14 @@
           </button>
         </div>
 
-        <div v-if="rankedPosts.length === 0" class="px-6 py-14">
+        <div v-if="loading" class="px-6 py-14">
+          <div class="flex items-center justify-center gap-3 text-sm font-bold text-slate-500">
+            <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
+            <span>{{ t("pages.popularPage.heroEyebrow") }}</span>
+          </div>
+        </div>
+
+        <div v-else-if="rankedPosts.length === 0" class="px-6 py-14">
           <FoundationEmptyState
             icon="i-ph-fire-duotone"
             :title="t('pages.popularPage.emptyTitle')"
@@ -110,11 +126,12 @@
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import { createHashtagPath, formatHashtagLabel } from "../../../feed/application/composables/useMockHashtagData"
+import { createHashtagPath, formatHashtagLabel } from "../../../feed/application/composables/useHashtagData"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import PopularFilters from "../components/Filters.vue"
 import PopularSidebar from "../components/Sidebar.vue"
-import type { PopularCategoryKey, PopularPost } from "../../application/composables/useMockPopularData"
-import { formatPopularNumber, getPopularPostScore, useMockPopularData } from "../../application/composables/useMockPopularData"
+import type { PopularCategoryKey, PopularPost } from "../../application/composables/usePopularData"
+import { formatPopularNumber, getPopularPostScore, mapFeedPostsToPopularPosts, usePopularCategories, usePopularQuickLinks } from "../../application/composables/usePopularData"
 
 const accentPalette = [
   "linear-gradient(135deg,#2563eb 0%,#60a5fa 100%)",
@@ -124,7 +141,12 @@ const accentPalette = [
 ]
 
 const { t, locale } = useI18n()
-const { categories, posts, quickLinks } = useMockPopularData()
+const repository = createApiFeedRepository()
+const categories = usePopularCategories()
+const quickLinks = usePopularQuickLinks()
+const loading = ref(true)
+const errorMessage = ref("")
+const posts = ref<PopularPost[]>([])
 
 useSeoMeta({
   title: () => t("pages.popularPage.seoTitle"),
@@ -133,6 +155,22 @@ useSeoMeta({
 
 const search = ref("")
 const selectedCategory = ref<PopularCategoryKey>("all")
+
+async function fetchPopularPosts() {
+  loading.value = true
+  errorMessage.value = ""
+
+  try {
+    const response = await repository.getPopular({ limit: 20 })
+    posts.value = mapFeedPostsToPopularPosts(response.posts)
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.popularPage.emptyDescription")
+  }
+  finally {
+    loading.value = false
+  }
+}
 
 const filteredPosts = computed(() => {
   const keyword = search.value.trim().toLowerCase()
@@ -275,4 +313,6 @@ const resetFilters = () => {
   search.value = ""
   selectedCategory.value = "all"
 }
+
+await fetchPopularPosts()
 </script>

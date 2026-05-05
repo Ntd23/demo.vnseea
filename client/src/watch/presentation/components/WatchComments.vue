@@ -1,3 +1,4 @@
+<!-- Description: Renders watch comments and emits backend-bound comment submissions for the selected video post. -->
 <template>
   <section class="watch-comments">
     <div class="watch-comments__header">
@@ -44,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import type { WatchComment } from '../../application/composables/useMockWatchData'
+import type { WatchComment } from "../../application/composables/useWatchData"
 
 defineProps<{
   comments: ReadonlyArray<WatchComment>

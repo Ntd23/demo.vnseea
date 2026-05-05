@@ -3,7 +3,14 @@
   <div class="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,#020617_0%,#0f172a_52%,#020617_100%)] text-white">
     <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.16),transparent_34%),linear-gradient(90deg,rgba(37,99,235,0.12),transparent_28%,transparent_72%,rgba(14,165,233,0.1))]" />
 
-    <div class="relative mx-auto flex min-h-screen max-w-[1440px] items-center justify-center gap-4 px-0 py-0 sm:px-5 sm:py-4 xl:px-8">
+    <div v-if="loading" class="relative mx-auto flex min-h-screen max-w-[1440px] items-center justify-center px-6 text-center">
+      <div class="space-y-4 rounded-[28px] border border-white/10 bg-white/6 px-8 py-10 backdrop-blur">
+        <Icon name="i-lucide-loader-2" class="mx-auto h-8 w-8 animate-spin text-white/70" />
+        <p class="text-sm font-bold text-white/70">{{ t("pages.reelsPage.playing") }}</p>
+      </div>
+    </div>
+
+    <div v-else-if="activeReel" class="relative mx-auto flex min-h-screen max-w-[1440px] items-center justify-center gap-4 px-0 py-0 sm:px-5 sm:py-4 xl:px-8">
       <div class="min-w-0 flex-1">
         <ReelsPlayer
           :reel="activeReel"
@@ -82,68 +89,83 @@
         </div>
       </aside>
     </div>
+
+    <div v-else class="relative mx-auto flex min-h-screen max-w-[1440px] items-center justify-center px-6 text-center">
+      <div class="space-y-4 rounded-[28px] border border-white/10 bg-white/6 px-8 py-10 backdrop-blur">
+        <Icon name="i-ph-film-strip-duotone" class="mx-auto h-8 w-8 text-white/70" />
+        <p class="text-base font-black text-white">{{ t("pages.reelsPage.heroTitle") }}</p>
+        <p class="max-w-md text-sm leading-6 text-white/70">{{ errorMessage || t("pages.watchPage.emptyDescription") }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { formatHashtagLabel } from "../../../feed/application/composables/useHashtagData"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import ReelsPlayer from "../components/ReelsPlayer.vue"
 
 const { t } = useI18n()
+const repository = createApiFeedRepository()
+const loading = ref(true)
+const errorMessage = ref("")
 useSeoMeta({
   title: () => t("pages.reelsPage.seoTitle"),
   description: () => t("pages.reelsPage.seoDescription"),
 })
 
-const reels = computed(() => [
-  {
-    id: 1,
-    title: t("pages.reelsPage.reelOneTitle"),
-    author: "Thanh Ha",
-    subtitle: t("pages.reelsPage.reelOneSubtitle"),
-    description: t("pages.reelsPage.reelOneDescription"),
-    music: t("pages.reelsPage.reelOneMusic"),
-    likes: 120,
-    comments: 18,
-    shares: 9,
-    views: 2400,
-    tags: ["#workspace", "#dailyflow"],
-    cover: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&h=1600&q=80",
-    avatar: "https://i.pravatar.cc/150?u=reel-1",
-  },
-  {
-    id: 2,
-    title: t("pages.reelsPage.reelTwoTitle"),
-    author: "Minh Anh",
-    subtitle: t("pages.reelsPage.reelTwoSubtitle"),
-    description: t("pages.reelsPage.reelTwoDescription"),
-    music: t("pages.reelsPage.reelTwoMusic"),
-    likes: 218,
-    comments: 44,
-    shares: 21,
-    views: 5200,
-    tags: ["#travel", "#weekend"],
-    cover: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&h=1600&q=80",
-    avatar: "https://i.pravatar.cc/150?u=reel-2",
-  },
-  {
-    id: 3,
-    title: t("pages.reelsPage.reelThreeTitle"),
-    author: "Ha My",
-    subtitle: t("pages.reelsPage.reelThreeSubtitle"),
-    description: t("pages.reelsPage.reelThreeDescription"),
-    music: t("pages.reelsPage.reelThreeMusic"),
-    likes: 95,
-    comments: 12,
-    shares: 7,
-    views: 1800,
-    tags: ["#camera", "#behindthescenes"],
-    cover: "https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&w=900&h=1600&q=80",
-    avatar: "https://i.pravatar.cc/150?u=reel-3",
-  },
-])
+const reels = ref<Array<{
+  id: number
+  title: string
+  author: string
+  subtitle: string
+  description: string
+  likes: number
+  comments: number
+  shares: number
+  views: number
+  music: string
+  tags: string[]
+  cover: string
+  avatar: string
+  authorPath: string
+}>>([])
 
 const activeIndex = ref(0)
-const activeReel = computed(() => reels.value[activeIndex.value])
+const activeReel = computed(() => reels.value[activeIndex.value] ?? null)
+
+async function fetchReels() {
+  loading.value = true
+  errorMessage.value = ""
+
+  try {
+    const response = await repository.getVideos({ limit: 12 })
+    reels.value = response.posts
+      .filter(post => post.mediaItems.length > 0)
+      .map((post) => ({
+        id: post.id,
+        title: post.text || post.author,
+        author: post.author,
+        subtitle: post.role,
+        description: post.text || post.role,
+        likes: post.stats.likes,
+        comments: post.stats.comments,
+        shares: post.stats.shares,
+        views: post.stats.views,
+        music: post.tags[0] ? formatHashtagLabel(post.tags[0]) : post.sourceLabel,
+        tags: post.tags.map(tag => formatHashtagLabel(tag)),
+        cover: post.mediaItems[0]?.thumb || post.mediaItems[0]?.src || post.authorAvatarUrl,
+        avatar: post.authorAvatarUrl,
+        authorPath: post.authorPath,
+      }))
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.watchPage.emptyDescription")
+  }
+  finally {
+    loading.value = false
+  }
+}
 
 const jumpToReel = (index: number) => {
   activeIndex.value = index
@@ -156,4 +178,6 @@ const nextReel = () => {
 const prevReel = () => {
   activeIndex.value = (activeIndex.value - 1 + reels.value.length) % reels.value.length
 }
+
+await fetchReels()
 </script>

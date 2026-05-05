@@ -1,3 +1,4 @@
+<!-- Description: Renders the fullscreen reels viewer for API-backed reel cards with swipe and keyboard navigation. -->
 <template>
   <div
     class="reel-player"
@@ -81,6 +82,7 @@ const props = defineProps<{
     tags: string[]
     cover: string
     avatar: string
+    authorPath: string
   }
   currentIndex: number
   total: number

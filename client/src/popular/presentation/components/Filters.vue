@@ -1,3 +1,4 @@
+<!-- Description: Renders popular-page filters backed by normalized category options instead of mock-specific types. -->
 <template>
   <section class="rounded-[20px] border border-[#dbe3f2] bg-white p-2.5 shadow-[0_8px_22px_rgba(15,35,110,0.04)] sm:p-3">
     <div class="grid min-w-0 gap-3 lg:grid-cols-[minmax(260px,380px)_minmax(0,1fr)] lg:items-center">
@@ -34,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PopularCategory, PopularCategoryKey } from "../../application/composables/useMockPopularData"
+import type { PopularCategory, PopularCategoryKey } from "../../application/composables/usePopularData"
 
 defineProps<{
   categories: ReadonlyArray<PopularCategory>

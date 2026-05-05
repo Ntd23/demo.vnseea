@@ -36,6 +36,15 @@
       :placeholder="t('pages.photosPage.searchPlaceholder')"
     />
 
+    <UAlert
+      v-if="errorMessage"
+      color="warning"
+      variant="subtle"
+      icon="i-ph-warning-circle-fill"
+      class="rounded-[22px]"
+      :description="errorMessage"
+    />
+
     <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px] xl:items-start">
       <section class="min-w-0 space-y-5">
         <div class="scrollbar-hide -mx-4 flex gap-3 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
@@ -79,7 +88,17 @@
         </section>
 
         <section
-          v-if="filteredPhotos.length === 0"
+          v-if="loading"
+          class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+        >
+          <div class="flex items-center justify-center gap-3 text-sm font-bold text-slate-500">
+            <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
+            <span>{{ t("pages.photosPage.heroEyebrow") }}</span>
+          </div>
+        </section>
+
+        <section
+          v-else-if="filteredPhotos.length === 0"
           class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
         >
           <FoundationEmptyState
@@ -123,29 +142,30 @@
       :open="lightboxOpen"
       :items="lightboxItems"
       :current-index="currentLightboxIndex"
-      :title="currentPhoto.title"
-      :description="currentPhoto.location"
-      :author="currentPhoto.photographer"
-      :caption="currentPhoto.albumTitle"
+      :title="currentPhoto?.title || ''"
+      :description="currentPhoto?.location || ''"
+      :author="currentPhoto?.photographer || ''"
+      :caption="currentPhoto?.albumTitle || ''"
       @close="lightboxOpen = false"
-      @change="currentPhotoId = filteredPhotos[$event]?.id ?? filteredPhotos[0]?.id ?? currentPhotoId"
-      @share="navigateTo(currentPhoto.companionTo)"
+      @change="currentPhotoId = filteredPhotos[$event]?.id ?? filteredPhotos[0]?.id ?? ''"
+      @share="currentPhoto?.companionTo ? navigateTo(currentPhoto.companionTo) : null"
       @download="noop"
       @like="noop"
-      @comment="navigateTo(currentPhoto.companionTo)"
+      @comment="currentPhoto?.companionTo ? navigateTo(currentPhoto.companionTo) : null"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import { createHashtagPath, formatHashtagLabel } from "../../../feed/application/composables/useMockHashtagData"
+import { createHashtagPath, formatHashtagLabel } from "../../../feed/application/composables/useHashtagData"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import LightboxModal from "../../../lightbox/presentation/components/LightboxModal.vue"
 import PhotosCard from "../components/Card.vue"
 import PhotosFilters from "../components/Filters.vue"
 import PhotosSidebar from "../components/Sidebar.vue"
-import type { MockPhoto, PhotoCategoryKey } from "../../application/composables/useMockPhotosData"
-import { formatPhotoNumber, getPhotoEngagement, useMockPhotosData } from "../../application/composables/useMockPhotosData"
+import type { PhotoCategoryKey, PhotoRecord } from "../../application/composables/usePhotosData"
+import { buildPhotoAlbums, formatPhotoNumber, getPhotoEngagement, mapFeedPostsToPhotos, usePhotoCategories, usePhotoQuickLinks } from "../../application/composables/usePhotosData"
 
 const accentPalette = [
   "linear-gradient(135deg,#2563eb 0%,#60a5fa 100%)",
@@ -154,26 +174,13 @@ const accentPalette = [
   "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)",
 ]
 
-const fallbackPhoto: MockPhoto = {
-  id: "photos-fallback",
-  title: "VNSEEA Photos",
-  category: "community",
-  albumTitle: "VNSEEA",
-  photographer: "VNSEEA",
-  photographerRole: "Mock gallery",
-  location: "VNSEEA",
-  timeLabel: "",
-  likes: 0,
-  comments: 0,
-  image: "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
-  accent: "linear-gradient(135deg,#2563eb 0%,#60a5fa 100%)",
-  tags: [],
-  frame: "landscape",
-  companionTo: "/photos",
-}
-
 const { t, locale } = useI18n()
-const { categories, photos, albums, quickLinks } = useMockPhotosData()
+const repository = createApiFeedRepository()
+const categories = usePhotoCategories()
+const quickLinks = usePhotoQuickLinks()
+const loading = ref(true)
+const errorMessage = ref("")
+const photos = ref<PhotoRecord[]>([])
 
 useSeoMeta({
   title: () => t("pages.photosPage.seoTitle"),
@@ -184,12 +191,29 @@ const search = ref("")
 const selectedCategory = ref<PhotoCategoryKey>("all")
 const lightboxOpen = ref(false)
 const currentPhotoId = ref("")
+const albums = computed(() => buildPhotoAlbums(photos.value, categories.value))
+
+async function fetchPhotos() {
+  loading.value = true
+  errorMessage.value = ""
+
+  try {
+    const response = await repository.getPhotos({ limit: 30 })
+    photos.value = mapFeedPostsToPhotos(response.posts)
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.photosPage.emptyDescription")
+  }
+  finally {
+    loading.value = false
+  }
+}
 
 watch(
   photos,
   (items) => {
     if (!currentPhotoId.value || !items.some(photo => photo.id === currentPhotoId.value)) {
-      currentPhotoId.value = items[0]?.id ?? fallbackPhoto.id
+      currentPhotoId.value = items[0]?.id ?? ""
     }
   },
   { immediate: true },
@@ -226,11 +250,11 @@ watch(filteredPhotos, (items) => {
   }
 })
 
-const currentPhoto = computed<MockPhoto>(() =>
+const currentPhoto = computed<PhotoRecord | null>(() =>
   filteredPhotos.value.find(photo => photo.id === currentPhotoId.value)
   ?? photos.value.find(photo => photo.id === currentPhotoId.value)
   ?? photos.value[0]
-  ?? fallbackPhoto,
+  ?? null,
 )
 
 const heroStats = computed(() => [
@@ -346,10 +370,12 @@ const openPhoto = (id: string) => {
 const resetFilters = () => {
   search.value = ""
   selectedCategory.value = "all"
-  currentPhotoId.value = photos.value[0]?.id ?? fallbackPhoto.id
+  currentPhotoId.value = photos.value[0]?.id ?? ""
 }
 
 const noop = () => {}
+
+await fetchPhotos()
 </script>
 
 <style scoped>

@@ -1,3 +1,4 @@
+<!-- Description: Renders the selected watch item hero using API-backed video metadata from the normalized feed posts. -->
 <template>
   <section class="watch-player">
     <div class="watch-player__video">
@@ -45,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { WatchVideo } from '../../application/composables/useMockWatchData'
+import type { WatchVideo } from "../../application/composables/useWatchData"
 
 defineProps<{
   video: WatchVideo

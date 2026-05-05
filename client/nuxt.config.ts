@@ -1,3 +1,4 @@
+// English description: Configures the Nuxt frontend runtime, backend bridge endpoints, and allowed remote image hosts.
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -25,11 +26,24 @@ function normalizeBackendWebBase(value: string) {
     .replace(/\/api$/i, "")
 }
 
+function extractHostname(value: string) {
+  try {
+    return new URL(value).hostname
+  }
+  catch {
+    return ""
+  }
+}
+
 const publicApiBase = requireEnv("NUXT_PUBLIC_API_BASE")
 const backendApiBase = requireEnv("NUXT_BACKEND_API_BASE")
 const backendServerKey = requireEnv("NUXT_BACKEND_SERVER_KEY")
 const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL")
 const backendWebBase = normalizeBackendWebBase(backendApiBase)
+const imageDomains = Array.from(new Set([
+  extractHostname(publicSiteUrl),
+  extractHostname(backendWebBase),
+].filter(Boolean)))
 const allowedHosts = requireEnv("NUXT_ALLOWED_HOSTS")
   .split(",")
   .map(host => host.trim())
@@ -81,6 +95,9 @@ export default defineNuxtConfig({
         },
       ],
     },
+  },
+  image: {
+    domains: imageDomains,
   },
   site: {
     name: "VNSEEA",

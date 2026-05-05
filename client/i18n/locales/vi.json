@@ -1013,12 +1013,65 @@
       "viewProfile": "Xem hồ sơ"
     },
     "homeFeedPage": {
-      "seoTitle": "Bảng tin | VNSEEA",
-      "seoDescription": "Theo dõi story, đăng bài nhanh và cập nhật nội dung mới nhất từ mạng lưới cộng đồng VNSEEA.",
-      "newPostsButton": "Hiển thị {count} bài viết mới",
-      "loadingMore": "Đang tải thêm",
-      "loadMore": "Tải thêm bài viết",
-      "allCaughtUp": "Bạn đã xem hết bảng tin mô phỏng hiện tại."
+      "seoTitle": "B\u1ea3ng tin | VNSEEA",
+      "seoDescription": "Theo d\u00f5i story, \u0111\u0103ng b\u00e0i nhanh v\u00e0 c\u1eadp nh\u1eadt n\u1ed9i dung m\u1edbi nh\u1ea5t t\u1eeb m\u1ea1ng l\u01b0\u1edbi c\u1ed9ng \u0111\u1ed3ng VNSEEA.",
+      "filterEyebrow": "B\u1ed9 l\u1ecdc b\u1ea3ng tin",
+      "filterTitle": "Ch\u1ecdn lo\u1ea1i n\u1ed9i dung hi\u1ec3n th\u1ecb tr\u01b0\u1edbc",
+      "filterHint": "Gi\u1eef \u0111\u00fang h\u00e0ng filter c\u1ee7a giao di\u1ec7n PHP tr\u01b0\u1edbc stories v\u00e0 danh s\u00e1ch b\u00e0i vi\u1ebft.",
+      "announcementEyebrow": "Th\u00f4ng b\u00e1o",
+      "announcementTitle": "C\u1eadp nh\u1eadt h\u1ec7 th\u1ed1ng",
+      "announcementMessage": "Xem nhanh th\u00f4ng b\u00e1o m\u1edbi tr\u01b0\u1edbc khi ti\u1ebfp t\u1ee5c v\u1edbi stories v\u00e0 b\u1ea3ng tin.",
+      "orderEyebrow": "S\u1eafp x\u1ebfp b\u00e0i vi\u1ebft",
+      "orderTitle": "\u0110\u1ed5i nh\u1ecbp hi\u1ec3n th\u1ecb c\u1ee7a feed",
+      "greetingEyebrow": "L\u1eddi ch\u00e0o",
+      "greetingMorning": "Ch\u00e0o bu\u1ed5i s\u00e1ng, m\u1eddi b\u1ea1n xem c\u1eadp nh\u1eadt m\u1edbi.",
+      "greetingAfternoon": "Ch\u00e0o bu\u1ed5i chi\u1ec1u, \u0111\u00e2y l\u00e0 nh\u1eefng g\u00ec v\u1eeba thay \u0111\u1ed5i h\u00f4m nay.",
+      "greetingEvening": "Ch\u00e0o bu\u1ed5i t\u1ed1i, c\u00f9ng xem l\u1ea1i c\u00e1c b\u00e0i vi\u1ebft m\u1edbi nh\u1ea5t.",
+      "greetingDescription": "Kh\u1ed1i ch\u00e0o m\u1eebng v\u1eabn n\u1eb1m ngay tr\u00ean lu\u1ed3ng b\u00e0i vi\u1ebft, gi\u1ed1ng nh\u1ecbp b\u1ed1 c\u1ee5c c\u1ee7a timeline PHP.",
+      "newPostsButton": "Hi\u1ec3n th\u1ecb {count} b\u00e0i vi\u1ebft m\u1edbi",
+      "loadingMore": "\u0110ang t\u1ea3i th\u00eam",
+      "loadMore": "T\u1ea3i th\u00eam b\u00e0i vi\u1ebft",
+      "allCaughtUp": "B\u1ea1n \u0111\u00e3 xem h\u1ebft b\u1ea3ng tin hi\u1ec7n t\u1ea1i.",
+      "filters": {
+        "all": "T\u1ea5t c\u1ea3",
+        "text": "V\u0103n b\u1ea3n",
+        "photos": "\u1ea2nh",
+        "video": "Video",
+        "music": "\u00c2m nh\u1ea1c"
+      },
+      "orders": {
+        "allLabel": "T\u1ea5t c\u1ea3 b\u00e0i vi\u1ebft",
+        "allDescription": "Hi\u1ec3n th\u1ecb to\u00e0n b\u1ed9 feed \u0111ang c\u00f3.",
+        "followingLabel": "Ng\u01b0\u1eddi t\u00f4i theo d\u00f5i",
+        "followingDescription": "\u01afu ti\u00ean c\u00e1c k\u1ebft n\u1ed1i b\u1ea1n \u0111ang theo d\u00f5i."
+      }
+    },
+    "statusCreatePage": {
+      "seoTitle": "T\u1ea1o story | VNSEEA",
+      "seoDescription": "T\u1ea3i l\u00ean \u1ea3nh ho\u1eb7c video \u0111\u1ec3 t\u1ea1o story m\u1edbi tr\u00ean VNSEEA.",
+      "eyebrow": "Story",
+      "title": "T\u1ea1o tin m\u1edbi",
+      "description": "Ch\u1ecdn m\u1ed9t \u1ea3nh ho\u1eb7c video, xem preview r\u1ed3i \u0111\u0103ng tin. Flow n\u00e0y gi\u1eef \u0111\u00fang nh\u1ecbp upload-first c\u1ee7a trang PHP.",
+      "backToFeed": "Quay l\u1ea1i b\u1ea3ng tin",
+      "changeFile": "\u0110\u1ed5i t\u1ec7p story",
+      "selectFile": "Ch\u1ecdn \u1ea3nh ho\u1eb7c video",
+      "pickerHint": "Story ch\u1ec9 c\u1ea7n m\u1ed9t t\u1ec7p media. Ch\u1ecdn file tr\u01b0\u1edbc, xem tr\u01b0\u1edbc \u1edf c\u1ed9t ph\u1ea3i, sau \u0111\u00f3 \u0111\u0103ng th\u1eb3ng l\u00ean backend.",
+      "submitCta": "\u0110\u0103ng tin",
+      "previewEyebrow": "Preview",
+      "previewAlt": "Xem tr\u01b0\u1edbc story",
+      "previewFallbackName": "B\u1ea1n",
+      "previewTimestamp": "V\u1eeba xong",
+      "defaultHintReady": "Story \u0111\u00e3 s\u1eb5n s\u00e0ng \u0111\u0103ng l\u00ean backend.",
+      "defaultHintEmpty": "Ch\u1ecdn m\u1ed9t \u1ea3nh ho\u1eb7c video tr\u01b0\u1edbc khi \u0111\u0103ng story.",
+      "mediaTypeImage": "\u1ea2nh story",
+      "mediaTypeVideo": "Video story",
+      "mediaTypeDefault": "Story",
+      "previewDescriptionReady": "Story \u0111\u00e3 c\u00f3 preview local v\u00e0 s\u1eb5n s\u00e0ng cho b\u01b0\u1edbc \u0111\u0103ng tin.",
+      "previewDescriptionEmpty": "Khung n\u00e0y s\u1ebd hi\u1ec3n th\u1ecb \u1ea3nh ho\u1eb7c video sau khi b\u1ea1n ch\u1ecdn t\u1ec7p.",
+      "submittingStatus": "\u0110ang t\u1ea3i story l\u00ean backend.",
+      "successStatus": "Story \u0111\u00e3 \u0111\u01b0\u1ee3c t\u1ea1o th\u00e0nh c\u00f4ng.",
+      "errorStatus": "Kh\u00f4ng th\u1ec3 t\u1ea1o story.",
+      "toastTitle": "Story"
     },
     "groupDetailPage": {
       "seoFallbackTitle": "Chi tiết nhóm",
@@ -1281,7 +1334,7 @@
     },
     "photosPage": {
       "seoTitle": "Ảnh | VNSEEA",
-      "seoDescription": "Trang photo mock của VNSEEA với hero thư viện ảnh, bộ lọc, strip album, masonry gallery, lightbox và link sang hashtag, popular, memories.",
+      "seoDescription": "Trang ảnh của VNSEEA với hero thư viện ảnh, bộ lọc, strip album, masonry gallery, lightbox và liên kết sang hashtag, popular, memories.",
       "heroEyebrow": "P-35 · Photos",
       "heroTitle": "Thư viện ảnh cộng đồng đang được xem nhiều",
       "heroDescription": "Trang /photos gom các bộ ảnh theo chủ đề, cho phép lọc theo loại nội dung, mở lightbox trực tiếp và đi nhanh sang hashtag, memories hoặc popular.",
@@ -2015,7 +2068,7 @@
       "postsTitle": "{count} bài viết cho {tag}",
       "postsDescription": "Danh sách bài viết được lọc theo hashtag hiện tại.",
       "emptyTitle": "Chưa có bài viết cho {tag}",
-      "emptyDescription": "Hashtag này chưa có dữ liệu bài viết trong bộ mock hiện tại. Hãy thử một hashtag gợi ý hoặc quay lại bảng tin để xem thêm nội dung."
+      "emptyDescription": "Hashtag này chưa có dữ liệu bài viết ở thời điểm hiện tại. Hãy thử một hashtag gợi ý hoặc quay lại bảng tin để xem thêm nội dung."
     },
     "popularPage": {
       "seoTitle": "Bài viết phổ biến | VNSEEA",
@@ -2366,7 +2419,7 @@
     },
     "reelsPage": {
       "seoTitle": "Cuộn phim | VNSEEA",
-      "seoDescription": "Xem các video ngắn trên VNSEEA với giao diện dọc rõ ràng, dữ liệu mẫu đầy đủ và thao tác xem tiếp mượt hơn.",
+      "seoDescription": "Xem các video ngắn trên VNSEEA với giao diện dọc rõ ràng, dữ liệu feed đầy đủ và thao tác xem tiếp mượt hơn.",
       "playing": "Đang phát",
       "more": "Tùy chọn cuộn phim",
       "swipeHint": "Cuộn để xem tiếp",
@@ -2434,7 +2487,7 @@
       "resetStatus": "Đặt lại trạng thái",
       "listEyebrow": "Danh sách chờ phản hồi",
       "listTitle": "{count} lượt chọc đang hiển thị",
-      "listDescription": "Các gợi ý dưới đây được gom từ dữ liệu mẫu để mô phỏng flow phản hồi, bỏ qua hoặc nối tiếp sang nhắn tin mà không bị rối ngữ cảnh.",
+      "listDescription": "Các gợi ý dưới đây giữ cho flow chọc nhẹ hơn để bạn phản hồi, bỏ qua hoặc nối tiếp sang nhắn tin mà không bị rối ngữ cảnh.",
       "pendingLabel": "Đang chờ",
       "statNewPokes": "Lượt chọc mới",
       "statNewPokesDescription": "Tổng số lời chọc hiện có trong danh sách của phiên làm việc này.",
@@ -2467,7 +2520,7 @@
       "homeFeed": "Về bảng tin",
       "resetSharing": "Đặt lại chia sẻ",
       "sectionTitle": "{count} ký ức đang được gợi lại",
-      "sectionDescription": "Các bài đăng dưới đây được gom từ dữ liệu mẫu để mô phỏng trải nghiệm xem lại và chia sẻ ký ức trên bảng tin.",
+      "sectionDescription": "Các bài đăng dưới đây được gom lại để trải nghiệm xem lại và chia sẻ ký ức trên bảng tin gọn và rõ hơn.",
       "savedPosts": "Bài viết đã lưu",
       "statMemories": "Ký ức",
       "statMemoriesDescription": "Tổng số mục ký ức hiện có trong danh sách đang hiển thị.",
@@ -2490,15 +2543,15 @@
     },
     "savedPostsPage": {
       "seoTitle": "Bài viết đã lưu | VNSEEA",
-      "seoDescription": "Xem lại các bài viết bạn đã lưu trên VNSEEA với khu tổng quan rõ ràng, danh sách gọn và khả năng khôi phục dữ liệu mock nhanh.",
+      "seoDescription": "Xem lại các bài viết bạn đã lưu trên VNSEEA với khu tổng quan rõ ràng, danh sách gọn và lối quay lại nội dung liên quan nhanh hơn.",
       "heroEyebrow": "Thư viện cá nhân",
       "heroTitle": "Những bài viết bạn muốn quay lại đọc kỹ hơn",
       "heroDescription": "Lưu lại các bài viết quan trọng để xem tiếp khi cần, gom theo bộ sưu tập riêng và giữ cho flow đọc lại vẫn nhanh, rõ và dễ hành động.",
       "backToFeed": "Về bảng tin",
       "removeAll": "Bỏ toàn bộ",
       "emptyTitle": "Chưa còn bài viết đã lưu",
-      "emptyDescription": "Danh sách hiện không còn mục nào khả dụng. Bạn có thể khôi phục dữ liệu mock hoặc quay lại các khu khám phá để lưu thêm bài mới.",
-      "restoreMock": "Khôi phục dữ liệu mẫu",
+      "emptyDescription": "Danh sách hiện không còn mục nào khả dụng. Hãy quay lại các khu khám phá để lưu thêm bài viết mới.",
+      "restoreMock": "Tải lại bài viết đã lưu",
       "goToExplore": "Đi tới khám phá",
       "listEyebrow": "Danh sách đã lưu",
       "listTitle": "{count} bài viết đang được giữ lại",
@@ -2536,13 +2589,13 @@
       "commentPlaceholder": "Viết bình luận của bạn...",
       "playerReady": "Trình phát đã sẵn sàng",
       "statVideos": "Video đang có",
-      "statVideosDescription": "Số video hiện có trong danh sách watch mock của route này.",
+      "statVideosDescription": "Số video hiện có trong danh sách watch của route này.",
       "statViews": "Lượt xem tích lũy",
       "statViewsDescription": "Tổng lượt xem của các video đang hiện trong khu watch.",
       "statComments": "Bình luận mới",
       "statCommentsDescription": "Số bình luận vừa thêm trong phiên xem hiện tại của bạn.",
       "share": "Chia sẻ",
-      "shareSuccess": "Đã sao chép liên kết video ở flow mô phỏng.",
+      "shareSuccess": "Đã sao chép liên kết video.",
       "creatorMeta": "Người đăng nổi bật",
       "viewsCount": "{count} lượt xem",
       "you": "Bạn",
@@ -4077,56 +4130,9 @@
     },
     "storyCarousel": {
       "createStory": "Tạo tin",
-      "fallbackMeta": "Vừa xong",
       "previousStory": "Story trước",
       "nextStory": "Story sau",
-      "openStory": "Mở story của {author}",
-      "storyLabel": "Story",
-      "interactions": "Tương tác",
-      "actionLike": "Thích story",
-      "actionComment": "Bình luận story",
-      "actionShare": "Chia sẻ story",
-      "actionLikeDone": "Đã thả tim story trong giao diện mô phỏng.",
-      "actionCommentDone": "Khung phản hồi story sẽ mở ở bước tích hợp tiếp theo.",
-      "actionShareDone": "Flow chia sẻ story đã được kích hoạt trong giao diện mô phỏng.",
-      "viewerHint": "Vuốt ngang hoặc dùng phím mũi tên để chuyển story. Nhấn Esc để đóng nhanh trên desktop.",
-      "stories": {
-        "mine": {
-          "title": "Tạo story mới",
-          "caption": "Chia sẻ khoảnh khắc của bạn",
-          "meta": "Story · của bạn"
-        },
-        "story1": {
-          "title": "Một buổi sáng yên tĩnh để lên ý tưởng",
-          "caption": "Story viewer theo style dự án, giữ cảm giác gần Facebook nhưng vẫn bám palette và spacing của VNSEEA.",
-          "meta": "Story · 2 phút trước"
-        },
-        "story2": {
-          "title": "Đoạn chill ngắn cho một ngày dài",
-          "caption": "Vuốt trái/phải để chuyển story, bấm nút để điều hướng nhanh hơn trên desktop.",
-          "meta": "Story · 15 phút trước"
-        },
-        "story3": {
-          "title": "Mẫu story full-screen cho mobile-first",
-          "caption": "Phù hợp cả ảnh và video, sau này có thể nối API story thật từ backend.",
-          "meta": "Story · 1 giờ trước"
-        },
-        "story4": {
-          "title": "Story hướng dẫn nội bộ",
-          "caption": "Cách dùng story để highlight thông báo và nội dung nhanh.",
-          "meta": "Story · 3 giờ trước"
-        },
-        "story5": {
-          "title": "Story du lịch",
-          "caption": "Một góc ảnh nhẹ nhàng, hợp style Facebook nhưng vẫn rất VNSEEA.",
-          "meta": "Story · 5 giờ trước"
-        },
-        "story6": {
-          "title": "Story về sản phẩm",
-          "caption": "Tập trung vào một thông điệp ngắn, rõ, đẹp.",
-          "meta": "Story · 7 giờ trước"
-        }
-      }
+      "openStory": "Mở story của {author}"
     },
     "postHeader": {
       "follow": "Theo dõi",
@@ -6158,3 +6164,5 @@
     }
   }
 }
+
+

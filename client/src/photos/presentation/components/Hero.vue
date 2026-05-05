@@ -1,3 +1,4 @@
+<!-- Description: Renders the optional photos hero with normalized API-backed photo records. -->
 <template>
   <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
     <!-- Gradient background -->
@@ -109,13 +110,13 @@
 </template>
 
 <script setup lang="ts">
-import type { MockPhoto } from "../../application/composables/useMockPhotosData"
+import type { PhotoRecord } from "../../application/composables/usePhotosData"
 
 defineProps<{
   eyebrow: string
   title: string
   description: string
-  photo: MockPhoto
+  photo: PhotoRecord
   stats: ReadonlyArray<{ label: string; value: string | number; description: string }>
   primaryLabel: string
   secondaryLabel: string

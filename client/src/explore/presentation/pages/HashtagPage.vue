@@ -29,6 +29,25 @@
       </div>
     </section>
 
+    <UAlert
+      v-if="errorMessage"
+      color="warning"
+      variant="subtle"
+      icon="i-ph-warning-circle-fill"
+      class="rounded-[22px]"
+      :description="errorMessage"
+    />
+
+    <section
+      v-if="loading"
+      class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+    >
+      <div class="flex items-center justify-center gap-3 text-sm font-bold text-slate-500">
+        <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
+        <span>{{ t("pages.hashtagPage.heroEyebrow") }}</span>
+      </div>
+    </section>
+
     <section class="rounded-[22px] border border-[#dbe3f2] bg-white px-5 py-4 shadow-[0_8px_20px_rgba(15,35,110,0.04)]">
       <div class="flex flex-wrap gap-3">
         <NuxtLink
@@ -44,7 +63,7 @@
     </section>
 
     <section
-      v-if="hasMatches"
+      v-if="!loading && hasMatches"
       class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]"
     >
       <div class="space-y-2 border-b border-[#eef2fb] pb-4">
@@ -84,7 +103,9 @@
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import { formatHashtagLabel, useMockHashtagData } from "../../../feed/application/composables/useMockHashtagData"
+import { formatHashtagLabel, normalizeHashtagValue } from "../../../feed/application/composables/useHashtagData"
+import type { FeedHashtagChip, FeedPostRecord } from "../../../feed/domain/types/feed.types"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 
 function readRouteParam(value: unknown) {
   if (Array.isArray(value)) return String(value[0] || "")
@@ -93,21 +114,65 @@ function readRouteParam(value: unknown) {
 
 const route = useRoute()
 const { t } = useI18n()
+const repository = createApiFeedRepository()
+const loading = ref(true)
+const errorMessage = ref("")
+const matchingPosts = ref<FeedPostRecord[]>([])
 
-const rawTag = computed(() => readRouteParam(route.params.tag))
+const rawTag = computed(() => normalizeHashtagValue(readRouteParam(route.params.tag)))
+const hashtagLabel = computed(() => formatHashtagLabel(rawTag.value))
+const hasMatches = computed(() => matchingPosts.value.length > 0)
+const visibleHashtags = computed<FeedHashtagChip[]>(() => {
+  const scoreMap = new Map<string, number>()
 
-const {
-  hashtagLabel,
-  hasMatches,
-  matchingPosts,
-  relatedHashtags,
-  suggestedHashtags,
-  heroStats,
-} = useMockHashtagData(rawTag)
+  matchingPosts.value.forEach((post) => {
+    post.tags.forEach((tag) => {
+      scoreMap.set(tag, (scoreMap.get(tag) ?? 0) + 1)
+    })
+  })
 
-const visibleHashtags = computed(() =>
-  (hasMatches.value ? relatedHashtags.value : suggestedHashtags.value).slice(0, 8),
-)
+  return Array.from(scoreMap.entries())
+    .filter(([tag]) => tag !== rawTag.value)
+    .sort((left, right) => right[1] - left[1])
+    .slice(0, 8)
+    .map(([tag, count]) => ({
+      label: tag,
+      slug: tag,
+      count,
+      to: `/hashtag/${encodeURIComponent(tag)}`,
+    }))
+})
+
+const formatCount = (value: number) =>
+  new Intl.NumberFormat().format(value)
+
+const heroStats = computed(() => [
+  {
+    label: t("pages.hashtagPage.postsEyebrow"),
+    value: formatCount(matchingPosts.value.length),
+    description: t("pages.hashtagPage.postsDescription"),
+  },
+  {
+    label: t("pages.explorePage.sectionUsersShort"),
+    value: formatCount(new Set(matchingPosts.value.map(post => post.author)).size),
+    description: t("pages.explorePage.sectionUsersDescription"),
+  },
+  {
+    label: t("pages.photosPage.statPhotos"),
+    value: formatCount(matchingPosts.value.reduce((total, post) => total + post.mediaItems.filter(item => item.type === "image").length, 0)),
+    description: t("pages.photosPage.statPhotosDescription"),
+  },
+  {
+    label: t("pages.popularPage.statInteractions"),
+    value: formatCount(
+      matchingPosts.value.reduce(
+        (total, post) => total + post.stats.likes + post.stats.comments + post.stats.shares,
+        0,
+      ),
+    ),
+    description: t("pages.popularPage.statInteractionsDescription"),
+  },
+])
 
 const heroDescription = computed(() => {
   if (hasMatches.value) {
@@ -117,6 +182,23 @@ const heroDescription = computed(() => {
   return t("pages.hashtagPage.heroDescriptionEmpty", { tag: hashtagLabel.value })
 })
 
+async function fetchHashtagPosts() {
+  loading.value = true
+  errorMessage.value = ""
+
+  try {
+    const response = await repository.getHashtag(rawTag.value, { limit: 18 })
+    matchingPosts.value = response.posts
+  }
+  catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : t("pages.hashtagPage.emptyDescription", { tag: hashtagLabel.value })
+    matchingPosts.value = []
+  }
+  finally {
+    loading.value = false
+  }
+}
+
 useSeoMeta({
   title: () => t("pages.hashtagPage.seoTitle", { tag: hashtagLabel.value }),
   description: () =>
@@ -124,4 +206,8 @@ useSeoMeta({
       ? t("pages.hashtagPage.seoDescriptionMatch", { tag: hashtagLabel.value })
       : t("pages.hashtagPage.seoDescriptionEmpty", { tag: hashtagLabel.value }),
 })
+
+watch(rawTag, async () => {
+  await fetchHashtagPosts()
+}, { immediate: true })
 </script>

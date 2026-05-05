@@ -1,3 +1,4 @@
+<!-- Description: Renders an API-backed explore user card with real profile and message navigation instead of mock connect actions. -->
 <template>
   <article class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,35,110,0.12)]">
     <div class="h-1.5 w-full" :style="{ background: accentBackground }" />
@@ -72,33 +73,14 @@
         </span>
       </div>
 
-      <UAlert
-        v-if="actionState !== 'idle' && actionMessage"
-        class="rounded-[20px]"
-        :color="actionState === 'error' ? 'warning' : actionState === 'success' ? 'success' : 'primary'"
-        variant="subtle"
-        :icon="actionState === 'error'
-          ? 'i-ph-warning-circle-fill'
-          : actionState === 'success'
-            ? 'i-ph-check-circle-fill'
-            : 'i-ph-spinner-gap-bold'"
-        :description="actionMessage"
-      />
-
       <div class="flex flex-col gap-2 sm:flex-row">
-        <UButton
-          color="neutral"
-          variant="solid"
-          size="lg"
-          class="justify-center rounded-full text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)]"
+        <NuxtLink
+          :to="messageTo"
+          class="inline-flex h-11 items-center justify-center rounded-full px-4 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)]"
           :style="{ background: accentBackground }"
-          :loading="actionState === 'loading'"
-          :disabled="actionState === 'loading' || connected"
-          :aria-label="`${primaryActionLabel}: ${user.name}`"
-          @click="connectWithUser"
         >
-          {{ primaryActionLabel }}
-        </UButton>
+          {{ t("pages.pokePage.openMessages") }}
+        </NuxtLink>
 
         <NuxtLink
           :to="user.href"
@@ -112,19 +94,13 @@
 </template>
 
 <script setup lang="ts">
-import type { ExploreUserSpotlight } from "../../application/composables/useMockExploreData"
-
-type SpotlightActionState = "idle" | "loading" | "success" | "error"
+import type { FeedExploreUserRecord } from "../../../feed/domain/types/feed.types"
 
 const props = defineProps<{
-  user: ExploreUserSpotlight
+  user: FeedExploreUserRecord
 }>()
 
 const { t } = useI18n()
-const toast = useToast()
-const connected = ref(false)
-const actionState = ref<SpotlightActionState>("idle")
-const actionMessage = ref("")
 
 const accentBackground = computed(() =>
   `linear-gradient(135deg, ${props.user.accent} 0%, #0000ff 100%)`,
@@ -133,56 +109,9 @@ const accentBackground = computed(() =>
 const profileLabel = computed(() =>
   props.user.online ? t("pages.explorePage.activeNow") : t("pages.explorePage.connectable"),
 )
-
-const primaryActionLabel = computed(() => {
-  if (actionState.value === "loading") return t("pages.explorePage.connecting")
-  if (connected.value) return t("pages.explorePage.inviteSent")
-  return t("pages.explorePage.connectNow")
-})
-
-watch(
-  () => props.user.id,
-  () => {
-    connected.value = false
-    actionState.value = "idle"
-    actionMessage.value = ""
-  },
-  { immediate: true },
+const messageTo = computed(() =>
+  props.user.username
+    ? `/messages?tab=users&username=${encodeURIComponent(props.user.username)}`
+    : props.user.href,
 )
-
-async function connectWithUser() {
-  if (actionState.value === "loading" || connected.value) return
-
-  if (!props.user.id || !props.user.href) {
-    actionState.value = "error"
-    actionMessage.value = t("pages.explorePage.connectErrorMessage")
-
-    toast.add({
-      color: "warning",
-      icon: "i-ph-warning-circle-fill",
-      title: props.user.name,
-      description: actionMessage.value,
-    })
-
-    return
-  }
-
-  actionState.value = "loading"
-  actionMessage.value = ""
-
-  await new Promise(resolve => setTimeout(resolve, 260))
-
-  connected.value = true
-  actionState.value = "success"
-  actionMessage.value = t("pages.explorePage.connectSuccessMessage", {
-    name: props.user.name,
-  })
-
-  toast.add({
-    color: "success",
-    icon: "i-ph-user-plus-fill",
-    title: props.user.name,
-    description: actionMessage.value,
-  })
-}
 </script>

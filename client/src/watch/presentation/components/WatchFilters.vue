@@ -1,3 +1,4 @@
+<!-- Description: Renders watch filters using API-backed category options for the watch listing. -->
 <template>
   <section class="watch-filters">
     <div class="watch-filters__inner">
@@ -29,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import type { WatchCategoryKey } from '../../application/composables/useMockWatchData'
+import type { WatchCategoryKey } from "../../application/composables/useWatchData"
 
 defineProps<{
   search: string
