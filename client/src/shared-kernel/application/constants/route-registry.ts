@@ -117,6 +117,10 @@ export const apiRoutes = {
   settings: {
     me: "settings/me",
     update: "settings/update",
+    sessions: "settings/sessions",
+    blocked: "settings/blocked",
+    unblock: "settings/unblock",
+    myInfo: "settings/my-info",
   },
 } as const
 

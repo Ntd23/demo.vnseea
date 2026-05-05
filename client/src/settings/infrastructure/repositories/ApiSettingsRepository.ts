@@ -85,5 +85,23 @@ export function createApiSettingsRepository(): SettingsRepository {
         toApiRequestBody(payload),
       )
     },
+    async getSessions() {
+      return await client.get<SettingSession[]>(apiRoutes.settings.sessions)
+    },
+    async deleteSession(id) {
+      const response = await client.delete<{ success: boolean }>(apiRoutes.settings.sessions, { id })
+      return response.success
+    },
+    async getBlockedUsers() {
+      return await client.get<SettingsBlockedUser[]>(apiRoutes.settings.blocked)
+    },
+    async unblockUser(userId) {
+      const response = await client.post<{ success: boolean }>(apiRoutes.settings.unblock, { userId })
+      return response.success
+    },
+    async requestMyInfo(options) {
+      const response = await client.post<{ success: boolean }>(apiRoutes.settings.myInfo, options)
+      return response.success
+    },
   }
 }

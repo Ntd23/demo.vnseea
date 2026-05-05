@@ -4790,41 +4790,24 @@
             }
           }
         },
-        "blockedUsers": {
+        "blocked-users": {
           "label": "Người dùng đã chặn",
           "description": "Danh sách người dùng bạn đã chặn.",
           "sections": {
-            "blockedUsers": {
+            "blocked": {
               "title": "Quản lý chặn",
-              "description": "Những người trong danh sách này sẽ không thể tương tác với bạn.",
-              "items": {
-                "spamAccount": { "description": "Đã chặn 2 ngày trước", "action": "Bỏ chặn" },
-                "oldBot": { "description": "Đã chặn 1 tháng trước", "action": "Bỏ chặn" }
-              }
+              "description": "Những người trong danh sách này sẽ không thể tương tác với bạn."
             }
           }
         },
-        "sessions": {
+        "manage-sessions": {
           "label": "Phiên đăng nhập",
           "description": "Danh sách các thiết bị và trình duyệt đang đăng nhập tài khoản của bạn.",
           "sections": {
-            "activeSessions": {
+            "sessions": {
               "title": "Các phiên hoạt động",
               "description": "Kiểm tra và đăng xuất khỏi các thiết bị lạ.",
-              "items": {
-                "chrome": {
-                  "title": "Chrome · Windows",
-                  "description": "127.0.0.1 · hiện tại",
-                  "meta": "Đang hoạt động",
-                  "action": "Giữ lại"
-                },
-                "safari": {
-                  "title": "Safari · iPhone",
-                  "description": "TP. Hồ Chí Minh · 2 ngày trước",
-                  "meta": "Di động",
-                  "action": "Đăng xuất"
-                }
-              }
+              "action": "Đăng xuất khỏi tất cả thiết bị"
             }
           }
         },
@@ -4884,9 +4867,10 @@
           "label": "Kiếm tiền",
           "description": "Thiết lập các gói nội dung trả phí cho người theo dõi.",
           "sections": {
-            "plan": {
+            "plans": {
               "title": "Gói kiếm tiền",
               "description": "Tạo gói nội dung độc quyền dành cho những người đăng ký.",
+              "action": "Thêm gói mới",
               "fields": {
                 "planName": "Tên gói",
                 "price": "Giá tiền",
@@ -4941,19 +4925,21 @@
             }
           }
         },
-        "myInfo": {
+        "my-info": {
           "label": "Dữ liệu của tôi",
           "description": "Yêu cầu và tải xuống toàn bộ dữ liệu cá nhân của bạn.",
           "sections": {
-            "myInfo": {
+            "download": {
               "title": "Thông tin cá nhân",
               "description": "Nhận bản sao dữ liệu của bạn dưới dạng file nén.",
-              "items": {
-                "download": {
-                  "title": "Tải dữ liệu cá nhân",
-                  "description": "Bao gồm ảnh, bài viết, tin nhắn và thông tin cá nhân khác.",
-                  "action": "Yêu cầu bản sao"
-                }
+              "action": "Tạo file dữ liệu",
+              "fields": {
+                "my_information": "Thông tin của tôi",
+                "posts": "Bài viết",
+                "pages": "Các trang",
+                "groups": "Các nhóm",
+                "following": "Đang theo dõi",
+                "followers": "Người theo dõi"
               }
             }
           }
@@ -4987,16 +4973,14 @@
           "label": "Địa chỉ nhận hàng",
           "description": "Quản lý địa chỉ giao hàng cho các đơn hàng Marketplace.",
           "sections": {
-            "shippingAddresses": {
+            "list": {
               "title": "Địa chỉ giao hàng",
               "description": "Thông tin liên hệ và vị trí nhận hàng của bạn.",
+              "action": "Thêm địa chỉ mới",
               "fields": {
                 "fullName": "Họ và tên",
                 "phone": "Số điện thoại",
                 "address": "Địa chỉ chi tiết"
-              },
-              "values": {
-                "address": "Quận 1, TP. Hồ Chí Minh"
               }
             }
           }

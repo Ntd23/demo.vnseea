@@ -4790,41 +4790,24 @@
             }
           }
         },
-        "blockedUsers": {
+        "blocked-users": {
           "label": "Blocked users",
           "description": "Blocked list and unblock actions.",
           "sections": {
-            "blockedUsers": {
-              "title": "Blocked users",
-              "description": "Manage blocked users.",
-              "items": {
-                "spamAccount": { "description": "Blocked 2 days ago", "action": "Unblock" },
-                "oldBot": { "description": "Blocked 1 month ago", "action": "Unblock" }
-              }
+            "blocked": {
+              "title": "Manage Blocked Users",
+              "description": "Blocked users will not be able to interact with you."
             }
           }
         },
-        "sessions": {
+        "manage-sessions": {
           "label": "Sessions",
           "description": "Active sessions and termination controls.",
           "sections": {
-            "activeSessions": {
+            "sessions": {
               "title": "Active sessions",
               "description": "Review devices currently signed in.",
-              "items": {
-                "chrome": {
-                  "title": "Chrome · Windows",
-                  "description": "127.0.0.1 · current",
-                  "meta": "Active now",
-                  "action": "Keep session"
-                },
-                "safari": {
-                  "title": "Safari · iPhone",
-                  "description": "Ho Chi Minh City · 2 days ago",
-                  "meta": "Mobile",
-                  "action": "Terminate"
-                }
-              }
+              "action": "Terminate all sessions"
             }
           }
         },
@@ -4884,13 +4867,14 @@
           "label": "Monetization",
           "description": "Plan, price, and enable or disable state.",
           "sections": {
-            "plan": {
-              "title": "Monetization plan",
-              "description": "Create a paid content plan.",
+            "plans": {
+              "title": "Monetization plans",
+              "description": "Create a paid content plan for your subscribers.",
+              "action": "Add new plan",
               "fields": {
                 "planName": "Plan name",
                 "price": "Price",
-                "enabled": "Enable/disable"
+                "enabled": "Enabled"
               }
             }
           }
@@ -4941,19 +4925,21 @@
             }
           }
         },
-        "myInfo": {
+        "my-info": {
           "label": "My data",
           "description": "Download personal data.",
           "sections": {
-            "myInfo": {
+            "download": {
               "title": "My info",
               "description": "Download personal data as an archive.",
-              "items": {
-                "download": {
-                  "title": "Download personal data",
-                  "description": "Includes profile, posts, media, and message metadata.",
-                  "action": "Request archive"
-                }
+              "action": "Generate archive",
+              "fields": {
+                "my_information": "My Information",
+                "posts": "Posts",
+                "pages": "Pages",
+                "groups": "Groups",
+                "following": "Following",
+                "followers": "Followers"
               }
             }
           }
@@ -4987,16 +4973,14 @@
           "label": "Addresses",
           "description": "Add or edit shipping addresses.",
           "sections": {
-            "shippingAddresses": {
+            "list": {
               "title": "Shipping addresses",
               "description": "Delivery addresses for the marketplace.",
+              "action": "Add new address",
               "fields": {
                 "fullName": "Full name",
                 "phone": "Phone",
                 "address": "Address"
-              },
-              "values": {
-                "address": "District 1, Ho Chi Minh City"
               }
             }
           }
