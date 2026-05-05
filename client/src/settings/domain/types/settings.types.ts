@@ -14,8 +14,28 @@ export type SettingsSectionSlug =
   | "socialLinks"
   | "verification"
   | "deleteAccount"
+  | "manage-sessions"
+  | "blocked-users"
+  | "my-info"
   | "addresses"
   | "monetization"
+
+export interface SettingSession {
+  id: number
+  platform: string
+  browser: string
+  time: string
+  ip: string
+}
+
+export interface SettingsBlockedUser {
+  id: number
+  name: string
+  username: string
+  avatar: string
+  url: string
+  lastseen?: string
+}
 
 export type SettingsRole = "user" | "moderator" | "admin"
 

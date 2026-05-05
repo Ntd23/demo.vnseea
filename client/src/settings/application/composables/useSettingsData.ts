@@ -74,6 +74,25 @@ const settingsText = (
   params?: Record<string, string | number | boolean>,
 ) => t(`settings.data.${key}`, params ?? {})
 
+const pageText = (
+  t: SettingTranslate,
+  page: string,
+  key: string,
+  params?: Record<string, string | number | boolean>,
+) => settingsText(t, `pages.${page}.${key}`, params)
+
+const fieldText = (
+  t: SettingTranslate,
+  key: string,
+  params?: Record<string, string | number | boolean>,
+) => settingsText(t, `fields.${key}`, params)
+
+const messageText = (
+  t: SettingTranslate,
+  key: string,
+  params?: Record<string, string | number | boolean>,
+) => settingsText(t, `messages.${key}`, params)
+
 const pageIcons: Record<string, string> = {
   general: "i-ph-user-fill",
   profile: "i-ph-identification-card-fill",
@@ -88,6 +107,11 @@ const pageIcons: Record<string, string> = {
   verification: "i-ph-seal-check-fill",
   deleteAccount: "i-ph-warning-octagon-fill",
   myPoints: "i-ph-star-fill",
+  manageSessions: "i-ph-devices-fill",
+  blockedUsers: "i-ph-user-minus-fill",
+  myInfo: "i-ph-info-fill",
+  addresses: "i-ph-map-pin-fill",
+  monetization: "i-ph-currency-circle-dollar-fill",
 }
 
 const supportedUpdateSections = new Set<SettingsSectionSlug>([
@@ -245,14 +269,14 @@ const summaryItem = (title: string, description: string, meta?: string): Setting
   meta,
 })
 
-const pageText = (t: SettingTranslate, page: string, key: string) =>
-  settingsText(t, `pages.${page}.${key}`)
+// const pageText = (t: SettingTranslate, page: string, key: string) =>
+//   settingsText(t, `pages.${page}.${key}`)
 
-const fieldText = (t: SettingTranslate, key: string) =>
-  settingsText(t, `fields.${key}`)
+// const fieldText = (t: SettingTranslate, key: string) =>
+//   settingsText(t, `fields.${key}`)
 
-const messageText = (t: SettingTranslate, key: string, params?: Record<string, string | number | boolean>) =>
-  settingsText(t, `messages.${key}`, params)
+// const messageText = (t: SettingTranslate, key: string, params?: Record<string, string | number | boolean>) =>
+//   settingsText(t, `messages.${key}`, params)
 
 const generalPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "general",
@@ -546,6 +570,78 @@ const myPointsPage = (t: SettingTranslate, user: SettingsUser | null): SettingPa
   }],
 })
 
+const manageSessionsPage = (t: SettingTranslate): SettingPage => ({
+  slug: "manage-sessions",
+  label: pageText(t, "manage-sessions", "label"),
+  icon: pageIcons.manageSessions,
+  description: pageText(t, "manage-sessions", "description"),
+  sections: [{
+    title: pageText(t, "manage-sessions", "sections.sessions.title"),
+    description: pageText(t, "manage-sessions", "sections.sessions.description"),
+    kind: "list",
+    actions: [{ label: pageText(t, "manage-sessions", "sections.sessions.action"), icon: "i-ph-trash-duotone", tone: "danger" }],
+  }],
+})
+
+const blockedUsersPage = (t: SettingTranslate): SettingPage => ({
+  slug: "blocked-users",
+  label: pageText(t, "blocked-users", "label"),
+  icon: pageIcons.blockedUsers,
+  description: pageText(t, "blocked-users", "description"),
+  sections: [{
+    title: pageText(t, "blocked-users", "sections.blocked.title"),
+    description: pageText(t, "blocked-users", "sections.blocked.description"),
+    kind: "list",
+  }],
+})
+
+const myInfoPage = (t: SettingTranslate): SettingPage => ({
+  slug: "my-info",
+  label: pageText(t, "my-info", "label"),
+  icon: pageIcons.myInfo,
+  description: pageText(t, "my-info", "description"),
+  sections: [{
+    title: pageText(t, "my-info", "sections.download.title"),
+    description: pageText(t, "my-info", "sections.download.description"),
+    kind: "toggles",
+    toggles: [
+      { key: "my_information", label: pageText(t, "my-info", "sections.download.fields.my_information"), description: "", enabled: true },
+      { key: "posts", label: pageText(t, "my-info", "sections.download.fields.posts"), description: "", enabled: true },
+      { key: "pages", label: pageText(t, "my-info", "sections.download.fields.pages"), description: "", enabled: true },
+      { key: "groups", label: pageText(t, "my-info", "sections.download.fields.groups"), description: "", enabled: true },
+      { key: "following", label: pageText(t, "my-info", "sections.download.fields.following"), description: "", enabled: true },
+      { key: "followers", label: pageText(t, "my-info", "sections.download.fields.followers"), description: "", enabled: true },
+    ],
+    actions: [{ label: pageText(t, "my-info", "sections.download.action"), icon: "i-ph-download-simple-duotone" }],
+  }],
+})
+
+const addressesPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
+  slug: "addresses",
+  label: pageText(t, "addresses", "label"),
+  icon: pageIcons.addresses,
+  description: pageText(t, "addresses", "description"),
+  sections: [{
+    title: pageText(t, "addresses", "sections.list.title"),
+    description: pageText(t, "addresses", "sections.list.description"),
+    kind: "list",
+    actions: [{ label: pageText(t, "addresses", "sections.list.action"), icon: "i-ph-plus-duotone" }],
+  }],
+})
+
+const monetizationPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
+  slug: "monetization",
+  label: pageText(t, "monetization", "label"),
+  icon: pageIcons.monetization,
+  description: pageText(t, "monetization", "description"),
+  sections: [{
+    title: pageText(t, "monetization", "sections.plans.title"),
+    description: pageText(t, "monetization", "sections.plans.description"),
+    kind: "list",
+    actions: [{ label: pageText(t, "monetization", "sections.plans.action"), icon: "i-ph-plus-duotone" }],
+  }],
+})
+
 const createPages = (t: SettingTranslate, user: SettingsUser | null): SettingPage[] => [
   generalPage(t, user),
   profilePage(t, user),
@@ -559,6 +655,11 @@ const createPages = (t: SettingTranslate, user: SettingsUser | null): SettingPag
   socialLinksPage(t, user),
   verificationPage(t, user),
   myPointsPage(t, user),
+  manageSessionsPage(t),
+  blockedUsersPage(t),
+  myInfoPage(t),
+  addressesPage(t),
+  monetizationPage(t),
   deleteAccountPage(t),
 ]
 
@@ -678,16 +779,60 @@ export const useSettingsData = () => {
 
   const pages = computed<SettingPage[]>(() => createPages(t, user.value))
 
+  const sessions = ref<SettingSession[]>([])
+  const blockedUsers = ref<SettingsBlockedUser[]>([])
+
+  async function fetchSessions() {
+    loading.value = true
+    try {
+      sessions.value = await settingsRepository.getSessions()
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function deleteSession(id: number | "all") {
+    const success = await settingsRepository.deleteSession(id)
+    if (success) await fetchSessions()
+    return success
+  }
+
+  async function fetchBlockedUsers() {
+    loading.value = true
+    try {
+      blockedUsers.value = await settingsRepository.getBlockedUsers()
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function unblockUser(userId: number) {
+    const success = await settingsRepository.unblockUser(userId)
+    if (success) await fetchBlockedUsers()
+    return success
+  }
+
+  async function requestMyInfo(options: Record<string, boolean>) {
+    return await settingsRepository.requestMyInfo(options)
+  }
+
   void hydrate()
 
   return {
     pages,
     user,
+    sessions,
+    blockedUsers,
     loading,
     errorMessage,
     defaultSlug: "general",
     hydrate,
     updateSettings,
+    fetchSessions,
+    deleteSession,
+    fetchBlockedUsers,
+    unblockUser,
+    requestMyInfo,
     findPageBySlug: (slug: string) => pages.value.find(page => page.slug === slug),
   }
 }
