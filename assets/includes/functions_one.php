@@ -1081,10 +1081,15 @@ function Wo_GetBlogIdFromUrl($string)
 function Wo_isValidPasswordResetToken($string)
 {
     global $sqlConnect;
-    $string_exp = explode('_', $string);
-    $user_id = Wo_Secure($string_exp[0]);
-    $password = Wo_Secure($string_exp[1]);
-    if (empty($user_id) or !is_numeric($user_id) or $user_id < 1) {
+    $sep_pos = strpos($string, '_');
+    if ($sep_pos === false) {
+        return false;
+    }
+    $user_id  = substr($string, 0, $sep_pos);
+    $password = substr($string, $sep_pos + 1);
+    $user_id  = mysqli_real_escape_string($sqlConnect, $user_id);
+    $password = mysqli_real_escape_string($sqlConnect, $password);
+    if (empty($user_id) || !is_numeric($user_id) || (int)$user_id < 1) {
         return false;
     }
     if (empty($password)) {
@@ -1097,10 +1102,15 @@ function Wo_isValidPasswordResetToken($string)
 function Wo_isValidPasswordResetToken2($string)
 {
     global $sqlConnect;
-    $string_exp = explode('_', $string);
-    $user_id = Wo_Secure($string_exp[0]);
-    $password = Wo_Secure($string_exp[1]);
-    if (empty($user_id) or !is_numeric($user_id) or $user_id < 1) {
+    $sep_pos = strpos($string, '_');
+    if ($sep_pos === false) {
+        return false;
+    }
+    $user_id  = substr($string, 0, $sep_pos);
+    $password = substr($string, $sep_pos + 1);
+    $user_id  = mysqli_real_escape_string($sqlConnect, $user_id);
+    $password = mysqli_real_escape_string($sqlConnect, $password);
+    if (empty($user_id) || !is_numeric($user_id) || (int)$user_id < 1) {
         return false;
     }
     if (empty($password)) {
@@ -10227,7 +10237,7 @@ function Wo_ReplaceText($html = '', $replaces = array())
     }, $html);
     foreach ($replaces as $key => $replace) {
         $object_to_replace = "{{" . $key . "}}";
-        $html = str_replace($object_to_replace, $replace, $html);
+        $html = str_replace($object_to_replace, (string)($replace ?? ''), $html);
     }
     return $html;
 }

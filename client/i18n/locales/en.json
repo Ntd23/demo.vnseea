@@ -5670,6 +5670,8 @@
         "title": "What are you looking for?",
         "desc": "Enter a keyword above to find users, pages, groups, or posts. You can also start with the quick suggestions appearing in the filter."
       },
+      "loadingResults": "Loading search results",
+      "errorTitle": "Could not load results",
       "clearFilters": "Clear filters",
       "tryKeyword": "Try {keyword}",
       "controls": {
@@ -5678,12 +5680,38 @@
         "desc": "Search by keyword, filter by result type, and quickly switch between datasets mathematically available in VNSEEA's mock social graph.",
         "keywordParams": {
           "label": "Keyword",
-          "placeholder": "Search for users, pages, groups, posts, or #hashtags"
+          "placeholder": "Keyword"
         },
         "typeLabel": "Result type",
         "sortLabel": "Sort by",
         "submit": "Search",
         "quickSuggestions": "Quick suggestions"
+      },
+      "filters": {
+        "filter": "Filter",
+        "country": "Select country",
+        "age": "Age",
+        "ageFrom": "From age",
+        "ageTo": "To age",
+        "verified": "Verified",
+        "status": "Status",
+        "gender": "Gender",
+        "profilePicture": "Profile picture",
+        "all": "All",
+        "yes": "Yes",
+        "no": "No",
+        "verifiedOn": "Verified",
+        "verifiedOff": "Unverified",
+        "online": "Online",
+        "offline": "Offline",
+        "male": "Male",
+        "female": "Female"
+      },
+      "countries": {
+        "vietnam": "Vietnam",
+        "singapore": "Singapore",
+        "thailand": "Thailand",
+        "unitedStates": "United States"
       },
       "results": {
         "label": "Results",

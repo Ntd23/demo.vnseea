@@ -3,18 +3,22 @@
     <SearchFiltersPanel
       v-model:keyword="searchText"
       v-model:type="selectedType"
-      v-model:sort="selectedSort"
-      :type-options="searchTypeOptions"
-      :sort-options="searchSortOptions"
+      v-model:country="selectedCountry"
+      v-model:filterbyage="selectedFilterByAge"
+      v-model:age-from="selectedAgeFrom"
+      v-model:age-to="selectedAgeTo"
+      v-model:verified="selectedVerified"
+      v-model:status="selectedStatus"
+      v-model:gender="selectedGender"
+      v-model:image="selectedImage"
+      :country-options="countryOptions"
       :tabs="tabItems"
-      :quick-keywords="quickKeywords"
       @submit="commitSearch"
-      @quick-search="applyQuickKeyword"
     />
 
     <!-- Summary Cards -->
     <section
-      v-if="hasKeyword"
+      v-if="!loading && !errorMessage"
       class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       <article
@@ -37,22 +41,32 @@
       </article>
     </section>
 
-    <!-- Empty State (No keyword) -->
+    <!-- Loading State -->
     <section
-      v-if="!hasKeyword"
+      v-if="loading"
+      class="surface-card border-secondary-100 p-6 sm:p-8"
+    >
+      <FoundationLoadingSkeleton
+        variant="list"
+        :count="isMobile ? 3 : 4"
+        :rows="3"
+        :label="$t('community.search.loadingResults')"
+      />
+    </section>
+
+    <!-- Error State -->
+    <section
+      v-else-if="errorMessage"
       class="surface-card border-secondary-100 p-12 sm:p-20"
     >
-      <div class="flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
-        <div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-primary-50 text-3xl font-black text-[var(--text-primary)] border border-primary-100 shadow-sm mb-8">
-          {{ idleMonogram }}
-        </div>
-        <h2 class="text-2xl font-black text-[var(--text-primary)] tracking-tight">
-          {{ $t('community.search.emptyState.title') }}
-        </h2>
-        <p class="mt-3 text-body-secondary text-base leading-relaxed">
-          {{ $t('community.search.emptyState.desc') }}
-        </p>
-      </div>
+      <FoundationEmptyState
+        icon="i-ph-warning-circle-duotone"
+        :title="$t('community.search.errorTitle')"
+        :description="errorMessage"
+        :primary-label="$t('community.search.clearFilters')"
+        primary-color="warning"
+        @primary="clearFilters"
+      />
     </section>
 
     <!-- No Results found -->
@@ -63,8 +77,8 @@
       <div class="mx-auto max-w-2xl text-center">
         <FoundationEmptyState
           icon="i-ph-magnifying-glass-duotone"
-          :title="$t('community.search.emptyValue.title')"
-          :description="$t('community.search.emptyValue.desc', { keyword: searchText.trim() })"
+          :title="emptyResultsTitle"
+          :description="emptyResultsDescription"
         />
 
         <div class="mt-10 flex flex-wrap justify-center gap-3">
@@ -159,7 +173,7 @@
     </div>
 
     <!-- Footer -->
-      <footer class="surface-card border-secondary-100/50 p-6 sm:p-8">
+    <footer class="surface-card border-secondary-100/50 p-6 sm:p-8">
       <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div class="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm font-semibold text-[var(--text-primary)]">
           <span class="text-[var(--text-primary)]">© 2026 VNSEEA</span>
@@ -192,14 +206,20 @@
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
+import FoundationLoadingSkeleton from "../../../foundation/presentation/components/LoadingSkeleton.vue"
 import SearchFiltersPanel from "../components/FiltersPanel.vue"
 import SearchResultCard from "../components/ResultCard.vue"
 import { useSearchData } from "../../application/composables/useSearchData"
 import type {
+  SearchAgeFilter,
+  SearchBackendFilters,
   SearchCollectionType,
+  SearchGenderFilter,
+  SearchImageFilter,
   SearchResultItem,
   SearchResultType,
   SearchSortKey,
+  SearchTriStateFilter,
 } from "../../domain/types/search.types"
 
 type SearchSection = {
@@ -241,16 +261,49 @@ const router = useRouter()
 const { t } = useI18n()
 
 const collectionKinds: SearchCollectionType[] = ["users", "pages", "groups", "posts"]
+const searchTypeValues: SearchResultType[] = ["all", "users", "pages", "groups", "posts"]
+const searchSortValues: SearchSortKey[] = ["relevance", "popular", "recent"]
+const triStateValues: SearchTriStateFilter[] = ["all", "on", "off"]
+const genderValues: SearchGenderFilter[] = ["all", "male", "female"]
+const imageValues: SearchImageFilter[] = ["all", "yes", "no"]
 
 const normalizeType = (value: string): SearchResultType =>
-  searchTypeOptions.some(option => option.value === value)
+  searchTypeValues.includes(value as SearchResultType)
     ? value as SearchResultType
     : "all"
 
 const normalizeSort = (value: string): SearchSortKey =>
-  searchSortOptions.some(option => option.value === value)
+  searchSortValues.includes(value as SearchSortKey)
     ? value as SearchSortKey
     : "relevance"
+
+const normalizeTriState = (value: string): SearchTriStateFilter =>
+  triStateValues.includes(value as SearchTriStateFilter)
+    ? value as SearchTriStateFilter
+    : "all"
+
+const normalizeGender = (value: string): SearchGenderFilter =>
+  genderValues.includes(value as SearchGenderFilter)
+    ? value as SearchGenderFilter
+    : "all"
+
+const normalizeImage = (value: string): SearchImageFilter =>
+  imageValues.includes(value as SearchImageFilter)
+    ? value as SearchImageFilter
+    : "all"
+
+const normalizeAgeFilter = (value: string): SearchAgeFilter =>
+  value === "yes" ? "yes" : "no"
+
+const normalizeAgeValue = (value: string, fallback: string) => {
+  const numeric = Number(value)
+
+  if (!Number.isFinite(numeric)) {
+    return fallback
+  }
+
+  return String(Math.min(Math.max(Math.round(numeric), 10), 70))
+}
 
 // 1. Breakpoints logic
 const { isMobile } = useAppBreakpoints()
@@ -262,21 +315,48 @@ const { searchQuery: searchText, debouncedSearchQuery } = useDebouncedSearch({
   queryParamName: "q"
 })
 
+// Other filters are synced to URL and sent to the PHP search bridge.
+const selectedType = ref<SearchResultType>(normalizeType(readQueryValue(route.query.type)))
+const selectedSort = ref<SearchSortKey>(normalizeSort(readQueryValue(route.query.sort)))
+const selectedCountry = ref(readQueryValue(route.query.country) || "all")
+const selectedFilterByAge = ref<SearchAgeFilter>(normalizeAgeFilter(readQueryValue(route.query.filterbyage)))
+const selectedAgeFrom = ref(normalizeAgeValue(readQueryValue(route.query.age_from), "18"))
+const selectedAgeTo = ref(normalizeAgeValue(readQueryValue(route.query.age_to), "50"))
+const selectedVerified = ref<SearchTriStateFilter>(normalizeTriState(readQueryValue(route.query.verified)))
+const selectedStatus = ref<SearchTriStateFilter>(normalizeTriState(readQueryValue(route.query.status)))
+const selectedGender = ref<SearchGenderFilter>(normalizeGender(readQueryValue(route.query.gender)))
+const selectedImage = ref<SearchImageFilter>(normalizeImage(readQueryValue(route.query.image)))
+
+const countryOptions = computed(() => [
+  { label: t("community.search.filters.country"), value: "all" },
+  { label: t("community.search.countries.vietnam"), value: "233" },
+  { label: t("community.search.countries.singapore"), value: "192" },
+  { label: t("community.search.countries.thailand"), value: "213" },
+  { label: t("community.search.countries.unitedStates"), value: "1" },
+])
+
+const searchFilters = computed<SearchBackendFilters>(() => ({
+  type: selectedType.value,
+  country: selectedCountry.value,
+  filterbyage: selectedFilterByAge.value,
+  age_from: selectedAgeFrom.value,
+  age_to: selectedAgeTo.value,
+  verified: selectedVerified.value,
+  status: selectedStatus.value,
+  gender: selectedGender.value,
+  image: selectedImage.value,
+}))
+
 const {
   quickKeywords,
   searchTabs,
   searchTypeOptions,
-  searchSortOptions,
   resultsByType,
-} = useSearchData(debouncedSearchQuery)
-
-// Other filters (no debounce needed, simple sync)
-const selectedType = ref<SearchResultType>(normalizeType(readQueryValue(route.query.type)))
-const selectedSort = ref<SearchSortKey>(normalizeSort(readQueryValue(route.query.sort)))
+  loading,
+  errorMessage,
+} = useSearchData(debouncedSearchQuery, searchFilters)
 
 const hasKeyword = computed(() => searchText.value.trim().length > 0)
-const idleMonogram = computed(() => searchText.value.trim().charAt(0).toUpperCase() || "A")
-
 const keywordTokens = computed(() =>
   normalizeKeyword(searchText.value)
     .split(" ")
@@ -287,29 +367,80 @@ const keywordTokens = computed(() =>
 function syncFromRoute() {
   const nextType = normalizeType(readQueryValue(route.query.type))
   const nextSort = normalizeSort(readQueryValue(route.query.sort))
+  const nextCountry = readQueryValue(route.query.country) || "all"
+  const nextFilterByAge = normalizeAgeFilter(readQueryValue(route.query.filterbyage))
+  const nextAgeFrom = normalizeAgeValue(readQueryValue(route.query.age_from), "18")
+  const nextAgeTo = normalizeAgeValue(readQueryValue(route.query.age_to), "50")
+  const nextVerified = normalizeTriState(readQueryValue(route.query.verified))
+  const nextStatus = normalizeTriState(readQueryValue(route.query.status))
+  const nextGender = normalizeGender(readQueryValue(route.query.gender))
+  const nextImage = normalizeImage(readQueryValue(route.query.image))
 
   if (nextType !== selectedType.value) selectedType.value = nextType
   if (nextSort !== selectedSort.value) selectedSort.value = nextSort
+  if (nextCountry !== selectedCountry.value) selectedCountry.value = nextCountry
+  if (nextFilterByAge !== selectedFilterByAge.value) selectedFilterByAge.value = nextFilterByAge
+  if (nextAgeFrom !== selectedAgeFrom.value) selectedAgeFrom.value = nextAgeFrom
+  if (nextAgeTo !== selectedAgeTo.value) selectedAgeTo.value = nextAgeTo
+  if (nextVerified !== selectedVerified.value) selectedVerified.value = nextVerified
+  if (nextStatus !== selectedStatus.value) selectedStatus.value = nextStatus
+  if (nextGender !== selectedGender.value) selectedGender.value = nextGender
+  if (nextImage !== selectedImage.value) selectedImage.value = nextImage
 }
 
 watch(
-  () => [route.query.type, route.query.sort],
+  () => [
+    route.query.type,
+    route.query.sort,
+    route.query.country,
+    route.query.filterbyage,
+    route.query.age_from,
+    route.query.age_to,
+    route.query.verified,
+    route.query.status,
+    route.query.gender,
+    route.query.image,
+  ],
   syncFromRoute,
 )
 
 function commitSearch() {
   const nextType = selectedType.value === "all" ? "" : selectedType.value
   const nextSort = selectedSort.value === "relevance" ? "" : selectedSort.value
+  const nextKeyword = searchText.value.trim()
 
-  const nextQuery: Record<string, string> = { ...route.query }
-  if (nextType) nextQuery.type = nextType; else delete nextQuery.type
-  if (nextSort) nextQuery.sort = nextSort; else delete nextQuery.sort
+  const nextQuery: Record<string, string> = {}
+  if (nextKeyword) nextQuery.q = nextKeyword
+  if (nextType) nextQuery.type = nextType
+  if (nextSort) nextQuery.sort = nextSort
+  if (selectedCountry.value !== "all") nextQuery.country = selectedCountry.value
+
+  if (selectedFilterByAge.value === "yes") {
+    nextQuery.filterbyage = selectedFilterByAge.value
+    nextQuery.age_from = selectedAgeFrom.value
+    nextQuery.age_to = selectedAgeTo.value
+  }
+
+  if (selectedVerified.value !== "all") nextQuery.verified = selectedVerified.value
+  if (selectedStatus.value !== "all") nextQuery.status = selectedStatus.value
+  if (selectedGender.value !== "all") nextQuery.gender = selectedGender.value
+  if (selectedImage.value !== "all") nextQuery.image = selectedImage.value
 
   void router.replace({ path: appRoutes.search, query: nextQuery })
 }
 
-watch(selectedType, commitSearch)
-watch(selectedSort, commitSearch)
+watch([
+  selectedType,
+  selectedSort,
+  selectedCountry,
+  selectedFilterByAge,
+  selectedAgeFrom,
+  selectedAgeTo,
+  selectedVerified,
+  selectedStatus,
+  selectedGender,
+  selectedImage,
+], commitSearch)
 
 function matchesKeyword(item: SearchResultItem) {
   if (!keywordTokens.value.length) return true
@@ -409,8 +540,6 @@ const summaryCards = computed(() => [
 ])
 
 const visibleSections = computed<SearchSection[]>(() => {
-  if (!hasKeyword.value) return []
-
   const sections = collectionKinds
     .filter(kind => selectedType.value === "all" || selectedType.value === kind)
     .map((kind) => {
@@ -448,6 +577,18 @@ const resultDescription = computed(() => {
   return t('community.search.results.descSpecific', { type: currentTypeLabel.value.toLowerCase(), keyword })
 })
 
+const emptyResultsTitle = computed(() =>
+  hasKeyword.value
+    ? t('community.search.emptyValue.title')
+    : t('community.search.emptyState.title')
+)
+
+const emptyResultsDescription = computed(() =>
+  hasKeyword.value
+    ? t('community.search.emptyValue.desc', { keyword: searchText.value.trim() })
+    : t('community.search.emptyState.desc')
+)
+
 function applyQuickKeyword(keyword: string) {
   searchText.value = keyword
   commitSearch()
@@ -457,6 +598,14 @@ function clearFilters() {
   searchText.value = ""
   selectedType.value = "all"
   selectedSort.value = "relevance"
+  selectedCountry.value = "all"
+  selectedFilterByAge.value = "no"
+  selectedAgeFrom.value = "18"
+  selectedAgeTo.value = "50"
+  selectedVerified.value = "all"
+  selectedStatus.value = "all"
+  selectedGender.value = "all"
+  selectedImage.value = "all"
   commitSearch()
 }
 
