@@ -4,17 +4,37 @@
     <!-- ── Loading skeleton ──────────────────────────────── -->
     <template v-if="pending">
       <div class="profile-page__hero-skeleton">
-        <USkeleton class="h-[300px] w-full" />
+        <USkeleton class="profile-page__cover-skeleton" />
+        <div class="profile-page__identity-skeleton">
+          <USkeleton class="profile-page__avatar-skeleton" />
+          <div class="profile-page__identity-lines">
+            <USkeleton class="h-8 w-56 max-w-full rounded-full" />
+            <USkeleton class="h-5 w-72 max-w-full rounded-full" />
+            <USkeleton class="h-5 w-44 max-w-full rounded-full" />
+          </div>
+          <div class="profile-page__action-skeletons">
+            <USkeleton class="h-10 w-40 rounded-full" />
+            <USkeleton class="h-10 w-36 rounded-full" />
+          </div>
+        </div>
+        <div class="profile-page__tab-skeletons">
+          <USkeleton
+            v-for="item in 5"
+            :key="`profile-tab-skeleton-${item}`"
+            class="h-9 w-24 rounded-full"
+          />
+        </div>
       </div>
-      <div class="profile-page__body">
+      <div class="profile-page__body profile-page__skeleton-body">
         <main class="profile-page__feed">
-          <USkeleton class="h-[110px] w-full rounded-2xl" />
-          <USkeleton class="h-[360px] w-full rounded-2xl" />
-          <USkeleton class="h-[320px] w-full rounded-2xl" />
+          <USkeleton class="h-[82px] w-full rounded-[20px]" />
+          <USkeleton class="h-[340px] w-full rounded-[20px]" />
+          <USkeleton class="h-[300px] w-full rounded-[20px]" />
         </main>
         <aside class="profile-page__sidebar">
-          <USkeleton class="h-[180px] w-full rounded-2xl" />
-          <USkeleton class="h-[260px] w-full rounded-2xl" />
+          <USkeleton class="h-[180px] w-full rounded-[20px]" />
+          <USkeleton class="h-[260px] w-full rounded-[20px]" />
+          <USkeleton class="h-[220px] w-full rounded-[20px]" />
         </aside>
       </div>
     </template>
@@ -1486,8 +1506,89 @@ const {
 
 /* ── Skeletons / Empty ───────────────────────────────── */
 .profile-page__hero-skeleton {
-  background: #fff;
+  overflow: hidden;
+  background: #ffffff;
   margin-bottom: 12px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.profile-page__cover-skeleton {
+  height: 280px;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .profile-page__cover-skeleton {
+    height: 350px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .profile-page__cover-skeleton {
+    height: 400px;
+  }
+}
+
+.profile-page__identity-skeleton {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 12px;
+  padding: 0 16px 14px;
+  margin-top: -44px;
+}
+
+.profile-page__avatar-skeleton {
+  width: 120px;
+  height: 120px;
+  border-radius: 999px;
+  border: 4px solid #ffffff;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.12);
+}
+
+.profile-page__identity-lines,
+.profile-page__action-skeletons,
+.profile-page__tab-skeletons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile-page__tab-skeletons {
+  overflow: hidden;
+  border-top: 1px solid #e2e8f0;
+  padding: 12px 16px;
+}
+
+.profile-page__skeleton-body {
+  padding-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+  .profile-page__identity-skeleton {
+    grid-template-columns: 168px minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 16px;
+    padding: 0 24px 14px;
+    margin-top: -28px;
+  }
+
+  .profile-page__avatar-skeleton {
+    width: 168px;
+    height: 168px;
+  }
+}
+
+@media (max-width: 639px) {
+  .profile-page__hero-skeleton {
+    border-bottom-right-radius: 18px;
+    border-bottom-left-radius: 18px;
+  }
+
+  .profile-page__action-skeletons {
+    display: none;
+  }
 }
 
 .profile-page__empty {
