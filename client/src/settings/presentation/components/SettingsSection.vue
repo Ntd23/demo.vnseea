@@ -14,7 +14,6 @@
         <h2 :id="`section-title-${sectionId}`" class="settings-section__title">
           {{ section.title }}
         </h2>
-        <p class="settings-section__description">{{ section.description }}</p>
       </div>
 
       <UButton
@@ -34,12 +33,20 @@
     <div class="settings-section__divider-line" />
 
     <!-- Fields grid -->
-    <div v-if="section.fields?.length" class="settings-section__fields">
+    <div v-if="section.kind === 'form' && section.fields?.length" class="settings-section__fields">
       <SettingsField
         v-for="field in section.fields"
         :key="field.key"
         :field="field"
         :class="isFullField(field) ? 'settings-section__field--full' : ''"
+        @change="handleFieldChange"
+      />
+    </div>
+
+    <!-- Profile Images (Facebook style) -->
+    <div v-if="section.kind === 'profile-images' && section.fields?.length" class="settings-section__profile-images">
+      <SettingsProfileImages
+        :fields="section.fields"
         @change="handleFieldChange"
       />
     </div>
@@ -57,7 +64,7 @@
           <p class="settings-section__toggle-description">{{ toggle.description }}</p>
         </div>
         <USwitch
-          :model-value="toggle.enabled"
+          :model-value="toggleValues[toggle.key]"
           :disabled="toggle.readOnly"
           size="md"
           :ui="{
@@ -168,6 +175,7 @@
 <script setup lang="ts">
 import type { SettingField, SettingFieldValue, SettingSection } from "../../application/composables/useSettingsData"
 import SettingsField from "./SettingsField.vue"
+import SettingsProfileImages from "./SettingsProfileImages.vue"
 
 const props = defineProps<{
   section: SettingSection
@@ -258,7 +266,8 @@ async function handleSave() {
     setTimeout(() => { savedMessage.value = "" }, 3000)
   }
   catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("settings.section.saveError")
+    const fetchError = error as any
+    errorMessage.value = fetchError.data?.statusMessage || fetchError.data?.message || (error instanceof Error ? error.message : t("settings.section.saveError"))
     toast.add({
       color: "error",
       icon: "i-ph-warning-circle-fill",

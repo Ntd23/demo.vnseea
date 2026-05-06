@@ -4,7 +4,7 @@ import { createApiSettingsRepository } from "../../infrastructure/repositories/A
 import type { SettingsFieldValue, SettingsSectionSlug, SettingsUpdateInput, SettingsUser } from "../../domain/types/settings.types"
 
 export type SettingFieldType = "text" | "email" | "tel" | "date" | "select" | "textarea" | "password" | "file" | "number" | "url" | "verification"
-export type SettingSectionKind = "form" | "toggles" | "list" | "danger" | "summary"
+export type SettingSectionKind = "form" | "toggles" | "list" | "danger" | "summary" | "profile-images"
 
 export type SettingField = {
   label: string
@@ -98,7 +98,6 @@ const pageIcons: Record<string, string> = {
   profile: "i-ph-identification-card-fill",
   privacy: "i-ph-lock-key-fill",
   avatar: "i-ph-image-fill",
-  design: "i-ph-palette-fill",
   password: "i-ph-key-fill",
   twoFactor: "i-ph-shield-check-fill",
   notifications: "i-ph-bell-fill",
@@ -119,7 +118,6 @@ const supportedUpdateSections = new Set<SettingsSectionSlug>([
   "profile",
   "privacy",
   "avatar",
-  "design",
   "password",
   "twoFactor",
   "notifications",
@@ -170,16 +168,6 @@ const friendPrivacyOptions: SettingOptionDefinition[] = [
   { labelKey: "options.peopleIFollow", value: "1" },
   { labelKey: "options.peopleFollowingMe", value: "2" },
   { labelKey: "options.nobody", value: "3" },
-]
-
-const designBackgroundOptions: SettingOptionDefinition[] = [
-  { labelKey: "options.defaultBackground", value: "defualt" },
-  { labelKey: "options.myBackground", value: "my_background" },
-]
-
-const cssStatusOptions: SettingOptionDefinition[] = [
-  { labelKey: "options.defaultCss", value: "1" },
-  { labelKey: "options.uploadedCss", value: "2" },
 ]
 
 const twoFactorOptions: SettingOptionDefinition[] = [
@@ -236,14 +224,12 @@ const isTrue = (value: unknown) =>
 const hasAdminSettingsRights = (user: SettingsUser | null) =>
   user?.role === "admin" || user?.role === "moderator"
 
-const notificationValue = (user: SettingsUser | null, key: string) => {
+const inAppNotificationValue = (user: SettingsUser | null, key: string) => {
   const notificationSettings = user?.notification_settings
-  const fromNotificationSettings = notificationSettings?.[key]
+  return isTrue(notificationSettings?.[key])
+}
 
-  if (fromNotificationSettings !== undefined) {
-    return isTrue(fromNotificationSettings)
-  }
-
+const emailNotificationValue = (user: SettingsUser | null, key: string) => {
   return isTrue(user?.[key as keyof SettingsUser])
 }
 
@@ -318,11 +304,11 @@ const profilePage = (t: SettingTranslate, user: SettingsUser | null): SettingPag
     fields: [
       field("first_name", fieldText(t, "firstName"), "text", user?.first_name ?? ""),
       field("last_name", fieldText(t, "lastName"), "text", user?.last_name ?? ""),
-      field("website", fieldText(t, "website"), "url", user?.website ?? "", undefined, { span: "full" }),
-      field("about", fieldText(t, "about"), "textarea", user?.about ?? "", undefined, { span: "full" }),
+      field("website", fieldText(t, "website"), "url", user?.website ?? ""),
+      field("about", fieldText(t, "about"), "textarea", user?.about ?? ""),
       field("working", fieldText(t, "working"), "text", user?.working ?? ""),
       field("working_link", fieldText(t, "workingLink"), "url", user?.working_link ?? ""),
-      field("address", fieldText(t, "address"), "text", user?.address ?? "", undefined, { span: "full" }),
+      field("address", fieldText(t, "address"), "text", user?.address ?? ""),
       field("school", fieldText(t, "school"), "text", user?.school ?? ""),
       field("relationship", fieldText(t, "relationship"), "select", optionLabel(t, relationshipOptions, user?.relationship_id), optionLabels(t, relationshipOptions)),
       field("completed", fieldText(t, "schoolCompleted"), "select", optionLabel(t, binaryOptions, isTrue(user?.school_completed) ? "1" : "0"), optionLabels(t, binaryOptions)),
@@ -356,31 +342,6 @@ const privacyPage = (t: SettingTranslate, user: SettingsUser | null): SettingPag
   }],
 })
 
-const designPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
-  slug: "design",
-  label: pageText(t, "design", "label"),
-  icon: pageIcons.design,
-  description: pageText(t, "design", "description"),
-  sections: [{
-    title: pageText(t, "design", "sections.appearance.title"),
-    description: pageText(t, "design", "sections.appearance.description"),
-    kind: "form",
-    fields: [
-      field("background_image_status", fieldText(t, "backgroundImage"), "select", optionLabel(t, designBackgroundOptions, isTrue(user?.background_image_status) ? "my_background" : "defualt"), optionLabels(t, designBackgroundOptions)),
-      field("css_status", fieldText(t, "cssFile"), "select", optionLabel(t, cssStatusOptions, user?.css_file ? "2" : "1"), optionLabels(t, cssStatusOptions)),
-      field("background_image", fieldText(t, "uploadBackgroundImage"), "file", "", undefined, {
-        accept: "image/*",
-        previewShape: "cover",
-        span: "full",
-      }),
-      field("css_file", fieldText(t, "uploadCssFile"), "file", "", undefined, {
-        accept: ".css,text/css",
-        span: "full",
-      }),
-    ],
-  }],
-})
-
 const avatarPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
   slug: "avatar",
   label: pageText(t, "avatar", "label"),
@@ -389,17 +350,15 @@ const avatarPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage
   sections: [{
     title: pageText(t, "avatar", "sections.uploadAvatar.title"),
     description: pageText(t, "avatar", "sections.uploadAvatar.description"),
-    kind: "form",
+    kind: "profile-images",
     fields: [
       field("avatar", fieldText(t, "avatarImage"), "file", "", undefined, {
-        description: user?.avatar || messageText(t, "avatarUnavailable"),
         accept: "image/*",
         previewShape: "avatar",
         previewUrl: user?.avatar,
         span: "full",
       }),
       field("cover", fieldText(t, "coverImage"), "file", "", undefined, {
-        description: user?.cover || messageText(t, "coverUnavailable"),
         accept: "image/*",
         previewShape: "cover",
         previewUrl: user?.cover,
@@ -474,7 +433,7 @@ const notificationsPage = (t: SettingTranslate, user: SettingsUser | null): Sett
       key,
       label: settingsText(t, `notificationTypes.${labelKey}.label`),
       description: settingsText(t, `notificationTypes.${labelKey}.description`),
-      enabled: notificationValue(user, key),
+      enabled: inAppNotificationValue(user, key),
     })),
   }],
 })
@@ -496,7 +455,7 @@ const emailNotificationsPage = (t: SettingTranslate, user: SettingsUser | null):
       key,
       label: settingsText(t, `notificationTypes.${labelKey}.label`),
       description: settingsText(t, `emailNotificationTypes.${labelKey}.description`),
-      enabled: notificationValue(user, key),
+      enabled: emailNotificationValue(user, key),
     })),
   }],
 })
@@ -647,7 +606,6 @@ const createPages = (t: SettingTranslate, user: SettingsUser | null): SettingPag
   profilePage(t, user),
   privacyPage(t, user),
   avatarPage(t, user),
-  designPage(t, user),
   passwordPage(t),
   twoFactorPage(t, user),
   notificationsPage(t, user),
@@ -704,12 +662,6 @@ const mapFieldsForSection = (
       case "share_my_data":
       case "completed":
         payload[key] = optionValue(t, binaryOptions, value)
-        break
-      case "background_image_status":
-        payload[key] = optionValue(t, designBackgroundOptions, value)
-        break
-      case "css_status":
-        payload[key] = optionValue(t, cssStatusOptions, value)
         break
       case "two_factor":
         payload[key] = optionValue(t, twoFactorOptions, value)
