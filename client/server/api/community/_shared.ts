@@ -220,6 +220,7 @@ export const mapCommunityPageRecord = (
   const name = firstString(entity, ["page_title", "title", "name", "page_name"]) || slug
   const ownerId = firstNumber(entity, ["user_id"])
   const cover = firstString(entity, ["cover", "cover_full", "avatar", "avatar_full"])
+  const avatar = firstString(entity, ["avatar", "avatar_full"])
 
   return {
     id,
@@ -228,6 +229,7 @@ export const mapCommunityPageRecord = (
     summary: firstString(entity, ["page_description", "about", "description"]),
     category: normalizePageCategory(entity.page_category || entity.category),
     banner: createBannerBackground(cover, id),
+    avatarUrl: avatar,
     accent: createAccent(id),
     followers: firstNumber(entity, ["followers", "followers_count"]),
     likes: firstNumber(entity, ["likes", "likes_count"]),

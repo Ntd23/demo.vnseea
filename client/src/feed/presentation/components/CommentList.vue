@@ -1,8 +1,9 @@
+<!-- Description: Displays real backend comments with compact sorting and no mock interaction controls. -->
 <template>
-  <div class="space-y-3">
-    <div class="flex items-center justify-between">
-      <p class="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#0000ff]/50">{{ t("feed.commentList.title") }}</p>
-      <div class="flex items-center gap-2 text-[12px] font-semibold text-slate-500">
+  <section class="comment-list">
+    <div class="comment-list__header">
+      <p class="comment-list__title">{{ t("feed.commentList.title") }}</p>
+      <div v-if="comments.length > 1" class="comment-list__sort">
         <UButton
           color="neutral"
           :variant="sort === 'top' ? 'soft' : 'ghost'"
@@ -26,58 +27,61 @@
 
     <UAlert
       v-if="visibleComments.length === 0"
-      class="rounded-[18px]"
+      class="comment-list__empty"
       color="neutral"
-      variant="subtle"
+      variant="soft"
       icon="i-ph-chat-centered-dots"
-      :title="t('feed.commentList.title')"
       :description="t('feed.commentList.emptyDescription')"
     />
 
-    <FeedCommentItem
-      v-for="comment in visibleComments"
-      :key="comment.id"
-      :author="comment.author"
-      :role="comment.role"
-      :text="comment.text"
-    />
+    <div v-else class="comment-list__items">
+      <FeedCommentItem
+        v-for="comment in visibleComments"
+        :key="comment.id"
+        :author="comment.author"
+        :author-avatar-url="comment.authorAvatarUrl"
+        :author-path="comment.authorPath"
+        :role="comment.role"
+        :text="comment.text"
+        :time="comment.time"
+      />
+    </div>
 
     <UButton
       v-if="visibleComments.length < sortedComments.length"
       color="neutral"
-      variant="outline"
+      variant="ghost"
       size="sm"
-      class="mx-auto block rounded-xl"
-      @click="visibleCount += 3"
+      class="comment-list__more"
+      @click="visibleCount += 5"
     >
       {{ t("feed.commentList.loadMore") }}
     </UButton>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
+import type { FeedCommentRecord } from "../../domain/types/feed.types"
 import FeedCommentItem from "./CommentItem.vue"
 
 const { t } = useI18n()
 
-type FeedComment = { id: number; author: string; role: string; text: string }
-
 const props = defineProps<{
-  comments: { id: number; author: string; role: string; text: string }[]
+  comments: FeedCommentRecord[]
 }>()
 
 const sort = ref<"top" | "newest">("top")
-const visibleCount = ref(2)
+const visibleCount = ref(3)
 
 watch(
   () => props.comments.length,
   (count) => {
-    visibleCount.value = Math.min(Math.max(visibleCount.value, 2), Math.max(count, 2))
+    visibleCount.value = Math.min(Math.max(visibleCount.value, 3), Math.max(count, 3))
   },
   { immediate: true },
 )
 
-const sortedComments = computed<FeedComment[]>(() =>
+const sortedComments = computed<FeedCommentRecord[]>(() =>
   sort.value === "newest" ? [...props.comments].reverse() : props.comments,
 )
 
@@ -85,3 +89,49 @@ const visibleComments = computed(() =>
   sortedComments.value.slice(0, visibleCount.value),
 )
 </script>
+
+<style scoped>
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comment-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.comment-list__title {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.comment-list__sort {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.comment-list__empty {
+  border-radius: 16px;
+}
+
+.comment-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comment-list__more {
+  align-self: flex-start;
+  border-radius: 999px;
+  font-weight: 700;
+}
+</style>

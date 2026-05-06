@@ -6,19 +6,16 @@
     icon="i-ph-identification-card-bold"
   >
     <template #trailing>
-      <UButton
+      <NuxtLink
         :to="pagePath"
-        color="neutral"
-        variant="outline"
-        size="md"
-        class="rounded-full"
+        class="page-settings-basics__view-link"
       >
         <Icon name="i-ph-arrow-square-out-bold" class="mr-1.5 h-4 w-4" />
         {{ $t("community.pageSettings.basics.viewPage") }}
-      </UButton>
+      </NuxtLink>
     </template>
 
-    <div class="space-y-5">
+    <div class="page-settings-basics space-y-5">
       <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.82fr)]">
         <UFormField
           name="name"
@@ -59,20 +56,17 @@
           </div>
 
           <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
-            <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-medium text-[#243b63]">
+            <span class="page-settings-basics__hint">
               {{ $t("community.pageSettings.basics.fields.urlSuggested", { slug: suggestedSlug || $t("community.pageSettings.basics.fields.slugPlaceholder") }) }}
-            </UBadge>
-            <UButton
+            </span>
+            <button
               v-if="suggestedSlug && model.slug.trim() !== suggestedSlug"
               type="button"
-              color="neutral"
-              variant="outline"
-              size="sm"
-              class="rounded-full"
+              class="page-settings-basics__suggestion-button"
               @click="model.slug = suggestedSlug"
             >
               {{ $t("community.pageSettings.basics.fields.urlUseSuggestion") }}
-            </UButton>
+            </button>
           </div>
         </UFormField>
       </div>
@@ -218,19 +212,19 @@
       </UFormField>
 
       <div class="grid gap-3 sm:grid-cols-4">
-        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <div class="page-settings-basics__stat">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.fields.summary") }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.pageSettings.basics.stats.summaryLength", { count: model.summary.trim().length }) }}</p>
         </div>
-        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <div class="page-settings-basics__stat">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.topicsLabel") }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.pageSettings.basics.stats.tagCount", { count: tagCount }) }}</p>
         </div>
-        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <div class="page-settings-basics__stat">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.ctaLabel") }}</p>
           <p class="mt-1 truncate text-[15px] font-black text-[#243b63]">{{ model.ctaLabel.trim() || $t("community.pageSettings.basics.stats.ctaFallback") }}</p>
         </div>
-        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <div class="page-settings-basics__stat">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.publicLinkLabel") }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ model.website.trim() ? $t("community.pageSettings.basics.stats.websiteYes") : $t("community.pageSettings.basics.stats.websiteNo") }}</p>
         </div>
@@ -294,3 +288,75 @@ const tagCount = computed(() =>
     .length,
 )
 </script>
+
+<style scoped>
+.page-settings-basics__view-link,
+.page-settings-basics__suggestion-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.page-settings-basics__view-link {
+  min-height: 36px;
+  padding: 8px 13px;
+}
+
+.page-settings-basics__suggestion-button {
+  min-height: 30px;
+  padding: 6px 12px;
+}
+
+.page-settings-basics__view-link:hover,
+.page-settings-basics__suggestion-button:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.page-settings-basics__hint {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #334155;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.page-settings-basics__stat {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 13px 16px;
+}
+
+.page-settings-basics :deep(input),
+.page-settings-basics :deep(textarea),
+.page-settings-basics :deep(button[role="combobox"]) {
+  border: 1px solid #cbd5e1;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: none;
+}
+
+.page-settings-basics :deep(input::placeholder),
+.page-settings-basics :deep(textarea::placeholder) {
+  color: #94a3b8 !important;
+}
+
+.page-settings-basics :deep(label) {
+  color: #334155;
+  font-weight: 800;
+}
+</style>

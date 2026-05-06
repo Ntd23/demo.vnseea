@@ -397,15 +397,22 @@ const extractMediaItems = (
   return items
 }
 
-const mapCommentRecord = (entity: BackendEntity): FeedCommentRecord => {
+const mapCommentRecord = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string = value => asString(value),
+): FeedCommentRecord => {
   const publisher = asRecord(entity.publisher)
   const author = firstString(publisher, ["name", "username"]) || "User"
+  const username = firstString(publisher, ["username"])
 
   return {
     id: firstNumber(entity, ["id", "comment_id"]),
     author,
+    authorAvatarUrl: resolveMediaUrl(firstString(publisher, ["avatar", "avatar_full"])),
+    authorPath: username ? `/@${username}` : undefined,
     role: firstString(publisher, ["working", "school", "address"]) || author,
     text: stripHtml(firstString(entity, ["text", "Orginaltext", "comment"])),
+    time: firstString(entity, ["time_text", "posted", "time"]) || "",
   }
 }
 
@@ -464,7 +471,7 @@ export const mapPostRecord = (
       shares: firstNumber(entity, ["post_shares", "shares", "shares_count"]),
       views: firstNumber(entity, ["post_views", "view_count", "views"]),
     },
-    comments: asArray(entity.get_post_comments).map(mapCommentRecord),
+    comments: asArray(entity.get_post_comments).map(comment => mapCommentRecord(comment, resolveMediaUrl)),
     mediaItems,
     category: inferCategory(categoryHint),
     primaryMediaType,
@@ -830,6 +837,7 @@ export async function fetchFeedPosts(
     postType?: string
     followingOnly?: boolean
     tag?: string
+    pageId?: number
   },
 ) {
   const client = createBackendApiClient(event)
@@ -845,6 +853,7 @@ export async function fetchFeedPosts(
         filter: input.followingOnly ? 1 : 0,
         post_type: input.postType,
         hash: input.tag,
+        page_id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
       },
     ),
     "Unable to load feed posts.",

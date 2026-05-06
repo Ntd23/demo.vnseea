@@ -1,3 +1,4 @@
+<!-- Description: Thin Nuxt route wrapper for the community page settings screen. -->
 <template>
   <CommunityPresentationPageSettingPage />
 </template>

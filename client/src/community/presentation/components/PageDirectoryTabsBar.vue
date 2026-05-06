@@ -1,32 +1,31 @@
+<!-- Description: Renders the light-theme page directory filters and search controls for community pages. -->
 <template>
-  <section class="rounded-[28px] border border-[#dbe3f2] bg-white px-4 py-4 shadow-[0_12px_30px_rgba(15,35,110,0.06)] sm:px-5">
-    <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div class="flex flex-wrap items-center gap-2" role="tablist" :aria-label="$t('community.pagesDirectory.title')">
-        <UButton
+  <section class="page-tabs-bar">
+    <div class="page-tabs-bar__row">
+      <div class="page-tabs-bar__tabs" role="tablist" :aria-label="$t('community.pagesDirectory.title')">
+        <NuxtLink
           v-for="tab in tabs"
           :key="tab.value"
           :to="tab.to"
-          :color="activeTab === tab.value ? 'primary' : 'neutral'"
-          :variant="activeTab === tab.value ? 'soft' : 'ghost'"
-          size="lg"
-          class="rounded-full px-4 text-[14px] font-bold"
+          class="page-tabs-bar__tab"
+          :class="{ 'page-tabs-bar__tab--active': activeTab === tab.value }"
           :aria-current="activeTab === tab.value ? 'page' : undefined"
         >
-          {{ $t(tab.label) }}
-          <UBadge color="neutral" variant="soft" class="ml-2 rounded-full px-2 py-0.5 text-[11px] font-black text-[#243b63]">
+          <span>{{ $t(tab.label) }}</span>
+          <span class="page-tabs-bar__count">
             {{ tab.count }}
-          </UBadge>
-        </UButton>
+          </span>
+        </NuxtLink>
       </div>
 
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div class="w-full sm:w-[320px]">
+      <div class="page-tabs-bar__search">
+        <div class="page-tabs-bar__input">
           <UInput
             v-model="search"
             :placeholder="$t('community.pagesDirectory.search')"
             leading-icon="i-ph-magnifying-glass-bold"
             color="primary"
-            size="xl"
+            size="lg"
             class="w-full"
             :ui="searchInputUi"
           />
@@ -37,34 +36,23 @@
           type="button"
           color="neutral"
           variant="outline"
-          size="xl"
+          size="md"
           class="rounded-full"
           @click="search = ''"
         >
           {{ $t("community.pagesDirectory.clearSearch") }}
         </UButton>
-
-        <UButton
-          :to="createTo"
-          color="primary"
-          variant="solid"
-          size="xl"
-          class="rounded-[16px] text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
-        >
-          <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
-          {{ createLabelText }}
-        </UButton>
       </div>
     </div>
 
-    <div class="mt-4 flex flex-col gap-3 border-t border-[#eef2f8] pt-4 sm:flex-row sm:items-center sm:justify-between">
-      <p class="text-[13px] text-slate-500">
+    <div class="page-tabs-bar__footer">
+      <p class="page-tabs-bar__status">
         {{ statusLabel }}
       </p>
 
-      <UBadge color="primary" variant="subtle" class="self-start rounded-full px-3 py-1.5 text-[12px] font-semibold">
+      <span class="page-tabs-bar__label">
         {{ $t("community.pagesDirectory.searchLabel") }}
-      </UBadge>
+      </span>
     </div>
   </section>
 </template>
@@ -74,23 +62,151 @@ import type { CommunityPageTab } from "../../domain/types/community.types"
 
 const search = defineModel<string>("search", { default: "" })
 
-const props = withDefaults(defineProps<{
+defineProps<{
   tabs: Array<{ label: string; value: CommunityPageTab; count: number; to: string }>
   activeTab: CommunityPageTab
-  createTo: string
-  createLabel?: string
   statusLabel: string
-}>(), {
-  createLabel: "",
-})
-
-const { t } = useI18n()
+}>()
 
 const searchInputUi = {
-  base: "h-12 rounded-full px-4 text-[14px]",
+  base: "h-11 rounded-full px-4 text-[14px]",
+}
+</script>
+
+<style scoped>
+.page-tabs-bar {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
-const createLabelText = computed(() =>
-  props.createLabel || t("community.pagesDirectory.createAction"),
-)
-</script>
+.page-tabs-bar__row {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.page-tabs-bar__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page-tabs-bar__tab {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 14px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.page-tabs-bar__tab:hover {
+  background: #f8fafc;
+  color: #0000ff;
+}
+
+.page-tabs-bar__tab--active {
+  background: rgba(0, 0, 255, 0.07);
+  color: #1d4ed8;
+}
+
+.page-tabs-bar__count {
+  display: inline-flex;
+  min-width: 24px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.page-tabs-bar__tab:not(.page-tabs-bar__tab--active) .page-tabs-bar__count {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.page-tabs-bar__search {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.page-tabs-bar__input {
+  width: 100%;
+}
+
+.page-tabs-bar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
+}
+
+.page-tabs-bar__status {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.page-tabs-bar__label {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.page-tabs-bar__input :deep(input) {
+  border: 1px solid #cbd5e1;
+  background: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: none;
+}
+
+.page-tabs-bar__input :deep(input::placeholder) {
+  color: #94a3b8 !important;
+}
+
+.page-tabs-bar__input :deep(svg) {
+  color: #64748b !important;
+}
+
+@media (min-width: 768px) {
+  .page-tabs-bar__row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .page-tabs-bar__search {
+    width: min(420px, 42vw);
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .page-tabs-bar__footer {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+</style>

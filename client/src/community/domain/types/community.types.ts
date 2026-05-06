@@ -1,3 +1,5 @@
+// English description: Defines normalized community group and page domain records used by Nuxt API-backed screens.
+
 export type CommunityPrivacy = "public" | "private" | "secret"
 
 export interface CommunityOption {
@@ -25,6 +27,7 @@ export interface CommunityPageRecord {
   summary: string
   category: string
   banner: string
+  avatarUrl?: string
   accent: string
   followers: number
   likes: number

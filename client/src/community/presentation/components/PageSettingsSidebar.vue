@@ -1,7 +1,7 @@
 <!-- Description: Renders the page settings sidebar preview from normalized backend-backed page data. -->
 <template>
-  <div class="space-y-4 xl:sticky xl:top-[84px]">
-    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
+  <div class="page-settings-sidebar space-y-4 xl:sticky xl:top-[84px]">
+    <section class="overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <div class="relative overflow-hidden px-5 py-5 text-white">
         <div class="absolute inset-0" :style="{ background: page.banner }" />
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.32),transparent_38%),linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.36))]" />
@@ -32,7 +32,7 @@
         </div>
       </div>
 
-      <div class="grid gap-px border-t border-white/10 bg-[#edf2fb] sm:grid-cols-3">
+      <div class="grid gap-px border-t border-[#e2e8f0] bg-[#e2e8f0] sm:grid-cols-3">
         <div class="bg-white px-4 py-3">
           <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t('community.pageSettings.sidebar.signals') }}</p>
           <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ enabledPolicies }}/{{ totalPolicies }}</p>
@@ -59,20 +59,20 @@
       compact
     />
 
-    <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
+    <section class="rounded-[18px] border border-[#e2e8f0] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
         {{ $t('community.pageSettings.sidebar.tips') }}
       </p>
 
       <div class="mt-4 space-y-3">
-        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <div class="rounded-[16px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3">
           <p class="text-[13px] font-semibold text-[#243b63]">{{ $t('community.pageSettings.sidebar.ctaFocus') }}</p>
           <p class="mt-1 text-[12px] leading-5 text-slate-500">
             {{ selectedCtaLabel }} {{ allowMessages ? $t('community.pageSettings.sidebar.ctaWithMessages') : $t('community.pageSettings.sidebar.ctaWithoutMessages') }}
           </p>
         </div>
 
-        <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3">
+        <div class="rounded-[16px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3">
           <p class="text-[13px] font-semibold text-[#243b63]">{{ $t('community.pageSettings.sidebar.discovery') }}</p>
           <p class="mt-1 text-[12px] leading-5 text-slate-500">
             {{ recommendRelatedPages ? $t('community.pageSettings.sidebar.discoveryOn') : $t('community.pageSettings.sidebar.discoveryOff') }}
@@ -124,3 +124,10 @@ const policyProgress = computed(() => {
   return (props.enabledPolicies / props.totalPolicies) * 100
 })
 </script>
+
+<style scoped>
+.page-settings-sidebar :deep(progress),
+.page-settings-sidebar :deep([role="progressbar"]) {
+  background-color: #dbeafe;
+}
+</style>

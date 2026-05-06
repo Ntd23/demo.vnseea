@@ -4075,7 +4075,7 @@
       "placeholder": "Viết bình luận mang tính xây dựng...",
       "helper": "{count}/280 ký tự",
       "emptyError": "Hãy nhập nội dung bình luận trước khi gửi.",
-      "successMessage": "Bình luận mô phỏng đã được gửi.",
+      "successMessage": "Bình luận đã được gửi.",
       "submit": "Gửi",
       "submitLoading": "Đang gửi...",
       "tooltipEmoji": "Emoji",
@@ -4218,7 +4218,8 @@
       "lightboxTitle": "Ảnh bài viết",
       "commentAuthor": "Bạn",
       "commentRole": "Thành viên cộng đồng",
-      "commentAddedMessage": "Bình luận mới đã được thêm vào giao diện mô phỏng.",
+      "commentAddedMessage": "Bình luận của bạn đã được đăng.",
+      "justNow": "Vừa xong",
       "lightboxDownloadMessage": "Đã chuẩn bị thao tác tải media trong giao diện mô phỏng."
     },
     "shareModal": {

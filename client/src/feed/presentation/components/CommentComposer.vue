@@ -1,135 +1,127 @@
+<!-- Description: Provides a compact backend-bound comment composer without fake attachment actions. -->
 <template>
-  <div class="rounded-[20px] border border-[#0000ff]/10 bg-[#0000ff]/3 p-4">
-    <div class="flex gap-3">
-      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0000ff] text-xs font-bold text-white shadow-[0_4px_12px_rgba(0,0,255,0.2)]">
-        VN
-      </div>
-      <div class="min-w-0 flex-1">
-        <UTextarea
-          v-model="message"
-          autoresize
-          :rows="3"
-          :placeholder="$t('feed.commentComposer.placeholder')"
-          class="w-full"
-          :ui="{
-            base: 'min-h-[88px] resize-y rounded-[18px] border-[#0000ff]/12 bg-white px-4 py-3 text-[14px] leading-6 text-slate-700 placeholder:text-slate-400',
-          }"
-        />
-        <div class="mt-2 flex items-center justify-between gap-3">
-          <p class="text-[11px] font-semibold text-slate-500">
-            {{ $t("feed.commentComposer.helper", { count: message.length }) }}
-          </p>
-          <UBadge color="neutral" variant="soft" class="rounded-full px-2.5 py-1 text-[10px] font-bold text-[#243b63]">
-            {{ trimmedMessage ? $t("feed.commentComposer.submit") : $t("feed.commentComposer.tooltipMention") }}
-          </UBadge>
-        </div>
-      </div>
+  <form class="comment-composer" @submit.prevent="submitComment">
+    <div class="comment-composer__avatar" aria-hidden="true">
+      <img
+        v-if="currentUserAvatarUrl"
+        :src="currentUserAvatarUrl"
+        :alt="currentUserName"
+        class="comment-composer__avatar-img"
+      >
+      <span v-else-if="currentUserInitials">{{ currentUserInitials }}</span>
+      <Icon v-else name="i-ph-user-circle-fill" class="h-5 w-5" />
     </div>
 
-    <UAlert
-      v-if="status !== 'idle' && statusMessage"
-      class="mt-3 rounded-[18px]"
-      :color="status === 'error' ? 'warning' : status === 'success' ? 'success' : 'primary'"
-      variant="subtle"
-      :icon="status === 'error'
-        ? 'i-ph-warning-circle-fill'
-        : status === 'success'
-          ? 'i-ph-check-circle-fill'
-          : 'i-ph-spinner-gap-bold'"
-      :description="statusMessage"
-    />
-
-    <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex flex-wrap gap-1 text-[#0000ff]/40">
-        <UButton
-          v-for="action in toolbarActions"
-          :key="action.label"
-          color="neutral"
-          variant="ghost"
-          size="xs"
-          class="rounded-full"
-          :aria-label="action.label"
-          @click="notifyAction(action.label)"
-        >
-          <Icon :name="action.icon" class="h-4 w-4" />
-        </UButton>
-      </div>
-
+    <div class="comment-composer__field">
+      <UTextarea
+        v-model="message"
+        autoresize
+        :rows="1"
+        :placeholder="$t('feed.commentComposer.placeholder')"
+        class="w-full"
+        :disabled="submitting"
+        :ui="{
+          base: 'min-h-[44px] resize-none rounded-[22px] border-transparent bg-[#f0f2f5] px-4 py-3 pr-12 text-[14px] leading-5 text-slate-800 placeholder:text-slate-500 focus:bg-white',
+        }"
+        @keydown.enter.exact.prevent="submitComment"
+      />
       <UButton
+        type="submit"
         color="primary"
-        size="sm"
-        class="rounded-full px-4"
-        :loading="status === 'loading'"
-        :disabled="status === 'loading' || !trimmedMessage"
-        @click="submitComment"
+        variant="solid"
+        size="xs"
+        class="comment-composer__send"
+        :loading="submitting"
+        :disabled="submitting || !trimmedMessage"
+        :aria-label="$t('feed.commentComposer.submit')"
       >
-        {{ status === "loading" ? $t("feed.commentComposer.submitLoading") : $t("feed.commentComposer.submit") }}
+        <Icon name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
       </UButton>
     </div>
-    </div>
+  </form>
 </template>
 
 <script setup lang="ts">
-type ComposerStatus = "idle" | "loading" | "success" | "error"
-
-const { t } = useI18n()
-const toast = useToast()
+const props = withDefaults(defineProps<{
+  currentUserName?: string
+  currentUserAvatarUrl?: string
+  submitting?: boolean
+}>(), {
+  currentUserName: "",
+  currentUserAvatarUrl: "",
+  submitting: false,
+})
 
 const emit = defineEmits<{
   submit: [message: string]
 }>()
 
 const message = ref("")
-const status = ref<ComposerStatus>("idle")
-const statusMessage = ref("")
-
 const trimmedMessage = computed(() => message.value.trim())
+const currentUserInitials = computed(() => {
+  const value = props.currentUserName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase() || "")
+    .join("")
 
-const toolbarActions = computed(() => [
-  { label: t("feed.commentComposer.tooltipEmoji"), icon: "i-lucide-smile" },
-  { label: t("feed.commentComposer.tooltipImage"), icon: "i-lucide-image" },
-  { label: t("feed.commentComposer.tooltipGif"), icon: "i-lucide-film" },
-  { label: t("feed.commentComposer.tooltipSticker"), icon: "i-lucide-sticker" },
-  { label: t("feed.commentComposer.tooltipMention"), icon: "i-lucide-at-sign" },
-])
-
-watch(message, () => {
-  if (status.value !== "loading") {
-    status.value = "idle"
-    statusMessage.value = ""
-  }
+  return value
 })
 
-function notifyAction(label: string) {
-  toast.add({
-    color: "primary",
-    icon: "i-ph-sparkle-fill",
-    title: label,
-  })
-}
-
-async function submitComment() {
-  if (!trimmedMessage.value) {
-    status.value = "error"
-    statusMessage.value = t("feed.commentComposer.emptyError")
+function submitComment() {
+  if (!trimmedMessage.value || props.submitting) {
     return
   }
 
-  status.value = "loading"
-  statusMessage.value = ""
-
-  await new Promise(resolve => setTimeout(resolve, 220))
-
   emit("submit", trimmedMessage.value)
   message.value = ""
-  status.value = "success"
-  statusMessage.value = t("feed.commentComposer.successMessage")
-
-  toast.add({
-    color: "success",
-    icon: "i-ph-check-circle-fill",
-    title: t("feed.commentComposer.submit"),
-    description: statusMessage.value,
-  })
 }
 </script>
+
+<style scoped>
+.comment-composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.comment-composer__avatar {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.comment-composer__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.comment-composer__field {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+
+.comment-composer__send {
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0;
+}
+</style>

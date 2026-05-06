@@ -1,6 +1,9 @@
 // English description: Repository contract for community directory, detail, and management API operations.
 
 import type {
+  FeedPostsResponse,
+} from "../../../feed/domain/types/feed.types"
+import type {
   CommunityDraft,
   CommunityGroupRecord,
   CommunityGroupSettingsDraft,
@@ -21,5 +24,5 @@ export interface CommunityRepository {
   createPage(input: CommunityDraft): Promise<CommunityPageRecord>
   updatePage(slug: string, input: CommunityPageSettingsDraft): Promise<CommunityPageRecord>
   followPage(slug: string): Promise<CommunityPageRecord>
+  getPagePosts(slug: string, input?: { limit?: number; afterPostId?: number }): Promise<FeedPostsResponse>
 }
-
