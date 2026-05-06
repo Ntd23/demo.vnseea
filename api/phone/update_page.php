@@ -97,7 +97,7 @@ if ($type == 'update_page' || $type == 'u_page') {
                             if (strlen($user_data['page_name']) < 5 || strlen($user_data['page_name']) > 32) {
                                 $errors[] = $wo['lang']['page_name_characters_length'];
                             }
-                            if (!preg_match('/^[\w]+$/', $user_data['page_name'])) {
+                            if (!preg_match('/^[\w-]+$/', $user_data['page_name'])) {
                                 $errors[] = $wo['lang']['page_name_invalid_characters'];
                             }
                             if (empty($errors)) {

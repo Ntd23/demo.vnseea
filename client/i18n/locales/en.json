@@ -4469,7 +4469,8 @@
         "toggles": "Toggles",
         "list": "List",
         "danger": "Danger",
-        "summary": "Summary"
+        "summary": "Summary",
+        "profileImages": "Profile Images"
       },
       "saveChanges": "Save",
       "dangerMessage": "Danger zone. This action is sent to the PHP delete-account handler.",

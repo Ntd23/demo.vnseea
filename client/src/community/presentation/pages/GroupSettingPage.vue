@@ -514,7 +514,7 @@ const validateDraft = (state: CommunityGroupSettingsDraft): GroupSettingsError[]
       message: t("community.creation.common.validationSlugRequired"),
     })
   }
-  else if (slug.length < 3 || createCommunitySlug(slug) !== slug) {
+  else if (slug.length < 5 || createCommunitySlug(slug) !== slug) {
     errors.push({
       name: "slug",
       message: t("community.creation.common.validationSlugInvalid"),

@@ -40,7 +40,7 @@ if (empty($error_code)) {
     } else if (strlen($_POST['page_name']) < 5 OR strlen($_POST['page_name']) > 32) {
         $error_code    = 5;
         $error_message = 'Page name must be between 5 / 32';
-    } else if (!preg_match('/^[\w]+$/', $_POST['page_name'])) {
+    } else if (!preg_match('/^[\w-]+$/', $_POST['page_name'])) {
         $error_code    = 6;
         $error_message = 'Invalid Page name characters';
     }

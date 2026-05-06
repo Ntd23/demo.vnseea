@@ -37,7 +37,7 @@ if (empty($error_code)) {
 		        $error_code    = 3;
 		        $error_message = 'Group name is already exists';
 		    }
-		    if (in_array($group_data['group_name'], $wo['site_pages']) || !preg_match('/^[\w]+$/', $group_data['group_name'])) {
+		    if (in_array($group_data['group_name'], $wo['site_pages']) || !preg_match('/^[\w-]+$/', $group_data['group_name'])) {
 		        $error_code    = 4;
 		        $error_message = 'Invalid group name characters';
 		    }

@@ -1,4 +1,3 @@
-<!-- Description: Provides the thin Nuxt route wrapper for the profile page runtime. -->
 <template>
   <PagesProfilePage />
 </template>

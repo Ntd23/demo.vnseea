@@ -102,8 +102,6 @@ function handleFileChange(key: 'avatar' | 'cover', event: Event) {
   if (key === 'cover') coverPreview.value = url
 
   emit('change', { key, value: file })
-  // Reset input value to allow selecting same file again
-  target.value = ""
 }
 </script>
 
