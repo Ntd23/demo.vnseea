@@ -16,10 +16,10 @@
           <p class="post-header__name">{{ author }}</p>
         </div>
         <div class="post-header__meta">
-          <span>{{ role }}</span>
-          <span class="post-header__dot">·</span>
-          <span>{{ time }}</span>
-          <span class="post-header__dot">·</span>
+          <template v-if="displayTime">
+            <span>{{ displayTime }}</span>
+            <span class="post-header__dot">·</span>
+          </template>
           <Icon :name="audienceIcon" class="post-header__audience-icon" :title="audience" />
         </div>
       </div>
@@ -98,6 +98,16 @@ const initials = computed(() =>
     .map(part => part[0])
     .join(""),
 )
+
+const displayTime = computed(() => {
+  const normalized = props.time.trim()
+
+  if (!normalized || /^\d{8,}$/.test(normalized)) {
+    return ""
+  }
+
+  return normalized
+})
 
 const audienceIcon = computed(() => {
   const map: Record<string, string> = {

@@ -1054,12 +1054,16 @@
       "description": "Ch\u1ecdn m\u1ed9t \u1ea3nh ho\u1eb7c video, xem preview r\u1ed3i \u0111\u0103ng tin. Flow n\u00e0y gi\u1eef \u0111\u00fang nh\u1ecbp upload-first c\u1ee7a trang PHP.",
       "backToFeed": "Quay l\u1ea1i b\u1ea3ng tin",
       "changeFile": "\u0110\u1ed5i t\u1ec7p story",
+      "removeFile": "X\u00f3a",
       "selectFile": "Ch\u1ecdn \u1ea3nh ho\u1eb7c video",
       "pickerHint": "Story ch\u1ec9 c\u1ea7n m\u1ed9t t\u1ec7p media. Ch\u1ecdn file tr\u01b0\u1edbc, xem tr\u01b0\u1edbc \u1edf c\u1ed9t ph\u1ea3i, sau \u0111\u00f3 \u0111\u0103ng th\u1eb3ng l\u00ean backend.",
+      "captionLabel": "Ch\u00fa th\u00edch",
+      "captionPlaceholder": "Th\u00eam m\u00f4 t\u1ea3 cho story c\u1ee7a b\u1ea1n\u2026",
       "submitCta": "\u0110\u0103ng tin",
       "previewEyebrow": "Preview",
       "previewAlt": "Xem tr\u01b0\u1edbc story",
       "previewFallbackName": "B\u1ea1n",
+      "previewInitialsFallback": "VN",
       "previewTimestamp": "V\u1eeba xong",
       "defaultHintReady": "Story \u0111\u00e3 s\u1eb5n s\u00e0ng \u0111\u0103ng l\u00ean backend.",
       "defaultHintEmpty": "Ch\u1ecdn m\u1ed9t \u1ea3nh ho\u1eb7c video tr\u01b0\u1edbc khi \u0111\u0103ng story.",
@@ -1315,10 +1319,17 @@
         "service": "Dịch vụ"
       }
     },
-    "profilePage": {
-      "emptyTitle": "Không thể tải hồ sơ",
-      "emptyDescription": "Backend chưa trả về dữ liệu hồ sơ cho route này.",
-      "tabs": {
+  "profilePage": {
+    "emptyTitle": "Không thể tải hồ sơ",
+    "emptyDescription": "Backend chưa trả về dữ liệu hồ sơ cho route này.",
+    "editCover": "Đổi ảnh bìa",
+    "sidebarSearchPosts": "Tìm kiếm bài viết",
+    "aboutSections": {
+      "workEducation": "Công việc và học vấn",
+      "contact": "Thông tin liên hệ",
+      "basic": "Thông tin cơ bản"
+    },
+    "tabs": {
         "timeline": "Dòng thời gian",
         "about": "Giới thiệu",
         "friends": "Bạn bè",
@@ -1326,12 +1337,14 @@
         "videos": "Video",
         "albums": "Album"
       },
-      "stats": {
-        "following": "Đang theo dõi",
-        "pages": "Trang",
-        "groups": "Nhóm"
-      }
-    },
+    "stats": {
+      "following": "Đang theo dõi",
+      "pages": "Trang",
+      "likes": "Thích",
+      "groups": "Nhóm",
+      "products": "Sản phẩm để bán"
+    }
+  },
     "photosPage": {
       "seoTitle": "Ảnh | VNSEEA",
       "seoDescription": "Trang ảnh của VNSEEA với hero thư viện ảnh, bộ lọc, strip album, masonry gallery, lightbox và liên kết sang hashtag, popular, memories.",
@@ -4132,7 +4145,22 @@
       "createStory": "Tạo tin",
       "previousStory": "Story trước",
       "nextStory": "Story sau",
-      "openStory": "Mở story của {author}"
+      "openStory": "Mở story của {author}",
+      "viewsLabel": "{count} lượt xem",
+      "reactStory": "Thả cảm xúc",
+      "replyStory": "Trả lời story",
+      "sendReply": "Gửi trả lời story",
+      "replySent": "Đã gửi trả lời story",
+      "replyDisabledSelf": "Không thể trả lời story của chính bạn.",
+      "actionFailed": "Không thể gửi thao tác story.",
+      "reactionFailed": "Không thể thả cảm xúc cho story.",
+      "replyFailed": "Không thể gửi trả lời story.",
+      "reactionLike": "Thích",
+      "reactionLove": "Yêu thích",
+      "reactionHaha": "Haha",
+      "reactionWow": "Wow",
+      "reactionSad": "Buồn",
+      "reactionAngry": "Phẫn nộ"
     },
     "postHeader": {
       "follow": "Theo dõi",

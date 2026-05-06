@@ -3,12 +3,6 @@
 import type { ProfileApiResponse, ProfileTabKey } from "../../domain/types/profile.types"
 import { createApiProfileRepository } from "../../infrastructure/repositories/ApiProfileRepository"
 
-type ProfileMediaItem = {
-  id: number
-  title: string
-  subtitle: string
-}
-
 type ProfileInfoItem = {
   icon: string
   label: string
@@ -25,7 +19,17 @@ export function useProfileVM(
   repository = createApiProfileRepository(),
 ) {
   const { t, locale } = useI18n()
+  const router = useRouter()
   const activeTab = ref<ProfileTabKey>("timeline")
+  const actionPending = ref(false)
+  const actionMessage = ref("")
+  const postSearchQuery = ref("")
+  const initialSkeletonVisible = ref(true)
+  const timelineLoadingMore = ref(false)
+  const productsExpanded = ref(false)
+  const timelinePostList = ref<ProfileApiResponse["timelinePosts"]>([])
+  const timelineHasMoreState = ref(false)
+  const timelineNextOffsetState = ref<number | null>(null)
   const resolvedUsername = computed(() => username.value.trim())
 
   const { data, status, error, refresh } = useAsyncData(
@@ -36,29 +40,19 @@ export function useProfileVM(
     {
       watch: [resolvedUsername],
       default: () => null,
+      lazy: true,
+      server: false,
     },
   )
 
+  onMounted(() => {
+    window.setTimeout(() => {
+      initialSkeletonVisible.value = false
+    }, 450)
+  })
+
   const formatCount = (value: number) =>
     new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US").format(value)
-
-  const completionItems = computed(() => {
-    const profile = data.value
-
-    if (!profile?.isOwner) {
-      return []
-    }
-
-    const items: string[] = []
-
-    if (!profile.avatarUrl) items.push(t("settings.data.fields.avatarImage"))
-    if (!profile.coverImage) items.push(t("settings.data.fields.coverImage"))
-    if (!profile.bio) items.push(t("settings.data.fields.about"))
-    if (!profile.website) items.push(t("settings.data.fields.website"))
-    if (!profile.address) items.push(t("settings.data.fields.address"))
-
-    return items
-  })
 
   const copy = computed(() => ({
     tabs: {
@@ -70,7 +64,7 @@ export function useProfileVM(
       albums: t("pages.profilePage.tabs.albums"),
     },
     introTitle: t("settings.data.fields.about"),
-    introAction: t("components.topbar.settingsNav.editProfile"),
+    introAction: t("navigation.mobileMenu.settingsNav.editProfile"),
     aboutTitle: t("settings.data.fields.about"),
     friendsTitle: t("pages.profilePage.tabs.friends"),
     friendsAction: t("navigation.mobileMenu.mainNav.findFriends"),
@@ -78,8 +72,6 @@ export function useProfileVM(
     photosAction: t("navigation.leftSidebar.showMore"),
     videosTitle: t("pages.profilePage.tabs.videos"),
     albumsTitle: t("pages.profilePage.tabs.albums"),
-    completionTitle: t("settings.section.kind.summary"),
-    completionItems: completionItems.value,
   }))
 
   const tabs = computed(() => [
@@ -102,13 +94,13 @@ export function useProfileVM(
       return [
         {
           id: "edit-profile",
-          label: t("components.topbar.settingsNav.editProfile"),
+          label: t("navigation.mobileMenu.settingsNav.editProfile"),
           icon: "i-ph-pencil-simple-duotone",
           variant: "solid" as const,
         },
         {
           id: "settings",
-          label: t("components.topbar.settingsNav.settings"),
+          label: t("navigation.mobileMenu.settingsNav.settings"),
           icon: "i-ph-gear-six-duotone",
           variant: "soft" as const,
         },
@@ -242,21 +234,21 @@ export function useProfileVM(
 
     if (workAndEducation.length > 0) {
       sections.push({
-        title: `${t("settings.data.fields.working")} & ${t("settings.data.fields.school")}`,
+        title: t("pages.profilePage.aboutSections.workEducation"),
         items: workAndEducation,
       })
     }
 
     if (contact.length > 0) {
       sections.push({
-        title: t("settings.data.fields.website"),
+        title: t("pages.profilePage.aboutSections.contact"),
         items: contact,
       })
     }
 
     if (basics.length > 0) {
       sections.push({
-        title: t("settings.data.fields.verification"),
+        title: t("pages.profilePage.aboutSections.basic"),
         items: basics,
       })
     }
@@ -283,9 +275,20 @@ export function useProfileVM(
       isOwner: apiProfile.isOwner,
       roleBadge: apiProfile.headline || t("navigation.headerBar.profile"),
       statusBadge: apiProfile.statusText,
+      counts: {
+        followers: apiProfile.followersCount,
+        following: apiProfile.followingCount,
+        posts: apiProfile.postCount,
+        albums: apiProfile.albumCount,
+        likes: apiProfile.likedPagesCount,
+        groups: apiProfile.joinedGroupsCount,
+        products: apiProfile.productsCount,
+      },
       stats: [
         { label: t("pages.pageDetailPage.followStat"), value: formatCount(apiProfile.followersCount) },
         { label: t("pages.profilePage.stats.following"), value: formatCount(apiProfile.followingCount) },
+        { label: t("pages.profilePage.tabs.timeline"), value: formatCount(apiProfile.postCount) },
+        { label: t("pages.profilePage.tabs.albums"), value: formatCount(apiProfile.albumCount) },
         { label: t("pages.profilePage.stats.pages"), value: formatCount(apiProfile.likedPagesCount) },
         { label: t("pages.profilePage.stats.groups"), value: formatCount(apiProfile.joinedGroupsCount) },
       ],
@@ -294,48 +297,168 @@ export function useProfileVM(
     }
   })
 
-  const timelinePosts = computed(() => [])
+  const timelinePosts = computed(() => timelinePostList.value)
+  const pending = computed(() =>
+    status.value === "pending" || status.value === "idle" || initialSkeletonVisible.value,
+  )
+  const displayedTimelinePosts = computed(() => {
+    const query = postSearchQuery.value.trim().toLowerCase()
 
-  const friends = computed(() => {
-    const profile = data.value
-
-    if (!profile) {
-      return []
+    if (!query) {
+      return timelinePostList.value
     }
 
-    const friendMap = new Map<number, (typeof profile.followers)[number]>()
-
-    for (const entry of [...profile.followers, ...profile.following]) {
-      if (!friendMap.has(entry.id)) {
-        friendMap.set(entry.id, entry)
-      }
-    }
-
-    return [...friendMap.values()]
+    return timelinePostList.value.filter(post =>
+      [
+        post.text,
+        post.author,
+        post.role,
+        ...post.tags,
+      ].join(" ").toLowerCase().includes(query),
+    )
   })
+  const timelineHasMore = computed(() => timelineHasMoreState.value)
+  const timelineNextOffset = computed(() => timelineNextOffsetState.value)
 
-  const photos = computed<ProfileMediaItem[]>(() => [])
-  const videos = computed<ProfileMediaItem[]>(() => [])
-  const albums = computed<ProfileMediaItem[]>(() => [])
+  const friends = computed(() => data.value?.followers ?? [])
+
+  const photos = computed(() => data.value?.photos ?? [])
+  const videos = computed(() => data.value?.videos ?? [])
+  const albums = computed(() => data.value?.albums ?? [])
+  const likedPages = computed(() => data.value?.likedPages ?? [])
+  const joinedGroups = computed(() => data.value?.joinedGroups ?? [])
+  const followers = computed(() => data.value?.followers ?? [])
+  const following = computed(() => data.value?.following ?? [])
+  const products = computed(() => data.value?.products ?? [])
+  const visibleProducts = computed(() => productsExpanded.value ? products.value : products.value.slice(0, 4))
+  const hasHiddenProducts = computed(() => products.value.length > visibleProducts.value.length)
 
   watch(resolvedUsername, () => {
     activeTab.value = "timeline"
+    actionMessage.value = ""
+    productsExpanded.value = false
   })
+
+  watch(
+    data,
+    (profileData) => {
+      timelinePostList.value = profileData?.timelinePosts ?? []
+      timelineHasMoreState.value = profileData?.timelineHasMore ?? false
+      timelineNextOffsetState.value = profileData?.timelineNextOffset ?? null
+    },
+    { immediate: true },
+  )
+
+  if (import.meta.client) {
+    const loadingIndicator = useLoadingIndicator()
+
+    watch(
+      pending,
+      (isPending) => {
+        if (isPending) {
+          loadingIndicator.start()
+          return
+        }
+
+        loadingIndicator.finish()
+      },
+      { immediate: true },
+    )
+  }
+
+  const loadMoreTimelinePosts = async () => {
+    if (timelineLoadingMore.value || !resolvedUsername.value || !timelineNextOffsetState.value) {
+      return
+    }
+
+    timelineLoadingMore.value = true
+
+    try {
+      const response = await repository.getProfilePosts({
+        username: resolvedUsername.value,
+        afterPostId: timelineNextOffsetState.value,
+      })
+
+      timelinePostList.value = [...timelinePostList.value, ...response.posts]
+      timelineHasMoreState.value = response.hasMore
+      timelineNextOffsetState.value = response.nextOffset
+    }
+    finally {
+      timelineLoadingMore.value = false
+    }
+  }
+
+  const runHeroAction = async (actionId: string) => {
+    const currentProfile = data.value
+
+    if (!currentProfile) {
+      return
+    }
+
+    if (actionId === "edit-profile" || actionId === "settings") {
+      await router.push("/setting")
+      return
+    }
+
+    if (actionId === "message-profile") {
+      await router.push(`/messages?user=${encodeURIComponent(currentProfile.username)}`)
+      return
+    }
+
+    if (actionId !== "follow-profile" || actionPending.value) {
+      return
+    }
+
+    actionPending.value = true
+
+    try {
+      const result = await repository.runProfileAction({
+        action: "follow",
+        userId: currentProfile.id,
+      })
+
+      actionMessage.value = result.status
+      await refresh()
+    }
+    catch (error) {
+      actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+    }
+    finally {
+      actionPending.value = false
+    }
+  }
 
   return {
     activeTab,
+    actionMessage,
+    actionPending,
     albums,
     copy,
+    displayedTimelinePosts,
     error,
+    followers,
+    following,
     friends,
     heroActions,
-    pending: computed(() => status.value === "pending"),
+    hasHiddenProducts,
+    joinedGroups,
+    likedPages,
+    loadMoreTimelinePosts,
+    pending,
+    postSearchQuery,
     photos,
     profile,
+    products,
+    productsExpanded,
     refresh,
     status,
     tabs,
+    timelineHasMore,
+    timelineLoadingMore,
+    timelineNextOffset,
     timelinePosts,
+    runHeroAction,
+    visibleProducts,
     videos,
   }
 }

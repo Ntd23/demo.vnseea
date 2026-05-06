@@ -6,6 +6,10 @@ import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { mapCommunityPageRecord } from "../community/_shared"
+import {
+  feedStoryReactionBackendIds,
+  isFeedStoryReaction,
+} from "../../../src/feed/domain/constants/story-reactions"
 import type {
   FeedAnnouncement,
   FeedCommentRecord,
@@ -86,7 +90,7 @@ const accentPalette = [
   "#e11d48",
 ] as const
 
-const videoExtensions = ["mp4", "mov", "webm", "m4v", "avi", "mpeg", "mkv"]
+const videoExtensions = ["mp4", "mov", "webm", "m4v", "avi", "mpeg", "mpg", "mkv", "ogg"]
 
 const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number"
@@ -114,6 +118,9 @@ const asArray = (value: unknown): BackendEntity[] =>
   Array.isArray(value)
     ? value.map(item => asRecord(item))
     : []
+
+const asUnknownArray = (value: unknown): unknown[] =>
+  Array.isArray(value) ? value : []
 
 const firstString = (entity: BackendEntity, keys: string[]) => {
   for (const key of keys) {
@@ -194,9 +201,50 @@ const inferCategory = (source: string) => {
 }
 
 const isVideoUrl = (value: string) => {
-  const normalized = value.toLowerCase()
-  return videoExtensions.some(extension => normalized.includes(`.${extension}`))
+  const normalized = value.toLowerCase().split(/[?#]/)[0] || ""
+  return videoExtensions.some(extension => normalized.endsWith(`.${extension}`))
     || normalized.includes("_video")
+}
+
+const firstMediaUrl = (
+  candidates: unknown[],
+  resolveMediaUrl: (value: unknown) => string,
+) => {
+  for (const candidate of candidates) {
+    const resolved = resolveMediaUrl(candidate)
+    if (resolved) {
+      return resolved
+    }
+  }
+
+  return ""
+}
+
+const collectStoryMediaUrls = (
+  source: unknown,
+  keys: string[],
+  resolveMediaUrl: (value: unknown) => string,
+  mediaType?: "image" | "video",
+) => {
+  const urls: string[] = []
+
+  for (const item of asUnknownArray(source)) {
+    const record = asRecord(item)
+    const rawType = firstString(record, ["type", "media_type"]).toLowerCase()
+
+    if (mediaType && rawType && !rawType.includes(mediaType)) {
+      continue
+    }
+
+    const rawValue = asString(item) || firstString(record, keys)
+    const resolved = resolveMediaUrl(rawValue)
+
+    if (resolved) {
+      urls.push(resolved)
+    }
+  }
+
+  return urls
 }
 
 const extractTags = (entity: BackendEntity) => {
@@ -218,6 +266,59 @@ const extractTags = (entity: BackendEntity) => {
       .map(item => item.replace(/^#/, "").trim())
       .filter(Boolean),
   ))
+}
+
+const buildPostText = (entity: BackendEntity) => {
+  const product = asRecord(entity.product)
+  const blog = asRecord(entity.blog)
+  const event = asRecord(entity.event)
+  const fund = asRecord(entity.fund)
+  const fundData = asRecord(entity.fund_data)
+  const thread = asRecord(entity.thread)
+  const forum = asRecord(entity.forum)
+  const sharedInfo = asRecord(entity.shared_info)
+
+  const candidates = [
+    firstString(entity, ["postText", "Orginaltext", "text"]),
+    [
+      firstString(entity, ["postLinkTitle"]),
+      firstString(entity, ["postLinkContent"]),
+    ].filter(Boolean).join("\n"),
+    firstString(entity, ["postMap"]),
+    firstString(entity, ["postFeeling", "postListening", "postPlaying", "postWatching", "postTraveling"]),
+    [
+      firstString(product, ["name", "title"]),
+      firstString(product, ["description"]),
+    ].filter(Boolean).join("\n"),
+    [
+      firstString(blog, ["title"]),
+      firstString(blog, ["description"]),
+    ].filter(Boolean).join("\n"),
+    [
+      firstString(event, ["name"]),
+      firstString(event, ["description", "start_date"]),
+    ].filter(Boolean).join("\n"),
+    [
+      firstString(fund, ["title"]),
+      firstString(fund, ["description"]),
+    ].filter(Boolean).join("\n"),
+    [
+      firstString(fundData, ["title"]),
+      firstString(fundData, ["description"]),
+    ].filter(Boolean).join("\n"),
+    [
+      firstString(thread, ["headline", "title"]),
+      firstString(thread, ["post_subject", "description"]),
+    ].filter(Boolean).join("\n"),
+    [
+      firstString(forum, ["name", "title"]),
+      firstString(forum, ["description"]),
+    ].filter(Boolean).join("\n"),
+    firstString(sharedInfo, ["postText", "Orginaltext", "text"]),
+  ]
+
+  const uniqueParts = Array.from(new Set(candidates.map(stripHtml).filter(Boolean)))
+  return uniqueParts.join("\n\n")
 }
 
 const extractMediaItems = (
@@ -331,7 +432,7 @@ export const mapPostRecord = (
       : authorUsername
         ? `/@${authorUsername}`
         : "/home"
-  const text = stripHtml(firstString(entity, ["postText", "Orginaltext", "text"]))
+  const text = buildPostText(entity)
   const mediaItems = extractMediaItems(entity, author, resolveMediaUrl)
   const categoryHint = [
     firstString(sourceEntity, ["working", "school"]),
@@ -389,6 +490,39 @@ const mapStoryRecord = (
     : ownerUsername
       ? `username:${ownerUsername}`
       : `author:${author.toLowerCase()}`
+  const avatarUrl = resolveMediaUrl(firstString(user, ["avatar", "avatar_full", "avatar_org"]))
+  const thumbnailUrl = resolveMediaUrl(firstString(entity, ["thumbnail"]))
+  const thumbUrl = resolveMediaUrl(firstString(asRecord(entity.thumb), ["filename", "image", "src"]))
+  const storyMediaVideoUrls = collectStoryMediaUrls(
+    entity.story_media,
+    ["filename", "video", "file", "src"],
+    resolveMediaUrl,
+    "video",
+  )
+  const storyMediaImageUrls = collectStoryMediaUrls(
+    entity.story_media,
+    ["filename", "image", "file", "src"],
+    resolveMediaUrl,
+    "image",
+  )
+  const videoUrl = firstMediaUrl(
+    [
+      ...storyMediaVideoUrls,
+      ...collectStoryMediaUrls(entity.videos, ["filename", "video", "file", "src"], resolveMediaUrl),
+      firstString(entity, ["video", "story_video", "postFile"]),
+      isVideoUrl(thumbnailUrl) ? thumbnailUrl : "",
+    ],
+    resolveMediaUrl,
+  )
+  const imageUrl = firstMediaUrl(
+    [
+      ...storyMediaImageUrls,
+      ...collectStoryMediaUrls(entity.images, ["filename", "image", "file", "src"], resolveMediaUrl),
+      thumbUrl,
+      !isVideoUrl(thumbnailUrl) ? thumbnailUrl : "",
+    ],
+    resolveMediaUrl,
+  )
 
   return {
     id,
@@ -397,11 +531,11 @@ const mapStoryRecord = (
     ownerUsername,
     author,
     avatar: createInitials(author),
-    avatarUrl: resolveMediaUrl(firstString(user, ["avatar", "avatar_full"])),
+    avatarUrl,
     gradient: createGradient(id),
-    media: resolveMediaUrl(firstString(entity, ["thumbnail"]))
-      || resolveMediaUrl(firstString(asRecord(entity.thumb), ["filename"]))
-      || resolveMediaUrl(firstString(user, ["avatar", "avatar_full"])),
+    media: videoUrl || imageUrl || avatarUrl,
+    mediaType: videoUrl ? "video" : "image",
+    poster: imageUrl || avatarUrl,
     title: firstString(entity, ["title"]),
     caption: firstString(entity, ["description"]) || "",
     meta: firstString(entity, ["time_text"]) || "",
@@ -887,8 +1021,9 @@ export async function runPokeAction(
 export async function runPostAction(
   event: H3Event,
   input: {
-    action: "like" | "comment" | "save" | "report"
+    action: "like" | "reaction" | "comment" | "save" | "report"
     postId: number
+    reaction?: string
     text?: string
   },
 ) {
@@ -900,15 +1035,20 @@ export async function runPostAction(
   }
 
   const client = createBackendApiClient(event)
+  const payload: Record<string, unknown> = {
+    action: input.action,
+    post_id: input.postId,
+    text: input.text,
+  }
+
+  if (input.action === "reaction" && input.reaction && isFeedStoryReaction(input.reaction)) {
+    payload.reaction = feedStoryReactionBackendIds[input.reaction]
+  }
 
   assertBackendApiSuccess(
     await client.post<Record<string, unknown>, Record<string, unknown>>(
       "post-actions",
-      {
-        action: input.action,
-        post_id: input.postId,
-        text: input.text,
-      },
+      payload,
     ),
     "Unable to update post.",
   )

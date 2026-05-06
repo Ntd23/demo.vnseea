@@ -1054,12 +1054,16 @@
       "description": "Choose one image or video, preview it, then publish it. This flow keeps the upload-first order from the PHP page.",
       "backToFeed": "Back to feed",
       "changeFile": "Change story file",
+      "removeFile": "Remove",
       "selectFile": "Choose an image or video",
       "pickerHint": "Stories only need one media file. Pick the file first, preview it on the right, then upload it directly to the backend.",
+      "captionLabel": "Caption",
+      "captionPlaceholder": "Add a caption to your story…",
       "submitCta": "Publish story",
       "previewEyebrow": "Preview",
       "previewAlt": "Story preview",
       "previewFallbackName": "You",
+      "previewInitialsFallback": "VN",
       "previewTimestamp": "Just now",
       "defaultHintReady": "Your story is ready to upload.",
       "defaultHintEmpty": "Choose an image or video before publishing the story.",
@@ -1315,10 +1319,17 @@
         "service": "Service"
       }
     },
-    "profilePage": {
-      "emptyTitle": "Profile not available",
-      "emptyDescription": "The backend did not return a profile for this route.",
-      "tabs": {
+  "profilePage": {
+    "emptyTitle": "Profile not available",
+    "emptyDescription": "The backend did not return a profile for this route.",
+    "editCover": "Edit cover",
+    "sidebarSearchPosts": "Search for posts",
+    "aboutSections": {
+      "workEducation": "Work and education",
+      "contact": "Contact info",
+      "basic": "Basic info"
+    },
+    "tabs": {
         "timeline": "Timeline",
         "about": "About",
         "friends": "Friends",
@@ -1326,12 +1337,14 @@
         "videos": "Videos",
         "albums": "Albums"
       },
-      "stats": {
-        "following": "Following",
-        "pages": "Pages",
-        "groups": "Groups"
-      }
-    },
+    "stats": {
+      "following": "Following",
+      "pages": "Pages",
+      "likes": "Likes",
+      "groups": "Groups",
+      "products": "Products for sale"
+    }
+  },
     "photosPage": {
       "seoTitle": "Photos | VNSEEA",
       "seoDescription": "A VNSEEA photo hub with a gallery hero, filters, album strip, masonry gallery, lightbox, and direct links to hashtags, popular, and memories.",
@@ -4132,7 +4145,22 @@
       "createStory": "Create story",
       "previousStory": "Previous story",
       "nextStory": "Next story",
-      "openStory": "Open {author}'s story"
+      "openStory": "Open {author}'s story",
+      "viewsLabel": "{count} views",
+      "reactStory": "React to story",
+      "replyStory": "Reply to story",
+      "sendReply": "Send story reply",
+      "replySent": "Story reply sent",
+      "replyDisabledSelf": "You cannot reply to your own story.",
+      "actionFailed": "Unable to send story action.",
+      "reactionFailed": "Unable to react to story.",
+      "replyFailed": "Unable to reply to story.",
+      "reactionLike": "Like",
+      "reactionLove": "Love",
+      "reactionHaha": "HaHa",
+      "reactionWow": "Wow",
+      "reactionSad": "Sad",
+      "reactionAngry": "Angry"
     },
     "postHeader": {
       "follow": "Follow",

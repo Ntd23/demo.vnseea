@@ -11,6 +11,7 @@ import type {
   FeedPokeActionResult,
   FeedPokeRecord,
   FeedPostsResponse,
+  FeedStoryActionResult,
 } from "../../domain/types/feed.types"
 
 const feedApiRoutes = {
@@ -24,6 +25,7 @@ const feedApiRoutes = {
   postAction: "feed/posts/action",
   postCreate: "feed/posts/create",
   saved: "feed/saved",
+  storyAction: "feed/stories/action",
   storyCreate: "feed/stories/create",
   videos: "feed/videos",
 } as const
@@ -114,6 +116,12 @@ export function createApiFeedRepository(): FeedRepository {
       return await client.post<FeedCreateStoryResponse, FormData>(
         feedApiRoutes.storyCreate,
         formData,
+      )
+    },
+    async runStoryAction(input) {
+      return await client.post<FeedStoryActionResult, Record<string, unknown>>(
+        feedApiRoutes.storyAction,
+        input,
       )
     },
     async runPokeAction(input) {
