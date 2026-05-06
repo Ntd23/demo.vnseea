@@ -287,6 +287,7 @@ const kindLabel = computed(() => {
     case "list":    return t("settings.section.kind.list")
     case "danger":  return t("settings.section.kind.danger")
     case "summary": return t("settings.section.kind.summary")
+    case "profile-images": return t("settings.section.kind.profileImages")
     default:        return props.section.kind
   }
 })
@@ -298,6 +299,7 @@ const sectionIcon = computed(() => {
     case "list":    return "i-ph-list-bullets-duotone"
     case "danger":  return "i-ph-warning-octagon-duotone"
     case "summary": return "i-ph-chart-bar-duotone"
+    case "profile-images": return "i-ph-image-duotone"
     default:        return "i-ph-gear-duotone"
   }
 })

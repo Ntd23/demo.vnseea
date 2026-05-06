@@ -572,7 +572,7 @@ const previewDescription = computed(() => {
 })
 
 const isNameReady = computed(() => model.value.name.trim().length >= 3)
-const isUrlReady = computed(() => model.value.slug.trim().length >= 3)
+const isUrlReady = computed(() => model.value.slug.trim().length >= 5)
 const isDescriptionReady = computed(() => descriptionLength.value >= 24)
 const isPrivacyReady = computed(() => !props.showPrivacy || Boolean(model.value.privacy))
 const isCategoryReady = computed(() => Boolean(model.value.category))
@@ -656,7 +656,7 @@ const validateForm = (state: CommunityDraft): CreationFormError[] => {
       message: t("community.creation.common.validationSlugRequired"),
     })
   }
-  else if (slug.length < 3 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+  else if (slug.length < 5 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     errors.push({
       name: "slug",
       message: t("community.creation.common.validationSlugInvalid"),

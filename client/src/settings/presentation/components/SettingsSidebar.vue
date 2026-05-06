@@ -401,6 +401,12 @@ onClickOutside(dropdownRef, () => {
     box-shadow: none !important;
   }
   
+  .settings-sidebar__icon--active {
+    background: transparent !important;
+    color: #0000ff !important;
+    box-shadow: none !important;
+  }
+  
   .settings-sidebar__icon :deep(svg) {
     width: 20px;
     height: 20px;

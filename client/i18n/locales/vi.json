@@ -4469,7 +4469,8 @@
         "toggles": "Công tắc",
         "list": "Danh sách",
         "danger": "Nguy hiểm",
-        "summary": "Tổng quan"
+        "summary": "Tổng quan",
+        "profileImages": "Ảnh hồ sơ"
       },
       "saveChanges": "Lưu",
       "dangerMessage": "Khu vực nguy hiểm. Hành động này được gửi tới handler xóa tài khoản của PHP.",

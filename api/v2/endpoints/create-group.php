@@ -40,7 +40,7 @@ if (empty($error_code)) {
     } else if (strlen($_POST['group_name']) < 5 OR strlen($_POST['group_name']) > 32) {
         $error_code    = 5;
         $error_message = 'Group name must be between 5 / 32';
-    } else if (!preg_match('/^[\w]+$/', $_POST['group_name'])) {
+    } else if (!preg_match('/^[\w-]+$/', $_POST['group_name'])) {
         $error_code    = 6;
         $error_message = 'Invalid group name characters';
     }

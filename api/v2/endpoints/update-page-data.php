@@ -37,7 +37,7 @@ if (empty($error_code)) {
 		        $error_code    = 3;
 		        $error_message = 'Page name is already exists';
 		    }
-		    if (in_array($page_data['page_name'], $wo['site_pages']) || !preg_match('/^[\w]+$/', $page_data['page_name'])) {
+		    if (in_array($page_data['page_name'], $wo['site_pages']) || !preg_match('/^[\w-]+$/', $page_data['page_name'])) {
 		        $error_code    = 4;
 		        $error_message = 'Invalid Page name characters';
 		    }

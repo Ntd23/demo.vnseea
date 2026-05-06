@@ -353,13 +353,13 @@ const avatarPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage
     kind: "profile-images",
     fields: [
       field("avatar", fieldText(t, "avatarImage"), "file", "", undefined, {
-        accept: "image/*",
+        accept: ".jpg,.jpeg,.png,.gif",
         previewShape: "avatar",
         previewUrl: user?.avatar,
         span: "full",
       }),
       field("cover", fieldText(t, "coverImage"), "file", "", undefined, {
-        accept: "image/*",
+        accept: ".jpg,.jpeg,.png,.gif",
         previewShape: "cover",
         previewUrl: user?.cover,
         span: "full",
