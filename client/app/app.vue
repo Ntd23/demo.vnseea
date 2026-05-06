@@ -1,5 +1,7 @@
+<!-- English description: Hosts the root Nuxt app shell, global route loading, error boundary, and toaster. -->
 <template>
   <UApp>
+    <NuxtLoadingIndicator color="#0000ff" :height="3" :duration="2500" :throttle="0" />
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtErrorBoundary :key="runtimeBoundaryKey" @error="handleRuntimePageError">

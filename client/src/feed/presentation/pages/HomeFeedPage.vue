@@ -1,30 +1,6 @@
 <!-- Description: Renders the home feed in PHP order while sourcing stories, announcement, and posts from real backend bridges instead of mock social data. -->
 <template>
   <div class="home-feed">
-    <section class="home-feed__section surface-card">
-      <div class="home-feed__section-header">
-        <div>
-          <p class="home-feed__eyebrow">{{ copy.filterEyebrow }}</p>
-          <h2 class="home-feed__title">{{ copy.filterTitle }}</h2>
-        </div>
-        <span class="home-feed__hint">{{ copy.filterHint }}</span>
-      </div>
-
-      <div class="home-feed__filter-list">
-        <button
-          v-for="filter in filters"
-          :key="filter.key"
-          class="home-feed__filter-chip"
-          :class="{ 'home-feed__filter-chip--active': activeFilter === filter.key }"
-          type="button"
-          @click="activeFilter = filter.key"
-        >
-          <Icon :name="filter.icon" class="h-4 w-4" />
-          <span>{{ filter.label }}</span>
-        </button>
-      </div>
-    </section>
-
     <div class="home-feed__stories">
       <FeedStoryCarousel :stories="stories" />
     </div>
@@ -124,16 +100,12 @@ import FeedPostCard from "../components/PostCard.vue"
 import FeedPublisherBox from "../components/FeedPublisherBox.vue"
 import FeedStoryCarousel from "../components/StoryCarousel.vue"
 
-type FeedFilterKey = "all" | "text" | "photos" | "video" | "music"
 type FeedOrderKey = "all" | "following"
 
 const { t } = useI18n()
 const repository = createApiFeedRepository()
 
 const copy = computed(() => ({
-  filterEyebrow: t("pages.homeFeedPage.filterEyebrow"),
-  filterTitle: t("pages.homeFeedPage.filterTitle"),
-  filterHint: t("pages.homeFeedPage.filterHint"),
   announcementEyebrow: t("pages.homeFeedPage.announcementEyebrow"),
   announcementTitle: t("pages.homeFeedPage.announcementTitle"),
   announcementMessage: t("pages.homeFeedPage.announcementMessage"),
@@ -144,13 +116,6 @@ const copy = computed(() => ({
   afternoon: t("pages.homeFeedPage.greetingAfternoon"),
   evening: t("pages.homeFeedPage.greetingEvening"),
   greetingDescription: t("pages.homeFeedPage.greetingDescription"),
-  filters: {
-    all: t("pages.homeFeedPage.filters.all"),
-    text: t("pages.homeFeedPage.filters.text"),
-    photos: t("pages.homeFeedPage.filters.photos"),
-    video: t("pages.homeFeedPage.filters.video"),
-    music: t("pages.homeFeedPage.filters.music"),
-  },
   orders: {
     all: {
       label: t("pages.homeFeedPage.orders.allLabel"),
@@ -163,20 +128,11 @@ const copy = computed(() => ({
   },
 }))
 
-const filters = computed(() => [
-  { key: "all" as const, icon: "i-ph-squares-four-duotone", label: copy.value.filters.all },
-  { key: "text" as const, icon: "i-ph-text-align-left-duotone", label: copy.value.filters.text },
-  { key: "photos" as const, icon: "i-ph-image-duotone", label: copy.value.filters.photos },
-  { key: "video" as const, icon: "i-ph-video-camera-duotone", label: copy.value.filters.video },
-  { key: "music" as const, icon: "i-ph-music-notes-duotone", label: copy.value.filters.music },
-])
-
 const orderOptions = computed(() => [
   { key: "all" as const, ...copy.value.orders.all },
   { key: "following" as const, ...copy.value.orders.following },
 ])
 
-const activeFilter = ref<FeedFilterKey>("all")
 const activeOrder = ref<FeedOrderKey>("all")
 const newPostsCount = ref(0)
 const loadingMore = ref(false)
@@ -209,33 +165,12 @@ const greetingTitle = computed(() => {
   return copy.value.evening
 })
 
-const resolvePostType = (filter: FeedFilterKey) => {
-  if (filter === "all") return ""
-  return filter
-}
-
 const canDisplayPostInCurrentFeed = (post: FeedPostRecord) => {
   if (activeOrder.value !== "all" && activeOrder.value !== "following") {
     return false
   }
 
-  if (activeFilter.value === "all") {
-    return true
-  }
-
-  if (activeFilter.value === "text") {
-    return post.primaryMediaType === "text"
-  }
-
-  if (activeFilter.value === "photos") {
-    return post.primaryMediaType === "image"
-  }
-
-  if (activeFilter.value === "video") {
-    return post.primaryMediaType === "video"
-  }
-
-  return false
+  return Boolean(post)
 }
 
 const mergePendingStory = (records: FeedStoryRecord[]) => {
@@ -257,7 +192,6 @@ async function fetchHome(reset = true) {
   const response = await repository.getHome({
     limit: 6,
     afterPostId: reset ? undefined : nextOffset.value ?? undefined,
-    postType: resolvePostType(activeFilter.value),
     followingOnly: activeOrder.value === "following",
   })
 
@@ -317,7 +251,7 @@ onMounted(() => {
   greetingPeriod.value = resolveGreetingPeriod()
 })
 
-watch([activeFilter, activeOrder], async () => {
+watch(activeOrder, async () => {
   if (!initialized.value) return
   await fetchHome(true)
 })
@@ -368,37 +302,16 @@ watch([activeFilter, activeOrder], async () => {
   color: rgba(15, 23, 42, 0.64);
 }
 
-.home-feed__filter-list,
 .home-feed__order-list {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.home-feed__filter-chip,
 .home-feed__order-button,
 .home-feed__new-posts-btn,
 .home-feed__load-more-btn {
   transition: all 0.2s ease;
-}
-
-.home-feed__filter-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #f8fafc;
-  padding: 10px 14px;
-  font-size: 13px;
-  font-weight: 700;
-  color: rgba(15, 23, 42, 0.72);
-}
-
-.home-feed__filter-chip--active {
-  border-color: rgba(37, 99, 235, 0.22);
-  background: rgba(37, 99, 235, 0.08);
-  color: #1d4ed8;
 }
 
 .home-feed__announcement {

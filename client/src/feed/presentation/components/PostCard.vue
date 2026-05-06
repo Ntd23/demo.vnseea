@@ -11,8 +11,8 @@
         @menu-action="handleMenuAction"
       />
 
-      <div class="post-card__content">
-        <p class="post-card__text">{{ post.text }}</p>
+      <div v-if="hasPostContent" class="post-card__content">
+        <p v-if="post.text" class="post-card__text">{{ post.text }}</p>
         <div v-if="post.tags.length" class="post-card__tags">
           <NuxtLink
             v-for="tag in post.tags"
@@ -28,11 +28,20 @@
       <FeedPostMediaGrid v-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="onOpenMedia" />
 
       <div class="post-card__stats">
-        <div class="post-card__stats-left">
+        <div v-if="hasReactions" class="post-card__stats-left">
           <div class="post-card__reaction-emojis">
-            <span class="post-card__emoji post-card__emoji--like">👍</span>
-            <span class="post-card__emoji post-card__emoji--love">❤️</span>
-            <span class="post-card__emoji post-card__emoji--wow">😮</span>
+            <span
+              v-for="reaction in previewReactions"
+              :key="reaction.value"
+              class="post-card__emoji"
+            >
+              <img
+                :src="reaction.src"
+                :alt="t(reaction.labelKey)"
+                class="post-card__emoji-image"
+                draggable="false"
+              >
+            </span>
           </div>
           <span class="post-card__stat-count">{{ likesCount }}</span>
         </div>
@@ -43,16 +52,68 @@
       </div>
 
       <div class="post-card__actions">
-        <button
-          class="post-card__action-btn"
-          :class="{ 'post-card__action-btn--active': liked }"
-          type="button"
-          :aria-pressed="liked"
-          @click="toggleLike"
+        <div
+          class="post-card__reaction-action"
+          @mouseenter="openPostReactionTray"
+          @mouseleave="closePostReactionTray"
+          @focusin="openPostReactionTray"
+          @focusout="closePostReactionTray"
         >
-          <Icon name="i-ph-thumbs-up-fill" class="post-card__action-icon" />
-          <span>{{ liked ? t("feed.postCard.likeActive") : t("feed.postCard.like") }}</span>
-        </button>
+          <Transition
+            enter-active-class="transition duration-150 ease-out"
+            enter-from-class="opacity-0 translate-y-2 scale-95"
+            enter-to-class="opacity-100 translate-y-0 scale-100"
+            leave-active-class="transition duration-100 ease-in"
+            leave-to-class="opacity-0 translate-y-2 scale-95"
+          >
+            <div
+              v-if="postReactionTrayOpen"
+              class="post-card__reaction-tray"
+              @click.stop
+              @pointerdown.stop
+            >
+              <button
+                v-for="reaction in postReactionOptions"
+                :key="reaction.value"
+                class="post-card__reaction-option"
+                :class="{ 'post-card__reaction-option--active': selectedPostReaction === reaction.value }"
+                type="button"
+                :aria-label="reaction.label"
+                @click="reactToPost(reaction.value)"
+              >
+                <img
+                  :src="reaction.src"
+                  :alt="reaction.label"
+                  class="post-card__reaction-option-image"
+                  draggable="false"
+                >
+              </button>
+            </div>
+          </Transition>
+
+          <button
+            class="post-card__action-btn"
+            :class="{ 'post-card__action-btn--active': liked }"
+            type="button"
+            :aria-pressed="liked"
+            :aria-label="activePostReactionLabel"
+            @pointerdown="startPostReactionPress"
+            @pointerup="finishPostReactionPress"
+            @pointerleave="cancelPostReactionPress"
+            @pointercancel="cancelPostReactionPress"
+            @click="handlePostReactionButtonClick"
+          >
+            <img
+              v-if="selectedPostReaction"
+              :src="activePostReactionAsset.src"
+              :alt="activePostReactionLabel"
+              class="post-card__action-reaction-image"
+              draggable="false"
+            >
+            <Icon v-else name="i-ph-thumbs-up-fill" class="post-card__action-icon" />
+            <span>{{ selectedPostReaction ? activePostReactionLabel : liked ? t("feed.postCard.likeActive") : t("feed.postCard.like") }}</span>
+          </button>
+        </div>
         <button
           class="post-card__action-btn"
           :class="{ 'post-card__action-btn--active': showComments }"
@@ -131,9 +192,17 @@
 </template>
 
 <script setup lang="ts">
+import { useTimeoutFn } from "@vueuse/core"
+import {
+  defaultFeedReactionAsset,
+  feedPostPreviewReactionAssets,
+  feedReactionAssetByValue,
+  feedReactionAssets,
+} from "../../application/constants/reaction-assets"
 import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useHashtagData"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
-import type { FeedCommentRecord, FeedPostRecord } from "../../domain/types/feed.types"
+import { defaultFeedStoryReaction } from "../../domain/constants/story-reactions"
+import type { FeedCommentRecord, FeedPostRecord, FeedStoryReactionType } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import FeedCommentComposer from "./CommentComposer.vue"
 import FeedCommentList from "./CommentList.vue"
@@ -156,6 +225,9 @@ const props = defineProps<{
 const showComments = ref(false)
 const showShare = ref(false)
 const liked = ref(false)
+const selectedPostReaction = ref<FeedStoryReactionType | null>(null)
+const postReactionTrayOpen = ref(false)
+const postReactionLongPressTriggered = ref(false)
 const lightboxOpen = ref(false)
 const currentMediaIndex = ref(0)
 const localComments = ref<FeedCommentRecord[]>([])
@@ -168,6 +240,28 @@ const commenting = ref(false)
 const reporting = ref(false)
 
 const postAnchorId = computed(() => `feed-post-${props.post.id}`)
+const postReactionOptions = computed(() =>
+  feedReactionAssets.map(reaction => ({
+    value: reaction.value,
+    label: t(reaction.labelKey),
+    src: reaction.src,
+  })),
+)
+const activePostReactionAsset = computed(() =>
+  selectedPostReaction.value
+    ? feedReactionAssetByValue[selectedPostReaction.value]
+    : defaultFeedReactionAsset,
+)
+const activePostReactionLabel = computed(() => t(activePostReactionAsset.value.labelKey))
+const previewReactions = computed(() =>
+  selectedPostReaction.value
+    ? [feedReactionAssetByValue[selectedPostReaction.value]]
+    : feedPostPreviewReactionAssets,
+)
+const hasReactions = computed(() => likesCount.value > 0)
+const hasPostContent = computed(() =>
+  Boolean(props.post.text.trim() || props.post.tags.length),
+)
 
 const shareUrl = computed(() =>
   new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString(),
@@ -180,6 +274,8 @@ watch(
     likesCount.value = post.stats.likes
     sharesCount.value = post.stats.shares
     liked.value = false
+    selectedPostReaction.value = null
+    postReactionTrayOpen.value = false
     actionState.value = "idle"
     actionMessage.value = ""
     showComments.value = false
@@ -195,19 +291,69 @@ onMounted(async () => {
 })
 
 const mediaItems = computed(() => props.post.mediaItems)
+const {
+  start: startPostReactionLongPressTimer,
+  stop: stopPostReactionLongPressTimer,
+} = useTimeoutFn(() => {
+  postReactionLongPressTriggered.value = true
+  postReactionTrayOpen.value = true
+}, 420, { immediate: false })
+
+function openPostReactionTray() {
+  postReactionTrayOpen.value = true
+}
+
+function closePostReactionTray() {
+  postReactionTrayOpen.value = false
+}
+
+function startPostReactionPress() {
+  if (liking.value) {
+    return
+  }
+
+  postReactionLongPressTriggered.value = false
+  startPostReactionLongPressTimer()
+}
+
+function finishPostReactionPress() {
+  stopPostReactionLongPressTimer()
+}
+
+function cancelPostReactionPress() {
+  stopPostReactionLongPressTimer()
+}
+
+async function handlePostReactionButtonClick() {
+  if (postReactionLongPressTriggered.value) {
+    return
+  }
+
+  await reactToPost(defaultFeedStoryReaction.value)
+}
 
 async function toggleLike() {
+  await reactToPost(defaultFeedStoryReaction.value)
+}
+
+async function reactToPost(reaction: FeedStoryReactionType) {
   if (liking.value) return
 
   liking.value = true
+  const hadLocalReaction = Boolean(selectedPostReaction.value)
 
   try {
     await repository.runPostAction({
-      action: "like",
+      action: "reaction",
       postId: props.post.id,
+      reaction,
     })
-    likesCount.value += liked.value ? -1 : 1
-    liked.value = !liked.value
+    if (!hadLocalReaction) {
+      likesCount.value += 1
+    }
+    selectedPostReaction.value = reaction
+    liked.value = true
+    postReactionTrayOpen.value = false
   }
   catch (error) {
     actionState.value = "error"
@@ -416,6 +562,7 @@ const downloadMedia = () => {
 
 .post-card__reaction-emojis {
   display: flex;
+  align-items: center;
 }
 
 .post-card__emoji {
@@ -425,9 +572,9 @@ const downloadMedia = () => {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  font-size: 12px;
-  margin-right: -5px;
-  border: 2px solid #ffffff;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: #ffffff;
   transition: transform 0.15s ease;
 }
 
@@ -436,9 +583,11 @@ const downloadMedia = () => {
   z-index: 2;
 }
 
-.post-card__emoji--like { background: #3b82f6; }
-.post-card__emoji--love { background: #ef4444; }
-.post-card__emoji--wow { background: #facc15; }
+.post-card__emoji-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 
 .post-card__stat-count {
   font-weight: 600;
@@ -462,6 +611,11 @@ const downloadMedia = () => {
   border-top: 1px solid rgba(0, 0, 255, 0.06);
 }
 
+.post-card__reaction-action {
+  position: relative;
+  min-width: 0;
+}
+
 .post-card__action-btn {
   display: flex;
   align-items: center;
@@ -478,6 +632,10 @@ const downloadMedia = () => {
   transition: all 0.15s ease;
 }
 
+.post-card__reaction-action .post-card__action-btn {
+  width: 100%;
+}
+
 .post-card__action-btn:hover {
   background: rgba(0, 0, 255, 0.04);
   color: #0000ff;
@@ -492,6 +650,55 @@ const downloadMedia = () => {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+}
+
+.post-card__action-reaction-image {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.post-card__reaction-tray {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 20;
+  display: flex;
+  gap: 10px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 10px 18px rgba(15, 23, 42, 0.22));
+}
+
+.post-card__reaction-option {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.post-card__reaction-option:hover,
+.post-card__reaction-option--active {
+  background: transparent;
+  transform: translateY(-5px) scale(1.08);
+}
+
+.post-card__reaction-option-image {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 .post-card__comment-peek {

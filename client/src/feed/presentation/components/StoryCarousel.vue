@@ -7,7 +7,7 @@
       @pointerdown="rememberStoryPointer"
       @pointerup="openStoryFromPointer"
     >
-      <NuxtLink to="/status/create" class="story-card story-card--create">
+      <NuxtLink :to="feedStoryCreatePath" class="story-card story-card--create">
         <div class="story-card__create-icon">
           <Icon name="i-ph-plus-bold" class="h-5 w-5" />
         </div>
@@ -25,23 +25,23 @@
         @click.stop="openStoryGroup(groupIndex)"
       >
         <div class="story-card__bg" :style="{ background: group.owner.gradient }" />
-        <img
-          v-if="group.owner.media"
-          :src="group.owner.media"
+        <NuxtImg
+          v-if="resolveStoryCardMedia(group.owner)"
+          :src="resolveStoryCardMedia(group.owner)"
           :alt="group.owner.author"
           class="story-card__bg-img"
-          draggable="false"
           loading="lazy"
-        >
+          sizes="120px"
+        />
         <div class="story-card__overlay" />
         <div class="story-card__avatar" :style="{ background: group.owner.gradient }">
-          <img
+          <NuxtImg
             v-if="group.owner.avatarUrl"
             :src="group.owner.avatarUrl"
             :alt="group.owner.author"
             class="story-card__avatar-image"
-            draggable="false"
-          >
+            sizes="34px"
+          />
           <span v-else>{{ group.owner.avatar }}</span>
         </div>
         <p class="story-card__name">{{ group.owner.author.split(" ").at(-1) }}</p>
@@ -89,14 +89,31 @@
           @touchstart.passive="onStoryTouchStart"
           @touchend.passive="onStoryTouchEnd"
         >
-          <img
-            v-if="activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
+          <video
+            v-if="activeStoryIsVideo && activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
+            :key="`video-${activeStoryData.id}`"
+            :src="activeStoryData.media"
+            :poster="activeStoryData.poster || undefined"
+            class="story-viewer__media"
+            autoplay
+            muted
+            playsinline
+            controls
+            preload="metadata"
+            controlslist="nodownload"
+            @ended="nextStory"
+            @error="markStoryMediaFailed(activeStoryData?.id)"
+          />
+          <NuxtImg
+            v-else-if="activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
+            :key="`image-${activeStoryData.id}`"
             :src="activeStoryData.media"
             :alt="activeStoryData.title || activeStoryData.author"
             class="story-viewer__media"
-            draggable="false"
+            loading="eager"
+            sizes="100vw sm:500px"
             @error="markStoryMediaFailed(activeStoryData?.id)"
-          >
+          />
           <div v-else class="story-viewer__fallback">
             <div class="story-viewer__fallback-avatar">
               {{ activeStoryData?.avatar }}
@@ -120,19 +137,30 @@
 
           <div class="story-viewer__author">
             <div class="story-viewer__author-avatar">
-              <img
+              <NuxtImg
                 v-if="activeStoryData?.avatarUrl"
                 :src="activeStoryData.avatarUrl"
                 :alt="activeStoryData.author"
                 class="story-viewer__author-avatar-image"
-                draggable="false"
-              >
+                sizes="38px"
+              />
               <span v-else>{{ activeStoryData?.avatar }}</span>
             </div>
             <div>
               <p class="story-viewer__author-name">{{ activeStoryData?.author }}</p>
               <p v-if="activeStoryData?.meta" class="story-viewer__author-meta">{{ activeStoryData.meta }}</p>
             </div>
+            <UBadge
+              v-if="activeStoryIsMine"
+              class="story-viewer__views-pill"
+              color="neutral"
+              variant="soft"
+              :aria-label="activeStoryViewsLabel"
+              :title="activeStoryViewsLabel"
+            >
+              <Icon name="i-ph-eye-fill" class="h-[14px] w-[14px]" />
+              <span>{{ activeStoryData?.views ?? 0 }}</span>
+            </UBadge>
           </div>
 
           <button
@@ -156,10 +184,99 @@
             @click="nextStory"
           />
 
-          <div v-if="activeStoryData?.caption" class="story-viewer__footer">
-            <div class="story-viewer__caption">
+          <div class="story-viewer__footer">
+            <!-- Caption block -->
+            <div v-if="activeStoryData?.caption" class="story-viewer__caption">
               <p class="story-viewer__text">{{ activeStoryData.caption }}</p>
             </div>
+
+            <div v-if="canInteractWithActiveStory" class="story-viewer__bar">
+              <div class="story-viewer__bar-reply" @click="focusReply">
+                <UInput
+                  ref="replyInputRef"
+                  v-model="replyText"
+                  class="story-viewer__bar-reply-input"
+                  variant="none"
+                  :placeholder="t('feed.storyCarousel.replyStory')"
+                  type="text"
+                  :disabled="storyActionState === 'loading'"
+                  @keydown.enter.prevent="sendReply"
+                  @keydown.escape.prevent="replyText = ''"
+                />
+                <UButton
+                  v-if="replyText.trim()"
+                  class="story-viewer__bar-send"
+                  icon="i-ph-paper-plane-tilt-fill"
+                  size="sm"
+                  color="primary"
+                  variant="solid"
+                  type="button"
+                  :aria-label="t('feed.storyCarousel.sendReply')"
+                  :loading="storyActionState === 'loading'"
+                  @click.stop="sendReply"
+                />
+              </div>
+
+              <div class="story-viewer__reaction-shell">
+                <Transition
+                  enter-active-class="transition duration-150 ease-out"
+                  enter-from-class="opacity-0 translate-y-2 scale-95"
+                  enter-to-class="opacity-100 translate-y-0 scale-100"
+                  leave-active-class="transition duration-100 ease-in"
+                  leave-to-class="opacity-0 translate-y-2 scale-95"
+                >
+                  <div
+                    v-if="reactionTrayOpen"
+                    class="story-viewer__reaction-tray"
+                    @click.stop
+                    @pointerdown.stop
+                  >
+                    <button
+                      v-for="reaction in storyReactionOptions"
+                      :key="reaction.value"
+                      class="story-viewer__reaction-option"
+                      :class="{ 'story-viewer__reaction-option--active': activeStoryReaction === reaction.value }"
+                      type="button"
+                      @click="reactToStory(reaction.value)"
+                    >
+                      <img
+                        :src="reaction.src"
+                      :alt="reaction.label"
+                      class="story-viewer__reaction-symbol"
+                      draggable="false"
+                    >
+                  </button>
+                  </div>
+                </Transition>
+
+                <UButton
+                  class="story-viewer__bar-react"
+                  :class="{ 'story-viewer__bar-react--active': Boolean(activeReactionOption) }"
+                  type="button"
+                  color="neutral"
+                  variant="soft"
+                  :aria-label="t('feed.storyCarousel.reactStory')"
+                  :disabled="storyActionState === 'loading'"
+                  @pointerdown.stop.prevent="startReactionPress"
+                  @pointerup.stop.prevent="finishReactionPress"
+                  @pointerleave="cancelReactionPress"
+                  @pointercancel="cancelReactionPress"
+                >
+                  <span class="story-viewer__bar-react-symbol">
+                    <img
+                      :src="activeReactionOption?.src ?? defaultFeedReactionAsset.src"
+                      :alt="activeReactionOption?.label ?? t(defaultFeedReactionAsset.labelKey)"
+                      class="story-viewer__bar-react-image"
+                      draggable="false"
+                    >
+                  </span>
+                </UButton>
+              </div>
+            </div>
+
+            <p v-if="storyActionError" class="story-viewer__action-error">
+              {{ storyActionError }}
+            </p>
           </div>
         </div>
       </div>
@@ -168,8 +285,26 @@
 </template>
 
 <script setup lang="ts">
-import { useEventListener } from "@vueuse/core"
-import type { FeedStoryRecord } from "../../domain/types/feed.types"
+import { useEventListener, useTimeoutFn } from "@vueuse/core"
+import {
+  feedStoryCarouselScrollDistance,
+  feedStoryCreatePath,
+  feedStoryKeyboardKeys,
+  feedStoryPointerTapTolerance,
+  feedStoryReactionLongPressDelay,
+  feedStorySwipeMinDistance,
+  feedStoryVideoExtensions,
+  feedStoryVideoPathHint,
+  feedStoryViewerFallbackGradient,
+  feedStoryViewerSideTapDivisor,
+} from "../../application/constants/story-carousel"
+import {
+  defaultFeedReactionAsset,
+  feedReactionAssets,
+} from "../../application/constants/reaction-assets"
+import { defaultFeedStoryReaction } from "../../domain/constants/story-reactions"
+import type { FeedStoryReactionType, FeedStoryRecord } from "../../domain/types/feed.types"
+import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
 type StoryGroup = {
   key: string
@@ -178,6 +313,8 @@ type StoryGroup = {
 }
 
 const { t } = useI18n()
+const toast = useToast()
+const repository = createApiFeedRepository()
 
 const props = defineProps<{
   stories: FeedStoryRecord[]
@@ -185,6 +322,7 @@ const props = defineProps<{
 
 const scrollRef = ref<HTMLElement | null>(null)
 const dialogRef = ref<HTMLElement | null>(null)
+const replyInputRef = ref<{ $el?: HTMLElement } | null>(null)
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 const activeStoryGroupIndex = ref<number | null>(null)
@@ -192,6 +330,24 @@ const activeStoryItemIndex = ref(0)
 const storyPointerStart = ref<{ x: number; y: number } | null>(null)
 const storyTouchStartX = ref<number | null>(null)
 const storyTouchStartY = ref<number | null>(null)
+const replyText = ref("")
+const reactionTrayOpen = ref(false)
+const reactionLongPressTriggered = ref(false)
+const storyActionState = ref<"idle" | "loading" | "success" | "error">("idle")
+const storyActionError = ref("")
+const selectedReactionByStoryId = ref(new Map<number, FeedStoryReactionType>())
+
+const storyReactionOptions = computed<Array<{
+  value: FeedStoryReactionType
+  label: string
+  src: string
+}>>(() =>
+  feedReactionAssets.map(reaction => ({
+    value: reaction.value,
+    label: t(reaction.labelKey),
+    src: reaction.src,
+  })),
+)
 
 const resolveStoryOwnerKey = (story: FeedStoryRecord, index: number) =>
   story.ownerKey
@@ -239,9 +395,54 @@ const activeStoryData = computed(() =>
     ? storyQueue.value[activeStoryItemIndex.value] ?? null
     : null,
 )
+const activeStoryIsVideo = computed(() => isVideoStory(activeStoryData.value))
+const activeStoryReaction = computed(() =>
+  activeStoryData.value
+    ? selectedReactionByStoryId.value.get(activeStoryData.value.id) ?? null
+    : null,
+)
+const activeReactionOption = computed(() =>
+  storyReactionOptions.value.find(reaction => reaction.value === activeStoryReaction.value) ?? null,
+)
+const activeStoryIsMine = computed(() => Boolean(activeStoryData.value?.isMe))
+const canInteractWithActiveStory = computed(() => Boolean(activeStoryData.value && !activeStoryIsMine.value))
+const activeStoryViewsLabel = computed(() =>
+  t("feed.storyCarousel.viewsLabel", { count: activeStoryData.value?.views ?? 0 }),
+)
 
 const failedMediaStoryIds = ref(new Set<number>())
-const fallbackGradient = "linear-gradient(135deg,#0f172a 0%,#1d4ed8 58%,#38bdf8 100%)"
+const fallbackGradient = feedStoryViewerFallbackGradient
+const storyVideoExtensionPattern = new RegExp(`\\.(${feedStoryVideoExtensions.join("|")})$`, "i")
+const {
+  start: startReactionLongPressTimer,
+  stop: stopReactionLongPressTimer,
+} = useTimeoutFn(() => {
+  if (!canInteractWithActiveStory.value || storyActionState.value === "loading") {
+    return
+  }
+
+  reactionLongPressTriggered.value = true
+  reactionTrayOpen.value = true
+}, feedStoryReactionLongPressDelay, { immediate: false })
+
+function isVideoStoryMedia(media: string) {
+  const normalized = media.toLowerCase().split(/[?#]/)[0] || ""
+  return storyVideoExtensionPattern.test(normalized) || normalized.includes(feedStoryVideoPathHint)
+}
+
+function isVideoStory(story?: FeedStoryRecord | null) {
+  if (!story) {
+    return false
+  }
+
+  return story.mediaType === "video" || isVideoStoryMedia(story.media)
+}
+
+function resolveStoryCardMedia(story: FeedStoryRecord) {
+  return isVideoStory(story)
+    ? story.poster || ""
+    : story.media || story.poster || ""
+}
 
 function markStoryMediaFailed(storyId?: number) {
   if (!storyId) {
@@ -259,7 +460,7 @@ function updateScroll() {
 }
 
 function scroll(dir: 1 | -1) {
-  scrollRef.value?.scrollBy({ left: dir * 220, behavior: "smooth" })
+  scrollRef.value?.scrollBy({ left: dir * feedStoryCarouselScrollDistance, behavior: "smooth" })
 }
 
 function openStoryGroup(groupIndex: number, itemIndex = 0) {
@@ -303,7 +504,7 @@ function openStoryFromPointer(event: PointerEvent) {
   const movedX = Math.abs(event.clientX - pointerStart.x)
   const movedY = Math.abs(event.clientY - pointerStart.y)
 
-  if (movedX > 10 || movedY > 10) {
+  if (movedX > feedStoryPointerTapTolerance || movedY > feedStoryPointerTapTolerance) {
     return
   }
 
@@ -314,6 +515,111 @@ function openStoryFromPointer(event: PointerEvent) {
 function closeStory() {
   activeStoryGroupIndex.value = null
   activeStoryItemIndex.value = 0
+  replyText.value = ""
+  reactionTrayOpen.value = false
+  storyActionError.value = ""
+  storyActionState.value = "idle"
+}
+
+function focusReply() {
+  if (!canInteractWithActiveStory.value) {
+    return
+  }
+
+  const input = replyInputRef.value?.$el?.querySelector?.("input") as HTMLInputElement | null
+  input?.focus()
+}
+
+function startReactionPress() {
+  if (!canInteractWithActiveStory.value || storyActionState.value === "loading") {
+    return
+  }
+
+  reactionLongPressTriggered.value = false
+  startReactionLongPressTimer()
+}
+
+async function finishReactionPress() {
+  stopReactionLongPressTimer()
+
+  if (reactionLongPressTriggered.value) {
+    return
+  }
+
+  await reactToStory(defaultFeedStoryReaction.value)
+}
+
+function cancelReactionPress() {
+  stopReactionLongPressTimer()
+}
+
+async function reactToStory(reaction: FeedStoryReactionType) {
+  const story = activeStoryData.value
+
+  if (!story || !canInteractWithActiveStory.value || storyActionState.value === "loading") {
+    return
+  }
+
+  storyActionState.value = "loading"
+  storyActionError.value = ""
+
+  try {
+    await repository.runStoryAction({
+      action: "react",
+      storyId: story.id,
+      reaction,
+    })
+
+    const nextReactions = new Map(selectedReactionByStoryId.value)
+    nextReactions.set(story.id, reaction)
+    selectedReactionByStoryId.value = nextReactions
+    reactionTrayOpen.value = false
+    storyActionState.value = "success"
+  }
+  catch (error) {
+    console.error(error)
+    storyActionState.value = "error"
+    storyActionError.value = t("feed.storyCarousel.reactionFailed")
+  }
+}
+
+async function sendReply() {
+  const story = activeStoryData.value
+  const text = replyText.value.trim()
+
+  if (!story || !text || storyActionState.value === "loading") {
+    return
+  }
+
+  if (story.isMe) {
+    storyActionError.value = t("feed.storyCarousel.replyDisabledSelf")
+    return
+  }
+
+  storyActionState.value = "loading"
+  storyActionError.value = ""
+
+  try {
+    await repository.runStoryAction({
+      action: "reply",
+      storyId: story.id,
+      ownerId: story.ownerId,
+      text,
+    })
+
+    replyText.value = ""
+    storyActionState.value = "success"
+    toast.add({
+      color: "success",
+      icon: "i-ph-paper-plane-tilt-fill",
+      title: t("feed.storyCarousel.replySent"),
+    })
+  }
+  catch (error) {
+    console.error(error)
+    storyActionState.value = "error"
+    storyActionError.value = t("feed.storyCarousel.replyFailed")
+  }
 }
 
 function nextStory() {
@@ -360,7 +666,7 @@ function onStoryTouchEnd(event: TouchEvent) {
   const deltaX = startX - endX
   const deltaY = startY - endY
 
-  if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+  if (Math.abs(deltaX) > feedStorySwipeMinDistance && Math.abs(deltaX) > Math.abs(deltaY)) {
     if (deltaX > 0) nextStory()
     else prevStory()
     return
@@ -371,7 +677,7 @@ function onStoryTouchEnd(event: TouchEvent) {
 
   const rect = target.getBoundingClientRect()
   const x = endX - rect.left
-  const third = rect.width / 3
+  const third = rect.width / feedStoryViewerSideTapDivisor
 
   if (x < third) prevStory()
   else if (x > third * 2) nextStory()
@@ -383,9 +689,9 @@ if (import.meta.client) {
   useEventListener(window, "keydown", (event) => {
     if (activeStoryGroupIndex.value === null) return
 
-    if (event.key === "Escape") closeStory()
-    if (event.key === "ArrowLeft") prevStory()
-    if (event.key === "ArrowRight") nextStory()
+    if (event.key === feedStoryKeyboardKeys.close) closeStory()
+    if (event.key === feedStoryKeyboardKeys.previous) prevStory()
+    if (event.key === feedStoryKeyboardKeys.next) nextStory()
   })
 }
 
@@ -416,6 +722,10 @@ watch(
 
 watch(activeStoryData, async (story) => {
   if (!story) return
+  replyText.value = ""
+  reactionTrayOpen.value = false
+  storyActionError.value = ""
+  storyActionState.value = "idle"
   await nextTick()
   dialogRef.value?.focus()
 })
@@ -550,6 +860,7 @@ watch(activeStoryData, async (story) => {
 .story-viewer__author {
   position: absolute;
   left: 16px;
+  right: 56px; /* stop before the close button */
   top: 28px;
   z-index: 4;
   display: flex;
@@ -644,30 +955,212 @@ watch(activeStoryData, async (story) => {
   z-index: 4;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: 10px;
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px));
   color: #ffffff;
 }
 
 @media (min-width: 640px) {
   .story-viewer__footer {
-    padding: 20px;
+    padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
   }
 }
 
 .story-viewer__caption {
-  max-width: 82%;
-  border-radius: 18px;
-  background: rgba(0, 0, 0, 0.28);
-  padding: 14px 16px;
-  backdrop-filter: blur(8px);
+  max-width: 88%;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.32);
+  padding: 12px 14px;
+  backdrop-filter: blur(10px);
 }
 
 .story-viewer__text {
   font-size: 14px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.84);
+  color: rgba(255, 255, 255, 0.9);
 }
+
+.story-viewer__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+}
+
+.story-viewer__views-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.32);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 12px;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.story-viewer__bar-react {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.36);
+  color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.story-viewer__bar-react:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.52);
+  transform: scale(1.1);
+}
+
+.story-viewer__bar-react--active {
+  border-color: rgba(59, 130, 246, 0.58);
+  background: rgba(37, 99, 235, 0.2);
+}
+
+.story-viewer__bar-react-symbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.story-viewer__bar-react-image {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.story-viewer__reaction-shell {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+}
+
+.story-viewer__reaction-tray {
+  position: absolute;
+  right: -4px;
+  bottom: 52px;
+  z-index: 8;
+  display: flex;
+  gap: 10px;
+  transform-origin: bottom right;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.42));
+}
+
+.story-viewer__reaction-option {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.story-viewer__reaction-option:hover,
+.story-viewer__reaction-option--active {
+  background: transparent;
+  transform: translateY(-4px) scale(1.08);
+}
+
+.story-viewer__reaction-symbol {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.story-viewer__bar-reply {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  height: 40px;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.36);
+  backdrop-filter: blur(12px);
+  padding: 0 4px 0 14px;
+  cursor: text;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.story-viewer__bar-reply:focus-within {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.52);
+}
+
+.story-viewer__bar-reply-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.story-viewer__bar-reply-input :deep(input) {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.story-viewer__bar-reply-input :deep(input::placeholder) {
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.story-viewer__bar-send {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #0000ff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.story-viewer__bar-send:hover {
+  background: #2233ff;
+  transform: scale(1.08);
+}
+
+.story-viewer__action-error {
+  border-radius: 12px;
+  background: rgba(127, 29, 29, 0.72);
+  padding: 8px 10px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
 
 .story-rail__scroll {
   display: flex;

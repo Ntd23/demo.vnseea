@@ -1,45 +1,51 @@
 <template>
   <div class="media-grid" :class="items.length > 1 ? 'media-grid--multi' : ''">
-    <button
+    <template
       v-for="(item, index) in items"
       :key="`${item.src}-${index}`"
-      class="media-grid__item"
-      type="button"
-      :aria-label="t('feed.postMediaGrid.openLabel', { index: index + 1 })"
-      @click="emit('open', index)"
     >
-      <img
+      <button
         v-if="item.type === 'image'"
-        :src="item.src"
-        :alt="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
-        class="media-grid__img"
-        loading="lazy"
+        class="media-grid__item"
+        type="button"
+        :aria-label="t('feed.postMediaGrid.openLabel', { index: index + 1 })"
+        @click="emit('open', index)"
       >
-      <video
+        <img
+          :src="item.src"
+          :alt="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
+          class="media-grid__img"
+          loading="lazy"
+        >
+      </button>
+
+      <div
         v-else
-        :aria-label="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
-        class="media-grid__img"
-        muted
-        playsinline
-        preload="metadata"
+        class="media-grid__item media-grid__item--video"
       >
-        <source :src="item.src" :type="item.mime || 'video/mp4'">
-      </video>
-
-      <!-- Subtle bottom gradient only -->
-      <div class="media-grid__overlay" />
-
-      <!-- Small type badge in corner -->
-      <div class="media-grid__type-badge">
-        <Icon :name="item.type === 'image' ? 'i-ph-image-bold' : 'i-ph-play-circle-bold'" class="h-3.5 w-3.5" />
-        {{ item.type === "image" ? t("feed.postMediaGrid.imageType") : t("feed.postMediaGrid.videoType") }}
+        <video
+          ref="videoRefs"
+          :aria-label="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
+          class="media-grid__img media-grid__video"
+          autoplay
+          controls
+          loop
+          playsinline
+          preload="auto"
+          @loadedmetadata="playVideoWithSound"
+        >
+          <source :src="item.src" :type="item.mime || 'video/mp4'">
+        </video>
       </div>
-    </button>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useIntersectionObserver } from "@vueuse/core"
+
 const { t } = useI18n()
+const videoRefs = ref<HTMLVideoElement[]>([])
 
 defineProps<{
   items: Array<{
@@ -51,6 +57,43 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{ open: [index: number] }>()
+
+function playVideoWithSound(event: Event) {
+  const video = event.currentTarget as HTMLVideoElement | null
+
+  if (!video) return
+
+  playVisibleVideo(video)
+}
+
+function playVisibleVideo(video: HTMLVideoElement) {
+  video.muted = false
+  video.volume = 1
+  void video.play().catch(() => {
+    // Browsers may block autoplay with sound until the user interacts.
+  })
+}
+
+onMounted(() => {
+  for (const video of videoRefs.value) {
+    useIntersectionObserver(
+      video,
+      ([entry]) => {
+        if (!entry) return
+
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+          playVisibleVideo(video)
+          return
+        }
+
+        video.pause()
+      },
+      {
+        threshold: [0, 0.55, 1],
+      },
+    )
+  }
+})
 </script>
 
 <style scoped>
@@ -73,6 +116,10 @@ const emit = defineEmits<{ open: [index: number] }>()
   cursor: pointer;
 }
 
+.media-grid__item--video {
+  cursor: default;
+}
+
 .media-grid__img {
   width: 100%;
   height: 100%;
@@ -86,28 +133,13 @@ const emit = defineEmits<{ open: [index: number] }>()
   transform: scale(1.02);
 }
 
-/* Subtle bottom gradient — much lighter than before */
-.media-grid__overlay {
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.2) 0%, transparent 40%);
+.media-grid__item--video:hover .media-grid__img,
+.media-grid__video:hover {
+  transform: none;
 }
 
-/* Small corner type badge */
-.media-grid__type-badge {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(4px);
-  padding: 4px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #ffffff;
+.media-grid__video {
+  cursor: default;
 }
+
 </style>

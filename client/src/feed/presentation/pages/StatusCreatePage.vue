@@ -1,10 +1,10 @@
-<!-- Description: Upload-first story/status creation: pick media → preview side by side → add caption → submit. Implements FEED-005. -->
+<!-- Description: Upload-first story/status creation that picks media, previews it, adds a caption, and submits to the backend. -->
 <template>
   <div class="status-create">
     <!-- Back bar -->
     <div class="status-create__topbar">
       <UButton
-        to="/home"
+        :to="feedHomePath"
         color="neutral"
         variant="outline"
         icon="i-ph-arrow-left-bold"
@@ -27,7 +27,7 @@
         <!-- Hidden file input -->
         <input
           ref="fileInputRef"
-          accept="image/*,video/*"
+          :accept="feedStoryAcceptedMimeTypes"
           class="hidden"
           type="file"
           @change="handleFileSelection"
@@ -82,7 +82,7 @@
                 class="rounded-full bg-red-600/70 text-white backdrop-blur-sm hover:bg-red-600/90"
                 @click="removeFile"
               >
-                {{ t("pages.statusCreatePage.removeFile", "Xóa") }}
+                {{ t("pages.statusCreatePage.removeFile") }}
               </UButton>
             </div>
           </template>
@@ -100,19 +100,19 @@
             :ui="{ body: 'p-4' }"
           >
             <label class="status-create__caption-label" for="status-caption">
-              {{ t("pages.statusCreatePage.captionLabel", "Chú thích") }}
+              {{ t("pages.statusCreatePage.captionLabel") }}
             </label>
             <textarea
               id="status-caption"
               ref="captionRef"
               v-model="caption"
               class="status-create__caption-input"
-              :placeholder="t('pages.statusCreatePage.captionPlaceholder', 'Thêm mô tả cho story của bạn…')"
+              :placeholder="t('pages.statusCreatePage.captionPlaceholder')"
               rows="3"
-              maxlength="200"
+              :maxlength="feedStoryCaptionMaxLength"
             />
-            <p class="status-create__caption-count" :class="{ 'text-red-500': caption.length > 180 }">
-              {{ caption.length }}/200
+            <p class="status-create__caption-count" :class="{ 'text-red-500': caption.length > feedStoryCaptionWarningLength }">
+              {{ caption.length }}/{{ feedStoryCaptionMaxLength }}
             </p>
           </UCard>
         </Transition>
@@ -186,6 +186,17 @@
 import { useDropZone, useTextareaAutosize } from "@vueuse/core"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import FormsSubmitBar from "../../../shared-kernel/presentation/components/forms/SubmitBar.vue"
+import {
+  feedHomePath,
+  feedStoryAcceptedMimeTypes,
+  feedStoryCaptionMaxLength,
+  feedStoryCaptionWarningLength,
+  feedStoryCreateRedirectDelay,
+  feedStoryDropZoneDataTypes,
+  feedStoryImageMimePrefix,
+  feedStoryPreviewProgressWidths,
+  feedStoryVideoMimePrefix,
+} from "../../application/constants/story-carousel"
 import type { FeedStoryRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
@@ -214,10 +225,10 @@ const caption = ref("")
 
 // @vueuse/core: drop zone
 const { isOverDropZone } = useDropZone(dropZoneRef, {
-  dataTypes: ["image/*", "video/*", "Files"],
+  dataTypes: [...feedStoryDropZoneDataTypes],
   onDrop(files) {
     const file = files?.[0]
-    if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
+    if (file && (file.type.startsWith(feedStoryImageMimePrefix) || file.type.startsWith(feedStoryVideoMimePrefix))) {
       applyFile(file)
     }
   },
@@ -244,10 +255,14 @@ const currentUserInitials = computed(() =>
     .filter(Boolean)
     .slice(0, 2)
     .map(part => part[0]?.toUpperCase() || "")
-    .join("") || "VN",
+    .join("") || t("pages.statusCreatePage.previewInitialsFallback"),
 )
 
-const previewBarWidth = computed(() => (selectedFile.value ? "76%" : "24%"))
+const previewBarWidth = computed(() =>
+  selectedFile.value
+    ? feedStoryPreviewProgressWidths.ready
+    : feedStoryPreviewProgressWidths.empty,
+)
 
 // ── File helpers ──────────────────────────────────────────
 const revokePreview = () => {
@@ -261,7 +276,7 @@ const applyFile = (file: File | null) => {
   revokePreview()
   selectedFile.value = file
   if (!file) { mediaType.value = null; return }
-  mediaType.value = file.type.startsWith("video/") ? "video" : "image"
+  mediaType.value = file.type.startsWith(feedStoryVideoMimePrefix) ? "video" : "image"
   previewUrl.value = URL.createObjectURL(file)
 }
 
@@ -306,12 +321,13 @@ async function submitStory() {
       description: statusDescription.value,
     })
 
-    window.setTimeout(() => { void router.push("/home") }, 500)
+    window.setTimeout(() => { void router.push(feedHomePath) }, feedStoryCreateRedirectDelay)
   }
   catch (error) {
+    console.error(error)
     pendingCreatedStory.value = null
     submitStatus.value = "error"
-    statusDescription.value = error instanceof Error ? error.message : t("pages.statusCreatePage.errorStatus")
+    statusDescription.value = t("pages.statusCreatePage.errorStatus")
   }
   finally {
     submitting.value = false

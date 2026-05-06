@@ -94,6 +94,7 @@
 <script setup lang="ts">
 import { useStorage } from "@vueuse/core"
 import { useTextareaAutosize } from "@vueuse/core"
+import { feedStoryCreatePath } from "../../application/constants/story-carousel"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
@@ -185,7 +186,7 @@ onMounted(async () => {
 
 function handleCompactAction(value: string) {
   if (value === "story") {
-    void router.push("/status/create")
+    void router.push(feedStoryCreatePath)
     return
   }
   expanded.value = true

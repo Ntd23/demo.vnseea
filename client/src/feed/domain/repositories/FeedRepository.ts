@@ -9,6 +9,8 @@ import type {
   FeedPokeActionResult,
   FeedPokeRecord,
   FeedPostsResponse,
+  FeedStoryActionResult,
+  FeedStoryReactionType,
 } from "../types/feed.types"
 
 export interface FeedRepository {
@@ -27,8 +29,9 @@ export interface FeedRepository {
   getMemories(): Promise<FeedMemoriesResponse>
   getPokes(): Promise<FeedPokeRecord[]>
   runPostAction(input: {
-    action: "like" | "comment" | "save" | "report"
+    action: "like" | "reaction" | "comment" | "save" | "report"
     postId: number
+    reaction?: FeedStoryReactionType
     text?: string
   }): Promise<{ ok: boolean }>
   createPost(input: {
@@ -41,6 +44,19 @@ export interface FeedRepository {
     title?: string
     description?: string
   }): Promise<FeedCreateStoryResponse>
+  runStoryAction(input:
+    | {
+      action: "react"
+      storyId: number
+      reaction: FeedStoryReactionType
+    }
+    | {
+      action: "reply"
+      storyId: number
+      ownerId: number
+      text: string
+    }
+  ): Promise<FeedStoryActionResult>
   runPokeAction(input: {
     action: "create" | "remove"
     userId?: number
