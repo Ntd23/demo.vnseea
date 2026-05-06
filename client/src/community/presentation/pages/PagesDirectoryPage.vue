@@ -1,23 +1,23 @@
 <!-- Description: Renders the pages directory as a content-first list shell matching the legacy PHP page order. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-5 px-3 pb-10 sm:px-5 lg:px-6">
-    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
+  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+    <section class="rounded-[18px] border border-[#e2e8f0] bg-white px-5 py-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+          <p class="text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400">
             {{ activeTabLabel }}
           </p>
-          <h1 class="text-[1.9rem] font-black tracking-[-0.04em] text-[var(--text-primary)] sm:text-[2.3rem]">
+          <h1 class="text-[22px] font-extrabold tracking-[-0.02em] text-slate-900 sm:text-[26px]">
             {{ pageTitle }}
           </h1>
-          <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+          <p class="max-w-3xl text-[14px] leading-6 text-slate-500">
             {{ pageDescription }}
           </p>
         </div>
 
         <NuxtLink
           to="/create-page"
-          class="inline-flex h-11 items-center justify-center rounded-[14px] bg-primary-600 px-5 text-[13px] font-bold text-white shadow-[0_12px_24px_rgba(37,99,235,0.18)] transition hover:-translate-y-0.5 hover:bg-primary-700"
+          class="inline-flex h-10 items-center justify-center rounded-[12px] bg-primary-600 px-4 text-[13px] font-bold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition hover:-translate-y-0.5 hover:bg-primary-700"
         >
           <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
           {{ $t("community.pagesDirectory.createAction") }}
@@ -29,12 +29,11 @@
       v-model:search="search"
       :tabs="tabItems"
       :active-tab="mode"
-      create-to="/create-page"
       :status-label="filterStatusLabel"
     />
 
-    <section class="rounded-[22px] border border-[#dbe3f2] bg-white px-5 py-4 text-[14px] leading-6 text-slate-500 shadow-[0_8px_20px_rgba(15,35,110,0.04)]">
-      <strong class="mr-2 text-[var(--text-primary)]">{{ activeTabLabel }}</strong>
+    <section class="rounded-[16px] border border-[#e2e8f0] bg-white px-5 py-4 text-[14px] leading-6 text-slate-500 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
+      <strong class="mr-2 text-slate-900">{{ activeTabLabel }}</strong>
       {{ activeTabHint }}
     </section>
 
@@ -42,9 +41,9 @@
       <div
         v-for="item in 4"
         :key="item"
-        class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+        class="rounded-[18px] border border-[#e2e8f0] bg-white p-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
       >
-        <USkeleton class="h-36 w-full rounded-[22px]" />
+        <USkeleton class="h-28 w-full rounded-[14px]" />
         <div class="mt-4 space-y-3">
           <USkeleton class="h-6 w-48 rounded-xl" />
           <USkeleton class="h-4 w-full rounded-xl" />
@@ -55,7 +54,7 @@
 
     <section
       v-else-if="visiblePages.length === 0"
-      class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-12 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+      class="rounded-[18px] border border-[#e2e8f0] bg-white px-6 py-12 text-center shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
     >
       <FoundationEmptyState
         :icon="mode === 'mine' ? 'i-ph-flag-duotone' : 'i-ph-magnifying-glass-duotone'"
@@ -64,7 +63,7 @@
       />
     </section>
 
-    <div v-else class="grid gap-4 xl:grid-cols-2">
+    <div v-else class="grid gap-4 lg:grid-cols-2">
       <CommunityPageCard
         v-for="page in visiblePages"
         :key="page.id"

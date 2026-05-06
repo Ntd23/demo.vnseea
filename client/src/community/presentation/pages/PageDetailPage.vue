@@ -11,6 +11,7 @@
             variant="solid"
             size="xs"
             class="rounded-full bg-white/90 text-slate-800 backdrop-blur-sm"
+            :loading="sharePending"
             @click="handleSharePage"
           >
             <Icon name="i-ph-paper-plane-tilt-bold" class="mr-1.5 h-4 w-4" />
@@ -21,6 +22,7 @@
             variant="solid"
             size="xs"
             class="rounded-full bg-white/90 text-slate-800 backdrop-blur-sm"
+            :loading="followPending"
             @click="handleFollowPage"
           >
             <Icon name="i-ph-bell-simple-ringing-bold" class="mr-1.5 h-4 w-4" />
@@ -32,7 +34,13 @@
       <div class="page-detail__identity">
         <div class="page-detail__avatar-wrap">
           <div class="page-detail__avatar" :style="{ background: page.banner }">
-            {{ avatarLabel }}
+            <img
+              v-if="page.avatarUrl"
+              :src="page.avatarUrl"
+              :alt="pageName"
+              class="page-detail__avatar-img"
+            >
+            <span v-else>{{ avatarLabel }}</span>
           </div>
         </div>
         <div class="page-detail__meta">
@@ -65,14 +73,32 @@
           {{ tab.label }}
         </button>
       </div>
+
+      <UAlert
+        v-if="actionMessage"
+        class="mx-4 mb-3 rounded-2xl sm:mx-6"
+        :color="actionState === 'error' ? 'warning' : 'success'"
+        variant="subtle"
+        :icon="actionState === 'error' ? 'i-ph-warning-circle-fill' : 'i-ph-check-circle-fill'"
+        :description="actionMessage"
+      />
     </div>
 
     <div class="page-detail__body">
       <section class="page-detail__main">
         <template v-if="activeTab === 'posts'">
-          <div class="space-y-3">
+          <div v-if="pagePosts.length" class="space-y-3">
             <FeedPostCard v-for="post in pagePosts" :key="post.id" :post="post" />
           </div>
+          <UAlert
+            v-else
+            color="neutral"
+            variant="subtle"
+            icon="i-ph-newspaper-clipping-duotone"
+            :title="t('pages.pageDetailPage.feedEmptyTitle')"
+            :description="t('pages.pageDetailPage.feedEmptyDescription')"
+            class="rounded-[20px]"
+          />
         </template>
         <template v-else>
           <section class="page-detail__card">
@@ -96,13 +122,17 @@
           <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutTitle') }}</h2>
           <p class="page-detail__card-text">{{ pageSummary }}</p>
         </section>
-
         <section class="page-detail__card">
-          <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.followingButton') }}</h2>
-          <div class="grid grid-cols-3 gap-2">
-            <NuxtLink v-for="item in pageConnections" :key="item.slug" :to="`/p/${item.slug}`" class="rounded-[14px] bg-[#f6f8ff] p-2 text-center text-[12px] font-semibold text-slate-700">
-              {{ item.name }}
-            </NuxtLink>
+          <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.interactionTitle') }}</h2>
+          <div class="mt-3 grid grid-cols-2 gap-3">
+            <div class="page-detail__metric">
+              <span>{{ t('pages.pageDetailPage.followStat') }}</span>
+              <strong>{{ page.followers }}</strong>
+            </div>
+            <div class="page-detail__metric">
+              <span>{{ t('pages.pageDetailPage.likeStat') }}</span>
+              <strong>{{ page.likes }}</strong>
+            </div>
           </div>
         </section>
       </aside>
@@ -141,26 +171,88 @@ const { t } = useI18n()
 const translateText = useMaybeTranslatedText()
 const route = useRoute()
 const username = computed(() => String(route.params.name || ""))
-const { page, pagePosts } = useCommunityPageDetail(username)
+const {
+  categoryLabel,
+  followPage,
+  followerCountLabel,
+  likeCountLabel,
+  page,
+  pagePosts,
+} = useCommunityPageDetail(username)
 const activeTab = ref<'posts' | 'about'>('posts')
-const isFollowing = ref(false)
+const toast = useToast()
+const actionState = ref<"idle" | "success" | "error">("idle")
+const actionMessage = ref("")
+const followPending = ref(false)
+const sharePending = ref(false)
+const isFollowing = computed(() => page.value?.following === true)
 const avatarLabel = computed(() => translateText(page.value?.name || '').slice(0, 2).toUpperCase())
 const pageName = computed(() => translateText(page.value?.name || ''))
 const pageSummary = computed(() => translateText(page.value?.summary || ''))
 const responseLabel = computed(() => translateText(page.value?.responseLabel || ''))
 const foundedLabel = computed(() => translateText(page.value?.foundedLabel || ''))
 const locationLabel = computed(() => translateText(page.value?.locationLabel || ''))
-const categoryLabel = computed(() => translateText(page.value?.categoryLabel || ''))
-const followerCountLabel = computed(() => page.value?.followersLabel || '')
-const likeCountLabel = computed(() => page.value?.likesLabel || '')
-const pageConnections = computed(() => page.value?.connections?.slice(0, 6) || [])
 const tabs = computed(() => [
   { key: 'posts', label: t('pages.pageDetailPage.tabs.posts') },
   { key: 'about', label: t('pages.pageDetailPage.tabs.about') },
 ])
 
-async function handleFollowPage() { isFollowing.value = !isFollowing.value }
-async function handleSharePage() { await navigator.clipboard?.writeText(window.location.href) }
+async function handleFollowPage() {
+  if (followPending.value) return
+
+  followPending.value = true
+  actionState.value = "idle"
+  actionMessage.value = ""
+
+  try {
+    const updatedPage = await followPage()
+    actionState.value = "success"
+    actionMessage.value = t("pages.pageDetailPage.followSuccessDescription", {
+      page: translateText(updatedPage?.name || page.value?.name || ""),
+    })
+  }
+  catch (error) {
+    actionState.value = "error"
+    actionMessage.value = error instanceof Error
+      ? error.message
+      : t("pages.pageDetailPage.followErrorDescription")
+  }
+  finally {
+    followPending.value = false
+  }
+}
+
+async function handleSharePage() {
+  if (!import.meta.client || sharePending.value) return
+
+  sharePending.value = true
+  actionState.value = "idle"
+  actionMessage.value = ""
+
+  try {
+    const url = window.location.href
+    if (!navigator.clipboard?.writeText) {
+      throw new Error("clipboard_unavailable")
+    }
+
+    await navigator.clipboard.writeText(url)
+    actionState.value = "success"
+    actionMessage.value = t("pages.pageDetailPage.shareSuccessDescription", { url })
+    toast.add({
+      color: "success",
+      icon: "i-ph-check-circle-fill",
+      title: t("pages.pageDetailPage.sharedButton"),
+      description: url,
+    })
+  }
+  catch {
+    actionState.value = "error"
+    actionMessage.value = t("pages.pageDetailPage.shareErrorDescription")
+  }
+  finally {
+    sharePending.value = false
+  }
+}
 </script>
 
 <style scoped>
@@ -173,6 +265,7 @@ async function handleSharePage() { await navigator.clipboard?.writeText(window.l
 .page-detail__identity { display:flex; gap:14px; align-items:flex-end; padding: 0 16px; margin-top:-44px; position:relative; z-index:1; }
 .page-detail__avatar-wrap { width:120px; height:120px; flex-shrink:0; }
 .page-detail__avatar { width:100%; height:100%; border-radius:50%; border:4px solid #fff; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:900; font-size:2rem; box-shadow:0 4px 20px rgba(0,0,0,.18); }
+.page-detail__avatar-img { width:100%; height:100%; border-radius:50%; object-fit:cover; display:block; }
 .page-detail__meta { min-width:0; padding-bottom:8px; }
 .page-detail__title { margin:0; font-size: clamp(1.5rem, 3vw, 2rem); font-weight:900; color:#0f172a; background:#fff; padding: 6px 16px; border-radius:999px; display:inline-flex; }
 .page-detail__summary { margin-top: 10px; color:#475569; line-height:1.7; }
@@ -186,4 +279,7 @@ async function handleSharePage() { await navigator.clipboard?.writeText(window.l
 .page-detail__card { background:#fff; border-radius:12px; box-shadow:0 1px 2px rgba(0,0,0,.1); padding:16px; }
 .page-detail__card-title { margin:0; font-size:18px; font-weight:900; color:#0f172a; }
 .page-detail__card-text { margin-top:8px; color:#475569; line-height:1.7; }
+.page-detail__metric { border-radius:14px; background:#f6f8ff; padding:12px; }
+.page-detail__metric span { display:block; color:#64748b; font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+.page-detail__metric strong { display:block; margin-top:4px; color:#0f172a; font-size:20px; font-weight:900; }
 </style>

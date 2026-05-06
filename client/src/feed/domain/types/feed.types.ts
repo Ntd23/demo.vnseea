@@ -14,8 +14,11 @@ export type FeedMediaItem = {
 export type FeedCommentRecord = {
   id: number
   author: string
+  authorAvatarUrl?: string
+  authorPath?: string
   role: string
   text: string
+  time?: string
 }
 
 export type FeedPostRecord = {

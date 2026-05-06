@@ -4075,7 +4075,7 @@
       "placeholder": "Write a constructive comment...",
       "helper": "{count}/280 characters",
       "emptyError": "Enter a comment before posting.",
-      "successMessage": "The mock comment has been posted.",
+      "successMessage": "The comment has been posted.",
       "submit": "Post",
       "submitLoading": "Posting...",
       "tooltipEmoji": "Emoji",
@@ -4218,7 +4218,8 @@
       "lightboxTitle": "Post media",
       "commentAuthor": "You",
       "commentRole": "Community member",
-      "commentAddedMessage": "The new comment was added to the mock UI.",
+      "commentAddedMessage": "Your comment was posted.",
+      "justNow": "Just now",
       "lightboxDownloadMessage": "Prepared the mock media download action."
     },
     "shareModal": {

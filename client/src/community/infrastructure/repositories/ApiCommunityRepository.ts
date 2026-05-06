@@ -1,6 +1,7 @@
 // English description: Nuxt API backed repository for community groups, pages, and management flows.
 
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
+import type { FeedPostsResponse } from "../../../feed/domain/types/feed.types"
 import type { CommunityRepository } from "../../domain/repositories/CommunityRepository"
 import type {
   CommunityDraft,
@@ -18,6 +19,7 @@ const communityApiRoutes = {
   groupJoin: (slug: string) => `community/groups/${encodeURIComponent(slug)}/join`,
   pages: "community/pages",
   pageBySlug: (slug: string) => `community/pages/${encodeURIComponent(slug)}`,
+  pagePosts: (slug: string) => `community/pages/${encodeURIComponent(slug)}/posts`,
   pageFollow: (slug: string) => `community/pages/${encodeURIComponent(slug)}/follow`,
 } as const
 
@@ -61,6 +63,11 @@ export function createApiCommunityRepository(): CommunityRepository {
     async followPage(slug: string) {
       return await client.post<CommunityPageRecord>(communityApiRoutes.pageFollow(slug))
     },
+    async getPagePosts(slug, input) {
+      return await client.get<FeedPostsResponse>(communityApiRoutes.pagePosts(slug), {
+        limit: input?.limit,
+        afterPostId: input?.afterPostId,
+      })
+    },
   }
 }
-

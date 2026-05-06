@@ -1,27 +1,27 @@
 <!-- Description: Renders the page settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP page settings structure. -->
 <template>
-  <div v-if="page && previewPage" class="mx-auto max-w-[1280px] space-y-5 pb-10">
-    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-6">
+  <div v-if="page && previewPage" class="page-settings mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+    <section class="page-settings__hero">
       <div class="space-y-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
+        <p class="page-settings__eyebrow">
           {{ $t('community.pageSettings.eyebrow') }}
         </p>
-        <h1 class="text-[1.7rem] font-black tracking-[-0.04em] text-[#243b63] sm:text-[2rem]">
+        <h1 class="page-settings__title">
           {{ $t('community.pageSettings.title', { name: translatedPageName }) }}
         </h1>
-        <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
+        <p class="page-settings__desc">
           {{ $t('community.pageSettings.desc') }}
         </p>
       </div>
 
-      <div class="mt-4 flex flex-wrap gap-2">
-        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
+      <div class="page-settings__pills">
+        <span class="page-settings__pill">
           {{ selectedCategoryLabel }}
         </span>
-        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
+        <span class="page-settings__pill">
           {{ selectedCtaLabel }}
         </span>
-        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
+        <span class="page-settings__pill">
           {{ visibilityLabel }}
         </span>
       </div>
@@ -29,19 +29,19 @@
 
     <div class="grid gap-5 xl:grid-cols-[220px_minmax(0,1fr)]">
       <aside class="xl:sticky xl:top-[84px] xl:self-start">
-        <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-4 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
-          <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
+        <section class="page-settings__nav-card">
+          <p class="page-settings__nav-eyebrow">
             {{ $t('community.pageSettings.eyebrow') }}
           </p>
-          <nav class="mt-4 space-y-2">
+          <nav class="page-settings__nav">
             <a
               v-for="item in settingsNavItems"
               :key="item.id"
               :href="`#${item.id}`"
-              class="flex items-center justify-between rounded-[16px] border border-[#e7ecf6] bg-[#fbfcff] px-4 py-3 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d4f5] hover:bg-white"
+              class="page-settings__nav-link"
             >
               <span>{{ item.label }}</span>
-              <Icon name="i-ph-caret-right-bold" class="h-3.5 w-3.5 text-slate-400" />
+              <Icon name="i-ph-caret-right-bold" class="h-3.5 w-3.5" />
             </a>
           </nav>
         </section>
@@ -74,46 +74,41 @@
               icon="i-ph-floppy-disk-back-bold"
             >
               <div class="flex flex-col gap-4">
-                <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-500">
+                <div class="page-settings__finish-note">
                   <span v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: selectedCtaLabel.toLowerCase() })" />
                 </div>
 
-                <UAlert
+                <div
                   v-if="statusAlert"
-                  :color="statusAlert.color"
-                  variant="subtle"
-                  :icon="statusAlert.icon"
-                  :title="statusAlert.title"
-                  :description="statusAlert.description"
-                  class="rounded-[20px]"
+                  class="page-settings__alert"
+                  :class="`page-settings__alert--${statusAlert.color}`"
                   aria-live="polite"
-                />
+                >
+                  <Icon :name="statusAlert.icon" class="h-5 w-5" />
+                  <div>
+                    <p>{{ statusAlert.title }}</p>
+                    <span>{{ statusAlert.description }}</span>
+                  </div>
+                </div>
 
                 <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <UButton
+                  <NuxtLink
                     :to="pagePath"
-                    color="neutral"
-                    variant="outline"
-                    size="xl"
-                    :disabled="isBusy"
-                    class="justify-center rounded-full"
+                    class="page-settings__button page-settings__button--secondary"
+                    :aria-disabled="isBusy"
                   >
                     <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
                     {{ $t("community.pageSettings.finish.back") }}
-                  </UButton>
+                  </NuxtLink>
 
-                  <UButton
+                  <button
                     type="submit"
-                    color="primary"
-                    variant="solid"
-                    size="xl"
-                    :loading="isBusy"
                     :disabled="isSaveDisabled"
-                    class="justify-center rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
+                    class="page-settings__button page-settings__button--primary"
                   >
-                    <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
+                    <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
                     {{ $t("community.pageSettings.finish.save") }}
-                  </UButton>
+                  </button>
                 </div>
               </div>
             </CommunitySettingsSectionCard>
@@ -137,8 +132,8 @@
     </div>
   </div>
 
-  <div v-else class="mx-auto max-w-[960px] pb-10 pt-4">
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
+  <div v-else class="mx-auto max-w-[960px] px-3 pb-10 pt-4 sm:px-5">
+    <section class="rounded-[18px] border border-[#e2e8f0] bg-white px-6 py-10 text-center shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-sliders-horizontal-fill"
         :title="$t('community.pageSettings.empty.title')"
@@ -519,3 +514,190 @@ const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] =
   return errors
 }
 </script>
+
+<style scoped>
+.page-settings__hero,
+.page-settings__nav-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.page-settings__hero {
+  padding: 20px;
+}
+
+.page-settings__eyebrow,
+.page-settings__nav-eyebrow {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-settings__title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.page-settings__desc {
+  margin: 0;
+  max-width: 760px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.page-settings__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.page-settings__pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.page-settings__nav-card {
+  padding: 16px;
+}
+
+.page-settings__nav {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.page-settings__nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #334155;
+  padding: 11px 13px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.page-settings__nav-link svg {
+  color: #94a3b8;
+}
+
+.page-settings__nav-link:hover {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.page-settings__finish-note {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #64748b;
+  padding: 13px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.page-settings__alert {
+  display: flex;
+  gap: 12px;
+  border: 1px solid #bfdbfe;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 14px 16px;
+}
+
+.page-settings__alert p {
+  margin: 0;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.page-settings__alert span {
+  display: block;
+  margin-top: 3px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.page-settings__alert--success {
+  border-color: #bae6fd;
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.page-settings__alert--error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.page-settings__button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+
+.page-settings__button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.page-settings__button--secondary {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.page-settings__button--secondary:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.page-settings__button--primary {
+  border: 1px solid #2563eb;
+  background: #0000ff;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(0, 0, 255, 0.18);
+}
+
+.page-settings__button--primary:hover {
+  background: #0000d8;
+}
+
+.page-settings__button:disabled,
+.page-settings__button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+</style>

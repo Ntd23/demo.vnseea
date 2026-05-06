@@ -59,6 +59,11 @@ export default defineNuxtConfig({
   features: {
     inlineStyles: true,
   },
+  colorMode: {
+    preference: "light",
+    fallback: "light",
+    classSuffix: "",
+  },
   nitro: {
     apiBaseURL: "/_api",
   },

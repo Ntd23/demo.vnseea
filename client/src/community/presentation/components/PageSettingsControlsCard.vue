@@ -6,12 +6,12 @@
     icon="i-ph-cursor-click-bold"
   >
     <template #trailing>
-      <UBadge color="neutral" variant="soft" class="rounded-full px-4 py-2 text-[12px] font-semibold text-[#243b63]">
+      <span class="page-settings-controls__selected">
         {{ selectedCtaLabel }}
-      </UBadge>
+      </span>
     </template>
 
-    <div class="space-y-5">
+    <div class="page-settings-controls space-y-5">
       <div>
         <p class="text-[12px] font-bold uppercase tracking-[0.16em] text-[#0000ff]/65">
           {{ $t("community.pageSettings.controls.preset") }}
@@ -42,20 +42,19 @@
         </div>
       </div>
 
-      <UAlert
-        color="neutral"
-        variant="subtle"
-        icon="i-ph-info-fill"
-        :title="$t('community.pageSettings.controls.logic')"
-        :description="logicDescription"
-        class="rounded-[20px]"
-      />
+      <div class="page-settings-controls__info">
+        <Icon name="i-ph-info-fill" class="h-5 w-5" />
+        <div>
+          <p>{{ $t('community.pageSettings.controls.logic') }}</p>
+          <span>{{ logicDescription }}</span>
+        </div>
+      </div>
 
       <div class="grid gap-3 lg:grid-cols-2">
         <div
           v-for="toggle in toggleItems"
           :key="toggle.key"
-          class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-4"
+          class="page-settings-controls__toggle"
         >
           <USwitch
             v-model="model[toggle.key]"
@@ -123,3 +122,57 @@ const toggleItems = computed(() => [
   },
 ])
 </script>
+
+<style scoped>
+.page-settings-controls__selected {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.page-settings-controls__info {
+  display: flex;
+  gap: 12px;
+  border: 1px solid #bfdbfe;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 14px 16px;
+}
+
+.page-settings-controls__info p {
+  margin: 0;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.page-settings-controls__info span {
+  display: block;
+  margin-top: 3px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.page-settings-controls__toggle {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 16px;
+}
+
+.page-settings-controls :deep(label) {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.page-settings-controls :deep(p) {
+  color: #64748b;
+}
+</style>

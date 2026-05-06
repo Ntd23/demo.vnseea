@@ -161,7 +161,12 @@
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
         <div v-if="showComments" class="post-card__comments-full">
           <FeedCommentList :comments="localComments" />
-          <FeedCommentComposer @submit="submitComment" />
+          <FeedCommentComposer
+            :current-user-name="currentAuthUserStore.user?.name"
+            :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+            :submitting="commenting"
+            @submit="submitComment"
+          />
         </div>
       </Transition>
     </div>
@@ -384,8 +389,11 @@ async function submitComment(message: string) {
     const comment: FeedCommentRecord = {
       id: Date.now(),
       author: currentAuthUserStore.user?.name || t("feed.postCard.commentAuthor"),
+      authorAvatarUrl: currentAuthUserStore.user?.avatarUrl || "",
+      authorPath: currentAuthUserStore.user?.username ? `/@${currentAuthUserStore.user.username}` : undefined,
       role: currentAuthUserStore.user?.username ? `@${currentAuthUserStore.user.username}` : t("feed.postCard.commentRole"),
       text: message,
+      time: t("feed.postCard.justNow"),
     }
 
     localComments.value = [...localComments.value, comment]

@@ -1,3 +1,5 @@
+<!-- Description: Thin Nuxt route wrapper for the backend-backed community page detail screen. -->
+
 <template>
   <CommunityPresentationPageDetailPage />
 </template>
@@ -15,7 +17,6 @@ const translateText = useMaybeTranslatedText()
 
 const { page } = useCommunityPageDetail(
   computed(() => String(route.params.name || "")),
-  computed(() => route.query),
 )
 
 const canonicalUrl = computed(() =>

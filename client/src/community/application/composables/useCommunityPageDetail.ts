@@ -20,6 +20,17 @@ export function useCommunityPageDetail(
     },
   )
 
+  const { data: pagePostsResponse, status: pagePostsStatus, refresh: refreshPagePosts } = useAsyncData(
+    () => `community:page:${slug.value}:posts`,
+    () => slug.value
+      ? repository.getPagePosts(slug.value, { limit: 10 })
+      : Promise.resolve({ posts: [], hasMore: false, nextOffset: null }),
+    {
+      watch: [slug],
+      default: () => ({ posts: [], hasMore: false, nextOffset: null }),
+    },
+  )
+
   const categoryLabel = computed(() =>
     t(`pages.pageDetailPage.categories.${page.value?.category || "local-business"}`),
   )
@@ -36,7 +47,19 @@ export function useCommunityPageDetail(
     }),
   )
 
-  const pagePosts = computed(() => [])
+  const pagePosts = computed(() => pagePostsResponse.value?.posts ?? [])
+  const pagePostsHasMore = computed(() => pagePostsResponse.value?.hasMore === true)
+  const pagePostsNextOffset = computed(() => pagePostsResponse.value?.nextOffset ?? null)
+
+  async function followPage() {
+    if (!slug.value) {
+      return null
+    }
+
+    const updatedPage = await repository.followPage(slug.value)
+    page.value = updatedPage
+    return updatedPage
+  }
 
   return {
     slug,
@@ -45,8 +68,13 @@ export function useCommunityPageDetail(
     followerCountLabel,
     likeCountLabel,
     pagePosts,
+    pagePostsHasMore,
+    pagePostsNextOffset,
+    pagePostsStatus,
+    refreshPagePosts,
     status,
     error,
+    followPage,
     refresh,
   }
 }
