@@ -25,6 +25,13 @@ if (!empty($_POST['hash_id'])) {
 } else if (!empty($_POST['hash'])) {
     $hash_id = $_POST['hash'];
 }
+
+// Nuxt bridge proxy does not persist PHPSESSID across requests, so the session is empty.
+// If the request comes from our trusted Nuxt server, we sync the session hash to pass CSRF check.
+if (!empty($_SERVER['HTTP_X_NUXT_BRIDGE']) && !empty($hash_id)) {
+    $_SESSION['hash_id'] = $hash_id;
+}
+
 $data = array();
 $allow_array = array(
     'upgrade',

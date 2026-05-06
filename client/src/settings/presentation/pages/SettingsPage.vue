@@ -22,7 +22,6 @@
           </div>
           <div>
             <h1 class="settings-page__page-title">{{ activePage.label }}</h1>
-            <p class="settings-page__page-description">{{ activePage.description }}</p>
           </div>
         </div>
 
@@ -98,7 +97,8 @@ useSeoMeta({
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 12px;  
+  width: 100%;
 }
 
 /* ─── Active page header ──────────────── */

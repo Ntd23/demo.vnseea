@@ -160,10 +160,6 @@ const supportedSections: Record<string, SectionConfig> = {
     action: "update_images_setting",
     fields: ["avatar", "cover"],
   },
-  design: {
-    action: "update_design_setting",
-    fields: ["background_image_status", "css_status", "background_image", "css_file"],
-  },
   password: {
     action: "update_user_password",
     fields: ["current_password", "new_password", "repeat_new_password"],

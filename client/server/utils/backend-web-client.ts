@@ -48,6 +48,7 @@ export function createBackendWebClient(event: H3Event) {
 
   const forwardedHeaders: HeadersInit = {
     "X-Requested-With": "XMLHttpRequest",
+    "X-Nuxt-Bridge": "1",
   }
 
   const cookie = event.node.req.headers.cookie
