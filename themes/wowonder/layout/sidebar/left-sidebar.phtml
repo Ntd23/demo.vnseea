@@ -1,3 +1,4 @@
+<?php // English description: Main left sidebar navigation for logged-in users with smooth-loading links. ?>
 <?php if (Wo_IsMobile() == false) { ?>
 <div class="left-sidebar">
 	<ul>
@@ -7,7 +8,7 @@
 			</a>
 		</li>-->
 		<li class="wow_side_post_fltr">
-			<a href="<?php echo $wo['config']['site_url']; ?>" data-ajax="?index.php?link1=home">
+			<a href="<?php echo $wo['config']['site_url']; ?>" data-ajax="?link1=home">
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#047cac" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/></svg><img src="<?php echo $wo['config']['theme_url'];?>/img/sidebar/home.svg"> <?php echo $wo['lang']['news_feed'];?>
 			</a>
 			<?php if (isset($wo['page']) && $wo['page'] == 'home') { ?>

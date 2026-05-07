@@ -28,19 +28,14 @@ $isAppUserAgent = (
 if ($appViewDisabled) {
     @setcookie('app_view', '', time() - 3600, '/');
     $_COOKIE['app_view'] = '';
-}
-
-if ($appViewRequested) {
+} elseif ($appViewRequested || $isAppUserAgent) {
     @setcookie('app_view', '1', time() + 31556926, '/');
+    $_COOKIE['app_view'] = '1';
 }
 
 $wo['is_app_view'] = (
-    $appViewRequested ||
-    (
-        $isAppUserAgent &&
-        !empty($_COOKIE['app_view']) &&
-        $_COOKIE['app_view'] === '1'
-    )
+    !$appViewDisabled &&
+    ($appViewRequested || $isAppUserAgent)
 );
 
 if (!empty($auto_redirect)) {
