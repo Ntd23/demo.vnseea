@@ -55,6 +55,22 @@ export function createApiCommunityRepository(): CommunityRepository {
       return await client.post<CommunityPageRecord, CommunityDraft>(communityApiRoutes.pages, input)
     },
     async updatePage(slug: string, input: CommunityPageSettingsDraft) {
+      if (input.avatarFile || input.bannerFile) {
+        const formData = new FormData()
+        Object.entries(input).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && key !== "avatarFile" && key !== "bannerFile") {
+            formData.append(key, String(value))
+          }
+        })
+        if (input.avatarFile) formData.append("avatar", input.avatarFile)
+        if (input.bannerFile) formData.append("banner", input.bannerFile)
+
+        return await client.put<CommunityPageRecord>(
+          communityApiRoutes.pageBySlug(slug),
+          formData as any,
+        )
+      }
+
       return await client.put<CommunityPageRecord, CommunityPageSettingsDraft>(
         communityApiRoutes.pageBySlug(slug),
         input,

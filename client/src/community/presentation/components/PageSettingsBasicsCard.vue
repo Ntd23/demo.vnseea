@@ -6,13 +6,7 @@
     icon="i-ph-identification-card-bold"
   >
     <template #trailing>
-      <NuxtLink
-        :to="pagePath"
-        class="page-settings-basics__view-link"
-      >
-        <Icon name="i-ph-arrow-square-out-bold" class="mr-1.5 h-4 w-4" />
-        {{ $t("community.pageSettings.basics.viewPage") }}
-      </NuxtLink>
+      <slot name="trailing" />
     </template>
 
     <div class="page-settings-basics space-y-5">
