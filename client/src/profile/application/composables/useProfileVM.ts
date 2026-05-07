@@ -30,7 +30,7 @@ export function useProfileVM(
   const timelinePostList = ref<ProfileApiResponse["timelinePosts"]>([])
   const timelineHasMoreState = ref(false)
   const timelineNextOffsetState = ref<number | null>(null)
-  const resolvedUsername = computed(() => username.value.trim())
+  const resolvedUsername = computed(() => username.value.trim().replace(/^@+/, ""))
 
   const { data, status, error, refresh } = useAsyncData(
     () => `profile:${resolvedUsername.value}`,
@@ -97,12 +97,6 @@ export function useProfileVM(
           label: t("navigation.mobileMenu.settingsNav.editProfile"),
           icon: "i-ph-pencil-simple-duotone",
           variant: "solid" as const,
-        },
-        {
-          id: "settings",
-          label: t("navigation.mobileMenu.settingsNav.settings"),
-          icon: "i-ph-gear-six-duotone",
-          variant: "soft" as const,
         },
       ]
     }

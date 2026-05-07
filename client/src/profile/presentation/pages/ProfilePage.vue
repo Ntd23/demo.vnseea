@@ -64,18 +64,6 @@
           >
           <div v-else class="profile-page__cover-placeholder" />
           <div class="profile-page__cover-shade" />
-          <!-- Edit cover (owner only) -->
-          <div v-if="profile.isOwner" class="profile-page__cover-actions">
-            <UButton
-              size="xs"
-              color="neutral"
-              variant="solid"
-              icon="i-ph-camera-plus-duotone"
-              class="rounded-full bg-white/90 text-slate-800 backdrop-blur-sm"
-            >
-              {{ $t("pages.profilePage.editCover") }}
-            </UButton>
-          </div>
         </div>
 
         <!-- Identity bar (avatar + name + actions) -->
@@ -100,13 +88,10 @@
           <!-- Name + meta -->
           <div class="profile-page__identity-meta">
             <div class="profile-page__name-row">
-              <h1 class="profile-page__display-name">{{ profile.displayName }}</h1>
+              <h1 class="text-label-primary">{{ profile.displayName }}</h1>
               <UBadge v-if="profile.verified" color="primary" variant="soft" class="rounded-full px-2.5 py-0.5 text-xs font-bold">
                 <Icon name="i-ph-seal-check-fill" class="mr-1 h-3.5 w-3.5" />
                 {{ $t("settings.data.fields.verified") }}
-              </UBadge>
-              <UBadge v-if="profile.roleBadge" color="neutral" variant="soft" class="rounded-full px-2.5 py-0.5 text-xs font-semibold">
-                {{ profile.roleBadge }}
               </UBadge>
             </div>
             <!-- Stats chips -->
@@ -128,10 +113,10 @@
               v-for="action in heroActions"
               :key="action.id"
               :variant="action.variant === 'solid' ? 'solid' : 'soft'"
-              :color="action.variant === 'solid' ? 'primary' : 'neutral'"
+              :color="'primary'"
               :icon="action.icon"
               :loading="actionPending && action.id === 'follow-profile'"
-              class="rounded-full px-4 font-semibold"
+              class="rounded-full btn-primary"
               @click="runHeroAction(action.id)"
             >
               {{ action.label }}
@@ -193,9 +178,8 @@
               <UButton
                 v-if="timelineHasMore && !postSearchQuery"
                 variant="soft"
-                color="neutral"
                 block
-                class="rounded-2xl font-semibold"
+                class="btn-primary profile-page__load-more-button rounded-2xl"
                 :loading="timelineLoadingMore"
                 @click="loadMoreTimelinePosts"
               >
@@ -224,7 +208,7 @@
                   variant="ghost"
                   color="primary"
                   size="xs"
-                  class="font-semibold"
+                  class="text-link"
                   @click="runHeroAction('edit-profile')"
                 >
                   {{ copy.introAction }}
@@ -245,15 +229,6 @@
                   </div>
                 </div>
               </div>
-              <UButton
-                v-if="profile.isOwner"
-                variant="soft"
-                color="neutral"
-                class="mt-3 w-full justify-center rounded-xl font-semibold"
-                @click="runHeroAction('edit-profile')"
-              >
-                {{ copy.introAction }}
-              </UButton>
             </section>
 
             <section class="profile-card">
@@ -264,7 +239,7 @@
                 v-model="postSearchQuery"
                 icon="i-ph-magnifying-glass-duotone"
                 :placeholder="$t('pages.profilePage.sidebarSearchPosts')"
-                class="w-full"
+                class="profile-page__post-search w-full"
               />
             </section>
 
@@ -272,14 +247,12 @@
             <section v-if="following.length" class="profile-card">
               <div class="profile-card__head">
                 <div>
-                  <h2 class="profile-card__title">{{ $t("pages.profilePage.stats.following") }}</h2>
-                  <p class="profile-card__sub">{{ profile.counts.following }} {{ $t("pages.profilePage.stats.following") }}</p>
+                  <h2 class="profile-card__title">{{ $t("pages.profilePage.stats.following") + ' (' + profile.counts.following + ')' }}</h2>
                 </div>
                 <UButton
                   variant="ghost"
-                  color="primary"
                   size="xs"
-                  class="font-semibold"
+                  class="text-link"
                   @click="activeTab = 'friends'"
                 >
                   {{ copy.photosAction }}
@@ -310,14 +283,13 @@
             <section v-if="followers.length" class="profile-card">
               <div class="profile-card__head">
                 <div>
-                  <h2 class="profile-card__title">{{ $t("pages.pageDetailPage.followStat") }}</h2>
-                  <p class="profile-card__sub">{{ profile.counts.followers }} {{ $t("pages.pageDetailPage.followStat") }}</p>
+                  <h2 class="profile-card__title">{{ $t("pages.pageDetailPage.followStat") + ' (' + profile.counts.followers + ')' }}</h2>
                 </div>
                 <UButton
                   variant="ghost"
                   color="primary"
                   size="xs"
-                  class="font-semibold"
+                  class="text-link"
                   @click="activeTab = 'friends'"
                 >
                   {{ copy.photosAction }}
@@ -352,7 +324,7 @@
                   variant="ghost"
                   color="primary"
                   size="xs"
-                  class="font-semibold"
+                  class="text-link"
                   @click="activeTab = 'photos'"
                 >
                   {{ copy.photosAction }}
@@ -390,7 +362,7 @@
                   variant="ghost"
                   color="primary"
                   size="xs"
-                  class="font-semibold"
+                  class="text-link"
                   @click="activeTab = 'albums'"
                 >
                   {{ copy.photosAction }}
@@ -424,7 +396,7 @@
                   variant="ghost"
                   color="primary"
                   size="xs"
-                  class="font-semibold"
+                  class="text-link"
                 >
                   {{ copy.photosAction }}
                 </UButton>
@@ -453,7 +425,7 @@
                   variant="ghost"
                   color="primary"
                   size="xs"
-                  class="font-semibold"
+                  class="text-link"
                 >
                   {{ copy.photosAction }}
                 </UButton>
@@ -474,15 +446,14 @@
             <section v-if="products.length" class="profile-card">
               <div class="profile-card__head">
                 <div>
-                  <h2 class="profile-card__title">{{ $t("pages.profilePage.stats.products") }}</h2>
-                  <p class="profile-card__sub">{{ profile.counts.products }} {{ $t("pages.profilePage.stats.products") }}</p>
+                  <h2 class="profile-card__title">{{ $t("pages.profilePage.stats.products") + ' (' + profile.counts.products + ')' }}</h2>
                 </div>
                 <UButton
                   v-if="hasHiddenProducts"
                   variant="ghost"
                   color="primary"
                   size="xs"
-                  class="font-semibold"
+                  class="text-link"
                   @click="productsExpanded = true"
                 >
                   {{ copy.photosAction }}
@@ -555,7 +526,7 @@
               <p class="profile-card__eyebrow">{{ copy.friendsTitle }}</p>
               <h2 class="profile-card__title">{{ profile.counts.followers }} {{ copy.friendsTitle }}</h2>
             </div>
-            <UButton variant="soft" color="primary" class="rounded-full px-5 font-semibold">
+            <UButton variant="soft" class="text-link">
               {{ copy.friendsAction }}
             </UButton>
           </div>
@@ -676,9 +647,18 @@ import { useProfileVM } from "../../application/composables/useProfileVM"
 
 const route = useRoute()
 
+const normalizeProfileUsername = (value: unknown) => {
+  const raw = Array.isArray(value) ? String(value[0] ?? "") : String(value ?? "")
+
+  try {
+    return decodeURIComponent(raw).trim().replace(/^@+/, "")
+  } catch {
+    return raw.trim().replace(/^@+/, "")
+  }
+}
+
 const username = computed(() => {
-  const value = route.params.username
-  return Array.isArray(value) ? String(value[0] ?? "") : String(value ?? "")
+  return normalizeProfileUsername(route.params.username)
 })
 
 const {
@@ -724,6 +704,7 @@ const {
   background: #ffffff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
+  border-radius: 16px;
 }
 
 @media (max-width: 639px) {
@@ -968,6 +949,13 @@ const {
 
 .profile-page__tab--more {
   color: #65676b;
+  background: transparent;
+  box-shadow: none;
+}
+
+.profile-page__tab--more:hover {
+  background: #f0f2f5;
+  color: #0f172a;
 }
 
 .profile-page__tab-scroll-hint {
@@ -1053,6 +1041,33 @@ const {
   width: 100%;
   min-width: 0;
   max-width: 100%;
+}
+
+.profile-page__load-more-button {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+.profile-page__load-more-button:hover {
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
+.profile-page__post-search :deep(input) {
+  border-color: #e2e8f0;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: none;
+}
+
+.profile-page__post-search :deep(input::placeholder) {
+  color: #94a3b8;
+}
+
+.profile-page__post-search :deep(svg) {
+  color: #64748b;
 }
 
 .profile-page__post-card {

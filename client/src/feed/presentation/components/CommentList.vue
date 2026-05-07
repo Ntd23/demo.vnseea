@@ -44,6 +44,7 @@
         :role="comment.role"
         :text="comment.text"
         :time="comment.time"
+        :attachment="comment.attachment"
       />
     </div>
 

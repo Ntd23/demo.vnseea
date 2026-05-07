@@ -10,6 +10,7 @@ import type {
   FeedMemoriesResponse,
   FeedPokeActionResult,
   FeedPokeRecord,
+  FeedPostActionResult,
   FeedPostsResponse,
   FeedStoryActionResult,
 } from "../../domain/types/feed.types"
@@ -89,7 +90,41 @@ export function createApiFeedRepository(): FeedRepository {
       return await client.get<FeedPokeRecord[]>(feedApiRoutes.poke)
     },
     async runPostAction(input) {
-      return await client.post<{ ok: boolean }, Record<string, unknown>>(
+      const hasCommentFile = Boolean(input.imageFile || input.gifFile || input.audioFile)
+
+      if (hasCommentFile) {
+        const formData = new FormData()
+
+        formData.append("action", input.action)
+        formData.append("postId", String(input.postId))
+
+        if (input.text) {
+          formData.append("text", input.text)
+        }
+
+        if (input.reaction) {
+          formData.append("reaction", input.reaction)
+        }
+
+        if (input.imageFile) {
+          formData.append("commentImage", input.imageFile, input.imageFile.name)
+        }
+
+        if (input.gifFile) {
+          formData.append("commentGif", input.gifFile, input.gifFile.name)
+        }
+
+        if (input.audioFile) {
+          formData.append("commentAudio", input.audioFile, input.audioFile.name)
+        }
+
+        return await client.post<FeedPostActionResult, FormData>(
+          feedApiRoutes.postAction,
+          formData,
+        )
+      }
+
+      return await client.post<FeedPostActionResult, Record<string, unknown>>(
         feedApiRoutes.postAction,
         input,
       )

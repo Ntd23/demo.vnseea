@@ -18,6 +18,7 @@
         v-for="(group, groupIndex) in storyGroups"
         :key="group.key"
         class="story-card"
+        :class="{ 'story-card--unseen': group.hasUnseen }"
         :style="{ '--story-gradient': group.owner.gradient }"
         :data-story-group-index="groupIndex"
         type="button"
@@ -310,6 +311,7 @@ type StoryGroup = {
   key: string
   owner: FeedStoryRecord
   stories: FeedStoryRecord[]
+  hasUnseen: boolean
 }
 
 const { t } = useI18n()
@@ -336,6 +338,8 @@ const reactionLongPressTriggered = ref(false)
 const storyActionState = ref<"idle" | "loading" | "success" | "error">("idle")
 const storyActionError = ref("")
 const selectedReactionByStoryId = ref(new Map<number, FeedStoryReactionType>())
+const viewedStoryIds = ref(new Set<number>())
+const sentStoryViewIds = ref(new Set<number>())
 
 const storyReactionOptions = computed<Array<{
   value: FeedStoryReactionType
@@ -368,11 +372,13 @@ const storyGroups = computed<StoryGroup[]>(() => {
         key,
         owner: story,
         stories: [story],
+        hasUnseen: story.hasUnseen && !viewedStoryIds.value.has(story.id),
       })
       return
     }
 
     existingGroup.stories.push(story)
+    existingGroup.hasUnseen = existingGroup.hasUnseen || (story.hasUnseen && !viewedStoryIds.value.has(story.id))
 
     if (story.id > existingGroup.owner.id) {
       existingGroup.owner = story
@@ -382,6 +388,7 @@ const storyGroups = computed<StoryGroup[]>(() => {
   return Array.from(groups.values()).map(group => ({
     ...group,
     stories: [...group.stories].sort((left, right) => right.id - left.id),
+    hasUnseen: group.stories.some(story => story.hasUnseen && !viewedStoryIds.value.has(story.id)),
   }))
 })
 const activeStoryGroup = computed(() =>
@@ -468,12 +475,14 @@ function openStoryGroup(groupIndex: number, itemIndex = 0) {
     return
   }
 
-  const groupStories = storyGroups.value[groupIndex]?.stories ?? []
+  const activeGroup = storyGroups.value[groupIndex]
+  const groupStories = activeGroup?.stories ?? []
 
   if (!groupStories.length) {
     return
   }
 
+  markStoryGroupViewed(groupStories)
   activeStoryGroupIndex.value = groupIndex
   activeStoryItemIndex.value = Math.min(Math.max(itemIndex, 0), groupStories.length - 1)
 }
@@ -519,6 +528,33 @@ function closeStory() {
   reactionTrayOpen.value = false
   storyActionError.value = ""
   storyActionState.value = "idle"
+}
+
+async function markStoryViewed(story: FeedStoryRecord) {
+  viewedStoryIds.value = new Set([...viewedStoryIds.value, story.id])
+
+  if (sentStoryViewIds.value.has(story.id)) {
+    return
+  }
+
+  sentStoryViewIds.value = new Set([...sentStoryViewIds.value, story.id])
+
+  try {
+    await repository.runStoryAction({
+      action: "view",
+      storyId: story.id,
+    })
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
+function markStoryGroupViewed(stories: FeedStoryRecord[]) {
+  viewedStoryIds.value = new Set([
+    ...viewedStoryIds.value,
+    ...stories.map(story => story.id),
+  ])
 }
 
 function focusReply() {
@@ -726,6 +762,7 @@ watch(activeStoryData, async (story) => {
   reactionTrayOpen.value = false
   storyActionError.value = ""
   storyActionState.value = "idle"
+  await markStoryViewed(story)
   await nextTick()
   dialogRef.value?.focus()
 })
@@ -1176,12 +1213,31 @@ watch(activeStoryData, async (story) => {
   flex-shrink: 0;
   width: 110px;
   height: 160px;
-  border-radius: 14px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   cursor: pointer;
-  border: none;
+  border: 0;
   text-align: left;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.story-card:not(.story-card--create)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  border: 2px solid var(--bg-surface);
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.story-card--unseen:not(.story-card--create)::after {
+  border-color: var(--color-primary-500);
+  box-shadow:
+    inset 0 0 0 1px var(--bg-surface),
+    0 0 0 2px var(--color-primary-100),
+    var(--shadow-md);
 }
 
 @media (min-width: 640px) {
@@ -1226,12 +1282,20 @@ watch(activeStoryData, async (story) => {
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
-  border: 2.5px solid #ffffff;
+  border: 2.5px solid var(--bg-surface);
   color: #ffffff;
   font-size: 12px;
   font-weight: 800;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   z-index: 2;
+}
+
+.story-card--unseen .story-card__avatar {
+  border-color: var(--color-primary-500);
+  box-shadow:
+    0 0 0 2px var(--bg-surface),
+    0 0 0 4px var(--color-primary-100),
+    0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .story-card__avatar-image {
@@ -1262,13 +1326,13 @@ watch(activeStoryData, async (story) => {
   justify-content: center;
   gap: 8px;
   background: #ffffff;
-  border: 2px dashed rgba(0, 0, 255, 0.15);
+  border: 2px dashed var(--border-default);
   text-decoration: none;
 }
 
 .story-card--create:hover {
-  border-color: rgba(0, 0, 255, 0.3);
-  background: rgba(0, 0, 255, 0.02);
+  border-color: var(--border-strong);
+  background: var(--bg-surface-hover);
 }
 
 .story-card__create-icon {

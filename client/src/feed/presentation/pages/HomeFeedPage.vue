@@ -5,16 +5,16 @@
       <FeedStoryCarousel :stories="stories" />
     </div>
 
-    <section class="home-feed__section surface-card">
+    <section v-if="announcement?.title || announcement?.message" class="home-feed__section surface-card">
       <div class="home-feed__announcement">
         <div class="home-feed__announcement-icon">
           <Icon name="i-ph-megaphone-simple-duotone" class="h-5 w-5" />
         </div>
         <div class="home-feed__announcement-copy">
           <p class="home-feed__eyebrow">{{ copy.announcementEyebrow }}</p>
-          <h2 class="home-feed__title">{{ announcement?.title || copy.announcementTitle }}</h2>
-          <p class="home-feed__body">
-            {{ announcement?.message || copy.announcementMessage }}
+          <h2 v-if="announcement.title" class="home-feed__title">{{ announcement.title }}</h2>
+          <p v-if="announcement.message" class="home-feed__body">
+            {{ announcement.message }}
           </p>
         </div>
       </div>
@@ -47,13 +47,25 @@
       </div>
     </section>
 
-    <section class="home-feed__section surface-card">
+    <section
+      v-if="greeting"
+      class="home-feed__section surface-card home-feed__greeting-card"
+      :style="{ '--home-feed-greeting-accent': greeting.accent }"
+    >
       <div class="home-feed__greeting">
-        <div>
+        <div class="home-feed__greeting-copy">
           <p class="home-feed__eyebrow">{{ copy.greetingEyebrow }}</p>
-          <h2 class="home-feed__title">{{ greetingTitle }}</h2>
+          <h2 class="home-feed__title">{{ greeting.title }}</h2>
         </div>
-        <p class="home-feed__body">{{ copy.greetingDescription }}</p>
+        <p class="home-feed__body">{{ greeting.message }}</p>
+        <NuxtImg
+          v-if="greeting.imageUrl"
+          :src="greeting.imageUrl"
+          :alt="greeting.title"
+          class="home-feed__greeting-image"
+          sizes="42px"
+          loading="lazy"
+        />
       </div>
     </section>
 
@@ -94,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FeedAnnouncement, FeedPostRecord, FeedStoryRecord } from "../../domain/types/feed.types"
+import type { FeedAnnouncement, FeedGreeting, FeedPostRecord, FeedStoryRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import FeedPostCard from "../components/PostCard.vue"
 import FeedPublisherBox from "../components/FeedPublisherBox.vue"
@@ -107,15 +119,9 @@ const repository = createApiFeedRepository()
 
 const copy = computed(() => ({
   announcementEyebrow: t("pages.homeFeedPage.announcementEyebrow"),
-  announcementTitle: t("pages.homeFeedPage.announcementTitle"),
-  announcementMessage: t("pages.homeFeedPage.announcementMessage"),
   orderEyebrow: t("pages.homeFeedPage.orderEyebrow"),
   orderTitle: t("pages.homeFeedPage.orderTitle"),
   greetingEyebrow: t("pages.homeFeedPage.greetingEyebrow"),
-  morning: t("pages.homeFeedPage.greetingMorning"),
-  afternoon: t("pages.homeFeedPage.greetingAfternoon"),
-  evening: t("pages.homeFeedPage.greetingEvening"),
-  greetingDescription: t("pages.homeFeedPage.greetingDescription"),
   orders: {
     all: {
       label: t("pages.homeFeedPage.orders.allLabel"),
@@ -139,6 +145,7 @@ const loadingMore = ref(false)
 const posts = ref<FeedPostRecord[]>([])
 const stories = ref<FeedStoryRecord[]>([])
 const announcement = ref<FeedAnnouncement | null>(null)
+const greeting = ref<FeedGreeting | null>(null)
 const hasMore = ref(false)
 const nextOffset = ref<number | null>(null)
 const initialized = ref(false)
@@ -146,24 +153,6 @@ const pendingCreatedStory = useState<FeedStoryRecord | null>("feed-pending-creat
 
 const visiblePosts = computed(() => posts.value)
 const allLoaded = computed(() => !hasMore.value)
-
-const resolveGreetingPeriod = () => {
-  const hour = new Date().getHours()
-  if (hour < 12) return "morning" as const
-  if (hour < 18) return "afternoon" as const
-  return "evening" as const
-}
-
-const greetingPeriod = useState<"morning" | "afternoon" | "evening">(
-  "feed-home-greeting-period",
-  resolveGreetingPeriod,
-)
-
-const greetingTitle = computed(() => {
-  if (greetingPeriod.value === "morning") return copy.value.morning
-  if (greetingPeriod.value === "afternoon") return copy.value.afternoon
-  return copy.value.evening
-})
 
 const canDisplayPostInCurrentFeed = (post: FeedPostRecord) => {
   if (activeOrder.value !== "all" && activeOrder.value !== "following") {
@@ -197,6 +186,7 @@ async function fetchHome(reset = true) {
 
   stories.value = mergePendingStory(response.stories)
   announcement.value = response.announcement
+  greeting.value = response.greeting
   hasMore.value = response.hasMore
   nextOffset.value = response.nextOffset
   posts.value = reset
@@ -247,10 +237,6 @@ async function handlePostCreated(post: FeedPostRecord | null) {
 await fetchHome(true)
 initialized.value = true
 
-onMounted(() => {
-  greetingPeriod.value = resolveGreetingPeriod()
-})
-
 watch(activeOrder, async () => {
   if (!initialized.value) return
   await fetchHome(true)
@@ -269,7 +255,11 @@ watch(activeOrder, async () => {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
+  border-color: var(--border-light);
+  border-radius: var(--radius-xl);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-4);
 }
 
 .home-feed__section-header {
@@ -280,16 +270,18 @@ watch(activeOrder, async () => {
 }
 
 .home-feed__eyebrow {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: var(--text-label);
+  font-weight: var(--weight-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(15, 23, 42, 0.48);
+  color: var(--text-tertiary);
 }
 
 .home-feed__title {
-  font-size: 16px;
-  font-weight: 800;
+  font-family: var(--font-secondary);
+  font-size: var(--text-heading);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
   color: var(--text-primary);
 }
 
@@ -299,7 +291,7 @@ watch(activeOrder, async () => {
 .home-feed__all-loaded {
   font-size: 13px;
   line-height: 1.6;
-  color: rgba(15, 23, 42, 0.64);
+  color: var(--text-secondary);
 }
 
 .home-feed__order-list {
@@ -316,7 +308,7 @@ watch(activeOrder, async () => {
 
 .home-feed__announcement {
   display: flex;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .home-feed__announcement-icon {
@@ -325,9 +317,9 @@ watch(activeOrder, async () => {
   width: 40px;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
-  background: rgba(59, 130, 246, 0.12);
-  color: #2563eb;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-active);
+  color: var(--icon-brand);
 }
 
 .home-feed__announcement-copy,
@@ -336,6 +328,26 @@ watch(activeOrder, async () => {
   flex: 1;
   flex-direction: column;
   gap: 6px;
+}
+
+.home-feed__greeting-card {
+  border-left: 4px solid var(--home-feed-greeting-accent, var(--border-strong));
+}
+
+.home-feed__greeting {
+  position: relative;
+  min-height: 64px;
+  padding-right: 58px;
+}
+
+.home-feed__greeting-image {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  transform: translateY(-50%);
+  object-fit: contain;
 }
 
 .home-feed__order-card {
@@ -349,17 +361,17 @@ watch(activeOrder, async () => {
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
-  border-radius: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #f8fafc;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
   padding: 12px 14px;
   color: var(--text-primary);
   text-align: left;
 }
 
 .home-feed__order-button--active {
-  border-color: rgba(37, 99, 235, 0.24);
-  background: rgba(37, 99, 235, 0.08);
+  border-color: var(--border-strong);
+  background: var(--bg-surface-active);
 }
 
 .home-feed__new-posts,
@@ -372,14 +384,14 @@ watch(activeOrder, async () => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border-radius: 999px;
-  border: 1px solid rgba(37, 99, 235, 0.14);
-  background: #ffffff;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
   padding: 8px 18px;
-  color: #1d4ed8;
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12);
+  color: var(--text-link);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  box-shadow: var(--shadow-md);
 }
 
 .home-feed__new-posts-btn:hover,
@@ -401,13 +413,13 @@ watch(activeOrder, async () => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border-radius: 999px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #ffffff;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
   padding: 10px 22px;
-  color: rgba(15, 23, 42, 0.7);
-  font-size: 13px;
-  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
 }
 
 .home-feed__load-more-btn:disabled {

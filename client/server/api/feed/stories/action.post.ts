@@ -1,4 +1,4 @@
-// English description: Bridges story reactions and story replies to the PHP backend APIs.
+// English description: Bridges story views, reactions, and replies to the PHP backend APIs.
 
 import { createError, readBody } from "h3"
 import { assertBackendApiSuccess } from "../../../utils/backend-api-response"
@@ -19,6 +19,12 @@ type BackendStoryReactionResponse = {
   error?: string
 }
 
+type BackendStoryViewResponse = {
+  status?: number | string
+  story_id?: number | string
+  html?: string
+}
+
 type BackendSendMessageResponse = {
   api_status?: number | string
   message_data?: unknown[]
@@ -36,6 +42,7 @@ const storyActionErrors = {
   reactFailed: "Unable to react to story.",
   replyRequired: "Reply text is required.",
   replyFailed: "Unable to reply to story.",
+  viewFailed: "Unable to mark story as viewed.",
 }
 
 const asString = (value: unknown) =>
@@ -100,6 +107,26 @@ export default defineEventHandler(async (event) => {
       ok: true,
       storyId,
       reaction: storyReaction,
+    }
+  }
+
+  if (action === "view") {
+    const response = await createBackendWebClient(event).postForm<BackendStoryViewResponse, URLSearchParams>(
+      "story_view",
+      new URLSearchParams({ id: String(storyId) }),
+    )
+
+    if (Number(response.status ?? 0) !== 200) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: storyActionErrors.viewFailed,
+        data: response,
+      })
+    }
+
+    return {
+      ok: true,
+      storyId,
     }
   }
 

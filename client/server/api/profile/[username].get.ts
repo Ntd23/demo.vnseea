@@ -245,8 +245,18 @@ const readUserCount = (
   return fallbackList?.length ?? 0
 }
 
+const normalizeRouteUsername = (value: unknown) => {
+  const raw = String(value ?? "")
+
+  try {
+    return decodeURIComponent(raw).trim().replace(/^@+/, "")
+  } catch {
+    return raw.trim().replace(/^@+/, "")
+  }
+}
+
 export default defineEventHandler(async (event): Promise<ProfileApiResponse | null> => {
-  const username = String(getRouterParam(event, "username") ?? "").trim()
+  const username = normalizeRouteUsername(getRouterParam(event, "username"))
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
 
   if (!username) {

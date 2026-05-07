@@ -8,6 +8,7 @@ import type {
   FeedMemoriesResponse,
   FeedPokeActionResult,
   FeedPokeRecord,
+  FeedPostActionResult,
   FeedPostsResponse,
   FeedStoryActionResult,
   FeedStoryReactionType,
@@ -33,7 +34,10 @@ export interface FeedRepository {
     postId: number
     reaction?: FeedStoryReactionType
     text?: string
-  }): Promise<{ ok: boolean }>
+    imageFile?: File
+    gifFile?: File
+    audioFile?: File
+  }): Promise<FeedPostActionResult>
   createPost(input: {
     text: string
     audience?: string
@@ -55,6 +59,10 @@ export interface FeedRepository {
       storyId: number
       ownerId: number
       text: string
+    }
+    | {
+      action: "view"
+      storyId: number
     }
   ): Promise<FeedStoryActionResult>
   runPokeAction(input: {
