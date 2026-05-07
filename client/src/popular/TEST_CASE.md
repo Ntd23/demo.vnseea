@@ -1,67 +1,67 @@
 English description: Test cases for the popular bounded context, covering the ranked popular feed route backed by the normalized feed API bridge.
 
-# Popular Test Cases
+# Test Case Popular
 
-## Scope
+## Phạm vi
 
 - Context: `client/src/popular`
 - Routes:
   - `/popular`
-- Main entry points:
+- Điểm vào chính:
   - `presentation/pages/PopularPage.vue`
   - `feed/infrastructure/repositories/ApiFeedRepository.ts`
   - `server/api/feed/popular.get.ts`
-- Out of scope:
-  - Home feed ranking logic outside the popular page
+- Ngoài phạm vi:
+  - Logic xếp hạng của home feed ngoài route popular
 
-## Environment
+## Môi trường
 
 - Nuxt direct: `http://127.0.0.1:3000`
 - Laragon proxy: `http://demo.vnseea.test:8080`
-- Backend session source: PHP browser cookies
+- Nguồn session backend: PHP browser cookies
 - API bridge:
   - `/_api/feed/popular`
 
 ## Smoke
 
-| ID | Status | Case | Entry | Expected |
+| ID | Status | Case | Entry | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `POPULAR-SMOKE-001` | `[ ]` | Hard reload popular page | `/popular` | Page renders without Nuxt error or broken shell. |
-| `POPULAR-SMOKE-002` | `[ ]` | Client navigation from home to popular | `/home -> /popular` | Route changes without leaving stale home-feed filters or sidebar widgets on the page. |
+| `POPULAR-SMOKE-001` | `[ ]` | Hard reload trang popular | `/popular` | Trang render được, không lỗi Nuxt và không vỡ shell. |
+| `POPULAR-SMOKE-002` | `[ ]` | Điều hướng client từ home sang popular | `/home -> /popular` | Route đổi đúng, không còn sót filter hoặc sidebar widget của home feed. |
 
-## Route Access
+## Truy cập route
 
-| ID | Status | Case | Precondition | Expected |
+| ID | Status | Case | Điều kiện | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `POPULAR-ROUTE-001` | `[ ]` | Direct URL access | Logged-in user | `/popular` opens through the authenticated flow and keeps the correct page heading. |
-| `POPULAR-ROUTE-002` | `[ ]` | Back/forward navigation | After visiting a post-heavy page | Page returns to the ranked feed list without duplicated content blocks. |
+| `POPULAR-ROUTE-001` | `[ ]` | Mở trực tiếp route popular | User đã đăng nhập | `/popular` mở qua authenticated flow và giữ đúng heading của trang. |
+| `POPULAR-ROUTE-002` | `[ ]` | Back/forward navigation | Sau khi đã đi qua trang có nhiều post | Khi quay lại, ranked feed list hiển thị sạch, không lặp content block. |
 
-## API And Data
+## API và dữ liệu
 
-| ID | Status | Case | Entry | Expected |
+| ID | Status | Case | Entry | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `POPULAR-API-001` | `[ ]` | Success response | `/_api/feed/popular` | UI renders real backend posts with normalized `FeedPostCard` data, not a reduced or hardcoded payload. |
-| `POPULAR-API-002` | `[ ]` | Comment/media parity | `/_api/feed/popular` | Posts keep the same comment, reaction, media, and source mapping behavior as other feed routes because the shared mapper is used. |
-| `POPULAR-API-003` | `[ ]` | Empty response | `/_api/feed/popular` | Empty state appears in the main content area and no fake ranked items are shown. |
-| `POPULAR-API-004` | `[ ]` | Error response | `/_api/feed/popular` | Warning alert appears and the page avoids an unhandled Nuxt error screen. |
+| `POPULAR-API-001` | `[ ]` | Response thành công | `/_api/feed/popular` | UI render bài viết thật từ backend với `FeedPostCard` chuẩn hóa, không dùng payload rút gọn hoặc hardcode. |
+| `POPULAR-API-002` | `[ ]` | Parity comment/media | `/_api/feed/popular` | Post giữ đúng mapping comment, reaction, media, source như các route feed khác vì dùng shared mapper. |
+| `POPULAR-API-003` | `[ ]` | Response rỗng | `/_api/feed/popular` | Empty state hiện trong vùng content chính, không có ranked item giả. |
+| `POPULAR-API-004` | `[ ]` | Response lỗi | `/_api/feed/popular` | Có warning alert và không văng sang trang lỗi Nuxt chưa xử lý. |
 
-## UI And UX
+## UI và UX
 
-| ID | Status | Case | Viewport | Expected |
+| ID | Status | Case | Viewport | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `POPULAR-UI-001` | `[ ]` | Desktop layout | `>= 1024px` | Layout is heading then ranked post list only. Old summary cards, filters, and sidebar widgets are absent. |
-| `POPULAR-UI-002` | `[ ]` | Rank indicator | `>= 1024px` | Each item shows rank order consistently and the wrapped `FeedPostCard` still renders the full post body below it. |
-| `POPULAR-UI-003` | `[ ]` | Mobile layout | `390x844` | Ranked cards stack cleanly and no horizontal overflow appears. |
-| `POPULAR-UX-001` | `[ ]` | Loading state | Slow API | Loading surface appears before posts arrive and no stale content flashes from a previous route. |
+| `POPULAR-UI-001` | `[ ]` | Layout desktop | `>= 1024px` | Bố cục là heading -> ranked post list. Không còn summary card, filter, sidebar widget của UI cũ. |
+| `POPULAR-UI-002` | `[ ]` | Hiển thị thứ hạng | `>= 1024px` | Mỗi item có rank rõ ràng, `FeedPostCard` phía dưới vẫn render đủ nội dung post. |
+| `POPULAR-UI-003` | `[ ]` | Layout mobile | `390x844` | Ranked card stack gọn, không overflow ngang. |
+| `POPULAR-UX-001` | `[ ]` | Trạng thái loading | Slow API | Loading surface hiện trước khi post về và không flash dữ liệu cũ của route trước. |
 
-## Verification Commands
+## Lệnh kiểm tra
 
 ```powershell
 cd client
 npm run build
 ```
 
-## Notes
+## Ghi chú
 
-- In DevTools Network, verify the page calls `/_api/feed/popular` only.
-- If a popular post lacks media/comments/reactions that exist on the same post elsewhere in feed surfaces, compare the `/_api/feed/popular` payload first and mark `POPULAR-API-002` as failed.
+- Dùng DevTools Network để xác nhận trang chỉ gọi `/_api/feed/popular`.
+- Nếu một post ở popular thiếu media/comments/reactions trong khi cùng post đó ở feed khác có đủ, so sánh payload `/_api/feed/popular` trước và đánh fail `POPULAR-API-002`.

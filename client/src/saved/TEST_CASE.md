@@ -1,66 +1,66 @@
 English description: Test cases for the saved bounded context, covering the saved-posts route backed by the real feed saved bridge without fallback cards.
 
-# Saved Test Cases
+# Test Case Saved
 
-## Scope
+## Phạm vi
 
 - Context: `client/src/saved`
 - Routes:
   - `/saved-posts`
-- Main entry points:
+- Điểm vào chính:
   - `presentation/pages/SavedPostsPage.vue`
   - `feed/infrastructure/repositories/ApiFeedRepository.ts`
   - `server/api/feed/saved.get.ts`
-- Out of scope:
-  - Save/unsave action logic triggered from other bounded contexts
+- Ngoài phạm vi:
+  - Logic save/unsave được kích hoạt từ context khác
 
-## Environment
+## Môi trường
 
 - Nuxt direct: `http://127.0.0.1:3000`
 - Laragon proxy: `http://demo.vnseea.test:8080`
-- Backend session source: PHP browser cookies
+- Nguồn session backend: PHP browser cookies
 - API bridge:
   - `/_api/feed/saved`
 
 ## Smoke
 
-| ID | Status | Case | Entry | Expected |
+| ID | Status | Case | Entry | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `SAVED-SMOKE-001` | `[ ]` | Hard reload saved posts | `/saved-posts` | Page renders without Nuxt error, blank shell, or mismatched layout. |
-| `SAVED-SMOKE-002` | `[ ]` | Client navigation to saved posts | `/home -> /saved-posts` | Route changes cleanly and old feed filters or hero blocks do not remain on screen. |
+| `SAVED-SMOKE-001` | `[ ]` | Hard reload trang saved posts | `/saved-posts` | Trang render được, không lỗi Nuxt, không trắng trang, không lệch layout. |
+| `SAVED-SMOKE-002` | `[ ]` | Điều hướng client sang saved posts | `/home -> /saved-posts` | Route đổi đúng, không còn hero hoặc feed filter cũ bám lại trên màn hình. |
 
-## Route Access
+## Truy cập route
 
-| ID | Status | Case | Precondition | Expected |
+| ID | Status | Case | Điều kiện | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `SAVED-ROUTE-001` | `[ ]` | Direct URL access | Logged-in user | `/saved-posts` opens through the authenticated flow and keeps the saved heading. |
-| `SAVED-ROUTE-002` | `[ ]` | Back/forward navigation | After viewing feed routes | Saved list restores cleanly without duplicated cards or stale empty state. |
+| `SAVED-ROUTE-001` | `[ ]` | Mở trực tiếp route saved posts | User đã đăng nhập | `/saved-posts` mở qua authenticated flow và giữ đúng heading saved. |
+| `SAVED-ROUTE-002` | `[ ]` | Back/forward navigation | Sau khi đã xem các route feed khác | Khi quay lại, danh sách saved render sạch, không lặp card hoặc giữ empty state sai. |
 
-## API And Data
+## API và dữ liệu
 
-| ID | Status | Case | Entry | Expected |
+| ID | Status | Case | Entry | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `SAVED-API-001` | `[ ]` | Success response | `/_api/feed/saved` | UI renders real saved posts through `FeedPostCard`; custom fallback cards and local mock data are absent. |
-| `SAVED-API-002` | `[ ]` | Empty response | `/_api/feed/saved` | Empty state appears in the main content area with no injected placeholder posts. |
-| `SAVED-API-003` | `[ ]` | Error response | `/_api/feed/saved` | Warning alert appears and the page avoids an unhandled Nuxt error screen. |
-| `SAVED-API-004` | `[ ]` | Feed parity | `/_api/feed/saved` | Saved posts preserve real media, author, reactions, comments, and action state from the normalized feed mapper. |
+| `SAVED-API-001` | `[ ]` | Response thành công | `/_api/feed/saved` | UI render saved posts thật qua `FeedPostCard`; không còn custom fallback card hoặc mock data cục bộ. |
+| `SAVED-API-002` | `[ ]` | Response rỗng | `/_api/feed/saved` | Empty state nằm đúng trong vùng content chính, không tự chèn placeholder post. |
+| `SAVED-API-003` | `[ ]` | Response lỗi | `/_api/feed/saved` | Có warning alert và không văng sang trang lỗi Nuxt chưa xử lý. |
+| `SAVED-API-004` | `[ ]` | Parity dữ liệu feed | `/_api/feed/saved` | Saved post giữ đúng media, author, reactions, comments và action state từ normalized feed mapper. |
 
-## UI And UX
+## UI và UX
 
-| ID | Status | Case | Viewport | Expected |
+| ID | Status | Case | Viewport | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `SAVED-UI-001` | `[ ]` | Desktop layout | `>= 1024px` | Layout is heading then saved post list only. Old hero/stat/removal toolbar blocks are absent. |
-| `SAVED-UI-002` | `[ ]` | Mobile layout | `390x844` | Cards stack vertically with no overflow and the empty state stays readable. |
-| `SAVED-UX-001` | `[ ]` | Loading state | Slow API | Loading surface appears before cards render and no stale list is shown from a previous visit. |
+| `SAVED-UI-001` | `[ ]` | Layout desktop | `>= 1024px` | Bố cục là heading -> saved post list. Không còn hero/stat/removal toolbar của UI cũ. |
+| `SAVED-UI-002` | `[ ]` | Layout mobile | `390x844` | Card stack dọc đúng, không overflow, empty state vẫn dễ đọc. |
+| `SAVED-UX-001` | `[ ]` | Trạng thái loading | Slow API | Loading surface hiện trước khi card render và không flash danh sách cũ của lần truy cập trước. |
 
-## Verification Commands
+## Lệnh kiểm tra
 
 ```powershell
 cd client
 npm run build
 ```
 
-## Notes
+## Ghi chú
 
-- Verify in DevTools Network that the page uses `/_api/feed/saved` only.
-- If the page still shows custom remove-all controls or non-feed card UI, mark `SAVED-UI-001` as failed because the route now follows the PHP content-first shell.
+- Dùng DevTools Network để xác nhận trang chỉ gọi `/_api/feed/saved`.
+- Nếu trang vẫn còn custom remove-all control hoặc UI card không phải `FeedPostCard`, đánh fail `SAVED-UI-001` vì route này đã được đưa về content-first shell theo PHP.

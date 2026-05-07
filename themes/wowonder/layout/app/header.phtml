@@ -35,26 +35,42 @@ $app_switch_account_markup = $app_extract_markup('/<li class="dropdown-switch-ac
 /* ── safe-area & content offset ─────────────────────── */
 body.app-view .content-container {
   margin-top: 0 !important;
-  padding-top: calc(100px + env(safe-area-inset-top, 0px)) !important;
+  padding-top: 100px !important;
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
 }
 body.app-view .content-container.wo-msg-container { padding-bottom: 0 !important; }
 body.app-view .page-margin { margin-top: 0 !important; padding: 8px 12px 0 !important; }
 body.app-view.page-home .page-margin { padding-top: 0 !important; }
+body.app-view.page-home #contnet { margin-top: 0; }
+body.app-view.page-home #filterby-post {
+  display: flex !important;
+  margin-top: 8px !important;
+  position: sticky !important;
+  top: 48px !important;
+  z-index: 1085 !important;
+}
+body.app-view.page-home .post.publisher-box { margin-top: 0; }
 
 /* ── header shell ──────────────────────────────────── */
 body.app-view .app-shell-header {
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 1090;
-  padding-top: env(safe-area-inset-top, 0px);
-  background: #fff;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+  padding: 0;
+  background: var(--app-shell-header-bg, #0a57ff);
+  box-shadow: 0 10px 24px rgba(8, 41, 112, 0.26);
+  transition: box-shadow 0.22s ease;
+}
+body.app-view .app-shell-header.is-hidden {
+  box-shadow: 0 8px 18px rgba(8, 41, 112, 0.22);
 }
 body.app-view .app-shell-header__inner {
+  position: relative;
   max-width: 960px;
   margin: 0 auto;
   display: block;
+  gap: 0;
+  grid-template-columns: none;
 }
 
 /* ── ROW 1: logo + actions ─────────────────────────── */
@@ -62,31 +78,62 @@ body.app-view .app-shell-header__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px 4px;
+  padding: 8px max(12px, env(safe-area-inset-right, 0px)) 4px max(20px, env(safe-area-inset-left, 0px));
   gap: 8px;
+  overflow: visible;
+  max-height: 52px;
+  opacity: 1;
+  transition: max-height 0.22s ease, padding 0.22s ease, opacity 0.16s ease;
+}
+
+body.app-view .app-shell-header.is-hidden .app-shell-header__top {
+  display: none;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 body.app-view .app-shell-header__brand {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: flex-start;
+  gap: 0;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  max-width: calc(100% - 132px);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
   flex-shrink: 0;
   text-decoration: none;
-  color: var(--app-shell-accent, #0866ff) !important;
+  color: #fff !important;
 }
 body.app-view .app-shell-header__brand img {
   display: block;
   width: auto;
-  max-width: min(110px, 36vw);
-  max-height: 28px;
+  max-width: min(124px, 38vw);
+  max-height: 24px;
   object-fit: contain;
   object-position: left center;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 body.app-view .app-shell-header__brand-name {
+  display: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 22px;
   font-weight: 900;
   letter-spacing: -0.5px;
-  line-height: 1;
+  line-height: 1.1;
 }
 
 body.app-view .app-shell-header__actions {
@@ -105,20 +152,25 @@ body.app-view .app-shell-header__action-btn {
   width: 36px; height: 36px;
   display: inline-flex; align-items: center; justify-content: center;
   border-radius: 999px;
-  background: #e4e6eb;
-  color: #050505;
+  background: rgba(255,255,255,0.16);
+  color: #fff;
   text-decoration: none;
   border: none; cursor: pointer;
   flex-shrink: 0;
 }
 body.app-view .app-shell-header__action-btn svg {
   width: 20px; height: 20px;
-  fill: currentColor; flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
 }
 body.app-view .app-shell-header__action-btn.is-active,
 body.app-view .app-shell-header__action.open > .app-shell-header__action-btn {
-  background: #e7f3ff;
-  color: var(--app-shell-accent, #0866ff);
+  background: rgba(255,255,255,0.28);
+  color: #fff;
 }
 
 /* badge on action buttons */
@@ -127,12 +179,101 @@ body.app-view .app-shell-header__action > .new-update-alert {
   top: -3px; right: -4px;
 }
 
+body.app-view .app-shell-search-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 10px;
+  right: 10px;
+  z-index: 5;
+  padding: 0;
+}
+
+body.app-view .app-shell-search-panel.is-open {
+  display: block;
+}
+
+body.app-view .app-shell-header.is-hidden .app-shell-search-panel {
+  display: none !important;
+}
+
+body.app-view .app-shell-search-form {
+  margin: 0;
+}
+
+body.app-view .app-shell-search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 16px;
+  background: #fff;
+}
+
+body.app-view .app-shell-search-field svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: #65758b;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.app-view .app-shell-search-input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  color: #0f172a;
+  font-size: 15px;
+  background: transparent;
+}
+
+body.app-view .app-shell-search-input::placeholder {
+  color: #7b8aa2;
+}
+
+body.app-view .app-shell-search-dropdown {
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.18);
+}
+
+body.app-view .app-shell-search-dropdown .search-dropdown-result {
+  min-height: 0;
+  max-height: min(52vh, 420px);
+  overflow-y: auto;
+}
+
+body.app-view .app-shell-search-dropdown .search-dropdown-result > .center-text {
+  display: block;
+  padding: 16px 18px;
+  color: #64748b;
+}
+
+body.app-view .app-shell-search-dropdown .search-advanced-container {
+  border-top: 1px solid #e5e7eb;
+}
+
+body.app-view .app-shell-search-dropdown .search-advanced-link {
+  display: block;
+  padding: 14px 18px;
+  color: #0a57ff !important;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 /* ── ROW 2: nav tabs ───────────────────────────────── */
 body.app-view .app-shell-header__nav {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
-  border-top: 1px solid #e4e6eb;
+  border-top: 1px solid rgba(255,255,255,0.18);
   padding: 0 4px;
   margin: 0;
   list-style: none;
@@ -157,7 +298,7 @@ body.app-view .app-shell-header__home-link {
   width: 100%;
   min-height: 48px;
   padding: 0 !important;
-  color: #65676b !important;
+  color: rgba(255,255,255,0.72) !important;
   background: transparent !important;
   text-decoration: none;
   border-radius: 8px;
@@ -166,8 +307,8 @@ body.app-view .app-shell-header__home-link {
 body.app-view .app-shell-header__nav-link.is-active,
 body.app-view .app-shell-header__home-link.is-active,
 body.app-view .app-shell-header__nav-item.open > .app-shell-header__nav-link {
-  color: var(--app-shell-accent, #0866ff) !important;
-  border-bottom-color: var(--app-shell-accent, #0866ff);
+  color: #fff !important;
+  border-bottom-color: #fff;
   border-radius: 0;
 }
 
@@ -227,7 +368,7 @@ body.app-view .app-shell-header .dropdown-menu {
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
 }
 body.app-view .app-shell-header .app-shell-header__action .dropdown-menu {
-  left: auto !important; right: 0 !important; transform: none !important;
+  left: -620% !important; transform: none !important;
 }
 body.app-view .app-shell-header .requests-container .dropdown-menu,
 body.app-view .app-shell-header .notification-container .dropdown-menu {
@@ -300,7 +441,11 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
 
 /* ── small screens ─────────────────────────────────── */
 @media (max-width: 380px) {
-  body.app-view .app-shell-header__brand img  { max-width: min(88px, 30vw); max-height: 24px; }
+  body.app-view .app-shell-header__top {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(10px, env(safe-area-inset-right, 0px));
+  }
+  body.app-view .app-shell-header__brand img { max-width: min(108px, 34vw); max-height: 22px; }
   body.app-view .app-shell-header__brand-name { font-size: 19px; }
   body.app-view .app-shell-header__action-btn { width: 32px; height: 32px; }
   body.app-view .app-shell-header__action-btn svg { width: 18px; height: 18px; }
@@ -308,12 +453,16 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
   body.app-view .app-shell-header__home-link svg { width: 22px; height: 22px; max-width: 22px; max-height: 22px; }
   body.app-view .app-shell-header .user-avatar { width: 24px; height: 24px; min-width: 24px; }
   body.app-view .content-container {
-    padding-top: calc(94px + env(safe-area-inset-top, 0px)) !important;
+    padding-top: 94px !important;
   }
   body.app-view .app-shell-header .dropdown-menu.ani-acc-menu {
     top: calc(90px + env(safe-area-inset-top, 0px)) !important;
     right: 8px !important;
     width: min(320px, calc(100vw - 16px));
+  }
+  body.app-view .app-shell-search-panel {
+    left: 8px;
+    right: 8px;
   }
 }
 </style>
@@ -326,10 +475,10 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
 
       <a class="app-shell-header__brand"
          href="<?php echo $wo['config']['site_url']; ?>"
-         data-ajax="?index.php?link1=home"
+         data-ajax="?link1=home"
          aria-label="<?php echo htmlspecialchars($app_site_title, ENT_QUOTES, 'UTF-8'); ?>">
         <img src="<?php echo $app_logo; ?>" alt="<?php echo htmlspecialchars($app_site_title, ENT_QUOTES, 'UTF-8'); ?>" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
-        <span class="app-shell-header__brand-name" style="display:none"><?php echo htmlspecialchars($app_site_title, ENT_QUOTES, 'UTF-8'); ?></span>
+        <span class="app-shell-header__brand-name"><?php echo htmlspecialchars($app_site_title, ENT_QUOTES, 'UTF-8'); ?></span>
       </a>
 
       <div class="app-shell-header__actions">
@@ -340,7 +489,7 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
              class="dropdown-toggle app-shell-header__action-btn<?php echo !empty($app_nav['create']) ? ' is-active' : ''; ?>"
              data-app-nav="create" data-toggle="dropdown" role="button" aria-expanded="false"
              aria-label="<?php echo htmlspecialchars($app_create_label, ENT_QUOTES, 'UTF-8'); ?>">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 11V7h2v4h4v2h-4v4h-2v-4H7v-2h4zm1 11C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
           </a>
           <ul class="dropdown-menu clearfix create_head_menu toleft" role="menu">
             <?php if ($wo['config']['website_mode'] != 'askfm') { ?>
@@ -379,12 +528,13 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
         </div>
 
         <!-- Search -->
-        <a href="<?php echo Wo_SeoLink('index.php?link1=search');?>"
-           data-ajax="?link1=search"
+        <a href="javascript:void(0);"
            class="app-shell-header__action-btn<?php echo !empty($app_nav['search']) ? ' is-active' : ''; ?>"
            data-app-nav="search"
+           data-app-search-toggle="true"
+           aria-expanded="false"
            aria-label="<?php echo htmlspecialchars($app_search_label, ENT_QUOTES, 'UTF-8'); ?>">
-          <svg viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.2-4.2"></path></svg>
         </a>
 
         <!-- Messages -->
@@ -395,12 +545,42 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
              class="app-shell-header__action-btn<?php echo !empty($app_nav['messages']) ? ' is-active' : ''; ?><?php echo $uu_msg ? ' ' . $uu_msg : ''; ?>"
              data-app-nav="messages"
              aria-label="<?php echo htmlspecialchars($app_messages_label, ENT_QUOTES, 'UTF-8'); ?>">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M320.6 72C180.6 72 72 174.3 72 312.6C72 384.9 101.7 447.4 150.1 490.5C158.4 498 156.7 502.4 158.1 548.7C158.2 551.9 159.1 555.1 160.7 557.9C162.3 560.7 164.6 563.1 167.4 564.8C170.2 566.5 173.3 567.6 176.5 567.8C179.7 568 183 567.5 186 566.2C238.9 543 239.6 541.2 248.6 543.6C401.8 585.8 568 487.7 568 312.6C568 174.3 460.6 72 320.6 72zM469.8 257.1L396.8 372.7C394 377 390.4 380.8 386.2 383.7C382 386.6 377.1 388.5 372.1 389.5C367.1 390.5 361.8 390.3 356.8 389.1C351.8 387.9 347.1 385.7 343 382.7L284.9 339.2C282.3 337.3 279.1 336.2 275.9 336.2C272.7 336.2 269.5 337.3 266.9 339.2L188.5 398.6C178 406.5 164.3 394 171.4 382.9L244.4 267.3C247.2 263 250.8 259.2 255 256.3C259.2 253.4 264.1 251.5 269.1 250.5C274.1 249.5 279.4 249.7 284.4 250.9C289.4 252.1 294.1 254.3 298.3 257.3L356.4 300.8C359 302.7 362.2 303.8 365.4 303.8C368.6 303.8 371.8 302.7 374.4 300.8L452.8 241.4C463.2 233.4 476.9 245.9 469.9 257z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.9 8.9 0 0 1-4-.9L3 21l1.9-5.1a8.4 8.4 0 0 1-.9-3.9A8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z"></path></svg>
           </a>
         </div>
 
       </div><!-- /.app-shell-header__actions -->
     </div><!-- /.app-shell-header__top -->
+
+    <div id="app-shell-search-panel" class="app-shell-search-panel" aria-hidden="true">
+      <form id="app-shell-search-form" class="app-shell-search-form" action="<?php echo Wo_SeoLink('index.php?link1=search'); ?>" method="get">
+        <input type="hidden" name="link1" value="search">
+        <div class="app-shell-search-field">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M20 20l-4.2-4.2"></path></svg>
+          <input
+            id="app-shell-search-input"
+            class="app-shell-search-input"
+            type="text"
+            name="query"
+            autocomplete="off"
+            spellcheck="false"
+            dir="auto"
+            placeholder="<?php echo htmlspecialchars($app_search_label, ENT_QUOTES, 'UTF-8'); ?>">
+        </div>
+      </form>
+      <div class="app-shell-search-dropdown">
+        <div id="app-shell-search-results" class="search-dropdown-result"></div>
+        <div id="app-shell-search-advanced" class="search-advanced-container">
+          <a
+            id="app-shell-search-link"
+            href="<?php echo Wo_SeoLink('index.php?link1=search'); ?>"
+            data-ajax="?link1=search"
+            class="search-advanced-link">
+            <?php echo $wo['lang']['view_all_results_for']; ?> <span id="app-shell-repeat-search"></span>
+          </a>
+        </div>
+      </div>
+    </div>
 
     <!-- ── ROW 2: nav tabs ── -->
     <ul class="app-shell-header__nav" aria-label="App navigation">
@@ -410,7 +590,7 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
         <a class="app-shell-header__home-link<?php echo !empty($app_nav['home']) ? ' is-active' : ''; ?>"
            data-app-nav="home"
            href="<?php echo $wo['config']['site_url']; ?>"
-           data-ajax="?index.php?link1=home"
+           data-ajax="?link1=home"
            aria-label="<?php echo htmlspecialchars($wo['lang']['home'], ENT_QUOTES, 'UTF-8'); ?>">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.75L12 3l9 7.75"/><path d="M5.5 9.5V20h13V9.5"/><path d="M9.5 20v-5h5v5"/></svg>
         </a>
@@ -482,6 +662,198 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
 
 <script>
 (function ($) {
+  var lastScrollTop = 0;
+  var ticking = false;
+  var hideThreshold = 64;
+  var deltaThreshold = 10;
+
+  function getAppScrollTop() {
+    var containerTop = $('.content-container').scrollTop() || 0;
+    var bodyTop = document.body ? (document.body.scrollTop || 0) : 0;
+    return Math.max(
+      window.pageYOffset || 0,
+      document.documentElement.scrollTop || 0,
+      bodyTop,
+      containerTop
+    );
+  }
+
+  function closeAppShellOverlays() {
+    $('.app-shell-header .dropdown.open').removeClass('open');
+    appCloseSearchPanel();
+  }
+
+  function setHeaderVisibility(forceShow) {
+    var $header = $('.app-shell-header');
+    if (!$header.length) {
+      return;
+    }
+
+    var currentTop = getAppScrollTop();
+
+    if (forceShow || currentTop <= 8) {
+      $header.removeClass('is-hidden');
+      lastScrollTop = currentTop;
+      return;
+    }
+
+    if (Math.abs(currentTop - lastScrollTop) < deltaThreshold) {
+      return;
+    }
+
+    if (currentTop > lastScrollTop && currentTop > hideThreshold) {
+      closeAppShellOverlays();
+      $header.addClass('is-hidden');
+    } else {
+      $header.removeClass('is-hidden');
+    }
+
+    lastScrollTop = currentTop;
+  }
+
+  function onScroll() {
+    if (ticking) {
+      return;
+    }
+    ticking = true;
+    window.requestAnimationFrame(function () {
+      setHeaderVisibility(false);
+      ticking = false;
+    });
+  }
+
+  function appSearchState() {
+    return {
+      $panel: $('#app-shell-search-panel'),
+      $toggle: $('[data-app-search-toggle]'),
+      $input: $('#app-shell-search-input'),
+      $results: $('#app-shell-search-results'),
+      $advanced: $('#app-shell-search-advanced'),
+      $link: $('#app-shell-search-link'),
+      $repeat: $('#app-shell-repeat-search')
+    };
+  }
+
+  function appSearchUrl(query) {
+    var trimmed = $.trim(query || '');
+    if (!trimmed) {
+      return {
+        href: '<?php echo Wo_SeoLink('index.php?link1=search'); ?>',
+        ajax: '?link1=search'
+      };
+    }
+
+    return {
+      href: '<?php echo Wo_SeoLink('index.php?link1=search&query='); ?>' + encodeURIComponent(trimmed),
+      ajax: '?link1=search&query=' + encodeURIComponent(trimmed)
+    };
+  }
+
+  function appUpdateSearchLink(query) {
+    var state = appSearchState();
+    var trimmed = $.trim(query || '');
+    var searchUrl = appSearchUrl(trimmed);
+
+    state.$repeat.text(trimmed);
+    state.$link.attr('href', searchUrl.href).attr('data-ajax', searchUrl.ajax);
+    state.$advanced.toggle(!!trimmed);
+  }
+
+  function appShowNoResult() {
+    appSearchState().$results.html('<span class="center-text"><?php echo addslashes($wo['lang']['no_result']); ?></span>');
+  }
+
+  function appOpenSearchPanel() {
+    var state = appSearchState();
+    state.$panel.addClass('is-open').attr('aria-hidden', 'false');
+    state.$toggle.attr('aria-expanded', 'true').addClass('is-active');
+    setHeaderVisibility(true);
+    setTimeout(function () {
+      state.$input.trigger('focus');
+      if (!$.trim(state.$input.val())) {
+        appGetRecentSearches();
+      }
+    }, 0);
+  }
+
+  function appCloseSearchPanel() {
+    var state = appSearchState();
+    state.$panel.removeClass('is-open').attr('aria-hidden', 'true');
+    state.$toggle.attr('aria-expanded', 'false');
+    if (!$('body').hasClass('page-search')) {
+      state.$toggle.removeClass('is-active');
+    }
+  }
+
+  function appClearSearches() {
+    $.get(Wo_Ajax_Requests_File(), {f: 'clearChat'}, function (data) {
+      if (data.status == 200) {
+        appGetRecentSearches();
+      }
+    });
+  }
+
+  function appGetRecentSearches() {
+    var state = appSearchState();
+    appUpdateSearchLink('');
+    $.get(Wo_Ajax_Requests_File(), {f: 'search', s: 'recent'}, function (data) {
+      if (data.status == 200 && data.html.length > 0) {
+        state.$results.html(
+          '<div class="recent">' +
+            '<div class="gray recent-searches <?php echo Wo_RightToLeft("pull-left"); ?>"><?php echo addslashes($wo["lang"]["recent_searches"]); ?></div>' +
+            '<div class="gray recent-searches clear-searches pointer <?php echo Wo_RightToLeft("pull-right"); ?>" style="color:#F44336;" data-app-clear-searches="true">' +
+              '<svg style="vertical-align:middle;margin-top:-3px;" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg><?php echo addslashes($wo["lang"]["clear"]); ?>' +
+            '</div><div class="clear"></div></div>' + data.html
+        );
+        return;
+      }
+      state.$results.empty();
+    });
+  }
+
+  function appSearchResult(query, mode) {
+    var state = appSearchState();
+    var trimmed = $.trim(query || '');
+    if (!trimmed) {
+      appGetRecentSearches();
+      return;
+    }
+
+    appUpdateSearchLink(trimmed);
+    $.get(Wo_Ajax_Requests_File(), {f: 'search', s: mode, query: trimmed}, function (data) {
+      if (data.status == 200) {
+        if (data.html.length > 0) {
+          state.$results.html(data.html);
+        } else {
+          appShowNoResult();
+        }
+        return;
+      }
+      appShowNoResult();
+    });
+  }
+
+  function appDetectSearchType(query) {
+    var trimmed = $.trim(query || '');
+    var isHash = typeof smokeTheHash === 'function'
+      ? smokeTheHash(trimmed)
+      : trimmed.indexOf('#') !== -1;
+
+    if (!trimmed) {
+      appGetRecentSearches();
+      return;
+    }
+
+    if (isHash) {
+      appSearchState().$advanced.hide();
+      appSearchResult(trimmed, 'hash');
+      return;
+    }
+
+    appSearchState().$advanced.show();
+    appSearchResult(trimmed, 'normal');
+  }
+
   window.Wo_UpdateAppShellState = function (page) {
     var p = String(page || '').toLowerCase();
     var createPages  = ['create-album','create-ads','create-blog','create-event','create-group','create-page','create_blog','edit-blog','create-ai-blog'];
@@ -494,7 +866,57 @@ body.app-view .app-shell-header .dropdown-switch-account .dropdown-menu {
     else if (profilePages.indexOf(p) !== -1) key = 'profile';
     $('.app-shell-header').find('[data-app-nav]').removeClass('is-active');
     $('.app-shell-header').find('[data-app-nav="' + key + '"]').addClass('is-active');
+    setHeaderVisibility(true);
   };
-  $(function () { window.Wo_UpdateAppShellState('<?php echo $wo['page']; ?>'); });
+
+  $(function () {
+    window.Wo_UpdateAppShellState('<?php echo $wo['page']; ?>');
+    $(window).add(document).add(document.body).add($('.content-container'))
+      .off('scroll.appShellHeader')
+      .on('scroll.appShellHeader', onScroll);
+    $(document)
+      .off('shown.bs.dropdown.appShell hidden.bs.dropdown.appShell click.appShellSearch')
+      .on('shown.bs.dropdown.appShell hidden.bs.dropdown.appShell', '.app-shell-header .dropdown', function () {
+        setHeaderVisibility(true);
+      })
+      .on('click.appShellSearch', '[data-app-search-toggle]', function (event) {
+        event.preventDefault();
+        if (appSearchState().$panel.hasClass('is-open')) {
+          appCloseSearchPanel();
+          return;
+        }
+        appOpenSearchPanel();
+      })
+      .on('click.appShellSearch', '[data-app-clear-searches]', function (event) {
+        event.preventDefault();
+        appClearSearches();
+      })
+      .on('click.appShellSearch', '#app-shell-search-results a, #app-shell-search-link', function () {
+        appCloseSearchPanel();
+      })
+      .on('click.appShellSearch', function (event) {
+        var $target = $(event.target);
+        if (!$target.closest('#app-shell-search-panel, [data-app-search-toggle]').length) {
+          appCloseSearchPanel();
+        }
+      });
+
+    $('#app-shell-search-input')
+      .off('focus.appShellSearch input.appShellSearch keydown.appShellSearch')
+      .on('focus.appShellSearch', function () {
+        if (!$.trim(this.value)) {
+          appGetRecentSearches();
+        }
+      })
+      .on('input.appShellSearch', function () {
+        appDetectSearchType(this.value);
+      })
+      .on('keydown.appShellSearch', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          window.location.href = appSearchUrl(this.value).href;
+        }
+      });
+  });
 })(jQuery);
 </script>

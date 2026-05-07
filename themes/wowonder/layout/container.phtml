@@ -342,7 +342,7 @@
                e.preventDefault();
               var $clicked_link = $(this);
                if (!ISAPI) {
-                 if (url == '?index.php?link1=home') {
+                 if (url == '?index.php?link1=home' || url == '?link1=home') {
                     $get_value = $('#json-data').val();
                     if ($get_value) {
                         $('#load-more-posts').hide();
@@ -375,7 +375,7 @@
                      // $('.effect-load').removeClass('opacity_start');
                      // $('.effect-load').addClass('opacity_stop');
                      if ($('.message-option-btns').length > 0) {
-                          if (json_data.url == 'index.php?index.php?link1=home') {
+                          if (json_data.url == 'index.php?index.php?link1=home' || json_data.url == 'index.php?link1=home' || json_data.url == '?link1=home') {
                               window.location.href = websiteUrl;
                           } else {
                              window.location.href = json_data.url;

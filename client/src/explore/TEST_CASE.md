@@ -1,77 +1,77 @@
 English description: Test cases for the explore bounded context, covering the media-first explore route and hashtag result route backed by feed API bridges.
 
-# Explore Test Cases
+# Test Case Explore
 
-## Scope
+## Phạm vi
 
 - Context: `client/src/explore`
 - Routes:
   - `/explore`
   - `/hashtag/[tag]`
-- Main entry points:
+- Điểm vào chính:
   - `presentation/pages/ExplorePage.vue`
   - `presentation/pages/HashtagPage.vue`
   - `feed/infrastructure/repositories/ApiFeedRepository.ts`
   - `server/api/feed/explore.get.ts`
   - `server/api/feed/hashtag/[tag].get.ts`
-- Out of scope:
-  - Feed home route behavior
-  - SEO for private-only surfaces outside these two pages
+- Ngoài phạm vi:
+  - Hành vi của home feed
+  - SEO của các bề mặt private ngoài 2 route này
 
-## Environment
+## Môi trường
 
 - Nuxt direct: `http://127.0.0.1:3000`
 - Laragon proxy: `http://demo.vnseea.test:8080`
-- Backend session source: PHP browser cookies
+- Nguồn session backend: PHP browser cookies
 - API bridge:
   - `/_api/feed/explore`
   - `/_api/feed/hashtag/[tag]`
 
 ## Smoke
 
-| ID | Status | Case | Entry | Expected |
+| ID | Status | Case | Entry | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `EXP-SMOKE-001` | `[ ]` | Hard reload explore | `/explore` | Page renders without Nuxt error, blank shell, or duplicated layout blocks. |
-| `EXP-SMOKE-002` | `[ ]` | Hard reload hashtag route | `/hashtag/test` | Page renders the matching hashtag heading and post list without hydration mismatch. |
-| `EXP-SMOKE-003` | `[ ]` | Client navigation between explore and hashtag | `/explore -> /hashtag/test` | Route changes cleanly and previous tiles do not remain on screen after navigation. |
+| `EXP-SMOKE-001` | `[ ]` | Hard reload trang explore | `/explore` | Trang render được, không lỗi Nuxt, không trắng trang, không lặp layout block. |
+| `EXP-SMOKE-002` | `[ ]` | Hard reload route hashtag | `/hashtag/test` | Trang render đúng heading hashtag và list bài viết, không bị hydration mismatch. |
+| `EXP-SMOKE-003` | `[ ]` | Điều hướng client giữa explore và hashtag | `/explore -> /hashtag/test` | Route đổi mượt, tile cũ không bị giữ lại sai sau khi chuyển trang. |
 
-## Route Access
+## Truy cập route
 
-| ID | Status | Case | Precondition | Expected |
+| ID | Status | Case | Điều kiện | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `EXP-ROUTE-001` | `[ ]` | Direct URL access | Logged-in user | `/explore` opens normally through authenticated flow. |
-| `EXP-ROUTE-002` | `[ ]` | Direct URL access with valid tag | Existing hashtag | `/hashtag/[tag]` shows results for that exact tag and not a generic discovery feed. |
-| `EXP-ROUTE-003` | `[ ]` | Direct URL access with missing tag data | Unknown hashtag | Page stays stable and falls back to the proper empty state instead of crashing. |
+| `EXP-ROUTE-001` | `[ ]` | Mở trực tiếp route explore | User đã đăng nhập | `/explore` mở bình thường qua authenticated flow. |
+| `EXP-ROUTE-002` | `[ ]` | Mở trực tiếp route hashtag hợp lệ | Hashtag có tồn tại | `/hashtag/[tag]` hiển thị kết quả đúng cho tag đó, không biến thành discovery feed chung. |
+| `EXP-ROUTE-003` | `[ ]` | Mở trực tiếp route hashtag không có dữ liệu | Hashtag không tồn tại | Trang ổn định và hiện empty state đúng, không crash. |
 
-## API And Data
+## API và dữ liệu
 
-| ID | Status | Case | Entry | Expected |
+| ID | Status | Case | Entry | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `EXP-API-001` | `[ ]` | Explore success response | `/_api/feed/explore` | UI renders real backend media posts; no hardcoded summary cards, fake people, or fake page suggestions. |
-| `EXP-API-002` | `[ ]` | Explore empty response | `/_api/feed/explore` | Empty state replaces the grid inside the main content area. |
-| `EXP-API-003` | `[ ]` | Explore error response | `/_api/feed/explore` | Warning alert appears and the page avoids an unhandled Nuxt error. |
-| `EXP-API-004` | `[ ]` | Hashtag success response | `/_api/feed/hashtag/[tag]` | `FeedPostCard` renders normalized real posts for the selected hashtag; no fallback related-tags block appears. |
-| `EXP-API-005` | `[ ]` | Hashtag empty response | `/_api/feed/hashtag/[tag]` | Empty state mentions the current hashtag and no mock posts are appended. |
-| `EXP-API-006` | `[ ]` | Hashtag param change | Navigate from `/hashtag/tag-a` to `/hashtag/tag-b` | New request is sent for the second tag and old results do not persist. |
+| `EXP-API-001` | `[ ]` | Response thành công của explore | `/_api/feed/explore` | UI render media post thật từ backend; không còn summary card, fake people, fake page suggestion. |
+| `EXP-API-002` | `[ ]` | Response rỗng của explore | `/_api/feed/explore` | Empty state thay thế grid ngay trong vùng content chính. |
+| `EXP-API-003` | `[ ]` | Response lỗi của explore | `/_api/feed/explore` | Có warning alert và không văng sang trang lỗi Nuxt chưa xử lý. |
+| `EXP-API-004` | `[ ]` | Response thành công của hashtag | `/_api/feed/hashtag/[tag]` | `FeedPostCard` render bài viết thật đã normalize cho tag được chọn; không còn related-tags block fallback. |
+| `EXP-API-005` | `[ ]` | Response rỗng của hashtag | `/_api/feed/hashtag/[tag]` | Empty state hiển thị đúng tên hashtag hiện tại và không chèn thêm post mock. |
+| `EXP-API-006` | `[ ]` | Đổi param hashtag | Điều hướng từ `/hashtag/tag-a` sang `/hashtag/tag-b` | Có request mới cho tag thứ hai và kết quả cũ không bị giữ lại. |
 
-## UI And UX
+## UI và UX
 
-| ID | Status | Case | Viewport | Expected |
+| ID | Status | Case | Viewport | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `EXP-UI-001` | `[ ]` | Explore desktop layout | `>= 1024px` | Layout is content-first: heading then media grid. Old stats, user lists, and extra dashboard sections are absent. |
-| `EXP-UI-002` | `[ ]` | Explore tile content | `>= 1024px` | Each tile shows backend media, author, and time. Video tiles show video treatment, not reused image placeholders. |
-| `EXP-UI-003` | `[ ]` | Hashtag desktop layout | `>= 1024px` | Layout is heading then post list. Related-tag chips and stats blocks from the old page are absent. |
-| `EXP-UI-004` | `[ ]` | Mobile layout | `390x844` | Grid and post list stack correctly with no overflow or clipped media. |
-| `EXP-UX-001` | `[ ]` | Loading state | Slow API | Loading surface appears before data arrives and no stale content flashes from a previous route. |
+| `EXP-UI-001` | `[ ]` | Layout desktop của explore | `>= 1024px` | Bố cục content-first: heading -> media grid. Không còn stats, user list, dashboard section thừa. |
+| `EXP-UI-002` | `[ ]` | Nội dung tile explore | `>= 1024px` | Mỗi tile hiện đúng media, author, time từ backend. Tile video phải có treatment video, không dùng ảnh placeholder sai. |
+| `EXP-UI-003` | `[ ]` | Layout desktop của hashtag | `>= 1024px` | Bố cục là heading -> post list. Không còn chip related-tag hoặc stat block của UI cũ. |
+| `EXP-UI-004` | `[ ]` | Layout mobile | `390x844` | Grid và post list stack đúng, không overflow, không cắt media. |
+| `EXP-UX-001` | `[ ]` | Trạng thái loading | Slow API | Loading surface hiện trước khi dữ liệu về và không flash nội dung cũ của route trước. |
 
-## Verification Commands
+## Lệnh kiểm tra
 
 ```powershell
 cd client
 npm run build
 ```
 
-## Notes
+## Ghi chú
 
-- Verify with DevTools Network that both routes use `/_api/feed/*` and not direct PHP calls.
-- If any user/page/hashtag summary block reappears on `/explore`, mark the UI case as failed because that content was explicitly removed for parity.
+- Dùng DevTools Network để xác nhận cả 2 route đều gọi `/_api/feed/*`, không gọi trực tiếp PHP.
+- Nếu `/explore` xuất hiện lại block user/page/hashtag summary cũ, đánh fail vì phần đó đã bị loại bỏ để theo parity.
