@@ -1,7 +1,7 @@
 // English description: Returns community group directory data from the PHP backend for the requested mode.
 
 import { getQuery } from "h3"
-import { fetchCommunityGroups } from "./_shared"
+import { fetchCommunityGroups, fetchSuggestedCommunityGroups } from "./_shared"
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
@@ -12,9 +12,8 @@ export default defineEventHandler(async (event) => {
   }
 
   if (mode === "suggested") {
-    return await fetchCommunityGroups(event, "groups")
+    return await fetchSuggestedCommunityGroups(event)
   }
 
   return await fetchCommunityGroups(event, "my_groups")
 })
-
