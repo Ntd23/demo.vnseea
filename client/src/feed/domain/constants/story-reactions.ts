@@ -47,6 +47,14 @@ export const feedStoryReactionBackendIds = feedStoryReactionDefinitions.reduce(
   {} as Record<FeedStoryReactionType, number>,
 )
 
+export const feedStoryReactionByBackendId = feedStoryReactionDefinitions.reduce(
+  (reactions, reaction) => {
+    reactions[String(reaction.backendId)] = reaction.value
+    return reactions
+  },
+  {} as Record<string, FeedStoryReactionType>,
+)
+
 export function isFeedStoryReaction(value: string): value is FeedStoryReactionType {
   return feedStoryReactionValues.includes(value as FeedStoryReactionType)
 }

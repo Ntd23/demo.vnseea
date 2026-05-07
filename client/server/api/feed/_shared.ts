@@ -8,8 +8,11 @@ import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { mapCommunityPageRecord } from "../community/_shared"
 import {
+  feedStoryReactionByBackendId,
   feedStoryReactionBackendIds,
+  feedStoryReactionDefinitions,
   isFeedStoryReaction,
+  type FeedStoryReactionType,
 } from "../../../src/feed/domain/constants/story-reactions"
 import type {
   FeedAnnouncement,
@@ -193,6 +196,44 @@ const firstNumber = (entity: BackendEntity, keys: string[]) => {
   }
 
   return 0
+}
+
+const normalizeReactionType = (value: unknown): FeedStoryReactionType | null => {
+  const rawValue = asString(value)
+
+  if (!rawValue) {
+    return null
+  }
+
+  if (isFeedStoryReaction(rawValue)) {
+    return rawValue
+  }
+
+  const titleValue = `${rawValue.charAt(0).toUpperCase()}${rawValue.slice(1).toLowerCase()}`
+
+  if (isFeedStoryReaction(titleValue)) {
+    return titleValue
+  }
+
+  return feedStoryReactionByBackendId[rawValue] ?? null
+}
+
+const getPostReaction = (entity: BackendEntity) => {
+  const reaction = asRecord(entity.reaction)
+  const reactionType = normalizeReactionType(firstString(reaction, ["type", "reaction"]))
+  const reactions = feedStoryReactionDefinitions
+    .map(({ value, backendId }) => ({
+      reaction: value,
+      count: asNumber(reaction[value]) || asNumber(reaction[value.toLowerCase()]) || asNumber(reaction[String(backendId)]),
+    }))
+    .filter(item => item.count > 0)
+
+  return {
+    isLiked: isTruthy(entity.is_liked) || isTruthy(reaction.is_reacted),
+    reaction: reactionType,
+    count: asNumber(reaction.count),
+    reactions,
+  }
 }
 
 const hasUnseenStoryState = (story: BackendEntity, owner: BackendEntity) => {
@@ -483,7 +524,7 @@ const mapCommentRecord = (
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(publisher, ["avatar", "avatar_full"])),
     authorPath: username ? `/@${username}` : undefined,
-    role: firstString(publisher, ["working", "school", "address"]) || author,
+    role: firstString(publisher, ["working", "school"]) || author,
     text: stripHtml(firstString(entity, ["text", "Orginaltext", "comment"])),
     time: firstString(entity, ["time_text", "posted", "time"]) || "",
     attachment,
@@ -525,6 +566,7 @@ export const mapPostRecord = (
     : mediaItems.some(item => item.type === "video")
       ? "video"
       : "image"
+  const postReaction = getPostReaction(entity)
 
   return {
     id: firstNumber(entity, ["post_id", "id"]),
@@ -540,7 +582,7 @@ export const mapPostRecord = (
     text,
     tags: extractTags(entity),
     stats: {
-      likes: firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
+      likes: postReaction.count || firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
       comments: firstNumber(entity, ["post_comments", "comments", "comments_count", "comments_count_total"]),
       shares: firstNumber(entity, ["post_shares", "shares", "shares_count"]),
       views: firstNumber(entity, ["post_views", "view_count", "views"]),
@@ -552,6 +594,9 @@ export const mapPostRecord = (
     sourceLabel: pageSlug ? "page" : groupSlug ? "group" : "feed",
     sourcePath,
     isSaved: isTruthy(entity.is_post_saved) || isTruthy(entity.is_saved),
+    isLiked: postReaction.isLiked,
+    reaction: postReaction.reaction,
+    reactions: postReaction.reactions,
   }
 }
 

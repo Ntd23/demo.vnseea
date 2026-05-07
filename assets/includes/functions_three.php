@@ -7113,8 +7113,12 @@ function Wo_GetFriendsStatusAPI($data_array = array('limit' => 8, 'user_id' => 0
 		$offset       = Wo_Secure($data_array['offset']);
 		$offset_query = " AND `user_id` < $offset ";
 	}
-	// $query     = "SELECT * FROM " . T_USER_STORY . " WHERE (user_id IN (SELECT following_id FROM " . T_FOLLOWERS . " WHERE follower_id = '$user_id') OR user_id = $user_id) AND user_id IN (SELECT user_id FROM " . T_USERS . " WHERE active = '1') $group_by ORDER BY id DESC";
-	$query     = "SELECT DISTINCT user_id,title,description,posted,expire,thumbnail,(SELECT MAX(us.id) FROM " . T_USER_STORY . " us WHERE us.user_id = " . T_USER_STORY . ".user_id) AS id  FROM " . T_USER_STORY . " WHERE (user_id IN (SELECT following_id FROM " . T_FOLLOWERS . " WHERE follower_id = '$user_id') OR user_id = $user_id) AND user_id IN (SELECT user_id FROM " . T_USERS . " WHERE active = '1') $offset_query $group_by ORDER BY user_id DESC LIMIT " . $data_array['limit'];
+		$story_filter = "(user_id IN (SELECT following_id FROM " . T_FOLLOWERS . " WHERE follower_id = '$user_id') OR user_id = $user_id) AND user_id IN (SELECT user_id FROM " . T_USERS . " WHERE active = '1') $offset_query";
+		if (!empty($data_array['api'])) {
+			$query = "SELECT * FROM " . T_USER_STORY . " WHERE $story_filter ORDER BY user_id DESC LIMIT " . $data_array['limit'];
+		} else {
+			$query = "SELECT story.* FROM " . T_USER_STORY . " story INNER JOIN (SELECT user_id, MAX(id) AS id FROM " . T_USER_STORY . " WHERE $story_filter GROUP BY user_id) latest ON latest.id = story.id ORDER BY story.user_id DESC LIMIT " . $data_array['limit'];
+		}
 	$query_run = mysqli_query($sqlConnect, $query);
 	while ($fetched_data = mysqli_fetch_assoc($query_run)) {
 		$story_images              = Wo_GetStoryMedia($fetched_data['id'], 'image');

@@ -39,7 +39,9 @@ const publicApiBase = requireEnv("NUXT_PUBLIC_API_BASE")
 const backendApiBase = requireEnv("NUXT_BACKEND_API_BASE")
 const backendServerKey = requireEnv("NUXT_BACKEND_SERVER_KEY")
 const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL")
-const backendWebBase = normalizeBackendWebBase(backendApiBase)
+const backendWebBase = normalizeBackendWebBase(
+  process.env.NUXT_PUBLIC_BACKEND_WEB_BASE?.trim() || backendApiBase,
+)
 const imageDomains = Array.from(new Set([
   extractHostname(publicSiteUrl),
   extractHostname(backendWebBase),

@@ -28,7 +28,7 @@ export const getBackendBaseCandidates = (value: string) => {
   try {
     const url = new URL(normalized)
 
-    if (url.hostname.endsWith(".test")) {
+    if (url.hostname.endsWith(".test") && !url.port) {
       candidates.add(`http://${url.hostname}:8080`)
       candidates.add(`https://${url.hostname}:8443`)
     }
