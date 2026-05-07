@@ -1,3 +1,4 @@
+<?php // English description: Main Wowonder container with app-view support and a Facebook-style header-only shell. ?>
 <!DOCTYPE html>
 <html lang="<?php echo($wo['lang_attr']); ?>" translate="no">
    <head>
@@ -199,6 +200,7 @@
       <style>
         body.app-view {
           --app-shell-accent: <?php echo !empty($wo['config']['btn_background_color']) ? $wo['config']['btn_background_color'] : '#2563eb'; ?>;
+          --app-shell-header-bg: <?php echo !empty($wo['config']['header_background']) ? $wo['config']['header_background'] : '#0866ff'; ?>;
           --app-shell-surface: #ffffff;
           --app-shell-ink: #0f172a;
         }
@@ -415,7 +417,10 @@
                         window.location.href = document.location;
                       };
 
-                     if (json_data.page == 'timeline' || json_data.page == 'page' || json_data.page == 'group') {
+                     if ($('body').hasClass('app-view')) {
+                       $('.content-container').css('margin-top', '0');
+                       $('.ad-placement-header-footer').find('.contnet').css('margin-top', '0');
+                     } else if (json_data.page == 'timeline' || json_data.page == 'page' || json_data.page == 'group') {
                        $('.content-container').css('margin-top', '25px');
                        $('.ad-placement-header-footer').find('.contnet').css('margin-top', '20px');
                      } else {
@@ -436,6 +441,9 @@
                      }
                      document.title = decodeHtml(json_data.title);
                      document_title = decodeHtml(json_data.title);
+                     if (typeof window.Wo_UpdateAppShellState === 'function') {
+                       window.Wo_UpdateAppShellState(json_data.page);
+                     }
                     //  $("html, body").animate({ scrollTop: 0 }, 150);
                      var scroll_to = 0;
                      if (json_data.page == 'setting' && $(window).width() < 720 && $("#wo_main_sett_mid").length > 0) {
@@ -857,6 +865,10 @@
       $app_site_title = !empty($wo['config']['siteTitle'])
         ? $wo['config']['siteTitle']
         : (!empty($wo['config']['site_name']) ? $wo['config']['site_name'] : 'VNSEEA');
+      $app_home_pages = array('home', 'welcome', 'get_news_feed');
+      $app_search_pages = array('search', 'explore', 'most_liked', 'products', 'blogs', 'forum', 'movies', 'jobs');
+      $app_create_pages = array('create-album', 'create-ads', 'create-blog', 'create-event', 'create-group', 'create-page', 'create_blog', 'edit-blog', 'create-ai-blog');
+      $app_profile_pages = array('timeline', 'setting', 'wallet', 'subscriptions');
       $app_title = $app_site_title;
       if ($wo['page'] == 'home' && !empty($wo['lang']['home'])) {
         $app_title = $wo['lang']['home'];
@@ -893,17 +905,18 @@
       $wo['app_shell'] = array(
         'title' => $app_title,
         'subtitle' => $app_site_title,
-        'show_header' => $is_app_view && !in_array($wo['page'], array('get_news_feed', 'maintenance', 'video-api'), true),
-        'show_bottom_nav' => $is_app_view && !empty($wo['loggedin']) && !in_array($wo['page'], array('maintenance', 'video-api'), true),
+        'show_header' => $is_app_view && !empty($wo['loggedin']) && !in_array($wo['page'], array('get_news_feed', 'maintenance', 'video-api'), true),
+        'show_bottom_nav' => false,
         'show_back' => !$app_is_own_timeline && !in_array($wo['page'], array('home', 'welcome', 'messages', 'search'), true),
         'show_settings_action' => $is_app_view && !empty($wo['loggedin']) && $wo['page'] != 'setting',
         'back_url' => $wo['config']['site_url'],
         'search_label' => $app_search_label,
         'nav' => array(
-          'home' => $wo['page'] == 'home',
-          'search' => $wo['page'] == 'search',
+          'home' => in_array($wo['page'], $app_home_pages, true),
+          'create' => in_array($wo['page'], $app_create_pages, true),
+          'search' => in_array($wo['page'], $app_search_pages, true),
           'messages' => $wo['page'] == 'messages',
-          'profile' => $app_is_own_timeline || $wo['page'] == 'setting'
+          'profile' => $app_is_own_timeline || in_array($wo['page'], $app_profile_pages, true)
         )
       );
       ?>
@@ -915,11 +928,14 @@
     <div id="focus-overlay"></div>
       <input type="hidden" class="seen_stories_users_ids" value="">
       <input type="hidden" class="main_session" value="<?php echo Wo_CreateMainSession();?>">
-      <?php if($wo['page'] != 'welcome' && $wo['page'] != 'get_news_feed' && $wo['page'] != 'maintenance' && $wo['page'] != 'video-api'): ?>
+      <?php if(empty($wo['is_app_view']) && $wo['page'] != 'welcome' && $wo['page'] != 'get_news_feed' && $wo['page'] != 'maintenance' && $wo['page'] != 'video-api'): ?>
          <header class="header-container">
             <?php echo Wo_LoadPage( 'header/content'); ?>
          </header>
       <?php endif; ?>
+      <?php if (!empty($wo['app_shell']['show_header'])) { ?>
+      <?php echo Wo_LoadPage('app/header'); ?>
+      <?php } ?>
       <?php
       $container = 'container';
       if ($wo['page'] == 'welcome') {
@@ -976,9 +992,6 @@
                ?>
          </div>
       </div>
-      <?php if (!empty($wo['app_shell']['show_bottom_nav'])) { ?>
-      <?php echo Wo_LoadPage('app/bottom-nav'); ?>
-      <?php } ?>
       <!-- Load modal alerts -->
     <?php echo Wo_LoadPage('modals/site-alerts'); ?>
 

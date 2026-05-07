@@ -4082,7 +4082,11 @@
       "tooltipImage": "Ảnh",
       "tooltipGif": "GIF",
       "tooltipSticker": "Sticker",
-      "tooltipMention": "Nhắc đến"
+      "tooltipMention": "Nhắc đến",
+      "tooltipVoice": "Ghi am",
+      "removeAttachment": "Xoa tep dinh kem",
+      "recording": "Dang ghi am...",
+      "selectedAttachment": "Da chon tep dinh kem"
     },
     "publisherBox": {
       "prompt": "Chuyện gì đang xảy ra vậy? Hashtag, mention, link...",

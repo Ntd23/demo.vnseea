@@ -232,11 +232,11 @@
 .surface-muted      { background-color: var(--bg-muted); }
 
 /* --- Button Base Utilities --- */
-.btn-primary        { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 20px; background: var(--bg-brand); color: var(--text-inverse); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-semibold); border-radius: var(--radius-full); box-shadow: var(--shadow-brand); border: none; cursor: pointer; transition: all var(--duration-normal) var(--ease-default); }
+.btn-primary        { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 20px; background: var(--bg-brand); color: var(--text-inverse); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-semibold); border-radius: var(--radius-full); box-shadow: var(--shadow-brand); border: none; cursor: pointer; }
 .btn-primary:hover  { background: var(--bg-brand-hover); transform: translateY(-1px); }
 .btn-primary:active { transform: scale(0.97); }
 
-.btn-secondary      { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 20px; background: transparent; color: var(--text-brand); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-semibold); border-radius: var(--radius-full); border: 1px solid var(--border-default); cursor: pointer; transition: all var(--duration-normal) var(--ease-default); }
+.btn-secondary      { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 20px; background: transparent; color: var(--text-brand); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-semibold); border-radius: var(--radius-full); border: 1px solid var(--border-default); cursor: pointer;}
 .btn-secondary:hover { background: var(--bg-surface-active); border-color: var(--border-strong); }
 
 .btn-ghost          { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 16px; background: transparent; color: var(--text-secondary); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-medium); border-radius: var(--radius-md); border: none; cursor: pointer; transition: all var(--duration-fast) var(--ease-default); }

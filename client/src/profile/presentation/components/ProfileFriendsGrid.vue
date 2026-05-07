@@ -1,8 +1,7 @@
   <div class="surface-card p-5 space-y-4">
     <div class="flex items-center justify-between">
       <div class="space-y-0.5">
-        <h3 class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.friendsGrid.title") }}</h3>
-        <p class="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-widest">{{ t("pages.profilePage.friendsGrid.friendCount", { count: friendCount }) }}</p>
+        <h3 class="text-sm font-black text-[var(--text-primary)] tracking-tight">{{ t("pages.profilePage.friendsGrid.title") }} ({friendCount})</h3>
       </div>
       <UButton
         variant="ghost"

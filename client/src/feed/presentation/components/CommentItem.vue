@@ -1,4 +1,4 @@
-<!-- Description: Renders one backend-provided feed comment without mock reply or menu actions. -->
+<!-- Description: Renders one backend-provided feed comment with PHP-parity media attachment support. -->
 <template>
   <article class="comment-item">
     <NuxtLink v-if="authorPath" :to="authorPath" class="comment-item__avatar" :aria-label="author">
@@ -31,7 +31,21 @@
           <p v-else class="comment-item__author">{{ author }}</p>
           <span v-if="role && role !== author" class="comment-item__role">{{ role }}</span>
         </div>
-        <p class="comment-item__text">{{ text }}</p>
+        <p v-if="text" class="comment-item__text">{{ text }}</p>
+        <NuxtImg
+          v-if="attachment && attachment.type !== 'audio'"
+          :src="attachment.url"
+          :alt="attachment.name || text || author"
+          class="comment-item__image"
+          loading="lazy"
+          sizes="240px"
+        />
+        <audio
+          v-else-if="attachment"
+          class="comment-item__audio"
+          :src="attachment.url"
+          controls
+        />
       </div>
       <div v-if="time" class="comment-item__footer">
         <span>{{ time }}</span>
@@ -41,6 +55,8 @@
 </template>
 
 <script setup lang="ts">
+import type { FeedCommentAttachment } from "../../domain/types/feed.types"
+
 const props = defineProps<{
   author: string
   authorAvatarUrl?: string
@@ -48,6 +64,7 @@ const props = defineProps<{
   role: string
   text: string
   time?: string
+  attachment?: FeedCommentAttachment
 }>()
 
 const initials = computed(() => {
@@ -142,6 +159,21 @@ const initials = computed(() => {
   line-height: 1.55;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.comment-item__image {
+  display: block;
+  width: min(240px, 100%);
+  max-height: 260px;
+  margin-top: 8px;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.comment-item__audio {
+  display: block;
+  width: min(280px, 100%);
+  margin-top: 8px;
 }
 
 .comment-item__footer {

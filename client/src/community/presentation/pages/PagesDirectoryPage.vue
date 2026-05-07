@@ -1,4 +1,4 @@
-<!-- Description: Renders the pages directory as a content-first list shell matching the legacy PHP page order. -->
+<!-- Description: Renders the legacy-style pages directory with a simple heading, tabs, and backend-backed list content. -->
 <template>
   <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
     <CommunityPageDirectoryTabsBar v-model:search="search" :tabs="tabItems" :active-tab="mode"
@@ -51,7 +51,6 @@
 </template>
 
 <script setup lang="ts">
-import { useStorage, watchDebounced } from "@vueuse/core"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityPageCard from "../components/PageCard.vue"
 import CommunityPageDirectoryTabsBar from "../components/PageDirectoryTabsBar.vue"
@@ -59,14 +58,8 @@ import {
   communityPageRouteMap,
   communityPageTabs,
 } from "../../domain/constants/community-options"
-import { appendCommunityQuery } from "../../domain/services/community-helpers.service"
 import type { CommunityPageTab } from "../../domain/types/community.types"
 import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
-
-function readQueryValue(value: unknown) {
-  if (Array.isArray(value)) return String(value[0] || "")
-  return typeof value === "string" ? value : ""
-}
 
 const props = withDefaults(defineProps<{
   mode?: CommunityPageTab
@@ -74,8 +67,6 @@ const props = withDefaults(defineProps<{
   mode: "mine",
 })
 
-const route = useRoute()
-const router = useRouter()
 const { t } = useI18n()
 const repository = createApiCommunityRepository()
 
@@ -97,30 +88,6 @@ const { data: pagesData, status } = useAsyncData(
   },
 )
 
-const { data: countsData } = useAsyncData(
-  "community:pages:counts",
-  async () => {
-    const [mine, suggested, favorite] = await Promise.all([
-      repository.getPages("mine"),
-      repository.getPages("suggested"),
-      repository.getPages("favorite"),
-    ])
-
-    return {
-      mine: mine.length,
-      suggested: suggested.length,
-      favorite: favorite.length,
-    }
-  },
-  {
-    default: () => ({
-      mine: 0,
-      suggested: 0,
-      favorite: 0,
-    }),
-  },
-)
-
 const pending = computed(() => status.value === "pending")
 const pages = computed(() => pagesData.value ?? [])
 
@@ -130,36 +97,10 @@ const pageTitle = computed(() => {
   return t("community.pagesDirectory.title")
 })
 
-const pageDescription = computed(() => {
-  if (props.mode === "suggested") return t("community.pagesDirectory.descSuggested")
-  if (props.mode === "favorite") return t("community.pagesDirectory.descFavorite")
-  return t("community.pagesDirectory.desc")
-})
-
-const visiblePages = computed(() => {
-  const keyword = search.value.trim().toLowerCase()
-  if (!keyword) return pages.value
-
-  return pages.value.filter((page) => {
-    const searchable = [
-      page.name,
-      page.slug,
-      page.summary,
-      page.ownerLabel,
-      page.responseLabel,
-      page.locationLabel || "",
-      ...page.tags,
-    ].join(" ").toLowerCase()
-
-    return searchable.includes(keyword)
-  })
-})
-
 const tabItems = computed(() =>
   communityPageTabs.map(tab => ({
     ...tab,
-    to: appendCommunityQuery(communityPageRouteMap[tab.value], { q: search.value.trim() }),
-    count: countsData.value?.[tab.value] ?? 0,
+    to: communityPageRouteMap[tab.value],
   })),
 )
 
@@ -168,73 +109,6 @@ const actionLabel = computed(() => {
   if (props.mode === "favorite") return t("community.pagesDirectory.actionFavorite")
   return t("community.pagesDirectory.actionMine")
 })
-
-const activeTabLabel = computed(() => {
-  const tab = communityPageTabs.find(tab => tab.value === props.mode)
-  return tab ? t(tab.label) : t("community.pagesDirectory.title")
-})
-
-const activeTabHint = computed(() => {
-  if (props.mode === "mine") return t("community.pagesDirectory.hintMine")
-  if (props.mode === "suggested") return t("community.pagesDirectory.hintSuggested")
-  return t("community.pagesDirectory.hintFavorite")
-})
-
-const filterStatusLabel = computed(() =>
-  search.value.trim()
-    ? t("community.pagesDirectory.resultsActive", { count: visiblePages.value.length })
-    : t("community.pagesDirectory.resultsIdle"),
-)
-
-watch(
-  () => route.query.q,
-  (value) => {
-    const nextValue = readQueryValue(value)
-
-    if (nextValue !== search.value) {
-      search.value = nextValue
-    }
-
-    if (nextValue.trim()) {
-      storedSearch.value = nextValue.trim()
-    }
-  },
-  { immediate: true },
-)
-
-onMounted(() => {
-  if (!readQueryValue(route.query.q) && storedSearch.value.trim()) {
-    search.value = storedSearch.value.trim()
-  }
-})
-
-watchDebounced(
-  search,
-  async (value) => {
-    const keyword = value.trim()
-
-    storedSearch.value = keyword
-
-    if (keyword === readQueryValue(route.query.q)) {
-      return
-    }
-
-    const nextQuery = { ...route.query }
-
-    if (keyword) {
-      nextQuery.q = keyword
-    }
-    else {
-      delete nextQuery.q
-    }
-
-    await router.replace({ query: nextQuery })
-  },
-  {
-    debounce: 250,
-    maxWait: 1000,
-  },
-)
 </script>
 
 <style scoped>

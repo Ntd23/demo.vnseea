@@ -3,6 +3,7 @@
 import { createError, getQuery, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
+import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { mapCommunityPageRecord } from "../community/_shared"
@@ -14,6 +15,7 @@ import type {
   FeedAnnouncement,
   FeedCommentRecord,
   FeedExploreResponse,
+  FeedGreeting,
   FeedExploreUserRecord,
   FeedHashtagChip,
   FeedHomeResponse,
@@ -27,6 +29,11 @@ import type {
 } from "../../../src/feed/domain/types/feed.types"
 
 type BackendEntity = Record<string, unknown>
+type BackendMultipartFile = {
+  filename?: string
+  type?: string
+  data: Buffer
+}
 
 type BackendPostsResponse = {
   api_status?: number | string
@@ -34,6 +41,22 @@ type BackendPostsResponse = {
   errors?: {
     error_text?: string
   }
+}
+
+type BackendRegisterCommentResponse = {
+  status?: number | string
+  html?: string
+  comments_num?: number | string
+  message?: string
+  errors?: unknown
+}
+
+type BackendUploadImageResponse = {
+  status?: number | string
+  image?: string
+  image_src?: string
+  message?: string
+  errors?: unknown
 }
 
 type BackendUserStoriesResponse = {
@@ -92,6 +115,27 @@ const accentPalette = [
 
 const videoExtensions = ["mp4", "mov", "webm", "m4v", "avi", "mpeg", "mpg", "mkv", "ogg"]
 
+const legacyGreetingCopy = {
+  morning: {
+    label: "Buổi sáng tốt lành",
+    quote: "Mỗi ngày mới là một cơ hội để thay đổi cuộc sống của bạn.",
+    accent: "#7FC583",
+    image: "park.png",
+  },
+  afternoon: {
+    label: "Chào buổi chiều",
+    quote: "Cầu mong cho buổi chiều nay được nhẹ nhàng, may mắn, giác ngộ, hiệu quả và hạnh phúc.",
+    accent: "#ffc107",
+    image: "desert.png",
+  },
+  evening: {
+    label: "Chào buổi tối",
+    quote: "Buổi tối là cách sống để nói rằng bạn đang tiến gần hơn đến ước mơ của mình.",
+    accent: "#FF4F70",
+    image: "sea.png",
+  },
+} as const
+
 const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number"
     ? String(value).trim()
@@ -108,6 +152,13 @@ const isTruthy = (value: unknown) =>
   || value === "1"
   || value === "yes"
   || value === "true"
+
+const isExplicitlyFalse = (value: unknown) =>
+  value === false
+  || value === 0
+  || value === "0"
+  || value === "no"
+  || value === "false"
 
 const asRecord = (value: unknown): BackendEntity =>
   value && typeof value === "object" && !Array.isArray(value)
@@ -142,6 +193,21 @@ const firstNumber = (entity: BackendEntity, keys: string[]) => {
   }
 
   return 0
+}
+
+const hasUnseenStoryState = (story: BackendEntity, owner: BackendEntity) => {
+  const unseenKeys = ["have_not_seen", "have_not_viewed", "not_seen", "unseen", "has_unseen"]
+  const seenKeys = ["is_seen", "is_viewed", "viewed", "seen"]
+
+  if (unseenKeys.some(key => isTruthy(story[key]) || isTruthy(owner[key]))) {
+    return true
+  }
+
+  if (seenKeys.some(key => isExplicitlyFalse(story[key]) || isExplicitlyFalse(owner[key]))) {
+    return true
+  }
+
+  return false
 }
 
 const stripHtml = (value: string) =>
@@ -404,6 +470,13 @@ const mapCommentRecord = (
   const publisher = asRecord(entity.publisher)
   const author = firstString(publisher, ["name", "username"]) || "User"
   const username = firstString(publisher, ["username"])
+  const imageUrl = resolveMediaUrl(firstString(entity, ["c_file", "comment_image", "image"]))
+  const audioUrl = resolveMediaUrl(firstString(entity, ["record", "audio"]))
+  const attachment = audioUrl
+    ? { type: "audio" as const, url: audioUrl }
+    : imageUrl
+      ? { type: imageUrl.toLowerCase().includes(".gif") ? "gif" as const : "image" as const, url: imageUrl }
+      : undefined
 
   return {
     id: firstNumber(entity, ["id", "comment_id"]),
@@ -413,6 +486,7 @@ const mapCommentRecord = (
     role: firstString(publisher, ["working", "school", "address"]) || author,
     text: stripHtml(firstString(entity, ["text", "Orginaltext", "comment"])),
     time: firstString(entity, ["time_text", "posted", "time"]) || "",
+    attachment,
   }
 }
 
@@ -550,6 +624,7 @@ const mapStoryRecord = (
     comments: firstNumber(entity, ["comment_count", "comments"]),
     views: firstNumber(entity, ["view_count", "views"]),
     isMe: ownerId === currentUserId,
+    hasUnseen: hasUnseenStoryState(entity, user),
   }
 }
 
@@ -557,8 +632,23 @@ const sortStoriesByLatest = (stories: FeedStoryRecord[]) =>
   [...stories].sort((left, right) => right.id - left.id)
 
 const withStoryOwnerData = (story: BackendEntity, ownerEntry: BackendEntity) => {
+  const storySeenState = {
+    have_not_seen: story.have_not_seen ?? ownerEntry.have_not_seen,
+    have_not_viewed: story.have_not_viewed ?? ownerEntry.have_not_viewed,
+    not_seen: story.not_seen ?? ownerEntry.not_seen,
+    unseen: story.unseen ?? ownerEntry.unseen,
+    has_unseen: story.has_unseen ?? ownerEntry.has_unseen,
+    is_seen: story.is_seen ?? ownerEntry.is_seen,
+    is_viewed: story.is_viewed ?? ownerEntry.is_viewed,
+    viewed: story.viewed ?? ownerEntry.viewed,
+    seen: story.seen ?? ownerEntry.seen,
+  }
+
   if (Object.keys(asRecord(story.user_data)).length > 0) {
-    return story
+    return {
+      ...story,
+      ...storySeenState,
+    }
   }
 
   const ownerData = { ...ownerEntry }
@@ -566,6 +656,7 @@ const withStoryOwnerData = (story: BackendEntity, ownerEntry: BackendEntity) => 
 
   return {
     ...story,
+    ...storySeenState,
     user_id: firstNumber(story, ["user_id", "owner_id"]) || firstNumber(ownerEntry, ["user_id", "id"]),
     user_data: ownerData,
   }
@@ -674,7 +765,7 @@ const mapAnnouncement = (entity: BackendEntity | undefined): FeedAnnouncement | 
     return null
   }
 
-  const title = firstString(entity, ["title", "name"]) || "Announcement"
+  const title = firstString(entity, ["title", "name"])
   const message = stripHtml(firstString(entity, ["text", "description", "message"]))
 
   if (!title && !message) {
@@ -684,6 +775,44 @@ const mapAnnouncement = (entity: BackendEntity | undefined): FeedAnnouncement | 
   return {
     title,
     message,
+  }
+}
+
+const resolveGreetingPeriod = (): FeedGreeting["period"] => {
+  const hour = new Date().getHours()
+
+  if (hour < 12) {
+    return "morning"
+  }
+
+  if (hour <= 18) {
+    return "afternoon"
+  }
+
+  return "evening"
+}
+
+const mapHomeGreeting = (
+  currentUser: BackendEntity,
+  event: H3Event,
+): FeedGreeting | null => {
+  const period = resolveGreetingPeriod()
+  const copy = legacyGreetingCopy[period]
+  const displayName = firstString(currentUser, ["first_name", "name", "username"])
+
+  if (!displayName) {
+    return null
+  }
+
+  const runtimeConfig = useRuntimeConfig(event)
+  const webBase = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase || "").replace(/\/+$/, "")
+
+  return {
+    period,
+    title: `${copy.label}, ${displayName}`,
+    message: copy.quote,
+    accent: copy.accent,
+    imageUrl: webBase ? `${webBase}/themes/wowonder/img/${copy.image}` : `/themes/wowonder/img/${copy.image}`,
   }
 }
 
@@ -900,6 +1029,7 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
     ...buildPostsResponse((posts.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)), limit),
     stories: flattenStorySequences(storySequences, currentUserId),
     announcement: mapAnnouncement(general.announcement),
+    greeting: mapHomeGreeting(currentUser, event),
   }
 }
 
@@ -1034,6 +1164,9 @@ export async function runPostAction(
     postId: number
     reaction?: string
     text?: string
+    imageFile?: BackendMultipartFile | null
+    gifFile?: BackendMultipartFile | null
+    audioFile?: BackendMultipartFile | null
   },
 ) {
   if (!input.postId) {
@@ -1041,6 +1174,99 @@ export async function runPostAction(
       statusCode: 400,
       statusMessage: "Post id is required.",
     })
+  }
+
+  if (input.action === "comment") {
+    const webClient = createBackendWebClient(event)
+    const mediaFile = input.gifFile ?? input.imageFile ?? null
+    let commentImage = ""
+
+    if (mediaFile) {
+      const imageBody = new FormData()
+      imageBody.append(
+        "image",
+        new Blob([mediaFile.data], { type: mediaFile.type || "application/octet-stream" }),
+        mediaFile.filename || "comment-image",
+      )
+
+      const imageResponse = await webClient.postForm<BackendUploadImageResponse, FormData>(
+        "upload_image",
+        imageBody,
+        { id: input.postId },
+      )
+
+      if (Number(imageResponse.status ?? 0) !== 200 || !imageResponse.image_src) {
+        throw createError({
+          statusCode: 400,
+          statusMessage: "Unable to upload comment image.",
+          data: imageResponse,
+        })
+      }
+
+      commentImage = asString(imageResponse.image_src)
+    }
+
+    const appendCommentFields = (body: FormData | URLSearchParams) => {
+      body.append("post_id", String(input.postId))
+      body.append("text", input.text ?? "")
+      body.append("user_id", "0")
+      body.append("page_id", "0")
+      body.append("comment_image", commentImage)
+    }
+    let commentBody: FormData | URLSearchParams
+
+    if (input.audioFile) {
+      const body = new FormData()
+      appendCommentFields(body)
+      body.append("audio-filename", input.audioFile.filename || "comment-audio.webm")
+      body.append(
+        "audio-blob",
+        new Blob([input.audioFile.data], { type: input.audioFile.type || "audio/webm" }),
+        input.audioFile.filename || "comment-audio.webm",
+      )
+      commentBody = body
+    }
+    else {
+      const body = new URLSearchParams()
+      appendCommentFields(body)
+      commentBody = body
+    }
+
+    const commentResponse = await webClient.postForm<BackendRegisterCommentResponse, FormData | URLSearchParams>(
+      "posts",
+      commentBody,
+      { s: "register_comment" },
+    )
+
+    if (Number(commentResponse.status ?? 0) !== 200) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Unable to post comment.",
+        data: commentResponse,
+      })
+    }
+
+    const commentId = Number(String(commentResponse.html ?? "").match(/comment_(\d+)/)?.[1] ?? 0) || undefined
+    const attachmentUrl = input.audioFile
+      ? ""
+      : commentImage
+        ? createBackendMediaUrlResolver(event)(commentImage)
+        : ""
+
+    return {
+      ok: true,
+      commentId,
+      commentsCount: asNumber(commentResponse.comments_num),
+      attachment: input.audioFile
+        ? undefined
+        : attachmentUrl
+          ? {
+              type: input.gifFile ? "gif" as const : "image" as const,
+              url: attachmentUrl,
+              name: mediaFile?.filename,
+            }
+          : undefined,
+    }
   }
 
   const client = createBackendApiClient(event)

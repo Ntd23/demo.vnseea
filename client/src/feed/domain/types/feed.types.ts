@@ -19,6 +19,28 @@ export type FeedCommentRecord = {
   role: string
   text: string
   time?: string
+  attachment?: FeedCommentAttachment
+}
+
+export type FeedCommentAttachment = {
+  type: "image" | "gif" | "audio"
+  url: string
+  name?: string
+}
+
+export type FeedCommentSubmitPayload = {
+  text: string
+  imageFile?: File
+  gifFile?: File
+  audioFile?: File
+  attachmentPreview?: FeedCommentAttachment
+}
+
+export type FeedPostActionResult = {
+  ok: boolean
+  commentId?: number
+  commentsCount?: number
+  attachment?: FeedCommentAttachment
 }
 
 export type FeedPostRecord = {
@@ -89,6 +111,7 @@ export type FeedStoryRecord = {
   comments: number
   views: number
   isMe: boolean
+  hasUnseen: boolean
 }
 
 export type FeedAnnouncement = {
@@ -96,9 +119,18 @@ export type FeedAnnouncement = {
   message: string
 }
 
+export type FeedGreeting = {
+  period: "morning" | "afternoon" | "evening"
+  title: string
+  message: string
+  accent: string
+  imageUrl: string
+}
+
 export type FeedHomeResponse = FeedPostsResponse & {
   stories: FeedStoryRecord[]
   announcement: FeedAnnouncement | null
+  greeting: FeedGreeting | null
 }
 
 export type FeedHashtagChip = {

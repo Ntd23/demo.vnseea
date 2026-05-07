@@ -4082,7 +4082,11 @@
       "tooltipImage": "Image",
       "tooltipGif": "GIF",
       "tooltipSticker": "Sticker",
-      "tooltipMention": "Mention"
+      "tooltipMention": "Mention",
+      "tooltipVoice": "Voice",
+      "removeAttachment": "Remove attachment",
+      "recording": "Recording...",
+      "selectedAttachment": "Attachment selected"
     },
     "publisherBox": {
       "prompt": "What is happening? Hashtag, mention, link...",

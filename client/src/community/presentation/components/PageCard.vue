@@ -1,4 +1,4 @@
-<!-- Description: Displays a compact backend-backed community page card aligned with the shared feed/profile card system. -->
+<!-- Description: Displays a compact page list row aligned to the legacy PHP pages-list layout without extra dashboard metadata. -->
 <template>
   <article class="page-card">
     <div class="page-card__cover" :style="{ background: page.banner }">
@@ -66,7 +66,6 @@
 
 <script setup lang="ts">
 import {
-  formatCommunityFollowerCount,
   formatCommunityLikeCount,
   getCommunityOptionLabel,
   getCommunityPagePath,
@@ -84,15 +83,8 @@ const props = withDefaults(defineProps<{
 
 const { t } = useI18n()
 
-const pageName = computed(() => t(props.page.name))
-const pageSummary = computed(() => t(props.page.summary))
-const ownerLabel = computed(() => props.page.ownerLabel ? t(props.page.ownerLabel) : "")
-const responseLabel = computed(() => props.page.responseLabel ? t(props.page.responseLabel) : "")
-const locationLabel = computed(() =>
-  props.page.locationLabel ? t(props.page.locationLabel) : "",
-)
-const localizedTags = computed(() => props.page.tags.map(tag => t(tag)).filter(Boolean))
-const followerCountLabel = computed(() => formatCommunityFollowerCount(props.page.followers))
+const pageName = computed(() => props.page.name)
+const pageSummary = computed(() => props.page.summary)
 const likeCountLabel = computed(() => formatCommunityLikeCount(props.page.likes))
 const avatarLabel = computed(() => pageName.value.slice(0, 2).toUpperCase())
 
@@ -100,14 +92,14 @@ const categoryLabel = computed(() => {
   const label = getCommunityOptionLabel(
     communityPageCategoryOptions,
     props.page.category,
-    "community.groups.card.noCategory",
+    "",
   )
 
-  return t(label)
+  return label ? t(label) : ""
 })
 
 const resolvedActionLabel = computed(() =>
-  props.actionLabel || t("community.pagesDirectory.actionMine"),
+  props.actionLabel || t("community.pagesDirectory.actionSuggested"),
 )
 
 const pageTo = computed(() => getCommunityPagePath(props.page.slug))
@@ -185,40 +177,41 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 
 .page-card__content {
   padding: 16px;
+  box-shadow: var(--shadow-sm);
 }
 
-.page-card__identity {
+.page-card__main {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 16px;
 }
 
 .page-card__avatar {
-  display: flex;
-  width: 52px;
-  height: 52px;
-  flex: 0 0 52px;
+  display: inline-flex;
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 3px solid #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 900;
+  border-radius: 18px;
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+  font-size: 18px;
+  font-weight: 800;
   text-decoration: none;
 }
 
 .page-card__avatar-img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
-.page-card__title-wrap {
+.page-card__content {
   min-width: 0;
+  flex: 1;
 }
 
 .page-card__title {
@@ -284,8 +277,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   z-index: 2;
 }
 
-.page-card__chip,
-.page-card__tag {
+.page-card__meta-item {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -326,16 +318,16 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   font-weight: 600;
 }
 
-.page-card__meta span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.page-card__summary {
+  margin: 10px 0 0;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  line-height: 1.6;
 }
 
 .page-card__actions {
+  display: flex;
   justify-content: flex-end;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 14px;
 }
 
 .page-card__action {
@@ -344,20 +336,14 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   right: 12px;
   z-index: 2;
   display: inline-flex;
-  min-height: 34px;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  padding: 8px 14px;
+  min-height: 34px;
+  border-radius: 10px;
+  padding: 0 14px;
   font-size: 12px;
-  font-weight: 800;
-  line-height: 1;
+  font-weight: 700;
   text-decoration: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
-}
-
-.page-card__action:hover {
-  transform: translateY(-1px);
 }
 
 /* .page-card__action--secondary {
@@ -373,25 +359,12 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__action--primary {
-  border: 1px solid #60a5fa;
-  background: #3b82f6;
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.16);
+  background: var(--bg-brand);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-brand);
 }
 
 .page-card__action--primary:hover {
-  background: #2563eb;
-}
-
-@media (max-width: 639px) {
-  .page-card__actions {
-    justify-content: stretch;
-  }
-
-  .page-card__actions :deep(a),
-  .page-card__actions :deep(button) {
-    flex: 1;
-    justify-content: center;
-  }
+  background: var(--bg-brand-hover);
 }
 </style>
