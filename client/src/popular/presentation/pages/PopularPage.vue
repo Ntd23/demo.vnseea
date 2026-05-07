@@ -1,17 +1,6 @@
 <!-- Description: Renders popular posts as a simple legacy-style ranked feed list without extra dashboard sections or sidebar widgets. -->
 <template>
   <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-16 sm:px-5 lg:px-6">
-    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
-      <div class="space-y-1.5">
-        <p class="text-label-secondary">
-          {{ t("pages.popularPage.heroEyebrow") }}
-        </p>
-        <h1 class="text-heading text-[var(--text-primary)]">
-          {{ t("pages.popularPage.heroTitle") }}
-        </h1>
-      </div>
-    </section>
-
     <UAlert
       v-if="errorMessage"
       color="warning"
@@ -27,7 +16,7 @@
     >
       <div class="flex items-center justify-center gap-3 text-sm font-bold text-[var(--text-secondary)]">
         <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
-        <span>{{ t("pages.popularPage.heroEyebrow") }}</span>
+        <span>{{ t("pages.popularPage.heroTitle") }}</span>
       </div>
     </section>
 
@@ -48,20 +37,6 @@
         :key="post.id"
         class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] p-3 shadow-[var(--shadow-sm)]"
       >
-        <div class="mb-3 flex items-center gap-3 rounded-[14px] bg-[var(--bg-surface-hover)] px-3 py-2">
-          <div class="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[var(--bg-brand)] text-[13px] font-extrabold text-[var(--text-inverse)]">
-            {{ formatRank(index + 1) }}
-          </div>
-          <div class="min-w-0">
-            <p class="text-[14px] font-bold text-[var(--text-primary)]">
-              {{ post.author }}
-            </p>
-            <p class="text-[12px] text-[var(--text-secondary)]">
-              {{ post.time }}
-            </p>
-          </div>
-        </div>
-
         <FeedPostCard :post="post" />
       </article>
     </div>

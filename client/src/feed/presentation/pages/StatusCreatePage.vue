@@ -5,10 +5,10 @@
     <div class="status-create__topbar">
       <UButton
         :to="feedHomePath"
-        color="neutral"
-        variant="outline"
+        color="primary"
+        variant="soft"
         icon="i-ph-arrow-left-bold"
-        class="rounded-[14px]"
+        class="rounded-[14px] border border-[var(--border-default)] bg-[var(--bg-surface)] text-[var(--text-primary)] shadow-[var(--shadow-sm)]"
       >
         {{ t("pages.statusCreatePage.backToFeed") }}
       </UButton>
@@ -47,8 +47,6 @@
             <div class="status-create__dropzone-icon">
               <Icon name="i-ph-upload-simple-duotone" class="h-9 w-9" />
             </div>
-            <p class="status-create__dropzone-heading">{{ t("pages.statusCreatePage.selectFile") }}</p>
-            <p class="status-create__dropzone-hint">{{ t("pages.statusCreatePage.pickerHint") }}</p>
           </template>
 
           <template v-else>
@@ -63,23 +61,21 @@
             </template>
 
             <!-- Overlay actions -->
-            <div class="status-create__file-overlay" @click.stop>
+            <div class="status-create__file-overlay surface-card" @click.stop>
               <UButton
                 color="neutral"
                 variant="solid"
                 size="sm"
                 icon="i-ph-pencil-simple-bold"
-                class="rounded-full bg-black/60 text-white backdrop-blur-sm hover:bg-black/80"
+                class="btn-secondary text-secondary"
                 @click="openPicker"
               >
                 {{ t("pages.statusCreatePage.changeFile") }}
               </UButton>
               <UButton
-                color="error"
-                variant="solid"
-                size="sm"
                 icon="i-ph-trash-simple-bold"
-                class="rounded-full bg-red-600/70 text-white backdrop-blur-sm hover:bg-red-600/90"
+                size="sm"
+                class="btn-ghost"
                 @click="removeFile"
               >
                 {{ t("pages.statusCreatePage.removeFile") }}
@@ -96,12 +92,9 @@
         >
           <UCard
             v-if="selectedFile"
-            class="rounded-[22px]"
+            class="status-create__caption-card rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)]"
             :ui="{ body: 'p-4' }"
           >
-            <label class="status-create__caption-label" for="status-caption">
-              {{ t("pages.statusCreatePage.captionLabel") }}
-            </label>
             <textarea
               id="status-caption"
               ref="captionRef"
@@ -120,8 +113,8 @@
         <!-- Submit bar (reuse shared-kernel component) -->
         <Transition
           enter-active-class="transition duration-200 ease-out"
-          enter-from-class="opacity-0 translate-y-2"
-          enter-to-class="opacity-100 translate-y-0"
+          enter-from-class="opacity-0"
+          enter-to-class="opacity-100"
         >
           <FormsSubmitBar
             v-if="selectedFile"
@@ -131,7 +124,7 @@
             :submit-disabled="!selectedFile"
             :status="submitStatus"
             :status-description="statusDescription"
-            class="rounded-[22px]"
+            class="status-create__submit-bar rounded-[22px]"
             @submit="submitStory"
           />
         </Transition>
@@ -209,7 +202,6 @@ useSeoMeta({
   description: () => t("pages.statusCreatePage.seoDescription"),
 })
 
-const toast = useToast()
 const router = useRouter()
 const currentAuthUserStore = useCurrentAuthUserStore()
 const repository = createApiFeedRepository()
@@ -311,15 +303,8 @@ async function submitStory() {
     })
     pendingCreatedStory.value = response.story
 
-    submitStatus.value = "success"
-    statusDescription.value = t("pages.statusCreatePage.successStatus")
-
-    toast.add({
-      color: "success",
-      icon: "i-ph-check-circle-fill",
-      title: t("pages.statusCreatePage.toastTitle"),
-      description: statusDescription.value,
-    })
+    submitStatus.value = "idle"
+    statusDescription.value = ""
 
     window.setTimeout(() => { void router.push(feedHomePath) }, feedStoryCreateRedirectDelay)
   }
@@ -358,19 +343,21 @@ async function submitStory() {
 }
 
 .status-create__eyebrow {
-  font-size: 11px;
-  font-weight: 800;
+  font-family: var(--font-primary);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
 .status-create__title {
+  font-family: var(--font-secondary);
   font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 900;
+  font-weight: var(--weight-extrabold);
   letter-spacing: -0.04em;
-  color: #0f172a;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -403,25 +390,27 @@ async function submitStory() {
   gap: 12px;
   min-height: 280px;
   border-radius: 22px;
-  border: 2px dashed #cbd5e1;
-  background: #f8fafc;
+  border: 2px dashed var(--border-default);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 249, 255, 0.98) 100%);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   text-align: center;
   padding: 32px 24px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   overflow: hidden;
 }
 
 .status-create__dropzone:hover,
 .status-create__dropzone--drag {
-  border-color: rgba(0, 0, 255, 0.35);
-  background: #eff6ff;
+  border-color: var(--border-strong);
+  background: var(--bg-surface-hover);
+  box-shadow: var(--shadow-md);
 }
 
 .status-create__dropzone--has-file {
   border-style: solid;
-  border-color: rgba(0, 0, 255, 0.12);
-  background: #fff;
+  border-color: var(--border-default);
+  background: var(--bg-surface);
   padding: 0;
   min-height: 320px;
 }
@@ -433,21 +422,23 @@ async function submitStory() {
   width: 72px;
   height: 72px;
   border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 4px 16px rgba(0, 0, 255, 0.08);
-  color: #0000ff;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--icon-brand);
 }
 
 .status-create__dropzone-heading {
+  font-family: var(--font-primary);
   font-size: 17px;
-  font-weight: 800;
-  color: #0f172a;
+  font-weight: var(--weight-extrabold);
+  color: var(--text-primary);
   margin: 0;
 }
 
 .status-create__dropzone-hint {
+  font-family: var(--font-primary);
   font-size: 13px;
-  color: #64748b;
+  color: var(--text-secondary);
   max-width: 340px;
   line-height: 1.6;
   margin: 0;
@@ -475,40 +466,67 @@ async function submitStory() {
 /* ── Caption ──────────────────────────────────────── */
 .status-create__caption-label {
   display: block;
-  font-size: 11px;
-  font-weight: 800;
+  font-family: var(--font-primary);
+  font-size: var(--text-label);
+  font-weight: var(--weight-bold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--text-secondary);
   margin-bottom: 8px;
+}
+
+.status-create__caption-card {
+  overflow: hidden;
 }
 
 .status-create__caption-input {
   width: 100%;
-  border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  background: #fafbfe;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface-hover);
   padding: 12px 14px;
+  font-family: var(--font-primary);
   font-size: 14.5px;
   line-height: 1.7;
-  color: #334155;
+  color: var(--text-primary);
   font-family: inherit;
   resize: none;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
   overflow-y: hidden;
 }
 
 .status-create__caption-input:focus {
-  border-color: rgba(0, 0, 255, 0.25);
+  border-color: var(--border-strong);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
 }
 
 .status-create__caption-count {
+  font-family: var(--font-primary);
   font-size: 11.5px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   text-align: right;
   margin: 6px 0 0;
   transition: color 0.15s ease;
+}
+
+.status-create__submit-bar :deep(.rounded-\[28px\]) {
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.status-create__submit-bar :deep(.border-\[\#dbe3f2\]) {
+  border-color: var(--border-default);
+}
+
+.status-create__submit-bar :deep(.bg-white\/90) {
+  background: var(--bg-surface);
+}
+
+.status-create__submit-bar :deep(.shadow-\[0_14px_34px_rgba\(15\,35\,110\,0\.07\)\]) {
+  box-shadow: var(--shadow-sm);
 }
 
 /* ── Preview pane ─────────────────────────────────── */
@@ -520,11 +538,12 @@ async function submitStory() {
 }
 
 .status-create__preview-eyebrow {
-  font-size: 11px;
-  font-weight: 800;
+  font-family: var(--font-primary);
+  font-size: var(--text-label);
+  font-weight: var(--weight-semibold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   margin: 0;
   align-self: flex-start;
 }
@@ -533,9 +552,9 @@ async function submitStory() {
   width: 100%;
   max-width: 260px;
   border-radius: 36px;
-  border: 6px solid #0f172a;
-  background: #0f172a;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.25), 0 0 0 2px #1e293b;
+  border: 6px solid #d7def0;
+  background: #edf2ff;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0, 0, 255, 0.08);
   overflow: hidden;
 }
 
@@ -545,7 +564,7 @@ async function submitStory() {
   aspect-ratio: 9 / 16;
   overflow: hidden;
   border-radius: 30px;
-  background: #0f172a;
+  background: linear-gradient(180deg, #f8faff 0%, #e8efff 100%);
 }
 
 .status-create__phone-media {
@@ -559,13 +578,13 @@ async function submitStory() {
 .status-create__phone-placeholder {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 50%, #38bdf8 100%);
+  background: linear-gradient(180deg, #f8fbff 0%, #dfe8ff 100%);
 }
 
 .status-create__phone-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.1) 0%, transparent 35%, rgba(15, 23, 42, 0.55) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, transparent 28%, rgba(15, 23, 42, 0.16) 100%);
 }
 
 .status-create__phone-bars {
@@ -581,19 +600,19 @@ async function submitStory() {
   flex: 1;
   height: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.62);
   overflow: hidden;
 }
 
 .status-create__phone-bar-fill {
   height: 100%;
   border-radius: 999px;
-  background: #fff;
+  background: var(--bg-brand);
   transition: width 0.3s ease;
 }
 
 .status-create__phone-bar--dim {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.34);
 }
 
 .status-create__phone-author {
@@ -603,6 +622,11 @@ async function submitStory() {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 8px 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
 }
 
 .status-create__phone-avatar {
@@ -613,8 +637,8 @@ async function submitStory() {
   justify-content: center;
   border-radius: 50%;
   overflow: hidden;
-  background: #0000ff;
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: var(--bg-brand);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   font-size: 11px;
   font-weight: 700;
   color: #fff;
@@ -630,13 +654,13 @@ async function submitStory() {
 .status-create__phone-name {
   font-size: 12px;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .status-create__phone-time {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -646,11 +670,13 @@ async function submitStory() {
   left: 10px;
   right: 10px;
   border-radius: 14px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
   padding: 10px 12px;
   font-size: 11px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
 }
 </style>

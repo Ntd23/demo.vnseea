@@ -1,28 +1,64 @@
-English description: Test cases for the lightbox bounded context, covering media viewing, keyboard navigation, thumbnails, and action controls.
+English description: Test cases for the lightbox bounded context, covering the shared media viewer used by photos and feed media surfaces.
 
 # Test Case Lightbox
 
-## Pham vi
+## Phạm vi
 
 - Context: `client/src/lightbox`
-- Man hinh su dung:
+- Màn hình sử dụng:
   - `/photos`
-  - feed/gallery screens co mo `LightboxModal`
-- Muc tieu: viewer phai media-first, thong tin va action nam o side panel, dieu huong giong nhom PHP lightbox
+  - các feed/gallery screen có mở `LightboxModal`
+- Điểm vào chính:
+  - `presentation/components/LightboxModal.vue`
+- Ngoài phạm vi:
+  - Story viewer
+  - Reels viewer
 
-## Case
+## Môi trường
 
-| ID | Man hinh | Route/screen | Cach test | Ky vong |
+- Nuxt direct: `http://127.0.0.1:3000`
+- Laragon proxy: `http://demo.vnseea.test:8080`
+- Nguồn session backend: PHP browser cookies
+- Dữ liệu đầu vào: media item từ feed/photos page, không gọi bridge riêng
+
+## Smoke
+
+| ID | Status | Case | Entry | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `LIGHTBOX-001` | Desktop `1440x900` | Gallery trong `/photos` | Mo 1 image | Viewer mo tren nen toi, media la noi dung chinh, side panel hien title/author/caption/actions. |
-| `LIGHTBOX-002` | Desktop `1440x900` | Gallery trong `/photos` | Dung nut trai/phai va phim `ArrowLeft` `ArrowRight` | Item hien tai doi dung, counter cap nhat dung. |
-| `LIGHTBOX-003` | Desktop `1440x900` | Gallery trong `/photos` | Click thumbnail trong side panel | Lightbox nhay dung item thumbnail da chon. |
-| `LIGHTBOX-004` | Mobile `390x844` | Gallery trong `/photos` | Mo lightbox | Viewer va side info stack doc, action van bam duoc, media khong bi crop vo nghia. |
-| `LIGHTBOX-005` | Desktop `1440x900` | Gallery co video | Mo item video | Video render bang player, label media type hien `video`, action shell khong bi vo. |
+| `LIGHTBOX-SMOKE-001` | `[ ]` | Mở lightbox từ `/photos` | Click một ảnh bất kỳ | Viewer mở được, không lỗi modal, không trắng phần media. |
+| `LIGHTBOX-SMOKE-002` | `[ ]` | Đóng lightbox | `Esc`, click close, hoặc đổi `open` state | Viewer đóng sạch, không kẹt overlay. |
 
-## Lenh kiem tra
+## Truy cập và điều hướng
+
+| ID | Status | Case | Điều kiện | Kỳ vọng |
+| --- | --- | --- | --- | --- |
+| `LIGHTBOX-ROUTE-001` | `[ ]` | Điều hướng item bằng nút trái/phải | Có từ 2 media item trở lên | Item hiện tại đổi đúng, counter cập nhật đúng. |
+| `LIGHTBOX-ROUTE-002` | `[ ]` | Điều hướng item bằng phím `ArrowLeft` `ArrowRight` | Desktop, lightbox đang mở | Item đổi đúng và không scroll nền phía sau. |
+
+## Dữ liệu và hiển thị
+
+| ID | Status | Case | Entry | Kỳ vọng |
+| --- | --- | --- | --- | --- |
+| `LIGHTBOX-API-001` | `[ ]` | Ảnh trong lightbox | Mở image item | Viewer hiển thị đúng `src`/`alt`, không thay bằng placeholder hoặc avatar fallback khi item có ảnh thật. |
+| `LIGHTBOX-API-002` | `[ ]` | Video trong lightbox | Mở video item | Viewer hiển thị video player thật, không render thành ảnh tĩnh. |
+| `LIGHTBOX-API-003` | `[ ]` | Thông tin item | Mở item có title/author/caption | Side panel hiển thị đúng metadata nhận từ nơi gọi, không lặp action box hoặc chrome dư. |
+
+## UI và UX
+
+| ID | Status | Case | Viewport | Kỳ vọng |
+| --- | --- | --- | --- | --- |
+| `LIGHTBOX-UI-001` | `[ ]` | Layout desktop | `>= 1024px` | Viewer media là trọng tâm, panel phụ chỉ giữ thông tin và action cần thiết, không lặp nút share/download ở nhiều khu vực. |
+| `LIGHTBOX-UI-002` | `[ ]` | Thumbnail strip | `>= 1024px` | Click thumbnail đổi đúng item, thumbnail active highlight đúng. |
+| `LIGHTBOX-UI-003` | `[ ]` | Layout mobile | `390x844` | Viewer và panel stack được, action vẫn bấm được, media không bị crop vô nghĩa. |
+
+## Lệnh kiểm tra
 
 ```powershell
 cd client
 npm run build
 ```
+
+## Ghi chú
+
+- Lightbox không có bridge riêng; testcase phải xác nhận dữ liệu đầu vào đến từ context gọi nó như `/photos` hoặc `FeedPostCard`.
+- Nếu vẫn còn action top bar và action side panel lặp lại cùng chức năng, đánh fail `LIGHTBOX-UI-001`.

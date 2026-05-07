@@ -99,13 +99,12 @@ const isActive = computed(() => {
 }
 
 .sidebar-item__label {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   color: #334155;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 1;
 }
 
 .sidebar-item--active .sidebar-item__label {

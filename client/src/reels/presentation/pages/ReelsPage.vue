@@ -1,96 +1,97 @@
-<!-- Description: Renders the reels route as a minimal fullscreen viewer with stacked reel navigation, aligned to the legacy PHP reels flow. -->
+<!-- Description: Renders the reels route as a minimal fullscreen media viewer backed by real feed videos instead of a dashboard-style landing page. -->
 <template>
-  <div class="relative min-h-screen overflow-hidden bg-[linear-gradient(180deg,#020617_0%,#0f172a_52%,#020617_100%)] text-white">
-    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.16),transparent_34%),linear-gradient(90deg,rgba(37,99,235,0.12),transparent_28%,transparent_72%,rgba(14,165,233,0.1))]" />
-
-    <div v-if="loading" class="relative mx-auto flex min-h-screen max-w-[1440px] items-center justify-center px-6 text-center">
+  <div class="min-h-screen bg-[#020617] text-white">
+    <div v-if="loading" class="flex min-h-screen items-center justify-center px-6 text-center">
       <div class="space-y-4 rounded-[28px] border border-white/10 bg-white/6 px-8 py-10 backdrop-blur">
         <Icon name="i-lucide-loader-2" class="mx-auto h-8 w-8 animate-spin text-white/70" />
         <p class="text-sm font-bold text-white/70">{{ t("pages.reelsPage.playing") }}</p>
       </div>
     </div>
 
-    <div v-else-if="activeReel" class="relative mx-auto flex min-h-screen max-w-[1440px] items-center justify-center gap-4 px-0 py-0 sm:px-5 sm:py-4 xl:px-8">
-      <div class="min-w-0 flex-1">
-        <ReelsPlayer
-          :reel="activeReel"
-          :current-index="activeIndex"
-          :total="reels.length"
-          @next="nextReel"
-          @prev="prevReel"
-        />
-      </div>
+    <div v-else-if="activeReel" class="relative flex min-h-screen items-center justify-center overflow-hidden">
+      <button
+        type="button"
+        class="absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/10 bg-black/35 p-3 text-white backdrop-blur transition hover:bg-black/55 disabled:cursor-not-allowed disabled:opacity-40"
+        :disabled="reels.length < 2"
+        @click="prevReel"
+      >
+        <Icon name="i-ph-caret-up-bold" class="h-5 w-5 rotate-[-90deg]" />
+      </button>
 
-      <aside class="hidden w-[300px] shrink-0 xl:flex xl:flex-col xl:gap-3">
-        <section class="rounded-[28px] border border-white/10 bg-white/6 p-4 backdrop-blur">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-white/60">
-            {{ t("pages.reelsPage.playing") }}
-          </p>
-          <h1 class="mt-2 text-[1.25rem] font-black tracking-[-0.03em] text-white">
-            {{ activeReel.title }}
-          </h1>
-          <p class="mt-1 text-[13px] leading-6 text-white/72">
-            {{ activeReel.description }}
-          </p>
-          <p class="mt-3 text-[12px] font-semibold text-white/60">
-            {{ activeIndex + 1 }}/{{ reels.length }}
-          </p>
-        </section>
+      <div
+        class="relative h-screen w-full max-w-[480px] overflow-hidden bg-black sm:my-4 sm:h-[92vh] sm:rounded-[32px] sm:border sm:border-white/10"
+        @touchstart.passive="onTouchStart"
+        @touchend.passive="onTouchEnd"
+      >
+        <template v-if="activeMedia?.type === 'video'">
+          <video
+            :key="activeReel.id"
+            :src="activeMedia.src"
+            class="h-full w-full object-cover"
+            autoplay
+            loop
+            playsinline
+            muted
+          />
+        </template>
+        <img
+          v-else
+          :src="activeMedia?.thumb || activeMedia?.src || activeReel.authorAvatarUrl"
+          :alt="activeReel.author"
+          class="h-full w-full object-cover"
+        >
 
-        <div class="space-y-2">
-          <button
-            v-for="(reel, index) in reels"
-            :key="reel.id"
-            type="button"
-            class="flex w-full items-center gap-3 rounded-[22px] border px-3 py-3 text-left transition"
-            :class="index === activeIndex
-              ? 'border-white/20 bg-white/12 shadow-[0_12px_28px_rgba(2,6,23,0.28)]'
-              : 'border-white/8 bg-black/18 hover:border-white/14 hover:bg-white/8'"
-            @click="jumpToReel(index)"
-          >
+        <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.15)_0%,transparent_28%,rgba(2,6,23,0.78)_100%)]" />
+
+        <div class="absolute inset-x-0 top-0 z-10 flex items-center gap-2 px-3 py-3">
+          <div
+            v-for="(item, index) in reels"
+            :key="item.id"
+            class="h-[3px] flex-1 rounded-full"
+            :class="index === activeIndex ? 'bg-white' : 'bg-white/30'"
+          />
+        </div>
+
+        <div class="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-5">
+          <div class="flex items-center gap-3">
             <img
-              :src="reel.cover"
-              :alt="reel.title"
-              class="h-16 w-12 rounded-[12px] object-cover"
+              :src="activeReel.authorAvatarUrl"
+              :alt="activeReel.author"
+              class="h-11 w-11 rounded-full border-2 border-white/80 object-cover"
             >
-            <div class="min-w-0 flex-1">
-              <p class="truncate text-[13px] font-black text-white">
-                {{ reel.title }}
+            <div class="min-w-0">
+              <p class="truncate text-[14px] font-bold text-white">
+                {{ activeReel.author }}
               </p>
-              <p class="mt-1 truncate text-[12px] text-white/62">
-                {{ reel.author }}
+              <p class="truncate text-[12px] text-white/70">
+                {{ activeReel.time }}
               </p>
             </div>
-            <span class="text-[12px] font-bold text-white/45">
-              {{ index + 1 }}
-            </span>
-          </button>
-        </div>
+          </div>
 
-        <div class="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            class="inline-flex items-center justify-center rounded-[18px] border border-white/10 bg-white/8 px-4 py-3 text-[13px] font-bold text-white transition hover:bg-white/12 disabled:cursor-not-allowed disabled:opacity-45"
-            :disabled="reels.length < 2"
-            @click="prevReel"
-          >
-            <Icon name="i-ph-arrow-up-bold" class="mr-2 h-4 w-4" />
-            Prev
-          </button>
-          <button
-            type="button"
-            class="inline-flex items-center justify-center rounded-[18px] border border-white/10 bg-white/8 px-4 py-3 text-[13px] font-bold text-white transition hover:bg-white/12 disabled:cursor-not-allowed disabled:opacity-45"
-            :disabled="reels.length < 2"
-            @click="nextReel"
-          >
-            Next
-            <Icon name="i-ph-arrow-down-bold" class="ml-2 h-4 w-4" />
-          </button>
+          <p v-if="activeReel.text" class="mt-3 text-[14px] leading-6 text-white/90">
+            {{ activeReel.text }}
+          </p>
+
+          <div class="mt-4 flex items-center gap-3 text-[12px] font-semibold text-white/78">
+            <span>{{ activeReel.stats.likes }} {{ t("pages.reelsPage.like") }}</span>
+            <span>{{ activeReel.stats.comments }} {{ t("pages.reelsPage.comment") }}</span>
+            <span>{{ activeReel.stats.shares }} {{ t("pages.reelsPage.share") }}</span>
+          </div>
         </div>
-      </aside>
+      </div>
+
+      <button
+        type="button"
+        class="absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-white/10 bg-black/35 p-3 text-white backdrop-blur transition hover:bg-black/55 disabled:cursor-not-allowed disabled:opacity-40"
+        :disabled="reels.length < 2"
+        @click="nextReel"
+      >
+        <Icon name="i-ph-caret-down-bold" class="h-5 w-5 rotate-[-90deg]" />
+      </button>
     </div>
 
-    <div v-else class="relative mx-auto flex min-h-screen max-w-[1440px] items-center justify-center px-6 text-center">
+    <div v-else class="flex min-h-screen items-center justify-center px-6 text-center">
       <div class="space-y-4 rounded-[28px] border border-white/10 bg-white/6 px-8 py-10 backdrop-blur">
         <Icon name="i-ph-film-strip-duotone" class="mx-auto h-8 w-8 text-white/70" />
         <p class="text-base font-black text-white">{{ t("pages.reelsPage.heroTitle") }}</p>
@@ -101,38 +102,20 @@
 </template>
 
 <script setup lang="ts">
-import { formatHashtagLabel } from "../../../feed/application/composables/useHashtagData"
+import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
-import ReelsPlayer from "../components/ReelsPlayer.vue"
 
 const { t } = useI18n()
 const repository = createApiFeedRepository()
+
 const loading = ref(true)
 const errorMessage = ref("")
-useSeoMeta({
-  title: () => t("pages.reelsPage.seoTitle"),
-  description: () => t("pages.reelsPage.seoDescription"),
-})
-
-const reels = ref<Array<{
-  id: number
-  title: string
-  author: string
-  subtitle: string
-  description: string
-  likes: number
-  comments: number
-  shares: number
-  views: number
-  music: string
-  tags: string[]
-  cover: string
-  avatar: string
-  authorPath: string
-}>>([])
-
+const reels = ref<FeedPostRecord[]>([])
 const activeIndex = ref(0)
+const touchStartY = ref<number | null>(null)
+
 const activeReel = computed(() => reels.value[activeIndex.value] ?? null)
+const activeMedia = computed(() => activeReel.value?.mediaItems[0] ?? null)
 
 async function fetchReels() {
   loading.value = true
@@ -140,24 +123,7 @@ async function fetchReels() {
 
   try {
     const response = await repository.getVideos({ limit: 12 })
-    reels.value = response.posts
-      .filter(post => post.mediaItems.length > 0)
-      .map((post) => ({
-        id: post.id,
-        title: post.text || post.author,
-        author: post.author,
-        subtitle: post.role,
-        description: post.text || post.role,
-        likes: post.stats.likes,
-        comments: post.stats.comments,
-        shares: post.stats.shares,
-        views: post.stats.views,
-        music: post.tags[0] ? formatHashtagLabel(post.tags[0]) : post.sourceLabel,
-        tags: post.tags.map(tag => formatHashtagLabel(tag)),
-        cover: post.mediaItems[0]?.thumb || post.mediaItems[0]?.src || post.authorAvatarUrl,
-        avatar: post.authorAvatarUrl,
-        authorPath: post.authorPath,
-      }))
+    reels.value = response.posts.filter(post => post.primaryMediaType === "video" || post.mediaItems[0]?.type === "video")
   }
   catch (error) {
     errorMessage.value = error instanceof Error ? error.message : t("pages.watchPage.emptyDescription")
@@ -167,17 +133,38 @@ async function fetchReels() {
   }
 }
 
-const jumpToReel = (index: number) => {
-  activeIndex.value = index
-}
-
-const nextReel = () => {
+function nextReel() {
+  if (reels.value.length < 2) return
   activeIndex.value = (activeIndex.value + 1) % reels.value.length
 }
 
-const prevReel = () => {
+function prevReel() {
+  if (reels.value.length < 2) return
   activeIndex.value = (activeIndex.value - 1 + reels.value.length) % reels.value.length
 }
+
+function onTouchStart(event: TouchEvent) {
+  touchStartY.value = event.changedTouches[0]?.clientY ?? null
+}
+
+function onTouchEnd(event: TouchEvent) {
+  const startY = touchStartY.value
+  const endY = event.changedTouches[0]?.clientY ?? null
+  touchStartY.value = null
+
+  if (startY == null || endY == null) return
+
+  const deltaY = startY - endY
+  if (Math.abs(deltaY) < 50) return
+
+  if (deltaY > 0) nextReel()
+  else prevReel()
+}
+
+useSeoMeta({
+  title: () => t("pages.reelsPage.seoTitle"),
+  description: () => t("pages.reelsPage.seoDescription"),
+})
 
 await fetchReels()
 </script>
