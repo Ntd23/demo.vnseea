@@ -1,119 +1,48 @@
-<!-- Description: Displays a single community group card while hiding optional backend fields when they are not available. -->
+<!-- Description: Displays a compact group list row aligned to the legacy PHP group-list layout without extra hero metadata. -->
 <template>
-  <article class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,35,110,0.12)]">
-    <div class="relative overflow-hidden px-5 pb-5 pt-6 text-white" :style="{ background: group.banner }">
-      <div class="pointer-events-none absolute inset-0 opacity-30" :style="{ background: 'radial-gradient(circle_at_top_right, rgba(255,255,255,0.45), transparent 42%)' }" />
-      <div class="relative flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <UBadge color="neutral" variant="soft" class="rounded-full bg-white/16 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-white/95 backdrop-blur">
-            {{ privacyLabel }}
-          </UBadge>
-          <NuxtLink
-            :to="groupTo"
-            class="mt-4 block text-[1.35rem] font-black tracking-[-0.04em] text-white transition hover:text-white/85"
-          >
-            {{ groupName }}
-          </NuxtLink>
-          <p class="mt-2 max-w-[28rem] text-[13px] leading-6 text-white/82">
-            {{ groupSummary }}
-          </p>
-        </div>
+  <article class="group-card">
+    <div class="group-card__main">
+      <NuxtLink :to="groupTo" class="group-card__avatar" :style="{ background: group.banner }" :aria-label="groupName">
+        <span class="group-card__avatar-overlay" />
+        <Icon name="i-ph-users-three-fill" class="group-card__avatar-icon" />
+      </NuxtLink>
 
-        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] bg-white/16 text-white backdrop-blur">
-          <Icon name="i-ph-users-three-fill" class="h-6 w-6" />
-        </div>
+      <div class="group-card__content">
+        <NuxtLink :to="groupTo" class="group-card__title">
+          {{ groupName }}
+        </NuxtLink>
+
+        <p class="group-card__members">
+          {{ memberLabel }}
+        </p>
       </div>
     </div>
 
-    <div class="space-y-5 px-5 py-5">
-      <div class="flex flex-wrap items-center gap-2 text-[12px] font-semibold">
-        <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[#243b63]">
-          <Icon name="i-ph-users" class="mr-1.5 h-4 w-4 text-[#0000ff]" />
-          {{ memberLabel }}
-        </UBadge>
-        <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-slate-500">
-          {{ categoryLabel }}
-        </UBadge>
-        <UBadge
-          v-for="tag in localizedTags.slice(0, 2)"
-          :key="tag"
-          color="neutral"
-          variant="outline"
-          class="rounded-full px-3 py-1.5 text-slate-500"
-        >
-          #{{ tag }}
-        </UBadge>
-      </div>
+    <div class="group-card__actions">
+      <NuxtLink
+        v-if="group.canManage"
+        :to="groupSettingsTo"
+        class="group-card__action group-card__action--secondary"
+      >
+        {{ $t("community.groups.action.manage") }}
+      </NuxtLink>
 
-      <div v-if="activityLabel || ownerLabel" class="grid gap-3 md:grid-cols-2">
-        <div v-if="activityLabel" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            {{ $t("community.groups.card.activity") }}
-          </p>
-          <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-            {{ activityLabel }}
-          </p>
-        </div>
-
-        <div v-if="ownerLabel" class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">
-            {{ $t("community.groups.card.context") }}
-          </p>
-          <p class="mt-1 text-[13px] font-semibold text-[#243b63]">
-            {{ ownerLabel }}
-          </p>
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div class="text-[12px] text-slate-500">
-          <span class="font-semibold text-[#243b63]">/g/{{ group.slug }}</span>
-          <template v-if="privacyDescription">
-            <span class="mx-2 text-slate-300">•</span>
-            <span>{{ privacyDescription }}</span>
-          </template>
-        </div>
-
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <UButton
-            v-if="group.canManage"
-            :to="groupSettingsTo"
-            color="neutral"
-            variant="outline"
-            size="md"
-            class="rounded-full"
-          >
-            <Icon name="i-ph-gear-six-bold" class="mr-1.5 h-4 w-4" />
-            {{ $t("community.groups.action.manage") }}
-          </UButton>
-
-          <UButton
-            :to="groupTo"
-            color="primary"
-            variant="solid"
-            size="md"
-            class="rounded-full px-5 text-[13px] font-bold text-white shadow-[0_10px_20px_rgba(0,0,255,0.18)]"
-            :style="{ background: primaryButtonBackground }"
-          >
-            {{ resolvedActionLabel }}
-          </UButton>
-        </div>
-      </div>
+      <NuxtLink
+        v-else
+        :to="groupTo"
+        class="group-card__action group-card__action--primary"
+      >
+        {{ resolvedActionLabel }}
+      </NuxtLink>
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
 import {
-  getCommunityOptionDescription,
-  getCommunityOptionLabel,
   getCommunityGroupPath,
   getCommunityGroupSettingsPath,
 } from "../../domain/services/community-helpers.service"
-import {
-  communityCategoryOptions,
-  communityPrivacyOptions,
-} from "../../domain/constants/community-options"
 import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 const { t, locale } = useI18n()
@@ -125,14 +54,7 @@ const props = withDefaults(defineProps<{
   actionLabel: "",
 })
 
-const groupName = computed(() => t(props.group.name))
-const groupSummary = computed(() => t(props.group.summary))
-const activityLabel = computed(() => props.group.activityLabel ? t(props.group.activityLabel) : "")
-const ownerLabel = computed(() => props.group.ownerLabel ? t(props.group.ownerLabel) : "")
-
-const localizedTags = computed(() =>
-  props.group.tags.map(tag => t(tag)),
-)
+const groupName = computed(() => props.group.name)
 
 const memberLabel = computed(() =>
   t("community.groups.format.members", {
@@ -140,34 +62,114 @@ const memberLabel = computed(() =>
   }),
 )
 
-const privacyLabel = computed(() => {
-  const label = getCommunityOptionLabel(communityPrivacyOptions, props.group.privacy, "")
-  return label ? t(label) : t("community.groups.card.privacyFallback")
-})
-
-const privacyDescription = computed(() => {
-  const desc = getCommunityOptionDescription(communityPrivacyOptions, props.group.privacy, "")
-  return desc ? t(desc) : ""
-})
-
-const categoryLabel = computed(() => {
-  const label = getCommunityOptionLabel(communityCategoryOptions, props.group.category, "")
-  return label ? t(label) : t("community.groups.card.noCategory")
-})
-
 const resolvedActionLabel = computed(() =>
-  props.actionLabel ? t(props.actionLabel) : t("community.groups.action.viewGroup"),
+  props.actionLabel ? t(props.actionLabel) : t("community.groups.action.explore"),
 )
 
-const primaryButtonBackground = computed(() =>
-  `linear-gradient(135deg, ${props.group.accent} 0%, #0000ff 100%)`,
-)
-
-const groupTo = computed(() =>
-  getCommunityGroupPath(props.group.slug),
-)
-
-const groupSettingsTo = computed(() =>
-  getCommunityGroupSettingsPath(props.group.slug),
-)
+const groupTo = computed(() => getCommunityGroupPath(props.group.slug))
+const groupSettingsTo = computed(() => getCommunityGroupSettingsPath(props.group.slug))
 </script>
+
+<style scoped>
+.group-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.group-card__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.group-card__avatar {
+  position: relative;
+  display: inline-flex;
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 18px;
+  text-decoration: none;
+}
+
+.group-card__avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.36));
+}
+
+.group-card__avatar-icon {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  color: #ffffff;
+}
+
+.group-card__content {
+  min-width: 0;
+  flex: 1;
+}
+
+.group-card__title {
+  display: inline-block;
+  color: var(--text-primary);
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-decoration: none;
+}
+
+.group-card__title:hover {
+  color: var(--text-brand);
+}
+
+.group-card__members {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.group-card__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.group-card__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.group-card__action--secondary {
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+.group-card__action--primary {
+  background: var(--bg-brand);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-brand);
+}
+
+.group-card__action--primary:hover {
+  background: var(--bg-brand-hover);
+}
+</style>

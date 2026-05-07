@@ -31,6 +31,14 @@ type BackendSearchResponse = {
   }
 }
 
+type BackendRecommendedResponse = {
+  api_status?: number | string
+  data?: BackendEntity[]
+  errors?: {
+    error_text?: string
+  }
+}
+
 type BackendGroupDetailResponse = {
   api_status?: number | string
   group_data?: BackendEntity
@@ -274,6 +282,28 @@ export async function fetchCommunityGroups(
   )
 }
 
+export async function fetchSuggestedCommunityGroups(event: H3Event) {
+  const currentUser = await getBackendCurrentUser(event)
+  const client = createBackendApiClient(event)
+  const response = assertBackendApiSuccess(
+    await client.post<BackendRecommendedResponse, Record<string, unknown>>(
+      "fetch-recommended",
+      {
+        type: "groups",
+        limit: 40,
+      },
+    ),
+    "Unable to load suggested groups.",
+  )
+
+  return (response.data ?? []).map(entity =>
+    mapCommunityGroupRecord(entity, {
+      segment: "suggested",
+      currentUserId: asNumber(currentUser.user_id),
+    }),
+  )
+}
+
 export async function fetchCommunityPages(
   event: H3Event,
   fetch: Extract<CommunityListFetch, "pages" | "liked_pages">,
@@ -293,6 +323,27 @@ export async function fetchCommunityPages(
   )
 
   return extractPagesFromResponse(response, fetch).map(entity =>
+    mapCommunityPageRecord(entity, {
+      currentUserId: asNumber(currentUser.user_id),
+    }),
+  )
+}
+
+export async function fetchSuggestedCommunityPages(event: H3Event) {
+  const currentUser = await getBackendCurrentUser(event)
+  const client = createBackendApiClient(event)
+  const response = assertBackendApiSuccess(
+    await client.post<BackendRecommendedResponse, Record<string, unknown>>(
+      "fetch-recommended",
+      {
+        type: "pages",
+        limit: 40,
+      },
+    ),
+    "Unable to load suggested pages.",
+  )
+
+  return (response.data ?? []).map(entity =>
     mapCommunityPageRecord(entity, {
       currentUserId: asNumber(currentUser.user_id),
     }),
