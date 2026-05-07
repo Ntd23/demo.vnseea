@@ -221,10 +221,10 @@
               <div class="story-viewer__reaction-shell">
                 <Transition
                   enter-active-class="transition duration-150 ease-out"
-                  enter-from-class="opacity-0 translate-y-2 scale-95"
-                  enter-to-class="opacity-100 translate-y-0 scale-100"
+                  enter-from-class="opacity-0 scale-95"
+                  enter-to-class="opacity-100 scale-100"
                   leave-active-class="transition duration-100 ease-in"
-                  leave-to-class="opacity-0 translate-y-2 scale-95"
+                  leave-to-class="opacity-0 scale-95"
                 >
                   <div
                     v-if="reactionTrayOpen"
@@ -1119,7 +1119,6 @@ watch(activeStoryData, async (story) => {
 .story-viewer__reaction-option:hover,
 .story-viewer__reaction-option--active {
   background: transparent;
-  transform: translateY(-4px) scale(1.08);
 }
 
 .story-viewer__reaction-symbol {

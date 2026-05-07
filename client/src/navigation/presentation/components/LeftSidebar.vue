@@ -17,7 +17,6 @@
 
         <!-- Expandable section -->
         <template v-if="expanded">
-          <div class="left-sidebar__divider" />
           <NavigationSidebarMenuItem
             v-for="item in sidebarNavMore"
             :key="item.label"
@@ -212,10 +211,10 @@ const isItemActive = (to: string) => {
 }
 
 .left-sidebar__toggle-label {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
-  color: #64748b;
   transition: color 0.15s ease;
+  color: #334155;
 }
 
 .left-sidebar__toggle:hover .left-sidebar__toggle-label {

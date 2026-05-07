@@ -1,29 +1,14 @@
-<!-- Description: Renders the memories page with the PHP-style order of header, friendversaries, then memory posts. -->
+<!-- Description: Renders the memories route in PHP order with a simple header, friendversaries block, and memory posts backed by the feed bridge. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-5 px-3 pb-16 sm:px-5 lg:px-6">
-    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div class="space-y-2">
-          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-            {{ t("pages.memoriesPage.heroEyebrow") }}
-          </p>
-          <h1 class="text-[1.9rem] font-black tracking-[-0.04em] text-[var(--text-primary)] sm:text-[2.2rem]">
-            {{ t("pages.memoriesPage.heroTitle") }}
-          </h1>
-          <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
-            {{ t("pages.memoriesPage.heroDescription") }}
-          </p>
-        </div>
-
-        <div class="flex flex-wrap gap-3">
-          <NuxtLink
-            :to="appRoutes.feed"
-            class="inline-flex h-11 items-center justify-center rounded-[14px] border border-[#dbe3f2] bg-white px-5 text-[13px] font-bold text-[var(--text-primary)] transition hover:border-primary-200 hover:text-primary-700"
-          >
-            <Icon name="i-ph-house-line-duotone" class="mr-2 h-4 w-4" />
-            {{ t("pages.memoriesPage.homeFeed") }}
-          </NuxtLink>
-        </div>
+  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
+      <div class="space-y-1.5">
+        <p class="text-label-secondary">
+          {{ t("pages.memoriesPage.heroEyebrow") }}
+        </p>
+        <h1 class="text-heading text-[var(--text-primary)]">
+          {{ t("pages.memoriesPage.heroTitle") }}
+        </h1>
       </div>
     </section>
 
@@ -38,77 +23,86 @@
 
     <section
       v-if="loading"
-      class="rounded-[28px] border border-[#dbe3f2] bg-white px-6 py-14 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)]"
+      class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
     >
-      <div class="flex items-center justify-center gap-3 text-sm font-bold text-slate-500">
+      <div class="flex items-center justify-center gap-3 text-sm font-bold text-[var(--text-secondary)]">
         <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
-        <span>{{ t("pages.memoriesPage.heroEyebrow") }}</span>
+        <span>{{ t("pages.memoriesPage.heroTitle") }}</span>
       </div>
     </section>
 
-    <section v-else class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
-      <div class="space-y-2">
-        <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-          {{ t("pages.memoriesPage.statYears") }}
-        </p>
-        <h2 class="text-[1.45rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
-          {{ t("pages.memoriesPage.sectionTitle", { count: memoryFriends.length }) }}
-        </h2>
-      </div>
-
-      <div class="mt-4 grid gap-4 md:grid-cols-2">
-        <article
-          v-for="friend in memoryFriends"
-          :key="friend.id"
-          class="rounded-[22px] border border-[#e2e8f0] bg-[#f8fafc] p-4"
-        >
-          <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-            {{ friend.label }}
+    <template v-else>
+      <section
+        v-if="memoryFriends.length > 0"
+        class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] p-5 shadow-[var(--shadow-sm)]"
+      >
+        <div class="mb-4 space-y-1.5">
+          <p class="text-label-secondary">
+            {{ t("pages.memoriesPage.statYears") }}
           </p>
-          <h3 class="mt-2 text-lg font-black text-[var(--text-primary)]">
-            {{ friend.name }}
-          </h3>
-          <p class="mt-2 text-sm leading-6 text-slate-600">
-            {{ friend.note }}
+          <h2 class="text-heading text-[var(--text-primary)]">
+            {{ t("pages.memoriesPage.sectionTitle", { count: memoryFriends.length }) }}
+          </h2>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2">
+          <article
+            v-for="friend in memoryFriends"
+            :key="friend.id"
+            class="rounded-[16px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4"
+          >
+            <p class="text-title-primary">{{ friend.name }}</p>
+            <p class="mt-1 text-caption-secondary">{{ friend.label }}</p>
+            <p class="mt-3 text-body-secondary">{{ friend.note }}</p>
+          </article>
+        </div>
+      </section>
+
+      <section
+        v-if="memoryEntries.length > 0"
+        class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] p-5 shadow-[var(--shadow-sm)]"
+      >
+        <div class="mb-4 space-y-1.5">
+          <p class="text-label-secondary">
+            {{ t("pages.memoriesPage.statMemories") }}
           </p>
-        </article>
-      </div>
-    </section>
+          <h2 class="text-heading text-[var(--text-primary)]">
+            {{ t("pages.memoriesPage.sectionTitle", { count: memoryEntries.length }) }}
+          </h2>
+        </div>
 
-    <section class="overflow-hidden rounded-[26px] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
-      <div class="border-b border-[#eef2fb] px-5 py-4">
-        <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-          {{ t("pages.memoriesPage.statMemories") }}
-        </p>
-        <h2 class="mt-2 text-[1.45rem] font-black tracking-[-0.03em] text-[var(--text-primary)]">
-          {{ t("pages.memoriesPage.sectionTitle", { count: memoryEntries.length }) }}
-        </h2>
-        <p class="mt-1 text-[14px] leading-6 text-slate-500">
-          {{ t("pages.memoriesPage.sectionDescription") }}
-        </p>
-      </div>
-
-      <div class="mx-auto max-w-4xl px-4 py-5 sm:px-5">
         <MemoriesMemoryFeed
           :entries="memoryEntries"
           @share="shareMemory"
         />
-      </div>
-    </section>
+      </section>
+
+      <section
+        v-if="memoryEntries.length === 0 && memoryFriends.length === 0"
+        class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
+      >
+        <FoundationEmptyState
+          icon="i-ph-clock-counter-clockwise-duotone"
+          :title="t('pages.memoriesPage.emptyTitle')"
+          :description="t('pages.memoriesPage.emptyDescription')"
+        />
+      </section>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import type { FeedMemoryFriendRecord, FeedMemoryRecord } from "../../../feed/domain/types/feed.types"
 import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import MemoriesMemoryFeed from "../components/MemoryFeed.vue"
+
 const route = useRoute()
 const requestURL = useRequestURL()
 const toast = useToast()
 const repository = createApiFeedRepository()
-
 const { t } = useI18n()
+
 const loading = ref(true)
 const errorMessage = ref("")
 const memoryEntries = ref<FeedMemoryRecord[]>([])
@@ -124,7 +118,7 @@ async function fetchMemories() {
     memoryFriends.value = response.friends
   }
   catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("pages.memoriesPage.sectionDescription")
+    errorMessage.value = error instanceof Error ? error.message : t("pages.memoriesPage.emptyDescription")
   }
   finally {
     loading.value = false

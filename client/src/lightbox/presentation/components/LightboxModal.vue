@@ -19,31 +19,6 @@
                 <span class="text-white/30">/</span>
                 <span>{{ mediaTypeLabel }}</span>
               </div>
-
-              <div class="flex items-center gap-2">
-                <UButton
-                  type="button"
-                  color="neutral"
-                  variant="soft"
-                  class="rounded-full border border-white/10 bg-black/35 text-white"
-                  :disabled="!hasCurrentItem"
-                  :aria-label="t('feed.lightboxModal.actionShare')"
-                  @click="emit('share')"
-                >
-                  <Icon name="i-ph-share-network-fill" class="h-4 w-4" />
-                </UButton>
-                <UButton
-                  type="button"
-                  color="neutral"
-                  variant="soft"
-                  class="rounded-full border border-white/10 bg-black/35 text-white"
-                  :disabled="!hasCurrentItem"
-                  :aria-label="t('feed.lightboxModal.actionDownload')"
-                  @click="emit('download')"
-                >
-                  <Icon name="i-ph-download-simple-bold" class="h-4 w-4" />
-                </UButton>
-              </div>
             </div>
 
             <UButton
@@ -135,7 +110,7 @@
             </section>
 
             <section class="rounded-[24px] border border-white/10 bg-white/6 p-4 backdrop-blur">
-              <div class="grid gap-2">
+              <div class="grid grid-cols-2 gap-2">
                 <UButton
                   type="button"
                   color="neutral"
@@ -143,10 +118,23 @@
                   size="lg"
                   class="justify-start rounded-[18px] border border-white/10 bg-black/20 text-white"
                   :disabled="!hasCurrentItem"
-                  @click="emit('like')"
+                  @click="emit('share')"
                 >
-                  <Icon name="i-ph-heart-fill" class="mr-2 h-4 w-4 text-[#f97316]" />
-                  {{ t("feed.lightboxModal.actionLike") }}
+                  <Icon name="i-ph-share-network-fill" class="mr-2 h-4 w-4" />
+                  {{ t("feed.lightboxModal.actionShare") }}
+                </UButton>
+
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="soft"
+                  size="lg"
+                  class="justify-start rounded-[18px] border border-white/10 bg-black/20 text-white"
+                  :disabled="!hasCurrentItem"
+                  @click="emit('download')"
+                >
+                  <Icon name="i-ph-download-simple-bold" class="mr-2 h-4 w-4" />
+                  {{ t("feed.lightboxModal.actionDownload") }}
                 </UButton>
 
                 <UButton
@@ -169,10 +157,10 @@
                   size="lg"
                   class="justify-start rounded-[18px] border border-white/10 bg-black/20 text-white"
                   :disabled="!hasCurrentItem"
-                  @click="emit('share')"
+                  @click="emit('like')"
                 >
-                  <Icon name="i-ph-share-network-fill" class="mr-2 h-4 w-4" />
-                  {{ t("feed.lightboxModal.actionShare") }}
+                  <Icon name="i-ph-heart-fill" class="mr-2 h-4 w-4 text-[#f97316]" />
+                  {{ t("feed.lightboxModal.actionLike") }}
                 </UButton>
               </div>
             </section>
