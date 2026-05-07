@@ -50,10 +50,10 @@ withDefaults(defineProps<{
 <style scoped>
 .settings-section-card {
   border: 1px solid #e2e8f0;
-  border-radius: 18px;
+  border-radius: 16px;
   background: #ffffff;
   padding: 20px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .settings-section-card__header {
@@ -75,34 +75,33 @@ withDefaults(defineProps<{
   flex: 0 0 44px;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
-  background: #eff6ff;
-  color: #0000ff;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .settings-section-card__eyebrow {
   margin: 0;
-  color: rgba(0, 0, 255, 0.62);
+  color: #64748b;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .settings-section-card__title {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   color: #0f172a;
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: -0.03em;
+  font-size: 18px;
+  font-weight: 800;
   line-height: 1.2;
 }
 
 .settings-section-card__desc {
   margin: 4px 0 0;
-  color: #64748b;
-  font-size: 14px;
-  line-height: 1.6;
+  color: #94a3b8;
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 .settings-section-card__trailing {

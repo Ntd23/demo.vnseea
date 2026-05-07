@@ -17,9 +17,6 @@
           </span>
         </NuxtLink>
       </div>
-       <span class="page-tabs-bar__label">
-        {{ $t("community.pagesDirectory.searchLabel") }}
-      </span>
     </div>
 
     <div class="page-tabs-bar__footer">
@@ -68,11 +65,18 @@
 <script setup lang="ts">
 import type { CommunityPageTab } from "../../domain/types/community.types"
 
+const search = defineModel<string>("search", { default: "" })
+
 defineProps<{
-  tabs: Array<{ label: string; value: CommunityPageTab; to: string }>
+  tabs: Array<{ label: string; value: CommunityPageTab; count: number; to: string }>
   activeTab: CommunityPageTab
+  statusLabel: string
   createTo: string
 }>()
+
+const searchInputUi = {
+  base: "h-11 rounded-full px-4 text-[14px]",
+}
 </script>
 
 <style scoped>
@@ -87,33 +91,67 @@ defineProps<{
   box-shadow: var(--shadow-sm);
 }
 
+.page-tabs-bar__row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .page-tabs-bar__tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 10px;
+  gap: 8px;
 }
 
 .page-tabs-bar__tab {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
-  border-radius: var(--radius-full);
-  padding: 8px 14px;
-  color: var(--text-secondary);
-  font-size: 13px;
+  justify-content: space-between;
+  min-height: 40px;
+  border-radius: 12px;
+  padding: 8px 16px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
+  transition: all 0.2s ease;
 }
 
 .page-tabs-bar__tab:hover {
-  color: var(--text-brand);
-  background: var(--bg-surface-hover);
+  background: #f1f5f9;
+  color: #0f172a;
 }
 
 .page-tabs-bar__tab--active {
-  color: var(--text-brand);
-  background: var(--bg-surface-active);
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.page-tabs-bar__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 20px;
+  margin-left: 8px;
+  border-radius: 999px;
+  padding: 0 6px;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 0.2s ease;
+}
+
+.page-tabs-bar__tab--active .page-tabs-bar__count {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.page-tabs-bar__tab:hover:not(.page-tabs-bar__tab--active) .page-tabs-bar__count {
+  background: #cbd5e1;
+  color: #1e293b;
 }
 
 .page-tabs-bar__create {
@@ -148,22 +186,21 @@ defineProps<{
   gap: 20px;
   margin-top: 16px;
   border-top: 1px solid #f1f5f9;
-  padding-top: 16px;
+  padding-top: 20px;
 }
 
 .page-tabs-bar__left {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  flex: 1;
+  gap: 16px;
 }
 
 .page-tabs-bar__status {
   margin: 0;
   color: #64748b;
-  font-size: 13px;
-  line-height: 1.5;
-  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .page-tabs-bar__create-btn {
@@ -220,28 +257,29 @@ defineProps<{
   background: var(--bg-brand-hover);
 }
 
-@media (min-width: 768px) {
-  .page-tabs-bar {
+@media (min-width: 1024px) {
+  .page-tabs-bar__row {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .page-tabs-bar__search {
-    width: min(420px, 42vw);
-    flex-direction: row;
-    align-items: center;
   }
 
   .page-tabs-bar__footer {
     flex-direction: row;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
-    gap: 32px;
+    gap: 40px;
+  }
+
+  .page-tabs-bar__search {
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+    max-width: 600px;
   }
 
   .page-tabs-bar__create-btn {
-    margin-bottom: 2px; /* Visual alignment with search input */
+    align-self: center;
   }
 }
 </style>

@@ -230,6 +230,8 @@
         </div>
       </div>
     </div>
+
+    <slot name="footer" />
   </CommunitySettingsSectionCard>
 </template>
 
