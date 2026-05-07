@@ -277,6 +277,12 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   z-index: 2;
 }
 
+.page-card__identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .page-card__meta-item {
   display: inline-flex;
   align-items: center;
@@ -287,11 +293,12 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__chip {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(15, 23, 42, 0.3);
   color: #ffffff;
   padding: 6px 12px;
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
 }
 
 .page-card__tag {

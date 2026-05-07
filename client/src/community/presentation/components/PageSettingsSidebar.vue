@@ -1,6 +1,6 @@
 <!-- Description: Renders the page settings sidebar preview from normalized backend-backed page data. -->
 <template>
-  <div class="page-settings-sidebar space-y-4 xl:sticky xl:top-[84px]">
+  <!-- <div class="page-settings-sidebar space-y-4 xl:sticky xl:top-[84px]">
     <section class="overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <div class="relative overflow-hidden px-5 py-5 text-white">
         <div class="absolute inset-0" :style="{ background: page.banner }" />
@@ -48,43 +48,10 @@
         </div>
       </div>
     </section>
-
-    <CommunityPageAboutCard
-      :page="page"
-      :category-label="categoryLabel"
-      :follower-count-label="followerCountLabel"
-      :like-count-label="likeCountLabel"
-      :show-follower-count="showFollowerCount"
-      :show-like-count="showLikeCount"
-      compact
-    />
-
-    <section class="rounded-[18px] border border-[#e2e8f0] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
-      <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-        {{ $t('community.pageSettings.sidebar.tips') }}
-      </p>
-
-      <div class="mt-4 space-y-3">
-        <div class="rounded-[16px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3">
-          <p class="text-[13px] font-semibold text-[#243b63]">{{ $t('community.pageSettings.sidebar.ctaFocus') }}</p>
-          <p class="mt-1 text-[12px] leading-5 text-slate-500">
-            {{ selectedCtaLabel }} {{ allowMessages ? $t('community.pageSettings.sidebar.ctaWithMessages') : $t('community.pageSettings.sidebar.ctaWithoutMessages') }}
-          </p>
-        </div>
-
-        <div class="rounded-[16px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3">
-          <p class="text-[13px] font-semibold text-[#243b63]">{{ $t('community.pageSettings.sidebar.discovery') }}</p>
-          <p class="mt-1 text-[12px] leading-5 text-slate-500">
-            {{ recommendRelatedPages ? $t('community.pageSettings.sidebar.discoveryOn') : $t('community.pageSettings.sidebar.discoveryOff') }}
-          </p>
-        </div>
-      </div>
-    </section>
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
-import CommunityPageAboutCard from "./PageAboutCard.vue"
 import { getCommunityInitials } from "../../domain/services/community-helpers.service"
 import type { CommunityPageRecord } from "../../domain/types/community.types"
 
