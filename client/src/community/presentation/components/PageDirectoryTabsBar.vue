@@ -17,42 +17,50 @@
           </span>
         </NuxtLink>
       </div>
-
-      <div class="page-tabs-bar__search">
-        <div class="page-tabs-bar__input">
-          <UInput
-            v-model="search"
-            :placeholder="$t('community.pagesDirectory.search')"
-            leading-icon="i-ph-magnifying-glass-bold"
-            color="primary"
-            size="lg"
-            class="w-full"
-            :ui="searchInputUi"
-          />
-        </div>
-
-        <UButton
-          v-if="search.trim()"
-          type="button"
-          color="neutral"
-          variant="outline"
-          size="md"
-          class="rounded-full"
-          @click="search = ''"
-        >
-          {{ $t("community.pagesDirectory.clearSearch") }}
-        </UButton>
-      </div>
+       <span class="page-tabs-bar__label">
+        {{ $t("community.pagesDirectory.searchLabel") }}
+      </span>
     </div>
 
     <div class="page-tabs-bar__footer">
-      <p class="page-tabs-bar__status">
-        {{ statusLabel }}
-      </p>
+      <div class="page-tabs-bar__left">
+        <p v-if="statusLabel" class="page-tabs-bar__status">
+          {{ statusLabel }}
+        </p>
+        <div class="page-tabs-bar__search">
+          <div class="page-tabs-bar__input">
+            <UInput
+              v-model="search"
+              :placeholder="$t('community.pagesDirectory.search')"
+              leading-icon="i-ph-magnifying-glass-bold"
+              color="primary"
+              size="lg"
+              class="w-full"
+              :ui="searchInputUi"
+            />
+          </div>
 
-      <span class="page-tabs-bar__label">
-        {{ $t("community.pagesDirectory.searchLabel") }}
-      </span>
+          <UButton
+            v-if="search.trim()"
+            type="button"
+            color="neutral"
+            variant="outline"
+            size="md"
+            class="rounded-full w-40"
+            @click="search = ''"
+          >
+            {{ $t("community.pagesDirectory.clearSearch") }}
+          </UButton>
+        </div>
+      </div>
+
+      <NuxtLink
+        to="/create-page"
+        class="page-tabs-bar__create-btn"
+      >
+        <Icon name="i-ph-plus-bold" class="page-tabs-bar__create-icon" />
+        <span>{{ $t("community.pagesDirectory.createAction") }}</span>
+      </NuxtLink>
     </div>
   </section>
 </template>
@@ -149,10 +157,17 @@ const searchInputUi = {
 .page-tabs-bar__footer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 20px;
+  margin-top: 16px;
   border-top: 1px solid #f1f5f9;
-  padding-top: 14px;
+  padding-top: 16px;
+}
+
+.page-tabs-bar__left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
 }
 
 .page-tabs-bar__status {
@@ -160,6 +175,41 @@ const searchInputUi = {
   color: #64748b;
   font-size: 13px;
   line-height: 1.5;
+  font-weight: 500;
+}
+
+.page-tabs-bar__create-btn {
+  display: inline-flex;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 14px;
+  background: #1d4ed8;
+  padding: 0 20px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.page-tabs-bar__create-btn:hover {
+  transform: translateY(-2px);
+  background: #2563eb;
+  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.page-tabs-bar__create-btn:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}
+
+.page-tabs-bar__create-icon {
+  width: 16px;
+  height: 16px;
 }
 
 .page-tabs-bar__label {
@@ -205,8 +255,13 @@ const searchInputUi = {
 
   .page-tabs-bar__footer {
     flex-direction: row;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
+    gap: 32px;
+  }
+
+  .page-tabs-bar__create-btn {
+    margin-bottom: 2px; /* Visual alignment with search input */
   }
 }
 </style>

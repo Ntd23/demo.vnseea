@@ -212,7 +212,7 @@ const draftStorage = useStorage<CommunityPageSettingsDraft | null>(
 )
 
 const normalizedTags = computed(() =>
-  draft.value.tags
+  (draft.value.tags || "")
     .split(",")
     .map(tag => tag.trim())
     .filter(Boolean),
@@ -223,17 +223,17 @@ const previewPage = computed<CommunityPageRecord | null>(() => {
 
   return {
     ...page.value,
-    name: draft.value.name.trim() || page.value.name,
-    slug: draft.value.slug.trim() || page.value.slug,
-    summary: draft.value.summary.trim() || page.value.summary,
+    name: (draft.value.name || "").trim() || page.value.name,
+    slug: (draft.value.slug || "").trim() || page.value.slug,
+    summary: (draft.value.summary || "").trim() || page.value.summary,
     website: draft.value.showWebsite
-      ? (draft.value.website.trim() || page.value.website)
+      ? ((draft.value.website || "").trim() || page.value.website)
       : undefined,
-    locationLabel: draft.value.locationLabel.trim() || page.value.locationLabel,
+    locationLabel: (draft.value.locationLabel || "").trim() || page.value.locationLabel,
     category: draft.value.category,
-    ctaLabel: draft.value.ctaLabel.trim() || page.value.ctaLabel,
-    responseLabel: draft.value.responseLabel.trim() || page.value.responseLabel,
-    ownerLabel: draft.value.ownerLabel.trim() || page.value.ownerLabel,
+    ctaLabel: (draft.value.ctaLabel || "").trim() || page.value.ctaLabel,
+    responseLabel: (draft.value.responseLabel || "").trim() || page.value.responseLabel,
+    ownerLabel: (draft.value.ownerLabel || "").trim() || page.value.ownerLabel,
     tags: normalizedTags.value.length > 0 ? normalizedTags.value : page.value.tags,
   }
 })
@@ -253,7 +253,7 @@ const selectedCategoryLabel = computed(() =>
 )
 
 const selectedCtaLabel = computed(() =>
-  draft.value.ctaLabel.trim() || page.value?.ctaLabel || t("community.pageSettings.basics.stats.ctaFallback"),
+  (draft.value.ctaLabel || "").trim() || page.value?.ctaLabel || t("community.pageSettings.basics.stats.ctaFallback"),
 )
 
 const totalPolicies = 5
@@ -286,9 +286,9 @@ const settingsNavItems = computed(() => [
 const isBusy = computed(() => saveState.value === "loading")
 const isSaveDisabled = computed(() =>
   isBusy.value
-  || !draft.value.name.trim()
-  || !draft.value.slug.trim()
-  || draft.value.summary.trim().length < 24
+  || !(draft.value.name || "").trim()
+  || !(draft.value.slug || "").trim()
+  || (draft.value.summary || "").trim().length < 24
   || !draft.value.category,
 )
 
@@ -452,16 +452,16 @@ function createLocalizedDraft(value: CommunityPageRecord): CommunityPageSettings
 function normalizeDraft(value: CommunityPageSettingsDraft): CommunityPageSettingsDraft {
   return {
     ...value,
-    name: value.name.trim(),
-    slug: value.slug.trim(),
-    summary: value.summary.trim(),
-    website: value.website.trim(),
-    locationLabel: value.locationLabel.trim(),
-    category: value.category.trim(),
-    ctaLabel: value.ctaLabel.trim(),
-    responseLabel: value.responseLabel.trim(),
-    ownerLabel: value.ownerLabel.trim(),
-    tags: value.tags
+    name: (value.name || "").trim(),
+    slug: (value.slug || "").trim(),
+    summary: (value.summary || "").trim(),
+    website: (value.website || "").trim(),
+    locationLabel: (value.locationLabel || "").trim(),
+    category: (value.category || "").trim(),
+    ctaLabel: (value.ctaLabel || "").trim(),
+    responseLabel: (value.responseLabel || "").trim(),
+    ownerLabel: (value.ownerLabel || "").trim(),
+    tags: (value.tags || "")
       .split(",")
       .map(tag => tag.trim())
       .filter(Boolean)
@@ -475,9 +475,9 @@ function isSameDraft(first: CommunityPageSettingsDraft, second: CommunityPageSet
 
 const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] => {
   const errors: PageSettingsError[] = []
-  const slug = state.slug.trim()
+  const slug = (state.slug || "").trim()
 
-  if (!state.name.trim()) {
+  if (!(state.name || "").trim()) {
     errors.push({
       name: "name",
       message: t("community.creation.common.validationNameRequired"),
@@ -497,7 +497,7 @@ const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] =
     })
   }
 
-  if (state.summary.trim().length < 24) {
+  if ((state.summary || "").trim().length < 24) {
     errors.push({
       name: "summary",
       message: t("community.creation.common.validationDescriptionRequired"),

@@ -1,37 +1,30 @@
 <!-- Description: Displays a compact backend-backed community page card aligned with the shared feed/profile card system. -->
 <template>
   <article class="page-card">
-    <NuxtLink :to="pageTo" class="page-card__cover" :style="{ background: page.banner }" :aria-label="pageName">
+    <div class="page-card__cover" :style="{ background: page.banner }">
+      <NuxtLink :to="pageTo" class="page-card__cover-link" :aria-label="pageName" />
       <span class="page-card__category">{{ categoryLabel }}</span>
+      <NuxtLink v-if="page.canManage" :to="pageSettingsTo" class="page-card__action page-card__action--secondary">
+        <Icon name="i-ph-gear-six-duotone" class="mr-1.5 h-5 w-5" />
+      </NuxtLink>
       <span v-if="page.canManage" class="page-card__owner-badge">
         <Icon name="i-ph-flag-fill" class="h-4 w-4" />
       </span>
-    </NuxtLink>
-
-    <div class="page-card__content">
-      <div class="page-card__identity">
-        <NuxtLink :to="pageTo" class="page-card__avatar" :style="{ background: page.accent }" :aria-label="pageName">
-          <img
-            v-if="page.avatarUrl"
-            :src="page.avatarUrl"
-            :alt="pageName"
-            class="page-card__avatar-img"
-          >
-          <span v-else>{{ avatarLabel }}</span>
-        </NuxtLink>
-
-        <div class="page-card__title-wrap">
-          <NuxtLink :to="pageTo" class="page-card__title">
-            {{ pageName }}
+      <div class="page-card__infor">
+        <div class="page-card__identity">
+          <NuxtLink :to="pageTo" class="page-card__avatar" :style="{ background: page.accent }" :aria-label="pageName">
+            <img v-if="page.avatarUrl" :src="page.avatarUrl" :alt="pageName" class="page-card__avatar-img">
+            <span v-else>{{ avatarLabel }}</span>
           </NuxtLink>
-          <p class="page-card__slug">/p/{{ page.slug }}</p>
+
+          <div class="page-card__title-wrap">
+            <NuxtLink :to="pageTo" class="page-card__title">
+              {{ pageName }}
+            </NuxtLink>
+            <p class="page-card__slug">/p/{{ page.slug }}</p>
+          </div>
         </div>
       </div>
-
-      <p v-if="pageSummary" class="page-card__summary">
-        {{ pageSummary }}
-      </p>
-
       <div class="page-card__stats">
         <span class="page-card__chip">
           <Icon name="i-ph-users-three-duotone" class="h-4 w-4" />
@@ -42,6 +35,11 @@
           {{ $t("community.pages.format.likes", { count: likeCountLabel }) }}
         </span>
       </div>
+    </div>
+    <!-- <div class="page-card__content">
+      <p v-if="pageSummary" class="page-card__summary">
+        {{ pageSummary }}
+      </p>
 
       <div v-if="ownerLabel || responseLabel || locationLabel" class="page-card__meta">
         <p v-if="ownerLabel">
@@ -57,35 +55,12 @@
           <span>{{ locationLabel }}</span>
         </p>
       </div>
-
-      <div v-if="localizedTags.length" class="page-card__tags">
-        <span
-          v-for="tag in localizedTags.slice(0, 3)"
-          :key="tag"
-          class="page-card__tag"
-        >
-          #{{ tag }}
-        </span>
-      </div>
-
       <div class="page-card__actions">
-        <NuxtLink
-          v-if="page.canManage"
-          :to="pageSettingsTo"
-          class="page-card__action page-card__action--secondary"
-        >
-          <Icon name="i-ph-gear-six-duotone" class="mr-1.5 h-4 w-4" />
-          {{ $t("community.pagesDirectory.settingsAction") }}
-        </NuxtLink>
-
-        <NuxtLink
-          :to="pageTo"
-          class="page-card__action page-card__action--primary"
-        >
+        <NuxtLink :to="pageTo" class="page-card__action page-card__action--primary">
           {{ resolvedActionLabel }}
         </NuxtLink>
       </div>
-    </div>
+    </div> -->
   </article>
 </template>
 
@@ -157,29 +132,37 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 .page-card__cover {
   position: relative;
   display: block;
-  height: 112px;
+  height: 300px;
   overflow: hidden;
-  color: #ffffff;
-  text-decoration: none;
+  background-size: cover;
+  background-position: center;
+}
+
+.page-card__cover-link {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
 
 .page-card__cover::after {
   position: absolute;
   inset: 0;
   content: "";
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.36));
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.6) 100%);
+  z-index: 0;
 }
 
 .page-card__category,
 .page-card__owner-badge {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.42);
+  background: rgba(15, 23, 42, 0.3);
   color: #ffffff;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .page-card__category {
@@ -241,23 +224,26 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 .page-card__title {
   display: block;
   overflow: hidden;
-  color: #0f172a;
-  font-size: 16px;
-  font-weight: 800;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
   text-overflow: ellipsis;
   text-decoration: none;
   white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .page-card__title:hover {
-  color: #0000ff;
+  color: #ffffff;
+  opacity: 0.9;
 }
 
 .page-card__slug {
-  margin: 3px 0 0;
-  color: #64748b;
+  margin: 1px 0 0;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 12px;
   font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .page-card__summary {
@@ -271,13 +257,31 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   line-height: 1.55;
 }
 
-.page-card__stats,
 .page-card__tags,
 .page-card__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 14px;
+}
+
+.page-card__stats {
+  position: absolute;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  left: 12px;
+  gap: 8px;
+  z-index: 2;
+}
+
+.page-card__infor {
+  position: absolute;
+  bottom: 52px;
+  left: 12px;
+  right: 12px;
+  display: grid;
+  gap: 8px;
+  z-index: 2;
 }
 
 .page-card__chip,
@@ -291,9 +295,11 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__chip {
-  background: rgba(0, 0, 255, 0.05);
-  color: #334155;
-  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 6px 12px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .page-card__tag {
@@ -305,7 +311,6 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 .page-card__meta {
   display: grid;
   gap: 8px;
-  margin-top: 14px;
   border-top: 1px solid #f1f5f9;
   padding-top: 12px;
 }
@@ -334,6 +339,10 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__action {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
   display: inline-flex;
   min-height: 34px;
   align-items: center;
@@ -351,11 +360,11 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   transform: translateY(-1px);
 }
 
-.page-card__action--secondary {
+/* .page-card__action--secondary {
   border: 1px solid #cbd5e1;
   background: #ffffff;
   color: #334155;
-}
+} */
 
 .page-card__action--secondary:hover {
   border-color: #93c5fd;
