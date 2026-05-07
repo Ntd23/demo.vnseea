@@ -20,9 +20,11 @@ type BackendStoryReactionResponse = {
 }
 
 type BackendStoryViewResponse = {
-  status?: number | string
-  story_id?: number | string
-  html?: string
+  api_status?: number | string
+  story?: unknown
+  errors?: {
+    error_text?: string
+  }
 }
 
 type BackendSendMessageResponse = {
@@ -111,15 +113,17 @@ export default defineEventHandler(async (event) => {
   }
 
   if (action === "view") {
-    const response = await createBackendWebClient(event).postForm<BackendStoryViewResponse, URLSearchParams>(
-      "story_view",
-      new URLSearchParams({ id: String(storyId) }),
+    const response = await createBackendApiClient(event).post<BackendStoryViewResponse, Record<string, unknown>>(
+      "get_story_by_id",
+      {
+        id: storyId,
+      },
     )
 
-    if (Number(response.status ?? 0) !== 200) {
+    if (Number(response.api_status ?? 0) !== 200) {
       throw createError({
         statusCode: 400,
-        statusMessage: storyActionErrors.viewFailed,
+        statusMessage: response.errors?.error_text || storyActionErrors.viewFailed,
         data: response,
       })
     }

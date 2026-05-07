@@ -211,6 +211,7 @@ import type {
   FeedCommentRecord,
   FeedCommentSubmitPayload,
   FeedPostRecord,
+  FeedPostReactionSummary,
   FeedStoryReactionType,
 } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
@@ -241,6 +242,7 @@ const postReactionLongPressTriggered = ref(false)
 const lightboxOpen = ref(false)
 const currentMediaIndex = ref(0)
 const localComments = ref<FeedCommentRecord[]>([])
+const localReactionSummary = ref<FeedPostReactionSummary[]>([])
 const likesCount = ref(0)
 const sharesCount = ref(0)
 const actionState = ref<"idle" | "success" | "error">("idle")
@@ -263,11 +265,21 @@ const activePostReactionAsset = computed(() =>
     : defaultFeedReactionAsset,
 )
 const activePostReactionLabel = computed(() => t(activePostReactionAsset.value.labelKey))
-const previewReactions = computed(() =>
-  selectedPostReaction.value
-    ? [feedReactionAssetByValue[selectedPostReaction.value]]
-    : feedPostPreviewReactionAssets,
-)
+const previewReactions = computed(() => {
+  if (!localReactionSummary.value.length) {
+    return []
+  }
+
+  return localReactionSummary.value
+    .filter(item => item.count > 0)
+    .sort((a, b) => b.count - a.count)
+    .map(item => ({
+      ...feedReactionAssetByValue[item.reaction],
+      count: item.count,
+    }))
+    .filter(Boolean)
+    .slice(0, 3)
+})
 const hasReactions = computed(() => likesCount.value > 0)
 const hasPostContent = computed(() =>
   Boolean(props.post.text.trim() || props.post.tags.length),
@@ -281,10 +293,11 @@ watch(
   () => props.post,
   (post) => {
     localComments.value = [...post.comments]
+    localReactionSummary.value = [...post.reactions]
     likesCount.value = post.stats.likes
     sharesCount.value = post.stats.shares
-    liked.value = false
-    selectedPostReaction.value = null
+    liked.value = post.isLiked
+    selectedPostReaction.value = post.reaction ?? (post.isLiked ? defaultFeedStoryReaction.value : null)
     postReactionTrayOpen.value = false
     actionState.value = "idle"
     actionMessage.value = ""
@@ -339,6 +352,11 @@ async function handlePostReactionButtonClick() {
     return
   }
 
+  if (liked.value) {
+    await clearPostReaction()
+    return
+  }
+
   await reactToPost(defaultFeedStoryReaction.value)
 }
 
@@ -350,7 +368,7 @@ async function reactToPost(reaction: FeedStoryReactionType) {
   if (liking.value) return
 
   liking.value = true
-  const hadLocalReaction = Boolean(selectedPostReaction.value)
+  const previousReaction = selectedPostReaction.value
 
   try {
     await repository.runPostAction({
@@ -358,11 +376,58 @@ async function reactToPost(reaction: FeedStoryReactionType) {
       postId: props.post.id,
       reaction,
     })
-    if (!hadLocalReaction) {
+    if (!previousReaction) {
       likesCount.value += 1
     }
+    updateLocalReactionSummary(previousReaction, reaction)
     selectedPostReaction.value = reaction
     liked.value = true
+    postReactionTrayOpen.value = false
+  }
+  catch (error) {
+    actionState.value = "error"
+    actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+  }
+  finally {
+    liking.value = false
+  }
+}
+
+function updateLocalReactionSummary(previousReaction: FeedStoryReactionType | null, nextReaction: FeedStoryReactionType | null) {
+  const reactionCounts = new Map(localReactionSummary.value.map(item => [item.reaction, item.count]))
+
+  if (previousReaction) {
+    reactionCounts.set(previousReaction, Math.max((reactionCounts.get(previousReaction) ?? 0) - 1, 0))
+  }
+
+  if (nextReaction) {
+    reactionCounts.set(nextReaction, (reactionCounts.get(nextReaction) ?? 0) + 1)
+  }
+
+  localReactionSummary.value = feedReactionAssets
+    .map(asset => ({
+      reaction: asset.value,
+      count: reactionCounts.get(asset.value) ?? 0,
+    }))
+    .filter(item => item.count > 0)
+}
+
+async function clearPostReaction() {
+  if (liking.value) return
+
+  liking.value = true
+
+  try {
+    await repository.runPostAction({
+      action: "reaction",
+      postId: props.post.id,
+    })
+    if (selectedPostReaction.value && likesCount.value > 0) {
+      likesCount.value -= 1
+    }
+    updateLocalReactionSummary(selectedPostReaction.value, null)
+    selectedPostReaction.value = null
+    liked.value = false
     postReactionTrayOpen.value = false
   }
   catch (error) {

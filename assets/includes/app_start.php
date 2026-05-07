@@ -10,7 +10,8 @@ require_once "assets/libraries/DB/vendor/autoload.php";
 
 $wo           = array();
 // Connect to SQL Server
-$sqlConnect   = $wo["sqlConnect"] = mysqli_connect($sql_db_host, $sql_db_user, $sql_db_pass, $sql_db_name, 3306);
+$sql_db_port  = isset($sql_db_port) ? (int) $sql_db_port : 3306;
+$sqlConnect   = $wo["sqlConnect"] = mysqli_connect($sql_db_host, $sql_db_user, $sql_db_pass, $sql_db_name, $sql_db_port);
 // create new mysql connection
 $mysqlMaria   = new Mysql;
 // Handling Server Errors
