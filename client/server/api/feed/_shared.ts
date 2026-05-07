@@ -1014,12 +1014,13 @@ export async function fetchFeedPosts(
     pageId?: number
   },
 ) {
+  const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const limit = input.limit ?? 10
   const response = assertBackendApiSuccess(
     await client.post<BackendPostsResponse, Record<string, unknown>>(
-      input.type === "get_random_videos" ? "posts" : "posts",
+      "posts",
       {
         type: input.type,
         limit,
@@ -1027,6 +1028,7 @@ export async function fetchFeedPosts(
         filter: input.followingOnly ? 1 : 0,
         post_type: input.postType,
         hash: input.tag,
+        user_id: currentUser.user_id,
         page_id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
       },
     ),
@@ -1079,57 +1081,29 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
 }
 
 export async function fetchExplore(event: H3Event): Promise<FeedExploreResponse> {
-  const currentUser = await getBackendCurrentUser(event)
-  const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
-  const limit = resolveLimit(event, 6, 12)
+  const limit = resolveLimit(event, 15, 20)
 
-  const [
-    usersResponse,
-    pagesResponse,
-    postsResponse,
-    generalResponse,
-  ] = await Promise.all([
-    client.post<BackendRecommendedResponse, Record<string, unknown>>(
-      "fetch-recommended",
-      {
-        type: "users",
-        limit,
-      },
-    ),
-    client.post<BackendRecommendedResponse, Record<string, unknown>>(
-      "fetch-recommended",
-      {
-        type: "pages",
-        limit,
-      },
-    ),
-    client.post<BackendPostsResponse, Record<string, unknown>>(
-      "posts",
-      {
-        type: "get_news_feed",
-        limit,
-      },
-    ),
-    client.post<BackendGeneralDataResponse, Record<string, unknown>>(
-      "get-general-data",
-      {
-        fetch: "trending_hashtag,announcement",
-      },
-    ),
-  ])
+  // Use the established helper that is working for Hashtag/Home
+  const postsResponse = await fetchFeedPosts(event, {
+    type: "get_news_feed",
+    limit,
+  })
 
-  const users = assertBackendApiSuccess(usersResponse, "Unable to load recommended users.")
-  const pages = assertBackendApiSuccess(pagesResponse, "Unable to load recommended pages.")
-  const posts = assertBackendApiSuccess(postsResponse, "Unable to load explore posts.")
+  const client = createBackendApiClient(event)
+  const generalResponse = await client.post<BackendGeneralDataResponse, Record<string, unknown>>(
+    "get-general-data",
+    {
+      fetch: "trending_hashtag,announcement",
+    },
+  )
+
   const general = assertBackendApiSuccess(generalResponse, "Unable to load explore metadata.")
 
   return {
-    posts: (posts.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)),
-    users: (users.data ?? []).map(user => mapExploreUser(user, resolveMediaUrl)),
-    pages: (pages.data ?? []).map(page =>
-      mapCommunityPageRecord(page, { currentUserId: asNumber(currentUser.user_id) }),
-    ),
+    posts: postsResponse.posts,
+    users: [],
+    pages: [],
     hashtags: extractTrendingHashtags(general.trending_hashtag),
     announcement: mapAnnouncement(general.announcement),
   }

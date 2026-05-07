@@ -18,7 +18,7 @@
       create-to="/create-group"
     />
 
-    <div v-if="pending" class="grid gap-4 xl:grid-cols-2">
+    <div v-if="pending" class="grid gap-4 lg:grid-cols-2">
       <div
         v-for="item in 4"
         :key="item"
@@ -46,7 +46,7 @@
       />
     </section>
 
-    <div v-else class="grid gap-4 xl:grid-cols-2">
+    <div v-else class="grid gap-4 lg:grid-cols-2">
       <CommunityGroupCard
         v-for="group in groups"
         :key="group.id"
