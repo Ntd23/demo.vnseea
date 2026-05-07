@@ -207,7 +207,12 @@ import {
 import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useHashtagData"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import { defaultFeedStoryReaction } from "../../domain/constants/story-reactions"
-import type { FeedCommentRecord, FeedPostRecord, FeedStoryReactionType } from "../../domain/types/feed.types"
+import type {
+  FeedCommentRecord,
+  FeedCommentSubmitPayload,
+  FeedPostRecord,
+  FeedStoryReactionType,
+} from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 import FeedCommentComposer from "./CommentComposer.vue"
 import FeedCommentList from "./CommentList.vue"
@@ -374,26 +379,30 @@ const onOpenMedia = (index: number) => {
   lightboxOpen.value = true
 }
 
-async function submitComment(message: string) {
+async function submitComment(payload: FeedCommentSubmitPayload) {
   if (commenting.value) return
 
   commenting.value = true
 
   try {
-    await repository.runPostAction({
+    const response = await repository.runPostAction({
       action: "comment",
       postId: props.post.id,
-      text: message,
+      text: payload.text,
+      imageFile: payload.imageFile,
+      gifFile: payload.gifFile,
+      audioFile: payload.audioFile,
     })
 
     const comment: FeedCommentRecord = {
-      id: Date.now(),
+      id: response.commentId ?? Date.now(),
       author: currentAuthUserStore.user?.name || t("feed.postCard.commentAuthor"),
       authorAvatarUrl: currentAuthUserStore.user?.avatarUrl || "",
       authorPath: currentAuthUserStore.user?.username ? `/@${currentAuthUserStore.user.username}` : undefined,
       role: currentAuthUserStore.user?.username ? `@${currentAuthUserStore.user.username}` : t("feed.postCard.commentRole"),
-      text: message,
+      text: payload.text,
       time: t("feed.postCard.justNow"),
+      attachment: response.attachment ?? payload.attachmentPreview,
     }
 
     localComments.value = [...localComments.value, comment]
