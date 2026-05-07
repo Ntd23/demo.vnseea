@@ -103,7 +103,7 @@ if (empty($error_code)) {
                 0,
                 2
             );
-            if (in_array($_POST['verified'], $array)) {
+            if (isset($_POST['verified']) && in_array($_POST['verified'], $array, true)) {
                 $page_data['verified'] = $_POST['verified'];
             }
 
@@ -152,8 +152,8 @@ if (empty($error_code)) {
             }
             $array       = array(0,1);
             $page_data['users_post'] = 0;
-            if (!empty($_POST['users_post'])) {
-                if (in_array($_POST['users_post'], $array)) {
+            if (isset($_POST['users_post'])) {
+                if (in_array($_POST['users_post'], $array, true)) {
                     $page_data['users_post'] = Wo_Secure($_POST['users_post']);
                 }
             }

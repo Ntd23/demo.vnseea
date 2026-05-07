@@ -20,7 +20,6 @@
 
       <div class="page-settings__stepper-container mb-8 mt-5">
         <nav class="page-settings__nav-horizontal">
-          <div class="page-settings__nav-line-horizontal" />
           <button v-for="(item, index) in settingsNavItems" :key="item.id" type="button"
             class="page-settings__nav-step-item"
             :class="{ 'page-settings__nav-step-item--active': activeTab === item.id }" @click="activeTab = item.id">
@@ -44,107 +43,144 @@
       <div class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px] 2xl:items-start">
         <UForm :state="draft" :validate="validateDraft" class="min-w-0 space-y-4" @submit="handleSave"
           @error="handleSaveError">
+          <div v-if="statusAlert || hasErrors" class="page-settings__alert mb-5"
+            :class="`page-settings__alert--${statusAlert?.color || 'error'}`" aria-live="polite">
+            <Icon :name="statusAlert?.icon || 'i-ph-warning-circle-fill'" class="h-5 w-5 mt-0.5" />
+            <div>
+              <p class="font-bold">{{ statusAlert?.title || $t('community.pageSettings.finish.statusErrorTitle') }}</p>
+              <ul v-if="hasErrors" class="mt-1 list-disc pl-4 text-xs space-y-1">
+                <li v-for="(error, index) in validationErrors" :key="index">
+                  {{ error.message }}
+                </li>
+              </ul>
+              <span v-else>{{ statusAlert?.description }}</span>
+            </div>
+          </div>
+
           <section v-if="activeTab === 'basics'" id="basics">
-            <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath" />
+            <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath">
+              <template #trailing>
+                <button type="submit" :disabled="isSaveDisabled"
+                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]">
+                  <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                  {{ $t("community.pageSettings.finish.save") }}
+                </button>
+              </template>
+            </CommunityPageSettingsBasicsCard>
+          </section>
+
+          <section v-if="activeTab === 'media'" id="media">
+            <CommunitySettingsSectionCard :eyebrow="$t('community.pageSettings.sidebar.media.eyebrow')"
+              :title="$t('community.pageSettings.sidebar.media.title')"
+              :description="$t('community.pageSettings.sidebar.media.desc')" icon="i-ph-image-square-bold">
+              <template #trailing>
+                <button type="submit" :disabled="isSaveDisabled"
+                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]">
+                  <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                  {{ $t("community.pageSettings.finish.save") }}
+                </button>
+              </template>
+              <div class="page-preview">
+                <!-- Banner -->
+                <div class="page-preview__banner" :style="previewPage?.banner?.startsWith('linear-gradient')
+                  ? { background: previewPage?.banner }
+                  : (previewPage?.banner?.startsWith('blob:') || previewPage?.banner?.includes('/')
+                    ? { backgroundImage: `url(${previewPage?.banner})` }
+                    : { backgroundColor: previewPage?.banner })">
+                  <div class="page-preview__overlay"></div>
+
+                  <!-- Upload Banner -->
+                  <div class="page-preview__banner-upload">
+                    <input ref="bannerInput" type="file" accept="image/*" class="hidden-input"
+                      @change="e => onFileChange(e, 'bannerUrl')">
+
+                    <button type="button" class="upload-btn" @click="bannerInput?.click()">
+                      <Icon name="i-ph-camera-bold" class="upload-btn__icon" />
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Avatar -->
+                <div class="page-preview__avatar-wrapper">
+                  <div class="page-preview__avatar" :style="{ background: previewPage?.accent }">
+                    <img v-if="previewPage?.avatarUrl" :src="previewPage?.avatarUrl" class="page-preview__avatar-img">
+
+                    <span v-else>
+                      {{ initials }}
+                    </span>
+                  </div>
+
+                  <!-- Upload Avatar -->
+                  <input ref="avatarInput" type="file" accept="image/*" class="hidden-input"
+                    @change="e => onFileChange(e, 'avatarUrl')">
+
+                  <button type="button" class="avatar-upload-btn" @click="avatarInput?.click()">
+                    <Icon name="i-ph-camera-bold" class="avatar-upload-btn__icon" />
+                  </button>
+                </div>
+              </div>
+
+              <!-- Spacer for overlapping avatar -->
+              <div class="h-20 sm:h-28"></div>
+            </CommunitySettingsSectionCard>
           </section>
 
           <section v-if="activeTab === 'controls'" id="controls">
-            <CommunityPageSettingsControlsCard v-model="draft" />
+            <CommunityPageSettingsControlsCard v-model="draft">
+              <template #trailing>
+                <button type="submit" :disabled="isSaveDisabled"
+                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]">
+                  <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                  {{ $t("community.pageSettings.finish.save") }}
+                </button>
+              </template>
+            </CommunityPageSettingsControlsCard>
           </section>
 
-          <section v-if="activeTab === 'preview'" id="preview">
-            <CommunitySettingsSectionCard
-              :eyebrow="$t('community.pageSettings.preview.eyebrow')"
-              :title="$t('community.pageSettings.sidebar.preview')"
-              :description="$t('community.pageSettings.preview.navDesc')"
-              icon="i-ph-eye-bold"
-            >
-              <div class="page-preview-card overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-                <!-- Banner Area -->
-                <div class="page-preview-banner h-[220px] relative bg-slate-100" :style="{ background: previewPage.banner }">
-                  <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                </div>
-
-                <!-- Identity Area -->
-                <div class="px-8 pb-8">
-                  <div class="flex items-end justify-between -mt-12 relative z-10">
-                    <div class="flex items-end gap-5">
-                      <!-- Avatar -->
-                      <div class="page-preview-avatar-wrap p-1 bg-white rounded-full">
-                        <div class="page-preview-avatar h-24 w-24 rounded-full flex items-center justify-center text-xl font-black text-white overflow-hidden shadow-md" :style="{ background: previewPage.accent }">
-                          <img v-if="previewPage.avatarUrl" :src="previewPage.avatarUrl" class="h-full w-full object-cover">
-                          <span v-else>{{ initials }}</span>
-                        </div>
-                      </div>
-
-                      <!-- Title & Badge -->
-                      <div class="bg-white px-6 py-4 rounded-t-[28px] flex items-center gap-3 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
-                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">{{ previewPage.name }}</h2>
-                        <span class="bg-[#2563eb]/10 text-[#2563eb] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#2563eb]/20">
-                          {{ $t('community.pageSettings.sidebar.owner') || 'Owner' }}
-                        </span>
-                      </div>
-                    </div>
-
-                    <!-- Action Bar -->
-                    <div class="flex items-center gap-6 pb-3">
-                      <button type="button" class="flex items-center gap-2 text-[13px] font-bold text-slate-600 hover:text-blue-600 transition-colors">
-                        <Icon name="i-ph-paper-plane-tilt-bold" class="h-4.5 w-4.5" />
-                        <span>{{ $t('community.pageSettings.preview.share') || 'Chia sẻ' }}</span>
-                      </button>
-                      <button type="button" class="flex items-center gap-2 text-[13px] font-bold text-slate-600 hover:text-blue-600 transition-colors">
-                        <Icon name="i-ph-bell-bold" class="h-4.5 w-4.5" />
-                        <span>{{ $t('community.pageSettings.preview.follow') || 'Theo dõi' }}</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Details -->
-                  <div class="mt-6 pl-2">
-                    <p class="text-slate-500 text-[14px] leading-relaxed max-w-2xl font-medium">
-                      {{ previewPage.summary }}
-                    </p>
-                    <div class="mt-3 flex items-center gap-2 text-[13px] text-slate-400 font-semibold">
-                      <span>{{ followerPreview }}</span>
-                      <span class="opacity-30">•</span>
-                      <span>{{ likePreview }}</span>
-                    </div>
-                  </div>
+          <section v-if="activeTab === 'admins'" id="admins">
+            <CommunitySettingsSectionCard eyebrow="CÀI ĐẶT QUẢN TRỊ" title="Quản trị viên"
+              description="Thêm hoặc xóa các quản trị viên cho trang của bạn để cùng quản lý nội dung và cài đặt."
+              icon="i-ph-shield-checkered-bold">
+              <div class="flex flex-col gap-4 py-4">
+                <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center">
+                  <Icon name="i-ph-users-three-duotone" class="mx-auto h-12 w-12 text-slate-300" />
+                  <p class="mt-2 text-sm font-medium text-slate-500">Chức năng quản trị viên đang được cập nhật</p>
                 </div>
               </div>
             </CommunitySettingsSectionCard>
           </section>
 
-          <section v-if="activeTab === 'finish'" id="finish">
-            <CommunitySettingsSectionCard :eyebrow="$t('community.pageSettings.finish.eyebrow')"
-              :title="$t('community.pageSettings.finish.title')" :description="$t('community.pageSettings.finish.desc')"
-              icon="i-ph-floppy-disk-back-bold">
-              <div class="flex flex-col gap-4">
-                <div class="page-settings__finish-note">
-                  <span
-                    v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: (selectedCtaLabel || '').toLowerCase() })" />
+          <section v-if="activeTab === 'analytics'" id="analytics">
+            <CommunitySettingsSectionCard eyebrow="THỐNG KÊ CHI TIẾT" title="Phân tích trang"
+              description="Theo dõi hiệu suất của trang, bao gồm lượt thích, lượt theo dõi và tương tác của người dùng."
+              icon="i-ph-chart-line-up-bold">
+              <div class="flex flex-col gap-4 py-4">
+                <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center">
+                  <Icon name="i-ph-presentation-chart-duotone" class="mx-auto h-12 w-12 text-slate-300" />
+                  <p class="mt-2 text-sm font-medium text-slate-500">Dữ liệu phân tích đang được xử lý</p>
                 </div>
+              </div>
+            </CommunitySettingsSectionCard>
+          </section>
 
-                <div v-if="statusAlert" class="page-settings__alert"
-                  :class="`page-settings__alert--${statusAlert.color}`" aria-live="polite">
-                  <Icon :name="statusAlert.icon" class="h-5 w-5" />
-                  <div>
-                    <p>{{ statusAlert.title }}</p>
-                    <span>{{ statusAlert.description }}</span>
+          <section v-if="activeTab === 'delete'" id="delete">
+            <CommunitySettingsSectionCard eyebrow="KHU VỰC NGUY HIỂM" title="Xóa trang"
+              description="Một khi bạn xóa trang, mọi dữ liệu bao gồm bài viết, hình ảnh và cài đặt sẽ bị xóa vĩnh viễn và không thể khôi phục."
+              icon="i-ph-warning-octagon-bold">
+              <div class="flex flex-col gap-6 py-4">
+                <div class="rounded-xl border border-red-100 bg-red-50 p-4">
+                  <div class="flex gap-3">
+                    <Icon name="i-ph-warning-fill" class="h-5 w-5 text-red-500" />
+                    <p class="text-sm font-medium text-red-800">
+                      Hành động này không thể hoàn tác. Vui lòng cân nhắc kỹ trước khi tiếp tục.
+                    </p>
                   </div>
                 </div>
 
-                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <NuxtLink :to="pagePath" class="page-settings__button page-settings__button--secondary"
-                    :aria-disabled="isBusy">
-                    <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
-                    {{ $t("community.pageSettings.finish.back") }}
-                  </NuxtLink>
-
-                  <button type="submit" :disabled="isSaveDisabled"
-                    class="page-settings__button page-settings__button--primary">
-                    <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
-                    {{ $t("community.pageSettings.finish.save") }}
+                <div class="flex justify-end">
+                  <button type="button" class="page-settings__button bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-200">
+                    <Icon name="i-ph-trash-bold" class="mr-2 h-4 w-4" />
+                    Xác nhận xóa trang
                   </button>
                 </div>
               </div>
@@ -232,6 +268,8 @@ const draftRestored = ref(false)
 const storageHydrated = ref(false)
 const isSyncingDraft = ref(false)
 const activeTab = ref("basics")
+const bannerInput = ref<HTMLInputElement | null>(null)
+const avatarInput = ref<HTMLInputElement | null>(null)
 
 const draftStorage = useStorage<CommunityPageSettingsDraft | null>(
   `community:page-settings:${String(route.params.page || "")}`,
@@ -264,8 +302,12 @@ const previewPage = computed<CommunityPageRecord | null>(() => {
     responseLabel: (draft.value.responseLabel || "").trim() || page.value.responseLabel,
     ownerLabel: (draft.value.ownerLabel || "").trim() || page.value.ownerLabel,
     tags: normalizedTags.value.length > 0 ? normalizedTags.value : page.value.tags,
+    avatarUrl: draft.value.avatarUrl || page.value.avatarUrl,
+    banner: draft.value.bannerUrl || page.value.banner,
   }
 })
+
+const initials = computed(() => getCommunityInitials(draft.value.name || page.value?.name || ""))
 
 const translatedPageName = computed(() =>
   page.value ? translateText(page.value.name, page.value.slug) : "",
@@ -314,32 +356,46 @@ const settingsNavItems = computed(() => [
     icon: "i-ph-identification-card-duotone",
   },
   {
+    id: "media",
+    label: t("community.pageSettings.sidebar.media.title") || "Hình ảnh",
+    desc: t("community.pageSettings.sidebar.media.navDesc") || "Ảnh bìa & đại diện",
+    icon: "i-ph-image-duotone",
+  },
+  {
     id: "controls",
     label: t("community.pageSettings.controls.title"),
     desc: t("community.pageSettings.controls.navDesc"),
     icon: "i-ph-sliders-duotone",
   },
   {
-    id: "preview",
-    label: t("community.pageSettings.sidebar.preview"),
-    desc: t("community.pageSettings.preview.navDesc"),
-    icon: "i-ph-eye-duotone",
+    id: "admins",
+    label: "Quản trị viên",
+    desc: "Quản lý quyền quản trị trang",
+    icon: "i-ph-users-three-duotone",
   },
   {
-    id: "finish",
-    label: t("community.pageSettings.finish.title"),
-    desc: t("community.pageSettings.finish.navDesc"),
-    icon: "i-ph-check-circle-duotone",
+    id: "analytics",
+    label: "Phân tích trang",
+    desc: "Xem số liệu thống kê của trang",
+    icon: "i-ph-chart-bar-duotone",
+  },
+  {
+    id: "delete",
+    label: "Xóa trang",
+    desc: "Xóa vĩnh viễn trang này",
+    icon: "i-ph-trash-duotone",
   },
 ])
 
 const isBusy = computed(() => saveState.value === "loading")
+
+const validationErrors = computed(() => validateDraft(draft.value))
+const hasErrors = computed(() => validationErrors.value.length > 0)
+
 const isSaveDisabled = computed(() =>
   isBusy.value
   || !(draft.value.name || "").trim()
-  || !(draft.value.slug || "").trim()
-  || (draft.value.summary || "").trim().length < 24
-  || !draft.value.category,
+  || !(draft.value.slug || "").trim(),
 )
 
 const statusAlert = computed(() => {
@@ -574,9 +630,7 @@ const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] =
 
   return errors
 }
-const initials = computed(() =>
-  getCommunityInitials(previewPage.value?.name || ""),
-)
+
 
 const followerPreview = computed(() =>
   draft.value.showFollowerCount ? followerCountLabel.value : t("community.pageSettings.sidebar.hidden"),
@@ -593,6 +647,19 @@ const policyProgress = computed(() => {
 
   return (enabledPolicies.value / totalPolicies) * 100
 })
+function onFileChange(event: Event, field: "avatarUrl" | "bannerUrl") {
+  const target = event.target as HTMLInputElement
+  if (target.files && target.files[0]) {
+    const file = target.files[0]
+    draft.value[field] = URL.createObjectURL(file)
+    if (field === "avatarUrl") {
+      draft.value.avatarFile = file
+    }
+    else if (field === "bannerUrl") {
+      draft.value.bannerFile = file
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -699,18 +766,8 @@ const policyProgress = computed(() => {
   position: relative;
   max-width: 800px;
   margin: 0 auto;
-  padding: 0 40px;
 }
 
-.page-settings__nav-line-horizontal {
-  position: absolute;
-  top: 16px;
-  left: 60px;
-  right: 60px;
-  height: 2px;
-  background: #f1f5f9;
-  z-index: -1;
-}
 
 .page-settings__nav-step-item {
   display: flex;
@@ -760,6 +817,10 @@ const policyProgress = computed(() => {
 
 .page-settings__nav-step-item--active .page-settings__nav-step-label {
   color: #0f172a;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #2563eb;
 }
 
 .page-settings__nav-step-item:hover .page-settings__nav-step-circle:not(.page-settings__nav-step-circle--active) {
@@ -873,8 +934,193 @@ const policyProgress = computed(() => {
   cursor: not-allowed;
   opacity: 0.55;
 }
+
 .page-settings-sidebar :deep(progress),
 .page-settings-sidebar :deep([role="progressbar"]) {
   background-color: #dbeafe;
+}
+
+.page-preview {
+  position: relative;
+  margin-top: 16px;
+}
+
+/* =========================
+   Banner
+========================= */
+
+.page-preview__banner {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  overflow: hidden;
+  border-radius: 24px;
+  background-color: #f1f5f9;
+  background-size: cover;
+  background-position: center;
+}
+
+.page-preview__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+      rgba(0, 0, 0, 0.3),
+      transparent);
+}
+
+/* =========================
+   Banner Upload
+========================= */
+
+.page-preview__banner-upload {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2;
+}
+
+/* =========================
+   Avatar
+========================= */
+
+.page-preview__avatar-wrapper {
+  position: absolute;
+  left: 48px;
+  bottom: -80px;
+  z-index: 10;
+}
+
+.page-preview__avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 176px;
+  height: 176px;
+
+  overflow: hidden;
+
+  border: 8px solid #ffffff;
+  border-radius: 999px;
+
+  background: #3b82f6;
+
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 900;
+}
+
+.page-preview__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.upload-btn,
+.avatar-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.upload-btn:hover,
+.avatar-upload-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Banner button */
+
+.upload-btn {
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+}
+
+/* Avatar button */
+
+.avatar-upload-btn {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+
+  width: 48px;
+  height: 48px;
+
+  border: 1px solid #e2e8f0;
+
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+}
+
+.upload-btn__icon,
+.avatar-upload-btn__icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* =========================
+   Hidden Input
+========================= */
+
+.hidden-input {
+  display: none;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 640px) {
+  .page-preview__banner {
+    height: 280px;
+    border-radius: 20px;
+  }
+
+  .page-preview__banner-upload {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .page-preview__avatar-wrapper {
+    left: 24px;
+    bottom: -64px;
+  }
+
+  .page-preview__avatar {
+    width: 128px;
+    height: 128px;
+    border-width: 6px;
+    font-size: 30px;
+  }
+
+  .upload-btn,
+  .avatar-upload-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .upload-btn__icon,
+  .avatar-upload-btn__icon {
+    width: 20px;
+    height: 20px;
+  }
 }
 </style>

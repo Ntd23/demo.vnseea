@@ -109,4 +109,8 @@ export interface CommunityPageSettingsDraft {
   showLikeCount: boolean
   showWebsite: boolean
   recommendRelatedPages: boolean
+  avatarUrl?: string
+  bannerUrl?: string
+  avatarFile?: File
+  bannerFile?: File
 }

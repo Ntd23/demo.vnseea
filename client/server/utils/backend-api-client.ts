@@ -94,11 +94,18 @@ export function createBackendApiClient(event: H3Event) {
     options: BackendApiRequest<TBody> = {},
   ) => {
     const requestBody = toBackendFormBody(options.body)
-    const bodyWithServerKey = new URLSearchParams(
-      requestBody instanceof URLSearchParams ? requestBody : undefined,
-    )
+    let bodyWithServerKey: any
 
-    bodyWithServerKey.set("server_key", String(runtimeConfig.backendServerKey))
+    if (requestBody instanceof FormData) {
+      bodyWithServerKey = requestBody
+      bodyWithServerKey.append("server_key", String(runtimeConfig.backendServerKey))
+    }
+    else {
+      bodyWithServerKey = new URLSearchParams(
+        requestBody instanceof URLSearchParams ? requestBody : undefined,
+      )
+      bodyWithServerKey.set("server_key", String(runtimeConfig.backendServerKey))
+    }
     const queryWithAccessToken: ApiQuery = { ...(options.query ?? {}) }
 
     if (backendAccessToken && queryWithAccessToken.access_token === undefined) {
