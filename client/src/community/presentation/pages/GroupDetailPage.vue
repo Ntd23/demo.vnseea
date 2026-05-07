@@ -1,8 +1,8 @@
 <!-- Description: Renders the backend-backed community group detail page without mock invite feedback. -->
 <template>
-  <div v-if="group" class="mx-auto max-w-[1280px] space-y-5 pb-10">
+  <div v-if="group || status === 'pending'" class="mx-auto max-w-[1280px] space-y-5 pb-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
     <CommunityGroupHeroBanner
-      :group="group"
+      :group="group || ({} as any)"
       :member-count-label="memberCountLabel"
       :online-count-label="onlineCountLabel"
       :privacy-label="privacyLabel"
@@ -21,15 +21,19 @@
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.24fr)_320px]">
       <section class="min-w-0 space-y-4">
-        <template v-if="activeTab === 'posts'">
+        <!-- Tab: Posts (Instant) -->
+        <div v-show="activeTab === 'posts'">
           <CommunityGroupFeedSection
+            v-if="group"
             :group="group"
             :posts="groupPosts"
           />
-        </template>
+        </div>
 
-        <template v-else>
+        <!-- Tab: About (Instant) -->
+        <div v-show="activeTab === 'about'">
           <CommunityGroupAboutCard
+            v-if="group"
             :group="group"
             :privacy-label="privacyLabel"
             :privacy-description="privacyDescription"
@@ -38,15 +42,17 @@
           />
 
           <CommunityGroupTopicsCard
+            v-if="group"
             :group="group"
             :category-label="categoryLabel"
             :privacy-description="privacyDescription"
           />
-        </template>
+        </div>
       </section>
 
       <aside class="space-y-4">
         <CommunityGroupAboutCard
+          v-if="group"
           :group="group"
           :privacy-label="privacyLabel"
           :privacy-description="privacyDescription"
@@ -63,7 +69,7 @@
         />
 
         <CommunityGroupAdminCard
-          v-if="group.canManage"
+          v-if="group && group.canManage"
           :slug="group.slug"
         />
       </aside>
@@ -138,6 +144,7 @@ const {
   memberCountLabel,
   onlineCountLabel,
   groupPosts,
+  status,
   refresh,
 } = useCommunityGroupDetail(computed(() => String(route.params.name || "")))
 

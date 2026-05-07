@@ -77,6 +77,8 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core"
 
+import { useTimeAgo } from "@vueuse/core"
+
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -102,8 +104,14 @@ const initials = computed(() =>
 const displayTime = computed(() => {
   const normalized = props.time.trim()
 
-  if (!normalized || /^\d{8,}$/.test(normalized)) {
+  if (!normalized) {
     return ""
+  }
+
+  // If it's a Unix timestamp (10+ digits)
+  if (/^\d{10,}$/.test(normalized)) {
+    const timestamp = Number(normalized) * 1000
+    return useTimeAgo(new Date(timestamp)).value
   }
 
   return normalized

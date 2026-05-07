@@ -1,4 +1,3 @@
-<!-- Description: Renders explore as a compact media-first discovery grid aligned to the legacy PHP explore layout. -->
 <template>
   <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-16 sm:px-5 lg:px-6">
     <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
@@ -21,15 +20,19 @@
       :description="errorMessage"
     />
 
-    <section
-      v-if="loading"
-      class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
-    >
-      <div class="flex items-center justify-center gap-3 text-sm font-bold text-[var(--text-secondary)]">
-        <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
-        <span>{{ t("pages.explorePage.heroEyebrow") }}</span>
+    <div v-if="loading" class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+      <div
+        v-for="item in 12"
+        :key="item"
+        class="explore-skeleton-tile"
+      >
+        <USkeleton class="aspect-square w-full rounded-t-[14px]" />
+        <div class="space-y-2 p-3">
+          <USkeleton class="h-4 w-[60%] rounded-lg" />
+          <USkeleton class="h-3 w-[40%] rounded-lg" />
+        </div>
       </div>
-    </section>
+    </div>
 
     <section
       v-else-if="mediaPosts.length === 0"
@@ -42,10 +45,11 @@
       />
     </section>
 
-    <div v-else class="grid grid-cols-2 gap-3 md:grid-cols-3">
-      <article
+    <div v-else class="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+      <NuxtLink
         v-for="post in mediaPosts"
         :key="post.id"
+        :to="post.sourcePath"
         class="explore-tile"
       >
         <div class="explore-tile__media">
@@ -55,6 +59,7 @@
             :alt="post.mediaItems[0].alt || post.author"
             class="explore-tile__image"
             loading="lazy"
+            @error="handleImageError"
           />
           <div
             v-else
@@ -63,20 +68,23 @@
               ? { backgroundImage: `url('${post.mediaItems[0]?.thumb || post.mediaItems[0]?.src}')` }
               : undefined"
           >
-            <Icon name="i-ph-play-fill" class="h-9 w-9 text-white/90" />
+            <div class="explore-tile__play-overlay">
+              <Icon name="i-ph-play-fill" class="h-8 w-8 text-white" />
+            </div>
           </div>
         </div>
 
         <div class="explore-tile__meta">
           <p class="explore-tile__author">{{ post.author }}</p>
-          <p class="explore-tile__time">{{ post.time }}</p>
+          <p class="explore-tile__time">{{ formatDisplayTime(post.time) }}</p>
         </div>
-      </article>
+      </NuxtLink>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useTimeAgo } from "@vueuse/core"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import type { FeedExploreResponse } from "../../../feed/domain/types/feed.types"
 import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
@@ -97,12 +105,36 @@ const mediaPosts = computed(() =>
   response.value.posts.filter(post => post.mediaItems.length > 0),
 )
 
+function formatDisplayTime(value: string) {
+  const normalized = value.trim()
+  if (!normalized) return ""
+
+  // If it's a Unix timestamp (10+ digits)
+  if (/^\d{10,}$/.test(normalized)) {
+    const timestamp = Number(normalized) * 1000
+    return useTimeAgo(new Date(timestamp)).value
+  }
+
+  return normalized
+}
+
+function handleImageError(e: Event) {
+  const img = e.target as HTMLImageElement | null
+  if (!img) return
+
+  img.classList.add("hidden")
+  const parent = img.parentElement
+  if (parent) {
+    parent.classList.add("explore-tile__media--error")
+  }
+}
+
 async function fetchExplore() {
   loading.value = true
   errorMessage.value = ""
 
   try {
-    response.value = await repository.getExplore({ limit: 18 })
+    response.value = await repository.getExplore({ limit: 15 })
   }
   catch (error) {
     errorMessage.value = error instanceof Error ? error.message : t("pages.explorePage.emptyDescription")
@@ -116,26 +148,46 @@ await fetchExplore()
 </script>
 
 <style scoped>
-.explore-tile {
+.explore-tile,
+.explore-skeleton-tile {
+  display: block;
   overflow: hidden;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
+  text-decoration: none;
+}
+
+.explore-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .explore-tile__media {
+  position: relative;
   aspect-ratio: 1 / 1;
   background: var(--bg-surface-hover);
+  overflow: hidden;
+}
+
+.explore-tile__media--error::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface-hover) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'/%3E%3Ccircle cx='8.5' cy='8.5' r='1.5'/%3E%3Cpolyline points='21 15 16 10 5 21'/%3E%3C/svg%3E") no-repeat center;
+  opacity: 0.5;
 }
 
 .explore-tile__image,
 .explore-tile__video {
-  display: flex;
+  display: block;
   width: 100%;
   height: 100%;
-  align-items: center;
-  justify-content: center;
 }
 
 .explore-tile__image {
@@ -149,6 +201,21 @@ await fetchExplore()
   background-size: cover;
 }
 
+.explore-tile__play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.2);
+  backdrop-filter: blur(2px);
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.explore-tile:hover .explore-tile__play-overlay {
+  background: rgba(15, 23, 42, 0.4);
+}
+
 .explore-tile__meta {
   padding: 10px 12px 12px;
 }
@@ -158,11 +225,15 @@ await fetchExplore()
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .explore-tile__time {
   margin: 4px 0 0;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 500;
 }
 </style>

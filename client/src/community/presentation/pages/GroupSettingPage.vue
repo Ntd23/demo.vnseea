@@ -1,6 +1,6 @@
 <!-- Description: Renders the group settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP group settings structure. -->
 <template>
-  <div v-if="group && previewGroup" class="mx-auto max-w-[1280px] space-y-5 pb-10">
+  <div v-if="(group && previewGroup) || status === 'pending'" class="mx-auto max-w-[1280px] space-y-5 pb-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
     <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-6">
       <div class="space-y-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
@@ -135,7 +135,7 @@
     </div>
   </div>
 
-  <div v-else class="mx-auto max-w-[960px] pb-10 pt-4">
+  <div v-else-if="status !== 'pending'" class="mx-auto max-w-[960px] pb-10 pt-4">
     <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-gear-six-fill"
@@ -197,6 +197,7 @@ const {
   group,
   members,
   memberCountLabel,
+  status,
 } = useCommunityGroupDetail(computed(() => String(route.params.group || "")))
 
 const draft = ref<CommunityGroupSettingsDraft>(
@@ -233,11 +234,11 @@ const previewGroup = computed<CommunityGroupRecord | null>(() => {
 
   return {
     ...group.value,
-    name: draft.value.name.trim() || group.value.name,
-    slug: draft.value.slug.trim() || group.value.slug,
-    summary: draft.value.summary.trim() || group.value.summary,
-    website: draft.value.website.trim() || group.value.website,
-    locationLabel: draft.value.locationLabel.trim() || group.value.locationLabel,
+    name: (draft.value.name || "").trim() || group.value.name,
+    slug: (draft.value.slug || "").trim() || group.value.slug,
+    summary: (draft.value.summary || "").trim() || group.value.summary,
+    website: (draft.value.website || "").trim() || group.value.website,
+    locationLabel: (draft.value.locationLabel || "").trim() || group.value.locationLabel,
     privacy: draft.value.privacy,
     category: draft.value.category,
     tags: normalizedTags.value.length > 0 ? normalizedTags.value : group.value.tags,
@@ -309,9 +310,9 @@ const settingsNavItems = computed(() => [
 const isBusy = computed(() => saveState.value === "loading")
 const isSaveDisabled = computed(() =>
   isBusy.value
-  || !draft.value.name.trim()
-  || !draft.value.slug.trim()
-  || draft.value.summary.trim().length < 24
+  || !(draft.value.name || "").trim()
+  || !(draft.value.slug || "").trim()
+  || (draft.value.summary || "").trim().length < 24
   || !draft.value.category,
 )
 
@@ -474,18 +475,18 @@ function createLocalizedDraft(value: CommunityGroupRecord): CommunityGroupSettin
 function normalizeDraft(value: CommunityGroupSettingsDraft): CommunityGroupSettingsDraft {
   return {
     ...value,
-    name: value.name.trim(),
-    slug: value.slug.trim(),
-    summary: value.summary.trim(),
-    website: value.website.trim(),
-    locationLabel: value.locationLabel.trim(),
-    category: value.category.trim(),
-    tags: value.tags
+    name: (value.name || "").trim(),
+    slug: (value.slug || "").trim(),
+    summary: (value.summary || "").trim(),
+    website: (value.website || "").trim(),
+    locationLabel: (value.locationLabel || "").trim(),
+    category: (value.category || "").trim(),
+    tags: (value.tags || "")
       .split(",")
       .map(tag => tag.trim())
       .filter(Boolean)
       .join(", "),
-    guidelines: value.guidelines
+    guidelines: (value.guidelines || "")
       .split("\n")
       .map(rule => rule.trim())
       .filter(Boolean)
@@ -499,7 +500,7 @@ function isSameDraft(first: CommunityGroupSettingsDraft, second: CommunityGroupS
 
 const validateDraft = (state: CommunityGroupSettingsDraft): GroupSettingsError[] => {
   const errors: GroupSettingsError[] = []
-  const slug = state.slug.trim()
+  const slug = (state.slug || "").trim()
 
   if (!state.name.trim()) {
     errors.push({
