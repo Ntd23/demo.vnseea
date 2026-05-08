@@ -56,10 +56,6 @@
           @error="handleSaveError"
         >
           <section v-if="activeTab === 'basics'" id="basics">
-            <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath" />
-          </section>
-
-          <section v-if="activeTab === 'basics'" id="basics">
             <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath">
               <template #trailing>
                 <button type="submit" :disabled="isSaveDisabled"
@@ -173,11 +169,8 @@
                 <div class="page-settings__finish-note">
                   <span
                     v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: (selectedCtaLabel || '').toLowerCase() })"
-                  />
+                  ></span>
                 </div>
-              </div>
-            </CommunitySettingsSectionCard>
-          </section>
 
                 <div
                   v-if="statusAlert"
