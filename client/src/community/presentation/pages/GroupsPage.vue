@@ -15,7 +15,7 @@
     <CommunityGroupsFilterBar
       :tabs="tabItems"
       :active-tab="mode"
-      create-to="/create-group"
+      :create-to="appRoutes.createGroup"
     />
 
     <div v-if="pending" class="grid gap-4 lg:grid-cols-2">
@@ -58,15 +58,12 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityGroupCard from "../components/CommunityGroupCard.vue"
 import CommunityGroupsFilterBar from "../components/GroupsFilterBar.vue"
-import {
-  communityGroupRouteMap,
-  communityGroupTabs,
-} from "../../domain/constants/community-options"
 import type { CommunityGroupTab } from "../../domain/types/community.types"
-import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
+import { useCommunityGroupsPageVM } from "../../application/view-models/useCommunityGroupsPageVM"
 
 const props = withDefaults(defineProps<{
   mode?: CommunityGroupTab
@@ -75,38 +72,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
-const repository = createApiCommunityRepository()
-
-const mode = computed(() => props.mode)
-
-const { data: groupsData, status } = useAsyncData(
-  () => `community:groups:${mode.value}`,
-  () => repository.getGroups(mode.value),
-  {
-    watch: [mode],
-    default: () => [],
-  },
+const { mode, pending, groups, pageTitle, tabItems, cardActionLabel } = useCommunityGroupsPageVM(
+  computed(() => props.mode),
 )
-
-const pending = computed(() => status.value === "pending")
-const groups = computed(() => groupsData.value ?? [])
-
-const pageTitle = computed(() => {
-  if (props.mode === "suggested") return t("community.groups.titleSuggested")
-  if (props.mode === "joined") return t("community.groups.titleJoined")
-  return t("community.groups.title")
-})
-
-const tabItems = computed(() =>
-  communityGroupTabs.map(tab => ({
-    ...tab,
-    to: communityGroupRouteMap[tab.value],
-  })),
-)
-
-const cardActionLabel = computed(() => {
-  if (mode.value === "suggested") return "community.groups.action.explore"
-  if (mode.value === "joined") return "community.groups.action.viewUpdates"
-  return "community.groups.action.viewGroup"
-})
 </script>

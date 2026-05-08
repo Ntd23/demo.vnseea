@@ -89,6 +89,38 @@ export const apiRoutes = {
   profile: {
     byUsername: (username: string) => `profile/${encodeSegment(username)}`,
   },
+  feed: {
+    home: "feed/home",
+    saved: "feed/saved",
+    explore: "feed/explore",
+    hashtag: (tag: string) => `feed/hashtag/${encodeSegment(tag)}`,
+    popular: "feed/popular",
+    videos: "feed/videos",
+    photos: "feed/photos",
+    memories: "feed/memories",
+    poke: "feed/poke",
+    posts: {
+      create: "feed/posts/create",
+      action: "feed/posts/action",
+    },
+    comments: {
+      action: "feed/comments/action",
+      replies: "feed/comments/replies",
+    },
+    stories: {
+      create: "feed/stories/create",
+      action: "feed/stories/action",
+    },
+  },
+  community: {
+    groups: "community/groups",
+    groupBySlug: (slug: string) => `community/groups/${encodeSegment(slug)}`,
+    groupJoin: (slug: string) => `community/groups/${encodeSegment(slug)}/join`,
+    pages: "community/pages",
+    pageBySlug: (slug: string) => `community/pages/${encodeSegment(slug)}`,
+    pagePosts: (slug: string) => `community/pages/${encodeSegment(slug)}/posts`,
+    pageFollow: (slug: string) => `community/pages/${encodeSegment(slug)}/follow`,
+  },
   checkout: {
     snapshot: "checkout/snapshot",
     address: "checkout/address",
@@ -105,7 +137,8 @@ export const apiRoutes = {
   },
   messages: {
     conversations: "messages/conversations",
-    detail: (conversationId: string | number) => `messages/${encodeSegment(conversationId)}`,
+    thread: "messages/thread",
+    multi: "messages/multi",
     send: "messages/send",
   },
   navigation: {

@@ -55,31 +55,10 @@
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
-import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
+import { useSavedPostsPageVM } from "../../application/view-models/useSavedPostsPageVM"
 
 const { t } = useI18n()
-const repository = createApiFeedRepository()
-
-const loading = ref(true)
-const errorMessage = ref("")
-const posts = ref<FeedPostRecord[]>([])
-
-async function fetchSavedPosts() {
-  loading.value = true
-  errorMessage.value = ""
-
-  try {
-    const response = await repository.getSaved({ limit: 20 })
-    posts.value = response.posts
-  }
-  catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("pages.savedPostsPage.emptyDescription")
-  }
-  finally {
-    loading.value = false
-  }
-}
+const { loading, errorMessage, posts, fetchSavedPosts } = useSavedPostsPageVM()
 
 useSeoMeta({
   title: () => t("pages.savedPostsPage.seoTitle"),

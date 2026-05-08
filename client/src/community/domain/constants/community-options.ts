@@ -1,3 +1,6 @@
+// English description: Defines shared community options, tabs, and route maps for group and page surfaces.
+
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type {
   CommunityGroupTab,
   CommunityOption,
@@ -152,13 +155,13 @@ export const communityPageTabs: Array<{ label: string; value: CommunityPageTab }
 ]
 
 export const communityPageRouteMap: Record<CommunityPageTab, string> = {
-  mine: "/pages",
-  suggested: "/suggested-pages",
-  favorite: "/liked-pages",
+  mine: appRoutes.pages,
+  suggested: appRoutes.suggestedPages,
+  favorite: appRoutes.likedPages,
 }
 
 export const communityGroupRouteMap: Record<CommunityGroupTab, string> = {
-  mine: "/groups",
-  suggested: "/suggested-groups",
-  joined: "/joined_groups",
+  mine: appRoutes.groups,
+  suggested: appRoutes.suggestedGroups,
+  joined: appRoutes.joinedGroups,
 }

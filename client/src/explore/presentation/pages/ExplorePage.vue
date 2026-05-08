@@ -86,63 +86,10 @@
 <script setup lang="ts">
 import { useTimeAgo } from "@vueuse/core"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import type { FeedExploreResponse } from "../../../feed/domain/types/feed.types"
-import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
+import { useExplorePageVM } from "../../application/view-models/useExplorePageVM"
 
 const { t } = useI18n()
-const repository = createApiFeedRepository()
-const loading = ref(true)
-const errorMessage = ref("")
-const response = ref<FeedExploreResponse>({
-  posts: [],
-  users: [],
-  pages: [],
-  hashtags: [],
-  announcement: null,
-})
-
-const mediaPosts = computed(() =>
-  response.value.posts.filter(post => post.mediaItems.length > 0),
-)
-
-function formatDisplayTime(value: string) {
-  const normalized = value.trim()
-  if (!normalized) return ""
-
-  // If it's a Unix timestamp (10+ digits)
-  if (/^\d{10,}$/.test(normalized)) {
-    const timestamp = Number(normalized) * 1000
-    return useTimeAgo(new Date(timestamp)).value
-  }
-
-  return normalized
-}
-
-function handleImageError(e: Event) {
-  const img = e.target as HTMLImageElement | null
-  if (!img) return
-
-  img.classList.add("hidden")
-  const parent = img.parentElement
-  if (parent) {
-    parent.classList.add("explore-tile__media--error")
-  }
-}
-
-async function fetchExplore() {
-  loading.value = true
-  errorMessage.value = ""
-
-  try {
-    response.value = await repository.getExplore({ limit: 15 })
-  }
-  catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("pages.explorePage.emptyDescription")
-  }
-  finally {
-    loading.value = false
-  }
-}
+const { loading, errorMessage, mediaPosts, fetchExplore } = useExplorePageVM()
 
 await fetchExplore()
 </script>

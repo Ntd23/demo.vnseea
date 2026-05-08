@@ -1,15 +1,33 @@
 <template>
   <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
-    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
-      <div class="space-y-1.5">
-        <p class="text-label-secondary">
-          {{ $t("community.pagesDirectory.title") }}
-        </p>
-        <h1 class="text-heading text-[var(--text-primary)]">
-          {{ pageTitle }}
-        </h1>
-      </div>
-    </section>
+    <CommunityPageDirectoryTabsBar
+      v-model:search="search"
+      :tabs="tabItems"
+      :active-tab="mode"
+      :status-label="filterStatusLabel"
+      :create-to="appRoutes.createPage"
+    />
+
+    <div v-if="pending" class="grid gap-4 lg:grid-cols-2">
+      <div v-for="item in 4" :key="item" class="skeleton-card">
+        <div class="skeleton-cover">
+          <div class="skeleton skeleton-bg"></div>
+          
+          <div class="skeleton-overlay-top-left">
+            <div class="skeleton skeleton-pill w-[180px] h-[28px]"></div>
+          </div>
+
+          <div class="skeleton-overlay-top-right">
+            <div class="skeleton skeleton-circle h-[34px] w-[34px]"></div>
+          </div>
+
+          <div class="skeleton-overlay-info">
+            <div class="skeleton skeleton-avatar"></div>
+            <div class="skeleton-info-text">
+              <div class="skeleton skeleton-text w-[70%] h-[20px]"></div>
+              <div class="skeleton skeleton-text w-[40%] h-[14px]"></div>
+            </div>
+          </div>
 
     <CommunityPageDirectoryTabsBar
       :tabs="tabItems"
@@ -57,15 +75,12 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityPageCard from "../components/PageCard.vue"
 import CommunityPageDirectoryTabsBar from "../components/PageDirectoryTabsBar.vue"
-import {
-  communityPageRouteMap,
-  communityPageTabs,
-} from "../../domain/constants/community-options"
 import type { CommunityPageTab } from "../../domain/types/community.types"
-import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
+import { useCommunityPagesDirectoryVM } from "../../application/view-models/useCommunityPagesDirectoryVM"
 
 const props = withDefaults(defineProps<{
   mode?: CommunityPageTab
@@ -73,62 +88,13 @@ const props = withDefaults(defineProps<{
   mode: "mine",
 })
 
-const { t } = useI18n()
-const repository = createApiCommunityRepository()
-
-const { data: pagesData, status } = useAsyncData(
-  () => `community:pages:${props.mode}`,
-  () => repository.getPages(props.mode),
-  {
-    watch: [() => props.mode],
-    default: () => [],
-  },
-)
-
-const pending = computed(() => status.value === "pending")
-const pages = computed(() => pagesData.value ?? [])
-
-const pageTitle = computed(() => {
-  if (props.mode === "suggested") return t("community.pagesDirectory.titleSuggested")
-  if (props.mode === "favorite") return t("community.pagesDirectory.titleFavorite")
-  return t("community.pagesDirectory.title")
-})
-
-const { data: countsData } = useAsyncData(
-  "community:pages:counts",
-  async () => {
-    const [mine, suggested, favorite] = await Promise.all([
-      repository.getPages("mine"),
-      repository.getPages("suggested"),
-      repository.getPages("favorite"),
-    ])
-
-    return {
-      mine: mine.length,
-      suggested: suggested.length,
-      favorite: favorite.length,
-    }
-  },
-  {
-    default: () => ({
-      mine: 0,
-      suggested: 0,
-      favorite: 0,
-    }),
-  },
-)
-
-const tabItems = computed(() =>
-  communityPageTabs.map(tab => ({
-    ...tab,
-    to: communityPageRouteMap[tab.value],
-    count: countsData.value?.[tab.value] ?? 0,
-  })),
-)
-
-const actionLabel = computed(() => {
-  if (props.mode === "suggested") return "community.pagesDirectory.actionSuggested"
-  if (props.mode === "favorite") return "community.pagesDirectory.actionFavorite"
-  return "community.pagesDirectory.actionMine"
-})
+const {
+  mode,
+  search,
+  pending,
+  visiblePages,
+  tabItems,
+  actionLabel,
+  filterStatusLabel,
+} = useCommunityPagesDirectoryVM(computed(() => props.mode))
 </script>

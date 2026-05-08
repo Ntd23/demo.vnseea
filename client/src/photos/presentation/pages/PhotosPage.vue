@@ -77,15 +77,26 @@
       :items="lightboxItems"
       :current-index="currentLightboxIndex"
       :title="currentPhoto?.title || currentPhoto?.photographer || ''"
-      :description="currentPhoto?.timeLabel || ''"
+      :description="''"
       :author="currentPhoto?.photographer || ''"
+      :author-avatar-url="currentPhoto?.authorAvatarUrl || ''"
+      :author-path="currentPhoto?.authorPath || ''"
       :caption="currentPhoto?.albumTitle || ''"
+      :time-label="currentPhoto?.timeLabel || ''"
+      :like-count="currentPhotoLikeCount"
+      :selected-reaction="currentPhotoReaction"
+      :comments="currentPhoto?.commentItems || []"
+      :current-user-name="currentAuthUserStore.user?.name"
+      :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+      :submitting-comment="commenting"
       @close="lightboxOpen = false"
       @change="handleLightboxChange"
       @share="currentPhoto?.companionTo ? navigateTo(currentPhoto.companionTo) : null"
       @download="noop"
       @like="noop"
+      @react="reactToCurrentPhoto"
       @comment="currentPhoto?.companionTo ? navigateTo(currentPhoto.companionTo) : null"
+      @submit-comment="submitComment"
     />
   </div>
 </template>
@@ -93,85 +104,31 @@
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import LightboxModal from "../../../lightbox/presentation/components/LightboxModal.vue"
-import type { PhotoRecord } from "../../application/composables/usePhotosData"
-import { mapFeedPostsToPhotos } from "../../application/composables/usePhotosData"
-import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
+import { usePhotosPageVM } from "../../application/view-models/usePhotosPageVM"
 
 const { t } = useI18n()
-const repository = createApiFeedRepository()
-
-const loading = ref(true)
-const loadingMore = ref(false)
-const errorMessage = ref("")
-const photos = ref<PhotoRecord[]>([])
-const hasMore = ref(false)
-const nextOffset = ref<number | null>(null)
-const lightboxOpen = ref(false)
-const currentPhotoId = ref("")
-
-async function fetchPhotos(reset = true) {
-  errorMessage.value = ""
-
-  try {
-    const response = await repository.getPhotos({
-      limit: 24,
-      afterPostId: reset ? undefined : nextOffset.value ?? undefined,
-    })
-
-    const mapped = mapFeedPostsToPhotos(response.posts)
-
-    hasMore.value = response.hasMore
-    nextOffset.value = response.nextOffset
-    photos.value = reset
-      ? mapped
-      : [...photos.value, ...mapped.filter(photo => !photos.value.some(existing => existing.id === photo.id))]
-
-    if (!currentPhotoId.value && photos.value.length > 0) {
-      currentPhotoId.value = photos.value[0].id
-    }
-  }
-  catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("pages.photosPage.emptyDescription")
-  }
-  finally {
-    loading.value = false
-    loadingMore.value = false
-  }
-}
-
-const currentPhoto = computed(() =>
-  photos.value.find(photo => photo.id === currentPhotoId.value) ?? photos.value[0] ?? null,
-)
-
-const lightboxItems = computed(() =>
-  photos.value.map(photo => ({
-    type: "image" as const,
-    src: photo.image,
-    alt: photo.title || photo.photographer,
-  })),
-)
-
-const currentLightboxIndex = computed(() => {
-  const index = photos.value.findIndex(photo => photo.id === currentPhotoId.value)
-  return index >= 0 ? index : 0
-})
-
-function openPhoto(id: string) {
-  currentPhotoId.value = id
-  lightboxOpen.value = true
-}
-
-function handleLightboxChange(index: number) {
-  currentPhotoId.value = photos.value[index]?.id ?? photos.value[0]?.id ?? ""
-}
-
-async function loadMore() {
-  if (!hasMore.value || loadingMore.value) return
-
-  loadingMore.value = true
-  await fetchPhotos(false)
-}
-
+const {
+  currentAuthUserStore,
+  loading,
+  loadingMore,
+  commenting,
+  errorMessage,
+  photos,
+  hasMore,
+  lightboxOpen,
+  currentPhoto,
+  currentPhotoReaction,
+  currentPhotoLikeCount,
+  lightboxItems,
+  currentLightboxIndex,
+  openPhoto,
+  handleLightboxChange,
+  loadMore,
+  submitComment,
+  reactToCurrentPhoto,
+  fetchPhotos,
+  hydrateCurrentUser,
+} = usePhotosPageVM()
 const noop = () => {}
 
 useSeoMeta({
@@ -180,4 +137,5 @@ useSeoMeta({
 })
 
 await fetchPhotos(true)
+await hydrateCurrentUser()
 </script>

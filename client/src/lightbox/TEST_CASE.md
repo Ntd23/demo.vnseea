@@ -42,6 +42,8 @@ English description: Test cases for the lightbox bounded context, covering the s
 | `LIGHTBOX-API-001` | `[ ]` | Ảnh trong lightbox | Mở image item | Viewer hiển thị đúng `src`/`alt`, không thay bằng placeholder hoặc avatar fallback khi item có ảnh thật. |
 | `LIGHTBOX-API-002` | `[ ]` | Video trong lightbox | Mở video item | Viewer hiển thị video player thật, không render thành ảnh tĩnh. |
 | `LIGHTBOX-API-003` | `[ ]` | Thông tin item | Mở item có title/author/caption | Side panel hiển thị đúng metadata nhận từ nơi gọi, không lặp action box hoặc chrome dư. |
+| `LIGHTBOX-API-004` | `[ ]` | Reply comment qua bridge thật | Mở lightbox từ feed có comment, bấm `Trả lời` ở một comment | Reply được gửi qua `/_api/feed/comments/action`, reply mới xuất hiện ngay dưới comment cha. |
+| `LIGHTBOX-API-005` | `[ ]` | Fetch replies thật | Mở lightbox từ feed có comment đã có reply | Bấm `Trả lời` để mở thread, client gọi `/_api/feed/comments/replies` và hiển thị đúng danh sách reply backend trả về. |
 
 ## UI và UX
 
@@ -50,6 +52,8 @@ English description: Test cases for the lightbox bounded context, covering the s
 | `LIGHTBOX-UI-001` | `[ ]` | Layout desktop | `>= 1024px` | Viewer media là trọng tâm, panel phụ chỉ giữ thông tin và action cần thiết, không lặp nút share/download ở nhiều khu vực. |
 | `LIGHTBOX-UI-002` | `[ ]` | Thumbnail strip | `>= 1024px` | Click thumbnail đổi đúng item, thumbnail active highlight đúng. |
 | `LIGHTBOX-UI-003` | `[ ]` | Layout mobile | `390x844` | Viewer và panel stack được, action vẫn bấm được, media không bị crop vô nghĩa. |
+| `LIGHTBOX-UI-004` | `[ ]` | Fullscreen overlay | Desktop + mobile | Lightbox phủ kín viewport, không để lộ app shell/header phía sau như modal overlay mờ. |
+| `LIGHTBOX-UI-005` | `[ ]` | Reaction tray giống post card | Desktop + mobile | Nút reaction chính hiển thị icon hiện tại; hover hoặc nhấn giữ mở đúng dải reaction asset như `PostCard`, không dùng icon rời khác kiểu. |
 
 ## Lệnh kiểm tra
 

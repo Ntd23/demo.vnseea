@@ -20,6 +20,10 @@ export type FeedCommentRecord = {
   text: string
   time?: string
   attachment?: FeedCommentAttachment
+  reactionsCount?: number
+  selectedReaction?: FeedStoryReactionType | null
+  repliesCount?: number
+  replies?: FeedCommentRecord[]
 }
 
 export type FeedCommentAttachment = {
@@ -41,6 +45,9 @@ export type FeedPostActionResult = {
   commentId?: number
   commentsCount?: number
   attachment?: FeedCommentAttachment
+  reaction?: FeedStoryReactionType | null
+  reactionsCount?: number
+  reply?: FeedCommentRecord
 }
 
 export type FeedPostReactionSummary = {
