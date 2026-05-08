@@ -28,6 +28,8 @@
               <div class="skeleton skeleton-text w-[40%] h-[14px]"></div>
             </div>
           </div>
+        </div>
+      </div>
 
     <CommunityPageDirectoryTabsBar
       :tabs="tabItems"
@@ -71,6 +73,7 @@
         :action-label="actionLabel"
       />
     </div>
+  </div>
   </div>
 </template>
 
