@@ -8,8 +8,11 @@ import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { mapCommunityPageRecord } from "../community/_shared"
 import {
+  feedStoryReactionByBackendId,
   feedStoryReactionBackendIds,
+  feedStoryReactionDefinitions,
   isFeedStoryReaction,
+  type FeedStoryReactionType,
 } from "../../../src/feed/domain/constants/story-reactions"
 import type {
   FeedAnnouncement,
@@ -26,6 +29,7 @@ import type {
   FeedPostRecord,
   FeedPostsResponse,
   FeedStoryRecord,
+  FeedStoryReactionType,
 } from "../../../src/feed/domain/types/feed.types"
 
 type BackendEntity = Record<string, unknown>
@@ -195,6 +199,44 @@ const firstNumber = (entity: BackendEntity, keys: string[]) => {
   return 0
 }
 
+const normalizeReactionType = (value: unknown): FeedStoryReactionType | null => {
+  const rawValue = asString(value)
+
+  if (!rawValue) {
+    return null
+  }
+
+  if (isFeedStoryReaction(rawValue)) {
+    return rawValue
+  }
+
+  const titleValue = `${rawValue.charAt(0).toUpperCase()}${rawValue.slice(1).toLowerCase()}`
+
+  if (isFeedStoryReaction(titleValue)) {
+    return titleValue
+  }
+
+  return feedStoryReactionByBackendId[rawValue] ?? null
+}
+
+const getPostReaction = (entity: BackendEntity) => {
+  const reaction = asRecord(entity.reaction)
+  const reactionType = normalizeReactionType(firstString(reaction, ["type", "reaction"]))
+  const reactions = feedStoryReactionDefinitions
+    .map(({ value, backendId }) => ({
+      reaction: value,
+      count: asNumber(reaction[value]) || asNumber(reaction[value.toLowerCase()]) || asNumber(reaction[String(backendId)]),
+    }))
+    .filter(item => item.count > 0)
+
+  return {
+    isLiked: isTruthy(entity.is_liked) || isTruthy(reaction.is_reacted),
+    reaction: reactionType,
+    count: asNumber(reaction.count),
+    reactions,
+  }
+}
+
 const hasUnseenStoryState = (story: BackendEntity, owner: BackendEntity) => {
   const unseenKeys = ["have_not_seen", "have_not_viewed", "not_seen", "unseen", "has_unseen"]
   const seenKeys = ["is_seen", "is_viewed", "viewed", "seen"]
@@ -212,6 +254,40 @@ const hasUnseenStoryState = (story: BackendEntity, owner: BackendEntity) => {
 
 const stripHtml = (value: string) =>
   value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
+
+const formatBackendTimestamp = (value: unknown) => {
+  const raw = asString(value)
+
+  if (!raw) {
+    return ""
+  }
+
+  const numeric = Number(raw)
+
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return raw
+  }
+
+  const timestamp = numeric > 9999999999 ? numeric : numeric * 1000
+  const date = new Date(timestamp)
+
+  if (Number.isNaN(date.getTime())) {
+    return raw
+  }
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(date)
+}
+
+const normalizeFeedReactionType = (value: unknown): FeedStoryReactionType | null => {
+  const reaction = asString(value)
+  return isFeedStoryReaction(reaction) ? reaction : null
+}
 
 const createInitials = (value: string, fallback = "VN") => {
   const initials = value
@@ -468,6 +544,7 @@ const mapCommentRecord = (
   resolveMediaUrl: (value: unknown) => string = value => asString(value),
 ): FeedCommentRecord => {
   const publisher = asRecord(entity.publisher)
+  const reaction = asRecord(entity.reaction)
   const author = firstString(publisher, ["name", "username"]) || "User"
   const username = firstString(publisher, ["username"])
   const imageUrl = resolveMediaUrl(firstString(entity, ["c_file", "comment_image", "image"]))
@@ -483,10 +560,14 @@ const mapCommentRecord = (
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(publisher, ["avatar", "avatar_full"])),
     authorPath: username ? `/@${username}` : undefined,
-    role: firstString(publisher, ["working", "school", "address"]) || author,
+    role: firstString(publisher, ["working", "school"]) || author,
     text: stripHtml(firstString(entity, ["text", "Orginaltext", "comment"])),
-    time: firstString(entity, ["time_text", "posted", "time"]) || "",
+    time: firstString(entity, ["time_text", "posted"]) || formatBackendTimestamp(entity.time),
     attachment,
+    reactionsCount: firstNumber(reaction, ["count", "reactions_count", "total"]),
+    selectedReaction: normalizeFeedReactionType(reaction.type),
+    repliesCount: firstNumber(entity, ["replies", "replies_num", "reply_count", "replies_count"]),
+    replies: asArray(entity.replies).map(reply => mapCommentRecord(reply, resolveMediaUrl)),
   }
 }
 
@@ -525,6 +606,7 @@ export const mapPostRecord = (
     : mediaItems.some(item => item.type === "video")
       ? "video"
       : "image"
+  const postReaction = getPostReaction(entity)
 
   return {
     id: firstNumber(entity, ["post_id", "id"]),
@@ -540,7 +622,7 @@ export const mapPostRecord = (
     text,
     tags: extractTags(entity),
     stats: {
-      likes: firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
+      likes: postReaction.count || firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
       comments: firstNumber(entity, ["post_comments", "comments", "comments_count", "comments_count_total"]),
       shares: firstNumber(entity, ["post_shares", "shares", "shares_count"]),
       views: firstNumber(entity, ["post_views", "view_count", "views"]),
@@ -552,6 +634,9 @@ export const mapPostRecord = (
     sourceLabel: pageSlug ? "page" : groupSlug ? "group" : "feed",
     sourcePath,
     isSaved: isTruthy(entity.is_post_saved) || isTruthy(entity.is_saved),
+    isLiked: postReaction.isLiked,
+    reaction: postReaction.reaction,
+    reactions: postReaction.reactions,
   }
 }
 
@@ -969,12 +1054,13 @@ export async function fetchFeedPosts(
     pageId?: number
   },
 ) {
+  const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const limit = input.limit ?? 10
   const response = assertBackendApiSuccess(
     await client.post<BackendPostsResponse, Record<string, unknown>>(
-      input.type === "get_random_videos" ? "posts" : "posts",
+      "posts",
       {
         type: input.type,
         limit,
@@ -982,6 +1068,7 @@ export async function fetchFeedPosts(
         filter: input.followingOnly ? 1 : 0,
         post_type: input.postType,
         hash: input.tag,
+        user_id: currentUser.user_id,
         page_id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
       },
     ),
@@ -1034,57 +1121,29 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
 }
 
 export async function fetchExplore(event: H3Event): Promise<FeedExploreResponse> {
-  const currentUser = await getBackendCurrentUser(event)
-  const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
-  const limit = resolveLimit(event, 6, 12)
+  const limit = resolveLimit(event, 15, 20)
 
-  const [
-    usersResponse,
-    pagesResponse,
-    postsResponse,
-    generalResponse,
-  ] = await Promise.all([
-    client.post<BackendRecommendedResponse, Record<string, unknown>>(
-      "fetch-recommended",
-      {
-        type: "users",
-        limit,
-      },
-    ),
-    client.post<BackendRecommendedResponse, Record<string, unknown>>(
-      "fetch-recommended",
-      {
-        type: "pages",
-        limit,
-      },
-    ),
-    client.post<BackendPostsResponse, Record<string, unknown>>(
-      "posts",
-      {
-        type: "get_news_feed",
-        limit,
-      },
-    ),
-    client.post<BackendGeneralDataResponse, Record<string, unknown>>(
-      "get-general-data",
-      {
-        fetch: "trending_hashtag,announcement",
-      },
-    ),
-  ])
+  // Use the established helper that is working for Hashtag/Home
+  const postsResponse = await fetchFeedPosts(event, {
+    type: "get_news_feed",
+    limit,
+  })
 
-  const users = assertBackendApiSuccess(usersResponse, "Unable to load recommended users.")
-  const pages = assertBackendApiSuccess(pagesResponse, "Unable to load recommended pages.")
-  const posts = assertBackendApiSuccess(postsResponse, "Unable to load explore posts.")
+  const client = createBackendApiClient(event)
+  const generalResponse = await client.post<BackendGeneralDataResponse, Record<string, unknown>>(
+    "get-general-data",
+    {
+      fetch: "trending_hashtag,announcement",
+    },
+  )
+
   const general = assertBackendApiSuccess(generalResponse, "Unable to load explore metadata.")
 
   return {
-    posts: (posts.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)),
-    users: (users.data ?? []).map(user => mapExploreUser(user, resolveMediaUrl)),
-    pages: (pages.data ?? []).map(page =>
-      mapCommunityPageRecord(page, { currentUserId: asNumber(currentUser.user_id) }),
-    ),
+    posts: postsResponse.posts,
+    users: [],
+    pages: [],
     hashtags: extractTrendingHashtags(general.trending_hashtag),
     announcement: mapAnnouncement(general.announcement),
   }
@@ -1291,4 +1350,116 @@ export async function runPostAction(
   return {
     ok: true,
   }
+}
+
+export async function fetchCommentReplies(
+  event: H3Event,
+  input: {
+    commentId: number
+    limit?: number
+    offset?: number
+  },
+) {
+  const client = createBackendApiClient(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const response = assertBackendApiSuccess(
+    await client.post<BackendRecommendedResponse, Record<string, unknown>>(
+      "comments",
+      {
+        type: "fetch_comments_reply",
+        comment_id: input.commentId,
+        limit: input.limit ?? 20,
+        offset: input.offset ?? 0,
+      },
+    ),
+    "Unable to load comment replies.",
+  )
+
+  return (response.data ?? []).map(reply => mapCommentRecord(reply, resolveMediaUrl))
+}
+
+export async function runCommentAction(
+  event: H3Event,
+  input: {
+    action: "reply"
+    commentId: number
+    text?: string
+  } | {
+    action: "reaction"
+    target: "comment" | "reply"
+    targetId: number
+    reaction: FeedStoryReactionType
+  },
+) {
+  if (input.action === "reply") {
+    if (!input.commentId) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Comment id is required.",
+      })
+    }
+
+    const client = createBackendApiClient(event)
+    const resolveMediaUrl = createBackendMediaUrlResolver(event)
+    const response = assertBackendApiSuccess(
+      await client.post<{
+        api_status?: number | string
+        data?: BackendEntity
+        errors?: { error_text?: string }
+      }, Record<string, unknown>>(
+        "comments",
+        {
+          type: "create_reply",
+          comment_id: input.commentId,
+          text: input.text ?? "",
+        },
+      ),
+      "Unable to reply to comment.",
+    )
+
+    return {
+      ok: true,
+      commentId: firstNumber(asRecord(response.data), ["id", "comment_id"]),
+      attachment: undefined,
+      reply: response.data ? mapCommentRecord(asRecord(response.data), resolveMediaUrl) : undefined,
+    }
+  }
+
+  if (input.action === "reaction") {
+    if (!input.targetId) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Reaction target id is required.",
+      })
+    }
+
+    const response = assertBackendApiSuccess(
+      await createBackendApiClient(event).post<{
+        api_status?: number | string
+        message?: string
+        errors?: { error_text?: string }
+      }, Record<string, unknown>>(
+        "comments",
+        {
+          type: input.target === "reply" ? "reaction_reply" : "reaction_comment",
+          reaction: input.reaction.toLowerCase(),
+          ...(input.target === "reply"
+            ? { reply_id: input.targetId }
+            : { comment_id: input.targetId }),
+        },
+      ),
+      "Unable to react to comment.",
+    )
+
+    return {
+      ok: true,
+      reaction: input.reaction,
+      reactionsCount: response.message?.includes("deleted") ? 0 : undefined,
+    }
+  }
+
+  throw createError({
+    statusCode: 400,
+    statusMessage: "Comment action is invalid.",
+  })
 }

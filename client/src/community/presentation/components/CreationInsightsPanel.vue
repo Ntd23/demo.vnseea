@@ -1,85 +1,91 @@
 <template>
-  <div class="space-y-4 xl:sticky xl:top-[84px]">
-    <section class="overflow-hidden rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]">
-      <div class="bg-[linear-gradient(140deg,#0f172a_0%,#243b63_34%,#0000ff_100%)] p-5 text-white">
-        <p class="text-[11px] font-bold uppercase tracking-[0.22em] text-white/70">
+  <div class="space-y-6 xl:sticky xl:top-[84px]">
+    <section class="overflow-hidden rounded-[32px] border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-md)]">
+      <!-- Premium Header with Refined Gradient -->
+      <div class="bg-[linear-gradient(135deg,var(--color-primary-900)_0%,var(--color-primary-700)_40%,var(--color-primary-500)_100%)] p-6 text-white">
+        <p class="text-[10px] font-black uppercase tracking-[0.25em] text-white/60">
           {{ $t("community.creation.insights.preview") }}
         </p>
-        <div class="mt-4 rounded-[24px] border border-white/10 bg-white/10 p-4 backdrop-blur-[10px]">
-          <div class="flex items-start gap-3">
-            <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] bg-white text-[#0000ff] shadow-[0_10px_24px_rgba(15,23,42,0.16)]">
-              <Icon :name="previewIcon" class="h-6 w-6" />
+        <div class="mt-5 rounded-[24px] border border-white/20 bg-white/10 p-5 backdrop-blur-xl ring-1 ring-white/10">
+          <div class="flex items-start gap-4">
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-white text-primary-600 shadow-xl shadow-black/20 transition-transform hover:scale-105">
+              <Icon :name="previewIcon" class="h-7 w-7" />
             </div>
 
-            <div class="min-w-0">
-              <p class="truncate text-[16px] font-black">
+            <div class="min-w-0 space-y-1">
+              <p class="truncate text-[17px] font-black tracking-tight">
                 {{ previewTitle }}
               </p>
-              <p class="mt-1 break-all text-[12px] font-medium text-white/72">
+              <p class="truncate text-[12px] font-bold text-white/70">
                 {{ previewUrl }}
               </p>
             </div>
           </div>
 
-          <div class="mt-4 flex flex-wrap gap-2">
+          <div class="mt-5 flex flex-wrap gap-2.5">
             <div
               v-if="showPrivacy"
-              class="inline-flex items-center rounded-full bg-white/14 px-3 py-1.5 text-[12px] font-semibold text-white"
+              class="inline-flex items-center rounded-full bg-white/15 px-3.5 py-1.5 text-[11px] font-black tracking-wide text-white ring-1 ring-white/10"
             >
-              <Icon name="i-ph-shield-check-fill" class="mr-1.5 h-4 w-4" />
+              <Icon name="i-ph-shield-check-fill" class="mr-2 h-4 w-4" />
               {{ privacyLabel }}
             </div>
-            <div class="inline-flex items-center rounded-full bg-white/14 px-3 py-1.5 text-[12px] font-semibold text-white">
-              <Icon name="i-ph-tag-fill" class="mr-1.5 h-4 w-4" />
+            <div class="inline-flex items-center rounded-full bg-white/15 px-3.5 py-1.5 text-[11px] font-black tracking-wide text-white ring-1 ring-white/10">
+              <Icon name="i-ph-tag-fill" class="mr-2 h-4 w-4" />
               {{ categoryLabel }}
             </div>
           </div>
 
-          <p class="mt-4 text-[13px] leading-6 text-white/82">
+          <p class="mt-5 text-[13px] font-medium leading-relaxed text-white/80 line-clamp-3">
             {{ resolvedPreviewDescription }}
           </p>
         </div>
       </div>
 
-      <div class="space-y-4 p-5">
-        <div class="rounded-[22px] border border-[#eef2f8] bg-[#f8fbff] p-4">
-          <div class="flex items-center justify-between gap-3">
+      <div class="space-y-6 p-6">
+        <!-- Readiness Section -->
+        <div class="rounded-[28px] border border-primary-100/50 bg-primary-50/20 p-5 ring-1 ring-primary-50">
+          <div class="flex items-center justify-between gap-4">
             <div>
-              <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+              <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500/80">
                 {{ $t("community.creation.insights.readiness") }}
               </p>
-              <p class="mt-1 text-[15px] font-black text-[#243b63]">
+              <p class="mt-1 text-[16px] font-bold text-[var(--text-primary)]">
                 {{ $t("community.creation.insights.completionStatus", { count: completionCount, total: completionTotal }) }}
               </p>
             </div>
-            <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.06)]">
-              <Icon name="i-ph-check-fat-fill" class="h-5 w-5" />
+            <div
+              class="flex h-12 w-12 items-center justify-center rounded-[18px] transition-all duration-500"
+              :class="progressValue === 100 ? 'bg-green-500 text-white shadow-lg shadow-green-500/30' : 'bg-white text-primary-500 shadow-sm'"
+            >
+              <Icon :name="progressValue === 100 ? 'i-ph-check-fat-fill' : 'i-ph-rocket-launch-fill'" class="h-6 w-6" />
             </div>
           </div>
 
           <UProgress
             :model-value="progressValue"
             color="primary"
-            class="mt-4"
+            size="md"
+            class="mt-5 h-2"
           />
 
-          <div class="mt-4 space-y-2.5">
+          <div class="mt-6 space-y-3">
             <div
               v-for="item in readinessItems"
               :key="item.label"
-              class="flex items-start gap-2.5 rounded-[16px] bg-white px-3 py-2.5"
+              class="flex items-center gap-3 rounded-2xl bg-white px-3.5 py-3 shadow-sm ring-1 ring-slate-100/50 transition-all hover:ring-primary-100"
             >
               <div
-                class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px]"
-                :class="item.done ? 'bg-[#0000ff] text-white' : 'bg-[#eef2f8] text-slate-400'"
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors duration-300"
+                :class="item.done ? 'bg-primary-500 text-white shadow-md shadow-primary-500/20' : 'bg-slate-50 text-slate-300'"
               >
-                <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-dot-outline-bold'" class="h-3.5 w-3.5" />
+                <Icon :name="item.done ? 'i-ph-check-bold' : 'i-ph-circle-bold'" class="h-4 w-4" />
               </div>
               <div class="min-w-0">
-                <p class="text-[13px] font-semibold text-[#243b63]">
+                <p class="truncate text-[13px] font-bold text-[var(--text-primary)]">
                   {{ item.label }}
                 </p>
-                <p class="mt-0.5 text-[12px] leading-5 text-slate-500">
+                <p class="truncate text-[11px] font-medium text-slate-400">
                   {{ item.description }}
                 </p>
               </div>
@@ -87,33 +93,47 @@
           </div>
         </div>
 
+        <!-- Privacy Insight -->
         <div
           v-if="showPrivacy"
-          class="rounded-[22px] border border-[#eef2f8] bg-white p-4"
+          class="rounded-[24px] border border-[var(--border-default)] bg-white p-5 shadow-sm"
         >
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-            {{ $t("community.creation.insights.privacy") }}
-          </p>
-          <p class="mt-2 text-[14px] font-black text-[#243b63]">
+          <div class="flex items-center gap-2">
+            <Icon name="i-ph-info-fill" class="h-4 w-4 text-primary-500" />
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-primary-500/80">
+              {{ $t("community.creation.insights.privacy") }}
+            </p>
+          </div>
+          <p class="mt-3 text-[14px] font-bold text-[var(--text-primary)]">
             {{ privacyLabel }}
           </p>
-          <p class="mt-2 text-[13px] leading-6 text-slate-500">
+          <p class="mt-1.5 text-[12.5px] leading-relaxed text-[var(--text-secondary)]">
             {{ privacyDescription }}
           </p>
         </div>
 
-        <div class="rounded-[22px] border border-[#eef2f8] bg-white p-4">
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
+        <!-- Next Steps Section -->
+        <div class="space-y-4">
+          <p class="ml-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
             {{ $t("community.creation.insights.afterCreation") }}
           </p>
-          <div class="mt-3 space-y-3">
+          <div class="space-y-3">
             <div
               v-for="step in resolvedNextSteps"
               :key="step.title"
-              class="rounded-[18px] bg-[#f8fbff] px-4 py-3"
+              class="group relative overflow-hidden rounded-[24px] bg-[var(--bg-surface-sunken)] p-4 ring-1 ring-[var(--border-default)] transition-all hover:bg-white hover:shadow-md hover:ring-primary-100"
             >
-              <p class="text-[13px] font-semibold text-[#243b63]">{{ step.title }}</p>
-              <p class="mt-1 text-[12px] leading-5 text-slate-500">{{ step.description }}</p>
+              <div class="relative z-10 space-y-1">
+                <p class="text-[13px] font-bold text-[var(--text-primary)] transition-colors group-hover:text-primary-600">
+                  {{ step.title }}
+                </p>
+                <p class="text-[12px] leading-relaxed text-[var(--text-secondary)]">
+                  {{ step.description }}
+                </p>
+              </div>
+              <div class="absolute -right-2 -top-2 opacity-[0.03] transition-opacity group-hover:opacity-[0.08]">
+                <Icon name="i-ph-sparkle-fill" class="h-16 w-16" />
+              </div>
             </div>
           </div>
         </div>

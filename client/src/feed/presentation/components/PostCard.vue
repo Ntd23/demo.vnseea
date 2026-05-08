@@ -160,7 +160,12 @@
 
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
         <div v-if="showComments" class="post-card__comments-full">
-          <FeedCommentList :comments="localComments" />
+          <FeedCommentList
+            :comments="localComments"
+            enable-reply
+            :current-user-name="currentAuthUserStore.user?.name"
+            :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+          />
           <FeedCommentComposer
             :current-user-name="currentAuthUserStore.user?.name"
             :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
@@ -182,38 +187,35 @@
       :open="lightboxOpen"
       :items="mediaItems"
       :current-index="currentMediaIndex"
-      :title="t('feed.postCard.lightboxTitle')"
-      :description="t('feed.lightboxViewer.description', { count: mediaItems.length })"
+      :title="props.post.text || t('feed.postCard.lightboxTitle')"
+      :description="''"
       :author="post.author"
+      :author-avatar-url="post.authorAvatarUrl"
+      :author-path="post.authorPath"
       :caption="post.text"
+      :time-label="post.time"
+      :like-count="likesCount"
+      :comments="localComments"
+      :current-user-name="currentAuthUserStore.user?.name"
+      :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+      :submitting-comment="commenting"
+      :selected-reaction="selectedPostReaction"
       @close="lightboxOpen = false"
       @change="currentMediaIndex = $event"
       @share="showShare = true"
       @download="downloadMedia"
       @like="toggleLike"
+      @react="reactToPost"
       @comment="showComments = true"
+      @submit-comment="submitComment"
     />
   </article>
 </template>
 
 <script setup lang="ts">
-import { useTimeoutFn } from "@vueuse/core"
-import {
-  defaultFeedReactionAsset,
-  feedPostPreviewReactionAssets,
-  feedReactionAssetByValue,
-  feedReactionAssets,
-} from "../../application/constants/reaction-assets"
 import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useHashtagData"
-import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
-import { defaultFeedStoryReaction } from "../../domain/constants/story-reactions"
-import type {
-  FeedCommentRecord,
-  FeedCommentSubmitPayload,
-  FeedPostRecord,
-  FeedStoryReactionType,
-} from "../../domain/types/feed.types"
-import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
+import { useFeedPostCardVM } from "../../application/view-models/useFeedPostCardVM"
+import type { FeedPostRecord } from "../../domain/types/feed.types"
 import FeedCommentComposer from "./CommentComposer.vue"
 import FeedCommentList from "./CommentList.vue"
 import FeedLightboxViewer from "./LightboxViewer.vue"
@@ -222,280 +224,48 @@ import FeedPostMediaGrid from "./PostMediaGrid.vue"
 import FeedShareModal from "./ShareModal.vue"
 
 const { t } = useI18n()
-const route = useRoute()
-const requestURL = useRequestURL()
-const toast = useToast()
-const currentAuthUserStore = useCurrentAuthUserStore()
-const repository = createApiFeedRepository()
 
 const props = defineProps<{
   post: FeedPostRecord
 }>()
-
-const showComments = ref(false)
-const showShare = ref(false)
-const liked = ref(false)
-const selectedPostReaction = ref<FeedStoryReactionType | null>(null)
-const postReactionTrayOpen = ref(false)
-const postReactionLongPressTriggered = ref(false)
-const lightboxOpen = ref(false)
-const currentMediaIndex = ref(0)
-const localComments = ref<FeedCommentRecord[]>([])
-const likesCount = ref(0)
-const sharesCount = ref(0)
-const actionState = ref<"idle" | "success" | "error">("idle")
-const actionMessage = ref("")
-const liking = ref(false)
-const commenting = ref(false)
-const reporting = ref(false)
-
-const postAnchorId = computed(() => `feed-post-${props.post.id}`)
-const postReactionOptions = computed(() =>
-  feedReactionAssets.map(reaction => ({
-    value: reaction.value,
-    label: t(reaction.labelKey),
-    src: reaction.src,
-  })),
-)
-const activePostReactionAsset = computed(() =>
-  selectedPostReaction.value
-    ? feedReactionAssetByValue[selectedPostReaction.value]
-    : defaultFeedReactionAsset,
-)
-const activePostReactionLabel = computed(() => t(activePostReactionAsset.value.labelKey))
-const previewReactions = computed(() =>
-  selectedPostReaction.value
-    ? [feedReactionAssetByValue[selectedPostReaction.value]]
-    : feedPostPreviewReactionAssets,
-)
-const hasReactions = computed(() => likesCount.value > 0)
-const hasPostContent = computed(() =>
-  Boolean(props.post.text.trim() || props.post.tags.length),
-)
-
-const shareUrl = computed(() =>
-  new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString(),
-)
-
-watch(
-  () => props.post,
-  (post) => {
-    localComments.value = [...post.comments]
-    likesCount.value = post.stats.likes
-    sharesCount.value = post.stats.shares
-    liked.value = false
-    selectedPostReaction.value = null
-    postReactionTrayOpen.value = false
-    actionState.value = "idle"
-    actionMessage.value = ""
-    showComments.value = false
-    showShare.value = false
-    lightboxOpen.value = false
-    currentMediaIndex.value = 0
-  },
-  { deep: true, immediate: true },
-)
-
-onMounted(async () => {
-  await currentAuthUserStore.hydrate()
-})
-
-const mediaItems = computed(() => props.post.mediaItems)
 const {
-  start: startPostReactionLongPressTimer,
-  stop: stopPostReactionLongPressTimer,
-} = useTimeoutFn(() => {
-  postReactionLongPressTriggered.value = true
-  postReactionTrayOpen.value = true
-}, 420, { immediate: false })
-
-function openPostReactionTray() {
-  postReactionTrayOpen.value = true
-}
-
-function closePostReactionTray() {
-  postReactionTrayOpen.value = false
-}
-
-function startPostReactionPress() {
-  if (liking.value) {
-    return
-  }
-
-  postReactionLongPressTriggered.value = false
-  startPostReactionLongPressTimer()
-}
-
-function finishPostReactionPress() {
-  stopPostReactionLongPressTimer()
-}
-
-function cancelPostReactionPress() {
-  stopPostReactionLongPressTimer()
-}
-
-async function handlePostReactionButtonClick() {
-  if (postReactionLongPressTriggered.value) {
-    return
-  }
-
-  await reactToPost(defaultFeedStoryReaction.value)
-}
-
-async function toggleLike() {
-  await reactToPost(defaultFeedStoryReaction.value)
-}
-
-async function reactToPost(reaction: FeedStoryReactionType) {
-  if (liking.value) return
-
-  liking.value = true
-  const hadLocalReaction = Boolean(selectedPostReaction.value)
-
-  try {
-    await repository.runPostAction({
-      action: "reaction",
-      postId: props.post.id,
-      reaction,
-    })
-    if (!hadLocalReaction) {
-      likesCount.value += 1
-    }
-    selectedPostReaction.value = reaction
-    liked.value = true
-    postReactionTrayOpen.value = false
-  }
-  catch (error) {
-    actionState.value = "error"
-    actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
-  }
-  finally {
-    liking.value = false
-  }
-}
-
-const onOpenMedia = (index: number) => {
-  currentMediaIndex.value = index
-  lightboxOpen.value = true
-}
-
-async function submitComment(payload: FeedCommentSubmitPayload) {
-  if (commenting.value) return
-
-  commenting.value = true
-
-  try {
-    const response = await repository.runPostAction({
-      action: "comment",
-      postId: props.post.id,
-      text: payload.text,
-      imageFile: payload.imageFile,
-      gifFile: payload.gifFile,
-      audioFile: payload.audioFile,
-    })
-
-    const comment: FeedCommentRecord = {
-      id: response.commentId ?? Date.now(),
-      author: currentAuthUserStore.user?.name || t("feed.postCard.commentAuthor"),
-      authorAvatarUrl: currentAuthUserStore.user?.avatarUrl || "",
-      authorPath: currentAuthUserStore.user?.username ? `/@${currentAuthUserStore.user.username}` : undefined,
-      role: currentAuthUserStore.user?.username ? `@${currentAuthUserStore.user.username}` : t("feed.postCard.commentRole"),
-      text: payload.text,
-      time: t("feed.postCard.justNow"),
-      attachment: response.attachment ?? payload.attachmentPreview,
-    }
-
-    localComments.value = [...localComments.value, comment]
-    showComments.value = true
-    actionState.value = "success"
-    actionMessage.value = t("feed.postCard.commentAddedMessage")
-
-    toast.add({
-      color: "success",
-      icon: "i-ph-chat-centered-dots-fill",
-      title: props.post.author,
-      description: actionMessage.value,
-    })
-  }
-  catch (error) {
-    actionState.value = "error"
-    actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
-  }
-  finally {
-    commenting.value = false
-  }
-}
-
-function handleShared() {
-  sharesCount.value += 1
-  actionState.value = "success"
-  actionMessage.value = t("feed.shareModal.shared")
-  showShare.value = false
-}
-
-async function handleMenuAction(action: string) {
-  if (action === "open" && import.meta.client) {
-    window.open(props.post.sourcePath || shareUrl.value, "_blank", "noopener,noreferrer")
-    return
-  }
-
-  if (action === "copy") {
-    try {
-      if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
-        throw new Error("clipboard_unavailable")
-      }
-
-      await navigator.clipboard.writeText(shareUrl.value)
-      actionState.value = "success"
-      actionMessage.value = shareUrl.value
-    }
-    catch {
-      actionState.value = "error"
-      actionMessage.value = shareUrl.value
-    }
-  }
-  else if (action === "report") {
-    if (reporting.value) return
-    reporting.value = true
-
-    try {
-      await repository.runPostAction({
-        action: "report",
-        postId: props.post.id,
-      })
-      actionState.value = "success"
-      actionMessage.value = t("feed.postHeader.menuReportLabel")
-    }
-    catch (error) {
-      actionState.value = "error"
-      actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
-    }
-    finally {
-      reporting.value = false
-    }
-  }
-
-  toast.add({
-    color: actionState.value === "error" ? "warning" : "primary",
-    icon: actionState.value === "error" ? "i-ph-warning-circle-fill" : "i-ph-check-circle-fill",
-    title: props.post.author,
-    description: actionMessage.value,
-  })
-}
-
-const downloadMedia = () => {
-  if (!mediaItems.value[currentMediaIndex.value]) return
-
-  actionState.value = "success"
-  actionMessage.value = t("feed.postCard.lightboxDownloadMessage")
-
-  toast.add({
-    color: "primary",
-    icon: "i-ph-download-simple-fill",
-    title: props.post.author,
-    description: actionMessage.value,
-  })
-}
+  currentAuthUserStore,
+  showComments,
+  showShare,
+  liked,
+  selectedPostReaction,
+  postReactionTrayOpen,
+  lightboxOpen,
+  currentMediaIndex,
+  localComments,
+  likesCount,
+  sharesCount,
+  actionState,
+  actionMessage,
+  commenting,
+  postAnchorId,
+  postReactionOptions,
+  activePostReactionAsset,
+  activePostReactionLabel,
+  previewReactions,
+  hasReactions,
+  hasPostContent,
+  mediaItems,
+  shareUrl,
+  openPostReactionTray,
+  closePostReactionTray,
+  startPostReactionPress,
+  finishPostReactionPress,
+  cancelPostReactionPress,
+  handlePostReactionButtonClick,
+  toggleLike,
+  reactToPost,
+  onOpenMedia,
+  submitComment,
+  handleShared,
+  handleMenuAction,
+  downloadMedia,
+} = useFeedPostCardVM(toRef(props, "post"))
 </script>
 
 <style scoped>

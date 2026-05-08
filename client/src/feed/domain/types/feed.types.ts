@@ -20,6 +20,10 @@ export type FeedCommentRecord = {
   text: string
   time?: string
   attachment?: FeedCommentAttachment
+  reactionsCount?: number
+  selectedReaction?: FeedStoryReactionType | null
+  repliesCount?: number
+  replies?: FeedCommentRecord[]
 }
 
 export type FeedCommentAttachment = {
@@ -41,6 +45,14 @@ export type FeedPostActionResult = {
   commentId?: number
   commentsCount?: number
   attachment?: FeedCommentAttachment
+  reaction?: FeedStoryReactionType | null
+  reactionsCount?: number
+  reply?: FeedCommentRecord
+}
+
+export type FeedPostReactionSummary = {
+  reaction: FeedStoryReactionType
+  count: number
 }
 
 export type FeedPostRecord = {
@@ -66,6 +78,9 @@ export type FeedPostRecord = {
   sourceLabel: string
   sourcePath: string
   isSaved: boolean
+  isLiked: boolean
+  reaction: FeedStoryReactionType | null
+  reactions: FeedPostReactionSummary[]
 }
 
 export type FeedPostsResponse = {

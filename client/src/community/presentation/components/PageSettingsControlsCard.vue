@@ -6,36 +6,36 @@
     icon="i-ph-cursor-click-bold"
   >
     <template #trailing>
-      <span class="page-settings-controls__selected">
-        {{ selectedCtaLabel }}
-      </span>
+      <div class="flex items-center gap-3">
+        <span class="page-settings-controls__selected">
+          {{ selectedCtaLabel }}
+        </span>
+        <slot name="trailing" />
+      </div>
     </template>
 
     <div class="page-settings-controls space-y-5">
       <div>
-        <p class="text-[12px] font-bold uppercase tracking-[0.16em] text-[#0000ff]/65">
-          {{ $t("community.pageSettings.controls.preset") }}
-        </p>
-
-        <div class="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <button
             v-for="option in ctaOptions"
             :key="option.value"
-            class="rounded-[22px] border px-4 py-4 text-left transition"
-            :class="selectedCtaLabel === option.labelText
-              ? 'border-[#0000ff]/22 bg-[#eef0ff] shadow-[0_12px_24px_rgba(0,0,255,0.08)]'
-              : 'border-[#dbe3f2] bg-white hover:border-[#c5caff] hover:bg-[#f8fbff]'"
             type="button"
-            :aria-pressed="selectedCtaLabel === option.labelText"
+            class="cta-card flex flex-col items-center p-6 text-center transition-all duration-300"
+            :class="selectedCtaLabel === option.labelText
+              ? 'cta-card--active'
+              : 'cta-card--inactive'"
             @click="model.ctaLabel = option.labelText"
           >
-            <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.05)]">
-              <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
+            <div class="cta-card__icon-wrap mb-6">
+              <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-12 w-12" />
             </div>
-            <p class="mt-4 text-[14px] font-black text-[#243b63]">
+
+            <h3 class="cta-card__title">
               {{ option.labelText }}
-            </p>
-            <p class="mt-2 text-[12px] leading-5 text-slate-500">
+            </h3>
+
+            <p class="cta-card__desc mb-0">
               {{ option.descriptionText }}
             </p>
           </button>
@@ -126,6 +126,54 @@ const toggleItems = computed(() => [
 </script>
 
 <style scoped>
+.cta-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.cta-card--active {
+  border-color: #2563eb;
+  background: #f0f7ff;
+  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.1), 0 8px 10px -6px rgba(37, 99, 235, 0.1);
+}
+
+.cta-card--inactive:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.cta-card__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  background: #ffffff;
+  border-radius: 20px;
+  color: #0f172a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.cta-card--active .cta-card__icon-wrap {
+  color: #2563eb;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+}
+
+.cta-card__title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.cta-card__desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #64748b;
+  margin-bottom: 0;
+}
+
 .page-settings-controls__selected {
   display: inline-flex;
   align-items: center;

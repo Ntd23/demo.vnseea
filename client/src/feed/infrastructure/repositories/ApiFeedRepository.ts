@@ -1,10 +1,12 @@
 // English description: Implements the shared Dev 2 feed repository against Nuxt server API routes.
 
+import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { FeedRepository } from "../../domain/repositories/FeedRepository"
 import type {
   FeedCreatePostResponse,
   FeedCreateStoryResponse,
+  FeedCommentRecord,
   FeedExploreResponse,
   FeedHomeResponse,
   FeedMemoriesResponse,
@@ -13,23 +15,8 @@ import type {
   FeedPostActionResult,
   FeedPostsResponse,
   FeedStoryActionResult,
+  FeedStoryReactionType,
 } from "../../domain/types/feed.types"
-
-const feedApiRoutes = {
-  explore: "feed/explore",
-  hashtag: (tag: string) => `feed/hashtag/${encodeURIComponent(tag)}`,
-  home: "feed/home",
-  memories: "feed/memories",
-  photos: "feed/photos",
-  poke: "feed/poke",
-  popular: "feed/popular",
-  postAction: "feed/posts/action",
-  postCreate: "feed/posts/create",
-  saved: "feed/saved",
-  storyAction: "feed/stories/action",
-  storyCreate: "feed/stories/create",
-  videos: "feed/videos",
-} as const
 
 const normalizeOffset = (value?: number) =>
   typeof value === "number" && Number.isFinite(value) && value > 0
@@ -41,7 +28,7 @@ export function createApiFeedRepository(): FeedRepository {
 
   return {
     async getHome(input) {
-      return await client.get<FeedHomeResponse>(feedApiRoutes.home, {
+      return await client.get<FeedHomeResponse>(apiRoutes.feed.home, {
         limit: input?.limit,
         afterPostId: normalizeOffset(input?.afterPostId),
         postType: input?.postType,
@@ -49,45 +36,52 @@ export function createApiFeedRepository(): FeedRepository {
       })
     },
     async getSaved(input) {
-      return await client.get<FeedPostsResponse>(feedApiRoutes.saved, {
+      return await client.get<FeedPostsResponse>(apiRoutes.feed.saved, {
         limit: input?.limit,
         afterPostId: normalizeOffset(input?.afterPostId),
       })
     },
     async getHashtag(tag, input) {
-      return await client.get<FeedPostsResponse>(feedApiRoutes.hashtag(tag), {
+      return await client.get<FeedPostsResponse>(apiRoutes.feed.hashtag(tag), {
         limit: input?.limit,
         afterPostId: normalizeOffset(input?.afterPostId),
       })
     },
     async getVideos(input) {
-      return await client.get<FeedPostsResponse>(feedApiRoutes.videos, {
+      return await client.get<FeedPostsResponse>(apiRoutes.feed.videos, {
         limit: input?.limit,
         afterPostId: normalizeOffset(input?.afterPostId),
       })
     },
     async getPopular(input) {
-      return await client.get<FeedPostsResponse>(feedApiRoutes.popular, {
+      return await client.get<FeedPostsResponse>(apiRoutes.feed.popular, {
         limit: input?.limit,
         afterPostId: normalizeOffset(input?.afterPostId),
       })
     },
     async getPhotos(input) {
-      return await client.get<FeedPostsResponse>(feedApiRoutes.photos, {
+      return await client.get<FeedPostsResponse>(apiRoutes.feed.photos, {
         limit: input?.limit,
         afterPostId: normalizeOffset(input?.afterPostId),
       })
     },
     async getExplore(input) {
-      return await client.get<FeedExploreResponse>(feedApiRoutes.explore, {
+      return await client.get<FeedExploreResponse>(apiRoutes.feed.explore, {
         limit: input?.limit,
       })
     },
     async getMemories() {
-      return await client.get<FeedMemoriesResponse>(feedApiRoutes.memories)
+      return await client.get<FeedMemoriesResponse>(apiRoutes.feed.memories)
     },
     async getPokes() {
-      return await client.get<FeedPokeRecord[]>(feedApiRoutes.poke)
+      return await client.get<FeedPokeRecord[]>(apiRoutes.feed.poke)
+    },
+    async getCommentReplies(input) {
+      return await client.get<FeedCommentRecord[]>(apiRoutes.feed.comments.replies, {
+        commentId: input.commentId,
+        limit: input.limit,
+        offset: input.offset,
+      })
     },
     async runPostAction(input) {
       const hasCommentFile = Boolean(input.imageFile || input.gifFile || input.audioFile)
@@ -119,19 +113,27 @@ export function createApiFeedRepository(): FeedRepository {
         }
 
         return await client.post<FeedPostActionResult, FormData>(
-          feedApiRoutes.postAction,
+          apiRoutes.feed.posts.action,
           formData,
         )
       }
 
       return await client.post<FeedPostActionResult, Record<string, unknown>>(
-        feedApiRoutes.postAction,
+        apiRoutes.feed.posts.action,
         input,
+      )
+    },
+    async runCommentAction(input) {
+      return await client.post<FeedPostActionResult, Record<string, unknown>>(
+        apiRoutes.feed.comments.action,
+        input as Record<string, unknown> & {
+          reaction?: FeedStoryReactionType
+        },
       )
     },
     async createPost(input) {
       return await client.post<FeedCreatePostResponse, Record<string, unknown>>(
-        feedApiRoutes.postCreate,
+        apiRoutes.feed.posts.create,
         input,
       )
     },
@@ -149,19 +151,19 @@ export function createApiFeedRepository(): FeedRepository {
       }
 
       return await client.post<FeedCreateStoryResponse, FormData>(
-        feedApiRoutes.storyCreate,
+        apiRoutes.feed.stories.create,
         formData,
       )
     },
     async runStoryAction(input) {
       return await client.post<FeedStoryActionResult, Record<string, unknown>>(
-        feedApiRoutes.storyAction,
+        apiRoutes.feed.stories.action,
         input,
       )
     },
     async runPokeAction(input) {
       return await client.post<FeedPokeActionResult, Record<string, unknown>>(
-        feedApiRoutes.poke,
+        apiRoutes.feed.poke,
         input,
       )
     },

@@ -15,7 +15,7 @@ $sql_db_user = "root";
 // MySQL Database Password
 $sql_db_pass = "";
 // MySQL Database Name
-$sql_db_name = "demo.vnseea";
+$sql_db_name = "vnseea";
 
 // Site URL
 $site_url = "http://demo.vnseea.test"; // e.g (http://example.com)

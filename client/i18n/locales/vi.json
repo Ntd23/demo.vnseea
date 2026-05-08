@@ -4072,7 +4072,6 @@
   },
   "feed": {
     "commentComposer": {
-      "placeholder": "Viết bình luận mang tính xây dựng...",
       "helper": "{count}/280 ký tự",
       "emptyError": "Hãy nhập nội dung bình luận trước khi gửi.",
       "successMessage": "Bình luận đã được gửi.",
@@ -5932,7 +5931,6 @@
         "statusErrorDescription": "Kiểm tra lại tên, URL, mô tả và danh mục trước khi lưu."
       },
       "sidebar": {
-        "preview": "Xem trước sau khi lưu",
         "notes": "Lưu ý quản trị",
         "tip1Title": "Giữ mô tả đủ rõ",
         "tip1Desc": "Thành viên mới thường quyết định tham gia trong 1-2 câu đầu tiên của phần giới thiệu.",
@@ -6032,7 +6030,17 @@
         "statusErrorDescription": "Kiểm tra lại tên, URL, mô tả và danh mục trước khi lưu."
       },
       "sidebar": {
-        "preview": "Xem trước sau khi lưu",
+       "preview": {
+          "eyebrow": "Xem trước",
+          "title": "Xem trước sau khi lưu",
+          "desc": "Đây là những gì thành viên sẽ thấy khi truy cập vào nhóm của bạn."
+        },
+        "media": {
+          "eyebrow": "Nhận diện hình ảnh",
+          "title": "Ảnh đại diện & Ảnh bìa",
+          "desc": "Tải lên những hình ảnh chất lượng cao để làm cho trang của bạn nổi bật hơn.",
+          "navDesc": "Ảnh bìa & đại diện"
+        },
         "signals": "Tín hiệu bật",
         "followers": "Theo dõi",
         "likes": "Yêu thích",

@@ -27,7 +27,7 @@
           v-if="showSave"
           color="neutral"
           variant="outline"
-          class="justify-center rounded-full"
+          class="justify-center rounded-full btn-primary"
           :disabled="disabled || saveDisabled"
           :loading="saveLoading || status === 'saving'"
           @click="$emit('save')"
@@ -38,7 +38,7 @@
         <UButton
           color="primary"
           variant="solid"
-          class="justify-center rounded-full"
+          class="justify-center rounded-full btn-primary"
           :disabled="disabled || submitDisabled"
           :loading="loading || status === 'submitting'"
           @click="$emit('submit')"

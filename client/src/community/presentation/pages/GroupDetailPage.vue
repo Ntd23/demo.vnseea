@@ -1,8 +1,8 @@
 <!-- Description: Renders the backend-backed community group detail page without mock invite feedback. -->
 <template>
-  <div v-if="group" class="mx-auto max-w-[1280px] space-y-5 pb-10">
+  <div v-if="group || status === 'pending'" class="mx-auto max-w-[1280px] space-y-5 pb-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
     <CommunityGroupHeroBanner
-      :group="group"
+      :group="group || ({} as any)"
       :member-count-label="memberCountLabel"
       :online-count-label="onlineCountLabel"
       :privacy-label="privacyLabel"
@@ -21,15 +21,19 @@
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.24fr)_320px]">
       <section class="min-w-0 space-y-4">
-        <template v-if="activeTab === 'posts'">
+        <!-- Tab: Posts (Instant) -->
+        <div v-show="activeTab === 'posts'">
           <CommunityGroupFeedSection
+            v-if="group"
             :group="group"
             :posts="groupPosts"
           />
-        </template>
+        </div>
 
-        <template v-else>
+        <!-- Tab: About (Instant) -->
+        <div v-show="activeTab === 'about'">
           <CommunityGroupAboutCard
+            v-if="group"
             :group="group"
             :privacy-label="privacyLabel"
             :privacy-description="privacyDescription"
@@ -38,15 +42,17 @@
           />
 
           <CommunityGroupTopicsCard
+            v-if="group"
             :group="group"
             :category-label="categoryLabel"
             :privacy-description="privacyDescription"
           />
-        </template>
+        </div>
       </section>
 
       <aside class="space-y-4">
         <CommunityGroupAboutCard
+          v-if="group"
           :group="group"
           :privacy-label="privacyLabel"
           :privacy-description="privacyDescription"
@@ -63,7 +69,7 @@
         />
 
         <CommunityGroupAdminCard
-          v-if="group.canManage"
+          v-if="group && group.canManage"
           :slug="group.slug"
         />
       </aside>
@@ -80,7 +86,7 @@
 
       <div class="mt-6 flex justify-center">
         <UButton
-          to="/groups"
+          :to="emptyBackPath"
           color="primary"
           variant="solid"
           size="xl"
@@ -102,34 +108,14 @@ import CommunityGroupHeroBanner from "../components/GroupHeroBanner.vue"
 import CommunityGroupMembersCard from "../components/GroupMembersCard.vue"
 import CommunityGroupTabsBar from "../components/GroupTabsBar.vue"
 import CommunityGroupTopicsCard from "../components/GroupTopicsCard.vue"
-import { useCommunityGroupDetail } from "../../application/composables/useCommunityGroupDetail"
-import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
+import { useCommunityGroupDetailPageVM } from "../../application/view-models/useCommunityGroupDetailPageVM"
 
-type CommunityDetailTab = "posts" | "about"
-type CommunityActionState = "idle" | "loading" | "success" | "error"
-
-function readQueryValue(value: unknown) {
-  if (Array.isArray(value)) return String(value[0] || "")
-  return typeof value === "string" ? value : ""
-}
-
-function normalizeDetailTab(value: string): CommunityDetailTab {
-  return value === "about" ? "about" : "posts"
-}
-
-const route = useRoute()
-const router = useRouter()
 const { t } = useI18n()
-const toast = useToast()
-const translateText = useMaybeTranslatedText()
-const repository = createApiCommunityRepository()
-
-const activeTab = ref<CommunityDetailTab>(normalizeDetailTab(readQueryValue(route.query.tab)))
-const joinState = ref<CommunityActionState>("idle")
-const inviteState = ref<CommunityActionState>("idle")
-const joined = ref(false)
-
 const {
+  activeTab,
+  joinState,
+  inviteState,
+  joined,
   group,
   members,
   privacyLabel,
@@ -138,102 +124,8 @@ const {
   memberCountLabel,
   onlineCountLabel,
   groupPosts,
-  refresh,
-} = useCommunityGroupDetail(computed(() => String(route.params.name || "")))
-
-const localizedGroupName = computed(() =>
-  group.value ? translateText(group.value.name) : t("pages.groupDetailPage.seoFallbackTitle"),
-)
-
-watch(() => route.query.tab, (value) => {
-  const normalizedTab = normalizeDetailTab(readQueryValue(value))
-  if (normalizedTab !== activeTab.value) {
-    activeTab.value = normalizedTab
-  }
-})
-
-watch(activeTab, (value) => {
-  const currentTab = readQueryValue(route.query.tab)
-  const nextTab = value === "posts" ? "" : value
-
-  if (currentTab === nextTab) return
-
-  const nextQuery = { ...route.query }
-
-  if (value === "posts") {
-    delete nextQuery.tab
-  }
-  else {
-    nextQuery.tab = value
-  }
-
-  router.replace({ query: nextQuery })
-})
-
-watch(() => route.params.name, () => {
-  activeTab.value = normalizeDetailTab(readQueryValue(route.query.tab))
-  joinState.value = "idle"
-  inviteState.value = "idle"
-  joined.value = Boolean(group.value?.joined)
-})
-
-watch(group, (value) => {
-  joined.value = Boolean(value?.joined)
-}, { immediate: true })
-
-async function handleJoinGroup() {
-  if (!group.value || joinState.value === "loading" || joined.value) return
-
-  joinState.value = "loading"
-
-  try {
-    const updatedGroup = await repository.joinGroup(group.value.slug)
-    await refresh()
-
-    joinState.value = "success"
-    joined.value = Boolean(updatedGroup.joined)
-
-    toast.add({
-      title: t("pages.groupDetailPage.joinSuccessTitle"),
-      description: t("pages.groupDetailPage.joinSuccessDescription", {
-        group: localizedGroupName.value,
-      }),
-      color: "success",
-    })
-  }
-  catch {
-    joinState.value = "error"
-
-    toast.add({
-      title: t("pages.groupDetailPage.joinErrorTitle"),
-      description: t("pages.groupDetailPage.joinErrorDescription"),
-      color: "error",
-    })
-  }
-}
-
-async function handleInviteMembers() {
-  if (!group.value || inviteState.value === "loading") return
-
-  inviteState.value = "loading"
-
-  try {
-    await navigateTo({
-      path: "/messages",
-      query: {
-        tab: "multi",
-      },
-    })
-    inviteState.value = "success"
-  }
-  catch {
-    inviteState.value = "error"
-
-    toast.add({
-      title: t("pages.groupDetailPage.inviteErrorTitle"),
-      description: t("pages.groupDetailPage.inviteErrorDescription"),
-      color: "error",
-    })
-  }
-}
+  handleJoinGroup,
+  handleInviteMembers,
+  emptyBackPath,
+} = useCommunityGroupDetailPageVM()
 </script>

@@ -379,6 +379,7 @@ const systemActions = computed(() => {
 }
 
 .user-menu__item-label {
+  font-size: 16px;
   min-width: 0;
 }
 

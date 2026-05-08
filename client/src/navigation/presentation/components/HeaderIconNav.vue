@@ -9,7 +9,6 @@
       :aria-label="$t(item.label)"
     >
       <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="icon-nav__icon" />
-      <span class="icon-nav__label">{{ $t(item.label) }}</span>
       <span
         v-if="item.logoBadge"
         class="icon-nav__logo-badge"
