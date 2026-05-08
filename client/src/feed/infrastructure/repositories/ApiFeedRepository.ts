@@ -132,6 +132,32 @@ export function createApiFeedRepository(): FeedRepository {
       )
     },
     async createPost(input) {
+      if (input.imageFile || input.videoFile || input.feeling) {
+        const formData = new FormData()
+        formData.append("text", input.text)
+
+        if (input.audience) {
+          formData.append("audience", input.audience)
+        }
+
+        if (input.feeling) {
+          formData.append("feeling", input.feeling)
+        }
+
+        if (input.imageFile) {
+          formData.append("postPhotos[]", input.imageFile, input.imageFile.name)
+        }
+
+        if (input.videoFile) {
+          formData.append("postVideo", input.videoFile, input.videoFile.name)
+        }
+
+        return await client.post<FeedCreatePostResponse, FormData>(
+          apiRoutes.feed.posts.create,
+          formData,
+        )
+      }
+
       return await client.post<FeedCreatePostResponse, Record<string, unknown>>(
         apiRoutes.feed.posts.create,
         input,

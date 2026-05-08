@@ -132,14 +132,6 @@
         accept="image/gif"
         @change="selectGifFile"
       >
-      <input
-        ref="audioInputRef"
-        class="comment-composer__file"
-        type="file"
-        accept="audio/*,audio/webm,audio/mp3,audio/wav"
-        capture
-        @change="selectAudioFile"
-      >
     </div>
   </form>
 </template>
@@ -160,6 +152,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   submit: [payload: FeedCommentSubmitPayload]
 }>()
+const toast = useToast()
 
 const emojiOptions = ["😀", "😄", "😍", "😂", "😮", "😢", "😡", "👍", "❤️"]
 const recorderMimeTypes = [
@@ -173,7 +166,6 @@ const message = ref("")
 const emojiOpen = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
 const gifInputRef = ref<HTMLInputElement | null>(null)
-const audioInputRef = ref<HTMLInputElement | null>(null)
 const textareaRef = ref()
 const imageFile = ref<File | undefined>()
 const gifFile = ref<File | undefined>()
@@ -188,6 +180,17 @@ const trimmedMessage = computed(() => message.value.trim())
 const canSubmit = computed(() =>
   Boolean(trimmedMessage.value || imageFile.value || gifFile.value || audioFile.value),
 )
+const canRecordAudio = computed(() => {
+  if (!import.meta.client) {
+    return false
+  }
+
+  return Boolean(
+    navigator.mediaDevices?.getUserMedia
+    && typeof MediaRecorder !== "undefined",
+  )
+})
+
 const currentUserInitials = computed(() => {
   const value = props.currentUserName
     .split(/\s+/)
@@ -208,7 +211,6 @@ function revokeAttachmentUrl() {
 function resetFileInputs() {
   if (imageInputRef.value) imageInputRef.value.value = ""
   if (gifInputRef.value) gifInputRef.value.value = ""
-  if (audioInputRef.value) audioInputRef.value.value = ""
 }
 
 function resetComposerState() {
@@ -226,10 +228,6 @@ function openImagePicker() {
 
 function openGifPicker() {
   gifInputRef.value?.click()
-}
-
-function openAudioPicker() {
-  audioInputRef.value?.click()
 }
 
 function selectImageFile(event: Event) {
@@ -250,16 +248,6 @@ function selectGifFile(event: Event) {
   }
 
   setAttachment(file, "gif")
-}
-
-function selectAudioFile(event: Event) {
-  const file = (event.target as HTMLInputElement).files?.[0]
-
-  if (!file) {
-    return
-  }
-
-  setAudioAttachment(file)
 }
 
 function setAttachment(file: File, type: FeedCommentAttachment["type"]) {
@@ -350,8 +338,14 @@ async function toggleRecording() {
   }
 
   try {
-    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
-      throw new Error("Recorder is unavailable")
+    if (!canRecordAudio.value) {
+      toast.add({
+        color: "warning",
+        icon: "i-ph-warning-circle-fill",
+        title: t("feed.commentComposer.tooltipVoice"),
+        description: "Microphone recording is not available in this browser context.",
+      })
+      return
     }
 
     resetComposerState()
@@ -383,7 +377,6 @@ async function toggleRecording() {
   catch {
     recording.value = false
     stopMediaStream()
-    openAudioPicker()
   }
 }
 

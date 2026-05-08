@@ -53,6 +53,9 @@ export interface FeedRepository {
   createPost(input: {
     text: string
     audience?: string
+    imageFile?: File
+    videoFile?: File
+    feeling?: string
   }): Promise<FeedCreatePostResponse>
   createStory(input: {
     file: File
