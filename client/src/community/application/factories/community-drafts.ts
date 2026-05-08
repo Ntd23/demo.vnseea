@@ -59,6 +59,8 @@ export function createCommunityPageSettingsDraft(
     showLikeCount: true,
     showWebsite: true,
     recommendRelatedPages: true,
+    avatarUrl: page?.avatarUrl,
+    bannerUrl: page?.banner,
   }
 }
 

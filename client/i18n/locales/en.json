@@ -6039,7 +6039,17 @@
         "statusErrorDescription": "Check the name, URL, description, and category before saving."
       },
       "sidebar": {
-        "preview": "Preview after saving",
+        "preview": {
+          "eyebrow": "Preview",
+          "title": "Preview after saving",
+          "desc": "This is what members will see when they visit your group."
+        },
+        "media": {
+          "eyebrow": "Image recognition",
+          "title": "Avatar Photo & Cover Photo",
+          "desc": "Upload high-quality images to make your site stand out.",
+          "navDesc": "Cover photo & profile"
+        },
         "signals": "Signals on",
         "followers": "Followers",
         "likes": "Likes",

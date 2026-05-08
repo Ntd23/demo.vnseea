@@ -1,82 +1,39 @@
-<!-- Description: Renders the legacy-style page directory tab row with only tab navigation and the create-page action. -->
 <template>
   <section class="page-tabs-bar">
-    <div class="page-tabs-bar__row">
-      <div class="page-tabs-bar__tabs" role="tablist" :aria-label="$t('community.pagesDirectory.title')">
-        <NuxtLink
-          v-for="tab in tabs"
-          :key="tab.value"
-          :to="tab.to"
-          class="page-tabs-bar__tab"
-          :class="{ 'page-tabs-bar__tab--active': activeTab === tab.value }"
-          :aria-current="activeTab === tab.value ? 'page' : undefined"
-        >
-          <span>{{ $t(tab.label) }}</span>
-          <span class="page-tabs-bar__count">
-            {{ tab.count }}
-          </span>
-        </NuxtLink>
-      </div>
-    </div>
-
-    <div class="page-tabs-bar__footer">
-      <div class="page-tabs-bar__left">
-        <p v-if="statusLabel" class="page-tabs-bar__status">
-          {{ statusLabel }}
-        </p>
-        <div class="page-tabs-bar__search">
-          <div class="page-tabs-bar__input">
-            <UInput
-              v-model="search"
-              :placeholder="$t('community.pagesDirectory.search')"
-              leading-icon="i-ph-magnifying-glass-bold"
-              color="primary"
-              size="lg"
-              class="w-full"
-              :ui="searchInputUi"
-            />
-          </div>
-
-          <UButton
-            v-if="search.trim()"
-            type="button"
-            color="neutral"
-            variant="outline"
-            size="md"
-            class="rounded-full w-40"
-            @click="search = ''"
-          >
-            {{ $t("community.pagesDirectory.clearSearch") }}
-          </UButton>
-        </div>
-      </div>
-
+    <div class="page-tabs-bar__tabs" role="tablist" :aria-label="$t('community.pagesDirectory.title')">
       <NuxtLink
-        to="/create-page"
-        class="page-tabs-bar__create-btn"
+        v-for="tab in tabs"
+        :key="tab.value"
+        :to="tab.to"
+        class="page-tabs-bar__tab"
+        :class="{ 'page-tabs-bar__tab--active': activeTab === tab.value }"
+        :aria-current="activeTab === tab.value ? 'page' : undefined"
       >
-        <Icon name="i-ph-plus-bold" class="page-tabs-bar__create-icon" />
-        <span>{{ $t("community.pagesDirectory.createAction") }}</span>
+        <span>{{ $t(tab.label) }}</span>
+        <span v-if="tab.count > 0" class="page-tabs-bar__count">
+          {{ tab.count }}
+        </span>
       </NuxtLink>
     </div>
+
+    <NuxtLink
+      :to="createTo"
+      class="page-tabs-bar__create"
+    >
+      <Icon name="i-ph-plus-bold" class="h-4 w-4" />
+      <span>{{ $t("community.pagesDirectory.createAction") }}</span>
+    </NuxtLink>
   </section>
 </template>
 
 <script setup lang="ts">
 import type { CommunityPageTab } from "../../domain/types/community.types"
 
-const search = defineModel<string>("search", { default: "" })
-
 defineProps<{
   tabs: Array<{ label: string; value: CommunityPageTab; count: number; to: string }>
   activeTab: CommunityPageTab
-  statusLabel: string
   createTo: string
 }>()
-
-const searchInputUi = {
-  base: "h-11 rounded-full px-4 text-[14px]",
-}
 </script>
 
 <style scoped>
@@ -91,155 +48,61 @@ const searchInputUi = {
   box-shadow: var(--shadow-sm);
 }
 
-.page-tabs-bar__row {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
 .page-tabs-bar__tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px 10px;
 }
 
 .page-tabs-bar__tab {
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  min-height: 40px;
-  border-radius: 12px;
-  padding: 8px 16px;
-  background: #f8fafc;
-  color: #64748b;
-  font-size: 14px;
+  min-height: 36px;
+  border-radius: var(--radius-full);
+  padding: 8px 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
   font-weight: 700;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
 .page-tabs-bar__tab:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  color: var(--text-brand);
+  background: var(--bg-surface-hover);
 }
 
 .page-tabs-bar__tab--active {
-  background: #eff6ff;
-  color: #2563eb;
+  color: var(--text-brand);
+  background: var(--bg-surface-active);
 }
 
 .page-tabs-bar__count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  height: 20px;
+  min-width: 20px;
+  height: 18px;
   margin-left: 8px;
   border-radius: 999px;
   padding: 0 6px;
-  background: #e2e8f0;
-  color: #475569;
-  font-size: 11px;
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+  font-size: 10px;
   font-weight: 800;
-  transition: all 0.2s ease;
 }
 
 .page-tabs-bar__tab--active .page-tabs-bar__count {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-.page-tabs-bar__tab:hover:not(.page-tabs-bar__tab--active) .page-tabs-bar__count {
-  background: #cbd5e1;
-  color: #1e293b;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
 }
 
 .page-tabs-bar__create {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-size: 11px;
-  font-weight: 900;
-}
-
-.page-tabs-bar__tab:not(.page-tabs-bar__tab--active) .page-tabs-bar__count {
-  background: #f1f5f9;
-  color: #64748b;
-}
-
-.page-tabs-bar__search {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.page-tabs-bar__input {
-  width: 100%;
-}
-
-.page-tabs-bar__footer {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 16px;
-  border-top: 1px solid #f1f5f9;
-  padding-top: 20px;
-}
-
-.page-tabs-bar__left {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.page-tabs-bar__status {
-  margin: 0;
-  color: #64748b;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.page-tabs-bar__create-btn {
-  display: inline-flex;
-  height: 44px;
-  align-items: center;
-  justify-content: center;
   gap: 8px;
-  border-radius: 14px;
-  background: #1d4ed8;
-  padding: 0 20px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
-}
-
-.page-tabs-bar__create-btn:hover {
-  transform: translateY(-2px);
-  background: #2563eb;
-  box-shadow: 0 8px 20px rgba(29, 78, 216, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.page-tabs-bar__create-btn:active {
-  transform: translateY(0);
-  filter: brightness(0.95);
-}
-
-.page-tabs-bar__create-icon {
-  width: 16px;
-  height: 16px;
-}
-
-.page-tabs-bar__label {
-  display: inline-flex;
-  align-items: center;
+  min-height: 38px;
   align-self: flex-start;
   border-radius: 12px;
   background: var(--bg-brand);
@@ -257,29 +120,15 @@ const searchInputUi = {
   background: var(--bg-brand-hover);
 }
 
-@media (min-width: 1024px) {
-  .page-tabs-bar__row {
+@media (min-width: 768px) {
+  .page-tabs-bar {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
   }
 
-  .page-tabs-bar__footer {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 40px;
-  }
-
-  .page-tabs-bar__search {
-    flex-direction: row;
-    align-items: center;
-    flex: 1;
-    max-width: 600px;
-  }
-
-  .page-tabs-bar__create-btn {
-    align-self: center;
+  .page-tabs-bar__create {
+    align-self: auto;
   }
 }
 </style>

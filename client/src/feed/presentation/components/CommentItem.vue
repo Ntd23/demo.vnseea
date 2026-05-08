@@ -29,7 +29,7 @@
             {{ author }}
           </NuxtLink>
           <p v-else class="comment-item__author">{{ author }}</p>
-          <span v-if="role && role !== author" class="comment-item__role">{{ role }}</span>
+          <span v-if="visibleRole" class="comment-item__role">{{ visibleRole }}</span>
         </div>
         <p v-if="text" class="comment-item__text">{{ text }}</p>
         <NuxtImg
