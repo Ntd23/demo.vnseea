@@ -144,6 +144,20 @@ const normalizePageCategory = (value: unknown): CommunityPageRecord["category"] 
   return "local-business"
 }
 
+const mapCtaIdToLabel = (id: unknown): string => {
+  const sid = String(id || "0")
+  switch (sid) {
+    case "1": return "Theo dõi"
+    case "2": return "Xem sản phẩm"
+    case "3": return "Xem ngay"
+    case "4": return "Gửi tin nhắn" // Note: can be 11 too
+    case "5": return "Đặt lịch"
+    case "11": return "Nhắn tin"
+    case "12": return "Gọi ngay"
+    default: return ""
+  }
+}
+
 const createAccent = (id: number) =>
   accentPalette[Math.abs(id) % accentPalette.length]
 
@@ -242,11 +256,11 @@ export const mapCommunityPageRecord = (
     followers: firstNumber(entity, ["followers", "followers_count"]),
     likes: firstNumber(entity, ["likes", "likes_count"]),
     ownerLabel: firstString(entity, ["category_name", "company"]),
-    responseLabel: firstString(entity, ["call_action_type_text", "phone", "website"]),
+    responseLabel: firstString(entity, ["call_action_type_url", "call_action_type_text", "phone", "website"]),
     website: normalizeUrl(firstString(entity, ["website"])),
     locationLabel: firstString(entity, ["address", "location"]),
     foundedLabel: firstString(entity, ["registered", "time_text"]),
-    ctaLabel: firstString(entity, ["call_action_type_text"]),
+    ctaLabel: firstString(entity, ["call_action_type_text"]) || mapCtaIdToLabel(entity.call_action_type),
     canManage: isTruthy(entity.is_owner) || (ownerId > 0 && ownerId === options.currentUserId),
     tags: toUniqueList([
       firstString(entity, ["category_name"]),

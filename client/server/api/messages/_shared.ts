@@ -5,6 +5,7 @@ import { createError, getQuery, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import type {
   MessageContact,
   MessageItem,
@@ -140,6 +141,7 @@ const buildPageStatus = (entity: BackendEntity) =>
 const mapMessageContact = (
   entity: BackendEntity,
   currentUserId: number,
+  resolveMediaUrl: (value: unknown) => string,
 ): MessageContact | null => {
   const type = asString(entity.chat_type) as MessageThreadType
   const lastMessage = asRecord(entity.last_message)
@@ -156,7 +158,7 @@ const mapMessageContact = (
       name: firstString(entity, ["name", "username"]) || `User ${userId}`,
       status: buildUserStatus(entity),
       isOnline: asNumber(entity.lastseen) > (Math.floor(Date.now() / 1000) - 60),
-      avatarUrl: firstString(entity, ["avatar", "avatar_full"]),
+      avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "user",
       preview: buildContactPreview(lastMessage),
       time: firstString(lastMessage, ["time_text"]),
@@ -181,7 +183,7 @@ const mapMessageContact = (
       name: firstString(entity, ["group_name", "name"]) || `Group ${groupId}`,
       status: buildGroupStatus(entity),
       isOnline: false,
-      avatarUrl: firstString(entity, ["avatar", "avatar_full"]),
+      avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "group",
       preview: buildContactPreview(lastMessage),
       time: firstString(lastMessage, ["time_text"]),
@@ -206,7 +208,7 @@ const mapMessageContact = (
       name: firstString(entity, ["page_title", "name", "page_name"]) || `Page ${pageId}`,
       status: buildPageStatus(entity),
       isOnline: false,
-      avatarUrl: firstString(entity, ["avatar", "avatar_full"]),
+      avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "user",
       preview: buildContactPreview(lastMessage),
       time: firstString(lastMessage, ["time_text"]),
@@ -226,6 +228,7 @@ const mapMessageContact = (
 const mapThreadMessage = (
   entity: BackendEntity,
   currentUserId: number,
+  resolveMediaUrl: (value: unknown) => string,
   fallbackAvatar = "",
 ): MessageItem => {
   const timestamp = asNumber(entity.time)
@@ -237,9 +240,9 @@ const mapThreadMessage = (
     text: decryptMessageText(entity.text, timestamp),
     isMine: asNumber(entity.from_id) === currentUserId || asString(entity.position).startsWith("right"),
     time: firstString(entity, ["time_text"]),
-    avatar: firstString(userData, ["avatar", "avatar_full"])
+    avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
       || firstString(messageUser, ["avatar", "avatar_full"])
-      || fallbackAvatar,
+      || fallbackAvatar),
     timestamp,
   }
 }
@@ -259,6 +262,7 @@ export const decorateThreadMessages = (messages: MessageItem[]) =>
 export async function fetchInboxContacts(event: H3Event) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const response = assertBackendApiSuccess(
     await client.post<BackendInboxResponse, Record<string, unknown>>(
       "get_chats",
@@ -273,7 +277,7 @@ export async function fetchInboxContacts(event: H3Event) {
   )
 
   return (response.data ?? [])
-    .map(entity => mapMessageContact(entity, asNumber(currentUser.user_id)))
+    .map(entity => mapMessageContact(entity, asNumber(currentUser.user_id), resolveMediaUrl))
     .filter(Boolean) as MessageContact[]
 }
 
@@ -305,6 +309,7 @@ export async function fetchMessageThread(
   const currentUser = await getBackendCurrentUser(event)
   const currentUserId = asNumber(currentUser.user_id)
   const client = createBackendApiClient(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
 
   if (input.type === "user") {
     if (!input.userId) {
@@ -329,7 +334,7 @@ export async function fetchMessageThread(
     return {
       messages: decorateThreadMessages(
         (response.messages ?? []).map(message =>
-          mapThreadMessage(message, currentUserId),
+          mapThreadMessage(message, currentUserId, resolveMediaUrl),
         ),
       ),
       typing: isTruthy(response.typing),
@@ -360,7 +365,7 @@ export async function fetchMessageThread(
     return {
       messages: decorateThreadMessages(
         (response.data ?? []).map(message =>
-          mapThreadMessage(message, currentUserId),
+          mapThreadMessage(message, currentUserId, resolveMediaUrl),
         ),
       ),
       typing: false,
@@ -391,7 +396,7 @@ export async function fetchMessageThread(
   return {
     messages: decorateThreadMessages(
       (response.data ?? []).map(message =>
-        mapThreadMessage(message, currentUserId),
+        mapThreadMessage(message, currentUserId, resolveMediaUrl),
       ),
     ),
     typing: false,
@@ -405,6 +410,7 @@ export async function sendMessageToThread(
   const client = createBackendApiClient(event)
   const currentUser = await getBackendCurrentUser(event)
   const currentUserId = asNumber(currentUser.user_id)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const messageHash = `${Date.now()}`
 
   if (input.type === "user") {
@@ -429,7 +435,7 @@ export async function sendMessageToThread(
 
     return decorateThreadMessages(
       (response.message_data ?? []).map(message =>
-        mapThreadMessage(message, currentUserId),
+        mapThreadMessage(message, currentUserId, resolveMediaUrl),
       ),
     )
   }
@@ -457,7 +463,7 @@ export async function sendMessageToThread(
 
     return decorateThreadMessages(
       (response.data ?? []).map(message =>
-        mapThreadMessage(message, currentUserId),
+        mapThreadMessage(message, currentUserId, resolveMediaUrl),
       ),
     )
   }
@@ -485,7 +491,7 @@ export async function sendMessageToThread(
 
   return decorateThreadMessages(
     (response.data ?? []).map(message =>
-      mapThreadMessage(message, currentUserId),
+      mapThreadMessage(message, currentUserId, resolveMediaUrl),
     ),
   )
 }

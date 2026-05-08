@@ -50,6 +50,11 @@ export type FeedPostActionResult = {
   reply?: FeedCommentRecord
 }
 
+export type FeedPostReactionSummary = {
+  reaction: FeedStoryReactionType
+  count: number
+}
+
 export type FeedPostRecord = {
   id: number
   author: string
@@ -73,6 +78,9 @@ export type FeedPostRecord = {
   sourceLabel: string
   sourcePath: string
   isSaved: boolean
+  isLiked: boolean
+  reaction: FeedStoryReactionType | null
+  reactions: FeedPostReactionSummary[]
 }
 
 export type FeedPostsResponse = {

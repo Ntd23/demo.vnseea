@@ -8,8 +8,11 @@ import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { mapCommunityPageRecord } from "../community/_shared"
 import {
+  feedStoryReactionByBackendId,
   feedStoryReactionBackendIds,
+  feedStoryReactionDefinitions,
   isFeedStoryReaction,
+  type FeedStoryReactionType,
 } from "../../../src/feed/domain/constants/story-reactions"
 import type {
   FeedAnnouncement,
@@ -194,6 +197,44 @@ const firstNumber = (entity: BackendEntity, keys: string[]) => {
   }
 
   return 0
+}
+
+const normalizeReactionType = (value: unknown): FeedStoryReactionType | null => {
+  const rawValue = asString(value)
+
+  if (!rawValue) {
+    return null
+  }
+
+  if (isFeedStoryReaction(rawValue)) {
+    return rawValue
+  }
+
+  const titleValue = `${rawValue.charAt(0).toUpperCase()}${rawValue.slice(1).toLowerCase()}`
+
+  if (isFeedStoryReaction(titleValue)) {
+    return titleValue
+  }
+
+  return feedStoryReactionByBackendId[rawValue] ?? null
+}
+
+const getPostReaction = (entity: BackendEntity) => {
+  const reaction = asRecord(entity.reaction)
+  const reactionType = normalizeReactionType(firstString(reaction, ["type", "reaction"]))
+  const reactions = feedStoryReactionDefinitions
+    .map(({ value, backendId }) => ({
+      reaction: value,
+      count: asNumber(reaction[value]) || asNumber(reaction[value.toLowerCase()]) || asNumber(reaction[String(backendId)]),
+    }))
+    .filter(item => item.count > 0)
+
+  return {
+    isLiked: isTruthy(entity.is_liked) || isTruthy(reaction.is_reacted),
+    reaction: reactionType,
+    count: asNumber(reaction.count),
+    reactions,
+  }
 }
 
 const hasUnseenStoryState = (story: BackendEntity, owner: BackendEntity) => {
@@ -519,7 +560,7 @@ const mapCommentRecord = (
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(publisher, ["avatar", "avatar_full"])),
     authorPath: username ? `/@${username}` : undefined,
-    role: firstString(publisher, ["working", "school", "address"]) || author,
+    role: firstString(publisher, ["working", "school"]) || author,
     text: stripHtml(firstString(entity, ["text", "Orginaltext", "comment"])),
     time: firstString(entity, ["time_text", "posted"]) || formatBackendTimestamp(entity.time),
     attachment,
@@ -565,6 +606,7 @@ export const mapPostRecord = (
     : mediaItems.some(item => item.type === "video")
       ? "video"
       : "image"
+  const postReaction = getPostReaction(entity)
 
   return {
     id: firstNumber(entity, ["post_id", "id"]),
@@ -580,7 +622,7 @@ export const mapPostRecord = (
     text,
     tags: extractTags(entity),
     stats: {
-      likes: firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
+      likes: postReaction.count || firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
       comments: firstNumber(entity, ["post_comments", "comments", "comments_count", "comments_count_total"]),
       shares: firstNumber(entity, ["post_shares", "shares", "shares_count"]),
       views: firstNumber(entity, ["post_views", "view_count", "views"]),
@@ -592,6 +634,9 @@ export const mapPostRecord = (
     sourceLabel: pageSlug ? "page" : groupSlug ? "group" : "feed",
     sourcePath,
     isSaved: isTruthy(entity.is_post_saved) || isTruthy(entity.is_saved),
+    isLiked: postReaction.isLiked,
+    reaction: postReaction.reaction,
+    reactions: postReaction.reactions,
   }
 }
 
@@ -1009,12 +1054,13 @@ export async function fetchFeedPosts(
     pageId?: number
   },
 ) {
+  const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const limit = input.limit ?? 10
   const response = assertBackendApiSuccess(
     await client.post<BackendPostsResponse, Record<string, unknown>>(
-      input.type === "get_random_videos" ? "posts" : "posts",
+      "posts",
       {
         type: input.type,
         limit,
@@ -1022,6 +1068,7 @@ export async function fetchFeedPosts(
         filter: input.followingOnly ? 1 : 0,
         post_type: input.postType,
         hash: input.tag,
+        user_id: currentUser.user_id,
         page_id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
       },
     ),
@@ -1074,57 +1121,29 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
 }
 
 export async function fetchExplore(event: H3Event): Promise<FeedExploreResponse> {
-  const currentUser = await getBackendCurrentUser(event)
-  const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
-  const limit = resolveLimit(event, 6, 12)
+  const limit = resolveLimit(event, 15, 20)
 
-  const [
-    usersResponse,
-    pagesResponse,
-    postsResponse,
-    generalResponse,
-  ] = await Promise.all([
-    client.post<BackendRecommendedResponse, Record<string, unknown>>(
-      "fetch-recommended",
-      {
-        type: "users",
-        limit,
-      },
-    ),
-    client.post<BackendRecommendedResponse, Record<string, unknown>>(
-      "fetch-recommended",
-      {
-        type: "pages",
-        limit,
-      },
-    ),
-    client.post<BackendPostsResponse, Record<string, unknown>>(
-      "posts",
-      {
-        type: "get_news_feed",
-        limit,
-      },
-    ),
-    client.post<BackendGeneralDataResponse, Record<string, unknown>>(
-      "get-general-data",
-      {
-        fetch: "trending_hashtag,announcement",
-      },
-    ),
-  ])
+  // Use the established helper that is working for Hashtag/Home
+  const postsResponse = await fetchFeedPosts(event, {
+    type: "get_news_feed",
+    limit,
+  })
 
-  const users = assertBackendApiSuccess(usersResponse, "Unable to load recommended users.")
-  const pages = assertBackendApiSuccess(pagesResponse, "Unable to load recommended pages.")
-  const posts = assertBackendApiSuccess(postsResponse, "Unable to load explore posts.")
+  const client = createBackendApiClient(event)
+  const generalResponse = await client.post<BackendGeneralDataResponse, Record<string, unknown>>(
+    "get-general-data",
+    {
+      fetch: "trending_hashtag,announcement",
+    },
+  )
+
   const general = assertBackendApiSuccess(generalResponse, "Unable to load explore metadata.")
 
   return {
-    posts: (posts.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)),
-    users: (users.data ?? []).map(user => mapExploreUser(user, resolveMediaUrl)),
-    pages: (pages.data ?? []).map(page =>
-      mapCommunityPageRecord(page, { currentUserId: asNumber(currentUser.user_id) }),
-    ),
+    posts: postsResponse.posts,
+    users: [],
+    pages: [],
     hashtags: extractTrendingHashtags(general.trending_hashtag),
     announcement: mapAnnouncement(general.announcement),
   }

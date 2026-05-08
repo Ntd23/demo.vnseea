@@ -1,6 +1,6 @@
 <!-- Description: Renders the group settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP group settings structure. -->
 <template>
-  <div v-if="group && previewGroup" class="mx-auto max-w-[1280px] space-y-5 pb-10">
+  <div v-if="(group && previewGroup) || status === 'pending'" class="mx-auto max-w-[1280px] space-y-5 pb-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
     <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-6">
       <div class="space-y-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
@@ -135,7 +135,7 @@
     </div>
   </div>
 
-  <div v-else class="mx-auto max-w-[960px] pb-10 pt-4">
+  <div v-else-if="status !== 'pending'" class="mx-auto max-w-[960px] pb-10 pt-4">
     <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-gear-six-fill"

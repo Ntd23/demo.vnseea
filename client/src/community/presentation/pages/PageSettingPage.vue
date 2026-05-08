@@ -59,8 +59,16 @@
             <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath" />
           </section>
 
-          <section v-if="activeTab === 'controls'" id="controls">
-            <CommunityPageSettingsControlsCard v-model="draft" />
+          <section v-if="activeTab === 'basics'" id="basics">
+            <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath">
+              <template #trailing>
+                <button type="submit" :disabled="isSaveDisabled"
+                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]">
+                  <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                  {{ $t("community.pageSettings.finish.save") }}
+                </button>
+              </template>
+            </CommunityPageSettingsBasicsCard>
           </section>
 
           <section v-if="activeTab === 'preview'" id="preview">
@@ -113,6 +121,42 @@
                       <span>{{ likePreview }}</span>
                     </div>
                   </div>
+
+                  <!-- Upload Avatar -->
+                  <input ref="avatarInput" type="file" accept="image/*" class="hidden-input"
+                    @change="e => onFileChange(e, 'avatarUrl')">
+
+                  <button type="button" class="avatar-upload-btn" @click="avatarInput?.click()">
+                    <Icon name="i-ph-camera-bold" class="avatar-upload-btn__icon" />
+                  </button>
+                </div>
+              </div>
+
+              <!-- Spacer for overlapping avatar -->
+              <div class="h-20 sm:h-28"></div>
+            </CommunitySettingsSectionCard>
+          </section>
+
+          <section v-if="activeTab === 'controls'" id="controls">
+            <CommunityPageSettingsControlsCard v-model="draft">
+              <template #trailing>
+                <button type="submit" :disabled="isSaveDisabled"
+                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]">
+                  <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                  {{ $t("community.pageSettings.finish.save") }}
+                </button>
+              </template>
+            </CommunityPageSettingsControlsCard>
+          </section>
+
+          <section v-if="activeTab === 'admins'" id="admins">
+            <CommunitySettingsSectionCard eyebrow="CÀI ĐẶT QUẢN TRỊ" title="Quản trị viên"
+              description="Thêm hoặc xóa các quản trị viên cho trang của bạn để cùng quản lý nội dung và cài đặt."
+              icon="i-ph-shield-checkered-bold">
+              <div class="flex flex-col gap-4 py-4">
+                <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center">
+                  <Icon name="i-ph-users-three-duotone" class="mx-auto h-12 w-12 text-slate-300" />
+                  <p class="mt-2 text-sm font-medium text-slate-500">Chức năng quản trị viên đang được cập nhật</p>
                 </div>
               </div>
             </CommunitySettingsSectionCard>
@@ -131,6 +175,9 @@
                     v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: (selectedCtaLabel || '').toLowerCase() })"
                   />
                 </div>
+              </div>
+            </CommunitySettingsSectionCard>
+          </section>
 
                 <div
                   v-if="statusAlert"
@@ -413,6 +460,10 @@ const { t } = useI18n()
 
 .page-settings__nav-step-item--active .page-settings__nav-step-label {
   color: #0f172a;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: #2563eb;
 }
 
 .page-settings__nav-step-item:hover .page-settings__nav-step-circle:not(.page-settings__nav-step-circle--active) {
@@ -534,5 +585,189 @@ const { t } = useI18n()
 .page-settings-sidebar :deep(progress),
 .page-settings-sidebar :deep([role="progressbar"]) {
   background-color: #dbeafe;
+}
+
+.page-preview {
+  position: relative;
+  margin-top: 16px;
+}
+
+/* =========================
+   Banner
+========================= */
+
+.page-preview__banner {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  overflow: hidden;
+  border-radius: 24px;
+  background-color: #f1f5f9;
+  background-size: cover;
+  background-position: center;
+}
+
+.page-preview__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+      rgba(0, 0, 0, 0.3),
+      transparent);
+}
+
+/* =========================
+   Banner Upload
+========================= */
+
+.page-preview__banner-upload {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2;
+}
+
+/* =========================
+   Avatar
+========================= */
+
+.page-preview__avatar-wrapper {
+  position: absolute;
+  left: 48px;
+  bottom: -80px;
+  z-index: 10;
+}
+
+.page-preview__avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 176px;
+  height: 176px;
+
+  overflow: hidden;
+
+  border: 8px solid #ffffff;
+  border-radius: 999px;
+
+  background: #3b82f6;
+
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 900;
+}
+
+.page-preview__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.upload-btn,
+.avatar-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.upload-btn:hover,
+.avatar-upload-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Banner button */
+
+.upload-btn {
+  width: 48px;
+  height: 48px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
+}
+
+/* Avatar button */
+
+.avatar-upload-btn {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+
+  width: 48px;
+  height: 48px;
+
+  border: 1px solid #e2e8f0;
+
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
+}
+
+.upload-btn__icon,
+.avatar-upload-btn__icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* =========================
+   Hidden Input
+========================= */
+
+.hidden-input {
+  display: none;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 640px) {
+  .page-preview__banner {
+    height: 280px;
+    border-radius: 20px;
+  }
+
+  .page-preview__banner-upload {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .page-preview__avatar-wrapper {
+    left: 24px;
+    bottom: -64px;
+  }
+
+  .page-preview__avatar {
+    width: 128px;
+    height: 128px;
+    border-width: 6px;
+    font-size: 30px;
+  }
+
+  .upload-btn,
+  .avatar-upload-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .upload-btn__icon,
+  .avatar-upload-btn__icon {
+    width: 20px;
+    height: 20px;
+  }
 }
 </style>
