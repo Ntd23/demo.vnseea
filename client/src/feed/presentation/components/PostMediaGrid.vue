@@ -1,39 +1,16 @@
 <template>
   <div class="media-grid" :class="items.length > 1 ? 'media-grid--multi' : ''">
-    <template
-      v-for="(item, index) in items"
-      :key="`${item.src}-${index}`"
-    >
-      <button
-        v-if="item.type === 'image'"
-        class="media-grid__item"
-        type="button"
-        :aria-label="t('feed.postMediaGrid.openLabel', { index: index + 1 })"
-        @click="emit('open', index)"
-      >
-        <img
-          :src="item.src"
-          :alt="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
-          class="media-grid__img"
-          loading="lazy"
-        >
+    <template v-for="(item, index) in items" :key="`${item.src}-${index}`">
+      <button v-if="item.type === 'image'" class="media-grid__item" type="button"
+        :aria-label="t('feed.postMediaGrid.openLabel', { index: index + 1 })" @click="emit('open', index)">
+        <img :src="item.src" :alt="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
+          class="media-grid__img" loading="lazy">
       </button>
 
-      <div
-        v-else
-        class="media-grid__item media-grid__item--video"
-      >
-        <video
-          ref="videoRefs"
-          :aria-label="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
-          class="media-grid__img media-grid__video"
-          autoplay
-          controls
-          loop
-          playsinline
-          preload="auto"
-          @loadedmetadata="playVideoWithSound"
-        >
+      <div v-else class="media-grid__item media-grid__item--video">
+        <video ref="videoRefs" :aria-label="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
+          class="media-grid__img media-grid__video" autoplay controls loop playsinline preload="auto"
+          @loadedmetadata="playVideoWithSound">
           <source :src="item.src" :type="item.mime || 'video/mp4'">
         </video>
       </div>
@@ -118,13 +95,14 @@ onMounted(() => {
 
 .media-grid__item--video {
   cursor: default;
+  background: #000000; /* Nền đen cho video */
 }
 
 .media-grid__img {
   width: 100%;
-  height: 100%;
-  min-height: 200px;
-  object-fit: cover;
+  height: auto;
+  max-height: 500px; /* Giới hạn chiều cao cho video/ảnh dài */
+  object-fit: contain; /* Hiện đầy đủ nội dung, không bị cắt */
   display: block;
   transition: transform 0.25s ease;
 }
@@ -141,5 +119,4 @@ onMounted(() => {
 .media-grid__video {
   cursor: default;
 }
-
 </style>
