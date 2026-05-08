@@ -5,6 +5,8 @@ header("Content-type: application/json");
 require('assets/init.php');
 require('api/v2/init.php');
 decryptConfigData();
+$sqlConnect->query("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+
 $wo['loggedin'] = false;
 $response_data  = array();
 $error_code     = 0;
