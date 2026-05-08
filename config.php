@@ -10,8 +10,6 @@
 // +------------------------------------------------------------------------+
 // MySQL Hostname
 $sql_db_host = "127.0.0.1";
-// MySQL Port
-$sql_db_port = 3307;
 // MySQL Database User
 $sql_db_user = "root";
 // MySQL Database Password
@@ -20,7 +18,7 @@ $sql_db_pass = "";
 $sql_db_name = "vnseea";
 
 // Site URL
-$site_url = "https://demo.vnseea.test"; // e.g (http://example.com)
+$site_url = "http://demo.vnseea.test"; // e.g (http://example.com)
 
 $auto_redirect = true;
 
