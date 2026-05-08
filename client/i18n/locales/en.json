@@ -5873,7 +5873,14 @@
           "tags": "Subject Tags",
           "tagsPlaceholder": "ev, charging, review",
           "guidelines": "Guidelines displayed on the group page",
-          "guidelinesPlaceholder": "Each line is a principle. Example: Prioritize posts sharing practical context."
+          "guidelinesPlaceholder": "Each line is a principle. Example: Prioritize posts sharing practical context.",
+          "media": "Group Media",
+          "groupMedia": "Group media",
+          "addBanner": "Add Cover Photo",
+          "addAvatar": "Change Avatar",
+          "minChars": "min characters",
+          "bannerHint": "Recommended: 1500x500px",
+          "changePhoto": "Change Photo"
         },
         "stats": {
           "descLength": "Description length",

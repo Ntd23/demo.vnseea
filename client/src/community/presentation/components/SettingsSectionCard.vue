@@ -50,7 +50,7 @@ withDefaults(defineProps<{
 <style scoped>
 .settings-section-card {
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 32px;
   background: #ffffff;
   padding: 20px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -75,7 +75,7 @@ withDefaults(defineProps<{
   flex: 0 0 44px;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
+  border-radius: 16px;
   background: #f1f5f9;
   color: #64748b;
 }

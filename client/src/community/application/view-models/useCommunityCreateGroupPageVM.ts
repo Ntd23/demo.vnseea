@@ -36,9 +36,9 @@ export function useCommunityCreateGroupPageVM(
 
   const isSubmitDisabled = computed(() =>
     submitState.value === "loading"
-    || !draft.value.name.trim()
-    || !draft.value.slug.trim()
-    || draft.value.description.trim().length < 24
+    || !(draft.value.name || "").trim()
+    || !(draft.value.slug || "").trim()
+    || (draft.value.description || "").trim().length < 24
     || !draft.value.privacy
     || !draft.value.category,
   )

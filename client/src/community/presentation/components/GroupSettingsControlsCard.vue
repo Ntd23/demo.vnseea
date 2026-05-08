@@ -94,25 +94,5 @@ const toggleItems = computed(() => [
     label: t("community.settings.controls.toggles.join.label"),
     description: t("community.settings.controls.toggles.join.desc"),
   },
-  {
-    key: "postApproval" as const,
-    label: t("community.settings.controls.toggles.post.label"),
-    description: t("community.settings.controls.toggles.post.desc"),
-  },
-  {
-    key: "allowMemberInvites" as const,
-    label: t("community.settings.controls.toggles.invite.label"),
-    description: t("community.settings.controls.toggles.invite.desc"),
-  },
-  {
-    key: "showMemberDirectory" as const,
-    label: t("community.settings.controls.toggles.directory.label"),
-    description: t("community.settings.controls.toggles.directory.desc"),
-  },
-  {
-    key: "welcomePostEnabled" as const,
-    label: t("community.settings.controls.toggles.welcome.label"),
-    description: t("community.settings.controls.toggles.welcome.desc"),
-  },
 ])
 </script>

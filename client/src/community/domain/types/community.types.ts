@@ -52,6 +52,7 @@ export interface CommunityGroupRecord {
   privacy: CommunityPrivacy
   category: string
   banner: string
+  avatar?: string
   accent: string
   segment: Exclude<CommunityGroupTab, "mine">
   activityLabel: string
@@ -65,6 +66,12 @@ export interface CommunityGroupRecord {
   inviteLabel?: string
   guidelines?: string[]
   joined?: boolean
+  joinApproval?: boolean
+  postApproval?: boolean
+  allowMemberInvites?: boolean
+  showMemberDirectory?: boolean
+  welcomePostEnabled?: boolean
+  bannerUrl?: string
 }
 
 export interface CommunityGroupMember {
@@ -91,6 +98,10 @@ export interface CommunityGroupSettingsDraft {
   allowMemberInvites: boolean
   showMemberDirectory: boolean
   welcomePostEnabled: boolean
+  avatarUrl?: string
+  bannerUrl?: string
+  avatarFile?: File
+  bannerFile?: File
 }
 
 export interface CommunityPageSettingsDraft {

@@ -69,17 +69,6 @@ const {
   loading,
   errorMessage,
   matchingPosts,
-  rawTag,
   hashtagLabel,
-  fetchHashtagPosts,
 } = useHashtagPageVM()
-
-useSeoMeta({
-  title: () => t("pages.hashtagPage.seoTitle", { tag: hashtagLabel.value }),
-  description: () => t("pages.hashtagPage.seoDescriptionMatch", { tag: hashtagLabel.value }),
-})
-
-watch(rawTag, async () => {
-  await fetchHashtagPosts()
-}, { immediate: true })
 </script>

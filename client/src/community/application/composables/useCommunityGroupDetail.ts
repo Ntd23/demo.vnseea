@@ -46,7 +46,20 @@ export function useCommunityGroupDetail(
     }),
   )
 
-  const groupPosts = computed(() => [])
+  const { data: groupPostsResponse, status: groupPostsStatus, refresh: refreshGroupPosts } = useAsyncData(
+    () => `community:group:${slug.value}:posts`,
+    () => slug.value
+      ? repository.getGroupPosts(slug.value, { limit: 10 })
+      : Promise.resolve({ posts: [], hasMore: false, nextOffset: null }),
+    {
+      watch: [slug],
+      default: () => ({ posts: [], hasMore: false, nextOffset: null }),
+    },
+  )
+
+  const groupPosts = computed(() => groupPostsResponse.value?.posts ?? [])
+  const groupPostsHasMore = computed(() => groupPostsResponse.value?.hasMore === true)
+  const groupPostsNextOffset = computed(() => groupPostsResponse.value?.nextOffset ?? null)
 
   return {
     slug,
@@ -58,6 +71,10 @@ export function useCommunityGroupDetail(
     memberCountLabel,
     onlineCountLabel,
     groupPosts,
+    groupPostsHasMore,
+    groupPostsNextOffset,
+    groupPostsStatus,
+    refreshGroupPosts,
     status,
     error,
     refresh,
