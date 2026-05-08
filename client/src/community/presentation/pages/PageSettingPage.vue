@@ -1,6 +1,9 @@
 <!-- Description: Renders the page settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP page settings structure. -->
 <template>
-  <div v-if="page && previewPage" class="page-settings mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+  <div
+    v-if="page && previewPage"
+    class="page-settings mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6"
+  >
     <section class="page-settings__hero border-b border-slate-100 pb-8 pt-4">
       <div class="flex items-center justify-between">
         <div>
@@ -21,11 +24,18 @@
       <div class="page-settings__stepper-container mb-8 mt-5">
         <nav class="page-settings__nav-horizontal">
           <div class="page-settings__nav-line-horizontal" />
-          <button v-for="(item, index) in settingsNavItems" :key="item.id" type="button"
+          <button
+            v-for="item in settingsNavItems"
+            :key="item.id"
+            type="button"
             class="page-settings__nav-step-item"
-            :class="{ 'page-settings__nav-step-item--active': activeTab === item.id }" @click="activeTab = item.id">
-            <div class="page-settings__nav-step-circle"
-              :class="{ 'page-settings__nav-step-circle--active': activeTab === item.id }">
+            :class="{ 'page-settings__nav-step-item--active': activeTab === item.id }"
+            @click="activeTab = item.id"
+          >
+            <div
+              class="page-settings__nav-step-circle"
+              :class="{ 'page-settings__nav-step-circle--active': activeTab === item.id }"
+            >
               <Icon :name="item.icon" class="h-5 w-5" />
             </div>
             <div class="page-settings__nav-step-label-container">
@@ -36,14 +46,15 @@
       </div>
     </section>
 
-
-
     <div class="page-settings__content-container">
-
-
       <div class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px] 2xl:items-start">
-        <UForm :state="draft" :validate="validateDraft" class="min-w-0 space-y-4" @submit="handleSave"
-          @error="handleSaveError">
+        <UForm
+          :state="draft"
+          :validate="validateDraft"
+          class="min-w-0 space-y-4"
+          @submit="handleSave"
+          @error="handleSaveError"
+        >
           <section v-if="activeTab === 'basics'" id="basics">
             <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath" />
           </section>
@@ -60,53 +71,45 @@
               icon="i-ph-eye-bold"
             >
               <div class="page-preview-card overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
-                <!-- Banner Area -->
-                <div class="page-preview-banner h-[220px] relative bg-slate-100" :style="{ background: previewPage.banner }">
+                <div
+                  class="page-preview-banner relative h-[220px] bg-slate-100"
+                  :style="{ background: previewPage.banner }"
+                >
                   <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
 
-                <!-- Identity Area -->
                 <div class="px-8 pb-8">
-                  <div class="flex items-end justify-between -mt-12 relative z-10">
+                  <div class="relative z-10 -mt-12 flex items-end justify-between gap-5">
                     <div class="flex items-end gap-5">
-                      <!-- Avatar -->
-                      <div class="page-preview-avatar-wrap p-1 bg-white rounded-full">
-                        <div class="page-preview-avatar h-24 w-24 rounded-full flex items-center justify-center text-xl font-black text-white overflow-hidden shadow-md" :style="{ background: previewPage.accent }">
-                          <img v-if="previewPage.avatarUrl" :src="previewPage.avatarUrl" class="h-full w-full object-cover">
+                      <div class="page-preview-avatar-wrap rounded-full bg-white p-1">
+                        <div
+                          class="page-preview-avatar flex h-24 w-24 items-center justify-center overflow-hidden rounded-full text-xl font-black text-white shadow-md"
+                          :style="{ background: previewPage.accent }"
+                        >
+                          <img
+                            v-if="previewPage.avatarUrl"
+                            :src="previewPage.avatarUrl"
+                            class="h-full w-full object-cover"
+                          >
                           <span v-else>{{ initials }}</span>
                         </div>
                       </div>
 
-                      <!-- Title & Badge -->
-                      <div class="bg-white px-6 py-4 rounded-t-[28px] flex items-center gap-3 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
-                        <h2 class="text-2xl font-black text-slate-900 tracking-tight">{{ previewPage.name }}</h2>
-                        <span class="bg-[#2563eb]/10 text-[#2563eb] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-[#2563eb]/20">
-                          {{ $t('community.pageSettings.sidebar.owner') || 'Owner' }}
-                        </span>
+                      <div class="rounded-t-[28px] bg-white px-6 py-4 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+                        <h2 class="text-2xl font-black tracking-tight text-slate-900">
+                          {{ previewPage.name }}
+                        </h2>
                       </div>
-                    </div>
-
-                    <!-- Action Bar -->
-                    <div class="flex items-center gap-6 pb-3">
-                      <button type="button" class="flex items-center gap-2 text-[13px] font-bold text-slate-600 hover:text-blue-600 transition-colors">
-                        <Icon name="i-ph-paper-plane-tilt-bold" class="h-4.5 w-4.5" />
-                        <span>{{ $t('community.pageSettings.preview.share') || 'Chia sẻ' }}</span>
-                      </button>
-                      <button type="button" class="flex items-center gap-2 text-[13px] font-bold text-slate-600 hover:text-blue-600 transition-colors">
-                        <Icon name="i-ph-bell-bold" class="h-4.5 w-4.5" />
-                        <span>{{ $t('community.pageSettings.preview.follow') || 'Theo dõi' }}</span>
-                      </button>
                     </div>
                   </div>
 
-                  <!-- Details -->
                   <div class="mt-6 pl-2">
-                    <p class="text-slate-500 text-[14px] leading-relaxed max-w-2xl font-medium">
+                    <p class="max-w-2xl text-[14px] font-medium leading-relaxed text-slate-500">
                       {{ previewPage.summary }}
                     </p>
-                    <div class="mt-3 flex items-center gap-2 text-[13px] text-slate-400 font-semibold">
+                    <div class="mt-3 flex items-center gap-2 text-[13px] font-semibold text-slate-400">
                       <span>{{ followerPreview }}</span>
-                      <span class="opacity-30">•</span>
+                      <span class="opacity-30">&bull;</span>
                       <span>{{ likePreview }}</span>
                     </div>
                   </div>
@@ -116,17 +119,25 @@
           </section>
 
           <section v-if="activeTab === 'finish'" id="finish">
-            <CommunitySettingsSectionCard :eyebrow="$t('community.pageSettings.finish.eyebrow')"
-              :title="$t('community.pageSettings.finish.title')" :description="$t('community.pageSettings.finish.desc')"
-              icon="i-ph-floppy-disk-back-bold">
+            <CommunitySettingsSectionCard
+              :eyebrow="$t('community.pageSettings.finish.eyebrow')"
+              :title="$t('community.pageSettings.finish.title')"
+              :description="$t('community.pageSettings.finish.desc')"
+              icon="i-ph-floppy-disk-back-bold"
+            >
               <div class="flex flex-col gap-4">
                 <div class="page-settings__finish-note">
                   <span
-                    v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: (selectedCtaLabel || '').toLowerCase() })" />
+                    v-html="$t('community.pageSettings.finish.status', { enabled: enabledPolicies, total: totalPolicies, cta: (selectedCtaLabel || '').toLowerCase() })"
+                  />
                 </div>
 
-                <div v-if="statusAlert" class="page-settings__alert"
-                  :class="`page-settings__alert--${statusAlert.color}`" aria-live="polite">
+                <div
+                  v-if="statusAlert"
+                  class="page-settings__alert"
+                  :class="`page-settings__alert--${statusAlert.color}`"
+                  aria-live="polite"
+                >
                   <Icon :name="statusAlert.icon" class="h-5 w-5" />
                   <div>
                     <p>{{ statusAlert.title }}</p>
@@ -135,15 +146,24 @@
                 </div>
 
                 <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <NuxtLink :to="pagePath" class="page-settings__button page-settings__button--secondary"
-                    :aria-disabled="isBusy">
+                  <NuxtLink
+                    :to="pagePath"
+                    class="page-settings__button page-settings__button--secondary"
+                    :aria-disabled="isBusy"
+                  >
                     <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
                     {{ $t("community.pageSettings.finish.back") }}
                   </NuxtLink>
 
-                  <button type="submit" :disabled="isSaveDisabled"
-                    class="page-settings__button page-settings__button--primary">
-                    <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                  <button
+                    type="submit"
+                    :disabled="isSaveDisabled"
+                    class="page-settings__button page-settings__button--primary"
+                  >
+                    <Icon
+                      :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'"
+                      class="mr-2 h-4 w-4"
+                    />
                     {{ $t("community.pageSettings.finish.save") }}
                   </button>
                 </div>
@@ -152,25 +172,39 @@
           </section>
         </UForm>
 
-        <CommunityPageSettingsSidebar v-if="activeTab === 'preview'" :page="previewPage"
-          :category-label="selectedCategoryLabel" :follower-count-label="followerCountLabel"
-          :like-count-label="likeCountLabel" :selected-cta-label="selectedCtaLabel" :enabled-policies="enabledPolicies"
-          :total-policies="totalPolicies" :show-follower-count="draft.showFollowerCount"
-          :show-like-count="draft.showLikeCount" :allow-messages="draft.allowMessages"
-          :recommend-related-pages="draft.recommendRelatedPages" />
+        <CommunityPageSettingsSidebar
+          v-if="activeTab === 'preview'"
+          :page="previewPage"
+          :category-label="selectedCategoryLabel"
+          :follower-count-label="followerCountLabel"
+          :like-count-label="likeCountLabel"
+          :selected-cta-label="selectedCtaLabel"
+          :enabled-policies="enabledPolicies"
+          :total-policies="totalPolicies"
+          :show-follower-count="draft.showFollowerCount"
+          :show-like-count="draft.showLikeCount"
+          :allow-messages="draft.allowMessages"
+          :recommend-related-pages="draft.recommendRelatedPages"
+        />
       </div>
     </div>
   </div>
 
   <div v-else class="mx-auto max-w-[960px] px-3 pb-10 pt-4 sm:px-5">
     <section
-      class="rounded-[18px] border border-[#e2e8f0] bg-white px-6 py-10 text-center shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:px-8 sm:py-16">
-      <FoundationEmptyState icon="i-ph-sliders-horizontal-fill" :title="$t('community.pageSettings.empty.title')"
-        :description="$t('community.pageSettings.empty.desc')" />
+      class="rounded-[18px] border border-[#e2e8f0] bg-white px-6 py-10 text-center shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:px-8 sm:py-16"
+    >
+      <FoundationEmptyState
+        icon="i-ph-sliders-horizontal-fill"
+        :title="$t('community.pageSettings.empty.title')"
+        :description="$t('community.pageSettings.empty.desc')"
+      />
 
       <div class="mt-6 flex justify-center">
-        <NuxtLink to="/pages"
-          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]">
+        <NuxtLink
+          :to="appRoutes.pages"
+          class="inline-flex h-12 items-center justify-center rounded-[16px] bg-[#0000ff] px-5 text-[14px] font-extrabold text-white shadow-[0_12px_24px_rgba(0,0,255,0.24)] transition hover:-translate-y-0.5 hover:bg-[#0000e0]"
+        >
           {{ $t("community.pageSettings.empty.back") }}
         </NuxtLink>
       </div>
@@ -179,420 +213,39 @@
 </template>
 
 <script setup lang="ts">
-import { useStorage, watchDebounced } from "@vueuse/core"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import CommunityPageCard from "../components/PageCard.vue"
 import CommunityPageSettingsBasicsCard from "../components/PageSettingsBasicsCard.vue"
 import CommunityPageSettingsControlsCard from "../components/PageSettingsControlsCard.vue"
 import CommunityPageSettingsSidebar from "../components/PageSettingsSidebar.vue"
 import CommunitySettingsSectionCard from "../components/SettingsSectionCard.vue"
-import { useCommunityPageDetail } from "../../application/composables/useCommunityPageDetail"
-import { createCommunityPageSettingsDraft } from "../../application/factories/community-drafts"
-import { communityPageCategoryOptions } from "../../domain/constants/community-options"
-import {
-  appendCommunityQuery,
-  createCommunitySlug,
-  getCommunityOptionLabel,
-  getCommunityPagePath,
-} from "../../domain/services/community-helpers.service"
-import { getCommunityInitials } from "../../domain/services/community-helpers.service"
-import type {
-  CommunityPageRecord,
-  CommunityPageSettingsDraft,
-} from "../../domain/types/community.types"
-import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
-
-type PageSettingsState = "idle" | "loading" | "success" | "error"
-
-type PageSettingsError = {
-  name?: keyof CommunityPageSettingsDraft
-  message: string
-}
-
-const route = useRoute()
-const toast = useToast()
-const { t } = useI18n()
-const translateText = useMaybeTranslatedText()
-const repository = createApiCommunityRepository()
+import { useCommunityPageSettingPageVM } from "../../application/view-models/useCommunityPageSettingPageVM"
 
 const {
   page,
-  categoryLabel: baseCategoryLabel,
+  previewPage,
+  draft,
+  validateDraft,
+  handleSave,
+  handleSaveError,
+  activeTab,
+  pagePath,
+  settingsNavItems,
+  statusAlert,
+  isBusy,
+  isSaveDisabled,
+  selectedCategoryLabel,
   followerCountLabel,
   likeCountLabel,
-} = useCommunityPageDetail(
-  computed(() => String(route.params.page || "")),
-)
+  selectedCtaLabel,
+  enabledPolicies,
+  totalPolicies,
+  initials,
+  followerPreview,
+  likePreview,
+  appRoutes,
+} = useCommunityPageSettingPageVM()
 
-const draft = ref<CommunityPageSettingsDraft>(
-  createCommunityPageSettingsDraft(),
-)
-const saveState = ref<PageSettingsState>("idle")
-const draftRestored = ref(false)
-const storageHydrated = ref(false)
-const isSyncingDraft = ref(false)
-const activeTab = ref("basics")
-
-const draftStorage = useStorage<CommunityPageSettingsDraft | null>(
-  `community:page-settings:${String(route.params.page || "")}`,
-  null,
-  undefined,
-  { initOnMounted: true },
-)
-
-const normalizedTags = computed(() =>
-  (draft.value.tags || "")
-    .split(",")
-    .map(tag => tag.trim())
-    .filter(Boolean),
-)
-
-const previewPage = computed<CommunityPageRecord | null>(() => {
-  if (!page.value) return null
-
-  return {
-    ...page.value,
-    name: (draft.value.name || "").trim() || page.value.name,
-    slug: (draft.value.slug || "").trim() || page.value.slug,
-    summary: (draft.value.summary || "").trim() || page.value.summary,
-    website: draft.value.showWebsite
-      ? ((draft.value.website || "").trim() || page.value.website)
-      : undefined,
-    locationLabel: (draft.value.locationLabel || "").trim() || page.value.locationLabel,
-    category: draft.value.category,
-    ctaLabel: (draft.value.ctaLabel || "").trim() || page.value.ctaLabel,
-    responseLabel: (draft.value.responseLabel || "").trim() || page.value.responseLabel,
-    ownerLabel: (draft.value.ownerLabel || "").trim() || page.value.ownerLabel,
-    tags: normalizedTags.value.length > 0 ? normalizedTags.value : page.value.tags,
-  }
-})
-
-const translatedPageName = computed(() =>
-  page.value ? translateText(page.value.name, page.value.slug) : "",
-)
-
-const selectedCategoryLabel = computed(() =>
-  t(
-    getCommunityOptionLabel(
-      communityPageCategoryOptions,
-      draft.value.category,
-      baseCategoryLabel.value,
-    ),
-  ),
-)
-
-const selectedCtaLabel = computed(() =>
-  (draft.value.ctaLabel || "").trim() || page.value?.ctaLabel || t("community.pageSettings.basics.stats.ctaFallback"),
-)
-
-const totalPolicies = 5
-
-const enabledPolicies = computed(() =>
-  [
-    draft.value.allowMessages,
-    draft.value.showFollowerCount,
-    draft.value.showLikeCount,
-    draft.value.showWebsite,
-    draft.value.recommendRelatedPages,
-  ].filter(Boolean).length,
-)
-
-const visibilityLabel = computed(() =>
-  draft.value.showWebsite ? t("community.pageSettings.basics.stats.websiteYes") : t("community.pageSettings.basics.stats.websiteNo"),
-)
-
-const pagePath = computed(() =>
-  page.value
-    ? appendCommunityQuery(getCommunityPagePath(page.value.slug), route.query)
-    : "/pages",
-)
-const settingsNavItems = computed(() => [
-  {
-    id: "basics",
-    label: t("community.pageSettings.basics.title"),
-    desc: t("community.pageSettings.basics.navDesc"),
-    icon: "i-ph-identification-card-duotone",
-  },
-  {
-    id: "controls",
-    label: t("community.pageSettings.controls.title"),
-    desc: t("community.pageSettings.controls.navDesc"),
-    icon: "i-ph-sliders-duotone",
-  },
-  {
-    id: "preview",
-    label: t("community.pageSettings.sidebar.preview"),
-    desc: t("community.pageSettings.preview.navDesc"),
-    icon: "i-ph-eye-duotone",
-  },
-  {
-    id: "finish",
-    label: t("community.pageSettings.finish.title"),
-    desc: t("community.pageSettings.finish.navDesc"),
-    icon: "i-ph-check-circle-duotone",
-  },
-])
-
-const isBusy = computed(() => saveState.value === "loading")
-const isSaveDisabled = computed(() =>
-  isBusy.value
-  || !(draft.value.name || "").trim()
-  || !(draft.value.slug || "").trim()
-  || (draft.value.summary || "").trim().length < 24
-  || !draft.value.category,
-)
-
-const statusAlert = computed(() => {
-  if (saveState.value === "loading") {
-    return {
-      color: "primary" as const,
-      icon: "i-ph-spinner-gap-bold",
-      title: t("community.pageSettings.finish.statusSavingTitle"),
-      description: t("community.pageSettings.finish.statusSavingDescription"),
-    }
-  }
-
-  if (saveState.value === "success") {
-    return {
-      color: "success" as const,
-      icon: "i-ph-check-circle-fill",
-      title: t("community.pageSettings.finish.statusSuccessTitle"),
-      description: t("community.pageSettings.finish.statusSuccessDescription"),
-    }
-  }
-
-  if (saveState.value === "error") {
-    return {
-      color: "error" as const,
-      icon: "i-ph-warning-circle-fill",
-      title: t("community.pageSettings.finish.statusErrorTitle"),
-      description: t("community.pageSettings.finish.statusErrorDescription"),
-    }
-  }
-
-  if (draftRestored.value) {
-    return {
-      color: "primary" as const,
-      icon: "i-ph-clock-counter-clockwise-fill",
-      title: t("community.pageSettings.finish.draftRestoredTitle"),
-      description: t("community.pageSettings.finish.draftRestoredDescription"),
-    }
-  }
-
-  return null
-})
-
-watch(page, syncDraftFromPage, { immediate: true })
-
-watchDebounced(
-  () => normalizeDraft(draft.value),
-  (value) => {
-    if (!storageHydrated.value || !page.value) {
-      return
-    }
-
-    draftStorage.value = { ...value }
-  },
-  {
-    debounce: 250,
-    maxWait: 1000,
-  },
-)
-
-watch(
-  () => ({ ...draft.value }),
-  () => {
-    if (isSyncingDraft.value) {
-      return
-    }
-
-    if (saveState.value !== "loading") {
-      saveState.value = "idle"
-    }
-
-    draftRestored.value = false
-  },
-)
-
-onMounted(async () => {
-  storageHydrated.value = true
-  await nextTick()
-  syncDraftFromPage()
-})
-
-async function handleSave() {
-  saveState.value = "loading"
-
-  try {
-    if (!page.value) {
-      throw new Error("page_missing")
-    }
-
-    const savedPage = await repository.updatePage(page.value.slug, draft.value)
-    const normalized = normalizeDraft(createLocalizedDraft(savedPage))
-
-    draft.value = { ...normalized }
-    draftStorage.value = { ...normalized }
-    draftRestored.value = false
-    saveState.value = "success"
-
-    toast.add({
-      title: t("community.pageSettings.finish.statusSuccessTitle"),
-      description: t("community.pageSettings.finish.statusSuccessDescription"),
-      color: "success",
-    })
-  }
-  catch {
-    saveState.value = "error"
-
-    toast.add({
-      title: t("community.pageSettings.finish.statusErrorTitle"),
-      description: t("community.pageSettings.finish.statusErrorDescription"),
-      color: "error",
-    })
-  }
-}
-
-function handleSaveError() {
-  saveState.value = "error"
-}
-
-function syncDraftFromPage() {
-  if (!page.value) {
-    return
-  }
-
-  const baseDraft = createLocalizedDraft(page.value)
-  const restoredDraft = storageHydrated.value && draftStorage.value
-    ? normalizeDraft(draftStorage.value)
-    : null
-
-  // Ensure mandatory profile data is always present even in restored drafts
-  const finalDraft = restoredDraft && !isSameDraft(restoredDraft, baseDraft)
-    ? {
-      ...baseDraft,
-      ...restoredDraft,
-      // Prioritize backend data for core profile fields if restored draft has them empty
-      name: restoredDraft.name || baseDraft.name,
-      slug: restoredDraft.slug || baseDraft.slug,
-      summary: restoredDraft.summary || baseDraft.summary,
-      category: restoredDraft.category || baseDraft.category,
-    }
-    : baseDraft
-
-  applyDraft(
-    finalDraft,
-    Boolean(restoredDraft && !isSameDraft(restoredDraft, baseDraft)),
-  )
-}
-
-function applyDraft(value: CommunityPageSettingsDraft, restored: boolean) {
-  isSyncingDraft.value = true
-  draft.value = value
-  draftRestored.value = restored
-  saveState.value = "idle"
-
-  nextTick(() => {
-    isSyncingDraft.value = false
-  })
-}
-
-function createLocalizedDraft(value: CommunityPageRecord): CommunityPageSettingsDraft {
-  return {
-    ...createCommunityPageSettingsDraft(value),
-    name: translateText(value.name, value.slug),
-    summary: translateText(value.summary),
-    locationLabel: translateText(value.locationLabel),
-    ctaLabel: translateText(value.ctaLabel),
-    responseLabel: translateText(value.responseLabel),
-    ownerLabel: translateText(value.ownerLabel),
-    tags: value.tags.map(tag => translateText(tag, tag)).join(", "),
-  }
-}
-
-function normalizeDraft(value: CommunityPageSettingsDraft): CommunityPageSettingsDraft {
-  return {
-    ...value,
-    name: (value.name || "").trim(),
-    slug: (value.slug || "").trim(),
-    summary: (value.summary || "").trim(),
-    website: (value.website || "").trim(),
-    locationLabel: (value.locationLabel || "").trim(),
-    category: (value.category || "").trim(),
-    ctaLabel: (value.ctaLabel || "").trim(),
-    responseLabel: (value.responseLabel || "").trim(),
-    ownerLabel: (value.ownerLabel || "").trim(),
-    tags: (value.tags || "")
-      .split(",")
-      .map(tag => tag.trim())
-      .filter(Boolean)
-      .join(", "),
-  }
-}
-
-function isSameDraft(first: CommunityPageSettingsDraft, second: CommunityPageSettingsDraft) {
-  return JSON.stringify(normalizeDraft(first)) === JSON.stringify(normalizeDraft(second))
-}
-
-const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] => {
-  const errors: PageSettingsError[] = []
-  const slug = (state.slug || "").trim()
-
-  if (!(state.name || "").trim()) {
-    errors.push({
-      name: "name",
-      message: t("community.creation.common.validationNameRequired"),
-    })
-  }
-
-  if (!slug) {
-    errors.push({
-      name: "slug",
-      message: t("community.creation.common.validationSlugRequired"),
-    })
-  }
-  else if (slug.length < 5 || createCommunitySlug(slug) !== slug) {
-    errors.push({
-      name: "slug",
-      message: t("community.creation.common.validationSlugInvalid"),
-    })
-  }
-
-  if ((state.summary || "").trim().length < 24) {
-    errors.push({
-      name: "summary",
-      message: t("community.creation.common.validationDescriptionRequired"),
-    })
-  }
-
-  if (!state.category) {
-    errors.push({
-      name: "category",
-      message: t("community.creation.common.validationCategoryRequired"),
-    })
-  }
-
-  return errors
-}
-const initials = computed(() =>
-  getCommunityInitials(previewPage.value?.name || ""),
-)
-
-const followerPreview = computed(() =>
-  draft.value.showFollowerCount ? followerCountLabel.value : t("community.pageSettings.sidebar.hidden"),
-)
-
-const likePreview = computed(() =>
-  draft.value.showLikeCount ? likeCountLabel.value : t("community.pageSettings.sidebar.hidden"),
-)
-
-const policyProgress = computed(() => {
-  if (!totalPolicies) {
-    return 0
-  }
-
-  return (enabledPolicies.value / totalPolicies) * 100
-})
+const { t } = useI18n()
 </script>
 
 <style scoped>
@@ -693,12 +346,12 @@ const policyProgress = computed(() => {
 }
 
 .page-settings__nav-horizontal {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   position: relative;
-  max-width: 800px;
   margin: 0 auto;
+  display: flex;
+  max-width: 800px;
+  align-items: center;
+  justify-content: space-between;
   padding: 0 40px;
 }
 
@@ -707,42 +360,42 @@ const policyProgress = computed(() => {
   top: 16px;
   left: 60px;
   right: 60px;
+  z-index: -1;
   height: 2px;
   background: #f1f5f9;
-  z-index: -1;
 }
 
 .page-settings__nav-step-item {
   display: flex;
+  min-width: 100px;
+  cursor: pointer;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  background: transparent;
   border: none;
-  cursor: pointer;
+  background: transparent;
   padding: 0;
-  min-width: 100px;
 }
 
 .page-settings__nav-step-circle {
   display: flex;
-  width: 34px;
   height: 34px;
+  width: 34px;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  border: 2px solid #f1f5f9;
   background: #ffffff;
   color: #94a3b8;
   font-size: 14px;
   font-weight: 800;
-  border: 2px solid #f1f5f9;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .page-settings__nav-step-circle--active {
+  border-color: #2563eb;
   background: #2563eb;
   color: #ffffff;
-  border-color: #2563eb;
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
 }
 
@@ -752,9 +405,9 @@ const policyProgress = computed(() => {
 
 .page-settings__nav-step-label {
   display: block;
+  color: #64748b;
   font-size: 13px;
   font-weight: 700;
-  color: #64748b;
   transition: color 0.2s ease;
 }
 
@@ -779,7 +432,6 @@ const policyProgress = computed(() => {
 .page-preview-avatar-wrap {
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
-
 
 .page-settings__finish-note {
   border: 1px solid #e2e8f0;
@@ -838,7 +490,12 @@ const policyProgress = computed(() => {
   font-size: 14px;
   font-weight: 900;
   text-decoration: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .page-settings__button:not(:disabled):hover {
@@ -873,6 +530,7 @@ const policyProgress = computed(() => {
   cursor: not-allowed;
   opacity: 0.55;
 }
+
 .page-settings-sidebar :deep(progress),
 .page-settings-sidebar :deep([role="progressbar"]) {
   background-color: #dbeafe;

@@ -1,5 +1,6 @@
 // Description: Implements the messages repository against Nuxt server API bridges.
 
+import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { MessagesRepository } from "../../domain/repositories/MessagesRepository"
 import type {
@@ -8,13 +9,6 @@ import type {
   MessageThread,
   MultiMessageSendResult,
 } from "../../domain/types/messages.types"
-
-const messageApiRoutes = {
-  inbox: "messages/inbox",
-  multi: "messages/multi",
-  thread: "messages/thread",
-  send: "messages/send",
-} as const
 
 const createThreadQuery = (contact: MessageContact, beforeId?: number) => ({
   type: contact.type,
@@ -64,23 +58,23 @@ export function createApiMessagesRepository(): MessagesRepository {
 
   return {
     async getInbox() {
-      return await client.get<MessageContact[]>(messageApiRoutes.inbox)
+      return await client.get<MessageContact[]>(apiRoutes.messages.conversations)
     },
     async getThread(contact: MessageContact, options?: { beforeId?: number }) {
       return await client.get<MessageThread>(
-        messageApiRoutes.thread,
+        apiRoutes.messages.thread,
         createThreadQuery(contact, options?.beforeId),
       )
     },
     async sendMessage(contact: MessageContact, text: string) {
-      return await client.post<MessageItem[], Record<string, unknown>>(messageApiRoutes.send, {
+      return await client.post<MessageItem[], Record<string, unknown>>(apiRoutes.messages.send, {
         ...createThreadQuery(contact),
         text,
       })
     },
     async sendMultiMessage(input) {
       return await client.post<MultiMessageSendResult, FormData | Record<string, unknown>>(
-        messageApiRoutes.multi,
+        apiRoutes.messages.multi,
         createMultiSendBody(input),
       )
     },

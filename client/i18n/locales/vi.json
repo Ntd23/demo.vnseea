@@ -4072,7 +4072,6 @@
   },
   "feed": {
     "commentComposer": {
-      "placeholder": "Viết bình luận mang tính xây dựng...",
       "helper": "{count}/280 ký tự",
       "emptyError": "Hãy nhập nội dung bình luận trước khi gửi.",
       "successMessage": "Bình luận đã được gửi.",

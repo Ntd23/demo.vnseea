@@ -1,4 +1,4 @@
-<!-- Description: Renders one backend-provided feed comment with PHP-parity media attachment support. -->
+<!-- Description: Renders one backend-provided feed comment with media, reactions, and inline reply actions for feed and lightbox surfaces. -->
 <template>
   <article class="comment-item">
     <NuxtLink v-if="authorPath" :to="authorPath" class="comment-item__avatar" :aria-label="author">
@@ -47,17 +47,131 @@
           controls
         />
       </div>
-      <div v-if="time" class="comment-item__footer">
-        <span>{{ time }}</span>
+
+      <div v-if="time || id || enableReply" class="comment-item__footer">
+        <span v-if="time">{{ time }}</span>
+
+        <div
+          class="comment-item__reaction-action"
+          @mouseenter="openReactionTray"
+          @mouseleave="closeReactionTray"
+          @focusin="openReactionTray"
+          @focusout="closeReactionTray"
+        >
+          <Transition
+            enter-active-class="transition duration-150 ease-out"
+            enter-from-class="opacity-0 translate-y-2 scale-95"
+            enter-to-class="opacity-100 translate-y-0 scale-100"
+            leave-active-class="transition duration-100 ease-in"
+            leave-to-class="opacity-0 translate-y-2 scale-95"
+          >
+            <div
+              v-if="reactionTrayOpen"
+              class="comment-item__reaction-tray"
+              @click.stop
+              @pointerdown.stop
+            >
+              <button
+                v-for="reaction in reactionOptions"
+                :key="reaction.value"
+                type="button"
+                class="comment-item__reaction-option"
+                :class="{ 'comment-item__reaction-option--active': localSelectedReaction === reaction.value }"
+                :aria-label="reaction.label"
+                @click="reactToComment(reaction.value)"
+              >
+                <img
+                  :src="reaction.src"
+                  :alt="reaction.label"
+                  class="comment-item__reaction-option-image"
+                  draggable="false"
+                >
+              </button>
+            </div>
+          </Transition>
+
+          <button
+            type="button"
+            class="comment-item__footer-action"
+            :class="{ 'comment-item__footer-action--active': Boolean(localSelectedReaction) }"
+            :disabled="reacting || !id"
+            @pointerdown="startReactionPress"
+            @pointerup="finishReactionPress"
+            @pointerleave="cancelReactionPress"
+            @pointercancel="cancelReactionPress"
+            @click="handleReactionButtonClick"
+          >
+            <img
+              v-if="localSelectedReaction"
+              :src="activeReactionAsset.src"
+              :alt="activeReactionLabel"
+              class="comment-item__footer-reaction-image"
+              draggable="false"
+            >
+            <Icon v-else name="i-ph-thumbs-up" class="h-3.5 w-3.5" />
+            <span>{{ localSelectedReaction ? activeReactionLabel : t("feed.postCard.like") }}</span>
+            <span v-if="localReactionsCount > 0" class="comment-item__footer-count">{{ localReactionsCount }}</span>
+          </button>
+        </div>
+
+        <button
+          v-if="enableReply"
+          type="button"
+          class="comment-item__footer-action comment-item__reply-toggle"
+          @click="toggleReplyThread"
+        >
+          {{ replyActionLabel }}
+        </button>
+      </div>
+
+      <div v-if="enableReply && replyThreadOpen" class="comment-item__replies">
+        <div v-if="replyLoading" class="comment-item__reply-loading">
+          <Icon name="i-ph-circle-notch-bold" class="h-4 w-4 animate-spin" />
+          <span>{{ t("feed.commentList.loadMore") }}</span>
+        </div>
+
+        <div v-else-if="replyItems.length > 0" class="comment-item__reply-list">
+          <CommentItem
+            v-for="reply in replyItems"
+            :key="reply.id"
+            :id="reply.id"
+            :author="reply.author"
+            :author-avatar-url="reply.authorAvatarUrl"
+            :author-path="reply.authorPath"
+            :role="reply.role"
+            :text="reply.text"
+            :time="reply.time"
+            :attachment="reply.attachment"
+            :reactions-count="reply.reactionsCount"
+            :selected-reaction="reply.selectedReaction"
+            :replies="reply.replies"
+            :replies-count="reply.repliesCount"
+            :enable-reply="false"
+            reaction-target="reply"
+          />
+        </div>
+
+        <FeedCommentComposer
+          :current-user-name="currentUserName"
+          :current-user-avatar-url="currentUserAvatarUrl"
+          :submitting="replySubmitting"
+          @submit="submitReply"
+        />
       </div>
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import type { FeedCommentAttachment } from "../../domain/types/feed.types"
+import { useFeedCommentItemVM } from "../../application/view-models/useFeedCommentItemVM"
+import type { FeedStoryReactionType } from "../../domain/constants/story-reactions"
+import type { FeedCommentAttachment, FeedCommentRecord, FeedCommentSubmitPayload } from "../../domain/types/feed.types"
+import FeedCommentComposer from "./CommentComposer.vue"
+
+const { t } = useI18n()
 
 const props = defineProps<{
+  id?: number
   author: string
   authorAvatarUrl?: string
   authorPath?: string
@@ -65,18 +179,48 @@ const props = defineProps<{
   text: string
   time?: string
   attachment?: FeedCommentAttachment
+  reactionsCount?: number
+  selectedReaction?: FeedStoryReactionType | null
+  replies?: FeedCommentRecord[]
+  repliesCount?: number
+  enableReply?: boolean
+  currentUserName?: string
+  currentUserAvatarUrl?: string
+  reactionTarget?: "comment" | "reply"
 }>()
 
-const initials = computed(() => {
-  const value = props.author
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(part => part[0]?.toUpperCase() || "")
-    .join("")
+const {
+  replyThreadOpen,
+  replyLoading,
+  replySubmitting,
+  reactionTrayOpen,
+  reacting,
+  replyItems,
+  localSelectedReaction,
+  localReactionsCount,
+  initials,
+  reactionOptions,
+  replyActionLabel,
+  activeReactionAsset,
+  activeReactionLabel,
+  openReactionTray,
+  closeReactionTray,
+  startReactionPress,
+  finishReactionPress,
+  cancelReactionPress,
+  handleReactionButtonClick,
+  toggleReplyThread,
+  reactToComment,
+  submitReply,
+} = useFeedCommentItemVM(props)
 
-  return value
+const replyToggleLabel = computed(() => {
+  const count = replyItems.value.length || props.repliesCount || 0
+  return count > 0
+    ? `${t("feed.commentItem.reply")} · ${count}`
+    : t("feed.commentItem.reply")
 })
+
 </script>
 
 <style scoped>
@@ -95,18 +239,18 @@ const initials = computed(() => {
   justify-content: center;
   overflow: hidden;
   border-radius: 999px;
-  background: #e2e8f0;
-  color: #475569;
+  background: var(--bg-surface-active);
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 800;
   text-decoration: none;
 }
 
 .comment-item__avatar-img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .comment-item__body {
@@ -118,7 +262,7 @@ const initials = computed(() => {
   display: inline-block;
   max-width: min(100%, 720px);
   border-radius: 18px;
-  background: #f0f2f5;
+  background: var(--bg-surface-hover);
   padding: 9px 12px;
 }
 
@@ -132,7 +276,7 @@ const initials = computed(() => {
 .comment-item__author {
   margin: 0;
   min-width: 0;
-  color: #0f172a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 800;
   line-height: 1.25;
@@ -145,7 +289,7 @@ const initials = computed(() => {
 
 .comment-item__role {
   overflow: hidden;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 11px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -154,7 +298,7 @@ const initials = computed(() => {
 
 .comment-item__text {
   margin: 3px 0 0;
-  color: #1e293b;
+  color: var(--text-primary);
   font-size: 13.5px;
   line-height: 1.55;
   white-space: pre-wrap;
@@ -177,9 +321,113 @@ const initials = computed(() => {
 }
 
 .comment-item__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
   margin: 4px 0 0 12px;
-  color: #94a3b8;
+  color: var(--text-tertiary);
   font-size: 11.5px;
   font-weight: 600;
+}
+
+.comment-item__reaction-action {
+  position: relative;
+}
+
+.comment-item__reaction-tray {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--bg-surface);
+  padding: 6px 8px;
+  box-shadow: var(--shadow-md);
+}
+
+.comment-item__reaction-option {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.comment-item__reaction-option:hover,
+.comment-item__reaction-option--active {
+  background: var(--bg-surface-hover);
+  transform: translateY(-2px);
+}
+
+.comment-item__reaction-option-image {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.comment-item__footer-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.comment-item__footer-action:hover,
+.comment-item__footer-action--active {
+  color: var(--text-brand);
+}
+
+.comment-item__footer-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.comment-item__footer-reaction-image {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+}
+
+.comment-item__footer-count {
+  color: var(--text-tertiary);
+}
+
+.comment-item__replies {
+  margin-top: 8px;
+  padding-left: 12px;
+  border-left: 2px solid rgba(37, 99, 235, 0.12);
+}
+
+.comment-item__reply-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.comment-item__reply-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 </style>

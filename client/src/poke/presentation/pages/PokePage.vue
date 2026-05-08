@@ -57,72 +57,19 @@
 
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import type { PokeRecord } from "../../application/composables/usePokeData"
-import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import PokeRequestCard from "../components/RequestCard.vue"
+import { usePokePageVM } from "../../application/view-models/usePokePageVM"
 
-const repository = createApiFeedRepository()
 const { t } = useI18n()
-
-const loading = ref(true)
-const errorMessage = ref("")
-const pokeRecords = ref<PokeRecord[]>([])
-const pokedBackIds = ref<string[]>([])
-
-async function fetchPokes() {
-  loading.value = true
-  errorMessage.value = ""
-
-  try {
-    pokeRecords.value = await repository.getPokes()
-  }
-  catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("pages.pokePage.listDescription")
-  }
-  finally {
-    loading.value = false
-  }
-}
-
-async function pokeBack(id: string) {
-  if (pokedBackIds.value.includes(id)) return
-
-  const record = pokeRecords.value.find(item => item.id === id)
-  if (!record) return
-
-  errorMessage.value = ""
-
-  try {
-    await repository.runPokeAction({
-      action: "create",
-      userId: record.userId,
-      pokeId: record.pokeId,
-    })
-    pokedBackIds.value = [...pokedBackIds.value, id]
-  }
-  catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("pages.pokePage.listDescription")
-  }
-}
-
-async function removePoke(id: string) {
-  const record = pokeRecords.value.find(item => item.id === id)
-  if (!record) return
-
-  errorMessage.value = ""
-
-  try {
-    await repository.runPokeAction({
-      action: "remove",
-      pokeId: record.pokeId,
-    })
-    pokeRecords.value = pokeRecords.value.filter(item => item.id !== id)
-    pokedBackIds.value = pokedBackIds.value.filter(item => item !== id)
-  }
-  catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("pages.pokePage.listDescription")
-  }
-}
+const {
+  loading,
+  errorMessage,
+  pokeRecords,
+  pokedBackIds,
+  fetchPokes,
+  pokeBack,
+  removePoke,
+} = usePokePageVM()
 
 useSeoMeta({
   title: () => t("pages.pokePage.seoTitle"),

@@ -1,4 +1,4 @@
-<!-- Description: Displays real backend comments with compact sorting and no mock interaction controls. -->
+<!-- Description: Displays real backend comments with compact sorting and optional inline reply threads. -->
 <template>
   <section class="comment-list">
     <div class="comment-list__header">
@@ -38,6 +38,7 @@
       <FeedCommentItem
         v-for="comment in visibleComments"
         :key="comment.id"
+        :id="comment.id"
         :author="comment.author"
         :author-avatar-url="comment.authorAvatarUrl"
         :author-path="comment.authorPath"
@@ -45,6 +46,13 @@
         :text="comment.text"
         :time="comment.time"
         :attachment="comment.attachment"
+        :reactions-count="comment.reactionsCount"
+        :selected-reaction="comment.selectedReaction"
+        :replies="comment.replies"
+        :replies-count="comment.repliesCount"
+        :enable-reply="enableReply"
+        :current-user-name="currentUserName"
+        :current-user-avatar-url="currentUserAvatarUrl"
       />
     </div>
 
@@ -69,6 +77,9 @@ const { t } = useI18n()
 
 const props = defineProps<{
   comments: FeedCommentRecord[]
+  enableReply?: boolean
+  currentUserName?: string
+  currentUserAvatarUrl?: string
 }>()
 
 const sort = ref<"top" | "newest">("top")

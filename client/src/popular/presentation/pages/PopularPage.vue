@@ -46,32 +46,10 @@
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
-import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
+import { usePopularPageVM } from "../../application/view-models/usePopularPageVM"
 
 const { t } = useI18n()
-const repository = createApiFeedRepository()
-const loading = ref(true)
-const errorMessage = ref("")
-const posts = ref<FeedPostRecord[]>([])
-
-const formatRank = (value: number) => String(value).padStart(2, "0")
-
-async function fetchPopularPosts() {
-  loading.value = true
-  errorMessage.value = ""
-
-  try {
-    const response = await repository.getPopular({ limit: 20 })
-    posts.value = response.posts
-  }
-  catch (error) {
-    errorMessage.value = error instanceof Error ? error.message : t("pages.popularPage.emptyDescription")
-  }
-  finally {
-    loading.value = false
-  }
-}
+const { loading, errorMessage, posts, fetchPopularPosts } = usePopularPageVM()
 
 useSeoMeta({
   title: () => t("pages.popularPage.seoTitle"),

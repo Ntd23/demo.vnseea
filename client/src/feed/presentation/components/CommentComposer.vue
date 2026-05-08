@@ -20,18 +20,17 @@
             v-model="message"
             autoresize
             :rows="1"
-            :placeholder="$t('feed.commentComposer.placeholder')"
             class="w-full"
             :disabled="submitting"
             :ui="{
-              base: 'min-h-[44px] resize-none rounded-[22px] border border-[var(--border-light)] bg-[var(--bg-surface-hover)] py-3 pl-4 pr-12 text-[14px] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--color-primary-100)]',
+              base: 'min-h-[44px] resize-none rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-4 pr-12 text-[14px] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--color-primary-100)]',
             }"
             @keydown.enter.exact.prevent="submitComment"
           />
 
           <button
             type="submit"
-            class="btn-primary comment-composer__send"
+            class="comment-composer__send"
             :disabled="submitting || !canSubmit"
             :aria-label="$t('feed.commentComposer.submit')"
           >
@@ -69,6 +68,7 @@
           >
             {{ $t("feed.commentComposer.tooltipGif") }}
           </button>
+
           <div class="comment-composer__emoji-wrap">
             <button
               class="comment-composer__tool"
@@ -92,6 +92,7 @@
               </button>
             </div>
           </div>
+
           <button
             class="comment-composer__tool"
             type="button"
@@ -102,6 +103,7 @@
           >
             <Icon name="i-ph-images-square-duotone" class="h-5 w-5" />
           </button>
+
           <button
             class="comment-composer__tool"
             :class="{ 'comment-composer__tool--recording': recording }"
@@ -130,6 +132,14 @@
         accept="image/gif"
         @change="selectGifFile"
       >
+      <input
+        ref="audioInputRef"
+        class="comment-composer__file"
+        type="file"
+        accept="audio/*,audio/webm,audio/mp3,audio/wav"
+        capture
+        @change="selectAudioFile"
+      >
     </div>
   </form>
 </template>
@@ -152,10 +162,18 @@ const emit = defineEmits<{
 }>()
 
 const emojiOptions = ["😀", "😄", "😍", "😂", "😮", "😢", "😡", "👍", "❤️"]
+const recorderMimeTypes = [
+  "audio/webm;codecs=opus",
+  "audio/webm",
+  "audio/mp4",
+  "audio/ogg;codecs=opus",
+] as const
+
 const message = ref("")
 const emojiOpen = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
 const gifInputRef = ref<HTMLInputElement | null>(null)
+const audioInputRef = ref<HTMLInputElement | null>(null)
 const textareaRef = ref()
 const imageFile = ref<File | undefined>()
 const gifFile = ref<File | undefined>()
@@ -181,12 +199,37 @@ const currentUserInitials = computed(() => {
   return value
 })
 
+function revokeAttachmentUrl() {
+  if (attachmentPreview.value?.url?.startsWith("blob:")) {
+    URL.revokeObjectURL(attachmentPreview.value.url)
+  }
+}
+
+function resetFileInputs() {
+  if (imageInputRef.value) imageInputRef.value.value = ""
+  if (gifInputRef.value) gifInputRef.value.value = ""
+  if (audioInputRef.value) audioInputRef.value.value = ""
+}
+
+function resetComposerState() {
+  revokeAttachmentUrl()
+  imageFile.value = undefined
+  gifFile.value = undefined
+  audioFile.value = undefined
+  attachmentPreview.value = undefined
+  resetFileInputs()
+}
+
 function openImagePicker() {
   imageInputRef.value?.click()
 }
 
 function openGifPicker() {
   gifInputRef.value?.click()
+}
+
+function openAudioPicker() {
+  audioInputRef.value?.click()
 }
 
 function selectImageFile(event: Event) {
@@ -209,8 +252,18 @@ function selectGifFile(event: Event) {
   setAttachment(file, "gif")
 }
 
+function selectAudioFile(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+
+  if (!file) {
+    return
+  }
+
+  setAudioAttachment(file)
+}
+
 function setAttachment(file: File, type: FeedCommentAttachment["type"]) {
-  clearAttachment()
+  resetComposerState()
   const previewUrl = URL.createObjectURL(file)
 
   attachmentPreview.value = {
@@ -227,18 +280,20 @@ function setAttachment(file: File, type: FeedCommentAttachment["type"]) {
   }
 }
 
-function clearAttachment() {
-  if (attachmentPreview.value?.url?.startsWith("blob:")) {
-    URL.revokeObjectURL(attachmentPreview.value.url)
+function setAudioAttachment(file: File) {
+  resetComposerState()
+  const previewUrl = URL.createObjectURL(file)
+
+  audioFile.value = file
+  attachmentPreview.value = {
+    type: "audio",
+    url: previewUrl,
+    name: file.name,
   }
+}
 
-  imageFile.value = undefined
-  gifFile.value = undefined
-  audioFile.value = undefined
-  attachmentPreview.value = undefined
-
-  if (imageInputRef.value) imageInputRef.value.value = ""
-  if (gifInputRef.value) gifInputRef.value.value = ""
+function clearAttachment() {
+  resetComposerState()
 }
 
 function insertEmoji(emoji: string) {
@@ -250,49 +305,86 @@ function insertEmoji(emoji: string) {
   })
 }
 
+function stopMediaStream() {
+  mediaStream.value?.getTracks().forEach(track => track.stop())
+  mediaStream.value = null
+  mediaRecorder.value = null
+}
+
+function createAudioFileFromChunks() {
+  const mimeType = mediaRecorder.value?.mimeType || "audio/webm"
+  const blob = new Blob(audioChunks.value, { type: mimeType })
+  const extension = mimeType.includes("wav")
+    ? "wav"
+    : mimeType.includes("mp4")
+      ? "m4a"
+      : mimeType.includes("ogg")
+        ? "ogg"
+        : "webm"
+
+  return new File([blob], `comment-audio-${Date.now()}.${extension}`, { type: mimeType })
+}
+
+function getRecorderMimeType() {
+  if (!import.meta.client || typeof MediaRecorder === "undefined" || typeof MediaRecorder.isTypeSupported !== "function") {
+    return ""
+  }
+
+  for (const mimeType of recorderMimeTypes) {
+    if (MediaRecorder.isTypeSupported(mimeType)) {
+      return mimeType
+    }
+  }
+
+  return ""
+}
+
 async function toggleRecording() {
   if (recording.value) {
     mediaRecorder.value?.stop()
     return
   }
 
-  if (!import.meta.client || !navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+  if (!import.meta.client) {
     return
   }
 
-  clearAttachment()
-  audioChunks.value = []
-  mediaStream.value = await navigator.mediaDevices.getUserMedia({ audio: true })
-  mediaRecorder.value = new MediaRecorder(mediaStream.value)
-  mediaRecorder.value.ondataavailable = (event) => {
-    if (event.data.size > 0) {
-      audioChunks.value.push(event.data)
+  try {
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+      throw new Error("Recorder is unavailable")
     }
-  }
-  mediaRecorder.value.onstop = () => {
-    const mimeType = mediaRecorder.value?.mimeType || "audio/webm"
-    const blob = new Blob(audioChunks.value, { type: mimeType })
-    const extension = mimeType.includes("wav") ? "wav" : "webm"
-    const file = new File([blob], `comment-audio-${Date.now()}.${extension}`, { type: mimeType })
-    const previewUrl = URL.createObjectURL(file)
 
-    audioFile.value = file
-    attachmentPreview.value = {
-      type: "audio",
-      url: previewUrl,
-      name: file.name,
+    resetComposerState()
+    audioChunks.value = []
+    mediaStream.value = await navigator.mediaDevices.getUserMedia({ audio: true })
+    const mimeType = getRecorderMimeType()
+    mediaRecorder.value = mimeType
+      ? new MediaRecorder(mediaStream.value, { mimeType })
+      : new MediaRecorder(mediaStream.value)
+
+    mediaRecorder.value.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunks.value.push(event.data)
+      }
     }
+
+    mediaRecorder.value.onstop = () => {
+      if (audioChunks.value.length > 0) {
+        setAudioAttachment(createAudioFileFromChunks())
+      }
+
+      recording.value = false
+      stopMediaStream()
+    }
+
+    mediaRecorder.value.start()
+    recording.value = true
+  }
+  catch {
     recording.value = false
     stopMediaStream()
+    openAudioPicker()
   }
-  mediaRecorder.value.start()
-  recording.value = true
-}
-
-function stopMediaStream() {
-  mediaStream.value?.getTracks().forEach(track => track.stop())
-  mediaStream.value = null
-  mediaRecorder.value = null
 }
 
 function submitComment() {
@@ -307,17 +399,14 @@ function submitComment() {
     audioFile: audioFile.value,
     attachmentPreview: attachmentPreview.value,
   })
+
   message.value = ""
-  imageFile.value = undefined
-  gifFile.value = undefined
-  audioFile.value = undefined
-  attachmentPreview.value = undefined
   emojiOpen.value = false
-  if (imageInputRef.value) imageInputRef.value.value = ""
-  if (gifInputRef.value) gifInputRef.value.value = ""
+  resetComposerState()
 }
 
 onBeforeUnmount(() => {
+  revokeAttachmentUrl()
   stopMediaStream()
 })
 </script>
@@ -487,20 +576,25 @@ onBeforeUnmount(() => {
 
 .comment-composer__send {
   position: absolute;
-  top: 5px;
+  top: 6px;
   right: 6px;
   display: inline-flex;
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   align-items: center;
   justify-content: center;
   border: 0;
   border-radius: var(--radius-full);
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  background: linear-gradient(180deg, #4f8cff 0%, #2563eb 100%);
   color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
-  transition: all 0.15s ease;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.comment-composer__send:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(37, 99, 235, 0.25);
 }
 
 .comment-composer__send:disabled {

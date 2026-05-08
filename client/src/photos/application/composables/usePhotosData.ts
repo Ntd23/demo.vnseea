@@ -2,7 +2,7 @@
 
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { resolveI18nMessage } from "#shared-kernel/application/utils/resolveI18nMessage"
-import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
+import type { FeedCommentRecord, FeedPostRecord } from "../../../feed/domain/types/feed.types"
 
 export type PhotoCategoryKey =
   | "all"
@@ -25,11 +25,14 @@ export type PhotoRecord = {
   category: Exclude<PhotoCategoryKey, "all">
   albumTitle: string
   photographer: string
+  authorAvatarUrl: string
+  authorPath: string
   photographerRole: string
   location: string
   timeLabel: string
   likes: number
   comments: number
+  commentItems: FeedCommentRecord[]
   image: string
   accent: string
   tags: string[]
@@ -130,11 +133,14 @@ export function mapFeedPostsToPhotos(posts: FeedPostRecord[]): PhotoRecord[] {
           category: normalizePhotoCategory(post.category),
           albumTitle: post.sourceLabel === "page" ? "Page" : post.sourceLabel === "group" ? "Group" : "Feed",
           photographer: post.author,
+          authorAvatarUrl: post.authorAvatarUrl,
+          authorPath: post.authorPath,
           photographerRole: post.role,
           location: post.role,
           timeLabel: post.time,
           likes: post.stats.likes,
           comments: post.stats.comments,
+          commentItems: post.comments,
           image: item.src,
           accent: accentPalette[(index + mediaIndex) % accentPalette.length],
           tags: post.tags,

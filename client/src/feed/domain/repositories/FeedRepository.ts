@@ -3,6 +3,7 @@
 import type {
   FeedCreatePostResponse,
   FeedCreateStoryResponse,
+  FeedCommentRecord,
   FeedExploreResponse,
   FeedHomeResponse,
   FeedMemoriesResponse,
@@ -29,6 +30,7 @@ export interface FeedRepository {
   getExplore(input?: { limit?: number }): Promise<FeedExploreResponse>
   getMemories(): Promise<FeedMemoriesResponse>
   getPokes(): Promise<FeedPokeRecord[]>
+  getCommentReplies(input: { commentId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   runPostAction(input: {
     action: "like" | "reaction" | "comment" | "save" | "report"
     postId: number
@@ -37,6 +39,16 @@ export interface FeedRepository {
     imageFile?: File
     gifFile?: File
     audioFile?: File
+  }): Promise<FeedPostActionResult>
+  runCommentAction(input: {
+    action: "reply"
+    commentId: number
+    text?: string
+  } | {
+    action: "reaction"
+    target: "comment" | "reply"
+    targetId: number
+    reaction: FeedStoryReactionType
   }): Promise<FeedPostActionResult>
   createPost(input: {
     text: string

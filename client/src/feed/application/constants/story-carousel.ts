@@ -1,8 +1,10 @@
 // English description: Centralizes story carousel UI behavior constants used by the feed presentation layer.
 
-export const feedStoryCreatePath = "/status/create"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 
-export const feedHomePath = "/home"
+export const feedStoryCreatePath = appRoutes.statusCreate
+
+export const feedHomePath = appRoutes.feed
 
 export const feedStoryCreateRedirectDelay = 500
 

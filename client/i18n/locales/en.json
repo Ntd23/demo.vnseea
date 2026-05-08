@@ -5932,6 +5932,7 @@
         "statusErrorDescription": "Check the name, URL, description, and category before saving."
       },
       "sidebar": {
+        "owner": "Owner",
         "preview": "Preview after saving",
         "notes": "Admin Notes",
         "tip1Title": "Keep description clear",
@@ -5945,6 +5946,12 @@
         "category": "Category",
         "members": "Members",
         "inviteMore": "Invite more"
+      },
+      "preview": {
+        "eyebrow": "Preview",
+        "navDesc": "Review the banner, label, and main fanpage signals before saving.",
+        "share": "Share",
+        "follow": "Follow"
       },
       "empty": {
         "title": "Group to set up not found",
