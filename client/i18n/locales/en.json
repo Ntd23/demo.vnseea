@@ -6050,6 +6050,24 @@
           "desc": "Upload high-quality images to make your site stand out.",
           "navDesc": "Cover photo & profile"
         },
+        "admin": {
+          "eyebrow": "Admins List",
+          "title": "Administrators",
+          "desc": "Add or remove administrators for your page to manage content and settings together.",
+          "navDesc": "Administrators"
+        },
+        "analytics": {
+          "eyebrow": "Detailed statistics",
+          "title": "Page analytics",
+          "desc": "Track page performance, including likes, follows, and user interactions.",
+          "navDesc": "Analytics"
+        },
+        "delete": {
+          "eyebrow": "Danger Zone",
+          "title": "Delete page",
+          "desc": "Once you delete the page, all data including posts, images, and settings will be permanently deleted and cannot be restored.",
+          "navDesc": "Delete page"
+        },
         "signals": "Signals on",
         "followers": "Followers",
         "likes": "Likes",

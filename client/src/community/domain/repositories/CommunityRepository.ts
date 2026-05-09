@@ -25,4 +25,6 @@ export interface CommunityRepository {
   updatePage(slug: string, input: CommunityPageSettingsDraft): Promise<CommunityPageRecord>
   followPage(slug: string): Promise<CommunityPageRecord>
   getPagePosts(slug: string, input?: { limit?: number; afterPostId?: number }): Promise<FeedPostsResponse>
+  deletePage(id: number): Promise<void>
+  deleteGroup(id: number): Promise<void>
 }
