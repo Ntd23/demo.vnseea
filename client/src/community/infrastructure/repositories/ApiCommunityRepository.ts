@@ -67,31 +67,47 @@ export function createApiCommunityRepository(): CommunityRepository {
       return await client.post<CommunityPageRecord, CommunityDraft>(apiRoutes.community.pages, input)
     },
     async updatePage(slug: string, input: CommunityPageSettingsDraft) {
-      if (input.avatarFile || input.bannerFile) {
-        const formData = new FormData()
+      const formData = new FormData()
+      const fields: Array<keyof CommunityPageSettingsDraft> = [
+        "name",
+        "slug",
+        "summary",
+        "website",
+        "locationLabel",
+        "category",
+        "ctaLabel",
+        "responseLabel",
+        "ownerLabel",
+        "allowMessages",
+        "showFollowerCount",
+        "showLikeCount",
+        "showWebsite",
+        "recommendRelatedPages",
+      ]
 
-        Object.entries(input).forEach(([key, value]) => {
-          if (
-            value !== undefined &&
-            value !== null &&
-            !["avatarFile", "bannerFile", "avatarUrl", "bannerUrl"].includes(key)
-          ) {
-            formData.append(key, String(value))
-          }
-        })
-        if (input.avatarFile) formData.append("avatar", input.avatarFile)
-        if (input.bannerFile) formData.append("banner", input.bannerFile)
+      fields.forEach((key) => {
+        const value = input[key]
 
-        return await client.put<CommunityPageRecord>(
+        if (value !== undefined && value !== null) {
+          formData.append(key, typeof value === "boolean" ? (value ? "1" : "0") : String(value))
+        }
+      })
+
+      if (input.avatarFile) formData.append("avatar", input.avatarFile)
+      if (input.bannerFile) formData.append("banner", input.bannerFile)
+
+      try {
+        const result = await client.put<CommunityPageRecord, CommunityPageSettingsDraft>(
           apiRoutes.community.pageBySlug(slug),
           formData as any,
         )
-      }
 
-      return await client.put<CommunityPageRecord, CommunityPageSettingsDraft>(
-        apiRoutes.community.pageBySlug(slug),
-        input,
-      )
+        console.log(`[Repository] Update result for ${slug}:`, result)
+        return result
+      } catch (error) {
+        console.error(`[Repository] Update FAILED for ${slug}:`, error)
+        throw error
+      }
     },
     async followPage(slug: string) {
       return await client.post<CommunityPageRecord>(apiRoutes.community.pageFollow(slug))
@@ -102,11 +118,11 @@ export function createApiCommunityRepository(): CommunityRepository {
         afterPostId: input?.afterPostId,
       })
     },
-    async getGroupPosts(slug, input) {
-      return await client.get<FeedPostsResponse>(apiRoutes.community.groupPosts(slug), {
-        limit: input?.limit,
-        afterPostId: input?.afterPostId,
-      })
+    async deletePage(id: number) {
+      await client.delete(apiRoutes.community.pageById(id))
+    },
+    async deleteGroup(id: number) {
+      await client.delete(apiRoutes.community.groupById(id))
     },
   }
 }

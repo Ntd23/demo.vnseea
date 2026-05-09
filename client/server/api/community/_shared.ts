@@ -69,6 +69,7 @@ const accentPalette = [
   "#0369a1",
   "#7c3aed",
   "#0f766e",
+  "#0369a1",
 ] as const
 
 const asString = (value: unknown) =>
@@ -145,6 +146,14 @@ const normalizeGroupCategory = (value: unknown): CommunityGroupRecord["category"
 const normalizePageCategory = (value: unknown): CommunityPageRecord["category"] => {
   const normalized = asString(value).toLowerCase()
 
+  // Map backend IDs to frontend technical strings
+  if (normalized === "2") return "local-business"
+  if (normalized === "5") return "creator"
+  if (normalized === "4") return "brand"
+  if (normalized === "13") return "education"
+  if (normalized === "3") return "organization"
+  if (normalized === "12") return "service"
+
   if (["local-business", "creator", "brand", "education", "organization", "service"].includes(normalized)) {
     return normalized as CommunityPageRecord["category"]
   }
@@ -155,13 +164,14 @@ const normalizePageCategory = (value: unknown): CommunityPageRecord["category"] 
 const mapCtaIdToLabel = (id: unknown): string => {
   const sid = String(id || "0")
   switch (sid) {
-    case "1": return "Theo dõi"
-    case "2": return "Xem sản phẩm"
-    case "3": return "Xem ngay"
-    case "4": return "Gửi tin nhắn" // Note: can be 11 too
-    case "5": return "Đặt lịch"
-    case "11": return "Nhắn tin"
-    case "12": return "Gọi ngay"
+    case "1": return "follow"
+    case "2": return "catalog"
+    case "3": return "view"
+    case "5": return "booking"
+    case "11": return "message"
+    case "12": return "call"
+    case "16": return "call"
+    case "21": return "booking"
     default: return ""
   }
 }
@@ -266,7 +276,7 @@ export const mapCommunityPageRecord = (
   const cover = firstString(entity, ["cover", "cover_full", "avatar", "avatar_full"])
   const avatar = firstString(entity, ["avatar", "avatar_full"])
 
-  return {
+  const record: CommunityPageRecord = {
     id,
     name,
     slug,
@@ -282,7 +292,7 @@ export const mapCommunityPageRecord = (
     website: normalizeUrl(firstString(entity, ["website"])),
     locationLabel: firstString(entity, ["address", "location"]),
     foundedLabel: firstString(entity, ["registered", "time_text"]),
-    ctaLabel: firstString(entity, ["call_action_type_text"]) || mapCtaIdToLabel(entity.call_action_type),
+    ctaLabel: mapCtaIdToLabel(entity.call_action_type) || firstString(entity, ["call_action_type_text"]),
     canManage: isTruthy(entity.is_owner) || (ownerId > 0 && ownerId === options.currentUserId),
     tags: toUniqueList([
       firstString(entity, ["category_name"]),
@@ -290,6 +300,16 @@ export const mapCommunityPageRecord = (
     ]),
     following: isTruthy(entity.is_liked),
   }
+
+  console.log(`[Mapper] Mapped page ${record.slug}:`, {
+    raw_category: entity.page_category || entity.category,
+    mapped_category: record.category,
+    raw_cta: entity.call_action_type,
+    mapped_cta: record.ctaLabel,
+    avatar: record.avatarUrl,
+  })
+
+  return record
 }
 
 export async function fetchCommunityGroups(

@@ -118,8 +118,10 @@ export const apiRoutes = {
     groupJoin: (slug: string) => `community/groups/${encodeSegment(slug)}/join`,
     pages: "community/pages",
     pageBySlug: (slug: string) => `community/pages/${encodeSegment(slug)}`,
+    pageById: (id: number | string) => `community/pages/id/${encodeSegment(id)}`,
     pagePosts: (slug: string) => `community/pages/${encodeSegment(slug)}/posts`,
     pageFollow: (slug: string) => `community/pages/${encodeSegment(slug)}/follow`,
+    groupById: (id: number | string) => `community/groups/id/${encodeSegment(id)}`,
   },
   checkout: {
     snapshot: "checkout/snapshot",

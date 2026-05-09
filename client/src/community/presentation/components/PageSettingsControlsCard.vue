@@ -7,9 +7,9 @@
   >
     <template #trailing>
       <div class="flex items-center gap-3">
-        <span class="page-settings-controls__selected">
+        <!-- <span class="page-settings-controls__selected">
           {{ selectedCtaLabel }}
-        </span>
+        </span> -->
         <slot name="trailing" />
       </div>
     </template>
@@ -22,10 +22,10 @@
             :key="option.value"
             type="button"
             class="cta-card flex flex-col items-center p-6 text-center transition-all duration-300"
-            :class="selectedCtaLabel === option.labelText
+            :class="model.ctaLabel === option.value
               ? 'cta-card--active'
               : 'cta-card--inactive'"
-            @click="model.ctaLabel = option.labelText"
+            @click="model.ctaLabel = option.value"
           >
             <div class="cta-card__icon-wrap mb-6">
               <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-12 w-12" />

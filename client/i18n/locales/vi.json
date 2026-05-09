@@ -6057,6 +6057,24 @@
           "desc": "Tải lên những hình ảnh chất lượng cao để làm cho trang của bạn nổi bật hơn.",
           "navDesc": "Ảnh bìa & đại diện"
         },
+        "admin": {
+          "eyebrow": "Danh sách quản trị viên",
+          "title": "Quản trị viên",
+          "desc": "Thêm hoặc xóa các quản trị viên cho trang của bạn để cùng quản lý nội dung và cài đặt.",
+          "navDesc": "Quản trị viên"
+        },
+        "analytics": {
+          "eyebrow": "Thống kê chi tiết",
+          "title": "Phân tích trang",
+          "desc": "Theo dõi hiệu suất của trang, bao gồm lượt thích, lượt theo dõi và tương tác của người dùng.",
+          "navDesc": "Phân tích"
+        },
+        "delete": {
+          "eyebrow": "Khu vực nguy hiểm",
+          "title": "Xóa trang",
+          "desc": "Một khi bạn xóa trang, mọi dữ liệu bao gồm bài viết, hình ảnh và cài đặt sẽ bị xóa vĩnh viễn và không thể khôi phục.",
+          "navDesc": "Xóa trang"
+        },
         "signals": "Tín hiệu bật",
         "followers": "Theo dõi",
         "likes": "Yêu thích",
