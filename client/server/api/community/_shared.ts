@@ -115,6 +115,14 @@ const normalizeUrl = (value: string) => {
   return `https://${value}`
 }
 
+const normalizeImagePath = (path: string, baseUrl: string) => {
+  if (!path) return ""
+  if (/^https?:\/\//i.test(path)) return path
+  const cleanBase = baseUrl.replace(/\/+$/, "")
+  const cleanPath = path.startsWith("/") ? path : `/${path}`
+  return `${cleanBase}${cleanPath}`
+}
+
 const normalizeGroupPrivacy = (value: unknown): CommunityGroupRecord["privacy"] => {
   const normalized = asString(value).toLowerCase()
 
@@ -195,6 +203,7 @@ export const mapCommunityGroupRecord = (
   options: {
     segment?: CommunityGroupRecord["segment"]
     currentUserId?: number
+    baseUrl?: string
   } = {},
 ): CommunityGroupRecord => {
   const id = firstNumber(entity, ["group_id", "id"])
@@ -203,7 +212,12 @@ export const mapCommunityGroupRecord = (
   const members = firstNumber(entity, ["members", "members_count"])
   const postCount = firstNumber(entity, ["post_count", "posts_count"])
   const ownerId = firstNumber(entity, ["user_id"])
-  const cover = firstString(entity, ["cover", "cover_full", "avatar", "avatar_full"])
+  const cover = firstString(entity, ["cover", "cover_full"])
+  const avatar = firstString(entity, ["avatar", "avatar_full"])
+
+  if (slug.includes("am-tham-ben-em")) {
+    console.log("[Mapper] Group entity for am-tham-ben-em:", JSON.stringify(entity, null, 2))
+  }
 
   return {
     id,
@@ -213,7 +227,7 @@ export const mapCommunityGroupRecord = (
     members,
     privacy: normalizeGroupPrivacy(entity.privacy),
     category: normalizeGroupCategory(entity.category),
-    banner: createBannerBackground(cover, id),
+    banner: createBannerBackground(normalizeImagePath(cover, options.baseUrl || ""), id),
     accent: createAccent(id),
     segment: options.segment ?? "suggested",
     activityLabel: postCount > 0 ? `${postCount}` : "",
@@ -228,6 +242,13 @@ export const mapCommunityGroupRecord = (
     canManage: isTruthy(entity.is_owner) || (ownerId > 0 && ownerId === options.currentUserId),
     guidelines: [],
     joined: isTruthy(entity.is_joined),
+    joinApproval: String(entity.join_privacy) === "2",
+    postApproval: isTruthy(entity.post_privacy),
+    allowMemberInvites: isTruthy(entity.allow_member_invites),
+    showMemberDirectory: isTruthy(entity.show_member_directory),
+    welcomePostEnabled: isTruthy(entity.welcome_post_enabled),
+    bannerUrl: normalizeImagePath(cover, options.baseUrl || ""),
+    avatar: normalizeImagePath(avatar, options.baseUrl || ""),
   }
 }
 
@@ -235,6 +256,7 @@ export const mapCommunityPageRecord = (
   entity: BackendEntity,
   options: {
     currentUserId?: number
+    baseUrl?: string
   } = {},
 ): CommunityPageRecord => {
   const id = firstNumber(entity, ["page_id", "id"])
@@ -250,8 +272,8 @@ export const mapCommunityPageRecord = (
     slug,
     summary: firstString(entity, ["page_description", "about", "description"]),
     category: normalizePageCategory(entity.page_category || entity.category),
-    banner: createBannerBackground(cover, id),
-    avatarUrl: avatar,
+    banner: createBannerBackground(normalizeImagePath(cover, options.baseUrl || ""), id),
+    avatarUrl: normalizeImagePath(avatar, options.baseUrl || ""),
     accent: createAccent(id),
     followers: firstNumber(entity, ["followers", "followers_count"]),
     likes: firstNumber(entity, ["likes", "likes_count"]),
@@ -276,6 +298,8 @@ export async function fetchCommunityGroups(
 ) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
+  const runtimeConfig = useRuntimeConfig(event)
+  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
   const response = assertBackendApiSuccess(
     await client.post<BackendCommunityResponse, Record<string, unknown>>(
       "get-community",
@@ -292,6 +316,7 @@ export async function fetchCommunityGroups(
     mapCommunityGroupRecord(entity, {
       segment: fetch === "joined_groups" ? "joined" : "suggested",
       currentUserId: asNumber(currentUser.user_id),
+      baseUrl,
     }),
   )
 }
@@ -299,6 +324,8 @@ export async function fetchCommunityGroups(
 export async function fetchSuggestedCommunityGroups(event: H3Event) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
+  const runtimeConfig = useRuntimeConfig(event)
+  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
   const response = assertBackendApiSuccess(
     await client.post<BackendRecommendedResponse, Record<string, unknown>>(
       "fetch-recommended",
@@ -314,6 +341,7 @@ export async function fetchSuggestedCommunityGroups(event: H3Event) {
     mapCommunityGroupRecord(entity, {
       segment: "suggested",
       currentUserId: asNumber(currentUser.user_id),
+      baseUrl,
     }),
   )
 }
@@ -324,6 +352,8 @@ export async function fetchCommunityPages(
 ) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
+  const runtimeConfig = useRuntimeConfig(event)
+  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
   const response = assertBackendApiSuccess(
     await client.post<BackendCommunityResponse, Record<string, unknown>>(
       "get-community",
@@ -339,6 +369,7 @@ export async function fetchCommunityPages(
   return extractPagesFromResponse(response, fetch).map(entity =>
     mapCommunityPageRecord(entity, {
       currentUserId: asNumber(currentUser.user_id),
+      baseUrl,
     }),
   )
 }
@@ -346,6 +377,8 @@ export async function fetchCommunityPages(
 export async function fetchSuggestedCommunityPages(event: H3Event) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
+  const runtimeConfig = useRuntimeConfig(event)
+  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
   const response = assertBackendApiSuccess(
     await client.post<BackendRecommendedResponse, Record<string, unknown>>(
       "fetch-recommended",
@@ -360,6 +393,7 @@ export async function fetchSuggestedCommunityPages(event: H3Event) {
   return (response.data ?? []).map(entity =>
     mapCommunityPageRecord(entity, {
       currentUserId: asNumber(currentUser.user_id),
+      baseUrl,
     }),
   )
 }
@@ -426,8 +460,12 @@ export async function resolveGroupRecordBySlug(event: H3Event, slug: string) {
     })
   }
 
+  const runtimeConfig = useRuntimeConfig(event)
+  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+
   return mapCommunityGroupRecord(detailResponse.group_data, {
     currentUserId: asNumber(currentUser.user_id),
+    baseUrl,
   })
 }
 
@@ -493,7 +531,11 @@ export async function resolvePageRecordBySlug(event: H3Event, slug: string) {
     })
   }
 
+  const runtimeConfig = useRuntimeConfig(event)
+  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+
   return mapCommunityPageRecord(detailResponse.page_data, {
     currentUserId: asNumber(currentUser.user_id),
+    baseUrl,
   })
 }

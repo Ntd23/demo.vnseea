@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import CommunityPresentationPageDetailPage from "../../../src/community/presentation/pages/PageDetailPage.vue"
-import { useCommunityPageDetail } from "../../../src/community/application/composables/useCommunityPageDetail"
+import { useCommunityPageDetailPageVM } from "../../../src/community/application/view-models/useCommunityPageDetailPageVM"
 
 definePageMeta({ layout: "default" })
 
@@ -15,12 +15,10 @@ const route = useRoute()
 const requestURL = useRequestURL()
 const translateText = useMaybeTranslatedText()
 
-const { page } = useCommunityPageDetail(
-  computed(() => String(route.params.name || "")),
-)
+const { page, slug } = useCommunityPageDetailPageVM()
 
 const canonicalUrl = computed(() =>
-  new URL(`/p/${String(route.params.name || "")}`, requestURL.origin).toString(),
+  new URL(`/p/${slug.value}`, requestURL.origin).toString(),
 )
 
 const hasPreviewQuery = computed(() =>

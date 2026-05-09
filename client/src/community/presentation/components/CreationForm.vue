@@ -223,7 +223,7 @@ watch(
   () => model.value.name,
   (value, previousValue) => {
     const previousSuggestedSlug = createCommunitySlug(previousValue || "")
-    const currentSlug = model.value.slug.trim()
+    const currentSlug = (model.value.slug || "").trim()
     if (!currentSlug || currentSlug === previousSuggestedSlug) {
       model.value.slug = createCommunitySlug(value)
     }
@@ -232,11 +232,11 @@ watch(
 
 const validateForm = (state: CommunityDraft): CreationFormError[] => {
   const errors: CreationFormError[] = []
-  const slug = state.slug.trim()
-  if (!state.name.trim()) errors.push({ name: "name", message: t("community.creation.common.validationNameRequired") })
+  const slug = (state.slug || "").trim()
+  if (!(state.name || "").trim()) errors.push({ name: "name", message: t("community.creation.common.validationNameRequired") })
   if (!slug) errors.push({ name: "slug", message: t("community.creation.common.validationSlugRequired") })
   else if (slug.length < 5 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) errors.push({ name: "slug", message: t("community.creation.common.validationSlugInvalid") })
-  if (state.description.trim().length < 24) errors.push({ name: "description", message: t("community.creation.common.validationDescriptionRequired") })
+  if ((state.description || "").trim().length < 24) errors.push({ name: "description", message: t("community.creation.common.validationDescriptionRequired") })
   if (props.showPrivacy && !state.privacy) errors.push({ name: "privacy", message: t("community.creation.common.validationPrivacyRequired") })
   if (!state.category) errors.push({ name: "category", message: t("community.creation.common.validationCategoryRequired") })
   return errors

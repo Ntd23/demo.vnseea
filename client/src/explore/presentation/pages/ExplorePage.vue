@@ -89,9 +89,7 @@ import FoundationEmptyState from "../../../foundation/presentation/components/Em
 import { useExplorePageVM } from "../../application/view-models/useExplorePageVM"
 
 const { t } = useI18n()
-const { loading, errorMessage, mediaPosts, fetchExplore } = useExplorePageVM()
-
-await fetchExplore()
+const { loading, errorMessage, mediaPosts } = useExplorePageVM()
 </script>
 
 <style scoped>

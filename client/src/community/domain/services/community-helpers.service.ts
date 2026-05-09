@@ -14,9 +14,9 @@ export function getCommunityCompletionCount(
   const includePrivacy = options?.includePrivacy ?? true
 
   return [
-    draft.name.trim(),
-    draft.slug.trim(),
-    draft.description.trim(),
+    (draft.name || "").trim(),
+    (draft.slug || "").trim(),
+    (draft.description || "").trim(),
     includePrivacy ? draft.privacy : "skip",
     draft.category,
   ].filter(Boolean).length

@@ -2,9 +2,19 @@
 <template>
   <article class="group-card">
     <div class="group-card__main">
-      <NuxtLink :to="groupTo" class="group-card__avatar" :style="{ background: group.banner }" :aria-label="groupName">
+      <NuxtLink 
+        :to="groupTo" 
+        class="group-card__avatar" 
+        :style="{ background: !group.avatar ? group.banner : 'transparent' }"
+        :aria-label="groupName"
+      >
+        <img 
+          v-if="group.avatar" 
+          :src="group.avatar" 
+          class="absolute inset-0 h-full w-full object-cover" 
+        />
         <span class="group-card__avatar-overlay" />
-        <Icon name="i-ph-users-three-fill" class="group-card__avatar-icon" />
+        <Icon v-if="!group.avatar" name="i-ph-users-three-fill" class="group-card__avatar-icon" />
       </NuxtLink>
 
       <div class="group-card__content">

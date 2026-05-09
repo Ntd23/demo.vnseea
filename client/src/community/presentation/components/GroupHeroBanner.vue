@@ -1,24 +1,30 @@
 <template>
-  <section class="overflow-hidden rounded-3xl border border-slate-200 bg-slate-900 shadow-lg">
+  <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
     <!-- Header/Cover Area -->
-    <div class="relative h-48 sm:h-64 overflow-hidden">
-      <div class="absolute inset-0" :style="bannerStyle" />
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
+    <div class="relative w-full overflow-hidden bg-slate-800" style="height: 300px !important; display: block !important;">
+      <img 
+        v-if="group.bannerUrl" 
+        :src="group.bannerUrl" 
+        class="absolute inset-0 h-full w-full object-cover transition-opacity duration-700"
+        loading="lazy"
+      />
+      <div v-else class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
       
       <!-- Top Badges (Minimal) -->
       <div class="absolute top-6 left-6 flex gap-2">
-        <span class="rounded-full bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm ring-1 ring-white/20">
+        <span class="rounded-full bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md ring-1 ring-white/20">
           {{ privacyLabel }}
         </span>
-        <span class="rounded-full bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-sm ring-1 ring-white/20">
+        <span class="rounded-full bg-black/40 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur-md ring-1 ring-white/20">
           {{ categoryLabel }}
         </span>
       </div>
     </div>
 
     <!-- Info Area -->
-    <div class="px-6 pb-8 sm:px-10">
-      <div class="relative -mt-16 flex flex-col gap-6 sm:-mt-20 sm:flex-row sm:items-end sm:justify-between">
+    <div style="padding: 0 40px 32px 40px;">
+      <div style="position: relative; margin-top: -80px; display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px;">
         <!-- Avatar + Title Group -->
         <div class="flex flex-col gap-6 sm:flex-row sm:items-end">
           <!-- Big Avatar/Icon -->
@@ -116,20 +122,6 @@ const emit = defineEmits<{
   join: []
   invite: []
 }>()
-
-const bannerStyle = computed(() => {
-  if (props.group.banner && props.group.banner.startsWith("http")) {
-    return {
-      backgroundImage: `url(${props.group.banner})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-    }
-  }
-
-  return {
-    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-  }
-})
 
 const avatarLabel = computed(() =>
   getCommunityInitials(translateText(props.group.name)),

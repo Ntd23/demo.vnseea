@@ -5872,7 +5872,14 @@
           "tags": "Thẻ chủ đề",
           "tagsPlaceholder": "xe điện, trạm sạc, review",
           "guidelines": "Nội quy hiển thị trên trang nhóm",
-          "guidelinesPlaceholder": "Mỗi dòng là một nguyên tắc. Ví dụ: Ưu tiên bài chia sẻ có ngữ cảnh thực tế."
+          "guidelinesPlaceholder": "Mỗi dòng là một nguyên tắc. Ví dụ: Ưu tiên bài chia sẻ có ngữ cảnh thực tế.",
+          "media": "Hồ sơ hình ảnh",
+          "groupMedia": "Hồ sơ hình ảnh",
+          "addBanner": "Thêm ảnh bìa",
+          "addAvatar": "Đổi ảnh đại diện",
+          "minChars": "ký tự tối thiểu",
+          "bannerHint": "Khuyến nghị: 1500x500px",
+          "changePhoto": "Thay đổi"
         },
         "stats": {
           "descLength": "Độ dài mô tả",

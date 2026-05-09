@@ -28,6 +28,27 @@ export function createApiCommunityRepository(): CommunityRepository {
       return await client.post<CommunityGroupRecord, CommunityDraft>(apiRoutes.community.groups, input)
     },
     async updateGroup(slug: string, input: CommunityGroupSettingsDraft) {
+      if (input.avatarFile || input.bannerFile) {
+        const formData = new FormData()
+
+        Object.entries(input).forEach(([key, value]) => {
+          if (
+            value !== undefined &&
+            value !== null &&
+            !["avatarFile", "bannerFile", "avatarUrl", "bannerUrl"].includes(key)
+          ) {
+            formData.append(key, String(value))
+          }
+        })
+        if (input.avatarFile) formData.append("avatar", input.avatarFile)
+        if (input.bannerFile) formData.append("banner", input.bannerFile)
+
+        return await client.put<CommunityGroupRecord>(
+          apiRoutes.community.groupBySlug(slug),
+          formData as any,
+        )
+      }
+
       return await client.put<CommunityGroupRecord, CommunityGroupSettingsDraft>(
         apiRoutes.community.groupBySlug(slug),
         input,
@@ -48,8 +69,13 @@ export function createApiCommunityRepository(): CommunityRepository {
     async updatePage(slug: string, input: CommunityPageSettingsDraft) {
       if (input.avatarFile || input.bannerFile) {
         const formData = new FormData()
+
         Object.entries(input).forEach(([key, value]) => {
-          if (value !== undefined && value !== null && key !== "avatarFile" && key !== "bannerFile") {
+          if (
+            value !== undefined &&
+            value !== null &&
+            !["avatarFile", "bannerFile", "avatarUrl", "bannerUrl"].includes(key)
+          ) {
             formData.append(key, String(value))
           }
         })
@@ -57,7 +83,7 @@ export function createApiCommunityRepository(): CommunityRepository {
         if (input.bannerFile) formData.append("banner", input.bannerFile)
 
         return await client.put<CommunityPageRecord>(
-          communityApiRoutes.pageBySlug(slug),
+          apiRoutes.community.pageBySlug(slug),
           formData as any,
         )
       }
@@ -72,6 +98,12 @@ export function createApiCommunityRepository(): CommunityRepository {
     },
     async getPagePosts(slug, input) {
       return await client.get<FeedPostsResponse>(apiRoutes.community.pagePosts(slug), {
+        limit: input?.limit,
+        afterPostId: input?.afterPostId,
+      })
+    },
+    async getGroupPosts(slug, input) {
+      return await client.get<FeedPostsResponse>(apiRoutes.community.groupPosts(slug), {
         limit: input?.limit,
         afterPostId: input?.afterPostId,
       })

@@ -28,7 +28,7 @@ export function useCommunityGroupSettingPageVM(
   const toast = useToast()
   const translateText = useMaybeTranslatedText()
 
-  const { group, members, memberCountLabel } = useCommunityGroupDetail(computed(() => String(route.params.group || "")))
+  const { group, members, memberCountLabel, status } = useCommunityGroupDetail(computed(() => String(route.params.group || "")))
 
   const draft = ref<CommunityGroupSettingsDraft>(createCommunityGroupSettingsDraft())
   const saveState = ref<GroupSettingsState>("idle")
@@ -43,27 +43,18 @@ export function useCommunityGroupSettingPageVM(
     { initOnMounted: true },
   )
 
-  const normalizedTags = computed(() =>
-    draft.value.tags.split(",").map(tag => tag.trim()).filter(Boolean),
-  )
-  const normalizedGuidelines = computed(() =>
-    draft.value.guidelines.split("\n").map(rule => rule.trim()).filter(Boolean),
-  )
-
   const previewGroup = computed<CommunityGroupRecord | null>(() => {
     if (!group.value) return null
 
     return {
       ...group.value,
-      name: draft.value.name.trim() || group.value.name,
-      slug: draft.value.slug.trim() || group.value.slug,
-      summary: draft.value.summary.trim() || group.value.summary,
-      website: draft.value.website.trim() || group.value.website,
-      locationLabel: draft.value.locationLabel.trim() || group.value.locationLabel,
+      name: (draft.value.name || "").trim() || group.value.name,
+      slug: (draft.value.slug || "").trim() || group.value.slug,
+      summary: (draft.value.summary || "").trim() || group.value.summary,
       privacy: draft.value.privacy,
       category: draft.value.category,
-      tags: normalizedTags.value.length > 0 ? normalizedTags.value : group.value.tags,
-      guidelines: normalizedGuidelines.value.length > 0 ? normalizedGuidelines.value : group.value.guidelines,
+      avatar: draft.value.avatarUrl || group.value.avatar,
+      banner: draft.value.bannerUrl || group.value.banner,
     }
   })
 
@@ -80,19 +71,15 @@ export function useCommunityGroupSettingPageVM(
     t(getCommunityOptionLabel(communityCategoryOptions, draft.value.category, "community.groups.card.noCategory")),
   )
 
-  const totalPolicies = 5
+  const totalPolicies = 1
   const enabledPolicies = computed(() =>
     [
       draft.value.joinApproval,
-      draft.value.postApproval,
-      draft.value.allowMemberInvites,
-      draft.value.showMemberDirectory,
-      draft.value.welcomePostEnabled,
     ].filter(Boolean).length,
   )
 
   const visibleMembers = computed(() =>
-    members.value.slice(0, draft.value.showMemberDirectory ? 5 : 3),
+    members.value.slice(0, 3),
   )
 
   const groupPath = computed(() =>
@@ -107,9 +94,9 @@ export function useCommunityGroupSettingPageVM(
   const isBusy = computed(() => saveState.value === "loading")
   const isSaveDisabled = computed(() =>
     isBusy.value
-    || !draft.value.name.trim()
-    || !draft.value.slug.trim()
-    || draft.value.summary.trim().length < 24
+    || !(draft.value.name || "").trim()
+    || !(draft.value.slug || "").trim()
+    || (draft.value.summary || "").trim().length < 24
     || !draft.value.category,
   )
 
@@ -159,7 +146,13 @@ export function useCommunityGroupSettingPageVM(
     () => normalizeDraft(draft.value),
     (value) => {
       if (!storageHydrated.value || !group.value) return
-      draftStorage.value = { ...value }
+      // We don't want to store File objects or temporary blob URLs in local storage
+      const storageValue = { ...value }
+      delete storageValue.avatarFile
+      delete storageValue.bannerFile
+      delete storageValue.avatarUrl
+      delete storageValue.bannerUrl
+      draftStorage.value = storageValue
     },
     { debounce: 250, maxWait: 1000 },
   )
@@ -198,12 +191,14 @@ export function useCommunityGroupSettingPageVM(
         color: "success",
       })
     }
-    catch {
+    catch (err: any) {
       saveState.value = "error"
+
+      const errorMessage = err?.data?.message || err?.message || t("community.settings.finish.statusErrorDescription")
 
       toast.add({
         title: t("community.settings.finish.statusErrorTitle"),
-        description: t("community.settings.finish.statusErrorDescription"),
+        description: errorMessage,
         color: "error",
       })
     }
@@ -217,15 +212,16 @@ export function useCommunityGroupSettingPageVM(
     if (!group.value) return
 
     const baseDraft = createLocalizedDraft(group.value)
-    const restoredDraft = storageHydrated.value && draftStorage.value
-      ? normalizeDraft(draftStorage.value)
+    const stored = draftStorage.value
+    const restoredDraft = storageHydrated.value && stored && (stored.name || stored.summary)
+      ? normalizeDraft(stored)
       : null
 
+    const shouldRestore = restoredDraft && !isSameDraft(restoredDraft, baseDraft)
+
     applyDraft(
-      restoredDraft && !isSameDraft(restoredDraft, baseDraft)
-        ? { ...baseDraft, ...restoredDraft }
-        : baseDraft,
-      Boolean(restoredDraft && !isSameDraft(restoredDraft, baseDraft)),
+      shouldRestore ? { ...baseDraft, ...restoredDraft } : baseDraft,
+      Boolean(shouldRestore),
     )
   }
 
@@ -241,27 +237,20 @@ export function useCommunityGroupSettingPageVM(
   }
 
   function createLocalizedDraft(value: CommunityGroupRecord): CommunityGroupSettingsDraft {
-    return {
-      ...createCommunityGroupSettingsDraft(value),
-      name: translateText(value.name, value.slug),
-      summary: translateText(value.summary),
-      locationLabel: translateText(value.locationLabel),
-      tags: value.tags.map(tag => translateText(tag, tag)).join(", "),
-      guidelines: (value.guidelines ?? []).map(rule => translateText(rule, rule)).join("\n"),
-    }
+    return createCommunityGroupSettingsDraft(value)
   }
 
   function normalizeDraft(value: CommunityGroupSettingsDraft): CommunityGroupSettingsDraft {
     return {
       ...value,
-      name: value.name.trim(),
-      slug: value.slug.trim(),
-      summary: value.summary.trim(),
-      website: value.website.trim(),
-      locationLabel: value.locationLabel.trim(),
-      category: value.category.trim(),
-      tags: value.tags.split(",").map(tag => tag.trim()).filter(Boolean).join(", "),
-      guidelines: value.guidelines.split("\n").map(rule => rule.trim()).filter(Boolean).join("\n"),
+      name: (value.name || "").trim(),
+      slug: (value.slug || "").trim(),
+      summary: (value.summary || "").trim(),
+      website: (value.website || "").trim(),
+      locationLabel: (value.locationLabel || "").trim(),
+      category: (value.category || "").trim(),
+      tags: (value.tags || "").split(",").map(tag => tag.trim()).filter(Boolean).join(", "),
+      guidelines: (value.guidelines || "").split("\n").map(rule => rule.trim()).filter(Boolean).join("\n"),
     }
   }
 
@@ -271,9 +260,9 @@ export function useCommunityGroupSettingPageVM(
 
   const validateDraft = (state: CommunityGroupSettingsDraft): GroupSettingsError[] => {
     const errors: GroupSettingsError[] = []
-    const slug = state.slug.trim()
+    const slug = (state.slug || "").trim()
 
-    if (!state.name.trim()) {
+    if (!(state.name || "").trim()) {
       errors.push({ name: "name", message: t("community.creation.common.validationNameRequired") })
     }
 
@@ -284,7 +273,7 @@ export function useCommunityGroupSettingPageVM(
       errors.push({ name: "slug", message: t("community.creation.common.validationSlugInvalid") })
     }
 
-    if (state.summary.trim().length < 24) {
+    if ((state.summary || "").trim().length < 24) {
       errors.push({ name: "summary", message: t("community.creation.common.validationDescriptionRequired") })
     }
 
@@ -297,6 +286,7 @@ export function useCommunityGroupSettingPageVM(
 
   return {
     group,
+    status,
     previewGroup,
     translatedGroupName,
     memberCountLabel,

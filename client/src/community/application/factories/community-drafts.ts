@@ -22,11 +22,13 @@ export function createCommunityGroupSettingsDraft(
     category: group?.category ?? getDefaultCommunityCategory(),
     tags: group?.tags.join(", ") ?? "",
     guidelines: group?.guidelines?.join("\n") ?? "",
-    joinApproval: group?.privacy !== "public",
-    postApproval: group?.privacy === "private" || group?.privacy === "secret",
-    allowMemberInvites: true,
-    showMemberDirectory: true,
-    welcomePostEnabled: true,
+    joinApproval: group?.joinApproval ?? group?.privacy !== "public",
+    postApproval: group?.postApproval ?? (group?.privacy === "private" || group?.privacy === "secret"),
+    allowMemberInvites: group?.allowMemberInvites ?? true,
+    showMemberDirectory: group?.showMemberDirectory ?? true,
+    welcomePostEnabled: group?.welcomePostEnabled ?? true,
+    avatarUrl: group?.avatar,
+    bannerUrl: group?.bannerUrl || group?.banner,
   }
 }
 
