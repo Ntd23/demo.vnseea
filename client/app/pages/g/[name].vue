@@ -4,21 +4,18 @@
 
 <script setup lang="ts">
 import CommunityPresentationGroupDetailPage from "../../../src/community/presentation/pages/GroupDetailPage.vue"
-import { useCommunityGroupDetail } from "../../../src/community/application/composables/useCommunityGroupDetail"
+import { useCommunityGroupDetailPageVM } from "../../../src/community/application/view-models/useCommunityGroupDetailPageVM"
 
 definePageMeta({ layout: "default" })
 
 const { t } = useI18n()
-const route = useRoute()
 const requestURL = useRequestURL()
 const translateText = useMaybeTranslatedText()
 
-const { group } = useCommunityGroupDetail(
-  computed(() => String(route.params.name || "")),
-)
+const { group, slug } = useCommunityGroupDetailPageVM()
 
 const canonicalUrl = computed(() =>
-  new URL(`/g/${String(route.params.name || "")}`, requestURL.origin).toString(),
+  new URL(`/g/${slug.value}`, requestURL.origin).toString(),
 )
 
 const metaTitle = computed(() => {

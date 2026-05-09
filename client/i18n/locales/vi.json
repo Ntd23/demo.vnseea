@@ -4085,7 +4085,9 @@
       "tooltipVoice": "Ghi am",
       "removeAttachment": "Xoa tep dinh kem",
       "recording": "Dang ghi am...",
-      "selectedAttachment": "Da chon tep dinh kem"
+      "selectedAttachment": "Da chon tep dinh kem",
+      "microphoneUnavailable": "Khong the ghi am trong boi canh trinh duyet hien tai.",
+      "microphonePermissionDenied": "Ban da tu choi quyen truy cap microphone."
     },
     "publisherBox": {
       "prompt": "Chuyện gì đang xảy ra vậy? Hashtag, mention, link...",
@@ -5872,7 +5874,14 @@
           "tags": "Thẻ chủ đề",
           "tagsPlaceholder": "xe điện, trạm sạc, review",
           "guidelines": "Nội quy hiển thị trên trang nhóm",
-          "guidelinesPlaceholder": "Mỗi dòng là một nguyên tắc. Ví dụ: Ưu tiên bài chia sẻ có ngữ cảnh thực tế."
+          "guidelinesPlaceholder": "Mỗi dòng là một nguyên tắc. Ví dụ: Ưu tiên bài chia sẻ có ngữ cảnh thực tế.",
+          "media": "Hồ sơ hình ảnh",
+          "groupMedia": "Hồ sơ hình ảnh",
+          "addBanner": "Thêm ảnh bìa",
+          "addAvatar": "Đổi ảnh đại diện",
+          "minChars": "ký tự tối thiểu",
+          "bannerHint": "Khuyến nghị: 1500x500px",
+          "changePhoto": "Thay đổi"
         },
         "stats": {
           "descLength": "Độ dài mô tả",
@@ -5914,7 +5923,14 @@
           }
         }
       },
-      "finish": {
+        "admins": {
+          "eyebrow": "Quan tri",
+          "title": "Quan tri vien",
+          "desc": "Xem quan tri vien chinh cua trang voi bo cuc gon, giong Facebook hon.",
+          "navDesc": "Truy cap quan tri chinh",
+          "primaryRole": "Quan tri vien chinh"
+        },
+        "finish": {
         "eyebrow": "Hoàn tất",
         "title": "Hành động nhanh",
         "desc": "Bạn có thể quay lại trang nhóm hoặc tiếp tục tinh chỉnh cấu hình ngay tại đây.",

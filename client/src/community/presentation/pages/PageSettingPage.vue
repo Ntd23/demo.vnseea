@@ -861,6 +861,97 @@ const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] =
   opacity: 0.55;
 }
 
+.page-settings__admins {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.page-settings__admin-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 14px 16px;
+}
+
+.page-settings__admin-main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-settings__admin-avatar {
+  display: flex;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.page-settings__admin-avatar-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page-settings__admin-copy {
+  min-width: 0;
+}
+
+.page-settings__admin-name {
+  overflow: hidden;
+  margin: 0;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-settings__admin-role {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.page-settings__admin-menu {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #475569;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.page-settings__admin-menu:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.page-settings__admins-placeholder {
+  display: none;
+}
+
 .page-settings-sidebar :deep(progress),
 .page-settings-sidebar :deep([role="progressbar"]) {
   background-color: #dbeafe;

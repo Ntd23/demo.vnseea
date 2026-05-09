@@ -8,40 +8,34 @@ export function useExplorePageVM(
 ) {
   const { t } = useI18n()
 
-  const loading = ref(true)
-  const errorMessage = ref("")
-  const response = ref<FeedExploreResponse>({
-    posts: [],
-    users: [],
-    pages: [],
-    hashtags: [],
-    announcement: null,
-  })
+  const { data, status, error } = useAsyncData(
+    "explore:discovery",
+    () => repository.getExplore({ limit: 18 }),
+    {
+      default: () => ({
+        posts: [],
+        users: [],
+        pages: [],
+        hashtags: [],
+        announcement: null,
+      } as FeedExploreResponse),
+      lazy: true,
+      server: false,
+    },
+  )
+
+  const loading = computed(() => status.value === "pending" || status.value === "idle")
+  const errorMessage = computed(() => error.value ? (error.value instanceof Error ? error.value.message : t("pages.explorePage.emptyDescription")) : "")
+  const response = computed(() => data.value as FeedExploreResponse)
 
   const mediaPosts = computed(() =>
     response.value.posts.filter(post => post.mediaItems.length > 0),
   )
-
-  async function fetchExplore() {
-    loading.value = true
-    errorMessage.value = ""
-
-    try {
-      response.value = await repository.getExplore({ limit: 18 })
-    }
-    catch (error) {
-      errorMessage.value = error instanceof Error ? error.message : t("pages.explorePage.emptyDescription")
-    }
-    finally {
-      loading.value = false
-    }
-  }
 
   return {
     loading,
     errorMessage,
     response,
     mediaPosts,
-    fetchExplore,
   }
 }

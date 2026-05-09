@@ -31,18 +31,6 @@
         </div>
         <div class="publisher__meta">
           <p class="publisher__name">{{ currentUserName || t("feed.publisherBox.expandedOpen") }}</p>
-          <div class="publisher__audience-row">
-            <button
-              v-for="audience in audiences"
-              :key="audience.value"
-              class="publisher__audience-pill"
-              :class="{ 'publisher__audience-pill--active': draft.audience === audience.value }"
-              type="button"
-              @click="draft.audience = audience.value"
-            >
-              {{ audience.label }}
-            </button>
-          </div>
         </div>
         <button class="publisher__close" type="button" @click="expanded = false">
           <Icon name="i-ph-x-bold" class="h-4 w-4" />
@@ -61,15 +49,53 @@
         maxlength="280"
       />
 
+      <input
+        ref="imageInputRef"
+        class="publisher__file-input"
+        type="file"
+        accept="image/png,image/jpeg,image/gif"
+        @change="selectImageFile"
+      >
+      <input
+        ref="videoInputRef"
+        class="publisher__file-input"
+        type="file"
+        accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v"
+        @change="selectVideoFile"
+      >
+
+      <div v-if="selectedMediaLabel || activeFeeling" class="publisher__selection-row">
+        <div v-if="selectedMediaLabel" class="publisher__selection-pill">
+          <Icon :name="selectedMediaType === 'video' ? 'i-ph-video-camera-bold' : 'i-ph-image-bold'" class="h-4 w-4" />
+          <span>{{ selectedMediaLabel }}</span>
+          <button type="button" class="publisher__selection-remove" @click="clearSelectedMedia">
+            <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        <div v-if="activeFeeling" class="publisher__selection-pill">
+          <span>{{ activeFeeling.emoji }}</span>
+          <span>{{ t("feed.publisherBox.actionFeeling") }}</span>
+          <button type="button" class="publisher__selection-remove" @click="selectFeeling(activeFeeling.value)">
+            <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
       <div class="publisher__toolbar">
         <div class="publisher__actions">
           <button
             v-for="action in actions"
             :key="action.value"
             class="publisher__action-chip"
-            :class="{ 'publisher__action-chip--active': draft.action === action.value }"
+            :class="{
+              'publisher__action-chip--active':
+                (action.value === 'image' && selectedMediaType === 'image')
+                || (action.value === 'video' && selectedMediaType === 'video')
+                || (action.value === 'feeling' && Boolean(activeFeeling)),
+            }"
             type="button"
-            @click="draft.action = draft.action === action.value ? '' : action.value"
+            @click="handleAction(action.value)"
           >
             <Icon :name="action.icon" class="h-4 w-4" />
             <span class="publisher__action-label">{{ action.label }}</span>
@@ -80,12 +106,25 @@
           <span class="publisher__count" :class="{ 'publisher__count--warn': draft.text.length > 240 }">
             {{ draft.text.length }}/280
           </span>
-          <button class="publisher__submit-btn" type="button" :disabled="submitting || !draft.text.trim()" @click="publish">
+          <button class="publisher__submit-btn" type="button" :disabled="submitting || !canPublish" @click="publish">
             <Icon v-if="submitting" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
             <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
             {{ submitting ? t("feed.publisherBox.submitLoading") : t("feed.publisherBox.share") }}
           </button>
         </div>
+      </div>
+
+      <div v-if="showFeelingPicker" class="publisher__feeling-picker">
+        <button
+          v-for="feeling in feelingOptions"
+          :key="feeling.value"
+          type="button"
+          class="publisher__feeling-option"
+          :class="{ 'publisher__feeling-option--active': activeFeeling?.value === feeling.value }"
+          @click="selectFeeling(feeling.value)"
+        >
+          {{ feeling.emoji }}
+        </button>
       </div>
     </div>
   </section>
@@ -113,8 +152,20 @@ const {
   currentUserInitials,
   compactActions,
   actions,
-  audiences,
+  feelingOptions,
+  activeFeeling,
+  selectedMediaLabel,
+  selectedMediaType,
+  showFeelingPicker,
+  canPublish,
   handleCompactAction,
+  handleAction,
+  imageInputRef,
+  videoInputRef,
+  selectImageFile,
+  selectVideoFile,
+  clearSelectedMedia,
+  selectFeeling,
   publish,
 } = useFeedPublisherBoxVM((event, post) => emit(event, post))
 </script>
@@ -238,30 +289,6 @@ const {
   color: #0f172a;
 }
 
-.publisher__audience-row {
-  display: flex;
-  gap: 4px;
-  margin-top: 6px;
-}
-
-.publisher__audience-pill {
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid #e2e8f0;
-  background: transparent;
-  font-size: 11px;
-  font-weight: 600;
-  color: #64748b;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.publisher__audience-pill--active {
-  border-color: rgba(0, 0, 255, 0.2);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
-}
-
 .publisher__close {
   display: flex;
   width: 32px;
@@ -324,6 +351,40 @@ const {
   border-color: rgba(0, 0, 255, 0.2);
 }
 
+.publisher__file-input {
+  display: none;
+}
+
+.publisher__selection-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.publisher__selection-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+  padding: 6px 12px;
+  color: #1e3a8a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.publisher__selection-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+}
+
 .publisher__toolbar {
   display: flex;
   flex-direction: column;
@@ -369,6 +430,32 @@ const {
 .publisher__action-chip--active {
   background: rgba(0, 0, 255, 0.06);
   color: #0000ff;
+}
+
+.publisher__feeling-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.publisher__feeling-option {
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.publisher__feeling-option--active,
+.publisher__feeling-option:hover {
+  border-color: rgba(0, 0, 255, 0.2);
+  background: rgba(0, 0, 255, 0.05);
 }
 
 .publisher__action-label {

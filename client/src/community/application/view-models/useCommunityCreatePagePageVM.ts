@@ -51,9 +51,9 @@ export function useCommunityCreatePagePageVM(
 
   const isSubmitDisabled = computed(() =>
     submitState.value === "loading"
-    || !draft.value.name.trim()
-    || !draft.value.slug.trim()
-    || draft.value.description.trim().length < 24
+    || !(draft.value.name || "").trim()
+    || !(draft.value.slug || "").trim()
+    || (draft.value.description || "").trim().length < 24
     || !draft.value.category,
   )
 

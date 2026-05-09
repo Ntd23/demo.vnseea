@@ -4082,12 +4082,14 @@
       "tooltipImage": "Image",
       "tooltipGif": "GIF",
       "tooltipSticker": "Sticker",
-      "tooltipMention": "Mention",
-      "tooltipVoice": "Voice",
-      "removeAttachment": "Remove attachment",
-      "recording": "Recording...",
-      "selectedAttachment": "Attachment selected"
-    },
+        "tooltipMention": "Mention",
+        "tooltipVoice": "Voice",
+        "removeAttachment": "Remove attachment",
+        "recording": "Recording...",
+        "selectedAttachment": "Attachment selected",
+        "microphoneUnavailable": "Microphone recording is not available in this browser context.",
+        "microphonePermissionDenied": "Microphone permission was denied."
+      },
     "publisherBox": {
       "prompt": "What is happening? Hashtag, mention, link...",
       "composerPlaceholder": "What is happening? Hashtag, mention, link...",
@@ -5873,7 +5875,14 @@
           "tags": "Subject Tags",
           "tagsPlaceholder": "ev, charging, review",
           "guidelines": "Guidelines displayed on the group page",
-          "guidelinesPlaceholder": "Each line is a principle. Example: Prioritize posts sharing practical context."
+          "guidelinesPlaceholder": "Each line is a principle. Example: Prioritize posts sharing practical context.",
+          "media": "Group Media",
+          "groupMedia": "Group media",
+          "addBanner": "Add Cover Photo",
+          "addAvatar": "Change Avatar",
+          "minChars": "min characters",
+          "bannerHint": "Recommended: 1500x500px",
+          "changePhoto": "Change Photo"
         },
         "stats": {
           "descLength": "Description length",
@@ -6002,10 +6011,10 @@
           "websiteNo": "Not available"
         }
       },
-      "controls": {
-        "eyebrow": "Interaction & Visibility",
-        "title": "CTA and Public Signals",
-        "desc": "Tweak the primary action and decide what info will be pushed to the fanpage interface.",
+        "controls": {
+          "eyebrow": "Interaction & Visibility",
+          "title": "CTA and Public Signals",
+          "desc": "Tweak the primary action and decide what info will be pushed to the fanpage interface.",
         "preset": "Preset CTA",
         "logic": "Applied Logic",
         "logicDesc": "Current CTA is **{cta}**. You can combine it with website display, message button, and engagement metrics to make the page's goal clearer.",
@@ -6019,10 +6028,17 @@
           "websiteLabel": "Show public website",
           "websiteDesc": "Hide or show the landing page/website link in the fanpage info section.",
           "relatedLabel": "Suggest related fanpages",
-          "relatedDesc": "Allow the system to insert similar suggestions in the discovery area later."
-        }
-      },
-      "finish": {
+            "relatedDesc": "Allow the system to insert similar suggestions in the discovery area later."
+          }
+        },
+        "admins": {
+          "eyebrow": "Admin Access",
+          "title": "Admins",
+          "desc": "Review the primary page admin and keep the management surface compact, similar to Facebook.",
+          "navDesc": "Primary admin access",
+          "primaryRole": "Primary admin"
+        },
+        "finish": {
         "eyebrow": "Finish",
         "title": "Quick Actions",
         "desc": "You can go back to the fanpage to compare changes or continue refining the configuration here.",

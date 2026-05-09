@@ -40,6 +40,8 @@ export function useCommunityGroupDetailPageVM(
     onlineCountLabel,
     groupPosts,
     refresh,
+    slug,
+    status,
   } = useCommunityGroupDetail(computed(() => String(route.params.name || "")))
 
   const localizedGroupName = computed(() =>
@@ -163,5 +165,7 @@ export function useCommunityGroupDetailPageVM(
     handleJoinGroup,
     handleInviteMembers,
     emptyBackPath,
+    status,
+    slug,
   }
 }

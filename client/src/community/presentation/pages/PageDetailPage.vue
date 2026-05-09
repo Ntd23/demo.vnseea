@@ -1,258 +1,230 @@
-<!-- Description: Renders the page-directory style community surface with a profile-like hero, tab nav, feed, and side cards. -->
 <template>
-  <div v-if="page" class="page-detail">
-    <div class="page-detail__hero">
-      <div class="page-detail__cover">
-        <div class="page-detail__cover-backdrop" :style="{ background: page.banner }" />
-        <div class="page-detail__cover-shade" />
-        <div class="page-detail__cover-actions">
-          <UButton
-            color="neutral"
-            variant="solid"
-            size="xs"
-            class="rounded-full bg-white/90 text-slate-800 backdrop-blur-sm"
-            :loading="sharePending"
-            @click="handleSharePage"
-          >
-            <Icon name="i-ph-paper-plane-tilt-bold" class="mr-1.5 h-4 w-4" />
-            {{ t('pages.pageDetailPage.shareButton') }}
-          </UButton>
-          <UButton
-            color="neutral"
-            variant="solid"
-            size="xs"
-            class="rounded-full bg-white/90 text-slate-800 backdrop-blur-sm"
-            :loading="followPending"
-            @click="handleFollowPage"
-          >
-            <Icon name="i-ph-bell-simple-ringing-bold" class="mr-1.5 h-4 w-4" />
-            {{ isFollowing ? t('pages.pageDetailPage.followingButton') : translateText(page.ctaLabel, t('pages.pageDetailPage.followFallback')) }}
-          </UButton>
+  <div class="mx-auto max-w-[1280px] pb-10">
+    <!-- ── Loading skeleton ──────────────────────────────── -->
+    <template v-if="status === 'pending' && !page">
+      <div class="space-y-5">
+        <!-- Hero Skeleton -->
+        <div class="overflow-hidden rounded-b-[26px] bg-white shadow-sm sm:rounded-[26px]">
+          <USkeleton class="h-[280px] w-full" />
+          <div class="px-6 pb-8 pt-0">
+            <div class="relative flex items-end gap-5">
+              <USkeleton class="-mt-12 h-32 w-32 rounded-full border-4 border-white shadow-lg" />
+              <div class="flex-1 space-y-3 pb-2">
+                <USkeleton class="h-8 w-48 rounded-full" />
+                <USkeleton class="h-4 w-64 rounded-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Body Skeleton -->
+        <div class="grid grid-cols-1 gap-4 px-4 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div class="space-y-4">
+            <USkeleton class="h-[120px] w-full rounded-2xl" />
+            <USkeleton v-for="i in 2" :key="i" class="h-[300px] w-full rounded-2xl" />
+          </div>
+          <div class="space-y-4">
+            <USkeleton class="h-[180px] w-full rounded-2xl" />
+            <USkeleton class="h-[220px] w-full rounded-2xl" />
+          </div>
         </div>
       </div>
+    </template>
 
-      <div class="page-detail__identity">
-        <div class="page-detail__avatar-wrap">
-          <div class="page-detail__avatar" :style="{ background: page.banner }">
-            <img
-              v-if="page.avatarUrl"
-              :src="page.avatarUrl"
-              :alt="pageName"
-              class="page-detail__avatar-img"
+    <!-- ── Main Content ──────────────────────────────────── -->
+    <div v-else-if="page" class="page-detail" :class="{ 'opacity-50 pointer-events-none': status === 'pending' }">
+      <div class="page-detail__hero">
+        <div class="page-detail__cover">
+          <div class="page-detail__cover-backdrop" :style="{ background: page.banner }" />
+          <div class="page-detail__cover-shade" />
+          <div class="page-detail__cover-actions">
+            <UButton
+              color="neutral"
+              variant="solid"
+              size="xs"
+              class="rounded-full bg-white/90 text-slate-800 backdrop-blur-sm"
+              :loading="sharePending"
+              @click="handleSharePage"
             >
-            <span v-else>{{ avatarLabel }}</span>
+              <Icon name="i-ph-paper-plane-tilt-bold" class="mr-1.5 h-4 w-4" />
+              {{ t('pages.pageDetailPage.shareButton') }}
+            </UButton>
+            <UButton
+              color="neutral"
+              variant="solid"
+              size="xs"
+              class="rounded-full bg-white/90 text-slate-800 backdrop-blur-sm"
+              :loading="followPending"
+              @click="handleFollowPage"
+            >
+              <Icon name="i-ph-bell-simple-ringing-bold" class="mr-1.5 h-4 w-4" />
+              {{ isFollowing ? t('pages.pageDetailPage.followingButton') : t('pages.pageDetailPage.followFallback') }}
+            </UButton>
           </div>
         </div>
-        <div class="page-detail__meta">
-          <div class="flex flex-wrap items-center gap-2">
-            <h1 class="page-detail__title">{{ pageName }}</h1>
-            <UBadge v-if="page.canManage" color="primary" variant="soft" class="rounded-full px-2.5 py-0.5 text-xs font-bold">Owner</UBadge>
+
+        <div class="page-detail__identity">
+          <div class="page-detail__avatar-wrap">
+            <div class="page-detail__avatar" :style="{ background: page.banner }">
+              <img
+                v-if="page.avatarUrl"
+                :src="page.avatarUrl"
+                :alt="pageName"
+                class="page-detail__avatar-img"
+              >
+              <span v-else>{{ avatarLabel }}</span>
+            </div>
           </div>
-          <p class="page-detail__summary">{{ pageSummary }}</p>
-          <div class="page-detail__stats">
-            <span>{{ followerCountLabel }}</span>
-            <span class="text-slate-300">•</span>
-            <span>{{ likeCountLabel }}</span>
-            <template v-if="locationLabel">
+          <div class="page-detail__meta">
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 class="page-detail__title">{{ pageName }}</h1>
+              <UBadge v-if="page.canManage" color="primary" variant="soft" class="rounded-full px-2.5 py-0.5 text-xs font-bold">Owner</UBadge>
+            </div>
+            <p class="page-detail__summary">{{ pageSummary }}</p>
+            <div class="page-detail__stats">
+              <span>{{ followerCountLabel }}</span>
               <span class="text-slate-300">•</span>
-              <span>{{ locationLabel }}</span>
-            </template>
+              <span>{{ likeCountLabel }}</span>
+              <template v-if="locationLabel">
+                <span class="text-slate-300">•</span>
+                <span>{{ locationLabel }}</span>
+              </template>
+            </div>
           </div>
         </div>
+
+        <div class="page-detail__tabs">
+          <button
+            v-for="tab in tabs"
+            :key="tab.key"
+            type="button"
+            class="page-detail__tab"
+            :class="{ 'page-detail__tab--active': activeTab === tab.key }"
+            @click="activeTab = tab.key"
+          >
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <UAlert
+          v-if="actionMessage"
+          class="mx-4 mb-3 rounded-2xl sm:mx-6"
+          :color="actionState === 'error' ? 'warning' : 'success'"
+          variant="subtle"
+          :icon="actionState === 'error' ? 'i-ph-warning-circle-fill' : 'i-ph-check-circle-fill'"
+          :description="actionMessage"
+        />
       </div>
 
-      <div class="page-detail__tabs">
-        <button
-          v-for="tab in tabs"
-          :key="tab.key"
-          type="button"
-          class="page-detail__tab"
-          :class="{ 'page-detail__tab--active': activeTab === tab.key }"
-          @click="activeTab = tab.key"
-        >
-          {{ tab.label }}
-        </button>
-      </div>
+      <div class="page-detail__body">
+        <section class="page-detail__main">
+          <template v-if="activeTab === 'posts'">
+            <div v-if="pagePosts.length" class="space-y-3">
+              <FeedPostCard v-for="post in pagePosts" :key="post.id" :post="post" />
+            </div>
+            <UAlert
+              v-else
+              color="neutral"
+              variant="subtle"
+              icon="i-ph-newspaper-clipping-duotone"
+              :title="t('pages.pageDetailPage.feedEmptyTitle')"
+              :description="t('pages.pageDetailPage.feedEmptyDescription')"
+              class="rounded-[20px]"
+            />
+          </template>
+          <template v-else>
+            <section class="page-detail__card">
+              <h2 class="page-detail__card-title">{{ categoryLabel }}</h2>
+              <p class="page-detail__card-text">{{ pageSummary }}</p>
+            </section>
+            <section class="page-detail__card">
+              <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutTitle') }}</h2>
+              <div class="space-y-2 text-sm text-slate-600">
+                <p>{{ followerCountLabel }}</p>
+                <p>{{ likeCountLabel }}</p>
+                <p v-if="responseLabel">{{ responseLabel }}</p>
+                <p v-if="foundedLabel">{{ foundedLabel }}</p>
+              </div>
+            </section>
+          </template>
+        </section>
 
-      <UAlert
-        v-if="actionMessage"
-        class="mx-4 mb-3 rounded-2xl sm:mx-6"
-        :color="actionState === 'error' ? 'warning' : 'success'"
-        variant="subtle"
-        :icon="actionState === 'error' ? 'i-ph-warning-circle-fill' : 'i-ph-check-circle-fill'"
-        :description="actionMessage"
-      />
-    </div>
-
-    <div class="page-detail__body">
-      <section class="page-detail__main">
-        <template v-if="activeTab === 'posts'">
-          <div v-if="pagePosts.length" class="space-y-3">
-            <FeedPostCard v-for="post in pagePosts" :key="post.id" :post="post" />
-          </div>
-          <UAlert
-            v-else
-            color="neutral"
-            variant="subtle"
-            icon="i-ph-newspaper-clipping-duotone"
-            :title="t('pages.pageDetailPage.feedEmptyTitle')"
-            :description="t('pages.pageDetailPage.feedEmptyDescription')"
-            class="rounded-[20px]"
-          />
-        </template>
-        <template v-else>
+        <aside class="page-detail__sidebar">
           <section class="page-detail__card">
-            <h2 class="page-detail__card-title">{{ categoryLabel }}</h2>
+            <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutTitle') }}</h2>
             <p class="page-detail__card-text">{{ pageSummary }}</p>
           </section>
           <section class="page-detail__card">
-            <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutTitle') }}</h2>
-            <div class="space-y-2 text-sm text-slate-600">
-              <p>{{ followerCountLabel }}</p>
-              <p>{{ likeCountLabel }}</p>
-              <p v-if="responseLabel">{{ responseLabel }}</p>
-              <p v-if="foundedLabel">{{ foundedLabel }}</p>
+            <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.interactionTitle') }}</h2>
+            <div class="mt-3 grid grid-cols-2 gap-3">
+              <div class="page-detail__metric">
+                <span>{{ t('pages.pageDetailPage.followStat') }}</span>
+                <strong>{{ page.followers }}</strong>
+              </div>
+              <div class="page-detail__metric">
+                <span>{{ t('pages.pageDetailPage.likeStat') }}</span>
+                <strong>{{ page.likes }}</strong>
+              </div>
             </div>
           </section>
-        </template>
-      </section>
-
-      <aside class="page-detail__sidebar">
-        <section class="page-detail__card">
-          <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutTitle') }}</h2>
-          <p class="page-detail__card-text">{{ pageSummary }}</p>
-        </section>
-        <section class="page-detail__card">
-          <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.interactionTitle') }}</h2>
-          <div class="mt-3 grid grid-cols-2 gap-3">
-            <div class="page-detail__metric">
-              <span>{{ t('pages.pageDetailPage.followStat') }}</span>
-              <strong>{{ page.followers }}</strong>
-            </div>
-            <div class="page-detail__metric">
-              <span>{{ t('pages.pageDetailPage.likeStat') }}</span>
-              <strong>{{ page.likes }}</strong>
-            </div>
-          </div>
-        </section>
-      </aside>
-    </div>
-  </div>
-
-  <div v-else class="mx-auto max-w-[960px] pb-10 pt-4">
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
-      <FoundationEmptyState
-        icon="i-ph-megaphone-simple-fill"
-        :title="t('pages.pageDetailPage.emptyTitle')"
-        :description="t('pages.pageDetailPage.emptyDescription')"
-      />
-
-      <div class="mt-6 flex justify-center">
-        <UButton
-          to="/create-page"
-          color="primary"
-          variant="solid"
-          size="xl"
-          class="rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
-        >
-          {{ t("pages.pageDetailPage.createNewPage") }}
-        </UButton>
+        </aside>
       </div>
-    </section>
+    </div>
+
+    <!-- ── Empty State ───────────────────────────────────── -->
+    <div v-else class="mx-auto max-w-[960px] pt-4">
+      <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
+        <FoundationEmptyState
+          icon="i-ph-megaphone-simple-fill"
+          :title="t('pages.pageDetailPage.emptyTitle')"
+          :description="t('pages.pageDetailPage.emptyDescription')"
+        />
+
+        <div class="mt-6 flex justify-center">
+          <UButton
+            to="/create-page"
+            color="primary"
+            variant="solid"
+            size="xl"
+            class="rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
+          >
+            {{ t("pages.pageDetailPage.createNewPage") }}
+          </UButton>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import { useCommunityPageDetail } from "../../application/composables/useCommunityPageDetail"
+import { useCommunityPageDetailPageVM } from "../../application/view-models/useCommunityPageDetailPageVM"
 
 const { t } = useI18n()
-const translateText = useMaybeTranslatedText()
-const route = useRoute()
-const username = computed(() => String(route.params.name || ""))
 const {
+  activeTab,
+  followPending,
+  sharePending,
+  actionState,
+  actionMessage,
+  page,
+  status,
+  pageName,
+  pageSummary,
+  isFollowing,
+  avatarLabel,
+  responseLabel,
+  foundedLabel,
+  locationLabel,
   categoryLabel,
-  followPage,
   followerCountLabel,
   likeCountLabel,
-  page,
   pagePosts,
-} = useCommunityPageDetail(username)
-const activeTab = ref<'posts' | 'about'>('posts')
-const toast = useToast()
-const actionState = ref<"idle" | "success" | "error">("idle")
-const actionMessage = ref("")
-const followPending = ref(false)
-const sharePending = ref(false)
-const isFollowing = computed(() => page.value?.following === true)
-const avatarLabel = computed(() => translateText(page.value?.name || '').slice(0, 2).toUpperCase())
-const pageName = computed(() => translateText(page.value?.name || ''))
-const pageSummary = computed(() => translateText(page.value?.summary || ''))
-const responseLabel = computed(() => translateText(page.value?.responseLabel || ''))
-const foundedLabel = computed(() => translateText(page.value?.foundedLabel || ''))
-const locationLabel = computed(() => translateText(page.value?.locationLabel || ''))
-const tabs = computed(() => [
-  { key: 'posts', label: t('pages.pageDetailPage.tabs.posts') },
-  { key: 'about', label: t('pages.pageDetailPage.tabs.about') },
-])
-
-async function handleFollowPage() {
-  if (followPending.value) return
-
-  followPending.value = true
-  actionState.value = "idle"
-  actionMessage.value = ""
-
-  try {
-    const updatedPage = await followPage()
-    actionState.value = "success"
-    actionMessage.value = t("pages.pageDetailPage.followSuccessDescription", {
-      page: translateText(updatedPage?.name || page.value?.name || ""),
-    })
-  }
-  catch (error) {
-    actionState.value = "error"
-    actionMessage.value = error instanceof Error
-      ? error.message
-      : t("pages.pageDetailPage.followErrorDescription")
-  }
-  finally {
-    followPending.value = false
-  }
-}
-
-async function handleSharePage() {
-  if (!import.meta.client || sharePending.value) return
-
-  sharePending.value = true
-  actionState.value = "idle"
-  actionMessage.value = ""
-
-  try {
-    const url = window.location.href
-    if (!navigator.clipboard?.writeText) {
-      throw new Error("clipboard_unavailable")
-    }
-
-    await navigator.clipboard.writeText(url)
-    actionState.value = "success"
-    actionMessage.value = t("pages.pageDetailPage.shareSuccessDescription", { url })
-    toast.add({
-      color: "success",
-      icon: "i-ph-check-circle-fill",
-      title: t("pages.pageDetailPage.sharedButton"),
-      description: url,
-    })
-  }
-  catch {
-    actionState.value = "error"
-    actionMessage.value = t("pages.pageDetailPage.shareErrorDescription")
-  }
-  finally {
-    sharePending.value = false
-  }
-}
+  tabs,
+  handleFollowPage,
+  handleSharePage,
+} = useCommunityPageDetailPageVM()
 </script>
 
 <style scoped>

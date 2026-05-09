@@ -1,7 +1,7 @@
 <!-- Description: Renders the group settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP group settings structure. -->
 <template>
-  <div v-if="(group && previewGroup) || status === 'pending'" class="mx-auto max-w-[1280px] space-y-5 pb-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
-    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-6">
+  <div v-if="(group && previewGroup) || status === 'pending'" class="mx-auto max-w-[1280px] space-y-5 pb-10 pt-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
+    <section class="border border-[#dbe3f2] bg-white px-8 py-8 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-8" style="border-radius: 32px !important;">
       <div class="space-y-3">
         <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
           {{ $t('community.settings.eyebrow') }}
@@ -27,31 +27,12 @@
       </div>
     </section>
 
-    <div class="grid gap-5 xl:grid-cols-[220px_minmax(0,1fr)]">
-      <aside class="xl:sticky xl:top-[84px] xl:self-start">
-        <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-4 shadow-[0_12px_30px_rgba(15,35,110,0.06)]">
-          <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
-            {{ $t('community.settings.eyebrow') }}
-          </p>
-          <nav class="mt-4 space-y-2">
-            <a
-              v-for="item in settingsNavItems"
-              :key="item.id"
-              :href="`#${item.id}`"
-              class="flex items-center justify-between rounded-[16px] border border-[#e7ecf6] bg-[#fbfcff] px-4 py-3 text-[13px] font-bold text-[#243b63] transition hover:border-[#c8d4f5] hover:bg-white"
-            >
-              <span>{{ item.label }}</span>
-              <Icon name="i-ph-caret-right-bold" class="h-3.5 w-3.5 text-slate-400" />
-            </a>
-          </nav>
-        </section>
-      </aside>
+    <div class="mx-auto max-w-[800px] space-y-5">
 
-      <div class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px] 2xl:items-start">
         <UForm
           :state="draft"
           :validate="validateDraft"
-          class="min-w-0 space-y-4"
+          class="space-y-4"
           @submit="handleSave"
           @error="handleSaveError"
         >
@@ -108,8 +89,7 @@
                     variant="solid"
                     size="xl"
                     :loading="isBusy"
-                    :disabled="isSaveDisabled"
-                    class="justify-center rounded-[16px] px-5 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
+                    class="justify-center rounded-full px-8 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
                   >
                     <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
                     {{ $t("community.settings.finish.save") }}
@@ -119,23 +99,10 @@
             </CommunitySettingsSectionCard>
           </section>
         </UForm>
-
-        <CommunityGroupSettingsSidebar
-          :group="previewGroup"
-          :members="visibleMembers"
-          :member-count-label="memberCountLabel"
-          :privacy-label="selectedPrivacyLabel"
-          :privacy-description="selectedPrivacyDescription"
-          :category-label="selectedCategoryLabel"
-          :enabled-policies="enabledPolicies"
-          :total-policies="totalPolicies"
-          :show-member-directory="draft.showMemberDirectory"
-        />
-      </div>
     </div>
   </div>
 
-  <div v-else-if="status !== 'pending'" class="mx-auto max-w-[960px] pb-10 pt-4">
+  <div v-else-if="status === 'error' || (status === 'success' && !group)" class="mx-auto max-w-[960px] pb-10 pt-4">
     <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-gear-six-fill"

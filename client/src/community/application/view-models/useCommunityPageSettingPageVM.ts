@@ -95,6 +95,7 @@ export function useCommunityPageSettingPageVM(
   const settingsNavItems = computed(() => [
     { id: "basics", label: t("community.pageSettings.basics.title"), desc: t("community.pageSettings.basics.navDesc"), icon: "i-ph-identification-card-duotone" },
     { id: "controls", label: t("community.pageSettings.controls.title"), desc: t("community.pageSettings.controls.navDesc"), icon: "i-ph-sliders-duotone" },
+    { id: "admins", label: t("community.pageSettings.admins.title"), desc: t("community.pageSettings.admins.navDesc"), icon: "i-ph-shield-checkered-duotone" },
     { id: "preview", label: t("community.pageSettings.sidebar.preview"), desc: t("community.pageSettings.preview.navDesc"), icon: "i-ph-eye-duotone" },
     { id: "finish", label: t("community.pageSettings.finish.title"), desc: t("community.pageSettings.finish.navDesc"), icon: "i-ph-check-circle-duotone" },
   ])
