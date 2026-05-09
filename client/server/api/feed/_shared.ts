@@ -1237,6 +1237,17 @@ export async function runPostAction(
 
   if (input.action === "comment") {
     const webClient = createBackendWebClient(event)
+    const currentUser = await getBackendCurrentUser(event)
+    const sessionHash = asString(currentUser.session_hash)
+    const currentUserId = asNumber(currentUser.user_id)
+
+    if (!sessionHash || !currentUserId) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Authentication is required.",
+      })
+    }
+
     const mediaFile = input.gifFile ?? input.imageFile ?? null
     let commentImage = ""
 
@@ -1268,20 +1279,21 @@ export async function runPostAction(
     const appendCommentFields = (body: FormData | URLSearchParams) => {
       body.append("post_id", String(input.postId))
       body.append("text", input.text ?? "")
-      body.append("user_id", "0")
+      body.append("user_id", String(currentUserId))
       body.append("page_id", "0")
       body.append("comment_image", commentImage)
+      body.append("hash_id", sessionHash)
     }
     let commentBody: FormData | URLSearchParams
 
     if (input.audioFile) {
       const body = new FormData()
       appendCommentFields(body)
-      body.append("audio-filename", input.audioFile.filename || "comment-audio.webm")
+      body.append("audio-filename", input.audioFile.filename || "comment-audio.wav")
       body.append(
         "audio-blob",
-        new Blob([input.audioFile.data], { type: input.audioFile.type || "audio/webm" }),
-        input.audioFile.filename || "comment-audio.webm",
+        new Blob([input.audioFile.data], { type: "application/octet-stream" }),
+        input.audioFile.filename || "comment-audio.wav",
       )
       commentBody = body
     }
@@ -1294,13 +1306,16 @@ export async function runPostAction(
     const commentResponse = await webClient.postForm<BackendRegisterCommentResponse, FormData | URLSearchParams>(
       "posts",
       commentBody,
-      { s: "register_comment" },
+      {
+        s: "register_comment",
+        hash: sessionHash,
+      },
     )
 
     if (Number(commentResponse.status ?? 0) !== 200) {
       throw createError({
         statusCode: 400,
-        statusMessage: "Unable to post comment.",
+        statusMessage: asString(commentResponse.message) || "Unable to post comment.",
         data: commentResponse,
       })
     }

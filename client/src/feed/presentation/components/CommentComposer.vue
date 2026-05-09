@@ -39,20 +39,55 @@
           </button>
         </div>
 
-        <div v-if="attachmentPreview || recording" class="comment-composer__preview">
-          <span v-if="recording" class="comment-composer__recording-dot" />
-          <span class="comment-composer__preview-label">
-            {{ recording ? $t("feed.commentComposer.recording") : attachmentPreview?.name || $t("feed.commentComposer.selectedAttachment") }}
-          </span>
-          <button
-            v-if="attachmentPreview"
-            class="comment-composer__preview-remove"
-            type="button"
-            :aria-label="$t('feed.commentComposer.removeAttachment')"
-            @click="clearAttachment"
-          >
-            <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
-          </button>
+        <div v-if="attachmentPreview || recording || recordingErrorMessage" class="comment-composer__preview">
+          <template v-if="recording">
+            <div class="comment-composer__recording-status">
+              <span class="comment-composer__recording-dot" />
+              <span class="comment-composer__preview-label">{{ $t("feed.commentComposer.recording") }}</span>
+              <span class="comment-composer__recording-time">{{ recordingDurationLabel }}</span>
+            </div>
+            <div class="comment-composer__recording-progress" aria-hidden="true">
+              <span class="comment-composer__recording-progress-bar" />
+            </div>
+          </template>
+
+          <template v-else-if="attachmentPreview?.type === 'audio'">
+            <div class="comment-composer__audio-preview">
+              <audio
+                :src="attachmentPreview.url"
+                controls
+                preload="metadata"
+                class="comment-composer__audio-player"
+              />
+              <button
+                class="comment-composer__preview-remove"
+                type="button"
+                :aria-label="$t('feed.commentComposer.removeAttachment')"
+                @click="clearAttachment"
+              >
+                <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="comment-composer__preview-meta">
+              <span class="comment-composer__preview-label">
+                {{
+                  recordingErrorMessage || attachmentPreview?.name || $t("feed.commentComposer.selectedAttachment")
+                }}
+              </span>
+              <button
+                v-if="attachmentPreview || recordingErrorMessage"
+                class="comment-composer__preview-remove"
+                type="button"
+                :aria-label="$t('feed.commentComposer.removeAttachment')"
+                @click="clearAttachment"
+              >
+                <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </template>
         </div>
       </div>
 
@@ -152,16 +187,10 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   submit: [payload: FeedCommentSubmitPayload]
 }>()
+const { t } = useI18n()
 const toast = useToast()
 
 const emojiOptions = ["😀", "😄", "😍", "😂", "😮", "😢", "😡", "👍", "❤️"]
-const recorderMimeTypes = [
-  "audio/webm;codecs=opus",
-  "audio/webm",
-  "audio/mp4",
-  "audio/ogg;codecs=opus",
-] as const
-
 const message = ref("")
 const emojiOpen = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
@@ -172,14 +201,22 @@ const gifFile = ref<File | undefined>()
 const audioFile = ref<File | undefined>()
 const attachmentPreview = ref<FeedCommentAttachment | undefined>()
 const recording = ref(false)
-const mediaRecorder = ref<MediaRecorder | null>(null)
+const recordingErrorMessage = ref("")
 const mediaStream = ref<MediaStream | null>(null)
-const audioChunks = ref<Blob[]>([])
+const audioContext = ref<AudioContext | null>(null)
+const mediaSource = ref<MediaStreamAudioSourceNode | null>(null)
+const scriptProcessor = ref<ScriptProcessorNode | null>(null)
+const pcmChunks = ref<Float32Array[]>([])
+const recordingSampleRate = ref(44100)
+const recordingStartedAt = ref<number | null>(null)
+const recordingElapsedMs = ref(0)
+let recordingTimer: ReturnType<typeof setInterval> | null = null
 
 const trimmedMessage = computed(() => message.value.trim())
 const canSubmit = computed(() =>
   Boolean(trimmedMessage.value || imageFile.value || gifFile.value || audioFile.value),
 )
+const recordingDurationLabel = computed(() => formatRecordingDuration(recordingElapsedMs.value))
 const canRecordAudio = computed(() => {
   if (!import.meta.client) {
     return false
@@ -187,7 +224,7 @@ const canRecordAudio = computed(() => {
 
   return Boolean(
     navigator.mediaDevices?.getUserMedia
-    && typeof MediaRecorder !== "undefined",
+    && typeof AudioContext !== "undefined",
   )
 })
 
@@ -219,6 +256,7 @@ function resetComposerState() {
   gifFile.value = undefined
   audioFile.value = undefined
   attachmentPreview.value = undefined
+  recordingErrorMessage.value = ""
   resetFileInputs()
 }
 
@@ -294,42 +332,109 @@ function insertEmoji(emoji: string) {
 }
 
 function stopMediaStream() {
+  stopRecordingTimer()
+  scriptProcessor.value?.disconnect()
+  mediaSource.value?.disconnect()
+  void audioContext.value?.close()
+  scriptProcessor.value = null
+  mediaSource.value = null
+  audioContext.value = null
   mediaStream.value?.getTracks().forEach(track => track.stop())
   mediaStream.value = null
-  mediaRecorder.value = null
 }
 
-function createAudioFileFromChunks() {
-  const mimeType = mediaRecorder.value?.mimeType || "audio/webm"
-  const blob = new Blob(audioChunks.value, { type: mimeType })
-  const extension = mimeType.includes("wav")
-    ? "wav"
-    : mimeType.includes("mp4")
-      ? "m4a"
-      : mimeType.includes("ogg")
-        ? "ogg"
-        : "webm"
+function formatRecordingDuration(value: number) {
+  const totalSeconds = Math.max(0, Math.floor(value / 1000))
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
 
-  return new File([blob], `comment-audio-${Date.now()}.${extension}`, { type: mimeType })
+  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
 }
 
-function getRecorderMimeType() {
-  if (!import.meta.client || typeof MediaRecorder === "undefined" || typeof MediaRecorder.isTypeSupported !== "function") {
-    return ""
+function startRecordingTimer() {
+  stopRecordingTimer()
+  recordingStartedAt.value = Date.now()
+  recordingElapsedMs.value = 0
+  recordingTimer = setInterval(() => {
+    if (!recordingStartedAt.value) {
+      return
+    }
+
+    recordingElapsedMs.value = Date.now() - recordingStartedAt.value
+  }, 200)
+}
+
+function stopRecordingTimer() {
+  if (recordingTimer) {
+    clearInterval(recordingTimer)
+    recordingTimer = null
   }
 
-  for (const mimeType of recorderMimeTypes) {
-    if (MediaRecorder.isTypeSupported(mimeType)) {
-      return mimeType
+  recordingStartedAt.value = null
+}
+
+function mergeFloat32Chunks(chunks: Float32Array[]) {
+  const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0)
+  const merged = new Float32Array(totalLength)
+  let offset = 0
+
+  for (const chunk of chunks) {
+    merged.set(chunk, offset)
+    offset += chunk.length
+  }
+
+  return merged
+}
+
+function encodeWav(samples: Float32Array, sampleRate: number) {
+  const buffer = new ArrayBuffer(44 + samples.length * 2)
+  const view = new DataView(buffer)
+
+  const writeString = (offset: number, value: string) => {
+    for (let index = 0; index < value.length; index += 1) {
+      view.setUint8(offset + index, value.charCodeAt(index))
     }
   }
 
-  return ""
+  writeString(0, "RIFF")
+  view.setUint32(4, 36 + samples.length * 2, true)
+  writeString(8, "WAVE")
+  writeString(12, "fmt ")
+  view.setUint32(16, 16, true)
+  view.setUint16(20, 1, true)
+  view.setUint16(22, 1, true)
+  view.setUint32(24, sampleRate, true)
+  view.setUint32(28, sampleRate * 2, true)
+  view.setUint16(32, 2, true)
+  view.setUint16(34, 16, true)
+  writeString(36, "data")
+  view.setUint32(40, samples.length * 2, true)
+
+  let offset = 44
+  for (let index = 0; index < samples.length; index += 1) {
+    const sample = Math.max(-1, Math.min(1, samples[index] ?? 0))
+    view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true)
+    offset += 2
+  }
+
+  return new Blob([buffer], { type: "audio/wav" })
+}
+
+function createAudioFileFromChunks() {
+  const merged = mergeFloat32Chunks(pcmChunks.value)
+  const blob = encodeWav(merged, recordingSampleRate.value)
+
+  return new File([blob], `comment-audio-${Date.now()}.wav`, { type: "audio/wav" })
 }
 
 async function toggleRecording() {
   if (recording.value) {
-    mediaRecorder.value?.stop()
+    if (pcmChunks.value.length > 0) {
+      setAudioAttachment(createAudioFileFromChunks())
+    }
+
+    recording.value = false
+    stopMediaStream()
     return
   }
 
@@ -339,42 +444,50 @@ async function toggleRecording() {
 
   try {
     if (!canRecordAudio.value) {
+      recordingErrorMessage.value = t("feed.commentComposer.microphoneUnavailable")
       toast.add({
         color: "warning",
         icon: "i-ph-warning-circle-fill",
         title: t("feed.commentComposer.tooltipVoice"),
-        description: "Microphone recording is not available in this browser context.",
+        description: t("feed.commentComposer.microphoneUnavailable"),
       })
       return
     }
 
     resetComposerState()
-    audioChunks.value = []
+    pcmChunks.value = []
     mediaStream.value = await navigator.mediaDevices.getUserMedia({ audio: true })
-    const mimeType = getRecorderMimeType()
-    mediaRecorder.value = mimeType
-      ? new MediaRecorder(mediaStream.value, { mimeType })
-      : new MediaRecorder(mediaStream.value)
+    audioContext.value = new AudioContext()
+    recordingSampleRate.value = audioContext.value.sampleRate
+    mediaSource.value = audioContext.value.createMediaStreamSource(mediaStream.value)
+    scriptProcessor.value = audioContext.value.createScriptProcessor(4096, 1, 1)
 
-    mediaRecorder.value.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        audioChunks.value.push(event.data)
-      }
-    }
-
-    mediaRecorder.value.onstop = () => {
-      if (audioChunks.value.length > 0) {
-        setAudioAttachment(createAudioFileFromChunks())
+    scriptProcessor.value.onaudioprocess = (event) => {
+      if (!recording.value) {
+        return
       }
 
-      recording.value = false
-      stopMediaStream()
+      const channelData = event.inputBuffer.getChannelData(0)
+      pcmChunks.value.push(new Float32Array(channelData))
     }
 
-    mediaRecorder.value.start()
+    mediaSource.value.connect(scriptProcessor.value)
+    scriptProcessor.value.connect(audioContext.value.destination)
     recording.value = true
+    startRecordingTimer()
   }
-  catch {
+  catch (error) {
+    const message = error instanceof Error && error.name === "NotAllowedError"
+      ? t("feed.commentComposer.microphonePermissionDenied")
+      : t("feed.commentComposer.microphoneUnavailable")
+
+    recordingErrorMessage.value = message
+    toast.add({
+      color: "warning",
+      icon: "i-ph-warning-circle-fill",
+      title: t("feed.commentComposer.tooltipVoice"),
+      description: message,
+    })
     recording.value = false
     stopMediaStream()
   }
@@ -449,24 +562,41 @@ onBeforeUnmount(() => {
 }
 
 .comment-composer__preview {
-  display: inline-flex;
-  width: fit-content;
+  display: flex;
+  width: 100%;
   max-width: 100%;
-  align-items: center;
-  gap: 7px;
+  flex-direction: column;
+  gap: 8px;
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xl);
   background: var(--bg-surface-hover);
-  padding: 5px 8px 5px 10px;
+  padding: 10px 12px;
   color: var(--text-secondary);
   font-size: 12px;
   font-weight: 700;
 }
 
+.comment-composer__preview-meta,
+.comment-composer__recording-status,
+.comment-composer__audio-preview {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+}
+
 .comment-composer__preview-label {
+  min-width: 0;
+  flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.comment-composer__recording-time {
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
 }
 
 .comment-composer__preview-remove {
@@ -480,6 +610,28 @@ onBeforeUnmount(() => {
   background: var(--bg-surface);
   color: var(--text-tertiary);
   cursor: pointer;
+}
+
+.comment-composer__audio-player {
+  width: 100%;
+  min-width: 0;
+}
+
+.comment-composer__recording-progress {
+  width: 100%;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-active);
+}
+
+.comment-composer__recording-progress-bar {
+  display: block;
+  width: 36%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-primary-400) 0%, var(--color-primary-600) 100%);
+  animation: comment-recording-progress 1.2s ease-in-out infinite;
 }
 
 .comment-composer__recording-dot {
@@ -610,6 +762,16 @@ onBeforeUnmount(() => {
   50% {
     opacity: 0.45;
     transform: scale(0.82);
+  }
+}
+
+@keyframes comment-recording-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(280%);
   }
 }
 </style>

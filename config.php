@@ -9,16 +9,16 @@
 // | Copyright (c) 2016 WoWonder. All rights reserved.
 // +------------------------------------------------------------------------+
 // MySQL Hostname
-$sql_db_host = "127.0.0.1";
+$sql_db_host = "localhost";
 // MySQL Database User
 $sql_db_user = "root";
 // MySQL Database Password
 $sql_db_pass = "";
 // MySQL Database Name
-$sql_db_name = "vnseea";
+$sql_db_name = "demo.vnseea";
 
 // Site URL
-$site_url = "http://demo.vnseea.test"; // e.g (http://example.com)
+$site_url = ""; // e.g (http://example.com)
 
 $auto_redirect = true;
 
