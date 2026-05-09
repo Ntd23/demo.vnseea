@@ -149,8 +149,36 @@
             <CommunitySettingsSectionCard eyebrow="CÀI ĐẶT QUẢN TRỊ" title="Quản trị viên"
               description="Thêm hoặc xóa các quản trị viên cho trang của bạn để cùng quản lý nội dung và cài đặt."
               icon="i-ph-shield-checkered-bold">
-              <div class="flex flex-col gap-4 py-4">
-                <div class="rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center">
+              <div class="page-settings__admins">
+                <div class="page-settings__admin-card">
+                  <div class="page-settings__admin-main">
+                    <div class="page-settings__admin-avatar" :style="{ background: previewPage.accent }">
+                      <img
+                        v-if="previewPage.avatarUrl"
+                        :src="previewPage.avatarUrl"
+                        :alt="previewPage.name"
+                        class="page-settings__admin-avatar-img"
+                      >
+                      <span v-else>{{ initials }}</span>
+                    </div>
+
+                    <div class="page-settings__admin-copy">
+                      <p class="page-settings__admin-name">{{ previewPage.name }}</p>
+                      <p class="page-settings__admin-role">{{ previewPage.ownerLabel || 'Page admin' }}</p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    class="page-settings__admin-menu"
+                    :aria-label="t('community.pageSettings.basics.viewPage')"
+                    @click="navigateTo(pagePath)"
+                  >
+                    <Icon name="i-ph-dots-three-bold" class="h-5 w-5" />
+                  </button>
+                </div>
+
+                <div class="page-settings__admins-placeholder rounded-xl border border-slate-100 bg-slate-50/50 p-6 text-center">
                   <Icon name="i-ph-users-three-duotone" class="mx-auto h-12 w-12 text-slate-300" />
                   <p class="mt-2 text-sm font-medium text-slate-500">Chức năng quản trị viên đang được cập nhật</p>
                 </div>
@@ -573,6 +601,97 @@ const { t } = useI18n()
 .page-settings__button[aria-disabled="true"] {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+.page-settings__admins {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.page-settings__admin-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 14px 16px;
+}
+
+.page-settings__admin-main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-settings__admin-avatar {
+  display: flex;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+}
+
+.page-settings__admin-avatar-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.page-settings__admin-copy {
+  min-width: 0;
+}
+
+.page-settings__admin-name {
+  overflow: hidden;
+  margin: 0;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-settings__admin-role {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.page-settings__admin-menu {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #475569;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.page-settings__admin-menu:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.page-settings__admins-placeholder {
+  display: none;
 }
 
 .page-settings-sidebar :deep(progress),

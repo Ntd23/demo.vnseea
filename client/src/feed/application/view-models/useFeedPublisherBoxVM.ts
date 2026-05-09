@@ -1,4 +1,4 @@
-// English description: Owns the feed publisher draft, current-user state, and backend post creation flow for the publisher box.
+// English description: Owns the feed publisher draft, media pickers, feeling picker, current-user state, and backend post creation flow for the publisher box.
 
 import { useStorage, useTextareaAutosize } from "@vueuse/core"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
@@ -6,8 +6,9 @@ import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCur
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
-type PublisherAction = "image" | "video" | "feeling" | "story" | ""
+type PublisherAction = "image" | "video" | "feeling" | "story"
 type PublisherAudience = "public" | "connections" | "group"
+type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | ""
 
 export function useFeedPublisherBoxVM(
   emit: (event: "created", post: FeedPostRecord | null) => void,
@@ -20,21 +21,27 @@ export function useFeedPublisherBoxVM(
   const currentAuthUserStore = useCurrentAuthUserStore()
 
   const textareaEl = ref<HTMLTextAreaElement | null>(null)
+  const imageInputRef = ref<HTMLInputElement | null>(null)
+  const videoInputRef = ref<HTMLInputElement | null>(null)
   const draftTextInput = ref("")
   const { triggerResize } = useTextareaAutosize({ element: textareaEl, input: draftTextInput })
 
   const expanded = ref(false)
+  const showFeelingPicker = ref(false)
+  const imageFile = ref<File | null>(null)
+  const videoFile = ref<File | null>(null)
+
   const storageKey = `feed-publisher-draft:${route.path || "/"}`
   const draft = useStorage<{
     text: string
     audience: PublisherAudience
-    action: PublisherAction
+    feeling: PublisherFeeling
   }>(
     storageKey,
     {
       text: "",
       audience: "public",
-      action: "",
+      feeling: "",
     },
     undefined,
     {
@@ -85,6 +92,41 @@ export function useFeedPublisherBoxVM(
     { value: "group" as const, label: t("feed.publisherBox.audienceGroup") },
   ])
 
+  const feelingOptions = [
+    { value: "happy" as const, emoji: "😊" },
+    { value: "loved" as const, emoji: "😍" },
+    { value: "sad" as const, emoji: "😢" },
+    { value: "angry" as const, emoji: "😡" },
+  ]
+
+  const activeFeeling = computed(() =>
+    feelingOptions.find(option => option.value === draft.value.feeling) ?? null,
+  )
+
+  const selectedMediaLabel = computed(() =>
+    imageFile.value?.name || videoFile.value?.name || "",
+  )
+  const selectedMediaType = computed<"image" | "video" | "">(() => {
+    if (imageFile.value) {
+      return "image"
+    }
+
+    if (videoFile.value) {
+      return "video"
+    }
+
+    return ""
+  })
+
+  const canPublish = computed(() =>
+    Boolean(
+      draft.value.text.trim()
+      || imageFile.value
+      || videoFile.value
+      || draft.value.feeling,
+    ),
+  )
+
   onMounted(async () => {
     await currentAuthUserStore.hydrate()
   })
@@ -99,18 +141,109 @@ export function useFeedPublisherBoxVM(
     textareaEl.value?.focus()
   })
 
-  function handleCompactAction(value: string) {
+  function resetSelectedMedia() {
+    imageFile.value = null
+    videoFile.value = null
+
+    if (imageInputRef.value) {
+      imageInputRef.value.value = ""
+    }
+
+    if (videoInputRef.value) {
+      videoInputRef.value.value = ""
+    }
+  }
+
+  function openImagePicker() {
+    expanded.value = true
+    showFeelingPicker.value = false
+    imageInputRef.value?.click()
+  }
+
+  function openVideoPicker() {
+    expanded.value = true
+    showFeelingPicker.value = false
+    videoInputRef.value?.click()
+  }
+
+  function handleCompactAction(value: PublisherAction) {
     if (value === "story") {
       void router.push(appRoutes.statusCreate)
       return
     }
 
+    if (value === "image") {
+      openImagePicker()
+      return
+    }
+
+    if (value === "video") {
+      openVideoPicker()
+      return
+    }
+
     expanded.value = true
-    draft.value.action = value as typeof draft.value.action
+  }
+
+  function handleAction(value: PublisherAction) {
+    if (value === "story") {
+      void router.push(appRoutes.statusCreate)
+      return
+    }
+
+    if (value === "image") {
+      openImagePicker()
+      return
+    }
+
+    if (value === "video") {
+      openVideoPicker()
+      return
+    }
+
+    showFeelingPicker.value = !showFeelingPicker.value
+  }
+
+  function selectImageFile(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    videoFile.value = null
+    imageFile.value = file
+    showFeelingPicker.value = false
+  }
+
+  function selectVideoFile(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0]
+
+    if (!file) {
+      return
+    }
+
+    imageFile.value = null
+    videoFile.value = file
+    showFeelingPicker.value = false
+  }
+
+  function clearSelectedMedia() {
+    resetSelectedMedia()
+  }
+
+  function selectFeeling(value: PublisherFeeling) {
+    draft.value.feeling = draft.value.feeling === value ? "" : value
+    showFeelingPicker.value = false
+    expanded.value = true
+
+    nextTick(() => {
+      textareaEl.value?.focus()
+    })
   }
 
   async function publish() {
-    if (!draft.value.text.trim()) {
+    if (!canPublish.value) {
       statusTone.value = "warning"
       statusMessage.value = t("feed.publisherBox.statusErrorDescription")
       return
@@ -124,12 +257,17 @@ export function useFeedPublisherBoxVM(
       const response = await repository.createPost({
         text: draft.value.text,
         audience: draft.value.audience,
+        feeling: draft.value.feeling || undefined,
+        imageFile: imageFile.value || undefined,
+        videoFile: videoFile.value || undefined,
       })
 
       statusTone.value = "success"
       statusMessage.value = t("feed.publisherBox.statusSuccessDescription")
       draft.value.text = ""
-      draft.value.action = ""
+      draft.value.feeling = ""
+      resetSelectedMedia()
+      showFeelingPicker.value = false
       expanded.value = false
       emit("created", response.post)
 
@@ -153,6 +291,8 @@ export function useFeedPublisherBoxVM(
 
   return {
     textareaEl,
+    imageInputRef,
+    videoInputRef,
     expanded,
     draft,
     submitting,
@@ -164,7 +304,18 @@ export function useFeedPublisherBoxVM(
     compactActions,
     actions,
     audiences,
+    feelingOptions,
+    activeFeeling,
+    selectedMediaLabel,
+    selectedMediaType,
+    showFeelingPicker,
+    canPublish,
     handleCompactAction,
+    handleAction,
+    selectImageFile,
+    selectVideoFile,
+    clearSelectedMedia,
+    selectFeeling,
     publish,
   }
 }
