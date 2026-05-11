@@ -40,12 +40,34 @@
           loading="lazy"
           sizes="240px"
         />
-        <audio
-          v-else-if="attachment"
-          class="comment-item__audio"
-          :src="attachment.url"
-          controls
-        />
+        <div v-else-if="attachment" class="comment-item__audio-player">
+          <audio
+            ref="audioRef"
+            class="comment-item__audio-native"
+            :src="attachment.url"
+            preload="metadata"
+            @loadedmetadata="syncAudioState"
+            @timeupdate="syncAudioState"
+            @ended="stopAudio"
+          />
+          <button
+            class="comment-item__audio-toggle"
+            type="button"
+            :aria-label="audioPlaying ? 'Stop voice comment' : 'Play voice comment'"
+            @click="toggleAudio"
+          >
+            <Icon :name="audioPlaying ? 'i-ph-stop-fill' : 'i-ph-play-fill'" class="h-3.5 w-3.5" />
+          </button>
+          <div class="comment-item__audio-track">
+            <div class="comment-item__audio-meta">
+              <span class="comment-item__audio-title">{{ attachment.name || t("feed.commentComposer.tooltipVoice") }}</span>
+              <span class="comment-item__audio-time">{{ audioProgressLabel }}</span>
+            </div>
+            <div class="comment-item__audio-progress" aria-hidden="true">
+              <span class="comment-item__audio-progress-bar" :style="{ width: `${audioProgressPercent}%` }" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div v-if="time || id || enableReply" class="comment-item__footer">
@@ -169,6 +191,10 @@ import type { FeedCommentAttachment, FeedCommentRecord, FeedCommentSubmitPayload
 import FeedCommentComposer from "./CommentComposer.vue"
 
 const { t } = useI18n()
+const audioRef = ref<HTMLAudioElement | null>(null)
+const audioPlaying = ref(false)
+const audioCurrentTime = ref(0)
+const audioDuration = ref(0)
 
 const props = defineProps<{
   id?: number
@@ -219,6 +245,78 @@ const replyToggleLabel = computed(() => {
   return count > 0
     ? `${t("feed.commentItem.reply")} · ${count}`
     : t("feed.commentItem.reply")
+})
+const audioProgressPercent = computed(() => {
+  if (!audioDuration.value) {
+    return 0
+  }
+
+  return Math.min(100, Math.max(0, (audioCurrentTime.value / audioDuration.value) * 100))
+})
+const audioProgressLabel = computed(() => {
+  const current = formatAudioDuration(audioCurrentTime.value)
+  const duration = formatAudioDuration(audioDuration.value)
+
+  return `${current} / ${duration}`
+})
+
+function formatAudioDuration(value: number) {
+  const totalSeconds = Math.max(0, Math.floor(value))
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+
+  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+}
+
+function syncAudioState() {
+  const audio = audioRef.value
+
+  if (!audio) {
+    return
+  }
+
+  audioCurrentTime.value = audio.currentTime || 0
+  audioDuration.value = Number.isFinite(audio.duration) ? audio.duration : 0
+}
+
+function stopAudio() {
+  if (audioRef.value) {
+    audioRef.value.pause()
+    audioRef.value.currentTime = 0
+  }
+
+  audioPlaying.value = false
+  audioCurrentTime.value = 0
+}
+
+async function toggleAudio() {
+  const audio = audioRef.value
+
+  if (!audio) {
+    return
+  }
+
+  if (audioPlaying.value) {
+    stopAudio()
+    return
+  }
+
+  try {
+    if (audio.readyState === HTMLMediaElement.HAVE_NOTHING) {
+      audio.load()
+    }
+
+    audioPlaying.value = true
+    await audio.play()
+    syncAudioState()
+  }
+  catch {
+    audioPlaying.value = false
+  }
+}
+
+onBeforeUnmount(() => {
+  stopAudio()
 })
 
 </script>
@@ -314,10 +412,96 @@ const replyToggleLabel = computed(() => {
   object-fit: cover;
 }
 
-.comment-item__audio {
+.comment-item__audio-player {
+  display: flex;
+  width: min(320px, 100%);
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  color-scheme: light;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  padding: var(--space-2);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.comment-item__audio-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.comment-item__audio-toggle {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--bg-brand);
+  color: var(--icon-inverse);
+  cursor: pointer;
+  box-shadow: var(--shadow-brand);
+  transition: transform var(--duration-fast) var(--ease-default), background var(--duration-fast) var(--ease-default);
+}
+
+.comment-item__audio-toggle:hover {
+  background: var(--bg-brand-hover);
+  transform: translateY(-1px);
+}
+
+.comment-item__audio-track {
+  min-width: 0;
+  flex: 1;
+}
+
+.comment-item__audio-meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.comment-item__audio-title {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-bold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comment-item__audio-time {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  font-size: var(--text-label);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.comment-item__audio-progress {
+  width: 100%;
+  height: 5px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-active);
+}
+
+.comment-item__audio-progress-bar {
   display: block;
-  width: min(280px, 100%);
-  margin-top: 8px;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--bg-brand);
+  transition: width var(--duration-fast) linear;
 }
 
 .comment-item__footer {
