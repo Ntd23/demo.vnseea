@@ -32,7 +32,7 @@ export interface FeedRepository {
   getPokes(): Promise<FeedPokeRecord[]>
   getCommentReplies(input: { commentId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   runPostAction(input: {
-    action: "like" | "reaction" | "comment" | "save" | "report"
+    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide"
     postId: number
     reaction?: FeedStoryReactionType
     text?: string

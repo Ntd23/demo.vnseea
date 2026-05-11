@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
     : await parseJsonPayload(event)
   const { action, postId, reaction, text } = payload
 
-  if (!["like", "reaction", "comment", "save", "report"].includes(action)) {
+  if (!["like", "reaction", "comment", "save", "report", "unsave", "delete", "hide"].includes(action)) {
     throw createError({
       statusCode: 400,
       statusMessage: "Post action is invalid.",
@@ -118,7 +118,7 @@ export default defineEventHandler(async (event) => {
   }
 
   return await runPostAction(event, {
-    action: action as "like" | "reaction" | "comment" | "save" | "report",
+    action: action as "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide",
     postId,
     reaction,
     text,

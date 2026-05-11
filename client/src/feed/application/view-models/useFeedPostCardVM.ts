@@ -68,6 +68,17 @@ export function useFeedPostCardVM(
     Boolean(post.value.text.trim() || post.value.tags.length),
   )
   const mediaItems = computed(() => post.value.mediaItems)
+  const isOwner = computed(() => {
+    const currentUsername = currentAuthUserStore.user?.username
+    if (!currentUsername || !post.value.authorPath) {
+      return false
+    }
+    // Remove /@ prefix if exists
+    const postUsername = post.value.authorPath.replace("/@", "")
+    return currentUsername === postUsername
+  })
+  const isAdmin = computed(() => currentAuthUserStore.user?.isAdmin || currentAuthUserStore.user?.isModerator || false)
+
   const shareUrl = computed(() =>
     new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString(),
   )
@@ -278,6 +289,52 @@ export function useFeedPostCardVM(
       }
     }
 
+    else if (action === "save" || action === "unsave") {
+      try {
+        await repository.runPostAction({
+          action,
+          postId: post.value.id,
+        })
+        post.value.isSaved = action === "save"
+        actionState.value = "success"
+        actionMessage.value = action === "save" ? t("feed.postHeader.menuSaveLabel") : t("feed.postHeader.menuUnsaveLabel")
+      }
+      catch (error) {
+        actionState.value = "error"
+        actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+      }
+    }
+    else if (action === "delete") {
+      try {
+        await repository.runPostAction({
+          action: "delete",
+          postId: post.value.id,
+        })
+        actionState.value = "success"
+        actionMessage.value = t("feed.postHeader.menuDeleteLabel")
+        // Note: In a real app, we might want to emit a 'deleted' event to the parent to remove it from the list
+      }
+      catch (error) {
+        actionState.value = "error"
+        actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+      }
+    }
+    else if (action === "hide") {
+      try {
+        await repository.runPostAction({
+          action: "hide",
+          postId: post.value.id,
+        })
+        actionState.value = "success"
+        actionMessage.value = t("feed.postHeader.menuHideLabel")
+        // Note: In a real app, we might want to emit a 'hidden' event
+      }
+      catch (error) {
+        actionState.value = "error"
+        actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+      }
+    }
+
     toast.add({
       color: actionState.value === "error" ? "warning" : "primary",
       icon: actionState.value === "error" ? "i-ph-warning-circle-fill" : "i-ph-check-circle-fill",
@@ -339,5 +396,7 @@ export function useFeedPostCardVM(
     handleShared,
     handleMenuAction,
     downloadMedia,
+    isOwner,
+    isAdmin,
   }
 }
