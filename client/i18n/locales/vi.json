@@ -1317,6 +1317,10 @@
         "education": "Giáo dục",
         "organization": "Tổ chức",
         "service": "Dịch vụ"
+      },
+      "tabs": {
+        "posts": "Tất cả",
+        "about": "Giới thiệu"  
       }
     },
   "profilePage": {
@@ -2596,6 +2600,7 @@
       "heroDescription": "Theo dõi các video nổi bật, lọc theo chủ đề và tiếp tục xem mà không bị đứt mạch khi chuyển giữa các phiên nội dung.",
       "searchPlaceholder": "Tìm video, tác giả hoặc chủ đề",
       "relatedEyebrow": "Xem tiếp",
+      "upNext": "Video tiếp theo",
       "relatedTitle": "Video liên quan",
       "commentsEyebrow": "Thảo luận",
       "commentsTitle": "Bình luận gần đây",
@@ -4141,8 +4146,8 @@
       "statusDraftRestoredDescription": "Nội dung bạn nhập trước đó đã được điền lại trong khung soạn bài này.",
       "statusLoadingTitle": "Đang chuẩn bị đăng bài",
       "statusLoadingDescription": "VNSEEA đang kiểm tra nhanh nội dung, tuỳ chọn hiển thị và định dạng mô phỏng.",
-      "statusSuccessTitle": "Bài viết mô phỏng đã sẵn sàng",
-      "statusSuccessDescription": "Bạn có thể tiếp tục soạn bài khác ngay trên cùng khung composer này.",
+      "statusSuccessTitle": "Đăng bài thành công",
+      "statusSuccessDescription": "Bài viết của bạn đã được đăng lên dòng thời gian.",
       "statusErrorTitle": "Cần nhập nội dung trước khi đăng",
       "statusErrorDescription": "Hãy thêm ít nhất một đoạn mô tả ngắn để bài viết không bị trống."
     },
@@ -4260,6 +4265,7 @@
       "actionDownload": "Tải media",
       "actionPrevious": "Media trước",
       "actionNext": "Media tiếp theo",
+      "actionOpenOriginal" :"Mở bản gốc",
       "itemImage": "Ảnh",
       "itemVideo": "Video",
       "defaultTitle": "Lightbox"

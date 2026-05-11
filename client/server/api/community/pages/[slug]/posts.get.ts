@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const page = await resolvePageRecordBySlug(event, slug)
 
   return await fetchFeedPosts(event, {
-    type: "get_news_feed",
+    type: "get_page_posts",
     limit: Number(query.limit ?? 10) || 10,
     afterPostId: Number(query.afterPostId ?? 0) || 0,
     pageId: page.id,

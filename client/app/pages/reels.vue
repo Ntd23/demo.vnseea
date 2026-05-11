@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import ReelsPresentationReelsPage from "../../src/reels/presentation/pages/ReelsPage.vue"
 definePageMeta({
-  layout: 'default',
+  layout: false,
 })
 
 const { t } = useI18n()

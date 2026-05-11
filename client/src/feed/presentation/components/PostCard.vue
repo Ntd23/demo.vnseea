@@ -28,7 +28,7 @@
         </div>
       </div>
 
-      <FeedPostMediaGrid v-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="onOpenMedia" />
+      <FeedPostMediaGrid v-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
 
       <div class="post-card__stats">
         <div v-if="hasReactions" class="post-card__stats-left">
@@ -230,7 +230,13 @@ const { t } = useI18n()
 
 const props = defineProps<{
   post: FeedPostRecord
+  preventLightbox?: boolean
 }>()
+
+const emit = defineEmits<{
+  open: [index: number]
+}>()
+
 const {
   currentAuthUserStore,
   showComments,
@@ -271,6 +277,13 @@ const {
   isOwner,
   isAdmin,
 } = useFeedPostCardVM(toRef(props, "post"))
+
+function handleMediaOpen(index: number) {
+  emit("open", index)
+  if (!props.preventLightbox) {
+    onOpenMedia(index)
+  }
+}
 </script>
 
 <style scoped>

@@ -23,7 +23,7 @@
             class="w-full"
             :disabled="submitting"
             :ui="{
-              base: 'min-h-[44px] resize-none rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-4 pr-12 text-[14px] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--color-primary-100)]',
+              base: 'min-h-[44px] resize-none rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-4 pr-12 text-[var(--text-body)] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--color-primary-100)]',
             }"
             @keydown.enter.exact.prevent="submitComment"
           />
@@ -54,11 +54,36 @@
           <template v-else-if="attachmentPreview?.type === 'audio'">
             <div class="comment-composer__audio-preview">
               <audio
+                ref="audioPreviewRef"
                 :src="attachmentPreview.url"
-                controls
                 preload="metadata"
-                class="comment-composer__audio-player"
+                class="comment-composer__audio-native"
+                @loadedmetadata="syncAudioPreview"
+                @timeupdate="syncAudioPreview"
+                @ended="stopAudioPreview"
               />
+
+              <button
+                class="comment-composer__audio-toggle"
+                type="button"
+                :aria-label="audioPlaying ? 'Stop voice preview' : 'Play voice preview'"
+                @click="toggleAudioPreview"
+              >
+                <Icon :name="audioPlaying ? 'i-ph-stop-fill' : 'i-ph-play-fill'" class="h-4 w-4" />
+              </button>
+
+              <div class="comment-composer__audio-track">
+                <div class="comment-composer__audio-meta">
+                  <span class="comment-composer__preview-label">
+                    {{ attachmentPreview.name || $t("feed.commentComposer.tooltipVoice") }}
+                  </span>
+                  <span class="comment-composer__recording-time">{{ audioProgressLabel }}</span>
+                </div>
+                <div class="comment-composer__audio-progress" aria-hidden="true">
+                  <span class="comment-composer__audio-progress-bar" :style="{ width: `${audioProgressPercent}%` }" />
+                </div>
+              </div>
+
               <button
                 class="comment-composer__preview-remove"
                 type="button"
@@ -196,12 +221,16 @@ const emojiOpen = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
 const gifInputRef = ref<HTMLInputElement | null>(null)
 const textareaRef = ref()
+const audioPreviewRef = ref<HTMLAudioElement | null>(null)
 const imageFile = ref<File | undefined>()
 const gifFile = ref<File | undefined>()
 const audioFile = ref<File | undefined>()
 const attachmentPreview = ref<FeedCommentAttachment | undefined>()
 const recording = ref(false)
 const recordingErrorMessage = ref("")
+const audioPlaying = ref(false)
+const audioCurrentTime = ref(0)
+const audioDuration = ref(0)
 const mediaStream = ref<MediaStream | null>(null)
 const audioContext = ref<AudioContext | null>(null)
 const mediaSource = ref<MediaStreamAudioSourceNode | null>(null)
@@ -217,6 +246,19 @@ const canSubmit = computed(() =>
   Boolean(trimmedMessage.value || imageFile.value || gifFile.value || audioFile.value),
 )
 const recordingDurationLabel = computed(() => formatRecordingDuration(recordingElapsedMs.value))
+const audioProgressPercent = computed(() => {
+  if (!audioDuration.value) {
+    return 0
+  }
+
+  return Math.min(100, Math.max(0, (audioCurrentTime.value / audioDuration.value) * 100))
+})
+const audioProgressLabel = computed(() => {
+  const current = formatRecordingDuration(audioCurrentTime.value * 1000)
+  const duration = formatRecordingDuration(audioDuration.value * 1000)
+
+  return `${current} / ${duration}`
+})
 const canRecordAudio = computed(() => {
   if (!import.meta.client) {
     return false
@@ -250,7 +292,19 @@ function resetFileInputs() {
   if (gifInputRef.value) gifInputRef.value.value = ""
 }
 
+function resetAudioPreviewState() {
+  if (audioPreviewRef.value) {
+    audioPreviewRef.value.pause()
+    audioPreviewRef.value.currentTime = 0
+  }
+
+  audioPlaying.value = false
+  audioCurrentTime.value = 0
+  audioDuration.value = 0
+}
+
 function resetComposerState() {
+  resetAudioPreviewState()
   revokeAttachmentUrl()
   imageFile.value = undefined
   gifFile.value = undefined
@@ -329,6 +383,53 @@ function insertEmoji(emoji: string) {
     const textarea = textareaRef.value?.$el?.querySelector?.("textarea") as HTMLTextAreaElement | null
     textarea?.focus()
   })
+}
+
+function syncAudioPreview() {
+  const audio = audioPreviewRef.value
+
+  if (!audio) {
+    return
+  }
+
+  audioCurrentTime.value = audio.currentTime || 0
+  audioDuration.value = Number.isFinite(audio.duration) ? audio.duration : 0
+}
+
+function stopAudioPreview() {
+  if (audioPreviewRef.value) {
+    audioPreviewRef.value.pause()
+    audioPreviewRef.value.currentTime = 0
+  }
+
+  audioPlaying.value = false
+  audioCurrentTime.value = 0
+}
+
+async function toggleAudioPreview() {
+  const audio = audioPreviewRef.value
+
+  if (!audio) {
+    return
+  }
+
+  if (audioPlaying.value) {
+    stopAudioPreview()
+    return
+  }
+
+  try {
+    if (audio.readyState === HTMLMediaElement.HAVE_NOTHING) {
+      audio.load()
+    }
+
+    audioPlaying.value = true
+    await audio.play()
+    syncAudioPreview()
+  }
+  catch {
+    audioPlaying.value = false
+  }
 }
 
 function stopMediaStream() {
@@ -612,9 +713,72 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
-.comment-composer__audio-player {
-  width: 100%;
+.comment-composer__audio-preview {
+  color-scheme: light;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  padding: var(--space-2);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.comment-composer__audio-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.comment-composer__audio-toggle {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--bg-brand);
+  color: var(--icon-inverse);
+  cursor: pointer;
+  box-shadow: var(--shadow-brand);
+  transition: transform var(--duration-fast) var(--ease-default), background var(--duration-fast) var(--ease-default);
+}
+
+.comment-composer__audio-toggle:hover {
+  background: var(--bg-brand-hover);
+  transform: translateY(-1px);
+}
+
+.comment-composer__audio-track {
   min-width: 0;
+  flex: 1;
+}
+
+.comment-composer__audio-meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.comment-composer__audio-progress {
+  width: 100%;
+  height: 6px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-active);
+}
+
+.comment-composer__audio-progress-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--bg-brand);
+  transition: width var(--duration-fast) linear;
 }
 
 .comment-composer__recording-progress {
@@ -638,7 +802,7 @@ onBeforeUnmount(() => {
   width: 8px;
   height: 8px;
   border-radius: var(--radius-full);
-  background: #ef4444;
+  background: var(--color-error);
   animation: comment-recording-pulse 1s ease-in-out infinite;
 }
 
@@ -730,16 +894,17 @@ onBeforeUnmount(() => {
   justify-content: center;
   border: 0;
   border-radius: var(--radius-full);
-  background: linear-gradient(180deg, #4f8cff 0%, #2563eb 100%);
-  color: #ffffff;
+  background: var(--bg-brand);
+  color: var(--icon-inverse);
   cursor: pointer;
-  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.22);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  box-shadow: var(--shadow-brand);
+  transition: transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default), opacity var(--duration-fast) var(--ease-default);
 }
 
 .comment-composer__send:hover:not(:disabled) {
+  background: var(--bg-brand-hover);
   transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(37, 99, 235, 0.25);
+  box-shadow: var(--shadow-xl);
 }
 
 .comment-composer__send:disabled {

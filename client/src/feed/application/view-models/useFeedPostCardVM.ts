@@ -18,7 +18,7 @@ import type {
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
 export function useFeedPostCardVM(
-  post: Ref<FeedPostRecord>,
+  post: Ref<FeedPostRecord | null>,
   repository = createApiFeedRepository(),
 ) {
   const { t } = useI18n()
@@ -44,7 +44,7 @@ export function useFeedPostCardVM(
   const commenting = ref(false)
   const reporting = ref(false)
 
-  const postAnchorId = computed(() => `feed-post-${post.value.id}`)
+  const postAnchorId = computed(() => post.value ? `feed-post-${post.value.id}` : "")
   const postReactionOptions = computed(() =>
     feedReactionAssets.map(reaction => ({
       value: reaction.value,
@@ -65,7 +65,7 @@ export function useFeedPostCardVM(
   )
   const hasReactions = computed(() => likesCount.value > 0)
   const hasPostContent = computed(() =>
-    Boolean(post.value.text.trim() || post.value.tags.length),
+    Boolean(post.value?.text.trim() || post.value?.tags.length),
   )
   const mediaItems = computed(() => post.value.mediaItems)
   const isOwner = computed(() => {
@@ -80,12 +80,28 @@ export function useFeedPostCardVM(
   const isAdmin = computed(() => currentAuthUserStore.user?.isAdmin || currentAuthUserStore.user?.isModerator || false)
 
   const shareUrl = computed(() =>
-    new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString(),
+    post.value ? new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString() : ""
   )
 
   watch(
     post,
     (value) => {
+      if (!value) {
+        localComments.value = []
+        likesCount.value = 0
+        sharesCount.value = 0
+        liked.value = false
+        selectedPostReaction.value = null
+        postReactionTrayOpen.value = false
+        actionState.value = "idle"
+        actionMessage.value = ""
+        showComments.value = false
+        showShare.value = false
+        lightboxOpen.value = false
+        currentMediaIndex.value = 0
+        return
+      }
+
       localComments.value = [...value.comments]
       likesCount.value = value.stats.likes
       sharesCount.value = value.stats.shares
@@ -152,7 +168,9 @@ export function useFeedPostCardVM(
   }
 
   async function reactToPost(reaction: FeedStoryReactionType) {
-    if (liking.value) {
+    const currentPost = post.value
+
+    if (liking.value || !currentPost) {
       return
     }
 
@@ -162,7 +180,7 @@ export function useFeedPostCardVM(
     try {
       await repository.runPostAction({
         action: "reaction",
-        postId: post.value.id,
+        postId: currentPost.id,
         reaction,
       })
 
@@ -189,7 +207,9 @@ export function useFeedPostCardVM(
   }
 
   async function submitComment(payload: FeedCommentSubmitPayload) {
-    if (commenting.value) {
+    const currentPost = post.value
+
+    if (commenting.value || !currentPost) {
       return
     }
 
@@ -198,7 +218,7 @@ export function useFeedPostCardVM(
     try {
       const response = await repository.runPostAction({
         action: "comment",
-        postId: post.value.id,
+        postId: currentPost.id,
         text: payload.text,
         imageFile: payload.imageFile,
         gifFile: payload.gifFile,
@@ -224,7 +244,7 @@ export function useFeedPostCardVM(
       toast.add({
         color: "success",
         icon: "i-ph-chat-centered-dots-fill",
-        title: post.value.author,
+        title: currentPost.author,
         description: actionMessage.value,
       })
     }
@@ -238,6 +258,12 @@ export function useFeedPostCardVM(
   }
 
   function handleShared() {
+    const currentPost = post.value
+
+    if (!currentPost) {
+      return
+    }
+
     sharesCount.value += 1
     actionState.value = "success"
     actionMessage.value = t("feed.shareModal.shared")
@@ -245,8 +271,14 @@ export function useFeedPostCardVM(
   }
 
   async function handleMenuAction(action: string) {
+    const currentPost = post.value
+
+    if (!currentPost) {
+      return
+    }
+
     if (action === "open" && import.meta.client) {
-      window.open(post.value.sourcePath || shareUrl.value, "_blank", "noopener,noreferrer")
+      window.open(currentPost.sourcePath || shareUrl.value, "_blank", "noopener,noreferrer")
       return
     }
 
@@ -275,7 +307,7 @@ export function useFeedPostCardVM(
       try {
         await repository.runPostAction({
           action: "report",
-          postId: post.value.id,
+          postId: currentPost.id,
         })
         actionState.value = "success"
         actionMessage.value = t("feed.postHeader.menuReportLabel")
@@ -338,13 +370,15 @@ export function useFeedPostCardVM(
     toast.add({
       color: actionState.value === "error" ? "warning" : "primary",
       icon: actionState.value === "error" ? "i-ph-warning-circle-fill" : "i-ph-check-circle-fill",
-      title: post.value.author,
+      title: currentPost.author,
       description: actionMessage.value,
     })
   }
 
   function downloadMedia() {
-    if (!mediaItems.value[currentMediaIndex.value]) {
+    const currentPost = post.value
+
+    if (!currentPost || !mediaItems.value[currentMediaIndex.value]) {
       return
     }
 
@@ -354,7 +388,7 @@ export function useFeedPostCardVM(
     toast.add({
       color: "primary",
       icon: "i-ph-download-simple-fill",
-      title: post.value.author,
+      title: currentPost.author,
       description: actionMessage.value,
     })
   }

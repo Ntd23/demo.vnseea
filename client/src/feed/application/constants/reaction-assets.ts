@@ -46,4 +46,6 @@ export const feedReactionAssetByValue = feedReactionAssets.reduce(
 
 export const feedPostPreviewReactionAssets = [
   feedReactionAssetByValue.Like,
+  feedReactionAssetByValue.Love,
+  feedReactionAssetByValue.HaHa,
 ]

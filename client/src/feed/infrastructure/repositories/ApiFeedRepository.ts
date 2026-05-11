@@ -132,10 +132,14 @@ export function createApiFeedRepository(): FeedRepository {
       )
     },
     async createPost(input) {
-      if (input.imageFile || input.videoFile || input.feeling) {
-        const formData = new FormData()
-        formData.append("text", input.text)
+      const formData = new FormData()
+      formData.append("text", input.text)
 
+      if (input.pageId) {
+        formData.append("pageId", String(input.pageId))
+      }
+
+      if (input.imageFile || input.videoFile || input.feeling) {
         if (input.audience) {
           formData.append("audience", input.audience)
         }
