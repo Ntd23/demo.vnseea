@@ -1,4 +1,4 @@
-<!-- Description: Renders the reels route as a minimal fullscreen media viewer backed by real feed videos instead of a dashboard-style landing page. -->
+<!-- Description: Renders the reels route as a fullscreen media viewer with feed-powered reactions, comments, sharing, and save controls. -->
 <template>
   <div class="reels-page">
     <!-- Loading State -->
@@ -217,6 +217,10 @@
 </template>
 
 <script setup lang="ts">
+import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM"
+import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
+import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
+import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
 import { useReelsPageVM } from "../../application/view-models/useReelsPageVM"
 import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM"
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
@@ -227,16 +231,74 @@ const { t } = useI18n()
 const {
   loading,
   errorMessage,
-  reels,
-  activeIndex,
   activeReel,
   activeMedia,
   fetchReels,
-  nextReel,
-  prevReel,
   onTouchStart,
   onTouchEnd,
+  onWheel,
 } = useReelsPageVM()
+const videoRef = ref<HTMLVideoElement | null>(null)
+const videoPaused = ref(false)
+const videoMuted = ref(true)
+const locallySaved = ref(false)
+
+const {
+  currentAuthUserStore,
+  showComments,
+  showShare,
+  liked,
+  selectedPostReaction,
+  postReactionTrayOpen,
+  localComments,
+  likesCount,
+  sharesCount,
+  commenting,
+  postReactionOptions,
+  activePostReactionAsset,
+  activePostReactionLabel,
+  shareUrl,
+  openPostReactionTray,
+  closePostReactionTray,
+  startPostReactionPress,
+  finishPostReactionPress,
+  cancelPostReactionPress,
+  handlePostReactionButtonClick,
+  reactToPost,
+  submitComment,
+  handleShared,
+  handleMenuAction,
+} = useFeedPostCardVM(activeReel)
+
+watch(
+  activeReel,
+  value => {
+    locallySaved.value = Boolean(value?.isSaved)
+    videoPaused.value = false
+  },
+  { immediate: true },
+)
+
+async function toggleVideoPlayback() {
+  const video = videoRef.value
+
+  if (!video) {
+    return
+  }
+
+  if (video.paused) {
+    await video.play()
+    videoPaused.value = false
+    return
+  }
+
+  video.pause()
+  videoPaused.value = true
+}
+
+function toggleLocalSave() {
+  locallySaved.value = !locallySaved.value
+}
 
 const showComments = ref(false)
 
