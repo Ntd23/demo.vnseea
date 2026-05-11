@@ -31,6 +31,8 @@ export function useCommunityPageDetailPageVM(
     categoryLabel,
     followerCountLabel,
     likeCountLabel,
+    slug,
+    refreshPagePosts,
   } = useCommunityPageDetail(username, repository)
 
   const pageName = computed(() => translateText(page.value?.name || ""))
@@ -128,6 +130,7 @@ export function useCommunityPageDetailPageVM(
     tabs,
     handleFollowPage,
     handleSharePage,
+    refreshPagePosts,
     slug,
   }
 }

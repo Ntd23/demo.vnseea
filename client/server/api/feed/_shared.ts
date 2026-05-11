@@ -346,6 +346,12 @@ const isVideoUrl = (value: string) => {
   const normalized = value.toLowerCase().split(/[?#]/)[0] || ""
   return videoExtensions.some(extension => normalized.endsWith(`.${extension}`))
     || normalized.includes("_video")
+    || normalized.includes("youtube.com")
+    || normalized.includes("youtu.be")
+    || normalized.includes("vimeo.com")
+    || normalized.includes("playtube")
+    || normalized.includes("facebook.com")
+    || normalized.includes("dailymotion")
 }
 
 const firstMediaUrl = (
@@ -528,11 +534,11 @@ const extractMediaItems = (
       "postFacebook",
     ])
 
-    if (externalVideoThumb) {
-      appendMediaValue(externalVideoThumb, "image")
+    if (externalVideo) {
+      appendMediaValue(externalVideo, "video", externalVideoThumb || undefined)
     }
-    else if (externalVideo && isVideoUrl(externalVideo)) {
-      appendMediaValue(externalVideo, "video")
+    else if (externalVideoThumb) {
+      appendMediaValue(externalVideoThumb, "image")
     }
   }
 
@@ -1045,7 +1051,7 @@ const buildPostsResponse = (posts: FeedPostRecord[], limit: number): FeedPostsRe
 export async function fetchFeedPosts(
   event: H3Event,
   input: {
-    type: "get_news_feed" | "saved" | "hashtag" | "get_random_videos"
+    type: "get_news_feed" | "saved" | "hashtag" | "get_random_videos" | "get_page_posts"
     limit?: number
     afterPostId?: number
     postType?: string
@@ -1070,10 +1076,18 @@ export async function fetchFeedPosts(
         hash: input.tag,
         user_id: currentUser.user_id,
         page_id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
+        id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
       },
     ),
     "Unable to load feed posts.",
   )
+
+  if (input.pageId) {
+    console.log(`[fetchFeedPosts] Page ${input.pageId} response:`, {
+      type: input.type,
+      count: response.data?.length ?? 0,
+    })
+  }
 
   return buildPostsResponse((response.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)), limit)
 }

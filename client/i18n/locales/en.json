@@ -1317,6 +1317,10 @@
         "education": "Education",
         "organization": "Organization",
         "service": "Service"
+      },
+      "tabs" : {
+        "posts" : "All",
+        "about" :"About"
       }
     },
   "profilePage": {
@@ -2596,6 +2600,7 @@
       "heroDescription": "Browse highlighted videos, filter by topic, and continue watching without losing context while moving between sessions.",
       "searchPlaceholder": "Search videos, creators, or topics",
       "relatedEyebrow": "Watch next",
+      "upNext": "Up next",
       "relatedTitle": "Related videos",
       "commentsEyebrow": "Discussion",
       "commentsTitle": "Recent comments",
@@ -4257,6 +4262,7 @@
       "actionDownload": "Download media",
       "actionPrevious": "Previous media",
       "actionNext": "Next media",
+      "actionOpenOriginal": "Open Original File",
       "itemImage": "Image",
       "itemVideo": "Video",
       "defaultTitle": "Lightbox"

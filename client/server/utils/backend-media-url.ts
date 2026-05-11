@@ -1,11 +1,8 @@
 // English description: Resolves backend media paths into absolute URLs that are safe to render through Nuxt image components.
 
-import { existsSync } from "node:fs"
-import { normalize, resolve } from "node:path"
 import type { H3Event } from "h3"
 
 const trimTrailingSlash = (value: string) => value.replace(/\/+$/, "")
-const repoRoot = resolve(process.cwd(), "..")
 
 const stripBackendApiSuffix = (value: string) =>
   value
@@ -19,16 +16,6 @@ const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number"
     ? String(value).trim()
     : ""
-
-const isMissingLocalUpload = (pathname: string) => {
-  if (!pathname.startsWith("/upload/")) {
-    return false
-  }
-
-  const localPath = normalize(resolve(repoRoot, `.${decodeURIComponent(pathname)}`))
-
-  return localPath.startsWith(repoRoot) && !existsSync(localPath)
-}
 
 export const getBackendWebBaseUrl = (event: H3Event) => {
   const runtimeConfig = useRuntimeConfig(event)
@@ -56,18 +43,7 @@ export const createBackendMediaUrlResolver = (event: H3Event) => {
     }
 
     if (/^https?:\/\//i.test(rawValue)) {
-      try {
-        const url = new URL(rawValue)
-
-        return isMissingLocalUpload(url.pathname) ? "" : rawValue
-      }
-      catch {
-        return rawValue
-      }
-    }
-
-    if (isMissingLocalUpload(rawValue.startsWith("/") ? rawValue : `/${rawValue}`)) {
-      return ""
+      return rawValue
     }
 
     if (rawValue.startsWith("//")) {

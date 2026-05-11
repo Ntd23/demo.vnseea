@@ -44,10 +44,10 @@ function playVideoWithSound(event: Event) {
 }
 
 function playVisibleVideo(video: HTMLVideoElement) {
-  video.muted = false
+  video.muted = true // Phải tắt tiếng mới autoplay được trên hầu hết trình duyệt
   video.volume = 1
   void video.play().catch(() => {
-    // Browsers may block autoplay with sound until the user interacts.
+    // Nếu vẫn lỗi, trình duyệt yêu cầu người dùng click vào trang web trước
   })
 }
 

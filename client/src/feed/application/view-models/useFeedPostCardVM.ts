@@ -44,7 +44,7 @@ export function useFeedPostCardVM(
   const commenting = ref(false)
   const reporting = ref(false)
 
-  const postAnchorId = computed(() => `feed-post-${post.value.id}`)
+  const postAnchorId = computed(() => post.value ? `feed-post-${post.value.id}` : "")
   const postReactionOptions = computed(() =>
     feedReactionAssets.map(reaction => ({
       value: reaction.value,
@@ -65,16 +65,32 @@ export function useFeedPostCardVM(
   )
   const hasReactions = computed(() => likesCount.value > 0)
   const hasPostContent = computed(() =>
-    Boolean(post.value.text.trim() || post.value.tags.length),
+    Boolean(post.value?.text.trim() || post.value?.tags.length),
   )
-  const mediaItems = computed(() => post.value.mediaItems)
+  const mediaItems = computed(() => post.value?.mediaItems || [])
   const shareUrl = computed(() =>
-    new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString(),
+    post.value ? new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString() : ""
   )
 
   watch(
     post,
     (value) => {
+      if (!value) {
+        localComments.value = []
+        likesCount.value = 0
+        sharesCount.value = 0
+        liked.value = false
+        selectedPostReaction.value = null
+        postReactionTrayOpen.value = false
+        actionState.value = "idle"
+        actionMessage.value = ""
+        showComments.value = false
+        showShare.value = false
+        lightboxOpen.value = false
+        currentMediaIndex.value = 0
+        return
+      }
+
       localComments.value = [...value.comments]
       likesCount.value = value.stats.likes
       sharesCount.value = value.stats.shares
