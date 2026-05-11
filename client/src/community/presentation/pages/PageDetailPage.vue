@@ -119,6 +119,10 @@
       <div class="page-detail__body">
         <section class="page-detail__main">
           <template v-if="activeTab === 'posts'">
+            <div class="mb-4">
+              <FeedPublisherBox :page-id="page.id" @created="handlePostCreated" />
+            </div>
+
             <div v-if="pagePosts.length" class="space-y-3">
               <FeedPostCard v-for="post in pagePosts" :key="post.id" :post="post" />
             </div>
@@ -138,7 +142,7 @@
               <p class="page-detail__card-text">{{ pageSummary }}</p>
             </section>
             <section class="page-detail__card">
-              <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutTitle') }}</h2>
+              <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutEyebrow') }}</h2>
               <div class="space-y-2 text-sm text-slate-600">
                 <p>{{ followerCountLabel }}</p>
                 <p>{{ likeCountLabel }}</p>
@@ -151,7 +155,7 @@
 
         <aside class="page-detail__sidebar">
           <section class="page-detail__card">
-            <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutTitle') }}</h2>
+            <h2 class="page-detail__card-title">{{ t('pages.pageDetailPage.aboutEyebrow') }}</h2>
             <p class="page-detail__card-text">{{ pageSummary }}</p>
           </section>
           <section class="page-detail__card">
@@ -199,6 +203,7 @@
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
+import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
 import { useCommunityPageDetailPageVM } from "../../application/view-models/useCommunityPageDetailPageVM"
 
 const { t } = useI18n()
@@ -224,7 +229,12 @@ const {
   tabs,
   handleFollowPage,
   handleSharePage,
+  refreshPagePosts,
 } = useCommunityPageDetailPageVM()
+
+function handlePostCreated() {
+  refreshPagePosts()
+}
 </script>
 
 <style scoped>

@@ -135,6 +135,9 @@ import { useFeedPublisherBoxVM } from "../../application/view-models/useFeedPubl
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 
 const { t } = useI18n()
+const props = defineProps<{
+  pageId?: number
+}>()
 const emit = defineEmits<{
   created: [post: FeedPostRecord | null]
 }>()
@@ -167,7 +170,7 @@ const {
   clearSelectedMedia,
   selectFeeling,
   publish,
-} = useFeedPublisherBoxVM((event, post) => emit(event, post))
+} = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId)
 </script>
 
 <style scoped>

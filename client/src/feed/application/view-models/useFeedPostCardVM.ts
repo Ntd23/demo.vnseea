@@ -44,7 +44,7 @@ export function useFeedPostCardVM(
   const commenting = ref(false)
   const reporting = ref(false)
 
-  const postAnchorId = computed(() => post.value ? `feed-post-${post.value.id}` : "feed-post")
+  const postAnchorId = computed(() => post.value ? `feed-post-${post.value.id}` : "")
   const postReactionOptions = computed(() =>
     feedReactionAssets.map(reaction => ({
       value: reaction.value,
@@ -67,19 +67,35 @@ export function useFeedPostCardVM(
   const hasPostContent = computed(() =>
     Boolean(post.value?.text.trim() || post.value?.tags.length),
   )
-  const mediaItems = computed(() => post.value?.mediaItems ?? [])
+  const mediaItems = computed(() => post.value?.mediaItems || [])
   const shareUrl = computed(() =>
-    new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString(),
+    post.value ? new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString() : ""
   )
 
   watch(
     post,
     (value) => {
-      localComments.value = value ? [...value.comments] : []
-      likesCount.value = value?.stats.likes ?? 0
-      sharesCount.value = value?.stats.shares ?? 0
-      liked.value = Boolean(value?.reaction)
-      selectedPostReaction.value = value?.reaction ?? null
+      if (!value) {
+        localComments.value = []
+        likesCount.value = 0
+        sharesCount.value = 0
+        liked.value = false
+        selectedPostReaction.value = null
+        postReactionTrayOpen.value = false
+        actionState.value = "idle"
+        actionMessage.value = ""
+        showComments.value = false
+        showShare.value = false
+        lightboxOpen.value = false
+        currentMediaIndex.value = 0
+        return
+      }
+
+      localComments.value = [...value.comments]
+      likesCount.value = value.stats.likes
+      sharesCount.value = value.stats.shares
+      liked.value = false
+      selectedPostReaction.value = null
       postReactionTrayOpen.value = false
       actionState.value = "idle"
       actionMessage.value = ""

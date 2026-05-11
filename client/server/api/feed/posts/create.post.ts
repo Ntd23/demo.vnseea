@@ -28,6 +28,7 @@ type CreatePostPayload = {
     type?: string
     data: Buffer
   } | null
+  pageId?: number
 }
 
 const mapAudienceToPrivacy = (value: string) => {
@@ -67,6 +68,7 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     feeling: typeof body.feeling === "string" ? body.feeling.trim() : "",
     imageFile: null,
     videoFile: null,
+    pageId: body.pageId ? Number(body.pageId) : undefined,
   }
 }
 
@@ -78,6 +80,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     feeling: "",
     imageFile: null,
     videoFile: null,
+    pageId: undefined,
   }
 
   for (const part of parts) {
@@ -107,6 +110,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     if (part.name === "text") payload.text = value
     if (part.name === "audience") payload.audience = value || "public"
     if (part.name === "feeling") payload.feeling = value
+    if (part.name === "pageId") payload.pageId = Number(value)
   }
 
   return payload
@@ -138,6 +142,10 @@ export default defineEventHandler(async (event) => {
 
   requestBody.append("postText", payload.text)
   requestBody.append("postPrivacy", mapAudienceToPrivacy(payload.audience))
+
+  if (payload.pageId) {
+    requestBody.append("page_id", String(payload.pageId))
+  }
 
   if (payload.feeling) {
     requestBody.append("feeling_type", "feelings")

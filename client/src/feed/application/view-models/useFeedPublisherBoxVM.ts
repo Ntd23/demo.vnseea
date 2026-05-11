@@ -12,6 +12,7 @@ type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | ""
 
 export function useFeedPublisherBoxVM(
   emit: (event: "created", post: FeedPostRecord | null) => void,
+  pageId?: number,
   repository = createApiFeedRepository(),
 ) {
   const { t } = useI18n()
@@ -260,6 +261,7 @@ export function useFeedPublisherBoxVM(
         feeling: draft.value.feeling || undefined,
         imageFile: imageFile.value || undefined,
         videoFile: videoFile.value || undefined,
+        pageId,
       })
 
       statusTone.value = "success"

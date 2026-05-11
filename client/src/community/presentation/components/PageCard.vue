@@ -21,7 +21,6 @@
             <NuxtLink :to="pageTo" class="page-card__title">
               {{ pageName }}
             </NuxtLink>
-            <p class="page-card__slug">/p/{{ page.slug }}</p>
           </div>
         </div>
       </div>
@@ -61,6 +60,7 @@ const { t } = useI18n()
 const pageName = computed(() => props.page.name)
 const pageSummary = computed(() => props.page.summary)
 const likeCountLabel = computed(() => formatCommunityLikeCount(props.page.likes))
+const followerCountLabel = computed(() => formatCommunityLikeCount(props.page.followers))
 const avatarLabel = computed(() => pageName.value.slice(0, 2).toUpperCase())
 
 const categoryLabel = computed(() => {
