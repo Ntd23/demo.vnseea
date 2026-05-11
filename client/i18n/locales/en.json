@@ -4181,12 +4181,16 @@
       "menuDeleteDescription": "Permanently delete this post.",
       "menuSaveLabel": "Save post",
       "menuSaveDescription": "Add this post to your saved list.",
+      "menuUnsaveLabel": "Unsave post",
+      "menuUnsaveDescription": "Remove this post from your saved list.",
       "menuReportLabel": "Report post",
       "menuReportDescription": "Report this post to us.",
       "menuOpenLabel": "Open post in a new tab",
       "menuOpenDescription": "View this post in a separate tab.",
       "menuHideLabel": "Hide post",
-      "menuHideDescription": "I do not want to see this post anymore."
+      "menuHideDescription": "I do not want to see this post anymore.",
+      "menuCopyLabel": "Copy link",
+      "menuCopyDescription": "Copy the link to this post."
     },
     "commentList": {
       "title": "Comments",

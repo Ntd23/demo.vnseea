@@ -1233,7 +1233,7 @@ export async function runPokeAction(
 export async function runPostAction(
   event: H3Event,
   input: {
-    action: "like" | "reaction" | "comment" | "save" | "report"
+    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide"
     postId: number
     reaction?: string
     text?: string
@@ -1358,8 +1358,25 @@ export async function runPostAction(
   }
 
   const client = createBackendApiClient(event)
+
+  if (input.action === "hide") {
+    assertBackendApiSuccess(
+      await client.post<Record<string, unknown>, Record<string, unknown>>(
+        "hide_post",
+        {
+          post_id: input.postId,
+        },
+      ),
+      "Unable to hide post.",
+    )
+
+    return {
+      ok: true,
+    }
+  }
+
   const payload: Record<string, unknown> = {
-    action: input.action,
+    action: input.action === "unsave" ? "save" : input.action,
     post_id: input.postId,
     text: input.text,
   }

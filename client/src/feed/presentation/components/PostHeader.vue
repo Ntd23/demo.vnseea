@@ -3,12 +3,7 @@
   <div class="post-header">
     <div class="post-header__left">
       <div class="post-header__avatar">
-        <img
-          v-if="authorAvatarUrl"
-          :src="authorAvatarUrl"
-          :alt="author"
-          class="post-header__avatar-image"
-        >
+        <img v-if="authorAvatarUrl" :src="authorAvatarUrl" :alt="author" class="post-header__avatar-image">
         <span v-else>{{ initials }}</span>
       </div>
       <div class="post-header__info">
@@ -25,39 +20,23 @@
       </div>
     </div>
 
-    <div ref="menuRef" class="relative">
-      <button
-        class="post-header__menu-btn"
-        :class="{ 'post-header__menu-btn--open': open }"
-        type="button"
-        :aria-label="t('feed.postHeader.menuOpenLabel')"
-        @click="open = !open"
-      >
+    <div ref="menuRef" class="relative" :style="{ zIndex: open ? 50 : undefined }">
+      <button class="post-header__menu-btn" :class="{ 'post-header__menu-btn--open': open }" type="button"
+        :aria-label="t('feed.postHeader.menuOpenLabel')" @click="open = !open">
         <Icon name="i-lucide-more-horizontal" class="h-5 w-5" />
       </button>
 
-      <Transition
-        enter-active-class="transition duration-150 ease-out origin-top-right"
-        enter-from-class="opacity-0 scale-95"
-        enter-to-class="opacity-100 scale-100"
-        leave-active-class="transition duration-100 ease-in origin-top-right"
-        leave-from-class="opacity-100 scale-100"
-        leave-to-class="opacity-0 scale-95"
-      >
-        <div
-          v-if="open"
-          class="post-header__dropdown"
-        >
+      <Transition enter-active-class="transition duration-150 ease-out origin-top-right"
+        enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-100 ease-in origin-top-right" leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95">
+        <div v-if="open" class="post-header__dropdown">
           <div class="py-1">
-            <button
-              v-for="item in menuItems"
-              :key="item.key"
-              class="post-header__dropdown-item"
-              :class="{ 'post-header__dropdown-item--danger': item.danger }"
-              type="button"
-              @click="handleMenuAction(item)"
-            >
-              <span class="post-header__dropdown-icon-wrap" :class="{ 'post-header__dropdown-icon-wrap--danger': item.danger }">
+            <button v-for="item in menuItems" :key="item.key" class="post-header__dropdown-item"
+              :class="{ 'post-header__dropdown-item--danger': item.danger }" type="button"
+              @click="handleMenuAction(item)">
+              <span class="post-header__dropdown-icon-wrap"
+                :class="{ 'post-header__dropdown-icon-wrap--danger': item.danger }">
                 <Icon :name="item.icon" class="h-4 w-4" />
               </span>
               <div class="min-w-0">
@@ -87,6 +66,9 @@ const props = defineProps<{
   role: string
   time: string
   audience: string
+  isSaved?: boolean
+  isOwner?: boolean
+  isAdmin?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -130,29 +112,80 @@ const audienceIcon = computed(() => {
 const open = ref(false)
 const menuRef = ref<HTMLElement | null>(null)
 
-const menuItems = computed(() => [
-  {
-    key: "report",
-    label: t("feed.postHeader.menuReportLabel"),
-    desc: t("feed.postHeader.menuReportDescription"),
-    icon: "i-lucide-flag",
-    danger: false,
-  },
-  {
+const menuItems = computed(() => {
+  const items = []
+
+  // 1. Delete Action (Owner or Admin)
+  if (props.isOwner || props.isAdmin) {
+    items.push({
+      key: "delete",
+      label: t("feed.postHeader.menuDeleteLabel"),
+      desc: t("feed.postHeader.menuDeleteDescription"),
+      icon: "i-ph-trash",
+      danger: true,
+    })
+  }
+
+  // 2. Save/Unsave Action
+  if (props.isSaved) {
+    items.push({
+      key: "unsave",
+      label: t("feed.postHeader.menuUnsaveLabel"),
+      desc: t("feed.postHeader.menuUnsaveDescription"),
+      icon: "i-ph-bookmark-fill",
+      danger: false,
+    })
+  }
+  else {
+    items.push({
+      key: "save",
+      label: t("feed.postHeader.menuSaveLabel"),
+      desc: t("feed.postHeader.menuSaveDescription"),
+      icon: "i-ph-bookmark",
+      danger: false,
+    })
+  }
+
+  // 3. Report Action (If not owner)
+  if (!props.isOwner) {
+    items.push({
+      key: "report",
+      label: t("feed.postHeader.menuReportLabel"),
+      desc: t("feed.postHeader.menuReportDescription"),
+      icon: "i-ph-flag",
+      danger: false,
+    })
+  }
+
+  // 4. Open in new tab
+  items.push({
     key: "open",
     label: t("feed.postHeader.menuOpenLabel"),
     desc: t("feed.postHeader.menuOpenDescription"),
-    icon: "i-lucide-external-link",
+    icon: "i-ph-arrow-square-out",
     danger: false,
-  },
-  {
+  })
+
+  // 5. Hide Action
+  items.push({
+    key: "hide",
+    label: t("feed.postHeader.menuHideLabel"),
+    desc: t("feed.postHeader.menuHideDescription"),
+    icon: "i-ph-eye-slash",
+    danger: false,
+  })
+
+  // 6. Copy link
+  items.push({
     key: "copy",
     label: t("feed.postHeader.menuCopyLabel"),
     desc: t("feed.postHeader.menuCopyDescription"),
-    icon: "i-lucide-copy",
+    icon: "i-ph-copy",
     danger: false,
-  },
-])
+  })
+
+  return items
+})
 
 onClickOutside(menuRef, () => {
   open.value = false
@@ -259,7 +292,7 @@ function handleMenuAction(item: { key: string }) {
   position: absolute;
   right: 0;
   top: 100%;
-  z-index: 30;
+  z-index: 1000;
   margin-top: 4px;
   width: 260px;
   overflow: hidden;

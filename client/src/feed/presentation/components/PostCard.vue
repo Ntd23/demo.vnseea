@@ -8,6 +8,9 @@
         :role="post.role"
         :time="post.time"
         :audience="post.audience"
+        :is-saved="post.isSaved"
+        :is-owner="isOwner"
+        :is-admin="isAdmin"
         @menu-action="handleMenuAction"
       />
 
@@ -271,6 +274,8 @@ const {
   handleShared,
   handleMenuAction,
   downloadMedia,
+  isOwner,
+  isAdmin,
 } = useFeedPostCardVM(toRef(props, "post"))
 
 function handleMediaOpen(index: number) {
@@ -283,7 +288,6 @@ function handleMediaOpen(index: number) {
 
 <style scoped>
 .post-card {
-  overflow: hidden;
   border-radius: 16px;
   background: #ffffff;
   border: 1px solid rgba(0, 0, 255, 0.06);

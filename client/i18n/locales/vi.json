@@ -4180,12 +4180,16 @@
       "menuDeleteDescription": "Xóa hoàn toàn bài đăng này.",
       "menuSaveLabel": "Lưu bài đăng",
       "menuSaveDescription": "Thêm bài đăng này vào danh sách yêu thích của bạn.",
+      "menuUnsaveLabel": "Bỏ lưu bài đăng",
+      "menuUnsaveDescription": "Xóa bài đăng này khỏi danh sách yêu thích của bạn.",
       "menuReportLabel": "Báo cáo về bài đăng",
       "menuReportDescription": "Báo cáo bài đăng này cho chúng tôi.",
       "menuOpenLabel": "Mở bài đăng trong tab mới",
       "menuOpenDescription": "Xem bài đăng này trong một tab mới.",
       "menuHideLabel": "Ẩn bài đăng",
-      "menuHideDescription": "Tôi không muốn xem bài đăng này nữa."
+      "menuHideDescription": "Tôi không muốn xem bài đăng này nữa.",
+      "menuCopyLabel": "Sao chép liên kết",
+      "menuCopyDescription": "Sao chép liên kết của bài đăng này."
     },
     "commentList": {
       "title": "Bình luận",
