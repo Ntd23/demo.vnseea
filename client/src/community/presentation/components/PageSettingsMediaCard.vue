@@ -92,14 +92,21 @@ const bannerStyle = computed(() => {
   const banner = props.previewPage?.banner
   if (!banner) return { backgroundColor: "#f1f5f9" }
 
-  if (banner.includes("url(") || banner.startsWith("linear-gradient")) {
+  // Already a CSS gradient or url() value
+  if (banner.startsWith("linear-gradient") || banner.startsWith("radial-gradient")) {
     return { background: banner }
   }
 
-  if (banner.startsWith("blob:")) {
-    return { backgroundImage: `url(${banner})` }
+  if (banner.includes("url(")) {
+    return { background: banner }
   }
 
+  // Blob URL or regular image URL — render as background-image
+  if (banner.startsWith("blob:") || banner.startsWith("http://") || banner.startsWith("https://") || banner.startsWith("/")) {
+    return { backgroundImage: `url(${banner})`, backgroundSize: "cover", backgroundPosition: "center" }
+  }
+
+  // Fallback to accent color
   return { backgroundColor: props.previewPage?.accent || "#f1f5f9" }
 })
 

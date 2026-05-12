@@ -1,55 +1,52 @@
 <template>
-  <div class="space-y-5 pb-10">
+  <div class="create-blog-page">
     <BlogsCreateBlogHero
       :stats="heroStats"
       @quick-fill="quickFillDemo"
     />
 
-    <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.05fr)_360px]">
-      <section class="space-y-5">
-        <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-4 shadow-[var(--shadow-md)] sm:p-5">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p class="text-label-secondary text-[var(--text-primary)]">
-                {{ $t("pages.createBlogPage.editorEyebrow") }}
-              </p>
-              <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-                {{ $t("pages.createBlogPage.contentTitle") }}
-              </h2>
-              <p class="mt-1 text-body-secondary">
-                {{ $t("pages.createBlogPage.contentDescription") }}
-              </p>
-            </div>
+    <div class="create-blog-page__layout">
+      <section class="create-blog-page__main">
+        <section class="create-blog-page__intro">
+          <div class="create-blog-page__intro-copy">
+            <p class="create-blog-page__eyebrow">
+              <Icon name="i-ph-pencil-line-fill" class="h-4 w-4" />
+              {{ $t("pages.createBlogPage.editorEyebrow") }}
+            </p>
+            <h2 class="create-blog-page__heading">
+              {{ $t("pages.createBlogPage.contentTitle") }}
+            </h2>
+            <p class="create-blog-page__description">
+              {{ $t("pages.createBlogPage.contentDescription") }}
+            </p>
+          </div>
 
-            <div class="inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-2 text-[12px] font-bold text-[var(--text-primary)]">
-              <Icon name="i-ph-seal-check-fill" class="h-4 w-4" />
-              {{ completionText }}
-            </div>
+          <div class="create-blog-page__completion">
+            <Icon name="i-ph-seal-check-fill" class="h-4 w-4" />
+            {{ completionText }}
           </div>
         </section>
 
-        <section class="rounded-[28px] border border-[var(--border-default)] bg-white p-5 shadow-[var(--shadow-md)] sm:p-6">
-          <label class="block space-y-3">
-            <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createBlogPage.titleLabel") }}</span>
+        <section class="create-blog-page__editor">
+          <label class="create-blog-page__field create-blog-page__field--title">
+            <span class="create-blog-page__label">{{ $t("pages.createBlogPage.titleLabel") }}</span>
             <input
               v-model="title"
-              class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.08rem] text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
+              class="create-blog-page__title-input"
               maxlength="120"
               :placeholder="$t('pages.createBlogPage.titlePlaceholder')"
               type="text"
             >
           </label>
 
-          <div class="mt-7 space-y-3">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p class="text-[1.02rem] font-black text-[var(--text-primary)]">
-                {{ $t("pages.createBlogPage.contentLabel") }}
-              </p>
-              <div class="flex flex-wrap gap-2">
+          <div class="create-blog-page__field">
+            <div class="create-blog-page__toolbar">
+              <span class="create-blog-page__label">{{ $t("pages.createBlogPage.contentLabel") }}</span>
+              <div class="create-blog-page__actions">
                 <button
                   v-for="action in editorActions"
                   :key="action.label"
-                  class="inline-flex h-9 items-center gap-1.5 rounded-[14px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-3 text-[12px] font-bold text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)]"
+                  class="create-blog-page__tool"
                   type="button"
                   @click="applyEditorToken(action.token)"
                 >
@@ -61,19 +58,16 @@
 
             <textarea
               v-model="content"
-              class="min-h-[280px] w-full resize-y rounded-[22px] border border-[var(--border-default)] bg-white px-5 py-5 text-[1rem] leading-8 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
+              class="create-blog-page__textarea"
               :placeholder="$t('pages.createBlogPage.contentPlaceholder')"
               rows="10"
             />
           </div>
 
-          <div class="mt-7 grid gap-5 md:grid-cols-2">
-            <label class="block space-y-3">
-              <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createBlogPage.categoryLabel") }}</span>
-              <select
-                v-model="category"
-                class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] font-semibold text-[var(--text-primary)] outline-none transition focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
-              >
+          <div class="create-blog-page__meta-grid">
+            <label class="create-blog-page__field">
+              <span class="create-blog-page__label">{{ $t("pages.createBlogPage.categoryLabel") }}</span>
+              <select v-model="category" class="create-blog-page__control">
                 <option
                   v-for="option in categoryOptions"
                   :key="option.value"
@@ -84,37 +78,35 @@
               </select>
             </label>
 
-            <label class="block space-y-3">
-              <span class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createBlogPage.tagsLabel") }}</span>
+            <label class="create-blog-page__field">
+              <span class="create-blog-page__label">{{ $t("pages.createBlogPage.tagsLabel") }}</span>
               <input
                 v-model="tagsInput"
-                class="h-[4.7rem] w-full rounded-[22px] border border-[var(--border-default)] bg-white px-5 text-[1.02rem] text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-tertiary)] focus:border-[var(--color-primary-500)] focus:ring-4 focus:ring-[var(--bg-surface-active)]"
+                class="create-blog-page__control"
                 :placeholder="$t('pages.createBlogPage.tagsPlaceholder')"
                 type="text"
               >
             </label>
           </div>
 
-          <div class="mt-4 flex min-h-9 flex-wrap gap-2">
+          <div class="create-blog-page__tags">
             <span
               v-for="tag in tagList"
               :key="tag"
-              class="inline-flex items-center rounded-[var(--radius-full)] bg-[var(--color-primary-50)] px-3 py-1.5 text-[12px] font-bold text-[var(--text-primary)]"
+              class="create-blog-page__tag"
             >
               #{{ tag }}
             </span>
-            <span v-if="tagList.length === 0" class="text-caption-secondary">
+            <span v-if="tagList.length === 0" class="create-blog-page__tag-help">
               {{ $t("pages.createBlogPage.tagsHelp") }}
             </span>
           </div>
 
-          <div class="mt-8 space-y-3">
-            <p class="text-[1.02rem] font-black text-[var(--text-primary)]">{{ $t("pages.createBlogPage.thumbnailLabel") }}</p>
-            <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
-              <label
-                class="group flex min-h-[170px] cursor-pointer items-center justify-center rounded-[22px] border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface-hover)] p-4 text-center transition hover:bg-[var(--color-primary-50)]"
-                for="blog-thumbnail"
-              >
+          <div class="create-blog-page__thumbnail">
+            <p class="create-blog-page__label">{{ $t("pages.createBlogPage.thumbnailLabel") }}</p>
+
+            <div class="create-blog-page__thumbnail-grid">
+              <label class="create-blog-page__upload" for="blog-thumbnail">
                 <input
                   id="blog-thumbnail"
                   class="sr-only"
@@ -122,59 +114,51 @@
                   accept="image/*"
                   @change="onThumbnailChange"
                 >
-                <span>
-                  <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-[18px] bg-white text-[var(--text-primary)] shadow-[var(--shadow-sm)]">
-                    <Icon name="i-ph-image-square-fill" class="h-8 w-8" />
-                  </span>
-                  <span class="mt-3 block text-[13px] font-bold text-[var(--text-primary)]">
-                    {{ $t("pages.createBlogPage.chooseThumbnail") }}
-                  </span>
-                  <span class="mt-1 block text-[12px] leading-5 text-[var(--text-secondary)]">
-                    {{ thumbnailName || $t("pages.createBlogPage.thumbnailFormats") }}
-                  </span>
+                <span class="create-blog-page__upload-icon">
+                  <Icon name="i-ph-image-square-fill" class="h-7 w-7" />
+                </span>
+                <span class="create-blog-page__upload-title">
+                  {{ $t("pages.createBlogPage.chooseThumbnail") }}
+                </span>
+                <span class="create-blog-page__upload-help">
+                  {{ thumbnailName || $t("pages.createBlogPage.thumbnailFormats") }}
                 </span>
               </label>
 
               <button
-                class="relative min-h-[170px] overflow-hidden rounded-[22px] border border-[var(--border-default)] text-left shadow-[var(--shadow-sm)]"
+                class="create-blog-page__preview"
                 type="button"
                 @click="cycleThumbnail"
               >
-                <div class="absolute inset-0" :style="{ background: thumbnailBackground }" />
-                <div class="absolute inset-0 bg-[linear-gradient(180deg,transparent_20%,rgba(15,23,42,0.55)_100%)]" />
-                <div class="relative flex h-full min-h-[170px] flex-col justify-end p-4 text-white">
-                  <p class="text-[12px] font-bold uppercase tracking-[0.18em] text-white/72">
-                    {{ $t("pages.createBlogPage.previewLabel") }}
-                  </p>
-                  <p class="mt-2 text-[1.1rem] font-black leading-tight">
-                    {{ title || $t("pages.createBlogPage.previewTitleFallback") }}
-                  </p>
-                  <p class="mt-2 text-[12px] text-white/78">
-                    {{ $t("pages.createBlogPage.cycleBackground") }}
-                  </p>
+                <div class="create-blog-page__preview-bg" :style="{ background: thumbnailBackground }" />
+                <div class="create-blog-page__preview-shade" />
+                <div class="create-blog-page__preview-copy">
+                  <span>{{ $t("pages.createBlogPage.previewLabel") }}</span>
+                  <strong>{{ title || $t("pages.createBlogPage.previewTitleFallback") }}</strong>
+                  <small>{{ $t("pages.createBlogPage.cycleBackground") }}</small>
                 </div>
               </button>
             </div>
           </div>
         </section>
 
-        <section class="flex flex-col gap-3 rounded-[28px] border border-[var(--border-default)] bg-white/90 p-4 shadow-[var(--shadow-md)] md:flex-row md:items-center md:justify-between">
-          <p class="text-body-secondary">
-            {{ submitMessage || $t("pages.createBlogPage.submitHint") }}
-          </p>
-          <div class="flex flex-wrap gap-3">
-            <button
-              class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] border border-[var(--border-default)] bg-white px-5 text-[14px] font-bold text-[var(--text-primary)] transition hover:border-[var(--border-strong)]"
-              type="button"
-              @click="saveDraft"
-            >
+        <section class="create-blog-page__submit">
+          <div
+            class="create-blog-page__submit-status"
+            :class="`create-blog-page__submit-status--${submitState}`"
+            role="status"
+            aria-live="polite"
+          >
+            <Icon :name="submitStatusIcon" class="h-5 w-5" />
+            <p>{{ submitMessage || $t("pages.createBlogPage.submitHint") }}</p>
+          </div>
+          <div class="create-blog-page__submit-actions">
+            <button class="create-blog-page__secondary" type="button" :disabled="isSubmitting" @click="saveDraft">
+              <Icon :name="submitState === 'saving' ? 'i-ph-circle-notch-bold' : 'i-ph-floppy-disk-bold'" class="h-4 w-4" />
               {{ $t("pages.createBlogPage.saveDraft") }}
             </button>
-            <button
-              class="inline-flex h-11 items-center justify-center rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-5 text-[14px] font-extrabold text-white shadow-[var(--shadow-brand)] transition hover:-translate-y-0.5"
-              type="button"
-              @click="publishMock"
-            >
+            <button class="create-blog-page__primary" type="button" :disabled="isSubmitting" @click="publishBlog">
+              <Icon :name="submitState === 'publishing' ? 'i-ph-circle-notch-bold' : 'i-ph-paper-plane-tilt-fill'" class="h-4 w-4" />
               {{ $t("pages.createBlogPage.publish") }}
             </button>
           </div>
@@ -182,6 +166,7 @@
       </section>
 
       <BlogsCreateBlogSidebar
+        class="create-blog-page__sidebar"
         :title="title"
         :thumbnail-background="thumbnailBackground"
         :selected-category-label="selectedCategoryLabel"
@@ -197,176 +182,475 @@
 <script setup lang="ts">
 import BlogsCreateBlogHero from "../components/CreateBlogHero.vue"
 import BlogsCreateBlogSidebar from "../components/CreateBlogSidebar.vue"
-import FormsSubmitBar from "../../../shared-kernel/presentation/components/forms/SubmitBar.vue"
+import { useCreateBlogPageVM } from "../../application/view-models/useCreateBlogPageVM"
 
-type BlogCategoryValue =
-  | "business"
-  | "education"
-  | "movies"
-  | "gaming"
-  | "history"
-  | "lifestyle"
-  | "people"
-  | "pets"
-  | "science"
-  | "sports"
-  | "travel"
-  | "other"
+const {
+  title,
+  content,
+  category,
+  tagsInput,
+  thumbnailName,
+  submitMessage,
+  submitState,
+  isSubmitting,
+  categoryOptions,
+  editorActions,
+  tagList,
+  selectedCategoryLabel,
+  thumbnailBackground,
+  readMinutes,
+  completionText,
+  heroStats,
+  previewExcerpt,
+  checklistItems,
+  applyEditorToken,
+  cycleThumbnail,
+  onThumbnailChange,
+  saveDraft,
+  publishBlog,
+  quickFillDemo,
+} = useCreateBlogPageVM()
 
-const { t } = useI18n()
-
-const title = ref("")
-const content = ref("")
-const category = ref<BlogCategoryValue>("business")
-const tagsInput = ref("")
-const thumbnailName = ref("")
-const thumbnailIndex = ref(0)
-const submitMessage = ref("")
-
-const categoryOptions = computed(() => [
-  { label: t("pages.blogsPage.categoryBusiness"), value: "business" },
-  { label: t("pages.blogsPage.categoryEducation"), value: "education" },
-  { label: t("pages.blogsPage.categoryMovies"), value: "movies" },
-  { label: t("pages.blogsPage.categoryGaming"), value: "gaming" },
-  { label: t("pages.blogsPage.categoryHistory"), value: "history" },
-  { label: t("pages.blogsPage.categoryLifestyle"), value: "lifestyle" },
-  { label: t("pages.blogsPage.categoryPeople"), value: "people" },
-  { label: t("pages.blogsPage.categoryPets"), value: "pets" },
-  { label: t("pages.blogsPage.categoryScience"), value: "science" },
-  { label: t("pages.blogsPage.categorySports"), value: "sports" },
-  { label: t("pages.blogsPage.categoryTravel"), value: "travel" },
-  { label: t("pages.blogsPage.categoryOther"), value: "other" },
-] satisfies { label: string; value: BlogCategoryValue }[])
-
-const editorActions = computed(() => [
-  { label: t("pages.createBlogPage.actionBold"), icon: "i-ph-text-b-bold", token: t("pages.createBlogPage.tokenBold") },
-  { label: t("pages.createBlogPage.actionHeading"), icon: "i-ph-text-h-bold", token: t("pages.createBlogPage.tokenHeading") },
-  { label: t("pages.createBlogPage.actionQuote"), icon: "i-ph-quotes-fill", token: t("pages.createBlogPage.tokenQuote") },
-  { label: t("pages.createBlogPage.actionList"), icon: "i-ph-list-bullets-bold", token: t("pages.createBlogPage.tokenList") },
-] as const)
-
-const thumbnailBackgrounds = [
-  "linear-gradient(135deg,#1e3a8a 0%,#2563eb 46%,#bfdbfe 100%)",
-  "linear-gradient(135deg,#172554 0%,#1d4ed8 46%,#7dd3fc 100%)",
-  "linear-gradient(135deg,#111827 0%,#4f46e5 42%,#c4b5fd 100%)",
-  "linear-gradient(135deg,#9f1239 0%,#fb7185 100%)",
-] as const
-
-const tagList = computed(() =>
-  tagsInput.value
-    .split(",")
-    .map(tag => tag.trim().replace(/^#/, ""))
-    .filter(Boolean)
-    .slice(0, 8),
-)
-
-const selectedCategoryLabel = computed(
-  () => categoryOptions.value.find(option => option.value === category.value)?.label ?? t("pages.blogsPage.categoryOther"),
-)
-
-const thumbnailBackground = computed(
-  () => thumbnailBackgrounds[thumbnailIndex.value % thumbnailBackgrounds.length],
-)
-
-const readMinutes = computed(() => {
-  const words = content.value.trim().split(/\s+/).filter(Boolean).length
-  return Math.max(1, Math.ceil(words / 180))
+const submitStatusIcon = computed(() => {
+  if (submitState.value === "published") return "i-ph-check-circle-fill"
+  if (submitState.value === "pending") return "i-ph-clock-countdown-fill"
+  if (submitState.value === "draft") return "i-ph-floppy-disk-fill"
+  if (submitState.value === "saving" || submitState.value === "publishing") return "i-ph-circle-notch-bold"
+  if (submitState.value === "error") return "i-ph-x-circle-fill"
+  if (submitState.value === "warning") return "i-ph-warning-circle-fill"
+  return "i-ph-info-fill"
 })
-
-const completionCount = computed(() =>
-  [
-    title.value.trim().length >= 12,
-    content.value.trim().length >= 80,
-    Boolean(category.value),
-    tagList.value.length > 0,
-    thumbnailName.value.length > 0 || thumbnailIndex.value > 0,
-  ].filter(Boolean).length,
-)
-
-const completionText = computed(() => t("pages.createBlogPage.completionText", { count: completionCount.value }))
-
-const heroStats = computed(() => [
-  {
-    label: t("pages.createBlogPage.statCompletion"),
-    value: `${completionCount.value}/5`,
-    description: t("pages.createBlogPage.statCompletionDescription"),
-  },
-  {
-    label: t("pages.createBlogPage.statReading"),
-    value: t("pages.createBlogPage.statReadingValue", { count: readMinutes.value }),
-    description: t("pages.createBlogPage.statReadingDescription"),
-  },
-  {
-    label: t("pages.createBlogPage.tagsLabel"),
-    value: String(tagList.value.length),
-    description: t("pages.createBlogPage.statTagsDescription"),
-  },
-])
-
-const previewExcerpt = computed(() => {
-  const clean = content.value.replace(/[#>*-]/g, "").trim()
-  if (!clean) return t("pages.createBlogPage.emptyPreviewExcerpt")
-  return clean.length > 180 ? `${clean.slice(0, 180)}...` : clean
-})
-
-const checklistItems = computed(() => [
-  {
-    label: t("pages.createBlogPage.checkTitle"),
-    description: t("pages.createBlogPage.checkTitleDescription"),
-    done: title.value.trim().length >= 12,
-  },
-  {
-    label: t("pages.createBlogPage.checkContent"),
-    description: t("pages.createBlogPage.checkContentDescription"),
-    done: content.value.trim().length >= 80,
-  },
-  {
-    label: t("pages.createBlogPage.checkTopicTags"),
-    description: t("pages.createBlogPage.checkTopicTagsDescription"),
-    done: Boolean(category.value) && tagList.value.length > 0,
-  },
-  {
-    label: t("pages.createBlogPage.checkThumbnail"),
-    description: t("pages.createBlogPage.checkThumbnailDescription"),
-    done: thumbnailName.value.length > 0 || thumbnailIndex.value > 0,
-  },
-])
-
-const applyEditorToken = (token: string) => {
-  content.value = content.value.trim()
-    ? `${content.value.trim()}\n\n${token}`
-    : token
-}
-
-const cycleThumbnail = () => {
-  thumbnailIndex.value += 1
-}
-
-const onThumbnailChange = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0]
-  if (!file) return
-  thumbnailName.value = file.name
-  cycleThumbnail()
-}
-
-const saveDraft = () => {
-  submitMessage.value = t("pages.createBlogPage.draftSaved")
-}
-
-const publishMock = () => {
-  submitMessage.value = completionCount.value >= 5
-    ? t("pages.createBlogPage.publishComplete")
-    : t("pages.createBlogPage.publishMissing")
-}
-
-const quickFillDemo = () => {
-  title.value = t("pages.createBlogPage.demoTitle")
-  content.value = t("pages.createBlogPage.demoContent")
-  category.value = "people"
-  tagsInput.value = "community, green, local"
-  thumbnailName.value = "community-green.jpg"
-  thumbnailIndex.value = 2
-  submitMessage.value = ""
-}
 </script>
+
+<style scoped>
+.create-blog-page {
+  padding-bottom: 40px;
+}
+
+.create-blog-page__layout {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.create-blog-page__main {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.create-blog-page__intro,
+.create-blog-page__editor,
+.create-blog-page__submit {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.create-blog-page__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.create-blog-page__eyebrow,
+.create-blog-page__label {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.create-blog-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #0000ff;
+}
+
+.create-blog-page__heading {
+  margin: 6px 0 0;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.create-blog-page__description {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.create-blog-page__completion {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.create-blog-page__editor {
+  padding: 18px;
+}
+
+.create-blog-page__field {
+  display: grid;
+  gap: 10px;
+}
+
+.create-blog-page__field + .create-blog-page__field,
+.create-blog-page__meta-grid,
+.create-blog-page__thumbnail {
+  margin-top: 20px;
+}
+
+.create-blog-page__title-input,
+.create-blog-page__control,
+.create-blog-page__textarea {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fafbfe;
+  color: #0f172a;
+  font-family: inherit;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.create-blog-page__title-input {
+  min-height: 68px;
+  padding: 0 16px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.create-blog-page__control {
+  min-height: 48px;
+  padding: 0 13px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.create-blog-page__textarea {
+  min-height: 320px;
+  resize: vertical;
+  padding: 16px;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.create-blog-page__title-input:focus,
+.create-blog-page__control:focus,
+.create-blog-page__textarea:focus {
+  border-color: rgba(0, 0, 255, 0.25);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
+}
+
+.create-blog-page__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.create-blog-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.create-blog-page__tool,
+.create-blog-page__secondary,
+.create-blog-page__primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  transition: all 0.15s ease;
+}
+
+.create-blog-page__tool {
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #334155;
+  padding: 8px 11px;
+}
+
+.create-blog-page__tool:hover,
+.create-blog-page__secondary:hover {
+  border-color: rgba(0, 0, 255, 0.14);
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
+.create-blog-page__meta-grid,
+.create-blog-page__thumbnail-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.create-blog-page__tags {
+  display: flex;
+  min-height: 34px;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.create-blog-page__tag {
+  border-radius: 999px;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.create-blog-page__tag-help {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.create-blog-page__upload,
+.create-blog-page__preview {
+  min-height: 170px;
+  border-radius: 16px;
+}
+
+.create-blog-page__upload {
+  display: flex;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  padding: 18px;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.create-blog-page__upload:hover {
+  border-color: rgba(0, 0, 255, 0.22);
+  background: rgba(0, 0, 255, 0.04);
+}
+
+.create-blog-page__upload-icon {
+  display: flex;
+  height: 52px;
+  width: 52px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0000ff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.create-blog-page__upload-title,
+.create-blog-page__upload-help {
+  display: block;
+}
+
+.create-blog-page__upload-title {
+  margin-top: 12px;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.create-blog-page__upload-help {
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.create-blog-page__preview {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.create-blog-page__preview-bg,
+.create-blog-page__preview-shade {
+  position: absolute;
+  inset: 0;
+}
+
+.create-blog-page__preview-shade {
+  background: linear-gradient(180deg, transparent 15%, rgba(15, 23, 42, 0.62) 100%);
+}
+
+.create-blog-page__preview-copy {
+  position: relative;
+  display: flex;
+  min-height: 170px;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  color: #ffffff;
+}
+
+.create-blog-page__preview-copy span,
+.create-blog-page__preview-copy small {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.create-blog-page__preview-copy strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.create-blog-page__preview-copy small {
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.create-blog-page__submit {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.create-blog-page__submit-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+  color: #64748b;
+  padding: 12px 14px;
+  transition: all 0.15s ease;
+}
+
+.create-blog-page__submit-status--draft {
+  border-color: #bae6fd;
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.create-blog-page__submit-status--published {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.create-blog-page__submit-status--pending {
+  border-color: #bae6fd;
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.create-blog-page__submit-status--warning {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.create-blog-page__submit-status--saving,
+.create-blog-page__submit-status--publishing {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.create-blog-page__submit-status--error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.create-blog-page__submit-status p {
+  margin: 0;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.create-blog-page__submit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.create-blog-page__secondary {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  padding: 11px 15px;
+}
+
+.create-blog-page__primary {
+  border: 1px solid #0000ff;
+  background: #0000ff;
+  color: #ffffff;
+  padding: 11px 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+}
+
+.create-blog-page__primary:hover {
+  transform: translateY(-1px);
+}
+
+.create-blog-page__secondary:disabled,
+.create-blog-page__primary:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
+}
+
+@media (min-width: 768px) {
+  .create-blog-page__intro,
+  .create-blog-page__toolbar,
+  .create-blog-page__submit {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .create-blog-page__meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .create-blog-page__thumbnail-grid {
+    grid-template-columns: 230px minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .create-blog-page__layout {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: start;
+  }
+
+  .create-blog-page__sidebar {
+    position: sticky;
+    top: 82px;
+  }
+}
+</style>

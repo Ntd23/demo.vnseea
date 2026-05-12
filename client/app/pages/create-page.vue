@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 import CommunityPresentationCreatePagePage from "../../src/community/presentation/pages/CreatePagePage.vue"
+import { appRoutes } from "../../src/shared-kernel/application/constants/route-registry"
 
 definePageMeta({ layout: "default" })
 
 const { t } = useI18n()
-const route = useRoute()
 const requestURL = useRequestURL()
 
-const canonicalUrl = computed(() => new URL(route.fullPath || "/create-page", requestURL.origin).toString())
+const canonicalUrl = computed(() => new URL(appRoutes.createPage, requestURL.origin).toString())
 
 useSeoMeta({
   title: () => `${t("community.creation.page.seoTitle")} | VNSEEA`,

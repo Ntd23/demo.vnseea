@@ -4,13 +4,14 @@ import { useStorage, watchDebounced } from "@vueuse/core"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useCommunityPageDetail } from "../composables/useCommunityPageDetail"
 import { createCommunityPageSettingsDraft } from "../factories/community-drafts"
-import { communityPageCategoryOptions } from "../../domain/constants/community-options"
+import { communityPageCategoryOptions, communityPageCtaOptions } from "../../domain/constants/community-options"
 import {
   appendCommunityQuery,
   createCommunitySlug,
   getCommunityInitials,
   getCommunityOptionLabel,
   getCommunityPagePath,
+  getCommunityPageSettingsPath,
 } from "../../domain/services/community-helpers.service"
 import type { CommunityPageRecord, CommunityPageSettingsDraft } from "../../domain/types/community.types"
 import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
@@ -22,6 +23,7 @@ export function useCommunityPageSettingPageVM(
   repository = createApiCommunityRepository(),
 ) {
   const route = useRoute()
+  const router = useRouter()
   const toast = useToast()
   const { t } = useI18n()
   const translateText = useMaybeTranslatedText()
@@ -31,6 +33,7 @@ export function useCommunityPageSettingPageVM(
     categoryLabel: baseCategoryLabel,
     followerCountLabel,
     likeCountLabel,
+    refresh: refreshPage,
   } = useCommunityPageDetail(computed(() => String(route.params.page || "")))
 
   const draft = ref<CommunityPageSettingsDraft>(createCommunityPageSettingsDraft())
@@ -38,6 +41,7 @@ export function useCommunityPageSettingPageVM(
   const draftRestored = ref(false)
   const storageHydrated = ref(false)
   const isSyncingDraft = ref(false)
+  const isInitialized = ref(false)
   const activeTab = ref("basics")
 
   const draftStorage = useStorage<CommunityPageSettingsDraft | null>(
@@ -54,6 +58,12 @@ export function useCommunityPageSettingPageVM(
   const previewPage = computed<CommunityPageRecord | null>(() => {
     if (!page.value) return null
 
+    // Resolve avatar: prefer blob/draft URL (from file picker), then page value
+    const avatarUrl = draft.value.avatarUrl || page.value.avatarUrl
+
+    // Resolve banner: prefer blob URL from draft, then page banner
+    const bannerResolved = draft.value.bannerUrl || page.value.banner
+
     return {
       ...page.value,
       name: (draft.value.name || "").trim() || page.value.name,
@@ -68,15 +78,20 @@ export function useCommunityPageSettingPageVM(
       responseLabel: (draft.value.responseLabel || "").trim() || page.value.responseLabel,
       ownerLabel: (draft.value.ownerLabel || "").trim() || page.value.ownerLabel,
       tags: normalizedTags.value.length > 0 ? normalizedTags.value : page.value.tags,
+      avatarUrl,
+      banner: bannerResolved,
     }
   })
 
   const selectedCategoryLabel = computed(() =>
     t(getCommunityOptionLabel(communityPageCategoryOptions, draft.value.category, baseCategoryLabel.value)),
   )
-  const selectedCtaLabel = computed(() =>
-    (draft.value.ctaLabel || "").trim() || page.value?.ctaLabel || t("community.pageSettings.basics.stats.ctaFallback"),
-  )
+  const selectedCtaLabel = computed(() => {
+    const value = (draft.value.ctaLabel || "").trim() || page.value?.ctaLabel
+    if (!value) return t("community.pageSettings.basics.stats.ctaFallback")
+    
+    return t(getCommunityOptionLabel(communityPageCtaOptions, value, value))
+  })
   const totalPolicies = 5
   const enabledPolicies = computed(() =>
     [
@@ -94,10 +109,10 @@ export function useCommunityPageSettingPageVM(
   )
   const settingsNavItems = computed(() => [
     { id: "basics", label: t("community.pageSettings.basics.title"), desc: t("community.pageSettings.basics.navDesc"), icon: "i-ph-identification-card-duotone" },
+    { id: "media", label: t("community.pageSettings.sidebar.media.title"), desc: t("community.pageSettings.sidebar.media.navDesc"), icon: "i-ph-image-duotone" },
     { id: "controls", label: t("community.pageSettings.controls.title"), desc: t("community.pageSettings.controls.navDesc"), icon: "i-ph-sliders-duotone" },
-    { id: "admins", label: t("community.pageSettings.admins.title"), desc: t("community.pageSettings.admins.navDesc"), icon: "i-ph-shield-checkered-duotone" },
-    { id: "preview", label: t("community.pageSettings.sidebar.preview"), desc: t("community.pageSettings.preview.navDesc"), icon: "i-ph-eye-duotone" },
-    { id: "finish", label: t("community.pageSettings.finish.title"), desc: t("community.pageSettings.finish.navDesc"), icon: "i-ph-check-circle-duotone" },
+    { id: "analytics", label: t("community.pageSettings.sidebar.analytics.title"), desc: t("community.pageSettings.sidebar.analytics.desc"), icon: "i-ph-chart-bar-duotone" },
+    { id: "delete", label: t("community.pageSettings.sidebar.delete.title"), desc: t("community.pageSettings.sidebar.delete.desc"), icon: "i-ph-trash-duotone" },
   ])
 
   const isBusy = computed(() => saveState.value === "loading")
@@ -149,7 +164,16 @@ export function useCommunityPageSettingPageVM(
     return null
   })
 
-  watch(page, syncDraftFromPage, { immediate: true })
+  watch(page, (newVal, oldVal) => {
+    if (!newVal) return
+    
+    // If we switched to a different page, reset initialization to sync fresh data
+    if (newVal.slug !== oldVal?.slug) {
+      isInitialized.value = false
+    }
+    
+    syncDraftFromPage()
+  }, { immediate: true })
 
   watchDebounced(
     () => normalizeDraft(draft.value),
@@ -163,8 +187,10 @@ export function useCommunityPageSettingPageVM(
   watch(
     () => ({ ...draft.value }),
     () => {
+      // Skip if we are syncing from page data or in the middle of a save
       if (isSyncingDraft.value) return
-      if (saveState.value !== "loading") saveState.value = "idle"
+      if (saveState.value === "loading" || saveState.value === "success") return
+      saveState.value = "idle"
       draftRestored.value = false
     },
   )
@@ -180,21 +206,36 @@ export function useCommunityPageSettingPageVM(
 
     try {
       if (!page.value) throw new Error("page_missing")
+      const oldSlug = page.value.slug
       const savedPage = await repository.updatePage(page.value.slug, draft.value)
-      const normalized = normalizeDraft(createLocalizedDraft(savedPage))
+      // After successful save, we want the next syncDraftFromPage to force-update from DB
+      isInitialized.value = false
+      
+      // Cleanup blob URLs
+      if (draft.value.avatarUrl?.startsWith("blob:")) URL.revokeObjectURL(draft.value.avatarUrl)
+      if (draft.value.bannerUrl?.startsWith("blob:")) URL.revokeObjectURL(draft.value.bannerUrl)
 
-      draft.value = { ...normalized }
-      draftStorage.value = { ...normalized }
-      draftRestored.value = false
+      // Handle Slug Change: If the slug changed, we MUST update the URL first.
+      // This will trigger the useAsyncData in useCommunityPageDetail to refetch the NEW slug.
+      if (savedPage.slug !== oldSlug) {
+        await router.replace(getCommunityPageSettingsPath(savedPage.slug))
+        // The route change will trigger useAsyncData refetch automatically.
+        // We give it a moment to resolve.
+      } else {
+        // Slug didn't change, just refresh the current data to get absolute truth from DB.
+        await refreshPage()
+      }
+      
       saveState.value = "success"
-
+      
       toast.add({
         title: t("community.pageSettings.finish.statusSuccessTitle"),
         description: t("community.pageSettings.finish.statusSuccessDescription"),
         color: "success",
       })
     }
-    catch {
+    catch (err) {
+      console.error("[PageSettings] Save failed:", err)
       saveState.value = "error"
 
       toast.add({
@@ -209,34 +250,64 @@ export function useCommunityPageSettingPageVM(
     saveState.value = "error"
   }
 
+  async function handleDeletePage(pageId: number, password: string) {
+    try {
+      await repository.deletePage(pageId, password)
+      
+      toast.add({
+        title: t("community.pageSettings.delete.successTitle") || "Đã xóa trang",
+        description: t("community.pageSettings.delete.successDescription") || "Trang đã được xóa thành công.",
+        color: "success",
+      })
+      router.push(appRoutes.pages)
+    }
+    catch (err) {
+      toast.add({
+        title: t("community.pageSettings.delete.errorTitle") || "Xóa trang thất bại",
+        description: t("community.pageSettings.delete.errorDescription") || "Đã xảy ra lỗi khi xóa trang. Vui lòng thử lại.",
+        color: "error",
+      })
+    }
+  }
+
   function syncDraftFromPage() {
     if (!page.value) return
 
     const baseDraft = createLocalizedDraft(page.value)
-    const restoredDraft = storageHydrated.value && draftStorage.value
-      ? normalizeDraft(draftStorage.value)
-      : null
-
-    const finalDraft = restoredDraft && !isSameDraft(restoredDraft, baseDraft)
-      ? {
+    
+    // 1. Initial load: try to restore from storage once
+    if (!isInitialized.value && storageHydrated.value && draftStorage.value) {
+      const restoredDraft = normalizeDraft(draftStorage.value)
+      
+      if (restoredDraft.slug === baseDraft.slug && !isSameDraft(restoredDraft, baseDraft)) {
+        applyDraft({
           ...baseDraft,
           ...restoredDraft,
-          name: restoredDraft.name || baseDraft.name,
-          slug: restoredDraft.slug || baseDraft.slug,
-          summary: restoredDraft.summary || baseDraft.summary,
-          category: restoredDraft.category || baseDraft.category,
-        }
-      : baseDraft
+          avatarUrl: baseDraft.avatarUrl,
+          bannerUrl: baseDraft.bannerUrl,
+        }, true)
+        isInitialized.value = true
+        return
+      }
+    }
 
-    applyDraft(finalDraft, Boolean(restoredDraft && !isSameDraft(restoredDraft, baseDraft)))
+    // 2. Default Sync: update draft from DB data
+    // We do this if NOT initialized yet, OR if we just finished a save (isInitialized was reset to false)
+    if (!isInitialized.value || isSyncingDraft.value) {
+      applyDraft(baseDraft, false)
+      isInitialized.value = true
+    }
   }
 
   function applyDraft(value: CommunityPageSettingsDraft, restored: boolean) {
     isSyncingDraft.value = true
     draft.value = value
     draftRestored.value = restored
-    saveState.value = "idle"
-
+    // Never overwrite a loading/success state — handleSave sets these
+    // and syncDraftFromPage (triggered by page watcher) must not undo them
+    if (saveState.value !== "loading" && saveState.value !== "success") {
+      saveState.value = "idle"
+    }
     nextTick(() => {
       isSyncingDraft.value = false
     })
@@ -245,12 +316,15 @@ export function useCommunityPageSettingPageVM(
   function createLocalizedDraft(value: CommunityPageRecord): CommunityPageSettingsDraft {
     return {
       ...createCommunityPageSettingsDraft(value),
+      // Content fields can be localized
       name: translateText(value.name, value.slug),
       summary: translateText(value.summary),
       locationLabel: translateText(value.locationLabel),
-      ctaLabel: translateText(value.ctaLabel),
-      responseLabel: translateText(value.responseLabel),
-      ownerLabel: translateText(value.ownerLabel),
+      // Technical/Value fields must NOT be localized as strings 
+      // or they break the backend value mapping
+      ctaLabel: value.ctaLabel || "",
+      responseLabel: value.responseLabel || "",
+      ownerLabel: value.ownerLabel || "",
       tags: value.tags.map(tag => translateText(tag, tag)).join(", "),
     }
   }
@@ -318,6 +392,7 @@ export function useCommunityPageSettingPageVM(
     validateDraft,
     handleSave,
     handleSaveError,
+    handleDeletePage,
     activeTab,
     pagePath,
     settingsNavItems,

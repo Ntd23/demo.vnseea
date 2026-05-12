@@ -308,9 +308,17 @@
       "submitHint": "You can save a draft first and come back later to finish the article.",
       "saveDraft": "Save draft",
       "publish": "Publish",
-      "draftSaved": "The draft was saved in the mock UI.",
-      "publishComplete": "The article is ready to publish in the mock UI.",
+      "savingDraft": "Saving the draft to the database...",
+      "publishing": "Publishing the article...",
+      "draftSavedTitle": "Draft saved",
+      "draftSaved": "The draft was saved to the database.",
+      "publishCompleteTitle": "Published",
+      "publishComplete": "The article was published successfully.",
+      "publishPendingTitle": "Pending review",
+      "publishPending": "The article was saved and is waiting for admin review.",
       "publishMissing": "Complete all 5 core sections before publishing.",
+      "submitFailedTitle": "Could not save article",
+      "submitFailed": "Could not save the article to the database. Please try again.",
       "actionBold": "Bold",
       "actionHeading": "Heading",
       "actionQuote": "Quote",
@@ -6105,6 +6113,11 @@
         "discovery": "Related Discovery Block",
         "discoveryOn": "The system may insert similar fanpages to boost discovery.",
         "discoveryOff": "You are turning off related fanpage suggestions on the UI."
+      },
+      "delete": {
+        "warning": "Are you sure you want to delete this fanpage?",
+        "confirm": "Yes, delete this page",
+        "cancel": "No, keep this page"
       },
       "empty": {
         "title": "Fanpage to setup not found",

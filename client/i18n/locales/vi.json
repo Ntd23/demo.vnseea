@@ -308,9 +308,17 @@
       "submitHint": "Bạn có thể lưu nháp trước rồi quay lại hoàn thiện bài viết sau.",
       "saveDraft": "Lưu nháp",
       "publish": "Xuất bản",
-      "draftSaved": "Bản nháp đã được lưu ở giao diện mô phỏng.",
-      "publishComplete": "Bài viết đã sẵn sàng để xuất bản ở giao diện mô phỏng.",
+      "savingDraft": "Đang lưu bản nháp vào cơ sở dữ liệu...",
+      "publishing": "Đang xuất bản bài viết...",
+      "draftSavedTitle": "Đã lưu bản nháp",
+      "draftSaved": "Bản nháp đã được lưu vào cơ sở dữ liệu.",
+      "publishCompleteTitle": "Đã xuất bản",
+      "publishComplete": "Bài viết đã được xuất bản thành công.",
+      "publishPendingTitle": "Đang chờ duyệt",
+      "publishPending": "Bài viết đã được lưu và đang chờ quản trị viên duyệt.",
       "publishMissing": "Hãy hoàn thiện đủ 5 mục chính trước khi xuất bản.",
+      "submitFailedTitle": "Không thể lưu bài viết",
+      "submitFailed": "Không thể lưu bài viết vào cơ sở dữ liệu. Vui lòng thử lại.",
       "actionBold": "Đậm",
       "actionHeading": "Tiêu đề",
       "actionQuote": "Trích dẫn",
@@ -6096,6 +6104,10 @@
         "discovery": "Khối khám phá liên quan",
         "discoveryOn": "Hệ thống có thể chèn fanpage tương tự để tăng khám phá.",
         "discoveryOff": "Bạn đang tắt gợi ý fanpage liên quan trên giao diện."
+      },
+      "delete": {
+        "warning": "Hành động này không thể hoàn tác và sẽ xóa vĩnh viễn tất cả dữ liệu liên quan đến trang, bao gồm bài viết, hình ảnh và cài đặt.",
+        "confirm": "Xóa trang"
       },
       "empty": {
         "title": "Không tìm thấy fanpage để cài đặt",

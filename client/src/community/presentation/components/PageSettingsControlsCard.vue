@@ -21,23 +21,25 @@
             v-for="option in ctaOptions"
             :key="option.value"
             type="button"
-            class="cta-card flex flex-col items-center p-6 text-center transition-all duration-300"
+            class="cta-card"
             :class="model.ctaLabel === option.value
               ? 'cta-card--active'
               : 'cta-card--inactive'"
             @click="model.ctaLabel = option.value"
           >
-            <div class="cta-card__icon-wrap mb-6">
-              <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-12 w-12" />
+            <div class="cta-card__icon-wrap">
+              <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-6 w-6" />
             </div>
 
-            <h3 class="cta-card__title">
-              {{ option.labelText }}
-            </h3>
+            <div class="cta-card__content">
+              <h3 class="cta-card__title">
+                {{ option.labelText }}
+              </h3>
 
-            <p class="cta-card__desc mb-0">
-              {{ option.descriptionText }}
-            </p>
+              <p class="cta-card__desc">
+                {{ option.descriptionText }}
+              </p>
+            </div>
           </button>
         </div>
       </div>
@@ -127,9 +129,16 @@ const toggleItems = computed(() => [
 
 <style scoped>
 .cta-card {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 12px;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: 16px;
   background: #ffffff;
+  padding: 14px;
+  text-align: left;
+  transition: all 0.15s ease;
 }
 
 .cta-card--active {
@@ -147,10 +156,12 @@ const toggleItems = computed(() => [
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
   background: #ffffff;
-  border-radius: 20px;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
   color: #0f172a;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
@@ -161,17 +172,21 @@ const toggleItems = computed(() => [
 }
 
 .cta-card__title {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 800;
   color: #0f172a;
-  margin-bottom: 8px;
+  margin: 0;
 }
 
 .cta-card__desc {
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.45;
   color: #64748b;
-  margin-bottom: 0;
+  margin: 4px 0 0;
+}
+
+.cta-card__content {
+  min-width: 0;
 }
 
 .page-settings-controls__selected {

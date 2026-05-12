@@ -22,7 +22,8 @@ foreach ($get_articles as $key => $article) {
     foreach ($non_allowed as $key => $value) {
        unset($article['author'][$value]);
     }
-    $article['category'] = $wo['page_categories'][$article['category']];
+    $article['category_id'] = $article['category'];
+    $article['category'] = !empty($wo['blog_categories'][$article['category']]) ? $wo['blog_categories'][$article['category']] : $article['category'];
     $article['posted'] = Wo_Time_Elapsed_String($article['posted']);
     $articles[] = $article;
 }

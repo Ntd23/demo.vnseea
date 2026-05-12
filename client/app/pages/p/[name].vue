@@ -1,52 +1,38 @@
 <!-- Description: Thin Nuxt route wrapper for the backend-backed community page detail screen. -->
-
 <template>
   <CommunityPresentationPageDetailPage />
 </template>
 
 <script setup lang="ts">
 import CommunityPresentationPageDetailPage from "../../../src/community/presentation/pages/PageDetailPage.vue"
-import { useCommunityPageDetailPageVM } from "../../../src/community/application/view-models/useCommunityPageDetailPageVM"
+import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 definePageMeta({ layout: "default" })
 
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
-const translateText = useMaybeTranslatedText()
 
-const { page, slug } = useCommunityPageDetailPageVM()
-
+const pageSlug = computed(() => String(route.params.name || ""))
 const canonicalUrl = computed(() =>
-  new URL(`/p/${slug.value}`, requestURL.origin).toString(),
+  new URL(appRoutes.pageDetail(pageSlug.value), requestURL.origin).toString(),
 )
 
 const hasPreviewQuery = computed(() =>
-  ["name", "description", "category"].some(key => {
+  ["name", "description", "category"].some((key) => {
     const value = route.query[key]
     if (Array.isArray(value)) return String(value[0] || "").trim().length > 0
     return typeof value === "string" && value.trim().length > 0
   }),
 )
 
-const metaTitle = computed(() => {
-  const pageName = page.value ? translateText(page.value.name) : ""
-  return `${pageName || t("pages.pageDetailPage.seoFallbackTitle")} | VNSEEA`
-})
-
-const metaDescription = computed(() =>
-  page.value
-    ? translateText(page.value.summary, t("pages.pageDetailPage.seoFallbackDescription"))
-    : t("pages.pageDetailPage.seoFallbackDescription"),
-)
-
 useSeoMeta({
-  title: () => metaTitle.value,
-  description: () => metaDescription.value,
-  ogTitle: () => metaTitle.value,
-  ogDescription: () => metaDescription.value,
+  title: () => `${t("pages.pageDetailPage.seoFallbackTitle")} | VNSEEA`,
+  description: () => t("pages.pageDetailPage.seoFallbackDescription"),
+  ogTitle: () => `${t("pages.pageDetailPage.seoFallbackTitle")} | VNSEEA`,
+  ogDescription: () => t("pages.pageDetailPage.seoFallbackDescription"),
   ogUrl: () => canonicalUrl.value,
-  robots: () => (!page.value || hasPreviewQuery.value) ? "noindex, nofollow" : "index, follow",
+  robots: () => hasPreviewQuery.value ? "noindex, nofollow" : "index, follow",
 })
 
 useHead({

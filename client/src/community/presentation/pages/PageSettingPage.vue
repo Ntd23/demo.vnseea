@@ -20,7 +20,7 @@
 
       <div class="page-settings__stepper-container mb-8 mt-5">
         <nav class="page-settings__nav-horizontal">
-          <button v-for="(item, index) in settingsNavItems" :key="item.id" type="button"
+          <button v-for="item in settingsNavItems" :key="item.id" type="button"
             class="page-settings__nav-step-item"
             :class="{ 'page-settings__nav-step-item--active': activeTab === item.id }" @click="activeTab = item.id">
             <div class="page-settings__nav-step-circle"
@@ -41,27 +41,25 @@
 
 
       <div class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px] 2xl:items-start">
-        <UForm :state="draft" :validate="validateDraft" class="min-w-0 space-y-4" @submit="handleSave"
-          @error="handleSaveError">
-          <div v-if="statusAlert || hasErrors" class="page-settings__alert mb-5"
-            :class="`page-settings__alert--${statusAlert?.color || 'error'}`" aria-live="polite">
-            <Icon :name="statusAlert?.icon || 'i-ph-warning-circle-fill'" class="h-5 w-5 mt-0.5" />
+      <div class="min-w-0 space-y-4">
+          <div v-if="statusAlert" class="page-settings__alert mb-5"
+            :class="`page-settings__alert--${statusAlert.color}`" aria-live="polite">
+            <Icon :name="statusAlert.icon" class="h-5 w-5 mt-0.5" />
             <div>
-              <p class="font-bold">{{ statusAlert?.title || $t('community.pageSettings.finish.statusErrorTitle') }}</p>
-              <ul v-if="hasErrors" class="mt-1 list-disc pl-4 text-xs space-y-1">
-                <li v-for="(error, index) in validationErrors" :key="index">
-                  {{ error.message }}
-                </li>
-              </ul>
-              <span v-else>{{ statusAlert?.description }}</span>
+              <p class="font-bold">{{ statusAlert.title }}</p>
+              <span>{{ statusAlert.description }}</span>
             </div>
           </div>
 
           <section v-if="activeTab === 'basics'" id="basics">
             <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath">
               <template #trailing>
-                <button type="submit" :disabled="isSaveDisabled"
-                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]">
+                <button
+                  type="button"
+                  :disabled="isSaveDisabled"
+                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
+                  @click="handleSave"
+                >
                   <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
                   {{ $t("community.pageSettings.finish.save") }}
                 </button>
@@ -72,8 +70,12 @@
           <section v-if="activeTab === 'media'" id="media">
             <CommunityPageSettingsMediaCard v-model="draft" :page-path="pagePath" :preview-page="previewPage">
               <template #trailing>
-                <button type="submit" :disabled="isSaveDisabled"
-                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]">
+                <button
+                  type="button"
+                  :disabled="isBusy"
+                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
+                  @click="handleSave"
+                >
                   <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
                   {{ $t("community.pageSettings.finish.save") }}
                 </button>
@@ -84,19 +86,18 @@
           <section v-if="activeTab === 'controls'" id="controls">
             <CommunityPageSettingsControlsCard v-model="draft">
               <template #trailing>
-                <button type="submit" :disabled="isSaveDisabled"
-                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]">
+                <button
+                  type="button"
+                  :disabled="isBusy"
+                  class="page-settings__button page-settings__button--primary !min-h-[36px] !py-2 !text-[13px]"
+                  @click="handleSave"
+                >
                   <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
                   {{ $t("community.pageSettings.finish.save") }}
                 </button>
               </template>
             </CommunityPageSettingsControlsCard>
           </section>
-
-          <section v-if="activeTab === 'admins'" id="admins">
-            <CommunityPageSettingsAdminCard />
-          </section>
-
           <section v-if="activeTab === 'analytics'" id="analytics">
             <CommunityPageSettingsAnalyticCard />
           </section>
@@ -109,14 +110,7 @@
               @delete="onDeletePage"
             />
           </section>
-        </UForm>
-
-        <CommunityPageSettingsSidebar v-if="activeTab === 'preview'" :page="previewPage"
-          :category-label="selectedCategoryLabel" :follower-count-label="followerCountLabel"
-          :like-count-label="likeCountLabel" :selected-cta-label="selectedCtaLabel" :enabled-policies="enabledPolicies"
-          :total-policies="totalPolicies" :show-follower-count="draft.showFollowerCount"
-          :show-like-count="draft.showLikeCount" :allow-messages="draft.allowMessages"
-          :recommend-related-pages="draft.recommendRelatedPages" />
+        </div>
       </div>
     </div>
   </div>
@@ -138,453 +132,30 @@
 </template>
 
 <script setup lang="ts">
-import { useStorage, watchDebounced } from "@vueuse/core"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityPageSettingsBasicsCard from "../components/PageSettingsBasicsCard.vue"
 import CommunityPageSettingsControlsCard from "../components/PageSettingsControlsCard.vue"
 import CommunityPageSettingsMediaCard from "../components/PageSettingsMediaCard.vue"
-import CommunityPageSettingsAdminCard from "../components/PageSettingsAdminCard.vue"
 import CommunityPageSettingsAnalyticCard from "../components/PageSettingsAnalyticCard.vue"
 import CommunityPageSettingsDeleteCard from "../components/PageSettingsDeleteCard.vue"
-import CommunityPageSettingsSidebar from "../components/PageSettingsSidebar.vue"
-import CommunitySettingsSectionCard from "../components/SettingsSectionCard.vue"
-import { useCommunityPageDetail } from "../../application/composables/useCommunityPageDetail"
-import { createCommunityPageSettingsDraft } from "../../application/factories/community-drafts"
-import { communityPageCategoryOptions, communityPageCtaOptions } from "../../domain/constants/community-options"
-import {
-  appendCommunityQuery,
-  createCommunitySlug,
-  getCommunityOptionLabel,
-  getCommunityPagePath,
-  getCommunityPageSettingsPath,
-} from "../../domain/services/community-helpers.service"
-import { getCommunityInitials } from "../../domain/services/community-helpers.service"
-import type {
-  CommunityPageRecord,
-  CommunityPageSettingsDraft,
-} from "../../domain/types/community.types"
-import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
-
-type PageSettingsState = "idle" | "loading" | "success" | "error"
-
-type PageSettingsError = {
-  path?: string
-  message: string
-}
-
-const route = useRoute()
-const router = useRouter()
-const toast = useToast()
-const { t } = useI18n()
-const translateText = useMaybeTranslatedText()
-const repository = createApiCommunityRepository()
+import { useCommunityPageSettingPageVM } from "../../application/view-models/useCommunityPageSettingPageVM"
 
 const {
   page,
-  categoryLabel: baseCategoryLabel,
-  followerCountLabel,
-  likeCountLabel,
-} = useCommunityPageDetail(
-  computed(() => String(route.params.page || "")),
-)
+  previewPage,
+  draft,
+  activeTab,
+  settingsNavItems,
+  statusAlert,
+  isBusy,
+  isSaveDisabled,
+  pagePath,
+  handleSave,
+  handleDeletePage,
+} = useCommunityPageSettingPageVM()
 
-const draft = ref<CommunityPageSettingsDraft>(
-  createCommunityPageSettingsDraft(),
-)
-const saveState = ref<PageSettingsState>("idle")
-const draftRestored = ref(false)
-const storageHydrated = ref(false)
-const isSyncingDraft = ref(false)
-const activeTab = ref("basics")
-
-const draftStorage = useStorage<CommunityPageSettingsDraft | null>(
-  `community:page-settings:${String(route.params.page || "")}`,
-  null,
-  undefined,
-  { initOnMounted: true },
-)
-
-const normalizedTags = computed(() =>
-  (draft.value.tags || "")
-    .split(",")
-    .map(tag => tag.trim())
-    .filter(Boolean),
-)
-
-const previewPage = computed<CommunityPageRecord | null>(() => {
-  if (!page.value) return null
-
-  return {
-    ...page.value,
-    name: (draft.value.name || "").trim() || page.value.name,
-    slug: (draft.value.slug || "").trim() || page.value.slug,
-    summary: (draft.value.summary || "").trim() || page.value.summary,
-    website: draft.value.showWebsite
-      ? ((draft.value.website || "").trim() || page.value.website)
-      : undefined,
-    locationLabel: (draft.value.locationLabel || "").trim() || page.value.locationLabel,
-    category: draft.value.category,
-    ctaLabel: (draft.value.ctaLabel || "").trim() || page.value.ctaLabel,
-    responseLabel: (draft.value.responseLabel || "").trim() || page.value.responseLabel,
-    ownerLabel: (draft.value.ownerLabel || "").trim() || page.value.ownerLabel,
-    tags: normalizedTags.value.length > 0 ? normalizedTags.value : page.value.tags,
-    avatarUrl: draft.value.avatarUrl || page.value.avatarUrl,
-    banner: draft.value.bannerUrl || page.value.banner,
-  }
-})
-
-const translatedPageName = computed(() =>
-  page.value ? translateText(page.value.name, page.value.slug) : "",
-)
-
-const selectedCategoryLabel = computed(() =>
-  t(
-    getCommunityOptionLabel(
-      communityPageCategoryOptions,
-      draft.value.category,
-      baseCategoryLabel.value,
-    ),
-  ),
-)
-
-const selectedCtaLabel = computed(() => {
-  const value = (draft.value.ctaLabel || "").trim()
-  const option = communityPageCtaOptions.find(o => o.value === value)
-  if (option) return t(option.label)
-  return value || page.value?.ctaLabel || t("community.pageSettings.basics.stats.ctaFallback")
-})
-
-const totalPolicies = 5
-
-const enabledPolicies = computed(() =>
-  [
-    draft.value.allowMessages,
-    draft.value.showFollowerCount,
-    draft.value.showLikeCount,
-    draft.value.showWebsite,
-    draft.value.recommendRelatedPages,
-  ].filter(Boolean).length,
-)
-
-const visibilityLabel = computed(() =>
-  draft.value.showWebsite ? t("community.pageSettings.basics.stats.websiteYes") : t("community.pageSettings.basics.stats.websiteNo"),
-)
-
-const pagePath = computed(() =>
-  page.value
-    ? appendCommunityQuery(getCommunityPagePath(page.value.slug), route.query)
-    : "/pages",
-)
-const settingsNavItems = computed(() => [
-  {
-    id: "basics",
-    label: t("community.pageSettings.basics.title"),
-    desc: t("community.pageSettings.basics.navDesc"),
-    icon: "i-ph-identification-card-duotone",
-  },
-  {
-    id: "media",
-    label: t("community.pageSettings.sidebar.media.title"),
-    desc: t("community.pageSettings.sidebar.media.navDesc"),
-    icon: "i-ph-image-duotone",
-  },
-  {
-    id: "controls",
-    label: t("community.pageSettings.controls.title"),
-    desc: t("community.pageSettings.controls.navDesc"),
-    icon: "i-ph-sliders-duotone",
-  },
-  {
-    id: "admins",
-    label: t("community.pageSettings.sidebar.admin.title"),
-    desc: t("community.pageSettings.sidebar.admin.desc"),
-    icon: "i-ph-users-three-duotone",
-  },
-  {
-    id: "analytics",
-    label: t("community.pageSettings.sidebar.analytics.title"),
-    desc: t("community.pageSettings.sidebar.analytics.desc"),
-    icon: "i-ph-chart-bar-duotone",
-  },
-  {
-    id: "delete",
-    label: t("community.pageSettings.sidebar.delete.title"),
-    desc: t("community.pageSettings.sidebar.delete.desc"),
-    icon: "i-ph-trash-duotone",
-  },
-])
-
-const isBusy = computed(() => saveState.value === "loading")
-
-const validationErrors = computed(() => validateDraft(draft.value))
-const hasErrors = computed(() => validationErrors.value.length > 0)
-
-const isSaveDisabled = computed(() =>
-  isBusy.value
-  || !(draft.value.name || "").trim()
-  || !(draft.value.slug || "").trim()
-  || (draft.value.summary || "").trim().length < 24
-  || !draft.value.category,
-)
-
-const statusAlert = computed(() => {
-  if (saveState.value === "loading") {
-    return {
-      color: "primary" as const,
-      icon: "i-ph-spinner-gap-bold",
-      title: t("community.pageSettings.finish.statusSavingTitle"),
-      description: t("community.pageSettings.finish.statusSavingDescription"),
-    }
-  }
-
-  if (saveState.value === "success") {
-    return {
-      color: "success" as const,
-      icon: "i-ph-check-circle-fill",
-      title: t("community.pageSettings.finish.statusSuccessTitle"),
-      description: t("community.pageSettings.finish.statusSuccessDescription"),
-    }
-  }
-
-  if (saveState.value === "error") {
-    return {
-      color: "error" as const,
-      icon: "i-ph-warning-circle-fill",
-      title: t("community.pageSettings.finish.statusErrorTitle"),
-      description: t("community.pageSettings.finish.statusErrorDescription"),
-    }
-  }
-
-  if (draftRestored.value) {
-    return {
-      color: "primary" as const,
-      icon: "i-ph-clock-counter-clockwise-fill",
-      title: t("community.pageSettings.finish.draftRestoredTitle"),
-      description: t("community.pageSettings.finish.draftRestoredDescription"),
-    }
-  }
-
-  return null
-})
-
-watch(page, syncDraftFromPage, { immediate: true })
-
-watchDebounced(
-  () => normalizeDraft(draft.value),
-  (value) => {
-    if (!storageHydrated.value || !page.value) {
-      return
-    }
-
-    draftStorage.value = { ...value }
-  },
-  {
-    debounce: 250,
-    maxWait: 1000,
-  },
-)
-
-watch(
-  () => ({ ...draft.value }),
-  () => {
-    if (isSyncingDraft.value) {
-      return
-    }
-
-    if (saveState.value !== "loading") {
-      saveState.value = "idle"
-    }
-
-    draftRestored.value = false
-  },
-)
-
-onMounted(async () => {
-  storageHydrated.value = true
-  await nextTick()
-  syncDraftFromPage()
-})
-
-async function handleSave() {
-  saveState.value = "loading"
-
-  try {
-    if (!page.value) {
-      throw new Error("page_missing")
-    }
-
-    const savedPage = await repository.updatePage(page.value.slug, draft.value)
-    const normalized = normalizeDraft(createLocalizedDraft(savedPage))
-
-    // Update both the page and the draft to maintain consistency
-    const oldSlug = page.value.slug
-    page.value = savedPage
-    const newDraft = createLocalizedDraft(savedPage); draft.value = { ...newDraft }
-    draftStorage.value = { ...newDraft }
-    draftRestored.value = false
-
-    // If the slug changed, update the URL without refreshing to avoid 404
-    if (savedPage.slug !== oldSlug) {
-      router.replace(getCommunityPageSettingsPath(savedPage.slug))
-    }
-    saveState.value = "success"
-
-    toast.add({
-      title: t("community.pageSettings.finish.statusSuccessTitle"),
-      description: t("community.pageSettings.finish.statusSuccessDescription"),
-      color: "success",
-    })
-  }
-  catch {
-    saveState.value = "error"
-
-    toast.add({
-      title: t("community.pageSettings.finish.statusErrorTitle"),
-      description: t("community.pageSettings.finish.statusErrorDescription"),
-      color: "error",
-    })
-  }
-}
-
-function handleSaveError() {
-  saveState.value = "error"
-}
-
-function syncDraftFromPage() {
-  if (!page.value) {
-    return
-  }
-
-  const baseDraft = createLocalizedDraft(page.value)
-  const restoredDraft = storageHydrated.value && draftStorage.value
-    ? normalizeDraft(draftStorage.value)
-    : null
-
-  // Ensure mandatory profile data is always present even in restored drafts
-  const finalDraft = restoredDraft && !isSameDraft(restoredDraft, baseDraft)
-    ? {
-      ...baseDraft,
-      ...restoredDraft,
-      // Prioritize backend data for core profile fields if restored draft has them empty
-      name: restoredDraft.name || baseDraft.name,
-      slug: restoredDraft.slug || baseDraft.slug,
-      summary: restoredDraft.summary || baseDraft.summary,
-      category: restoredDraft.category || baseDraft.category,
-    }
-    : baseDraft
-
-  applyDraft(
-    finalDraft,
-    Boolean(restoredDraft && !isSameDraft(restoredDraft, baseDraft)),
-  )
-}
-
-function applyDraft(value: CommunityPageSettingsDraft, restored: boolean) {
-  isSyncingDraft.value = true
-  draft.value = value
-  draftRestored.value = restored
-  saveState.value = "idle"
-
-  nextTick(() => {
-    isSyncingDraft.value = false
-  })
-}
-
-function createLocalizedDraft(value: CommunityPageRecord): CommunityPageSettingsDraft {
-  return {
-    ...createCommunityPageSettingsDraft(value),
-    name: translateText(value.name, value.slug),
-    summary: translateText(value.summary),
-    locationLabel: translateText(value.locationLabel),
-    ctaLabel: normalizeCtaDraftValue(value.ctaLabel),
-    responseLabel: translateText(value.responseLabel),
-    ownerLabel: translateText(value.ownerLabel),
-    tags: value.tags.map(tag => translateText(tag, tag)).join(", "),
-  }
-}
-
-function normalizeCtaDraftValue(value?: string) {
-  const input = String(value || "").trim()
-  const normalized = input.toLowerCase()
-
-  if (communityPageCtaOptions.some(option => option.value === normalized)) {
-    return normalized
-  }
-
-  if (normalized.includes("shop") || normalized.includes("catalog") || normalized.includes("product") || normalized.includes("sản phẩm") || normalized.includes("mua sắm") || normalized.includes("cửa hàng")) return "catalog"
-  if (normalized.includes("get a quote") || normalized.includes("call") || normalized.includes("phone") || normalized.includes("gọi") || normalized.includes("điện thoại")) return "call"
-  if (normalized.includes("quote") || normalized.includes("message") || normalized.includes("chat") || normalized.includes("nhắn tin") || normalized.includes("gửi tin nhắn") || normalized.includes("messenger")) return "message"
-  if (normalized.includes("book") || normalized.includes("schedule") || normalized.includes("đặt lịch") || normalized.includes("đặt chỗ")) return "booking"
-  if (normalized.includes("read more") || normalized.includes("follow") || normalized.includes("theo dõi")) return "follow"
-  if (normalized.includes("view") || normalized.includes("xem ngay") || normalized.includes("tìm hiểu")) return "view"
-
-  return input
-}
-
-
-function normalizeDraft(value: CommunityPageSettingsDraft): CommunityPageSettingsDraft {
-  return {
-    ...value,
-    name: (value.name || "").trim(),
-    slug: (value.slug || "").trim(),
-    summary: (value.summary || "").trim(),
-    website: (value.website || "").trim(),
-    locationLabel: (value.locationLabel || "").trim(),
-    category: (value.category || "").trim(),
-    ctaLabel: (value.ctaLabel || "").trim(),
-    responseLabel: (value.responseLabel || "").trim(),
-    ownerLabel: (value.ownerLabel || "").trim(),
-    tags: (value.tags || "")
-      .split(",")
-      .map(tag => tag.trim())
-      .filter(Boolean)
-      .join(", "),
-  }
-}
-
-function isSameDraft(first: CommunityPageSettingsDraft, second: CommunityPageSettingsDraft) {
-  return JSON.stringify(normalizeDraft(first)) === JSON.stringify(normalizeDraft(second))
-}
-
-const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] => {
-  const errors: PageSettingsError[] = []
-  const slug = (state.slug || "").trim()
-
-  if (!(state.name || "").trim()) {
-    errors.push({
-      path: "name",
-      message: t("community.creation.common.validationNameRequired"),
-    })
-  }
-
-  if (!slug) {
-    errors.push({
-      path: "slug",
-      message: t("community.creation.common.validationSlugRequired"),
-    })
-  }
-  else if (slug.length < 5 || createCommunitySlug(slug) !== slug) {
-    errors.push({
-      path: "slug",
-      message: t("community.creation.common.validationSlugInvalid"),
-    })
-  }
-
-  if ((state.summary || "").trim().length < 24) {
-    errors.push({
-      path: "summary",
-      message: t("community.creation.common.validationDescriptionRequired"),
-    })
-  }
-
-  if (!state.category) {
-    errors.push({
-      path: "category",
-      message: t("community.creation.common.validationCategoryRequired"),
-    })
-  }
-
-  return errors
+function onDeletePage(pageId: number, password: string) {
+  handleDeletePage(pageId, password)
 }
 </script>
 
@@ -687,8 +258,10 @@ const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] =
 
 .page-settings__nav-horizontal {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 10px;
   position: relative;
   max-width: 800px;
   margin: 0 auto;
@@ -697,24 +270,27 @@ const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] =
 
 .page-settings__nav-step-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  background: transparent;
-  border: none;
+  gap: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
   cursor: pointer;
-  padding: 0;
-  min-width: 100px;
+  padding: 10px 12px;
+  text-align: left;
+  transition: all 0.15s ease;
+  width: 100%;
 }
 
 .page-settings__nav-step-circle {
   display: flex;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: #ffffff;
+  border-radius: 12px;
+  background: #f8fafc;
   color: #94a3b8;
   font-size: 14px;
   font-weight: 800;
@@ -723,14 +299,15 @@ const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] =
 }
 
 .page-settings__nav-step-circle--active {
-  background: #2563eb;
+  background: #0000ff;
   color: #ffffff;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  border-color: #0000ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
 }
 
 .page-settings__nav-step-label-container {
-  text-align: center;
+  min-width: 0;
+  text-align: left;
 }
 
 .page-settings__nav-step-label {
@@ -741,17 +318,109 @@ const validateDraft = (state: CommunityPageSettingsDraft): PageSettingsError[] =
   transition: color 0.2s ease;
 }
 
+.page-settings__nav-step-desc {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-settings__nav-step-item--active {
+  border-color: rgba(0, 0, 255, 0.16);
+  background: rgba(0, 0, 255, 0.05);
+}
+
 .page-settings__nav-step-item--active .page-settings__nav-step-label {
-  color: #0f172a;
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 2px;
-  text-decoration-color: #2563eb;
+  color: #0000ff;
+  font-weight: 800;
+}
+
+.page-settings__nav-step-item--active .page-settings__nav-step-desc {
+  color: #334155;
+}
+
+.page-settings__nav-step-item:hover {
+  border-color: rgba(0, 0, 255, 0.12);
+  background: rgba(0, 0, 255, 0.03);
 }
 
 .page-settings__nav-step-item:hover .page-settings__nav-step-circle:not(.page-settings__nav-step-circle--active) {
-  border-color: #cbd5e1;
-  color: #475569;
+  border-color: rgba(0, 0, 255, 0.12);
+  color: #0000ff;
+}
+
+@media (min-width: 768px) {
+  .page-settings__nav-horizontal {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+  }
+
+  .page-settings__nav-step-item {
+    flex: 0 1 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: auto;
+    min-width: 100px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    text-align: center;
+  }
+
+  .page-settings__nav-step-item--active {
+    background: transparent;
+  }
+
+  .page-settings__nav-step-circle {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    background: #ffffff;
+  }
+
+  .page-settings__nav-step-circle--active {
+    background: #ffffff;
+    color: #0000ff;
+    border-color: rgba(0, 0, 255, 0.18);
+    box-shadow: 0 4px 12px rgba(0, 0, 255, 0.14);
+  }
+
+  .page-settings__nav-step-label-container {
+    text-align: center;
+  }
+
+  .page-settings__nav-step-desc {
+    display: none;
+  }
+
+  .page-settings__nav-step-item--active .page-settings__nav-step-label {
+    color: #0f172a;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+    text-decoration-color: #2563eb;
+  }
+
+  .page-settings__nav-step-item:hover {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .page-settings__nav-step-item:hover .page-settings__nav-step-circle:not(.page-settings__nav-step-circle--active) {
+    border-color: rgba(0, 0, 255, 0.18);
+    color: #0000ff;
+    background: rgba(0, 0, 255, 0.04);
+  }
 }
 
 .page-preview-card {

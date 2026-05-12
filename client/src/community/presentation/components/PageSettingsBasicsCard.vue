@@ -204,25 +204,6 @@
           :ui="inputUi"
         />
       </UFormField>
-
-      <div class="grid gap-3 sm:grid-cols-4">
-        <div class="page-settings-basics__stat">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.fields.summary") }}</p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.pageSettings.basics.stats.summaryLength", { count: model.summary.trim().length }) }}</p>
-        </div>
-        <div class="page-settings-basics__stat">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.topicsLabel") }}</p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ $t("community.pageSettings.basics.stats.tagCount", { count: tagCount }) }}</p>
-        </div>
-        <div class="page-settings-basics__stat">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.ctaLabel") }}</p>
-          <p class="mt-1 truncate text-[15px] font-black text-[#243b63]">{{ model.ctaLabel.trim() || $t("community.pageSettings.basics.stats.ctaFallback") }}</p>
-        </div>
-        <div class="page-settings-basics__stat">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[#0000ff]/65">{{ $t("community.pageSettings.basics.stats.publicLinkLabel") }}</p>
-          <p class="mt-1 text-[15px] font-black text-[#243b63]">{{ model.website.trim() ? $t("community.pageSettings.basics.stats.websiteYes") : $t("community.pageSettings.basics.stats.websiteNo") }}</p>
-        </div>
-      </div>
     </div>
 
     <slot name="footer" />
