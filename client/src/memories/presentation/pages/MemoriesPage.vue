@@ -73,7 +73,6 @@
 
         <MemoriesMemoryFeed
           :entries="memoryEntries"
-          @share="shareMemory"
         />
       </section>
 
@@ -103,7 +102,6 @@ const {
   memoryEntries,
   memoryFriends,
   fetchMemories,
-  shareMemory,
 } = useMemoriesPageVM()
 
 useSeoMeta({

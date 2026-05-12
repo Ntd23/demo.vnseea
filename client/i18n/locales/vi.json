@@ -532,7 +532,11 @@
           "count": "128 hồ sơ",
           "href": "/search",
           "accent": "linear-gradient(135deg,#0f172a 0%,#2563eb 52%,#7dd3fc 100%)",
-          "tags": ["Creator", "Chuyên gia", "Profile"],
+          "tags": [
+            "Creator",
+            "Chuyên gia",
+            "Profile"
+          ],
           "featured": true
         },
         {
@@ -545,7 +549,11 @@
           "count": "34 fanpage",
           "href": "/pages",
           "accent": "linear-gradient(135deg,#1f2937 0%,#9333ea 50%,#f9a8d4 100%)",
-          "tags": ["Brand", "Creator", "Suggested"],
+          "tags": [
+            "Brand",
+            "Creator",
+            "Suggested"
+          ],
           "featured": true
         },
         {
@@ -558,7 +566,11 @@
           "count": "18 nhóm",
           "href": "/groups",
           "accent": "linear-gradient(135deg,#0f172a 0%,#0891b2 46%,#fde68a 100%)",
-          "tags": ["Community", "Discussion", "Joined"],
+          "tags": [
+            "Community",
+            "Discussion",
+            "Joined"
+          ],
           "featured": true
         },
         {
@@ -571,7 +583,11 @@
           "count": "52 sản phẩm",
           "href": "/products",
           "accent": "linear-gradient(135deg,#111827 0%,#ea580c 48%,#fdba74 100%)",
-          "tags": ["Product", "Listing", "Market"],
+          "tags": [
+            "Product",
+            "Listing",
+            "Market"
+          ],
           "featured": true
         },
         {
@@ -584,7 +600,11 @@
           "count": "9 sự kiện",
           "href": "/events",
           "accent": "linear-gradient(135deg,#1e293b 0%,#4f46e5 48%,#c4b5fd 100%)",
-          "tags": ["Calendar", "Online", "Meetup"],
+          "tags": [
+            "Calendar",
+            "Online",
+            "Meetup"
+          ],
           "featured": false
         },
         {
@@ -597,7 +617,11 @@
           "count": "21 vị trí",
           "href": "/jobs",
           "accent": "linear-gradient(135deg,#0f172a 0%,#0369a1 50%,#bae6fd 100%)",
-          "tags": ["Hiring", "Career", "Remote"],
+          "tags": [
+            "Hiring",
+            "Career",
+            "Remote"
+          ],
           "featured": false
         },
         {
@@ -610,7 +634,11 @@
           "count": "24 bài viết",
           "href": "/blogs",
           "accent": "linear-gradient(135deg,#111827 0%,#7c3aed 48%,#c084fc 100%)",
-          "tags": ["Article", "Topic", "Community"],
+          "tags": [
+            "Article",
+            "Topic",
+            "Community"
+          ],
           "featured": true
         },
         {
@@ -623,7 +651,11 @@
           "count": "7 chiến dịch",
           "href": "/funding",
           "accent": "linear-gradient(135deg,#172554 0%,#2563eb 48%,#bfdbfe 100%)",
-          "tags": ["Support", "Campaign", "Impact"],
+          "tags": [
+            "Support",
+            "Campaign",
+            "Impact"
+          ],
           "featured": false
         },
         {
@@ -636,7 +668,11 @@
           "count": "5 stream",
           "href": "/live",
           "accent": "linear-gradient(135deg,#450a0a 0%,#dc2626 48%,#fca5a5 100%)",
-          "tags": ["Streaming", "Realtime", "Host"],
+          "tags": [
+            "Streaming",
+            "Realtime",
+            "Host"
+          ],
           "featured": false
         },
         {
@@ -649,7 +685,11 @@
           "count": "16 video",
           "href": "/watch",
           "accent": "linear-gradient(135deg,#111827 0%,#0ea5e9 50%,#bae6fd 100%)",
-          "tags": ["Video", "Feed", "Recommended"],
+          "tags": [
+            "Video",
+            "Feed",
+            "Recommended"
+          ],
           "featured": false
         },
         {
@@ -662,7 +702,11 @@
           "count": "11 game",
           "href": "/games",
           "accent": "linear-gradient(135deg,#1f2937 0%,#2563eb 48%,#93c5fd 100%)",
-          "tags": ["Arcade", "Mini Game", "Play"],
+          "tags": [
+            "Arcade",
+            "Mini Game",
+            "Play"
+          ],
           "featured": false
         },
         {
@@ -675,7 +719,11 @@
           "count": "19 chủ đề",
           "href": "/forum",
           "accent": "linear-gradient(135deg,#0f172a 0%,#7c2d12 48%,#fdba74 100%)",
-          "tags": ["Thread", "Q&A", "Topic"],
+          "tags": [
+            "Thread",
+            "Q&A",
+            "Topic"
+          ],
           "featured": true
         }
       ]
@@ -1320,35 +1368,50 @@
       },
       "tabs": {
         "posts": "Tất cả",
-        "about": "Giới thiệu"  
+        "about": "Giới thiệu"
       }
     },
-  "profilePage": {
-    "emptyTitle": "Không thể tải hồ sơ",
-    "emptyDescription": "Backend chưa trả về dữ liệu hồ sơ cho route này.",
-    "editCover": "Đổi ảnh bìa",
-    "sidebarSearchPosts": "Tìm kiếm bài viết",
-    "aboutSections": {
-      "workEducation": "Công việc và học vấn",
-      "contact": "Thông tin liên hệ",
-      "basic": "Thông tin cơ bản"
-    },
-    "tabs": {
+    "profilePage": {
+      "emptyTitle": "Không thể tải hồ sơ",
+      "emptyDescription": "Backend chưa trả về dữ liệu hồ sơ cho route này.",
+      "editCover": "Đổi ảnh bìa",
+      "sidebarSearchPosts": "Tìm kiếm bài viết",
+      "aboutSections": {
+        "workEducation": "Công việc và học vấn",
+        "contact": "Thông tin liên hệ",
+        "basic": "Thông tin cơ bản"
+      },
+      "tabs": {
         "timeline": "Dòng thời gian",
         "about": "Giới thiệu",
         "friends": "Bạn bè",
         "photos": "Ảnh",
         "videos": "Video",
-        "albums": "Album"
+        "albums": "Album",
+        "more": "Xem thêm",
+        "poke": "Chọc",
+        "pokeDesc": "Gửi một lời chào nhẹ nhàng và vui vẻ đến bạn bè.",
+        "pokeSuccess": "Bạn đã chọc {name} thành công! 🙌",
+        "pokeAlready": "Bạn đã chọc người này rồi!",
+        "block": "Chặn người dùng",
+        "blockDesc": "Người này sẽ không thể xem hồ sơ hoặc liên hệ với bạn.",
+        "blockSuccess": "Đã chặn {name} thành công.",
+        "report": "Báo cáo trang cá nhân",
+        "reportDesc": "Gửi báo cáo vi phạm tới quản trị viên.",
+        "reportSuccess": "Cảm ơn bạn đã báo cáo. Chúng tôi sẽ xem xét sớm.",
+        "copyLink": "Sao chép liên kết",
+        "copyLinkDesc": "Sao chép đường dẫn trang cá nhân này.",
+        "blockList": "Danh sách chặn",
+        "blockListDesc": "Xem và quản lý những người bạn đã chặn."
       },
-    "stats": {
-      "following": "Đang theo dõi",
-      "pages": "Trang",
-      "likes": "Thích",
-      "groups": "Nhóm",
-      "products": "Sản phẩm để bán"
-    }
-  },
+      "stats": {
+        "following": "Đang theo dõi",
+        "pages": "Trang",
+        "likes": "Thích",
+        "groups": "Nhóm",
+        "products": "Sản phẩm để bán"
+      }
+    },
     "photosPage": {
       "seoTitle": "Ảnh | VNSEEA",
       "seoDescription": "Trang ảnh của VNSEEA với hero thư viện ảnh, bộ lọc, strip album, masonry gallery, lightbox và liên kết sang hashtag, popular, memories.",
@@ -1387,12 +1450,36 @@
       "sidebarLinksEyebrow": "Lối đi nhanh",
       "sidebarLinksTitle": "Mở thêm flow liên quan",
       "categories": [
-        { "label": "Tất cả", "value": "all", "icon": "i-ph-squares-four-fill" },
-        { "label": "Cộng đồng", "value": "community", "icon": "i-ph-users-three-fill" },
-        { "label": "Sự kiện", "value": "events", "icon": "i-ph-calendar-blank-fill" },
-        { "label": "Chân dung", "value": "portraits", "icon": "i-ph-user-focus-fill" },
-        { "label": "Sản phẩm", "value": "product", "icon": "i-ph-package-fill" },
-        { "label": "Giáo dục", "value": "education", "icon": "i-ph-graduation-cap-fill" }
+        {
+          "label": "Tất cả",
+          "value": "all",
+          "icon": "i-ph-squares-four-fill"
+        },
+        {
+          "label": "Cộng đồng",
+          "value": "community",
+          "icon": "i-ph-users-three-fill"
+        },
+        {
+          "label": "Sự kiện",
+          "value": "events",
+          "icon": "i-ph-calendar-blank-fill"
+        },
+        {
+          "label": "Chân dung",
+          "value": "portraits",
+          "icon": "i-ph-user-focus-fill"
+        },
+        {
+          "label": "Sản phẩm",
+          "value": "product",
+          "icon": "i-ph-package-fill"
+        },
+        {
+          "label": "Giáo dục",
+          "value": "education",
+          "icon": "i-ph-graduation-cap-fill"
+        }
       ],
       "albums": [
         {
@@ -1437,7 +1524,11 @@
           "comments": 624,
           "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)",
-          "tags": ["#community", "#workshop", "#rooftop"],
+          "tags": [
+            "#community",
+            "#workshop",
+            "#rooftop"
+          ],
           "frame": "portrait",
           "companionTo": "/memories"
         },
@@ -1454,7 +1545,11 @@
           "comments": 840,
           "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
           "accent": "linear-gradient(135deg,#172554 0%,#2563eb 100%)",
-          "tags": ["#event", "#summit", "#community"],
+          "tags": [
+            "#event",
+            "#summit",
+            "#community"
+          ],
           "frame": "landscape",
           "companionTo": "/events"
         },
@@ -1471,7 +1566,11 @@
           "comments": 318,
           "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#7c3aed 0%,#c084fc 100%)",
-          "tags": ["#portrait", "#member", "#studio"],
+          "tags": [
+            "#portrait",
+            "#member",
+            "#studio"
+          ],
           "frame": "tall",
           "companionTo": "/search"
         },
@@ -1488,7 +1587,11 @@
           "comments": 274,
           "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80",
           "accent": "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
-          "tags": ["#product", "#studio", "#brand"],
+          "tags": [
+            "#product",
+            "#studio",
+            "#brand"
+          ],
           "frame": "landscape",
           "companionTo": "/blogs"
         },
@@ -1505,7 +1608,11 @@
           "comments": 201,
           "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#4338ca 0%,#60a5fa 100%)",
-          "tags": ["#education", "#makerspace", "#future"],
+          "tags": [
+            "#education",
+            "#makerspace",
+            "#future"
+          ],
           "frame": "portrait",
           "companionTo": "/blogs"
         },
@@ -1522,7 +1629,11 @@
           "comments": 352,
           "image": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#7c2d12 0%,#fb923c 100%)",
-          "tags": ["#community", "#market", "#citylife"],
+          "tags": [
+            "#community",
+            "#market",
+            "#citylife"
+          ],
           "frame": "square",
           "companionTo": "/popular"
         },
@@ -1539,7 +1650,11 @@
           "comments": 407,
           "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#111827 0%,#334155 100%)",
-          "tags": ["#event", "#backstage", "#demo"],
+          "tags": [
+            "#event",
+            "#backstage",
+            "#demo"
+          ],
           "frame": "portrait",
           "companionTo": "/popular"
         },
@@ -1556,7 +1671,11 @@
           "comments": 289,
           "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#be123c 0%,#fb7185 100%)",
-          "tags": ["#portrait", "#creator", "#studio"],
+          "tags": [
+            "#portrait",
+            "#creator",
+            "#studio"
+          ],
           "frame": "tall",
           "companionTo": "/search"
         }
@@ -1744,7 +1863,11 @@
           "views": 5260,
           "repliesCount": 2,
           "excerpt": "Thread này tổng hợp các hạng mục đã lên kế hoạch cho forum: SEO page-level, route sync, UI feedback và guard SSR cho các tương tác chính.",
-          "tags": ["migration", "seo", "roadmap"],
+          "tags": [
+            "migration",
+            "seo",
+            "roadmap"
+          ],
           "replies": [
             {
               "id": 101,
@@ -1777,7 +1900,11 @@
           "views": 1840,
           "repliesCount": 2,
           "excerpt": "Mình đang migrate listing page sang Nuxt 4, có search + section + thread trên URL. Có ai đã xử lý contract SSR/hydration ổn định cho flow này chưa?",
-          "tags": ["nuxt-ui", "ssr", "router"],
+          "tags": [
+            "nuxt-ui",
+            "ssr",
+            "router"
+          ],
           "replies": [
             {
               "id": 201,
@@ -1811,7 +1938,11 @@
           "views": 940,
           "repliesCount": 2,
           "excerpt": "Forum marketplace đang có nhiều thread hỏi giá trong comment. Mọi người đang xử lý phần guideline hoặc template mở thread thế nào cho rõ hơn?",
-          "tags": ["marketplace", "guideline", "pricing"],
+          "tags": [
+            "marketplace",
+            "guideline",
+            "pricing"
+          ],
           "replies": [
             {
               "id": 301,
@@ -1844,7 +1975,11 @@
           "views": 770,
           "repliesCount": 1,
           "excerpt": "Mình muốn recap event theo dạng dễ đọc trên mobile nhưng vẫn đủ context cho người chưa tham gia. Mọi người đang giữ checklist nào là tối thiểu?",
-          "tags": ["events", "recap", "community"],
+          "tags": [
+            "events",
+            "recap",
+            "community"
+          ],
           "replies": [
             {
               "id": 401,
@@ -1869,7 +2004,11 @@
           "views": 1280,
           "repliesCount": 3,
           "excerpt": "Mình đang chuẩn hóa thread tuyển dụng để ứng viên đọc nhanh trên mobile. Có mẫu field nào nên luôn xuất hiện ở đầu thread không?",
-          "tags": ["jobs", "remote", "hiring"],
+          "tags": [
+            "jobs",
+            "remote",
+            "hiring"
+          ],
           "replies": [
             {
               "id": 501,
@@ -1911,7 +2050,11 @@
           "views": 688,
           "repliesCount": 2,
           "excerpt": "Mình muốn gom ví dụ thực tế về cách đổi title, tag và opening summary để thread showcase đọc thuyết phục hơn trên listing công khai.",
-          "tags": ["showcase", "case-study", "content"],
+          "tags": [
+            "showcase",
+            "case-study",
+            "content"
+          ],
           "replies": [
             {
               "id": 601,
@@ -2190,7 +2333,11 @@
           "audience": "Công khai",
           "time": "12 phút trước",
           "text": "Team vừa chốt lại thứ tự rollout cho các page công khai: ưu tiên route ổn định, state SSR-safe và feedback rõ ở từng action thay vì chỉ đổi UI bề mặt.",
-          "tags": ["migration", "community", "nuxt"],
+          "tags": [
+            "migration",
+            "community",
+            "nuxt"
+          ],
           "stats": {
             "likes": 124,
             "comments": 28,
@@ -2221,7 +2368,11 @@
           "audience": "Thành viên",
           "time": "35 phút trước",
           "text": "Marketplace mock mới đang cho thấy card sản phẩm cần ưu tiên giá, vị trí và CTA gọn hơn. Chỉ cần thừa một tầng badge là trải nghiệm bắt đầu rối ngay.",
-          "tags": ["marketplace", "product", "ux"],
+          "tags": [
+            "marketplace",
+            "product",
+            "ux"
+          ],
           "stats": {
             "likes": 96,
             "comments": 19,
@@ -2252,7 +2403,11 @@
           "audience": "Công khai",
           "time": "1 giờ trước",
           "text": "Nếu một route có thể crash vì data chưa sẵn, đó không chỉ là lỗi dữ liệu mà còn là lỗi contract. Page nên có fallback đủ shape để người dùng vẫn rời đi được bình thường.",
-          "tags": ["business", "ssr", "contract"],
+          "tags": [
+            "business",
+            "ssr",
+            "contract"
+          ],
           "stats": {
             "likes": 141,
             "comments": 33,
@@ -2282,7 +2437,11 @@
           "audience": "Công khai",
           "time": "2 giờ trước",
           "text": "Popular page nên tạo cảm giác biên tập chứ không chỉ là feed sắp xếp lại. Hero, quick links và sidebar phải cho thấy đây là nơi gom những gì đáng xem nhất.",
-          "tags": ["design", "curation", "popular"],
+          "tags": [
+            "design",
+            "curation",
+            "popular"
+          ],
           "stats": {
             "likes": 88,
             "comments": 17,
@@ -2313,7 +2472,11 @@
           "audience": "Thành viên",
           "time": "3 giờ trước",
           "text": "Khi locale thiếu hẳn namespace, route vẫn nên render bằng fallback data nội bộ thay vì đợi đến lúc người dùng tự reload mới thoát được trạng thái gãy.",
-          "tags": ["technology", "i18n", "runtime"],
+          "tags": [
+            "technology",
+            "i18n",
+            "runtime"
+          ],
           "stats": {
             "likes": 167,
             "comments": 26,
@@ -2461,7 +2624,10 @@
     "moviesPage": {
       "seoTitle": "Phim | VNSEEA",
       "seoDescription": "Khám phá các phim tuyển chọn trên VNSEEA với hero rõ ràng, bộ lọc gọn và lối chuyển mạch hợp lý sang watch, live và blog.",
-      "heroEyebrow": "Tuyển chọn hôm nay",
+      "heroEyebrow": "Phim",
+      "tabNew": "Mới",
+      "tabRecommended": "Đề xuất",
+      "tabWatched": "Xem nhiều nhất",
       "searchPlaceholder": "Tìm phim, đạo diễn hoặc chủ đề",
       "openLink": "Mở tuyển tập",
       "resultEyebrow": "Danh sách đang chiếu",
@@ -2501,10 +2667,10 @@
       "heroTitle": "Những lượt chọc đang chờ bạn phản hồi",
       "heroDescription": "Xử lý các lượt chọc mới theo cách nhanh, gọn và rõ trạng thái, đồng thời giữ được ngữ cảnh vì sao người đó đang xuất hiện trong danh sách.",
       "openMessages": "Mở tin nhắn",
-      "resetStatus": "Đặt lại trạng thái",
+      "offlineStatus": "Ngoại tuyến",
       "listEyebrow": "Danh sách chờ phản hồi",
       "listTitle": "{count} lượt chọc đang hiển thị",
-      "listDescription": "Các gợi ý dưới đây giữ cho flow chọc nhẹ hơn để bạn phản hồi, bỏ qua hoặc nối tiếp sang nhắn tin mà không bị rối ngữ cảnh.",
+      "listDescription": "Danh sách này hiển thị những người đã chọc bạn. Bạn có thể chọc lại để phản hồi hoặc bắt đầu trò chuyện ngay.",
       "pendingLabel": "Đang chờ",
       "statNewPokes": "Lượt chọc mới",
       "statNewPokesDescription": "Tổng số lời chọc hiện có trong danh sách của phiên làm việc này.",
@@ -2522,11 +2688,12 @@
       "activeNow": "Đang hoạt động",
       "onlineChatContext": "Đang hoạt động trong chat",
       "onlineChatNote": "Đây là người đang online hoặc vừa tương tác gần đây, nên flow chọc lại có thể dẫn sang nhắn tin ngay khá tự nhiên.",
-      "pokeCountLabel": "Trạng thái",
-      "pokeActionLabel": "Nguồn kết nối",
+      "pokeCountLabel": "Hoạt động",
+      "pokeActionLabel": "Gửi lúc",
       "invitationSent": "Đã chọc lại",
       "pokeBack": "Chọc lại",
-      "deletePoke": "Xóa yêu cầu"
+      "deletePoke": "Xóa yêu cầu",
+      "minuteAgo": "{count} phút trước"
     },
     "memoriesPage": {
       "seoTitle": "Ký ức | VNSEEA",
@@ -2671,7 +2838,11 @@
           "shares": 19,
           "cover": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1600&q=80",
           "description": "Buổi live tổng hợp cập nhật mới của cộng đồng, những phần đang triển khai và các điểm cần mọi người cùng theo dõi trong tuần này.",
-          "tags": ["#community", "#demo-day", "#updates"],
+          "tags": [
+            "#community",
+            "#demo-day",
+            "#updates"
+          ],
           "comments": [
             {
               "id": 101,
@@ -2706,7 +2877,11 @@
           "shares": 12,
           "cover": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=80",
           "description": "Trao đổi nhanh về cách chọn ưu tiên, giữ flow review gọn và tránh để team nhỏ bị nghẽn khi rollout nhiều hạng mục cùng lúc.",
-          "tags": ["#founder", "#product", "#execution"],
+          "tags": [
+            "#founder",
+            "#product",
+            "#execution"
+          ],
           "comments": [
             {
               "id": 201,
@@ -2741,7 +2916,11 @@
           "shares": 9,
           "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
           "description": "Một buổi chia sẻ tập trung vào note-taking, ôn tập theo cụm chủ đề và cách giữ được nhịp học đều mà không quá tải.",
-          "tags": ["#education", "#learning", "#notes"],
+          "tags": [
+            "#education",
+            "#learning",
+            "#notes"
+          ],
           "comments": [
             {
               "id": 301,
@@ -2776,7 +2955,11 @@
           "shares": 27,
           "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
           "description": "Đi nhanh qua các cập nhật đáng chú ý trong hệ sinh thái frontend, công cụ AI hỗ trợ code và những thay đổi mới đáng thử.",
-          "tags": ["#tech", "#frontend", "#ai"],
+          "tags": [
+            "#tech",
+            "#frontend",
+            "#ai"
+          ],
           "comments": [
             {
               "id": 401,
@@ -3424,9 +3607,18 @@
             "Ưu tiên hỗ trợ qua kênh trợ giúp tiêu chuẩn."
           ],
           "limits": [
-            { "label": "Dung lượng lưu trữ", "value": "50 GB" },
-            { "label": "Trang quản lý", "value": "2 page" },
-            { "label": "Mẫu tự động", "value": "3 mẫu" }
+            {
+              "label": "Dung lượng lưu trữ",
+              "value": "50 GB"
+            },
+            {
+              "label": "Trang quản lý",
+              "value": "2 page"
+            },
+            {
+              "label": "Mẫu tự động",
+              "value": "3 mẫu"
+            }
           ]
         },
         {
@@ -3443,9 +3635,18 @@
             "Ưu tiên hỗ trợ nhanh hơn cùng gói template tự động."
           ],
           "limits": [
-            { "label": "Dung lượng lưu trữ", "value": "250 GB" },
-            { "label": "Trang quản lý", "value": "10 page" },
-            { "label": "Mẫu tự động", "value": "Không giới hạn" }
+            {
+              "label": "Dung lượng lưu trữ",
+              "value": "250 GB"
+            },
+            {
+              "label": "Trang quản lý",
+              "value": "10 page"
+            },
+            {
+              "label": "Mẫu tự động",
+              "value": "Không giới hạn"
+            }
           ]
         },
         {
@@ -3462,24 +3663,75 @@
             "Hỗ trợ ưu tiên cao cùng checklist onboarding cho đội vận hành."
           ],
           "limits": [
-            { "label": "Dung lượng lưu trữ", "value": "1 TB" },
-            { "label": "Trang quản lý", "value": "Không giới hạn" },
-            { "label": "Seat nhóm", "value": "15 thành viên" }
+            {
+              "label": "Dung lượng lưu trữ",
+              "value": "1 TB"
+            },
+            {
+              "label": "Trang quản lý",
+              "value": "Không giới hạn"
+            },
+            {
+              "label": "Seat nhóm",
+              "value": "15 thành viên"
+            }
           ]
         }
       ],
       "comparisonRows": [
-        { "label": "Analytics nâng cao", "starter": true, "creator": true, "business": true },
-        { "label": "Thư viện media mở rộng", "starter": true, "creator": true, "business": true },
-        { "label": "Template tự động không giới hạn", "starter": false, "creator": true, "business": true },
-        { "label": "Cộng tác nhiều thành viên", "starter": false, "creator": true, "business": true },
-        { "label": "Branding tùy chỉnh", "starter": false, "creator": false, "business": true },
-        { "label": "Hỗ trợ ưu tiên cao", "starter": false, "creator": true, "business": true }
+        {
+          "label": "Analytics nâng cao",
+          "starter": true,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Thư viện media mở rộng",
+          "starter": true,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Template tự động không giới hạn",
+          "starter": false,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Cộng tác nhiều thành viên",
+          "starter": false,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Branding tùy chỉnh",
+          "starter": false,
+          "creator": false,
+          "business": true
+        },
+        {
+          "label": "Hỗ trợ ưu tiên cao",
+          "starter": false,
+          "creator": true,
+          "business": true
+        }
       ],
       "paymentMethods": [
-        { "label": "Ví VNSEEA", "value": "wallet", "icon": "i-ph-wallet-fill" },
-        { "label": "Thẻ ngân hàng", "value": "card", "icon": "i-ph-credit-card-fill" },
-        { "label": "Chuyển khoản", "value": "bank", "icon": "i-ph-bank-fill" }
+        {
+          "label": "Ví VNSEEA",
+          "value": "wallet",
+          "icon": "i-ph-wallet-fill"
+        },
+        {
+          "label": "Thẻ ngân hàng",
+          "value": "card",
+          "icon": "i-ph-credit-card-fill"
+        },
+        {
+          "label": "Chuyển khoản",
+          "value": "bank",
+          "icon": "i-ph-bank-fill"
+        }
       ],
       "currentSubscription": {
         "plan": "Creator Pro",
@@ -3646,27 +3898,95 @@
       "createdJobDeadline": "30/06/2026",
       "createdJobExperience": "Theo mô tả công việc",
       "categories": [
-        { "label": "Tất cả nhóm nghề", "value": "all", "icon": "i-ph-squares-four-fill" },
-        { "label": "Kỹ thuật", "value": "engineering", "icon": "i-ph-code-fill" },
-        { "label": "Thiết kế", "value": "design", "icon": "i-ph-paint-brush-fill" },
-        { "label": "Marketing", "value": "marketing", "icon": "i-ph-megaphone-fill" },
-        { "label": "Kinh doanh", "value": "sales", "icon": "i-ph-handshake-fill" },
-        { "label": "Vận hành", "value": "operations", "icon": "i-ph-gear-six-fill" },
-        { "label": "Tài chính", "value": "finance", "icon": "i-ph-chart-line-up-fill" }
+        {
+          "label": "Tất cả nhóm nghề",
+          "value": "all",
+          "icon": "i-ph-squares-four-fill"
+        },
+        {
+          "label": "Kỹ thuật",
+          "value": "engineering",
+          "icon": "i-ph-code-fill"
+        },
+        {
+          "label": "Thiết kế",
+          "value": "design",
+          "icon": "i-ph-paint-brush-fill"
+        },
+        {
+          "label": "Marketing",
+          "value": "marketing",
+          "icon": "i-ph-megaphone-fill"
+        },
+        {
+          "label": "Kinh doanh",
+          "value": "sales",
+          "icon": "i-ph-handshake-fill"
+        },
+        {
+          "label": "Vận hành",
+          "value": "operations",
+          "icon": "i-ph-gear-six-fill"
+        },
+        {
+          "label": "Tài chính",
+          "value": "finance",
+          "icon": "i-ph-chart-line-up-fill"
+        }
       ],
       "locations": [
-        { "label": "Mọi địa điểm", "value": "all", "icon": "i-ph-map-pin-fill" },
-        { "label": "TP. Hồ Chí Minh", "value": "ho-chi-minh", "icon": "i-ph-buildings-fill" },
-        { "label": "Hà Nội", "value": "ha-noi", "icon": "i-ph-bank-fill" },
-        { "label": "Đà Nẵng", "value": "da-nang", "icon": "i-ph-waves-fill" },
-        { "label": "Remote", "value": "remote", "icon": "i-ph-globe-hemisphere-east-fill" }
+        {
+          "label": "Mọi địa điểm",
+          "value": "all",
+          "icon": "i-ph-map-pin-fill"
+        },
+        {
+          "label": "TP. Hồ Chí Minh",
+          "value": "ho-chi-minh",
+          "icon": "i-ph-buildings-fill"
+        },
+        {
+          "label": "Hà Nội",
+          "value": "ha-noi",
+          "icon": "i-ph-bank-fill"
+        },
+        {
+          "label": "Đà Nẵng",
+          "value": "da-nang",
+          "icon": "i-ph-waves-fill"
+        },
+        {
+          "label": "Remote",
+          "value": "remote",
+          "icon": "i-ph-globe-hemisphere-east-fill"
+        }
       ],
       "types": [
-        { "label": "Mọi loại hình", "value": "all", "icon": "i-ph-briefcase-fill" },
-        { "label": "Toàn thời gian", "value": "full-time", "icon": "i-ph-clock-fill" },
-        { "label": "Bán thời gian", "value": "part-time", "icon": "i-ph-clock-afternoon-fill" },
-        { "label": "Hợp đồng", "value": "contract", "icon": "i-ph-file-text-fill" },
-        { "label": "Thực tập", "value": "internship", "icon": "i-ph-student-fill" }
+        {
+          "label": "Mọi loại hình",
+          "value": "all",
+          "icon": "i-ph-briefcase-fill"
+        },
+        {
+          "label": "Toàn thời gian",
+          "value": "full-time",
+          "icon": "i-ph-clock-fill"
+        },
+        {
+          "label": "Bán thời gian",
+          "value": "part-time",
+          "icon": "i-ph-clock-afternoon-fill"
+        },
+        {
+          "label": "Hợp đồng",
+          "value": "contract",
+          "icon": "i-ph-file-text-fill"
+        },
+        {
+          "label": "Thực tập",
+          "value": "internship",
+          "icon": "i-ph-student-fill"
+        }
       ],
       "jobs": [
         {
@@ -3698,7 +4018,12 @@
             "Lịch làm việc linh hoạt theo sprint, ưu tiên output rõ ràng hơn giờ ngồi đủ.",
             "Ngân sách học tập và thiết bị được review lại theo nhu cầu thực tế."
           ],
-          "skills": ["Vue", "Nuxt", "TypeScript", "SSR"],
+          "skills": [
+            "Vue",
+            "Nuxt",
+            "TypeScript",
+            "SSR"
+          ],
           "isRemote": false,
           "isFeatured": true,
           "isSaved": true,
@@ -3733,7 +4058,11 @@
             "Được tham gia shaping requirement thay vì chỉ nhận task execution.",
             "Môi trường phù hợp để thử nghiệm layout, hierarchy và motion có chủ đích."
           ],
-          "skills": ["Figma", "Prototype", "Design System"],
+          "skills": [
+            "Figma",
+            "Prototype",
+            "Design System"
+          ],
           "isRemote": true,
           "isFeatured": true,
           "isSaved": false,
@@ -3768,7 +4097,11 @@
             "Dữ liệu chiến dịch được chia sẻ đủ sâu để tối ưu nhanh.",
             "Làm việc sát với founder và team product khi cần điều chỉnh funnel."
           ],
-          "skills": ["Growth", "Content", "Analytics"],
+          "skills": [
+            "Growth",
+            "Content",
+            "Analytics"
+          ],
           "isRemote": false,
           "isFeatured": false,
           "isSaved": false,
@@ -3803,7 +4136,11 @@
             "Có sẵn playbook cơ bản để tăng tốc giai đoạn onboard.",
             "Được mở rộng network đối tác trong hệ sinh thái địa phương."
           ],
-          "skills": ["B2B", "CRM", "Partnership"],
+          "skills": [
+            "B2B",
+            "CRM",
+            "Partnership"
+          ],
           "isRemote": false,
           "isFeatured": false,
           "isSaved": true,
@@ -3838,7 +4175,11 @@
             "Tiếp cận dữ liệu vận hành end-to-end thay vì chỉ xử lý đầu việc rời rạc.",
             "Phù hợp cho người muốn tăng tốc tư duy vận hành tài chính thực chiến."
           ],
-          "skills": ["Finance", "Excel", "Reporting"],
+          "skills": [
+            "Finance",
+            "Excel",
+            "Reporting"
+          ],
           "isRemote": false,
           "isFeatured": false,
           "isSaved": false,
@@ -3873,7 +4214,11 @@
             "Có mentor và checklist rõ ràng để theo dõi tiến độ từng tuần.",
             "Phù hợp cho người muốn xây nền tảng operations trước khi lên role chính thức."
           ],
-          "skills": ["Community", "Ops", "Notion"],
+          "skills": [
+            "Community",
+            "Ops",
+            "Notion"
+          ],
           "isRemote": true,
           "isFeatured": false,
           "isSaved": false,
@@ -3981,9 +4326,18 @@
         }
       ],
       "paymentProfiles": [
-        { "label": "Ngân hàng mặc định", "value": "Vietcombank - 1023...889" },
-        { "label": "Ví MoMo", "value": "0987...543" },
-        { "label": "PayPal ID", "value": "user-paypal-example.com" }
+        {
+          "label": "Ngân hàng mặc định",
+          "value": "Vietcombank - 1023...889"
+        },
+        {
+          "label": "Ví MoMo",
+          "value": "0987...543"
+        },
+        {
+          "label": "PayPal ID",
+          "value": "user-paypal-example.com"
+        }
       ],
       "history": [
         {
@@ -4040,9 +4394,21 @@
       "sendTransactionDescription": "Chuyển tiền nhanh",
       "justNow": "Vừa xong",
       "methods": [
-        { "label": "Ngân hàng", "value": "bank", "icon": "i-ph-bank" },
-        { "label": "Thẻ quốc tế", "value": "card", "icon": "i-ph-credit-card" },
-        { "label": "Ví MoMo", "value": "momo", "icon": "i-ph-wallet" }
+        {
+          "label": "Ngân hàng",
+          "value": "bank",
+          "icon": "i-ph-bank"
+        },
+        {
+          "label": "Thẻ quốc tế",
+          "value": "card",
+          "icon": "i-ph-credit-card"
+        },
+        {
+          "label": "Ví MoMo",
+          "value": "momo",
+          "icon": "i-ph-wallet"
+        }
       ],
       "transactions": [
         {
@@ -4189,7 +4555,7 @@
       "menuHideLabel": "Ẩn bài đăng",
       "menuHideDescription": "Tôi không muốn xem bài đăng này nữa.",
       "menuCopyLabel": "Sao chép liên kết",
-      "menuCopyDescription": "Sao chép liên kết của bài đăng này."
+      "menuCopyDescription": "Sao chép đường dẫn bài đăng vào bộ nhớ tạm."
     },
     "commentList": {
       "title": "Bình luận",
@@ -4225,6 +4591,7 @@
       "share": "Chia sẻ",
       "hidePost": "Ẩn bài",
       "reportPost": "Báo cáo",
+      "reportSuccess": "Đã gửi báo cáo thành công.",
       "savePost": "Lưu bài",
       "copyLink": "Sao chép link",
       "translatePost": "Dịch bài",
@@ -4265,7 +4632,7 @@
       "actionDownload": "Tải media",
       "actionPrevious": "Media trước",
       "actionNext": "Media tiếp theo",
-      "actionOpenOriginal" :"Mở bản gốc",
+      "actionOpenOriginal": "Mở bản gốc",
       "itemImage": "Ảnh",
       "itemVideo": "Video",
       "defaultTitle": "Lightbox"
@@ -4492,6 +4859,7 @@
       "dangerMessage": "Khu vực nguy hiểm. Hành động này được gửi tới handler xóa tài khoản của PHP.",
       "deleteAccount": "Xóa tài khoản",
       "savedState": "Đã lưu cài đặt.",
+      "unblockAction": "Bỏ chặn",
       "saveError": "Không thể lưu cài đặt."
     },
     "data": {
@@ -4607,33 +4975,96 @@
         "backendSource": "Backend"
       },
       "notificationTypes": {
-        "liked": { "label": "Lượt thích", "description": "Nhận thông báo lượt thích." },
-        "shared": { "label": "Chia sẻ", "description": "Nhận thông báo chia sẻ." },
-        "wondered": { "label": "Wonder", "description": "Nhận thông báo wonder." },
-        "commented": { "label": "Bình luận", "description": "Nhận thông báo bình luận." },
-        "followed": { "label": "Người theo dõi", "description": "Nhận thông báo người theo dõi." },
-        "likedPage": { "label": "Thích trang", "description": "Nhận thông báo thích trang." },
-        "visited": { "label": "Lượt xem hồ sơ", "description": "Nhận thông báo lượt xem hồ sơ." },
-        "mentioned": { "label": "Nhắc đến", "description": "Nhận thông báo nhắc đến." },
-        "joinedGroup": { "label": "Tham gia nhóm", "description": "Nhận thông báo tham gia nhóm." },
-        "accepted": { "label": "Chấp nhận yêu cầu", "description": "Nhận thông báo yêu cầu đã được chấp nhận." },
-        "profileWallPost": { "label": "Bài trên tường hồ sơ", "description": "Nhận thông báo bài viết trên tường hồ sơ." },
-        "memory": { "label": "Kỷ niệm", "description": "Nhận thông báo kỷ niệm." },
-        "sentMeMessage": { "label": "Tin nhắn", "description": "Nhận thông báo tin nhắn." }
+        "liked": {
+          "label": "Lượt thích",
+          "description": "Nhận thông báo lượt thích."
+        },
+        "shared": {
+          "label": "Chia sẻ",
+          "description": "Nhận thông báo chia sẻ."
+        },
+        "wondered": {
+          "label": "Wonder",
+          "description": "Nhận thông báo wonder."
+        },
+        "commented": {
+          "label": "Bình luận",
+          "description": "Nhận thông báo bình luận."
+        },
+        "followed": {
+          "label": "Người theo dõi",
+          "description": "Nhận thông báo người theo dõi."
+        },
+        "likedPage": {
+          "label": "Thích trang",
+          "description": "Nhận thông báo thích trang."
+        },
+        "visited": {
+          "label": "Lượt xem hồ sơ",
+          "description": "Nhận thông báo lượt xem hồ sơ."
+        },
+        "mentioned": {
+          "label": "Nhắc đến",
+          "description": "Nhận thông báo nhắc đến."
+        },
+        "joinedGroup": {
+          "label": "Tham gia nhóm",
+          "description": "Nhận thông báo tham gia nhóm."
+        },
+        "accepted": {
+          "label": "Chấp nhận yêu cầu",
+          "description": "Nhận thông báo yêu cầu đã được chấp nhận."
+        },
+        "profileWallPost": {
+          "label": "Bài trên tường hồ sơ",
+          "description": "Nhận thông báo bài viết trên tường hồ sơ."
+        },
+        "memory": {
+          "label": "Kỷ niệm",
+          "description": "Nhận thông báo kỷ niệm."
+        },
+        "sentMeMessage": {
+          "label": "Tin nhắn",
+          "description": "Nhận thông báo tin nhắn."
+        }
       },
       "emailNotificationTypes": {
-        "liked": { "description": "Gửi email cho lượt thích." },
-        "shared": { "description": "Gửi email cho chia sẻ." },
-        "wondered": { "description": "Gửi email cho wonder." },
-        "commented": { "description": "Gửi email cho bình luận." },
-        "followed": { "description": "Gửi email cho người theo dõi." },
-        "likedPage": { "description": "Gửi email cho thích trang." },
-        "visited": { "description": "Gửi email cho lượt xem hồ sơ." },
-        "mentioned": { "description": "Gửi email cho nhắc đến." },
-        "joinedGroup": { "description": "Gửi email cho tham gia nhóm." },
-        "accepted": { "description": "Gửi email cho yêu cầu đã được chấp nhận." },
-        "profileWallPost": { "description": "Gửi email cho bài trên tường hồ sơ." },
-        "sentMeMessage": { "description": "Gửi email cho tin nhắn." }
+        "liked": {
+          "description": "Gửi email cho lượt thích."
+        },
+        "shared": {
+          "description": "Gửi email cho chia sẻ."
+        },
+        "wondered": {
+          "description": "Gửi email cho wonder."
+        },
+        "commented": {
+          "description": "Gửi email cho bình luận."
+        },
+        "followed": {
+          "description": "Gửi email cho người theo dõi."
+        },
+        "likedPage": {
+          "description": "Gửi email cho thích trang."
+        },
+        "visited": {
+          "description": "Gửi email cho lượt xem hồ sơ."
+        },
+        "mentioned": {
+          "description": "Gửi email cho nhắc đến."
+        },
+        "joinedGroup": {
+          "description": "Gửi email cho tham gia nhóm."
+        },
+        "accepted": {
+          "description": "Gửi email cho yêu cầu đã được chấp nhận."
+        },
+        "profileWallPost": {
+          "description": "Gửi email cho bài trên tường hồ sơ."
+        },
+        "sentMeMessage": {
+          "description": "Gửi email cho tin nhắn."
+        }
       },
       "pages": {
         "general": {
@@ -4776,21 +5207,66 @@
               "title": "Thông báo trong ứng dụng",
               "description": "Lượt thích, bình luận, theo dõi, tin nhắn và các sự kiện khác.",
               "toggles": {
-                "likes": { "label": "Lượt thích", "description": "Thông báo khi có người thích bài viết của bạn." },
-                "comments": { "label": "Bình luận", "description": "Thông báo khi có người bình luận bài viết của bạn." },
-                "follows": { "label": "Người theo dõi", "description": "Thông báo khi có người theo dõi bạn." },
-                "messages": { "label": "Tin nhắn", "description": "Thông báo khi có tin nhắn mới." },
-                "mentions": { "label": "Nhắc đến", "description": "Thông báo khi bạn được nhắc đến trong bài viết hoặc bình luận." },
-                "shares": { "label": "Chia sẻ", "description": "Thông báo khi có người chia sẻ bài viết của bạn." },
-                "events": { "label": "Sự kiện", "description": "Thông báo về các sự kiện bạn tham gia hoặc được mời." },
-                "groups": { "label": "Nhóm", "description": "Thông báo về hoạt động trong các nhóm bạn tham gia." },
-                "pages": { "label": "Trang", "description": "Thông báo về các trang bạn theo dõi hoặc quản lý." },
-                "marketplace": { "label": "Chợ", "description": "Thông báo về các sản phẩm bạn quan tâm hoặc đăng bán." },
-                "jobs": { "label": "Việc làm", "description": "Thông báo về các tin tuyển dụng phù hợp." },
-                "funding": { "label": "Gây quỹ", "description": "Thông báo về các chiến dịch gây quỹ." },
-                "live": { "label": "Trực tiếp", "description": "Thông báo khi bạn bè hoặc trang bạn theo dõi phát trực tiếp." },
-                "watch": { "label": "Video", "description": "Thông báo về các video mới." },
-                "security": { "label": "Bảo mật", "description": "Thông báo về các vấn đề bảo mật tài khoản." }
+                "likes": {
+                  "label": "Lượt thích",
+                  "description": "Thông báo khi có người thích bài viết của bạn."
+                },
+                "comments": {
+                  "label": "Bình luận",
+                  "description": "Thông báo khi có người bình luận bài viết của bạn."
+                },
+                "follows": {
+                  "label": "Người theo dõi",
+                  "description": "Thông báo khi có người theo dõi bạn."
+                },
+                "messages": {
+                  "label": "Tin nhắn",
+                  "description": "Thông báo khi có tin nhắn mới."
+                },
+                "mentions": {
+                  "label": "Nhắc đến",
+                  "description": "Thông báo khi bạn được nhắc đến trong bài viết hoặc bình luận."
+                },
+                "shares": {
+                  "label": "Chia sẻ",
+                  "description": "Thông báo khi có người chia sẻ bài viết của bạn."
+                },
+                "events": {
+                  "label": "Sự kiện",
+                  "description": "Thông báo về các sự kiện bạn tham gia hoặc được mời."
+                },
+                "groups": {
+                  "label": "Nhóm",
+                  "description": "Thông báo về hoạt động trong các nhóm bạn tham gia."
+                },
+                "pages": {
+                  "label": "Trang",
+                  "description": "Thông báo về các trang bạn theo dõi hoặc quản lý."
+                },
+                "marketplace": {
+                  "label": "Chợ",
+                  "description": "Thông báo về các sản phẩm bạn quan tâm hoặc đăng bán."
+                },
+                "jobs": {
+                  "label": "Việc làm",
+                  "description": "Thông báo về các tin tuyển dụng phù hợp."
+                },
+                "funding": {
+                  "label": "Gây quỹ",
+                  "description": "Thông báo về các chiến dịch gây quỹ."
+                },
+                "live": {
+                  "label": "Trực tiếp",
+                  "description": "Thông báo khi bạn bè hoặc trang bạn theo dõi phát trực tiếp."
+                },
+                "watch": {
+                  "label": "Video",
+                  "description": "Thông báo về các video mới."
+                },
+                "security": {
+                  "label": "Bảo mật",
+                  "description": "Thông báo về các vấn đề bảo mật tài khoản."
+                }
               }
             }
           }
@@ -4803,10 +5279,22 @@
               "title": "Thông báo qua Email",
               "description": "Chọn loại email hệ thống được phép gửi tới bạn.",
               "toggles": {
-                "newMessage": { "label": "Email tin nhắn mới", "description": "Gửi email khi bạn nhận được tin nhắn mới." },
-                "mention": { "label": "Email nhắc đến", "description": "Gửi email khi bạn được nhắc đến." },
-                "weeklyDigest": { "label": "Tóm tắt hàng tuần", "description": "Email tóm tắt các hoạt động nổi bật trong tuần." },
-                "security": { "label": "Email bảo mật", "description": "Cảnh báo đăng nhập lạ và các thay đổi bảo mật quan trọng." }
+                "newMessage": {
+                  "label": "Email tin nhắn mới",
+                  "description": "Gửi email khi bạn nhận được tin nhắn mới."
+                },
+                "mention": {
+                  "label": "Email nhắc đến",
+                  "description": "Gửi email khi bạn được nhắc đến."
+                },
+                "weeklyDigest": {
+                  "label": "Tóm tắt hàng tuần",
+                  "description": "Email tóm tắt các hoạt động nổi bật trong tuần."
+                },
+                "security": {
+                  "label": "Email bảo mật",
+                  "description": "Cảnh báo đăng nhập lạ và các thay đổi bảo mật quan trọng."
+                }
               }
             }
           }
@@ -5359,19 +5847,52 @@
         "ongoing": "Đang diễn ra",
         "notApplicable": "Không áp dụng",
         "notCompleted": "Chưa hoàn tất",
-        "created": { "label": "Đã tạo đơn", "description": "Đơn hàng được ghi nhận và chờ shop xác nhận." },
-        "confirmed": { "label": "Shop xác nhận", "description": "Shop sẽ kiểm tra tồn kho và chuẩn bị đơn của bạn." },
-        "shipping": { "label": "Bàn giao vận chuyển", "description": "Đơn sẽ được chuyển sang đơn vị giao hàng sau khi xác nhận." },
-        "delivered": { "label": "Giao thành công", "description": "Bạn sẽ nhận được thông báo khi đơn hoàn tất." },
-        "shipping_active": { "label": "Đang vận chuyển", "description": "Đơn đang trên xe giao và sẽ đến trong hôm nay." },
-        "cancelled": { "label": "Yêu cầu hủy đơn", "description": "Người mua gửi yêu cầu hủy trước khi đơn được xác nhận." },
-        "refunded": { "label": "Hoàn tiền & đóng đơn", "description": "Tiền đã được hoàn về ví nội bộ VNSEEA." }
+        "created": {
+          "label": "Đã tạo đơn",
+          "description": "Đơn hàng được ghi nhận và chờ shop xác nhận."
+        },
+        "confirmed": {
+          "label": "Shop xác nhận",
+          "description": "Shop sẽ kiểm tra tồn kho và chuẩn bị đơn của bạn."
+        },
+        "shipping": {
+          "label": "Bàn giao vận chuyển",
+          "description": "Đơn sẽ được chuyển sang đơn vị giao hàng sau khi xác nhận."
+        },
+        "delivered": {
+          "label": "Giao thành công",
+          "description": "Bạn sẽ nhận được thông báo khi đơn hoàn tất."
+        },
+        "shipping_active": {
+          "label": "Đang vận chuyển",
+          "description": "Đơn đang trên xe giao và sẽ đến trong hôm nay."
+        },
+        "cancelled": {
+          "label": "Yêu cầu hủy đơn",
+          "description": "Người mua gửi yêu cầu hủy trước khi đơn được xác nhận."
+        },
+        "refunded": {
+          "label": "Hoàn tiền & đóng đơn",
+          "description": "Tiền đã được hoàn về ví nội bộ VNSEEA."
+        }
       },
       "tasks": {
-        "payment": { "label": "Xác thực thanh toán", "description": "Ví nội bộ đã ghi nhận thành công hoặc tiền đã về hệ thống." },
-        "stock": { "label": "Kiểm tra tồn kho", "description": "Đảm bảo hàng đủ số lượng, phụ kiện và tình trạng đóng gói." },
-        "packing": { "label": "Đóng gói & In đơn", "description": "Cần hoàn tất trước khi bàn giao cho đơn vị vận chuyển." },
-        "handoff": { "label": "Bàn giao shipper", "description": "Hệ thống sẽ mở đối soát sau khi đơn rời kho." }
+        "payment": {
+          "label": "Xác thực thanh toán",
+          "description": "Ví nội bộ đã ghi nhận thành công hoặc tiền đã về hệ thống."
+        },
+        "stock": {
+          "label": "Kiểm tra tồn kho",
+          "description": "Đảm bảo hàng đủ số lượng, phụ kiện và tình trạng đóng gói."
+        },
+        "packing": {
+          "label": "Đóng gói & In đơn",
+          "description": "Cần hoàn tất trước khi bàn giao cho đơn vị vận chuyển."
+        },
+        "handoff": {
+          "label": "Bàn giao shipper",
+          "description": "Hệ thống sẽ mở đối soát sau khi đơn rời kho."
+        }
       },
       "delivery": {
         "expected2h": "Shop dự kiến xác nhận trong 2 giờ",
@@ -5447,7 +5968,11 @@
         "eyebrow": "P-18 · Cộng đồng",
         "title": "Tạo nhóm mới",
         "description": "Thiết lập một cộng đồng mới cho thành viên cùng trao đổi, chia sẻ nội dung và kết nối quanh một chủ đề chung.",
-        "highlights": ["URL tùy chỉnh", "Kiểm soát quyền riêng tư", "Sẵn sàng mời thành viên"],
+        "highlights": [
+          "URL tùy chỉnh",
+          "Kiểm soát quyền riêng tư",
+          "Sẵn sàng mời thành viên"
+        ],
         "nameLabel": "Tên nhóm",
         "namePlaceholder": "Ví dụ: Cộng đồng Ô tô miền Trung",
         "slugPlaceholder": "cong-dong-o-to-mien-trung",
@@ -5458,7 +5983,11 @@
         "eyebrow": "P-21 · Fanpage",
         "title": "Tạo trang mới",
         "description": "Khởi tạo một fanpage cho thương hiệu, cửa hàng, chuyên gia hoặc dự án nội dung để bắt đầu đăng bài, nhận theo dõi và xây dựng hiện diện công khai.",
-        "highlights": ["Công khai ngay từ đầu", "URL thương hiệu", "Sẵn sàng cho hồ sơ fanpage"],
+        "highlights": [
+          "Công khai ngay từ đầu",
+          "URL thương hiệu",
+          "Sẵn sàng cho hồ sơ fanpage"
+        ],
         "nameLabel": "Tên trang",
         "namePlaceholder": "Ví dụ: Studio Nội thất Mộc Mây",
         "slugPlaceholder": "studio-noi-that-moc-may",
@@ -5573,11 +6102,26 @@
       }
     },
     "cta": {
-      "message": { "label": "Nhắn tin", "description": "Phù hợp khi bạn muốn kéo người xem sang inbox để tư vấn trực tiếp." },
-      "follow": { "label": "Theo dõi", "description": "Tốt cho fanpage nội dung, thương hiệu hoặc kênh cập nhật định kỳ." },
-      "catalog": { "label": "Xem sản phẩm", "description": "Dùng cho trang có danh mục sản phẩm, dịch vụ hoặc bộ sưu tập nổi bật." },
-      "booking": { "label": "Đặt lịch", "description": "Hợp với studio, chuyên gia, lớp học hoặc dịch vụ cần chốt khung giờ." },
-      "call": { "label": "Gọi ngay", "description": "Phù hợp với doanh nghiệp địa phương hoặc đội ngũ cần phản hồi nhanh." }
+      "message": {
+        "label": "Nhắn tin",
+        "description": "Phù hợp khi bạn muốn kéo người xem sang inbox để tư vấn trực tiếp."
+      },
+      "follow": {
+        "label": "Theo dõi",
+        "description": "Tốt cho fanpage nội dung, thương hiệu hoặc kênh cập nhật định kỳ."
+      },
+      "catalog": {
+        "label": "Xem sản phẩm",
+        "description": "Dùng cho trang có danh mục sản phẩm, dịch vụ hoặc bộ sưu tập nổi bật."
+      },
+      "booking": {
+        "label": "Đặt lịch",
+        "description": "Hợp với studio, chuyên gia, lớp học hoặc dịch vụ cần chốt khung giờ."
+      },
+      "call": {
+        "label": "Gọi ngay",
+        "description": "Phù hợp với doanh nghiệp địa phương hoặc đội ngũ cần phản hồi nhanh."
+      }
     },
     "tabs": {
       "groups": {
@@ -5592,22 +6136,64 @@
       }
     },
     "privacy": {
-      "public": { "label": "Công cộng", "description": "Ai cũng có thể tìm thấy nhóm và xem nội dung cơ bản." },
-      "private": { "label": "Riêng tư", "description": "Nhóm hiển thị công khai nhưng chỉ thành viên mới xem được bài đăng." },
-      "secret": { "label": "Bí mật", "description": "Chỉ người được mời mới nhìn thấy và tham gia được nhóm." }
+      "public": {
+        "label": "Công cộng",
+        "description": "Ai cũng có thể tìm thấy nhóm và xem nội dung cơ bản."
+      },
+      "private": {
+        "label": "Riêng tư",
+        "description": "Nhóm hiển thị công khai nhưng chỉ thành viên mới xem được bài đăng."
+      },
+      "secret": {
+        "label": "Bí mật",
+        "description": "Chỉ người được mời mới nhìn thấy và tham gia được nhóm."
+      }
     },
     "categories": {
-      "auto": { "label": "Ô tô và Xe cộ", "description": "Dành cho thảo luận xe mới, bảo dưỡng, review và phụ kiện." },
-      "business": { "label": "Kinh doanh", "description": "Tập trung vào hợp tác, bán hàng, quản trị và phát triển doanh nghiệp." },
-      "technology": { "label": "Công nghệ", "description": "Phù hợp cho cộng đồng yêu thích phần mềm, AI, thiết bị và lập trình." },
-      "education": { "label": "Giáo dục", "description": "Chia sẻ kiến thức, tài liệu học tập, workshop và mentoring." },
-      "travel": { "label": "Du lịch", "description": "Dùng để tổ chức chuyến đi, chia sẻ lịch trình và kinh nghiệm thực tế." },
-      "marketplace": { "label": "Mua bán", "description": "Hợp với nhóm trao đổi sản phẩm, ưu đãi và nhu cầu mua chung." },
-      "local-business": { "label": "Doanh nghiệp địa phương", "description": "Phù hợp cho cửa hàng, studio, quán ăn và các thương hiệu vận hành tại địa phương." },
-      "creator": { "label": "Creator & Chuyên gia", "description": "Dùng cho KOL, chuyên gia, huấn luyện viên hoặc người xây dựng thương hiệu cá nhân." },
-      "brand": { "label": "Thương hiệu & Sản phẩm", "description": "Dành cho fanpage giới thiệu sản phẩm, chiến dịch, ưu đãi và cập nhật thương hiệu." },
-      "organization": { "label": "Tổ chức & Cộng đồng", "description": "Dành cho tổ chức, câu lạc bộ, dự án xã hội và các chương trình cộng đồng." },
-      "service": { "label": "Dịch vụ chuyên nghiệp", "description": "Phù hợp với agency, freelancer, studio dịch vụ và đội ngũ tư vấn." }
+      "auto": {
+        "label": "Ô tô và Xe cộ",
+        "description": "Dành cho thảo luận xe mới, bảo dưỡng, review và phụ kiện."
+      },
+      "business": {
+        "label": "Kinh doanh",
+        "description": "Tập trung vào hợp tác, bán hàng, quản trị và phát triển doanh nghiệp."
+      },
+      "technology": {
+        "label": "Công nghệ",
+        "description": "Phù hợp cho cộng đồng yêu thích phần mềm, AI, thiết bị và lập trình."
+      },
+      "education": {
+        "label": "Giáo dục",
+        "description": "Chia sẻ kiến thức, tài liệu học tập, workshop và mentoring."
+      },
+      "travel": {
+        "label": "Du lịch",
+        "description": "Dùng để tổ chức chuyến đi, chia sẻ lịch trình và kinh nghiệm thực tế."
+      },
+      "marketplace": {
+        "label": "Mua bán",
+        "description": "Hợp với nhóm trao đổi sản phẩm, ưu đãi và nhu cầu mua chung."
+      },
+      "local-business": {
+        "label": "Doanh nghiệp địa phương",
+        "description": "Phù hợp cho cửa hàng, studio, quán ăn và các thương hiệu vận hành tại địa phương."
+      },
+      "creator": {
+        "label": "Creator & Chuyên gia",
+        "description": "Dùng cho KOL, chuyên gia, huấn luyện viên hoặc người xây dựng thương hiệu cá nhân."
+      },
+      "brand": {
+        "label": "Thương hiệu & Sản phẩm",
+        "description": "Dành cho fanpage giới thiệu sản phẩm, chiến dịch, ưu đãi và cập nhật thương hiệu."
+      },
+      "organization": {
+        "label": "Tổ chức & Cộng đồng",
+        "description": "Dành cho tổ chức, câu lạc bộ, dự án xã hội và các chương trình cộng đồng."
+      },
+      "service": {
+        "label": "Dịch vụ chuyên nghiệp",
+        "description": "Phù hợp với agency, freelancer, studio dịch vụ và đội ngũ tư vấn."
+      }
     },
     "groups": {
       "hub": "Trung tâm Cộng đồng",
@@ -5933,14 +6519,14 @@
           }
         }
       },
-        "admins": {
-          "eyebrow": "Quan tri",
-          "title": "Quan tri vien",
-          "desc": "Xem quan tri vien chinh cua trang voi bo cuc gon, giong Facebook hon.",
-          "navDesc": "Truy cap quan tri chinh",
-          "primaryRole": "Quan tri vien chinh"
-        },
-        "finish": {
+      "admins": {
+        "eyebrow": "Quan tri",
+        "title": "Quan tri vien",
+        "desc": "Xem quan tri vien chinh cua trang voi bo cuc gon, giong Facebook hon.",
+        "navDesc": "Truy cap quan tri chinh",
+        "primaryRole": "Quan tri vien chinh"
+      },
+      "finish": {
         "eyebrow": "Hoàn tất",
         "title": "Hành động nhanh",
         "desc": "Bạn có thể quay lại trang nhóm hoặc tiếp tục tinh chỉnh cấu hình ngay tại đây.",
@@ -6056,7 +6642,7 @@
         "statusErrorDescription": "Kiểm tra lại tên, URL, mô tả và danh mục trước khi lưu."
       },
       "sidebar": {
-       "preview": {
+        "preview": {
           "eyebrow": "Xem trước",
           "title": "Xem trước sau khi lưu",
           "desc": "Đây là những gì thành viên sẽ thấy khi truy cập vào nhóm của bạn."
@@ -6115,7 +6701,11 @@
           "owner": "Quản trị bởi Studio Mobility",
           "location": "Hoạt động toàn quốc",
           "founded": "Thành lập từ tháng 3/2024",
-          "tags": ["xe điện", "trạm sạc", "review"],
+          "tags": [
+            "xe điện",
+            "trạm sạc",
+            "review"
+          ],
           "guidelines": {
             "0": "Ưu tiên review thực tế, có hình ảnh hoặc số liệu khi chia sẻ trải nghiệm.",
             "1": "Không đăng bán hàng trực tiếp ngoài chủ đề xe điện và phụ kiện liên quan.",
@@ -6129,7 +6719,11 @@
           "owner": "Được tuyển chọn bởi VNSEEA Business",
           "location": "Hà Nội · TP.HCM · Online",
           "founded": "Thành lập từ tháng 8/2023",
-          "tags": ["founder", "growth", "networking"],
+          "tags": [
+            "founder",
+            "growth",
+            "networking"
+          ],
           "joinLabel": "Gửi yêu cầu tham gia",
           "inviteLabel": "Mời cộng sự",
           "guidelines": {
@@ -6145,7 +6739,11 @@
           "owner": "Bạn đã tham gia từ tháng 2",
           "location": "Remote-first community",
           "founded": "Thành lập từ tháng 1/2024",
-          "tags": ["AI", "product", "automation"],
+          "tags": [
+            "AI",
+            "product",
+            "automation"
+          ],
           "guidelines": {
             "0": "Ưu tiên demo có hình, video hoặc link prototype để mọi người góp ý nhanh.",
             "1": "Gắn tag rõ mục tiêu: nghiên cứu, case study, prompt, automation hoặc launch.",
@@ -6159,7 +6757,11 @@
           "owner": "Bạn đang theo dõi 4 chủ đề con",
           "location": "Cộng đồng học tập Việt Nam",
           "founded": "Thành lập từ tháng 11/2023",
-          "tags": ["workshop", "learning", "mentoring"],
+          "tags": [
+            "workshop",
+            "learning",
+            "mentoring"
+          ],
           "guidelines": {
             "0": "Tài liệu đăng lên cần ghi nguồn để người sau có thể kiểm chứng và học tiếp.",
             "1": "Khuyến khích chia sẻ note ngắn, tóm tắt key insight sau mỗi workshop.",
@@ -6234,5 +6836,3 @@
     }
   }
 }
-
-

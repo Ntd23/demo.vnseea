@@ -1,91 +1,82 @@
-<!-- Description: Renders one API-backed poke request card and exposes real poke-back and remove actions. -->
+<!-- Description: Renders one API-backed poke request with real-time dynamic time updates and refined activity status. -->
 <template>
-  <article class="surface-card group relative overflow-hidden rounded-[18px] bg-white ring-1 ring-secondary-200/50 transition-all duration-500 hover:-translate-y-2 hover:ring-primary-500/20 hover:shadow-[0_12px_32px_rgba(37,99,235,0.12)]">
-    <div class="h-2 w-full bg-gradient-to-r from-primary-400 via-primary-500 to-primary-600 shadow-sm" />
-
-    <div class="p-8 space-y-8">
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex min-w-0 items-center gap-5">
-          <div class="relative shrink-0">
-            <div
-              class="flex h-16 w-16 items-center justify-center rounded-2xl text-sm font-extrabold text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ring-1 ring-white/20"
-              :style="{ background: accentBackground }"
-            >
-              <img v-if="record.avatarUrl" :src="record.avatarUrl" :alt="record.name" class="h-full w-full rounded-2xl object-cover">
-              <span v-else>{{ record.initials }}</span>
-            </div>
-
-            <div
-              v-if="record.online"
-              class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-[3px] border-white bg-sky-500 shadow-lg shadow-sky-500/20"
-            />
-          </div>
-
-          <div class="min-w-0 space-y-1">
-            <p class="truncate text-lg font-extrabold tracking-tight text-secondary-900 transition-colors group-hover:text-secondary-900">
-              {{ record.name }}
-            </p>
-            <p class="truncate text-sm font-semibold text-secondary-500">
-              {{ record.role }}
-            </p>
-            <div class="flex items-center gap-2">
-              <Icon name="i-ph-clock-duotone" class="h-3 w-3 text-primary-400" />
-              <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-                {{ record.timeLabel }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <UBadge 
-          variant="soft" 
-          class="rounded-xl bg-secondary-50 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 ring-1 ring-secondary-100 transition-all shadow-sm group-hover:bg-primary-50 group-hover:text-primary-600 group-hover:ring-primary-200"
+  <article class="relative flex flex-col gap-6 bg-white p-6 shadow-sm border border-slate-200 transition-all hover:shadow-md hover:border-primary-300" style="border-radius: 24px 24px 24px 4px; border-width: 1px;">
+    <!-- Top Row: Avatar & Name -->
+    <div class="flex items-center gap-4">
+      <div class="h-14 w-14 overflow-hidden rounded-xl border border-slate-100 bg-slate-50 shadow-sm">
+        <img 
+          v-if="record.avatarUrl" 
+          :src="record.avatarUrl" 
+          :alt="record.name" 
+          class="h-full w-full object-cover"
+          @error="(e: any) => e.target.src = '/img/user.png'"
         >
-          {{ record.mutualLabel }}
-        </UBadge>
+        <div v-else class="flex h-full w-full items-center justify-center bg-primary-50 text-primary-600 font-bold">
+          {{ record.initials }}
+        </div>
       </div>
-
-      <div class="rounded-2xl bg-secondary-50/50 p-6 space-y-4 ring-1 ring-secondary-100/50 transition-all group-hover:bg-white group-hover:ring-primary-100 group-hover:shadow-lg group-hover:shadow-primary-500/5">
-        <div class="flex items-center justify-between gap-2 border-b border-secondary-100/50 pb-4">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">{{ t("pages.pokePage.pokeCountLabel") }}</p>
-          <p class="truncate text-[11px] font-semibold text-secondary-900">
-            {{ record.online ? t("pages.pokePage.activeNow") : record.role }}
-          </p>
-        </div>
-        
-        <div class="flex items-center justify-between gap-2">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">{{ t("pages.pokePage.pokeActionLabel") }}</p>
-          <p class="truncate text-[11px] font-semibold italic text-secondary-900">"{{ record.contextLabel }}"</p>
-        </div>
-
-        <p class="text-sm font-medium leading-relaxed text-secondary-500">
-          {{ record.note }}
+      
+      <div class="min-w-0">
+        <h3 class="text-lg font-bold text-slate-900 leading-tight">
+          {{ record.name }}
+        </h3>
+        <p class="truncate text-sm font-medium text-slate-500">
+          {{ record.role || `@${record.href.split('@')[1]}` }}
         </p>
       </div>
+    </div>
 
-      <div class="flex flex-col gap-3 pt-2">
+    <!-- Bottom Row: Status & Time & Actions -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div class="flex gap-8">
+        <!-- Activity Status -->
+        <div class="space-y-1">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            {{ t("pages.pokePage.pokeCountLabel") }}
+          </p>
+          <div class="flex items-center gap-2">
+             <div class="h-2 w-2 rounded-full" :class="record.online ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-slate-300'" />
+             <p class="text-xs font-bold" :class="record.online ? 'text-green-600' : 'text-slate-500'">
+                {{ record.online ? t("pages.pokePage.activeNow") : t("pages.pokePage.offlineStatus") }}
+             </p>
+          </div>
+        </div>
+
+        <!-- Poke Time (Dynamic) -->
+        <div class="space-y-1">
+          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+             {{ t("pages.pokePage.pokeActionLabel") }}
+          </p>
+          <p class="text-xs font-bold text-slate-600">
+            {{ displayTime }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center gap-2">
         <UButton
-          size="xl"
-          class="h-14 rounded-xl border-none bg-primary-600 text-[11px] font-semibold uppercase tracking-[0.06em] text-white shadow-[0_4px_14px_rgba(0,0,255,0.2)] transition-all hover:bg-primary-700 active:scale-95"
+          size="lg"
+          class="rounded-xl px-8 font-bold shadow-sm"
+          color="primary"
+          variant="solid"
           @click="$emit('poke', record.id)"
         >
           <template #leading>
-            <Icon :name="pokedBack ? 'i-ph-check-circle-duotone' : 'i-ph-hand-pointing-duotone'" class="h-5 w-5 mr-1" />
+            <Icon :name="pokedBack ? 'i-ph-check-circle-bold' : 'i-ph-hand-pointing-bold'" class="h-5 w-5" />
           </template>
           {{ pokedBack ? t("pages.pokePage.invitationSent") : t("pages.pokePage.pokeBack") }}
         </UButton>
 
         <UButton
           v-if="!pokedBack"
-          variant="soft"
-          size="xl"
-          class="h-14 rounded-xl bg-white text-[11px] font-semibold uppercase tracking-[0.06em] text-secondary-500 ring-1 ring-secondary-200/50 transition-all hover:bg-secondary-50 hover:text-secondary-900 hover:ring-secondary-300 active:scale-95"
+          size="lg"
+          color="gray"
+          variant="ghost"
+          class="rounded-xl p-2.5 hover:bg-red-50 hover:text-red-600 transition-colors"
           @click="$emit('remove', record.id)"
         >
-          <template #leading>
-             <Icon name="i-ph-trash-duotone" class="h-5 w-5 mr-1" />
-          </template>
-          {{ t("pages.pokePage.deletePoke") }}
+          <Icon name="i-ph-trash-bold" class="h-5 w-5" />
         </UButton>
       </div>
     </div>
@@ -93,6 +84,7 @@
 </template>
 
 <script setup lang="ts">
+import { useNow } from "@vueuse/core"
 import type { PokeRecord } from "../../application/composables/usePokeData"
 
 const props = defineProps<{
@@ -107,7 +99,29 @@ defineEmits<{
   remove: [id: string]
 }>()
 
-const accentBackground = computed(() =>
-  `linear-gradient(135deg, ${props.record.accent} 0%, #0000ff 100%)`,
-)
+// Real-time dynamic time-ago logic
+const now = useNow({ interval: 30000 })
+const displayTime = computed(() => {
+  const timestamp = props.record.timestamp
+  if (!timestamp) return props.record.timeLabel
+
+  const diffInSeconds = Math.floor((now.value.getTime() - timestamp * 1000) / 1000)
+  
+  if (diffInSeconds < 60) {
+    return t('pages.pokePage.justNow')
+  }
+  
+  if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60)
+    return t('pages.pokePage.minuteAgo', { count: minutes })
+  }
+  
+  if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600)
+    return t('pages.pokePage.hoursAgo', { count: hours })
+  }
+
+  // If older than a day, show the formatted date string from server
+  return props.record.timeLabel
+})
 </script>

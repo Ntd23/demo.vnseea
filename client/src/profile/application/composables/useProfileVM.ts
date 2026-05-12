@@ -258,6 +258,7 @@ export function useProfileVM(
     }
 
     return {
+      id: apiProfile.id,
       username: apiProfile.username,
       displayName: apiProfile.displayName,
       headline: apiProfile.headline,

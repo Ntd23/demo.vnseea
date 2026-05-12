@@ -1,12 +1,12 @@
 <template>
   <Teleport to="body">
     <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
-      <div v-if="open" class="fixed inset-0 z-50 flex items-end justify-center sm:items-center" @click.self="$emit('close')">
+      <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8" @click.self="$emit('close')">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" @click="$emit('close')" />
 
         <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 translate-y-6 scale-[0.97]" enter-to-class="opacity-100 translate-y-0 scale-100">
-          <div v-if="open" class="relative z-10 flex w-full max-w-2xl flex-col overflow-hidden rounded-t-[28px] bg-white shadow-[0_-8px_50px_rgba(0,0,255,0.13)] sm:max-h-[90vh] sm:rounded-[28px]">
-            <div class="flex shrink-0 items-center justify-between border-b border-[#0000ff]/8 px-5 py-4">
+          <div v-if="open" class="relative z-10 flex w-full max-w-2xl flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_-8px_50px_rgba(0,0,255,0.13)] max-h-full">
+            <div class="flex shrink-0 items-center justify-between border-b border-[#0000ff]/8 px-5 py-3">
               <div class="flex items-center gap-2.5">
                 <div class="flex h-9 w-9 items-center justify-center rounded-full bg-[#0000ff]/8 text-[#0000ff]">
                   <Icon name="i-lucide-share-2" class="h-[18px] w-[18px]" />
@@ -115,7 +115,7 @@
               </div>
             </div>
 
-            <div class="shrink-0 border-t border-[#0000ff]/8 px-5 py-4">
+            <div class="shrink-0 border-t border-[#0000ff]/8 px-5 py-3">
               <UButton
                 color="primary"
                 size="lg"
@@ -143,8 +143,6 @@
 </template>
 
 <script setup lang="ts">
-import { useClipboard } from "@vueuse/core"
-
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
@@ -167,13 +165,12 @@ type ShareStatus = "idle" | "loading" | "success" | "error"
 
 const emit = defineEmits<{ close: []; shared: [destination: string] }>()
 
-const { copy, copied, isSupported } = useClipboard()
+const copied = ref(false)
 
 const caption = ref("")
 const shared = ref(false)
 const selectedDest = ref("timeline")
 const status = ref<ShareStatus>("idle")
-const statusMessage = ref("")
 
 const pageUrl = computed(() =>
   props.shareUrl || new URL(route.fullPath || route.path || "/", requestURL.origin).toString(),
@@ -211,42 +208,51 @@ const destinations = computed(() => [
 ])
 
 async function copyShareLink() {
-  if (!isSupported.value) {
-    status.value = "error"
-    statusMessage.value = t("feed.shareModal.copyUnavailable")
+  if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+    toast.add({
+      color: "warning",
+      icon: "i-ph-warning-circle-fill",
+      title: t("feed.shareModal.title"),
+      description: t("feed.shareModal.copyUnavailable"),
+    })
     return
   }
 
-  await copy(pageUrl.value)
-  status.value = "success"
-  statusMessage.value = t("feed.shareModal.copied")
-
-  toast.add({
-    color: "success",
-    icon: "i-ph-check-circle-fill",
-    title: t("feed.shareModal.platformCopy"),
-    description: statusMessage.value,
-  })
+  try {
+    await navigator.clipboard.writeText(pageUrl.value)
+    copied.value = true
+    toast.add({
+      color: "success",
+      icon: "i-ph-check-circle-fill",
+      title: t("feed.shareModal.title"),
+      description: t("feed.shareModal.copied"),
+    })
+    setTimeout(() => (copied.value = false), 2000)
+  }
+  catch (err) {
+    toast.add({
+      color: "warning",
+      icon: "i-ph-warning-circle-fill",
+      title: t("feed.shareModal.title"),
+      description: t("feed.shareModal.copyUnavailable"),
+    })
+  }
 }
 
 function openPlatform(url: string) {
   if (!import.meta.client) return
 
   window.open(url, "_blank", "noopener,noreferrer")
-  status.value = "success"
-  statusMessage.value = pageUrl.value
 }
 
 async function onShare() {
   if (!selectedDest.value) return
 
   status.value = "loading"
-  statusMessage.value = ""
   await new Promise(resolve => setTimeout(resolve, 280))
   shared.value = true
 
   status.value = "success"
-  statusMessage.value = t("feed.shareModal.shared")
 
   toast.add({
     color: "success",
@@ -269,7 +275,6 @@ watch(() => props.open, (val) => {
       caption.value = ''
       shared.value = false
       status.value = "idle"
-      statusMessage.value = ""
       selectedDest.value = 'timeline'
     }, 200)
   }

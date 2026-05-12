@@ -210,6 +210,7 @@ export type FeedPokeRecord = {
   href: string
   role: string
   timeLabel: string
+  timestamp: number
   mutualLabel: string
   contextLabel: string
   note: string

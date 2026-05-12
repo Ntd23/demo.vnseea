@@ -32,7 +32,15 @@
         <div class="user-menu__summary">
           <div class="user-menu__summary-card">
             <div class="user-menu__summary-head">
-              <p class="user-menu__summary-name">{{ currentUser?.name || "User" }}</p>
+              <NuxtLink
+                v-if="currentUser"
+                :to="profilePath"
+                class="user-menu__summary-name"
+                @click="open = false"
+              >
+                {{ currentUser.name }}
+              </NuxtLink>
+              <p v-else class="user-menu__summary-name">User</p>
               <Icon name="i-ph-hand-heart-fill" class="user-menu__summary-icon" />
             </div>
 
@@ -135,6 +143,8 @@ const secondaryLabel = computed(() => {
   if (currentUser.value.username) return `@${currentUser.value.username}`
   return ""
 })
+
+const profilePath = computed(() => currentUser.value?.username ? `/@${currentUser.value.username}` : "#")
 
 const numberFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US"))
 const formattedWallet = computed(() => {
@@ -303,6 +313,13 @@ const systemActions = computed(() => {
   font-weight: 800;
   line-height: 1.25;
   color: #111827;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.user-menu__summary-name:hover {
+  color: #0000ff;
+  text-decoration: underline;
 }
 
 .user-menu__summary-icon {

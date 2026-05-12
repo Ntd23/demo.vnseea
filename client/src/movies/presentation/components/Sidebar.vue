@@ -58,28 +58,36 @@
       </div>
     </section>
 
-    <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] shadow-[var(--shadow-md)]">
-      <div class="bg-[linear-gradient(135deg,#09144c_0%,#0000ff_56%,#60a5fa_100%)] p-4 text-white">
-        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-white/72">{{ $t("pages.moviesPage.sidebarRoutingEyebrow") }}</p>
-        <h3 class="mt-2 text-[1.25rem] font-black leading-tight">{{ $t("pages.moviesPage.sidebarRoutingTitle") }}</h3>
-        <p class="mt-2 text-[13px] font-semibold leading-6 text-white/76">
+    <section class="overflow-hidden rounded-[28px] border border-[var(--border-default)] shadow-[var(--shadow-md)]" style="background-color: #0a58ca !important; color: white !important;">
+      <div class="p-5">
+        <p class="text-[11px] font-black uppercase tracking-[0.18em]" style="color: rgba(255,255,255,0.6) !important;">{{ $t("pages.moviesPage.sidebarRoutingEyebrow") }}</p>
+        <h3 class="mt-2 text-[1.1rem] font-black leading-tight" style="color: white !important;">{{ $t("pages.moviesPage.sidebarRoutingTitle") }}</h3>
+        <p class="mt-2 text-[12px] font-medium leading-5" style="color: rgba(255,255,255,0.7) !important;">
           {{ $t("pages.moviesPage.sidebarRoutingDescription") }}
         </p>
+      </div>
 
-        <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-          <NuxtLink to="/watch" class="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-white px-4 text-[12px] font-black text-[var(--text-primary)] sm:justify-start">
-            <Icon name="i-ph-play-fill" class="h-4 w-4" />
-            /watch
-          </NuxtLink>
-          <NuxtLink to="/live" class="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/12 px-4 text-[12px] font-black text-white backdrop-blur sm:justify-start">
-            <Icon name="i-ph-broadcast-fill" class="h-4 w-4" />
-            /live
-          </NuxtLink>
-          <NuxtLink to="/blogs" class="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-white/15 bg-white/12 px-4 text-[12px] font-black text-white backdrop-blur sm:justify-start">
-            <Icon name="i-ph-newspaper-fill" class="h-4 w-4" />
-            /blogs
-          </NuxtLink>
-        </div>
+      <div class="grid grid-cols-1 gap-2 p-4 pt-0">
+        <NuxtLink to="/watch" class="flex items-center gap-3 rounded-2xl border border-white/10 p-3 transition" style="background-color: rgba(255,255,255,0.1) !important;">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: rgba(255,255,255,0.2) !important;">
+            <Icon name="i-ph-play-fill" class="h-5 w-5" style="color: white !important;" />
+          </div>
+          <span class="text-[13px] font-bold" style="color: white !important;">Xem Watch</span>
+        </NuxtLink>
+        
+        <NuxtLink to="/live" class="flex items-center gap-3 rounded-2xl border border-white/10 p-3 transition" style="background-color: rgba(255,255,255,0.1) !important;">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: rgba(255,255,255,0.2) !important;">
+            <Icon name="i-ph-broadcast-fill" class="h-5 w-5" style="color: white !important;" />
+          </div>
+          <span class="text-[13px] font-bold" style="color: white !important;">Xem Live</span>
+        </NuxtLink>
+
+        <NuxtLink to="/blogs" class="flex items-center gap-3 rounded-2xl border border-white/10 p-3 transition" style="background-color: rgba(255,255,255,0.1) !important;">
+          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style="background-color: rgba(255,255,255,0.2) !important;">
+            <Icon name="i-ph-newspaper-fill" class="h-5 w-5" style="color: white !important;" />
+          </div>
+          <span class="text-[13px] font-bold" style="color: white !important;">Đọc Blog</span>
+        </NuxtLink>
       </div>
     </section>
   </aside>

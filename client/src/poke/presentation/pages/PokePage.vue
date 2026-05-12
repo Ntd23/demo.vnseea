@@ -1,48 +1,55 @@
-<!-- Description: Renders the poke route as a simple heading plus backend-backed poke request list aligned to the legacy PHP order. -->
+<!-- Description: Renders the poke route with a structured list of cards following the user's specific reference. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
-    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
-      <div class="space-y-1.5">
-        <p class="text-label-secondary">
-          {{ t("pages.pokePage.listEyebrow") }}
-        </p>
-        <h1 class="text-heading text-[var(--text-primary)]">
-          {{ t("pages.pokePage.heroTitle") }}
-        </h1>
+  <div class="mx-auto max-w-[900px] min-h-screen space-y-6 px-4 py-12 sm:px-6 lg:px-8">
+    <!-- Simple Header (Matching Screenshot) -->
+    <header class="space-y-2 pb-6">
+      <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+        {{ t("pages.pokePage.listEyebrow") }}
+      </p>
+      <h1 class="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
+        {{ t("pages.pokePage.heroTitle") }}
+      </h1>
+      <p class="max-w-2xl text-sm font-medium text-slate-500 leading-relaxed">
+        {{ t("pages.pokePage.heroDescription") }}
+      </p>
+      
+      <div class="flex items-center gap-4 pt-4">
+        <div class="flex flex-col">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">{{ t("pages.pokePage.pendingLabel") }}</span>
+          <span class="text-3xl font-black text-slate-900">{{ pokeRecords.length }}</span>
+        </div>
+        <button 
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-slate-200 transition-all hover:ring-primary-500 active:scale-90"
+          @click="fetchPokes"
+        >
+          <Icon name="i-ph-arrow-counter-clockwise-bold" class="h-6 w-6 text-slate-600" />
+        </button>
       </div>
-    </section>
+    </header>
 
     <UAlert
       v-if="errorMessage"
-      color="warning"
-      variant="subtle"
-      icon="i-ph-warning-circle-fill"
-      class="rounded-[22px]"
+      color="error"
+      variant="soft"
+      icon="i-ph-warning-octagon-fill"
+      class="rounded-2xl border-none font-semibold"
       :description="errorMessage"
     />
 
-    <section
-      v-if="loading"
-      class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
-    >
-      <div class="flex items-center justify-center gap-3 text-sm font-bold text-[var(--text-secondary)]">
-        <Icon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" />
-        <span>{{ t("pages.pokePage.heroTitle") }}</span>
-      </div>
-    </section>
+    <!-- List Container -->
+    <div v-if="loading" class="space-y-6">
+      <div v-for="i in 3" :key="i" class="h-64 w-full animate-pulse rounded-[24px] bg-slate-100" />
+    </div>
 
-    <section
-      v-else-if="pokeRecords.length === 0"
-      class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-14 text-center shadow-[var(--shadow-sm)]"
-    >
-      <FoundationEmptyState
-        icon="i-ph-hand-pointing-duotone"
-        :title="t('pages.pokePage.listTitle', { count: 0 })"
-        :description="t('pages.pokePage.listDescription')"
-      />
-    </section>
+    <div v-else-if="pokeRecords.length === 0">
+      <section class="flex flex-col items-center justify-center py-24 text-center bg-white border border-dashed border-slate-200 rounded-[24px]">
+        <Icon name="i-ph-hand-pointing-duotone" class="h-16 w-16 text-slate-300 mb-4" />
+        <h2 class="text-xl font-bold text-slate-900">{{ t('pages.pokePage.listTitle', { count: 0 }) }}</h2>
+        <p class="text-sm font-medium text-slate-500">{{ t('pages.pokePage.listDescription') }}</p>
+      </section>
+    </div>
 
-    <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div v-else class="flex flex-col gap-6">
       <PokeRequestCard
         v-for="item in pokeRecords"
         :key="item.id"
