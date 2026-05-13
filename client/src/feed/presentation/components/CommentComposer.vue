@@ -2,40 +2,57 @@
 <template>
   <form class="comment-composer" @submit.prevent="submitComment">
     <div class="comment-composer__avatar" aria-hidden="true">
-      <img
-        v-if="currentUserAvatarUrl"
-        :src="currentUserAvatarUrl"
-        :alt="currentUserName"
-        class="comment-composer__avatar-img"
-      >
+      <img v-if="currentUserAvatarUrl" :src="currentUserAvatarUrl" :alt="currentUserName"
+        class="comment-composer__avatar-img">
       <span v-else-if="currentUserInitials">{{ currentUserInitials }}</span>
-      <Icon v-else name="i-ph-user-circle-fill" class="h-5 w-5" />
+      <Icon v-else name="i-ph-user-circle-duotone" class="h-5 w-5 text-blue-600" />
     </div>
 
     <div class="comment-composer__shell">
       <div class="comment-composer__field">
-        <div class="comment-composer__input-wrap">
-          <UTextarea
-            ref="textareaRef"
-            v-model="message"
-            autoresize
-            :rows="1"
-            class="w-full"
-            :disabled="submitting"
-            :ui="{
-              base: 'min-h-[44px] resize-none rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-4 pr-12 text-[var(--text-body)] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--color-primary-100)]',
-            }"
-            @keydown.enter.exact.prevent="submitComment"
-          />
+        <div class="comment-composer__main-row">
+          <div class="comment-composer__input-wrap">
+            <UTextarea ref="textareaRef" v-model="message" autoresize :rows="1" class="flex-1" :disabled="submitting"
+              placeholder="Viết bình luận" variant="none" :ui="{
+                base: 'resize-none border-none bg-transparent py-3 pl-4 pr-2 text-[var(--text-body)] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:ring-0 focus:shadow-none shadow-none',
+              }" @keydown.enter.exact.prevent="submitComment" />
 
-          <button
-            type="submit"
-            class="comment-composer__send"
-            :disabled="submitting || !canSubmit"
-            :aria-label="$t('feed.commentComposer.submit')"
-          >
-            <Icon v-if="submitting" name="i-ph-circle-notch-bold" class="h-4 w-4 animate-spin" />
-            <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
+            <div class="comment-composer__inline-actions">
+              <button class="comment-composer__inline-tool" type="button" :title="$t('feed.commentComposer.tooltipGif')"
+                :disabled="submitting" @click="openGifPicker">
+                <Icon name="i-ph-gif-duotone" class="h-5 w-5" />
+              </button>
+
+              <button class="comment-composer__inline-tool" :class="{ 'comment-composer__tool--recording': recording }"
+                type="button" :title="$t('feed.commentComposer.tooltipVoice')" :disabled="submitting"
+                @click="toggleRecording">
+                <Icon :name="recording ? 'i-ph-stop-circle-fill' : 'i-ph-microphone-duotone'" class="h-5 w-5" />
+              </button>
+
+              <div class="comment-composer__emoji-wrap">
+                <button class="comment-composer__inline-tool" type="button" :title="$t('feed.commentComposer.tooltipEmoji')"
+                  :disabled="submitting" @click="emojiOpen = !emojiOpen">
+                  <Icon name="i-ph-smiley-duotone" class="h-5 w-5" />
+                </button>
+                <div v-if="emojiOpen" class="comment-composer__emoji-tray">
+                  <button v-for="emoji in emojiOptions" :key="emoji" class="comment-composer__emoji" type="button"
+                    @click="insertEmoji(emoji)">
+                    {{ emoji }}
+                  </button>
+                </div>
+              </div>
+
+              <button class="comment-composer__inline-tool" type="button" :title="$t('feed.commentComposer.tooltipImage')"
+                :disabled="submitting" @click="openImagePicker">
+                <Icon name="i-ph-images-square-duotone" class="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="comment-composer__send" :disabled="submitting || !canSubmit"
+            :aria-label="$t('feed.commentComposer.submit')">
+            <Icon v-if="submitting" name="i-ph-circle-notch-bold" class="h-4.5 w-4.5 animate-spin" />
+            <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4.5 w-4.5" />
           </button>
         </div>
 
@@ -116,66 +133,20 @@
         </div>
       </div>
 
-      <div class="comment-composer__toolbar">
-        <div class="comment-composer__tools">
-          <button
-            class="comment-composer__tool"
-            type="button"
-            :title="$t('feed.commentComposer.tooltipGif')"
-            :aria-label="$t('feed.commentComposer.tooltipGif')"
-            :disabled="submitting"
-            @click="openGifPicker"
-          >
-            {{ $t("feed.commentComposer.tooltipGif") }}
-          </button>
 
-          <div class="comment-composer__emoji-wrap">
-            <button
-              class="comment-composer__tool"
-              type="button"
-              :title="$t('feed.commentComposer.tooltipEmoji')"
-              :aria-label="$t('feed.commentComposer.tooltipEmoji')"
-              :disabled="submitting"
-              @click="emojiOpen = !emojiOpen"
-            >
-              <Icon name="i-ph-smiley-duotone" class="h-5 w-5" />
-            </button>
-            <div v-if="emojiOpen" class="comment-composer__emoji-tray">
-              <button
-                v-for="emoji in emojiOptions"
-                :key="emoji"
-                class="comment-composer__emoji"
-                type="button"
-                @click="insertEmoji(emoji)"
-              >
-                {{ emoji }}
-              </button>
-            </div>
-          </div>
-
-          <button
-            class="comment-composer__tool"
-            type="button"
-            :title="$t('feed.commentComposer.tooltipImage')"
-            :aria-label="$t('feed.commentComposer.tooltipImage')"
-            :disabled="submitting"
-            @click="openImagePicker"
-          >
-            <Icon name="i-ph-images-square-duotone" class="h-5 w-5" />
-          </button>
-
-          <button
-            class="comment-composer__tool"
-            :class="{ 'comment-composer__tool--recording': recording }"
-            type="button"
-            :title="$t('feed.commentComposer.tooltipVoice')"
-            :aria-label="$t('feed.commentComposer.tooltipVoice')"
-            :disabled="submitting"
-            @click="toggleRecording"
-          >
-            <Icon :name="recording ? 'i-ph-stop-circle-fill' : 'i-ph-microphone-duotone'" class="h-5 w-5" />
-          </button>
-        </div>
+      <!-- Ép Nuxt Icon nhận diện để đóng gói vào bundle local -->
+      <div class="hidden" aria-hidden="true">
+        <Icon name="i-ph-user-circle-duotone" />
+        <Icon name="i-ph-paper-plane-tilt-fill" />
+        <Icon name="i-ph-smiley-duotone" />
+        <Icon name="i-ph-images-square-duotone" />
+        <Icon name="i-ph-microphone-duotone" />
+        <Icon name="i-ph-stop-circle-fill" />
+        <Icon name="i-ph-stop-fill" />
+        <Icon name="i-ph-play-fill" />
+        <Icon name="i-ph-x-bold" />
+        <Icon name="i-ph-circle-notch-bold" />
+        <Icon name="i-ph-gif-duotone" />
       </div>
 
       <input
@@ -658,8 +629,61 @@ onBeforeUnmount(() => {
   gap: 8px;
 }
 
+.comment-composer__main-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.comment-composer__main-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
 .comment-composer__input-wrap {
   position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  background: var(--bg-surface-hover);
+  border: 1px solid var(--border-default);
+  border-radius: 24px;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.comment-composer__input-wrap:focus-within {
+  background: var(--bg-surface);
+  border-color: var(--color-primary-300);
+  box-shadow: 0 0 0 4px var(--color-primary-50);
+}
+
+.comment-composer__inline-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+}
+
+.comment-composer__inline-tool {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.comment-composer__inline-tool:hover {
+  background: var(--bg-surface-active);
+  color: var(--color-primary-500);
 }
 
 .comment-composer__preview {
@@ -884,32 +908,34 @@ onBeforeUnmount(() => {
 }
 
 .comment-composer__send {
-  position: absolute;
-  top: 6px;
-  right: 6px;
   display: inline-flex;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   border: 0;
   border-radius: var(--radius-full);
-  background: var(--bg-brand);
+  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
   color: var(--icon-inverse);
   cursor: pointer;
-  box-shadow: var(--shadow-brand);
-  transition: transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default), opacity var(--duration-fast) var(--ease-default);
+  box-shadow: 0 4px 12px var(--color-primary-100);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .comment-composer__send:hover:not(:disabled) {
-  background: var(--bg-brand-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px var(--color-primary-200);
+}
+
+.comment-composer__send:active:not(:disabled) {
+  transform: translateY(0) scale(0.95);
 }
 
 .comment-composer__send:disabled {
   cursor: not-allowed;
-  opacity: 0.45;
+  opacity: 0.4;
+  filter: grayscale(1);
   box-shadow: none;
 }
 

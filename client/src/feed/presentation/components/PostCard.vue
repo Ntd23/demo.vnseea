@@ -183,7 +183,7 @@
     <FeedShareModal
       :open="showShare"
       :share-url="shareUrl"
-      :post="{ author: post.author, text: post.text }"
+      :post="{ author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
       @close="showShare = false"
       @shared="handleShared"
     />

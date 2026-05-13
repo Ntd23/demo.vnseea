@@ -59,6 +59,7 @@ export type FeedPostRecord = {
   id: number
   author: string
   authorAvatarUrl: string
+  authorVerified?: boolean
   authorPath: string
   role: string
   audience: string
