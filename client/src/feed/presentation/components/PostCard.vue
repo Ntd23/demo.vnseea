@@ -19,7 +19,11 @@
       />
 
       <div v-if="hasPostContent" class="post-card__content">
-        <p v-if="post.text" class="post-card__text">{{ post.text }}</p>
+        <p v-if="post.text" class="post-card__text">
+          <template v-for="segment in postTextSegments" :key="segment.key">
+            <span :class="{ 'post-card__mention': segment.isMention }">{{ segment.text }}</span>
+          </template>
+        </p>
         <div v-if="post.tags.length" class="post-card__tags">
           <NuxtLink
             v-for="tag in post.tags"
@@ -131,6 +135,7 @@
           <Icon name="i-ph-chat-circle-fill" class="post-card__action-icon" />
           <span>{{ t("feed.postCard.comment") }}</span>
         </button>
+       
         <button
           class="post-card__action-btn"
           type="button"
@@ -174,6 +179,7 @@
             :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
           />
           <FeedCommentComposer
+            ref="commentComposerRef"
             :current-user-name="currentAuthUserStore.user?.name"
             :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
             :submitting="commenting"
@@ -240,6 +246,10 @@ const props = defineProps<{
 const emit = defineEmits<{
   open: [index: number]
 }>()
+const commentComposerRef = ref<{
+  focus: () => void
+  insertMentionTrigger: () => void
+} | null>(null)
 
 const {
   currentAuthUserStore,
@@ -282,6 +292,80 @@ const {
   isAdmin,
 } = useFeedPostCardVM(toRef(props, "post"))
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+function getMentionDisplayName(mention: NonNullable<FeedPostRecord["mentions"]>[number]) {
+  return mention.displayName || mention.name.split(/\s+/).filter(Boolean)[0] || mention.username
+}
+
+const normalizedPostText = computed(() => {
+  return (props.post.mentions ?? []).reduce((text, mention) => {
+    const displayName = getMentionDisplayName(mention)
+    const replacements = [
+      mention.name,
+      mention.username,
+    ]
+
+    return replacements.reduce((nextText, label) => {
+      const normalized = label.replace(/^@/, "").trim()
+
+      if (!normalized || normalized === displayName) {
+        return nextText
+      }
+
+      return nextText.replace(
+        new RegExp(`(^|\\s)@${escapeRegExp(normalized)}(?=\\s|$)`, "g"),
+        `$1@${displayName}`,
+      )
+    }, text)
+  }, props.post.text)
+})
+
+const mentionLabelKeys = computed(() => {
+  const labels = new Set<string>()
+
+  for (const mention of props.post.mentions ?? []) {
+    const displayName = getMentionDisplayName(mention)
+    const rawLabels = [
+      displayName,
+      mention.username,
+      mention.name.split(/\s+/).filter(Boolean)[0],
+    ]
+
+    for (const label of rawLabels) {
+      const normalized = label?.replace(/^@/, "").trim()
+
+      if (normalized) {
+        labels.add(`@${normalized}`.toLowerCase())
+      }
+    }
+  }
+
+  return labels
+})
+
+const postTextSegments = computed(() => {
+  const mentionPattern = /(@[\p{L}\p{N}_][\p{L}\p{N}_.-]*)/gu
+  const labels = mentionLabelKeys.value
+
+  return normalizedPostText.value
+    .split(mentionPattern)
+    .filter(segment => segment.length > 0)
+    .map((segment, index) => ({
+      key: `${index}:${segment}`,
+      text: segment,
+      isMention: segment.startsWith("@") && (labels.size === 0 || labels.has(segment.toLowerCase())),
+    }))
+})
+
+async function openCommentTagging() {
+  showComments.value = true
+  await nextTick()
+  commentComposerRef.value?.insertMentionTrigger()
+}
+
 function handleMediaOpen(index: number) {
   emit("open", index)
   if (!props.preventLightbox) {
@@ -321,6 +405,11 @@ function handleMediaOpen(index: number) {
   font-size: 14.5px;
   line-height: 1.75;
   color: #334155;
+}
+
+.post-card__mention {
+  color: #1420ff;
+  font-weight: 600;
 }
 
 .post-card__tags {
@@ -412,7 +501,7 @@ function handleMediaOpen(index: number) {
 
 .post-card__actions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 4px;
   margin-top: 10px;
   padding-top: 10px;
@@ -458,6 +547,18 @@ function handleMediaOpen(index: number) {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+}
+
+.post-card__action-symbol {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .post-card__action-reaction-image {

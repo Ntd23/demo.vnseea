@@ -10,6 +10,44 @@
 
     <div class="comment-composer__shell">
       <div class="comment-composer__field">
+        <div
+          class="comment-composer__input-wrap"
+          :class="{ 'comment-composer__input-wrap--highlight': hasHighlightedMentions }"
+        >
+          <div v-if="hasHighlightedMentions" class="comment-composer__highlight" aria-hidden="true">
+            <template v-for="segment in highlightedMessageSegments" :key="segment.key">
+              <span :class="{ 'comment-composer__highlight-mention': segment.isMention }">{{ segment.text }}</span>
+            </template>
+          </div>
+          <UTextarea
+            ref="textareaRef"
+            v-model="message"
+            autoresize
+            :rows="1"
+            class="comment-composer__textarea w-full"
+            :disabled="submitting"
+            spellcheck="false"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            :ui="{
+              base: 'min-h-[44px] resize-none rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-4 pr-12 text-[var(--text-body)] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--color-primary-100)]',
+            }"
+            @input="updateMentionQuery"
+            @click="updateMentionQuery"
+            @keyup="handleTextareaKeyup"
+            @keydown.esc.prevent="closeMentionSuggestions"
+            @keydown.enter.exact.prevent="submitComment"
+          />
+
+          <button
+            type="submit"
+            class="comment-composer__send"
+            :disabled="submitting || !canSubmit"
+            :aria-label="$t('feed.commentComposer.submit')"
+          >
+            <Icon v-if="submitting" name="i-lucide-loader-2" class="comment-composer__send-icon animate-spin" />
+            <Icon v-else name="i-lucide-send" class="comment-composer__send-icon" />
         <div class="comment-composer__main-row">
           <div class="comment-composer__input-wrap">
             <UTextarea ref="textareaRef" v-model="message" autoresize :rows="1" class="flex-1" :disabled="submitting"
@@ -54,6 +92,34 @@
             <Icon v-if="submitting" name="i-ph-circle-notch-bold" class="h-4.5 w-4.5 animate-spin" />
             <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4.5 w-4.5" />
           </button>
+        </div>
+
+        <div v-if="showMentionSuggestions" class="comment-composer__mention-popover">
+          <div v-if="mentionLoading" class="comment-composer__mention-state">
+            <Icon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+            <span>Đang tìm người dùng...</span>
+          </div>
+          <template v-else>
+            <button
+              v-for="user in mentionSuggestions"
+              :key="user.id"
+              type="button"
+              class="comment-composer__mention-option"
+              @mousedown.prevent="selectMention(user)"
+            >
+              <span class="comment-composer__mention-avatar">
+                <img v-if="user.avatarUrl" :src="user.avatarUrl" :alt="user.name">
+                <span v-else>{{ user.initials }}</span>
+              </span>
+              <span class="comment-composer__mention-copy">
+                <span class="comment-composer__mention-name">{{ user.name }}</span>
+                <span class="comment-composer__mention-username">@{{ user.username }}</span>
+              </span>
+            </button>
+          </template>
+          <div v-if="!mentionLoading && mentionSuggestions.length === 0" class="comment-composer__mention-state">
+            Không tìm thấy người dùng theo first_name.
+          </div>
         </div>
 
         <div v-if="attachmentPreview || recording || recordingErrorMessage" class="comment-composer__preview">
@@ -133,6 +199,29 @@
         </div>
       </div>
 
+      <div class="comment-composer__toolbar">
+        <div class="comment-composer__tools">
+          <button
+            class="comment-composer__tool"
+            type="button"
+            title="Tag bạn bè"
+            aria-label="Tag bạn bè"
+            :disabled="submitting"
+            @click="insertMentionTrigger"
+          >
+            @
+          </button>
+
+          <button
+            class="comment-composer__tool"
+            type="button"
+            :title="$t('feed.commentComposer.tooltipGif')"
+            :aria-label="$t('feed.commentComposer.tooltipGif')"
+            :disabled="submitting"
+            @click="openGifPicker"
+          >
+            {{ $t("feed.commentComposer.tooltipGif") }}
+          </button>
 
       <!-- Ép Nuxt Icon nhận diện để đóng gói vào bundle local -->
       <div class="hidden" aria-hidden="true">
@@ -168,7 +257,23 @@
 </template>
 
 <script setup lang="ts">
+import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
+import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { FeedCommentAttachment, FeedCommentSubmitPayload } from "../../domain/types/feed.types"
+
+type MentionSearchResult = {
+  id: string
+  title: string
+  subtitle?: string
+  username?: string
+  firstName?: string
+  avatarUrl?: string
+  initials: string
+}
+
+type MentionSearchResponse = {
+  users: MentionSearchResult[]
+}
 
 const props = withDefaults(defineProps<{
   currentUserName?: string
@@ -185,9 +290,24 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 const toast = useToast()
+const apiClient = useNuxtApiClient()
 
 const emojiOptions = ["😀", "😄", "😍", "😂", "😮", "😢", "😡", "👍", "❤️"]
 const message = ref("")
+const mentionQuery = ref("")
+const mentionStartIndex = ref<number | null>(null)
+const mentionCandidates = ref<Array<{
+  id: string
+  name: string
+  username: string
+  firstName: string
+  avatarUrl: string
+  initials: string
+}>>([])
+const mentionLoading = ref(false)
+const mentionSelectionLocked = ref(false)
+const mentionCandidatesLoaded = ref(false)
+const selectedMentionUsernames = ref<Record<string, string>>({})
 const emojiOpen = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
 const gifInputRef = ref<HTMLInputElement | null>(null)
@@ -251,6 +371,27 @@ const currentUserInitials = computed(() => {
 
   return value
 })
+const mentionSuggestions = computed(() => {
+  const keyword = mentionQuery.value.trim().toLowerCase()
+  const users = keyword
+    ? mentionCandidates.value.filter(user => user.firstName.toLowerCase().includes(keyword))
+    : mentionCandidates.value
+
+  return users.slice(0, 6)
+})
+const showMentionSuggestions = computed(() => mentionStartIndex.value !== null)
+const hasHighlightedMentions = computed(() => Object.keys(selectedMentionUsernames.value).length > 0)
+const highlightedMessageSegments = computed(() =>
+  message.value
+    .split(/(@[^\s@]{1,40})/g)
+    .filter(segment => segment.length > 0)
+    .map((segment, index) => ({
+      key: `${index}:${segment}`,
+      text: segment,
+      isMention: Boolean(selectedMentionUsernames.value[segment]),
+    })),
+)
+let mentionRequestId = 0
 
 function revokeAttachmentUrl() {
   if (attachmentPreview.value?.url?.startsWith("blob:")) {
@@ -347,12 +488,206 @@ function clearAttachment() {
   resetComposerState()
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+function toBackendMentionText(text: string) {
+  return Object.entries(selectedMentionUsernames.value).reduce((nextText, [displayMention, username]) => {
+    const mentionPattern = new RegExp(`(^|\\s)${escapeRegExp(displayMention)}(?=\\s|$)`, "g")
+
+    return nextText.replace(mentionPattern, `$1@${username}`)
+  }, text)
+}
+
+function extractMentionQuery(text = message.value, caret = getTextareaElement()?.selectionStart ?? text.length) {
+  if (mentionSelectionLocked.value) {
+    return
+  }
+
+  const beforeCaret = text.slice(0, caret)
+  const match = beforeCaret.match(/(^|\s)@([^\s@]{0,40})$/)
+
+  if (!match) {
+    mentionStartIndex.value = null
+    mentionQuery.value = ""
+    return
+  }
+
+  const nextStartIndex = caret - (match[2]?.length ?? 0) - 1
+  const nextQuery = match[2] ?? ""
+  const mentionStartChanged = mentionStartIndex.value !== nextStartIndex
+
+  mentionStartIndex.value = nextStartIndex
+  mentionQuery.value = nextQuery
+
+  if (mentionStartChanged && mentionCandidates.value.length === 0) {
+    void loadMentionCandidates()
+  }
+}
+
+function updateMentionQuery(event?: Event) {
+  const eventTextarea = event?.target instanceof HTMLTextAreaElement
+    ? event.target
+    : null
+  const textarea = eventTextarea ?? getTextareaElement()
+  const text = textarea?.value ?? message.value
+
+  extractMentionQuery(text, textarea?.selectionStart ?? text.length)
+}
+
+function handleTextareaKeyup(event: KeyboardEvent) {
+  if (event.key === "Escape") {
+    return
+  }
+
+  updateMentionQuery(event)
+}
+
+function closeMentionSuggestions() {
+  mentionRequestId += 1
+  mentionStartIndex.value = null
+  mentionQuery.value = ""
+  mentionLoading.value = false
+}
+
+function getMentionUsername(user: MentionSearchResult) {
+  const fromUsername = user.username?.trim()
+  if (fromUsername) {
+    return fromUsername.replace(/^@/, "")
+  }
+
+  const fromSubtitle = user.subtitle?.trim().replace(/^@/, "")
+  if (fromSubtitle) {
+    return fromSubtitle
+  }
+
+  return user.title
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+}
+
+function normalizeMentionUsers(users: MentionSearchResult[]) {
+  const seenUsers = new Set<string>()
+
+  return users
+    .map(user => ({
+      id: user.id,
+      name: user.title,
+      username: getMentionUsername(user),
+      firstName: user.firstName || user.title.split(/\s+/)[0] || "",
+      avatarUrl: user.avatarUrl || "",
+      initials: user.initials || (user.title[0]?.toUpperCase() ?? "U"),
+    }))
+    .filter((user) => {
+      const uniqueKey = user.username || user.id
+
+      if (!user.firstName || !user.username || seenUsers.has(uniqueKey)) {
+        return false
+      }
+
+      seenUsers.add(uniqueKey)
+      return true
+    })
+}
+
+async function loadMentionCandidates() {
+  if (mentionCandidatesLoaded.value || mentionLoading.value) {
+    return
+  }
+
+  const requestId = ++mentionRequestId
+  mentionLoading.value = true
+
+  try {
+    const response = await apiClient.get<MentionSearchResponse>(apiRoutes.search.index, {
+      q: "",
+      limit: 50,
+    })
+
+    if (requestId !== mentionRequestId) {
+      return
+    }
+
+    mentionCandidates.value = normalizeMentionUsers(response.users ?? [])
+    mentionCandidatesLoaded.value = true
+  }
+  catch {
+    if (requestId !== mentionRequestId) {
+      return
+    }
+
+    mentionCandidates.value = []
+  }
+  finally {
+    if (requestId === mentionRequestId) {
+      mentionLoading.value = false
+    }
+  }
+}
+
+async function selectMention(user: { firstName: string; name: string; username: string }) {
+  const start = mentionStartIndex.value
+  const textarea = getTextareaElement()
+
+  if (start === null || !textarea) {
+    return
+  }
+
+  mentionSelectionLocked.value = true
+  const caret = textarea.selectionStart ?? message.value.length
+  const beforeMention = message.value.slice(0, start)
+  const afterMention = message.value.slice(caret)
+  const mentionUsername = user.username.trim().replace(/^@/, "")
+  const mentionDisplayName = (user.firstName || user.name || mentionUsername)
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/^@/, "")
+  const displayMention = `@${mentionDisplayName}`
+  const inserted = `${displayMention} `
+  const nextCaret = beforeMention.length + inserted.length
+
+  selectedMentionUsernames.value = {
+    ...selectedMentionUsernames.value,
+    [displayMention]: mentionUsername,
+  }
+  message.value = `${beforeMention}${inserted}${afterMention}`
+  closeMentionSuggestions()
+
+  await nextTick()
+  textarea.focus()
+  textarea.setSelectionRange(nextCaret, nextCaret)
+  mentionSelectionLocked.value = false
+}
+
 function insertEmoji(emoji: string) {
   message.value = `${message.value}${emoji}`
   emojiOpen.value = false
   nextTick(() => {
-    const textarea = textareaRef.value?.$el?.querySelector?.("textarea") as HTMLTextAreaElement | null
-    textarea?.focus()
+    focusComposer()
+  })
+}
+
+function getTextareaElement() {
+  return textareaRef.value?.$el?.querySelector?.("textarea") as HTMLTextAreaElement | null
+}
+
+function focusComposer() {
+  getTextareaElement()?.focus()
+}
+
+function insertMentionTrigger() {
+  if (!message.value.endsWith("@")) {
+    const separator = message.value && !/\s$/.test(message.value) ? " " : ""
+    message.value = `${message.value}${separator}@`
+  }
+
+  void loadMentionCandidates()
+  nextTick(() => {
+    focusComposer()
+    updateMentionQuery()
   })
 }
 
@@ -570,8 +905,11 @@ function submitComment() {
     return
   }
 
+  const displayText = trimmedMessage.value
+
   emit("submit", {
-    text: trimmedMessage.value,
+    text: displayText,
+    backendText: toBackendMentionText(displayText),
     imageFile: imageFile.value,
     gifFile: gifFile.value,
     audioFile: audioFile.value,
@@ -579,6 +917,8 @@ function submitComment() {
   })
 
   message.value = ""
+  selectedMentionUsernames.value = {}
+  closeMentionSuggestions()
   emojiOpen.value = false
   resetComposerState()
 }
@@ -586,6 +926,11 @@ function submitComment() {
 onBeforeUnmount(() => {
   revokeAttachmentUrl()
   stopMediaStream()
+})
+
+defineExpose({
+  focus: focusComposer,
+  insertMentionTrigger,
 })
 </script>
 
@@ -684,6 +1029,125 @@ onBeforeUnmount(() => {
 .comment-composer__inline-tool:hover {
   background: var(--bg-surface-active);
   color: var(--color-primary-500);
+}
+
+.comment-composer__highlight {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  min-height: 44px;
+  padding: 12px 48px 12px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: var(--text-body);
+  line-height: 20px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.comment-composer__highlight-mention {
+  color: #1420ff;
+}
+
+.comment-composer__textarea {
+  position: relative;
+  z-index: 2;
+}
+
+.comment-composer__input-wrap :deep(textarea) {
+  font-family: inherit;
+  font-size: var(--text-body);
+  line-height: 20px;
+}
+
+.comment-composer__input-wrap--highlight :deep(textarea) {
+  color: transparent;
+  caret-color: var(--text-primary);
+  -webkit-text-fill-color: transparent;
+  text-decoration-color: transparent;
+}
+
+.comment-composer__input-wrap--highlight :deep(textarea::spelling-error),
+.comment-composer__input-wrap--highlight :deep(textarea::grammar-error) {
+  text-decoration: none;
+}
+
+.comment-composer__mention-popover {
+  width: min(360px, 100%);
+  border: 1px solid rgba(20, 32, 255, 0.12);
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  overflow: hidden;
+}
+
+.comment-composer__mention-option,
+.comment-composer__mention-state {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border: 0;
+  background: #ffffff;
+  color: #475569;
+  text-align: left;
+}
+
+.comment-composer__mention-option {
+  cursor: pointer;
+}
+
+.comment-composer__mention-option:hover {
+  background: rgba(20, 32, 255, 0.06);
+}
+
+.comment-composer__mention-state {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.comment-composer__mention-avatar {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1420ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.comment-composer__mention-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comment-composer__mention-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-composer__mention-name {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.comment-composer__mention-username {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .comment-composer__preview {
@@ -923,6 +1387,12 @@ onBeforeUnmount(() => {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.comment-composer__send-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
 .comment-composer__send:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 6px 20px var(--color-primary-200);
@@ -933,6 +1403,7 @@ onBeforeUnmount(() => {
 }
 
 .comment-composer__send:disabled {
+  background: #1420ff;
   cursor: not-allowed;
   opacity: 0.4;
   filter: grayscale(1);

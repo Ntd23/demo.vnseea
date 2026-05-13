@@ -87,7 +87,6 @@
         <div class="settings-section__item-copy">
           <div class="settings-section__item-title-row">
             <h3 class="settings-section__item-title">{{ item.title }}</h3>
-            <!-- UBadge from @nuxt/ui -->
             <UBadge
               v-if="item.meta"
               variant="soft"
@@ -386,20 +385,20 @@ const sectionIcon = computed(() => {
 
 .settings-section__save-button {
   border-radius: 10px !important;
-  background: #0000ff !important;
+  background: #1420ff !important;
   color: #ffffff !important;
   font-size: 12px !important;
   font-weight: 700 !important;
   padding: 10px 20px !important;
   height: auto !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(20, 32, 255, 0.22) !important;
   transition: all 0.2s ease !important;
 }
 
 .settings-section__save-button:hover {
-  background: #0000cc !important;
+  background: #1018d8 !important;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0, 0, 255, 0.3) !important;
+  box-shadow: 0 6px 16px rgba(20, 32, 255, 0.32) !important;
 }
 
 /* ─── Divider ─────────────────────────── */
