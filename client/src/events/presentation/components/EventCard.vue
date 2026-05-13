@@ -1,90 +1,55 @@
-<!-- Description: Renders a backend-backed event list card aligned with the legacy PHP event directory layout. -->
+<!-- Description: Renders an event item close to the WoWonder events-list cover layout. -->
 <template>
-  <article class="overflow-hidden rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)]">
-    <NuxtLink :to="appRoutes.eventDetail(event.id)" class="group block">
-      <div class="relative aspect-[16/10] overflow-hidden bg-[var(--bg-muted)]">
-        <div class="absolute inset-0" :style="{ background: event.coverFallback }" />
-        <NuxtImg
+  <article class="events-list-wrapper">
+    <div class="events-list-cover">
+      <NuxtLink :to="appRoutes.eventDetail(event.id)" class="event-cover">
+        <div class="event-cover__fallback" :style="{ background: event.coverFallback }" />
+        <img
           v-if="event.coverUrl && !imageFailed"
           :src="event.coverUrl"
           :alt="event.name"
-          class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+          class="events-list-cover-img"
           loading="lazy"
           @error="imageFailed = true"
-        />
-
-        <span class="absolute right-3 top-3 rounded-full bg-[#111827]/78 px-3 py-1 text-[12px] font-bold text-white">
-          {{ event.dateBadge }}
-        </span>
-
-        <div class="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.72))] p-3 text-white">
-          <p class="flex items-center gap-1.5 text-[12px] font-medium text-white/90">
-            <Icon name="i-ph-map-pin-fill" class="h-3.5 w-3.5" />
-            <span class="truncate">{{ event.location }}</span>
-          </p>
+        >
+        <span class="event-cover__date">{{ event.dateBadge }}</span>
+        <div class="event-cover__location">
+          <Icon name="i-ph-map-pin-fill" class="h-5 w-5" />
+          <span>{{ event.location }}</span>
         </div>
-      </div>
-    </NuxtLink>
+      </NuxtLink>
 
-    <div class="space-y-4 p-4">
-      <div class="space-y-2">
-        <NuxtLink
-          :to="appRoutes.eventDetail(event.id)"
-          class="text-[1.05rem] font-bold leading-7 text-[var(--text-primary)] hover:text-[var(--text-link)]"
-        >
-          {{ event.name }}
-        </NuxtLink>
-        <p class="text-[13px] leading-6 text-[var(--text-secondary)] line-clamp-2">
-          {{ event.description }}
-        </p>
-      </div>
+      <div class="event-l-info">
+        <h3 class="events-list-name">
+          <NuxtLink :to="appRoutes.eventDetail(event.id)">
+            {{ event.name }}
+          </NuxtLink>
+        </h3>
 
-      <div class="space-y-1 text-[13px] text-[var(--text-secondary)]">
-        <p>{{ event.dateRangeLabel }}</p>
-        <p class="truncate">
-          {{ event.hostName }}
-        </p>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2 text-[12px] text-[var(--text-secondary)]">
-        <span class="rounded-full bg-[var(--bg-surface-hover)] px-3 py-1.5 font-medium">
-          {{ event.goingCount }} {{ $t("pages.eventsPage.rsvpGoing") }}
-        </span>
-        <span class="rounded-full bg-[var(--bg-surface-hover)] px-3 py-1.5 font-medium">
-          {{ event.interestedCount }} {{ $t("pages.eventsPage.rsvpInterested") }}
-        </span>
-      </div>
-
-      <div class="grid gap-2 sm:grid-cols-3">
-        <UButton
-          color="primary"
-          :variant="event.rsvpState === 'going' ? 'solid' : 'soft'"
-          size="sm"
-          class="justify-center rounded-full"
-          :loading="busyState === 'going'"
-          @click.prevent="$emit('setGoing', event.id)"
-        >
-          {{ $t("pages.eventsPage.rsvpGoing") }}
-        </UButton>
-        <UButton
-          color="warning"
-          :variant="event.rsvpState === 'interested' ? 'solid' : 'soft'"
-          size="sm"
-          class="justify-center rounded-full"
-          :loading="busyState === 'interested'"
-          @click.prevent="$emit('setInterested', event.id)"
-        >
-          {{ $t("pages.eventsPage.rsvpInterested") }}
-        </UButton>
-        <UButton
-          :to="appRoutes.eventDetail(event.id)"
-          color="neutral"
-          variant="outline"
-          size="sm"
-          class="justify-center rounded-full"
-        >
-          {{ $t("pages.eventsPage.detail") }}
-        </UButton>
+        <div class="event-l-btns">
+          <button
+            class="btn-mat"
+            :class="{ 'btn-main': event.isGoing || event.rsvpState === 'going' }"
+            type="button"
+            :disabled="busyState === 'going'"
+            @click="$emit('setGoing', event.id)"
+          >
+            <Icon v-if="busyState === 'going'" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+            <Icon v-else name="i-ph-users-three-fill" class="h-4 w-4" />
+            {{ $t("pages.eventsPage.rsvpGoing") }}
+          </button>
+          <button
+            class="btn-mat"
+            :class="{ 'btn-main': event.isInterested || event.rsvpState === 'interested' }"
+            type="button"
+            :disabled="busyState === 'interested'"
+            @click="$emit('setInterested', event.id)"
+          >
+            <Icon v-if="busyState === 'interested'" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+            <Icon v-else name="i-ph-heart-fill" class="h-4 w-4" />
+            {{ $t("pages.eventsPage.rsvpInterested") }}
+          </button>
+        </div>
       </div>
     </div>
   </article>
@@ -114,3 +79,135 @@ watch(
   { immediate: true },
 )
 </script>
+
+<style scoped>
+.events-list-wrapper {
+  min-width: 0;
+}
+
+.events-list-cover {
+  overflow: hidden;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+
+.event-cover {
+  position: relative;
+  display: block;
+  height: 260px;
+  overflow: hidden;
+  background: #eef2f7;
+}
+
+.event-cover__fallback,
+.events-list-cover-img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.events-list-cover-img {
+  object-fit: cover;
+}
+
+.event-cover__date {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.94);
+  padding: 7px 11px;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.14);
+}
+
+.event-cover__location {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 36px 16px 14px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.74));
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.event-cover__location span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-l-info {
+  padding: 16px 18px 18px;
+}
+
+.events-list-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.events-list-name a {
+  color: #111827;
+  text-decoration: none;
+}
+
+.events-list-name a:hover {
+  color: #2563eb;
+}
+
+.event-l-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.btn-mat {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  border: 1px solid #d7dee8;
+  border-radius: 3px;
+  background: #fff;
+  padding: 7px 12px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-mat:hover {
+  border-color: #c5d1df;
+  background: #f8fafc;
+}
+
+.btn-mat:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.btn-main {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+
+@media (max-width: 640px) {
+  .event-cover {
+    height: 220px;
+  }
+}
+</style>

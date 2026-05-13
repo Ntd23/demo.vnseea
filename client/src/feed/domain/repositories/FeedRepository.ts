@@ -57,6 +57,8 @@ export interface FeedRepository {
     videoFile?: File
     feeling?: string
     pageId?: number
+    eventId?: number
+    groupId?: number
   }): Promise<FeedCreatePostResponse>
   createStory(input: {
     file: File

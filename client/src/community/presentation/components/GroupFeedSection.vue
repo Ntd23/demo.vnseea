@@ -20,7 +20,7 @@
       </div>
     </section>
 
-    <FeedPublisherBox />
+    <FeedPublisherBox :group-id="group.id" @created="post => emit('created', post)" />
 
     <UAlert
       v-if="posts.length === 0"
@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
 import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
+import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 const { t } = useI18n()
@@ -52,18 +53,11 @@ const translateText = useMaybeTranslatedText()
 
 const props = defineProps<{
   group: CommunityGroupRecord
-  posts: Array<{
-    id: number
-    author: string
-    role: string
-    audience: string
-    time: string
-    text: string
-    tags: string[]
-    stats: { likes: number; comments: number; shares: number }
-    media?: "double" | "single"
-    comments: { id: number; author: string; role: string; text: string }[]
-  }>
+  posts: FeedPostRecord[]
+}>()
+
+const emit = defineEmits<{
+  created: [post: FeedPostRecord | null]
 }>()
 
 const activityLabel = computed(() =>

@@ -1,40 +1,35 @@
 <!-- Description: Renders the backend-backed events directory using the legacy PHP tab order and list-first layout. -->
 <template>
   <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
-    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
-      <div class="flex items-center gap-3">
-        <span class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
-          <Icon name="i-ph-calendar-check-fill" class="h-6 w-6" />
+    <section class="wow-content">
+      <div class="wo-page-heading wo-page-heading--big">
+        <span class="wo-page-heading__icon">
+          <Icon name="i-ph-calendar-blank-fill" class="h-5 w-5" />
         </span>
-        <div>
-          <p class="text-label-secondary">{{ $t("pages.eventsPage.title") }}</p>
-          <h1 class="text-heading text-[var(--text-primary)]">{{ $t("pages.eventsPage.title") }}</h1>
-        </div>
+        <span>{{ $t("pages.eventsPage.title") }}</span>
       </div>
     </section>
 
-    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
-      <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div class="overflow-x-auto">
-          <div class="flex min-w-max items-center gap-5 border-b border-[var(--border-default)]">
+    <section class="wow-content">
+      <div class="wo-page-menu">
+        <div class="wo-page-menu__scroll">
+          <div class="wo-page-menu__items">
             <NuxtLink
               v-for="tab in tabItems"
               :key="tab.key"
               :to="tabLink(tab.key)"
-              class="border-b-[3px] px-1 pb-3 pt-1 text-[1.05rem] font-medium transition"
-              :class="activeTab === tab.key
-                ? 'border-[var(--text-brand)] text-[var(--text-primary)]'
-                : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'"
+              class="wo-page-menu__link"
+              :class="{ 'wo-page-menu__link--active': activeTab === tab.key }"
             >
               {{ tab.label }}
             </NuxtLink>
           </div>
         </div>
 
-        <UButton :to="appRoutes.createEvent" color="primary" size="lg" class="justify-center rounded-full px-6">
-          <Icon name="i-ph-plus-bold" class="mr-2 h-4 w-4" />
+        <NuxtLink :to="appRoutes.createEvent" class="btn-main btn-mat-raised">
+          <Icon name="i-ph-plus-bold" class="h-5 w-5" />
           {{ $t("pages.eventsPage.createEvent") }}
-        </UButton>
+        </NuxtLink>
       </div>
     </section>
 
@@ -53,10 +48,7 @@
       </div>
     </div>
 
-    <section
-      v-else-if="events.length === 0"
-      class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-12 text-center shadow-[var(--shadow-sm)]"
-    >
+    <section v-else-if="events.length === 0" class="wow-content empty-state-wrap">
       <FoundationEmptyState
         icon="i-ph-calendar-x-fill"
         :title="$t('pages.eventsPage.emptyTitle')"
@@ -64,7 +56,7 @@
       />
     </section>
 
-    <div v-else class="grid gap-4 lg:grid-cols-2">
+    <div v-else class="events-grid">
       <EventsEventCard
         v-for="event in events"
         :key="event.id"
@@ -101,26 +93,36 @@ const tabLink = (tab: EventTabKey) =>
     ? appRoutes.events
     : `${appRoutes.events}?tab=${encodeURIComponent(tab)}`
 
-const updateLocalRsvp = (eventId: number, nextState: "going" | "interested" | "none") => {
+const updateLocalRsvp = (
+  eventId: number,
+  action: "going" | "interested",
+  nextState: "going" | "interested" | "none",
+) => {
   const event = events.value.find(item => item.id === eventId)
   if (!event) return
 
-  const previousState = event.rsvpState
-  event.rsvpState = nextState
+  if (action === "going") {
+    event.isGoing = nextState === "going"
+    event.rsvpState = event.isGoing
+      ? "going"
+      : event.isInterested
+        ? "interested"
+        : "none"
+    event.goingCount = nextState === "going"
+      ? Math.max(1, event.goingCount)
+      : Math.max(0, event.goingCount - 1)
+    return
+  }
 
-  if (previousState !== "going" && nextState === "going") {
-    event.goingCount += 1
-  }
-  else if (previousState === "going" && nextState !== "going") {
-    event.goingCount = Math.max(0, event.goingCount - 1)
-  }
-
-  if (previousState !== "interested" && nextState === "interested") {
-    event.interestedCount += 1
-  }
-  else if (previousState === "interested" && nextState !== "interested") {
-    event.interestedCount = Math.max(0, event.interestedCount - 1)
-  }
+  event.isInterested = nextState === "interested"
+  event.rsvpState = event.isGoing
+    ? "going"
+    : event.isInterested
+      ? "interested"
+      : "none"
+  event.interestedCount = nextState === "interested"
+    ? Math.max(1, event.interestedCount)
+    : Math.max(0, event.interestedCount - 1)
 }
 
 const runRsvp = async (eventId: number, action: "going" | "interested") => {
@@ -132,7 +134,7 @@ const runRsvp = async (eventId: number, action: "going" | "interested") => {
       ? await repository.setGoing(eventId)
       : await repository.setInterested(eventId)
 
-    updateLocalRsvp(eventId, result.rsvpState)
+    updateLocalRsvp(eventId, action, result.rsvpState)
 
     toast.add({
       color: "success",
@@ -156,3 +158,117 @@ const runRsvp = async (eventId: number, action: "going" | "interested") => {
 const setGoing = (eventId: number) => runRsvp(eventId, "going")
 const setInterested = (eventId: number) => runRsvp(eventId, "interested")
 </script>
+
+<style scoped>
+.wow-content {
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+}
+
+.wo-page-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 18px 20px;
+  color: #111827;
+  font-weight: 700;
+}
+
+.wo-page-heading--big {
+  font-size: 22px;
+}
+
+.wo-page-heading__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #111827;
+}
+
+.wo-page-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 14px 0 18px;
+}
+
+.wo-page-menu__scroll {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.wo-page-menu__items {
+  display: flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 2px;
+}
+
+.wo-page-menu__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 58px;
+  border-bottom: 3px solid transparent;
+  padding: 0 12px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.wo-page-menu__link:hover,
+.wo-page-menu__link--active {
+  border-bottom-color: #2563eb;
+  color: #2563eb;
+}
+
+.btn-main {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  border-radius: 3px;
+  background: #2563eb;
+  padding: 8px 15px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.btn-mat-raised {
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.28);
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.empty-state-wrap {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .wo-page-menu {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 0 14px 14px;
+  }
+
+  .btn-main {
+    width: 100%;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

@@ -129,6 +129,7 @@ export const apiRoutes = {
     groups: "community/groups",
     groupBySlug: (slug: string) => `community/groups/${encodeSegment(slug)}`,
     groupJoin: (slug: string) => `community/groups/${encodeSegment(slug)}/join`,
+    groupPosts: (slug: string) => `community/groups/${encodeSegment(slug)}/posts`,
     pages: "community/pages",
     pageBySlug: (slug: string) => `community/pages/${encodeSegment(slug)}`,
     pageById: (id: number | string) => `community/pages/id/${encodeSegment(id)}`,

@@ -79,10 +79,10 @@
         >
           <input id="event-cover" class="sr-only" type="file" accept="image/*" @change="onCoverChange">
 
-          <div v-if="coverPreviewUrl" class="aspect-[16/9] bg-[var(--bg-muted)]">
+          <div v-if="coverPreviewUrl" class="h-[220px] bg-[var(--bg-muted)] sm:h-[260px]">
             <img :src="coverPreviewUrl" :alt="$t('pages.createEventPage.coverPreviewAlt')" class="h-full w-full object-cover">
           </div>
-          <div v-else class="flex aspect-[16/9] items-center justify-center">
+          <div v-else class="flex h-[220px] items-center justify-center sm:h-[260px]">
             <div class="text-center">
               <Icon name="i-ph-image-square-fill" class="mx-auto h-8 w-8 text-[var(--text-secondary)]" />
               <p class="mt-3 text-body-secondary">{{ $t("pages.createEventPage.chooseCover") }}</p>

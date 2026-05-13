@@ -237,6 +237,42 @@ const getPostReaction = (entity: BackendEntity) => {
   }
 }
 
+const extractPostEventContext = (entity: BackendEntity): FeedPostRecord["eventContext"] => {
+  const eventEntity = asRecord(entity.event || entity.event_data || entity.post_event)
+  const eventId = firstNumber(entity, ["event_id", "page_event_id"])
+    || firstNumber(eventEntity, ["id", "event_id"])
+  const eventName = firstString(eventEntity, ["name", "event_name", "title"])
+
+  if (eventId <= 0 || !eventName) {
+    return null
+  }
+
+  return {
+    id: eventId,
+    name: eventName,
+    path: `/events/${eventId}`,
+  }
+}
+
+const extractPostGroupContext = (entity: BackendEntity): FeedPostRecord["groupContext"] => {
+  const groupEntity = asRecord(entity.group_data || entity.group_recipient || entity.group)
+  const groupId = firstNumber(entity, ["group_id"])
+    || firstNumber(groupEntity, ["group_id", "id"])
+  const groupSlug = firstString(groupEntity, ["group_name", "slug", "name"])
+  const groupName = firstString(groupEntity, ["group_title", "title", "name", "group_name"])
+
+  if (groupId <= 0 || !groupSlug || !groupName) {
+    return null
+  }
+
+  return {
+    id: groupId,
+    name: groupName,
+    path: `/g/${groupSlug}`,
+    slug: groupSlug,
+  }
+}
+
 const hasUnseenStoryState = (story: BackendEntity, owner: BackendEntity) => {
   const unseenKeys = ["have_not_seen", "have_not_viewed", "not_seen", "unseen", "has_unseen"]
   const seenKeys = ["is_seen", "is_viewed", "viewed", "seen"]
@@ -419,7 +455,6 @@ const extractTags = (entity: BackendEntity) => {
 const buildPostText = (entity: BackendEntity) => {
   const product = asRecord(entity.product)
   const blog = asRecord(entity.blog)
-  const event = asRecord(entity.event)
   const fund = asRecord(entity.fund)
   const fundData = asRecord(entity.fund_data)
   const thread = asRecord(entity.thread)
@@ -433,7 +468,6 @@ const buildPostText = (entity: BackendEntity) => {
       firstString(entity, ["postLinkContent"]),
     ].filter(Boolean).join("\n"),
     firstString(entity, ["postMap"]),
-    firstString(entity, ["postFeeling", "postListening", "postPlaying", "postWatching", "postTraveling"]),
     [
       firstString(product, ["name", "title"]),
       firstString(product, ["description"]),
@@ -441,10 +475,6 @@ const buildPostText = (entity: BackendEntity) => {
     [
       firstString(blog, ["title"]),
       firstString(blog, ["description"]),
-    ].filter(Boolean).join("\n"),
-    [
-      firstString(event, ["name"]),
-      firstString(event, ["description", "start_date"]),
     ].filter(Boolean).join("\n"),
     [
       firstString(fund, ["title"]),
@@ -467,6 +497,37 @@ const buildPostText = (entity: BackendEntity) => {
 
   const uniqueParts = Array.from(new Set(candidates.map(stripHtml).filter(Boolean)))
   return uniqueParts.join("\n\n")
+}
+
+const feelingLabels: Record<string, { label: string; emoji: string }> = {
+  happy: { label: "Vui mừng", emoji: "😊" },
+  loved: { label: "Được yêu", emoji: "😍" },
+  sad: { label: "Buồn", emoji: "😢" },
+  so_sad: { label: "Rất buồn", emoji: "😭" },
+  angry: { label: "Tức giận", emoji: "😡" },
+  confused: { label: "Bối rối", emoji: "😕" },
+  smirk: { label: "Cười nhếch mép", emoji: "😏" },
+  cool: { label: "Tuyệt", emoji: "😎" },
+  funny: { label: "Vui nhộn", emoji: "😄" },
+  tired: { label: "Mệt mỏi", emoji: "😫" },
+  blessed: { label: "May mắn", emoji: "😇" },
+  shocked: { label: "Sốc", emoji: "😮" },
+  sleepy: { label: "Buồn ngủ", emoji: "😴" },
+  bored: { label: "Chán", emoji: "😒" },
+}
+
+const extractPostFeeling = (entity: BackendEntity) => {
+  const value = firstString(entity, ["postFeeling"])
+
+  if (!value) {
+    return null
+  }
+
+  return {
+    value,
+    label: feelingLabels[value]?.label || value,
+    emoji: feelingLabels[value]?.emoji || "🙂",
+  }
 }
 
 const extractMediaItems = (
@@ -601,6 +662,9 @@ export const mapPostRecord = (
         ? `/@${authorUsername}`
         : "/home"
   const text = buildPostText(entity)
+  const feeling = extractPostFeeling(entity)
+  const eventContext = extractPostEventContext(entity)
+  const groupContext = extractPostGroupContext(entity)
   const mediaItems = extractMediaItems(entity, author, resolveMediaUrl)
   const categoryHint = [
     firstString(sourceEntity, ["working", "school"]),
@@ -620,6 +684,8 @@ export const mapPostRecord = (
     authorAvatarUrl: resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"])),
     authorVerified: isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
     authorPath: authorUsername ? `/@${authorUsername}` : sourcePath,
+    eventContext,
+    groupContext,
     role: firstString(sourceEntity, ["working", "school", "address"])
       || firstString(pageData, ["category_name", "phone"])
       || firstString(groupData, ["category_name", "group_title"])
@@ -627,6 +693,7 @@ export const mapPostRecord = (
     audience: inferAudience(entity),
     time: firstString(entity, ["time_text", "posted", "time"]) || "",
     text,
+    feeling,
     tags: extractTags(entity),
     stats: {
       likes: postReaction.count || firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
@@ -1058,7 +1125,7 @@ const buildPostsResponse = (posts: FeedPostRecord[], limit: number): FeedPostsRe
 export async function fetchFeedPosts(
   event: H3Event,
   input: {
-    type: "get_news_feed" | "saved" | "hashtag" | "get_random_videos" | "get_page_posts" | "get_event_posts"
+    type: "get_news_feed" | "saved" | "hashtag" | "get_random_videos" | "get_page_posts" | "get_event_posts" | "get_group_posts"
     limit?: number
     afterPostId?: number
     postType?: string
@@ -1066,6 +1133,7 @@ export async function fetchFeedPosts(
     tag?: string
     pageId?: number
     eventId?: number
+    groupId?: number
   },
 ) {
   const currentUser = await getBackendCurrentUser(event)
@@ -1087,6 +1155,9 @@ export async function fetchFeedPosts(
         id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
         ...(input.eventId && input.eventId > 0
           ? { id: input.eventId }
+          : {}),
+        ...(input.groupId && input.groupId > 0
+          ? { id: input.groupId }
           : {}),
       },
     ),

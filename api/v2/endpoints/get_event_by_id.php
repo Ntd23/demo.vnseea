@@ -7,6 +7,10 @@ if (!empty($_POST['id']) && is_numeric($_POST['id']) && $_POST['id'] > 0) {
 		foreach ($non_allowed as $key4 => $value4) {
 	      unset($event['user_data'][$value4]);
 	    }
+	    $event['is_going'] = Wo_EventGoingExists($event['id']);
+	    $event['is_interested'] = Wo_EventInterestedExists($event['id']);
+	    $event['going_count'] = Wo_TotalGoingUsers($event['id']);
+	    $event['interested_count'] = Wo_TotalInterestedUsers($event['id']);
 	    $event_data = $event;
 	}
 		

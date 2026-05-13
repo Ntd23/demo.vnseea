@@ -1,4 +1,4 @@
-<!-- Description: Renders the backend-backed event detail page with real RSVP counts and attendee lists. -->
+<!-- Description: Renders the backend-backed event detail page with real RSVP counts, attendee lists, and event posts. -->
 <template>
   <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
     <section
@@ -25,6 +25,8 @@
           <EventsEventDetailMain :event="event" />
 
           <section class="space-y-4">
+            <FeedPublisherBox :event-id="event.id" @created="handlePostCreated" />
+
             <div
               v-if="posts.length === 0"
               class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-10 text-center shadow-[var(--shadow-sm)]"
@@ -65,6 +67,7 @@
 
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
+import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
 import { useEventDetailPageVM } from "../../application/view-models/useEventDetailPageVM"
 import EventsEventDetailHero from "../components/EventDetailHero.vue"
@@ -73,9 +76,13 @@ import EventsEventDetailSidebar from "../components/EventDetailSidebar.vue"
 
 const route = useRoute()
 const { locale } = useI18n()
-const { event, pending, posts, errorMessage, goingAttendees, interestedAttendees, busyAction, setGoing, setInterested } = useEventDetailPageVM(
+const { event, pending, posts, errorMessage, goingAttendees, interestedAttendees, busyAction, refreshAll, setGoing, setInterested } = useEventDetailPageVM(
   computed(() => String(route.params.id || "")),
 )
+
+const handlePostCreated = async () => {
+  await refreshAll()
+}
 
 const emptyPostsTitle = computed(() =>
   locale.value === "vi"
@@ -85,7 +92,7 @@ const emptyPostsTitle = computed(() =>
 
 const emptyPostsDescription = computed(() =>
   locale.value === "vi"
-    ? "Trang sự kiện đã dùng dữ liệu thật. Danh sách bài viết sẽ hiện ở đây khi sự kiện có bài đăng."
-    : "This event route already uses real backend data. Posts will appear here after people publish into the event.",
+    ? "Đăng bài mới ở khung phía trên để bài viết được gắn trực tiếp vào sự kiện này."
+    : "Publish from the composer above to attach a post directly to this event.",
 )
 </script>

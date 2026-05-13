@@ -139,6 +139,14 @@ export function createApiFeedRepository(): FeedRepository {
         formData.append("pageId", String(input.pageId))
       }
 
+      if (input.eventId) {
+        formData.append("eventId", String(input.eventId))
+      }
+
+      if (input.groupId) {
+        formData.append("groupId", String(input.groupId))
+      }
+
       if (input.imageFile || input.videoFile || input.feeling) {
         if (input.audience) {
           formData.append("audience", input.audience)
