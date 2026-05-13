@@ -1,13 +1,13 @@
 <template>
   <aside class="space-y-4">
     <!-- Trending topics card -->
-    <div class="overflow-hidden rounded-[24px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
+    <div class="overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <div class="border-b border-[var(--border-light)] px-4 py-3.5">
         <div class="flex items-center gap-2">
           <span class="flex h-7 w-7 items-center justify-center rounded-[10px] bg-[var(--color-primary-50)]">
             <Icon name="i-ph-trend-up-bold" class="h-4 w-4 text-[var(--color-primary-600)]" />
           </span>
-          <p id="blogs-sidebar-topics-title" class="text-[12px] font-extrabold uppercase tracking-[0.1em] text-[var(--text-primary)]">
+          <p id="blogs-sidebar-topics-title" class="text-[12px] font-extrabold uppercase tracking-[0.06em] text-[var(--text-primary)]">
             {{ $t("pages.blogsPage.featuredTopics") }}
           </p>
         </div>
@@ -50,13 +50,13 @@
     </div>
 
     <!-- Featured authors card -->
-    <div class="overflow-hidden rounded-[24px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]">
+    <div class="overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white shadow-[0_2px_12px_rgba(0,0,0,0.04)]">
       <div class="border-b border-[var(--border-light)] px-4 py-3.5">
         <div class="flex items-center gap-2">
           <span class="flex h-7 w-7 items-center justify-center rounded-[10px] bg-[#fff0f9]">
             <Icon name="i-ph-star-fill" class="h-4 w-4 text-[#e879a0]" />
           </span>
-          <p id="blogs-sidebar-authors-title" class="text-[12px] font-extrabold uppercase tracking-[0.1em] text-[var(--text-primary)]">
+          <p id="blogs-sidebar-authors-title" class="text-[12px] font-extrabold uppercase tracking-[0.06em] text-[var(--text-primary)]">
             {{ $t("pages.blogsPage.authorsThisWeek") }}
           </p>
         </div>

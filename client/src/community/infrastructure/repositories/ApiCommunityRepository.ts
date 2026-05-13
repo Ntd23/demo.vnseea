@@ -96,18 +96,10 @@ export function createApiCommunityRepository(): CommunityRepository {
       if (input.avatarFile) formData.append("avatar", input.avatarFile)
       if (input.bannerFile) formData.append("banner", input.bannerFile)
 
-      try {
-        const result = await client.put<CommunityPageRecord, CommunityPageSettingsDraft>(
-          apiRoutes.community.pageBySlug(slug),
-          formData as any,
-        )
-
-        console.log(`[Repository] Update result for ${slug}:`, result)
-        return result
-      } catch (error) {
-        console.error(`[Repository] Update FAILED for ${slug}:`, error)
-        throw error
-      }
+      return await client.put<CommunityPageRecord, CommunityPageSettingsDraft>(
+        apiRoutes.community.pageBySlug(slug),
+        formData as any,
+      )
     },
     async followPage(slug: string) {
       return await client.post<CommunityPageRecord>(apiRoutes.community.pageFollow(slug))
@@ -118,8 +110,14 @@ export function createApiCommunityRepository(): CommunityRepository {
         afterPostId: input?.afterPostId,
       })
     },
-    async deletePage(id: number) {
-      await client.delete(apiRoutes.community.pageById(id))
+    async deletePage(id: number, password: string) {
+      await client.request<void, { password: string }>(
+        apiRoutes.community.pageById(id),
+        {
+          method: "DELETE",
+          body: { password },
+        },
+      )
     },
     async deleteGroup(id: number) {
       await client.delete(apiRoutes.community.groupById(id))

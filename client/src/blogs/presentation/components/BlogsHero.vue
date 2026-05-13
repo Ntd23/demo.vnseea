@@ -1,47 +1,52 @@
 <template>
   <section
-    class="blogs-hero relative overflow-hidden rounded-[28px] px-7 py-10 sm:px-10 sm:py-14"
+    class="blogs-hero"
     aria-labelledby="blogs-hero-title"
   >
-    <!-- Decorative blur orbs -->
-    <div
-      class="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full blogs-hero-orb-1 blur-[90px]"
-      aria-hidden="true"
-    />
-    <div
-      class="pointer-events-none absolute -bottom-12 left-1/3 h-52 w-52 rounded-full blogs-hero-orb-2 blur-[70px]"
-      aria-hidden="true"
-    />
+    <div class="blogs-hero__content">
+      <span class="blogs-hero__eyebrow">
+        <Icon name="i-ph-newspaper-clipping-fill" class="h-4 w-4" />
+        {{ articleCount }} {{ $t("pages.blogsPage.results") }}
+      </span>
 
-    <div class="relative space-y-5">
       <h1
         id="blogs-hero-title"
-        class="max-w-2xl text-[30px] font-extrabold leading-tight tracking-[-0.025em] text-white sm:text-[42px]"
+        class="blogs-hero__title"
       >
         {{ $t("pages.blogsPage.heroTitle") }}
       </h1>
 
-      <div class="flex flex-wrap items-center gap-3">
+      <div class="blogs-hero__actions">
         <button
           type="button"
-          class="inline-flex h-10 items-center gap-2 rounded-[12px] px-4 text-[13px] font-semibold transition-all duration-200 active:scale-95"
-          :class="mineOnly
-            ? 'bg-white text-[#1e1b4b] shadow-[0_4px_14px_rgba(255,255,255,0.22)]'
-            : 'bg-white/15 text-white ring-1 ring-white/20 backdrop-blur-[6px] hover:bg-white/25'"
+          class="blogs-hero__button"
+          :class="{ 'blogs-hero__button--active': mineOnly }"
           :aria-pressed="mineOnly"
           @click="$emit('toggleMine')"
         >
-          <Icon name="i-ph-article-fill" class="h-4 w-4 shrink-0" />
+          <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-article-fill'" class="h-4 w-4 shrink-0" />
           {{ $t("pages.blogsPage.myArticles") }}
         </button>
 
         <NuxtLink
           to="/create-blog"
-          class="inline-flex h-10 items-center gap-2 rounded-[12px] bg-[var(--color-primary-500)] px-4 text-[13px] font-semibold text-white shadow-[0_4px_16px_rgba(99,102,241,0.45)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[var(--color-primary-400)] active:scale-95"
+          class="blogs-hero__primary"
         >
           <Icon name="i-ph-pencil-simple-line-fill" class="h-4 w-4 shrink-0" />
           {{ $t("pages.blogsPage.writeBlog") }}
         </NuxtLink>
+      </div>
+    </div>
+
+    <div class="blogs-hero__stats" aria-label="Blog statistics">
+      <div
+        v-for="stat in stats"
+        :key="stat.label"
+        class="blogs-hero__stat"
+      >
+        <strong>{{ stat.value }}</strong>
+        <span>{{ stat.label }}</span>
+        <small>{{ stat.description }}</small>
       </div>
     </div>
   </section>
@@ -65,14 +70,146 @@ defineEmits<{
 
 <style scoped>
 .blogs-hero {
-  background: linear-gradient(130deg, #0f172a 0%, #1e1b4b 45%, #4c1d95 100%);
+  display: grid;
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background:
+    linear-gradient(120deg, rgba(0, 0, 255, 0.08), transparent 48%),
+    #ffffff;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
-.blogs-hero-orb-1 {
-  background: #7c3aed;
-  opacity: 0.22;
+
+.blogs-hero__content {
+  min-width: 0;
 }
-.blogs-hero-orb-2 {
-  background: #4f46e5;
-  opacity: 0.18;
+
+.blogs-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.blogs-hero__title {
+  max-width: 720px;
+  margin: 14px 0 0;
+  color: #0f172a;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+}
+
+.blogs-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.blogs-hero__button,
+.blogs-hero__primary {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.blogs-hero__button {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+}
+
+.blogs-hero__button:hover,
+.blogs-hero__button--active {
+  border-color: rgba(0, 0, 255, 0.16);
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
+.blogs-hero__primary {
+  border: 1px solid #0000ff;
+  background: #0000ff;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+}
+
+.blogs-hero__button:hover,
+.blogs-hero__primary:hover {
+  transform: translateY(-1px);
+}
+
+.blogs-hero__stats {
+  display: grid;
+  gap: 10px;
+}
+
+.blogs-hero__stat {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 13px;
+}
+
+.blogs-hero__stat strong,
+.blogs-hero__stat span,
+.blogs-hero__stat small {
+  display: block;
+}
+
+.blogs-hero__stat strong {
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.blogs-hero__stat span {
+  margin-top: 6px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.blogs-hero__stat small {
+  margin-top: 3px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+@media (min-width: 768px) {
+  .blogs-hero {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: end;
+    padding: 26px;
+  }
+
+  .blogs-hero__title {
+    font-size: 40px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .blogs-hero__stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 </style>

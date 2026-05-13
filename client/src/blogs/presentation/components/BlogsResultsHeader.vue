@@ -1,32 +1,24 @@
 <template>
   <div
-    class="flex flex-col gap-3 rounded-[22px] border border-[var(--border-default)] bg-white px-4 py-4 shadow-[var(--shadow-sm)] sm:flex-row sm:items-center sm:justify-between"
+    class="blogs-results"
     role="region"
     aria-labelledby="blogs-results-heading"
     aria-live="polite"
   >
-    <div>
-      <div class="flex items-center gap-2">
-        <span class="inline-flex h-5 w-5 items-center justify-center rounded-[7px] bg-[var(--color-primary-50)]">
-          <Icon name="i-ph-article-fill" class="h-3 w-3 text-[var(--color-primary-600)]" />
-        </span>
-        <span class="text-[10.5px] font-bold uppercase tracking-[0.12em] text-[var(--text-tertiary)]">
-          {{ $t("pages.blogsPage.results") }}
-        </span>
+    <div class="blogs-results__main">
+      <span class="blogs-results__icon">
+        <Icon name="i-ph-article-fill" class="h-3.5 w-3.5" />
+      </span>
+      <div class="min-w-0">
+        <p class="blogs-results__eyebrow">{{ $t("pages.blogsPage.results") }}</p>
+        <h2 id="blogs-results-heading" class="blogs-results__heading">{{ heading }}</h2>
+        <p class="blogs-results__meta">
+          {{ $t("pages.blogsPage.resultMeta", { count, sort: sortLabel }) }}
+        </p>
       </div>
-      <h2 id="blogs-results-heading" class="mt-1 text-[17px] font-extrabold tracking-[-0.02em] text-[var(--text-primary)]">
-        {{ heading }}
-      </h2>
-      <p class="mt-0.5 text-[12.5px] text-[var(--text-secondary)]">
-        {{ $t("pages.blogsPage.resultMeta", { count, sort: sortLabel }) }}
-      </p>
     </div>
 
-    <button
-      class="inline-flex items-center gap-2 rounded-[14px] border border-[var(--border-default)] bg-[var(--color-secondary-50)] px-3.5 py-2 text-[12.5px] font-bold text-[var(--text-secondary)] transition-all duration-150 hover:border-[var(--border-strong)] hover:bg-white hover:text-[var(--text-primary)]"
-      type="button"
-      @click="$emit('reset')"
-    >
+    <button class="blogs-results__reset" type="button" @click="$emit('reset')">
       <Icon name="i-ph-arrow-counter-clockwise" class="h-3.5 w-3.5" />
       {{ $t("pages.blogsPage.reset") }}
     </button>
@@ -44,3 +36,87 @@ defineEmits<{
   reset: []
 }>()
 </script>
+
+<style scoped>
+.blogs-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.blogs-results__main {
+  display: flex;
+  min-width: 0;
+  gap: 10px;
+}
+
+.blogs-results__icon {
+  display: flex;
+  height: 32px;
+  width: 32px;
+  flex: 0 0 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+}
+
+.blogs-results__eyebrow {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.blogs-results__heading {
+  margin: 2px 0 0;
+  color: #0f172a;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.blogs-results__meta {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.blogs-results__reset {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #334155;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-weight: 800;
+  transition: all 0.15s ease;
+}
+
+.blogs-results__reset:hover {
+  border-color: rgba(0, 0, 255, 0.14);
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
+@media (min-width: 640px) {
+  .blogs-results {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+</style>

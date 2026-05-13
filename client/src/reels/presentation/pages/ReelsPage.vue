@@ -10,15 +10,19 @@
     </div>
 
     <!-- Active Reel Content -->
-    <div v-else-if="activeReel" class="reels-page__container" @wheel.prevent="handleWheel">
+    <div
+      v-else-if="activeReel"
+      class="reels-page__container"
+      @wheel="handleWheel"
+      @touchstart.passive="onTouchStart"
+      @touchend.passive="onTouchEnd"
+    >
       <!-- Main Content Area -->
       <main class="reels-page__main">
          <!-- Reel Player Stage -->
          <div class="reels-page__stage">
             <div
               class="reels-page__player-box"
-              @touchstart.passive="onTouchStart"
-              @touchend.passive="onTouchEnd"
             >
               <template v-if="activeMedia?.type === 'video'">
                 <video
@@ -222,10 +226,6 @@ import FeedCommentComposer from "../../../feed/presentation/components/CommentCo
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
 import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
 import { useReelsPageVM } from "../../application/view-models/useReelsPageVM"
-import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM"
-import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
-import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
-import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
 
 const { t } = useI18n()
 const {
@@ -234,6 +234,8 @@ const {
   activeReel,
   activeMedia,
   fetchReels,
+  nextReel,
+  prevReel,
   onTouchStart,
   onTouchEnd,
   onWheel,
@@ -300,31 +302,6 @@ function toggleLocalSave() {
   locallySaved.value = !locallySaved.value
 }
 
-const showComments = ref(false)
-
-// Use the FeedPostCardVM for all interaction logic
-const {
-  currentAuthUserStore,
-  showShare,
-  liked,
-  selectedPostReaction,
-  postReactionTrayOpen,
-  localComments,
-  likesCount,
-  sharesCount,
-  commenting,
-  shareUrl,
-  postReactionOptions,
-  activePostReactionAsset,
-  previewReactions,
-  openPostReactionTray,
-  closePostReactionTray,
-  handlePostReactionButtonClick,
-  reactToPost,
-  submitComment,
-  handleShared,
-  handleMenuAction,
-} = useFeedPostCardVM(activeReel as any)
 
 watchEffect(() => {
   if (import.meta.client) {
@@ -342,8 +319,6 @@ useSeoMeta({
   title: () => t("pages.reelsPage.seoTitle"),
   description: () => t("pages.reelsPage.seoDescription"),
 })
-
-const videoRef = ref<HTMLVideoElement | null>(null)
 const currentTime = ref(0)
 const duration = ref(0)
 const isPlaying = ref(true)
@@ -386,6 +361,9 @@ const lastWheelTime = ref(0)
 const wheelThreshold = 500 // ms
 
 function handleWheel(event: WheelEvent) {
+  if (showComments.value) return
+
+  event.preventDefault()
   const now = Date.now()
   if (now - lastWheelTime.value < wheelThreshold) return
 
@@ -397,10 +375,6 @@ function handleWheel(event: WheelEvent) {
     lastWheelTime.value = now
   }
 }
-
-definePageMeta({
-  layout: "empty",
-})
 
 await fetchReels()
 </script>

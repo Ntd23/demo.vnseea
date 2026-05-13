@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 import CommunityPresentationPagesDirectoryPage from "../../src/community/presentation/pages/PagesDirectoryPage.vue"
+import { appRoutes } from "../../src/shared-kernel/application/constants/route-registry"
 
 definePageMeta({ layout: "default" })
 
 const { t } = useI18n()
-const route = useRoute()
 const requestURL = useRequestURL()
 
-const canonicalUrl = computed(() => new URL(route.fullPath || "/liked-pages", requestURL.origin).toString())
+const canonicalUrl = computed(() => new URL(appRoutes.likedPages, requestURL.origin).toString())
 
 useSeoMeta({
   title: () => `${t("community.pagesDirectory.seoFavoriteTitle")} | VNSEEA`,

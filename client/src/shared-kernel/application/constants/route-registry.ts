@@ -112,6 +112,10 @@ export const apiRoutes = {
       action: "feed/stories/action",
     },
   },
+  blogs: {
+    list: "blogs",
+    create: "blogs/create",
+  },
   community: {
     groups: "community/groups",
     groupBySlug: (slug: string) => `community/groups/${encodeSegment(slug)}`,

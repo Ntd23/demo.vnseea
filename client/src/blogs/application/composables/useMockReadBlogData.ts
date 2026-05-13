@@ -1,12 +1,17 @@
+import type { BlogCategory } from "../../domain/types/blog.types"
+
 export type MockReadBlogArticle = {
+  id: number
   slug: string
   title: string
   excerpt: string
+  category: Exclude<BlogCategory, "all">
   categoryLabel: string
   author: string
   authorInitials: string
   authorGradient: string
   publishedAt: string
+  publishedHoursAgo: number
   views: number
   readMinutes: number
   likes: number
@@ -14,6 +19,7 @@ export type MockReadBlogArticle = {
   image: string
   imageFallback: string
   body: string[]
+  mine?: boolean
 }
 
 export const useMockReadBlogData = () => {
@@ -21,20 +27,24 @@ export const useMockReadBlogData = () => {
 
   const articles = computed<MockReadBlogArticle[]>(() => [
     {
+      id: 1,
       slug: "recycled-plastic-granules-market-growth",
       title: t("pages.blogsPage.article1Title"),
       excerpt: t("pages.blogsPage.article1Excerpt"),
+      category: "business",
       categoryLabel: t("pages.blogsPage.categoryBusiness"),
       author: "Justin",
       authorInitials: "JT",
       authorGradient: "linear-gradient(135deg,#0000ff 0%,#4f7cff 100%)",
       publishedAt: t("pages.blogsPage.article1PublishedAt"),
+      publishedHoursAgo: 0.25,
       views: 18400,
       readMinutes: 5,
       likes: 412,
       tags: ["market", "recycle"],
       image: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=1600&q=80",
       imageFallback: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 46%,#bfdbfe 100%)",
+      mine: true,
       body: [
         t("pages.readBlogPage.article1Body1"),
         t("pages.readBlogPage.article1Body2"),
@@ -42,14 +52,17 @@ export const useMockReadBlogData = () => {
       ],
     },
     {
+      id: 2,
       slug: "passion-hose-industrial-automotive-needs",
       title: t("pages.blogsPage.article2Title"),
       excerpt: t("pages.blogsPage.article2Excerpt"),
+      category: "vehicles",
       categoryLabel: t("pages.blogsPage.categoryVehicles"),
       author: "Hoangne",
       authorInitials: "HN",
       authorGradient: "linear-gradient(135deg,#334155 0%,#0f172a 100%)",
       publishedAt: t("pages.blogsPage.article2PublishedAt"),
+      publishedHoursAgo: 0.7,
       views: 12600,
       readMinutes: 4,
       likes: 286,
@@ -63,14 +76,17 @@ export const useMockReadBlogData = () => {
       ],
     },
     {
+      id: 3,
       slug: "lop-hoc-so-sau-gio-lam",
       title: t("pages.blogsPage.article3Title"),
       excerpt: t("pages.blogsPage.article3Excerpt"),
+      category: "education",
       categoryLabel: t("pages.blogsPage.categoryEducation"),
       author: "Dung 1",
       authorInitials: "D1",
       authorGradient: "linear-gradient(135deg,#7c3aed 0%,#2563eb 100%)",
       publishedAt: t("pages.blogsPage.article3PublishedAt"),
+      publishedHoursAgo: 1,
       views: 9300,
       readMinutes: 6,
       likes: 204,
@@ -84,14 +100,17 @@ export const useMockReadBlogData = () => {
       ],
     },
     {
+      id: 4,
       slug: "khong-gian-song-toi-gian",
       title: t("pages.blogsPage.article4Title"),
       excerpt: t("pages.blogsPage.article4Excerpt"),
+      category: "lifestyle",
       categoryLabel: t("pages.blogsPage.categoryLifestyle"),
       author: "Ngoctokyo",
       authorInitials: "NT",
       authorGradient: "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
       publishedAt: t("pages.blogsPage.article4PublishedAt"),
+      publishedHoursAgo: 3,
       views: 7600,
       readMinutes: 3,
       likes: 176,
@@ -105,14 +124,17 @@ export const useMockReadBlogData = () => {
       ],
     },
     {
+      id: 5,
       slug: "ai-ca-nhan-hoa-luong-doc-tin",
       title: t("pages.blogsPage.article5Title"),
       excerpt: t("pages.blogsPage.article5Excerpt"),
+      category: "science",
       categoryLabel: t("pages.blogsPage.categoryScience"),
       author: "Nicolas",
       authorInitials: "NC",
       authorGradient: "linear-gradient(135deg,#1e293b 0%,#4f46e5 100%)",
       publishedAt: t("pages.blogsPage.article5PublishedAt"),
+      publishedHoursAgo: 4,
       views: 15400,
       readMinutes: 5,
       likes: 520,
@@ -126,14 +148,17 @@ export const useMockReadBlogData = () => {
       ],
     },
     {
+      id: 6,
       slug: "cung-duong-cuoi-tuan-gan-bien",
       title: t("pages.blogsPage.article6Title"),
       excerpt: t("pages.blogsPage.article6Excerpt"),
+      category: "travel",
       categoryLabel: t("pages.blogsPage.categoryTravel"),
       author: "Minh Anh",
       authorInitials: "MA",
       authorGradient: "linear-gradient(135deg,#0284c7 0%,#38bdf8 100%)",
       publishedAt: t("pages.blogsPage.article6PublishedAt"),
+      publishedHoursAgo: 5,
       views: 6900,
       readMinutes: 4,
       likes: 149,
@@ -147,14 +172,17 @@ export const useMockReadBlogData = () => {
       ],
     },
     {
+      id: 7,
       slug: "doi-bong-phong-trao-lich-tap-deu",
       title: t("pages.blogsPage.article7Title"),
       excerpt: t("pages.blogsPage.article7Excerpt"),
+      category: "sports",
       categoryLabel: t("pages.blogsPage.categorySports"),
       author: "Thanh Son",
       authorInitials: "TS",
       authorGradient: "linear-gradient(135deg,#1d4ed8 0%,#3b82f6 100%)",
       publishedAt: t("pages.blogsPage.article7PublishedAt"),
+      publishedHoursAgo: 6,
       views: 5300,
       readMinutes: 4,
       likes: 118,
@@ -168,20 +196,24 @@ export const useMockReadBlogData = () => {
       ],
     },
     {
+      id: 8,
       slug: "game-indie-viet-nhom-phat-trien-nho",
       title: t("pages.blogsPage.article8Title"),
       excerpt: t("pages.blogsPage.article8Excerpt"),
+      category: "gaming",
       categoryLabel: t("pages.blogsPage.categoryGaming"),
       author: "Hai Nam",
       authorInitials: "HN",
       authorGradient: "linear-gradient(135deg,#4338ca 0%,#a855f7 100%)",
       publishedAt: t("pages.blogsPage.article8PublishedAt"),
+      publishedHoursAgo: 24,
       views: 8800,
       readMinutes: 5,
       likes: 268,
       tags: ["game", "indie"],
       image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1600&q=80",
       imageFallback: "linear-gradient(135deg,#312e81 0%,#a855f7 100%)",
+      mine: true,
       body: [
         t("pages.readBlogPage.article8Body1"),
         t("pages.readBlogPage.article8Body2"),

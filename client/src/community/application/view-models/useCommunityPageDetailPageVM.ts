@@ -19,7 +19,8 @@ export function useCommunityPageDetailPageVM(
   const actionState = ref<PageActionState>("idle")
   const actionMessage = ref("")
 
-  const username = computed(() => String(route.params.name || ""))
+  // pageSlug is the raw route param used to look up the page
+  const pageSlug = computed(() => String(route.params.name || ""))
 
   const {
     page,
@@ -33,7 +34,7 @@ export function useCommunityPageDetailPageVM(
     likeCountLabel,
     slug,
     refreshPagePosts,
-  } = useCommunityPageDetail(username, repository)
+  } = useCommunityPageDetail(pageSlug, repository)
 
   const pageName = computed(() => translateText(page.value?.name || ""))
   const pageSummary = computed(() => translateText(page.value?.summary || ""))
@@ -131,6 +132,9 @@ export function useCommunityPageDetailPageVM(
     handleFollowPage,
     handleSharePage,
     refreshPagePosts,
+    // slug: backend-normalized slug (may differ from route param), used for canonical URLs
     slug,
+    // pageSlug: raw route param value
+    pageSlug,
   }
 }

@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import BlogsPresentationReadBlogPage from "../../../src/blogs/presentation/pages/ReadBlogPage.vue"
-import { useMockReadBlogData } from "../../../src/blogs/application/composables/useMockReadBlogData"
+import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 definePageMeta({
   layout: "default",
@@ -13,32 +13,17 @@ definePageMeta({
 const route = useRoute()
 const requestURL = useRequestURL()
 const { t } = useI18n()
-const { articles } = useMockReadBlogData()
 
 const currentSlug = computed(() => String(route.params.slug ?? ""))
-const article = computed(() =>
-  articles.value.find(item => item.slug === currentSlug.value) ?? articles.value[0],
-)
-const articleNotFound = computed(() =>
-  !articles.value.some(item => item.slug === currentSlug.value),
-)
-const canonicalUrl = computed(() => new URL(route.fullPath || `/read-blog/${currentSlug.value}`, requestURL.origin).toString())
-const seoTitle = computed(() =>
-  articleNotFound.value ? `${t("pages.readBlogPage.notFound")} | VNSEEA` : `${article.value.title} | VNSEEA`,
-)
-const seoDescription = computed(() =>
-  articleNotFound.value ? t("pages.readBlogPage.notFoundDescription") : article.value.excerpt,
-)
+const canonicalUrl = computed(() => new URL(appRoutes.readBlog(currentSlug.value), requestURL.origin).toString())
 
 useSeoMeta({
-  title: () => seoTitle.value,
-  description: () => seoDescription.value,
-  ogTitle: () => seoTitle.value,
-  ogDescription: () => seoDescription.value,
+  title: () => `${t("pages.readBlogPage.notFound")} | VNSEEA`,
+  description: () => t("pages.readBlogPage.notFoundDescription"),
+  ogTitle: () => `${t("pages.readBlogPage.notFound")} | VNSEEA`,
+  ogDescription: () => t("pages.readBlogPage.notFoundDescription"),
   ogUrl: () => canonicalUrl.value,
-  ogImage: () => article.value.image,
   ogType: "article",
-  robots: () => articleNotFound.value ? "noindex, nofollow" : "index, follow",
 })
 
 useHead({
