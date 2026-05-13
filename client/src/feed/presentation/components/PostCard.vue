@@ -6,6 +6,9 @@
         :author="post.author"
         :author-avatar-url="post.authorAvatarUrl"
         :author-path="post.authorPath"
+        :event-context="post.eventContext"
+        :group-context="post.groupContext"
+        :feeling="post.feeling"
         :role="post.role"
         :time="post.time"
         :audience="post.audience"
@@ -189,7 +192,7 @@
     <FeedShareModal
       :open="showShare"
       :share-url="shareUrl"
-      :post="{ author: post.author, text: post.text }"
+      :post="{ author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
       @close="showShare = false"
       @shared="handleShared"
     />

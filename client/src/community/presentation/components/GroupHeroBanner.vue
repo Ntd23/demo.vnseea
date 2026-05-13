@@ -23,8 +23,8 @@
     </div>
 
     <!-- Info Area -->
-    <div style="padding: 0 40px 32px 40px;">
-      <div style="position: relative; margin-top: -80px; display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px;">
+    <div class="group-hero__info">
+      <div class="group-hero__identity-row">
         <!-- Avatar + Title Group -->
         <div class="flex flex-col gap-6 sm:flex-row sm:items-end">
           <!-- Big Avatar/Icon -->
@@ -55,29 +55,29 @@
         </div>
 
         <!-- Action Buttons (Clean) -->
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="group-hero__actions">
           <UButton
             color="primary"
             variant="solid"
-            size="xl"
+            size="lg"
             :loading="inviteState === 'loading'"
             :disabled="inviteState === 'loading'"
-            class="rounded-xl px-8 font-bold shadow-lg"
+            class="group-hero__action-btn rounded-xl px-6 font-bold shadow-lg"
             @click="emit('invite')"
           >
             {{ inviteButtonLabel }}
           </UButton>
 
           <UButton
-            color="white"
+            :color="primaryButtonColor"
             variant="solid"
-            size="xl"
+            size="lg"
             :loading="joinState === 'loading'"
-            :disabled="joinState === 'loading' || joined"
-            class="rounded-xl px-6 font-bold"
-            @click="emit('join')"
+            :disabled="joinState === 'loading'"
+            class="group-hero__action-btn rounded-xl px-5 font-bold"
+            @click="handlePrimaryAction"
           >
-            <Icon :name="joined ? 'i-ph-check-circle-bold' : 'i-ph-user-plus-bold'" class="mr-2 h-5 w-5" />
+            <Icon :name="primaryButtonIcon" class="mr-2 h-5 w-5" />
             {{ joinButtonLabel }}
           </UButton>
 
@@ -98,10 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  getCommunityInitials,
-  getCommunityGroupSettingsPath,
-} from "../../domain/services/community-helpers.service"
+import { getCommunityGroupSettingsPath } from "../../domain/services/community-helpers.service"
 import type { CommunityGroupRecord } from "../../domain/types/community.types"
 
 const { t } = useI18n()
@@ -120,12 +117,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   join: []
+  delete: []
   invite: []
 }>()
-
-const avatarLabel = computed(() =>
-  getCommunityInitials(translateText(props.group.name)),
-)
 
 const settingsPath = computed(() =>
   getCommunityGroupSettingsPath(props.group.slug),
@@ -140,12 +134,86 @@ const groupSummary = computed(() =>
 )
 
 const joinButtonLabel = computed(() => {
-  if (props.joined) return t("pages.groupDetailPage.joinedButton")
+  if (props.group.canManage) return t("pages.groupDetailPage.deleteGroupButton")
+  if (props.joined) return t("pages.groupDetailPage.leaveButton")
   return translateText(props.group.joinLabel, t("pages.groupDetailPage.joinFallback"))
 })
+
+const primaryButtonColor = computed(() =>
+  props.group.canManage ? "error" : props.joined ? "primary" : "white",
+)
+
+const primaryButtonIcon = computed(() => {
+  if (props.group.canManage) return "i-ph-trash-bold"
+  if (props.joined) return "i-ph-sign-out-bold"
+  return "i-ph-user-plus-bold"
+})
+
+function handlePrimaryAction() {
+  if (props.group.canManage) {
+    emit("delete")
+    return
+  }
+
+  emit("join")
+}
 
 const inviteButtonLabel = computed(() => {
   if (props.inviteState === "success") return t("pages.groupDetailPage.invitedButton")
   return translateText(props.group.inviteLabel, t("pages.groupDetailPage.inviteFallback"))
 })
 </script>
+
+<style scoped>
+.group-hero__info {
+  padding: 0 40px 32px;
+}
+
+.group-hero__identity-row {
+  position: relative;
+  margin-top: -80px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.group-hero__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+  padding-bottom: 4px;
+}
+
+.group-hero__action-btn {
+  min-height: 44px;
+  min-width: 150px;
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .group-hero__info {
+    padding: 0 24px 28px;
+  }
+
+  .group-hero__identity-row {
+    margin-top: -64px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .group-hero__actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    padding-bottom: 0;
+  }
+
+  .group-hero__action-btn {
+    min-width: 0;
+    flex: 1 1 160px;
+  }
+}
+</style>

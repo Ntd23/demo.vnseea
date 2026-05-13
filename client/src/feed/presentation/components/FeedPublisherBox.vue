@@ -118,7 +118,7 @@
 
         <div v-if="activeFeeling" class="publisher__selection-pill">
           <span>{{ activeFeeling.emoji }}</span>
-          <span>{{ t("feed.publisherBox.actionFeeling") }}</span>
+          <span>{{ feelingSelectedText }} {{ activeFeeling.label }}</span>
           <button type="button" class="publisher__selection-remove" @click="selectFeeling(activeFeeling.value)">
             <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
           </button>
@@ -158,6 +158,7 @@
       </div>
 
       <div v-if="showFeelingPicker" class="publisher__feeling-picker">
+        <p class="publisher__feeling-title">{{ feelingPromptText }}</p>
         <button
           v-for="feeling in feelingOptions"
           :key="feeling.value"
@@ -166,7 +167,8 @@
           :class="{ 'publisher__feeling-option--active': activeFeeling?.value === feeling.value }"
           @click="selectFeeling(feeling.value)"
         >
-          {{ feeling.emoji }}
+          <span class="publisher__feeling-emoji">{{ feeling.emoji }}</span>
+          <span>{{ feeling.label }}</span>
         </button>
       </div>
     </div>
@@ -195,8 +197,11 @@ type MentionSearchResponse = {
 
 const { t } = useI18n()
 const apiClient = useNuxtApiClient()
+const { locale } = useI18n()
 const props = defineProps<{
   pageId?: number
+  eventId?: number
+  groupId?: number
 }>()
 const emit = defineEmits<{
   created: [post: FeedPostRecord | null]
@@ -470,6 +475,16 @@ async function selectMention(user: { firstName: string; name: string; username: 
   textarea.setSelectionRange(nextCaret, nextCaret)
   mentionSelectionLocked.value = false
 }
+  publish,
+} = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId, props.eventId, props.groupId)
+
+const feelingPromptText = computed(() =>
+  locale.value === "vi" ? "Bạn đang cảm thấy gì?" : "What are you feeling?",
+)
+
+const feelingSelectedText = computed(() =>
+  locale.value === "vi" ? "Đang cảm thấy" : "Feeling",
+)
 </script>
 
 <style scoped>
@@ -856,29 +871,57 @@ async function selectMention(user: { firstName: string; name: string; username: 
 }
 
 .publisher__feeling-picker {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
   gap: 8px;
-  flex-wrap: wrap;
+  padding: 10px 0 2px;
+}
+
+.publisher__feeling-title {
+  grid-column: 1 / -1;
+  margin: 0 0 2px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .publisher__feeling-option {
-  display: inline-flex;
-  width: 36px;
-  height: 36px;
+  display: flex;
+  min-width: 0;
+  min-height: 40px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 8px;
   border: 1px solid #e2e8f0;
-  border-radius: 999px;
+  border-radius: 12px;
   background: #ffffff;
-  font-size: 18px;
+  padding: 8px 10px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
   cursor: pointer;
   transition: all 0.15s ease;
+}
+
+.publisher__feeling-emoji {
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #f8fafc;
+  font-size: 16px;
+  line-height: 1;
 }
 
 .publisher__feeling-option--active,
 .publisher__feeling-option:hover {
   border-color: rgba(0, 0, 255, 0.2);
   background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
 }
 
 .publisher__action-label {

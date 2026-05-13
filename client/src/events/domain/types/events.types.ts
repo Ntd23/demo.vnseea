@@ -38,6 +38,8 @@ export type EventRecord = {
   dateRangeLabel: string
   isOwner: boolean
   rsvpState: EventRsvpState
+  isGoing: boolean
+  isInterested: boolean
   goingCount: number
   interestedCount: number
   hostName: string

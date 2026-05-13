@@ -78,6 +78,21 @@ const createFallback = (id: number) => {
   return `linear-gradient(135deg,#0f172a 0%,${accent} 58%,#bfdbfe 100%)`
 }
 
+const resolveEventCover = (entity: BackendEntity, baseUrl: string) =>
+  normalizeImagePath(
+    asString(
+      entity.cover
+      || entity.cover_url
+      || entity.cover_full
+      || entity.cover_org
+      || entity.event_cover
+      || entity.eventCover
+      || entity.image
+      || entity.thumbnail,
+    ),
+    baseUrl,
+  )
+
 const toDateBadge = (startDateValue: string, startDateLabel: string) => {
   if (!startDateValue) {
     return startDateLabel
@@ -117,6 +132,8 @@ export const mapEventRecord = (
   options: {
     currentUserId: number
     baseUrl: string
+    assumedGoing?: boolean
+    assumedInterested?: boolean
   },
 ): EventRecord => {
   const id = asNumber(entity.id)
@@ -127,13 +144,17 @@ export const mapEventRecord = (
   const startTime = asString(entity.start_time)
   const endTime = asString(entity.end_time)
   const userData = (entity.user_data ?? {}) as BackendEntity
+  const isGoing = options.assumedGoing || isTruthy(entity.is_going)
+  const isInterested = options.assumedInterested || isTruthy(entity.is_interested)
+  const goingCount = Math.max(asNumber(entity.going_count || entity.going), isGoing ? 1 : 0)
+  const interestedCount = Math.max(asNumber(entity.interested_count || entity.interested), isInterested ? 1 : 0)
 
   return {
     id,
     name: asString(entity.name) || `Event ${id}`,
     description: asString(entity.description),
     location: asString(entity.location),
-    coverUrl: normalizeImagePath(asString(entity.cover), options.baseUrl),
+    coverUrl: resolveEventCover(entity, options.baseUrl),
     coverFallback: createFallback(id),
     startDateLabel,
     endDateLabel,
@@ -145,9 +166,11 @@ export const mapEventRecord = (
     timeLabel: [startTime, endTime].filter(Boolean).join(" - "),
     dateRangeLabel: toDateRangeLabel(startDateLabel, endDateLabel, startTime, endTime),
     isOwner: isTruthy(entity.is_owner) || asNumber(entity.poster_id || entity.user_id) === options.currentUserId,
-    rsvpState: toRsvpState(entity),
-    goingCount: asNumber(entity.going_count || entity.going),
-    interestedCount: asNumber(entity.interested_count || entity.interested),
+    rsvpState: isGoing ? "going" : isInterested ? "interested" : toRsvpState(entity),
+    isGoing,
+    isInterested,
+    goingCount,
+    interestedCount,
     hostName: asString(userData.name) || asString(userData.username) || "VNSEEA",
     hostUsername: asString(userData.username),
     hostAvatarUrl: normalizeImagePath(
@@ -189,15 +212,38 @@ export async function fetchEventsCatalog(event: H3Event): Promise<EventsCatalogR
   )
 
   const currentUserId = asNumber(currentUser.user_id)
-  const mapList = (items: BackendEntity[] | undefined) =>
-    (items ?? []).map(item => mapEventRecord(item, { currentUserId, baseUrl }))
+  const goingIds = new Set((response.going ?? []).map(item => asNumber(item.id)))
+  const interestedIds = new Set((response.interested ?? []).map(item => asNumber(item.id)))
+  const browseById = new Map(
+    (response.events ?? []).map(item => [asNumber(item.id), item]),
+  )
+  const mapList = (
+    items: BackendEntity[] | undefined,
+    options?: {
+      assumedGoing?: boolean
+      assumedInterested?: boolean
+    },
+  ) =>
+    (items ?? []).map((item) => {
+      const merged = {
+        ...(browseById.get(asNumber(item.id)) ?? {}),
+        ...item,
+      }
+
+      return mapEventRecord(merged, {
+        currentUserId,
+        baseUrl,
+        assumedGoing: options?.assumedGoing || goingIds.has(asNumber(item.id)),
+        assumedInterested: options?.assumedInterested || interestedIds.has(asNumber(item.id)),
+      })
+    })
 
   return {
     browse: mapList(response.events),
     mine: mapList(response.my_events),
-    going: mapList(response.going),
+    going: mapList(response.going, { assumedGoing: true }),
     invited: mapList(response.invited),
-    interested: mapList(response.interested),
+    interested: mapList(response.interested, { assumedInterested: true }),
     past: mapList(response.past),
   }
 }

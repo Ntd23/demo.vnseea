@@ -1,137 +1,121 @@
 <template>
-  <div class="space-y-6 pb-10">
-    <!-- Legacy Header -->
-    <div class="border-b border-[var(--border-default)]" style="background-color: #f9f9f9 !important;">
-      <div class="container mx-auto h-16 flex items-center px-4 sm:px-6">
-        <h1 class="flex items-center gap-3 text-2xl font-black text-[var(--text-primary)]">
-          <Icon name="i-ph-movie-bold" class="h-8 w-8" style="color: #0a58ca !important;" />
+  <div class="movies-page pb-10">
+    <div class="movies-page__head">
+      <div class="container mx-auto px-4 sm:px-6">
+        <h1 class="movies-page__title">
+          <Icon name="i-ph-film-strip-bold" class="h-5 w-5" />
           {{ $t("pages.moviesPage.heroEyebrow") }}
         </h1>
       </div>
     </div>
 
+    <div class="movies-page__backdrop" />
+
     <div class="container mx-auto px-4 sm:px-6">
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <!-- Main Content -->
-        <div class="space-y-6">
-          <!-- Filters & Tabs -->
-          <div class="space-y-4">
-            <MoviesFilters
-              v-model:search="search"
-              v-model:selected-category="selectedCategory"
-              :categories="categories"
-              :placeholder="$t('pages.moviesPage.searchPlaceholder')"
-            />
-            
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <MoviesTabs
-                v-model="activeTab"
-                :tabs="navigationTabs"
-              />
+      <section class="movies-page__filters">
+        <div class="movies-page__search">
+          <Icon name="i-ph-magnifying-glass-bold" class="movies-page__search-icon" />
+          <input
+            v-model="search"
+            class="movies-page__search-input"
+            :placeholder="$t('pages.moviesPage.searchPlaceholder')"
+            type="text"
+          >
+        </div>
 
-              <div class="flex items-center gap-2">
-                <!-- Genre Dropdown -->
-                <div class="relative">
-                  <button
-                    class="flex h-11 items-center gap-2 rounded-xl border border-[var(--border-default)] bg-white px-4 text-[14px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] transition shadow-sm"
-                    @click="isGenreOpen = !isGenreOpen; isCountryOpen = false"
-                  >
-                    <Icon name="i-ph-tag-bold" class="h-4 w-4 text-[var(--text-tertiary)]" />
-                    <span>{{ selectedGenreLabel }}</span>
-                    <Icon name="i-ph-caret-down-bold" class="h-3 w-3 opacity-50 transition-transform" :class="{ 'rotate-180': isGenreOpen }" />
-                  </button>
-                  <div v-if="isGenreOpen" class="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-[var(--border-default)] bg-white p-2 shadow-xl space-y-1">
-                    <button
-                      v-for="genre in genres"
-                      :key="genre.value"
-                      class="flex w-full items-center px-4 py-2.5 rounded-lg text-left text-[13px] font-bold transition hover:bg-[var(--bg-surface-hover)]"
-                      :class="selectedGenre === genre.value ? 'bg-[var(--color-primary-50)] text-[#0a58ca]' : 'text-[var(--text-secondary)]'"
-                      @click="selectedGenre = genre.value; isGenreOpen = false"
-                    >
-                      {{ genre.label }}
-                    </button>
-                  </div>
-                </div>
+        <div ref="filterMenuRef" class="movies-page__filter">
+          <button
+            class="movies-page__filter-button"
+            type="button"
+            :aria-expanded="isFilterOpen"
+            @click.stop="isFilterOpen = !isFilterOpen"
+          >
+            <Icon name="i-ph-funnel-simple-bold" class="h-5 w-5" />
+          </button>
 
-                <!-- Country Dropdown -->
-                <div class="relative">
-                  <button
-                    class="flex h-11 items-center gap-2 rounded-xl border border-[var(--border-default)] bg-white px-4 text-[14px] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-surface-hover)] transition shadow-sm"
-                    @click="isCountryOpen = !isCountryOpen; isGenreOpen = false"
-                  >
-                    <Icon name="i-ph-globe-bold" class="h-4 w-4 text-[var(--text-tertiary)]" />
-                    <span>{{ selectedCountryLabel }}</span>
-                    <Icon name="i-ph-caret-down-bold" class="h-3 w-3 opacity-50 transition-transform" :class="{ 'rotate-180': isCountryOpen }" />
-                  </button>
-                  <div v-if="isCountryOpen" class="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-[var(--border-default)] bg-white p-2 shadow-xl space-y-1">
-                    <button
-                      v-for="country in countries"
-                      :key="country.value"
-                      class="flex w-full items-center px-4 py-2.5 rounded-lg text-left text-[13px] font-bold transition hover:bg-[var(--bg-surface-hover)]"
-                      :class="selectedCountry === country.value ? 'bg-[var(--color-primary-50)] text-[#0a58ca]' : 'text-[var(--text-secondary)]'"
-                      @click="selectedCountry = country.value; isCountryOpen = false"
-                    >
-                      {{ country.label }}
-                    </button>
-                  </div>
-                </div>
-              </div>
+          <div v-if="isFilterOpen" class="movies-page__filter-menu" @click.stop>
+            <button class="movies-page__filter-section" type="button" @click="genreOpen = !genreOpen">
+              <span>Thể loại</span>
+              <Icon name="i-ph-caret-down-bold" class="h-4 w-4" :class="{ 'rotate-180': genreOpen }" />
+            </button>
+            <div v-if="genreOpen" class="movies-page__filter-list">
+              <button
+                v-for="genre in genres"
+                :key="genre.value"
+                class="movies-page__filter-item"
+                :class="{ 'movies-page__filter-item--active': selectedGenre === genre.value }"
+                type="button"
+                @click="selectGenre(genre.value)"
+              >
+                {{ genre.label }}
+              </button>
             </div>
-          </div>
 
-          <!-- Movies Grid -->
-          <div v-if="displayMovies.length > 0" class="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
-            <MoviesCard
-              v-for="movie in displayMovies"
-              :key="movie.id"
-              :category-label="categoryLabelMap[movie.category]"
-              :movie="movie"
-            />
-          </div>
-
-          <!-- Empty State -->
-          <div v-else class="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border-default)] bg-white py-16 text-center">
-            <div class="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--bg-surface-hover)] text-[var(--text-tertiary)]">
-              <Icon name="i-ph-popcorn-bold" class="h-10 w-10" />
+            <button class="movies-page__filter-section" type="button" @click="countryOpen = !countryOpen">
+              <span>Quốc gia</span>
+              <Icon name="i-ph-caret-down-bold" class="h-4 w-4" :class="{ 'rotate-180': countryOpen }" />
+            </button>
+            <div v-if="countryOpen" class="movies-page__filter-list">
+              <button
+                v-for="country in countries"
+                :key="country.value"
+                class="movies-page__filter-item"
+                :class="{ 'movies-page__filter-item--active': selectedCountry === country.value }"
+                type="button"
+                @click="selectCountry(country.value)"
+              >
+                {{ country.label }}
+              </button>
             </div>
-            <h3 class="mt-4 text-lg font-bold text-[var(--text-primary)]">{{ $t("pages.moviesPage.emptyTitle") }}</h3>
-            <p class="mt-2 text-[var(--text-secondary)]">{{ $t("pages.moviesPage.emptyDescription") }}</p>
-            <button
-              class="mt-6 font-bold text-[var(--color-primary-600)] hover:underline"
-              @click="resetFilters"
-            >
+
+            <button class="movies-page__reset" type="button" @click="resetFilters">
+              <Icon name="i-ph-arrow-counter-clockwise-bold" class="h-4 w-4" />
               {{ $t("pages.moviesPage.resetFilters") }}
             </button>
           </div>
         </div>
+      </section>
 
-        <!-- Sidebar -->
-        <MoviesSidebar
-          :active-movie-id="activeMovieId"
-          :picks="topRatedMovies"
-          :picks-eyebrow="$t('pages.moviesPage.sidebarPicksEyebrow')"
-          :picks-title="$t('pages.moviesPage.sidebarPicksTitle')"
-          :upcoming="upcoming"
-          :upcoming-eyebrow="$t('pages.moviesPage.sidebarUpcomingEyebrow')"
-          :upcoming-title="$t('pages.moviesPage.sidebarUpcomingTitle')"
-          @select="activeMovieId = $event"
-        />
-      </div>
+      <section class="movies-page__tabs" aria-label="Movie filters">
+        <MoviesTabs v-model="activeTab" :tabs="navigationTabs" />
+      </section>
+
+      <section class="movies-page__content">
+        <div v-if="visibleMovies.length > 0" class="movies-page__grid">
+          <MoviesCard
+            v-for="movie in visibleMovies"
+            :key="movie.id"
+            :genre-label="genreLabelMap[movie.genre] || movie.genre"
+            :movie="movie"
+          />
+        </div>
+
+        <div v-else class="movies-page__empty">
+          <Icon name="i-ph-film-strip-bold" class="h-9 w-9" />
+          <span>{{ $t("pages.moviesPage.emptyTitle") }}</span>
+          <button type="button" @click="resetFilters">
+            {{ $t("pages.moviesPage.resetFilters") }}
+          </button>
+        </div>
+
+        <div v-if="hasMoreMovies" class="movies-page__load-more">
+          <button class="movies-page__load-more-button" type="button" @click="visibleCount += pageSize">
+            <Icon name="i-ph-arrow-down-bold" class="h-4 w-4" />
+            Tải thêm
+          </button>
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
-
 <script setup lang="ts">
 import MoviesCard from "../components/Card.vue"
-import MoviesFilters from "../components/Filters.vue"
 import MoviesTabs from "../components/Tabs.vue"
 import type { MovieTabId } from "../components/Tabs.vue"
-import MoviesSidebar from "../components/Sidebar.vue"
-import type { MovieCategoryKey } from "../../application/composables/useMockMoviesData"
 import { useMockMoviesData } from "../../application/composables/useMockMoviesData"
 
-const { categories, movies, upcoming } = useMockMoviesData()
+const { movies } = useMockMoviesData()
 const { t: translate } = useI18n()
 
 useSeoMeta({
@@ -139,19 +123,21 @@ useSeoMeta({
   description: () => translate("pages.moviesPage.seoDescription"),
 })
 
+const pageSize = 26
 const search = ref("")
-const selectedCategory = ref<MovieCategoryKey>("all")
 const activeTab = ref<MovieTabId>("new")
-const activeMovieId = ref(movies.value[0]?.id ?? "")
-
-// New Dropdown States
-const isGenreOpen = ref(false)
-const isCountryOpen = ref(false)
 const selectedGenre = ref("all")
 const selectedCountry = ref("all")
+const visibleCount = ref(pageSize)
+const isFilterOpen = ref(false)
+const genreOpen = ref(false)
+const countryOpen = ref(false)
+const filterMenuRef = ref<HTMLElement | null>(null)
 
 const genres = [
-  { label: "Thể loại", value: "all" },
+  { label: "Tất cả", value: "all" },
+  { label: "Tài liệu", value: "documentary" },
+  { label: "Chính kịch", value: "drama" },
   { label: "Hành động", value: "action" },
   { label: "Hài hước", value: "comedy" },
   { label: "Tình cảm", value: "romance" },
@@ -160,7 +146,7 @@ const genres = [
 ]
 
 const countries = [
-  { label: "Quốc gia", value: "all" },
+  { label: "Tất cả", value: "all" },
   { label: "Việt Nam", value: "vietnam" },
   { label: "Âu Mỹ", value: "usa" },
   { label: "Hàn Quốc", value: "korea" },
@@ -168,86 +154,306 @@ const countries = [
   { label: "Trung Quốc", value: "china" },
 ]
 
-const selectedGenreLabel = computed(() => {
-  const g = genres.find(item => item.value === selectedGenre.value)
-  return g ? g.label : "Thể loại"
-})
-
-const selectedCountryLabel = computed(() => {
-  const c = countries.find(item => item.value === selectedCountry.value)
-  return c ? c.label : "Quốc gia"
-})
+const genreLabelMap = computed(() =>
+  Object.fromEntries(genres.map(genre => [genre.value, genre.label])) as Record<string, string>,
+)
 
 const navigationTabs = computed(() => [
   { id: "new" as MovieTabId, label: translate("pages.moviesPage.tabNew"), icon: "i-ph-film-strip-bold" },
   { id: "recommended" as MovieTabId, label: translate("pages.moviesPage.tabRecommended"), icon: "i-ph-star-bold" },
-  { id: "watched" as MovieTabId, label: translate("pages.moviesPage.tabWatched"), icon: "i-ph-fire-bold" },
+  { id: "watched" as MovieTabId, label: translate("pages.moviesPage.tabWatched"), icon: "i-ph-trend-up-bold" },
 ])
-
-const categoryLabelMap = computed(() =>
-  Object.fromEntries(
-    categories.value.map(category => [category.value, category.label]),
-  ) as Record<MovieCategoryKey, string>,
-)
 
 const filteredMovies = computed(() => {
   const keyword = search.value.trim().toLowerCase()
 
   return movies.value.filter((movie) => {
-    const matchesCategory = selectedCategory.value === "all" || movie.category === selectedCategory.value
     const matchesGenre = selectedGenre.value === "all" || movie.genre === selectedGenre.value
     const matchesCountry = selectedCountry.value === "all" || movie.country === selectedCountry.value
-    
-    const matchesKeyword = keyword.length === 0 || [
+    const matchesKeyword = !keyword || [
       movie.title,
       movie.director,
       movie.summary,
+      movie.genre,
       ...movie.tags,
-      categoryLabelMap.value[movie.category],
     ].some(field => field.toLowerCase().includes(keyword))
 
-    return matchesCategory && matchesGenre && matchesCountry && matchesKeyword
+    return matchesGenre && matchesCountry && matchesKeyword
   })
 })
 
 const displayMovies = computed(() => {
   const items = [...filteredMovies.value]
-  
+
   if (activeTab.value === "recommended") {
-    return items.filter(m => m.isEditorsPick)
+    return items.filter(movie => movie.isEditorsPick)
   }
-  
+
   if (activeTab.value === "watched") {
-    // Proxy for most watched: sort by rating
-    return items.sort((a, b) => b.rating - a.rating)
+    return items.sort((left, right) => right.rating - left.rating)
   }
-  
-  // Default: New (assume default order is newest)
+
   return items
 })
 
-const topRatedMovies = computed(() =>
-  movies.value
-    .slice()
-    .sort((left, right) => right.rating - left.rating)
-    .slice(0, 4),
-)
+const visibleMovies = computed(() => displayMovies.value.slice(0, visibleCount.value))
+const hasMoreMovies = computed(() => visibleMovies.value.length < displayMovies.value.length)
+
+const selectGenre = (value: string) => {
+  selectedGenre.value = value
+}
+
+const selectCountry = (value: string) => {
+  selectedCountry.value = value
+}
 
 const resetFilters = () => {
   search.value = ""
-  selectedCategory.value = "all"
   activeTab.value = "new"
-  activeMovieId.value = movies.value[0]?.id ?? ""
+  selectedGenre.value = "all"
+  selectedCountry.value = "all"
+  visibleCount.value = pageSize
+  isFilterOpen.value = false
+  genreOpen.value = false
+  countryOpen.value = false
 }
+
+const closeFilterOnOutsideClick = (event: MouseEvent) => {
+  const target = event.target as Node | null
+
+  if (isFilterOpen.value && target && !filterMenuRef.value?.contains(target)) {
+    isFilterOpen.value = false
+  }
+}
+
+watch([search, activeTab, selectedGenre, selectedCountry], () => {
+  visibleCount.value = pageSize
+})
+
+onMounted(() => window.addEventListener("click", closeFilterOnOutsideClick))
+onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick))
 </script>
 
-
 <style scoped>
-.scrollbar-hide {
-  scrollbar-width: none;
+.movies-page {
+  background: #f0f2f5;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.movies-page__head {
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: #f9f9f9;
+}
+
+.movies-page__title {
+  display: flex;
+  height: 64px;
+  align-items: center;
+  gap: 10px;
+  color: #111827;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.movies-page__title :deep(svg) {
+  color: #0a58ca;
+}
+
+.movies-page__backdrop {
+  height: 24px;
+  background: #ffffff;
+}
+
+.movies-page__filters {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: -8px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+
+.movies-page__search {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+
+.movies-page__search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  color: #94a3b8;
+}
+
+.movies-page__search-input {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #e5e7eb;
+  background: #f8fafc;
+  padding: 0 14px 0 46px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+}
+
+.movies-page__search-input:focus {
+  border-color: #0a58ca;
+  background: #ffffff;
+}
+
+.movies-page__filter {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.movies-page__filter-button {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe1ea;
+  background: #ffffff;
+  color: #111827;
+  cursor: pointer;
+}
+
+.movies-page__filter-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(320px, calc(100vw - 32px));
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  padding: 8px 0;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.16);
+}
+
+.movies-page__filter-section,
+.movies-page__filter-item,
+.movies-page__reset {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 0;
+  background: transparent;
+  padding: 11px 16px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.movies-page__filter-list {
+  padding: 2px 0 8px 14px;
+}
+
+.movies-page__filter-item {
+  justify-content: flex-start;
+  padding: 8px 16px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.movies-page__filter-item:hover,
+.movies-page__filter-item--active {
+  color: #0a58ca;
+}
+
+.movies-page__reset {
+  border-top: 1px solid #eef2f7;
+  justify-content: flex-start;
+  color: #0a58ca;
+}
+
+.movies-page__tabs {
+  margin-top: 18px;
+}
+
+.movies-page__content {
+  margin-top: 18px;
+}
+
+.movies-page__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.movies-page__empty {
+  display: flex;
+  min-height: 190px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  color: #64748b;
+  font-weight: 800;
+  text-align: center;
+}
+
+.movies-page__empty button {
+  border: 0;
+  background: transparent;
+  color: #0a58ca;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.movies-page__load-more {
+  display: flex;
+  justify-content: center;
+  padding: 26px 0 8px;
+}
+
+.movies-page__load-more-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #dbe1ea;
+  background: #ffffff;
+  padding: 10px 22px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 640px) {
+  .movies-page__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .movies-page__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .movies-page__grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
 }
 </style>

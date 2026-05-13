@@ -8,14 +8,16 @@ import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFe
 
 type PublisherAction = "image" | "video" | "feeling" | "story"
 type PublisherAudience = "public" | "connections" | "group"
-type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | ""
+type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | "funny" | "cool" | "tired" | "confused" | ""
 
 export function useFeedPublisherBoxVM(
   emit: (event: "created", post: FeedPostRecord | null) => void,
   pageId?: number,
+  eventId?: number,
+  groupId?: number,
   repository = createApiFeedRepository(),
 ) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const route = useRoute()
   const router = useRouter()
   const toast = useToast()
@@ -93,15 +95,19 @@ export function useFeedPublisherBoxVM(
     { value: "group" as const, label: t("feed.publisherBox.audienceGroup") },
   ])
 
-  const feelingOptions = [
-    { value: "happy" as const, emoji: "😊" },
-    { value: "loved" as const, emoji: "😍" },
-    { value: "sad" as const, emoji: "😢" },
-    { value: "angry" as const, emoji: "😡" },
-  ]
+  const feelingOptions = computed(() => [
+    { value: "happy" as const, emoji: "😊", label: locale.value === "vi" ? "Vui mừng" : "Happy" },
+    { value: "loved" as const, emoji: "😍", label: locale.value === "vi" ? "Được yêu" : "Loved" },
+    { value: "funny" as const, emoji: "😄", label: locale.value === "vi" ? "Vui nhộn" : "Funny" },
+    { value: "cool" as const, emoji: "😎", label: locale.value === "vi" ? "Tuyệt" : "Cool" },
+    { value: "sad" as const, emoji: "😢", label: locale.value === "vi" ? "Buồn" : "Sad" },
+    { value: "angry" as const, emoji: "😡", label: locale.value === "vi" ? "Tức giận" : "Angry" },
+    { value: "tired" as const, emoji: "😫", label: locale.value === "vi" ? "Mệt mỏi" : "Tired" },
+    { value: "confused" as const, emoji: "😕", label: locale.value === "vi" ? "Bối rối" : "Confused" },
+  ])
 
   const activeFeeling = computed(() =>
-    feelingOptions.find(option => option.value === draft.value.feeling) ?? null,
+    feelingOptions.value.find(option => option.value === draft.value.feeling) ?? null,
   )
 
   const selectedMediaLabel = computed(() =>
@@ -262,6 +268,8 @@ export function useFeedPublisherBoxVM(
         imageFile: imageFile.value || undefined,
         videoFile: videoFile.value || undefined,
         pageId,
+        eventId,
+        groupId,
       })
 
       statusTone.value = "success"
