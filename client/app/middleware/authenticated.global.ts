@@ -17,7 +17,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo(appRoutes.welcome, { replace: true })
   }
 
-  const currentUserStore = useCurrentAuthUserStore()
+ const pinia = usePinia()
+const currentUserStore = useCurrentAuthUserStore(pinia)
   const currentUser = await currentUserStore.hydrate(true)
 
   if (!currentUser) {

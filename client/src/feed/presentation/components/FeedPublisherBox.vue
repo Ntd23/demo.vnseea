@@ -41,13 +41,56 @@
         {{ statusMessage }}
       </div>
 
-      <textarea
-        ref="textareaEl"
-        v-model="draft.text"
-        class="publisher__textarea"
-        :placeholder="t('feed.publisherBox.composerPlaceholder')"
-        maxlength="280"
-      />
+      <div class="publisher__textarea-shell">
+        <div class="publisher__textarea-highlight" aria-hidden="true">
+          <template v-for="segment in highlightedDraftSegments" :key="segment.key">
+            <span :class="{ 'publisher__textarea-mention': segment.isMention }">{{ segment.text }}</span>
+          </template>
+        </div>
+        <textarea
+          ref="textareaEl"
+          v-model="draft.text"
+          class="publisher__textarea"
+          :placeholder="t('feed.publisherBox.composerPlaceholder')"
+          maxlength="280"
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="off"
+          autocorrect="off"
+          @input="updateMentionQuery"
+          @click="updateMentionQuery"
+          @keyup="handleTextareaKeyup"
+          @keydown.esc.prevent="closeMentionSuggestions"
+        />
+      </div>
+
+      <div v-if="showMentionSuggestions" class="publisher__mention-popover">
+        <div v-if="mentionLoading" class="publisher__mention-state">
+          <Icon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+          <span>Đang tìm người dùng...</span>
+        </div>
+        <template v-else>
+          <button
+            v-for="user in mentionSuggestions"
+            :key="user.id"
+            type="button"
+            class="publisher__mention-option"
+            @mousedown.prevent="selectMention(user)"
+          >
+            <span class="publisher__mention-avatar">
+              <img v-if="user.avatarUrl" :src="user.avatarUrl" :alt="user.name">
+              <span v-else>{{ user.initials }}</span>
+            </span>
+            <span class="publisher__mention-copy">
+              <span class="publisher__mention-name">{{ user.name }}</span>
+              <span class="publisher__mention-username">@{{ user.username }}</span>
+            </span>
+          </button>
+        </template>
+        <div v-if="!mentionLoading && mentionSuggestions.length === 0" class="publisher__mention-state">
+          Không tìm thấy người dùng theo first_name.
+        </div>
+      </div>
 
       <input
         ref="imageInputRef"
@@ -131,10 +174,27 @@
 </template>
 
 <script setup lang="ts">
+import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
+import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import { useFeedPublisherBoxVM } from "../../application/view-models/useFeedPublisherBoxVM"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 
+type MentionSearchResult = {
+  id: string
+  title: string
+  subtitle?: string
+  username?: string
+  firstName?: string
+  avatarUrl?: string
+  initials: string
+}
+
+type MentionSearchResponse = {
+  users: MentionSearchResult[]
+}
+
 const { t } = useI18n()
+const apiClient = useNuxtApiClient()
 const props = defineProps<{
   pageId?: number
 }>()
@@ -169,8 +229,247 @@ const {
   selectVideoFile,
   clearSelectedMedia,
   selectFeeling,
-  publish,
+  publish: publishPost,
 } = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId)
+
+const mentionQuery = ref("")
+const mentionStartIndex = ref<number | null>(null)
+const mentionCandidates = ref<Array<{
+  id: string
+  name: string
+  username: string
+  firstName: string
+  avatarUrl: string
+  initials: string
+}>>([])
+const mentionLoading = ref(false)
+const mentionSelectionLocked = ref(false)
+const mentionCandidatesLoaded = ref(false)
+const selectedMentionUsernames = ref<Record<string, string>>({})
+let mentionRequestId = 0
+
+const mentionSuggestions = computed(() => {
+  const keyword = mentionQuery.value.trim().toLowerCase()
+  const users = keyword
+    ? mentionCandidates.value.filter(user => user.firstName.toLowerCase().includes(keyword))
+    : mentionCandidates.value
+
+  return users.slice(0, 6)
+})
+
+const showMentionSuggestions = computed(() =>
+  expanded.value
+  && mentionStartIndex.value !== null,
+)
+
+const highlightedDraftSegments = computed(() =>
+  draft.value.text
+    .split(/(@[^\s@]{1,40})/g)
+    .filter(segment => segment.length > 0)
+    .map((segment, index) => ({
+      key: `${index}:${segment}`,
+      text: segment,
+      isMention: Boolean(selectedMentionUsernames.value[segment]),
+    })),
+)
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+function toBackendMentionText(text: string) {
+  return Object.entries(selectedMentionUsernames.value).reduce((nextText, [displayMention, username]) => {
+    const mentionPattern = new RegExp(`(^|\\s)${escapeRegExp(displayMention)}(?=\\s|$)`, "g")
+
+    return nextText.replace(mentionPattern, `$1@${username}`)
+  }, text)
+}
+
+async function publish() {
+  const displayText = draft.value.text
+  const backendText = toBackendMentionText(displayText)
+
+  if (backendText !== displayText) {
+    draft.value.text = backendText
+  }
+
+  await publishPost()
+
+  if (backendText !== displayText && draft.value.text === backendText) {
+    draft.value.text = displayText
+  }
+
+  if (!draft.value.text) {
+    selectedMentionUsernames.value = {}
+  }
+}
+
+function extractMentionQuery(text = draft.value.text, caret = textareaEl.value?.selectionStart ?? text.length) {
+  if (mentionSelectionLocked.value) {
+    return
+  }
+
+  const beforeCaret = text.slice(0, caret)
+  const match = beforeCaret.match(/(^|\s)@([^\s@]{0,40})$/)
+
+  if (!match) {
+    mentionStartIndex.value = null
+    mentionQuery.value = ""
+    return
+  }
+
+  const nextStartIndex = caret - (match[2]?.length ?? 0) - 1
+  const nextQuery = match[2] ?? ""
+  const mentionStartChanged = mentionStartIndex.value !== nextStartIndex
+
+  mentionStartIndex.value = nextStartIndex
+  mentionQuery.value = nextQuery
+
+  if (mentionStartChanged && mentionCandidates.value.length === 0) {
+    void loadMentionCandidates()
+  }
+}
+
+function updateMentionQuery(event?: Event) {
+  const textarea = event?.target instanceof HTMLTextAreaElement
+    ? event.target
+    : textareaEl.value
+  const text = textarea?.value ?? draft.value.text
+
+  extractMentionQuery(text, textarea?.selectionStart ?? text.length)
+}
+
+function handleTextareaKeyup(event: KeyboardEvent) {
+  if (event.key === "Escape") {
+    return
+  }
+
+  updateMentionQuery(event)
+}
+
+function closeMentionSuggestions() {
+  mentionRequestId += 1
+  mentionStartIndex.value = null
+  mentionQuery.value = ""
+  mentionLoading.value = false
+}
+
+function getMentionUsername(user: MentionSearchResult) {
+  const fromUsername = user.username?.trim()
+  if (fromUsername) {
+    return fromUsername.replace(/^@/, "")
+  }
+
+  const fromSubtitle = user.subtitle?.trim().replace(/^@/, "")
+  if (fromSubtitle) {
+    return fromSubtitle
+  }
+
+  return user.title
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+}
+
+function normalizeMentionUsers(users: MentionSearchResult[]) {
+  const seenUsers = new Set<string>()
+
+  return users
+    .map(user => ({
+      id: user.id,
+      name: user.title,
+      username: getMentionUsername(user),
+      firstName: user.firstName || user.title.split(/\s+/)[0] || "",
+      avatarUrl: user.avatarUrl || "",
+      initials: user.initials || (user.title[0]?.toUpperCase() ?? "U"),
+    }))
+    .filter((user) => {
+      const uniqueKey = user.username || user.id
+
+      if (!user.firstName || !user.username || seenUsers.has(uniqueKey)) {
+        return false
+      }
+
+      seenUsers.add(uniqueKey)
+      return true
+    })
+}
+
+async function loadMentionCandidates() {
+  if (mentionCandidatesLoaded.value || mentionLoading.value) {
+    return
+  }
+
+  const requestId = ++mentionRequestId
+  mentionLoading.value = true
+
+  try {
+    const response = await apiClient.get<MentionSearchResponse>(apiRoutes.search.index, {
+      q: "",
+      limit: 50,
+    })
+
+    if (requestId !== mentionRequestId) {
+      return
+    }
+
+    mentionCandidates.value = normalizeMentionUsers(response.users ?? [])
+    mentionCandidatesLoaded.value = true
+  }
+  catch {
+    if (requestId !== mentionRequestId) {
+      return
+    }
+
+    mentionCandidates.value = []
+  }
+  finally {
+    if (requestId === mentionRequestId) {
+      mentionLoading.value = false
+    }
+  }
+}
+
+watch(expanded, (value) => {
+  if (value) {
+    void loadMentionCandidates()
+  }
+})
+
+async function selectMention(user: { firstName: string; name: string; username: string }) {
+  const start = mentionStartIndex.value
+  const textarea = textareaEl.value
+
+  if (start === null || !textarea) {
+    return
+  }
+
+  mentionSelectionLocked.value = true
+  const caret = textarea.selectionStart ?? draft.value.text.length
+  const beforeMention = draft.value.text.slice(0, start)
+  const afterMention = draft.value.text.slice(caret)
+  const mentionUsername = user.username.trim().replace(/^@/, "")
+  const mentionDisplayName = (user.firstName || user.name || mentionUsername)
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/^@/, "")
+  const displayMention = `@${mentionDisplayName}`
+  const inserted = `${displayMention} `
+  const nextCaret = beforeMention.length + inserted.length
+
+  selectedMentionUsernames.value = {
+    ...selectedMentionUsernames.value,
+    [displayMention]: mentionUsername,
+  }
+  draft.value.text = `${beforeMention}${inserted}${afterMention}`
+  closeMentionSuggestions()
+
+  await nextTick()
+  textarea.focus()
+  textarea.setSelectionRange(nextCaret, nextCaret)
+  mentionSelectionLocked.value = false
+}
 </script>
 
 <style scoped>
@@ -333,25 +632,146 @@ const {
   color: #d97706;
 }
 
+.publisher__textarea-shell {
+  position: relative;
+  border-radius: 14px;
+  background: #fafbfe;
+}
+
+.publisher__textarea-highlight,
 .publisher__textarea {
   width: 100%;
   min-height: 96px;
-  resize: none;
-  border-radius: 14px;
-  border: 1px solid #e2e8f0;
-  background: #fafbfe;
   padding: 14px 16px;
   font-size: 14.5px;
   line-height: 1.7;
-  color: #334155;
-  outline: none;
-  transition: border-color 0.15s ease, height 0.1s ease;
   font-family: inherit;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.publisher__textarea-highlight {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  color: transparent;
+}
+
+.publisher__textarea-mention {
+  color: #1420ff;
+}
+
+.publisher__textarea {
+  position: relative;
+  z-index: 1;
+  resize: none;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  background: transparent;
+  color: #334155;
+  caret-color: #334155;
+  outline: none;
+  text-decoration: none;
+  transition: border-color 0.15s ease, height 0.1s ease;
   overflow-y: hidden;
+}
+
+.publisher__textarea::spelling-error,
+.publisher__textarea::grammar-error {
+  text-decoration: none;
 }
 
 .publisher__textarea:focus {
   border-color: rgba(0, 0, 255, 0.2);
+}
+
+.publisher__textarea::placeholder {
+  color: #94a3b8;
+}
+
+.publisher__mention-popover {
+  margin-top: -6px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+}
+
+.publisher__mention-option,
+.publisher__mention-state {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: #ffffff;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.publisher__mention-option {
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.publisher__mention-option:hover {
+  background: rgba(20, 32, 255, 0.05);
+}
+
+.publisher__mention-state {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.publisher__mention-avatar {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #1420ff;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.publisher__mention-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.publisher__mention-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.publisher__mention-name {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.publisher__mention-username {
+  overflow: hidden;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .publisher__file-input {

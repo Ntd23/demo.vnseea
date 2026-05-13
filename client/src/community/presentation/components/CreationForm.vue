@@ -109,13 +109,13 @@
         </div>
 
         <!-- Buttons -->
-        <div class="flex items-center justify-between pt-8 border-t border-slate-100">
+        <div class="flex items-center justify-between pt-8">
           <UButton
             :to="backTo"
             variant="ghost"
             color="neutral"
             size="lg"
-            class="rounded-xl px-6"
+            class="text-link rounded-xl px-6"
           >
             {{ $t("community.creation.common.back") }}
           </UButton>
@@ -126,7 +126,7 @@
             size="xl"
             :loading="isBusy"
             :disabled="isSubmitDisabled"
-            class="rounded-xl px-12 font-bold shadow-md shadow-primary-500/20"
+            class="btn-primary rounded-xl px-12 font-bold shadow-md shadow-primary-500/20"
           >
             {{ submitLabelText }}
           </UButton>

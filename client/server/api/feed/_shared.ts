@@ -24,6 +24,7 @@ import type {
   FeedHomeResponse,
   FeedMemoriesResponse,
   FeedMediaItem,
+  FeedPostMention,
   FeedPokeActionResult,
   FeedPokeRecord,
   FeedPostRecord,
@@ -255,6 +256,49 @@ const hasUnseenStoryState = (story: BackendEntity, owner: BackendEntity) => {
 const stripHtml = (value: string) =>
   value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
 
+const firstDisplayNamePart = (value: string) =>
+  value.trim().split(/\s+/).filter(Boolean)[0] || value.trim()
+
+const normalizeDisplayMention = (value: string) =>
+  firstDisplayNamePart(value).replace(/^@/, "").replace(/\s+/g, "_")
+
+const extractMentions = (entity: BackendEntity): FeedPostMention[] => {
+  const rawMentions = entity.mentions_users
+  const mentions: FeedPostMention[] = []
+
+  if (Array.isArray(rawMentions)) {
+    for (const item of rawMentions) {
+      const record = asRecord(item)
+      const username = firstString(record, ["username", "user_name"])
+      const name = firstString(record, ["name", "first_name", "firstName"]) || username
+
+      if (username) {
+        mentions.push({
+          username,
+          name,
+          displayName: normalizeDisplayMention(name || username),
+        })
+      }
+    }
+  } else {
+    for (const [username, nameValue] of Object.entries(asRecord(rawMentions))) {
+      const name = asString(nameValue) || username
+
+      if (username) {
+        mentions.push({
+          username,
+          name,
+          displayName: normalizeDisplayMention(name || username),
+        })
+      }
+    }
+  }
+
+  return mentions.filter((mention, index, source) =>
+    source.findIndex(item => item.username === mention.username) === index,
+  )
+}
+
 const formatBackendTimestamp = (value: unknown) => {
   const raw = asString(value)
 
@@ -404,7 +448,7 @@ const extractTags = (entity: BackendEntity) => {
 
   const inlineTags = Array.from(
     new Set(
-      stripHtml(firstString(entity, ["postText", "Orginaltext", "text"]))
+      stripHtml(firstString(entity, ["Orginaltext", "postText_API", "postText", "text"]))
         .match(/#[\p{L}\p{N}_-]+/gu) ?? [],
     ),
   )
@@ -427,7 +471,7 @@ const buildPostText = (entity: BackendEntity) => {
   const sharedInfo = asRecord(entity.shared_info)
 
   const candidates = [
-    firstString(entity, ["postText", "Orginaltext", "text"]),
+    firstString(entity, ["Orginaltext", "postText_API", "postText", "text"]),
     [
       firstString(entity, ["postLinkTitle"]),
       firstString(entity, ["postLinkContent"]),
@@ -462,7 +506,7 @@ const buildPostText = (entity: BackendEntity) => {
       firstString(forum, ["name", "title"]),
       firstString(forum, ["description"]),
     ].filter(Boolean).join("\n"),
-    firstString(sharedInfo, ["postText", "Orginaltext", "text"]),
+    firstString(sharedInfo, ["Orginaltext", "postText_API", "postText", "text"]),
   ]
 
   const uniqueParts = Array.from(new Set(candidates.map(stripHtml).filter(Boolean)))
@@ -600,6 +644,7 @@ export const mapPostRecord = (
       : authorUsername
         ? `/@${authorUsername}`
         : "/home"
+  const mentions = extractMentions(entity)
   const text = buildPostText(entity)
   const mediaItems = extractMediaItems(entity, author, resolveMediaUrl)
   const categoryHint = [
@@ -626,6 +671,7 @@ export const mapPostRecord = (
     audience: inferAudience(entity),
     time: firstString(entity, ["time_text", "posted", "time"]) || "",
     text,
+    mentions,
     tags: extractTags(entity),
     stats: {
       likes: postReaction.count || firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
