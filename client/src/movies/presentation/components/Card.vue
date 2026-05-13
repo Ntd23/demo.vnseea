@@ -1,44 +1,107 @@
 <template>
-  <div class="group relative overflow-hidden rounded-xl border border-[var(--border-default)] bg-white p-2.5 transition-all duration-200 hover:shadow-md">
-    <div class="relative aspect-[2/3] overflow-hidden rounded-lg bg-[var(--bg-surface-hover)]">
-      <NuxtLink :to="movie.to" class="block h-full w-full">
+  <article class="movie-card">
+    <figure class="movie-card__figure">
+      <NuxtLink :to="movie.to" class="movie-card__poster-link">
         <img
           :alt="movie.title"
-          class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          class="movie-card__poster"
           :src="movie.cover"
         >
-        <!-- Rating Badge -->
-        <div class="absolute right-2 top-2 flex items-center gap-1 rounded bg-black/50 px-1.5 py-0.5 text-[11px] font-bold text-[#fbc02d] backdrop-blur-sm">
-          <Icon name="i-ph-star-fill" class="h-3 w-3" />
+        <span class="movie-card__rating">
+          <Icon name="i-ph-star-fill" class="h-3.5 w-3.5" />
           {{ movie.rating.toFixed(1) }}
-        </div>
+        </span>
       </NuxtLink>
-    </div>
 
-    <div class="mt-3 space-y-1">
-      <NuxtLink :to="movie.to">
-        <h3 class="line-clamp-1 text-[15px] font-extrabold text-[var(--text-primary)] transition hover:text-[var(--color-primary-600)]" :title="movie.title">
-          {{ movie.title }}
-        </h3>
-      </NuxtLink>
-      
-      <div class="flex items-center gap-2 text-[12px] font-semibold">
-        <span class="text-[var(--color-primary-600)]">{{ categoryLabel }}</span>
-        <span class="text-[var(--text-quaternary)]">•</span>
-        <span class="text-[var(--text-tertiary)]">{{ movie.year }}</span>
-        <span class="text-[var(--text-quaternary)]">•</span>
-        <span class="text-[var(--text-tertiary)]">{{ movie.runtime }}</span>
-      </div>
-    </div>
-  </div>
+      <h3 class="movie-card__title" :title="movie.title">
+        <NuxtLink :to="movie.to">{{ movie.title }}</NuxtLink>
+      </h3>
+      <p class="movie-card__genre">{{ genreLabel }}</p>
+    </figure>
+  </article>
 </template>
 
 <script setup lang="ts">
 import type { MockMovie } from "../../application/composables/useMockMoviesData"
 
 defineProps<{
-  categoryLabel: string
+  genreLabel: string
   movie: MockMovie
 }>()
 </script>
 
+<style scoped>
+.movie-card {
+  min-width: 0;
+}
+
+.movie-card__figure {
+  margin: 0;
+}
+
+.movie-card__poster-link {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 3px;
+  background: #e5e7eb;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.16);
+}
+
+.movie-card__poster {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  transition: transform 0.22s ease;
+}
+
+.movie-card__poster-link:hover .movie-card__poster {
+  transform: scale(1.04);
+}
+
+.movie-card__rating {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.58);
+  padding: 3px 6px;
+  color: #ffc000;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.movie-card__title {
+  margin: 10px 0 0;
+  overflow: hidden;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.movie-card__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.movie-card__title a:hover {
+  color: #0a58ca;
+}
+
+.movie-card__genre {
+  margin: 4px 0 0;
+  overflow: hidden;
+  color: #7c8798;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>

@@ -50,12 +50,20 @@ export function useCreateEventPageVM(
       errors.push({ name: "description", message: t("pages.createEventPage.validationDescriptionRequired") })
     }
 
-    if (!state.startDate || !state.startTime) {
+    if (!state.startDate) {
       errors.push({ name: "startDate", message: t("pages.createEventPage.validationStartRequired") })
     }
 
-    if (!state.endDate || !state.endTime) {
+    if (!state.startTime) {
+      errors.push({ name: "startTime", message: t("pages.createEventPage.validationStartRequired") })
+    }
+
+    if (!state.endDate) {
       errors.push({ name: "endDate", message: t("pages.createEventPage.validationEndRequired") })
+    }
+
+    if (!state.endTime) {
+      errors.push({ name: "endTime", message: t("pages.createEventPage.validationEndRequired") })
     }
 
     if (state.startDate && state.startTime && state.endDate && state.endTime) {

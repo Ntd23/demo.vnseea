@@ -62,7 +62,17 @@ export function useEventDetailPageVM(
     || postsStatus.value === "pending"
   )
 
-  const event = computed(() => data.value)
+  const event = computed(() => {
+    if (!data.value) {
+      return null
+    }
+
+    return {
+      ...data.value,
+      goingCount: Math.max(data.value.goingCount, goingData.value?.length ?? 0),
+      interestedCount: Math.max(data.value.interestedCount, interestedData.value?.length ?? 0),
+    }
+  })
   const posts = computed(() => postsData.value.posts ?? [])
   const hasPosts = computed(() => posts.value.length > 0)
   const goingAttendees = computed(() => goingData.value ?? [])
@@ -78,35 +88,41 @@ export function useEventDetailPageVM(
   }
 
   const applyRsvp = async (state: EventRsvpState) => {
-    if (!event.value || rsvpBusy.value) return
+    if (!data.value || rsvpBusy.value) return
 
     rsvpBusy.value = true
     busyAction.value = state === "interested" ? "interested" : "going"
 
     try {
       const result = state === "going"
-        ? await repository.setGoing(event.value.id)
-        : await repository.setInterested(event.value.id)
+        ? await repository.setGoing(data.value.id)
+        : await repository.setInterested(data.value.id)
 
-      if (!event.value) return
+      if (!data.value) return
 
-      const previousState = event.value.rsvpState
       const nextState = result.rsvpState
 
-      event.value.rsvpState = nextState
-
-      if (previousState !== "going" && nextState === "going") {
-        event.value.goingCount += 1
+      if (state === "going") {
+        data.value.isGoing = nextState === "going"
+        data.value.rsvpState = data.value.isGoing
+          ? "going"
+          : data.value.isInterested
+            ? "interested"
+            : "none"
+        data.value.goingCount = nextState === "going"
+          ? Math.max(1, data.value.goingCount)
+          : Math.max(0, data.value.goingCount - 1)
       }
-      else if (previousState === "going" && nextState !== "going") {
-        event.value.goingCount = Math.max(0, event.value.goingCount - 1)
-      }
-
-      if (previousState !== "interested" && nextState === "interested") {
-        event.value.interestedCount += 1
-      }
-      else if (previousState === "interested" && nextState !== "interested") {
-        event.value.interestedCount = Math.max(0, event.value.interestedCount - 1)
+      else {
+        data.value.isInterested = nextState === "interested"
+        data.value.rsvpState = data.value.isGoing
+          ? "going"
+          : data.value.isInterested
+            ? "interested"
+            : "none"
+        data.value.interestedCount = nextState === "interested"
+          ? Math.max(1, data.value.interestedCount)
+          : Math.max(0, data.value.interestedCount - 1)
       }
 
       await Promise.all([refreshGoing(), refreshInterested()])
@@ -114,7 +130,7 @@ export function useEventDetailPageVM(
       toast.add({
         color: "success",
         icon: "i-ph-check-circle-fill",
-        title: event.value.name,
+        title: data.value.name,
         description: nextState === "going"
           ? t("pages.eventsPage.rsvpGoing")
           : nextState === "interested"

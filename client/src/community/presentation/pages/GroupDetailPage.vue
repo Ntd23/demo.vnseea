@@ -55,6 +55,7 @@
         :invite-state="inviteState"
         :joined="joined"
         @join="handleJoinGroup"
+        @delete="handleDeleteGroup"
         @invite="handleInviteMembers"
       />
 
@@ -71,6 +72,7 @@
               v-if="group"
               :group="group"
               :posts="groupPosts"
+              @created="handlePostCreated"
             />
           </div>
 
@@ -170,9 +172,15 @@ const {
   memberCountLabel,
   onlineCountLabel,
   groupPosts,
+  refreshGroupPosts,
   handleJoinGroup,
+  handleDeleteGroup,
   handleInviteMembers,
   emptyBackPath,
   status,
 } = useCommunityGroupDetailPageVM()
+
+function handlePostCreated() {
+  refreshGroupPosts()
+}
 </script>
