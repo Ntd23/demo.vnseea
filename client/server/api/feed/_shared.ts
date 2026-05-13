@@ -618,6 +618,7 @@ export const mapPostRecord = (
     id: firstNumber(entity, ["post_id", "id"]),
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"])),
+    authorVerified: isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
     authorPath: authorUsername ? `/@${authorUsername}` : sourcePath,
     role: firstString(sourceEntity, ["working", "school", "address"])
       || firstString(pageData, ["category_name", "phone"])
