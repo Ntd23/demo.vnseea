@@ -1,32 +1,33 @@
+<!-- English description: Backend-backed wallet top-up form for redirect and bank-transfer methods. -->
 <template>
-  <section class="surface-card p-6">
-    <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">{{ t("pages.walletPage.topupEyebrow") }}</p>
-    <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.topupTitle") }}</h2>
-    <p class="mt-3 text-body-secondary">{{ t("pages.walletPage.topupDescription") }}</p>
-
-    <div class="mt-6 grid gap-3 sm:grid-cols-2">
-      <UButton
-        v-for="amount in presetAmounts"
-        :key="amount"
-        color="neutral"
-        variant="soft"
-        class="justify-between rounded-2xl px-4 py-4"
-        :class="form.amount === amount ? 'ring-2 ring-primary-500 bg-primary-50 text-primary-700' : ''"
-        @click="form.amount = amount"
+  <section class="surface-card p-5 sm:p-6">
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-label-secondary">{{ t("pages.walletPage.addFunds") }}</p>
+        <h2 class="text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.topupTitle") }}</h2>
+      </div>
+      <UBadge
+        v-if="selectedMethod?.label"
+        color="primary"
+        variant="subtle"
+        class="w-fit rounded-full px-3 py-1 font-semibold"
       >
-        <span class="font-bold">{{ formatWalletCurrency(amount, locale.value) }}</span>
-        <Icon name="i-ph-plus-circle-bold" class="h-4 w-4" />
-      </UButton>
+        {{ selectedMethod.label }}
+      </UBadge>
     </div>
 
-    <div class="mt-6 space-y-5">
-      <UFormField :label="t('pages.walletPage.otherAmountLabel')">
-        <UInputNumber v-model="form.amount" :min="0" :step="50000" class="w-full" />
+    <div v-if="methods.length" class="mt-5 grid gap-4 md:grid-cols-[minmax(0,1fr)_240px]">
+      <UFormField :label="t('pages.walletPage.amountLabel')">
+        <UInputNumber
+          v-model="draft.amount"
+          :min="1"
+          class="w-full"
+        />
       </UFormField>
 
-      <UFormField :label="t('pages.walletPage.topupSubmit')">
+      <UFormField :label="t('pages.walletPage.topupMethod')">
         <USelect
-          v-model="form.method"
+          v-model="draft.method"
           :items="methods"
           label-key="label"
           value-key="value"
@@ -35,21 +36,33 @@
       </UFormField>
     </div>
 
-    <div class="mt-6 flex flex-wrap gap-3">
-      <UBadge
-        v-for="method in methods"
-        :key="method.value"
-        color="neutral"
-        variant="subtle"
-        class="rounded-full px-3 py-1.5 font-semibold"
-      >
-        {{ method.label }}
-      </UBadge>
+    <UAlert
+      v-else
+      class="mt-5 rounded-2xl"
+      color="warning"
+      variant="subtle"
+      :description="t('pages.walletPage.noTopupMethods')"
+    />
+
+    <div v-if="selectedMethod?.type === 'upload'" class="mt-5 space-y-3">
+      <UFormField :label="t('pages.walletPage.receipt')">
+        <input
+          class="block w-full rounded-2xl border border-[var(--border-default)] bg-[var(--bg-surface)] px-4 py-3 text-body-primary"
+          type="file"
+          accept="image/*"
+          @change="onReceiptChange"
+        >
+      </UFormField>
+      <p v-if="selectedMethod.note" class="text-caption-secondary">
+        {{ selectedMethod.note }}
+      </p>
     </div>
 
     <UButton
-      class="mt-6 h-12 rounded-xl font-semibold"
-      block
+      class="mt-6 rounded-full font-semibold"
+      color="primary"
+      :loading="submitting"
+      :disabled="!methods.length || draft.amount <= 0"
       @click="submit"
     >
       {{ t("pages.walletPage.topupSubmit") }}
@@ -58,35 +71,57 @@
 </template>
 
 <script setup lang="ts">
-import type { WalletTopupPayload } from "../../application/composables/useMockWalletData"
-import { formatWalletCurrency } from "../../application/composables/useMockWalletData"
-
-const { t, locale } = useI18n()
+import type {
+  WalletTopupDraft,
+  WalletTopupMethod,
+} from "../../domain/types/wallet.types"
 
 const props = defineProps<{
-  methods: ReadonlyArray<{ label: string; value: WalletTopupPayload["method"]; icon: string }>
+  methods: WalletTopupMethod[]
+  submitting: boolean
 }>()
 
-const emit = defineEmits<{ topup: [payload: WalletTopupPayload] }>()
+const emit = defineEmits<{
+  topup: [payload: WalletTopupDraft]
+}>()
 
-const presetAmounts = [100000, 300000, 500000, 1000000]
-const form = reactive<WalletTopupPayload>({
-  amount: 300000,
-  method: "bank",
+const { t } = useI18n()
+const receiptFile = ref<File | null>(null)
+const draft = reactive<WalletTopupDraft>({
+  amount: 0,
+  method: "",
 })
+
+const selectedMethod = computed(() =>
+  props.methods.find(method => method.value === draft.method) ?? null,
+)
 
 watch(
   () => props.methods,
-  methods => {
-    if (methods.length && !methods.some(item => item.value === form.method)) {
-      form.method = methods[0].value
+  (methods) => {
+    if (!draft.method && methods.length) {
+      draft.method = methods[0].value
+    }
+
+    if (draft.method && !methods.some(method => method.value === draft.method)) {
+      draft.method = methods[0]?.value ?? ""
     }
   },
   { immediate: true },
 )
 
-const submit = () => {
-  if (form.amount <= 0) return
-  emit("topup", { ...form })
+function onReceiptChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  receiptFile.value = input.files?.[0] ?? null
+}
+
+function submit() {
+  if (!draft.method || draft.amount <= 0) return
+
+  emit("topup", {
+    amount: draft.amount,
+    method: draft.method,
+    receiptFile: selectedMethod.value?.type === "upload" ? receiptFile.value : null,
+  })
 }
 </script>

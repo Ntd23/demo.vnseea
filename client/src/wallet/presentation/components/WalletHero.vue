@@ -1,40 +1,43 @@
+<!-- English description: Compact wallet balance card that mirrors the PHP wallet balance section. -->
 <template>
-  <section class="surface-card overflow-hidden">
-    <div class="grid gap-0 xl:grid-cols-[minmax(0,1fr)_440px]">
-      <div class="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
-        <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest">{{ t("pages.walletPage.heroEyebrow") }}</p>
-        <h1 class="mt-3 text-display text-4xl sm:text-6xl text-[var(--text-primary)] leading-tight">
-          {{ t("pages.walletPage.heroTitle") }}
-        </h1>
-        <p class="mt-5 max-w-xl text-body-secondary text-lg leading-relaxed">
-          {{ t("pages.walletPage.heroDescription") }}
-        </p>
-      </div>
-
-      <div class="bg-secondary-50 p-6 sm:p-8 xl:border-l xl:border-secondary-100 flex flex-col justify-center">
-        <div class="rounded-3xl bg-white p-6 shadow-xl shadow-secondary-900/5 border border-secondary-100">
-          <p class="text-micro font-bold uppercase tracking-wider text-[var(--text-primary)]">{{ t("pages.walletPage.balanceLabel") }}</p>
-          <p class="mt-3 break-words text-4xl font-black text-[var(--text-primary)] leading-none">{{ formatWalletCurrency(balance, locale.value) }}</p>
-          
-          <div class="mt-8 grid gap-4 sm:grid-cols-2">
-            <div v-for="item in stats" :key="item.label" class="rounded-2xl bg-secondary-50/80 p-4 border border-secondary-100/50">
-              <p class="text-[10px] font-black uppercase tracking-wider text-[var(--text-primary)]">{{ item.label }}</p>
-              <p class="mt-1.5 text-lg font-black text-[var(--text-primary)] leading-none">{{ item.value }}</p>
-            </div>
-          </div>
+  <section class="surface-card p-5 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex min-w-0 items-center gap-4">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
+          <Icon name="i-ph-wallet-duotone" class="h-7 w-7" />
+        </div>
+        <div class="min-w-0">
+          <p class="text-label-secondary">{{ t("pages.walletPage.title") }}</p>
+          <p class="mt-1 break-words text-3xl font-black text-[var(--text-primary)]">
+            {{ formattedBalance }}
+          </p>
         </div>
       </div>
+
+      <slot />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { formatWalletCurrency } from "../../application/composables/useMockWalletData"
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import type { WalletCurrencyRule } from "../../domain/types/wallet.types"
+
+const props = defineProps<{
+  balance: number
+  currency: string
+  currencySymbol: string
+  currencyRule: WalletCurrencyRule
+}>()
 
 const { t, locale } = useI18n()
 
-defineProps<{
-  balance: number
-  stats: ReadonlyArray<{ label: string; value: string | number }>
-}>()
+const formattedBalance = computed(() =>
+  formatCurrency(props.balance, {
+    currency: props.currency,
+    currencySymbol: props.currencySymbol,
+    currencyRule: props.currencyRule,
+    locale: locale.value,
+  }),
+)
 </script>

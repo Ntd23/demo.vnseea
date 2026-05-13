@@ -1,3 +1,4 @@
+<!-- English description: Header user menu with current account shortcuts and locale-aware wallet formatting. -->
 <template>
   <div ref="menuRef" class="user-menu-root">
     <button class="user-menu__trigger" type="button" @click="open = !open">
@@ -112,6 +113,7 @@
 import { onClickOutside } from "@vueuse/core"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useBackendWebUrl } from "#shared-kernel/application/utils/backend-web-url"
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 
 const { t, locale } = useI18n()
@@ -155,13 +157,13 @@ const formattedWallet = computed(() => {
   }
 
   if (typeof value === "number") {
-    return `VND${numberFormatter.value.format(value)}`
+    return formatCurrency(value, { currency: "VND", locale: locale.value })
   }
 
   const normalized = Number(String(value).replace(/,/g, ""))
 
   return Number.isFinite(normalized)
-    ? `VND${numberFormatter.value.format(normalized)}`
+    ? formatCurrency(normalized, { currency: "VND", locale: locale.value })
     : String(value)
 })
 const formattedPoints = computed(() => {

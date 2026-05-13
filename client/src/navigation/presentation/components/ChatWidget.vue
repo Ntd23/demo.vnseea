@@ -21,17 +21,16 @@
 
     <!-- Tabs -->
     <div class="chat-widget__tabs">
-      <button
+      <UButton
         v-for="(tab, index) in tabs"
         :key="tab.value"
-        class="chat-widget__tab"
         :class="{ 'chat-widget__tab--active': tabIndex === index }"
         type="button"
         @click="tabIndex = index"
       >
         <Icon :name="tabIndex === index ? tab.icon.replace('-duotone', '-fill') : tab.icon" class="h-4 w-4" />
         <span>{{ $t(tab.label) }}</span>
-      </button>
+      </UButton>
     </div>
 
     <!-- Tab Content -->

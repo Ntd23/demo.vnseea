@@ -1,3 +1,4 @@
+<!-- English description: Checkout summary card with locale-aware currency values and order actions. -->
 <template>
   <section
     class="relative overflow-hidden rounded-[18px] border border-[#dbe3f2] bg-white p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:p-6"
@@ -85,8 +86,16 @@
           >
             <div class="relative h-[290px] overflow-hidden rounded-[16px] border border-[#dbe3f2] bg-[#eef1f7] shadow-[0_2px_12px_rgba(15,35,110,0.06)]">
               <div
+                v-if="!item.imageUrl"
                 class="absolute inset-0"
                 :style="{ background: item.imageStyle || defaultCardBackground }"
+              />
+              <NuxtImg
+                v-else
+                :src="item.imageUrl"
+                :alt="item.name"
+                class="absolute inset-0 h-full w-full object-cover"
+                loading="lazy"
               />
               <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_28%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.2)_100%)]" />
 
@@ -241,6 +250,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import type { CheckoutLineItem } from "../../domain/types/checkout.types"
 
@@ -270,8 +280,6 @@ const defaultCardBackground = [
   "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.26), transparent 22%)",
   "linear-gradient(150deg, #243b63 0%, #f1959b 42%, #f8c184 100%)",
 ].join(", ")
-
-const currencyFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US"))
 
 const subtotal = computed(() =>
   props.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
@@ -385,6 +393,9 @@ const paymentHint = computed(() => {
 })
 
 function formatVnd(value: number) {
-  return `VND${currencyFormatter.value.format(value)}`
+  return formatCurrency(value, {
+    currency: "VND",
+    locale: locale.value,
+  })
 }
 </script>

@@ -1,186 +1,303 @@
+<!-- English description: Displays a backend-backed job card using the same cover-overlay rhythm as the pages directory cards. -->
 <template>
-  <article>
-    <UCard
-      class="flex h-full flex-col rounded-[30px] border bg-white transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
-      :class="cardClass"
-      :ui="{ body: 'p-5' }"
-    >
-      <div class="flex items-start gap-4">
-        <div
-          class="avatar-lg shrink-0 text-white shadow-[var(--shadow-md)]"
-          :style="{ background: job.companyGradient }"
-        >
-          {{ job.companyInitials }}
+  <article class="job-card">
+    <div class="job-card__cover">
+      <NuxtImg
+        v-if="job.imageUrl"
+        :src="job.imageUrl"
+        :alt="job.title"
+        class="job-card__image"
+        width="640"
+        height="400"
+      />
+      <div v-else class="job-card__fallback">
+        <Icon name="i-ph-briefcase-fill" class="h-10 w-10" />
+      </div>
+
+      <span class="job-card__category">{{ job.categoryLabel }}</span>
+
+      <div class="job-card__identity">
+        <div class="job-card__avatar">
+          <NuxtImg
+            v-if="job.owner?.avatarUrl"
+            :src="job.owner.avatarUrl"
+            :alt="job.owner.name"
+            class="job-card__avatar-img"
+            width="72"
+            height="72"
+          />
+          <Icon v-else name="i-ph-briefcase-fill" class="h-7 w-7" />
         </div>
 
-        <div class="min-w-0 flex-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-bold">
-              {{ job.categoryLabel }}
-            </UBadge>
-
-            <UBadge
-              v-if="selected"
-              color="success"
-              variant="subtle"
-              class="rounded-full px-3 py-1 text-[11px] font-bold"
-            >
-              {{ $t("pages.jobsPage.selectedBadge") }}
-            </UBadge>
-
-            <UBadge
-              v-if="job.isFeatured"
-              color="warning"
-              variant="subtle"
-              class="rounded-full px-3 py-1 text-[11px] font-bold"
-            >
-              {{ $t("pages.jobsPage.featuredBadge") }}
-            </UBadge>
-
-            <UBadge
-              v-if="job.isOwner"
-              color="neutral"
-              variant="subtle"
-              class="rounded-full px-3 py-1 text-[11px] font-bold"
-            >
-              {{ $t("pages.jobsPage.myBadge") }}
-            </UBadge>
-
-            <UBadge
-              v-if="job.isRemote"
-              color="info"
-              variant="subtle"
-              class="rounded-full px-3 py-1 text-[11px] font-bold"
-            >
-              {{ $t("pages.jobsPage.remoteBadge") }}
-            </UBadge>
-          </div>
-
-          <h3 class="mt-4 line-clamp-2 text-[1.2rem] font-black leading-tight tracking-[-0.04em] text-[var(--text-primary)]">
+        <div class="min-w-0">
+          <h3 class="job-card__title">
             {{ job.title }}
           </h3>
-          <p class="mt-1 text-[13px] font-bold text-[var(--text-secondary)]">
-            {{ job.company }} · {{ job.typeLabel }}
-          </p>
-          <p class="mt-2 text-[12px] font-semibold text-[var(--text-tertiary)]">
-            {{ job.postedAt }}
+          <p v-if="job.owner?.name" class="job-card__owner">
+            {{ job.owner.name }}
           </p>
         </div>
       </div>
 
-      <p class="mt-5 min-h-[72px] text-[13px] leading-6 text-[var(--text-secondary)]">
+      <div class="job-card__chips">
+        <span class="job-card__chip">
+          <Icon name="i-ph-clock-duotone" class="h-4 w-4" />
+          {{ job.typeLabel }}
+        </span>
+        <span class="job-card__chip">
+          <Icon name="i-ph-users-three-duotone" class="h-4 w-4" />
+          {{ $t("pages.jobsPage.applicantCount", { count: job.applyCount }) }}
+        </span>
+      </div>
+    </div>
+
+    <div class="job-card__content">
+      <p class="job-card__description">
         {{ job.description }}
       </p>
 
-      <div class="mt-5 grid gap-3 sm:grid-cols-2">
-        <div class="rounded-[20px] bg-[var(--bg-surface-hover)] px-3 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            {{ $t("pages.jobsPage.jobLocationLabel") }}
-          </p>
-          <p class="mt-1 text-[13px] font-extrabold text-[var(--text-primary)]">
-            {{ job.location }}
-          </p>
-        </div>
-
-        <div class="rounded-[20px] bg-[var(--bg-surface-hover)] px-3 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            {{ $t("pages.jobsPage.jobSalaryLabel") }}
-          </p>
-          <p class="mt-1 text-[13px] font-extrabold text-[var(--text-primary)]">
-            {{ job.salary }}
-          </p>
-        </div>
-
-        <div class="rounded-[20px] bg-[var(--bg-surface-hover)] px-3 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            {{ $t("pages.jobsPage.jobExperienceLabel") }}
-          </p>
-          <p class="mt-1 text-[13px] font-extrabold text-[var(--text-primary)]">
-            {{ job.experience }}
-          </p>
-        </div>
-
-        <div class="rounded-[20px] bg-[var(--bg-surface-hover)] px-3 py-3">
-          <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-            {{ $t("pages.jobsPage.jobApplicantsLabel") }}
-          </p>
-          <p class="mt-1 text-[13px] font-extrabold text-[var(--text-primary)]">
-            {{ $t("pages.jobsPage.applicantCount", { count: job.applicants }) }}
-          </p>
-        </div>
+      <div class="job-card__meta">
+        <span class="job-card__meta-item">
+          <Icon name="i-ph-map-pin-duotone" class="h-4 w-4" />
+          {{ job.location }}
+        </span>
+        <span class="job-card__meta-item">
+          <Icon name="i-ph-wallet-duotone" class="h-4 w-4" />
+          {{ job.salaryLabel || $t("pages.jobsPage.salaryUnknown") }}
+        </span>
       </div>
 
-      <div class="mt-5 flex flex-wrap gap-2">
-        <UBadge
-          v-for="skill in job.skills"
-          :key="skill"
-          color="neutral"
-          variant="soft"
-          class="rounded-full px-3 py-1 text-[11px] font-semibold"
-        >
-          #{{ skill }}
-        </UBadge>
-      </div>
-
-      <div class="mt-6 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
-        <UButton
+      <div class="job-card__actions">
+        <button
+          v-if="job.canApply"
           type="button"
-          color="primary"
-          size="lg"
-          class="justify-center rounded-full"
+          class="job-card__apply"
           @click="emit('apply', job)"
         >
-          <Icon name="i-ph-paper-plane-tilt-fill" class="mr-1.5 h-4 w-4" />
           {{ $t("pages.jobsPage.apply") }}
-        </UButton>
+        </button>
 
-        <UButton
-          type="button"
-          :color="selected ? 'success' : 'neutral'"
-          :variant="selected ? 'solid' : 'outline'"
-          size="lg"
-          class="justify-center rounded-full"
-          @click="emit('view', job)"
-        >
-          {{ selected ? $t("pages.jobsPage.viewingDetail") : $t("pages.jobsPage.viewDetail") }}
-        </UButton>
-
-        <UButton
-          type="button"
-          color="neutral"
-          variant="outline"
-          size="lg"
-          class="justify-center rounded-full"
-          :aria-pressed="saved"
-          @click="emit('toggleSave', job.id)"
-        >
-          <Icon :name="saved ? 'i-ph-bookmark-simple-fill' : 'i-ph-bookmark-simple'" class="h-5 w-5" />
-        </UButton>
+        <span v-else-if="job.alreadyApplied" class="job-card__applied">
+          {{ $t("pages.jobsPage.alreadyApplied") }}
+        </span>
       </div>
-    </UCard>
+    </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import type { MockJob } from "../../application/composables/useMockJobsData"
+import type { JobRecord } from "../../domain/types/jobs.types"
 
-const props = withDefaults(defineProps<{
-  job: MockJob
-  saved: boolean
-  selected?: boolean
-}>(), {
-  selected: false,
-})
-
-const emit = defineEmits<{
-  apply: [job: MockJob]
-  view: [job: MockJob]
-  toggleSave: [id: string]
+defineProps<{
+  job: JobRecord
 }>()
 
-const cardClass = computed(() =>
-  props.selected
-    ? "border-[var(--color-success)] ring-4 ring-sky-50 shadow-[var(--shadow-xl)]"
-    : "border-[var(--border-default)] shadow-[var(--shadow-md)]",
-)
+const emit = defineEmits<{
+  apply: [job: JobRecord]
+}>()
 </script>
+
+<style scoped>
+.job-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.job-card:hover {
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.job-card__cover {
+  position: relative;
+  height: 230px;
+  overflow: hidden;
+  background: var(--bg-muted);
+}
+
+.job-card__cover::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  content: "";
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.68) 100%);
+}
+
+.job-card__image,
+.job-card__fallback {
+  width: 100%;
+  height: 100%;
+}
+
+.job-card__image {
+  display: block;
+  object-fit: cover;
+}
+
+.job-card__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-secondary);
+}
+
+.job-card__category,
+.job-card__chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.34);
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+}
+
+.job-card__category {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.job-card__identity {
+  position: absolute;
+  right: 12px;
+  bottom: 54px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.job-card__avatar {
+  display: inline-flex;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+}
+
+.job-card__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.job-card__title {
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.job-card__owner {
+  margin: 3px 0 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.job-card__chips {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.job-card__chip {
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.job-card__content {
+  padding: 16px;
+}
+
+.job-card__description {
+  display: -webkit-box;
+  min-height: 42px;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.job-card__meta {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.job-card__meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.job-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+.job-card__apply,
+.job-card__applied {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.job-card__apply {
+  border: 0;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
+  cursor: pointer;
+  box-shadow: var(--shadow-brand);
+}
+
+.job-card__applied {
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+}
+</style>

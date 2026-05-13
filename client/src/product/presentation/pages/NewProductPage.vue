@@ -1,3 +1,5 @@
+<!-- English description: Product creation page that submits product form data to the backend API bridge. -->
+
 <template>
   <div class="space-y-5 pb-10">
     <ProductHeroBanner
@@ -5,9 +7,7 @@
       :badge="$t('pages.newProductPage.badge')"
       :title="$t('pages.newProductPage.title')"
       :description="$t('pages.newProductPage.description')"
-      :secondary-action-label="$t('pages.newProductPage.quickFill')"
       :stats="heroStats"
-      @secondary-action="quickFillDemo"
     />
 
     <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.06fr)_360px]">
@@ -61,9 +61,9 @@
 
         <FormsSubmitBar
           :hint="saveHint"
-          cta="Đăng sản phẩm"
+          :cta="$t('pages.newProductPage.submitCta')"
           @save="saveDraft"
-          @submit="submitMock"
+          @submit="submitProduct"
         />
       </section>
 
@@ -114,6 +114,7 @@ import ProductTipsCard from "../components/TipsCard.vue"
 import { useProductEditorDraft } from "../../application/composables/useProductEditorDraft"
 import { useProductEditorMeta } from "../../application/composables/useProductEditorMeta"
 import FormsSubmitBar from "../../../shared-kernel/presentation/components/forms/SubmitBar.vue"
+import { useNuxtApiClient } from "../../../shared-kernel/infrastructure/http/nuxt-api-client"
 
 const { t } = useI18n()
 
@@ -147,6 +148,7 @@ const createInitialDraft = (): ProductEditorDraft => ({
 const { draft, markSaved } = useProductEditorDraft("product-editor:create", createInitialDraft())
 const newFiles = shallowRef<File[]>([])
 const toast = useToast()
+const apiClient = useNuxtApiClient()
 const savedAgo = useTimeAgo(computed(() => draft.value.lastSavedAt || Date.now()))
 
 const imageCount = computed(() => newFiles.value.length)
@@ -259,23 +261,6 @@ const sellingTips = computed<ProductTipItem[]>(() => [
   },
 ])
 
-const quickFillDemo = () => {
-  draft.value.fields.title = "Honda Vision 2024"
-  draft.value.fields.price = "1250"
-  draft.value.fields.description = "Xe đi ít, giấy tờ đầy đủ, máy êm và ngoại hình còn mới. Phù hợp đi lại hằng ngày hoặc mua cho sinh viên."
-  draft.value.fields.category = "vehicles"
-  draft.value.fields.condition = "new"
-  draft.value.fields.location = "Đà Nẵng"
-  draft.value.fields.currency = "USD"
-  draft.value.fields.stock = "2"
-
-  toast.add({
-    title: "Đã điền dữ liệu mẫu",
-    description: "Bạn có thể tiếp tục chỉnh nội dung rồi xem preview bên phải.",
-    color: "primary",
-  })
-}
-
 watchDebounced(
   [() => draft.value.fields, () => newFiles.value.length],
   () => {
@@ -293,12 +278,41 @@ const saveDraft = () => {
   })
 }
 
-const submitMock = () => {
-  markSaved()
-  toast.add({
-    title: "Chưa nối submit thật",
-    description: "Flow hiện đang dừng ở mức UI mock và preview local.",
-    color: "neutral",
-  })
+const submitProduct = async () => {
+  const fields = draft.value.fields
+  const form = new FormData()
+
+  form.append("product_title", fields.title)
+  form.append("product_category", fields.category)
+  form.append("product_description", fields.description)
+  form.append("product_price", fields.price)
+  form.append("product_location", fields.location)
+  form.append("product_type", fields.condition === "used" ? "1" : "0")
+  form.append("currency", fields.currency)
+
+  if (fields.stock) {
+    form.append("units", fields.stock)
+  }
+
+  for (const file of newFiles.value) {
+    form.append("images[]", file, file.name)
+  }
+
+  try {
+    await apiClient.post("product/create", form)
+    markSaved()
+    toast.add({
+      title: t("pages.newProductPage.createSuccessTitle"),
+      color: "success",
+    })
+    await navigateTo("/my-products")
+  }
+  catch (error) {
+    toast.add({
+      title: t("pages.newProductPage.createErrorTitle"),
+      description: error instanceof Error ? error.message : String(error),
+      color: "error",
+    })
+  }
 }
 </script>

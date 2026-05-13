@@ -1,41 +1,25 @@
+// English description: Checkout repository implementation that calls Nuxt API bridges without mock fallback.
+
 import type { CheckoutRepository } from "../../domain/repositories/CheckoutRepository"
 import type { CheckoutSnapshot, ShippingAddress } from "../../domain/types/checkout.types"
 import { apiRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "../../../shared-kernel/infrastructure/http/nuxt-api-client"
-import { createMockCheckoutRepository } from "./MockCheckoutRepository"
 
-export function createApiCheckoutRepository(
-  fallback: CheckoutRepository = createMockCheckoutRepository(),
-): CheckoutRepository {
+export function createApiCheckoutRepository(): CheckoutRepository {
   const client = useNuxtApiClient()
 
   return {
     async getSnapshot() {
-      try {
-        return await client.get<CheckoutSnapshot>(apiRoutes.checkout.snapshot)
-      }
-      catch {
-        return fallback.getSnapshot()
-      }
+      return await client.get<CheckoutSnapshot>(apiRoutes.checkout.snapshot)
     },
     async saveShippingAddress(address: ShippingAddress) {
-      try {
-        return await client.post<ShippingAddress, ShippingAddress>(apiRoutes.checkout.address, address)
-      }
-      catch {
-        return fallback.saveShippingAddress(address)
-      }
+      return await client.post<ShippingAddress, ShippingAddress>(apiRoutes.checkout.address, address)
     },
     async submitOrder(snapshot: CheckoutSnapshot) {
-      try {
-        return await client.post<{ success: boolean; orderId: string }, CheckoutSnapshot>(
-          apiRoutes.checkout.submit,
-          snapshot,
-        )
-      }
-      catch {
-        return fallback.submitOrder(snapshot)
-      }
+      return await client.post<{ success: boolean; orderId: string }, CheckoutSnapshot>(
+        apiRoutes.checkout.submit,
+        snapshot,
+      )
     },
   }
 }

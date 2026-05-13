@@ -1,3 +1,5 @@
+<!-- English description: My-products page backed by the real product API bridge. -->
+
 <template>
   <div class="mx-auto max-w-[1280px] space-y-10 pb-20 px-4 sm:px-6 pt-4">
     <!-- Header Section -->
@@ -83,8 +85,79 @@
       </div>
     </div>
 
+    <section
+      v-if="status === 'pending'"
+      class="grid gap-4 md:grid-cols-2"
+    >
+      <UCard
+        v-for="index in 4"
+        :key="index"
+        class="rounded-[24px] bg-white"
+        :ui="{ body: 'flex gap-4 p-5' }"
+      >
+        <USkeleton class="h-24 w-24 rounded-2xl" />
+        <div class="flex-1 space-y-3">
+          <USkeleton class="h-5 w-2/3 rounded-full" />
+          <USkeleton class="h-4 w-1/2 rounded-full" />
+          <USkeleton class="h-10 w-32 rounded-full" />
+        </div>
+      </UCard>
+    </section>
+
+    <UAlert
+      v-else-if="error"
+      color="error"
+      variant="soft"
+      icon="i-ph-warning-circle-duotone"
+      :title="$t('pages.myProductsPage.loadErrorTitle')"
+      :description="String(error)"
+    />
+
+    <section
+      v-else-if="products.length"
+      class="grid gap-5 md:grid-cols-2"
+    >
+      <article
+        v-for="product in products"
+        :key="product.id"
+        class="surface-card overflow-hidden bg-white"
+      >
+        <div class="relative h-48 bg-secondary-100">
+          <NuxtImg
+            v-if="product.imageUrl"
+            :src="product.imageUrl"
+            :alt="product.title"
+            class="h-full w-full object-cover"
+            loading="lazy"
+          />
+          <div
+            v-else
+            class="h-full w-full"
+            :style="{ background: product.background }"
+          />
+        </div>
+        <div class="space-y-3 p-5">
+          <UBadge variant="soft" color="primary" class="rounded-full">
+            {{ product.categoryLabel }}
+          </UBadge>
+          <h2 class="text-title-primary line-clamp-2">
+            {{ product.title }}
+          </h2>
+          <p class="text-body-secondary line-clamp-2">
+            {{ product.description }}
+          </p>
+          <NuxtLink
+            :to="`/edit-product/${product.id}`"
+            class="btn-secondary"
+          >
+            {{ $t("pages.myProductsPage.edit") }}
+          </NuxtLink>
+        </div>
+      </article>
+    </section>
+
     <!-- Empty State Section -->
-    <section class="surface-card p-16 sm:p-24 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden">
+    <section v-else class="surface-card p-16 sm:p-24 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden">
       <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(var(--color-primary-500-rgb),0.05)_0%,_transparent_70%)]" />
       
       <div class="relative z-10 mx-auto flex max-w-[560px] flex-col items-center text-center">
@@ -130,5 +203,5 @@ useSeoMeta({
   description: () => t("pages.myProductsPage.seoDescription"),
 })
 
-const { overviewCards } = useMyProductsOverview()
+const { overviewCards, products, status, error } = useMyProductsOverview()
 </script>

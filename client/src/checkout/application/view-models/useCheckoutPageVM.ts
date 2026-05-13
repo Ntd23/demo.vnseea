@@ -1,3 +1,6 @@
+// English description: Checkout page view model that coordinates cart, address, wallet balance, and submit actions.
+
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import type { SavedShippingAddress } from "../../domain/types/checkout.types"
 import { createCheckoutSnapshot } from "../use-cases/create-checkout-snapshot"
 import { createApiCheckoutRepository } from "../../infrastructure/repositories/ApiCheckoutRepository"
@@ -7,7 +10,7 @@ const cloneSnapshot = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 export function useCheckoutPageVM(
   repository = createApiCheckoutRepository(),
 ) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const toast = useToast()
 
   const { data: initialSnapshot } = useAsyncData(
@@ -112,19 +115,15 @@ export function useCheckoutPageVM(
     }
 
     if (walletShortage.value > 0) {
-      const shortageAmount = walletShortage.value
-
-      snapshot.value.walletBalance += shortageAmount
-
       toast.add({
-        title: t("checkout.summary.topUpSuccessTitle"),
-        description: t("checkout.summary.topUpSuccessDescription", {
-          amount: formatVnd(shortageAmount),
+        title: t("checkout.summary.walletShortageTitle"),
+        description: t("checkout.summary.walletShortageDescription", {
+          amount: formatVnd(walletShortage.value),
         }),
-        color: "success",
+        color: "warning",
       })
 
-      resetCheckoutState()
+      checkoutState.value = "error"
       return
     }
 
@@ -152,7 +151,10 @@ export function useCheckoutPageVM(
   }
 
   function formatVnd(value: number) {
-    return `VND${value.toLocaleString("en-US")}`
+    return formatCurrency(value, {
+      currency: "VND",
+      locale: locale.value,
+    })
   }
 
   return {

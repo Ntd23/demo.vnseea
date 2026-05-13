@@ -1,3 +1,4 @@
+<!-- English description: Order item card with shared locale-aware currency formatting. -->
 <template>
   <article
     v-if="variant === 'detail'"
@@ -77,8 +78,8 @@
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { orderItemFallbackBackground } from "../../application/composables/useOrderPresentation"
-import { formatOrderCurrency } from "../../domain/types/orders.types"
 import type { OrderItem } from "../../domain/types/orders.types"
 
 const props = withDefaults(defineProps<{
@@ -94,7 +95,13 @@ const props = withDefaults(defineProps<{
   variant: "compact",
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+const formatOrderCurrency = (value: number) =>
+  formatCurrency(value, {
+    currency: "VND",
+    locale: locale.value,
+  })
 
 const detailMetaText = computed(() =>
   props.metaText
