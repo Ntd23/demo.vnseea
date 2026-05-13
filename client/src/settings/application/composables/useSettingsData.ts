@@ -38,6 +38,7 @@ export type SettingAction = {
 }
 
 export type SettingItem = {
+  id?: string | number
   title: string
   description: string
   meta?: string
@@ -529,7 +530,7 @@ const myPointsPage = (t: SettingTranslate, user: SettingsUser | null): SettingPa
   }],
 })
 
-const manageSessionsPage = (t: SettingTranslate): SettingPage => ({
+const manageSessionsPage = (t: SettingTranslate, sessions: SettingSession[]): SettingPage => ({
   slug: "manage-sessions",
   label: pageText(t, "manage-sessions", "label"),
   icon: pageIcons.manageSessions,
@@ -538,11 +539,17 @@ const manageSessionsPage = (t: SettingTranslate): SettingPage => ({
     title: pageText(t, "manage-sessions", "sections.sessions.title"),
     description: pageText(t, "manage-sessions", "sections.sessions.description"),
     kind: "list",
-    actions: [{ label: pageText(t, "manage-sessions", "sections.sessions.action"), icon: "i-ph-trash-duotone", tone: "danger" }],
+    items: sessions.map(session => ({
+      id: session.id,
+      title: `${session.browser} (${session.platform})`,
+      description: session.ip,
+      meta: session.time,
+      action: pageText(t, "manage-sessions", "sections.sessions.action"),
+    })),
   }],
 })
 
-const blockedUsersPage = (t: SettingTranslate): SettingPage => ({
+const blockedUsersPage = (t: SettingTranslate, blockedUsers: SettingsBlockedUser[]): SettingPage => ({
   slug: "blocked-users",
   label: pageText(t, "blocked-users", "label"),
   icon: pageIcons.blockedUsers,
@@ -551,6 +558,13 @@ const blockedUsersPage = (t: SettingTranslate): SettingPage => ({
     title: pageText(t, "blocked-users", "sections.blocked.title"),
     description: pageText(t, "blocked-users", "sections.blocked.description"),
     kind: "list",
+    items: blockedUsers.map(user => ({
+      id: user.id,
+      title: user.name,
+      description: "",
+      meta: "",
+      action: t("settings.section.unblockAction") || "Unblock",
+    })),
   }],
 })
 
@@ -601,7 +615,12 @@ const monetizationPage = (t: SettingTranslate, user: SettingsUser | null): Setti
   }],
 })
 
-const createPages = (t: SettingTranslate, user: SettingsUser | null): SettingPage[] => [
+const createPages = (
+  t: SettingTranslate,
+  user: SettingsUser | null,
+  sessions: SettingSession[],
+  blockedUsers: SettingsBlockedUser[],
+): SettingPage[] => [
   generalPage(t, user),
   profilePage(t, user),
   privacyPage(t, user),
@@ -613,11 +632,11 @@ const createPages = (t: SettingTranslate, user: SettingsUser | null): SettingPag
   socialLinksPage(t, user),
   verificationPage(t, user),
   myPointsPage(t, user),
-  manageSessionsPage(t),
-  blockedUsersPage(t),
+  manageSessionsPage(t, sessions),
+  blockedUsersPage(t, blockedUsers),
   myInfoPage(t),
-  addressesPage(t),
-  monetizationPage(t),
+  addressesPage(t, user),
+  monetizationPage(t, user),
   deleteAccountPage(t),
 ]
 
@@ -729,7 +748,9 @@ export const useSettingsData = () => {
     return response.message
   }
 
-  const pages = computed<SettingPage[]>(() => createPages(t, user.value))
+  const pages = computed<SettingPage[]>(() =>
+    createPages(t, user.value, sessions.value, blockedUsers.value),
+  )
 
   const sessions = ref<SettingSession[]>([])
   const blockedUsers = ref<SettingsBlockedUser[]>([])

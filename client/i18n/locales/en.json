@@ -532,7 +532,11 @@
           "count": "128 profiles",
           "href": "/search",
           "accent": "linear-gradient(135deg,#0f172a 0%,#2563eb 52%,#7dd3fc 100%)",
-          "tags": ["Creator", "Expert", "Profile"],
+          "tags": [
+            "Creator",
+            "Expert",
+            "Profile"
+          ],
           "featured": true
         },
         {
@@ -545,7 +549,11 @@
           "count": "34 pages",
           "href": "/pages",
           "accent": "linear-gradient(135deg,#1f2937 0%,#9333ea 50%,#f9a8d4 100%)",
-          "tags": ["Brand", "Creator", "Suggested"],
+          "tags": [
+            "Brand",
+            "Creator",
+            "Suggested"
+          ],
           "featured": true
         },
         {
@@ -558,7 +566,11 @@
           "count": "18 groups",
           "href": "/groups",
           "accent": "linear-gradient(135deg,#0f172a 0%,#0891b2 46%,#fde68a 100%)",
-          "tags": ["Community", "Discussion", "Joined"],
+          "tags": [
+            "Community",
+            "Discussion",
+            "Joined"
+          ],
           "featured": true
         },
         {
@@ -571,7 +583,11 @@
           "count": "52 products",
           "href": "/products",
           "accent": "linear-gradient(135deg,#111827 0%,#ea580c 48%,#fdba74 100%)",
-          "tags": ["Product", "Listing", "Market"],
+          "tags": [
+            "Product",
+            "Listing",
+            "Market"
+          ],
           "featured": true
         },
         {
@@ -584,7 +600,11 @@
           "count": "9 events",
           "href": "/events",
           "accent": "linear-gradient(135deg,#1e293b 0%,#4f46e5 48%,#c4b5fd 100%)",
-          "tags": ["Calendar", "Online", "Meetup"],
+          "tags": [
+            "Calendar",
+            "Online",
+            "Meetup"
+          ],
           "featured": false
         },
         {
@@ -597,7 +617,11 @@
           "count": "21 roles",
           "href": "/jobs",
           "accent": "linear-gradient(135deg,#0f172a 0%,#0369a1 50%,#bae6fd 100%)",
-          "tags": ["Hiring", "Career", "Remote"],
+          "tags": [
+            "Hiring",
+            "Career",
+            "Remote"
+          ],
           "featured": false
         },
         {
@@ -610,7 +634,11 @@
           "count": "24 articles",
           "href": "/blogs",
           "accent": "linear-gradient(135deg,#111827 0%,#7c3aed 48%,#c084fc 100%)",
-          "tags": ["Article", "Topic", "Community"],
+          "tags": [
+            "Article",
+            "Topic",
+            "Community"
+          ],
           "featured": true
         },
         {
@@ -623,7 +651,11 @@
           "count": "7 campaigns",
           "href": "/funding",
           "accent": "linear-gradient(135deg,#172554 0%,#2563eb 48%,#bfdbfe 100%)",
-          "tags": ["Support", "Campaign", "Impact"],
+          "tags": [
+            "Support",
+            "Campaign",
+            "Impact"
+          ],
           "featured": false
         },
         {
@@ -636,7 +668,11 @@
           "count": "5 streams",
           "href": "/live",
           "accent": "linear-gradient(135deg,#450a0a 0%,#dc2626 48%,#fca5a5 100%)",
-          "tags": ["Streaming", "Realtime", "Host"],
+          "tags": [
+            "Streaming",
+            "Realtime",
+            "Host"
+          ],
           "featured": false
         },
         {
@@ -649,7 +685,11 @@
           "count": "16 videos",
           "href": "/watch",
           "accent": "linear-gradient(135deg,#111827 0%,#0ea5e9 50%,#bae6fd 100%)",
-          "tags": ["Video", "Feed", "Recommended"],
+          "tags": [
+            "Video",
+            "Feed",
+            "Recommended"
+          ],
           "featured": false
         },
         {
@@ -662,7 +702,11 @@
           "count": "11 games",
           "href": "/games",
           "accent": "linear-gradient(135deg,#1f2937 0%,#2563eb 48%,#93c5fd 100%)",
-          "tags": ["Arcade", "Mini Game", "Play"],
+          "tags": [
+            "Arcade",
+            "Mini Game",
+            "Play"
+          ],
           "featured": false
         },
         {
@@ -675,7 +719,11 @@
           "count": "19 topics",
           "href": "/forum",
           "accent": "linear-gradient(135deg,#0f172a 0%,#7c2d12 48%,#fdba74 100%)",
-          "tags": ["Thread", "Q&A", "Topic"],
+          "tags": [
+            "Thread",
+            "Q&A",
+            "Topic"
+          ],
           "featured": true
         }
       ]
@@ -1318,37 +1366,52 @@
         "organization": "Organization",
         "service": "Service"
       },
-      "tabs" : {
-        "posts" : "All",
-        "about" :"About"
+      "tabs": {
+        "posts": "All",
+        "about": "About"
       }
     },
-  "profilePage": {
-    "emptyTitle": "Profile not available",
-    "emptyDescription": "The backend did not return a profile for this route.",
-    "editCover": "Edit cover",
-    "sidebarSearchPosts": "Search for posts",
-    "aboutSections": {
-      "workEducation": "Work and education",
-      "contact": "Contact info",
-      "basic": "Basic info"
-    },
-    "tabs": {
+    "profilePage": {
+      "emptyTitle": "Profile not available",
+      "emptyDescription": "The backend did not return a profile for this route.",
+      "editCover": "Edit cover",
+      "sidebarSearchPosts": "Search for posts",
+      "aboutSections": {
+        "workEducation": "Work and education",
+        "contact": "Contact info",
+        "basic": "Basic info"
+      },
+      "tabs": {
         "timeline": "Timeline",
         "about": "About",
         "friends": "Friends",
         "photos": "Photos",
         "videos": "Videos",
-        "albums": "Albums"
+        "albums": "Albums",
+        "more": "More",
+        "poke": "Poke",
+        "pokeDesc": "Give your friend a playful nudge.",
+        "pokeSuccess": "You have successfully poked {name}!",
+        "pokeAlready": "You have already poked this person!",
+        "block": "Block user",
+        "blockDesc": "This person won’t be able to view your profile or contact you.",
+        "blockSuccess": "Blocked {name} successfully.",
+        "report": "Report profile",
+        "reportDesc": "Submit a violation report to the administrators.",
+        "reportSuccess": "Thank you for the report. We will review it shortly.",
+        "copyLink": "Copy link",
+        "copyLinkDesc": "Copy this profile’s link to clipboard.",
+        "blockList": "Blocked list",
+        "blockListDesc": "View and manage people you have blocked."
       },
-    "stats": {
-      "following": "Following",
-      "pages": "Pages",
-      "likes": "Likes",
-      "groups": "Groups",
-      "products": "Products for sale"
-    }
-  },
+      "stats": {
+        "following": "Following",
+        "pages": "Pages",
+        "likes": "Likes",
+        "groups": "Groups",
+        "products": "Products for sale"
+      }
+    },
     "photosPage": {
       "seoTitle": "Photos | VNSEEA",
       "seoDescription": "A VNSEEA photo hub with a gallery hero, filters, album strip, masonry gallery, lightbox, and direct links to hashtags, popular, and memories.",
@@ -1387,12 +1450,36 @@
       "sidebarLinksEyebrow": "Quick paths",
       "sidebarLinksTitle": "Open related flows",
       "categories": [
-        { "label": "All", "value": "all", "icon": "i-ph-squares-four-fill" },
-        { "label": "Community", "value": "community", "icon": "i-ph-users-three-fill" },
-        { "label": "Events", "value": "events", "icon": "i-ph-calendar-blank-fill" },
-        { "label": "Portraits", "value": "portraits", "icon": "i-ph-user-focus-fill" },
-        { "label": "Product", "value": "product", "icon": "i-ph-package-fill" },
-        { "label": "Education", "value": "education", "icon": "i-ph-graduation-cap-fill" }
+        {
+          "label": "All",
+          "value": "all",
+          "icon": "i-ph-squares-four-fill"
+        },
+        {
+          "label": "Community",
+          "value": "community",
+          "icon": "i-ph-users-three-fill"
+        },
+        {
+          "label": "Events",
+          "value": "events",
+          "icon": "i-ph-calendar-blank-fill"
+        },
+        {
+          "label": "Portraits",
+          "value": "portraits",
+          "icon": "i-ph-user-focus-fill"
+        },
+        {
+          "label": "Product",
+          "value": "product",
+          "icon": "i-ph-package-fill"
+        },
+        {
+          "label": "Education",
+          "value": "education",
+          "icon": "i-ph-graduation-cap-fill"
+        }
       ],
       "albums": [
         {
@@ -1437,7 +1524,11 @@
           "comments": 624,
           "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#0000ff 0%,#4f46e5 100%)",
-          "tags": ["#community", "#workshop", "#rooftop"],
+          "tags": [
+            "#community",
+            "#workshop",
+            "#rooftop"
+          ],
           "frame": "portrait",
           "companionTo": "/memories"
         },
@@ -1454,7 +1545,11 @@
           "comments": 840,
           "image": "https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1400&q=80",
           "accent": "linear-gradient(135deg,#172554 0%,#2563eb 100%)",
-          "tags": ["#event", "#summit", "#community"],
+          "tags": [
+            "#event",
+            "#summit",
+            "#community"
+          ],
           "frame": "landscape",
           "companionTo": "/events"
         },
@@ -1471,7 +1566,11 @@
           "comments": 318,
           "image": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#7c3aed 0%,#c084fc 100%)",
-          "tags": ["#portrait", "#member", "#studio"],
+          "tags": [
+            "#portrait",
+            "#member",
+            "#studio"
+          ],
           "frame": "tall",
           "companionTo": "/search"
         },
@@ -1488,7 +1587,11 @@
           "comments": 274,
           "image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=80",
           "accent": "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
-          "tags": ["#product", "#studio", "#brand"],
+          "tags": [
+            "#product",
+            "#studio",
+            "#brand"
+          ],
           "frame": "landscape",
           "companionTo": "/blogs"
         },
@@ -1505,7 +1608,11 @@
           "comments": 201,
           "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#4338ca 0%,#60a5fa 100%)",
-          "tags": ["#education", "#makerspace", "#future"],
+          "tags": [
+            "#education",
+            "#makerspace",
+            "#future"
+          ],
           "frame": "portrait",
           "companionTo": "/blogs"
         },
@@ -1522,7 +1629,11 @@
           "comments": 352,
           "image": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#7c2d12 0%,#fb923c 100%)",
-          "tags": ["#community", "#market", "#citylife"],
+          "tags": [
+            "#community",
+            "#market",
+            "#citylife"
+          ],
           "frame": "square",
           "companionTo": "/popular"
         },
@@ -1539,7 +1650,11 @@
           "comments": 407,
           "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#111827 0%,#334155 100%)",
-          "tags": ["#event", "#backstage", "#demo"],
+          "tags": [
+            "#event",
+            "#backstage",
+            "#demo"
+          ],
           "frame": "portrait",
           "companionTo": "/popular"
         },
@@ -1556,7 +1671,11 @@
           "comments": 289,
           "image": "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80",
           "accent": "linear-gradient(135deg,#be123c 0%,#fb7185 100%)",
-          "tags": ["#portrait", "#creator", "#studio"],
+          "tags": [
+            "#portrait",
+            "#creator",
+            "#studio"
+          ],
           "frame": "tall",
           "companionTo": "/search"
         }
@@ -1744,7 +1863,11 @@
           "views": 5260,
           "repliesCount": 2,
           "excerpt": "This thread tracks the forum work planned so far: page-level SEO, route sync, UI feedback, and SSR guards for the primary interactions.",
-          "tags": ["migration", "seo", "roadmap"],
+          "tags": [
+            "migration",
+            "seo",
+            "roadmap"
+          ],
           "replies": [
             {
               "id": 101,
@@ -1777,7 +1900,11 @@
           "views": 1840,
           "repliesCount": 2,
           "excerpt": "I am migrating a listing page to Nuxt 4 with search + section + thread in the URL. Has anyone already handled the SSR and hydration contract for this flow cleanly?",
-          "tags": ["nuxt-ui", "ssr", "router"],
+          "tags": [
+            "nuxt-ui",
+            "ssr",
+            "router"
+          ],
           "replies": [
             {
               "id": 201,
@@ -1811,7 +1938,11 @@
           "views": 940,
           "repliesCount": 2,
           "excerpt": "The marketplace area is seeing a lot of price questions in comments. How are you handling guidelines or thread templates to make opening posts clearer?",
-          "tags": ["marketplace", "guideline", "pricing"],
+          "tags": [
+            "marketplace",
+            "guideline",
+            "pricing"
+          ],
           "replies": [
             {
               "id": 301,
@@ -1844,7 +1975,11 @@
           "views": 770,
           "repliesCount": 1,
           "excerpt": "I want a recap format that stays readable on mobile but still gives enough context to people who did not attend. What checklist do you keep as the minimum?",
-          "tags": ["events", "recap", "community"],
+          "tags": [
+            "events",
+            "recap",
+            "community"
+          ],
           "replies": [
             {
               "id": 401,
@@ -1869,7 +2004,11 @@
           "views": 1280,
           "repliesCount": 3,
           "excerpt": "I am standardizing hiring threads so candidates can scan them quickly on mobile. Which fields should always appear near the top of the thread?",
-          "tags": ["jobs", "remote", "hiring"],
+          "tags": [
+            "jobs",
+            "remote",
+            "hiring"
+          ],
           "replies": [
             {
               "id": 501,
@@ -1911,7 +2050,11 @@
           "views": 688,
           "repliesCount": 2,
           "excerpt": "I want to collect real examples of changing titles, tags, and opening summaries so showcase threads feel stronger in public listings.",
-          "tags": ["showcase", "case-study", "content"],
+          "tags": [
+            "showcase",
+            "case-study",
+            "content"
+          ],
           "replies": [
             {
               "id": 601,
@@ -2190,7 +2333,11 @@
           "audience": "Public",
           "time": "12 minutes ago",
           "text": "The team just locked the rollout order for public pages: stable routes, SSR-safe state, and clear action feedback now take priority over surface-level UI swaps.",
-          "tags": ["migration", "community", "nuxt"],
+          "tags": [
+            "migration",
+            "community",
+            "nuxt"
+          ],
           "stats": {
             "likes": 124,
             "comments": 28,
@@ -2221,7 +2368,11 @@
           "audience": "Members",
           "time": "35 minutes ago",
           "text": "The new marketplace mock is showing that product cards need to prioritize price, location, and a tighter CTA. One extra badge layer is enough to make the whole thing noisy.",
-          "tags": ["marketplace", "product", "ux"],
+          "tags": [
+            "marketplace",
+            "product",
+            "ux"
+          ],
           "stats": {
             "likes": 96,
             "comments": 19,
@@ -2252,7 +2403,11 @@
           "audience": "Public",
           "time": "1 hour ago",
           "text": "If a route can crash because data is not ready, that is not only a data issue. It is a contract issue. The page should keep a fallback shape so people can still move away cleanly.",
-          "tags": ["business", "ssr", "contract"],
+          "tags": [
+            "business",
+            "ssr",
+            "contract"
+          ],
           "stats": {
             "likes": 141,
             "comments": 33,
@@ -2282,7 +2437,11 @@
           "audience": "Public",
           "time": "2 hours ago",
           "text": "Popular should feel curated, not just like the feed sorted differently. The hero, quick links, and sidebar need to signal that this is where the most worth-seeing content gets gathered.",
-          "tags": ["design", "curation", "popular"],
+          "tags": [
+            "design",
+            "curation",
+            "popular"
+          ],
           "stats": {
             "likes": 88,
             "comments": 17,
@@ -2313,7 +2472,11 @@
           "audience": "Members",
           "time": "3 hours ago",
           "text": "When a locale is missing an entire namespace, the route should still render from internal fallback data instead of waiting for the user to hard-refresh out of a broken state.",
-          "tags": ["technology", "i18n", "runtime"],
+          "tags": [
+            "technology",
+            "i18n",
+            "runtime"
+          ],
           "stats": {
             "likes": 167,
             "comments": 26,
@@ -2461,7 +2624,10 @@
     "moviesPage": {
       "seoTitle": "Movies | VNSEEA",
       "seoDescription": "Browse curated movies on VNSEEA with a clearer hero, compact filters, and smoother routing into watch, live, and blog experiences.",
-      "heroEyebrow": "Today's curation",
+      "heroEyebrow": "Movies",
+      "tabNew": "New",
+      "tabRecommended": "Recommended",
+      "tabWatched": "Most Watched",
       "searchPlaceholder": "Search movies, directors, or topics",
       "openLink": "Open collection",
       "resultEyebrow": "Now showing",
@@ -2501,7 +2667,7 @@
       "heroTitle": "Pokes waiting for your response",
       "heroDescription": "Handle new pokes with a faster, clearer flow while keeping enough context to understand why each person is showing up here.",
       "openMessages": "Open messages",
-      "resetStatus": "Reset status",
+      "offlineStatus": "Offline",
       "listEyebrow": "Waiting for response",
       "listTitle": "{count} pokes currently shown",
       "listDescription": "These suggestions keep the poke flow light so people can respond, dismiss, or continue into messaging without losing context.",
@@ -2522,11 +2688,12 @@
       "activeNow": "Active now",
       "onlineChatContext": "Recently active in chat",
       "onlineChatNote": "This person is online or was active very recently, so a quick poke can naturally lead into a live conversation.",
-      "pokeCountLabel": "Status",
-      "pokeActionLabel": "Connection source",
+      "pokeCountLabel": "Activity",
+      "pokeActionLabel": "Sent at",
       "invitationSent": "Poked back",
       "pokeBack": "Poke back",
-      "deletePoke": "Remove request"
+      "deletePoke": "Remove request",
+      "minuteAgo": "{count} minutes ago"
     },
     "memoriesPage": {
       "seoTitle": "Memories | VNSEEA",
@@ -2671,7 +2838,11 @@
           "shares": 19,
           "cover": "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1600&q=80",
           "description": "A quick live recap of community updates, active workstreams, and the next items people should keep an eye on this week.",
-          "tags": ["#community", "#demo-day", "#updates"],
+          "tags": [
+            "#community",
+            "#demo-day",
+            "#updates"
+          ],
           "comments": [
             {
               "id": 101,
@@ -2706,7 +2877,11 @@
           "shares": 12,
           "cover": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=80",
           "description": "A short discussion on choosing priorities, keeping review loops compact, and preventing small teams from getting stuck mid-rollout.",
-          "tags": ["#founder", "#product", "#execution"],
+          "tags": [
+            "#founder",
+            "#product",
+            "#execution"
+          ],
           "comments": [
             {
               "id": 201,
@@ -2741,7 +2916,11 @@
           "shares": 9,
           "cover": "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80",
           "description": "A session focused on note-taking, topic-based review, and building a study rhythm that stays consistent without becoming overwhelming.",
-          "tags": ["#education", "#learning", "#notes"],
+          "tags": [
+            "#education",
+            "#learning",
+            "#notes"
+          ],
           "comments": [
             {
               "id": 301,
@@ -2776,7 +2955,11 @@
           "shares": 27,
           "cover": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
           "description": "A fast pass through notable frontend changes, AI coding tools worth testing, and the platform updates that actually matter this week.",
-          "tags": ["#tech", "#frontend", "#ai"],
+          "tags": [
+            "#tech",
+            "#frontend",
+            "#ai"
+          ],
           "comments": [
             {
               "id": 401,
@@ -3424,9 +3607,18 @@
             "Receive standard-priority support through the help flow."
           ],
           "limits": [
-            { "label": "Storage", "value": "50 GB" },
-            { "label": "Managed pages", "value": "2 pages" },
-            { "label": "Automation templates", "value": "3 templates" }
+            {
+              "label": "Storage",
+              "value": "50 GB"
+            },
+            {
+              "label": "Managed pages",
+              "value": "2 pages"
+            },
+            {
+              "label": "Automation templates",
+              "value": "3 templates"
+            }
           ]
         },
         {
@@ -3443,9 +3635,18 @@
             "Get faster support and a stronger set of automation templates."
           ],
           "limits": [
-            { "label": "Storage", "value": "250 GB" },
-            { "label": "Managed pages", "value": "10 pages" },
-            { "label": "Automation templates", "value": "Unlimited" }
+            {
+              "label": "Storage",
+              "value": "250 GB"
+            },
+            {
+              "label": "Managed pages",
+              "value": "10 pages"
+            },
+            {
+              "label": "Automation templates",
+              "value": "Unlimited"
+            }
           ]
         },
         {
@@ -3462,24 +3663,75 @@
             "Get top-priority support plus onboarding guidance for the team."
           ],
           "limits": [
-            { "label": "Storage", "value": "1 TB" },
-            { "label": "Managed pages", "value": "Unlimited" },
-            { "label": "Team seats", "value": "15 members" }
+            {
+              "label": "Storage",
+              "value": "1 TB"
+            },
+            {
+              "label": "Managed pages",
+              "value": "Unlimited"
+            },
+            {
+              "label": "Team seats",
+              "value": "15 members"
+            }
           ]
         }
       ],
       "comparisonRows": [
-        { "label": "Advanced analytics", "starter": true, "creator": true, "business": true },
-        { "label": "Expanded media library", "starter": true, "creator": true, "business": true },
-        { "label": "Unlimited automation templates", "starter": false, "creator": true, "business": true },
-        { "label": "Multi-member collaboration", "starter": false, "creator": true, "business": true },
-        { "label": "Custom branding", "starter": false, "creator": false, "business": true },
-        { "label": "Priority support", "starter": false, "creator": true, "business": true }
+        {
+          "label": "Advanced analytics",
+          "starter": true,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Expanded media library",
+          "starter": true,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Unlimited automation templates",
+          "starter": false,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Multi-member collaboration",
+          "starter": false,
+          "creator": true,
+          "business": true
+        },
+        {
+          "label": "Custom branding",
+          "starter": false,
+          "creator": false,
+          "business": true
+        },
+        {
+          "label": "Priority support",
+          "starter": false,
+          "creator": true,
+          "business": true
+        }
       ],
       "paymentMethods": [
-        { "label": "VNSEEA wallet", "value": "wallet", "icon": "i-ph-wallet-fill" },
-        { "label": "Bank card", "value": "card", "icon": "i-ph-credit-card-fill" },
-        { "label": "Bank transfer", "value": "bank", "icon": "i-ph-bank-fill" }
+        {
+          "label": "VNSEEA wallet",
+          "value": "wallet",
+          "icon": "i-ph-wallet-fill"
+        },
+        {
+          "label": "Bank card",
+          "value": "card",
+          "icon": "i-ph-credit-card-fill"
+        },
+        {
+          "label": "Bank transfer",
+          "value": "bank",
+          "icon": "i-ph-bank-fill"
+        }
       ],
       "currentSubscription": {
         "plan": "Creator Pro",
@@ -3646,27 +3898,95 @@
       "createdJobDeadline": "June 30, 2026",
       "createdJobExperience": "See description",
       "categories": [
-        { "label": "All categories", "value": "all", "icon": "i-ph-squares-four-fill" },
-        { "label": "Engineering", "value": "engineering", "icon": "i-ph-code-fill" },
-        { "label": "Design", "value": "design", "icon": "i-ph-paint-brush-fill" },
-        { "label": "Marketing", "value": "marketing", "icon": "i-ph-megaphone-fill" },
-        { "label": "Sales", "value": "sales", "icon": "i-ph-handshake-fill" },
-        { "label": "Operations", "value": "operations", "icon": "i-ph-gear-six-fill" },
-        { "label": "Finance", "value": "finance", "icon": "i-ph-chart-line-up-fill" }
+        {
+          "label": "All categories",
+          "value": "all",
+          "icon": "i-ph-squares-four-fill"
+        },
+        {
+          "label": "Engineering",
+          "value": "engineering",
+          "icon": "i-ph-code-fill"
+        },
+        {
+          "label": "Design",
+          "value": "design",
+          "icon": "i-ph-paint-brush-fill"
+        },
+        {
+          "label": "Marketing",
+          "value": "marketing",
+          "icon": "i-ph-megaphone-fill"
+        },
+        {
+          "label": "Sales",
+          "value": "sales",
+          "icon": "i-ph-handshake-fill"
+        },
+        {
+          "label": "Operations",
+          "value": "operations",
+          "icon": "i-ph-gear-six-fill"
+        },
+        {
+          "label": "Finance",
+          "value": "finance",
+          "icon": "i-ph-chart-line-up-fill"
+        }
       ],
       "locations": [
-        { "label": "All locations", "value": "all", "icon": "i-ph-map-pin-fill" },
-        { "label": "Ho Chi Minh City", "value": "ho-chi-minh", "icon": "i-ph-buildings-fill" },
-        { "label": "Hanoi", "value": "ha-noi", "icon": "i-ph-bank-fill" },
-        { "label": "Da Nang", "value": "da-nang", "icon": "i-ph-waves-fill" },
-        { "label": "Remote", "value": "remote", "icon": "i-ph-globe-hemisphere-east-fill" }
+        {
+          "label": "All locations",
+          "value": "all",
+          "icon": "i-ph-map-pin-fill"
+        },
+        {
+          "label": "Ho Chi Minh City",
+          "value": "ho-chi-minh",
+          "icon": "i-ph-buildings-fill"
+        },
+        {
+          "label": "Hanoi",
+          "value": "ha-noi",
+          "icon": "i-ph-bank-fill"
+        },
+        {
+          "label": "Da Nang",
+          "value": "da-nang",
+          "icon": "i-ph-waves-fill"
+        },
+        {
+          "label": "Remote",
+          "value": "remote",
+          "icon": "i-ph-globe-hemisphere-east-fill"
+        }
       ],
       "types": [
-        { "label": "All contract types", "value": "all", "icon": "i-ph-briefcase-fill" },
-        { "label": "Full-time", "value": "full-time", "icon": "i-ph-clock-fill" },
-        { "label": "Part-time", "value": "part-time", "icon": "i-ph-clock-afternoon-fill" },
-        { "label": "Contract", "value": "contract", "icon": "i-ph-file-text-fill" },
-        { "label": "Internship", "value": "internship", "icon": "i-ph-student-fill" }
+        {
+          "label": "All contract types",
+          "value": "all",
+          "icon": "i-ph-briefcase-fill"
+        },
+        {
+          "label": "Full-time",
+          "value": "full-time",
+          "icon": "i-ph-clock-fill"
+        },
+        {
+          "label": "Part-time",
+          "value": "part-time",
+          "icon": "i-ph-clock-afternoon-fill"
+        },
+        {
+          "label": "Contract",
+          "value": "contract",
+          "icon": "i-ph-file-text-fill"
+        },
+        {
+          "label": "Internship",
+          "value": "internship",
+          "icon": "i-ph-student-fill"
+        }
       ],
       "jobs": [
         {
@@ -3698,7 +4018,12 @@
             "Flexible sprint rhythm focused more on output clarity than seat time.",
             "Learning and equipment budget reviewed against real working needs."
           ],
-          "skills": ["Vue", "Nuxt", "TypeScript", "SSR"],
+          "skills": [
+            "Vue",
+            "Nuxt",
+            "TypeScript",
+            "SSR"
+          ],
           "isRemote": false,
           "isFeatured": true,
           "isSaved": true,
@@ -3733,7 +4058,11 @@
             "Opportunity to shape requirements instead of only receiving execution tasks.",
             "A good environment to explore strong layout, hierarchy, and motion choices."
           ],
-          "skills": ["Figma", "Prototype", "Design System"],
+          "skills": [
+            "Figma",
+            "Prototype",
+            "Design System"
+          ],
           "isRemote": true,
           "isFeatured": true,
           "isSaved": false,
@@ -3768,7 +4097,11 @@
             "Campaign data shared with enough depth to improve faster.",
             "Direct exposure to founder and product collaboration when the funnel needs changes."
           ],
-          "skills": ["Growth", "Content", "Analytics"],
+          "skills": [
+            "Growth",
+            "Content",
+            "Analytics"
+          ],
           "isRemote": false,
           "isFeatured": false,
           "isSaved": false,
@@ -3803,7 +4136,11 @@
             "A working playbook that helps speed up onboarding.",
             "Room to build a stronger local partner network."
           ],
-          "skills": ["B2B", "CRM", "Partnership"],
+          "skills": [
+            "B2B",
+            "CRM",
+            "Partnership"
+          ],
           "isRemote": false,
           "isFeatured": false,
           "isSaved": true,
@@ -3838,7 +4175,11 @@
             "Exposure to end-to-end operational data instead of narrow isolated tasks.",
             "A good role for building practical finance operations judgment."
           ],
-          "skills": ["Finance", "Excel", "Reporting"],
+          "skills": [
+            "Finance",
+            "Excel",
+            "Reporting"
+          ],
           "isRemote": false,
           "isFeatured": false,
           "isSaved": false,
@@ -3873,7 +4214,11 @@
             "Clear mentorship and weekly checklists to track progress.",
             "A good entry point for building an operations foundation before moving into a full role."
           ],
-          "skills": ["Community", "Ops", "Notion"],
+          "skills": [
+            "Community",
+            "Ops",
+            "Notion"
+          ],
           "isRemote": true,
           "isFeatured": false,
           "isSaved": false,
@@ -3981,9 +4326,18 @@
         }
       ],
       "paymentProfiles": [
-        { "label": "Default Bank", "value": "Vietcombank - 1023...889" },
-        { "label": "MoMo Wallet", "value": "0987...543" },
-        { "label": "PayPal ID", "value": "user-paypal-example.com" }
+        {
+          "label": "Default Bank",
+          "value": "Vietcombank - 1023...889"
+        },
+        {
+          "label": "MoMo Wallet",
+          "value": "0987...543"
+        },
+        {
+          "label": "PayPal ID",
+          "value": "user-paypal-example.com"
+        }
       ],
       "history": [
         {
@@ -4040,9 +4394,21 @@
       "sendTransactionDescription": "Quick transfer",
       "justNow": "Just now",
       "methods": [
-        { "label": "Bank Transfer", "value": "bank", "icon": "i-ph-bank" },
-        { "label": "Credit Card", "value": "card", "icon": "i-ph-credit-card" },
-        { "label": "MoMo Wallet", "value": "momo", "icon": "i-ph-wallet" }
+        {
+          "label": "Bank Transfer",
+          "value": "bank",
+          "icon": "i-ph-bank"
+        },
+        {
+          "label": "Credit Card",
+          "value": "card",
+          "icon": "i-ph-credit-card"
+        },
+        {
+          "label": "MoMo Wallet",
+          "value": "momo",
+          "icon": "i-ph-wallet"
+        }
       ],
       "transactions": [
         {
@@ -4087,14 +4453,14 @@
       "tooltipImage": "Image",
       "tooltipGif": "GIF",
       "tooltipSticker": "Sticker",
-        "tooltipMention": "Mention",
-        "tooltipVoice": "Voice",
-        "removeAttachment": "Remove attachment",
-        "recording": "Recording...",
-        "selectedAttachment": "Attachment selected",
-        "microphoneUnavailable": "Microphone recording is not available in this browser context.",
-        "microphonePermissionDenied": "Microphone permission was denied."
-      },
+      "tooltipMention": "Mention",
+      "tooltipVoice": "Voice",
+      "removeAttachment": "Remove attachment",
+      "recording": "Recording...",
+      "selectedAttachment": "Attachment selected",
+      "microphoneUnavailable": "Microphone recording is not available in this browser context.",
+      "microphonePermissionDenied": "Microphone permission was denied."
+    },
     "publisherBox": {
       "prompt": "What is happening? Hashtag, mention, link...",
       "composerPlaceholder": "What is happening? Hashtag, mention, link...",
@@ -4190,7 +4556,7 @@
       "menuHideLabel": "Hide post",
       "menuHideDescription": "I do not want to see this post anymore.",
       "menuCopyLabel": "Copy link",
-      "menuCopyDescription": "Copy the link to this post."
+      "menuCopyDescription": "Copy post link to clipboard."
     },
     "commentList": {
       "title": "Comments",
@@ -4226,6 +4592,7 @@
       "share": "Share",
       "hidePost": "Hide post",
       "reportPost": "Report",
+      "reportSuccess": "Report submitted successfully.",
       "savePost": "Save post",
       "copyLink": "Copy link",
       "translatePost": "Translate post",
@@ -4493,6 +4860,7 @@
       "dangerMessage": "Danger zone. This action is sent to the PHP delete-account handler.",
       "deleteAccount": "Delete account",
       "savedState": "Settings updated.",
+      "unblockAction": "Unblock",
       "saveError": "Unable to update settings."
     },
     "data": {
@@ -4608,33 +4976,96 @@
         "backendSource": "Backend"
       },
       "notificationTypes": {
-        "liked": { "label": "Likes", "description": "Receive like notifications." },
-        "shared": { "label": "Shares", "description": "Receive share notifications." },
-        "wondered": { "label": "Wonders", "description": "Receive wonder notifications." },
-        "commented": { "label": "Comments", "description": "Receive comment notifications." },
-        "followed": { "label": "Followers", "description": "Receive follower notifications." },
-        "likedPage": { "label": "Page likes", "description": "Receive page like notifications." },
-        "visited": { "label": "Profile visits", "description": "Receive profile visit notifications." },
-        "mentioned": { "label": "Mentions", "description": "Receive mention notifications." },
-        "joinedGroup": { "label": "Group joins", "description": "Receive group join notifications." },
-        "accepted": { "label": "Accepted requests", "description": "Receive accepted request notifications." },
-        "profileWallPost": { "label": "Profile wall posts", "description": "Receive profile wall post notifications." },
-        "memory": { "label": "Memories", "description": "Receive memory notifications." },
-        "sentMeMessage": { "label": "Messages", "description": "Receive message notifications." }
+        "liked": {
+          "label": "Likes",
+          "description": "Receive like notifications."
+        },
+        "shared": {
+          "label": "Shares",
+          "description": "Receive share notifications."
+        },
+        "wondered": {
+          "label": "Wonders",
+          "description": "Receive wonder notifications."
+        },
+        "commented": {
+          "label": "Comments",
+          "description": "Receive comment notifications."
+        },
+        "followed": {
+          "label": "Followers",
+          "description": "Receive follower notifications."
+        },
+        "likedPage": {
+          "label": "Page likes",
+          "description": "Receive page like notifications."
+        },
+        "visited": {
+          "label": "Profile visits",
+          "description": "Receive profile visit notifications."
+        },
+        "mentioned": {
+          "label": "Mentions",
+          "description": "Receive mention notifications."
+        },
+        "joinedGroup": {
+          "label": "Group joins",
+          "description": "Receive group join notifications."
+        },
+        "accepted": {
+          "label": "Accepted requests",
+          "description": "Receive accepted request notifications."
+        },
+        "profileWallPost": {
+          "label": "Profile wall posts",
+          "description": "Receive profile wall post notifications."
+        },
+        "memory": {
+          "label": "Memories",
+          "description": "Receive memory notifications."
+        },
+        "sentMeMessage": {
+          "label": "Messages",
+          "description": "Receive message notifications."
+        }
       },
       "emailNotificationTypes": {
-        "liked": { "description": "Send email for likes." },
-        "shared": { "description": "Send email for shares." },
-        "wondered": { "description": "Send email for wonders." },
-        "commented": { "description": "Send email for comments." },
-        "followed": { "description": "Send email for followers." },
-        "likedPage": { "description": "Send email for page likes." },
-        "visited": { "description": "Send email for profile visits." },
-        "mentioned": { "description": "Send email for mentions." },
-        "joinedGroup": { "description": "Send email for group joins." },
-        "accepted": { "description": "Send email for accepted requests." },
-        "profileWallPost": { "description": "Send email for profile wall posts." },
-        "sentMeMessage": { "description": "Send email for messages." }
+        "liked": {
+          "description": "Send email for likes."
+        },
+        "shared": {
+          "description": "Send email for shares."
+        },
+        "wondered": {
+          "description": "Send email for wonders."
+        },
+        "commented": {
+          "description": "Send email for comments."
+        },
+        "followed": {
+          "description": "Send email for followers."
+        },
+        "likedPage": {
+          "description": "Send email for page likes."
+        },
+        "visited": {
+          "description": "Send email for profile visits."
+        },
+        "mentioned": {
+          "description": "Send email for mentions."
+        },
+        "joinedGroup": {
+          "description": "Send email for group joins."
+        },
+        "accepted": {
+          "description": "Send email for accepted requests."
+        },
+        "profileWallPost": {
+          "description": "Send email for profile wall posts."
+        },
+        "sentMeMessage": {
+          "description": "Send email for messages."
+        }
       },
       "pages": {
         "general": {
@@ -4777,21 +5208,66 @@
               "title": "In-app notifications",
               "description": "Likes, comments, follows, messages, mentions, and more.",
               "toggles": {
-                "likes": { "label": "Likes", "description": "Receive like notifications." },
-                "comments": { "label": "Comments", "description": "Receive comment notifications." },
-                "follows": { "label": "Follows", "description": "Receive follow notifications." },
-                "messages": { "label": "Messages", "description": "Receive message notifications." },
-                "mentions": { "label": "Mentions", "description": "Receive mention notifications." },
-                "shares": { "label": "Shares", "description": "Receive share notifications." },
-                "events": { "label": "Events", "description": "Receive event notifications." },
-                "groups": { "label": "Groups", "description": "Receive group notifications." },
-                "pages": { "label": "Pages", "description": "Receive page notifications." },
-                "marketplace": { "label": "Marketplace", "description": "Receive marketplace notifications." },
-                "jobs": { "label": "Jobs", "description": "Receive job notifications." },
-                "funding": { "label": "Funding", "description": "Receive funding notifications." },
-                "live": { "label": "Live", "description": "Receive live notifications." },
-                "watch": { "label": "Watch", "description": "Receive watch notifications." },
-                "security": { "label": "Security", "description": "Receive security notifications." }
+                "likes": {
+                  "label": "Likes",
+                  "description": "Receive like notifications."
+                },
+                "comments": {
+                  "label": "Comments",
+                  "description": "Receive comment notifications."
+                },
+                "follows": {
+                  "label": "Follows",
+                  "description": "Receive follow notifications."
+                },
+                "messages": {
+                  "label": "Messages",
+                  "description": "Receive message notifications."
+                },
+                "mentions": {
+                  "label": "Mentions",
+                  "description": "Receive mention notifications."
+                },
+                "shares": {
+                  "label": "Shares",
+                  "description": "Receive share notifications."
+                },
+                "events": {
+                  "label": "Events",
+                  "description": "Receive event notifications."
+                },
+                "groups": {
+                  "label": "Groups",
+                  "description": "Receive group notifications."
+                },
+                "pages": {
+                  "label": "Pages",
+                  "description": "Receive page notifications."
+                },
+                "marketplace": {
+                  "label": "Marketplace",
+                  "description": "Receive marketplace notifications."
+                },
+                "jobs": {
+                  "label": "Jobs",
+                  "description": "Receive job notifications."
+                },
+                "funding": {
+                  "label": "Funding",
+                  "description": "Receive funding notifications."
+                },
+                "live": {
+                  "label": "Live",
+                  "description": "Receive live notifications."
+                },
+                "watch": {
+                  "label": "Watch",
+                  "description": "Receive watch notifications."
+                },
+                "security": {
+                  "label": "Security",
+                  "description": "Receive security notifications."
+                }
               }
             }
           }
@@ -4804,10 +5280,22 @@
               "title": "Email notifications",
               "description": "Choose which system emails are allowed.",
               "toggles": {
-                "newMessage": { "label": "New message email", "description": "Email when a new message arrives." },
-                "mention": { "label": "Mention email", "description": "Email when someone mentions you." },
-                "weeklyDigest": { "label": "Weekly digest", "description": "Weekly activity summary." },
-                "security": { "label": "Security email", "description": "Sign-in and security alerts." }
+                "newMessage": {
+                  "label": "New message email",
+                  "description": "Email when a new message arrives."
+                },
+                "mention": {
+                  "label": "Mention email",
+                  "description": "Email when someone mentions you."
+                },
+                "weeklyDigest": {
+                  "label": "Weekly digest",
+                  "description": "Weekly activity summary."
+                },
+                "security": {
+                  "label": "Security email",
+                  "description": "Sign-in and security alerts."
+                }
               }
             }
           }
@@ -5360,19 +5848,52 @@
         "ongoing": "Ongoing",
         "notApplicable": "N/A",
         "notCompleted": "Wait for completion",
-        "created": { "label": "Order created", "description": "The order has been recorded and is waiting for shop confirmation." },
-        "confirmed": { "label": "Shop confirmed", "description": "The shop will check inventory and prepare your order." },
-        "shipping": { "label": "Handed over to shipping", "description": "The order will be handed over to the shipping unit after confirmation." },
-        "delivered": { "label": "Delivered successfully", "description": "You will receive a notification when the order is completed." },
-        "shipping_active": { "label": "Shipping", "description": "The order is on the delivery truck and will arrive today." },
-        "cancelled": { "label": "Cancellation request", "description": "The buyer submitted a cancellation request before confirmation." },
-        "refunded": { "label": "Refunded & closed", "description": "The funds have been refunded to the internal VNSEEA wallet." }
+        "created": {
+          "label": "Order created",
+          "description": "The order has been recorded and is waiting for shop confirmation."
+        },
+        "confirmed": {
+          "label": "Shop confirmed",
+          "description": "The shop will check inventory and prepare your order."
+        },
+        "shipping": {
+          "label": "Handed over to shipping",
+          "description": "The order will be handed over to the shipping unit after confirmation."
+        },
+        "delivered": {
+          "label": "Delivered successfully",
+          "description": "You will receive a notification when the order is completed."
+        },
+        "shipping_active": {
+          "label": "Shipping",
+          "description": "The order is on the delivery truck and will arrive today."
+        },
+        "cancelled": {
+          "label": "Cancellation request",
+          "description": "The buyer submitted a cancellation request before confirmation."
+        },
+        "refunded": {
+          "label": "Refunded & closed",
+          "description": "The funds have been refunded to the internal VNSEEA wallet."
+        }
       },
       "tasks": {
-        "payment": { "label": "Verify payment", "description": "Internal wallet has recorded success or funds have reached the system." },
-        "stock": { "label": "Check inventory", "description": "Ensure sufficient quantity, accessories, and packaging condition." },
-        "packing": { "label": "Pack & Print label", "description": "Must be completed before handing over to the shipping unit." },
-        "handoff": { "label": "Handover to shipper", "description": "The system will open payout after the order leaves the warehouse." }
+        "payment": {
+          "label": "Verify payment",
+          "description": "Internal wallet has recorded success or funds have reached the system."
+        },
+        "stock": {
+          "label": "Check inventory",
+          "description": "Ensure sufficient quantity, accessories, and packaging condition."
+        },
+        "packing": {
+          "label": "Pack & Print label",
+          "description": "Must be completed before handing over to the shipping unit."
+        },
+        "handoff": {
+          "label": "Handover to shipper",
+          "description": "The system will open payout after the order leaves the warehouse."
+        }
       },
       "delivery": {
         "expected2h": "Shop expected to confirm in 2 hours",
@@ -5448,7 +5969,11 @@
         "eyebrow": "P-18 · Community",
         "title": "Create new group",
         "description": "Set up a new community for members to exchange, share content, and connect around a common topic.",
-        "highlights": ["Custom URL", "Privacy control", "Ready to invite members"],
+        "highlights": [
+          "Custom URL",
+          "Privacy control",
+          "Ready to invite members"
+        ],
         "nameLabel": "Group name",
         "namePlaceholder": "Example: Central Auto Community",
         "slugPlaceholder": "central-auto-community",
@@ -5459,7 +5984,11 @@
         "eyebrow": "P-21 · Fanpage",
         "title": "Create new page",
         "description": "Create a fanpage for your brand, store, professional, or content project to start posting, receiving followers, and building a public presence.",
-        "highlights": ["Public from the start", "Brand URL", "Ready for fanpage profile"],
+        "highlights": [
+          "Public from the start",
+          "Brand URL",
+          "Ready for fanpage profile"
+        ],
         "nameLabel": "Page name",
         "namePlaceholder": "Example: Moc May Furniture Studio",
         "slugPlaceholder": "moc-may-furniture-studio",
@@ -5574,11 +6103,26 @@
       }
     },
     "cta": {
-      "message": { "label": "Message", "description": "Suitable when you want to draw viewers to inbox for direct consultation." },
-      "follow": { "label": "Follow", "description": "Good for content fanpages, brands, or periodic update channels." },
-      "catalog": { "label": "View catalog", "description": "Used for pages with product catalogs, services, or featured collections." },
-      "booking": { "label": "Book now", "description": "Suitable for studios, experts, classes, or services that need to close scheduled slots." },
-      "call": { "label": "Call now", "description": "Suitable for local businesses or teams that need quick responses." }
+      "message": {
+        "label": "Message",
+        "description": "Suitable when you want to draw viewers to inbox for direct consultation."
+      },
+      "follow": {
+        "label": "Follow",
+        "description": "Good for content fanpages, brands, or periodic update channels."
+      },
+      "catalog": {
+        "label": "View catalog",
+        "description": "Used for pages with product catalogs, services, or featured collections."
+      },
+      "booking": {
+        "label": "Book now",
+        "description": "Suitable for studios, experts, classes, or services that need to close scheduled slots."
+      },
+      "call": {
+        "label": "Call now",
+        "description": "Suitable for local businesses or teams that need quick responses."
+      }
     },
     "tabs": {
       "groups": {
@@ -5593,22 +6137,64 @@
       }
     },
     "privacy": {
-      "public": { "label": "Public", "description": "Anyone can find the group and view basic content." },
-      "private": { "label": "Private", "description": "Group is publicly visible but only members can view posts." },
-      "secret": { "label": "Secret", "description": "Only invited people can see and join the group." }
+      "public": {
+        "label": "Public",
+        "description": "Anyone can find the group and view basic content."
+      },
+      "private": {
+        "label": "Private",
+        "description": "Group is publicly visible but only members can view posts."
+      },
+      "secret": {
+        "label": "Secret",
+        "description": "Only invited people can see and join the group."
+      }
     },
     "categories": {
-      "auto": { "label": "Auto & Vehicles", "description": "For discussions on new cars, maintenance, reviews, and accessories." },
-      "business": { "label": "Business", "description": "Focus on collaboration, sales, management, and business development." },
-      "technology": { "label": "Technology", "description": "Suitable for communities interested in software, AI, devices, and programming." },
-      "education": { "label": "Education", "description": "Share knowledge, study materials, workshops, and mentoring." },
-      "travel": { "label": "Travel", "description": "Used to organize trips, share schedules, and practical experiences." },
-      "marketplace": { "label": "Marketplace", "description": "Suitable for groups exchanging products, deals, and group buying needs." },
-      "local-business": { "label": "Local Business", "description": "Suitable for shops, studios, eateries, and brands operating locally." },
-      "creator": { "label": "Creator & Professional", "description": "For KOLs, experts, coaches, or people building personal brands." },
-      "brand": { "label": "Brand & Product", "description": "For fanpages introduced products, campaigns, deals, and brand updates." },
-      "organization": { "label": "Organization & Community", "description": "For organizations, clubs, social projects, and community programs." },
-      "service": { "label": "Professional Service", "description": "Suitable for agencies, freelancers, service studios, and consulting teams." }
+      "auto": {
+        "label": "Auto & Vehicles",
+        "description": "For discussions on new cars, maintenance, reviews, and accessories."
+      },
+      "business": {
+        "label": "Business",
+        "description": "Focus on collaboration, sales, management, and business development."
+      },
+      "technology": {
+        "label": "Technology",
+        "description": "Suitable for communities interested in software, AI, devices, and programming."
+      },
+      "education": {
+        "label": "Education",
+        "description": "Share knowledge, study materials, workshops, and mentoring."
+      },
+      "travel": {
+        "label": "Travel",
+        "description": "Used to organize trips, share schedules, and practical experiences."
+      },
+      "marketplace": {
+        "label": "Marketplace",
+        "description": "Suitable for groups exchanging products, deals, and group buying needs."
+      },
+      "local-business": {
+        "label": "Local Business",
+        "description": "Suitable for shops, studios, eateries, and brands operating locally."
+      },
+      "creator": {
+        "label": "Creator & Professional",
+        "description": "For KOLs, experts, coaches, or people building personal brands."
+      },
+      "brand": {
+        "label": "Brand & Product",
+        "description": "For fanpages introduced products, campaigns, deals, and brand updates."
+      },
+      "organization": {
+        "label": "Organization & Community",
+        "description": "For organizations, clubs, social projects, and community programs."
+      },
+      "service": {
+        "label": "Professional Service",
+        "description": "Suitable for agencies, freelancers, service studios, and consulting teams."
+      }
     },
     "groups": {
       "hub": "Community Hub",
@@ -6021,10 +6607,10 @@
           "websiteNo": "Not available"
         }
       },
-        "controls": {
-          "eyebrow": "Interaction & Visibility",
-          "title": "CTA and Public Signals",
-          "desc": "Tweak the primary action and decide what info will be pushed to the fanpage interface.",
+      "controls": {
+        "eyebrow": "Interaction & Visibility",
+        "title": "CTA and Public Signals",
+        "desc": "Tweak the primary action and decide what info will be pushed to the fanpage interface.",
         "preset": "Preset CTA",
         "logic": "Applied Logic",
         "logicDesc": "Current CTA is **{cta}**. You can combine it with website display, message button, and engagement metrics to make the page's goal clearer.",
@@ -6038,17 +6624,17 @@
           "websiteLabel": "Show public website",
           "websiteDesc": "Hide or show the landing page/website link in the fanpage info section.",
           "relatedLabel": "Suggest related fanpages",
-            "relatedDesc": "Allow the system to insert similar suggestions in the discovery area later."
-          }
-        },
-        "admins": {
-          "eyebrow": "Admin Access",
-          "title": "Admins",
-          "desc": "Review the primary page admin and keep the management surface compact, similar to Facebook.",
-          "navDesc": "Primary admin access",
-          "primaryRole": "Primary admin"
-        },
-        "finish": {
+          "relatedDesc": "Allow the system to insert similar suggestions in the discovery area later."
+        }
+      },
+      "admins": {
+        "eyebrow": "Admin Access",
+        "title": "Admins",
+        "desc": "Review the primary page admin and keep the management surface compact, similar to Facebook.",
+        "navDesc": "Primary admin access",
+        "primaryRole": "Primary admin"
+      },
+      "finish": {
         "eyebrow": "Finish",
         "title": "Quick Actions",
         "desc": "You can go back to the fanpage to compare changes or continue refining the configuration here.",
@@ -6124,7 +6710,11 @@
           "owner": "Managed by Studio Mobility",
           "location": "Nationwide activity",
           "founded": "Established from March 2024",
-          "tags": ["ev", "charging", "review"],
+          "tags": [
+            "ev",
+            "charging",
+            "review"
+          ],
           "guidelines": {
             "0": "Prioritize real reviews with images or data when sharing experiences.",
             "1": "Do not post direct sales outside of EV and related accessories topics.",
@@ -6138,7 +6728,11 @@
           "owner": "Curated by VNSEEA Business",
           "location": "Hanoi · HCMC · Online",
           "founded": "Established from August 2023",
-          "tags": ["founder", "growth", "networking"],
+          "tags": [
+            "founder",
+            "growth",
+            "networking"
+          ],
           "joinLabel": "Request to join",
           "inviteLabel": "Invite partners",
           "guidelines": {
@@ -6154,7 +6748,11 @@
           "owner": "You joined since February",
           "location": "Remote-first community",
           "founded": "Established from January 2024",
-          "tags": ["AI", "product", "automation"],
+          "tags": [
+            "AI",
+            "product",
+            "automation"
+          ],
           "guidelines": {
             "0": "Prioritize demos with images, videos, or prototype links for quick feedback.",
             "1": "Clearly tag goals: research, case study, prompt, automation, or launch.",
@@ -6168,7 +6766,11 @@
           "owner": "You are following 4 sub-topics",
           "location": "Vietnam learning community",
           "founded": "Established from November 2023",
-          "tags": ["workshop", "learning", "mentoring"],
+          "tags": [
+            "workshop",
+            "learning",
+            "mentoring"
+          ],
           "guidelines": {
             "0": "Documents posted need to site sources so others can verify and continue learning.",
             "1": "Encourage sharing short notes, summarizing key insights after each workshop.",
@@ -6241,5 +6843,3 @@
     }
   }
 }
-
-

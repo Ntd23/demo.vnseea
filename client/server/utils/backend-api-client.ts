@@ -93,23 +93,34 @@ export function createBackendApiClient(event: H3Event) {
     endpoint: string,
     options: BackendApiRequest<TBody> = {},
   ) => {
-    const requestBody = toBackendFormBody(options.body)
-    let bodyWithServerKey: any
+    const method = options.method ?? "GET"
+    const isSafeMethod = ["GET", "HEAD", "DELETE"].includes(method)
 
-    if (requestBody instanceof FormData) {
-      bodyWithServerKey = requestBody
-      bodyWithServerKey.append("server_key", String(runtimeConfig.backendServerKey))
+    // Build the query
+    const query: ApiQuery = { ...(options.query ?? {}) }
+    if (backendAccessToken && query.access_token === undefined) {
+      query.access_token = backendAccessToken
+    }
+
+    let finalBody: any = undefined
+
+    if (isSafeMethod) {
+      // For GET/DELETE, server_key must be in query
+      query.server_key = String(runtimeConfig.backendServerKey)
     }
     else {
-      bodyWithServerKey = new URLSearchParams(
-        requestBody instanceof URLSearchParams ? requestBody : undefined,
-      )
-      bodyWithServerKey.set("server_key", String(runtimeConfig.backendServerKey))
-    }
-    const queryWithAccessToken: ApiQuery = { ...(options.query ?? {}) }
-
-    if (backendAccessToken && queryWithAccessToken.access_token === undefined) {
-      queryWithAccessToken.access_token = backendAccessToken
+      // For POST/PUT/PATCH, server_key can be in body
+      const requestBody = toBackendFormBody(options.body)
+      if (requestBody instanceof FormData) {
+        finalBody = requestBody
+        finalBody.append("server_key", String(runtimeConfig.backendServerKey))
+      }
+      else {
+        finalBody = new URLSearchParams(
+          requestBody instanceof URLSearchParams ? requestBody : undefined,
+        )
+        finalBody.set("server_key", String(runtimeConfig.backendServerKey))
+      }
     }
 
     const baseCandidates = getBackendBaseCandidates(String(runtimeConfig.backendApiBase))
@@ -124,9 +135,9 @@ export function createBackendApiClient(event: H3Event) {
 
       try {
         return await client<TResponse>(`api/${normalizeEndpointType(endpoint)}`, {
-          method: options.method ?? "GET",
-          query: queryWithAccessToken,
-          body: bodyWithServerKey,
+          method,
+          query,
+          body: finalBody,
           headers: options.headers,
         })
       }

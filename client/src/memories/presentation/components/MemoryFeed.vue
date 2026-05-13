@@ -15,7 +15,6 @@
       v-for="item in entries"
       :key="item.id"
       :entry="item"
-      @share="$emit('share', $event)"
     />
   </div>
 </template>
@@ -26,9 +25,5 @@ import type { FeedMemoryRecord } from "../../../feed/domain/types/feed.types"
 
 defineProps<{
   entries: FeedMemoryRecord[]
-}>()
-
-defineEmits<{
-  share: [id: string]
 }>()
 </script>

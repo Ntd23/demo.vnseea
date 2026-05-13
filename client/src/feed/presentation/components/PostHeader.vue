@@ -2,13 +2,18 @@
 <template>
   <div class="post-header">
     <div class="post-header__left">
-      <div class="post-header__avatar">
-        <img v-if="authorAvatarUrl" :src="authorAvatarUrl" :alt="author" class="post-header__avatar-image">
+      <NuxtLink :to="authorPath || '#'" class="post-header__avatar">
+        <img
+          v-if="authorAvatarUrl"
+          :src="authorAvatarUrl"
+          :alt="author"
+          class="post-header__avatar-image"
+        >
         <span v-else>{{ initials }}</span>
-      </div>
+      </NuxtLink>
       <div class="post-header__info">
         <div class="post-header__name-row">
-          <p class="post-header__name">{{ author }}</p>
+          <NuxtLink :to="authorPath || '#'" class="post-header__name">{{ author }}</NuxtLink>
         </div>
         <div class="post-header__meta">
           <template v-if="displayTime">
@@ -63,6 +68,7 @@ const { t } = useI18n()
 const props = defineProps<{
   author: string
   authorAvatarUrl?: string
+  authorPath?: string
   role: string
   time: string
   audience: string
@@ -248,6 +254,13 @@ function handleMenuAction(item: { key: string }) {
   font-size: 14px;
   font-weight: 700;
   color: #0f172a;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.post-header__name:hover {
+  color: #0000ff;
+  text-decoration: underline;
 }
 
 .post-header__meta {

@@ -33,36 +33,7 @@ export function useMemoriesPageVM(
     }
   }
 
-  async function shareMemory(id: string) {
-    const entry = memoryEntries.value.find(item => item.id === id)
-    if (!entry) {
-      return
-    }
 
-    const shareUrl = new URL(`${route.path}#memory-post-${entry.post.id}`, requestURL.origin).toString()
-
-    try {
-      if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
-        throw new Error("clipboard_unavailable")
-      }
-
-      await navigator.clipboard.writeText(shareUrl)
-      toast.add({
-        color: "success",
-        icon: "i-ph-share-network-fill",
-        title: entry.post.author,
-        description: t("pages.memoriesPage.sharedAction"),
-      })
-    }
-    catch {
-      toast.add({
-        color: "primary",
-        icon: "i-ph-link-bold",
-        title: entry.post.author,
-        description: shareUrl,
-      })
-    }
-  }
 
   return {
     loading,
@@ -70,6 +41,5 @@ export function useMemoriesPageVM(
     memoryEntries,
     memoryFriends,
     fetchMemories,
-    shareMemory,
   }
 }

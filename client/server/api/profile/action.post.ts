@@ -1,4 +1,4 @@
-// English description: Runs backend-backed profile actions such as follow without frontend mock state.
+// English description: Runs backend-backed profile actions such as follow and poke without frontend mock state.
 
 import { createError, readBody } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
@@ -13,9 +13,13 @@ type ProfileActionBody = {
 type BackendFollowResponse = {
   api_status?: number | string
   follow_status?: string
-  errors?: {
-    error_text?: string
-  }
+  errors?: { error_text?: string }
+}
+
+type BackendPokeResponse = {
+  api_status?: number | string
+  message_data?: string
+  errors?: { error_text?: string }
 }
 
 const asNumber = (value: unknown) => {
@@ -23,11 +27,13 @@ const asNumber = (value: unknown) => {
   return Number.isFinite(normalized) ? normalized : 0
 }
 
+const SUPPORTED_ACTIONS = ["follow", "poke", "block", "report"] as const
+
 export default defineEventHandler(async (event): Promise<ProfileActionResult> => {
   const body = await readBody<ProfileActionBody>(event)
   const userId = asNumber(body.userId)
 
-  if (body.action !== "follow") {
+  if (!body.action || !(SUPPORTED_ACTIONS as readonly string[]).includes(body.action)) {
     throw createError({
       statusCode: 400,
       statusMessage: "Unsupported profile action.",
@@ -42,12 +48,47 @@ export default defineEventHandler(async (event): Promise<ProfileActionResult> =>
   }
 
   const client = createBackendApiClient(event)
+
+  // ── Poke ──────────────────────────────────────
+  if (body.action === "poke") {
+    const pokeResponse = await client.post<BackendPokeResponse, Record<string, unknown>>(
+      "poke",
+      { type: "create", user_id: userId },
+    )
+    const apiStatus = Number(pokeResponse?.api_status ?? 200)
+    const errorId = Number((pokeResponse?.errors as any)?.error_id ?? 0)
+    if (apiStatus !== 200) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: errorId === 7 ? "already_poked" : ((pokeResponse?.errors as any)?.error_text ?? "poke_failed"),
+      })
+    }
+    return { ok: true, status: "poked" }
+  }
+
+  // ── Block ─────────────────────────────────────
+  if (body.action === "block") {
+    const response = await client.post<any, any>("block-user", {
+      user_id: userId,
+      block_action: "block",
+    })
+    return { ok: true, status: response.block_status || "blocked" }
+  }
+
+  // ── Report ────────────────────────────────────
+  if (body.action === "report") {
+    await client.post<any, any>("report_user", {
+      user: userId,
+      text: "Reported from profile menu",
+    })
+    return { ok: true, status: "reported" }
+  }
+
+  // ── Follow ────────────────────────────────────
   const response = assertBackendApiSuccess(
     await client.post<BackendFollowResponse, Record<string, unknown>>(
       "follow-user",
-      {
-        user_id: userId,
-      },
+      { user_id: userId },
     ),
     "Unable to update profile follow state.",
   )

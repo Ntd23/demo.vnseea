@@ -31,6 +31,7 @@
           :key="section.title"
           :section="section"
           :on-save="fields => updateSettings(activePage.slug, fields)"
+          :on-action="handleItemAction"
         />
       </main>
     </div>
@@ -49,11 +50,31 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { pages, user, defaultSlug, findPageBySlug, updateSettings } = useSettingsData()
+const { 
+  pages, user, defaultSlug, findPageBySlug, 
+  updateSettings, fetchSessions, fetchBlockedUsers,
+  deleteSession, unblockUser 
+} = useSettingsData()
 
 const activePage = computed<SettingPage>(() =>
   findPageBySlug(props.pageSlug || defaultSlug) ?? findPageBySlug(defaultSlug)!,
 )
+
+watch(() => activePage.value.slug, (slug) => {
+  if (slug === 'manage-sessions') fetchSessions()
+  if (slug === 'blocked-users') fetchBlockedUsers()
+}, { immediate: true })
+
+async function handleItemAction(item: SettingItem) {
+  if (!item.id) return
+
+  if (activePage.value.slug === 'manage-sessions') {
+    await deleteSession(item.id as number)
+  }
+  else if (activePage.value.slug === 'blocked-users') {
+    await unblockUser(item.id as number)
+  }
+}
 
 const userInitials = computed(() => {
   const name = user.value?.name || user.value?.username || ""

@@ -104,7 +104,7 @@
           size="sm"
           variant="outline"
           class="rounded-[10px] text-[12px] font-semibold border-[rgba(0,0,255,0.2)] text-[#0000ff] bg-white hover:bg-[#0000ff] hover:text-white hover:border-[#0000ff] active:scale-[0.98] transition-all shrink-0"
-          disabled
+          @click="onAction?.(item)"
         >
           {{ item.action }}
         </UButton>
@@ -180,6 +180,7 @@ import SettingsProfileImages from "./SettingsProfileImages.vue"
 const props = defineProps<{
   section: SettingSection
   onSave?: (fields: Record<string, SettingFieldValue>) => Promise<string>
+  onAction?: (item: SettingItem) => Promise<void>
 }>()
 const { t } = useI18n()
 const toast = useToast()

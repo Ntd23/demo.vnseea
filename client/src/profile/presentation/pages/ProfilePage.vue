@@ -148,8 +148,14 @@
           >
             {{ tab.label }}
           </button>
-          <!-- More dropdown placeholder -->
-          <button class="profile-page__tab profile-page__tab--more" type="button">
+          <!-- More dropdown trigger -->
+          <button
+            ref="moreTriggerRef"
+            class="profile-page__tab profile-page__tab--more"
+            :class="{ 'profile-page__tab--active': moreOpen }"
+            type="button"
+            @click="toggleMore"
+          >
             <Icon name="i-ph-dots-three-bold" class="h-4 w-4" />
             {{ $t("navigation.leftSidebar.showMore") }}
           </button>
@@ -158,6 +164,79 @@
           </span>
         </nav>
       </div>
+
+      <!-- More dropdown (Teleported to body to avoid overflow clipping) -->
+      <Teleport to="body">
+        <Transition
+          enter-active-class="transition duration-150 ease-out"
+          enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition duration-100 ease-in"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
+        >
+          <div v-if="moreOpen" class="profile-more-dropdown" :style="moreDropdownStyle">
+            <div class="py-1">
+              <button class="profile-more-item" type="button" @click="handleMoreAction('poke')">
+                <span class="profile-more-icon" style="background:rgba(249,115,22,0.1)">
+                  <Icon name="i-ph-hand-pointing-fill" class="h-4 w-4 text-orange-500" />
+                </span>
+                <div class="min-w-0">
+                  <p class="profile-more-label">{{ $t('pages.profilePage.tabs.poke') }}</p>
+                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.pokeDesc') }}</p>
+                </div>
+              </button>
+              
+              <button v-if="profile.isOwner" class="profile-more-item" type="button" @click="handleMoreAction('copy')">
+                <span class="profile-more-icon">
+                  <Icon name="i-ph-link-bold" class="h-4 w-4" />
+                </span>
+                <div class="min-w-0">
+                  <p class="profile-more-label">{{ $t('pages.profilePage.tabs.copyLink') }}</p>
+                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.copyLinkDesc') }}</p>
+                </div>
+              </button>
+            </div>
+
+            <div class="profile-more-divider" />
+            
+            <div class="py-1">
+              <!-- Others' profile: Report -->
+              <button v-if="!profile.isOwner" class="profile-more-item" type="button" @click="handleMoreAction('report')">
+                <span class="profile-more-icon" style="background:rgba(245,158,11,0.1)">
+                  <Icon name="i-ph-warning-circle-bold" class="h-4 w-4 text-amber-500" />
+                </span>
+                <div class="min-w-0">
+                  <p class="profile-more-label">{{ $t('pages.profilePage.tabs.report') }}</p>
+                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.reportDesc') }}</p>
+                </div>
+              </button>
+
+              <!-- Self profile: Block List -->
+              <button v-if="profile.isOwner" class="profile-more-item" type="button" @click="handleMoreAction('blockList')">
+                <span class="profile-more-icon" style="background:rgba(220,38,38,0.08)">
+                  <Icon name="i-ph-prohibit-bold" class="h-4 w-4 text-red-500" />
+                </span>
+                <div class="min-w-0">
+                  <p class="profile-more-label" style="color:#dc2626">{{ $t('pages.profilePage.tabs.blockList') }}</p>
+                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.blockListDesc') }}</p>
+                </div>
+              </button>
+
+              <!-- Others' profile: Block -->
+              <button v-else class="profile-more-item" type="button" @click="handleMoreAction('block')">
+                <span class="profile-more-icon" style="background:rgba(220,38,38,0.08)">
+                  <Icon name="i-ph-prohibit-bold" class="h-4 w-4 text-red-500" />
+                </span>
+                <div class="min-w-0">
+                  <p class="profile-more-label" style="color:#dc2626">{{ $t('pages.profilePage.tabs.block') }}</p>
+                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.blockDesc') }}</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </Transition>
+      </Teleport>
 
       <!-- ── TIMELINE TAB ───────────────────────────────── -->
       <template v-if="activeTab === 'timeline'">
@@ -644,6 +723,7 @@ import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
 import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import { useProfileVM } from "../../application/composables/useProfileVM"
+import { onClickOutside } from "@vueuse/core"
 
 const route = useRoute()
 
@@ -690,6 +770,113 @@ const {
   visibleProducts,
   videos,
 } = useProfileVM(username)
+
+// ── More dropdown ──────────────────────────────────────
+const moreOpen = ref(false)
+const moreTriggerRef = ref<HTMLElement | null>(null)
+const moreDropdownStyle = ref<Record<string, string>>({})
+const toast = useToast()
+const { t } = useI18n()
+
+function toggleMore() {
+  if (!moreOpen.value && moreTriggerRef.value) {
+    const rect = moreTriggerRef.value.getBoundingClientRect()
+    moreDropdownStyle.value = {
+      position: 'fixed',
+      top: `${rect.bottom + 6}px`,
+      right: `${window.innerWidth - rect.right}px`,
+      'transform-origin': 'top right',
+    }
+  }
+  moreOpen.value = !moreOpen.value
+}
+
+function closeMore(e: MouseEvent) {
+  if (!moreTriggerRef.value?.contains(e.target as Node)) {
+    moreOpen.value = false
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeMore, true)
+  window.addEventListener('scroll', () => { moreOpen.value = false }, { passive: true })
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', closeMore, true)
+  window.removeEventListener('scroll', () => { moreOpen.value = false })
+})
+
+function handleMoreAction(action: string) {
+  moreOpen.value = false
+
+  if (action === 'copy') {
+    if (import.meta.client) {
+      navigator.clipboard.writeText(window.location.href)
+        .then(() => toast.add({ title: t('feed.shareModal.copied'), color: 'success', icon: 'i-ph-check-circle-fill' }))
+        .catch(() => toast.add({ title: t('pages.profilePage.tabs.copyLink'), description: window.location.href, color: 'warning', icon: 'i-ph-warning-circle-fill' }))
+    }
+    return
+  }
+
+  if (['poke', 'block', 'report', 'blockList'].includes(action)) {
+    // On own profile and poke → navigate to poke list
+    if (action === 'poke' && profile.value?.isOwner) {
+      navigateTo('/poke')
+      return
+    }
+
+    // On own profile and blockList → navigate to settings/blocked-users
+    if (action === 'blockList' && profile.value?.isOwner) {
+      navigateTo('/setting/blocked-users')
+      return
+    }
+
+    if (actionPending.value) return
+
+    const targetUserId = profile.value?.id
+    const targetName = profile.value?.displayName || profile.value?.username || ''
+    if (!targetUserId) {
+      toast.add({ title: 'Lỗi', description: 'Không tìm thấy người dùng.', color: 'error', icon: 'i-ph-warning-circle-fill' })
+      return
+    }
+
+    actionPending.value = true
+
+    $fetch('/_api/profile/action', {
+      method: 'POST',
+      body: { action, userId: targetUserId },
+    })
+      .then(() => {
+        const titleKey = action === 'blockList' ? 'blockList' : action
+        const title = t('pages.profilePage.tabs.' + titleKey)
+        const descKey = action === 'blockList' ? 'blockSuccess' : action + 'Success'
+        const desc = t('pages.profilePage.tabs.' + descKey, { name: targetName })
+        const icon = action === 'poke' ? 'i-ph-hand-pointing-fill' : (action === 'block' || action === 'blockList' ? 'i-ph-prohibit-duotone' : 'i-ph-warning-octagon-duotone')
+
+        toast.add({
+          title: `✅ ${title}`,
+          description: desc,
+          color: 'success',
+          icon,
+        })
+      })
+      .catch((err: any) => {
+        const status: string = err?.data?.statusMessage || ''
+        if (status === 'already_poked') {
+          toast.add({ title: t('pages.profilePage.tabs.poke'), description: t('pages.profilePage.tabs.pokeAlready'), color: 'warning', icon: 'i-ph-hand-pointing-fill' })
+        }
+        else {
+          toast.add({ title: 'Lỗi', description: 'Không thể thực hiện yêu cầu. Thử lại sau.', color: 'error', icon: 'i-ph-warning-circle-fill' })
+        }
+      })
+      .finally(() => {
+        actionPending.value = false
+      })
+    return
+  }
+
+  toast.add({ title: t('pages.profilePage.tabs.' + action), description: 'Tính năng đang phát triển', color: 'primary', icon: 'i-ph-info-bold' })
+}
 </script>
 
 <style scoped>
@@ -1616,3 +1803,66 @@ const {
   text-align: center;
 }
 </style>
+
+<style>
+/* Non-scoped: dropdown is Teleported to body */
+.profile-more-dropdown {
+  z-index: 9999;
+  width: 268px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 255, 0.08);
+  background: #ffffff;
+  box-shadow: 0 12px 40px rgba(0, 0, 255, 0.12);
+}
+
+.profile-more-divider {
+  height: 1px;
+  background: rgba(0, 0, 255, 0.06);
+}
+
+.profile-more-item {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.profile-more-item:hover {
+  background: rgba(0, 0, 255, 0.03);
+}
+
+.profile-more-icon {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 255, 0.05);
+  color: rgba(0, 0, 255, 0.6);
+  margin-top: 2px;
+}
+
+.profile-more-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.profile-more-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+  line-height: 1.3;
+}
+</style>
+

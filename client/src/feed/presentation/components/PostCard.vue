@@ -5,6 +5,7 @@
       <FeedPostHeader
         :author="post.author"
         :author-avatar-url="post.authorAvatarUrl"
+        :author-path="post.authorPath"
         :role="post.role"
         :time="post.time"
         :audience="post.audience"

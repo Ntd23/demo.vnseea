@@ -8229,11 +8229,11 @@ function Wo_GetMemoriesPosts($user_id) {
     // $end_time = strtotime(date('d').' '.date('F').' '.$year.' 11:59pm');
     $day       = date("d");
     $month     = date("n");
-    $year      = date("Y") - 1;
+    $current_year = date("Y");
     $user_id   = Wo_Secure($user_id);
     $data      = array();
     //$query_one = "SELECT `post_id` FROM " . T_POSTS . " WHERE `user_id` = {$user_id} AND `time` >= '{$start_time}' AND `time` <= '{$end_time}'";
-    $query_one = "SELECT `post_id` FROM " . T_POSTS . " WHERE `user_id` = '{$user_id}' AND DAY(FROM_UNIXTIME(time)) = '{$day}' AND MONTH(FROM_UNIXTIME(time)) = '{$month}' AND YEAR(FROM_UNIXTIME(time)) = '{$year}'";
+    $query_one = "SELECT `post_id` FROM " . T_POSTS . " WHERE `user_id` = '{$user_id}' AND DAY(FROM_UNIXTIME(time)) = '{$day}' AND MONTH(FROM_UNIXTIME(time)) = '{$month}' AND YEAR(FROM_UNIXTIME(time)) < '{$current_year}'";
     $query     = mysqli_query($sqlConnect, $query_one);
     if (mysqli_num_rows($query)) {
         while ($fetched_data = mysqli_fetch_assoc($query)) {
@@ -8252,10 +8252,10 @@ function Wo_GetMemoriesFreinds($user_id) {
     }
     $day       = date("d");
     $month     = date("n");
-    $year      = date("Y") - 1;
+    $current_year = date("Y");
     $user_id   = Wo_Secure($user_id);
     $data      = array();
-    $query_one = " SELECT `user_id`,b.`time` FROM " . T_USERS . " a," . T_FOLLOWERS . " b WHERE a.`user_id` IN (SELECT `follower_id` FROM " . T_FOLLOWERS . " WHERE `follower_id` <> {$user_id} AND `following_id` = {$user_id} AND `active` = '1' AND  DAY(FROM_UNIXTIME(time)) = '{$day}' AND MONTH(FROM_UNIXTIME(time)) = '{$month}') AND YEAR(FROM_UNIXTIME(time)) = '{$year}' AND a.`active` = '1' GROUP BY a.`user_id`";
+    $query_one = " SELECT `user_id`,b.`time` FROM " . T_USERS . " a," . T_FOLLOWERS . " b WHERE a.`user_id` IN (SELECT `follower_id` FROM " . T_FOLLOWERS . " WHERE `follower_id` <> {$user_id} AND `following_id` = {$user_id} AND `active` = '1' AND  DAY(FROM_UNIXTIME(time)) = '{$day}' AND MONTH(FROM_UNIXTIME(time)) = '{$month}') AND YEAR(FROM_UNIXTIME(time)) < '{$current_year}' AND a.`active` = '1' GROUP BY a.`user_id`";
     $query     = mysqli_query($sqlConnect, $query_one);
     if (mysqli_num_rows($query)) {
         while ($fetched_data = mysqli_fetch_assoc($query)) {

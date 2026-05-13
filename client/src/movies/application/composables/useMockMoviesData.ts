@@ -29,6 +29,8 @@ export type MockMovie = {
   backdrop: string
   accent: string
   tags: string[]
+  genre: string
+  country: string
   isPremiere: boolean
   isEditorsPick: boolean
   to: string
@@ -75,6 +77,8 @@ const defaultMovies: MockMovie[] = [
     backdrop: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=1600&q=80",
     accent: "linear-gradient(135deg,#1d4ed8 0%,#60a5fa 100%)",
     tags: ["Community", "Backstage", "Live recap"],
+    genre: "documentary",
+    country: "vietnam",
     isPremiere: true,
     isEditorsPick: true,
     to: "/watch",
@@ -94,6 +98,8 @@ const defaultMovies: MockMovie[] = [
     backdrop: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
     accent: "linear-gradient(135deg,#ea580c 0%,#fb923c 100%)",
     tags: ["Business", "Execution", "Founder"],
+    genre: "drama",
+    country: "vietnam",
     isPremiere: false,
     isEditorsPick: true,
     to: "/watch",
@@ -113,6 +119,8 @@ const defaultMovies: MockMovie[] = [
     backdrop: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80",
     accent: "linear-gradient(135deg,#0284c7 0%,#60a5fa 100%)",
     tags: ["Education", "Workshop", "Learning"],
+    genre: "documentary",
+    country: "vietnam",
     isPremiere: false,
     isEditorsPick: false,
     to: "/watch",
@@ -132,6 +140,8 @@ const defaultMovies: MockMovie[] = [
     backdrop: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
     accent: "linear-gradient(135deg,#0369a1 0%,#38bdf8 100%)",
     tags: ["Documentary", "Seller", "Marketplace"],
+    genre: "documentary",
+    country: "vietnam",
     isPremiere: false,
     isEditorsPick: true,
     to: "/watch",
@@ -151,6 +161,8 @@ const defaultMovies: MockMovie[] = [
     backdrop: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80",
     accent: "linear-gradient(135deg,#7c3aed 0%,#a78bfa 100%)",
     tags: ["Technology", "Frontend", "SSR"],
+    genre: "documentary",
+    country: "vietnam",
     isPremiere: true,
     isEditorsPick: true,
     to: "/watch",
@@ -231,6 +243,8 @@ const isMockMovie = (value: unknown): value is MockMovie =>
   && typeof value.accent === "string"
   && Array.isArray(value.tags)
   && value.tags.every(tag => typeof tag === "string")
+  && typeof value.genre === "string"
+  && typeof value.country === "string"
   && typeof value.isPremiere === "boolean"
   && typeof value.isEditorsPick === "boolean"
   && typeof value.to === "string"

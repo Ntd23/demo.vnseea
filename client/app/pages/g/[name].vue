@@ -4,38 +4,25 @@
 
 <script setup lang="ts">
 import CommunityPresentationGroupDetailPage from "../../../src/community/presentation/pages/GroupDetailPage.vue"
-import { useCommunityGroupDetailPageVM } from "../../../src/community/application/view-models/useCommunityGroupDetailPageVM"
+import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 definePageMeta({ layout: "default" })
 
 const { t } = useI18n()
+const route = useRoute()
 const requestURL = useRequestURL()
-const translateText = useMaybeTranslatedText()
-
-const { group, slug } = useCommunityGroupDetailPageVM()
+const slug = computed(() => String(route.params.name || ""))
 
 const canonicalUrl = computed(() =>
-  new URL(`/g/${slug.value}`, requestURL.origin).toString(),
-)
-
-const metaTitle = computed(() => {
-  const groupName = group.value ? translateText(group.value.name) : ""
-  return `${groupName || t("pages.groupDetailPage.seoFallbackTitle")} | VNSEEA`
-})
-
-const metaDescription = computed(() =>
-  group.value
-    ? translateText(group.value.summary, t("pages.groupDetailPage.seoFallbackDescription"))
-    : t("pages.groupDetailPage.seoFallbackDescription"),
+  new URL(appRoutes.groupDetail(slug.value), requestURL.origin).toString(),
 )
 
 useSeoMeta({
-  title: () => metaTitle.value,
-  description: () => metaDescription.value,
-  ogTitle: () => metaTitle.value,
-  ogDescription: () => metaDescription.value,
+  title: () => `${t("pages.groupDetailPage.seoFallbackTitle")} | VNSEEA`,
+  description: () => t("pages.groupDetailPage.seoFallbackDescription"),
+  ogTitle: () => `${t("pages.groupDetailPage.seoFallbackTitle")} | VNSEEA`,
+  ogDescription: () => t("pages.groupDetailPage.seoFallbackDescription"),
   ogUrl: () => canonicalUrl.value,
-  robots: () => group.value ? "index, follow" : "noindex, nofollow",
 })
 
 useHead({

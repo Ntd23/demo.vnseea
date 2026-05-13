@@ -42,5 +42,5 @@ import {
   communityPrivacyOptions,
 } from "../../domain/constants/community-options"
 
-const { draft, submitState, draftRestored, highlights, isSubmitDisabled, handleCreateGroup, appRoutes } = useCommunityCreateGroupPageVM()
+const { draft, submitState, isSubmitDisabled, handleCreateGroup, appRoutes } = useCommunityCreateGroupPageVM()
 </script>

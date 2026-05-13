@@ -89,6 +89,7 @@
                     variant="solid"
                     size="xl"
                     :loading="isBusy"
+                    :disabled="isSaveDisabled"
                     class="justify-center rounded-full px-8 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
                   >
                     <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
@@ -126,7 +127,6 @@
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityGroupSettingsBasicsCard from "../components/GroupSettingsBasicsCard.vue"
 import CommunityGroupSettingsControlsCard from "../components/GroupSettingsControlsCard.vue"
-import CommunityGroupSettingsSidebar from "../components/GroupSettingsSidebar.vue"
 import CommunitySettingsSectionCard from "../components/SettingsSectionCard.vue"
 import { useCommunityGroupSettingPageVM } from "../../application/view-models/useCommunityGroupSettingPageVM"
 
@@ -137,9 +137,7 @@ const {
   translatedGroupName,
   memberCountLabel,
   selectedPrivacyLabel,
-  selectedPrivacyDescription,
   selectedCategoryLabel,
-  settingsNavItems,
   draft,
   validateDraft,
   handleSave,
@@ -150,7 +148,6 @@ const {
   isSaveDisabled,
   enabledPolicies,
   totalPolicies,
-  visibleMembers,
   appRoutes,
 } = useCommunityGroupSettingPageVM()
 </script>

@@ -283,18 +283,19 @@ export function useFeedPostCardVM(
     }
 
     if (action === "copy") {
+      actionState.value = "idle"
+      actionMessage.value = ""
+
       try {
         if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
           throw new Error("clipboard_unavailable")
         }
 
         await navigator.clipboard.writeText(shareUrl.value)
-        actionState.value = "success"
-        actionMessage.value = shareUrl.value
+        actionMessage.value = t("feed.shareModal.copied")
       }
       catch {
-        actionState.value = "error"
-        actionMessage.value = shareUrl.value
+        actionMessage.value = `${t("feed.shareModal.copyUnavailable")}: ${shareUrl.value}`
       }
     }
     else if (action === "report") {
@@ -310,7 +311,7 @@ export function useFeedPostCardVM(
           postId: currentPost.id,
         })
         actionState.value = "success"
-        actionMessage.value = t("feed.postHeader.menuReportLabel")
+        actionMessage.value = t("feed.postCard.reportSuccess")
       }
       catch (error) {
         actionState.value = "error"

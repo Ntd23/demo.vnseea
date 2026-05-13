@@ -986,7 +986,12 @@ const mapMemoryPost = (
   resolveMediaUrl: (value: unknown) => string = value => asString(value),
 ) => {
   const post = mapPostRecord(entity, resolveMediaUrl)
-  const timeLabel = post.time || "Memory"
+  const timestamp = asNumber(entity.time) * 1000
+  const timeLabel = new Date(timestamp).toLocaleDateString("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  })
   const text = post.text || post.author
 
   return {
@@ -994,7 +999,7 @@ const mapMemoryPost = (
     post,
     happenedOnLabel: timeLabel,
     memoryLabel: timeLabel,
-    yearOffset: Math.max(1, Math.min(10, Math.floor((post.id % 7) + 1))),
+    yearOffset: Math.max(1, new Date().getFullYear() - new Date(timestamp).getFullYear()),
     reflection: text,
   }
 }
@@ -1015,9 +1020,10 @@ const mapPokeRecord = (
     initials: createInitials(name, "PK"),
     href: firstString(user, ["username"]) ? `/@${firstString(user, ["username"])}` : "/poke",
     role: firstString(user, ["working", "school", "address"]) || `@${firstString(user, ["username"])}`,
-    timeLabel: firstString(entity, ["time_text", "created_at"]) || "",
+    timeLabel: firstString(entity, ["time_text", "time", "posted", "created_at"]) || "",
+    timestamp: firstNumber(entity, ["time", "posted", "created_at"]) || Math.floor(Date.now() / 1000),
     mutualLabel: firstString(user, ["username"]) ? `@${firstString(user, ["username"])}` : name,
-    contextLabel: firstString(user, ["working", "school"]) || name,
+    contextLabel: firstString(user, ["working", "school"]) || "",
     note: stripHtml(firstString(user, ["about"])) || firstString(user, ["address"]) || "",
     accent: createAccent(userId),
     online: asNumber(user.lastseen) > (Math.floor(Date.now() / 1000) - 120),
