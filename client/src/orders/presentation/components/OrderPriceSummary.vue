@@ -1,3 +1,4 @@
+<!-- English description: Order price summary card with shared locale-aware currency formatting. -->
 <template>
   <div :class="cardClass">
     <p class="text-[10px] font-black uppercase tracking-[0.3em] text-secondary-900 pl-1">
@@ -42,9 +43,9 @@
 </template>
 
 <script setup lang="ts">
-import { useOrderPresentation } from "../../application/composables/useOrderPresentation"
-import { formatOrderCurrency } from "../../domain/types/orders.types"
 import { computed } from "vue"
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import { useOrderPresentation } from "../../application/composables/useOrderPresentation"
 import type { OrderPresentationShape } from "../../domain/types/orders.types"
 
 const props = withDefaults(defineProps<{
@@ -55,4 +56,11 @@ const props = withDefaults(defineProps<{
 })
 
 const { subtotal, statusMeta } = useOrderPresentation(computed(() => props.order))
+const { locale } = useI18n()
+
+const formatOrderCurrency = (value: number) =>
+  formatCurrency(value, {
+    currency: "VND",
+    locale: locale.value,
+  })
 </script>

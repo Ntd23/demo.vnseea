@@ -1,12 +1,17 @@
+// English description: Checkout domain types shared by checkout view models, repositories, and API bridges.
+
 export interface CheckoutLineItem {
   id: string
   name: string
   price: number
   quantity: number
   imageStyle?: string
+  imageUrl?: string
+  currency?: string
 }
 
 export interface ShippingAddress {
+  id?: string
   fullName: string
   phone: string
   country: string

@@ -1,98 +1,137 @@
+<!-- English description: Withdrawal page wired to backend data and the PHP withdrawal request flow. -->
 <template>
-  <div class="space-y-5 pb-10">
-    <WithdrawalHero
-      :available-balance="availableBalanceState"
-      :stats="withdrawalStats"
-    />
+  <div class="mx-auto max-w-5xl space-y-5 pb-10">
+    <section class="surface-card p-5 sm:p-6">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
+            <Icon name="i-ph-bank-duotone" class="h-6 w-6" />
+          </div>
+          <div>
+            <p class="text-label-secondary">{{ t("pages.withdrawalPage.title") }}</p>
+            <h1 class="text-heading text-[var(--text-primary)]">{{ t("pages.withdrawalPage.heroTitle") }}</h1>
+          </div>
+        </div>
 
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_420px]">
-      <main class="space-y-5">
-        <WithdrawalRequestForm
-          :available-balance="availableBalanceState"
-          :methods="methods"
-          :minimum-amount="minimumWithdrawal"
-          @request="handleRequest"
+        <NuxtLink to="/wallet" class="btn-secondary w-fit">
+          <Icon name="i-ph-arrow-left-bold" class="h-4 w-4" />
+          {{ t("pages.withdrawalPage.goBack") }}
+        </NuxtLink>
+      </div>
+    </section>
+
+    <div v-if="loading" class="space-y-5">
+      <USkeleton class="h-32 rounded-3xl" />
+      <USkeleton class="h-72 rounded-3xl" />
+    </div>
+
+    <template v-else>
+      <UAlert
+        v-if="errorMessage"
+        color="error"
+        variant="subtle"
+        class="rounded-2xl"
+        :description="errorMessage"
+      />
+
+      <template v-else>
+        <WithdrawalHero
+          :balance="overview.balance"
+          :wallet-balance="overview.walletBalance"
+          :currency="overview.currency"
+          :currency-symbol="overview.currencySymbol"
+          :currency-rule="overview.currencyRule"
         />
 
-        <WithdrawalHistory :items="allHistory" />
-      </main>
+        <UAlert
+          v-if="belowMinimum"
+          color="error"
+          variant="subtle"
+          class="rounded-2xl"
+          :description="t('pages.withdrawalPage.minimumWarning', {
+            balance: formatAmount(overview.balance),
+            minimum: formatAmount(overview.minimumAmount)
+          })"
+        />
 
-      <WithdrawalPaymentInfo :profiles="paymentProfiles" />
-    </div>
+        <UAlert
+          v-if="overview.hasPendingRequest"
+          color="warning"
+          variant="subtle"
+          class="rounded-2xl"
+          :description="t('pages.withdrawalPage.hasPendingRequest')"
+        />
+
+        <UAlert
+          v-if="mutationError"
+          color="error"
+          variant="subtle"
+          class="rounded-2xl"
+          :description="mutationError"
+        />
+        <UAlert
+          v-if="mutationMessage"
+          color="primary"
+          variant="subtle"
+          class="rounded-2xl"
+          :description="mutationMessage"
+        />
+
+        <WithdrawalRequestForm
+          :balance="overview.balance"
+          :minimum-amount="overview.minimumAmount"
+          :currency="overview.currency"
+          :currency-symbol="overview.currencySymbol"
+          :currency-rule="overview.currencyRule"
+          :methods="overview.methods"
+          :paypal-email="overview.paypalEmail"
+          :submitting="submitting"
+          :disabled="!canSubmit"
+          @request="requestWithdrawal"
+        />
+
+        <WithdrawalHistory
+          :items="overview.history"
+          :currency="overview.currency"
+          :currency-symbol="overview.currencySymbol"
+          :currency-rule="overview.currencyRule"
+        />
+      </template>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import { useWithdrawalPageVM } from "../../application/view-models/useWithdrawalPageVM"
 import WithdrawalHero from "../components/WithdrawalHero.vue"
 import WithdrawalHistory from "../components/WithdrawalHistory.vue"
-import WithdrawalPaymentInfo from "../components/WithdrawalPaymentInfo.vue"
 import WithdrawalRequestForm from "../components/WithdrawalRequestForm.vue"
-import type {
-  WithdrawalHistoryItem,
-  WithdrawalRequestPayload
-} from "../../application/composables/useMockWithdrawalData"
-
-import {
-  formatWithdrawalCurrency
-} from "../../application/composables/useMockWithdrawalData"
-import { useMockWithdrawalData } from "../../application/composables/useMockWithdrawalData"
 
 const { t, locale } = useI18n()
 
 const {
-  availableBalance,
-  pendingAmount,
-  minimumWithdrawal,
-  methods,
-  paymentProfiles,
-  history,
-} = useMockWithdrawalData()
+  overview,
+  loading,
+  errorMessage,
+  belowMinimum,
+  canSubmit,
+  submitting,
+  mutationError,
+  mutationMessage,
+  requestWithdrawal,
+} = useWithdrawalPageVM()
+
+const formatAmount = (amount: number) =>
+  formatCurrency(amount, {
+    currency: overview.value.currency,
+    currencySymbol: overview.value.currencySymbol,
+    currencyRule: overview.value.currencyRule,
+    locale: locale.value,
+  })
 
 useSeoMeta({
   title: () => t("pages.withdrawalPage.seoTitle"),
   description: () => t("pages.withdrawalPage.seoDescription"),
 })
-
-const availableBalanceState = ref(availableBalance)
-const pendingAmountState = ref(pendingAmount)
-const localHistory = ref<WithdrawalHistoryItem[]>([])
-
-/**
- * ✅ FIX CHÍNH Ở ĐÂY
- * đảm bảo history.value luôn là array
- */
-const allHistory = computed(() => [
-  ...localHistory.value,
-  ...(Array.isArray(history.value) ? history.value : []),
-])
-
-const withdrawalStats = computed(() => [
-  {
-    label: t("pages.withdrawalPage.statPending"),
-    value: formatWithdrawalCurrency(pendingAmountState.value, locale.value),
-  },
-  {
-    label: t("pages.withdrawalPage.statRequests"),
-    value: allHistory.value.length,
-  },
-])
-
-const handleRequest = (payload: WithdrawalRequestPayload) => {
-  const method = methods.value.find(item => item.value === payload.method)
-
-  availableBalanceState.value -= payload.amount
-  pendingAmountState.value += payload.amount
-
-  localHistory.value = [
-    {
-      id: `wd-${Date.now()}`,
-      amount: payload.amount,
-      method: method?.label ?? t("pages.withdrawalPage.fallbackMethod"),
-      account: payload.accountNumber,
-      time: t("pages.withdrawalPage.submittedNow"),
-      status: "pending",
-    },
-    ...localHistory.value,
-  ]
-}
 </script>

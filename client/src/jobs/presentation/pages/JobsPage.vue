@@ -1,660 +1,212 @@
+<!-- English description: Renders the backend-backed jobs directory in a compact list-first layout aligned with the legacy PHP jobs page. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-10 pb-20 px-4 sm:px-6">
-    <JobsHero
-      :job-count="filteredJobs.length"
-      :saved-only="savedOnly"
-      :stats="heroStats"
-      :status-label="filtersStatusLabel"
-      :search-term="search || undefined"
-      :active-category-label="selectedCategory !== defaultJobCategory ? activeCategoryLabel : undefined"
-      :selected-job-title="selectedJobPinned ? selectedJob?.title : undefined"
-      :has-active-filters="hasRouteState"
-      @open-post="openPostModal"
-      @toggle-saved="savedOnly = !savedOnly"
-      @reset="resetFilters"
-    />
-
+  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
     <JobsFilters
-      v-model:search="search"
-      v-model:selected-category="selectedCategory"
-      v-model:selected-location="selectedLocation"
-      v-model:selected-type="selectedType"
-      v-model:sort-by="sortBy"
-      :categories="jobCategories"
-      :locations="jobLocations"
-      :types="jobTypes"
-      :result-count="filteredJobs.length"
-      :status-label="filtersStatusLabel"
-      :has-active-filters="hasRouteState"
-      @open-post="openPostModal"
-      @reset="resetFilters"
+      v-model:search="vm.searchQuery.value"
+      v-model:selected-type="vm.selectedType.value"
+      v-model:selected-category="vm.selectedCategory.value"
+      v-model:selected-distance="vm.selectedDistance.value"
+      :types="vm.types.value"
+      :categories="vm.categories.value"
+      :distance-options="vm.distanceOptions.value"
+      :distance-enabled="vm.distanceEnabled.value"
+      :can-create="vm.canCreate.value"
+      :create-disabled-reason="vm.createDisabledReason.value"
+      :has-active-filters="vm.hasActiveFilters.value"
+      @open-create="vm.openCreate"
+      @reset="vm.resetFilters"
     />
 
-    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px] items-start">
-      <section class="min-w-0 space-y-10">
-        <JobsResultsHeader
-          :heading="resultHeading"
-          :count="filteredJobs.length"
-          :sort-label="currentSortLabel"
-          :status-label="filtersStatusLabel"
-          :has-active-filters="hasRouteState"
-          @open-post="openPostModal"
-          @reset="resetFilters"
-        />
+    <UAlert
+      v-if="vm.errorMessage.value"
+      color="error"
+      variant="subtle"
+      class="rounded-[24px]"
+      :title="vm.errorMessage.value"
+    />
 
-        <div v-if="filteredJobs.length > 0" class="grid gap-6 lg:grid-cols-2">
-          <JobsJobCard
-            v-for="job in filteredJobs"
-            :key="job.id"
-            :job="job"
-            :saved="savedById[job.id] ?? job.isSaved"
-            :selected="selectedJob?.id === job.id"
-            @apply="openApply"
-            @view="selectJob"
-            @toggle-save="toggleSave"
-          />
+    <div v-if="vm.loading.value" class="grid gap-4 lg:grid-cols-2">
+      <div v-for="index in 4" :key="index" class="jobs-skeleton-card">
+        <div class="jobs-skeleton-cover">
+          <USkeleton class="jobs-skeleton-bg" />
+
+          <div class="jobs-skeleton-overlay-top-left">
+            <USkeleton class="h-[28px] w-[160px] rounded-full bg-white/20" />
+          </div>
+
+          <div class="jobs-skeleton-overlay-info">
+            <USkeleton class="jobs-skeleton-avatar bg-white/20" />
+            <div class="jobs-skeleton-info-text">
+              <USkeleton class="h-[20px] w-[70%] rounded-full bg-white/20" />
+              <USkeleton class="h-[14px] w-[42%] rounded-full bg-white/20" />
+            </div>
+          </div>
+
+          <div class="jobs-skeleton-overlay-stats">
+            <USkeleton class="h-[31px] w-[120px] rounded-full bg-white/20" />
+            <USkeleton class="h-[31px] w-[140px] rounded-full bg-white/20" />
+          </div>
         </div>
 
-        <JobsEmptyState v-else @reset="resetFilters" />
-      </section>
-
-      <aside class="sticky top-24 space-y-10">
-        <JobsJobDetailPanel
-          v-if="selectedJob"
-          :job="selectedJob"
-          :saved="savedById[selectedJob.id] ?? selectedJob.isSaved"
-          @apply="openApply"
-          @toggle-save="toggleSave"
-        />
-        <JobsSidebar
-          :stats="sidebarStats"
-          :categories="categoryBreakdown"
-          :status-label="sidebarStatusLabel"
-          :has-active-filters="hasRouteState"
-          @select-category="selectCategory"
-          @reset="resetFilters"
-        />
-      </aside>
+        <div class="jobs-skeleton-body">
+          <USkeleton class="h-[16px] w-full rounded-full" />
+          <USkeleton class="h-[16px] w-[78%] rounded-full" />
+          <div class="jobs-skeleton-line"></div>
+          <USkeleton class="h-[14px] w-[65%] rounded-full" />
+          <USkeleton class="h-[14px] w-[54%] rounded-full" />
+        </div>
+      </div>
     </div>
 
-    <JobsJobApplyModal
-      :job="applyJob"
-      @close="applyJob = undefined"
-      @submit="recordApplication"
+    <template v-else>
+      <div v-if="vm.items.value.length > 0" class="grid gap-4 lg:grid-cols-2">
+        <JobCard
+          v-for="job in vm.items.value"
+          :key="job.id"
+          :job="job"
+          @apply="vm.openApply"
+        />
+      </div>
+
+      <JobsEmptyState v-else @reset="vm.resetFilters" />
+
+      <div v-if="vm.hasMore.value" class="flex justify-center pt-2">
+        <UButton
+          color="neutral"
+          variant="outline"
+          class="rounded-full px-6"
+          :loading="vm.loadingMore.value"
+          @click="vm.loadMore"
+        >
+          {{ $t("navigation.leftSidebar.showMore") }}
+        </UButton>
+      </div>
+    </template>
+
+    <JobApplyModal
+      :open="Boolean(vm.applyModalJob.value)"
+      :job="vm.applyModalJob.value"
+      :defaults="vm.currentUser.value"
+      :submitting="vm.applySubmitting.value"
+      :error-message="vm.applyErrorMessage.value"
+      @close="vm.closeApply"
+      @submit="vm.submitApplication"
     />
 
-    <JobsJobPostModal
-      :open="postModalOpen"
-      :categories="jobCategories"
-      :locations="jobLocations"
-      :types="jobTypes"
-      @close="postModalOpen = false"
-      @create="createJob"
+    <JobPostModal
+      :open="vm.createModalOpen.value"
+      :categories="vm.categories.value"
+      :types="vm.types.value"
+      :currencies="vm.currencies.value"
+      :salary-dates="vm.salaryDates.value"
+      :question-types="vm.questionTypes.value"
+      :image-types="vm.imageTypes.value"
+      :owned-pages="vm.ownedPages.value"
+      :defaults="vm.currentUser.value"
+      :can-create="vm.canCreate.value"
+      :create-disabled-reason="vm.createDisabledReason.value"
+      :submitting="vm.createSubmitting.value"
+      :error-message="vm.createErrorMessage.value"
+      @close="vm.closeCreate"
+      @submit="vm.submitCreate"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { watchDebounced } from "@vueuse/core"
-import type { LocationQueryRaw } from "vue-router"
-import type {
-  JobApplicationPayload,
-  JobCategoryFilter,
-  JobPostPayload,
-  JobSortKey,
-  MockJob,
-} from "../../application/composables/useMockJobsData"
-import {
-  defaultJobCategory,
-  defaultJobLocation,
-  defaultJobSort,
-  defaultJobType,
-  filterMockJobs,
-  formatJobCompactNumber,
-  normalizeJobCategory,
-  normalizeJobLocation,
-  normalizeJobSavedFlag,
-  normalizeJobSort,
-  normalizeJobType,
-  readJobQueryValue,
-  useMockJobsData,
-} from "../../application/composables/useMockJobsData"
+import { useJobsPageVM } from "../../application/view-models/useJobsPageVM"
+import JobApplyModal from "../components/JobApplyModal.vue"
+import JobCard from "../components/JobCard.vue"
+import JobPostModal from "../components/JobPostModal.vue"
 import JobsEmptyState from "../components/JobsEmptyState.vue"
 import JobsFilters from "../components/JobsFilters.vue"
-import JobsHero from "../components/JobsHero.vue"
-import JobsJobApplyModal from "../components/JobApplyModal.vue"
-import JobsJobCard from "../components/JobCard.vue"
-import JobsJobDetailPanel from "../components/JobDetailPanel.vue"
-import JobsJobPostModal from "../components/JobPostModal.vue"
-import JobsResultsHeader from "../components/JobsResultsHeader.vue"
-import JobsSidebar from "../components/JobsSidebar.vue"
 
-const { t, locale } = useI18n()
-const route = useRoute()
-const router = useRouter()
-const toast = useToast()
-const {
-  jobs,
-  jobCategories,
-  jobLocations,
-  jobTypes,
-  createdJobBenefits,
-  createdJobRequirements,
-  createdJobSkills,
-} = useMockJobsData()
-
-const search = ref(readJobQueryValue(route.query.q).trim())
-const selectedCategory = ref<JobCategoryFilter>(normalizeJobCategory(readJobQueryValue(route.query.category)))
-const selectedLocation = ref(normalizeJobLocation(readJobQueryValue(route.query.location)))
-const selectedType = ref(normalizeJobType(readJobQueryValue(route.query.type)))
-const sortBy = ref<JobSortKey>(normalizeJobSort(readJobQueryValue(route.query.sort)))
-const savedOnly = ref(normalizeJobSavedFlag(readJobQueryValue(route.query.saved)))
-const selectedJobId = ref(readJobQueryValue(route.query.job).trim())
-const selectedJobPinned = ref(readJobQueryValue(route.query.job).trim().length > 0)
-const applyJob = ref<MockJob | null>(null)
-const postModalOpen = ref(false)
-const createdJobs = ref<MockJob[]>([])
-const applications = ref<JobApplicationPayload[]>([])
-const savedById = ref<Record<string, boolean>>({})
-
-const allJobs = computed(() => [...createdJobs.value, ...jobs.value])
-
-const activeCategoryLabel = computed(() =>
-  jobCategories.value.find(item => item.value === selectedCategory.value)?.label
-  ?? t("pages.jobsPage.categoryAll"),
-)
-
-const activeLocationLabel = computed(() =>
-  jobLocations.value.find(item => item.value === selectedLocation.value)?.label
-  ?? t("pages.jobsPage.locationAll"),
-)
-
-const activeTypeLabel = computed(() =>
-  jobTypes.value.find(item => item.value === selectedType.value)?.label
-  ?? t("pages.jobsPage.typeAll"),
-)
-
-const filteredJobs = computed(() => {
-  return filterMockJobs(allJobs.value, {
-    search: search.value,
-    category: selectedCategory.value,
-    location: selectedLocation.value,
-    type: selectedType.value,
-    sort: sortBy.value,
-    savedOnly: savedOnly.value,
-    savedById: savedById.value,
-  })
-})
-
-const selectedJob = computed<MockJob | null>(() => {
-  return filteredJobs.value.find(job => job.id === selectedJobId.value)
-    ?? filteredJobs.value[0]
-    ?? null
-})
-
-const hasActiveFilters = computed(() =>
-  search.value.trim().length > 0
-  || selectedCategory.value !== defaultJobCategory
-  || selectedLocation.value !== defaultJobLocation
-  || selectedType.value !== defaultJobType
-  || sortBy.value !== defaultJobSort
-  || savedOnly.value,
-)
-
-const hasRouteState = computed(() =>
-  hasActiveFilters.value || selectedJobPinned.value,
-)
-
-const activeFilterSummary = computed(() => {
-  const tokens: string[] = []
-
-  if (search.value.trim()) {
-    tokens.push(t("pages.jobsPage.filterChipSearch", {
-      query: search.value.trim(),
-    }))
-  }
-
-  if (selectedCategory.value !== defaultJobCategory) {
-    tokens.push(activeCategoryLabel.value)
-  }
-
-  if (selectedLocation.value !== defaultJobLocation) {
-    tokens.push(activeLocationLabel.value)
-  }
-
-  if (selectedType.value !== defaultJobType) {
-    tokens.push(activeTypeLabel.value)
-  }
-
-  if (savedOnly.value) {
-    tokens.push(t("pages.jobsPage.savedOnly"))
-  }
-
-  return tokens.join(" · ")
-})
-
-const heroStats = computed(() => [
-  {
-    label: t("pages.jobsPage.statVisible"),
-    value: formatJobCompactNumber(filteredJobs.value.length, locale.value),
-    description: t("pages.jobsPage.statVisibleDescription"),
-  },
-  {
-    label: t("pages.jobsPage.statRemote"),
-    value: formatJobCompactNumber(filteredJobs.value.filter(job => job.isRemote).length, locale.value),
-    description: t("pages.jobsPage.statRemoteDescription"),
-  },
-  {
-    label: t("pages.jobsPage.statApplied"),
-    value: formatJobCompactNumber(applications.value.length, locale.value),
-    description: t("pages.jobsPage.statAppliedDescription"),
-  },
-])
-
-const sidebarStats = computed(() => [
-  {
-    label: t("pages.jobsPage.sidebarFeatured"),
-    value: formatJobCompactNumber(filteredJobs.value.filter(job => job.isFeatured).length, locale.value),
-  },
-  {
-    label: t("pages.jobsPage.sidebarSaved"),
-    value: formatJobCompactNumber(
-      allJobs.value.filter(job => savedById.value[job.id] ?? job.isSaved).length,
-      locale.value,
-    ),
-  },
-  {
-    label: t("pages.jobsPage.sidebarEmployers"),
-    value: formatJobCompactNumber(new Set(filteredJobs.value.map(job => job.company)).size, locale.value),
-  },
-])
-
-const categoryPool = computed(() =>
-  filterMockJobs(allJobs.value, {
-    search: search.value,
-    category: defaultJobCategory,
-    location: selectedLocation.value,
-    type: selectedType.value,
-    sort: defaultJobSort,
-    savedOnly: savedOnly.value,
-    savedById: savedById.value,
-  }),
-)
-
-const categoryBreakdown = computed(() =>
-  jobCategories.value
-    .filter(category => category.value !== "all")
-    .map(category => ({
-      ...category,
-      count: categoryPool.value.filter(job => job.category === category.value).length,
-    }))
-    .filter(category => category.count > 0)
-    .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label, locale.value)),
-)
-
-const currentSortLabel = computed(() => {
-  if (sortBy.value === "salary") return t("pages.jobsPage.sortSalary")
-  if (sortBy.value === "applicants") return t("pages.jobsPage.sortApplicants")
-  return t("pages.jobsPage.sortLatest")
-})
-
-const filtersStatusLabel = computed(() => {
-  if (activeFilterSummary.value) {
-    return t("pages.jobsPage.filterStatusActive", {
-      count: filteredJobs.value.length,
-      summary: activeFilterSummary.value,
-    })
-  }
-
-  return t("pages.jobsPage.filterStatusDefault", {
-    count: filteredJobs.value.length,
-    total: allJobs.value.length,
-  })
-})
-
-const sidebarStatusLabel = computed(() => {
-  if (selectedJobPinned.value && selectedJob.value) {
-    return t("pages.jobsPage.sidebarFocusedJob", {
-      title: selectedJob.value.title,
-      company: selectedJob.value.company,
-    })
-  }
-
-  return filtersStatusLabel.value
-})
-
-const resultHeading = computed(() => {
-  if (selectedJobPinned.value && selectedJob.value) {
-    return t("pages.jobsPage.headingFocusedJob", {
-      title: selectedJob.value.title,
-    })
-  }
-
-  if (savedOnly.value && search.value.trim()) {
-    return t("pages.jobsPage.headingSavedSearch", {
-      query: search.value.trim(),
-    })
-  }
-
-  if (savedOnly.value) return t("pages.jobsPage.savedHeading")
-
-  if (search.value.trim()) {
-    return t("pages.jobsPage.headingSearch", {
-      query: search.value.trim(),
-    })
-  }
-
-  if (selectedCategory.value !== "all") {
-    return jobCategories.value.find(category => category.value === selectedCategory.value)?.label ?? t("pages.jobsPage.defaultHeading")
-  }
-
-  return t("pages.jobsPage.defaultHeading")
-})
-
-watch(
-  jobs,
-  (items) => {
-    if (Object.keys(savedById.value).length > 0) return
-
-    savedById.value = Object.fromEntries(items.map(job => [job.id, job.isSaved]))
-  },
-  { immediate: true },
-)
-
-watch(
-  () => route.query,
-  (query) => {
-    const nextSearch = readJobQueryValue(query.q).trim()
-    const nextCategory = normalizeJobCategory(readJobQueryValue(query.category))
-    const nextLocation = normalizeJobLocation(readJobQueryValue(query.location))
-    const nextType = normalizeJobType(readJobQueryValue(query.type))
-    const nextSort = normalizeJobSort(readJobQueryValue(query.sort))
-    const nextSavedOnly = normalizeJobSavedFlag(readJobQueryValue(query.saved))
-    const nextJobId = readJobQueryValue(query.job).trim()
-
-    if (nextSearch !== search.value) {
-      search.value = nextSearch
-    }
-
-    if (nextCategory !== selectedCategory.value) {
-      selectedCategory.value = nextCategory
-    }
-
-    if (nextLocation !== selectedLocation.value) {
-      selectedLocation.value = nextLocation
-    }
-
-    if (nextType !== selectedType.value) {
-      selectedType.value = nextType
-    }
-
-    if (nextSort !== sortBy.value) {
-      sortBy.value = nextSort
-    }
-
-    if (nextSavedOnly !== savedOnly.value) {
-      savedOnly.value = nextSavedOnly
-    }
-
-    const previewJobs = filterMockJobs(allJobs.value, {
-      search: nextSearch,
-      category: nextCategory,
-      location: nextLocation,
-      type: nextType,
-      sort: nextSort,
-      savedOnly: nextSavedOnly,
-      savedById: savedById.value,
-    })
-
-    const nextPinned = nextJobId.length > 0 && previewJobs.some(job => job.id === nextJobId)
-    const fallbackJobId = previewJobs[0]?.id ?? ""
-    const normalizedJobId = nextPinned ? nextJobId : fallbackJobId
-
-    selectedJobPinned.value = nextPinned
-
-    if (normalizedJobId !== selectedJobId.value) {
-      selectedJobId.value = normalizedJobId
-    }
-  },
-  { immediate: true },
-)
-
-watch(
-  filteredJobs,
-  (items) => {
-    if (items.some(job => job.id === selectedJobId.value)) return
-
-    selectedJobPinned.value = false
-    selectedJobId.value = items[0]?.id ?? ""
-  },
-  { immediate: true },
-)
-
-watchDebounced(
-  search,
-  () => {
-    const normalizedSearch = search.value.trim()
-
-    if (normalizedSearch !== search.value) {
-      search.value = normalizedSearch
-      return
-    }
-
-    syncRoute()
-  },
-  {
-    debounce: 250,
-    maxWait: 800,
-  },
-)
-
-watch(selectedCategory, syncRoute)
-watch(selectedLocation, syncRoute)
-watch(selectedType, syncRoute)
-watch(sortBy, syncRoute)
-watch(savedOnly, syncRoute)
-watch(selectedJobId, syncRoute)
-
-onMounted(() => {
-  syncRoute()
-})
-
-const selectJob = (job: MockJob) => {
-  selectedJobId.value = job.id
-  selectedJobPinned.value = true
-}
-
-const openApply = (job: MockJob) => {
-  selectJob(job)
-  applyJob.value = job
-}
-
-const toggleSave = (id: string) => {
-  const current = savedById.value[id] ?? allJobs.value.find(job => job.id === id)?.isSaved ?? false
-  const nextValue = !current
-
-  savedById.value = {
-    ...savedById.value,
-    [id]: nextValue,
-  }
-
-  toast.add({
-    title: nextValue ? t("pages.jobsPage.saveToastTitle") : t("pages.jobsPage.unsaveToastTitle"),
-    description: nextValue ? t("pages.jobsPage.saveToastDescription") : t("pages.jobsPage.unsaveToastDescription"),
-    color: nextValue ? "primary" : "neutral",
-    icon: nextValue ? "i-ph-bookmark-simple-fill" : "i-ph-bookmark-simple-bold",
-  })
-}
-
-const recordApplication = (payload: JobApplicationPayload) => {
-  applications.value = [payload, ...applications.value]
-}
-
-const createJob = (payload: JobPostPayload) => {
-  const category = jobCategories.value.find(item => item.value === payload.category)
-  const type = jobTypes.value.find(item => item.value === payload.type)
-  const companyInitials = payload.company
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(word => word[0]?.toUpperCase())
-    .join("") || "JB"
-  const idBase = payload.title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "") || "new-job"
-
-  const job: MockJob = {
-    id: `${idBase}-${createdJobs.value.length + 1}`,
-    title: payload.title,
-    company: payload.company,
-    companyInitials,
-    companyGradient: "linear-gradient(135deg,var(--color-primary-500),var(--color-accent-500))",
-    category: payload.category,
-    categoryLabel: category?.label ?? activeCategoryLabel.value,
-    locationKey: payload.locationKey,
-    location: payload.location,
-    type: payload.type,
-    typeLabel: type?.label ?? activeTypeLabel.value,
-    salary: payload.salary,
-    postedAt: t("pages.jobsPage.createdJobPostedAt"),
-    deadline: t("pages.jobsPage.createdJobDeadline"),
-    experience: t("pages.jobsPage.createdJobExperience"),
-    applicants: 0,
-    views: 0,
-    description: payload.description,
-    requirements: [...createdJobRequirements.value],
-    benefits: [...createdJobBenefits.value],
-    skills: [...createdJobSkills.value],
-    isRemote: payload.locationKey === "remote",
-    isFeatured: false,
-    isSaved: false,
-    isOwner: true,
-  }
-
-  createdJobs.value = [job, ...createdJobs.value]
-  savedById.value = {
-    ...savedById.value,
-    [job.id]: false,
-  }
-  selectJob(job)
-}
-
-const resetFilters = () => {
-  search.value = ""
-  selectedCategory.value = defaultJobCategory
-  selectedLocation.value = defaultJobLocation
-  selectedType.value = defaultJobType
-  sortBy.value = defaultJobSort
-  savedOnly.value = false
-  selectedJobPinned.value = false
-
-  selectedJobId.value = filterMockJobs(allJobs.value, {
-    search: "",
-    category: defaultJobCategory,
-    location: defaultJobLocation,
-    type: defaultJobType,
-    sort: defaultJobSort,
-    savedOnly: false,
-    savedById: savedById.value,
-  })[0]?.id ?? ""
-}
-
-const selectCategory = (value: string) => {
-  selectedCategory.value = normalizeJobCategory(value)
-}
-
-function openPostModal() {
-  postModalOpen.value = true
-}
-
-function syncRoute() {
-  const nextSearch = search.value.trim()
-  const currentRawSearch = readJobQueryValue(route.query.q)
-  const currentRawCategory = readJobQueryValue(route.query.category)
-  const currentRawLocation = readJobQueryValue(route.query.location)
-  const currentRawType = readJobQueryValue(route.query.type)
-  const currentRawSort = readJobQueryValue(route.query.sort)
-  const currentRawSaved = readJobQueryValue(route.query.saved)
-  const currentRawJob = readJobQueryValue(route.query.job)
-  const visibleSelectedJobId = filteredJobs.value.some(job => job.id === selectedJobId.value)
-    ? selectedJobId.value
-    : ""
-
-  if (selectedJobPinned.value && !visibleSelectedJobId) {
-    selectedJobPinned.value = false
-  }
-
-  const nextCategory = selectedCategory.value === defaultJobCategory ? "" : selectedCategory.value
-  const nextLocation = selectedLocation.value === defaultJobLocation ? "" : selectedLocation.value
-  const nextType = selectedType.value === defaultJobType ? "" : selectedType.value
-  const nextSort = sortBy.value === defaultJobSort ? "" : sortBy.value
-  const nextSaved = savedOnly.value ? "1" : ""
-  const nextJob = selectedJobPinned.value ? visibleSelectedJobId : ""
-
-  if (
-    currentRawSearch === nextSearch
-    && currentRawCategory === nextCategory
-    && currentRawLocation === nextLocation
-    && currentRawType === nextType
-    && currentRawSort === nextSort
-    && currentRawSaved === nextSaved
-    && currentRawJob === nextJob
-  ) {
-    return
-  }
-
-  const nextQuery: LocationQueryRaw = { ...route.query }
-
-  if (nextSearch) {
-    nextQuery.q = nextSearch
-  }
-  else {
-    delete nextQuery.q
-  }
-
-  if (nextCategory) {
-    nextQuery.category = nextCategory
-  }
-  else {
-    delete nextQuery.category
-  }
-
-  if (nextLocation) {
-    nextQuery.location = nextLocation
-  }
-  else {
-    delete nextQuery.location
-  }
-
-  if (nextType) {
-    nextQuery.type = nextType
-  }
-  else {
-    delete nextQuery.type
-  }
-
-  if (nextSort) {
-    nextQuery.sort = nextSort
-  }
-  else {
-    delete nextQuery.sort
-  }
-
-  if (nextSaved) {
-    nextQuery.saved = nextSaved
-  }
-  else {
-    delete nextQuery.saved
-  }
-
-  if (nextJob) {
-    nextQuery.job = nextJob
-  }
-  else {
-    delete nextQuery.job
-  }
-
-  void router.replace({ path: "/jobs", query: nextQuery })
-}
+const vm = useJobsPageVM()
 </script>
+
+<style scoped>
+.jobs-skeleton-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.jobs-skeleton-cover {
+  position: relative;
+  height: 230px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.jobs-skeleton-bg {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.jobs-skeleton-cover::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 0.62) 100%);
+  z-index: 1;
+}
+
+.jobs-skeleton-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  flex-shrink: 0;
+}
+
+.jobs-skeleton-overlay-top-left {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 2;
+}
+
+.jobs-skeleton-overlay-info {
+  position: absolute;
+  bottom: 54px;
+  left: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.jobs-skeleton-info-text {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.jobs-skeleton-overlay-stats {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.jobs-skeleton-body {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+}
+
+.jobs-skeleton-line {
+  height: 1px;
+  margin: 4px 0;
+  background: #eef2f7;
+}
+</style>

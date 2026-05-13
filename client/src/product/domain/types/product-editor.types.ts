@@ -1,3 +1,5 @@
+// English description: Product editor domain types shared by create and edit screens.
+
 export type ProductCategory = "home" | "tech" | "beauty" | "books" | "vehicles" | "food"
 
 export type ProductCondition = "new" | "like-new" | "used"
@@ -86,6 +88,8 @@ export interface ProductRecord {
   currency: ProductCurrency
   price: number
   stock: number
+  images?: ProductCurrentImage[]
+  updatedAt?: string
 }
 
 export interface SaveProductDraftInput {

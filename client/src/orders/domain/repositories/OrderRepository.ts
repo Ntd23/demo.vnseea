@@ -1,3 +1,5 @@
+// English description: Order repository contract for buyer and seller order screens.
+
 import type { BuyerOrder, BuyerOrderFilter, BuyerOrderStatus, SellerOrder } from "../types/orders.types"
 
 export interface GetBuyerOrdersQuery {

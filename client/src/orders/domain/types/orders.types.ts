@@ -1,3 +1,5 @@
+// English description: Order domain types and metadata shared by order presentation and view models.
+
 export type BuyerOrderStatus = "pending" | "shipping" | "delivered" | "cancelled"
 
 export type BuyerOrderFilter = "all" | BuyerOrderStatus
@@ -11,7 +13,6 @@ export interface OrderItem {
   price: number
   imageStyle?: string
 }
-
 export interface OrderTimelineEntry {
   key: string
   label: string
@@ -145,7 +146,6 @@ export const buyerOrderStatusMeta: Record<BuyerOrderStatus, {
     description: "orders.status.cancelled.description",
   },
 }
-
 export const buyerOrderPaymentStatusMeta: Record<BuyerOrderPaymentStatus, {
   label: string
   badgeClass: string
@@ -159,7 +159,6 @@ export const buyerOrderPaymentStatusMeta: Record<BuyerOrderPaymentStatus, {
     badgeClass: "border-[#fecdd3] bg-[#fff1f3] text-[#be123c]",
   },
 }
-
 export const sellerOrderPayoutStatusMeta: Record<SellerOrderPayoutStatus, {
   label: string
   badgeClass: string
@@ -190,8 +189,4 @@ export const sellerOrderPayoutStatusMeta: Record<SellerOrderPayoutStatus, {
     panelClass: "bg-[#fff1f3] text-[#be123c]",
     description: "orders.payout.reversed.description",
   },
-}
-
-export function formatOrderCurrency(value: number) {
-  return `VND${value.toLocaleString("en-US")}`
 }

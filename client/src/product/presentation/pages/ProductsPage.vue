@@ -1,3 +1,5 @@
+<!-- English description: Marketplace product listing page backed by the PHP product APIs. -->
+
 <template>
   <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-24 sm:px-5 lg:px-6">
     <!-- Hero Marketplace -->
@@ -229,7 +231,37 @@
     </div>
 
     <div
-      v-if="visibleProducts.length > 0"
+      v-if="status === 'pending'"
+      class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3"
+    >
+      <UCard
+        v-for="index in 6"
+        :key="index"
+        class="rounded-[2.5rem] bg-white"
+        :ui="{ body: 'space-y-5 p-5' }"
+      >
+        <USkeleton class="h-[260px] rounded-[2rem]" />
+        <USkeleton class="h-5 w-1/3 rounded-full" />
+        <USkeleton class="h-8 w-4/5 rounded-full" />
+        <USkeleton class="h-20 rounded-2xl" />
+        <div class="grid grid-cols-2 gap-3">
+          <USkeleton class="h-12 rounded-2xl" />
+          <USkeleton class="h-12 rounded-2xl" />
+        </div>
+      </UCard>
+    </div>
+
+    <UAlert
+      v-else-if="error"
+      color="error"
+      variant="soft"
+      icon="i-ph-warning-circle-duotone"
+      :title="$t('pages.productsPage.loadErrorTitle')"
+      :description="String(error)"
+    />
+
+    <div
+      v-else-if="visibleProducts.length > 0"
       class="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3"
     >
       <article
@@ -240,7 +272,18 @@
         <!-- Product Media Layer -->
         <div class="relative h-[300px] overflow-hidden sm:h-[340px] xl:h-[380px]">
           <!-- Background with Premium Decorations -->
-          <div class="absolute inset-0 transition-transform duration-1000 group-hover:scale-110" :style="{ background: product.background }" />
+          <NuxtImg
+            v-if="product.imageUrl"
+            :src="product.imageUrl"
+            :alt="product.title"
+            class="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+            loading="lazy"
+          />
+          <div
+            v-else
+            class="absolute inset-0 transition-transform duration-1000 group-hover:scale-110"
+            :style="{ background: product.background }"
+          />
           <div class="absolute inset-0 bg-gradient-to-t from-secondary-950/80 via-transparent to-transparent opacity-60" />
           <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent_50%)]" />
 
@@ -274,7 +317,7 @@
 
               <div class="w-full rounded-[1.7rem] bg-white px-5 py-4 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl sm:w-auto sm:min-w-[250px] sm:rounded-[1.9rem] sm:px-6">
                 <p class="mb-2 text-[10px] font-black uppercase tracking-widest leading-none text-[var(--text-primary)]">{{ $t("pages.productsPage.priceLabel") }}</p>
-                <p class="truncate text-[1.7rem] font-black leading-none text-sky-600 sm:text-[2rem]">{{ formatCurrency(product.price) }}</p>
+                <p class="truncate text-[1.7rem] font-black leading-none text-sky-600 sm:text-[2rem]">{{ formatProductCurrency(product.price, product.currency) }}</p>
               </div>
             </div>
           </div>
@@ -314,7 +357,9 @@
               class="h-13 justify-center rounded-2xl border-none bg-primary-600 px-5 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary-500/30 transition-all active:scale-[0.98] hover:bg-primary-700 sm:h-14"
               icon="i-ph-shopping-cart-simple-duotone"
               :aria-label="$t('pages.productsPage.addToCart')"
+              :loading="cartLoadingProductId === product.id"
               :ui="{ icon: { base: 'h-5 w-5' } }"
+              @click.stop="addToCart(product.id)"
             >
               {{ $t('pages.productsPage.addToCart') }}
             </UButton>
@@ -400,8 +445,12 @@ const {
   activeFiltersLabel,
   resultHeading,
   visibleProducts,
-  formatCurrency,
+  status,
+  error,
+  cartLoadingProductId,
+  formatProductCurrency,
   formatDistance,
   resetFilters,
+  addToCart,
 } = useProductMarketplace()
 </script>

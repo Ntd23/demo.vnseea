@@ -1,212 +1,145 @@
+<!-- English description: Renders a pages-directory-style jobs filter bar with backend-backed type, category, distance, and search controls. -->
 <template>
-  <UCard class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-xl)]" :ui="{ body: 'p-5' }">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-      <div class="min-w-0 flex-1">
-        <p class="text-label-secondary text-[var(--text-primary)]">
-          {{ $t("pages.jobsPage.filtersEyebrow") }}
-        </p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">
-          {{ $t("pages.jobsPage.filtersTitle") }}
-        </h2>
-        <p class="mt-2 max-w-[700px] text-body-secondary">
-          {{ $t("pages.jobsPage.filtersDescription") }}
-        </p>
-      </div>
-
-      <div class="flex flex-col gap-2 sm:flex-row">
-        <UBadge
-          color="primary"
-          variant="subtle"
-          class="justify-center rounded-full px-4 py-2 text-[12px] font-semibold"
-        >
-          {{ $t("pages.jobsPage.resultCount", { count: resultCount }) }}
-        </UBadge>
-
-        <UButton
-          v-if="hasActiveFilters"
-          type="button"
-          color="neutral"
-          variant="outline"
-          class="justify-center rounded-full"
-          @click="resetFilters"
-        >
-          {{ $t("pages.jobsPage.reset") }}
-        </UButton>
-
-        <UButton
-          type="button"
-          color="primary"
-          class="justify-center rounded-[20px] font-extrabold"
-          @click="emit('open-post')"
-        >
-          <Icon name="i-ph-plus-circle-fill" class="mr-2 h-5 w-5" />
-          {{ $t("pages.jobsPage.postJob") }}
-        </UButton>
-      </div>
+  <section class="jobs-tabs-bar">
+    <div class="jobs-tabs-bar__search">
+      <Icon name="i-ph-magnifying-glass" class="jobs-tabs-bar__search-icon" />
+      <input
+        v-model="localSearch"
+        type="text"
+        :placeholder="$t('pages.jobsPage.searchPlaceholder')"
+        class="jobs-tabs-bar__search-input"
+      >
+      <button
+        v-if="localSearch"
+        type="button"
+        class="jobs-tabs-bar__search-clear"
+        @click="localSearch = ''"
+      >
+        <Icon name="i-ph-x" class="h-4 w-4" />
+      </button>
     </div>
 
-    <div class="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_320px]">
-      <UFormField
-        :label="$t('pages.jobsPage.searchLabel')"
-        size="xl"
-        class="space-y-2"
-      >
-        <UInput
-          v-model="localSearch"
-          size="xl"
-          color="primary"
-          class="w-full"
-          :leading-icon="'i-ph-magnifying-glass'"
-          :placeholder="$t('pages.jobsPage.searchPlaceholder')"
-          :ui="{ base: 'h-14 rounded-[22px] px-4 text-[15px] font-semibold' }"
-        />
-      </UFormField>
-
-      <UAlert
-        :color="hasActiveFilters ? 'primary' : 'neutral'"
-        variant="subtle"
-        icon="i-ph-faders-horizontal-fill"
-        :title="$t('pages.jobsPage.filterStatusTitle')"
-        :description="statusLabel"
-        class="rounded-[24px]"
+    <div class="jobs-tabs-bar__filters">
+      <USelect
+        v-model="typeModel"
+        :items="typeOptions"
+        value-key="value"
+        label-key="label"
+        size="lg"
+        class="jobs-tabs-bar__select"
+        :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-primary)] font-bold' }"
       />
+
+      <USelect
+        v-model="categoryModel"
+        :items="categoryOptions"
+        value-key="value"
+        label-key="label"
+        size="lg"
+        class="jobs-tabs-bar__select"
+        :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-primary)] font-bold' }"
+      />
+
+      <USelect
+        v-model="distanceModel"
+        :items="distanceSelectOptions"
+        value-key="value"
+        label-key="label"
+        size="lg"
+        class="jobs-tabs-bar__select"
+        :disabled="!distanceEnabled"
+        :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-primary)] font-bold' }"
+      />
+
+      <button
+        type="button"
+        class="jobs-tabs-bar__create"
+        :disabled="!canCreate"
+        @click="emit('openCreate')"
+      >
+        <Icon name="i-ph-plus-bold" class="h-4 w-4" />
+        <span>{{ $t("pages.jobsPage.postJob") }}</span>
+      </button>
+
+      <button
+        v-if="hasActiveFilters"
+        type="button"
+        class="jobs-tabs-bar__reset"
+        @click="emit('reset')"
+      >
+        {{ $t("pages.jobsPage.reset") }}
+      </button>
     </div>
 
-    <div class="mt-5 grid gap-4 xl:grid-cols-3">
-      <UFormField
-        :label="$t('pages.jobsPage.category')"
-        size="xl"
-        class="space-y-2"
-      >
-        <USelect
-          v-model="categoryModel"
-          :items="categories"
-          value-key="value"
-          label-key="label"
-          size="xl"
-          color="primary"
-          class="w-full"
-          :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
-        />
-      </UFormField>
-
-      <UFormField
-        :label="$t('pages.jobsPage.location')"
-        size="xl"
-        class="space-y-2"
-      >
-        <USelect
-          v-model="locationModel"
-          :items="locations"
-          value-key="value"
-          label-key="label"
-          size="xl"
-          color="primary"
-          class="w-full"
-          :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
-        />
-      </UFormField>
-
-      <UFormField
-        :label="$t('pages.jobsPage.type')"
-        size="xl"
-        class="space-y-2"
-      >
-        <USelect
-          v-model="typeModel"
-          :items="types"
-          value-key="value"
-          label-key="label"
-          size="xl"
-          color="primary"
-          class="w-full"
-          :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
-        />
-      </UFormField>
+    <div v-if="statusLabel" class="jobs-tabs-bar__status">
+      {{ statusLabel }}
     </div>
-
-    <div class="mt-5 rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p class="text-label-secondary text-[var(--text-tertiary)]">
-            {{ $t("pages.jobsPage.sort") }}
-          </p>
-          <p class="mt-1 text-sm text-[var(--text-secondary)]">
-            {{ $t("pages.jobsPage.sortDescription") }}
-          </p>
-        </div>
-
-        <div class="flex flex-wrap gap-2">
-          <UButton
-            v-for="sortOption in sortOptions"
-            :key="sortOption.value"
-            type="button"
-            :color="sortBy === sortOption.value ? 'primary' : 'neutral'"
-            :variant="sortBy === sortOption.value ? 'solid' : 'outline'"
-            class="rounded-full"
-            @click="emit('update:sortBy', sortOption.value)"
-          >
-            <Icon :name="sortOption.icon" class="mr-1.5 h-4 w-4" />
-            {{ sortOption.label }}
-          </UButton>
-        </div>
-      </div>
-    </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
 import { watchDebounced } from "@vueuse/core"
-import type { JobSortKey } from "../../application/composables/useMockJobsData"
+import type { JobsSelectOption } from "../../domain/types/jobs.types"
 
-const props = withDefaults(defineProps<{
+const ALL_CATEGORY_VALUE = "__all_categories__"
+const ALL_TYPE_VALUE = "__all_types__"
+const ALL_DISTANCE_VALUE = "__all_distances__"
+
+const props = defineProps<{
   search: string
-  selectedCategory: string
-  selectedLocation: string
   selectedType: string
-  sortBy: JobSortKey
-  resultCount: number
-  categories: ReadonlyArray<{ label: string; value: string; icon: string }>
-  locations: ReadonlyArray<{ label: string; value: string; icon: string }>
-  types: ReadonlyArray<{ label: string; value: string; icon: string }>
-  statusLabel: string
-  hasActiveFilters?: boolean
-}>(), {
-  hasActiveFilters: false,
-})
+  selectedCategory: string
+  selectedDistance: string
+  types: JobsSelectOption[]
+  categories: JobsSelectOption[]
+  distanceOptions: JobsSelectOption[]
+  distanceEnabled: boolean
+  canCreate: boolean
+  createDisabledReason: string
+  hasActiveFilters: boolean
+}>()
 
 const emit = defineEmits<{
   "update:search": [value: string]
-  "update:selectedCategory": [value: string]
-  "update:selectedLocation": [value: string]
   "update:selectedType": [value: string]
-  "update:sortBy": [value: JobSortKey]
-  "open-post": []
+  "update:selectedCategory": [value: string]
+  "update:selectedDistance": [value: string]
+  openCreate: []
   reset: []
 }>()
 
 const { t } = useI18n()
 const localSearch = ref(props.search)
 
-const sortOptions = computed<{ value: JobSortKey; label: string; icon: string }[]>(() => [
-  { value: "latest", label: t("pages.jobsPage.sortLatest"), icon: "i-ph-clock-countdown-fill" },
-  { value: "salary", label: t("pages.jobsPage.sortSalary"), icon: "i-ph-money-fill" },
-  { value: "applicants", label: t("pages.jobsPage.sortApplicants"), icon: "i-ph-users-three-fill" },
-])
-
-const categoryModel = computed({
-  get: () => props.selectedCategory,
-  set: value => emit("update:selectedCategory", String(value)),
-})
-
-const locationModel = computed({
-  get: () => props.selectedLocation,
-  set: value => emit("update:selectedLocation", String(value)),
-})
+const typeOptions = computed(() => Array.isArray(props.types) ? props.types : [])
+const categoryOptions = computed(() => Array.isArray(props.categories) ? props.categories : [])
+const distanceSelectOptions = computed(() => Array.isArray(props.distanceOptions) ? props.distanceOptions : [])
 
 const typeModel = computed({
-  get: () => props.selectedType,
-  set: value => emit("update:selectedType", String(value)),
+  get: () => props.selectedType || ALL_TYPE_VALUE,
+  set: value => emit("update:selectedType", String(value) === ALL_TYPE_VALUE ? "" : String(value)),
+})
+
+const categoryModel = computed({
+  get: () => props.selectedCategory || ALL_CATEGORY_VALUE,
+  set: value => emit("update:selectedCategory", String(value) === ALL_CATEGORY_VALUE ? "" : String(value)),
+})
+
+const distanceModel = computed({
+  get: () => props.selectedDistance || ALL_DISTANCE_VALUE,
+  set: value => emit("update:selectedDistance", String(value) === ALL_DISTANCE_VALUE ? "" : String(value)),
+})
+
+const statusLabel = computed(() => {
+  if (!props.distanceEnabled) {
+    return t("pages.jobsPage.distanceDisabled")
+  }
+
+  if (!props.canCreate || props.createDisabledReason) {
+    return props.createDisabledReason || t("pages.jobsPage.noOwnedPagesDescription")
+  }
+
+  return ""
 })
 
 watch(
@@ -221,18 +154,141 @@ watch(
 watchDebounced(
   localSearch,
   (value) => {
-    if (value !== props.search) {
-      emit("update:search", value)
-    }
+    emit("update:search", value)
   },
   {
     debounce: 240,
     maxWait: 700,
   },
 )
-
-function resetFilters() {
-  localSearch.value = ""
-  emit("reset")
-}
 </script>
+
+<style scoped>
+.jobs-tabs-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.jobs-tabs-bar__create {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--bg-brand);
+  padding: 0 18px;
+  color: var(--text-inverse);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: var(--shadow-brand);
+  transition: transform var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
+}
+
+.jobs-tabs-bar__create:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--bg-brand-hover);
+}
+
+.jobs-tabs-bar__create:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.jobs-tabs-bar__filters {
+  display: grid;
+  gap: 12px;
+}
+
+.jobs-tabs-bar__search {
+  position: relative;
+  flex: 1;
+}
+
+.jobs-tabs-bar__search-input {
+  width: 100%;
+  height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--bg-muted);
+  padding: 0 40px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.jobs-tabs-bar__search-input:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px var(--bg-surface-active);
+}
+
+.jobs-tabs-bar__search-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  color: var(--text-tertiary);
+  font-size: 18px;
+  transform: translateY(-50%);
+}
+
+.jobs-tabs-bar__search-clear {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.jobs-tabs-bar__search-clear:hover {
+  background: var(--bg-surface-active);
+  color: var(--text-secondary);
+}
+
+.jobs-tabs-bar__select {
+  width: 100%;
+}
+
+.jobs-tabs-bar__reset {
+  min-height: 40px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-surface);
+  color: var(--text-brand);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.jobs-tabs-bar__status {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+@media (min-width: 768px) {
+  .jobs-tabs-bar__filters {
+    align-items: center;
+    grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) minmax(180px, 1fr) auto;
+  }
+}
+</style>

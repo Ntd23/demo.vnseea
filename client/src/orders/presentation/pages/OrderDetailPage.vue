@@ -1,3 +1,4 @@
+<!-- English description: Buyer order detail page with locale-aware price formatting. -->
 <template>
   <div class="space-y-5 pb-10">
     <CheckoutLayout
@@ -188,13 +189,13 @@
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CheckoutLayout from "../../../checkout/presentation/components/CheckoutLayout.vue"
 import {
   useOrderPresentation,
 } from "../../application/composables/useOrderPresentation"
 import { useBuyerOrderDetailVM } from "../../application/view-models/useBuyerOrderDetailVM"
-import { formatOrderCurrency } from "../../domain/types/orders.types"
 import OrdersDetailSidebar from "../components/DetailSidebar.vue"
 import OrdersDetailTimelineCard from "../components/DetailTimelineCard.vue"
 import OrdersOrderItemCard from "../components/OrderItemCard.vue"
@@ -206,7 +207,13 @@ const props = defineProps<{
 const { order } = useBuyerOrderDetailVM(() => props.orderId)
 const { statusMeta, totalItems } = useOrderPresentation(order)
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
+
+const formatOrderCurrency = (value: number) =>
+  formatCurrency(value, {
+    currency: "VND",
+    locale: locale.value,
+  })
 
 const pageTitle = computed(() =>
   order.value

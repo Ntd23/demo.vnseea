@@ -1,3 +1,5 @@
+<!-- English description: Checkout shipping address form that saves real backend delivery addresses. -->
+
 <template>
   <div class="space-y-5">
     <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
@@ -331,14 +333,6 @@
             <p class="mt-4 rounded-[18px] bg-white px-4 py-3 text-[13px] leading-6 text-slate-500 shadow-[0_10px_20px_rgba(15,35,110,0.04)]">
               {{ previewAddress }}
             </p>
-
-            <UAlert
-              class="mt-4 rounded-[18px]"
-              color="neutral"
-              variant="subtle"
-              icon="i-ph-info-fill"
-              :description="$t('checkout.shippingForm.mockWarning')"
-            />
 
             <div class="mt-4 flex flex-col gap-3">
               <UButton

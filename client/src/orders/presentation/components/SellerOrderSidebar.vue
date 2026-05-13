@@ -1,3 +1,4 @@
+<!-- English description: Seller order sidebar with locale-aware payout totals and order actions. -->
 <template>
   <div class="space-y-6">
     <section class="surface-card p-6 sm:p-8 space-y-6 ring-1 ring-secondary-100 bg-white shadow-xl">
@@ -131,10 +132,10 @@
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useOrderPresentation } from "../../application/composables/useOrderPresentation"
 import {
-  formatOrderCurrency,
   sellerOrderPayoutStatusMeta,
 } from "../../domain/types/orders.types"
 import type { SellerOrder } from "../../domain/types/orders.types"
@@ -145,6 +146,13 @@ const props = defineProps<{
 }>()
 
 const { paymentMeta } = useOrderPresentation(computed(() => props.order))
+const { locale } = useI18n()
+
+const formatOrderCurrency = (value: number) =>
+  formatCurrency(value, {
+    currency: "VND",
+    locale: locale.value,
+  })
 
 const payoutMeta = computed(() => sellerOrderPayoutStatusMeta[props.order.payoutStatus])
 

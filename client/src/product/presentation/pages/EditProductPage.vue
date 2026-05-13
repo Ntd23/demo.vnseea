@@ -1,3 +1,5 @@
+<!-- English description: Product edit page that saves editor fields through the backend API bridge. -->
+
 <template>
   <div class="mx-auto max-w-[1280px] space-y-10 pb-28 px-4 sm:px-6">
     <ProductHeroBanner
@@ -88,7 +90,7 @@
           :cta="$t('pages.editProductPage.submitCta') || 'Lưu thay đổi'"
           class="rounded-[2.5rem] p-4 bg-white/90 backdrop-blur-3xl ring-1 ring-secondary-200/50 shadow-[0_-32px_64px_-16px_rgba(0,0,0,0.1)] transition-all hover:shadow-[0_-48px_80px_-24px_rgba(0,0,0,0.15)]"
           @save="saveDraft"
-          @submit="submitMock"
+          @submit="submitProduct"
         />
       </section>
 
@@ -125,9 +127,9 @@
 <script setup lang="ts">
 import type {
   ProductChecklistItem,
-  ProductCurrentImage,
   ProductEditorDraft,
   ProductHeroStat,
+  ProductRecord,
   ProductTipItem,
 } from "../../domain/types/product-editor.types"
 import { useTimeAgo, watchDebounced } from "@vueuse/core"
@@ -139,8 +141,8 @@ import ProductPreviewCard from "../components/PreviewCard.vue"
 import ProductTipsCard from "../components/TipsCard.vue"
 import { useProductEditorDraft } from "../../application/composables/useProductEditorDraft"
 import { useProductEditorMeta } from "../../application/composables/useProductEditorMeta"
-import { getEditableProductById, type EditableProductMock } from "../../infrastructure/mocks/productEditor.mock"
 import FormsSubmitBar from "../../../shared-kernel/presentation/components/forms/SubmitBar.vue"
+import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 
 const props = defineProps<{
   productId: string
@@ -160,29 +162,57 @@ const {
 } = useProductEditorMeta()
 
 const toast = useToast()
-const activeProduct = computed(() => getEditableProductById(props.productId))
+const productRepository = createApiProductRepository()
+const { data: productData } = useAsyncData(
+  `product:editor:${props.productId}`,
+  () => productRepository.getById(props.productId),
+)
+const activeProduct = computed(() => productData.value)
 const storageKey = computed(() => `product-editor:edit:${props.productId}`)
 
-const createDraftFromProduct = (product: EditableProductMock): ProductEditorDraft => ({
+const emptyProduct = computed<ProductRecord>(() => ({
+  id: props.productId,
+  title: "",
+  description: "",
+  category: "home",
+  condition: "new",
+  location: "",
+  currency: "VND",
+  price: 0,
+  stock: 0,
+  images: [],
+  updatedAt: "",
+}))
+
+const createDraftFromProduct = (product: ProductRecord): ProductEditorDraft => ({
   mode: "edit",
   productId: props.productId,
-  fields: { ...product.fields },
+  fields: {
+    title: product.title,
+    price: product.price > 0 ? String(product.price) : "",
+    description: product.description,
+    category: product.category,
+    condition: product.condition,
+    location: product.location,
+    currency: product.currency,
+    stock: product.stock > 0 ? String(product.stock) : "",
+  },
   removedImageIds: [],
   lastSavedAt: null,
 })
 
-const { draft, replaceSource, markSaved } = useProductEditorDraft(storageKey, createDraftFromProduct(activeProduct.value))
+const { draft, replaceSource, markSaved } = useProductEditorDraft(storageKey, createDraftFromProduct(activeProduct.value ?? emptyProduct.value))
 const newFiles = shallowRef<File[]>([])
 const savedAgo = useTimeAgo(computed(() => draft.value.lastSavedAt || Date.now()))
 
 const currentImages = computed(() =>
-  activeProduct.value.oldImages.filter(image => !draft.value.removedImageIds.includes(image.id)),
+  (activeProduct.value?.images ?? []).filter(image => !draft.value.removedImageIds.includes(image.id)),
 )
 
 watch(
-  () => props.productId,
+  () => activeProduct.value,
   () => {
-    replaceSource(createDraftFromProduct(activeProduct.value))
+    replaceSource(createDraftFromProduct(activeProduct.value ?? emptyProduct.value))
     newFiles.value = []
   },
   { immediate: true },
@@ -230,7 +260,7 @@ const heroStats = computed<ProductHeroStat[]>(() => [
   },
   {
     label: t("pages.editProductPage.statStatus"),
-    value: activeProduct.value.updatedAt,
+    value: activeProduct.value?.updatedAt || props.productId,
     description: t("pages.editProductPage.statStatusDescription"),
   },
 ])
@@ -305,12 +335,12 @@ const removeCurrentImage = (imageId: string) => {
 }
 
 const restoreOriginal = () => {
-  replaceSource(createDraftFromProduct(activeProduct.value))
+  replaceSource(createDraftFromProduct(activeProduct.value ?? emptyProduct.value))
   newFiles.value = []
 
   toast.add({
-    title: "Đã khôi phục dữ liệu gốc",
-    description: "Form đã quay về trạng thái mock ban đầu của sản phẩm.",
+    title: t("pages.editProductPage.restoreSuccessTitle"),
+    description: t("pages.editProductPage.restoreSuccessDescription"),
     color: "primary",
   })
 }
@@ -332,13 +362,22 @@ const saveDraft = () => {
   })
 }
 
-const submitMock = () => {
-  markSaved()
-  toast.add({
-    title: "Chưa nối API chỉnh sửa",
-    description: "Flow hiện vẫn dừng ở mức UI mock với preview và quản lý ảnh local.",
-    color: "neutral",
-  })
+const submitProduct = async () => {
+  try {
+    await productRepository.update(props.productId, draft.value)
+    markSaved()
+    toast.add({
+      title: t("pages.editProductPage.updateSuccessTitle"),
+      color: "success",
+    })
+  }
+  catch (error) {
+    toast.add({
+      title: t("pages.editProductPage.updateErrorTitle"),
+      description: error instanceof Error ? error.message : String(error),
+      color: "error",
+    })
+  }
 }
 </script>
 

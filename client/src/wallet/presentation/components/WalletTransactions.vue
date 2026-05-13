@@ -1,74 +1,84 @@
+<!-- English description: Wallet transaction history table/list backed by PHP transaction data. -->
 <template>
-  <section class="surface-card p-6">
+  <section class="surface-card p-5 sm:p-6">
     <div class="flex items-center justify-between gap-4">
       <div>
-        <p class="text-label-primary text-[var(--text-primary)] uppercase tracking-widest">{{ t("pages.walletPage.historyEyebrow") }}</p>
-        <h2 class="mt-1 text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.historyTitle") }}</h2>
+        <p class="text-label-secondary">{{ t("pages.walletPage.historyEyebrow") }}</p>
+        <h2 class="text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.historyTitle") }}</h2>
       </div>
       <UBadge
-        :label="transactions.length.toString()"
-        size="md"
-        variant="subtle"
         color="primary"
-        class="rounded-full px-3 font-bold"
-      />
+        variant="subtle"
+        class="rounded-full px-3 py-1 font-semibold"
+      >
+        {{ transactions.length }}
+      </UBadge>
     </div>
 
-    <div class="mt-8 space-y-4">
-      <div v-for="transaction in transactions" :key="transaction.id" class="group flex items-center justify-between gap-4 rounded-2xl bg-secondary-50/50 p-5 border border-secondary-100/30 transition hover:bg-secondary-50">
-        <div class="flex min-w-0 items-center gap-4">
-          <div 
-            :class="iconClass(transaction.amount)"
-            class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl shadow-sm border border-secondary-100/30 transition-transform group-hover:scale-110"
-          >
-            <Icon :name="iconName(transaction.type)" class="h-6 w-6" />
-          </div>
-          <div class="min-w-0 space-y-1">
-            <p class="truncate text-[15px] font-black text-[var(--text-primary)]">{{ transaction.title }}</p>
-            <p class="truncate text-xs font-semibold text-[var(--text-primary)]">{{ transaction.description }}</p>
-            <div class="flex items-center gap-2 text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-wider">
-              <span>{{ transaction.time }}</span>
-              <span class="text-secondary-200">•</span>
-              <span :class="statusColorClass(transaction.status)">{{ statusLabel(transaction.status) }}</span>
-            </div>
-          </div>
-        </div>
-        <p class="shrink-0 text-lg font-black tabular-nums" :class="transaction.amount >= 0 ? 'text-sky-600' : 'text-red-600'">
-          {{ transaction.amount >= 0 ? "+" : "-" }}{{ formatWalletCurrency(Math.abs(transaction.amount), locale.value) }}
+    <div v-if="transactions.length" class="mt-5 overflow-hidden rounded-2xl border border-[var(--border-light)]">
+      <div class="hidden grid-cols-[120px_minmax(0,1fr)_160px_160px] gap-4 bg-[var(--bg-muted)] px-4 py-3 text-label-secondary md:grid">
+        <span>{{ t("pages.walletPage.transactionType") }}</span>
+        <span>{{ t("pages.walletPage.transactionDescription") }}</span>
+        <span>{{ t("pages.walletPage.transactionDate") }}</span>
+        <span class="text-right">{{ t("pages.walletPage.transactionAmount") }}</span>
+      </div>
+
+      <div
+        v-for="transaction in transactions"
+        :key="transaction.id"
+        class="grid gap-2 border-t border-[var(--border-light)] px-4 py-4 md:grid-cols-[120px_minmax(0,1fr)_160px_160px] md:items-center"
+      >
+        <UBadge
+          :color="badgeColor(transaction.statusTone)"
+          variant="subtle"
+          class="w-fit rounded-full px-3 py-1 font-semibold"
+        >
+          {{ transaction.kind || "-" }}
+        </UBadge>
+        <p class="min-w-0 text-body-primary">{{ transaction.notes || "-" }}</p>
+        <p class="text-caption-secondary">{{ transaction.transactionDate || "-" }}</p>
+        <p class="text-left font-black tabular-nums text-[var(--text-primary)] md:text-right">
+          {{ formatTransactionAmount(transaction.amount) }}
         </p>
       </div>
+    </div>
+
+    <div v-else class="mt-5 rounded-2xl bg-[var(--bg-muted)] p-8 text-center">
+      <Icon name="i-ph-receipt-duotone" class="mx-auto h-10 w-10 text-[var(--icon-secondary)]" />
+      <p class="mt-3 text-body-secondary">{{ t("pages.walletPage.noTransactions") }}</p>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import type { WalletTransaction, WalletTransactionType } from "../../application/composables/useMockWalletData"
-import { formatWalletCurrency } from "../../application/composables/useMockWalletData"
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import type {
+  WalletCurrencyRule,
+  WalletTransaction,
+  WalletTransactionTone,
+} from "../../domain/types/wallet.types"
 
-defineProps<{ transactions: ReadonlyArray<WalletTransaction> }>()
+const props = defineProps<{
+  transactions: WalletTransaction[]
+  currency: string
+  currencySymbol: string
+  currencyRule: WalletCurrencyRule
+}>()
 
 const { t, locale } = useI18n()
 
-const iconName = (type: WalletTransactionType) => {
-  if (type === "topup") return "i-ph-arrow-down-left-bold"
-  if (type === "send") return "i-ph-arrow-up-right-bold"
-  if (type === "receive") return "i-ph-arrow-down-bold"
-  if (type === "refund") return "i-ph-arrow-counter-clockwise-bold"
-  return "i-ph-receipt-fill"
-}
+const formatTransactionAmount = (amount: number) =>
+  formatCurrency(amount, {
+    currency: props.currency,
+    currencySymbol: props.currencySymbol,
+    currencyRule: props.currencyRule,
+    locale: locale.value,
+  })
 
-const statusLabel = (status: WalletTransaction["status"]) => {
-  if (status === "completed") return t("pages.walletPage.statusCompleted")
-  if (status === "pending") return t("pages.walletPage.statusPending")
-  return t("pages.walletPage.statusFailed")
+const badgeColor = (tone: WalletTransactionTone) => {
+  if (tone === "success") return "primary"
+  if (tone === "warning") return "warning"
+  if (tone === "danger") return "error"
+  return "neutral"
 }
-
-const statusColorClass = (status: WalletTransaction["status"]) => {
-  if (status === "completed") return "text-sky-500"
-  if (status === "pending") return "text-amber-500"
-  return "text-red-500"
-}
-
-const iconClass = (amount: number) =>
-  amount >= 0 ? "bg-sky-50 text-sky-600 border-sky-100" : "bg-red-50 text-red-600 border-red-100"
 </script>

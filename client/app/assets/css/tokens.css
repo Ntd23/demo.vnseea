@@ -35,7 +35,7 @@
   --color-primary-300: #a1a4ff;
   --color-primary-400: #7b73ff;
   --color-primary-500: #0000ff;
-  --color-primary-600: #0000e6;
+  --color-primary-600: #0000ff;
   --color-primary-700: #0000cc;
   --color-primary-800: #0000a3;
   --color-primary-900: #000080;
@@ -233,7 +233,7 @@
 
 /* --- Button Base Utilities --- */
 .btn-primary        { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 20px; background: var(--bg-brand); color: var(--text-inverse); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-semibold); border-radius: var(--radius-full); box-shadow: var(--shadow-brand); border: none; cursor: pointer; }
-.btn-primary:hover  { background: var(--bg-brand-hover); transform: translateY(-1px); }
+.btn-primary:hover  { background: var(--bg-brand-hover);}
 .btn-primary:active { transform: scale(0.97); }
 
 .btn-secondary      { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 20px; background: transparent; color: var(--text-brand); font-family: var(--font-primary); font-size: var(--text-body); font-weight: var(--weight-semibold); border-radius: var(--radius-full); border: 1px solid var(--border-default); cursor: pointer;}

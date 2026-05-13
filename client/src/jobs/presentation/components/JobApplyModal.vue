@@ -1,387 +1,292 @@
+<!-- English description: Captures the real PHP-parity job application fields and dynamic questions for a selected backend job. -->
 <template>
   <FoundationModalShell
-    :open="Boolean(job)"
+    :open="modalOpen"
     :title="modalTitle"
-    :description="modalDescription"
-    size="lg"
-    :status="submitStatus"
-    :status-title="statusTitle"
-    :status-description="statusDescription"
+    size="xl"
     body-class="space-y-5"
     @close="emit('close')"
   >
-    <UForm :state="form" class="space-y-5" @submit="submit">
-      <div class="space-y-2">
-        <p class="text-label-secondary text-[var(--text-primary)]">
-          {{ $t("pages.jobsPage.applyEyebrow") }}
-        </p>
-        <p class="text-body-secondary">
-          {{ $t("pages.jobsPage.applyHelper") }}
-        </p>
-      </div>
+    <div v-if="job" class="space-y-5">
+      <UAlert
+        v-if="errorMessage"
+        color="error"
+        variant="subtle"
+        class="rounded-[20px]"
+        :title="errorMessage"
+      />
 
-      <UCard
-        v-if="job"
-        class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]"
-        :ui="{ body: 'p-4' }"
-      >
+      <UCard class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-4' }">
         <div class="flex items-start gap-4">
-          <div
-            class="avatar-lg shrink-0 text-white shadow-[var(--shadow-md)]"
-            :style="{ background: job.companyGradient }"
-          >
-            {{ job.companyInitials }}
+          <div class="h-16 w-16 overflow-hidden rounded-[18px] bg-[var(--bg-muted)]">
+            <NuxtImg
+              v-if="job.imageUrl"
+              :src="job.imageUrl"
+              :alt="job.title"
+              class="h-full w-full object-cover"
+              width="120"
+              height="120"
+            />
           </div>
 
           <div class="min-w-0 flex-1">
-            <div class="flex flex-wrap items-center gap-2">
-              <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-bold">
-                {{ job.categoryLabel }}
-              </UBadge>
-              <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1 text-[11px] font-semibold">
-                {{ job.location }}
-              </UBadge>
-            </div>
-
-            <h3 class="mt-4 text-lg font-black tracking-[-0.03em] text-[var(--text-primary)]">
-              {{ job.title }}
-            </h3>
-            <p class="mt-1 text-sm font-semibold text-[var(--text-secondary)]">
-              {{ job.company }} · {{ job.typeLabel }}
+            <p v-if="job.owner?.name" class="mt-1 text-sm text-[var(--text-secondary)]">
+              {{ job.owner.name }}
+            </p>
+            <p class="mt-2 text-sm text-[var(--text-secondary)]">
+              {{ job.location }} · {{ job.salaryLabel || $t("pages.jobsPage.salaryUnknown") }}
             </p>
           </div>
         </div>
       </UCard>
 
-      <div class="grid gap-5 sm:grid-cols-2">
-        <UFormField
-          name="name"
-          :label="$t('pages.jobsPage.fullName')"
-          required
-          size="xl"
-          class="space-y-2"
-          :error="fieldErrors.name || undefined"
-        >
-          <UInput
-            v-model="form.name"
-            size="xl"
-            color="primary"
-            class="w-full"
-            :disabled="isBusy"
-            :placeholder="$t('pages.jobsPage.fullNamePlaceholder')"
-            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
-          />
+      <div class="grid gap-4 sm:grid-cols-2">
+        <UFormField :label="$t('pages.jobsPage.fullName')" required :error="errors.userName || undefined">
+          <UInput v-model="form.userName" class="w-full" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
         </UFormField>
-
-        <UFormField
-          name="email"
-          :label="$t('pages.jobsPage.email')"
-          required
-          size="xl"
-          class="space-y-2"
-          :error="fieldErrors.email || undefined"
-        >
-          <UInput
-            v-model="form.email"
-            type="email"
-            size="xl"
-            color="primary"
-            class="w-full"
-            :disabled="isBusy"
-            placeholder="email@example.com"
-            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
-          />
+        <UFormField :label="$t('pages.jobsPage.phone')" required :error="errors.phoneNumber || undefined">
+          <UInput v-model="form.phoneNumber" class="w-full" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
         </UFormField>
-
-        <UFormField
-          name="phone"
-          :label="$t('pages.jobsPage.phone')"
-          required
-          size="xl"
-          class="space-y-2"
-          :error="fieldErrors.phone || undefined"
-        >
-          <UInput
-            v-model="form.phone"
-            type="tel"
-            size="xl"
-            color="primary"
-            class="w-full"
-            :disabled="isBusy"
-            :placeholder="$t('pages.jobsPage.phonePlaceholder')"
-            :ui="{ base: 'h-14 rounded-[20px] px-4 text-[15px] font-semibold' }"
-          />
+        <UFormField :label="$t('pages.jobsPage.location')" required :error="errors.location || undefined">
+          <UInput v-model="form.location" class="w-full" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
         </UFormField>
-
-        <UFormField
-          name="cvName"
-          :label="$t('pages.jobsPage.cvUpload')"
-          size="xl"
-          class="space-y-2"
-        >
-          <div class="rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p class="text-sm font-semibold text-[var(--text-primary)]">
-                  {{ form.cvName || $t("pages.jobsPage.cvPlaceholder") }}
-                </p>
-                <p class="mt-1 text-xs leading-5 text-[var(--text-secondary)]">
-                  {{ $t("pages.jobsPage.cvHelper") }}
-                </p>
-              </div>
-
-              <input
-                ref="fileInput"
-                class="sr-only"
-                type="file"
-                accept=".pdf,.doc,.docx"
-                :disabled="isBusy"
-                @change="setCvName"
-              >
-
-              <UButton
-                type="button"
-                color="neutral"
-                variant="outline"
-                class="justify-center rounded-full"
-                :disabled="isBusy"
-                @click="fileInput?.click()"
-              >
-                <Icon name="i-ph-paperclip" class="mr-1.5 h-4 w-4" />
-                {{ $t("pages.jobsPage.selectCv") }}
-              </UButton>
-            </div>
-          </div>
+        <UFormField :label="$t('pages.jobsPage.email')" required :error="errors.email || undefined">
+          <UInput v-model="form.email" class="w-full" type="email" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
         </UFormField>
       </div>
 
-      <UFormField
-        name="message"
-        :label="$t('pages.jobsPage.message')"
-        required
-        size="xl"
-        class="space-y-2"
-        :error="fieldErrors.message || undefined"
+      <UCard class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface)]" :ui="{ body: 'p-5' }">
+        <div class="space-y-4">
+          <p class="text-sm font-[700] text-[var(--text-primary)]">
+            {{ $t("pages.jobsPage.experience") }}
+          </p>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <UFormField :label="$t('pages.jobsPage.position')">
+              <UInput v-model="form.experience.position" class="w-full" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
+            </UFormField>
+            <UFormField :label="$t('pages.jobsPage.whereDidYouWork')">
+              <UInput v-model="form.experience.whereDidYouWork" class="w-full" size="xl" :ui="{ base: 'h-12 rounded-[18px]' }" />
+            </UFormField>
+          </div>
+
+          <UFormField :label="$t('pages.jobsPage.experienceDescription')">
+            <UTextarea v-model="form.experience.experienceDescription" :rows="4" autoresize class="w-full" />
+          </UFormField>
+
+          <div class="grid gap-4 sm:grid-cols-2">
+            <UFormField :label="$t('pages.jobsPage.experienceStartDate')">
+              <UInput
+                v-model="form.experience.experienceStartDate"
+                type="number"
+                min="1900"
+                max="2100"
+                class="w-full"
+                size="xl"
+                :ui="{ base: 'h-12 rounded-[18px]' }"
+              />
+            </UFormField>
+            <UFormField :label="$t('pages.jobsPage.experienceEndDate')">
+              <UInput
+                v-model="form.experience.experienceEndDate"
+                type="number"
+                min="1900"
+                max="2100"
+                class="w-full"
+                size="xl"
+                :disabled="form.experience.currentlyWorkHere"
+                :ui="{ base: 'h-12 rounded-[18px]' }"
+              />
+            </UFormField>
+          </div>
+
+          <UCheckbox v-model="form.experience.currentlyWorkHere" :label="$t('pages.jobsPage.currentlyWorkHere')" />
+        </div>
+      </UCard>
+
+      <UCard
+        v-for="question in job.questions"
+        :key="question.slot"
+        class="rounded-[24px] border border-[var(--border-default)] bg-[var(--bg-surface)]"
+        :ui="{ body: 'p-5' }"
       >
-        <UTextarea
-          v-model="form.message"
-          autoresize
-          :rows="6"
-          size="xl"
-          color="primary"
-          class="w-full"
-          :disabled="isBusy"
-          :placeholder="$t('pages.jobsPage.messagePlaceholder')"
-          :ui="{ base: 'min-h-[180px] rounded-[20px] px-4 py-3 text-[14px] leading-7' }"
-        />
-      </UFormField>
+        <div class="space-y-4">
+          <p class="text-sm font-[700] text-[var(--text-primary)]">
+            {{ question.prompt }}
+          </p>
+
+          <UTextarea
+            v-if="question.type === 'free_text_question'"
+            v-model="answers[String(question.slot)]"
+            :rows="3"
+            autoresize
+          />
+
+          <div v-else-if="question.type === 'yes_no_question'" class="flex flex-wrap gap-3">
+            <UButton
+              v-for="option in yesNoOptions"
+              :key="option.value"
+              type="button"
+              :color="answers[String(question.slot)] === option.value ? 'primary' : 'neutral'"
+              :variant="answers[String(question.slot)] === option.value ? 'solid' : 'outline'"
+              class="rounded-full"
+              @click="answers[String(question.slot)] = option.value"
+            >
+              {{ option.label }}
+            </UButton>
+          </div>
+
+          <USelect
+            v-else
+            v-model="answers[String(question.slot)]"
+            :items="question.answers"
+            value-key="value"
+            label-key="label"
+            class="w-full"
+            size="xl"
+            :ui="{ base: 'h-12 rounded-[18px]' }"
+          />
+
+          <p v-if="errors[`question${question.slot}`]" class="text-sm text-[var(--text-danger)]">
+            {{ errors[`question${question.slot}`] }}
+          </p>
+        </div>
+      </UCard>
 
       <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <UButton
-          type="button"
-          color="neutral"
-          variant="outline"
-          size="lg"
-          class="justify-center rounded-full"
-          :disabled="isBusy"
-          @click="emit('close')"
-        >
+        <UButton color="neutral" variant="outline" class="rounded-full" :disabled="submitting" @click="emit('close')">
           {{ $t("pages.jobsPage.close") }}
         </UButton>
-
-        <UButton
-          type="submit"
-          color="primary"
-          size="lg"
-          class="justify-center rounded-full"
-          :loading="isBusy"
-          :disabled="isBusy || !job"
-        >
-          <Icon name="i-ph-paper-plane-tilt-fill" class="mr-1.5 h-4 w-4" />
+        <UButton color="primary" class="rounded-full px-6" :loading="submitting" @click="submit">
           {{ $t("pages.jobsPage.submitApplication") }}
         </UButton>
       </div>
-    </UForm>
+    </div>
   </FoundationModalShell>
 </template>
 
 <script setup lang="ts">
-import type { JobApplicationPayload, MockJob } from "../../application/composables/useMockJobsData"
 import FoundationModalShell from "../../../foundation/presentation/components/ModalShell.vue"
-
-type ApplyStatus = "idle" | "loading" | "success" | "error"
-
-type ApplyFormState = {
-  name: string
-  email: string
-  phone: string
-  message: string
-  cvName: string
-}
+import type { JobApplicationDraft, JobRecord, JobUserDefaults } from "../../domain/types/jobs.types"
 
 const props = defineProps<{
-  job?: MockJob | null
+  open: boolean
+  job: JobRecord | null
+  defaults: JobUserDefaults
+  submitting: boolean
+  errorMessage: string
 }>()
 
 const emit = defineEmits<{
   close: []
-  submit: [payload: JobApplicationPayload]
+  submit: [payload: JobApplicationDraft]
 }>()
 
 const { t } = useI18n()
-const toast = useToast()
-const fileInput = ref<HTMLInputElement | null>(null)
+const modalOpen = computed(() => props.open && Boolean(props.job))
+const modalTitle = computed(() => props.job?.title || t("pages.jobsPage.submitApplication"))
 
-const form = reactive<ApplyFormState>({
-  name: "",
+const form = reactive<JobApplicationDraft>({
+  jobId: 0,
+  userName: "",
+  phoneNumber: "",
+  location: "",
   email: "",
-  phone: "",
-  message: "",
-  cvName: "",
+  experience: {
+    position: "",
+    whereDidYouWork: "",
+    experienceDescription: "",
+    experienceStartDate: "",
+    experienceEndDate: "",
+    currentlyWorkHere: false,
+  },
+  answers: {},
 })
 
-const fieldErrors = reactive<Record<keyof ApplyFormState, string>>({
-  name: "",
+const answers = reactive<Record<string, string>>({})
+const errors = reactive<Record<string, string>>({
+  userName: "",
+  phoneNumber: "",
+  location: "",
   email: "",
-  phone: "",
-  message: "",
-  cvName: "",
 })
 
-const submitStatus = ref<ApplyStatus>("idle")
-const isBusy = computed(() => submitStatus.value === "loading")
-
-const modalTitle = computed(() => {
-  if (!props.job) return t("pages.jobsPage.applyTitle")
-
-  return t("pages.jobsPage.applyTitleJob", {
-    title: props.job.title,
-  })
-})
-
-const modalDescription = computed(() => {
-  if (!props.job) return t("pages.jobsPage.applyDescription")
-
-  return t("pages.jobsPage.applyDescriptionJob", {
-    company: props.job.company,
-  })
-})
-
-const statusTitle = computed(() => {
-  if (submitStatus.value === "loading") return t("pages.jobsPage.applyStatusLoadingTitle")
-  if (submitStatus.value === "success") return t("pages.jobsPage.applyStatusSuccessTitle")
-  if (submitStatus.value === "error") return t("pages.jobsPage.applyStatusErrorTitle")
-  return ""
-})
-
-const statusDescription = computed(() => {
-  if (submitStatus.value === "loading") return t("pages.jobsPage.applyStatusLoadingDescription")
-  if (submitStatus.value === "success") return t("pages.jobsPage.applyStatusSuccessDescription")
-  if (submitStatus.value === "error") return t("pages.jobsPage.applyStatusErrorDescription")
-  return ""
-})
+const yesNoOptions = computed(() => [
+  { label: t("pages.jobsPage.answerYes"), value: "yes" },
+  { label: t("pages.jobsPage.answerNo"), value: "no" },
+])
 
 watch(
-  () => props.job?.id,
+  () => [props.open, props.job?.id, props.defaults.name, props.defaults.email, props.defaults.phoneNumber, props.defaults.location],
   () => {
-    resetForm()
+    form.jobId = props.job?.id ?? 0
+    form.userName = props.defaults.name || ""
+    form.phoneNumber = props.defaults.phoneNumber || ""
+    form.location = props.defaults.location || ""
+    form.email = props.defaults.email || ""
+    form.experience.position = ""
+    form.experience.whereDidYouWork = ""
+    form.experience.experienceDescription = ""
+    form.experience.experienceStartDate = ""
+    form.experience.experienceEndDate = ""
+    form.experience.currentlyWorkHere = false
+
+    Object.keys(answers).forEach((key) => {
+      delete answers[key]
+    })
+
     clearErrors()
-    submitStatus.value = "idle"
   },
   { immediate: true },
 )
 
-watch(
-  () => [form.name, form.email, form.phone, form.message, form.cvName],
-  () => {
-    if (submitStatus.value !== "loading") {
-      submitStatus.value = "idle"
-    }
-
-    clearErrors()
-  },
-)
-
-function setCvName(event: Event) {
-  const input = event.target as HTMLInputElement | null
-  form.cvName = input?.files?.[0]?.name ?? ""
+function clearErrors() {
+  Object.keys(errors).forEach((key) => {
+    errors[key] = ""
+  })
 }
 
-async function submit() {
-  if (!props.job) return
-
-  clearErrors()
-
-  if (form.name.trim().length < 2) {
-    fieldErrors.name = t("pages.jobsPage.fullNameError")
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-    fieldErrors.email = t("pages.jobsPage.emailError")
-  }
-
-  if (form.phone.trim().length < 8) {
-    fieldErrors.phone = t("pages.jobsPage.phoneError")
-  }
-
-  if (form.message.trim().length < 20) {
-    fieldErrors.message = t("pages.jobsPage.messageError")
-  }
-
-  if (Object.values(fieldErrors).some(Boolean)) {
-    submitStatus.value = "error"
+function submit() {
+  if (!props.job) {
     return
   }
 
-  submitStatus.value = "loading"
+  clearErrors()
 
-  await new Promise(resolve => setTimeout(resolve, 320))
+  if (!form.userName.trim()) errors.userName = t("pages.jobsPage.fullNameError")
+  if (!form.phoneNumber.trim()) errors.phoneNumber = t("pages.jobsPage.phoneError")
+  if (!form.location.trim()) errors.location = t("pages.jobsPage.locationError")
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = t("pages.jobsPage.emailError")
 
-  if (!props.job) return
-
-  const payload: JobApplicationPayload = {
-    jobId: props.job.id,
-    name: form.name.trim(),
-    email: form.email.trim(),
-    phone: form.phone.trim(),
-    message: form.message.trim(),
-    cvName: form.cvName.trim(),
-  }
-
-  emit("submit", payload)
-  submitStatus.value = "success"
-
-  toast.add({
-    title: t("pages.jobsPage.applyToastTitle"),
-    description: t("pages.jobsPage.applyToastDescription", {
-      title: props.job.title,
-    }),
-    color: "success",
-    icon: "i-ph-check-circle-fill",
+  props.job.questions.forEach((question) => {
+    if (!String(answers[String(question.slot)] || "").trim()) {
+      errors[`question${question.slot}`] = t("pages.jobsPage.questionRequired")
+    }
   })
 
-  setTimeout(() => {
-    emit("close")
-  }, 220)
-}
-
-function clearErrors() {
-  fieldErrors.name = ""
-  fieldErrors.email = ""
-  fieldErrors.phone = ""
-  fieldErrors.message = ""
-  fieldErrors.cvName = ""
-}
-
-function resetForm() {
-  form.name = ""
-  form.email = ""
-  form.phone = ""
-  form.message = ""
-  form.cvName = ""
-
-  if (fileInput.value) {
-    fileInput.value.value = ""
+  if (Object.values(errors).some(Boolean)) {
+    return
   }
+
+  emit("submit", {
+    ...form,
+    userName: form.userName.trim(),
+    phoneNumber: form.phoneNumber.trim(),
+    location: form.location.trim(),
+    email: form.email.trim(),
+    experience: {
+      ...form.experience,
+      position: form.experience.position.trim(),
+      whereDidYouWork: form.experience.whereDidYouWork.trim(),
+      experienceDescription: form.experience.experienceDescription.trim(),
+      experienceStartDate: form.experience.experienceStartDate.trim(),
+      experienceEndDate: form.experience.experienceEndDate.trim(),
+    },
+    answers: {
+      1: answers["1"] || undefined,
+      2: answers["2"] || undefined,
+      3: answers["3"] || undefined,
+    },
+  })
 }
 </script>

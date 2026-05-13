@@ -1,3 +1,4 @@
+<!-- English description: Mobile navigation drawer with account stats and locale-aware wallet formatting. -->
 <template>
   <Teleport to="body">
     <Transition name="mm-fade">
@@ -114,6 +115,7 @@
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useBackendWebUrl } from "#shared-kernel/application/utils/backend-web-url"
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 
 const { t, locale } = useI18n()
@@ -162,13 +164,13 @@ const formattedWallet = computed(() => {
   }
 
   if (typeof value === "number") {
-    return `VND${numberFormatter.value.format(value)}`
+    return formatCurrency(value, { currency: "VND", locale: locale.value })
   }
 
   const normalized = Number(String(value).replace(/,/g, ""))
 
   return Number.isFinite(normalized)
-    ? `VND${numberFormatter.value.format(normalized)}`
+    ? formatCurrency(normalized, { currency: "VND", locale: locale.value })
     : String(value)
 })
 const formattedPoints = computed(() => {
