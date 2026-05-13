@@ -1,10 +1,12 @@
 // English description: Loads reel videos and coordinates active-item navigation for the reels route.
 
 import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
+import type { FeedRepository } from "../../../feed/domain/repositories/FeedRepository"
+import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM"
 import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 
 export function useReelsPageVM(
-  repository = createApiFeedRepository(),
+  repository: FeedRepository = createApiFeedRepository(),
 ) {
   const { t } = useI18n()
 
@@ -16,9 +18,19 @@ export function useReelsPageVM(
   const touchStartX = ref<number | null>(null)
   const touchStartedFromLeftEdge = ref(false)
   const wheelLocked = ref(false)
+  const videoRef = ref<HTMLVideoElement | null>(null)
+  const currentTime = ref(0)
+  const duration = ref(0)
+  const isPlaying = ref(true)
 
   const activeReel = computed(() => reels.value[activeIndex.value] ?? null)
-  const activeMedia = computed(() => activeReel.value?.mediaItems[0] ?? null)
+  const activeMedia = computed(() =>
+    activeReel.value?.mediaItems.find(item => item.type === "video")
+    ?? activeReel.value?.mediaItems[0]
+    ?? null,
+  )
+  const progress = computed(() => (duration.value ? (currentTime.value / duration.value) * 100 : 0))
+  const feedPostVM = useFeedPostCardVM(activeReel)
 
   async function fetchReels() {
     loading.value = true
@@ -27,7 +39,7 @@ export function useReelsPageVM(
     try {
       const response = await repository.getVideos({ limit: 12 })
       reels.value = response.posts.filter(post =>
-        post.primaryMediaType === "video" || post.mediaItems[0]?.type === "video",
+        post.primaryMediaType === "video" || post.mediaItems.some(item => item.type === "video"),
       )
     }
     catch (error) {
@@ -36,6 +48,46 @@ export function useReelsPageVM(
     finally {
       loading.value = false
     }
+  }
+
+  function updateProgress() {
+    if (videoRef.value) {
+      currentTime.value = videoRef.value.currentTime
+    }
+  }
+
+  function onMetadataLoaded() {
+    if (videoRef.value) {
+      duration.value = videoRef.value.duration
+    }
+  }
+
+  function togglePlayPause() {
+    const video = videoRef.value
+
+    if (!video) {
+      return
+    }
+
+    if (video.paused) {
+      void video.play()
+      isPlaying.value = true
+      return
+    }
+
+    video.pause()
+    isPlaying.value = false
+  }
+
+  function seek(event: MouseEvent) {
+    if (!videoRef.value || !duration.value) {
+      return
+    }
+
+    const container = event.currentTarget as HTMLElement
+    const rect = container.getBoundingClientRect()
+    const position = (event.clientX - rect.left) / rect.width
+    videoRef.value.currentTime = position * duration.value
   }
 
   function nextReel() {
@@ -125,6 +177,31 @@ export function useReelsPageVM(
     }, 420)
   }
 
+  function handleWheel(event: WheelEvent) {
+    if (feedPostVM.showComments.value) {
+      return
+    }
+
+    event.preventDefault()
+    onWheel(event)
+  }
+
+  function toggleComments() {
+    feedPostVM.showComments.value = !feedPostVM.showComments.value
+  }
+
+  watch(
+    activeReel,
+    () => {
+      currentTime.value = 0
+      duration.value = 0
+      isPlaying.value = true
+    },
+    { immediate: true },
+  )
+
+  void fetchReels()
+
   return {
     loading,
     errorMessage,
@@ -132,12 +209,22 @@ export function useReelsPageVM(
     activeIndex,
     activeReel,
     activeMedia,
-    fetchReels,
+    videoRef,
+    currentTime,
+    duration,
+    isPlaying,
+    progress,
+    ...feedPostVM,
+    updateProgress,
+    onMetadataLoaded,
+    togglePlayPause,
+    seek,
     nextReel,
     prevReel,
     exitFullscreen,
     onTouchStart,
     onTouchEnd,
-    onWheel,
+    handleWheel,
+    toggleComments,
   }
 }

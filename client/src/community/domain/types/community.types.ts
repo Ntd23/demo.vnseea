@@ -41,6 +41,17 @@ export interface CommunityPageRecord {
   directoryTabs?: Exclude<CommunityPageTab, "mine">[]
   tags: string[]
   following?: boolean
+  liked?: boolean
+}
+
+export interface CommunityPageFollowerRecord {
+  id: number
+  username: string
+  name: string
+  avatarUrl?: string
+  verified?: boolean
+  isFriend: boolean
+  isRequested: boolean
 }
 
 export interface CommunityGroupRecord {

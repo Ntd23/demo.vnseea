@@ -123,6 +123,10 @@ export const apiRoutes = {
   },
   blogs: {
     list: "blogs",
+    detail: (slug: string) => `blogs/${encodeSegment(slug)}`,
+    comments: (slug: string) => `blogs/${encodeSegment(slug)}/comments`,
+    commentReplies: (slug: string) => `blogs/${encodeSegment(slug)}/comments/replies`,
+    commentAction: (slug: string) => `blogs/${encodeSegment(slug)}/comments/action`,
     create: "blogs/create",
   },
   community: {
@@ -133,7 +137,11 @@ export const apiRoutes = {
     pageBySlug: (slug: string) => `community/pages/${encodeSegment(slug)}`,
     pageById: (id: number | string) => `community/pages/id/${encodeSegment(id)}`,
     pagePosts: (slug: string) => `community/pages/${encodeSegment(slug)}/posts`,
+    pageFollowers: (slug: string) => `community/pages/${encodeSegment(slug)}/followers`,
     pageFollow: (slug: string) => `community/pages/${encodeSegment(slug)}/follow`,
+    pageLike: (slug: string) => `community/pages/${encodeSegment(slug)}/like`,
+    pageInvites: (slug: string) => `community/pages/${encodeSegment(slug)}/invites`,
+    pageInvite: (slug: string) => `community/pages/${encodeSegment(slug)}/invite`,
     groupById: (id: number | string) => `community/groups/id/${encodeSegment(id)}`,
   },
   checkout: {

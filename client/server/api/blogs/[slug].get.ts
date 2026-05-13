@@ -1,18 +1,18 @@
-// English description: Returns normalized blog articles from the PHP backend.
+// English description: Returns a single normalized blog article by list slug.
 
-import { getQuery } from "h3"
+import { createError, getRouterParam } from "h3"
 import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
-import type { BlogCategory, BlogListArticle } from "../../../src/blogs/domain/types/blog.types"
+import type { BlogCategory, BlogReadArticle } from "../../../src/blogs/domain/types/blog.types"
 
 type BackendEntity = Record<string, any>
 
-type BackendArticlesResponse = {
+type BackendArticleResponse = {
   api_status?: number | string
-  articles?: BackendEntity[]
+  data?: BackendEntity
   errors?: {
     error_text?: string
   }
@@ -97,12 +97,22 @@ const categoryFromEntity = (entity: BackendEntity): Exclude<BlogCategory, "all">
   return "other"
 }
 
+const bodyFromContent = (content: string, excerpt: string) => {
+  const text = stripHtml(content || excerpt)
+  const sentences = text.match(/[^.!?]+[.!?]+|[^.!?]+$/g)?.map(sentence => sentence.trim()).filter(Boolean) ?? []
+
+  if (sentences.length <= 3) return sentences.length > 0 ? sentences : [text].filter(Boolean)
+
+  return Array.from({ length: Math.ceil(sentences.length / 3) }, (_, index) =>
+    sentences.slice(index * 3, index * 3 + 3).join(" "),
+  ).slice(0, 12)
+}
+
 const mapArticle = (
   entity: BackendEntity,
   currentUserId: number,
-  index: number,
   resolveMediaUrl: (value: unknown) => string,
-): BlogListArticle | null => {
+): BlogReadArticle | null => {
   const id = asNumber(entity.id)
   const title = asString(entity.title)
 
@@ -118,12 +128,9 @@ const mapArticle = (
   const categoryLabel = asString(entity.category_name || entity.category) || category
   const content = asString(entity.content)
   const excerpt = stripHtml(asString(entity.description) || content).slice(0, 180)
-  const postedRaw = asString(entity.posted)
-  const postedNumber = asNumber(entity.posted)
-  const publishedHoursAgo = postedNumber > 100000
-    ? Math.max(0, (Date.now() / 1000 - postedNumber) / 3600)
-    : index
+  const postedRaw = asString(entity.time_text || entity.posted)
   const slug = `${id}_${slugify(title) || "blog"}`
+  const body = bodyFromContent(content, excerpt)
 
   return {
     id,
@@ -135,8 +142,8 @@ const mapArticle = (
     author: authorName,
     authorAvatarUrl: resolveMediaUrl(asString(author.avatar_full || author.avatar)),
     authorPath: authorUsername ? appRoutes.profile(authorUsername) : undefined,
-    publishedAt: postedRaw || "",
-    publishedHoursAgo,
+    publishedAt: postedRaw,
+    publishedHoursAgo: 0,
     views: asNumber(entity.view) || asNumber(entity.views),
     readMinutes: readMinutesOf(content || excerpt),
     likes: asNumber(entity.likes) || asNumber(entity.reaction?.count),
@@ -146,37 +153,44 @@ const mapArticle = (
       .filter(Boolean)
       .slice(0, 8),
     image: asString(entity.thumbnail),
-    imageFallback: fallbackGradients[index % fallbackGradients.length],
+    imageFallback: fallbackGradients[id % fallbackGradients.length],
     href: appRoutes.readBlog(slug),
     mine: currentUserId > 0 && asNumber(entity.user) === currentUserId,
+    body: body.length > 0 ? body : [excerpt],
   }
 }
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event)
-  const limit = Math.min(Math.max(asNumber(query.limit) || 25, 1), 50)
-  const offset = Math.max(asNumber(query.offset) || 0, 0)
-  const category = asString(query.category)
-  const categoryId = category && category !== "all" ? categoryValueToId[category] : 0
+  const slug = String(getRouterParam(event, "slug") || "")
+  const blogId = Number.parseInt(slug, 10)
+
+  if (!Number.isInteger(blogId) || blogId <= 0) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Blog not found.",
+    })
+  }
+
   const currentUser = await getBackendCurrentUser(event)
   const currentUserId = asNumber(currentUser.user_id)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
-
   const response = assertBackendApiSuccess(
-    await createBackendApiClient(event).post<BackendArticlesResponse, Record<string, unknown>>(
-      "get-articles",
+    await createBackendApiClient(event).post<BackendArticleResponse, Record<string, unknown>>(
+      "get-blog-by-id",
       {
-        limit,
-        offset,
-        category: categoryId || undefined,
-        user_id: asString(query.mine) === "1" ? currentUserId : undefined,
+        blog_id: blogId,
       },
     ),
-    "Unable to load blogs.",
+    "Unable to load blog.",
   )
+  const article = mapArticle(asEntity(response.data), currentUserId, resolveMediaUrl)
 
-  return (response.articles ?? [])
-    .filter(entity => asString(entity.active === undefined || entity.active === null ? "1" : entity.active) === "1")
-    .map((entity, index) => mapArticle(entity, currentUserId, index, resolveMediaUrl))
-    .filter(Boolean) as BlogListArticle[]
+  if (!article) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Blog not found.",
+    })
+  }
+
+  return article
 })

@@ -70,10 +70,11 @@
         </div>
       </div>
 
-      <div v-if="time || id || enableReply" class="comment-item__footer">
+      <div v-if="time || (enableReaction && id) || enableReply" class="comment-item__footer">
         <span v-if="time">{{ time }}</span>
 
         <div
+          v-if="enableReaction"
           class="comment-item__reaction-action"
           @mouseenter="openReactionTray"
           @mouseleave="closeReactionTray"
@@ -142,6 +143,7 @@
           class="comment-item__footer-action comment-item__reply-toggle"
           @click="toggleReplyThread"
         >
+          <Icon name="i-ph-arrow-bend-up-left" class="h-3.5 w-3.5" />
           {{ replyActionLabel }}
         </button>
       </div>
@@ -169,6 +171,8 @@
             :replies="reply.replies"
             :replies-count="reply.repliesCount"
             :enable-reply="false"
+            :enable-reaction="enableReaction"
+            :comment-action-repository="commentActionRepository"
             reaction-target="reply"
           />
         </div>
@@ -177,6 +181,7 @@
           :current-user-name="currentUserName"
           :current-user-avatar-url="currentUserAvatarUrl"
           :submitting="replySubmitting"
+          :enable-attachments="false"
           @submit="submitReply"
         />
       </div>
@@ -186,6 +191,7 @@
 
 <script setup lang="ts">
 import { useFeedCommentItemVM } from "../../application/view-models/useFeedCommentItemVM"
+import type { FeedCommentActionRepository } from "../../application/view-models/useFeedCommentItemVM"
 import type { FeedStoryReactionType } from "../../domain/constants/story-reactions"
 import type { FeedCommentAttachment, FeedCommentRecord, FeedCommentSubmitPayload } from "../../domain/types/feed.types"
 import FeedCommentComposer from "./CommentComposer.vue"
@@ -196,7 +202,7 @@ const audioPlaying = ref(false)
 const audioCurrentTime = ref(0)
 const audioDuration = ref(0)
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   id?: number
   author: string
   authorAvatarUrl?: string
@@ -210,10 +216,14 @@ const props = defineProps<{
   replies?: FeedCommentRecord[]
   repliesCount?: number
   enableReply?: boolean
+  enableReaction?: boolean
   currentUserName?: string
   currentUserAvatarUrl?: string
   reactionTarget?: "comment" | "reply"
-}>()
+  commentActionRepository?: FeedCommentActionRepository
+}>(), {
+  enableReaction: true,
+})
 
 const {
   replyThreadOpen,
@@ -238,14 +248,11 @@ const {
   toggleReplyThread,
   reactToComment,
   submitReply,
-} = useFeedCommentItemVM(props)
+} = useFeedCommentItemVM(props, props.commentActionRepository)
 
-const replyToggleLabel = computed(() => {
-  const count = replyItems.value.length || props.repliesCount || 0
-  return count > 0
-    ? `${t("feed.commentItem.reply")} · ${count}`
-    : t("feed.commentItem.reply")
-})
+const visibleRole = computed(() =>
+  props.role && props.role !== props.author ? props.role : "",
+)
 const audioProgressPercent = computed(() => {
   if (!audioDuration.value) {
     return 0

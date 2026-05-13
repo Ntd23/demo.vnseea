@@ -26,8 +26,8 @@ export type BlogListArticle = {
   category: Exclude<BlogCategory, "all">
   categoryLabel: string
   author: string
-  authorInitials: string
-  authorGradient: string
+  authorAvatarUrl: string
+  authorPath?: string
   publishedAt: string
   publishedHoursAgo: number
   views: number
@@ -40,12 +40,9 @@ export type BlogListArticle = {
   mine?: boolean
 }
 
-export type BlogComment = {
-  id: number
-  author: string
-  initials: string
-  time: string
-  body: string
+export type BlogReadArticle = Omit<BlogListArticle, "href"> & {
+  body: string[]
+  href?: string
 }
 
 export type BlogSubmitStatus = "draft" | "publish"

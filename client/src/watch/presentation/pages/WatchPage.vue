@@ -93,54 +93,18 @@ const {
   errorMessage,
   posts,
   hasMore,
-  fetchVideos,
+  selectedPost,
+  isModalOpen,
   loadMore,
+  handleOpenWatchModal,
+  handleSelectVideo,
+  closeWatchModal,
+  nextVideo,
+  prevVideo,
 } = useWatchPageVM()
-
-const selectedPostId = ref<string | null>(null)
-const isModalOpen = ref(false)
-
-const selectedPost = computed(() => posts.value.find(p => p.id === selectedPostId.value) || null)
-
-function handleOpenWatchModal(postId: string) {
-  selectedPostId.value = postId
-  isModalOpen.value = true
-}
-
-function handleSelectVideo(postId: string) {
-  selectedPostId.value = postId
-}
-
-function closeWatchModal() {
-  isModalOpen.value = false
-}
-
-function nextVideo() {
-  const index = posts.value.findIndex(p => p.id === selectedPostId.value)
-  if (index !== -1 && index < posts.value.length - 1) {
-    selectedPostId.value = posts.value[index + 1].id
-  }
-}
-
-function prevVideo() {
-  const index = posts.value.findIndex(p => p.id === selectedPostId.value)
-  if (index > 0) {
-    selectedPostId.value = posts.value[index - 1].id
-  }
-}
-
-// Automatically open the first video when posts are loaded for the first time
-watch(posts, (newPosts) => {
-  if (newPosts.length > 0 && !selectedPostId.value) {
-    selectedPostId.value = newPosts[0].id
-    isModalOpen.value = true
-  }
-}, { immediate: true })
 
 useSeoMeta({
   title: () => t("pages.watchPage.seoTitle"),
   description: () => t("pages.watchPage.seoDescription"),
 })
-
-await fetchVideos(true)
 </script>
