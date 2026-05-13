@@ -737,6 +737,7 @@
       ]
     },
     "eventsPage": {
+      "title": "Sự kiện",
       "seoTitle": "Sự kiện | VNSEEA",
       "seoTitleQuery": "Kết quả \"{query}\" | Sự kiện | VNSEEA",
       "seoTitleTab": "{tab} | Sự kiện | VNSEEA",

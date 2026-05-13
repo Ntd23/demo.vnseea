@@ -1,3 +1,4 @@
+<!-- Description: Thin Nuxt route wrapper for the backend-backed community groups directory screen. -->
 <template>
   <CommunityPresentationGroupsPage mode="mine" />
 </template>

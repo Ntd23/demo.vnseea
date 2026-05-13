@@ -1,3 +1,4 @@
+<!-- Description: Thin Nuxt route wrapper for the backend-backed suggested-pages directory screen. -->
 <template>
   <CommunityPresentationPagesDirectoryPage mode="suggested" />
 </template>

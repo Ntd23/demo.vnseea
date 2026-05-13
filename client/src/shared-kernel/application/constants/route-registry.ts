@@ -112,6 +112,15 @@ export const apiRoutes = {
       action: "feed/stories/action",
     },
   },
+  events: {
+    catalog: "events",
+    detail: (id: string | number) => `events/${encodeSegment(id)}`,
+    posts: (id: string | number) => `events/${encodeSegment(id)}/posts`,
+    create: "events/create",
+    going: (id: string | number) => `events/${encodeSegment(id)}/going`,
+    interested: (id: string | number) => `events/${encodeSegment(id)}/interested`,
+    attendees: (id: string | number) => `events/${encodeSegment(id)}/attendees`,
+  },
   blogs: {
     list: "blogs",
     create: "blogs/create",

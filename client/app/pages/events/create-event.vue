@@ -1,8 +1,10 @@
+<!-- Description: Thin Nuxt route wrapper for the backend-backed event creation route. -->
 <template>
   <EventsPresentationCreateEventPage />
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import EventsPresentationCreateEventPage from "../../../src/events/presentation/pages/CreateEventPage.vue"
 
 definePageMeta({
@@ -10,10 +12,11 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const route = useRoute()
 const requestURL = useRequestURL()
 
 const canonicalUrl = computed(() =>
-  new URL("/events/create-event", requestURL.origin).toString(),
+  new URL(route.fullPath || appRoutes.createEvent, requestURL.origin).toString(),
 )
 
 useSeoMeta({
@@ -29,7 +32,7 @@ useHead({
   link: [
     {
       rel: "canonical",
-      href: canonicalUrl,
+      href: canonicalUrl.value,
     },
   ],
 })

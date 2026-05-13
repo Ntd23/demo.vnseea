@@ -1057,13 +1057,14 @@ const buildPostsResponse = (posts: FeedPostRecord[], limit: number): FeedPostsRe
 export async function fetchFeedPosts(
   event: H3Event,
   input: {
-    type: "get_news_feed" | "saved" | "hashtag" | "get_random_videos" | "get_page_posts"
+    type: "get_news_feed" | "saved" | "hashtag" | "get_random_videos" | "get_page_posts" | "get_event_posts"
     limit?: number
     afterPostId?: number
     postType?: string
     followingOnly?: boolean
     tag?: string
     pageId?: number
+    eventId?: number
   },
 ) {
   const currentUser = await getBackendCurrentUser(event)
@@ -1083,6 +1084,9 @@ export async function fetchFeedPosts(
         user_id: currentUser.user_id,
         page_id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
         id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
+        ...(input.eventId && input.eventId > 0
+          ? { id: input.eventId }
+          : {}),
       },
     ),
     "Unable to load feed posts.",

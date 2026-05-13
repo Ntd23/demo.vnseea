@@ -1,130 +1,78 @@
+<!-- Description: Renders a backend-backed event list card aligned with the legacy PHP event directory layout. -->
 <template>
-  <UCard class="group overflow-hidden rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)] transition hover:-translate-y-1 hover:shadow-[var(--shadow-lg)]" :ui="{ body: 'p-0' }">
-    <NuxtLink :to="appRoutes.eventDetail(event.id)" class="block">
-      <div class="relative aspect-[16/9] overflow-hidden bg-[var(--color-secondary-100)]">
+  <article class="overflow-hidden rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)]">
+    <NuxtLink :to="appRoutes.eventDetail(event.id)" class="group block">
+      <div class="relative aspect-[16/10] overflow-hidden bg-[var(--bg-muted)]">
         <div class="absolute inset-0" :style="{ background: event.coverFallback }" />
         <NuxtImg
-          v-if="!imageFailed"
-          :src="event.cover"
-          :alt="event.title"
-          class="relative h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
+          v-if="event.coverUrl && !imageFailed"
+          :src="event.coverUrl"
+          :alt="event.name"
+          class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
           loading="lazy"
           @error="imageFailed = true"
         />
-        <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.05)_20%,rgba(15,23,42,0.72)_100%)]" />
 
-        <div class="absolute left-3 top-3 rounded-[18px] bg-white text-center shadow-[var(--shadow-md)]">
-          <p class="rounded-t-[18px] bg-[var(--color-primary-500)] px-3 py-1 text-[11px] font-black uppercase text-white">
-            {{ event.month }}
+        <span class="absolute right-3 top-3 rounded-full bg-[#111827]/78 px-3 py-1 text-[12px] font-bold text-white">
+          {{ event.dateBadge }}
+        </span>
+
+        <div class="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(15,23,42,0.72))] p-3 text-white">
+          <p class="flex items-center gap-1.5 text-[12px] font-medium text-white/90">
+            <Icon name="i-ph-map-pin-fill" class="h-3.5 w-3.5" />
+            <span class="truncate">{{ event.location }}</span>
           </p>
-          <p class="px-3 py-2 text-[1.45rem] font-black leading-none text-[var(--text-primary)]">
-            {{ event.day }}
-          </p>
-        </div>
-
-        <div class="absolute right-3 top-3 flex flex-wrap justify-end gap-2">
-          <UBadge color="neutral" variant="soft" class="rounded-full border border-white/15 bg-[#101828]/82 px-2.5 py-1 text-[11px] font-bold text-white">
-            {{ event.categoryLabel }}
-          </UBadge>
-          <UBadge
-            v-if="event.isOwner"
-            color="primary"
-            variant="subtle"
-            class="rounded-full border border-white/15 bg-white/18 px-2.5 py-1 text-[11px] font-bold text-white"
-          >
-            {{ $t("pages.eventsPage.ownerBadge") }}
-          </UBadge>
-        </div>
-
-        <div class="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-3">
-          <div class="min-w-0">
-            <p class="truncate text-[13px] font-bold text-white/78">
-              {{ event.dateLabel }}
-            </p>
-            <h3 class="mt-1 line-clamp-2 text-[1.1rem] font-black leading-tight text-white">
-              {{ event.title }}
-            </h3>
-          </div>
-          <UBadge color="neutral" variant="soft" class="shrink-0 rounded-full border border-white/15 bg-white/18 px-2.5 py-1.5 text-[11px] font-bold text-white">
-            {{ rsvpLabel }}
-          </UBadge>
         </div>
       </div>
     </NuxtLink>
 
-    <div class="p-4">
-      <div class="flex items-start gap-3">
-        <div
-          class="avatar-md shrink-0 text-white"
-          :style="{ background: event.hostGradient }"
+    <div class="space-y-4 p-4">
+      <div class="space-y-2">
+        <NuxtLink
+          :to="appRoutes.eventDetail(event.id)"
+          class="text-[1.05rem] font-bold leading-7 text-[var(--text-primary)] hover:text-[var(--text-link)]"
         >
-          {{ event.hostInitials }}
-        </div>
-        <div class="min-w-0">
-          <p class="text-title-primary truncate">
-            {{ event.host }}
-          </p>
-          <p class="mt-1 text-caption-secondary">
-            {{ event.hostRole }} · {{ event.timeLabel }}
-          </p>
-        </div>
+          {{ event.name }}
+        </NuxtLink>
+        <p class="text-[13px] leading-6 text-[var(--text-secondary)] line-clamp-2">
+          {{ event.description }}
+        </p>
       </div>
 
-      <p class="mt-3 min-h-[48px] text-[13px] leading-6 text-[var(--text-secondary)]">
-        {{ event.summary }}
-      </p>
-
-      <div class="mt-4 grid gap-2 sm:grid-cols-2">
-        <UCard class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-3' }">
-          <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">
-            {{ $t("pages.eventsPage.location") }}
-          </p>
-          <p class="mt-1 truncate text-[13px] font-semibold text-[var(--text-primary)]">
-            {{ event.location }}
-          </p>
-        </UCard>
-        <UCard class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)]" :ui="{ body: 'p-3' }">
-          <p class="text-[11px] font-bold uppercase text-[var(--text-tertiary)]">
-            {{ $t("pages.eventsPage.status") }}
-          </p>
-          <p class="mt-1 text-[13px] font-semibold text-[var(--text-primary)]">
-            {{ $t("pages.eventsPage.attendanceSummary", { going: formatCompact(event.stats.going), interested: formatCompact(event.stats.interested) }) }}
-          </p>
-        </UCard>
+      <div class="space-y-1 text-[13px] text-[var(--text-secondary)]">
+        <p>{{ event.dateRangeLabel }}</p>
+        <p class="truncate">
+          {{ event.hostName }}
+        </p>
       </div>
 
-      <div class="mt-4 flex flex-wrap gap-2">
-        <UBadge
-          v-for="tag in event.tags"
-          :key="tag"
-          color="primary"
-          variant="subtle"
-          class="rounded-full px-3 py-1.5 text-[12px] font-bold"
-        >
-          #{{ tag }}
-        </UBadge>
+      <div class="flex flex-wrap items-center gap-2 text-[12px] text-[var(--text-secondary)]">
+        <span class="rounded-full bg-[var(--bg-surface-hover)] px-3 py-1.5 font-medium">
+          {{ event.goingCount }} {{ $t("pages.eventsPage.rsvpGoing") }}
+        </span>
+        <span class="rounded-full bg-[var(--bg-surface-hover)] px-3 py-1.5 font-medium">
+          {{ event.interestedCount }} {{ $t("pages.eventsPage.rsvpInterested") }}
+        </span>
       </div>
 
-      <div class="mt-4 grid gap-2 sm:grid-cols-3">
+      <div class="grid gap-2 sm:grid-cols-3">
         <UButton
           color="primary"
-          :variant="rsvpState === 'going' ? 'solid' : 'soft'"
+          :variant="event.rsvpState === 'going' ? 'solid' : 'soft'"
           size="sm"
-          :disabled="rsvpState === 'going'"
-          class="justify-center rounded-[16px]"
-          :aria-label="`${$t('pages.eventsPage.rsvpGoing')}: ${event.title}`"
-          @click="$emit('rsvp', event.id, 'going')"
+          class="justify-center rounded-full"
+          :loading="busyState === 'going'"
+          @click.prevent="$emit('setGoing', event.id)"
         >
           {{ $t("pages.eventsPage.rsvpGoing") }}
         </UButton>
         <UButton
           color="warning"
-          :variant="rsvpState === 'interested' ? 'solid' : 'soft'"
+          :variant="event.rsvpState === 'interested' ? 'solid' : 'soft'"
           size="sm"
-          :disabled="rsvpState === 'interested'"
-          class="justify-center rounded-[16px]"
-          :aria-label="`${$t('pages.eventsPage.rsvpInterested')}: ${event.title}`"
-          @click="$emit('rsvp', event.id, 'interested')"
+          class="justify-center rounded-full"
+          :loading="busyState === 'interested'"
+          @click.prevent="$emit('setInterested', event.id)"
         >
           {{ $t("pages.eventsPage.rsvpInterested") }}
         </UButton>
@@ -133,41 +81,36 @@
           color="neutral"
           variant="outline"
           size="sm"
-          class="justify-center rounded-[16px]"
+          class="justify-center rounded-full"
         >
           {{ $t("pages.eventsPage.detail") }}
         </UButton>
       </div>
     </div>
-  </UCard>
+  </article>
 </template>
 
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
-import type { EventRsvpState, MockEvent } from "../../domain/types/events.types"
+import type { EventRecord } from "../../domain/types/events.types"
 
 const props = defineProps<{
-  event: MockEvent
-  rsvpState: EventRsvpState
+  event: EventRecord
+  busyState?: "going" | "interested" | null
 }>()
-
-const { t, locale } = useI18n()
-const imageFailed = ref(false)
 
 defineEmits<{
-  rsvp: [id: string, state: EventRsvpState]
+  setGoing: [id: number]
+  setInterested: [id: number]
 }>()
 
-const rsvpLabel = computed(() => {
-  if (props.rsvpState === "going") return t("pages.eventsPage.rsvpGoing")
-  if (props.rsvpState === "interested") return t("pages.eventsPage.rsvpInterested")
-  if (props.rsvpState === "invited") return t("pages.eventsPage.rsvpInvited")
-  if (props.rsvpState === "not_interested") return t("pages.eventsPage.rsvpSkipped")
-  return t("pages.eventsPage.rsvpOpen")
-})
+const imageFailed = ref(false)
 
-const formatCompact = (value: number) => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
-  notation: "compact",
-  maximumFractionDigits: 1,
-}).format(value)
+watch(
+  () => props.event.id,
+  () => {
+    imageFailed.value = false
+  },
+  { immediate: true },
+)
 </script>

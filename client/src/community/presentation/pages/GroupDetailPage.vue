@@ -1,3 +1,4 @@
+<!-- Description: Renders the backend-backed community group detail route with a tabbed feed and sidebar layout. -->
 <template>
   <div class="mx-auto max-w-[1280px] pb-10">
     <!-- ── Loading skeleton ──────────────────────────────── -->

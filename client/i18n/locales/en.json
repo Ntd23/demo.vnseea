@@ -737,6 +737,7 @@
       ]
     },
     "eventsPage": {
+      "title": "Events",
       "seoTitle": "Events | VNSEEA",
       "seoTitleQuery": "\"{query}\" Results | Events | VNSEEA",
       "seoTitleTab": "{tab} | Events | VNSEEA",
@@ -766,6 +767,7 @@
       "sortSoonest": "Soonest",
       "sortGoing": "Most going",
       "sortInterested": "Most interested",
+      "tabBrowse": "Browse events",
       "tabUpcoming": "Upcoming",
       "tabMy": "My events",
       "tabGoing": "Going",
@@ -901,6 +903,7 @@
       "attendeeOrganizer": "Event coordinator"
     },
     "createEventPage": {
+      "title": "Create new event",
       "seoTitle": "Create event | VNSEEA",
       "seoDescription": "Create a new VNSEEA event with a clearer form flow, stable preview, and device-safe draft persistence.",
       "heroEyebrow": "Event Builder",
@@ -953,7 +956,7 @@
       "demoLocation": "The Hall, District 1, Ho Chi Minh City",
       "demoFilled": "Sample event data has been filled so you can keep refining from there.",
       "draftSaved": "The event draft has been saved on this device.",
-      "publishComplete": "The event has been published in the mock flow.",
+      "publishComplete": "The event has been published successfully.",
       "validationTitleRequired": "The event name should be clear enough, at least 8 characters.",
       "validationDescriptionRequired": "The description should be specific enough, at least 24 characters.",
       "validationLocationRequired": "Enter a clearer location so attendees can understand the context.",
@@ -973,12 +976,15 @@
     "eventDetailPage": {
       "seoTitle": "Event detail",
       "seoDescription": "Follow the agenda, attendees, and key information for a VNSEEA community event.",
+      "notFoundTitle": "Event not available",
+      "notFoundDescription": "The backend did not return a valid event for this route.",
       "missingNotice": "This event link is no longer valid. Showing the closest mock fallback instead.",
       "ownerBadge": "You manage this",
       "hostAttendance": "{role} · {count} confirmed attendees",
       "actionSkip": "Skip",
       "actionInvite": "Invite",
       "rsvpPending": "Pending reply",
+      "rsvpCleared": "RSVP cleared",
       "infoEyebrow": "Event overview",
       "infoTitle": "Summary and key details",
       "share": "Share",
@@ -998,6 +1004,8 @@
       "inviteSentMessage": "Sent invites to {count} people in the mock experience.",
       "locationEyebrow": "Location",
       "mapPlaceholder": "Placeholder map surface for this event",
+      "emptyGoing": "No confirmed attendees yet.",
+      "emptyInterested": "No interested attendees yet.",
       "managementEyebrow": "Event management",
       "editEvent": "Edit event",
       "deleteEvent": "Delete event",

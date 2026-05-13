@@ -1,70 +1,77 @@
-export type EventTabKey = "upcoming" | "my" | "going" | "invited" | "interested" | "past"
-export type EventRsvpState = "none" | "going" | "interested" | "not_interested" | "invited"
-export type EventCategoryKey = "all" | "community" | "education" | "business" | "culture" | "technology"
-export type EventCityKey = "all" | "ho-chi-minh" | "ha-noi" | "da-nang" | "online"
-export type EventSortKey = "soonest" | "going" | "interested"
+// English description: Domain types for backend-backed event listing, detail, RSVP, attendee, creation, and event-post flows.
 
-export type EventTab = {
+import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
+
+export type EventTabKey = "browse" | "going" | "invited" | "interested" | "past" | "mine"
+
+export type EventRsvpState = "none" | "going" | "interested"
+
+export type EventAttendeeKind = "going" | "interested"
+
+export type EventTabItem = {
   key: EventTabKey
   label: string
-  icon: string
 }
 
-export type EventCategory = {
-  value: EventCategoryKey
-  label: string
-  icon: string
-}
-
-export type EventCity = {
-  value: EventCityKey
-  label: string
-}
-
-export type EventAttendee = {
+export type EventAttendeeRecord = {
   id: number
   name: string
-  role: string
-  initials: string
-  gradient: string
-  status: "going" | "interested" | "invited"
+  username: string
+  avatarUrl: string
 }
 
-export type MockEvent = {
-  id: string
-  title: string
-  category: Exclude<EventCategoryKey, "all">
-  categoryLabel: string
-  host: string
-  hostRole: string
-  hostInitials: string
-  hostGradient: string
-  location: string
-  city: Exclude<EventCityKey, "all">
-  startsAt: string
-  endsAt: string
-  dateLabel: string
-  timeLabel: string
-  month: string
-  day: string
-  cover: string
-  coverFallback: string
+export type EventRecord = {
+  id: number
+  name: string
   description: string
-  summary: string
-  tags: string[]
-  tabKeys: EventTabKey[]
-  userState: EventRsvpState
+  location: string
+  coverUrl: string
+  coverFallback: string
+  startDateLabel: string
+  endDateLabel: string
+  startDateValue: string
+  endDateValue: string
+  startTime: string
+  endTime: string
+  dateBadge: string
+  timeLabel: string
+  dateRangeLabel: string
   isOwner: boolean
-  capacity: number
-  stats: {
-    going: number
-    interested: number
-    invited: number
-  }
-  agenda: {
-    time: string
-    title: string
-    description: string
-  }[]
-  attendees: EventAttendee[]
+  rsvpState: EventRsvpState
+  goingCount: number
+  interestedCount: number
+  hostName: string
+  hostUsername: string
+  hostAvatarUrl: string
+}
+
+export type EventsCatalogRecord = {
+  browse: EventRecord[]
+  going: EventRecord[]
+  invited: EventRecord[]
+  interested: EventRecord[]
+  past: EventRecord[]
+  mine: EventRecord[]
+}
+
+export type EventPostsRecord = {
+  posts: FeedPostRecord[]
+  hasMore: boolean
+  nextOffset: number | null
+}
+
+export type EventCreateDraft = {
+  name: string
+  location: string
+  description: string
+  startDate: string
+  startTime: string
+  endDate: string
+  endTime: string
+  coverFile?: File | null
+}
+
+export type EventRsvpResult = {
+  eventId: number
+  rsvpState: EventRsvpState
 }

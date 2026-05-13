@@ -1,3 +1,4 @@
+<!-- Description: Thin Nuxt route wrapper for the backend-backed community group detail screen. -->
 <template>
   <CommunityPresentationGroupDetailPage />
 </template>

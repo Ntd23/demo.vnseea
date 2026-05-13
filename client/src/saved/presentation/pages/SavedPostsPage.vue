@@ -1,4 +1,4 @@
-Description: Renders saved posts as the legacy-style heading followed by the real saved feed list and empty state.
+<!-- Description: Renders saved posts as the legacy-style heading followed by the real saved feed list and empty state. -->
 <template>
   <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-16 sm:px-5 lg:px-6">
     <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
@@ -58,12 +58,5 @@ import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
 import { useSavedPostsPageVM } from "../../application/view-models/useSavedPostsPageVM"
 
 const { t } = useI18n()
-const { loading, errorMessage, posts, fetchSavedPosts } = useSavedPostsPageVM()
-
-useSeoMeta({
-  title: () => t("pages.savedPostsPage.seoTitle"),
-  description: () => t("pages.savedPostsPage.seoDescription"),
-})
-
-await fetchSavedPosts()
+const { loading, errorMessage, posts } = useSavedPostsPageVM()
 </script>

@@ -1,36 +1,10 @@
+<!-- Description: Renders the backend-backed event creation flow with the same field order as the PHP create-event screen. -->
 <template>
-  <div class="space-y-5 pb-10">
-    <EventsCreateEventHero
-      :stats="heroStats"
-      @quick-fill="quickFillSeed++"
-    />
-    <EventsCreateEventComposer :quick-fill-seed="quickFillSeed" />
+  <div class="mx-auto max-w-[1120px] px-3 pb-10 sm:px-5 lg:px-6">
+    <EventsCreateEventComposer />
   </div>
 </template>
 
 <script setup lang="ts">
 import EventsCreateEventComposer from "../components/CreateEventComposer.vue"
-import EventsCreateEventHero from "../components/CreateEventHero.vue"
-
-const { t } = useI18n()
-
-const quickFillSeed = ref(0)
-
-const heroStats = computed(() => [
-  {
-    label: t("pages.createEventPage.statMainFields"),
-    value: "7",
-    description: t("pages.createEventPage.statMainFieldsDescription"),
-  },
-  {
-    label: t("pages.createEventPage.statPreview"),
-    value: t("pages.createEventPage.statPreviewValue"),
-    description: t("pages.createEventPage.statPreviewDescription"),
-  },
-  {
-    label: t("pages.createEventPage.statSubmit"),
-    value: t("pages.createEventPage.statSubmitValue"),
-    description: t("pages.createEventPage.statSubmitDescription"),
-  },
-] as const)
 </script>

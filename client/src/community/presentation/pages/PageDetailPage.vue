@@ -1,3 +1,4 @@
+<!-- Description: Renders the backend-backed community page detail route with a tabbed feed and sidebar layout. -->
 <template>
   <div class="mx-auto max-w-[1280px] pb-10">
     <!-- ── Loading skeleton ──────────────────────────────── -->
@@ -186,7 +187,7 @@
 
         <div class="mt-6 flex justify-center">
           <UButton
-            to="/create-page"
+            :to="appRoutes.createPage"
             color="primary"
             variant="solid"
             size="xl"
@@ -204,6 +205,7 @@
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
 import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useCommunityPageDetailPageVM } from "../../application/view-models/useCommunityPageDetailPageVM"
 
 const { t } = useI18n()
