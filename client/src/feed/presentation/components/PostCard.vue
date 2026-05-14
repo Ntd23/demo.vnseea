@@ -227,6 +227,7 @@
 
 <script setup lang="ts">
 import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useHashtagData"
+import { createPostTextMentionSegments } from "../../application/utils/feed-mentions"
 import { useFeedPostCardVM } from "../../application/view-models/useFeedPostCardVM"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 import FeedCommentComposer from "./CommentComposer.vue"
@@ -292,73 +293,9 @@ const {
   isAdmin,
 } = useFeedPostCardVM(toRef(props, "post"))
 
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-}
-
-function getMentionDisplayName(mention: NonNullable<FeedPostRecord["mentions"]>[number]) {
-  return mention.displayName || mention.name.split(/\s+/).filter(Boolean)[0] || mention.username
-}
-
-const normalizedPostText = computed(() => {
-  return (props.post.mentions ?? []).reduce((text, mention) => {
-    const displayName = getMentionDisplayName(mention)
-    const replacements = [
-      mention.name,
-      mention.username,
-    ]
-
-    return replacements.reduce((nextText, label) => {
-      const normalized = label.replace(/^@/, "").trim()
-
-      if (!normalized || normalized === displayName) {
-        return nextText
-      }
-
-      return nextText.replace(
-        new RegExp(`(^|\\s)@${escapeRegExp(normalized)}(?=\\s|$)`, "g"),
-        `$1@${displayName}`,
-      )
-    }, text)
-  }, props.post.text)
-})
-
-const mentionLabelKeys = computed(() => {
-  const labels = new Set<string>()
-
-  for (const mention of props.post.mentions ?? []) {
-    const displayName = getMentionDisplayName(mention)
-    const rawLabels = [
-      displayName,
-      mention.username,
-      mention.name.split(/\s+/).filter(Boolean)[0],
-    ]
-
-    for (const label of rawLabels) {
-      const normalized = label?.replace(/^@/, "").trim()
-
-      if (normalized) {
-        labels.add(`@${normalized}`.toLowerCase())
-      }
-    }
-  }
-
-  return labels
-})
-
-const postTextSegments = computed(() => {
-  const mentionPattern = /(@[\p{L}\p{N}_][\p{L}\p{N}_.-]*)/gu
-  const labels = mentionLabelKeys.value
-
-  return normalizedPostText.value
-    .split(mentionPattern)
-    .filter(segment => segment.length > 0)
-    .map((segment, index) => ({
-      key: `${index}:${segment}`,
-      text: segment,
-      isMention: segment.startsWith("@") && (labels.size === 0 || labels.has(segment.toLowerCase())),
-    }))
-})
+const postTextSegments = computed(() =>
+  createPostTextMentionSegments(props.post.text, props.post.mentions ?? []),
+)
 
 async function openCommentTagging() {
   showComments.value = true
