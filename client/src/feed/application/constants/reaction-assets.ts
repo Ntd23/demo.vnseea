@@ -19,6 +19,10 @@ export type FeedReactionAsset = {
   src: string
 }
 
+export type FeedCommentComposerReactionAsset = FeedReactionAsset & {
+  text: string
+}
+
 const feedReactionAssetUrls: Record<FeedStoryReactionType, string> = {
   Like: likeReactionUrl,
   Love: loveReactionUrl,
@@ -26,6 +30,15 @@ const feedReactionAssetUrls: Record<FeedStoryReactionType, string> = {
   Wow: wowReactionUrl,
   Sad: sadReactionUrl,
   Angry: angryReactionUrl,
+}
+
+const feedReactionComposerTexts: Record<FeedStoryReactionType, string> = {
+  Like: "👍",
+  Love: "❤️",
+  HaHa: "😆",
+  Wow: "😮",
+  Sad: "😢",
+  Angry: "😡",
 }
 
 export const feedReactionAssets = feedStoryReactionDefinitions.map(reaction => ({
@@ -49,3 +62,8 @@ export const feedPostPreviewReactionAssets = [
   feedReactionAssetByValue.Love,
   feedReactionAssetByValue.HaHa,
 ]
+
+export const feedCommentComposerReactionAssets = feedReactionAssets.map(reaction => ({
+  ...reaction,
+  text: feedReactionComposerTexts[reaction.value],
+})) satisfies FeedCommentComposerReactionAsset[]
