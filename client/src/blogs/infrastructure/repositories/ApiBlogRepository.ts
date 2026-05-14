@@ -3,7 +3,8 @@
 import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { BlogRepository } from "../../domain/repositories/BlogRepository"
-import type { BlogCreateDraft, BlogCreateResult, BlogListArticle } from "../../domain/types/blog.types"
+import type { BlogCreateDraft, BlogCreateResult, BlogListArticle, BlogReadArticle } from "../../domain/types/blog.types"
+import type { FeedCommentRecord, FeedCommentSubmitPayload, FeedPostActionResult } from "../../../feed/domain/types/feed.types"
 
 export function createApiBlogRepository(): BlogRepository {
   const client = useNuxtApiClient()
@@ -16,6 +17,31 @@ export function createApiBlogRepository(): BlogRepository {
         category: input?.category,
         mine: input?.mineOnly ? "1" : undefined,
       })
+    },
+    async getBlogBySlug(slug: string) {
+      return await client.get<BlogReadArticle>(apiRoutes.blogs.detail(slug))
+    },
+    async getBlogComments(slug: string) {
+      return await client.get<FeedCommentRecord[]>(apiRoutes.blogs.comments(slug))
+    },
+    async addBlogComment(slug: string, input: FeedCommentSubmitPayload) {
+      return await client.post<FeedCommentRecord, { text: string }>(
+        apiRoutes.blogs.comments(slug),
+        { text: input.text },
+      )
+    },
+    async getBlogCommentReplies(slug, input) {
+      return await client.get<FeedCommentRecord[]>(apiRoutes.blogs.commentReplies(slug), {
+        commentId: input.commentId,
+        limit: input.limit,
+        offset: input.offset,
+      })
+    },
+    async runBlogCommentAction(slug, input) {
+      return await client.post<FeedPostActionResult, Record<string, unknown>>(
+        apiRoutes.blogs.commentAction(slug),
+        input as Record<string, unknown>,
+      )
     },
     async createBlog(input: BlogCreateDraft) {
       const formData = new FormData()

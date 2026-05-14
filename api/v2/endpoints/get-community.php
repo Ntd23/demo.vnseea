@@ -87,12 +87,22 @@ if (empty($error_code)) {
 			$pages_offset = (!empty($_POST['pages_offset']) && is_numeric($_POST['pages_offset']) && $_POST['pages_offset'] > 0 ? Wo_Secure($_POST['pages_offset']) : 0);
 	        $pages_limit = (!empty($_POST['pages_limit']) && is_numeric($_POST['pages_limit']) && $_POST['pages_limit'] > 0 && $_POST['pages_limit'] <= 50 ? Wo_Secure($_POST['pages_limit']) : 20);
 
-			$response_data['pages'] = Wo_GetMyPages($user_id,$pages_limit,$pages_offset);
+			$pages = Wo_GetMyPages($user_id,$pages_limit,$pages_offset);
+            foreach ($pages as $key => $page) {
+                $pages[$key]['likes'] = Wo_CountPageLikes($page['page_id']);
+                $pages[$key]['is_liked'] = Wo_IsPageLiked($page['page_id'], $wo['user']['user_id']);
+            }
+            $response_data['pages'] = $pages;
 		}
 		if (!empty($data['liked_pages'])) {
 			$liked_pages_offset = (!empty($_POST['liked_pages_offset']) && is_numeric($_POST['liked_pages_offset']) && $_POST['liked_pages_offset'] > 0 ? Wo_Secure($_POST['liked_pages_offset']) : 0);
 	        $liked_pages_limit = (!empty($_POST['liked_pages_limit']) && is_numeric($_POST['liked_pages_limit']) && $_POST['liked_pages_limit'] > 0 && $_POST['liked_pages_limit'] <= 50 ? Wo_Secure($_POST['liked_pages_limit']) : 20);
-			$response_data['liked_pages'] = Wo_GetLikes($user_id, 'profile', $liked_pages_limit, $liked_pages_offset, array('in' => 'profile_sidebar', 'likes_data' => $recipient_data['likes_data']));
+			$liked_pages = Wo_GetLikes($user_id, 'profile', $liked_pages_limit, $liked_pages_offset, array('in' => 'profile_sidebar', 'likes_data' => $recipient_data['likes_data']));
+            foreach ($liked_pages as $key => $page) {
+                $liked_pages[$key]['likes'] = Wo_CountPageLikes($page['page_id']);
+                $liked_pages[$key]['is_liked'] = true;
+            }
+            $response_data['liked_pages'] = $liked_pages;
 		}
     }
 }

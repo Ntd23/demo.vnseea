@@ -1,7 +1,6 @@
 // English description: Owns blog directory filtering, query sync, pagination, and derived sidebar state.
 
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
-import { useMockReadBlogData } from "../composables/useMockReadBlogData"
 import type { BlogCategory, BlogListArticle, BlogSortValue } from "../../domain/types/blog.types"
 import { createApiBlogRepository } from "../../infrastructure/repositories/ApiBlogRepository"
 
@@ -26,6 +25,7 @@ const blogSortValues = new Set<BlogSortValue>(["latest", "popular", "views", "re
 const blogQueryKeys = ["search", "category", "sort", "mine", "page"] as const
 
 type BlogsRouteQuery = Partial<Record<(typeof blogQueryKeys)[number], string>>
+type PaginationPageItem = number | "ellipsis"
 
 const getQueryValue = (value: string | string[] | undefined) =>
   Array.isArray(value) ? (value[0] ?? "") : (value ?? "")
@@ -73,13 +73,31 @@ const hasSameBlogsQuery = (
   currentQuery: ReturnType<typeof useRoute>["query"],
 ) => blogQueryKeys.every(key => (nextQuery[key] ?? "") === getQueryValue(currentQuery[key]))
 
+const createVisiblePageNumbers = (currentPage: number, totalPages: number): PaginationPageItem[] => {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1)
+  }
+
+  const visiblePages = new Set([1, totalPages, currentPage - 1, currentPage, currentPage + 1])
+  const pages = Array.from(visiblePages)
+    .filter(page => page >= 1 && page <= totalPages)
+    .sort((left, right) => left - right)
+
+  return pages.flatMap<PaginationPageItem>((page, index) => {
+    const previousPage = pages[index - 1]
+
+    if (!previousPage || page - previousPage === 1) return [page]
+
+    return ["ellipsis", page]
+  })
+}
+
 export function useBlogsPageVM(
   repository = createApiBlogRepository(),
 ) {
   const { t, locale } = useI18n()
   const route = useRoute()
   const router = useRouter()
-  const { articles: mockArticles } = useMockReadBlogData()
   const { data: backendArticles, pending: isLoading, error: loadError, refresh } = useAsyncData(
     "blogs:list",
     () => repository.getBlogs({ limit: 50 }),
@@ -93,7 +111,7 @@ export function useBlogsPageVM(
   const sortBy = ref<BlogSortValue>(resolveSortQuery(route.query.sort))
   const currentPage = ref(resolvePageQuery(route.query.page))
   const mineOnly = ref(resolveMineQuery(route.query.mine))
-  const pageSize = 6
+  const pageSize = 7
 
   const categoryOptions = computed(() => [
     { label: t("pages.blogsPage.categoryAll"), value: "all", icon: "i-ph-squares-four-fill" },
@@ -119,15 +137,11 @@ export function useBlogsPageVM(
     { label: t("pages.blogsPage.sortReading"), value: "reading" },
   ] satisfies { label: string; value: BlogSortValue }[])
 
-  const fallbackArticles = computed<BlogListArticle[]>(() =>
-    mockArticles.value.map(article => ({
-      ...article,
-      href: appRoutes.readBlog(article.slug),
-    })),
-  )
-
   const articles = computed<BlogListArticle[]>(() =>
-    loadError.value ? fallbackArticles.value : backendArticles.value,
+    backendArticles.value.map(article => ({
+      ...article,
+      href: article.href || appRoutes.readBlog(article.slug),
+    })),
   )
 
   const heroStats = computed(() => [
@@ -239,7 +253,7 @@ export function useBlogsPageVM(
   )
 
   const visiblePageNumbers = computed(() =>
-    Array.from({ length: totalPages.value }, (_, index) => index + 1),
+    createVisiblePageNumbers(currentPage.value, totalPages.value),
   )
 
   const trendingTopics = computed(() =>
@@ -261,8 +275,7 @@ export function useBlogsPageVM(
       .slice(0, 4)
       .map(article => ({
         name: article.author,
-        initials: article.authorInitials,
-        gradient: article.authorGradient,
+        avatarUrl: article.authorAvatarUrl,
         count: articles.value.filter(item => item.author === article.author).length,
         topic: article.categoryLabel,
       })),

@@ -5,8 +5,22 @@
       <NuxtLink :to="pageTo" class="page-card__cover-link" :aria-label="pageName" />
       <span class="page-card__category">{{ categoryLabel }}</span>
       <NuxtLink v-if="page.canManage" :to="pageSettingsTo" class="page-card__action page-card__action--secondary">
-        <Icon name="i-ph-gear-six-duotone" class="mr-1.5 h-5 w-5" />
+        <Icon name="i-ph-gear-six-duotone" class="h-5 w-5" />
       </NuxtLink>
+      <button 
+        v-else 
+        class="page-card__action"
+        :class="localIsLiked ? 'page-card__action--primary' : 'page-card__action--secondary'"
+        :disabled="likePending"
+        @click.prevent="handleLike"
+      >
+        <Icon 
+          :name="likePending ? 'i-ph-spinner-gap-bold' : (localIsLiked ? 'i-ph-thumbs-up-fill' : 'i-ph-thumbs-up-bold')" 
+          class="mr-1.5 h-4 w-4" 
+          :class="{'animate-spin': likePending}"
+        />
+        {{ localIsLiked ? t('pages.pageDetailPage.likedButton') : t('pages.pageDetailPage.likeButton') }}
+      </button>
       <span v-if="page.canManage" class="page-card__owner-badge">
         <Icon name="i-ph-flag-fill" class="h-4 w-4" />
       </span>
@@ -39,14 +53,10 @@
 </template>
 
 <script setup lang="ts">
-import {
-  formatCommunityLikeCount,
-  getCommunityOptionLabel,
-  getCommunityPagePath,
-  getCommunityPageSettingsPath,
-} from "../../domain/services/community-helpers.service"
+import { getCommunityOptionLabel, getCommunityPagePath, getCommunityPageSettingsPath } from "../../domain/services/community-helpers.service"
 import { communityPageCategoryOptions } from "../../domain/constants/community-options"
 import type { CommunityPageRecord } from "../../domain/types/community.types"
+import { useCommunityPageCardVM } from "../../application/view-models/useCommunityPageCardVM"
 
 const props = withDefaults(defineProps<{
   page: CommunityPageRecord
@@ -57,10 +67,16 @@ const props = withDefaults(defineProps<{
 
 const { t } = useI18n()
 
+const {
+  likePending,
+  localIsLiked,
+  likeCountLabel,
+  followerCountLabel,
+  handleLike,
+} = useCommunityPageCardVM(() => props.page)
+
 const pageName = computed(() => props.page.name)
 const pageSummary = computed(() => props.page.summary)
-const likeCountLabel = computed(() => formatCommunityLikeCount(props.page.likes))
-const followerCountLabel = computed(() => formatCommunityLikeCount(props.page.followers))
 const avatarLabel = computed(() => pageName.value.slice(0, 2).toUpperCase())
 
 const categoryLabel = computed(() => {
@@ -325,14 +341,17 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   padding: 0 14px;
   font-size: 12px;
   font-weight: 700;
-  text-decoration: none;
+  cursor: pointer;
+  border: none;
 }
 
-/* .page-card__action--secondary {
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
+.page-card__action--secondary {
+  background: rgba(255, 255, 255, 0.9);
   color: #334155;
-} */
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.2s ease;
+}
 
 .page-card__action--secondary:hover {
   border-color: #93c5fd;
@@ -341,12 +360,14 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 }
 
 .page-card__action--primary {
-  background: var(--bg-brand);
-  color: var(--text-inverse);
-  box-shadow: var(--shadow-brand);
+  background: var(--color-primary-500, #3b82f6);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
 }
 
 .page-card__action--primary:hover {
-  background: var(--bg-brand-hover);
+  background: var(--color-primary-600, #2563eb);
 }
 </style>

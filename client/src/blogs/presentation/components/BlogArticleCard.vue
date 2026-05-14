@@ -8,7 +8,7 @@
         :alt="article.title"
         width="1200"
         height="750"
-        sizes="(max-width: 767px) 100vw, (max-width: 1535px) 50vw, 33vw"
+        sizes="(max-width: 639px) 100vw, 50vw"
         class="blog-card__image"
         loading="lazy"
         decoding="async"
@@ -36,8 +36,18 @@
 
       <div class="blog-card__footer">
         <div class="blog-card__author">
-          <span class="blog-card__avatar" :style="{ background: article.authorGradient }">
-            {{ article.authorInitials }}
+          <span class="blog-card__avatar">
+            <NuxtImg
+              v-if="article.authorAvatarUrl"
+              :src="article.authorAvatarUrl"
+              :alt="article.author"
+              class="blog-card__avatar-image"
+              width="64"
+              height="64"
+              sizes="32px"
+              loading="lazy"
+            />
+            <Icon v-else name="i-ph-user-circle-fill" class="h-5 w-5" />
           </span>
           <span class="blog-card__author-copy">
             <span class="blog-card__author-name">{{ article.author }}</span>
@@ -70,8 +80,7 @@ const props = defineProps<{
     categoryLabel: string
     category?: string
     author: string
-    authorInitials: string
-    authorGradient: string
+    authorAvatarUrl: string
     publishedAt: string
     views: number
     readMinutes: number
@@ -252,15 +261,21 @@ const categoryAccentColor = computed(() =>
 
 .blog-card__avatar {
   display: flex;
+  overflow: hidden;
   height: 32px;
   width: 32px;
   flex: 0 0 32px;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 800;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.blog-card__avatar-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 
 .blog-card__author-copy {

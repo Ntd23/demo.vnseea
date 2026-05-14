@@ -57,6 +57,8 @@ const route = useRoute()
 const isReelsPage = computed(() => route.path === appRoutes.reels)
 const isCheckoutPage = computed(() => route.path === appRoutes.checkout)
 const isSearchPage = computed(() => route.path === appRoutes.search)
+const isPageDetailPage = computed(() => route.path.startsWith("/p/"))
+const isBlogDetailPage = computed(() => route.path.startsWith("/read-blog/"))
 const isHomeFeedPage = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
 const isCommunityComposerPage = computed(() =>
   route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
@@ -64,7 +66,9 @@ const isCommunityComposerPage = computed(() =>
 const showLeftSidebar = computed(() =>
   !route.path.startsWith('/@')
   && !isCheckoutPage.value
-  && !isSearchPage.value,
+  && !isSearchPage.value
+  && !isPageDetailPage.value
+  && !isBlogDetailPage.value,
 )
 const showRightSidebar = computed(() => !isReelsPage.value)
 // HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.

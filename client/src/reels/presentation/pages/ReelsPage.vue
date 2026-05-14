@@ -187,8 +187,11 @@
                  <FeedCommentList
                     v-if="localComments.length > 0"
                     :comments="localComments"
+                    enable-reply
+                    enable-reaction
                     :current-user-name="currentAuthUserStore.user?.name"
                     :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+                    :comment-action-repository="commentActionRepository"
                  />
                  <div v-else class="reels-page__comments-empty">
                     <Icon name="i-ph-chat-circle-text" class="h-10 w-10 opacity-20" />
@@ -221,7 +224,6 @@
 </template>
 
 <script setup lang="ts">
-import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM"
 import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
 import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
@@ -233,19 +235,16 @@ const {
   errorMessage,
   activeReel,
   activeMedia,
-  fetchReels,
-  nextReel,
-  prevReel,
+  videoRef,
+  isPlaying,
+  progress,
   onTouchStart,
   onTouchEnd,
-  onWheel,
-} = useReelsPageVM()
-const videoRef = ref<HTMLVideoElement | null>(null)
-const videoPaused = ref(false)
-const videoMuted = ref(true)
-const locallySaved = ref(false)
-
-const {
+  handleWheel,
+  updateProgress,
+  onMetadataLoaded,
+  togglePlayPause,
+  seek,
   currentAuthUserStore,
   showComments,
   showShare,
@@ -258,125 +257,22 @@ const {
   commenting,
   postReactionOptions,
   activePostReactionAsset,
-  activePostReactionLabel,
   shareUrl,
+  commentActionRepository,
   openPostReactionTray,
   closePostReactionTray,
-  startPostReactionPress,
-  finishPostReactionPress,
-  cancelPostReactionPress,
   handlePostReactionButtonClick,
   reactToPost,
   submitComment,
   handleShared,
   handleMenuAction,
-} = useFeedPostCardVM(activeReel)
-
-watch(
-  activeReel,
-  value => {
-    locallySaved.value = Boolean(value?.isSaved)
-    videoPaused.value = false
-  },
-  { immediate: true },
-)
-
-async function toggleVideoPlayback() {
-  const video = videoRef.value
-
-  if (!video) {
-    return
-  }
-
-  if (video.paused) {
-    await video.play()
-    videoPaused.value = false
-    return
-  }
-
-  video.pause()
-  videoPaused.value = true
-}
-
-function toggleLocalSave() {
-  locallySaved.value = !locallySaved.value
-}
-
-
-watchEffect(() => {
-  if (import.meta.client) {
-    console.log("Reels Debug - postReactionOptions:", postReactionOptions.value)
-    console.log("Reels Debug - postReactionTrayOpen:", postReactionTrayOpen.value)
-    console.log("Reels Debug - activeReel ID:", activeReel.value?.id)
-  }
-})
-
-function toggleComments() {
-  showComments.value = !showComments.value
-}
+  toggleComments,
+} = useReelsPageVM()
 
 useSeoMeta({
   title: () => t("pages.reelsPage.seoTitle"),
   description: () => t("pages.reelsPage.seoDescription"),
 })
-const currentTime = ref(0)
-const duration = ref(0)
-const isPlaying = ref(true)
-const progress = computed(() => (duration.value ? (currentTime.value / duration.value) * 100 : 0))
-
-function updateProgress() {
-  if (videoRef.value) {
-    currentTime.value = videoRef.value.currentTime
-  }
-}
-
-function onMetadataLoaded() {
-  if (videoRef.value) {
-    duration.value = videoRef.value.duration
-  }
-}
-
-function togglePlayPause() {
-  if (!videoRef.value) return
-  if (videoRef.value.paused) {
-    videoRef.value.play()
-    isPlaying.value = true
-  } else {
-    videoRef.value.pause()
-    isPlaying.value = false
-  }
-}
-
-function seek(event: MouseEvent) {
-  if (!videoRef.value || !duration.value) return
-  
-  const container = event.currentTarget as HTMLElement
-  const rect = container.getBoundingClientRect()
-  const pos = (event.clientX - rect.left) / rect.width
-  videoRef.value.currentTime = pos * duration.value
-}
-
-// Throttled Wheel Navigation
-const lastWheelTime = ref(0)
-const wheelThreshold = 500 // ms
-
-function handleWheel(event: WheelEvent) {
-  if (showComments.value) return
-
-  event.preventDefault()
-  const now = Date.now()
-  if (now - lastWheelTime.value < wheelThreshold) return
-
-  if (event.deltaY > 0) {
-    nextReel()
-    lastWheelTime.value = now
-  } else if (event.deltaY < 0) {
-    prevReel()
-    lastWheelTime.value = now
-  }
-}
-
-await fetchReels()
 </script>
 
 <style scoped>

@@ -15,6 +15,7 @@ import type {
   FeedPostRecord,
   FeedStoryReactionType,
 } from "../../domain/types/feed.types"
+import type { FeedCommentActionRepository } from "./useFeedCommentItemVM"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
 export function useFeedPostCardVM(
@@ -82,6 +83,15 @@ export function useFeedPostCardVM(
   const shareUrl = computed(() =>
     post.value ? new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString() : ""
   )
+
+  const commentActionRepository: FeedCommentActionRepository = {
+    getCommentReplies(input) {
+      return repository.getCommentReplies(input)
+    },
+    runCommentAction(input) {
+      return repository.runCommentAction(input)
+    },
+  }
 
   watch(
     post,
@@ -418,6 +428,7 @@ export function useFeedPostCardVM(
     hasPostContent,
     mediaItems,
     shareUrl,
+    commentActionRepository,
     openPostReactionTray,
     closePostReactionTray,
     startPostReactionPress,

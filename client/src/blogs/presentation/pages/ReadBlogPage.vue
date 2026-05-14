@@ -10,34 +10,54 @@
       aria-label="Reading progress"
     />
 
-    <BlogsReadBlogHero
-      :article="article"
-      :article-not-found="articleNotFound"
-      :format-compact="formatCompact"
-    />
-
-    <div class="read-blog-page__layout">
-      <BlogsReadBlogMain
-        v-model:comment-text="commentText"
-        class="read-blog-page__main"
-        :article="article"
-        :liked="liked"
-        :displayed-likes="displayedLikes"
-        :share-open="shareOpen"
-        :share-url="shareUrl"
-        :comments="comments"
-        :format-compact="formatCompact"
-        @toggle-like="liked = !liked"
-        @toggle-share="shareOpen = !shareOpen"
-        @add-comment="addComment"
-      />
-
-      <BlogsReadBlogSidebar
-        class="read-blog-page__sidebar"
-        :article="article"
-        :related-articles="relatedArticles"
-      />
+    <div v-if="isLoading" class="read-blog-page__state" role="status" aria-live="polite">
+      <Icon name="i-ph-circle-notch" class="read-blog-page__state-icon" />
+      <span>{{ $t("pages.readBlogPage.loading") }}</span>
     </div>
+
+    <UAlert
+      v-else-if="articleNotFound || !article"
+      color="warning"
+      variant="soft"
+      icon="i-ph-warning-circle-fill"
+      class="read-blog-page__alert"
+    >
+      {{ $t("pages.readBlogPage.notFound") }}
+    </UAlert>
+
+    <template v-else>
+      <BlogsReadBlogHero
+        :article="article"
+        :format-compact="formatCompact"
+      />
+
+      <div class="read-blog-page__layout">
+        <BlogsReadBlogMain
+          class="read-blog-page__main"
+          :article="article"
+          :liked="liked"
+          :displayed-likes="displayedLikes"
+          :share-open="shareOpen"
+          :share-url="shareUrl"
+          :comments="comments"
+          :comments-loading="commentsLoading"
+          :commenting="commenting"
+          :current-user-name="currentUserName"
+          :current-user-avatar-url="currentUserAvatarUrl"
+          :comment-action-repository="commentActionRepository"
+          :format-compact="formatCompact"
+          @toggle-like="liked = !liked"
+          @toggle-share="shareOpen = !shareOpen"
+          @add-comment="addComment"
+        />
+
+        <BlogsReadBlogSidebar
+          class="read-blog-page__sidebar"
+          :article="article"
+          :related-articles="relatedArticles"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -52,14 +72,19 @@ const {
   articleNotFound,
   liked,
   shareOpen,
-  commentText,
   comments,
+  commentsLoading,
+  commenting,
   displayedLikes,
   relatedArticles,
   shareUrl,
   formatCompact,
   addComment,
   readingProgress,
+  isLoading,
+  currentUserName,
+  currentUserAvatarUrl,
+  commentActionRepository,
 } = useReadBlogPageVM()
 </script>
 
@@ -78,16 +103,29 @@ const {
   transition: width 0.1s ease;
 }
 
-.read-blog-page :deep(header) {
-  overflow: hidden;
+.read-blog-page__state,
+.read-blog-page__alert {
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
+  border-radius: 16px;
   background: #ffffff;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
-.read-blog-page :deep(header > .relative) {
-  border-radius: 0;
+.read-blog-page__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 240px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.read-blog-page__state-icon {
+  height: 18px;
+  width: 18px;
+  animation: read-blog-spin 0.8s linear infinite;
 }
 
 .read-blog-page__layout {
@@ -100,19 +138,10 @@ const {
   min-width: 0;
 }
 
-.read-blog-page :deep(.blog-reader-body) {
-  max-width: 760px;
-  margin: 0 auto;
-}
-
-.read-blog-page :deep(.blog-body-paragraph) {
-  color: #334155;
-  font-size: 17px;
-  line-height: 1.9;
-}
-
-.read-blog-page :deep(.first-paragraph::first-letter) {
-  color: #0000ff;
+@keyframes read-blog-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (min-width: 1024px) {
