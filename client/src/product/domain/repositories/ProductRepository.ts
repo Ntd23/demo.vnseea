@@ -9,4 +9,5 @@ export interface ProductRepository {
   getById(id: string): Promise<ProductRecord | null>
   create(draft: ProductEditorDraft): Promise<ProductRecord>
   update(id: string, draft: ProductEditorDraft): Promise<ProductRecord>
+  delete(id: string | number): Promise<{ success: boolean }>
 }
