@@ -1,8 +1,39 @@
 <?php
 require_once __DIR__ .  '/../assets/includes/sepay_core.php';
+if (!function_exists('Wo_SepayRequestToken')) {
+    function Wo_SepayRequestToken()
+    {
+        $authHeader = (string)(
+            $_SERVER['HTTP_AUTHORIZATION']
+            ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION']
+            ?? $_SERVER['Authorization']
+            ?? ''
+        );
+
+        if ($authHeader !== '') {
+            if (preg_match('/^\s*ApiKey\s+(.+)\s*$/i', $authHeader, $m)) {
+                return trim($m[1]);
+            }
+            if (preg_match('/^\s*Apikey\s+(.+)\s*$/i', $authHeader, $m)) {
+                return trim($m[1]);
+            }
+            if (preg_match('/^\s*Bearer\s+(.+)\s*$/i', $authHeader, $m)) {
+                return trim($m[1]);
+            }
+        }
+
+        return (string)(
+            $_GET['token']
+            ?? $_POST['token']
+            ?? $_SERVER['HTTP_X_SEPAY_TOKEN']
+            ?? $_SERVER['HTTP_X_WEBHOOK_TOKEN']
+            ?? ''
+        );
+    }
+}
 if ($f == 'sepay') {
     header('Content-Type: application/json; charset=utf-8');
-    $enabled       = ($wo['config']['sepay'] == 1);
+    $enabled       = in_array((string)($wo['config']['sepay'] ?? '0'), array('1', 'yes', 'true', 'on'), true);
     $mode          = $wo['config']['sepay_mode'] ?? 'live';
     $bankCode      = $wo['config']['sepay_bank_code'] ?? '';
     // var_dump($bankCode);
@@ -38,7 +69,13 @@ if ($f == 'sepay') {
     // NHỚ: chỉ bỏ qua CSRF cho webhook. Các endpoint khác (kể cả check) vẫn kiểm CSRF như bạn đã làm.
     if ($s === 'webhook') {
         // 1) Xác thực token
-        $resp = Wo_SepayReturnWebhook($wo, $sqlConnect, (string)($_GET['token'] ?? ''));
+        $requestToken = Wo_SepayRequestToken();
+        $resp = Wo_SepayReturnWebhook($wo, $sqlConnect, $requestToken);
+        @file_put_contents(__DIR__ . '/logs/sepay_webhook_result.log', '[' . date('c') . '] ' . json_encode([
+            'http' => $resp['http'] ?? 200,
+            'body' => $resp['body'] ?? 'ok',
+            'has_token' => $requestToken !== '',
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . PHP_EOL, FILE_APPEND);
         http_response_code($resp['http'] ?? 200);
 
         echo $resp['body'] ?? 'ok';

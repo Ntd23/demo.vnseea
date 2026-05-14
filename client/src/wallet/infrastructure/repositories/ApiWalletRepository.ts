@@ -31,6 +31,10 @@ export function createApiWalletRepository(): WalletRepository {
       return await client.post<WalletMutationResult, WalletSendDraft>(walletApiRoutes.send, input)
     },
     async createTopup(input: WalletTopupDraft) {
+      if (input.method === "sepay") {
+        return await client.post<WalletMutationResult, WalletTopupDraft>(walletApiRoutes.sepayQr, input)
+      }
+
       const methodIsUpload = Boolean(input.receiptFile)
 
       if (methodIsUpload) {
@@ -49,6 +53,9 @@ export function createApiWalletRepository(): WalletRepository {
         amount: input.amount,
         method: input.method,
       })
+    },
+    async checkSepayTopup(orderCode: string) {
+      return await client.get<WalletMutationResult>(walletApiRoutes.sepayCheck, { orderCode })
     },
   }
 }

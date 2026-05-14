@@ -9,7 +9,7 @@ export type WalletCurrencyRule = {
 export type WalletTopupMethod = {
   value: string
   label: string
-  type: "redirect" | "upload"
+  type: "redirect" | "upload" | "qr"
   note?: string
 }
 
@@ -67,6 +67,15 @@ export type WalletMutationResult = {
   message: string
   balance?: number
   redirectUrl?: string
+  paymentId?: number
+  amount?: number
+  orderCode?: string
+  qrUrl?: string
+  bankCode?: string
+  accountNumber?: string
+  accountName?: string
+  paid?: boolean
+  status?: string
 }
 
 export type WalletReceiveQr = {

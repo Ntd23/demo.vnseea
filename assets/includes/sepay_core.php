@@ -6,7 +6,7 @@ function Wo_SepayCreateOrderQr($userId, $amount, $wo, $sqlConnect)
 {
     $amount = max(1000, (int)$amount);
     if ($amount <= 0) return ['error' => 'Invalid amount'];
-    $enabled = (isset($wo['config']['sepay']) && (int)$wo['config']['sepay'] == 1);
+    $enabled = (isset($wo['config']['sepay']) && in_array((string)$wo['config']['sepay'], array('1', 'yes', 'true', 'on'), true));
     if (!$enabled) return ['error' => 'SePay is disabled by admin'];
     $bankAcc = trim($wo['config']['sepay_bank_acc'] ?? '');
     $bankCode = trim($wo['config']['sepay_bank_code'] ?? '');
@@ -38,6 +38,9 @@ function Wo_SepayCreateOrderQr($userId, $amount, $wo, $sqlConnect)
         'payment_id' => $payment_id,
         'order_code' => $order_code,
         'amount'     => (int)$amount,
+        'bank_code'  => $bankCode,
+        'account_number' => $bankAcc,
+        'account_name' => $accountName,
         'qr_url'     => $qr_url,
     ];
 }
@@ -51,6 +54,53 @@ function Wo_SepayCheck(string $order_code_raw, int $userId, $sqlConnect)
     $p = mysqli_fetch_assoc($q);                  // $row: array<string,mixed>|null
 
     if ((int)$p['customer_id'] !== (int)$userId) return ['error' => 'Forbidden', 'code' => 403];
+    if (strtolower((string)$p['status']) !== 'paid') {
+        $order_code_upper_sql = mysqli_real_escape_string($sqlConnect, strtoupper((string)$p['order_code']));
+        $amount = (int)$p['amount'];
+        $tq = mysqli_query(
+            $sqlConnect,
+            "SELECT sepay_id
+                FROM " . SEPAY_TRANSACTION . "
+                WHERE UPPER(reference_code)=UPPER('{$order_code_upper_sql}')
+                    AND transfer_amount={$amount}
+                    AND (matched_payment_id IS NULL OR matched_payment_id=0 OR matched_payment_id=" . (int)$p['id'] . ")
+                ORDER BY created_at DESC
+                LIMIT 1"
+        );
+        if ($tq && mysqli_num_rows($tq) > 0) {
+            $tx = mysqli_fetch_assoc($tq);
+            $sepayId_sql = mysqli_real_escape_string($sqlConnect, (string)$tx['sepay_id']);
+            mysqli_begin_transaction($sqlConnect);
+            $ok1 = mysqli_query(
+                $sqlConnect,
+                "UPDATE " . PAYMENT . " SET status='paid', updated_at=NOW()
+                    WHERE id=" . (int)$p['id'] . " AND status='pending'"
+            );
+            if ($ok1 && mysqli_affected_rows($sqlConnect) === 1) {
+                $ok2 = mysqli_query(
+                    $sqlConnect,
+                    "UPDATE " . T_USERS . " SET wallet = wallet + {$amount}
+                        WHERE user_id=" . (int)$p['customer_id']
+                );
+                if ($ok2) {
+                    mysqli_query(
+                        $sqlConnect,
+                        "UPDATE " . SEPAY_TRANSACTION . "
+                            SET matched_payment_id=" . (int)$p['id'] . ",
+                                matched_user_id=" . (int)$p['customer_id'] . "
+                            WHERE sepay_id='{$sepayId_sql}'"
+                    );
+                    mysqli_commit($sqlConnect);
+                    $p['status'] = 'paid';
+                    $p['updated_at'] = date('Y-m-d H:i:s');
+                } else {
+                    mysqli_rollback($sqlConnect);
+                }
+            } else {
+                mysqli_rollback($sqlConnect);
+            }
+        }
+    }
     return [
         'order_code'  => $p['order_code'],
         'amount'      => (int)$p['amount'],
@@ -79,7 +129,7 @@ function Wo_SepayReturnWebhook($wo, $sqlConnect, $givenToken)
     if (!$order_code || $amount <= 0 || !in_array($direction, ['IN', 'CREDIT'])) {
         return ['http' => 200, 'body' => 'ignore'];
     }
-    $toAcc = strtoupper((string)($data['account_number'] ?? $data['toAccount'] ?? ''));
+    $toAcc = strtoupper((string)($data['account_number'] ?? $data['accountNumber'] ?? $data['toAccount'] ?? ''));
     $cfgAcc = strtoupper(trim($wo['config']['sepay_bank_acc'] ?? ''));
     if ($toAcc && $cfgAcc && $toAcc !== $cfgAcc) {
         return ['http' => 200, 'body' => 'ignore bank'];
@@ -88,9 +138,9 @@ function Wo_SepayReturnWebhook($wo, $sqlConnect, $givenToken)
     if ($sepayId === '') { // fallback để vẫn idempotent khi provider ko trả id
         $sepayId = 'hash_' . substr(sha1($raw ?: ($content . $amount . $toAcc)), 0, 24);
     }
-    $bankCode      = strtoupper((string)($data['bankCode'] ?? $data['bank_code'] ?? $data['toBank'] ?? $wo['config']['sepay_bank_code'] ?? ''));
+    $bankCode      = strtoupper((string)($data['bankCode'] ?? $data['bank_code'] ?? $data['gateway'] ?? $data['toBank'] ?? $wo['config']['sepay_bank_code'] ?? ''));
 
-    $accountNumber = (string)($data['account_number'] ?? $data['toAccount'] ?? $wo['config']['sepay_bank_acc'] ?? '');
+    $accountNumber = (string)($data['account_number'] ?? $data['accountNumber'] ?? $data['toAccount'] ?? $wo['config']['sepay_bank_acc'] ?? '');
     $transferType  = $direction; // đã chuẩn hoá ở trên
     $transferAmt   = (int)$amount;
     $referenceCode = $order_code;

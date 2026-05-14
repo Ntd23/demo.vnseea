@@ -15,6 +15,26 @@
       </UBadge>
     </div>
 
+    <div v-if="methods.length" class="mt-5 grid gap-3 sm:grid-cols-2">
+      <button
+        v-for="method in methods"
+        :key="method.value"
+        type="button"
+        class="flex min-h-20 items-center gap-3 rounded-2xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-60"
+        :class="method.value === draft.method ? 'border-[var(--border-strong)] bg-[var(--bg-surface-active)]' : 'border-[var(--border-light)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)]'"
+        :disabled="disabled"
+        @click="selectMethod(method.value)"
+      >
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--bg-muted)] text-[var(--text-brand)]">
+          <Icon :name="methodIcon(method.value)" class="h-5 w-5" />
+        </span>
+        <span class="min-w-0">
+          <span class="block text-title-primary">{{ method.label }}</span>
+          <span class="block text-caption-secondary">{{ methodDescription(method.value) }}</span>
+        </span>
+      </button>
+    </div>
+
     <div class="mt-5 grid gap-4 md:grid-cols-2">
       <UFormField :label="t('pages.withdrawalPage.withdrawMethod')">
         <USelect
@@ -146,6 +166,29 @@ const availableLabel = computed(() =>
   }),
 )
 
+function selectMethod(method: string) {
+  draft.method = method
+  localError.value = ""
+}
+
+function methodIcon(method: string) {
+  if (method === "paypal") return "i-ph-paypal-logo-duotone"
+  if (method === "bank") return "i-ph-bank-duotone"
+  if (method === "sepay") return "i-ph-qr-code-duotone"
+  return "i-ph-wallet-duotone"
+}
+
+function methodDescription(method: string) {
+  if (method === "paypal") return t("pages.withdrawalPage.paypalMethodHint")
+  if (method === "bank") return t("pages.withdrawalPage.bankMethodHint")
+  if (method === "sepay") return t("pages.withdrawalPage.sepayMethodHint")
+  return t("pages.withdrawalPage.otherMethodHint")
+}
+
+function hasBlank(...values: Array<string | undefined>) {
+  return values.some(value => !value?.trim())
+}
+
 watch(
   () => props.methods,
   (methods) => {
@@ -181,6 +224,24 @@ function submit() {
 
   if (draft.amount > props.balance) {
     localError.value = t("pages.withdrawalPage.errorMaximum")
+    return
+  }
+
+  if (draft.method === "paypal") {
+    const email = draft.paypalEmail?.trim() ?? ""
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      localError.value = t("pages.withdrawalPage.errorPaypalEmail")
+      return
+    }
+  }
+  else if (draft.method === "bank") {
+    if (hasBlank(draft.iban, draft.country, draft.fullName, draft.swiftCode, draft.address)) {
+      localError.value = t("pages.withdrawalPage.errorBankDetails")
+      return
+    }
+  }
+  else if (!draft.transferTo?.trim()) {
+    localError.value = t("pages.withdrawalPage.errorTransferTo")
     return
   }
 
