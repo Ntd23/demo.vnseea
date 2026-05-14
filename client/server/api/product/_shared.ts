@@ -4,34 +4,56 @@ import { createError, getCookie, type H3Event } from "h3"
 import { getBackendBaseCandidates } from "../../utils/backend-api-client"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import type {
+  ProductCategoryOption,
   ProductListing,
   ProductListingCategory,
   ProductMarketplaceResponse,
+  ProductSubCategoryOption,
 } from "../../../src/product/domain/types/product-marketplace.types"
 import type { ProductRecord, ProductCategory, ProductCondition, ProductCurrency } from "../../../src/product/domain/types/product-editor.types"
 import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 type BackendProduct = {
   id?: number | string
+  post_id?: number | string
+  seo_id?: string
+  url?: string
   name?: string
   description?: string
   price?: number | string
+  price_format?: string
   currency?: string | number
+  currency_code?: string
+  currency_symbol?: string
+  currency_rule?: {
+    decimals?: number | string
+    decimal_sep?: string
+    thousand_sep?: string
+  }
   location?: string
   category?: string | number
   category_name?: string
+  sub_category?: string | number
+  product_sub_category?: string
   type?: number | string
   time?: number | string
   time_text?: string
   distance?: number | string
   rating?: number | string
+  units?: number | string
+  added_to_cart?: number | string
+  is_owner?: number | string
+  can_contact_seller?: number | string
+  can_add_to_cart?: number | string
   images?: Array<string | { id?: number | string; image?: string; image_org?: string }>
   seller?: {
+    id?: number | string
     user_id?: number | string
     name?: string
     username?: string
   }
   user_data?: {
+    id?: number | string
     user_id?: number | string
     name?: string
     username?: string
@@ -41,6 +63,9 @@ type BackendProduct = {
 type BackendProductsResponse = {
   api_status?: number | string
   products?: BackendProduct[]
+  products_categories?: Record<string, string> | string[]
+  products_sub_categories?: Record<string, Array<{ id?: number | string; lang?: string }>>
+  distance_filter_available?: number | string
   message?: string
   errors?: { error_text?: string }
 }
@@ -61,6 +86,11 @@ const categoryVisuals: Record<ProductListingCategory, { icon: string; background
   food: { icon: "i-ph-bowl-food", background: "linear-gradient(135deg,#7c2d12 0%,#ea580c 40%,#fdba74 100%)" },
 }
 
+const defaultVisual = {
+  icon: "i-ph-storefront",
+  background: "linear-gradient(135deg,#334155 0%,#64748b 48%,#e2e8f0 100%)",
+}
+
 const asNumber = (value: unknown, fallback = 0) => {
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : fallback
@@ -72,6 +102,8 @@ const asString = (value: unknown, fallback = "") => {
   return fallback
 }
 
+const isNumericString = (value: string) => /^\d+$/.test(value.trim())
+
 const stripHtml = (value: unknown) =>
   asString(value).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
 
@@ -79,6 +111,9 @@ const normalizeCurrency = (value: unknown) => {
   const currency = asString(value, "VND").toUpperCase()
   return /^[A-Z]{3}$/.test(currency) ? currency : "VND"
 }
+
+const getCategoryVisuals = (category: ProductListingCategory) =>
+  categoryVisuals[category] || defaultVisual
 
 const inferCategory = (product: BackendProduct): ProductListingCategory => {
   const source = `${asString(product.category_name)} ${asString(product.category)}`.toLowerCase()
@@ -114,24 +149,90 @@ export const normalizeProductsResponse = (
   }
 
   const products = Array.isArray(response.products) ? response.products : []
+  const categoryMap = new Map<string, ProductCategoryOption>()
+  const subCategoryMap = new Map<string, ProductSubCategoryOption>()
+
+  Object.entries(response.products_categories ?? {}).forEach(([value, label]) => {
+    const categoryId = asString(value)
+    const categoryLabel = asString(label)
+
+    if (categoryId && categoryLabel && !isNumericString(categoryLabel)) {
+      categoryMap.set(categoryId, {
+        value: categoryId,
+        label: categoryLabel,
+      })
+    }
+  })
+
+  Object.entries(response.products_sub_categories ?? {}).forEach(([parentId, subCategories]) => {
+    if (!Array.isArray(subCategories)) return
+
+    subCategories.forEach((subCategory) => {
+      const subCategoryId = asString(subCategory.id)
+      const subCategoryLabel = asString(subCategory.lang)
+
+      if (parentId && subCategoryId && subCategoryLabel) {
+        subCategoryMap.set(subCategoryId, {
+          value: subCategoryId,
+          label: subCategoryLabel,
+          parentId,
+        })
+      }
+    })
+  })
+
   const items: ProductListing[] = products.map((product) => {
     const category = inferCategory(product)
-    const visuals = categoryVisuals[category]
+    const visuals = getCategoryVisuals(category)
     const seller = product.seller || product.user_data
     const time = asNumber(product.time)
     const postedHoursAgo = time > 0 ? Math.max(0, Math.round((Date.now() / 1000 - time) / 3600)) : 0
+    const categoryId = asString(product.category, category)
+    const categoryLabel = asString(product.category_name) || categoryId
+    const subCategoryId = asString(product.sub_category)
+    const subCategoryLabel = asString(product.product_sub_category)
+    const sellerId = asNumber(seller?.id || seller?.user_id)
+    const stock = asNumber(product.units)
+    const mine = asNumber(product.is_owner) === 1
+
+    if (categoryId && categoryLabel && !isNumericString(categoryLabel)) {
+      const existingCategory = categoryMap.get(categoryId)
+
+      categoryMap.set(categoryId, {
+        value: categoryId,
+        label: existingCategory?.label || categoryLabel,
+      })
+    }
+
+    if (subCategoryId && subCategoryLabel) {
+      subCategoryMap.set(subCategoryId, {
+        value: subCategoryId,
+        label: subCategoryLabel,
+        parentId: categoryId,
+      })
+    }
 
     return {
       id: asNumber(product.id),
+      postId: asNumber(product.post_id),
+      seoId: asString(product.seo_id),
+      href: asString(product.url) || (asString(product.seo_id) ? `/post/${asString(product.seo_id)}` : `/products`),
       title: asString(product.name),
       seller: asString(seller?.name) || asString(seller?.username),
+      sellerId,
       price: asNumber(product.price),
-      currency: normalizeCurrency(product.currency),
+      currency: normalizeCurrency(product.currency_code || product.currency),
+      currencySymbol: asString(product.currency_symbol),
+      currencyRule: product.currency_rule,
+      priceFormat: asString(product.price_format),
       imageUrl: getProductImage(event, product),
       location: asString(product.location),
       distanceKm: asNumber(product.distance),
       category,
-      categoryLabel: asString(product.category_name) || asString(product.category, category),
+      categoryId,
+      categoryLabel,
+      subCategoryId,
+      subCategoryLabel,
       condition: asNumber(product.type) === 1 ? "Used" : "New",
       description: stripHtml(product.description),
       background: visuals.background,
@@ -139,7 +240,11 @@ export const normalizeProductsResponse = (
       postedHoursAgo,
       postedLabel: asString(product.time_text),
       rating: asNumber(product.rating),
-      mine: false,
+      stock,
+      addedToCart: asNumber(product.added_to_cart) > 0,
+      canContactSeller: asNumber(product.can_contact_seller) === 1,
+      canAddToCart: asNumber(product.can_add_to_cart) === 1,
+      mine,
     }
   }).filter(product => product.id > 0 && product.title)
 
@@ -149,6 +254,9 @@ export const normalizeProductsResponse = (
     items,
     hasMore: items.length >= limit,
     nextOffset: lastItem?.id ?? null,
+    categories: [...categoryMap.values()],
+    subCategories: [...subCategoryMap.values()],
+    distanceFilterAvailable: asNumber(response.distance_filter_available) === 1,
   }
 }
 
