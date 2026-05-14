@@ -45,7 +45,7 @@
             class="comment-composer__send"
             :disabled="submitting || !canSubmit"
             :aria-label="$t('feed.commentComposer.submit')"
-          >
+          />
             <Icon v-if="submitting" name="i-lucide-loader-2" class="comment-composer__send-icon animate-spin" />
             <Icon v-else name="i-lucide-send" class="comment-composer__send-icon" />
         <div class="comment-composer__main-row">
@@ -97,9 +97,9 @@
         <div v-if="showMentionSuggestions" class="comment-composer__mention-popover">
           <div v-if="mentionLoading" class="comment-composer__mention-state">
             <Icon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
-            <span>Đang tìm người dùng...</span>
+            <span>{{ $t("feed.commentComposer.mentionLoading") }}</span>
           </div>
-          <template v-else>
+          <template v-else-if="mentionQuery.trim().length > 0">
             <button
               v-for="user in mentionSuggestions"
               :key="user.id"
@@ -117,8 +117,11 @@
               </span>
             </button>
           </template>
-          <div v-if="!mentionLoading && mentionSuggestions.length === 0" class="comment-composer__mention-state">
-            Không tìm thấy người dùng theo first_name.
+          <div v-if="!mentionLoading && mentionQuery.trim().length === 0" class="comment-composer__mention-state">
+            {{ $t("feed.commentComposer.mentionTypeToSearch") }}
+          </div>
+          <div v-else-if="!mentionLoading && mentionSuggestions.length === 0" class="comment-composer__mention-state">
+            {{ $t("feed.commentComposer.mentionEmpty") }}
           </div>
         </div>
 
@@ -198,7 +201,8 @@
           </template>
         </div>
       </div>
-
+</div>
+</div>
       <div class="comment-composer__toolbar">
         <div class="comment-composer__tools">
           <button
@@ -274,23 +278,8 @@
 </template>
 
 <script setup lang="ts">
-import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
-import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
+import { useFeedMentionSearch } from "../../application/composables/useFeedMentionSearch"
 import type { FeedCommentAttachment, FeedCommentSubmitPayload } from "../../domain/types/feed.types"
-
-type MentionSearchResult = {
-  id: string
-  title: string
-  subtitle?: string
-  username?: string
-  firstName?: string
-  avatarUrl?: string
-  initials: string
-}
-
-type MentionSearchResponse = {
-  users: MentionSearchResult[]
-}
 
 const props = withDefaults(defineProps<{
   currentUserName?: string
@@ -309,24 +298,9 @@ const emit = defineEmits<{
 }>()
 const { t } = useI18n()
 const toast = useToast()
-const apiClient = useNuxtApiClient()
 
 const emojiOptions = ["😀", "😄", "😍", "😂", "😮", "😢", "😡", "👍", "❤️"]
 const message = ref("")
-const mentionQuery = ref("")
-const mentionStartIndex = ref<number | null>(null)
-const mentionCandidates = ref<Array<{
-  id: string
-  name: string
-  username: string
-  firstName: string
-  avatarUrl: string
-  initials: string
-}>>([])
-const mentionLoading = ref(false)
-const mentionSelectionLocked = ref(false)
-const mentionCandidatesLoaded = ref(false)
-const selectedMentionUsernames = ref<Record<string, string>>({})
 const emojiOpen = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
 const gifInputRef = ref<HTMLInputElement | null>(null)
@@ -390,27 +364,26 @@ const currentUserInitials = computed(() => {
 
   return value
 })
-const mentionSuggestions = computed(() => {
-  const keyword = mentionQuery.value.trim().toLowerCase()
-  const users = keyword
-    ? mentionCandidates.value.filter(user => user.firstName.toLowerCase().includes(keyword))
-    : mentionCandidates.value
 
-  return users.slice(0, 6)
+const textareaElement = computed(() => getTextareaElement())
+const {
+  mentionQuery,
+  mentionLoading,
+  mentionSuggestions,
+  showMentionSuggestions,
+  highlightedMentionSegments: highlightedMessageSegments,
+  updateMentionQuery,
+  handleMentionKeyup: handleTextareaKeyup,
+  closeMentionSuggestions,
+  selectMention,
+  clearSelectedMentions,
+} = useFeedMentionSearch({
+  text: message,
+  textarea: textareaElement,
 })
-const showMentionSuggestions = computed(() => mentionStartIndex.value !== null)
-const hasHighlightedMentions = computed(() => Object.keys(selectedMentionUsernames.value).length > 0)
-const highlightedMessageSegments = computed(() =>
-  message.value
-    .split(/(@[^\s@]{1,40})/g)
-    .filter(segment => segment.length > 0)
-    .map((segment, index) => ({
-      key: `${index}:${segment}`,
-      text: segment,
-      isMention: Boolean(selectedMentionUsernames.value[segment]),
-    })),
+const hasHighlightedMentions = computed(() =>
+  highlightedMessageSegments.value.some(segment => segment.isMention),
 )
-let mentionRequestId = 0
 
 function revokeAttachmentUrl() {
   if (attachmentPreview.value?.url?.startsWith("blob:")) {
@@ -507,180 +480,6 @@ function clearAttachment() {
   resetComposerState()
 }
 
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-}
-
-function toBackendMentionText(text: string) {
-  return Object.entries(selectedMentionUsernames.value).reduce((nextText, [displayMention, username]) => {
-    const mentionPattern = new RegExp(`(^|\\s)${escapeRegExp(displayMention)}(?=\\s|$)`, "g")
-
-    return nextText.replace(mentionPattern, `$1@${username}`)
-  }, text)
-}
-
-function extractMentionQuery(text = message.value, caret = getTextareaElement()?.selectionStart ?? text.length) {
-  if (mentionSelectionLocked.value) {
-    return
-  }
-
-  const beforeCaret = text.slice(0, caret)
-  const match = beforeCaret.match(/(^|\s)@([^\s@]{0,40})$/)
-
-  if (!match) {
-    mentionStartIndex.value = null
-    mentionQuery.value = ""
-    return
-  }
-
-  const nextStartIndex = caret - (match[2]?.length ?? 0) - 1
-  const nextQuery = match[2] ?? ""
-  const mentionStartChanged = mentionStartIndex.value !== nextStartIndex
-
-  mentionStartIndex.value = nextStartIndex
-  mentionQuery.value = nextQuery
-
-  if (mentionStartChanged && mentionCandidates.value.length === 0) {
-    void loadMentionCandidates()
-  }
-}
-
-function updateMentionQuery(event?: Event) {
-  const eventTextarea = event?.target instanceof HTMLTextAreaElement
-    ? event.target
-    : null
-  const textarea = eventTextarea ?? getTextareaElement()
-  const text = textarea?.value ?? message.value
-
-  extractMentionQuery(text, textarea?.selectionStart ?? text.length)
-}
-
-function handleTextareaKeyup(event: KeyboardEvent) {
-  if (event.key === "Escape") {
-    return
-  }
-
-  updateMentionQuery(event)
-}
-
-function closeMentionSuggestions() {
-  mentionRequestId += 1
-  mentionStartIndex.value = null
-  mentionQuery.value = ""
-  mentionLoading.value = false
-}
-
-function getMentionUsername(user: MentionSearchResult) {
-  const fromUsername = user.username?.trim()
-  if (fromUsername) {
-    return fromUsername.replace(/^@/, "")
-  }
-
-  const fromSubtitle = user.subtitle?.trim().replace(/^@/, "")
-  if (fromSubtitle) {
-    return fromSubtitle
-  }
-
-  return user.title
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9_]+/g, "_")
-    .replace(/^_+|_+$/g, "")
-}
-
-function normalizeMentionUsers(users: MentionSearchResult[]) {
-  const seenUsers = new Set<string>()
-
-  return users
-    .map(user => ({
-      id: user.id,
-      name: user.title,
-      username: getMentionUsername(user),
-      firstName: user.firstName || user.title.split(/\s+/)[0] || "",
-      avatarUrl: user.avatarUrl || "",
-      initials: user.initials || (user.title[0]?.toUpperCase() ?? "U"),
-    }))
-    .filter((user) => {
-      const uniqueKey = user.username || user.id
-
-      if (!user.firstName || !user.username || seenUsers.has(uniqueKey)) {
-        return false
-      }
-
-      seenUsers.add(uniqueKey)
-      return true
-    })
-}
-
-async function loadMentionCandidates() {
-  if (mentionCandidatesLoaded.value || mentionLoading.value) {
-    return
-  }
-
-  const requestId = ++mentionRequestId
-  mentionLoading.value = true
-
-  try {
-    const response = await apiClient.get<MentionSearchResponse>(apiRoutes.search.index, {
-      q: "",
-      limit: 50,
-    })
-
-    if (requestId !== mentionRequestId) {
-      return
-    }
-
-    mentionCandidates.value = normalizeMentionUsers(response.users ?? [])
-    mentionCandidatesLoaded.value = true
-  }
-  catch {
-    if (requestId !== mentionRequestId) {
-      return
-    }
-
-    mentionCandidates.value = []
-  }
-  finally {
-    if (requestId === mentionRequestId) {
-      mentionLoading.value = false
-    }
-  }
-}
-
-async function selectMention(user: { firstName: string; name: string; username: string }) {
-  const start = mentionStartIndex.value
-  const textarea = getTextareaElement()
-
-  if (start === null || !textarea) {
-    return
-  }
-
-  mentionSelectionLocked.value = true
-  const caret = textarea.selectionStart ?? message.value.length
-  const beforeMention = message.value.slice(0, start)
-  const afterMention = message.value.slice(caret)
-  const mentionUsername = user.username.trim().replace(/^@/, "")
-  const mentionDisplayName = (user.firstName || user.name || mentionUsername)
-    .trim()
-    .replace(/\s+/g, "_")
-    .replace(/^@/, "")
-  const displayMention = `@${mentionDisplayName}`
-  const inserted = `${displayMention} `
-  const nextCaret = beforeMention.length + inserted.length
-
-  selectedMentionUsernames.value = {
-    ...selectedMentionUsernames.value,
-    [displayMention]: mentionUsername,
-  }
-  message.value = `${beforeMention}${inserted}${afterMention}`
-  closeMentionSuggestions()
-
-  await nextTick()
-  textarea.focus()
-  textarea.setSelectionRange(nextCaret, nextCaret)
-  mentionSelectionLocked.value = false
-}
-
 function insertEmoji(emoji: string) {
   message.value = `${message.value}${emoji}`
   emojiOpen.value = false
@@ -703,7 +502,6 @@ function insertMentionTrigger() {
     message.value = `${message.value}${separator}@`
   }
 
-  void loadMentionCandidates()
   nextTick(() => {
     focusComposer()
     updateMentionQuery()
@@ -928,7 +726,7 @@ function submitComment() {
 
   emit("submit", {
     text: displayText,
-    backendText: toBackendMentionText(displayText),
+    backendText: displayText,
     imageFile: imageFile.value,
     gifFile: gifFile.value,
     audioFile: audioFile.value,
@@ -936,7 +734,7 @@ function submitComment() {
   })
 
   message.value = ""
-  selectedMentionUsernames.value = {}
+  clearSelectedMentions()
   closeMentionSuggestions()
   emojiOpen.value = false
   resetComposerState()
