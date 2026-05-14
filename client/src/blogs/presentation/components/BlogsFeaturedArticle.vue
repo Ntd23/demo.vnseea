@@ -39,8 +39,18 @@
 
       <div class="blogs-featured__footer">
         <div class="blogs-featured__author">
-          <span class="blogs-featured__avatar" :style="{ background: article.authorGradient }">
-            {{ article.authorInitials }}
+          <span class="blogs-featured__avatar">
+            <NuxtImg
+              v-if="article.authorAvatarUrl"
+              :src="article.authorAvatarUrl"
+              :alt="article.author"
+              class="blogs-featured__avatar-image"
+              width="76"
+              height="76"
+              sizes="38px"
+              loading="lazy"
+            />
+            <Icon v-else name="i-ph-user-circle-fill" class="h-6 w-6" />
           </span>
           <span class="min-w-0">
             <span class="blogs-featured__author-name">{{ article.author }}</span>
@@ -72,8 +82,7 @@ const props = defineProps<{
     title: string
     categoryLabel: string
     author: string
-    authorInitials: string
-    authorGradient: string
+    authorAvatarUrl: string
     publishedAt: string
     views: number
     readMinutes: number
@@ -229,15 +238,21 @@ const handleImageError = () => {
 
 .blogs-featured__avatar {
   display: flex;
+  overflow: hidden;
   height: 38px;
   width: 38px;
   flex: 0 0 38px;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 800;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.blogs-featured__avatar-image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
 }
 
 .blogs-featured__author-name,

@@ -203,6 +203,11 @@
                 <FeedCommentList
                   v-if="localComments.length > 0"
                   :comments="localComments"
+                  enable-reply
+                  enable-reaction
+                  :current-user-name="currentAuthUserStore.user?.name"
+                  :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+                  :comment-action-repository="commentActionRepository"
                 />
                 <div v-else class="watch-modal__comments-empty">
                   <Icon name="i-ph-chat-circle-text" class="h-10 w-10 opacity-20" />
@@ -247,7 +252,7 @@ const emit = defineEmits<{
   close: []
   prev: []
   next: []
-  select: [postId: string]
+  select: [postId: number]
 }>()
 
 const videoRef = ref<HTMLVideoElement | null>(null)
@@ -268,6 +273,7 @@ const {
   activePostReactionAsset,
   activePostReactionLabel,
   previewReactions,
+  commentActionRepository,
   openPostReactionTray,
   closePostReactionTray,
   handlePostReactionButtonClick,

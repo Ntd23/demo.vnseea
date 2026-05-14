@@ -51,8 +51,10 @@
         :replies="comment.replies"
         :replies-count="comment.repliesCount"
         :enable-reply="enableReply"
+        :enable-reaction="enableReaction"
         :current-user-name="currentUserName"
         :current-user-avatar-url="currentUserAvatarUrl"
+        :comment-action-repository="commentActionRepository"
       />
     </div>
 
@@ -71,16 +73,21 @@
 
 <script setup lang="ts">
 import type { FeedCommentRecord } from "../../domain/types/feed.types"
+import type { FeedCommentActionRepository } from "../../application/view-models/useFeedCommentItemVM"
 import FeedCommentItem from "./CommentItem.vue"
 
 const { t } = useI18n()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   comments: FeedCommentRecord[]
   enableReply?: boolean
+  enableReaction?: boolean
   currentUserName?: string
   currentUserAvatarUrl?: string
-}>()
+  commentActionRepository?: FeedCommentActionRepository
+}>(), {
+  enableReaction: true,
+})
 
 const sort = ref<"top" | "newest">("top")
 const visibleCount = ref(3)

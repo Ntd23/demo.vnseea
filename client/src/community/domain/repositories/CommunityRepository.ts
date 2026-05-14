@@ -3,11 +3,13 @@
 import type {
   FeedPostsResponse,
 } from "../../../feed/domain/types/feed.types"
+import type { UserRecord } from "../../../shared-kernel/domain/types/user.types"
 import type {
   CommunityDraft,
   CommunityGroupRecord,
   CommunityGroupSettingsDraft,
   CommunityGroupTab,
+  CommunityPageFollowerRecord,
   CommunityPageRecord,
   CommunityPageSettingsDraft,
   CommunityPageTab,
@@ -25,6 +27,10 @@ export interface CommunityRepository {
   createPage(input: CommunityDraft): Promise<CommunityPageRecord>
   updatePage(slug: string, input: CommunityPageSettingsDraft): Promise<CommunityPageRecord>
   followPage(slug: string): Promise<CommunityPageRecord>
+  likePage(slug: string): Promise<CommunityPageRecord>
+  getPageFollowers(slug: string): Promise<CommunityPageFollowerRecord[]>
+  getPageInvites(slug: string): Promise<UserRecord[]>
+  sendPageInvite(slug: string, userId: number): Promise<void>
   getPagePosts(slug: string, input?: { limit?: number; afterPostId?: number }): Promise<FeedPostsResponse>
   deletePage(id: number, password: string): Promise<void>
   deleteGroup(slug: string, password: string): Promise<void>

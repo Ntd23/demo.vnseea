@@ -4,11 +4,13 @@ import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { FeedPostsResponse } from "../../../feed/domain/types/feed.types"
 import type { CommunityRepository } from "../../domain/repositories/CommunityRepository"
+import type { UserRecord } from "../../../shared-kernel/domain/types/user.types"
 import type {
   CommunityDraft,
   CommunityGroupRecord,
   CommunityGroupSettingsDraft,
   CommunityGroupTab,
+  CommunityPageFollowerRecord,
   CommunityPageRecord,
   CommunityPageSettingsDraft,
   CommunityPageTab,
@@ -109,6 +111,18 @@ export function createApiCommunityRepository(): CommunityRepository {
     },
     async followPage(slug: string) {
       return await client.post<CommunityPageRecord>(apiRoutes.community.pageFollow(slug))
+    },
+    async likePage(slug: string) {
+      return await client.post<CommunityPageRecord>(apiRoutes.community.pageLike(slug))
+    },
+    async getPageFollowers(slug: string) {
+      return await client.get<CommunityPageFollowerRecord[]>(apiRoutes.community.pageFollowers(slug))
+    },
+    async getPageInvites(slug: string) {
+      return await client.get<UserRecord[]>(apiRoutes.community.pageInvites(slug))
+    },
+    async sendPageInvite(slug: string, userId: number) {
+      await client.post<void, { userId: number }>(apiRoutes.community.pageInvite(slug), { userId })
     },
     async getPagePosts(slug, input) {
       return await client.get<FeedPostsResponse>(apiRoutes.community.pagePosts(slug), {

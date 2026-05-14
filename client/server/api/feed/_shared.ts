@@ -1616,7 +1616,9 @@ export async function runCommentAction(
         "comments",
         {
           type: input.target === "reply" ? "reaction_reply" : "reaction_comment",
-          reaction: input.reaction.toLowerCase(),
+          reaction: isFeedStoryReaction(input.reaction)
+            ? feedStoryReactionBackendIds[input.reaction]
+            : input.reaction,
           ...(input.target === "reply"
             ? { reply_id: input.targetId }
             : { comment_id: input.targetId }),

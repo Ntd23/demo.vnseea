@@ -25,13 +25,15 @@ type FeedCommentItemVMProps = {
   reactionTarget?: "comment" | "reply"
 }
 
+export type FeedCommentActionRepository = Pick<ReturnType<typeof createApiFeedRepository>, "getCommentReplies" | "runCommentAction">
+
 export function useFeedCommentItemVM(
   props: FeedCommentItemVMProps,
-  repository = createApiFeedRepository(),
+  repository: FeedCommentActionRepository = createApiFeedRepository(),
 ) {
   const { t } = useI18n()
 
-  const replyThreadOpen = ref(false)
+  const replyThreadOpen = ref((props.replies?.length ?? 0) > 0)
   const replyLoading = ref(false)
   const replySubmitting = ref(false)
   const reacting = ref(false)
@@ -45,6 +47,9 @@ export function useFeedCommentItemVM(
     () => props.replies,
     (value) => {
       replyItems.value = value ? [...value] : []
+      if (value && value.length > 0) {
+        replyThreadOpen.value = true
+      }
     },
     { deep: true },
   )
@@ -86,9 +91,7 @@ export function useFeedCommentItemVM(
     const count = replyItems.value.length || props.repliesCount || 0
 
     if (count > 0) {
-      return replyThreadOpen.value
-        ? t("navigation.leftSidebar.showLess")
-        : t("navigation.leftSidebar.showMore")
+      return `${t("feed.commentItem.reply")} · ${count}`
     }
 
     return t("feed.commentItem.reply")
@@ -223,7 +226,21 @@ export function useFeedCommentItemVM(
       }
 
       replyThreadOpen.value = true
-      replyItems.value = [...replyItems.value, reply]
+
+      if (props.id) {
+        const savedReplies = await repository.getCommentReplies({
+          commentId: props.id,
+          limit: 10,
+          offset: 0,
+        })
+
+        replyItems.value = savedReplies.some(item => item.id === reply.id)
+          ? savedReplies
+          : [...savedReplies, reply]
+      }
+      else {
+        replyItems.value = [...replyItems.value, reply]
+      }
     }
     finally {
       replySubmitting.value = false

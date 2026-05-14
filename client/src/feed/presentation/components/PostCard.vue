@@ -175,8 +175,10 @@
           <FeedCommentList
             :comments="localComments"
             enable-reply
+            enable-reaction
             :current-user-name="currentAuthUserStore.user?.name"
             :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+            :comment-action-repository="commentActionRepository"
           />
           <FeedCommentComposer
             ref="commentComposerRef"
@@ -266,6 +268,7 @@ const {
   actionState,
   actionMessage,
   commenting,
+  commentActionRepository,
   postAnchorId,
   postReactionOptions,
   activePostReactionAsset,

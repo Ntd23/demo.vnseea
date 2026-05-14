@@ -32,7 +32,7 @@
           :format-compact="formatCompact"
         />
 
-        <div v-if="visibleArticles.length > 0" class="grid gap-4 md:grid-cols-2">
+        <div v-if="visibleArticles.length > 0" class="grid gap-4 sm:grid-cols-2">
           <BlogsBlogArticleCard
             v-for="article in visibleArticles"
             :key="article.id"
@@ -51,11 +51,11 @@
         />
       </section>
 
-      <BlogsSidebar
+      <!-- <BlogsSidebar
         :trending-topics="trendingTopics"
         :featured-authors="featuredAuthors"
         @select-category="selectCategory"
-      />
+      /> -->
     </div>
   </div>
 </template>

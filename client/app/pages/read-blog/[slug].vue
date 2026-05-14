@@ -18,10 +18,10 @@ const currentSlug = computed(() => String(route.params.slug ?? ""))
 const canonicalUrl = computed(() => new URL(appRoutes.readBlog(currentSlug.value), requestURL.origin).toString())
 
 useSeoMeta({
-  title: () => `${t("pages.readBlogPage.notFound")} | VNSEEA`,
-  description: () => t("pages.readBlogPage.notFoundDescription"),
-  ogTitle: () => `${t("pages.readBlogPage.notFound")} | VNSEEA`,
-  ogDescription: () => t("pages.readBlogPage.notFoundDescription"),
+  title: () => `Blog | VNSEEA`,
+  description: () => t("pages.blogsPage.heroDescription"),
+  ogTitle: () => `Blog | VNSEEA`,
+  ogDescription: () => t("pages.blogsPage.heroDescription"),
   ogUrl: () => canonicalUrl.value,
   ogType: "article",
 })

@@ -202,6 +202,7 @@
       <div class="comment-composer__toolbar">
         <div class="comment-composer__tools">
           <button
+            v-if="enableAttachments"
             class="comment-composer__tool"
             type="button"
             title="Tag bạn bè"
@@ -213,6 +214,7 @@
           </button>
 
           <button
+            v-if="enableAttachments"
             class="comment-composer__tool"
             type="button"
             :title="$t('feed.commentComposer.tooltipGif')"
@@ -223,6 +225,19 @@
             {{ $t("feed.commentComposer.tooltipGif") }}
           </button>
 
+          <button
+            v-if="enableAttachments"
+            class="comment-composer__tool"
+            :class="{ 'comment-composer__tool--recording': recording }"
+            type="button"
+            :title="$t('feed.commentComposer.tooltipVoice')"
+            :aria-label="$t('feed.commentComposer.tooltipVoice')"
+            :disabled="submitting"
+            @click="toggleRecording"
+          >
+            <Icon :name="recording ? 'i-ph-stop-circle-fill' : 'i-ph-microphone-duotone'" class="h-5 w-5" />
+          </button>
+        </div>
       <!-- Ép Nuxt Icon nhận diện để đóng gói vào bundle local -->
       <div class="hidden" aria-hidden="true">
         <Icon name="i-ph-user-circle-duotone" />
@@ -239,6 +254,7 @@
       </div>
 
       <input
+        v-if="enableAttachments"
         ref="imageInputRef"
         class="comment-composer__file"
         type="file"
@@ -246,6 +262,7 @@
         @change="selectImageFile"
       >
       <input
+        v-if="enableAttachments"
         ref="gifInputRef"
         class="comment-composer__file"
         type="file"
@@ -279,10 +296,12 @@ const props = withDefaults(defineProps<{
   currentUserName?: string
   currentUserAvatarUrl?: string
   submitting?: boolean
+  enableAttachments?: boolean
 }>(), {
   currentUserName: "",
   currentUserAvatarUrl: "",
   submitting: false,
+  enableAttachments: true,
 })
 
 const emit = defineEmits<{
@@ -334,7 +353,7 @@ let recordingTimer: ReturnType<typeof setInterval> | null = null
 
 const trimmedMessage = computed(() => message.value.trim())
 const canSubmit = computed(() =>
-  Boolean(trimmedMessage.value || imageFile.value || gifFile.value || audioFile.value),
+  Boolean(trimmedMessage.value || (props.enableAttachments && (imageFile.value || gifFile.value || audioFile.value))),
 )
 const recordingDurationLabel = computed(() => formatRecordingDuration(recordingElapsedMs.value))
 const audioProgressPercent = computed(() => {
