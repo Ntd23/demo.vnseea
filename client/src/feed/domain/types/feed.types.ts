@@ -34,6 +34,7 @@ export type FeedCommentAttachment = {
 
 export type FeedCommentSubmitPayload = {
   text: string
+  backendText?: string
   imageFile?: File
   gifFile?: File
   audioFile?: File
@@ -55,15 +56,39 @@ export type FeedPostReactionSummary = {
   count: number
 }
 
+export type FeedPostMention = {
+  username: string
+  name: string
+  displayName: string
+}
+
 export type FeedPostRecord = {
   id: number
   author: string
   authorAvatarUrl: string
+  authorVerified?: boolean
   authorPath: string
+  eventContext: {
+    id: number
+    name: string
+    path: string
+  } | null
+  groupContext: {
+    id: number
+    name: string
+    path: string
+    slug: string
+  } | null
   role: string
   audience: string
   time: string
   text: string
+  mentions?: FeedPostMention[]
+  feeling: {
+    value: string
+    label: string
+    emoji: string
+  } | null
   tags: string[]
   stats: {
     likes: number

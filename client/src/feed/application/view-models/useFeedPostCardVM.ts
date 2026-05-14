@@ -229,7 +229,7 @@ export function useFeedPostCardVM(
       const response = await repository.runPostAction({
         action: "comment",
         postId: currentPost.id,
-        text: payload.text,
+        text: payload.backendText ?? payload.text,
         imageFile: payload.imageFile,
         gifFile: payload.gifFile,
         audioFile: payload.audioFile,

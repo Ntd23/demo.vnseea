@@ -1,41 +1,53 @@
+<!-- English description: Withdrawal balance block that follows the PHP withdrawal page order. -->
 <template>
-  <section class="surface-card p-6 lg:p-8">
-    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
-      <div>
-        <p class="text-label-primary text-[var(--text-primary)]">{{ t("pages.withdrawalPage.heroEyebrow") }}</p>
-        <h1 class="mt-2 text-display text-primary-900">{{ t("pages.withdrawalPage.heroTitle") }}</h1>
-        <p class="mt-4 max-w-2xl text-body-secondary">
-          {{ t("pages.withdrawalPage.heroDescription") }}
-        </p>
+  <section class="surface-card p-5 sm:p-6">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-4">
+        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
+          <Icon name="i-ph-bank-duotone" class="h-7 w-7" />
+        </div>
+        <div>
+          <p class="text-label-secondary">{{ t("pages.withdrawalPage.balanceTitle") }}</p>
+          <p class="mt-1 text-3xl font-black text-[var(--text-primary)]">
+            {{ totalBalance }}
+          </p>
+        </div>
       </div>
 
-      <div class="rounded-xl bg-primary-50/50 p-6 border border-primary-100/50">
-        <p class="text-label-secondary text-[var(--text-primary)]">{{ t("pages.withdrawalPage.availableBalance") }}</p>
-        <p class="mt-3 break-words text-4xl font-black leading-tight text-[var(--text-primary)]">
-          {{ formatWithdrawalCurrency(availableBalance, locale) }}
-        </p>
-        <div class="mt-6 grid grid-cols-2 gap-4">
-          <div
-            v-for="item in stats"
-            :key="item.label"
-            class="rounded-xl bg-white p-4 shadow-sm border border-primary-50"
-          >
-            <p class="text-micro font-bold text-[var(--text-primary)] uppercase tracking-wider">{{ item.label }}</p>
-            <p class="mt-1 text-lg font-black text-[var(--text-primary)]">{{ item.value }}</p>
-          </div>
-        </div>
+      <div class="rounded-2xl bg-[var(--bg-muted)] px-4 py-3">
+        <p class="text-caption-secondary">{{ t("pages.withdrawalPage.availableBalance") }}</p>
+        <p class="text-title-primary">{{ availableBalance }}</p>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { formatWithdrawalCurrency } from "../../application/composables/useMockWithdrawalData"
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import type { WithdrawalCurrencyRule } from "../../domain/types/withdrawal.types"
+
+const props = defineProps<{
+  balance: number
+  walletBalance: number
+  currency: string
+  currencySymbol: string
+  currencyRule: WithdrawalCurrencyRule
+}>()
 
 const { t, locale } = useI18n()
 
-defineProps<{
-  availableBalance: number
-  stats: ReadonlyArray<{ label: string; value: string | number }>
-}>()
+const formatAmount = (amount: number) =>
+  formatCurrency(amount, {
+    currency: props.currency,
+    currencySymbol: props.currencySymbol,
+    currencyRule: props.currencyRule,
+    locale: locale.value,
+  })
+
+const totalBalance = computed(() =>
+  formatAmount(props.balance + props.walletBalance),
+)
+const availableBalance = computed(() =>
+  formatAmount(props.balance),
+)
 </script>

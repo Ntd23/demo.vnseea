@@ -1,3 +1,7 @@
+// English description: Product marketplace view helpers for filtering, sorting, and shared price formatting.
+
+import { formatCurrency as formatSharedCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import { watchDebounced } from "@vueuse/core"
 import type {
   ProductCategory,
   ProductCategoryChip,
@@ -7,16 +11,37 @@ import type {
   ProductSortValue,
 } from "../../domain/types/product-marketplace.types"
 import { filterProductListings, sortProductListings } from "../../domain/services/product-marketplace.service"
-import { createMockProductListings } from "../../infrastructure/mocks/productMarketplace.mock"
+import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 
-export const useProductMarketplace = () => {
+export const useProductMarketplace = (
+  repository = createApiProductRepository(),
+) => {
   const { t, locale } = useI18n()
+  const toast = useToast()
 
   const search = ref("")
   const sortBy = ref<ProductSortValue>("featured")
   const selectedCategory = ref<ProductCategory>("all")
   const selectedDistance = ref<ProductDistanceValue>("all")
   const nearbyOnly = ref(false)
+  const cartLoadingProductId = ref<number | null>(null)
+
+  const { data: productData, status, error, refresh } = useAsyncData(
+    "product:marketplace",
+    () => repository.list({
+      keyword: search.value,
+      category: selectedCategory.value,
+      distance: selectedDistance.value,
+      limit: 35,
+    }),
+    {
+      default: () => ({
+        items: [],
+        hasMore: false,
+        nextOffset: null,
+      }),
+    },
+  )
 
   const sortOptions = computed<ProductSelectOption<ProductSortValue>[]>(() => [
     { label: t("pages.productsPage.sortFeatured"), value: "featured" },
@@ -53,12 +78,12 @@ export const useProductMarketplace = () => {
     { label: t("pages.productsPage.categoryTech"), value: "tech", icon: "i-ph-device-mobile-camera" },
   ])
 
-  const products = computed(() => createMockProductListings(t))
+  const products = computed(() => productData.value?.items ?? [])
 
   const heroStats = computed<ProductOverviewCard[]>(() => [
     {
       label: t("pages.productsPage.statActiveStores"),
-      value: "128",
+      value: String(products.value.length),
       icon: "i-ph-storefront-fill",
       description: t("pages.productsPage.statActiveStoresDescription"),
     },
@@ -109,13 +134,11 @@ export const useProductMarketplace = () => {
     nearbyOnly: nearbyOnly.value,
   }), sortBy.value))
 
-  const currencyFormatter = computed(() => new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0,
-  }))
-
-  const formatCurrency = (value: number) => currencyFormatter.value.format(value)
+  const formatProductCurrency = (value: number, currency?: string) =>
+    formatSharedCurrency(value, {
+      currency: currency || "VND",
+      locale: locale.value,
+    })
 
   const formatDistance = (value: number) =>
     t("pages.productsPage.distanceKm", {
@@ -129,6 +152,29 @@ export const useProductMarketplace = () => {
     selectedDistance.value = "all"
     nearbyOnly.value = false
   }
+
+  const addToCart = async (productId: number) => {
+    cartLoadingProductId.value = productId
+
+    try {
+      await repository.addToCart(productId)
+      toast.add({
+        title: t("pages.productsPage.addToCart"),
+        color: "success",
+      })
+    }
+    finally {
+      cartLoadingProductId.value = null
+    }
+  }
+
+  watchDebounced(
+    [search, selectedCategory, selectedDistance],
+    () => {
+      refresh()
+    },
+    { debounce: 350, maxWait: 1000 },
+  )
 
   return {
     search,
@@ -147,8 +193,12 @@ export const useProductMarketplace = () => {
     activeFiltersLabel,
     resultHeading,
     visibleProducts,
-    formatCurrency,
+    status,
+    error,
+    cartLoadingProductId,
+    formatProductCurrency,
     formatDistance,
     resetFilters,
+    addToCart,
   }
 }

@@ -39,6 +39,7 @@ export function useCommunityGroupDetailPageVM(
     memberCountLabel,
     onlineCountLabel,
     groupPosts,
+    refreshGroupPosts,
     refresh,
     slug,
     status,
@@ -90,13 +91,14 @@ export function useCommunityGroupDetailPageVM(
   }, { immediate: true })
 
   async function handleJoinGroup() {
-    if (!group.value || joinState.value === "loading" || joined.value) {
+    if (!group.value || joinState.value === "loading" || group.value.canManage) {
       return
     }
 
     joinState.value = "loading"
 
     try {
+      const wasJoined = joined.value
       const updatedGroup = await repository.joinGroup(group.value.slug)
       await refresh()
 
@@ -104,8 +106,10 @@ export function useCommunityGroupDetailPageVM(
       joined.value = Boolean(updatedGroup.joined)
 
       toast.add({
-        title: t("pages.groupDetailPage.joinSuccessTitle"),
-        description: t("pages.groupDetailPage.joinSuccessDescription", {
+        title: wasJoined ? t("pages.groupDetailPage.leaveSuccessTitle") : t("pages.groupDetailPage.joinSuccessTitle"),
+        description: wasJoined ? t("pages.groupDetailPage.leaveSuccessDescription", {
+          group: localizedGroupName.value,
+        }) : t("pages.groupDetailPage.joinSuccessDescription", {
           group: localizedGroupName.value,
         }),
         color: "success",
@@ -119,6 +123,44 @@ export function useCommunityGroupDetailPageVM(
         description: t("pages.groupDetailPage.joinErrorDescription"),
         color: "error",
       })
+    }
+  }
+
+  async function handleDeleteGroup() {
+    if (!group.value || !group.value.canManage || joinState.value === "loading") {
+      return
+    }
+
+    const password = window.prompt(t("pages.groupDetailPage.deletePrompt"))
+
+    if (!password) {
+      return
+    }
+
+    joinState.value = "loading"
+
+    try {
+      await repository.deleteGroup(group.value.slug, password)
+
+      toast.add({
+        title: t("pages.groupDetailPage.deleteSuccessTitle"),
+        description: t("pages.groupDetailPage.deleteSuccessDescription"),
+        color: "success",
+      })
+
+      await navigateTo(appRoutes.groups)
+    }
+    catch {
+      joinState.value = "error"
+
+      toast.add({
+        title: t("pages.groupDetailPage.deleteErrorTitle"),
+        description: t("pages.groupDetailPage.deleteErrorDescription"),
+        color: "error",
+      })
+    }
+    finally {
+      joinState.value = "idle"
     }
   }
 
@@ -162,7 +204,9 @@ export function useCommunityGroupDetailPageVM(
     memberCountLabel,
     onlineCountLabel,
     groupPosts,
+    refreshGroupPosts,
     handleJoinGroup,
+    handleDeleteGroup,
     handleInviteMembers,
     emptyBackPath,
     status,

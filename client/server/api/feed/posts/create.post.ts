@@ -29,6 +29,8 @@ type CreatePostPayload = {
     data: Buffer
   } | null
   pageId?: number
+  eventId?: number
+  groupId?: number
 }
 
 const mapAudienceToPrivacy = (value: string) => {
@@ -69,6 +71,8 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     imageFile: null,
     videoFile: null,
     pageId: body.pageId ? Number(body.pageId) : undefined,
+    eventId: body.eventId ? Number(body.eventId) : undefined,
+    groupId: body.groupId ? Number(body.groupId) : undefined,
   }
 }
 
@@ -81,6 +85,8 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     imageFile: null,
     videoFile: null,
     pageId: undefined,
+    eventId: undefined,
+    groupId: undefined,
   }
 
   for (const part of parts) {
@@ -111,6 +117,8 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     if (part.name === "audience") payload.audience = value || "public"
     if (part.name === "feeling") payload.feeling = value
     if (part.name === "pageId") payload.pageId = Number(value)
+    if (part.name === "eventId") payload.eventId = Number(value)
+    if (part.name === "groupId") payload.groupId = Number(value)
   }
 
   return payload
@@ -145,6 +153,14 @@ export default defineEventHandler(async (event) => {
 
   if (payload.pageId) {
     requestBody.append("page_id", String(payload.pageId))
+  }
+
+  if (payload.eventId) {
+    requestBody.append("event_id", String(payload.eventId))
+  }
+
+  if (payload.groupId) {
+    requestBody.append("group_id", String(payload.groupId))
   }
 
   if (payload.feeling) {

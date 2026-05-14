@@ -1,3 +1,4 @@
+<!-- English description: Nuxt route wrapper for the wallet bounded-context page. -->
 <template>
   <PagesWalletPage />
 </template>

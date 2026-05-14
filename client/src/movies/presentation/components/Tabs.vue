@@ -1,15 +1,14 @@
 <template>
-  <div class="flex flex-wrap gap-2 lg:gap-3">
+  <div class="movie-tabs">
     <button
       v-for="tab in tabs"
       :key="tab.id"
-      class="flex items-center gap-3 rounded-xl px-7 py-3 text-[14px] font-extrabold transition-all duration-200 whitespace-nowrap"
-      :style="modelValue === tab.id ? 'background-color: #0a58ca !important; color: white !important; min-width: 140px; justify-content: center;' : 'min-width: 140px; justify-content: center;'"
-      :class="modelValue !== tab.id ? 'bg-[var(--bg-surface-hover)] text-[var(--text-secondary)] border border-transparent hover:border-[var(--border-default)]' : 'shadow-md'"
+      class="movie-tabs__button"
+      :class="{ 'movie-tabs__button--active': modelValue === tab.id }"
       @click="$emit('update:modelValue', tab.id)"
     >
-      <Icon :name="tab.icon" class="h-5 w-5 shrink-0" :style="modelValue === tab.id ? 'color: white !important;' : ''" />
-      {{ tab.label }}
+      <Icon :name="tab.icon" class="movie-tabs__icon" />
+      <span>{{ tab.label }}</span>
     </button>
   </div>
 </template>
@@ -32,3 +31,42 @@ defineEmits<{
   "update:modelValue": [value: MovieTabId]
 }>()
 </script>
+
+<style scoped>
+.movie-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.movie-tabs__button {
+  display: inline-flex;
+  min-height: 44px;
+  min-width: 142px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 2px;
+  background: #ffffff;
+  padding: 10px 18px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.movie-tabs__icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+}
+
+.movie-tabs__button:hover,
+.movie-tabs__button--active {
+  border-color: #0a58ca;
+  background: #0a58ca;
+  color: #ffffff;
+}
+</style>

@@ -1,3 +1,5 @@
+// English description: Product marketplace domain types shared by view models and repositories.
+
 export type ProductCategory = "all" | "vehicles" | "home" | "beauty" | "books" | "tech" | "food"
 
 export type ProductListingCategory = Exclude<ProductCategory, "all">
@@ -11,6 +13,8 @@ export type ProductListing = {
   title: string
   seller: string
   price: number
+  currency?: string
+  imageUrl?: string
   location: string
   distanceKm: number
   category: ProductListingCategory
@@ -23,6 +27,21 @@ export type ProductListing = {
   postedLabel: string
   rating: number
   mine?: boolean
+}
+
+export type ProductMarketplaceQuery = {
+  keyword?: string
+  category?: ProductCategory
+  distance?: ProductDistanceValue
+  limit?: number
+  offset?: number | string
+  mine?: boolean
+}
+
+export type ProductMarketplaceResponse = {
+  items: ProductListing[]
+  hasMore: boolean
+  nextOffset: number | null
 }
 
 export type ProductSelectOption<T extends string> = {

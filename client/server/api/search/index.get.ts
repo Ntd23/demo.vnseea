@@ -22,6 +22,9 @@ export type SearchApiResult = {
   id: string
   kind: SearchApiResultKind
   title: string
+  username?: string
+  firstName?: string
+  avatarUrl?: string
   subtitle: string
   description: string
   href: string
@@ -84,8 +87,11 @@ const createGroupHref = (slug: string, id: string) =>
 function mapUsers(users: BackendSearchEntity[] = []): SearchApiResult[] {
   return users.map((user, index) => {
     const id = firstString(user, ["user_id", "id"]) || `user-${index + 1}`
-    const name = firstString(user, ["name", "username"]) || "User"
+    const firstName = firstString(user, ["first_name"])
+    const lastName = firstString(user, ["last_name"])
+    const name = firstString(user, ["name"]) || [firstName, lastName].filter(Boolean).join(" ") || firstString(user, ["username"]) || "User"
     const username = firstString(user, ["username"])
+    const avatarUrl = firstString(user, ["avatar", "avatar_url"])
     const about = firstString(user, ["about", "bio", "working", "address"])
     const followers = firstString(user, ["followers", "followers_count", "details.followers_count"])
 
@@ -93,6 +99,9 @@ function mapUsers(users: BackendSearchEntity[] = []): SearchApiResult[] {
       id: `user-${id}`,
       kind: "users",
       title: name,
+      username,
+      firstName,
+      avatarUrl,
       subtitle: username ? `@${username}` : "Member",
       description: about || "Member profile",
       href: createProfileHref(username, id),
@@ -101,7 +110,7 @@ function mapUsers(users: BackendSearchEntity[] = []): SearchApiResult[] {
       metricLabel: followers ? `${followers} followers` : "Profile",
       metaLabel: firstString(user, ["lastseen_time_text", "gender_text"]),
       tags: ["user", username].filter(Boolean),
-      searchableText: createSearchableText([name, username, about]),
+      searchableText: createSearchableText([firstName, lastName, name, username, about]),
       accent: "#0000ff",
       popularityScore: Number(followers || 0),
       recentScore: 100 - index,

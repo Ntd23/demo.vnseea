@@ -1,12 +1,30 @@
-import type { ProductOverviewCard } from "../../domain/types/product-marketplace.types"
+// English description: My-products overview view model backed by the product API bridge.
 
-export const useMyProductsOverview = () => {
+import type { ProductOverviewCard } from "../../domain/types/product-marketplace.types"
+import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
+
+export const useMyProductsOverview = (
+  repository = createApiProductRepository(),
+) => {
   const { t } = useI18n()
+  const { data, status, error, refresh } = useAsyncData(
+    "product:mine:overview",
+    () => repository.list({ mine: true, limit: 50 }),
+    {
+      default: () => ({
+        items: [],
+        hasMore: false,
+        nextOffset: null,
+      }),
+    },
+  )
+
+  const products = computed(() => data.value?.items ?? [])
 
   const overviewCards = computed<ProductOverviewCard[]>(() => [
     {
       label: t("pages.myProductsPage.activeListings"),
-      value: "0",
+      value: String(products.value.length),
       icon: "i-ph-tag-duotone",
       description: t("pages.myProductsPage.activeListingsDescription"),
     },
@@ -26,5 +44,9 @@ export const useMyProductsOverview = () => {
 
   return {
     overviewCards,
+    products,
+    status,
+    error,
+    refresh,
   }
 }

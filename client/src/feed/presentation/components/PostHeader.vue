@@ -14,6 +14,23 @@
       <div class="post-header__info">
         <div class="post-header__name-row">
           <NuxtLink :to="authorPath || '#'" class="post-header__name">{{ author }}</NuxtLink>
+          <template v-if="feeling">
+            <span class="post-header__feeling-text">đang cảm thấy</span>
+            <span class="post-header__feeling-emoji">{{ feeling.emoji }}</span>
+            <span class="post-header__feeling-label">{{ feeling.label }}</span>
+          </template>
+          <template v-if="showEventContext">
+            <span class="post-header__event-arrow">→</span>
+            <NuxtLink :to="eventContext.path" class="post-header__event-link">
+              {{ eventContext.name }}
+            </NuxtLink>
+          </template>
+          <template v-else-if="showGroupContext">
+            <span class="post-header__event-arrow">→</span>
+            <NuxtLink :to="groupContext.path" class="post-header__event-link">
+              {{ groupContext.name }}
+            </NuxtLink>
+          </template>
         </div>
         <div class="post-header__meta">
           <template v-if="displayTime">
@@ -64,11 +81,28 @@ import { onClickOutside } from "@vueuse/core"
 import { useTimeAgo } from "@vueuse/core"
 
 const { t } = useI18n()
+const route = useRoute()
 
 const props = defineProps<{
   author: string
   authorAvatarUrl?: string
   authorPath?: string
+  eventContext?: {
+    id: number
+    name: string
+    path: string
+  } | null
+  groupContext?: {
+    id: number
+    name: string
+    path: string
+    slug: string
+  } | null
+  feeling?: {
+    value: string
+    label: string
+    emoji: string
+  } | null
   role: string
   time: string
   audience: string
@@ -104,6 +138,24 @@ const displayTime = computed(() => {
 
   return normalized
 })
+
+const currentEventId = computed(() => {
+  const match = route.path.match(/^\/events\/(\d+)(?:\/)?$/)
+  return match?.[1] ? Number(match[1]) : 0
+})
+
+const showEventContext = computed(() =>
+  Boolean(props.eventContext && props.eventContext.id !== currentEventId.value),
+)
+
+const currentGroupSlug = computed(() => {
+  const match = route.path.match(/^\/g\/([^/]+)(?:\/)?$/)
+  return match?.[1] ? decodeURIComponent(match[1]).toLowerCase() : ""
+})
+
+const showGroupContext = computed(() =>
+  Boolean(props.groupContext && props.groupContext.slug.toLowerCase() !== currentGroupSlug.value),
+)
 
 const audienceIcon = computed(() => {
   const map: Record<string, string> = {
@@ -248,9 +300,12 @@ function handleMenuAction(item: { key: string }) {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
-.post-header__name {
+.post-header__name,
+.post-header__event-link {
   font-size: 14px;
   font-weight: 700;
   color: #0f172a;
@@ -258,9 +313,36 @@ function handleMenuAction(item: { key: string }) {
   transition: color 0.15s ease;
 }
 
-.post-header__name:hover {
+.post-header__name:hover,
+.post-header__event-link:hover {
   color: #0000ff;
   text-decoration: underline;
+}
+
+.post-header__event-arrow {
+  color: #334155;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.post-header__feeling-text,
+.post-header__feeling-label {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.post-header__feeling-emoji {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.post-header__event-link {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .post-header__meta {

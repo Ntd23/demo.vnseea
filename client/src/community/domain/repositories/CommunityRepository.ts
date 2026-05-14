@@ -18,6 +18,7 @@ import type {
 export interface CommunityRepository {
   getGroups(mode: CommunityGroupTab): Promise<CommunityGroupRecord[]>
   getGroupBySlug(slug: string): Promise<CommunityGroupRecord | null>
+  getGroupPosts(slug: string, input?: { limit?: number; afterPostId?: number }): Promise<FeedPostsResponse>
   createGroup(input: CommunityDraft): Promise<CommunityGroupRecord>
   updateGroup(slug: string, input: CommunityGroupSettingsDraft): Promise<CommunityGroupRecord>
   joinGroup(slug: string): Promise<CommunityGroupRecord>
@@ -32,5 +33,5 @@ export interface CommunityRepository {
   sendPageInvite(slug: string, userId: number): Promise<void>
   getPagePosts(slug: string, input?: { limit?: number; afterPostId?: number }): Promise<FeedPostsResponse>
   deletePage(id: number, password: string): Promise<void>
-  deleteGroup(id: number): Promise<void>
+  deleteGroup(slug: string, password: string): Promise<void>
 }

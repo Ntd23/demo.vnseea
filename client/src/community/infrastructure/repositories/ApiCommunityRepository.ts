@@ -59,6 +59,12 @@ export function createApiCommunityRepository(): CommunityRepository {
     async joinGroup(slug: string) {
       return await client.post<CommunityGroupRecord>(apiRoutes.community.groupJoin(slug))
     },
+    async getGroupPosts(slug, input) {
+      return await client.get<FeedPostsResponse>(apiRoutes.community.groupPosts(slug), {
+        limit: input?.limit,
+        afterPostId: input?.afterPostId,
+      })
+    },
     async getPages(mode: CommunityPageTab) {
       return await client.get<CommunityPageRecord[]>(apiRoutes.community.pages, { mode })
     },
@@ -133,8 +139,14 @@ export function createApiCommunityRepository(): CommunityRepository {
         },
       )
     },
-    async deleteGroup(id: number) {
-      await client.delete(apiRoutes.community.groupById(id))
+    async deleteGroup(slug: string, password: string) {
+      await client.request<void, { password: string }>(
+        apiRoutes.community.groupBySlug(slug),
+        {
+          method: "DELETE",
+          body: { password },
+        },
+      )
     },
   }
 }

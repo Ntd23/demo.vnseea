@@ -1,3 +1,4 @@
+<!-- English description: Nuxt route wrapper for the withdrawal bounded-context page. -->
 <template>
   <PagesWithdrawalPage />
 </template>
