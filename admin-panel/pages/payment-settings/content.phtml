@@ -261,8 +261,8 @@
         <br><small class="admin-info">Cho phép người dùng nạp ví / thanh toán bằng chuyển khoản VietQR qua SePay.</small>
       </div>
       <div class="form-group float-right switcher">
-        <input type="hidden" name="sepay" value="no" />
-        <input type="checkbox" name="sepay" id="chck-sepay" value="yes" <?php echo ($wo['config']['sepay'] == 'yes') ? 'checked' : '';?>>
+        <input type="hidden" name="sepay" value="0" />
+        <input type="checkbox" name="sepay" id="chck-sepay" value="1" <?php echo (in_array((string)($wo['config']['sepay'] ?? '0'), array('1', 'yes'), true)) ? 'checked' : '';?>>
         <label for="chck-sepay" class="check-trail"><span class="check-handler"></span></label>
       </div>
       <div class="clearfix"></div>
@@ -321,7 +321,7 @@
       <div class="form-group">
         <label class="form-label">Webhook URL</label>
         <input type="text" class="form-control" readonly
-               value="<?php echo $wo['config']['site_url'].'/requests.php?f=sepay&s=webhook&token='.$wo['config']['sepay_webhook_token']; ?>">
+               value="<?php echo rtrim($wo['config']['site_url'], '/').'/requests.php?f=sepay&s=webhook&token='.$wo['config']['sepay_webhook_token']; ?>">
         <small class="admin-info">Dán URL này vào phần Webhook trên SePay.</small>
       </div>
 

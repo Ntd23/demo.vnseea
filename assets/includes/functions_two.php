@@ -5599,6 +5599,15 @@ function Wo_ReplenishWallet($sum) {
         return false;
     }
     include_once('assets/includes/paypal_config.php');
+    if (empty($wo['paypal_access_token'])) {
+        return array(
+            'status' => 500,
+            'type' => 'ERROR',
+            'details' => !empty($wo['paypal_access_token_error'])
+                ? 'PayPal authentication failed: ' . $wo['paypal_access_token_error']
+                : 'PayPal authentication failed. Check PayPal client ID, secret, and mode.'
+        );
+    }
 
     if (!empty($wo["config"]['currency_array']) && in_array($wo["config"]['paypal_currency'], $wo["config"]['currency_array']) && $wo["config"]['paypal_currency'] != $wo['config']['currency'] && !empty($wo['config']['exchange']) && !empty($wo['config']['exchange'][$wo["config"]['paypal_currency']])) {
         $sum = (($sum * $wo['config']['exchange'][$wo["config"]['paypal_currency']]));
@@ -5656,11 +5665,23 @@ function Wo_ReplenishWallet($sum) {
     }
     curl_close($ch);
     $result = json_decode($result);
-    if (!empty($result) && !empty($result->links) && !empty($result->links[1]) && !empty($result->links[1]->href)) {
+    $approval_url = '';
+    if (!empty($result) && !empty($result->links) && is_array($result->links)) {
+        foreach ($result->links as $link) {
+            if (!empty($link->href) && (!empty($link->rel) && $link->rel == 'approve')) {
+                $approval_url = $link->href;
+                break;
+            }
+        }
+        if (empty($approval_url) && !empty($result->links[1]) && !empty($result->links[1]->href)) {
+            $approval_url = $result->links[1]->href;
+        }
+    }
+    if (!empty($approval_url)) {
         $data = array(
             "status" => 200,
             "type" => "SUCCESS",
-            'url' => $result->links[1]->href
+            'url' => $approval_url
         );
         return $data;
     }

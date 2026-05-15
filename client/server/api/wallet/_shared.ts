@@ -47,12 +47,22 @@ type BackendRecipientSearchResponse = {
 type BackendWebMutationResponse = {
   status?: number | string
   api_status?: number | string
+  type?: string
   message?: string
   error?: string
+  details?: string
   errors?: string[] | {
     error_text?: string
   }
   url?: string
+  payment_id?: number | string
+  order_code?: string
+  amount?: number | string
+  bank_code?: string
+  account_number?: string
+  account_name?: string
+  qr_url?: string
+  paid?: boolean | number | string
 }
 
 const asString = (value: unknown) =>
@@ -84,7 +94,11 @@ const transactionTone = (kind: string): WalletTransactionTone => {
   return "neutral"
 }
 
-const webErrorMessage = (response: BackendWebMutationResponse, fallback: string) => {
+const webErrorMessage = (response: BackendWebMutationResponse | false | null | undefined, fallback: string) => {
+  if (!response || typeof response !== "object") {
+    return fallback
+  }
+
   if (Array.isArray(response.errors)) {
     return response.errors.join("\n")
   }
@@ -93,10 +107,18 @@ const webErrorMessage = (response: BackendWebMutationResponse, fallback: string)
     return asString(response.errors.error_text) || fallback
   }
 
-  return asString(response.error || response.message) || fallback
+  return asString(response.error || response.message || response.details) || fallback
 }
 
-const assertWebSuccess = (response: BackendWebMutationResponse, fallback: string) => {
+const assertWebSuccess = (response: BackendWebMutationResponse | false | null | undefined, fallback: string) => {
+  if (!response || typeof response !== "object") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: fallback,
+      data: response,
+    })
+  }
+
   const status = Number(response.status ?? response.api_status ?? 0)
 
   if (status >= 200 && status < 300) {
@@ -126,7 +148,9 @@ const mapTransaction = (item: BackendEntity): WalletTransaction => {
 const mapTopupMethod = (item: BackendEntity): WalletTopupMethod => ({
   value: asString(item.value),
   label: asString(item.label),
-  type: asString(item.type) === "upload" ? "upload" : "redirect",
+  type: asString(item.type) === "upload"
+    ? "upload"
+    : asString(item.type) === "qr" ? "qr" : "redirect",
   note: asString(item.note),
 })
 
@@ -242,11 +266,20 @@ export async function createWalletTopupLink(
     ),
     "Unable to start wallet top-up.",
   )
+  const redirectUrl = asString(response.url)
+
+  if (!redirectUrl) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: webErrorMessage(response, "PayPal did not return an approval URL."),
+      data: response,
+    })
+  }
 
   return {
     success: true,
     message: asString(response.message),
-    redirectUrl: asString(response.url),
+    redirectUrl,
   }
 }
 
@@ -281,5 +314,62 @@ export async function uploadWalletBankTransfer(
   return {
     success: true,
     message: asString(response.message),
+  }
+}
+
+export async function createWalletSepayQr(
+  event: H3Event,
+  input: WalletTopupDraft,
+): Promise<WalletMutationResult> {
+  const currentUser = await getBackendCurrentUser(event)
+  const response = assertWebSuccess(
+    await createBackendWebClient(event).postForm<BackendWebMutationResponse>(
+      "sepay",
+      {
+        amount: input.amount,
+        hash_id: asString(currentUser.session_hash),
+      },
+      { s: "make_qr" },
+    ),
+    "Unable to create SePay QR.",
+  )
+
+  return {
+    success: true,
+    message: asString(response.message),
+    paymentId: asNumber(response.payment_id),
+    amount: asNumber(response.amount),
+    orderCode: asString(response.order_code),
+    bankCode: asString(response.bank_code),
+    accountNumber: asString(response.account_number),
+    accountName: asString(response.account_name),
+    qrUrl: asString(response.qr_url),
+    status: asString(response.status),
+  }
+}
+
+export async function checkWalletSepayTopup(
+  event: H3Event,
+  orderCode: string,
+): Promise<WalletMutationResult> {
+  const currentUser = await getBackendCurrentUser(event)
+  const response = assertWebSuccess(
+    await createBackendWebClient(event).postForm<BackendWebMutationResponse>(
+      "sepay",
+      {
+        order_code: orderCode,
+        hash_id: asString(currentUser.session_hash),
+      },
+      { s: "check" },
+    ),
+    "Unable to check SePay payment.",
+  )
+
+  return {
+    success: true,
+    message: asString(response.message),
+    orderCode: asString(response.order_code),
+    paid: asBoolean(response.paid),
+    status: asString(response.status),
   }
 }
