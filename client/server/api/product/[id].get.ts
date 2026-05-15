@@ -6,12 +6,17 @@ import { normalizeProductRecord } from "./_shared"
 
 export default defineEventHandler(async (event) => {
   const client = createBackendApiClient(event)
-  const id = String(getRouterParam(event, "id") ?? "")
+  const id = decodeURIComponent(String(getRouterParam(event, "id") ?? ""))
+  const numericPostId = id.match(/^\d+/)?.[0] ?? ""
   const response = await client.post<{ api_status?: number | string; products?: Parameters<typeof normalizeProductRecord>[1][] }>("get-products", {
-    limit: 50,
+    limit: 250,
   })
   const product = (Array.isArray(response.products) ? response.products : [])
-    .find(item => String(item.id ?? "") === id)
+    .find(item => [
+      item.id,
+      item.post_id,
+      item.seo_id,
+    ].some(value => String(value ?? "") === id || (!!numericPostId && String(value ?? "") === numericPostId)))
 
   return product ? normalizeProductRecord(event, product) : null
 })
