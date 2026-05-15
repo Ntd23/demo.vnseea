@@ -1,3 +1,5 @@
+// English description: Domain types for backend-backed games and legacy migration shapes.
+
 export type GameTabKey = "my" | "new" | "popular"
 export type GameCategoryKey = "all" | "puzzle" | "arcade" | "strategy" | "quiz" | "sport"
 
@@ -43,4 +45,29 @@ export type GameSessionPayload = {
   gameId: string
   score: number
   duration: string
+}
+
+export type GamesTabKey = "my" | "latest" | "popular"
+
+export type GameRecord = {
+  id: number
+  title: string
+  avatarUrl: string
+  url: string
+  lastPlay: string
+  players: number
+  isMine: boolean
+}
+
+export type GamesCatalog = {
+  items: GameRecord[]
+  activeTab: GamesTabKey
+  hasMore: boolean
+  nextOffset: number | null
+}
+
+export type GamesCatalogQuery = {
+  tab?: GamesTabKey
+  q?: string
+  offset?: number | null
 }

@@ -1,4 +1,5 @@
 <?php
+// English description: Backend funding API endpoint used by PHP and Nuxt bridges for campaign listing, details, creation, and donations.
 
 $response_data = array(
     'api_status' => 400
@@ -184,6 +185,9 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
         }
         $response_data = array(
                             'api_status' => 200,
+                            'can_create' => !empty($wo['config']['can_use_funding']),
+                            'currency' => $wo['config']['currency'],
+                            'currency_symbol' => $wo['config']['currency_symbol_array'][$wo['config']['currency']],
                             'data' => $funding
                         );
 
@@ -209,6 +213,9 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
         }
         $response_data = array(
                             'api_status' => 200,
+                            'can_create' => !empty($wo['config']['can_use_funding']),
+                            'currency' => $wo['config']['currency'],
+                            'currency_symbol' => $wo['config']['currency_symbol_array'][$wo['config']['currency']],
                             'data' => $funding
                         );
 
@@ -287,6 +294,8 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                 }
                 $response_data = array(
                                 'api_status' => 200,
+                                'currency' => $wo['config']['currency'],
+                                'currency_symbol' => $wo['config']['currency_symbol_array'][$wo['config']['currency']],
                                 'data' => $fund
                             );
             }

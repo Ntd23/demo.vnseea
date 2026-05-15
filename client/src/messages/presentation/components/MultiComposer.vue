@@ -1,10 +1,20 @@
 <!-- Description: Renders the real multi-send composer and forwards payloads to the backend bridge used by the PHP messages page. -->
 <template>
-  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white">
+  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
     <div class="border-b border-[#e2e8f0] px-5 py-5">
-      <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
-        {{ $t("pages.messagesPage.composeTitle") }}
-      </p>
+      <div class="flex items-center gap-3">
+        <UButton
+          variant="ghost"
+          color="neutral"
+          class="md:hidden -ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-slate-500 hover:bg-slate-100"
+          @click="$emit('close')"
+        >
+          <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />
+        </UButton>
+        <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
+          {{ $t("pages.messagesPage.composeTitle") }}
+        </p>
+      </div>
       <h3 class="mt-2 text-lg font-black text-[var(--text-primary)]">
         {{ $t("pages.messagesPage.sendMultiple") }}
       </h3>
@@ -143,6 +153,7 @@ const props = defineProps<{
 
 defineEmits<{
   send: []
+  close: []
 }>()
 
 const { t } = useI18n()

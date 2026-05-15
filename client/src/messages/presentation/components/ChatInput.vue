@@ -7,15 +7,19 @@
           variant="soft"
           class="h-10 w-10 shrink-0 rounded-[14px] bg-white text-[var(--text-primary)] ring-1 ring-secondary-100 shadow-none transition-all hover:bg-primary-50 hover:text-secondary-900 justify-center"
           square
+          type="button"
+          @click="fileInput?.click()"
         >
           <Icon name="i-ph-plus-circle-duotone" class="h-5 w-5" />
         </UButton>
         <UButton
-          v-for="icon in ['i-ph-image-duotone', 'i-ph-chat-circle-dots-duotone', 'i-ph-gif-duotone']"
+          v-for="icon in ['i-ph-image-duotone', 'i-ph-paperclip-duotone']"
           :key="icon"
           variant="soft"
           class="h-10 w-10 rounded-[14px] bg-transparent text-[var(--text-primary)] shadow-none transition-all hover:bg-white hover:text-secondary-900 justify-center"
           square
+          type="button"
+          @click="fileInput?.click()"
         >
           <Icon :name="icon" class="h-4 w-4" />
         </UButton>
@@ -46,6 +50,27 @@
         <Icon name="i-ph-paper-plane-tilt-bold" class="h-5 w-5" />
       </UButton>
     </div>
+
+    <div v-if="fileModel" class="mx-auto mt-2 flex max-w-[1080px] items-center justify-between gap-3 rounded-[18px] border border-secondary-100 bg-white px-4 py-2 text-sm text-slate-600">
+      <span class="truncate">{{ fileModel.name }}</span>
+      <UButton
+        variant="ghost"
+        color="neutral"
+        size="xs"
+        class="rounded-full"
+        type="button"
+        @click="clearFile"
+      >
+        {{ $t("pages.messagesPage.removeAttachment") }}
+      </UButton>
+    </div>
+
+    <input
+      ref="fileInput"
+      type="file"
+      class="hidden"
+      @change="onFileChange"
+    >
   </div>
 </template>
 
@@ -60,10 +85,12 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  send: [value: string]
+  send: [value: { text: string, file?: File | null }]
 }>()
 
 const textarea = ref<HTMLTextAreaElement | null>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
+const fileModel = ref<File | null>(null)
 
 function adjustHeight() {
   if (!textarea.value) {
@@ -81,14 +108,31 @@ function onEmoji(emoji: string) {
 function onSend() {
   const content = modelValue.value.trim()
 
-  if (content) {
-    emit("send", content)
+  if (content || fileModel.value) {
+    emit("send", {
+      text: content,
+      file: fileModel.value,
+    })
     modelValue.value = ""
+    clearFile()
     nextTick(() => {
       if (textarea.value) {
         textarea.value.style.height = "auto"
       }
     })
+  }
+}
+
+function onFileChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  fileModel.value = input.files?.[0] ?? null
+}
+
+function clearFile() {
+  fileModel.value = null
+
+  if (fileInput.value) {
+    fileInput.value.value = ""
   }
 }
 </script>

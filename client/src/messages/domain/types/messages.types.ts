@@ -11,6 +11,7 @@ export type MessageTab = {
 export type MessageContact = {
   id: string
   name: string
+  profileUrl?: string
   status: string
   isOnline: boolean
   avatarUrl: string
@@ -36,6 +37,14 @@ export type MessageItem = {
   showTime?: boolean
   avatar?: string
   timestamp?: number
+  mediaUrl?: string
+  mediaName?: string
+  mediaType?: "image" | "video" | "audio" | "gif" | "file"
+}
+
+export type MessageSendDraft = {
+  text: string
+  file?: File | null
 }
 
 export type MessageThread = {
@@ -51,4 +60,9 @@ export type MultiMessageSendResult = {
   failedIds: number[]
   invalidFile?: number
   error?: string
+}
+
+export type MessageActionResult = {
+  ok: boolean
+  message?: string
 }

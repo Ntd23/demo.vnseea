@@ -1,45 +1,66 @@
-<!-- Description: Renders the center conversation pane with backend-backed threads and no invented fallback contact state. -->
+<!-- Description: Renders the center conversation pane with backend-backed threads and contact state. -->
 <template>
-  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white">
+  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white shadow-[0_4px_20px_rgba(0,0,255,0.04)]">
     <template v-if="contact">
       <div class="border-b border-[#e2e8f0] px-5 py-4">
         <div class="flex items-center justify-between gap-4">
-          <button class="flex min-w-0 items-center gap-3 text-left" type="button" @click="$emit('toggle-info')">
-            <div class="relative shrink-0">
-              <UAvatar
-                :src="contact.avatarUrl"
-                size="lg"
-                :ui="{ rounded: 'rounded-[16px]' }"
-              />
-              <span
-                class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white"
-                :class="contact.isOnline ? 'bg-emerald-500' : 'bg-slate-300'"
-              />
-            </div>
-            <div class="min-w-0">
-              <h3 class="truncate text-base font-black text-[var(--text-primary)]">
-                {{ contact.name }}
-              </h3>
-              <p class="truncate text-sm text-slate-500">
-                {{ contactStatus }}
-              </p>
-            </div>
-          </button>
-
-          <div class="hidden items-center gap-2 sm:flex">
+          <div class="flex min-w-0 flex-1 items-center gap-3">
             <UButton
-              v-for="button in actionButtons"
-              :key="button.id"
-              variant="soft"
+              variant="ghost"
               color="neutral"
-              class="rounded-full px-4 font-semibold"
-              @click="button.id === 'info' ? $emit('toggle-info') : null"
+              class="md:hidden -ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-slate-500 hover:bg-slate-100"
+              @click="$emit('back')"
             >
-              <template #leading>
-                <Icon :name="button.icon" class="h-4 w-4" />
-              </template>
-              {{ button.text }}
+              <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />
             </UButton>
+            <button class="flex min-w-0 flex-1 items-center gap-3 text-left" type="button" @click="$emit('toggle-info')">
+              <div class="relative shrink-0">
+                <UAvatar
+                  :src="contact.avatarUrl"
+                  size="lg"
+                  :ui="{ rounded: 'rounded-[16px]' }"
+                />
+                <span
+                  class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white"
+                  :class="contact.isOnline ? 'bg-emerald-500' : 'bg-slate-300'"
+                />
+              </div>
+              <div class="min-w-0">
+                <h3 class="truncate text-base font-black text-[var(--text-primary)]">
+                  {{ contact.name }}
+                </h3>
+                <p class="truncate text-sm text-slate-500">
+                  {{ contactStatus }}
+                </p>
+              </div>
+            </button>
+          </div>
+
+          <div class="flex shrink-0 items-center gap-2">
+            <UButton
+              variant="ghost"
+              color="neutral"
+              class="h-10 w-10 shrink-0 justify-center rounded-full xl:hidden"
+              @click="$emit('toggle-info')"
+            >
+              <Icon name="i-ph-info-duotone" class="h-5 w-5" />
+            </UButton>
+            <div class="hidden items-center gap-2 sm:flex">
+              <UButton
+                v-for="button in actionButtons"
+                :key="button.id"
+                variant="soft"
+                :color="button.id === 'delete' ? 'error' : 'neutral'"
+                class="rounded-full px-4 font-semibold"
+                :loading="button.id === 'delete' && deletingConversation"
+                @click="onAction(button.id)"
+              >
+                <template #leading>
+                  <Icon :name="button.icon" class="h-4 w-4" />
+                </template>
+                {{ button.text }}
+              </UButton>
+            </div>
           </div>
         </div>
       </div>
@@ -72,9 +93,7 @@
         <h3 class="mt-5 text-lg font-black text-[var(--text-primary)]">
           {{ emptyTitle }}
         </h3>
-        <p class="mt-2 text-sm leading-6 text-slate-500">
-          {{ emptyDescription }}
-        </p>
+        <!-- Removed emptyDescription for cleaner look -->
       </div>
     </div>
   </div>
@@ -94,6 +113,7 @@ const props = defineProps<{
   isPending?: boolean
   messages: MessageItem[]
   isTyping?: boolean
+  deletingConversation?: boolean
 }>()
 
 const { t } = useI18n()
@@ -101,15 +121,16 @@ const { t } = useI18n()
 const emit = defineEmits<{
   "toggle-info": []
   "load-more": []
-  "send": [text: string]
+  "send": [input: { text: string, file?: File | null }]
+  "delete-conversation": []
+  "back": []
 }>()
 
 const inputModel = ref("")
 
 const actionButtons = computed(() => [
-  { icon: "i-ph-phone-duotone", id: "call", text: t("pages.messagesPage.call") },
-  { icon: "i-ph-video-camera-duotone", id: "video", text: t("pages.messagesPage.video") },
   { icon: "i-ph-info-duotone", id: "info", text: t("pages.messagesPage.info") },
+  { icon: "i-ph-trash-duotone", id: "delete", text: t("pages.messagesPage.deleteConversation") },
 ])
 
 const contactStatus = computed(() => {
@@ -130,7 +151,18 @@ const contactStatus = computed(() => {
 
 const loadingLabel = computed(() => t("pages.messagesPage.loadingMessages"))
 
-function onSendMessage(text: string) {
-  emit("send", text)
+function onSendMessage(input: { text: string, file?: File | null }) {
+  emit("send", input)
+}
+
+function onAction(id: string) {
+  if (id === "info") {
+    emit("toggle-info")
+    return
+  }
+
+  if (id === "delete") {
+    emit("delete-conversation")
+  }
 }
 </script>

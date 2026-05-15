@@ -1,3 +1,5 @@
+// English description: Domain types for backend-backed directory destinations and legacy migration shapes.
+
 export type DirectoryCategoryKey =
   | "all"
   | "users"
@@ -32,4 +34,18 @@ export type DirectoryItem = {
   accent: string
   tags: string[]
   featured: boolean
+}
+
+export type DirectoryDestination = {
+  key: string
+  label: string
+  description: string
+  href: string
+  icon: string
+}
+
+export type DirectoryCatalog = {
+  title: string
+  description: string
+  items: DirectoryDestination[]
 }

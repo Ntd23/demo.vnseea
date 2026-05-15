@@ -17,8 +17,8 @@
       </div>
 
       <MessagesChatBubble
-        v-for="(msg, idx) in messages"
-        :key="idx"
+        v-for="msg in messages"
+        :key="msg.id"
         v-bind="msg"
       />
 
