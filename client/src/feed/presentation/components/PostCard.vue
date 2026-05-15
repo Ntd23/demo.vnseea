@@ -441,8 +441,8 @@ function handleMediaOpen(index: number) {
 
 .post-card__actions {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid rgba(0, 0, 255, 0.06);
@@ -455,22 +455,29 @@ function handleMediaOpen(index: number) {
 
 .post-card__action-btn {
   display: flex;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 4px;
+  padding: 10px 8px;
   border: none;
   border-radius: 10px;
   background: transparent;
   font-size: 13px;
   font-weight: 600;
+  line-height: 1.2;
   color: #64748b;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.post-card__reaction-action .post-card__action-btn {
-  width: 100%;
+.post-card__action-btn span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .post-card__action-btn:hover {
@@ -506,6 +513,29 @@ function handleMediaOpen(index: number) {
   height: 20px;
   flex-shrink: 0;
   object-fit: contain;
+}
+
+@media (max-width: 420px) {
+  .post-card__actions {
+    gap: 4px;
+  }
+
+  .post-card__action-btn {
+    gap: 4px;
+    min-height: 42px;
+    padding: 9px 4px;
+    font-size: 12.5px;
+  }
+
+  .post-card__action-icon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .post-card__action-reaction-image {
+    width: 18px;
+    height: 18px;
+  }
 }
 
 .post-card__reaction-tray {

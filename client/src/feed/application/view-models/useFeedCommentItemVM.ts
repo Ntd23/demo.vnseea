@@ -210,7 +210,7 @@ export function useFeedCommentItemVM(
       const response = await repository.runCommentAction({
         action: "reply",
         commentId: props.id,
-        text: payload.text,
+        text: payload.backendText ?? payload.text,
       })
 
       const reply = response.reply ?? {
