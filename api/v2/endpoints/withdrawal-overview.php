@@ -41,6 +41,22 @@ else {
         );
     }
 
+    if (!empty($wo['config']['sepay']) && in_array((string) $wo['config']['sepay'], array('1', 'yes', 'true', 'on'), true)) {
+        $has_sepay_method = false;
+        foreach ($methods as $method) {
+            if (!empty($method['value']) && $method['value'] == 'sepay') {
+                $has_sepay_method = true;
+                break;
+            }
+        }
+        if (!$has_sepay_method) {
+            $methods[] = array(
+                'value' => 'sepay',
+                'label' => 'SePay VietQR',
+            );
+        }
+    }
+
     if (empty($methods)) {
         $methods[] = array(
             'value' => 'paypal',

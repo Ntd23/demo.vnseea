@@ -48,7 +48,13 @@ $required_config_defaults = array(
     'livekit_video_chat' => '0',
     'livekit_host' => '',
     'livekit_api_key' => '',
-    'livekit_api_secret' => ''
+    'livekit_api_secret' => '',
+    'sepay' => '0',
+    'sepay_mode' => 'live',
+    'sepay_bank_acc' => '',
+    'sepay_bank_code' => '',
+    'sepay_webhook_token' => '',
+    'sepay_desc_prefix' => 'SE'
 );
 foreach ($required_config_defaults as $config_name => $config_value) {
     if (!array_key_exists($config_name, $config)) {

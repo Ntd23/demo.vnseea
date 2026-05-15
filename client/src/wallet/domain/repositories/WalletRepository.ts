@@ -15,4 +15,5 @@ export interface WalletRepository {
   getReceiveQr(amount?: number | null): Promise<WalletReceiveQr>
   sendMoney(input: WalletSendDraft): Promise<WalletMutationResult>
   createTopup(input: WalletTopupDraft): Promise<WalletMutationResult>
+  checkSepayTopup(orderCode: string): Promise<WalletMutationResult>
 }

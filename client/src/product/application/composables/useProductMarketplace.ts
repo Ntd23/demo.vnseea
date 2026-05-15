@@ -1,37 +1,47 @@
-// English description: Product marketplace view helpers for filtering, sorting, and shared price formatting.
+// English description: Product marketplace view helpers aligned with the PHP Wowonder marketplace API.
 
 import { formatCurrency as formatSharedCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { watchDebounced } from "@vueuse/core"
 import type {
   ProductCategory,
-  ProductCategoryChip,
   ProductDistanceValue,
+  ProductListing,
   ProductOverviewCard,
   ProductSelectOption,
   ProductSortValue,
 } from "../../domain/types/product-marketplace.types"
-import { filterProductListings, sortProductListings } from "../../domain/services/product-marketplace.service"
+import {
+  filterProductListings,
+  mergeProductMarketplaceResponses,
+  sortProductListings,
+} from "../../domain/services/product-marketplace.service"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 
 export const useProductMarketplace = (
   repository = createApiProductRepository(),
 ) => {
   const { t, locale } = useI18n()
+  const route = useRoute()
   const toast = useToast()
 
   const search = ref("")
-  const sortBy = ref<ProductSortValue>("featured")
-  const selectedCategory = ref<ProductCategory>("all")
-  const selectedDistance = ref<ProductDistanceValue>("all")
-  const nearbyOnly = ref(false)
+  const sortBy = ref<ProductSortValue>("latest")
+  const selectedCategory = ref<ProductCategory>(String(route.query.c_id || "all"))
+  const selectedSubCategory = ref(String(route.query.sub_id || ""))
+  const selectedDistance = ref<ProductDistanceValue>("0")
+  const distanceRange = ref(0)
   const cartLoadingProductId = ref<number | null>(null)
+  const isLoadingMore = ref(false)
+  const hasShownDistanceUnavailableToast = ref(false)
 
   const { data: productData, status, error, refresh } = useAsyncData(
     "product:marketplace",
     () => repository.list({
       keyword: search.value,
       category: selectedCategory.value,
+      subCategory: selectedSubCategory.value,
       distance: selectedDistance.value,
+      sort: sortBy.value,
       limit: 35,
     }),
     {
@@ -39,45 +49,31 @@ export const useProductMarketplace = (
         items: [],
         hasMore: false,
         nextOffset: null,
+        categories: [],
+        subCategories: [],
+        distanceFilterAvailable: false,
       }),
     },
   )
 
   const sortOptions = computed<ProductSelectOption<ProductSortValue>[]>(() => [
-    { label: t("pages.productsPage.sortFeatured"), value: "featured" },
-    { label: t("pages.productsPage.sortLatest"), value: "latest" },
-    { label: t("pages.productsPage.sortPriceAsc"), value: "price-asc" },
-    { label: t("pages.productsPage.sortPriceDesc"), value: "price-desc" },
-    { label: t("pages.productsPage.sortNearest"), value: "nearest" },
-    { label: t("pages.productsPage.sortRating"), value: "rating" },
+    { label: t("pages.productsPage.sortBy"), value: "latest" },
+    { label: t("pages.productsPage.sortPriceAsc"), value: "price_low" },
+    { label: t("pages.productsPage.sortPriceDesc"), value: "price_high" },
   ])
 
   const categoryOptions = computed<ProductSelectOption<ProductCategory>[]>(() => [
-    { label: t("pages.productsPage.category"), value: "all" },
-    { label: t("pages.productsPage.categoryVehicles"), value: "vehicles" },
-    { label: t("pages.productsPage.categoryHome"), value: "home" },
-    { label: t("pages.productsPage.categoryBeauty"), value: "beauty" },
-    { label: t("pages.productsPage.categoryBooks"), value: "books" },
-    { label: t("pages.productsPage.categoryTech"), value: "tech" },
-    { label: t("pages.productsPage.categoryFood"), value: "food" },
+    { label: t("pages.productsPage.categoryType"), value: "all" },
+    ...(productData.value?.categories ?? []),
   ])
 
-  const distanceOptions = computed<ProductSelectOption<ProductDistanceValue>[]>(() => [
-    { label: t("pages.productsPage.distanceAll"), value: "all" },
-    { label: t("pages.productsPage.distance5"), value: "5" },
-    { label: t("pages.productsPage.distance10"), value: "10" },
-    { label: t("pages.productsPage.distance25"), value: "25" },
-  ])
+  const subCategoryOptions = computed<ProductSelectOption<string>[]>(() =>
+    (productData.value?.subCategories ?? [])
+      .filter(option => selectedCategory.value !== "all" && option.parentId === selectedCategory.value)
+      .map(option => ({ label: option.label, value: option.value })),
+  )
 
-  const quickCategoryChips = computed<ProductCategoryChip[]>(() => [
-    { label: t("pages.productsPage.categoryAll"), value: "all", icon: "i-ph-squares-four" },
-    { label: t("pages.productsPage.categoryVehicles"), value: "vehicles", icon: "i-ph-car-profile" },
-    { label: t("pages.productsPage.categoryHome"), value: "home", icon: "i-ph-armchair" },
-    { label: t("pages.productsPage.categoryBeauty"), value: "beauty", icon: "i-ph-drop" },
-    { label: t("pages.productsPage.categoryBooksShort"), value: "books", icon: "i-ph-book-open-text" },
-    { label: t("pages.productsPage.categoryTech"), value: "tech", icon: "i-ph-device-mobile-camera" },
-  ])
-
+  const hasSubCategories = computed(() => subCategoryOptions.value.length > 0)
   const products = computed(() => productData.value?.items ?? [])
 
   const heroStats = computed<ProductOverviewCard[]>(() => [
@@ -89,7 +85,7 @@ export const useProductMarketplace = (
     },
     {
       label: t("pages.productsPage.statFeatured"),
-      value: String(products.value.filter(item => item.postedHoursAgo <= 8).length),
+      value: String(products.value.filter(item => item.stock > 0).length),
       icon: "i-ph-seal-check-fill",
       description: t("pages.productsPage.statFeaturedDescription"),
     },
@@ -103,54 +99,75 @@ export const useProductMarketplace = (
 
   const heroMainStat = computed(() => heroStats.value[0])
   const heroSecondaryStats = computed(() => heroStats.value.slice(1))
-  const nearbyCount = computed(() => products.value.filter(item => item.distanceKm <= 5).length)
+  const nearbyCount = computed(() => products.value.filter(item => item.distanceKm > 0 && item.distanceKm <= 5).length)
 
   const currentSortLabel = computed(
-    () => sortOptions.value.find(option => option.value === sortBy.value)?.label ?? t("pages.productsPage.sortFeatured"),
+    () => sortBy.value === "latest"
+      ? t("pages.productsPage.sortLatest")
+      : sortOptions.value.find(option => option.value === sortBy.value)?.label ?? t("pages.productsPage.sortLatest"),
   )
-
-  const activeFiltersLabel = computed(() => {
-    const labels: string[] = []
-
-    if (selectedCategory.value !== "all") {
-      labels.push(categoryOptions.value.find(option => option.value === selectedCategory.value)?.label ?? "")
-    }
-
-    if (selectedDistance.value !== "all") {
-      labels.push(distanceOptions.value.find(option => option.value === selectedDistance.value)?.label ?? "")
-    }
-
-    if (nearbyOnly.value) labels.push(t("pages.productsPage.nearbyFilter"))
-
-    return labels.length > 0 ? labels.join(" • ") : t("pages.productsPage.allProducts")
-  })
 
   const resultHeading = computed(() => t("pages.productsPage.resultHeading"))
 
   const visibleProducts = computed(() => sortProductListings(filterProductListings(products.value, {
     keyword: search.value,
     category: selectedCategory.value,
+    subCategory: selectedSubCategory.value,
     distance: selectedDistance.value,
-    nearbyOnly: nearbyOnly.value,
   }), sortBy.value))
 
-  const formatProductCurrency = (value: number, currency?: string) =>
-    formatSharedCurrency(value, {
-      currency: currency || "VND",
+  const hasMore = computed(() => Boolean(productData.value?.hasMore && productData.value.nextOffset))
+  const distanceFilterUnavailable = computed(() =>
+    selectedDistance.value !== "0" && productData.value?.distanceFilterAvailable === false,
+  )
+
+  const formatProductCurrency = (product: ProductListing) => {
+    if (product.priceFormat) {
+      const symbol = product.currencySymbol?.trim()
+
+      return symbol ? `${symbol}${product.priceFormat}` : product.priceFormat
+    }
+
+    return formatSharedCurrency(product.price, {
+      currency: product.currency || "VND",
+      currencySymbol: product.currencySymbol,
+      currencyRule: product.currencyRule,
       locale: locale.value,
     })
+  }
 
   const formatDistance = (value: number) =>
-    t("pages.productsPage.distanceKm", {
-      value: value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US", { maximumFractionDigits: 1 }),
-    })
+    value > 0
+      ? t("pages.productsPage.distanceKm", {
+        value: value.toLocaleString(locale.value === "vi" ? "vi-VN" : "en-US", { maximumFractionDigits: 1 }),
+      })
+      : ""
 
   const resetFilters = () => {
     search.value = ""
-    sortBy.value = "featured"
+    sortBy.value = "latest"
     selectedCategory.value = "all"
-    selectedDistance.value = "all"
-    nearbyOnly.value = false
+    selectedSubCategory.value = ""
+    selectedDistance.value = "0"
+    distanceRange.value = 0
+  }
+
+  const applyDistance = () => {
+    selectedDistance.value = String(distanceRange.value)
+
+    if (
+      distanceRange.value > 0
+      && productData.value?.distanceFilterAvailable === false
+      && !hasShownDistanceUnavailableToast.value
+    ) {
+      hasShownDistanceUnavailableToast.value = true
+      toast.add({
+        title: t("pages.productsPage.distanceUnavailableTitle"),
+        description: t("pages.productsPage.distanceUnavailableDescription"),
+        color: "warning",
+        icon: "i-ph-map-pin-line",
+      })
+    }
   }
 
   const addToCart = async (productId: number) => {
@@ -168,8 +185,57 @@ export const useProductMarketplace = (
     }
   }
 
+  const loadMore = async () => {
+    if (!productData.value?.nextOffset || isLoadingMore.value) return
+
+    isLoadingMore.value = true
+
+    try {
+      const nextPage = await repository.list({
+        keyword: search.value,
+        category: selectedCategory.value,
+        subCategory: selectedSubCategory.value,
+        distance: selectedDistance.value,
+        sort: sortBy.value,
+        limit: 35,
+        offset: productData.value.nextOffset,
+      })
+      const merged = mergeProductMarketplaceResponses(productData.value, nextPage)
+
+      productData.value = {
+        ...nextPage,
+        items: merged.items,
+        categories: merged.categories,
+        subCategories: merged.subCategories,
+      }
+    }
+    finally {
+      isLoadingMore.value = false
+    }
+  }
+
+  const openSellerChat = (product: ProductListing) => {
+    if (!import.meta.client || !product.sellerId) return
+
+    const chat = (window as unknown as { Wo_OpenChatTab?: (sellerId: number, recipientId: number, productId: number) => void }).Wo_OpenChatTab
+
+    if (typeof chat === "function") {
+      chat(product.sellerId, 0, product.id)
+      return
+    }
+
+    toast.add({
+      title: t("pages.productsPage.messageSeller"),
+      description: product.seller,
+    })
+  }
+
+  watch(selectedCategory, () => {
+    selectedSubCategory.value = ""
+  })
+
   watchDebounced(
-    [search, selectedCategory, selectedDistance],
+    [search, selectedCategory, selectedSubCategory, selectedDistance, sortBy],
     () => {
       refresh()
     },
@@ -180,25 +246,31 @@ export const useProductMarketplace = (
     search,
     sortBy,
     selectedCategory,
+    selectedSubCategory,
     selectedDistance,
-    nearbyOnly,
+    distanceRange,
     sortOptions,
     categoryOptions,
-    distanceOptions,
-    quickCategoryChips,
+    subCategoryOptions,
+    hasSubCategories,
     heroMainStat,
     heroSecondaryStats,
     nearbyCount,
     currentSortLabel,
-    activeFiltersLabel,
     resultHeading,
     visibleProducts,
     status,
     error,
+    hasMore,
+    distanceFilterUnavailable,
     cartLoadingProductId,
+    isLoadingMore,
     formatProductCurrency,
     formatDistance,
     resetFilters,
+    applyDistance,
     addToCart,
+    loadMore,
+    openSellerChat,
   }
 }

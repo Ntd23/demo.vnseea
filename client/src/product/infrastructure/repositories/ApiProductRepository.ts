@@ -35,5 +35,8 @@ export function createApiProductRepository(): ProductRepository {
     update(id: string, draft: ProductEditorDraft) {
       return client.post<ProductRecord, ProductEditorDraft>(productApiRoutes.update(id), draft)
     },
+    delete(id: string | number) {
+      return client.delete<{ success: boolean }>(productApiRoutes.detail(String(id)))
+    },
   }
 }

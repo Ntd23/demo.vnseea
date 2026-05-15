@@ -47,6 +47,15 @@ else {
         );
     }
 
+    if (!empty($wo['config']['sepay']) && in_array((string) $wo['config']['sepay'], array('1', 'yes', 'true', 'on'), true)) {
+        $topup_methods[] = array(
+            'value' => 'sepay',
+            'label' => 'SePay VietQR',
+            'type' => 'qr',
+            'note' => !empty($wo['config']['sepay_bank_code']) ? (string) $wo['config']['sepay_bank_code'] : ''
+        );
+    }
+
     $can_withdraw = (
         (!empty($wo['config']['affiliate_system']) && $wo['config']['affiliate_system'] == 1)
         || (!empty($wo['config']['point_allow_withdrawal']) && $wo['config']['point_allow_withdrawal'] == 1)

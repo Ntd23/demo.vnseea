@@ -1,7 +1,22 @@
 <?php
 if ($f == 'request_payment') {
     if (Wo_CheckSession($hash_id) === true) {
-        if (empty($_POST['withdraw_method']) || !in_array($_POST['withdraw_method'], array_keys($wo['config']['withdrawal_payment_method'])) || $wo['config']['withdrawal_payment_method'][$_POST['withdraw_method']] != 1) {
+        $sepay_withdrawal_enabled = (
+            !empty($_POST['withdraw_method'])
+            && $_POST['withdraw_method'] == 'sepay'
+            && !empty($wo['config']['sepay'])
+            && in_array((string) $wo['config']['sepay'], array('1', 'yes', 'true', 'on'), true)
+        );
+        if (
+            empty($_POST['withdraw_method'])
+            || (
+                !$sepay_withdrawal_enabled
+                && (
+                    !in_array($_POST['withdraw_method'], array_keys($wo['config']['withdrawal_payment_method']))
+                    || $wo['config']['withdrawal_payment_method'][$_POST['withdraw_method']] != 1
+                )
+            )
+        ) {
             $errors[] = $error_icon . $wo['lang']['please_select_payment_method'];
         }
         elseif ($_POST['withdraw_method'] == 'bank') {

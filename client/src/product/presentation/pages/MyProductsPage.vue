@@ -1,111 +1,84 @@
-<!-- English description: My-products page backed by the real product API bridge. -->
+<!-- English description: Wowonder-aligned my-products page backed by the product API bridge. -->
 
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-10 pb-20 px-4 sm:px-6 pt-4">
-    <!-- Header Section -->
-    <section class="surface-card p-8 sm:p-10 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/header">
-      <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none" />
-      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-        <div class="flex items-center gap-6">
-          <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-50 text-[var(--text-primary)] shadow-lg shadow-primary-500/10 ring-1 ring-primary-100/50 group-hover/header:scale-110 transition-transform duration-500">
-            <Icon name="i-ph-storefront-duotone" class="h-8 w-8" />
-          </div>
-          <div>
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
-              {{ $t("pages.myProductsPage.eyebrow") }}
-            </p>
-            <h1 class="mt-2 text-4xl font-black tracking-tight text-[var(--text-primary)] leading-none">
-              {{ $t("pages.myProductsPage.title") }}
-            </h1>
-          </div>
+  <div class="my-products-page mx-auto w-full max-w-[1520px] px-3 pb-12 pt-4 sm:px-4">
+    <section class="my-products-heading">
+      <div class="my-products-heading__inner">
+        <span class="my-products-heading__icon">
+          <Icon name="i-ph-storefront-fill" class="h-5 w-5" />
+        </span>
+        <div>
+          <p class="my-products-heading__eyebrow">
+            {{ $t("pages.myProductsPage.eyebrow") }}
+          </p>
+          <h1 class="my-products-heading__title">
+            {{ $t("pages.myProductsPage.title") }}
+          </h1>
         </div>
-
-        <NuxtLink
-          to="/new-product"
-          class="inline-flex h-14 items-center justify-center rounded-2xl bg-primary-600 px-8 text-sm font-black text-white hover:bg-primary-700 shadow-lg shadow-primary-600/20 transition-all active:scale-95 group/btn"
-        >
-          <Icon name="i-ph-plus-bold" class="mr-3 h-5 w-5 group-hover/btn:rotate-90 transition-transform" />
-          {{ $t("pages.myProductsPage.create") }}
-        </NuxtLink>
       </div>
     </section>
 
-    <!-- Navigation Section -->
-    <section class="surface-card p-3 rounded-full bg-white/80 backdrop-blur-3xl ring-1 ring-secondary-200/50 shadow-xl inline-flex w-full md:w-auto">
-      <div class="flex flex-col md:flex-row w-full gap-2">
-        <button
-          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full bg-primary-600 px-6 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-primary-600/20 active:scale-95 transition-all"
-        >
-          <Icon name="i-ph-shopping-bag-duotone" class="mr-3 h-4 w-4" />
-          {{ $t("pages.myProductsPage.myProducts") }}
-        </button>
-        
-        <button
-          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full border border-secondary-200/50 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] hover:text-secondary-900 hover:bg-secondary-50 transition-all active:scale-95"
-        >
-          <Icon name="i-ph-receipt-duotone" class="mr-3 h-4 w-4" />
-          {{ $t("pages.myProductsPage.purchased") }}
-        </button>
-
+    <section class="my-products-nav">
+      <nav class="my-products-tabs" aria-label="Product sections">
         <NuxtLink
-          to="/products"
-          class="flex-1 md:flex-none inline-flex h-12 items-center justify-center rounded-full border border-secondary-200/50 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-[var(--text-primary)] hover:text-secondary-900 hover:bg-secondary-50 transition-all active:scale-95"
+          v-for="item in storeTabs"
+          :key="item.to"
+          :to="item.to"
+          class="my-products-tab"
+          :class="{ 'my-products-tab--active': item.active }"
         >
-          <Icon name="i-ph-planet-duotone" class="mr-3 h-4 w-4" />
-          {{ $t("pages.myProductsPage.marketplace") }}
+          <Icon :name="item.icon" class="my-products-tab__icon" />
+          {{ item.label }}
         </NuxtLink>
-      </div>
+      </nav>
+
+      <NuxtLink to="/new-product" class="my-products-create">
+        <Icon name="i-ph-plus-bold" class="h-4 w-4" />
+        {{ $t("pages.myProductsPage.create") }}
+      </NuxtLink>
     </section>
 
-    <!-- Stats Section -->
-    <div class="grid gap-6 md:grid-cols-3">
-      <div
-        v-for="card in overviewCards"
-        :key="card.label"
-        class="surface-card p-8 sm:p-10 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/stats hover:shadow-3xl transition-all duration-500"
-      >
-        <div class="absolute -right-4 -top-4 text-secondary-900/5 group-hover/stats:scale-125 transition-transform duration-700">
-          <Icon :name="card.icon" class="h-24 w-24" />
-        </div>
+    <section class="my-products-filters">
+      <label class="my-products-search">
+        <Icon name="i-ph-magnifying-glass" class="h-5 w-5 text-[#8b9bb2]" />
+        <input
+          v-model="search"
+          type="search"
+          :placeholder="$t('pages.myProductsPage.searchPlaceholder')"
+        >
+      </label>
 
-        <div class="relative z-10 space-y-4">
-          <div class="flex items-center gap-3">
-            <div class="h-1.5 w-1.5 rounded-full bg-primary-500" />
-            <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)]">
-              {{ card.label }}
-            </p>
-          </div>
-          <p class="text-5xl font-black text-[var(--text-primary)] tracking-tighter">
-            {{ card.value }}
-          </p>
-          <p class="text-sm font-medium leading-relaxed text-[var(--text-primary)] italic">
-            {{ card.description }}
-          </p>
+      <USelect
+        v-model="sortBy"
+        :items="sortOptions"
+        value-key="value"
+        label-key="label"
+        :placeholder="$t('pages.myProductsPage.sortBy')"
+        class="my-products-select"
+      />
+      <USelect
+        v-model="selectedCategory"
+        :items="categoryOptions"
+        value-key="value"
+        label-key="label"
+        :placeholder="$t('pages.myProductsPage.allCategories')"
+        class="my-products-select"
+      />
+    </section>
+
+    <section v-if="status === 'pending'" class="my-products-grid">
+      <div v-for="index in 8" :key="index" class="my-product-card">
+        <USkeleton class="my-product-card__image" />
+        <div class="my-product-card__info">
+          <USkeleton class="h-5 w-4/5 rounded" />
+          <USkeleton class="mt-2 h-5 w-24 rounded" />
         </div>
       </div>
-    </div>
-
-    <section
-      v-if="status === 'pending'"
-      class="grid gap-4 md:grid-cols-2"
-    >
-      <UCard
-        v-for="index in 4"
-        :key="index"
-        class="rounded-[24px] bg-white"
-        :ui="{ body: 'flex gap-4 p-5' }"
-      >
-        <USkeleton class="h-24 w-24 rounded-2xl" />
-        <div class="flex-1 space-y-3">
-          <USkeleton class="h-5 w-2/3 rounded-full" />
-          <USkeleton class="h-4 w-1/2 rounded-full" />
-          <USkeleton class="h-10 w-32 rounded-full" />
-        </div>
-      </UCard>
     </section>
 
     <UAlert
       v-else-if="error"
+      class="mt-5"
       color="error"
       variant="soft"
       icon="i-ph-warning-circle-duotone"
@@ -113,88 +86,62 @@
       :description="String(error)"
     />
 
-    <section
-      v-else-if="products.length"
-      class="grid gap-5 md:grid-cols-2"
-    >
+    <section v-else-if="visibleProducts.length" class="my-products-grid">
       <article
-        v-for="product in products"
+        v-for="product in visibleProducts"
+        :id="`product_${product.id}`"
         :key="product.id"
-        class="surface-card overflow-hidden bg-white"
+        class="my-product-card"
       >
-        <div class="relative h-48 bg-secondary-100">
-          <NuxtImg
-            v-if="product.imageUrl"
-            :src="product.imageUrl"
-            :alt="product.title"
-            class="h-full w-full object-cover"
-            loading="lazy"
+        <NuxtLink :to="product.href || '/products'" class="my-product-card__link">
+          <div class="my-product-card__image">
+            <img
+              v-if="product.imageUrl"
+              :src="product.imageUrl"
+              :alt="product.title"
+              loading="lazy"
+            >
+            <div v-else class="my-product-card__fallback" :style="{ background: product.background }">
+              <Icon :name="product.icon" class="h-9 w-9 text-white" />
+            </div>
+          </div>
+
+          <div class="my-product-card__info">
+            <span :title="product.title" class="my-product-card__title">
+              {{ product.title }}
+            </span>
+            <strong class="my-product-card__price">
+              {{ formatProductCurrency(product) }}
+            </strong>
+          </div>
+        </NuxtLink>
+
+        <button
+          type="button"
+          class="my-product-card__delete"
+          :disabled="deletingProductId === product.id"
+          :aria-label="$t('pages.myProductsPage.delete')"
+          @click="confirmDeleteProduct(product.id)"
+        >
+          <Icon
+            :name="deletingProductId === product.id ? 'i-ph-spinner-gap' : 'i-ph-trash-fill'"
+            class="h-5 w-5"
+            :class="{ 'animate-spin': deletingProductId === product.id }"
           />
-          <div
-            v-else
-            class="h-full w-full"
-            :style="{ background: product.background }"
-          />
-        </div>
-        <div class="space-y-3 p-5">
-          <UBadge variant="soft" color="primary" class="rounded-full">
-            {{ product.categoryLabel }}
-          </UBadge>
-          <h2 class="text-title-primary line-clamp-2">
-            {{ product.title }}
-          </h2>
-          <p class="text-body-secondary line-clamp-2">
-            {{ product.description }}
-          </p>
-          <NuxtLink
-            :to="`/edit-product/${product.id}`"
-            class="btn-secondary"
-          >
-            {{ $t("pages.myProductsPage.edit") }}
-          </NuxtLink>
-        </div>
+        </button>
       </article>
     </section>
 
-    <!-- Empty State Section -->
-    <section v-else class="surface-card p-16 sm:p-24 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden">
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(var(--color-primary-500-rgb),0.05)_0%,_transparent_70%)]" />
-      
-      <div class="relative z-10 mx-auto flex max-w-[560px] flex-col items-center text-center">
-        <div class="flex h-24 w-24 items-center justify-center rounded-[2.5rem] bg-secondary-50 text-secondary-300 ring-4 ring-secondary-50/50 relative">
-          <Icon name="i-ph-shopping-cart-simple-duotone" class="h-12 w-12" />
-        </div>
-        
-        <h2 class="mt-10 text-3xl font-black tracking-tight text-[var(--text-primary)] leading-tight">
-          {{ $t("pages.myProductsPage.emptyTitle") }}
-        </h2>
-        <p class="mt-4 text-base font-medium leading-relaxed text-[var(--text-primary)] max-w-[420px]">
-          {{ $t("pages.myProductsPage.emptyDescription") }}
-        </p>
-
-        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-          <NuxtLink
-            to="/new-product"
-            class="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-2xl bg-primary-600 px-8 text-sm font-black text-white shadow-lg shadow-primary-600/20 active:scale-95 transition-all"
-          >
-            <Icon name="i-ph-plus-bold" class="mr-3 h-5 w-5" />
-            {{ $t("pages.myProductsPage.createFirst") }}
-          </NuxtLink>
-          
-          <NuxtLink
-            to="/products"
-            class="w-full sm:w-auto inline-flex h-14 items-center justify-center rounded-2xl border border-secondary-200/50 bg-white px-8 text-sm font-black text-[var(--text-primary)] hover:bg-secondary-50 active:scale-95 transition-all"
-          >
-            {{ $t("pages.myProductsPage.viewMarketplace") }}
-          </NuxtLink>
-        </div>
-      </div>
+    <section v-else class="my-products-empty">
+      <Icon name="i-ph-shopping-cart-simple" class="h-7 w-7" />
+      <span>{{ $t("pages.myProductsPage.emptyTitle") }}</span>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useMyProductsOverview } from "../../application/composables/useMyProductsOverview"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 
 const { t } = useI18n()
 
@@ -203,5 +150,372 @@ useSeoMeta({
   description: () => t("pages.myProductsPage.seoDescription"),
 })
 
-const { overviewCards, products, status, error } = useMyProductsOverview()
+const {
+  visibleProducts,
+  status,
+  error,
+  search,
+  sortBy,
+  selectedCategory,
+  categoryOptions,
+  sortOptions,
+  deletingProductId,
+  formatProductCurrency,
+  deleteProduct,
+} = useMyProductsOverview()
+
+const storeTabs = computed(() => [
+  {
+    label: t("pages.myProductsPage.myProducts"),
+    to: appRoutes.myProducts,
+    icon: "i-ph-shopping-bag",
+    active: true,
+  },
+  {
+    label: t("pages.myProductsPage.purchased"),
+    to: appRoutes.purchased,
+    icon: "i-ph-receipt",
+    active: false,
+  },
+  {
+    label: t("pages.myProductsPage.orders"),
+    to: appRoutes.orders,
+    icon: "i-ph-list-checks",
+    active: false,
+  },
+  {
+    label: t("pages.myProductsPage.marketplace"),
+    to: appRoutes.products,
+    icon: "i-ph-planet",
+    active: false,
+  },
+])
+
+const confirmDeleteProduct = (productId: number) => {
+  if (import.meta.client && !window.confirm(t("pages.myProductsPage.deleteConfirm"))) {
+    return
+  }
+
+  deleteProduct(productId)
+}
 </script>
+
+<style scoped>
+.my-products-page {
+  --wowonder-blue: #0000ff;
+  --wowonder-card: #ffffff;
+  --wowonder-border: #dbe3f2;
+  --wowonder-text: #111827;
+  --wowonder-muted: #66758b;
+}
+
+.my-products-heading,
+.my-products-nav,
+.my-products-filters,
+.my-products-empty {
+  border: 1px solid var(--wowonder-border);
+  border-radius: 12px;
+  background: var(--wowonder-card);
+  box-shadow: 0 2px 6px rgba(13, 38, 76, 0.08);
+}
+
+.my-products-heading {
+  min-height: 80px;
+}
+
+.my-products-heading__inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 80px;
+  padding: 18px 24px;
+}
+
+.my-products-heading__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: var(--wowonder-blue);
+}
+
+.my-products-heading__eyebrow {
+  margin: 0;
+  color: var(--wowonder-text);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.my-products-heading__title {
+  margin: 7px 0 0;
+  color: var(--wowonder-text);
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.my-products-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 74px;
+  margin-top: 22px;
+  padding: 0 12px;
+}
+
+.my-products-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.my-products-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 74px;
+  flex: 0 0 auto;
+  gap: 8px;
+  padding: 0 13px;
+  color: #555555;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 8px 8px 0 0;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.16s ease, background 0.16s ease;
+}
+
+.my-products-tab:hover {
+  color: var(--wowonder-blue);
+  background: rgba(0, 0, 255, 0.04);
+}
+
+.my-products-tab__icon {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+}
+
+.my-products-tab--active {
+  color: #555555;
+  font-weight: 800;
+}
+
+.my-products-tab--active::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 4px;
+  background: var(--wowonder-blue);
+  content: "";
+}
+
+.my-products-create {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 128px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: var(--wowonder-blue);
+  box-shadow: 0 3px 8px rgba(0, 0, 255, 0.28);
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.my-products-filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 220px 240px;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 14px;
+}
+
+.my-products-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  border: 1px solid var(--wowonder-border);
+  border-radius: 8px;
+  padding: 0 12px;
+}
+
+.my-products-search input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: var(--wowonder-text);
+  background: transparent;
+  font-size: 15px;
+}
+
+.my-products-select {
+  min-width: 0;
+}
+
+.my-products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 26px;
+}
+
+.my-product-card {
+  position: relative;
+  min-width: 0;
+}
+
+.my-product-card__link {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--wowonder-border);
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+  text-decoration: none;
+}
+
+.my-product-card__link:hover {
+  text-decoration: none;
+}
+
+.my-product-card__image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #eef3fb;
+}
+
+.my-product-card__image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.my-product-card__fallback {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.my-product-card__info {
+  padding: 7px 10px 10px;
+}
+
+.my-product-card__title {
+  display: block;
+  overflow: hidden;
+  color: #555555;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.my-product-card__price {
+  display: block;
+  overflow: hidden;
+  margin-top: 7px;
+  color: #4caf50;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.my-product-card__delete {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.my-product-card__delete:hover {
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.my-product-card__delete:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.my-products-empty {
+  display: flex;
+  min-height: 180px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  color: var(--wowonder-muted);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .my-products-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .my-products-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .my-products-heading__title {
+    font-size: 24px;
+  }
+
+  .my-products-nav {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 0 12px 12px;
+  }
+
+  .my-products-tabs {
+    width: 100%;
+  }
+
+  .my-products-create {
+    width: 100%;
+  }
+
+  .my-products-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+</style>

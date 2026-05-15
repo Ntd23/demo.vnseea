@@ -43,6 +43,7 @@ export function useWalletPageVM(
   const recipientResults = ref<WalletRecipient[]>([])
   const recipientSearching = ref(false)
   const receiveQr = ref<WalletReceiveQr | null>(null)
+  const sepayTopup = ref<WalletMutationResult | null>(null)
   const mutationError = ref("")
   const mutationMessage = ref("")
   const sending = ref(false)
@@ -89,12 +90,26 @@ export function useWalletPageVM(
 
   function openSendModal() {
     resetMutationState()
+    topupFormOpen.value = false
+    receiveQrOpen.value = false
     sendModalOpen.value = true
   }
 
   function closeSendModal() {
     sendModalOpen.value = false
     recipientResults.value = []
+  }
+
+  function openTopupForm() {
+    resetMutationState()
+    sendModalOpen.value = false
+    receiveQrOpen.value = false
+    topupFormOpen.value = true
+  }
+
+  function closeTopupForm() {
+    topupFormOpen.value = false
+    sepayTopup.value = null
   }
 
   function toggleTopupForm() {
@@ -104,6 +119,8 @@ export function useWalletPageVM(
 
   async function openReceiveQr(amount?: number | null) {
     resetMutationState()
+    sendModalOpen.value = false
+    topupFormOpen.value = false
     try {
       receiveQr.value = await repository.getReceiveQr(amount)
       receiveQrOpen.value = true
@@ -168,12 +185,49 @@ export function useWalletPageVM(
         return
       }
 
+      if (result.qrUrl) {
+        sepayTopup.value = result
+        mutationMessage.value = t("pages.walletPage.sepayCreated")
+        return
+      }
+
       mutationMessage.value = result.message
       await refresh()
       topupFormOpen.value = false
     }
     catch (topupError) {
       mutationError.value = toErrorMessage(topupError, t("pages.walletPage.topupError"))
+    }
+    finally {
+      toppingUp.value = false
+    }
+  }
+
+  async function checkSepayTopup() {
+    if (!sepayTopup.value?.orderCode) return
+
+    toppingUp.value = true
+    resetMutationState()
+
+    try {
+      const result = await repository.checkSepayTopup(sepayTopup.value.orderCode)
+      sepayTopup.value = {
+        ...sepayTopup.value,
+        ...result,
+      }
+
+      if (result.paid) {
+        mutationMessage.value = t("pages.walletPage.sepayPaid")
+        topupFormOpen.value = false
+        sepayTopup.value = null
+        await refresh()
+        return
+      }
+
+      mutationMessage.value = t("pages.walletPage.sepayPending")
+    }
+    catch (checkError) {
+      mutationError.value = toErrorMessage(checkError, t("pages.walletPage.sepayCheckError"))
     }
     finally {
       toppingUp.value = false
@@ -191,6 +245,7 @@ export function useWalletPageVM(
     recipientResults,
     recipientSearching,
     receiveQr,
+    sepayTopup,
     mutationError,
     mutationMessage,
     sending,
@@ -199,12 +254,15 @@ export function useWalletPageVM(
     redirectTopupMethods,
     openSendModal,
     closeSendModal,
+    openTopupForm,
+    closeTopupForm,
     toggleTopupForm,
     openReceiveQr,
     closeReceiveQr,
     searchRecipients,
     sendMoney,
     createTopup,
+    checkSepayTopup,
     refresh,
   }
 }

@@ -8,6 +8,12 @@ if ($f == 'wallet') {
         }
         if (empty($error)) {
             $data = Wo_ReplenishWallet($_GET['amount']);
+            if (empty($data)) {
+                $data = array(
+                    'status' => 500,
+                    'error' => $error_icon . $wo['lang']['please_check_details']
+                );
+            }
             header("Content-type: application/json");
             echo json_encode($data);
             exit();

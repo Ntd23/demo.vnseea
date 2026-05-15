@@ -35,6 +35,7 @@ export const appRoutes = {
   newProduct: "/new-product",
   editProduct: (id: string | number) => `/edit-product/${encodeSegment(id)}`,
   myProducts: "/my-products",
+  purchased: "/purchased",
   directory: "/directory",
   forum: "/forum",
   games: "/games",
