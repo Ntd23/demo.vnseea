@@ -18,7 +18,7 @@ function get_auth_header() {
 // --- load config ---
 $SEPAY_BANK_CODE   = $wo['config']['sepay_bank_code'] ?? '';
 $SEPAY_ACC_NUMBER  = $wo['config']['sepay_bank_acc'] ?? '';
-$SEPAY_ACC_NAME    = $wo['config']['siteName'] ?? '';
+$SEPAY_ACC_NAME    = trim((string)($wo['config']['sepay_account_name'] ?? ''));
 $SEPAY_WEBHOOK_KEY = $wo['config']['sepay_webhook_token'] ?? '';
 $BASE_URL          = $wo['config']['site_url'] ?? '';
 
@@ -45,11 +45,17 @@ if ($path === 'pay') {
   $stmt->execute();
 
   // Tạo URL QR (SePay host)
+  $qr_bank_code = strtoupper($SEPAY_BANK_CODE);
+  if (in_array($qr_bank_code, array('MB', 'MBBANK', 'MB BANK'), true)) {
+    $qr_bank_code = 'MB';
+  }
+
   $qr_url = 'https://qr.sepay.vn/img?' . http_build_query([
-    'bank'   => $SEPAY_BANK_CODE,
+    'bank'   => $qr_bank_code,
     'acc'    => $SEPAY_ACC_NUMBER,
     'amount' => $amount,
-    'des'    => $order_code
+    'des'    => $order_code,
+    'template' => 'compact'
   ]);
 
   echo json_encode([

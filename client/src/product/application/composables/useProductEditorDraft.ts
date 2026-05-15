@@ -1,7 +1,6 @@
 import { computed, ref, watch, type ComputedRef, type Ref } from "vue"
 import { useStorage } from "@vueuse/core"
 import type {
-  CategoryValue,
   ConditionValue,
   CurrencyValue,
   ProductEditorDraft,
@@ -12,7 +11,6 @@ const cloneDraft = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null
 
-const categoryValues = ["home", "tech", "beauty", "books", "vehicles", "food"] as const satisfies readonly CategoryValue[]
 const conditionValues = ["new", "like-new", "used"] as const satisfies readonly ConditionValue[]
 const currencyValues = ["USD", "VND", "EUR"] as const satisfies readonly CurrencyValue[]
 
@@ -48,7 +46,7 @@ const normalizeDraft = (value: unknown, fallback: ProductEditorDraft): ProductEd
       title: typeof fieldsSource.title === "string" ? fieldsSource.title : fallbackFields.title,
       price: typeof fieldsSource.price === "string" ? fieldsSource.price : fallbackFields.price,
       description: typeof fieldsSource.description === "string" ? fieldsSource.description : fallbackFields.description,
-      category: normalizeEnumField(fieldsSource.category, categoryValues, fallbackFields.category),
+      category: extractStringValue(fieldsSource.category) ?? fallbackFields.category,
       condition: normalizeEnumField(fieldsSource.condition, conditionValues, fallbackFields.condition),
       location: typeof fieldsSource.location === "string" ? fieldsSource.location : fallbackFields.location,
       currency: normalizeEnumField(fieldsSource.currency, currencyValues, fallbackFields.currency),

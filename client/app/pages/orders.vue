@@ -1,5 +1,5 @@
 <template>
-  <PagesOrdersPage />
+  <PagesOrdersPage active-section="orders" />
 </template>
 
 <script setup lang="ts">

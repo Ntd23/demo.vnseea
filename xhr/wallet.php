@@ -94,63 +94,93 @@ if ($f == 'wallet') {
         exit();
     }
     if ($s == 'send' && $wo['loggedin'] === true) {
+        header("Content-type: application/json");
         $data = array(
             'status' => 400
         );
-        $user_id = (!empty($_POST['user_id']) && is_numeric($_POST['user_id'])) ? $_POST['user_id'] : 0;
-        $amount = (!empty($_POST['amount']) && is_numeric($_POST['amount'])) ? $_POST['amount'] : 0;
+        $user_id = (!empty($_POST['user_id']) && is_numeric($_POST['user_id'])) ? (int) $_POST['user_id'] : 0;
+        $amount = (!empty($_POST['amount']) && is_numeric($_POST['amount'])) ? (float) $_POST['amount'] : 0;
+        $sender_id = (int) $wo['user']['user_id'];
         $userdata = Wo_UserData($user_id);
-        $wallet = $wo['user']['wallet'];
-        if (empty($user_id) || empty($amount) || empty($userdata) || empty(floatval($wallet)) || $amount < 0) {
+        $sender = Wo_UserData($sender_id);
+        $wallet = isset($sender['wallet']) ? (float) $sender['wallet'] : 0;
+        if (empty($user_id) || empty($amount) || empty($userdata) || empty($sender) || $amount <= 0) {
+            $data['message'] = $wo['lang']['please_check_details'];
+        } else if ($user_id === $sender_id) {
+            $data['message'] = $wo['lang']['please_check_details'];
+        } else if (!empty($userdata['banned']) || empty($userdata['active'])) {
             $data['message'] = $wo['lang']['please_check_details'];
         } else if ($wallet < $amount) {
             $data['message'] = $wo['lang']['amount_exceded'];
         } else {
-            $amount = ($amount <= $wallet) ? $amount : $wallet;
-            $up_data1 = array(
-                'wallet' => sprintf('%.2f', $userdata['wallet'] + $amount)
-            );
-            $up_data2 = array(
-                'wallet' => sprintf('%.2f', $wallet - $amount)
-            );
-            $recipient_name = $userdata['username'];
+            $amount = (float) (($amount <= $wallet) ? $amount : $wallet);
+            $new_recipient_wallet = sprintf('%.2f', ((float) $userdata['wallet']) + $amount);
+            $new_sender_wallet = sprintf('%.2f', $wallet - $amount);
+            $recipient_full_name = trim((string)($userdata['first_name'] ?? '') . ' ' . (string)($userdata['last_name'] ?? ''));
+            $sender_full_name = trim((string)($sender['first_name'] ?? '') . ' ' . (string)($sender['last_name'] ?? ''));
+            $recipient_name = $recipient_full_name !== ''
+                ? $recipient_full_name
+                : (!empty($userdata['name']) ? $userdata['name'] : $userdata['username']);
+            $sender_name = $sender_full_name !== ''
+                ? $sender_full_name
+                : (!empty($sender['name']) ? $sender['name'] : $sender['username']);
             $currency = Wo_GetCurrency($wo['config']['ads_currency']);
             $success_msg = $wo['lang']['money_sent_to'];
             $notif_msg = $wo['lang']['sent_you'];
             $data['status'] = 200;
             $data['message'] = "$success_msg@ $recipient_name";
             //$note1           = $success_msg . " " . $userdata['name'];
-            $note1 = $userdata['name'];
+            $transfer_note = !empty($_POST['note']) ? trim((string)$_POST['note']) : '';
+            $note1 = $recipient_name;
             //$note2           = $wo['lang']['successfully_received_from'] . " " . $wo['user']['name'];
-            $note2 = $wo['user']['name'];
-            $db->where('user_id', $user_id)->update(T_USERS, $up_data1);
-
-            mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`) VALUES ({$user_id}, 'RECEIVED', {$amount}, '{$note2}')");
-            $db->where('user_id', $wo['user']['id'])->update(T_USERS, $up_data2);
-            mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`) VALUES ({$wo['user']['user_id']}, 'SENT', {$amount}, '{$note1}')");
+            $note2 = $sender_name;
+            $transfer_note_sql = mysqli_real_escape_string($sqlConnect, $transfer_note);
+            $extra = mysqli_real_escape_string($sqlConnect, json_encode(array(
+                'note' => $transfer_note,
+                'sender_id' => $sender_id,
+                'recipient_id' => $user_id
+            ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+            mysqli_begin_transaction($sqlConnect);
+            $update_sender = mysqli_query($sqlConnect, "UPDATE " . T_USERS . " SET `wallet` = `wallet` - {$amount} WHERE `user_id` = {$sender_id} AND `wallet` >= {$amount}");
+            if (!$update_sender || mysqli_affected_rows($sqlConnect) !== 1) {
+                mysqli_rollback($sqlConnect);
+                $data['message'] = $wo['lang']['amount_exceded'];
+                echo json_encode($data);
+                exit();
+            }
+            $update_recipient = mysqli_query($sqlConnect, "UPDATE " . T_USERS . " SET `wallet` = `wallet` + {$amount} WHERE `user_id` = {$user_id}");
+            if (!$update_recipient) {
+                mysqli_rollback($sqlConnect);
+                $data['message'] = $wo['lang']['please_check_details'];
+                echo json_encode($data);
+                exit();
+            }
+            mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`, `extra`) VALUES ({$user_id}, 'RECEIVED', {$amount}, '{$transfer_note_sql}', '{$extra}')");
+            mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`, `extra`) VALUES ({$sender_id}, 'SENT', {$amount}, '{$transfer_note_sql}', '{$extra}')");
+            mysqli_commit($sqlConnect);
             cache($user_id, 'users', 'delete');
-            cache($wo['user']['id'], 'users', 'delete');
+            cache($sender_id, 'users', 'delete');
             $notification_data_array = array(
                 'recipient_id' => $user_id,
                 'type' => 'sent_u_money',
-                'user_id' => $wo['user']['id'],
+                'user_id' => $sender_id,
                 'text' => "$notif_msg $amount$currency!",
                 'url' => 'index.php?link1=wallet'
             );
             Wo_RegisterNotification($notification_data_array);
            $data = [
             'status'            => 200,
-            'message'           => $wo['lang']['money_sent_to'].' @'.$userdata['username'],
+            'message'           => $wo['lang']['money_sent_to'].' '.$recipient_name,
             'recipient_id'      => (int)$userdata['user_id'],
-            'recipient_name'    => (string)($userdata['username'] ?: $to['username']),
-            // 'sender_balance'    => (float)$new_sender_balance,
-            'recipient_balance' => (float)$userdata['wallet'] + $amount,
+            'recipient_name'    => (string)$recipient_name,
+            'sender_balance'    => (float)$new_sender_wallet,
+            'recipient_balance' => (float)$new_recipient_wallet,
             'currency'          => $currency,
             'tx' => [
                 // 'id'             => $send_tx_id,     // id bản ghi SENT
                 'kind'           => 'SENT',
                 'amount'         => (float)$amount,
-                'notes'          => $note2,
+                'notes'          => $note1,
                 'transaction_dt' => date('Y-m-d H:i:s')
             ],
             // gợi ý FE đóng UI QR
@@ -158,7 +188,6 @@ if ($f == 'wallet') {
         ];
         echo json_encode($data); exit;
         }
-        header("Content-type: application/json");
         echo json_encode($data);
         exit();
     }

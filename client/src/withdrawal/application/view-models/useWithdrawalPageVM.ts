@@ -1,6 +1,7 @@
 // English description: Owns withdrawal overview loading and request submission state.
 
 import { createApiWithdrawalRepository } from "../../infrastructure/repositories/ApiWithdrawalRepository"
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import type { WithdrawalRepository } from "../../domain/repositories/WithdrawalRepository"
 import type {
   WithdrawalOverview,
@@ -27,7 +28,7 @@ const toErrorMessage = (error: unknown, defaultMessage: string) =>
 export function useWithdrawalPageVM(
   repository: WithdrawalRepository = createApiWithdrawalRepository(),
 ) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const submitting = ref(false)
   const mutationError = ref("")
   const mutationMessage = ref("")
@@ -51,6 +52,21 @@ export function useWithdrawalPageVM(
     && !overview.value.hasPendingRequest
     && !belowMinimum.value,
   )
+  const formattedBalance = computed(() =>
+    formatWithdrawalAmount(overview.value.balance),
+  )
+  const formattedMinimumAmount = computed(() =>
+    formatWithdrawalAmount(overview.value.minimumAmount),
+  )
+
+  function formatWithdrawalAmount(amount: number) {
+    return formatCurrency(amount, {
+      currency: overview.value.currency,
+      currencySymbol: overview.value.currencySymbol,
+      currencyRule: overview.value.currencyRule,
+      locale: locale.value,
+    })
+  }
 
   function resetMutationState() {
     mutationError.value = ""
@@ -80,6 +96,8 @@ export function useWithdrawalPageVM(
     errorMessage,
     belowMinimum,
     canSubmit,
+    formattedBalance,
+    formattedMinimumAmount,
     submitting,
     mutationError,
     mutationMessage,

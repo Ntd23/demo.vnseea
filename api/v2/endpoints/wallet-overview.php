@@ -14,14 +14,93 @@ else {
     $currency_symbol = Wo_GetCurrency($currency);
     $currency_rule = Wo_GetCurrencyRule($currency);
     $transactions = array();
-    $raw_transactions = Wo_GetMytransactions();
+    $user_id = (int) $wo['user']['user_id'];
+    $raw_transactions = array();
+    $transactions_query = mysqli_query($sqlConnect, "
+        SELECT *
+        FROM " . T_PAYMENT_TRANSACTIONS . "
+        WHERE `userid` = {$user_id}
+        ORDER BY `id` DESC
+        LIMIT 30
+    ");
+
+    if ($transactions_query) {
+        while ($transaction = mysqli_fetch_assoc($transactions_query)) {
+            $raw_transactions[] = $transaction;
+        }
+    }
 
     if (!empty($raw_transactions) && is_array($raw_transactions)) {
         foreach ($raw_transactions as $transaction) {
+            $extra = array();
+            if (!empty($transaction['extra'])) {
+                $decoded_extra = is_array($transaction['extra'])
+                    ? $transaction['extra']
+                    : json_decode((string) $transaction['extra'], true);
+                if (is_array($decoded_extra)) {
+                    $extra = $decoded_extra;
+                }
+            }
+
+            $kind = !empty($transaction['kind']) ? strtoupper((string) $transaction['kind']) : '';
+            $counterparty_id = 0;
+            if ($kind == 'RECEIVED' && !empty($extra['sender_id'])) {
+                $counterparty_id = (int) $extra['sender_id'];
+            }
+            elseif ($kind == 'SENT' && !empty($extra['recipient_id'])) {
+                $counterparty_id = (int) $extra['recipient_id'];
+            }
+
+            if ($counterparty_id <= 0 && ($kind == 'RECEIVED' || $kind == 'SENT')) {
+                $pair_id = $kind == 'RECEIVED'
+                    ? ((int) $transaction['id'] + 1)
+                    : ((int) $transaction['id'] - 1);
+                $pair_kind = $kind == 'RECEIVED' ? 'SENT' : 'RECEIVED';
+                $amount = isset($transaction['amount']) ? (float) $transaction['amount'] : 0;
+                $pair_query = mysqli_query($sqlConnect, "
+                    SELECT `userid`
+                    FROM " . T_PAYMENT_TRANSACTIONS . "
+                    WHERE `id` = {$pair_id}
+                      AND `kind` = '{$pair_kind}'
+                      AND `amount` = {$amount}
+                    LIMIT 1
+                ");
+
+                if ($pair_query && mysqli_num_rows($pair_query) > 0) {
+                    $pair = mysqli_fetch_assoc($pair_query);
+                    $counterparty_id = isset($pair['userid']) ? (int) $pair['userid'] : 0;
+                }
+            }
+
+            $counterparty_name = '';
+            if ($counterparty_id > 0) {
+                $counterparty = Wo_UserData($counterparty_id);
+                if (!empty($counterparty)) {
+                    $full_name = trim((string)($counterparty['first_name'] ?? '') . ' ' . (string)($counterparty['last_name'] ?? ''));
+                    $counterparty_name = $full_name !== ''
+                        ? $full_name
+                        : (!empty($counterparty['name']) ? $counterparty['name'] : $counterparty['username']);
+                }
+            }
+            elseif ($kind == 'RECEIVED' && !empty($extra['sender_name'])) {
+                $counterparty_name = strip_tags((string) $extra['sender_name']);
+            }
+            elseif ($kind == 'SENT' && !empty($extra['recipient_name'])) {
+                $counterparty_name = strip_tags((string) $extra['recipient_name']);
+            }
+
+            $notes = !empty($transaction['notes']) ? strip_tags((string) $transaction['notes']) : '';
+            if (($kind == 'RECEIVED' || $kind == 'SENT') && array_key_exists('note', $extra)) {
+                $notes = !empty($extra['note']) ? strip_tags((string) $extra['note']) : '';
+            }
+
             $transactions[] = array(
                 'id' => (int) $transaction['id'],
-                'kind' => !empty($transaction['kind']) ? (string) $transaction['kind'] : '',
-                'notes' => !empty($transaction['notes']) ? strip_tags((string) $transaction['notes']) : '',
+                'kind' => $kind,
+                'notes' => $notes,
+                'counterparty_id' => $counterparty_id,
+                'counterparty_name' => $counterparty_name,
+                'extra' => $extra,
                 'amount' => isset($transaction['amount']) ? (float) $transaction['amount'] : 0,
                 'transaction_dt' => !empty($transaction['transaction_dt']) ? (string) $transaction['transaction_dt'] : '',
             );
@@ -38,19 +117,10 @@ else {
         );
     }
 
-    if (!empty($wo['config']['bank_payment']) && $wo['config']['bank_payment'] == '1') {
-        $topup_methods[] = array(
-            'value' => 'bank_transfer',
-            'label' => !empty($wo['lang']['bank_transfer']) ? $wo['lang']['bank_transfer'] : 'Bank Transfer',
-            'type' => 'upload',
-            'note' => !empty($wo['config']['bank_transfer_note']) ? strip_tags((string) $wo['config']['bank_transfer_note']) : ''
-        );
-    }
-
     if (!empty($wo['config']['sepay']) && in_array((string) $wo['config']['sepay'], array('1', 'yes', 'true', 'on'), true)) {
         $topup_methods[] = array(
             'value' => 'sepay',
-            'label' => 'SePay VietQR',
+            'label' => 'SePay',
             'type' => 'qr',
             'note' => !empty($wo['config']['sepay_bank_code']) ? (string) $wo['config']['sepay_bank_code'] : ''
         );

@@ -134,6 +134,37 @@ const getProductImage = (event: H3Event, product: BackendProduct) => {
   return resolveMediaUrl(image) || undefined
 }
 
+const getProductHref = (event: H3Event, product: BackendProduct) => {
+  const rawUrl = asString(product.url).trim()
+  const fallbackId = asString(product.seo_id) || asString(product.post_id) || asString(product.id)
+
+  const extractPrettyPostId = (href: string) => {
+    try {
+      const parsedUrl = new URL(href, "http://localhost/")
+      const match = parsedUrl.pathname.match(/^\/post\/([^/]+)\/?$/i)
+
+      return match?.[1] ? decodeURIComponent(match[1]) : ""
+    }
+    catch {
+      const match = href.match(/^\/?post\/([^/]+)\/?$/i)
+
+      return match?.[1] ? decodeURIComponent(match[1]) : ""
+    }
+  }
+
+  const prettyPostId = rawUrl ? extractPrettyPostId(rawUrl) : ""
+
+  if (prettyPostId) {
+    return `/post/${encodeURIComponent(prettyPostId)}`
+  }
+
+  if (fallbackId) {
+    return `/post/${encodeURIComponent(fallbackId)}`
+  }
+
+  return "/products"
+}
+
 export const normalizeProductsResponse = (
   event: H3Event,
   response: BackendProductsResponse,
@@ -216,7 +247,7 @@ export const normalizeProductsResponse = (
       id: asNumber(product.id),
       postId: asNumber(product.post_id),
       seoId: asString(product.seo_id),
-      href: asString(product.url) || (asString(product.seo_id) ? `/post/${asString(product.seo_id)}` : `/products`),
+      href: getProductHref(event, product),
       title: asString(product.name),
       seller: asString(seller?.name) || asString(seller?.username),
       sellerId,
@@ -261,10 +292,11 @@ export const normalizeProductsResponse = (
 }
 
 export const normalizeProductRecord = (event: H3Event, product: BackendProduct): ProductRecord => {
-  const category = inferCategory(product)
+  const categoryVisual = inferCategory(product)
   const condition: ProductCondition = asNumber(product.type) === 1 ? "used" : "new"
-  const currency = normalizeCurrency(product.currency) as ProductCurrency
+  const currency = normalizeCurrency(product.currency_code || product.currency) as ProductCurrency
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const seller = product.seller || product.user_data
   const images = (Array.isArray(product.images) ? product.images : []).map((image, index) => {
     const imageId = typeof image === "string" ? `${asString(product.id)}-${index}` : asString(image.id, `${asString(product.id)}-${index}`)
     const imagePath = typeof image === "string" ? image : image.image_org || image.image
@@ -278,14 +310,27 @@ export const normalizeProductRecord = (event: H3Event, product: BackendProduct):
 
   return {
     id: asString(product.id),
+    postId: asString(product.post_id),
+    seoId: asString(product.seo_id),
     title: asString(product.name),
     description: stripHtml(product.description),
-    category: category as ProductCategory,
+    category: asString(product.category, categoryVisual) as ProductCategory,
+    categoryLabel: asString(product.category_name) || asString(product.category),
+    subCategoryLabel: asString(product.product_sub_category),
     condition,
     location: asString(product.location),
     currency,
+    currencySymbol: asString(product.currency_symbol),
+    currencyRule: product.currency_rule,
+    priceFormat: asString(product.price_format),
     price: asNumber(product.price),
     stock: asNumber((product as { units?: unknown }).units),
+    seller: asString(seller?.name) || asString(seller?.username),
+    sellerId: asNumber(seller?.id || seller?.user_id),
+    rating: asNumber(product.rating),
+    canContactSeller: asNumber(product.can_contact_seller) === 1,
+    canAddToCart: asNumber(product.can_add_to_cart) === 1,
+    mine: asNumber(product.is_owner) === 1,
     images,
     updatedAt: asString(product.time_text) || asString(product.time),
   }

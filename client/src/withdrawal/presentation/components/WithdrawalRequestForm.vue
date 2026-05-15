@@ -68,27 +68,6 @@
       </UFormField>
     </div>
 
-    <div v-else-if="draft.method === 'bank'" class="mt-4 grid gap-4 md:grid-cols-2">
-      <UFormField :label="t('pages.withdrawalPage.iban')">
-        <UInput v-model="draft.iban" class="w-full" :disabled="disabled" />
-      </UFormField>
-      <UFormField :label="t('pages.withdrawalPage.country')">
-        <UInput v-model="draft.country" class="w-full" :disabled="disabled" />
-      </UFormField>
-      <UFormField :label="t('pages.withdrawalPage.fullName')">
-        <UInput v-model="draft.fullName" class="w-full" :disabled="disabled" />
-      </UFormField>
-      <UFormField :label="t('pages.withdrawalPage.swiftCode')">
-        <UInput v-model="draft.swiftCode" class="w-full" :disabled="disabled" />
-      </UFormField>
-      <UFormField
-        :label="t('pages.withdrawalPage.address')"
-        class="md:col-span-2"
-      >
-        <UTextarea v-model="draft.address" :rows="3" class="w-full" :disabled="disabled" />
-      </UFormField>
-    </div>
-
     <div v-else-if="draft.method" class="mt-4">
       <UFormField :label="t('pages.withdrawalPage.transferTo')">
         <UTextarea
@@ -173,20 +152,14 @@ function selectMethod(method: string) {
 
 function methodIcon(method: string) {
   if (method === "paypal") return "i-ph-paypal-logo-duotone"
-  if (method === "bank") return "i-ph-bank-duotone"
   if (method === "sepay") return "i-ph-qr-code-duotone"
   return "i-ph-wallet-duotone"
 }
 
 function methodDescription(method: string) {
   if (method === "paypal") return t("pages.withdrawalPage.paypalMethodHint")
-  if (method === "bank") return t("pages.withdrawalPage.bankMethodHint")
   if (method === "sepay") return t("pages.withdrawalPage.sepayMethodHint")
   return t("pages.withdrawalPage.otherMethodHint")
-}
-
-function hasBlank(...values: Array<string | undefined>) {
-  return values.some(value => !value?.trim())
 }
 
 watch(
@@ -231,12 +204,6 @@ function submit() {
     const email = draft.paypalEmail?.trim() ?? ""
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       localError.value = t("pages.withdrawalPage.errorPaypalEmail")
-      return
-    }
-  }
-  else if (draft.method === "bank") {
-    if (hasBlank(draft.iban, draft.country, draft.fullName, draft.swiftCode, draft.address)) {
-      localError.value = t("pages.withdrawalPage.errorBankDetails")
       return
     }
   }

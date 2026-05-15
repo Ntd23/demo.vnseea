@@ -49,8 +49,8 @@
           variant="subtle"
           class="rounded-2xl"
           :description="t('pages.withdrawalPage.minimumWarning', {
-            balance: formatAmount(overview.balance),
-            minimum: formatAmount(overview.minimumAmount)
+            balance: formattedBalance,
+            minimum: formattedMinimumAmount
           })"
         />
 
@@ -102,13 +102,12 @@
 </template>
 
 <script setup lang="ts">
-import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { useWithdrawalPageVM } from "../../application/view-models/useWithdrawalPageVM"
 import WithdrawalHero from "../components/WithdrawalHero.vue"
 import WithdrawalHistory from "../components/WithdrawalHistory.vue"
 import WithdrawalRequestForm from "../components/WithdrawalRequestForm.vue"
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const {
   overview,
@@ -116,19 +115,13 @@ const {
   errorMessage,
   belowMinimum,
   canSubmit,
+  formattedBalance,
+  formattedMinimumAmount,
   submitting,
   mutationError,
   mutationMessage,
   requestWithdrawal,
 } = useWithdrawalPageVM()
-
-const formatAmount = (amount: number) =>
-  formatCurrency(amount, {
-    currency: overview.value.currency,
-    currencySymbol: overview.value.currencySymbol,
-    currencyRule: overview.value.currencyRule,
-    locale: locale.value,
-  })
 
 useSeoMeta({
   title: () => t("pages.withdrawalPage.seoTitle"),

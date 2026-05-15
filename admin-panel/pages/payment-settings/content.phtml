@@ -287,6 +287,16 @@
         </div>
       </div>
 
+      <!-- Tên chủ tài khoản -->
+      <div class="form-group form-float">
+        <div class="form-line">
+          <label class="form-label">Tên chủ tài khoản</label>
+          <input type="text" id="sepay_account_name" name="sepay_account_name" class="form-control"
+                 value="<?php echo htmlspecialchars($wo['config']['sepay_account_name'] ?? '', ENT_QUOTES); ?>">
+          <small class="admin-info">VD: NGUYEN TIEN DUNG. Tên này sẽ hiển thị trong thông tin thanh toán SePay.</small>
+        </div>
+      </div>
+
       <!-- Mã ngân hàng -->
       <div class="form-group form-float">
         <div class="form-line">

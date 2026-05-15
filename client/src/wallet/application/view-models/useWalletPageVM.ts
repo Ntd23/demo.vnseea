@@ -1,6 +1,7 @@
 // English description: Owns wallet overview loading, recipient lookup, QR generation, send money, and top-up mutations.
 
 import { createApiWalletRepository } from "../../infrastructure/repositories/ApiWalletRepository"
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import type { WalletRepository } from "../../domain/repositories/WalletRepository"
 import type {
   WalletMutationResult,
@@ -35,7 +36,7 @@ const toErrorMessage = (error: unknown, defaultMessage: string) =>
 export function useWalletPageVM(
   repository: WalletRepository = createApiWalletRepository(),
 ) {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const sendModalOpen = ref(false)
   const topupFormOpen = ref(false)
   const receiveQrOpen = ref(false)
@@ -67,6 +68,14 @@ export function useWalletPageVM(
   )
   const redirectTopupMethods = computed(() =>
     overview.value.topupMethods.filter(method => method.type === "redirect"),
+  )
+  const formattedSepayAmount = computed(() =>
+    formatCurrency(sepayTopup.value?.amount ?? 0, {
+      currency: overview.value.currency,
+      currencySymbol: overview.value.currencySymbol,
+      currencyRule: overview.value.currencyRule,
+      locale: locale.value,
+    }),
   )
 
   watch(
@@ -137,7 +146,7 @@ export function useWalletPageVM(
   async function searchRecipients(query: string) {
     const normalized = query.trim()
 
-    if (normalized.length < 2) {
+    if (normalized.length < 2 && !/^\d+$/.test(normalized)) {
       recipientResults.value = []
       return
     }
@@ -246,6 +255,7 @@ export function useWalletPageVM(
     recipientSearching,
     receiveQr,
     sepayTopup,
+    formattedSepayAmount,
     mutationError,
     mutationMessage,
     sending,

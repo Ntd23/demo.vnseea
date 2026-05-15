@@ -4,6 +4,7 @@ import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import {
   createMentionSegments,
+  escapeMentionRegExp,
   normalizeFeedMentionSearchText,
 } from "../utils/feed-mentions"
 
@@ -25,6 +26,7 @@ export type FeedMentionSuggestion = {
   id: string
   name: string
   username: string
+  displayLabel: string
   avatarUrl: string
   initials: string
   searchText: string
@@ -54,6 +56,19 @@ function getMentionUsername(user: BackendMentionSearchResult) {
     .replace(/^_+|_+$/g, "")
 }
 
+function getMentionDisplayLabel(user: BackendMentionSearchResult, fallback: string) {
+  const value = (user.firstName || user.title || fallback)
+    .trim()
+    .replace(/^@/, "")
+    .split(/\s+/)
+    .filter(Boolean)[0]
+
+  return (value || fallback)
+    .replace(/^@/, "")
+    .replace(/[^\p{L}\p{N}_.-]+/gu, "_")
+    .replace(/^_+|_+$/g, "")
+}
+
 function normalizeMentionUsers(users: BackendMentionSearchResult[]) {
   const seenUsers = new Set<string>()
 
@@ -61,16 +76,19 @@ function normalizeMentionUsers(users: BackendMentionSearchResult[]) {
     .map((user) => {
       const username = getMentionUsername(user)
       const name = user.title.trim() || username
+      const displayLabel = getMentionDisplayLabel(user, username)
 
       return {
         id: user.id,
         name,
         username,
+        displayLabel,
         avatarUrl: user.avatarUrl || "",
         initials: user.initials || (name[0]?.toUpperCase() ?? "U"),
         searchText: normalizeFeedMentionSearchText([
           name,
           username,
+          displayLabel,
           user.firstName,
           user.subtitle,
         ].filter(Boolean).join(" ")),
@@ -119,6 +137,18 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
     }),
   )
 
+  watch(options.text, (text) => {
+    const nextSelectedMentionUsernames = Object.fromEntries(
+      Object.entries(selectedMentionUsernames.value).filter(([displayMention]) =>
+        new RegExp(`(^|\\s)${escapeMentionRegExp(displayMention)}(?=\\s|$)`).test(text),
+      ),
+    )
+
+    if (Object.keys(nextSelectedMentionUsernames).length !== Object.keys(selectedMentionUsernames.value).length) {
+      selectedMentionUsernames.value = nextSelectedMentionUsernames
+    }
+  })
+
   function closeMentionSuggestions() {
     mentionRequestId += 1
     if (mentionSearchTimer) {
@@ -129,6 +159,21 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
     mentionQuery.value = ""
     mentionLoading.value = false
     mentionCandidates.value = []
+  }
+
+  function createBackendMentionText(text = options.text.value) {
+    return Object.entries(selectedMentionUsernames.value).reduce((nextText, [displayMention, username]) => {
+      const backendMention = `@${username.trim().replace(/^@/, "")}`
+
+      if (!displayMention || displayMention === backendMention) {
+        return nextText
+      }
+
+      return nextText.replace(
+        new RegExp(`(^|\\s)${escapeMentionRegExp(displayMention)}(?=\\s|$)`, "g"),
+        `$1${backendMention}`,
+      )
+    }, text)
   }
 
   function queueMentionSearch(keyword: string) {
@@ -237,7 +282,8 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
     const beforeMention = options.text.value.slice(0, start)
     const afterMention = options.text.value.slice(caret)
     const mentionUsername = user.username.trim().replace(/^@/, "")
-    const displayMention = `@${mentionUsername}`
+    const mentionDisplayLabel = (user.displayLabel || user.name || mentionUsername).trim().replace(/^@/, "")
+    const displayMention = `@${mentionDisplayLabel}`
     const inserted = `${displayMention} `
     const nextCaret = beforeMention.length + inserted.length
 
@@ -277,5 +323,6 @@ export function useFeedMentionSearch(options: UseFeedMentionSearchOptions) {
     closeMentionSuggestions,
     selectMention,
     clearSelectedMentions,
+    createBackendMentionText,
   }
 }

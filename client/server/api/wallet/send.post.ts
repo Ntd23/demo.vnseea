@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
   const payload: WalletSendDraft = {
     recipientUserId: Number(body.recipientUserId ?? 0) || 0,
     amount: Number(body.amount ?? 0) || 0,
+    note: typeof body.note === "string" ? body.note.trim() : "",
   }
 
   if (!payload.recipientUserId || payload.amount <= 0) {
