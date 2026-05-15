@@ -2,96 +2,132 @@
 <template>
   <form class="comment-composer" @submit.prevent="submitComment">
     <div class="comment-composer__avatar" aria-hidden="true">
-      <img v-if="currentUserAvatarUrl" :src="currentUserAvatarUrl" :alt="currentUserName"
-        class="comment-composer__avatar-img">
+      <img
+        v-if="currentUserAvatarUrl"
+        :src="currentUserAvatarUrl"
+        :alt="currentUserName"
+        class="comment-composer__avatar-img"
+      >
       <span v-else-if="currentUserInitials">{{ currentUserInitials }}</span>
       <Icon v-else name="i-ph-user-circle-duotone" class="h-5 w-5 text-blue-600" />
     </div>
 
     <div class="comment-composer__shell">
       <div class="comment-composer__field">
-        <div
-          class="comment-composer__input-wrap"
-          :class="{ 'comment-composer__input-wrap--highlight': hasHighlightedMentions }"
-        >
-          <div v-if="hasHighlightedMentions" class="comment-composer__highlight" aria-hidden="true">
-            <template v-for="segment in highlightedMessageSegments" :key="segment.key">
-              <span :class="{ 'comment-composer__highlight-mention': segment.isMention }">{{ segment.text }}</span>
-            </template>
-          </div>
-          <UTextarea
-            ref="textareaRef"
-            v-model="message"
-            autoresize
-            :rows="1"
-            class="comment-composer__textarea w-full"
-            :disabled="submitting"
-            spellcheck="false"
-            autocomplete="off"
-            autocapitalize="off"
-            autocorrect="off"
-            :ui="{
-              base: 'min-h-[44px] resize-none rounded-[var(--radius-full)] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] py-3 pl-4 pr-12 text-[var(--text-body)] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:bg-[var(--bg-surface)] focus:ring-2 focus:ring-[var(--color-primary-100)]',
-            }"
-            @input="updateMentionQuery"
-            @click="updateMentionQuery"
-            @keyup="handleTextareaKeyup"
-            @keydown.esc.prevent="closeMentionSuggestions"
-            @keydown.enter.exact.prevent="submitComment"
-          />
-
-          <button
-            type="submit"
-            class="comment-composer__send"
-            :disabled="submitting || !canSubmit"
-            :aria-label="$t('feed.commentComposer.submit')"
-          />
-            <Icon v-if="submitting" name="i-lucide-loader-2" class="comment-composer__send-icon animate-spin" />
-            <Icon v-else name="i-lucide-send" class="comment-composer__send-icon" />
         <div class="comment-composer__main-row">
           <div class="comment-composer__input-wrap">
-            <UTextarea ref="textareaRef" v-model="message" autoresize :rows="1" class="flex-1" :disabled="submitting"
-              placeholder="Viết bình luận" variant="none" :ui="{
-                base: 'resize-none border-none bg-transparent py-3 pl-4 pr-2 text-[var(--text-body)] leading-5 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:ring-0 focus:shadow-none shadow-none',
-              }" @keydown.enter.exact.prevent="submitComment" />
+            <div
+              class="comment-composer__editor"
+              :class="{ 'comment-composer__editor--highlighted': hasHighlightedMentions }"
+            >
+              <div v-if="hasHighlightedMentions" class="comment-composer__highlight" aria-hidden="true">
+                <template v-for="segment in highlightedMessageSegments" :key="segment.key">
+                  <span :class="{ 'comment-composer__highlight-mention': segment.isMention }">{{ segment.text }}</span>
+                </template>
+              </div>
 
-            <div class="comment-composer__inline-actions">
-              <button class="comment-composer__inline-tool" type="button" :title="$t('feed.commentComposer.tooltipGif')"
-                :disabled="submitting" @click="openGifPicker">
+              <textarea
+                ref="textareaRef"
+                v-model="message"
+                class="comment-composer__textarea"
+                :disabled="submitting"
+                :placeholder="$t('feed.commentComposer.placeholder')"
+                rows="1"
+                spellcheck="false"
+                autocomplete="off"
+                autocapitalize="off"
+                autocorrect="off"
+                @input="handleComposerInput"
+                @click="updateMentionQuery"
+                @keyup="handleTextareaKeyup"
+                @keydown.esc.prevent="closeMentionSuggestions"
+                @keydown.enter.exact="handleEnterKeydown"
+                @compositionstart="isComposingText = true"
+                @compositionend="handleCompositionEnd"
+              />
+            </div>
+
+            <div v-if="enableAttachments" class="comment-composer__inline-actions">
+              <button
+                class="comment-composer__inline-tool"
+                type="button"
+                title="Tag bạn bè"
+                aria-label="Tag bạn bè"
+                :disabled="submitting"
+                @click="insertMentionTrigger"
+              >
+                @
+              </button>
+
+              <button
+                class="comment-composer__inline-tool"
+                type="button"
+                :title="$t('feed.commentComposer.tooltipGif')"
+                :aria-label="$t('feed.commentComposer.tooltipGif')"
+                :disabled="submitting"
+                @click="openGifPicker"
+              >
                 <Icon name="i-ph-gif-duotone" class="h-5 w-5" />
               </button>
 
-              <button class="comment-composer__inline-tool" :class="{ 'comment-composer__tool--recording': recording }"
-                type="button" :title="$t('feed.commentComposer.tooltipVoice')" :disabled="submitting"
-                @click="toggleRecording">
+              <button
+                class="comment-composer__inline-tool"
+                :class="{ 'comment-composer__tool--recording': recording }"
+                type="button"
+                :title="$t('feed.commentComposer.tooltipVoice')"
+                :aria-label="$t('feed.commentComposer.tooltipVoice')"
+                :disabled="submitting"
+                @click="toggleRecording"
+              >
                 <Icon :name="recording ? 'i-ph-stop-circle-fill' : 'i-ph-microphone-duotone'" class="h-5 w-5" />
               </button>
 
               <div class="comment-composer__emoji-wrap">
-                <button class="comment-composer__inline-tool" type="button" :title="$t('feed.commentComposer.tooltipEmoji')"
-                  :disabled="submitting" @click="emojiOpen = !emojiOpen">
+                <button
+                  class="comment-composer__inline-tool"
+                  type="button"
+                  :title="$t('feed.commentComposer.tooltipEmoji')"
+                  :aria-label="$t('feed.commentComposer.tooltipEmoji')"
+                  :disabled="submitting"
+                  @click="emojiOpen = !emojiOpen"
+                >
                   <Icon name="i-ph-smiley-duotone" class="h-5 w-5" />
                 </button>
                 <div v-if="emojiOpen" class="comment-composer__emoji-tray">
-                  <button v-for="emoji in emojiOptions" :key="emoji" class="comment-composer__emoji" type="button"
-                    @click="insertEmoji(emoji)">
+                  <button
+                    v-for="emoji in emojiOptions"
+                    :key="emoji"
+                    class="comment-composer__emoji"
+                    type="button"
+                    @click="insertEmoji(emoji)"
+                  >
                     {{ emoji }}
                   </button>
                 </div>
               </div>
 
-              <button class="comment-composer__inline-tool" type="button" :title="$t('feed.commentComposer.tooltipImage')"
-                :disabled="submitting" @click="openImagePicker">
+              <button
+                class="comment-composer__inline-tool"
+                type="button"
+                :title="$t('feed.commentComposer.tooltipImage')"
+                :aria-label="$t('feed.commentComposer.tooltipImage')"
+                :disabled="submitting"
+                @click="openImagePicker"
+              >
                 <Icon name="i-ph-images-square-duotone" class="h-5 w-5" />
+              </button>
+
+              <button
+                type="submit"
+                class="comment-composer__send"
+                :disabled="submitting || !canSubmit"
+                :aria-label="$t('feed.commentComposer.submit')"
+              >
+                <Icon v-if="submitting" name="i-ph-circle-notch-bold" class="h-4.5 w-4.5 animate-spin" />
+                <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4.5 w-4.5" />
               </button>
             </div>
           </div>
-
-          <button type="submit" class="comment-composer__send" :disabled="submitting || !canSubmit"
-            :aria-label="$t('feed.commentComposer.submit')">
-            <Icon v-if="submitting" name="i-ph-circle-notch-bold" class="h-4.5 w-4.5 animate-spin" />
-            <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4.5 w-4.5" />
-          </button>
         </div>
 
         <div v-if="showMentionSuggestions" class="comment-composer__mention-popover">
@@ -201,47 +237,7 @@
           </template>
         </div>
       </div>
-</div>
-</div>
-      <div class="comment-composer__toolbar">
-        <div class="comment-composer__tools">
-          <button
-            v-if="enableAttachments"
-            class="comment-composer__tool"
-            type="button"
-            title="Tag bạn bè"
-            aria-label="Tag bạn bè"
-            :disabled="submitting"
-            @click="insertMentionTrigger"
-          >
-            @
-          </button>
 
-          <button
-            v-if="enableAttachments"
-            class="comment-composer__tool"
-            type="button"
-            :title="$t('feed.commentComposer.tooltipGif')"
-            :aria-label="$t('feed.commentComposer.tooltipGif')"
-            :disabled="submitting"
-            @click="openGifPicker"
-          >
-            {{ $t("feed.commentComposer.tooltipGif") }}
-          </button>
-
-          <button
-            v-if="enableAttachments"
-            class="comment-composer__tool"
-            :class="{ 'comment-composer__tool--recording': recording }"
-            type="button"
-            :title="$t('feed.commentComposer.tooltipVoice')"
-            :aria-label="$t('feed.commentComposer.tooltipVoice')"
-            :disabled="submitting"
-            @click="toggleRecording"
-          >
-            <Icon :name="recording ? 'i-ph-stop-circle-fill' : 'i-ph-microphone-duotone'" class="h-5 w-5" />
-          </button>
-        </div>
       <!-- Ép Nuxt Icon nhận diện để đóng gói vào bundle local -->
       <div class="hidden" aria-hidden="true">
         <Icon name="i-ph-user-circle-duotone" />
@@ -304,13 +300,14 @@ const message = ref("")
 const emojiOpen = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
 const gifInputRef = ref<HTMLInputElement | null>(null)
-const textareaRef = ref()
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
 const audioPreviewRef = ref<HTMLAudioElement | null>(null)
 const imageFile = ref<File | undefined>()
 const gifFile = ref<File | undefined>()
 const audioFile = ref<File | undefined>()
 const attachmentPreview = ref<FeedCommentAttachment | undefined>()
 const recording = ref(false)
+const isComposingText = ref(false)
 const recordingErrorMessage = ref("")
 const audioPlaying = ref(false)
 const audioCurrentTime = ref(0)
@@ -377,6 +374,7 @@ const {
   closeMentionSuggestions,
   selectMention,
   clearSelectedMentions,
+  createBackendMentionText,
 } = useFeedMentionSearch({
   text: message,
   textarea: textareaElement,
@@ -484,16 +482,50 @@ function insertEmoji(emoji: string) {
   message.value = `${message.value}${emoji}`
   emojiOpen.value = false
   nextTick(() => {
+    syncTextareaHeight()
     focusComposer()
   })
 }
 
 function getTextareaElement() {
-  return textareaRef.value?.$el?.querySelector?.("textarea") as HTMLTextAreaElement | null
+  return textareaRef.value
 }
 
 function focusComposer() {
   getTextareaElement()?.focus()
+}
+
+function syncTextareaHeight() {
+  const textarea = getTextareaElement()
+
+  if (!textarea) {
+    return
+  }
+
+  textarea.style.height = "auto"
+  textarea.style.height = `${textarea.scrollHeight}px`
+}
+
+function handleComposerInput() {
+  syncTextareaHeight()
+  updateMentionQuery()
+}
+
+function handleCompositionEnd() {
+  isComposingText.value = false
+  nextTick(() => {
+    syncTextareaHeight()
+    updateMentionQuery()
+  })
+}
+
+function handleEnterKeydown(event: KeyboardEvent) {
+  if (event.isComposing || isComposingText.value) {
+    return
+  }
+
+  event.preventDefault()
+  submitComment()
 }
 
 function insertMentionTrigger() {
@@ -503,6 +535,7 @@ function insertMentionTrigger() {
   }
 
   nextTick(() => {
+    syncTextareaHeight()
     focusComposer()
     updateMentionQuery()
   })
@@ -726,7 +759,7 @@ function submitComment() {
 
   emit("submit", {
     text: displayText,
-    backendText: displayText,
+    backendText: createBackendMentionText(displayText),
     imageFile: imageFile.value,
     gifFile: gifFile.value,
     audioFile: audioFile.value,
@@ -738,7 +771,12 @@ function submitComment() {
   closeMentionSuggestions()
   emojiOpen.value = false
   resetComposerState()
+  nextTick(syncTextareaHeight)
 }
+
+watch(message, () => {
+  nextTick(syncTextareaHeight)
+})
 
 onBeforeUnmount(() => {
   revokeAttachmentUrl()
@@ -754,6 +792,7 @@ defineExpose({
 <style scoped>
 .comment-composer {
   display: flex;
+  width: 100%;
   align-items: flex-start;
   gap: 10px;
 }
@@ -781,6 +820,7 @@ defineExpose({
 }
 
 .comment-composer__shell {
+  width: 100%;
   min-width: 0;
   flex: 1;
 }
@@ -794,13 +834,7 @@ defineExpose({
 .comment-composer__main-row {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
-}
-
-.comment-composer__main-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
+  min-width: 0;
 }
 
 .comment-composer__input-wrap {
@@ -824,15 +858,17 @@ defineExpose({
 
 .comment-composer__inline-actions {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 4px;
-  padding: 6px 10px;
+  padding: 6px 8px 6px 4px;
 }
 
 .comment-composer__inline-tool {
   display: inline-flex;
   width: 32px;
   height: 32px;
+  flex: 0 0 32px;
   align-items: center;
   justify-content: center;
   border: 0;
@@ -848,49 +884,61 @@ defineExpose({
   color: var(--color-primary-500);
 }
 
+.comment-composer__editor {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+
 .comment-composer__highlight {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   min-height: 44px;
-  padding: 12px 48px 12px 16px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-full);
-  color: var(--text-primary);
+  overflow: hidden;
+  padding: 12px 8px 12px 16px;
+  color: transparent;
   font-family: inherit;
   font-size: var(--text-body);
   line-height: 20px;
+  pointer-events: none;
+  text-decoration: none;
   white-space: pre-wrap;
   word-break: break-word;
-  overflow: hidden;
-  pointer-events: none;
+}
+
+.comment-composer__highlight *,
+.comment-composer__highlight-mention {
+  text-decoration: none !important;
+  text-decoration-line: none !important;
 }
 
 .comment-composer__highlight-mention {
-  color: #1420ff;
+  color: #0000ff;
 }
 
 .comment-composer__textarea {
   position: relative;
-  z-index: 2;
-}
-
-.comment-composer__input-wrap :deep(textarea) {
+  z-index: 1;
+  width: 100%;
+  min-height: 44px;
+  min-width: 0;
+  flex: 1;
+  resize: none;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  padding: 12px 8px 12px 16px;
   font-family: inherit;
   font-size: var(--text-body);
   line-height: 20px;
+  color: var(--text-primary);
+  outline: none;
+  box-shadow: none;
 }
 
-.comment-composer__input-wrap--highlight :deep(textarea) {
-  color: transparent;
-  caret-color: var(--text-primary);
-  -webkit-text-fill-color: transparent;
-  text-decoration-color: transparent;
-}
-
-.comment-composer__input-wrap--highlight :deep(textarea::spelling-error),
-.comment-composer__input-wrap--highlight :deep(textarea::grammar-error) {
-  text-decoration: none;
+.comment-composer__textarea::placeholder {
+  color: var(--text-tertiary);
 }
 
 .comment-composer__mention-popover {
@@ -1111,44 +1159,12 @@ defineExpose({
   animation: comment-recording-pulse 1s ease-in-out infinite;
 }
 
-.comment-composer__toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 7px;
-}
-
-.comment-composer__tools {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.comment-composer__tool {
-  position: relative;
-  display: inline-flex;
-  min-width: 30px;
-  height: 30px;
-  align-items: center;
-  justify-content: center;
-  border: 0;
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.comment-composer__tool:hover,
 .comment-composer__tool--recording {
   background: var(--bg-surface-active);
   color: var(--text-brand);
 }
 
-.comment-composer__tool:disabled {
+.comment-composer__inline-tool:disabled {
   cursor: not-allowed;
   opacity: 0.55;
 }
@@ -1190,9 +1206,9 @@ defineExpose({
 
 .comment-composer__send {
   display: inline-flex;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
   align-items: center;
   justify-content: center;
   border: 0;
@@ -1202,12 +1218,6 @@ defineExpose({
   cursor: pointer;
   box-shadow: 0 4px 12px var(--color-primary-100);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.comment-composer__send-icon {
-  display: block;
-  width: 16px;
-  height: 16px;
 }
 
 .comment-composer__send:hover:not(:disabled) {
@@ -1229,6 +1239,45 @@ defineExpose({
 
 .comment-composer__file {
   display: none;
+}
+
+@media (max-width: 640px) {
+  .comment-composer {
+    gap: 8px;
+  }
+
+  .comment-composer__avatar {
+    width: 32px;
+    height: 32px;
+    flex-basis: 32px;
+  }
+
+  .comment-composer__main-row {
+    gap: 8px;
+  }
+
+  .comment-composer__input-wrap {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 20px;
+  }
+
+  .comment-composer__inline-actions {
+    justify-content: flex-end;
+    padding: 0 8px 8px;
+  }
+
+  .comment-composer__inline-tool {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+
+  .comment-composer__send {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
 }
 
 @keyframes comment-recording-pulse {

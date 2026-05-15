@@ -31,7 +31,11 @@
           <p v-else class="comment-item__author">{{ author }}</p>
           <span v-if="visibleRole" class="comment-item__role">{{ visibleRole }}</span>
         </div>
-        <p v-if="text" class="comment-item__text">{{ text }}</p>
+        <p v-if="text" class="comment-item__text">
+          <template v-for="segment in textSegments" :key="segment.key">
+            <span :class="{ 'comment-item__mention': segment.isMention }">{{ segment.text }}</span>
+          </template>
+        </p>
         <NuxtImg
           v-if="attachment && attachment.type !== 'audio'"
           :src="attachment.url"
@@ -192,6 +196,7 @@
 <script setup lang="ts">
 import { useFeedCommentItemVM } from "../../application/view-models/useFeedCommentItemVM"
 import type { FeedCommentActionRepository } from "../../application/view-models/useFeedCommentItemVM"
+import { createMentionSegments } from "../../application/utils/feed-mentions"
 import type { FeedStoryReactionType } from "../../domain/constants/story-reactions"
 import type { FeedCommentAttachment, FeedCommentRecord, FeedCommentSubmitPayload } from "../../domain/types/feed.types"
 import FeedCommentComposer from "./CommentComposer.vue"
@@ -252,6 +257,9 @@ const {
 
 const visibleRole = computed(() =>
   props.role && props.role !== props.author ? props.role : "",
+)
+const textSegments = computed(() =>
+  createMentionSegments(props.text),
 )
 const audioProgressPercent = computed(() => {
   if (!audioDuration.value) {
@@ -408,6 +416,11 @@ onBeforeUnmount(() => {
   line-height: 1.55;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.comment-item__mention {
+  color: #1420ff;
+  font-weight: 600;
 }
 
 .comment-item__image {
