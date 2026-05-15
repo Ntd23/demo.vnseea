@@ -9,19 +9,19 @@
             <span class="ck-step-circle ck-step-circle--done">
               <Icon name="i-ph-check-bold" class="ck-step-check" />
             </span>
-            <span class="ck-step-text">{{ $t("checkout.stepper.cart", "Giỏ hàng") }}</span>
+            <span class="ck-step-text">{{ $t("checkout.stepper.cart") }}</span>
           </div>
           <span class="ck-step-line ck-step-line--done" />
           <div class="ck-step ck-step--done">
             <span class="ck-step-circle ck-step-circle--done">
               <Icon name="i-ph-check-bold" class="ck-step-check" />
             </span>
-            <span class="ck-step-text">{{ $t("checkout.stepper.confirm", "Xác nhận") }}</span>
+            <span class="ck-step-text">{{ $t("checkout.stepper.confirm") }}</span>
           </div>
           <span class="ck-step-line" />
           <div class="ck-step ck-step--active">
             <span class="ck-step-circle ck-step-circle--active">3</span>
-            <span class="ck-step-text ck-step-text--active">{{ $t("checkout.stepper.payment", "Thanh toán") }}</span>
+            <span class="ck-step-text ck-step-text--active">{{ $t("checkout.stepper.payment") }}</span>
           </div>
         </nav>
       </div>

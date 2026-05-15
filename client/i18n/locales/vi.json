@@ -5910,6 +5910,10 @@
       "allFieldsReady": "Đã đủ thông tin",
       "formTitle": "Biểu mẫu nhận hàng",
       "addAddressTitle": "Thông tin giao hàng",
+      "changeAddress": "Thay đổi địa chỉ",
+      "selectAddress": "Chọn địa chỉ giao hàng",
+      "noAddresses": "Chưa có địa chỉ nào được lưu",
+      "loadingAddresses": "Đang tải địa chỉ...",
       "formDesc": "Form đã được gom theo cụm thông tin để thao tác nhanh hơn trên desktop mà vẫn gọn trên mobile.",
       "fieldsCount": "{filled}/{total} trường đã điền",
       "recipientInfo": "Thông tin người nhận",
@@ -5948,7 +5952,14 @@
       "validationCountryRequired": "Vui lòng nhập quốc gia.",
       "validationCityRequired": "Vui lòng nhập thành phố.",
       "validationPostalCodeRequired": "Vui lòng nhập mã bưu chính.",
-      "validationStreetRequired": "Vui lòng nhập địa chỉ nhà."
+      "validationStreetRequired": "Vui lòng nhập địa chỉ nhà.",
+      "agreeTermsPrefix": "Tôi đã đọc và đồng ý với",
+      "termsAndConditions": "Điều khoản và Điều kiện"
+    },
+    "stepper": {
+      "cart": "Giỏ hàng",
+      "confirm": "Xác nhận",
+      "payment": "Thanh toán"
     }
   },
   "orders": {

@@ -1,7 +1,7 @@
 <template>
   <section class="os-card" aria-labelledby="os-title">
     <h2 id="os-title" class="os-heading">
-      {{ $t("checkout.summary.title", "Xem lại đơn hàng") }}
+      {{ $t("checkout.summary.title") }}
     </h2>
 
     <!-- Items -->
@@ -38,7 +38,7 @@
         </div>
         <div class="os-row">
           <span>{{ $t("checkout.summary.shippingFee") }}</span>
-          <span>{{ shippingFee > 0 ? formatVnd(shippingFee) : $t("checkout.summary.free", "Miễn phí") }}</span>
+          <span>{{ shippingFee > 0 ? formatVnd(shippingFee) : $t("checkout.summary.free") }}</span>
         </div>
         <div class="os-row os-row--total">
           <span>{{ $t("checkout.summary.totalPayment") }}</span>
@@ -197,7 +197,7 @@ const ctaLabel = computed(() => {
     return t("checkout.summary.addFunds")
   }
 
-  return t("checkout.summary.buy", "Thanh toán ngay")
+  return t("checkout.summary.buy")
 })
 
 const ctaDisabled = computed(() =>
@@ -218,12 +218,12 @@ function formatVnd(value: number) {
 <style scoped>
 .os-card {
   background: #fff;
-  padding: 28px;
+  padding: 0;
   border-radius: 16px;
 }
 
 .os-heading {
-  margin: 0 0 24px;
+  margin: 0 0 28px;
   font-size: 20px;
   font-weight: 800;
   color: #111827;
@@ -234,8 +234,9 @@ function formatVnd(value: number) {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding-bottom: 20px;
+  padding-bottom: 24px;
   border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 8px;
 }
 
 .os-item {
@@ -296,14 +297,14 @@ function formatVnd(value: number) {
 
 /* ── Totals ── */
 .os-totals {
-  padding: 20px 0;
+  padding: 16px 0 24px;
 }
 
 .os-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 8px 0;
   font-size: 14px;
   color: #4b5563;
 }

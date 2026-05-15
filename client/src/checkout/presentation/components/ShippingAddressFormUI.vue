@@ -6,7 +6,12 @@
     @submit="saveAddress"
     @error="handleFormError"
   >
-    <h2 class="sf-heading">{{ $t("checkout.shippingForm.addAddressTitle", "Thông tin giao hàng") }}</h2>
+    <div class="sf-heading-row">
+      <h2 class="sf-heading">{{ $t("checkout.shippingForm.addAddressTitle") }}</h2>
+      <button type="button" class="sf-change-address" @click="emit('change-address')">
+        {{ $t("checkout.shippingForm.changeAddress") }}
+      </button>
+    </div>
 
     <UAlert
       v-if="statusAlert"
@@ -99,7 +104,7 @@
     <!-- Địa chỉ chi tiết -->
     <UFormField name="streetAddress" class="sf-field">
       <template #label>
-        <span class="sf-label">{{ $t("checkout.shippingForm.streetAddress", "Địa chỉ chi tiết") }} <span class="sf-req">*</span></span>
+        <span class="sf-label">{{ $t("checkout.shippingForm.streetAddress") }} <span class="sf-req">*</span></span>
       </template>
       <UInput
         v-model="form.streetAddress"
@@ -114,8 +119,8 @@
     <!-- Checkbox điều khoản -->
     <label class="sf-terms">
       <UCheckbox v-model="agreedTerms" :disabled="isBusy" />
-      <span>{{ $t("checkout.shippingForm.agreeTermsPrefix", "Tôi đã đọc và đồng ý với") }}
-        <a href="#" class="sf-terms-link" @click.prevent>{{ $t("checkout.shippingForm.termsAndConditions", "Điều khoản và Điều kiện") }}</a>.
+      <span>{{ $t("checkout.shippingForm.agreeTermsPrefix") }}
+        <a href="#" class="sf-terms-link" @click.prevent>{{ $t("checkout.shippingForm.termsAndConditions") }}</a>.
       </span>
     </label>
 
@@ -153,6 +158,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   submit: [address: SavedShippingAddress]
+  'change-address': []
 }>()
 
 const { t } = useI18n()
@@ -161,7 +167,7 @@ const toast = useToast()
 const totalFieldCount = 6
 
 const inputUi = {
-  base: "h-[52px] rounded-lg px-4 text-[15px]",
+  base: "h-[56px] rounded-lg px-4 text-[15px]",
 }
 
 const createEmptyForm = (): ShippingAddressForm => ({
@@ -396,16 +402,38 @@ function handleFormError() {
 <style scoped>
 .sf-card {
   background: #fff;
-  padding: 32px;
+  padding: 0;
   border-radius: 16px;
   max-width: 540px;
 }
 
-.sf-heading {
+.sf-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 0 0 28px;
+}
+
+.sf-heading {
+  margin: 0;
   font-size: 20px;
   font-weight: 800;
   color: #111827;
+}
+
+.sf-change-address {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4361ee;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.sf-change-address:hover {
+  text-decoration: underline;
 }
 
 .sf-alert {
