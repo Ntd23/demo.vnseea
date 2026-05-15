@@ -1,4 +1,4 @@
-<!-- Description: Renders one normalized message bubble without inventing fallback avatar or text content. -->
+<!-- Description: Renders one normalized message bubble from backend-provided text and media fields. -->
 <template>
   <div class="flex w-full flex-col animate-in fade-in slide-in-from-bottom-2 duration-500">
     <div v-if="showTime" class="my-3 self-center sm:my-4">
@@ -28,7 +28,39 @@
               : 'rounded-[24px] rounded-bl-lg bg-white/96 text-[var(--text-primary)] font-medium ring-1 ring-secondary-100 shadow-[0_16px_34px_rgba(15,23,42,0.06)] hover:ring-primary-500/20'
           ]"
         >
-          {{ text }}
+          <p v-if="text" class="whitespace-pre-wrap">{{ text }}</p>
+
+          <div v-if="mediaUrl" :class="text ? 'mt-3' : ''">
+            <NuxtImg
+              v-if="mediaType === 'image' || mediaType === 'gif'"
+              :src="mediaUrl"
+              :alt="mediaName || text || 'Message media'"
+              class="max-h-[360px] rounded-[18px] object-contain"
+            />
+            <video
+              v-else-if="mediaType === 'video'"
+              :src="mediaUrl"
+              class="max-h-[360px] rounded-[18px]"
+              controls
+              playsinline
+            />
+            <audio
+              v-else-if="mediaType === 'audio'"
+              :src="mediaUrl"
+              class="min-w-[240px]"
+              controls
+            />
+            <a
+              v-else
+              :href="mediaUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-[16px] bg-white/15 px-3 py-2 text-sm font-semibold"
+            >
+              <Icon name="i-ph-paperclip-duotone" class="h-4 w-4" />
+              <span>{{ mediaName || mediaUrl }}</span>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -43,5 +75,8 @@ defineProps<{
   time?: string
   showTime?: boolean
   avatar?: string
+  mediaUrl?: string
+  mediaName?: string
+  mediaType?: "image" | "video" | "audio" | "gif" | "file"
 }>()
 </script>

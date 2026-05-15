@@ -1,316 +1,102 @@
+<!-- English description: Backend-backed Pro package comparison page aligned to the WoWonder go-pro phtml plan table. -->
 <template>
-  <div class="mx-auto max-w-[1440px] space-y-5 px-3 pb-12 sm:px-5 lg:px-6">
-    <GoProHero
-      :payments="paymentHistory"
-      :stats="heroStats"
-      :subscription="subscriptionState"
-      :billing-label="activeBillingLabel"
-      :selected-plan-name="focusedPlan?.name"
-      :has-active-selection="hasRouteState"
-      @select-featured="selectFeaturedPlan"
-      @reset="resetSelection"
-    />
+  <main class="mx-auto w-full max-w-6xl space-y-5 px-3 py-4 sm:px-5">
+    <section class="surface-card p-4 sm:p-5">
+      <div class="flex items-center gap-3">
+        <span class="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
+          <Icon name="i-ph-rocket-launch-duotone" class="h-6 w-6" />
+        </span>
+        <div>
+          <p class="text-label-secondary">PRO</p>
+          <h1 class="text-heading">{{ t("pages.goProPage.plansTitle") }}</h1>
+        </div>
+      </div>
+    </section>
 
-    <GoProBillingToggle
-      v-model="billingCycle"
-      :status-label="selectionStatusLabel"
-      :yearly-savings-percent="featuredPlanSavingsPercent"
-    />
+    <section v-if="pending" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <USkeleton v-for="index in 4" :key="index" class="h-96 rounded-[var(--radius-xl)]" />
+    </section>
 
-    <div id="go-pro-plans" class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
-      <section class="min-w-0 space-y-5">
-        <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-5 shadow-[0_10px_28px_rgba(15,35,110,0.05)]">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p class="text-[11px] font-extrabold uppercase text-slate-500">
-                {{ t("pages.goProPage.plansEyebrow") }}
-              </p>
-              <h2 class="mt-1 text-[26px] font-black leading-tight text-[var(--text-primary)]">
-                {{ t("pages.goProPage.plansShortTitle") }}
-              </h2>
-            </div>
+    <UAlert v-else-if="error" color="error" variant="soft" :title="String(error.message || error)" />
 
-            <button
-              v-if="hasRouteState"
-              type="button"
-              class="inline-flex h-10 items-center justify-center rounded-[14px] border border-secondary-200 bg-white px-4 text-[12px] font-extrabold text-[var(--text-primary)] transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 active:scale-95"
-              @click="resetSelection"
+    <section v-else-if="packages.length" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <article
+        v-for="plan in packages"
+        :key="plan.id"
+        class="surface-card-hover flex flex-col overflow-hidden"
+      >
+        <div class="p-5 text-white" :style="{ background: plan.color }">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="text-xl font-black">{{ plan.name }}</h2>
+            <UBadge v-if="plan.isCurrent" color="neutral" variant="soft" class="bg-white/20 text-white">
+              {{ t("pages.goProPage.currentPlanLabel") }}
+            </UBadge>
+          </div>
+          <p class="mt-4 text-3xl font-black">
+            {{ formatMoney(plan.price, plan.currency, plan.currencySymbol) }}
+          </p>
+        </div>
+
+        <div class="flex flex-1 flex-col gap-4 p-5">
+          <ul class="space-y-3">
+            <li
+              v-for="[key, value] in Object.entries(plan.features)"
+              :key="key"
+              class="flex items-start justify-between gap-3 border-b border-[var(--border-light)] pb-2 text-sm"
             >
-              {{ t("pages.goProPage.resetSelection") }}
-            </button>
-          </div>
+              <span class="font-semibold text-[var(--text-secondary)]">{{ normalizeFeature(key) }}</span>
+              <span class="font-bold text-[var(--text-primary)]">{{ formatFeature(value) }}</span>
+            </li>
+          </ul>
 
-          <div class="mt-5 grid gap-5 xl:grid-cols-3">
-            <GoProPlanCard
-              v-for="plan in plans"
-              :key="plan.id"
-              :billing-cycle="billingCycle"
-              :plan="plan"
-              :selected="focusedPlan?.id === plan.id"
-              @select="selectPlan"
-            />
-          </div>
-        </section>
+          <UButton
+            color="primary"
+            block
+            class="mt-auto rounded-[var(--radius-full)]"
+            :disabled="plan.isCurrent"
+            :loading="upgradingType === plan.id"
+            @click="upgrade(plan.id)"
+          >
+            {{ plan.isCurrent ? t("pages.goProPage.currentPlanLabel") : t("pages.goProPage.pay") }}
+          </UButton>
+        </div>
+      </article>
+    </section>
 
-        <GoProComparisonTable
-          :billing-cycle="billingCycle"
-          :plans="plans"
-          :rows="comparisonRows"
-          :selected-plan-id="focusedPlanId || ''"
-        />
-      </section>
-
-      <GoProSidebar
-        :subscription="subscriptionState"
-        :payments="paymentHistory"
-        :stats="sidebarStats"
-        :status-label="selectionStatusLabel"
-        :selected-plan="focusedPlan"
-        :has-active-selection="hasRouteState"
-        @reset="resetSelection"
-      />
-    </div>
-
-    <GoProCheckoutModal
-      :billing-cycle="billingCycle"
-      :payment-methods="paymentMethods"
-      :plan="checkoutPlan"
-      @checkout="recordCheckout"
-      @close="closeCheckout"
-    />
-  </div>
+    <UCard v-else class="surface-card text-center" :ui="{ body: 'p-8' }">
+      <Icon name="i-ph-rocket-launch-duotone" class="mx-auto h-10 w-10 text-[var(--text-tertiary)]" />
+      <h2 class="text-heading mt-3">{{ t("pages.goProPage.emptyPaymentsTitle") }}</h2>
+      <p class="text-body-secondary mt-2">{{ t("pages.goProPage.emptyPaymentsDescription") }}</p>
+    </UCard>
+  </main>
 </template>
 
 <script setup lang="ts">
-import type { LocationQueryRaw } from "vue-router"
-import GoProBillingToggle from "../components/BillingToggle.vue"
-import GoProCheckoutModal from "../components/CheckoutModal.vue"
-import GoProComparisonTable from "../components/ComparisonTable.vue"
-import GoProHero from "../components/GoProHero.vue"
-import GoProPlanCard from "../components/PlanCard.vue"
-import GoProSidebar from "../components/GoProSidebar.vue"
-import type { BillingCycle, ProCheckoutPayload, ProPlan, ProPlanKey } from "../../domain/types/go-pro.types"
-import {
-  defaultBillingCycle,
-  formatProCurrency,
-  getProPlanPrice,
-  getProSavingsPercent,
-  normalizeBillingCycle,
-  normalizeProPlanKey,
-  readGoProQueryValue,
-  useMockGoProData,
-} from "../../infrastructure/mocks/goProCatalog"
+import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
+import { useGoProPageVM } from "../../application/view-models/useGoProPageVM"
 
-const { plans, comparisonRows, paymentMethods, currentSubscription } = useMockGoProData()
 const { t, locale } = useI18n()
-const route = useRoute()
-const router = useRouter()
+const {
+  packages,
+  pending,
+  error,
+  upgradingType,
+  upgrade,
+} = useGoProPageVM()
 
-const billingCycle = ref<BillingCycle>(
-  normalizeBillingCycle(readGoProQueryValue(route.query.billing)),
-)
-const focusedPlanId = ref<ProPlanKey | "">(
-  normalizeProPlanKey(readGoProQueryValue(route.query.plan)),
-)
-const checkoutPlanId = ref<ProPlanKey | null>(null)
-const checkouts = ref<ProCheckoutPayload[]>([])
+const formatMoney = (amount: number, currency: string, currencySymbol: string) =>
+  formatCurrency(amount, {
+    currency,
+    currencySymbol,
+    locale: locale.value,
+  })
 
-const activeBillingLabel = computed(() =>
-  billingCycle.value === "monthly"
-    ? t("pages.goProPage.monthly")
-    : t("pages.goProPage.yearlySavings"),
-)
+const normalizeFeature = (key: string) =>
+  key.replace(/_/g, " ").replace(/\b\w/g, char => char.toUpperCase())
 
-const featuredPlan = computed(() =>
-  plans.value.find(plan => plan.highlight) ?? plans.value[1] ?? plans.value[0] ?? null,
-)
-
-const featuredPlanSavingsPercent = computed(() =>
-  featuredPlan.value ? getProSavingsPercent(featuredPlan.value) : 0,
-)
-
-const focusedPlan = computed<ProPlan | null>(() =>
-  plans.value.find(plan => plan.id === focusedPlanId.value) ?? null,
-)
-
-const checkoutPlan = computed<ProPlan | null>(() =>
-  plans.value.find(plan => plan.id === checkoutPlanId.value) ?? null,
-)
-
-const hasRouteState = computed(() =>
-  billingCycle.value !== defaultBillingCycle || Boolean(focusedPlanId.value),
-)
-
-const selectionStatusLabel = computed(() => {
-  if (focusedPlan.value && billingCycle.value !== defaultBillingCycle) {
-    return t("pages.goProPage.selectionStatusPlanBilling", {
-      plan: focusedPlan.value.name,
-      billing: activeBillingLabel.value,
-    })
-  }
-
-  if (focusedPlan.value) {
-    return t("pages.goProPage.selectionStatusPlan", {
-      plan: focusedPlan.value.name,
-    })
-  }
-
-  if (billingCycle.value !== defaultBillingCycle) {
-    return t("pages.goProPage.selectionStatusBilling", {
-      billing: activeBillingLabel.value,
-    })
-  }
-
-  return t("pages.goProPage.selectionStatusDefault")
-})
-
-const subscriptionState = computed(() => {
-  const latest = checkouts.value[0]
-  if (!latest) return currentSubscription.value
-
-  const plan = plans.value.find(item => item.id === latest.planId)
-  return {
-    plan: plan?.name ?? t("pages.goProPage.subscriptionFallbackPlan"),
-    status: t("pages.goProPage.subscriptionActive"),
-    renewsAt: latest.billingCycle === "monthly"
-      ? t("pages.goProPage.renewsMonthly")
-      : t("pages.goProPage.renewsYearly"),
-  }
-})
-
-const paymentHistory = computed(() =>
-  checkouts.value.map((checkout, index) => {
-    const plan = plans.value.find(item => item.id === checkout.planId)
-    const method = paymentMethods.value.find(item => item.value === checkout.paymentMethod)
-    return {
-      id: index + 1,
-      plan: plan?.name ?? t("pages.goProPage.subscriptionFallbackPlan"),
-      amount: formatProCurrency(checkout.amount, locale.value),
-      method: method?.label ?? t("pages.goProPage.paymentFallbackMethod"),
-      time: t("pages.goProPage.justNow"),
-    }
-  }),
-)
-
-const heroStats = computed(() => [
-  {
-    label: t("pages.goProPage.statPackages"),
-    value: plans.value.length,
-    description: t("pages.goProPage.statPackagesDescription"),
-  },
-  {
-    label: t("pages.goProPage.statSavings"),
-    value: t("pages.goProPage.statSavingsValue", {
-      percent: featuredPlanSavingsPercent.value,
-    }),
-    description: t("pages.goProPage.statSavingsDescription"),
-  },
-  {
-    label: t("pages.goProPage.statPayments"),
-    value: checkouts.value.length,
-    description: t("pages.goProPage.statPaymentsDescription"),
-  },
-])
-
-const sidebarStats = computed(() => {
-  const plan = focusedPlan.value ?? featuredPlan.value
-  const price = plan ? getProPlanPrice(plan, billingCycle.value) : 0
-
-  return [
-    {
-      label: t("pages.goProPage.sidebarBilling"),
-      value: activeBillingLabel.value,
-    },
-    {
-      label: t("pages.goProPage.sidebarPrice"),
-      value: formatProCurrency(price, locale.value),
-    },
-    {
-      label: t("pages.goProPage.sidebarPayments"),
-      value: paymentHistory.value.length,
-    },
-  ]
-})
-
-watch(
-  () => route.query.billing,
-  (value) => {
-    const nextBilling = normalizeBillingCycle(readGoProQueryValue(value))
-    if (nextBilling !== billingCycle.value) {
-      billingCycle.value = nextBilling
-    }
-  },
-)
-
-watch(
-  () => route.query.plan,
-  (value) => {
-    const nextPlan = normalizeProPlanKey(readGoProQueryValue(value))
-    if (nextPlan !== focusedPlanId.value) {
-      focusedPlanId.value = nextPlan
-    }
-  },
-)
-
-watch(billingCycle, syncRoute)
-watch(focusedPlanId, syncRoute)
-
-onMounted(() => {
-  syncRoute()
-})
-
-function selectPlan(plan: ProPlan) {
-  focusedPlanId.value = plan.id
-  checkoutPlanId.value = plan.id
-}
-
-function selectFeaturedPlan() {
-  if (!featuredPlan.value) return
-  selectPlan(featuredPlan.value)
-}
-
-function closeCheckout() {
-  checkoutPlanId.value = null
-}
-
-function recordCheckout(payload: ProCheckoutPayload) {
-  checkouts.value = [payload, ...checkouts.value]
-  focusedPlanId.value = payload.planId
-  closeCheckout()
-}
-
-function resetSelection() {
-  billingCycle.value = defaultBillingCycle
-  focusedPlanId.value = ""
-  closeCheckout()
-}
-
-function syncRoute() {
-  const currentRawBilling = readGoProQueryValue(route.query.billing)
-  const currentRawPlan = readGoProQueryValue(route.query.plan)
-  const nextBilling = billingCycle.value === defaultBillingCycle ? "" : billingCycle.value
-  const nextPlan = focusedPlanId.value
-
-  if (currentRawBilling === nextBilling && currentRawPlan === nextPlan) {
-    return
-  }
-
-  const nextQuery: LocationQueryRaw = { ...route.query }
-
-  if (nextBilling) {
-    nextQuery.billing = nextBilling
-  }
-  else {
-    delete nextQuery.billing
-  }
-
-  if (nextPlan) {
-    nextQuery.plan = nextPlan
-  }
-  else {
-    delete nextQuery.plan
-  }
-
-  void router.replace({ path: "/go-pro", query: nextQuery })
+const formatFeature = (value: boolean | string | number) => {
+  if (value === true) return t("pages.goProPage.featureIncluded")
+  if (value === false) return t("pages.goProPage.featureNotIncluded")
+  return String(value || t("pages.goProPage.featureNotIncluded"))
 }
 </script>

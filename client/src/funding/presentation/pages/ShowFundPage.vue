@@ -1,88 +1,133 @@
+<!-- English description: Backend-backed funding detail page for the show_fund route. -->
 <template>
-  <div v-if="campaign" class="space-y-5 pb-10">
-    <FundingDetailHero
-      :campaign="campaign"
-      @donate="openDonate"
-    />
+  <main class="mx-auto w-full max-w-5xl space-y-5 px-3 py-4 sm:px-5">
+    <USkeleton v-if="pending" class="h-[520px] rounded-[var(--radius-xl)]" />
 
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
-      <FundingDetailMain :campaign="campaign" />
-      <FundingDetailSidebar
-        :campaign="campaign"
-        @donate="openDonate"
+    <UAlert v-else-if="error" color="error" variant="soft" :title="String(error.message || error)" />
+
+    <article v-else-if="campaign" class="surface-card overflow-hidden">
+      <NuxtImg
+        v-if="campaign.imageUrl"
+        :src="campaign.imageUrl"
+        :alt="campaign.title"
+        width="1100"
+        height="520"
+        class="h-auto max-h-[520px] w-full object-cover"
       />
-    </div>
 
-    <FundingDonateModal
-      :campaign="donateCampaign"
-      @close="donateCampaign = undefined"
-      @donate="recordDonation"
-    />
-  </div>
+      <div class="space-y-5 p-4 sm:p-6">
+        <div class="flex items-start gap-3">
+          <NuxtImg
+            v-if="campaign.ownerAvatarUrl"
+            :src="campaign.ownerAvatarUrl"
+            :alt="campaign.ownerName"
+            width="48"
+            height="48"
+            class="h-12 w-12 rounded-full object-cover"
+          />
+          <div class="min-w-0">
+            <h1 class="text-heading">{{ campaign.title }}</h1>
+            <p class="text-caption-secondary mt-1">{{ campaign.ownerName }}</p>
+          </div>
+        </div>
 
-  <div
-    v-else
-    class="rounded-[34px] border border-dashed border-[var(--color-border)] bg-white p-10 text-center shadow-[var(--shadow-card)]"
-  >
-    <FoundationEmptyState
-      icon="i-ph-hand-heart-fill"
-      :title="$t('pages.showFundPage.notFoundTitle')"
-      :description="$t('pages.showFundPage.notFoundDescription')"
-      :primary-label="$t('pages.showFundPage.backToFunding')"
-      @primary="goBackToFunding"
-    />
-  </div>
+        <p class="text-body-primary whitespace-pre-line">{{ campaign.description }}</p>
+
+        <div>
+          <div class="mb-2 flex justify-between text-caption-secondary">
+            <span>{{ formatMoney(campaign.raised) }}</span>
+            <span>{{ formatMoney(campaign.amount) }}</span>
+          </div>
+          <UProgress :model-value="campaign.progress" color="primary" />
+        </div>
+
+        <UButton color="primary" class="rounded-[var(--radius-full)]" @click="openDonate">
+          {{ t("pages.fundingPage.donate") }}
+        </UButton>
+      </div>
+    </article>
+
+    <UModal v-model:open="donationOpen" :title="campaign?.title || t('pages.fundingPage.donateTitle')">
+      <template #body>
+        <UInput
+          v-model.number="donationAmount"
+          type="number"
+          min="1"
+          :placeholder="t('pages.fundingPage.amountPlaceholder')"
+          class="w-full"
+        />
+      </template>
+      <template #footer>
+        <div class="flex w-full justify-end gap-2">
+          <UButton color="neutral" variant="soft" @click="donationOpen = false">
+            {{ t("pages.fundingPage.close") }}
+          </UButton>
+          <UButton color="primary" :loading="donating" @click="submitDonation">
+            {{ t("pages.fundingPage.donate") }}
+          </UButton>
+        </div>
+      </template>
+    </UModal>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { appRoutes } from "#shared-kernel/application/constants/route-registry"
-import type { DonationPayload, MockFundingCampaign } from "../../domain/types/funding.types"
-import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import { applyFundingDonation, cloneFundingCampaign, useFundingCatalog } from "../../infrastructure/mocks/fundingCatalog"
-import FundingDetailHero from "../components/FundingDetailHero.vue"
-import FundingDetailMain from "../components/FundingDetailMain.vue"
-import FundingDetailSidebar from "../components/FundingDetailSidebar.vue"
-import FundingDonateModal from "../components/FundingDonateModal.vue"
+import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
+import { ApiFundingRepository } from "../../infrastructure/repositories/ApiFundingRepository"
+import type { FundingCampaign } from "../../domain/types/funding.types"
 
 const route = useRoute()
-const { t } = useI18n()
-const { campaigns } = useFundingCatalog()
+const toast = useToast()
+const { t, locale } = useI18n()
+const repository = new ApiFundingRepository()
+const donationOpen = ref(false)
+const donationAmount = ref<number | null>(null)
+const donating = ref(false)
 
-const fundingId = computed(() => {
-  const id = route.params.id
-  return Array.isArray(id) ? String(id[0] || "") : String(id || "")
-})
-
-const localCampaigns = ref<MockFundingCampaign[]>(
-  campaigns.map(cloneFundingCampaign),
+const { data, pending, error, refresh } = useAsyncData(
+  () => `funding-detail:${route.params.id}`,
+  () => $fetch<{
+    campaign: FundingCampaign
+    currency: string
+    currencySymbol: string
+  }>(`/_api/funding/${route.params.id}`),
+  { watch: [() => route.params.id] },
 )
-const donateCampaign = ref<MockFundingCampaign>()
 
-const campaign = computed(() =>
-  localCampaigns.value.find(item => item.id === fundingId.value),
-)
+const campaign = computed(() => data.value?.campaign ?? null)
 
-const openDonate = (selected: MockFundingCampaign) => {
-  donateCampaign.value = localCampaigns.value.find(item => item.id === selected.id) ?? selected
-}
-
-const recordDonation = (payload: DonationPayload) => {
-  const targetCampaign = localCampaigns.value.find(item => item.id === payload.campaignId)
-  if (!targetCampaign) return
-
-  donateCampaign.value = applyFundingDonation(targetCampaign, payload, {
-    supporterName: t("pages.fundingPage.recentSupporterName"),
-    supporterInitials: t("pages.fundingPage.recentSupporterInitials"),
-    fallbackMessage: t("pages.fundingPage.recentSupporterFallbackMessage"),
-    donatedAt: t("pages.fundingPage.recentSupporterJustNow"),
+const formatMoney = (amount: number) =>
+  formatCurrency(amount, {
+    currency: data.value?.currency,
+    currencySymbol: data.value?.currencySymbol,
+    locale: locale.value,
   })
+
+const openDonate = () => {
+  donationOpen.value = true
+  donationAmount.value = null
 }
 
-watch(fundingId, () => {
-  donateCampaign.value = undefined
-})
+const submitDonation = async () => {
+  if (!campaign.value || !donationAmount.value) return
+  donating.value = true
 
-function goBackToFunding() {
-  navigateTo(appRoutes.funding)
+  try {
+    await repository.donate({
+      id: campaign.value.id,
+      amount: donationAmount.value,
+    })
+    donationOpen.value = false
+    await refresh()
+  }
+  catch (err) {
+    toast.add({
+      color: "error",
+      title: err instanceof Error ? err.message : "Unable to donate.",
+    })
+  }
+  finally {
+    donating.value = false
+  }
 }
 </script>

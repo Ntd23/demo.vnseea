@@ -1,7 +1,7 @@
 // English description: Shared backend helpers and mappers for Nuxt messages API routes.
 
 import { createDecipheriv } from "node:crypto"
-import { createError, getQuery, type H3Event } from "h3"
+import { createError, getHeader, getQuery, readBody, readMultipartFormData, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
@@ -49,6 +49,15 @@ type MessageThreadQuery = {
   beforeId?: number
 }
 
+type MultipartMessageInput = MessageThreadQuery & {
+  text: string
+  file?: {
+    filename?: string
+    type?: string
+    data: Buffer
+  } | null
+}
+
 const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number"
     ? String(value).trim()
@@ -85,6 +94,16 @@ const firstString = (entity: BackendEntity, keys: string[]) => {
   return ""
 }
 
+const buildProfileUrl = (entity: BackendEntity, type: MessageThreadType) => {
+  if (type === "page") {
+    const name = firstString(entity, ["page_name", "name"])
+    return name ? `/p/${encodeURIComponent(name)}` : ""
+  }
+
+  const username = firstString(entity, ["username"])
+  return username ? `/@${encodeURIComponent(username)}` : ""
+}
+
 const createOpenSslKey = (value: string) => {
   const key = Buffer.alloc(16)
   Buffer.from(value).copy(key)
@@ -116,6 +135,27 @@ const decryptMessageText = (value: unknown, timestamp: unknown) => {
 const buildContactPreview = (message: BackendEntity) =>
   decryptMessageText(message.text, message.time)
   || firstString(message, ["media", "type_two", "type"])
+
+const inferMediaType = (entity: BackendEntity): MessageItem["mediaType"] | undefined => {
+  const rawType = firstString(entity, ["type", "type_two"]).toLowerCase()
+  const media = firstString(entity, ["media", "stickers", "media_file"]).toLowerCase()
+
+  if (rawType.includes("gif") || media.endsWith(".gif")) return "gif"
+  if (rawType.includes("image") || /\.(png|jpe?g|webp|bmp)$/i.test(media)) return "image"
+  if (rawType.includes("video") || /\.(mp4|mov|webm|m4v)$/i.test(media)) return "video"
+  if (rawType.includes("audio") || rawType.includes("record") || /\.(mp3|m4a|wav|ogg|webm)$/i.test(media)) return "audio"
+  if (media) return "file"
+
+  return undefined
+}
+
+const buildMediaUrl = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+) => {
+  const source = firstString(entity, ["media", "stickers", "media_file"])
+  return source ? resolveMediaUrl(source) : ""
+}
 
 const buildContactMembers = (entity: BackendEntity) =>
   asArray(entity.parts)
@@ -153,9 +193,16 @@ const mapMessageContact = (
       return null
     }
 
+    const name = firstString(entity, ["name", "username"])
+
+    if (!name) {
+      return null
+    }
+
     return {
       id: buildContactId("user", userId),
-      name: firstString(entity, ["name", "username"]) || `User ${userId}`,
+      name,
+      profileUrl: buildProfileUrl(entity, "user"),
       status: buildUserStatus(entity),
       isOnline: asNumber(entity.lastseen) > (Math.floor(Date.now() / 1000) - 60),
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
@@ -177,10 +224,15 @@ const mapMessageContact = (
     }
 
     const members = buildContactMembers(entity)
+    const name = firstString(entity, ["group_name", "name"])
+
+    if (!name) {
+      return null
+    }
 
     return {
       id: buildContactId("group", groupId),
-      name: firstString(entity, ["group_name", "name"]) || `Group ${groupId}`,
+      name,
       status: buildGroupStatus(entity),
       isOnline: false,
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
@@ -203,9 +255,16 @@ const mapMessageContact = (
       return null
     }
 
+    const name = firstString(entity, ["page_title", "name", "page_name"])
+
+    if (!name) {
+      return null
+    }
+
     return {
       id: buildContactId("page", pageId, recipientId),
-      name: firstString(entity, ["page_title", "name", "page_name"]) || `Page ${pageId}`,
+      name,
+      profileUrl: buildProfileUrl(entity, "page"),
       status: buildPageStatus(entity),
       isOnline: false,
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
@@ -229,11 +288,12 @@ const mapThreadMessage = (
   entity: BackendEntity,
   currentUserId: number,
   resolveMediaUrl: (value: unknown) => string,
-  fallbackAvatar = "",
 ): MessageItem => {
   const timestamp = asNumber(entity.time)
   const userData = asRecord(entity.user_data)
   const messageUser = asRecord(entity.messageUser)
+  const mediaUrl = buildMediaUrl(entity, resolveMediaUrl)
+  const mediaType = inferMediaType(entity)
 
   return {
     id: asNumber(entity.id),
@@ -241,9 +301,11 @@ const mapThreadMessage = (
     isMine: asNumber(entity.from_id) === currentUserId || asString(entity.position).startsWith("right"),
     time: firstString(entity, ["time_text"]),
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
-      || firstString(messageUser, ["avatar", "avatar_full"])
-      || fallbackAvatar),
+      || firstString(messageUser, ["avatar", "avatar_full"])),
     timestamp,
+    mediaUrl,
+    mediaName: firstString(entity, ["mediaFileName", "media_file_name", "filename"]),
+    mediaType,
   }
 }
 
@@ -405,13 +467,34 @@ export async function fetchMessageThread(
 
 export async function sendMessageToThread(
   event: H3Event,
-  input: MessageThreadQuery & { text: string },
+  input: MultipartMessageInput,
 ) {
   const client = createBackendApiClient(event)
   const currentUser = await getBackendCurrentUser(event)
   const currentUserId = asNumber(currentUser.user_id)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const messageHash = `${Date.now()}`
+  const createSendBody = (fields: Record<string, unknown>) => {
+    if (!input.file) {
+      return fields
+    }
+
+    const body = new FormData()
+
+    for (const [key, value] of Object.entries(fields)) {
+      if (value !== undefined && value !== null) {
+        body.append(key, String(value))
+      }
+    }
+
+    body.append(
+      "file",
+      new Blob([input.file.data], { type: input.file.type || "application/octet-stream" }),
+      input.file.filename || "attachment",
+    )
+
+    return body
+  }
 
   if (input.type === "user") {
     if (!input.userId) {
@@ -422,13 +505,13 @@ export async function sendMessageToThread(
     }
 
     const response = assertBackendApiSuccess(
-      await client.post<{ api_status?: number | string, message_data?: BackendEntity[] }, Record<string, unknown>>(
+      await client.post<{ api_status?: number | string, message_data?: BackendEntity[] }, FormData | Record<string, unknown>>(
         "send-message",
-        {
+        createSendBody({
           user_id: input.userId,
           text: input.text,
           message_hash_id: messageHash,
-        },
+        }),
       ),
       "Unable to send user message.",
     )
@@ -449,14 +532,14 @@ export async function sendMessageToThread(
     }
 
     const response = assertBackendApiSuccess(
-      await client.post<BackendCollectionResponse, Record<string, unknown>>(
+      await client.post<BackendCollectionResponse, FormData | Record<string, unknown>>(
         "group_chat",
-        {
+        createSendBody({
           type: "send",
           id: input.groupId,
           text: input.text,
           message_hash_id: messageHash,
-        },
+        }),
       ),
       "Unable to send group message.",
     )
@@ -476,15 +559,15 @@ export async function sendMessageToThread(
   }
 
   const response = assertBackendApiSuccess(
-    await client.post<BackendCollectionResponse, Record<string, unknown>>(
+    await client.post<BackendCollectionResponse, FormData | Record<string, unknown>>(
       "page_chat",
-      {
+      createSendBody({
         type: "send",
         page_id: input.pageId,
         recipient_id: input.recipientId,
         text: input.text,
         message_hash_id: messageHash,
-      },
+      }),
     ),
     "Unable to send page message.",
   )
@@ -494,4 +577,169 @@ export async function sendMessageToThread(
       mapThreadMessage(message, currentUserId, resolveMediaUrl),
     ),
   )
+}
+
+export async function parseMessageSendBody(event: H3Event): Promise<MultipartMessageInput> {
+  const contentType = getHeader(event, "content-type") || ""
+
+  if (!contentType.includes("multipart/form-data")) {
+    const body = await readBody<Record<string, unknown>>(event)
+
+    return {
+      type: asString(body.type) as MessageThreadType,
+      userId: asNumber(body.userId),
+      groupId: asNumber(body.groupId),
+      pageId: asNumber(body.pageId),
+      recipientId: asNumber(body.recipientId),
+      text: asString(body.text),
+      file: null,
+    }
+  }
+
+  const parts = await readMultipartFormData(event) ?? []
+  const fields: Record<string, string> = {}
+  let file: MultipartMessageInput["file"] = null
+
+  for (const part of parts) {
+    if (!part.name) {
+      continue
+    }
+
+    if (part.filename && part.name === "file") {
+      file = {
+        filename: part.filename,
+        type: part.type,
+        data: part.data,
+      }
+      continue
+    }
+
+    fields[part.name] = part.data.toString()
+  }
+
+  return {
+    type: asString(fields.type) as MessageThreadType,
+    userId: asNumber(fields.userId),
+    groupId: asNumber(fields.groupId),
+    pageId: asNumber(fields.pageId),
+    recipientId: asNumber(fields.recipientId),
+    text: asString(fields.text),
+    file,
+  }
+}
+
+export async function markAllMessagesAsRead(event: H3Event) {
+  const client = createBackendApiClient(event)
+  assertBackendApiSuccess(
+    await client.post<{ api_status?: number | string }>("read_chats"),
+    "Unable to mark chats as read.",
+  )
+
+  return { ok: true }
+}
+
+export async function deleteMessageConversation(
+  event: H3Event,
+  input: MessageThreadQuery,
+) {
+  const client = createBackendApiClient(event)
+
+  if (input.type === "user") {
+    if (!input.userId) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "A user thread requires userId.",
+      })
+    }
+
+    assertBackendApiSuccess(
+      await client.post<{ api_status?: number | string, message?: string }, Record<string, unknown>>(
+        "delete-conversation",
+        { user_id: input.userId },
+      ),
+      "Unable to delete user conversation.",
+    )
+
+    return { ok: true }
+  }
+
+  if (input.type === "page") {
+    if (!input.pageId || !input.recipientId) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "A page thread requires pageId and recipientId.",
+      })
+    }
+
+    assertBackendApiSuccess(
+      await client.post<{ api_status?: number | string, message?: string }, Record<string, unknown>>(
+        "page_chat",
+        {
+          type: "delete_chat",
+          page_id: input.pageId,
+          recipient_id: input.recipientId,
+        },
+      ),
+      "Unable to delete page conversation.",
+    )
+
+    return { ok: true }
+  }
+
+  if (!input.groupId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "A group thread requires groupId.",
+    })
+  }
+
+  assertBackendApiSuccess(
+    await client.post<{ api_status?: number | string, message_data?: string }, Record<string, unknown>>(
+      "group_chat",
+      {
+        type: "leave",
+        id: input.groupId,
+      },
+    ),
+    "Unable to leave group chat.",
+  )
+
+  return { ok: true }
+}
+
+export async function createMessageGroup(
+  event: H3Event,
+  input: { name: string, recipientIds: number[] },
+) {
+  const name = input.name.trim()
+  const recipientIds = [...new Set(input.recipientIds.map(Number).filter(id => Number.isFinite(id) && id > 0))]
+
+  if (name.length < 4) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Group name must be at least 4 characters.",
+    })
+  }
+
+  if (recipientIds.length === 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "At least one group recipient is required.",
+    })
+  }
+
+  const client = createBackendApiClient(event)
+  assertBackendApiSuccess(
+    await client.post<{ api_status?: number | string }, Record<string, unknown>>(
+      "group_chat",
+      {
+        type: "create",
+        group_name: name,
+        parts: recipientIds.join(","),
+      },
+    ),
+    "Unable to create group chat.",
+  )
+
+  return { ok: true }
 }

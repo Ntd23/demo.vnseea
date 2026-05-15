@@ -1,3 +1,5 @@
+// English description: Domain types for backend-backed Pro packages and legacy migration shapes.
+
 export type BillingCycle = "monthly" | "yearly"
 export type ProPlanKey = "starter" | "creator" | "business"
 export type PaymentMethodKey = "wallet" | "card" | "bank"
@@ -35,4 +37,27 @@ export type ProCheckoutPayload = {
   billingCycle: BillingCycle
   paymentMethod: PaymentMethodKey
   amount: number
+}
+
+export type GoProFeatureValue = boolean | string | number
+
+export type GoProPackage = {
+  id: string
+  name: string
+  price: number
+  currency: string
+  currencySymbol: string
+  color: string
+  features: Record<string, GoProFeatureValue>
+  isCurrent: boolean
+}
+
+export type GoProCatalog = {
+  packages: GoProPackage[]
+  membershipSystem: boolean
+  currentIsPro: boolean
+}
+
+export type GoProUpgradeDraft = {
+  type: string
 }

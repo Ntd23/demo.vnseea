@@ -1,3 +1,4 @@
+<!-- English description: Thin Nuxt route wrapper for the funding creation bounded-context page. -->
 <template>
   <FundingPresentationCreateFundingPage />
 </template>

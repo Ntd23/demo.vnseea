@@ -1,3 +1,5 @@
+// English description: Domain types for backend-backed forum sections and legacy migration shapes.
+
 export type ForumSectionKey = "all" | "announcements" | "support" | "marketplace" | "events" | "jobs" | "showcase"
 
 export type ForumSection = {
@@ -38,4 +40,32 @@ export type ForumThreadPayload = {
   title: string
   section: Exclude<ForumSectionKey, "all">
   message: string
+}
+
+export type ForumSummaryForum = {
+  id: number
+  sectionId: number
+  title: string
+  description: string
+  posts: number
+  url: string
+}
+
+export type ForumSummarySection = {
+  id: number
+  title: string
+  description: string
+  forums: ForumSummaryForum[]
+}
+
+export type ForumCatalog = {
+  sections: ForumSummarySection[]
+  canCreate: boolean
+  hasMore: boolean
+  nextOffset: number | null
+}
+
+export type ForumCatalogQuery = {
+  q?: string
+  offset?: number | null
 }

@@ -1,8 +1,9 @@
-// Description: Loads inbox contacts and message threads from the Nuxt API bridge without local mock fallbacks.
+// Description: Loads inbox contacts and message threads from the Nuxt API bridge using backend data only.
 
 import type {
   MessageContact,
   MessageItem,
+  MessageSendDraft,
   MessageTab,
   MessageTabKey,
   MessageThread,
@@ -77,6 +78,9 @@ export function useMessagesInbox(
   const isLoadingMore = ref(false)
   const isSending = ref(false)
   const isMultiSending = ref(false)
+  const isMarkingRead = ref(false)
+  const isDeletingConversation = ref(false)
+  const isCreatingGroup = ref(false)
 
   const tabs = computed<MessageTab[]>(() => [
     { id: "multi", label: t("pages.messagesPage.sendMultiple"), icon: "i-ph-user-list-duotone" },
@@ -305,17 +309,21 @@ export function useMessagesInbox(
     }
   }
 
-  async function sendMessage(text: string) {
+  async function sendMessage(input: MessageSendDraft) {
     const contact = selectedContact.value
 
     if (!contact || isSending.value) {
       return
     }
 
+    if (!input.text.trim() && !input.file) {
+      return
+    }
+
     isSending.value = true
 
     try {
-      const createdMessages = await repository.sendMessage(contact, text)
+      const createdMessages = await repository.sendMessage(contact, input)
       thread.value = {
         messages: mergeMessages(messages.value, createdMessages, "append"),
         typing: false,
@@ -331,6 +339,99 @@ export function useMessagesInbox(
     }
     finally {
       isSending.value = false
+    }
+  }
+
+  async function markAllAsRead() {
+    if (isMarkingRead.value) {
+      return
+    }
+
+    isMarkingRead.value = true
+
+    try {
+      await repository.markAllAsRead()
+      await refreshInbox()
+    }
+    catch {
+      toast.add({
+        title: t("pages.messagesPage.markReadErrorTitle"),
+        description: t("pages.messagesPage.markReadErrorDescription"),
+        color: "error",
+      })
+    }
+    finally {
+      isMarkingRead.value = false
+    }
+  }
+
+  async function deleteSelectedConversation() {
+    const contact = selectedContact.value
+
+    if (!contact || isDeletingConversation.value) {
+      return
+    }
+
+    isDeletingConversation.value = true
+
+    try {
+      await repository.deleteConversation(contact)
+      selectedContactId.value = ""
+      thread.value = { messages: [], typing: false }
+      await refreshInbox()
+    }
+    catch {
+      toast.add({
+        title: t("pages.messagesPage.deleteErrorTitle"),
+        description: t("pages.messagesPage.deleteErrorDescription"),
+        color: "error",
+      })
+    }
+    finally {
+      isDeletingConversation.value = false
+    }
+  }
+
+  async function createGroupChat(name: string) {
+    if (isCreatingGroup.value) {
+      return false
+    }
+
+    if (selectedRecipientIds.value.length === 0) {
+      setMultiFeedbackMessage("error", t("pages.messagesPage.multiMissingRecipients"))
+      return false
+    }
+
+    isCreatingGroup.value = true
+
+    try {
+      await repository.createGroup({
+        name,
+        recipientIds: selectedRecipientIds.value,
+      })
+      clearMultiSelection()
+      activeTab.value = "group"
+      await refreshInbox()
+
+      toast.add({
+        title: t("pages.messagesPage.groupCreateSuccessTitle"),
+        description: t("pages.messagesPage.groupCreateSuccessDescription"),
+        color: "success",
+      })
+
+      return true
+    }
+    catch {
+      toast.add({
+        title: t("pages.messagesPage.groupCreateErrorTitle"),
+        description: t("pages.messagesPage.groupCreateErrorDescription"),
+        color: "error",
+      })
+
+      return false
+    }
+    finally {
+      isCreatingGroup.value = false
     }
   }
 
@@ -445,9 +546,15 @@ export function useMessagesInbox(
     filteredContacts,
     inboxError,
     inboxPending,
+    createGroupChat,
+    deleteSelectedConversation,
+    isCreatingGroup,
+    isDeletingConversation,
+    isMarkingRead,
     isMultiSending,
     isTyping,
     loadOlderMessages,
+    markAllAsRead,
     messages,
     multiFeedbackMessage,
     multiFeedbackTone,

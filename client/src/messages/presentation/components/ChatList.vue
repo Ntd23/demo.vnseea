@@ -1,6 +1,6 @@
 <!-- Description: Renders the left inbox pane with search, actions, tabs, and real conversation rows from the backend inbox. -->
 <template>
-  <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white">
+  <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white shadow-[0_4px_20px_rgba(0,0,255,0.04)]">
     <div class="space-y-4 border-b border-[#e2e8f0] p-4">
       <div class="flex items-center gap-2 rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5">
         <Icon name="i-ph-magnifying-glass-duotone" class="h-4 w-4 text-slate-500" />
@@ -14,7 +14,13 @@
       </div>
 
       <div class="flex flex-wrap gap-2">
-        <UButton variant="soft" color="primary" class="rounded-full px-4 font-semibold" disabled>
+        <UButton
+          variant="soft"
+          color="primary"
+          class="rounded-full px-4 font-semibold"
+          :loading="markingRead"
+          @click="emit('mark-all-read')"
+        >
           <template #leading>
             <Icon name="i-ph-checks-duotone" class="h-4 w-4" />
           </template>
@@ -24,7 +30,7 @@
           variant="soft"
           color="neutral"
           class="rounded-full px-4 font-semibold"
-          @click="emit('update:activeTab', 'multi')"
+          @click="emit('create-group')"
         >
           <template #leading>
             <Icon name="i-ph-users-three-duotone" class="h-4 w-4" />
@@ -91,6 +97,16 @@
       <p v-else class="mt-3 text-sm text-slate-500">
         {{ noRecipientsSelected }}
       </p>
+      <UButton
+        class="mt-4 w-full rounded-full font-semibold md:hidden"
+        :disabled="selectedRecipients.length === 0"
+        @click="emit('open-multi-composer')"
+      >
+        <template #leading>
+          <Icon name="i-ph-paper-plane-tilt-bold" class="h-4 w-4" />
+        </template>
+        {{ $t("pages.messagesPage.openComposer") }}
+      </UButton>
     </div>
 
     <div class="flex items-center justify-between border-b border-[#e2e8f0] px-4 py-3">
@@ -136,12 +152,16 @@ const props = defineProps<{
   selectedRecipientIds?: number[]
   selectedRecipients?: MessageContact[]
   tabs: MessageTab[]
+  markingRead?: boolean
 }>()
 
 const { t } = useI18n()
 
 const emit = defineEmits<{
   "select-user": [user: MessageContact]
+  "create-group": []
+  "mark-all-read": []
+  "open-multi-composer": []
   "toggle-all-recipients": []
   "update:activeTab": [tab: MessageTabKey]
   "update:query": [value: string]

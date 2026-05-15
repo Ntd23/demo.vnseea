@@ -275,6 +275,7 @@
 
 <script setup lang="ts">
 import { useFeedMentionSearch } from "../../application/composables/useFeedMentionSearch"
+import { feedCommentComposerReactionAssets } from "../../application/constants/reaction-assets"
 import type { FeedCommentAttachment, FeedCommentSubmitPayload } from "../../domain/types/feed.types"
 
 const props = withDefaults(defineProps<{
@@ -295,7 +296,14 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const toast = useToast()
 
-const emojiOptions = ["😀", "😄", "😍", "😂", "😮", "😢", "😡", "👍", "❤️"]
+const emojiOptions = computed(() =>
+  feedCommentComposerReactionAssets.map(reaction => ({
+    value: reaction.value,
+    src: reaction.src,
+    text: reaction.text,
+    label: t(reaction.labelKey),
+  })),
+)
 const message = ref("")
 const emojiOpen = ref(false)
 const imageInputRef = ref<HTMLInputElement | null>(null)
@@ -1202,6 +1210,12 @@ defineExpose({
 
 .comment-composer__emoji:hover {
   background: var(--bg-surface-hover);
+}
+
+.comment-composer__emoji-image {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
 }
 
 .comment-composer__send {

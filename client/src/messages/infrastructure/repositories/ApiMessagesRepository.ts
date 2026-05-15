@@ -4,11 +4,19 @@ import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { MessagesRepository } from "../../domain/repositories/MessagesRepository"
 import type {
+  MessageActionResult,
   MessageContact,
   MessageItem,
+  MessageSendDraft,
   MessageThread,
   MultiMessageSendResult,
 } from "../../domain/types/messages.types"
+
+const MESSAGES_API = {
+  createGroup: "messages/group",
+  deleteConversation: "messages/delete",
+  markAllAsRead: "messages/read",
+} as const
 
 const createThreadQuery = (contact: MessageContact, beforeId?: number) => ({
   type: contact.type,
@@ -53,6 +61,35 @@ const createMultiSendBody = (input: {
   }
 }
 
+const createSingleSendBody = (
+  contact: MessageContact,
+  input: MessageSendDraft,
+) => {
+  const thread = createThreadQuery(contact)
+  const text = input.text.trim()
+
+  if (input.file) {
+    const formData = new FormData()
+
+    formData.append("type", String(thread.type))
+    formData.append("text", text)
+
+    if (thread.userId) formData.append("userId", String(thread.userId))
+    if (thread.groupId) formData.append("groupId", String(thread.groupId))
+    if (thread.pageId) formData.append("pageId", String(thread.pageId))
+    if (thread.recipientId) formData.append("recipientId", String(thread.recipientId))
+
+    formData.append("file", input.file, input.file.name)
+
+    return formData
+  }
+
+  return {
+    ...thread,
+    text,
+  }
+}
+
 export function createApiMessagesRepository(): MessagesRepository {
   const client = useNuxtApiClient()
 
@@ -66,16 +103,34 @@ export function createApiMessagesRepository(): MessagesRepository {
         createThreadQuery(contact, options?.beforeId),
       )
     },
-    async sendMessage(contact: MessageContact, text: string) {
-      return await client.post<MessageItem[], Record<string, unknown>>(apiRoutes.messages.send, {
-        ...createThreadQuery(contact),
-        text,
-      })
+    async sendMessage(contact: MessageContact, input: MessageSendDraft) {
+      return await client.post<MessageItem[], FormData | Record<string, unknown>>(
+        apiRoutes.messages.send,
+        createSingleSendBody(contact, input),
+      )
     },
     async sendMultiMessage(input) {
       return await client.post<MultiMessageSendResult, FormData | Record<string, unknown>>(
         apiRoutes.messages.multi,
         createMultiSendBody(input),
+      )
+    },
+    async markAllAsRead() {
+      return await client.post<MessageActionResult>(MESSAGES_API.markAllAsRead)
+    },
+    async deleteConversation(contact) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(
+        MESSAGES_API.deleteConversation,
+        createThreadQuery(contact),
+      )
+    },
+    async createGroup(input) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(
+        MESSAGES_API.createGroup,
+        {
+          name: input.name,
+          recipientIds: normalizeRecipientIds(input.recipientIds),
+        },
       )
     },
   }

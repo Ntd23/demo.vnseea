@@ -1,3 +1,5 @@
+// English description: Domain types for backend-backed funding campaigns and legacy migration shapes.
+
 export type FundingCategoryKey = "community" | "education" | "health" | "environment" | "startup"
 export type FundingStatusKey = "all" | "active" | "ending" | "funded" | "mine"
 
@@ -63,4 +65,37 @@ export type FundingDonationPresentation = {
   fallbackMessage: string
   donatedAt: string
   gradient?: string
+}
+
+export type FundingTabKey = "browse" | "mine"
+
+export type FundingCampaign = {
+  id: number
+  hashedId: string
+  title: string
+  description: string
+  imageUrl: string
+  ownerName: string
+  ownerAvatarUrl: string
+  ownerUrl: string
+  createdAt: string
+  amount: number
+  raised: number
+  progress: number
+  donated: boolean
+  detailUrl: string
+}
+
+export type FundingCatalog = {
+  items: FundingCampaign[]
+  canCreate: boolean
+  currency: string
+  currencySymbol: string
+  hasMore: boolean
+  nextOffset: number | null
+}
+
+export type FundingCatalogQuery = {
+  tab?: FundingTabKey
+  offset?: number | null
 }

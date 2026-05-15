@@ -1,6 +1,6 @@
-<!-- Description: Renders the right info pane that mirrors the PHP message detail sidebar without fallback contact text. -->
+<!-- Description: Renders the right info pane that mirrors the PHP message detail sidebar. -->
 <template>
-  <div class="scrollbar-hide flex h-full flex-col overflow-y-auto rounded-[24px] border border-[#e2e8f0] bg-white p-5">
+  <div class="scrollbar-hide flex h-full flex-col overflow-y-auto rounded-[24px] border border-[#e2e8f0] bg-white p-5 shadow-[0_4px_20px_rgba(0,0,255,0.04)]">
     <template v-if="contact">
       <div class="border-b border-[#e2e8f0] pb-5 text-center">
         <UAvatar
@@ -18,16 +18,28 @@
 
         <div class="mt-4 flex justify-center gap-2">
           <UButton
-            v-for="action in quickActions"
-            :key="action.id"
+            v-if="contact.profileUrl"
+            :to="contact.profileUrl"
             variant="soft"
             color="neutral"
             class="rounded-full px-4 font-semibold"
           >
             <template #leading>
-              <Icon :name="action.icon" class="h-4 w-4" />
+              <Icon name="i-ph-user-duotone" class="h-4 w-4" />
             </template>
-            {{ action.label }}
+            {{ $t("pages.messagesPage.profile") }}
+          </UButton>
+          <UButton
+            variant="soft"
+            color="error"
+            class="rounded-full px-4 font-semibold"
+            :loading="deletingConversation"
+            @click="$emit('delete-conversation')"
+          >
+            <template #leading>
+              <Icon name="i-ph-trash-duotone" class="h-4 w-4" />
+            </template>
+            {{ $t("pages.messagesPage.deleteConversation") }}
           </UButton>
         </div>
       </div>
@@ -92,17 +104,15 @@ import type { MessageContact } from "../../domain/types/messages.types"
 
 const props = defineProps<{
   contact?: MessageContact | null
+  deletingConversation?: boolean
   emptyDescription: string
   emptyTitle: string
 }>()
 
 const { t } = useI18n()
-
-const quickActions = computed(() => [
-  { icon: "i-ph-user-duotone", id: "profile", label: t("pages.messagesPage.profile") },
-  { icon: "i-ph-bell-slash-duotone", id: "mute", label: t("pages.messagesPage.muteNotifications") },
-  { icon: "i-ph-magnifying-glass-duotone", id: "search", label: t("pages.messagesPage.search") },
-])
+defineEmits<{
+  "delete-conversation": []
+}>()
 
 const contactStatus = computed(() => {
   const contact = props.contact
