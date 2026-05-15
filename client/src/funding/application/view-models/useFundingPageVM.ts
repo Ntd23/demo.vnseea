@@ -57,12 +57,13 @@ export function useFundingPageVM() {
   }
 
   const openDonate = (campaign: FundingCampaign) => {
+    if (!campaign.canDonate) return
     donationTarget.value = campaign
     donationAmount.value = null
   }
 
   const submitDonation = async () => {
-    if (!donationTarget.value || !donationAmount.value) return
+    if (!donationTarget.value || !donationTarget.value.canDonate || !donationAmount.value) return
     donating.value = true
 
     try {

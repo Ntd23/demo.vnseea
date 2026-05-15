@@ -3,7 +3,8 @@
 import { createError, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient, normalizeBackendBaseURL } from "../../utils/backend-api-client"
-import type { FundingCampaign, FundingCatalog, FundingTabKey } from "../../../src/funding/domain/types/funding.types"
+import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import type { FundingCampaign, FundingCatalog, FundingDonation, FundingTabKey } from "../../../src/funding/domain/types/funding.types"
 
 type BackendEntity = Record<string, unknown>
 
@@ -60,16 +61,35 @@ const formatBackendDate = (value: unknown) => {
   return new Date(timestamp * 1000).toISOString()
 }
 
-const mapFundingCampaign = (item: BackendEntity, baseUrl: string): FundingCampaign => {
+const mapDonation = (item: BackendEntity, baseUrl: string): FundingDonation => {
+  const user = (item.user_data ?? {}) as BackendEntity
+  const userId = asNumber(item.user_id) || asNumber(user.user_id) || asNumber(user.id)
+
+  return {
+    id: asNumber(item.id),
+    userId,
+    supporterName: asString(user.name || user.username) || `#${userId}`,
+    supporterAvatarUrl: normalizeUrl(user.avatar, baseUrl),
+    amount: asNumber(item.amount),
+    donatedAt: formatBackendDate(item.time),
+  }
+}
+
+const mapFundingCampaign = (item: BackendEntity, baseUrl: string, currentUserId = 0): FundingCampaign => {
   const user = (item.user_data ?? {}) as BackendEntity
   const id = asNumber(item.id)
   const progress = asNumber(item.bar)
+  const ownerId = asNumber(item.user_id) || asNumber(user.user_id) || asNumber(user.id)
+  const donations = Array.isArray(item.recent_donations)
+    ? item.recent_donations.map(donation => mapDonation(donation as BackendEntity, baseUrl))
+    : []
 
   return {
     id,
     hashedId: asString(item.hashed_id) || String(id),
     title: asString(item.title),
     description: asString(item.description).replace(/<br\s*\/?>/gi, "\n"),
+    ownerId,
     imageUrl: normalizeUrl(item.image, baseUrl),
     ownerName: asString(user.name || user.username),
     ownerAvatarUrl: normalizeUrl(user.avatar, baseUrl),
@@ -78,7 +98,10 @@ const mapFundingCampaign = (item: BackendEntity, baseUrl: string): FundingCampai
     amount: asNumber(item.amount),
     raised: asNumber(item.raised),
     progress: Math.max(0, Math.min(100, progress)),
+    donorCount: asNumber(item.all_donation) || donations.length,
     donated: asBoolean(item.is_donate),
+    canDonate: currentUserId > 0 && ownerId !== currentUserId,
+    donations,
     detailUrl: `/show_fund/${asString(item.hashed_id) || id}`,
   }
 }
@@ -90,6 +113,8 @@ export async function fetchFundingCatalog(
   const client = createBackendApiClient(event)
   const runtimeConfig = useRuntimeConfig(event)
   const baseUrl = normalizeBackendBaseURL(String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase))
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+  const currentUserId = asNumber(currentUser?.user_id)
   const type = query.tab === "mine" ? "user_funding" : "funding"
   const limit = query.limit && query.limit > 0 ? query.limit : 9
   const response = await client.post<BackendFundingResponse>("funding", {
@@ -99,7 +124,7 @@ export async function fetchFundingCatalog(
   })
 
   const data = assertBackendApiSuccess(response, "Unable to load funding campaigns.")
-  const items = (data.data ?? []).map(item => mapFundingCampaign(item, baseUrl))
+  const items = (data.data ?? []).map(item => mapFundingCampaign(item, baseUrl, currentUserId))
 
   return {
     items,
@@ -115,6 +140,8 @@ export async function fetchFundingDetail(event: H3Event, id: string) {
   const client = createBackendApiClient(event)
   const runtimeConfig = useRuntimeConfig(event)
   const baseUrl = normalizeBackendBaseURL(String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase))
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+  const currentUserId = asNumber(currentUser?.user_id)
   const response = await client.post<BackendFundingDetailResponse>("funding", {
     type: "get_by_id",
     fund_id: id,
@@ -129,7 +156,7 @@ export async function fetchFundingDetail(event: H3Event, id: string) {
   }
 
   return {
-    campaign: mapFundingCampaign(data.data, baseUrl),
+    campaign: mapFundingCampaign(data.data, baseUrl, currentUserId),
     canCreate: Boolean(data.can_create),
     currency: asString(data.currency),
     currencySymbol: asString(data.currency_symbol),

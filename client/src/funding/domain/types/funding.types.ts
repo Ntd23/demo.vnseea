@@ -69,11 +69,21 @@ export type FundingDonationPresentation = {
 
 export type FundingTabKey = "browse" | "mine"
 
+export type FundingDonation = {
+  id: number
+  userId: number
+  supporterName: string
+  supporterAvatarUrl: string
+  amount: number
+  donatedAt: string
+}
+
 export type FundingCampaign = {
   id: number
   hashedId: string
   title: string
   description: string
+  ownerId: number
   imageUrl: string
   ownerName: string
   ownerAvatarUrl: string
@@ -82,7 +92,10 @@ export type FundingCampaign = {
   amount: number
   raised: number
   progress: number
+  donorCount: number
   donated: boolean
+  canDonate: boolean
+  donations: FundingDonation[]
   detailUrl: string
 }
 
