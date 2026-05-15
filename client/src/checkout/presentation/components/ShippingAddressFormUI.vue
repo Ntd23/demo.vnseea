@@ -1,340 +1,225 @@
-<!-- English description: Checkout shipping address form that saves real backend delivery addresses. -->
-
 <template>
-  <div class="space-y-5">
-    <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-      <section class="rounded-[26px] border border-[#dbe3f2] bg-white p-5 shadow-[0_14px_32px_rgba(15,35,110,0.06)] sm:p-6">
-        <div class="flex items-start gap-4">
-          <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-[#eef0ff] text-[#0000ff] shadow-[0_10px_24px_rgba(0,0,255,0.08)]">
-            <Icon name="i-ph-map-pin-fill" class="h-6 w-6" />
+  <div class="space-y-8">
+    <!-- Current Address Section -->
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div class="border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-6">
+        <h2 class="text-lg font-bold text-slate-900">
+          {{ hasSavedAddress
+            ? $t("checkout.shippingForm.savedAddressTitle")
+            : $t("checkout.shippingForm.noAddressTitle") }}
+        </h2>
+        <p class="mt-1 text-sm text-slate-500">
+          {{ hasSavedAddress
+            ? $t("checkout.shippingForm.savedAddressDesc")
+            : $t("checkout.shippingForm.noAddressDesc") }}
+        </p>
+      </div>
+
+      <div class="p-5 sm:p-6">
+        <template v-if="latestSavedAddress">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center rounded-md bg-[var(--color-primary-50)] px-2 py-1 text-xs font-semibold text-[var(--color-primary-700)]">
+              {{ $t("checkout.shippingForm.recipient") }}
+            </span>
+            <p class="text-sm font-bold text-slate-900">
+              {{ latestSavedAddress.fullName }}
+            </p>
+            <span class="text-slate-300">•</span>
+            <p class="text-sm text-slate-600">
+              {{ latestSavedAddress.phone }}
+            </p>
           </div>
 
-          <div class="min-w-0 flex-1">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-              {{ $t("checkout.shippingForm.shippingAddress") }}
-            </p>
-            <h2 class="mt-1 text-[1.25rem] font-extrabold tracking-[-0.04em] text-[#243b63]">
-              {{ hasSavedAddress
-                ? $t("checkout.shippingForm.savedAddressTitle")
-                : $t("checkout.shippingForm.noAddressTitle") }}
-            </h2>
-            <p class="mt-2 text-[14px] leading-6 text-slate-500">
-              {{ hasSavedAddress
-                ? $t("checkout.shippingForm.savedAddressDesc")
-                : $t("checkout.shippingForm.noAddressDesc") }}
-            </p>
-          </div>
-        </div>
-
-        <div class="mt-5 rounded-[22px] border border-[#eef2f8] bg-[#f7f9ff] p-4">
-          <template v-if="latestSavedAddress">
-            <div class="flex flex-wrap items-center gap-2">
-              <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.06em]">
-                {{ $t("checkout.shippingForm.recipient") }}
-              </UBadge>
-              <p class="text-[15px] font-extrabold text-[#243b63]">
-                {{ latestSavedAddress.fullName }}
-              </p>
-              <span class="text-slate-300">•</span>
-              <p class="text-[14px] font-medium text-slate-600">
-                {{ latestSavedAddress.phone }}
-              </p>
-            </div>
-
-            <p class="mt-3 text-[14px] leading-7 text-slate-600">
-              {{ addressSummary }}
-            </p>
-
-            <div class="mt-3 flex flex-wrap gap-2">
-              <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
-                {{ latestSavedAddress.city }}
-              </UBadge>
-              <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
-                {{ latestSavedAddress.country }}
-              </UBadge>
-              <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
-                {{ $t("checkout.shippingForm.postalCodePrefix") }} {{ latestSavedAddress.postalCode }}
-              </UBadge>
-            </div>
-          </template>
-
-          <p v-else class="text-[15px] font-medium leading-7 text-slate-700">
-            {{ $t("checkout.shippingForm.addAddressHint") }}
+          <p class="mt-3 text-sm text-slate-600 max-w-2xl">
+            {{ addressSummary }}
           </p>
-        </div>
-      </section>
 
-      <aside class="rounded-[26px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f7f9ff_100%)] p-5 shadow-[0_14px_32px_rgba(15,35,110,0.05)]">
-        <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-          {{ $t("checkout.shippingForm.progressLabel") }}
+          <div class="mt-4 flex flex-wrap gap-2 text-sm text-slate-500">
+            <span class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1">{{ latestSavedAddress.city }}</span>
+            <span class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1">{{ latestSavedAddress.country }}</span>
+            <span class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1">{{ $t("checkout.shippingForm.postalCodePrefix") }} {{ latestSavedAddress.postalCode }}</span>
+          </div>
+        </template>
+        <p v-else class="text-sm text-slate-600">
+          {{ $t("checkout.shippingForm.addAddressHint") }}
         </p>
+      </div>
+    </section>
 
-        <p class="mt-2 text-[22px] font-extrabold tracking-[-0.04em] text-[#243b63]">
-          {{ $t("checkout.shippingForm.fieldsCount", { filled: filledFieldsCount, total: totalFieldCount }) }}
-        </p>
-
-        <UProgress
-          :model-value="completionPercent"
-          color="primary"
-          class="mt-4"
-        />
-
-        <div class="mt-4 flex flex-wrap gap-2">
-          <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
-            {{ hasCompleteForm
-              ? $t("checkout.shippingForm.allFieldsReady")
-              : $t("checkout.shippingForm.fieldsRemaining", { count: remainingFieldsCount }) }}
-          </UBadge>
-
-          <UBadge
-            color="neutral"
-            variant="soft"
-            class="rounded-full px-3 py-1.5 text-[12px] font-semibold"
-          >
-            {{ $t("checkout.shippingForm.draftLabel") }}
-          </UBadge>
-        </div>
-
-        <UAlert
-          class="mt-4 rounded-[18px]"
-          color="neutral"
-          variant="subtle"
-          icon="i-ph-floppy-disk-back-fill"
-          :description="$t('checkout.shippingForm.shippingInfoPersist')"
-        />
-      </aside>
-    </div>
-
+    <!-- Form Section -->
     <UForm
       :state="form"
       :validate="validateForm"
-      class="rounded-[28px] border border-[#dbe3f2] bg-white p-5 shadow-[0_16px_36px_rgba(15,35,110,0.07)] sm:p-6"
+      class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden"
       @submit="saveAddress"
       @error="handleFormError"
     >
-      <div class="flex flex-col gap-4 border-b border-[#eef2f8] pb-5 lg:flex-row lg:items-start lg:justify-between">
+      <div class="border-b border-slate-100 bg-white px-5 py-5 sm:px-6 flex items-center justify-between">
         <div>
-          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-            {{ $t("checkout.shippingForm.formTitle") }}
-          </p>
-          <h2 class="mt-1 text-[1.25rem] font-extrabold tracking-[-0.04em] text-[#243b63]">
+          <h2 class="text-lg font-bold text-slate-900">
             {{ $t("checkout.shippingForm.addAddressTitle") }}
           </h2>
-          <p class="mt-2 max-w-[520px] text-[14px] leading-6 text-slate-500">
+          <p class="mt-1 text-sm text-slate-500">
             {{ $t("checkout.shippingForm.formDesc") }}
           </p>
         </div>
-
-        <div class="inline-flex items-center gap-2 self-start rounded-full bg-[#f7f9ff] px-3 py-2 text-[12px] font-semibold text-slate-500">
-          <Icon name="i-ph-check-circle-fill" class="h-4 w-4 text-[#0000ff]" />
+        <div class="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-500">
+          <Icon name="i-ph-check-circle-fill" class="h-4 w-4 text-green-500" />
           {{ $t("checkout.shippingForm.fieldsCount", { filled: filledFieldsCount, total: totalFieldCount }) }}
         </div>
       </div>
 
-      <UAlert
-        v-if="statusAlert"
-        :color="statusAlert.color"
-        variant="subtle"
-        :icon="statusAlert.icon"
-        :title="statusAlert.title"
-        :description="statusAlert.description"
-        class="mt-5 rounded-[22px]"
-        aria-live="polite"
-      />
+      <div class="p-5 sm:p-6 space-y-8">
+        <UAlert
+          v-if="statusAlert"
+          :color="statusAlert.color"
+          variant="subtle"
+          :icon="statusAlert.icon"
+          :title="statusAlert.title"
+          :description="statusAlert.description"
+          class="rounded-xl"
+          aria-live="polite"
+        />
 
-      <div class="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_320px]">
-        <div class="space-y-4">
-          <section class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
-            <div class="flex items-start gap-3">
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#eef0ff] text-[#0000ff]">
-                <Icon name="i-ph-user-circle-fill" class="h-5 w-5" />
-              </div>
-              <div>
-                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-                  {{ $t("checkout.shippingForm.recipientInfo") }}
-                </p>
-                <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
-                  {{ $t("checkout.shippingForm.recipientInfoDesc") }}
-                </p>
-              </div>
-            </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <!-- Fields -->
+          <div class="lg:col-span-8 space-y-6">
+            <!-- Recipient -->
+            <fieldset class="space-y-4">
+              <legend class="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-100 w-full pb-2">
+                {{ $t("checkout.shippingForm.recipientInfo") }}
+              </legend>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <UFormField
+                  name="fullName"
+                  :label="$t('checkout.shippingForm.fullName')"
+                  required
+                >
+                  <UInput
+                    v-model="form.fullName"
+                    autocomplete="name"
+                    size="lg"
+                    :placeholder="$t('checkout.shippingForm.fullNamePlaceholder')"
+                    :disabled="isBusy"
+                    class="w-full"
+                    :ui="inputUi"
+                  />
+                </UFormField>
 
-            <div class="mt-4 grid gap-4 md:grid-cols-2">
+                <UFormField
+                  name="phone"
+                  :label="$t('checkout.shippingForm.phone')"
+                  required
+                >
+                  <UInput
+                    v-model="form.phone"
+                    autocomplete="tel"
+                    size="lg"
+                    type="tel"
+                    :placeholder="$t('checkout.shippingForm.phonePlaceholder')"
+                    :disabled="isBusy"
+                    class="w-full"
+                    :ui="inputUi"
+                  />
+                </UFormField>
+              </div>
+            </fieldset>
+
+            <!-- Region -->
+            <fieldset class="space-y-4">
+              <legend class="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-100 w-full pb-2">
+                {{ $t("checkout.shippingForm.region") }}
+              </legend>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <UFormField
+                  name="country"
+                  :label="$t('checkout.shippingForm.country')"
+                  required
+                >
+                  <UInput
+                    v-model="form.country"
+                    autocomplete="country-name"
+                    size="lg"
+                    :placeholder="$t('checkout.shippingForm.country')"
+                    :disabled="isBusy"
+                    class="w-full"
+                    :ui="inputUi"
+                  />
+                </UFormField>
+
+                <UFormField
+                  name="city"
+                  :label="$t('checkout.shippingForm.city')"
+                  required
+                >
+                  <UInput
+                    v-model="form.city"
+                    autocomplete="address-level2"
+                    size="lg"
+                    :placeholder="$t('checkout.shippingForm.city')"
+                    :disabled="isBusy"
+                    class="w-full"
+                    :ui="inputUi"
+                  />
+                </UFormField>
+
+                <UFormField
+                  name="postalCode"
+                  :label="$t('checkout.shippingForm.postalCode')"
+                  required
+                  class="sm:col-span-2"
+                >
+                  <UInput
+                    v-model="form.postalCode"
+                    autocomplete="postal-code"
+                    size="lg"
+                    :placeholder="$t('checkout.shippingForm.postalCode')"
+                    :disabled="isBusy"
+                    class="w-full"
+                    :ui="inputUi"
+                  />
+                </UFormField>
+              </div>
+            </fieldset>
+
+            <!-- Detailed Address -->
+            <fieldset class="space-y-4">
+              <legend class="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-100 w-full pb-2">
+                {{ $t("checkout.shippingForm.pointDetail") }}
+              </legend>
               <UFormField
-                name="fullName"
-                :label="$t('checkout.shippingForm.fullName')"
+                name="streetAddress"
+                :label="$t('checkout.shippingForm.streetAddress')"
                 required
-                size="xl"
-                class="space-y-2"
               >
-                <UInput
-                  v-model="form.fullName"
-                  autocomplete="name"
-                  color="primary"
-                  size="xl"
-                  :placeholder="$t('checkout.shippingForm.fullNamePlaceholder')"
+                <UTextarea
+                  v-model="form.streetAddress"
+                  autocomplete="street-address"
+                  size="lg"
+                  autoresize
+                  :rows="3"
+                  :placeholder="$t('checkout.shippingForm.streetAddressPlaceholder')"
                   :disabled="isBusy"
                   class="w-full"
-                  :ui="inputUi"
+                  :ui="textareaUi"
                 />
               </UFormField>
+            </fieldset>
+          </div>
 
-              <UFormField
-                name="phone"
-                :label="$t('checkout.shippingForm.phone')"
-                required
-                size="xl"
-                class="space-y-2"
-              >
-                <UInput
-                  v-model="form.phone"
-                  autocomplete="tel"
-                  color="primary"
-                  size="xl"
-                  type="tel"
-                  :placeholder="$t('checkout.shippingForm.phonePlaceholder')"
-                  :disabled="isBusy"
-                  class="w-full"
-                  :ui="inputUi"
-                />
-              </UFormField>
-            </div>
-          </section>
-
-          <section class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
-            <div class="flex items-start gap-3">
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#eef0ff] text-[#0000ff]">
-                <Icon name="i-ph-globe-hemisphere-east-fill" class="h-5 w-5" />
-              </div>
-              <div>
-                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-                  {{ $t("checkout.shippingForm.region") }}
-                </p>
-                <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
-                  {{ $t("checkout.shippingForm.regionDesc") }}
-                </p>
+          <!-- Preview & Actions -->
+          <div class="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-slate-100 pt-6 lg:pt-0 lg:pl-8 flex flex-col justify-between">
+            <div>
+              <p class="text-sm font-semibold text-slate-900 mb-3">
+                {{ $t("checkout.shippingForm.quickPreview") }}
+              </p>
+              <div class="rounded-xl bg-slate-50 p-4 border border-slate-100 text-sm space-y-2">
+                <p class="font-bold text-slate-900">{{ previewRecipient }}</p>
+                <p class="text-slate-600 leading-relaxed">{{ previewAddress }}</p>
               </div>
             </div>
 
-            <div class="mt-4 grid gap-4 md:grid-cols-2">
-              <UFormField
-                name="country"
-                :label="$t('checkout.shippingForm.country')"
-                required
-                size="xl"
-                class="space-y-2"
-              >
-                <UInput
-                  v-model="form.country"
-                  autocomplete="country-name"
-                  color="primary"
-                  size="xl"
-                  :placeholder="$t('checkout.shippingForm.country')"
-                  :disabled="isBusy"
-                  class="w-full"
-                  :ui="inputUi"
-                />
-              </UFormField>
-
-              <UFormField
-                name="city"
-                :label="$t('checkout.shippingForm.city')"
-                required
-                size="xl"
-                class="space-y-2"
-              >
-                <UInput
-                  v-model="form.city"
-                  autocomplete="address-level2"
-                  color="primary"
-                  size="xl"
-                  :placeholder="$t('checkout.shippingForm.city')"
-                  :disabled="isBusy"
-                  class="w-full"
-                  :ui="inputUi"
-                />
-              </UFormField>
-
-              <UFormField
-                name="postalCode"
-                :label="$t('checkout.shippingForm.postalCode')"
-                required
-                size="xl"
-                class="space-y-2 md:col-span-2"
-              >
-                <UInput
-                  v-model="form.postalCode"
-                  autocomplete="postal-code"
-                  color="primary"
-                  size="xl"
-                  :placeholder="$t('checkout.shippingForm.postalCode')"
-                  :disabled="isBusy"
-                  class="w-full"
-                  :ui="inputUi"
-                />
-              </UFormField>
-            </div>
-          </section>
-
-          <section class="rounded-[22px] border border-[#eef2f8] bg-[#fbfcff] p-4">
-            <div class="flex items-start gap-3">
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-[#eef0ff] text-[#0000ff]">
-                <Icon name="i-ph-house-line-fill" class="h-5 w-5" />
-              </div>
-              <div>
-                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-                  {{ $t("checkout.shippingForm.pointDetail") }}
-                </p>
-                <p class="mt-1 text-[14px] font-semibold leading-6 text-slate-500">
-                  {{ $t("checkout.shippingForm.pointDetailDesc") }}
-                </p>
-              </div>
-            </div>
-
-            <UFormField
-              name="streetAddress"
-              :label="$t('checkout.shippingForm.streetAddress')"
-              required
-              size="xl"
-              class="mt-4 space-y-2"
-            >
-              <UTextarea
-                v-model="form.streetAddress"
-                autocomplete="street-address"
-                color="primary"
-                size="xl"
-                autoresize
-                :rows="4"
-                :placeholder="$t('checkout.shippingForm.streetAddressPlaceholder')"
-                :disabled="isBusy"
-                class="w-full"
-                :ui="textareaUi"
-              />
-            </UFormField>
-          </section>
-        </div>
-
-        <aside class="space-y-4">
-          <section class="rounded-[24px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f7f9ff_100%)] p-5 shadow-[0_12px_26px_rgba(15,35,110,0.05)] xl:sticky xl:top-5">
-            <div class="flex items-start gap-3">
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-[15px] bg-[#eef0ff] text-[#0000ff]">
-                <Icon name="i-ph-eye-fill" class="h-5 w-5" />
-              </div>
-              <div>
-                <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-                  {{ $t("checkout.shippingForm.quickPreview") }}
-                </p>
-                <p class="mt-1 text-[15px] font-extrabold text-[#243b63]">
-                  {{ previewRecipient }}
-                </p>
-              </div>
-            </div>
-
-            <p class="mt-4 rounded-[18px] bg-white px-4 py-3 text-[13px] leading-6 text-slate-500 shadow-[0_10px_20px_rgba(15,35,110,0.04)]">
-              {{ previewAddress }}
-            </p>
-
-            <div class="mt-4 flex flex-col gap-3">
+            <div class="mt-8 space-y-3">
               <UButton
                 type="submit"
                 loading-auto
@@ -342,9 +227,9 @@
                 color="primary"
                 variant="solid"
                 block
-                size="xl"
+                size="lg"
                 :disabled="isSubmitDisabled"
-                class="rounded-[18px] text-[15px] font-extrabold shadow-[0_14px_28px_rgba(0,0,255,0.18)]"
+                class="rounded-xl h-12 text-sm font-bold shadow-sm"
               >
                 {{ submitLabel }}
               </UButton>
@@ -354,9 +239,9 @@
                 color="neutral"
                 variant="outline"
                 block
-                size="xl"
+                size="lg"
                 :disabled="isBusy"
-                class="rounded-[18px] text-[15px] font-semibold"
+                class="rounded-xl h-12 text-sm font-medium"
                 @click="resetForm"
               >
                 {{ $t("checkout.shippingForm.resetChanges") }}
@@ -366,18 +251,18 @@
                 v-if="canRestoreSavedAddress"
                 type="button"
                 color="neutral"
-                variant="soft"
+                variant="ghost"
                 block
-                size="xl"
+                size="md"
                 :disabled="isBusy"
-                class="rounded-[18px] text-[15px] font-semibold"
+                class="text-sm font-medium"
                 @click="restoreSavedAddress"
               >
                 {{ $t("checkout.shippingForm.restoreSavedAddress") }}
               </UButton>
             </div>
-          </section>
-        </aside>
+          </div>
+        </div>
       </div>
     </UForm>
   </div>

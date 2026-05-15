@@ -1,67 +1,49 @@
 <template>
-  <div class="space-y-6">
-    <section
-      class="relative overflow-hidden rounded-[18px] border border-[#dbe3f2] bg-[linear-gradient(180deg,#ffffff_0%,#f7f9ff_100%)] p-5 shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:p-6"
-      :aria-labelledby="headerId"
-    >
-      <div class="pointer-events-none absolute right-[-32px] top-[-44px] h-[180px] w-[180px] rounded-full border-[18px] border-[#d7e7ff]/55" />
-      <div class="pointer-events-none absolute bottom-[-90px] right-[88px] h-[220px] w-[220px] rounded-full bg-[#e9f4ff]/80" />
-
-      <div class="relative z-10 flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
-        <div class="px-1 pt-1">
-          <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-[#0000ff]/65">
+  <div class="bg-slate-50 min-h-screen pb-12">
+    <!-- Header Section -->
+    <header class="bg-white border-b border-slate-200 px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-7xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <p class="text-[13px] font-semibold text-[var(--color-primary-600)] uppercase tracking-wider">
             {{ eyebrow || $t("checkout.page.eyebrow") }}
           </p>
-          <h1 :id="headerId" class="mt-2 text-display text-[2rem] font-extrabold text-[#2f3542] sm:text-[2.3rem]">
+          <h1 :id="headerId" class="mt-1 text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             {{ title }}
           </h1>
-          <div class="mt-4 h-[5px] w-20 rounded-full bg-[#2f3542]" />
-          <p
-            v-if="description"
-            class="mt-4 max-w-[720px] text-[14px] leading-7 text-slate-500 sm:text-[15px]"
-          >
+          <p v-if="description" class="mt-2 text-[15px] text-slate-500 max-w-2xl">
             {{ description }}
           </p>
         </div>
 
-        <div
-          v-if="hasProgress"
-          class="w-full max-w-[360px] rounded-[16px] border border-[#dbe3f2] bg-white/90 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)] backdrop-blur"
-        >
-          <div class="flex items-center justify-between gap-3">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.06em] text-slate-400">
-              {{ progressLabel }}
-            </p>
-            <span class="text-[14px] font-extrabold text-[#243b63]">
-              {{ Math.round(progressValue) }}%
-            </span>
+        <div v-if="hasProgress" class="w-full md:w-72">
+          <div class="flex justify-between items-center text-[13px] font-medium text-slate-700 mb-2">
+            <span>{{ progressLabel }}</span>
+            <span class="text-[var(--color-primary-600)] font-bold">{{ Math.round(progressValue) }}%</span>
           </div>
-
-          <p v-if="progressText" class="mt-2 text-[14px] font-medium leading-6 text-[#243b63]">
+          <UProgress :model-value="progressValue" color="primary" class="h-2" />
+          <p v-if="progressText" class="mt-1.5 text-[12px] text-slate-500">
             {{ progressText }}
           </p>
-
-          <UProgress
-            :model-value="progressValue"
-            color="primary"
-            class="mt-3"
-          />
         </div>
       </div>
-    </section>
+    </header>
 
-    <div class="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_380px] xl:grid-cols-[minmax(0,1.08fr)_420px] 2xl:grid-cols-[minmax(0,1.1fr)_450px]">
-      <section class="order-2 min-w-0 lg:order-1" :aria-label="leftLabel || title">
-        <slot name="left" />
-      </section>
+    <!-- Main Content -->
+    <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left Column: Form -->
+        <section class="lg:col-span-7 xl:col-span-8" :aria-label="leftLabel || title">
+          <slot name="left" />
+        </section>
 
-      <aside
-        class="order-1 min-w-0 self-start lg:sticky lg:top-[84px] lg:order-2"
-        :aria-label="rightLabel || $t('checkout.page.summaryRegion')"
-      >
-        <slot name="right" />
-      </aside>
-    </div>
+        <!-- Right Column: Summary -->
+        <aside class="lg:col-span-5 xl:col-span-4" :aria-label="rightLabel || $t('checkout.page.summaryRegion')">
+          <div class="sticky top-8">
+            <slot name="right" />
+          </div>
+        </aside>
+      </div>
+    </main>
   </div>
 </template>
 
