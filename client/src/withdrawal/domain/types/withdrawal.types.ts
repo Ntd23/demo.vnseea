@@ -18,6 +18,7 @@ export interface WithdrawalHistoryItem {
   amount: number
   method: string
   requested: string
+  requestedAt: number
   status: WithdrawalStatus
   transferInfo: string
 }

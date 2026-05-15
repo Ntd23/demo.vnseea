@@ -53,6 +53,7 @@ $required_config_defaults = array(
     'sepay_mode' => 'live',
     'sepay_bank_acc' => '',
     'sepay_bank_code' => '',
+    'sepay_account_name' => '',
     'sepay_webhook_token' => '',
     'sepay_desc_prefix' => 'SE'
 );

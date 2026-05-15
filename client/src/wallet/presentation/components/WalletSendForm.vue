@@ -9,6 +9,15 @@
           />
         </UFormField>
 
+        <UFormField :label="t('pages.walletPage.transferContent')">
+          <UTextarea
+            v-model="transferNote"
+            :rows="3"
+            :placeholder="t('pages.walletPage.transferContentPlaceholder')"
+            class="w-full"
+          />
+        </UFormField>
+
         <UFormField :label="t('pages.walletPage.searchRecipient')">
           <UInput
             v-model="recipientQuery"
@@ -19,7 +28,7 @@
           />
         </UFormField>
 
-        <div class="grid gap-2 sm:grid-cols-[1fr_auto]">
+        <div class="grid gap-2 sm:grid-cols-[1fr_auto_auto]">
           <UInput
             v-model="qrPayload"
             icon="i-ph-qr-code-duotone"
@@ -35,6 +44,38 @@
           >
             {{ t("pages.walletPage.applyQr") }}
           </UButton>
+          <UButton
+            color="neutral"
+            variant="soft"
+            class="rounded-full font-semibold"
+            :icon="scanning ? 'i-ph-x-duotone' : 'i-ph-camera-duotone'"
+            @click="scanning ? stopQrScan() : startQrScan()"
+          >
+            {{ scanning ? t("pages.walletPage.stopScanQr") : t("pages.walletPage.scanQr") }}
+          </UButton>
+        </div>
+
+        <div v-if="scanning" class="wallet-send-scan">
+          <video ref="videoRef" class="wallet-send-scan__video" muted playsinline />
+        </div>
+
+        <div v-if="draft.recipientUserId" class="wallet-send-selected">
+          <img
+            v-if="selectedRecipient?.avatarUrl"
+            :src="selectedRecipient.avatarUrl"
+            :alt="selectedRecipient.name"
+            class="h-11 w-11 rounded-full object-cover"
+          >
+          <div v-else class="avatar-md avatar-muted shrink-0">
+            {{ selectedRecipientName.slice(0, 1).toUpperCase() }}
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-title-primary">{{ selectedRecipientName }}</p>
+            <p class="truncate text-caption-secondary">{{ t("pages.walletPage.selectedRecipient") }}</p>
+          </div>
+          <button type="button" class="wallet-send-selected__clear" @click="clearRecipient">
+            <Icon name="i-ph-x-duotone" class="h-4 w-4" />
+          </button>
         </div>
 
         <div class="max-h-64 space-y-2 overflow-y-auto pr-1">
@@ -99,11 +140,66 @@
         >
           {{ t("pages.walletPage.sendSubmit") }}
         </UButton>
+
+        <div v-if="confirmOpen" class="wallet-send-confirm" role="dialog" aria-modal="true">
+          <section class="wallet-send-confirm__dialog">
+            <div class="wallet-send-confirm__header">
+              <div>
+                <p class="text-label-secondary">{{ t("pages.walletPage.confirmTransferEyebrow") }}</p>
+                <h3 class="text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.confirmTransferTitle") }}</h3>
+              </div>
+              <button type="button" class="wallet-send-confirm__close" @click="confirmOpen = false">
+                <Icon name="i-ph-x-duotone" class="h-5 w-5" />
+              </button>
+            </div>
+
+            <dl class="wallet-send-confirm__list">
+              <div>
+                <dt>{{ t("pages.walletPage.confirmRecipient") }}</dt>
+                <dd>{{ selectedRecipientName }}</dd>
+              </div>
+              <div>
+                <dt>{{ t("pages.walletPage.confirmAmount") }}</dt>
+                <dd>{{ formattedDraftAmount }}</dd>
+              </div>
+              <div>
+                <dt>{{ t("pages.walletPage.confirmContent") }}</dt>
+                <dd>{{ normalizedTransferNote || "-" }}</dd>
+              </div>
+              <div>
+                <dt>{{ t("pages.walletPage.confirmDate") }}</dt>
+                <dd>{{ confirmationDate }}</dd>
+              </div>
+            </dl>
+
+            <div class="wallet-send-confirm__actions">
+              <UButton
+                color="neutral"
+                variant="soft"
+                class="rounded-full font-semibold"
+                :disabled="submitting"
+                @click="confirmOpen = false"
+              >
+                {{ t("pages.walletPage.confirmCancel") }}
+              </UButton>
+              <UButton
+                color="primary"
+                class="rounded-full font-semibold"
+                :loading="submitting"
+                @click="confirmTransfer"
+              >
+                {{ t("pages.walletPage.confirmSubmit") }}
+              </UButton>
+            </div>
+          </section>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import type {
+  WalletCurrencyRule,
   WalletRecipient,
   WalletSendDraft,
 } from "../../domain/types/wallet.types"
@@ -114,6 +210,9 @@ const props = defineProps<{
   searching: boolean
   submitting: boolean
   balance: number
+  currency: string
+  currencySymbol: string
+  currencyRule: WalletCurrencyRule
 }>()
 
 const emit = defineEmits<{
@@ -127,10 +226,54 @@ const recipientQuery = ref("")
 const qrPayload = ref("")
 const selectedRecipientLabel = ref("")
 const localError = ref("")
+const transferNote = ref("")
+const confirmOpen = ref(false)
+const videoRef = ref<HTMLVideoElement | null>(null)
+const scanning = ref(false)
+let scanStream: MediaStream | null = null
+let scanFrame = 0
 const draft = reactive<WalletSendDraft>({
   recipientUserId: 0,
   amount: 0,
 })
+
+const { locale } = useI18n()
+
+const selectedRecipient = computed(() =>
+  props.recipients.find(recipient => recipient.id === draft.recipientUserId) ?? null,
+)
+const selectedRecipientName = computed(() =>
+  selectedRecipient.value
+    ? `${selectedRecipient.value.name} (@${selectedRecipient.value.username})`
+    : selectedRecipientLabel.value || `User #${draft.recipientUserId}`,
+)
+const normalizedTransferNote = computed(() => transferNote.value.trim())
+const formattedDraftAmount = computed(() =>
+  formatCurrency(draft.amount || 0, {
+    currency: props.currency,
+    currencySymbol: props.currencySymbol,
+    currencyRule: props.currencyRule,
+    locale: locale.value,
+  }),
+)
+const confirmationDate = computed(() =>
+  new Intl.DateTimeFormat(locale.value, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date()),
+)
+
+type BarcodeDetectorConstructor = new (options?: { formats?: string[] }) => {
+  detect(source: CanvasImageSource): Promise<Array<{ rawValue: string }>>
+}
+
+const getBarcodeDetector = () => {
+  const detector = (globalThis as typeof globalThis & {
+    BarcodeDetector?: BarcodeDetectorConstructor
+  }).BarcodeDetector
+
+  return detector ?? null
+}
 
 watch(recipientQuery, (query) => {
   emit("search", query)
@@ -145,10 +288,27 @@ watch(
       selectedRecipientLabel.value = ""
       draft.recipientUserId = 0
       draft.amount = 0
+      transferNote.value = ""
+      confirmOpen.value = false
       localError.value = ""
+      stopQrScan()
     }
   },
 )
+
+watch(
+  () => props.recipients,
+  (recipients) => {
+    const recipient = recipients.find(item => item.id === draft.recipientUserId)
+    if (recipient) {
+      selectedRecipientLabel.value = recipient.name
+    }
+  },
+)
+
+onBeforeUnmount(() => {
+  stopQrScan()
+})
 
 function parseWalletQrPayload(value: string) {
   const raw = value.trim()
@@ -204,15 +364,25 @@ function applyQrPayload() {
 
   draft.recipientUserId = parsed.to
   selectedRecipientLabel.value = `User #${parsed.to}`
+  recipientQuery.value = String(parsed.to)
+  emit("search", String(parsed.to))
 
   if (parsed.amount !== null && Number.isFinite(parsed.amount) && parsed.amount > 0) {
     draft.amount = parsed.amount
   }
+
+  stopQrScan()
 }
 
 function selectRecipient(recipient: WalletRecipient) {
   draft.recipientUserId = recipient.id
   selectedRecipientLabel.value = recipient.name
+}
+
+function clearRecipient() {
+  draft.recipientUserId = 0
+  selectedRecipientLabel.value = ""
+  confirmOpen.value = false
 }
 
 function submit() {
@@ -228,6 +398,198 @@ function submit() {
     return
   }
 
-  emit("send", { ...draft })
+  confirmOpen.value = true
+}
+
+function confirmTransfer() {
+  emit("send", {
+    ...draft,
+    note: normalizedTransferNote.value,
+  })
+}
+
+async function startQrScan() {
+  localError.value = ""
+  const BarcodeDetector = getBarcodeDetector()
+
+  if (!BarcodeDetector || !navigator.mediaDevices?.getUserMedia) {
+    localError.value = t("pages.walletPage.errorQrScanUnsupported")
+    return
+  }
+
+  try {
+    scanning.value = true
+    scanStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+      audio: false,
+    })
+    await nextTick()
+
+    if (!videoRef.value) {
+      stopQrScan()
+      return
+    }
+
+    videoRef.value.srcObject = scanStream
+    await videoRef.value.play()
+    scanQrFrame(new BarcodeDetector({ formats: ["qr_code"] }))
+  }
+  catch {
+    stopQrScan()
+    localError.value = t("pages.walletPage.errorQrScan")
+  }
+}
+
+function stopQrScan() {
+  scanning.value = false
+
+  if (scanFrame) {
+    cancelAnimationFrame(scanFrame)
+    scanFrame = 0
+  }
+
+  if (scanStream) {
+    for (const track of scanStream.getTracks()) {
+      track.stop()
+    }
+    scanStream = null
+  }
+
+  if (videoRef.value) {
+    videoRef.value.srcObject = null
+  }
+}
+
+function scanQrFrame(detector: InstanceType<BarcodeDetectorConstructor>) {
+  const video = videoRef.value
+
+  if (!scanning.value || !video) return
+
+  detector.detect(video)
+    .then((codes) => {
+      const value = codes[0]?.rawValue
+      if (value) {
+        qrPayload.value = value
+        applyQrPayload()
+        return
+      }
+
+      scanFrame = requestAnimationFrame(() => scanQrFrame(detector))
+    })
+    .catch(() => {
+      stopQrScan()
+      localError.value = t("pages.walletPage.errorQrScan")
+    })
 }
 </script>
+
+<style scoped>
+.wallet-send-scan {
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  background: #0f172a;
+}
+
+.wallet-send-scan__video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+
+.wallet-send-selected {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(0, 0, 255, 0.14);
+  border-radius: 16px;
+  background: rgba(0, 0, 255, 0.04);
+  padding: 12px;
+}
+
+.wallet-send-selected__clear {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #64748b;
+}
+
+.wallet-send-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.48);
+  padding: 16px;
+}
+
+.wallet-send-confirm__dialog {
+  width: min(100%, 460px);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  background: var(--bg-surface);
+  padding: 18px;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.24);
+}
+
+.wallet-send-confirm__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.wallet-send-confirm__close {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+}
+
+.wallet-send-confirm__list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.wallet-send-confirm__list div {
+  display: grid;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 10px;
+}
+
+.wallet-send-confirm__list dt {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.wallet-send-confirm__list dd {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.wallet-send-confirm__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+</style>

@@ -78,6 +78,9 @@ const asNumber = (value: unknown) => {
 const asBoolean = (value: unknown) =>
   value === true || value === 1 || value === "1" || value === "true" || value === "yes"
 
+const asEntity = (value: unknown): BackendEntity =>
+  value && typeof value === "object" && !Array.isArray(value) ? value as BackendEntity : {}
+
 const normalizeImageUrl = (value: string, baseUrl: string) => {
   if (!value) return ""
   if (/^https?:\/\//i.test(value)) return value
@@ -94,51 +97,71 @@ const transactionTone = (kind: string): WalletTransactionTone => {
   return "neutral"
 }
 
-const webErrorMessage = (response: BackendWebMutationResponse | false | null | undefined, fallback: string) => {
-  if (!response || typeof response !== "object") {
+const normalizeWebMutationResponse = (response: BackendWebMutationResponse | string | false | null | undefined) => {
+  if (typeof response !== "string") {
+    return response
+  }
+
+  try {
+    return JSON.parse(response) as BackendWebMutationResponse
+  }
+  catch {
+    return response
+  }
+}
+
+const webErrorMessage = (response: BackendWebMutationResponse | string | false | null | undefined, fallback: string) => {
+  const normalized = normalizeWebMutationResponse(response)
+
+  if (!normalized || typeof normalized !== "object") {
     return fallback
   }
 
-  if (Array.isArray(response.errors)) {
-    return response.errors.join("\n")
+  if (Array.isArray(normalized.errors)) {
+    return normalized.errors.join("\n")
   }
 
-  if (response.errors && typeof response.errors === "object") {
-    return asString(response.errors.error_text) || fallback
+  if (normalized.errors && typeof normalized.errors === "object") {
+    return asString(normalized.errors.error_text) || fallback
   }
 
-  return asString(response.error || response.message || response.details) || fallback
+  return asString(normalized.error || normalized.message || normalized.details) || fallback
 }
 
-const assertWebSuccess = (response: BackendWebMutationResponse | false | null | undefined, fallback: string) => {
-  if (!response || typeof response !== "object") {
+const assertWebSuccess = (response: BackendWebMutationResponse | string | false | null | undefined, fallback: string) => {
+  const normalized = normalizeWebMutationResponse(response)
+
+  if (!normalized || typeof normalized !== "object") {
     throw createError({
       statusCode: 400,
       statusMessage: fallback,
-      data: response,
+      data: normalized,
     })
   }
 
-  const status = Number(response.status ?? response.api_status ?? 0)
+  const status = Number(normalized.status ?? normalized.api_status ?? 0)
 
   if (status >= 200 && status < 300) {
-    return response
+    return normalized
   }
 
   throw createError({
     statusCode: 400,
-    statusMessage: webErrorMessage(response, fallback),
-    data: response,
+    statusMessage: webErrorMessage(normalized, fallback),
+    data: normalized,
   })
 }
 
 const mapTransaction = (item: BackendEntity): WalletTransaction => {
   const kind = asString(item.kind)
+  const extra = asEntity(item.extra)
 
   return {
     id: asNumber(item.id),
     kind,
     notes: asString(item.notes),
+    counterpartyId: asNumber(item.counterparty_id ?? extra.sender_id ?? extra.recipient_id),
+    counterpartyName: asString(item.counterparty_name),
     amount: asNumber(item.amount),
     transactionDate: asString(item.transaction_dt),
     statusTone: transactionTone(kind),
@@ -238,6 +261,7 @@ export async function sendWalletMoney(
       {
         user_id: input.recipientUserId,
         amount: input.amount,
+        note: input.note,
       },
       { s: "send" },
     ),

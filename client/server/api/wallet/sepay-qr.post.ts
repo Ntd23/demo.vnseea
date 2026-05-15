@@ -1,4 +1,4 @@
-// English description: Creates a SePay VietQR top-up order through the PHP SePay handler.
+// English description: Creates a SePay top-up order through the PHP SePay handler.
 
 import { createError, readBody } from "h3"
 import { createWalletSepayQr } from "./_shared"
