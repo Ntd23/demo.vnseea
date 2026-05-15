@@ -1,6 +1,7 @@
 // English description: Product marketplace view helpers aligned with the PHP Wowonder marketplace API.
 
 import { formatCurrency as formatSharedCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { watchDebounced } from "@vueuse/core"
 import type {
   ProductCategory,
@@ -143,6 +144,20 @@ export const useProductMarketplace = (
       })
       : ""
 
+  const getErrorMessage = (error: unknown) => {
+    const fetchError = error as {
+      data?: { statusMessage?: string; message?: string }
+      statusMessage?: string
+      message?: string
+    }
+
+    return fetchError.data?.statusMessage
+      || fetchError.data?.message
+      || fetchError.statusMessage
+      || fetchError.message
+      || ""
+  }
+
   const resetFilters = () => {
     search.value = ""
     sortBy.value = "latest"
@@ -178,6 +193,22 @@ export const useProductMarketplace = (
       toast.add({
         title: t("pages.productsPage.addToCart"),
         color: "success",
+      })
+      await navigateTo(appRoutes.checkout)
+    }
+    catch (error) {
+      const message = getErrorMessage(error)
+
+      if (/already\s+in\s+cart/i.test(message)) {
+        await navigateTo(appRoutes.checkout)
+        return
+      }
+
+      toast.add({
+        title: t("pages.productsPage.addToCart"),
+        description: message || t("pages.productsPage.loadErrorTitle"),
+        color: "error",
+        icon: "i-ph-warning-circle",
       })
     }
     finally {
@@ -215,18 +246,15 @@ export const useProductMarketplace = (
   }
 
   const openSellerChat = (product: ProductListing) => {
-    if (!import.meta.client || !product.sellerId) return
+    if (!product.sellerId) return
 
-    const chat = (window as unknown as { Wo_OpenChatTab?: (sellerId: number, recipientId: number, productId: number) => void }).Wo_OpenChatTab
-
-    if (typeof chat === "function") {
-      chat(product.sellerId, 0, product.id)
-      return
-    }
-
-    toast.add({
-      title: t("pages.productsPage.messageSeller"),
-      description: product.seller,
+    void navigateTo({
+      path: appRoutes.messages,
+      query: {
+        userId: String(product.sellerId),
+        name: product.seller,
+        productId: String(product.id),
+      },
     })
   }
 
