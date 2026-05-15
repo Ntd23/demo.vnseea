@@ -1,6 +1,6 @@
 // English description: Product editor domain types shared by create and edit screens.
 
-export type ProductCategory = "home" | "tech" | "beauty" | "books" | "vehicles" | "food"
+export type ProductCategory = string
 
 export type ProductCondition = "new" | "like-new" | "used"
 
@@ -80,14 +80,31 @@ export interface ProductEditorDraft {
 
 export interface ProductRecord {
   id: string
+  postId?: string
+  seoId?: string
   title: string
   description: string
   category: ProductCategory
+  categoryLabel?: string
+  subCategoryLabel?: string
   condition: ProductCondition
   location: string
   currency: ProductCurrency
+  currencySymbol?: string
+  currencyRule?: {
+    decimals?: number | string
+    decimal_sep?: string
+    thousand_sep?: string
+  }
+  priceFormat?: string
   price: number
   stock: number
+  seller?: string
+  sellerId?: number
+  rating?: number
+  canContactSeller?: boolean
+  canAddToCart?: boolean
+  mine?: boolean
   images?: ProductCurrentImage[]
   updatedAt?: string
 }

@@ -1,133 +1,188 @@
-<!-- English description: Product creation page that submits product form data to the backend API bridge. -->
+<!-- English description: Wowonder-aligned product creation form that submits multipart data through the Nuxt API bridge. -->
 
 <template>
-  <div class="space-y-5 pb-10">
-    <ProductHeroBanner
-      variant="create"
-      :badge="$t('pages.newProductPage.badge')"
-      :title="$t('pages.newProductPage.title')"
-      :description="$t('pages.newProductPage.description')"
-      :stats="heroStats"
-    />
+  <div class="new-product-page mx-auto w-full max-w-[980px] px-3 pb-12 pt-4 sm:px-4">
+    <section class="new-product-heading">
+      <div class="new-product-heading__inner">
+        <span>
+          <Icon name="i-ph-storefront-fill" class="h-5 w-5" />
+        </span>
+        <h1>Tạo sản phẩm</h1>
+      </div>
+    </section>
 
-    <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1.06fr)_360px]">
-      <section class="space-y-5">
-        <UCard class="rounded-[28px] border border-[#dbe3f2] bg-white shadow-[0_14px_34px_rgba(15,35,110,0.07)]" :ui="{ body: 'p-4 sm:p-5' }">
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <p class="text-[12px] font-bold uppercase tracking-[0.26em] text-[#0000ff]/70">
-                {{ $t("pages.productEditor.editSectionEyebrow") }}
-              </p>
-              <h2 class="mt-1 text-[1.35rem] font-black tracking-[-0.05em] text-[#243b63]">
-                {{ $t("pages.newProductPage.sectionTitle") }}
-              </h2>
-              <p class="mt-1 text-[14px] leading-6 text-slate-500">
-                {{ $t("pages.newProductPage.sectionDescription") }}
-              </p>
-            </div>
+    <form class="new-product-form" @submit.prevent="submitProduct">
+      <div class="new-product-row new-product-row--name-price">
+        <label class="new-product-field">
+          <span>Tên sản phẩm</span>
+          <input v-model="draft.fields.title" type="text" autocomplete="off">
+        </label>
 
-            <UBadge color="primary" variant="subtle" class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-semibold">
-              <Icon name="i-ph-seal-check-fill" class="h-4 w-4 text-[#0000ff]" />
-              {{ completionText }}
-            </UBadge>
-          </div>
-          <UProgress :model-value="completionPercent" color="primary" class="mt-4" />
-        </UCard>
+        <label class="new-product-field">
+          <span>Giá bán</span>
+          <input v-model="draft.fields.price" type="text" inputmode="decimal" placeholder="0.00">
+        </label>
+      </div>
 
-        <UForm :state="draft.fields" class="space-y-5">
-          <ProductEditorFields
-            v-model:title="draft.fields.title"
-            v-model:price="draft.fields.price"
-            v-model:description="draft.fields.description"
-            v-model:category="draft.fields.category"
-            v-model:condition="draft.fields.condition"
-            v-model:location="draft.fields.location"
-            v-model:currency="draft.fields.currency"
-            v-model:stock="draft.fields.stock"
-            description-label="Sự mô tả"
-            :category-options="categoryOptions"
-            :condition-options="conditionOptions"
-            :currency-options="currencyOptions"
-            :media-summary="mediaSummary"
+      <label class="new-product-field">
+        <span>Mô tả sản phẩm</span>
+        <textarea
+          v-model="draft.fields.description"
+          rows="4"
+          placeholder="Mô tả sản phẩm"
+        />
+      </label>
+
+      <div class="new-product-row new-product-row--category">
+        <label class="new-product-field">
+          <span>Loại</span>
+          <select v-model="draft.fields.category" :disabled="categoryOptions.length === 0">
+            <option v-if="categoryOptions.length === 0" value="">
+              Không có danh mục
+            </option>
+            <option v-for="option in categoryOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+
+        <label class="new-product-field">
+          <span>Loại hình</span>
+          <select v-model="draft.fields.condition">
+            <option v-for="option in conditionOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <div v-if="subCategoryOptions.length > 0" class="new-product-row new-product-row--stock">
+        <label class="new-product-field">
+          <span>Danh mục con</span>
+          <select v-model="selectedSubCategory">
+            <option v-for="option in subCategoryOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <div class="new-product-row new-product-row--location">
+        <label class="new-product-field">
+          <span>Địa điểm</span>
+          <input
+            v-model="draft.fields.location"
+            type="text"
+            autocomplete="off"
+            placeholder="Địa điểm"
           >
-            <template #media>
-              <ProductCreateMediaField
-                v-model:files="newFiles"
-                :image-button-label="imageButtonLabel"
-              />
-            </template>
-          </ProductEditorFields>
-        </UForm>
+        </label>
 
-        <FormsSubmitBar
-          :hint="saveHint"
-          :cta="$t('pages.newProductPage.submitCta')"
-          @save="saveDraft"
-          @submit="submitProduct"
-        />
-      </section>
+        <label class="new-product-field">
+          <span>Tiền tệ</span>
+          <select v-model="draft.fields.currency">
+            <option v-for="option in currencyOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+      </div>
 
-      <aside class="space-y-5">
-        <ProductPreviewCard
-          :preview-background="previewBackground"
-          :preview-icon="previewIcon"
-          :category-label="previewCategoryLabel"
-          :condition-label="previewConditionLabel"
-          :currency-label="previewCurrencyLabel"
-          :title="draft.fields.title"
-          empty-title="Tên sản phẩm của bạn sẽ hiển thị ở đây"
-          :description="previewDescription"
-          :price="previewPrice"
-          :stock-label="stockLabel"
-          :location="draft.fields.location"
-          :image-count="imageCount"
-          leading-icon="i-ph-chat-circle-text-fill"
-          trailing-icon="i-ph-shopping-cart-simple-fill"
-          :status-label="$t('pages.newProductPage.statusReady')"
-        />
+      <div class="new-product-row new-product-row--stock">
+        <label class="new-product-field">
+          <span>Tổng số đơn vị mặt hàng</span>
+          <input
+            v-model="stockInput"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            autocomplete="off"
+            @input="hasTouchedStockInput = true"
+          >
+        </label>
+      </div>
 
-        <ProductChecklistCard :items="checklistItems" />
+      <div class="new-product-media">
+        <label>Hình ảnh</label>
+        <div class="new-product-images">
+          <button
+            type="button"
+            class="new-product-upload"
+            @click="fileInput?.click()"
+          >
+            <Icon name="i-ph-camera-fill" class="h-7 w-7" />
+          </button>
 
-        <ProductTipsCard
-          :title="$t('pages.newProductPage.tipsTitle')"
-          :items="sellingTips"
-        />
-      </aside>
-    </div>
+          <span
+            v-for="preview in newFilePreviews"
+            :key="preview.key"
+            class="new-product-thumb"
+          >
+            <button type="button" @click="removeNewFile(preview.index)">
+              <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+            </button>
+            <img :src="preview.src" :alt="preview.name">
+          </span>
+        </div>
+        <input
+          ref="fileInput"
+          class="hidden"
+          type="file"
+          accept="image/*"
+          multiple
+          @change="handleFileInput"
+        >
+      </div>
+
+      <div class="new-product-actions">
+        <NuxtLink to="/my-products" class="new-product-back">
+          <Icon name="i-ph-arrow-left" class="h-4 w-4" />
+          Quay lại
+        </NuxtLink>
+        <button type="submit" class="new-product-submit" :disabled="isSubmitting">
+          {{ isSubmitting ? "Đang đăng..." : "Đăng" }}
+        </button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import type {
-  ProductChecklistItem,
-  ProductEditorDraft,
-  ProductHeroStat,
-  ProductTipItem,
-} from "../../domain/types/product-editor.types"
-import { useTimeAgo, watchDebounced } from "@vueuse/core"
-import ProductChecklistCard from "../components/ChecklistCard.vue"
-import ProductCreateMediaField from "../components/CreateMediaField.vue"
-import ProductEditorFields from "../components/EditorFields.vue"
-import ProductHeroBanner from "../components/HeroBanner.vue"
-import ProductPreviewCard from "../components/PreviewCard.vue"
-import ProductTipsCard from "../components/TipsCard.vue"
+import type { ProductEditorDraft } from "../../domain/types/product-editor.types"
+import type { ProductCategoryOption, ProductSubCategoryOption } from "../../domain/types/product-marketplace.types"
+import { watchDebounced } from "@vueuse/core"
 import { useProductEditorDraft } from "../../application/composables/useProductEditorDraft"
-import { useProductEditorMeta } from "../../application/composables/useProductEditorMeta"
-import FormsSubmitBar from "../../../shared-kernel/presentation/components/forms/SubmitBar.vue"
+import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 import { useNuxtApiClient } from "../../../shared-kernel/infrastructure/http/nuxt-api-client"
 
-const { t } = useI18n()
+type FilePreview = {
+  index: number
+  key: string
+  name: string
+  src: string
+}
 
-const {
-  categoryOptions,
-  conditionOptions,
-  currencyOptions,
-  categoryMeta,
-  conditionMap,
-  currencyMeta,
-  formatProductPrice,
-  formatProductStockLabel,
-} = useProductEditorMeta()
+const toast = useToast()
+const productRepository = createApiProductRepository()
+const apiClient = useNuxtApiClient()
+const fileInput = ref<HTMLInputElement | null>(null)
+const newFiles = shallowRef<File[]>([])
+const newFilePreviews = shallowRef<FilePreview[]>([])
+const selectedSubCategory = ref("")
+const isSubmitting = ref(false)
+const stockInput = ref("")
+const hasTouchedStockInput = ref(false)
+
+const conditionOptions = [
+  { label: "Mới", value: "new" },
+  { label: "Đã sử dụng", value: "used" },
+] as const
+
+const currencyOptions = [
+  { label: "VND (đ)", value: "VND" },
+  { label: "USD ($)", value: "USD" },
+  { label: "EUR (€)", value: "EUR" },
+] as const
 
 const createInitialDraft = (): ProductEditorDraft => ({
   mode: "create",
@@ -135,131 +190,145 @@ const createInitialDraft = (): ProductEditorDraft => ({
     title: "",
     price: "",
     description: "",
-    category: "vehicles",
+    category: "",
     condition: "new",
     location: "",
-    currency: "USD",
+    currency: "VND",
     stock: "",
   },
   removedImageIds: [],
   lastSavedAt: null,
 })
 
-const { draft, markSaved } = useProductEditorDraft("product-editor:create", createInitialDraft())
-const newFiles = shallowRef<File[]>([])
-const toast = useToast()
-const apiClient = useNuxtApiClient()
-const savedAgo = useTimeAgo(computed(() => draft.value.lastSavedAt || Date.now()))
+const { draft, markSaved, resetDraft } = useProductEditorDraft("product-editor:create", createInitialDraft())
+stockInput.value = draft.value.fields.stock
 
-const imageCount = computed(() => newFiles.value.length)
-
-const completionCount = computed(() =>
-  [
-    draft.value.fields.title.trim(),
-    draft.value.fields.price.trim(),
-    draft.value.fields.description.trim(),
-    draft.value.fields.category,
-    draft.value.fields.condition,
-    draft.value.fields.location.trim(),
-    draft.value.fields.stock.trim(),
-    imageCount.value > 0,
-  ].filter(Boolean).length,
+const { data: marketplaceData } = useAsyncData(
+  "product:create:categories",
+  () => productRepository.list({ limit: 1 }),
+  {
+    default: () => ({
+      items: [],
+      hasMore: false,
+      nextOffset: null,
+      categories: [] as ProductCategoryOption[],
+      subCategories: [] as ProductSubCategoryOption[],
+      distanceFilterAvailable: false,
+    }),
+  },
 )
 
-const completionText = computed(() => `${completionCount.value}/8 trường chính đã hoàn thiện`)
-const completionPercent = computed(() => (completionCount.value / 8) * 100)
+const categoryOptions = computed(() => marketplaceData.value?.categories ?? [])
 
-const heroStats = computed<ProductHeroStat[]>(() => [
-  {
-    label: t("pages.newProductPage.statFilled"),
-    value: `${completionCount.value}/8`,
-    description: t("pages.newProductPage.statFilledDescription"),
-  },
-  {
-    label: "Ảnh local",
-    value: String(imageCount.value),
-    description: "Ảnh được chọn từ máy để kiểm tra flow preview trước khi nối upload thật.",
-  },
-  {
-    label: "Tiền tệ",
-    value: draft.value.fields.currency,
-    description: "Loại tiền đang dùng cho giá bán và preview bên phải.",
-  },
-])
-
-const activeCategoryMeta = computed(() =>
-  categoryMeta.value[draft.value.fields.category] ?? categoryMeta.value.vehicles,
+const subCategoryOptions = computed(() =>
+  (marketplaceData.value?.subCategories ?? []).filter(
+    option => option.parentId === draft.value.fields.category,
+  ),
 )
 
-const previewBackground = computed(() => activeCategoryMeta.value.background)
-const previewIcon = computed(() => activeCategoryMeta.value.icon)
-const previewCategoryLabel = computed(() => activeCategoryMeta.value.label)
-const previewConditionLabel = computed(() =>
-  conditionMap.value[draft.value.fields.condition] ?? conditionMap.value.new,
-)
-const previewCurrencyLabel = computed(() => currencyMeta[draft.value.fields.currency].label)
-const previewDescription = computed(() =>
-  draft.value.fields.description.trim()
-    || "Mô tả sản phẩm sẽ xuất hiện ở đây để bạn kiểm tra nội dung trước khi đăng.",
-)
+watch(
+  () => categoryOptions.value.map(option => option.value).join("|"),
+  () => {
+    const options = categoryOptions.value
 
-const previewPrice = computed(() => formatProductPrice(draft.value.fields.price, draft.value.fields.currency))
-const stockLabel = computed(() => formatProductStockLabel(draft.value.fields.stock))
+    if (draft.value.fields.category && options.some(option => option.value === draft.value.fields.category)) {
+      return
+    }
 
-const mediaSummary = computed(() =>
-  imageCount.value === 0 ? "Chưa có ảnh local" : imageCount.value === 1 ? "1 ảnh local" : `${imageCount.value} ảnh local`,
+    draft.value.fields.category = options[0]?.value ?? ""
+  },
+  { immediate: true },
 )
 
-const imageButtonLabel = computed(() =>
-  imageCount.value >= 10 ? t("pages.newProductPage.maxImages") : t("pages.newProductPage.addImage"),
+watch(
+  () => draft.value.fields.category,
+  () => {
+    const options = subCategoryOptions.value
+
+    if (selectedSubCategory.value && options.some(option => option.value === selectedSubCategory.value)) {
+      return
+    }
+
+    selectedSubCategory.value = options[0]?.value ?? ""
+  },
+  { immediate: true },
 )
 
-const saveHint = computed(() =>
-  draft.value.lastSavedAt
-    ? `Nháp được lưu cục bộ ${savedAgo.value}. Upload local chỉ phục vụ preview UI.`
-    : "Nháp chưa được lưu cục bộ. Upload local chỉ phục vụ preview UI.",
+watch(
+  () => subCategoryOptions.value.map(option => option.value).join("|"),
+  () => {
+    const options = subCategoryOptions.value
+
+    if (selectedSubCategory.value && options.some(option => option.value === selectedSubCategory.value)) {
+      return
+    }
+
+    selectedSubCategory.value = options[0]?.value ?? ""
+  },
+  { immediate: true },
 )
 
-const checklistItems = computed<ProductChecklistItem[]>(() => [
-  {
-    label: "Tên và giá bán",
-    description: "Điền đủ tên sản phẩm và giá bán để card hiển thị đầy đủ.",
-    done: draft.value.fields.title.trim().length > 0 && Number(draft.value.fields.price) > 0,
-  },
-  {
-    label: "Mô tả rõ ràng",
-    description: "Nội dung nên đủ dài để người mua hiểu nhanh sản phẩm.",
-    done: draft.value.fields.description.trim().length >= 20,
-  },
-  {
-    label: "Phân loại",
-    description: "Chọn loại, loại hình và tiền tệ đúng với tin đăng.",
-    done: Boolean(draft.value.fields.category && draft.value.fields.condition && draft.value.fields.currency),
-  },
-  {
-    label: "Địa điểm, tồn kho và ảnh",
-    description: "Hoàn thiện khu vực, số lượng còn lại và ít nhất một ảnh local.",
-    done: draft.value.fields.location.trim().length > 0 && Number(draft.value.fields.stock) > 0 && imageCount.value > 0,
-  },
-])
+watch(
+  stockInput,
+  (value) => {
+    const normalized = value.replace(/\D/g, "")
 
-const sellingTips = computed<ProductTipItem[]>(() => [
-  {
-    title: t("pages.newProductPage.tipName"),
-    description: t("pages.newProductPage.tipNameDescription"),
-    icon: "i-ph-text-t-fill",
+    if (normalized !== value) {
+      stockInput.value = normalized
+      return
+    }
+
+    if (draft.value.fields.stock !== normalized) {
+      draft.value.fields.stock = normalized
+    }
   },
-  {
-    title: t("pages.newProductPage.tipPrice"),
-    description: t("pages.newProductPage.tipPriceDescription"),
-    icon: "i-ph-currency-circle-dollar-fill",
+)
+
+watch(
+  () => draft.value.fields.stock,
+  (value) => {
+    if (hasTouchedStockInput.value) {
+      return
+    }
+
+    if (value !== stockInput.value) {
+      stockInput.value = value
+    }
   },
-  {
-    title: t("pages.newProductPage.tipImage"),
-    description: t("pages.newProductPage.tipImageDescription"),
-    icon: "i-ph-image-square-fill",
-  },
-])
+)
+
+const revokePreviews = () => {
+  newFilePreviews.value.forEach((preview) => {
+    URL.revokeObjectURL(preview.src)
+  })
+  newFilePreviews.value = []
+}
+
+const refreshFilePreviews = () => {
+  if (!import.meta.client) return
+
+  revokePreviews()
+  newFilePreviews.value = newFiles.value.map((file, index) => ({
+    index,
+    key: `${file.name}-${file.lastModified}-${index}`,
+    name: file.name,
+    src: URL.createObjectURL(file),
+  }))
+}
+
+const handleFileInput = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  newFiles.value = Array.from(input.files ?? [])
+  refreshFilePreviews()
+}
+
+const removeNewFile = (index: number) => {
+  newFiles.value = newFiles.value.filter((_, fileIndex) => fileIndex !== index)
+  if (fileInput.value) {
+    fileInput.value.value = ""
+  }
+  refreshFilePreviews()
+}
 
 watchDebounced(
   [() => draft.value.fields, () => newFiles.value.length],
@@ -269,50 +338,330 @@ watchDebounced(
   { deep: true, debounce: 800, maxWait: 2000 },
 )
 
-const saveDraft = () => {
-  markSaved()
-  toast.add({
-    title: "Đã lưu nháp",
-    description: "Thông tin sản phẩm đã được lưu cục bộ trên trình duyệt này.",
-    color: "success",
-  })
+const ensureCategory = () => {
+  const categoryExists = categoryOptions.value.some(category => category.value === draft.value.fields.category)
+
+  if (!draft.value.fields.category || !categoryExists) {
+    draft.value.fields.category = categoryOptions.value[0]?.value ?? ""
+  }
+}
+
+const validateForm = () => {
+  ensureCategory()
+
+  const fields = draft.value.fields
+  const price = Number(fields.price)
+
+  if (!fields.title.trim() || !fields.description.trim() || !fields.location.trim() || !fields.category) {
+    toast.add({
+      title: "Thiếu thông tin sản phẩm",
+      description: "Vui lòng nhập tên, mô tả, danh mục và địa điểm.",
+      color: "error",
+    })
+    return false
+  }
+
+  if (!Number.isFinite(price) || price <= 0) {
+    toast.add({
+      title: "Giá bán không hợp lệ",
+      description: "Giá bán phải là số lớn hơn 0.",
+      color: "error",
+    })
+    return false
+  }
+
+  if (newFiles.value.length === 0) {
+    toast.add({
+      title: "Chưa có hình ảnh",
+      description: "Vui lòng chọn ít nhất một ảnh sản phẩm.",
+      color: "error",
+    })
+    return false
+  }
+
+  return true
 }
 
 const submitProduct = async () => {
+  if (isSubmitting.value || !validateForm()) {
+    return
+  }
+
   const fields = draft.value.fields
   const form = new FormData()
+  fields.stock = stockInput.value
 
-  form.append("product_title", fields.title)
+  form.append("product_title", fields.title.trim())
   form.append("product_category", fields.category)
-  form.append("product_description", fields.description)
-  form.append("product_price", fields.price)
-  form.append("product_location", fields.location)
+  form.append("product_description", fields.description.trim())
+  form.append("product_price", fields.price.trim())
+  form.append("product_location", fields.location.trim())
   form.append("product_type", fields.condition === "used" ? "1" : "0")
   form.append("currency", fields.currency)
 
-  if (fields.stock) {
-    form.append("units", fields.stock)
+  if (selectedSubCategory.value) {
+    form.append("product_sub_category", selectedSubCategory.value)
+  }
+
+  if (fields.stock.trim()) {
+    form.append("units", fields.stock.trim())
   }
 
   for (const file of newFiles.value) {
     form.append("images[]", file, file.name)
   }
 
+  isSubmitting.value = true
+
   try {
-    await apiClient.post("product/create", form)
+    const response = await apiClient.post<{ id?: string; postId?: string }, FormData>("product/create", form)
     markSaved()
+    resetDraft(createInitialDraft())
+    stockInput.value = ""
+    newFiles.value = []
+    revokePreviews()
+    if (fileInput.value) {
+      fileInput.value.value = ""
+    }
     toast.add({
-      title: t("pages.newProductPage.createSuccessTitle"),
+      title: "Đã đăng sản phẩm",
       color: "success",
     })
-    await navigateTo("/my-products")
+
+    await navigateTo(response.postId ? `/post/${encodeURIComponent(response.postId)}` : "/my-products")
   }
   catch (error) {
     toast.add({
-      title: t("pages.newProductPage.createErrorTitle"),
+      title: "Không thể đăng sản phẩm",
       description: error instanceof Error ? error.message : String(error),
       color: "error",
     })
   }
+  finally {
+    isSubmitting.value = false
+  }
 }
+
+onBeforeUnmount(() => {
+  revokePreviews()
+})
 </script>
+
+<style scoped>
+.new-product-heading,
+.new-product-form {
+  border: 1px solid #dbe3f2;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(13, 38, 76, 0.08);
+}
+
+.new-product-heading {
+  margin-bottom: 16px;
+}
+
+.new-product-heading__inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 58px;
+  padding: 0 16px;
+}
+
+.new-product-heading__inner span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #0000ff;
+}
+
+.new-product-heading h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.new-product-form {
+  padding: 18px;
+}
+
+.new-product-row {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.new-product-row--name-price,
+.new-product-row--location {
+  grid-template-columns: minmax(0, 1fr) 220px;
+}
+
+.new-product-row--category {
+  grid-template-columns: minmax(0, 1fr) 220px;
+}
+
+.new-product-row--stock {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.new-product-field {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.new-product-field span,
+.new-product-media > label {
+  color: #555555;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.new-product-field input,
+.new-product-field textarea,
+.new-product-field select {
+  width: 100%;
+  border: 1px solid #dbe3f2;
+  border-radius: 4px;
+  outline: 0;
+  background: #ffffff;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 500;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.new-product-field input,
+.new-product-field select {
+  height: 42px;
+  padding: 0 12px;
+}
+
+.new-product-field textarea {
+  min-height: 112px;
+  resize: vertical;
+  padding: 12px;
+  line-height: 1.6;
+}
+
+.new-product-field input:focus,
+.new-product-field textarea:focus,
+.new-product-field select:focus {
+  border-color: #0000ff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
+}
+
+.new-product-field select:disabled {
+  color: #8a9bb2;
+  background: #f4f7fb;
+}
+
+.new-product-media {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.new-product-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.new-product-upload,
+.new-product-thumb {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  width: 92px;
+  height: 92px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe3f2;
+  border-radius: 4px;
+  background: #eef3fb;
+}
+
+.new-product-upload {
+  color: #344258;
+  cursor: pointer;
+}
+
+.new-product-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.new-product-thumb button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.68);
+  cursor: pointer;
+}
+
+.new-product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.new-product-back,
+.new-product-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  border-radius: 4px;
+  border: 0;
+  cursor: pointer;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.new-product-back {
+  color: #344258;
+  background: #eef3fb;
+}
+
+.new-product-submit {
+  min-width: 124px;
+  color: #ffffff;
+  background: #0000ff;
+}
+
+.new-product-submit:disabled {
+  cursor: progress;
+  opacity: 0.68;
+}
+
+@media (max-width: 760px) {
+  .new-product-row--name-price,
+  .new-product-row--location,
+  .new-product-row--category {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

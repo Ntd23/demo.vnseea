@@ -1,168 +1,198 @@
-<!-- English description: Product edit page that saves editor fields through the backend API bridge. -->
+<!-- English description: Wowonder-aligned product edit form that saves fields through the backend API bridge. -->
 
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-10 pb-28 px-4 sm:px-6">
-    <ProductHeroBanner
-      variant="edit"
-      :badge="$t('pages.editProductPage.badge')"
-      :title="$t('pages.editProductPage.title', { id: productId })"
-      :description="$t('pages.editProductPage.description')"
-      :secondary-action-label="$t('pages.editProductPage.restore')"
-      :stats="heroStats"
-      @secondary-action="restoreOriginal"
-    />
+  <div class="edit-product-page mx-auto w-full max-w-[980px] px-3 pb-12 pt-4 sm:px-4">
+    <section class="edit-product-heading">
+      <div class="edit-product-heading__inner">
+        <span>
+          <Icon name="i-ph-shopping-bag-open-fill" class="h-5 w-5" />
+        </span>
+        <h1>Sửa sản phẩm</h1>
+      </div>
+    </section>
 
-    <div class="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start">
-      <section class="lg:col-span-8 space-y-10">
-        <!-- Completion Summary Card -->
-        <div class="surface-card p-8 sm:p-10 space-y-8 ring-1 ring-secondary-200/50 shadow-2xl bg-white relative overflow-hidden group/summary">
-          <div class="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-transparent pointer-events-none opacity-0 group-hover/summary:opacity-100 transition-opacity duration-1000" />
-          
-          <div class="relative z-10 flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
-            <div class="space-y-3">
-              <p class="text-[10px] font-black uppercase tracking-[0.4em] text-[var(--text-primary)] pl-1">
-                {{ $t("pages.productEditor.editSectionEyebrow") }}
-              </p>
-              <h2 class="text-3xl font-black tracking-tight text-[var(--text-primary)] leading-none">
-                {{ $t("pages.editProductPage.sectionTitle") }}
-              </h2>
-              <p class="text-base font-medium leading-relaxed text-[var(--text-primary)] max-w-[520px] italic">
-                "{{ $t("pages.editProductPage.sectionDescription") }}"
-              </p>
-            </div>
+    <form class="edit-product-form" @submit.prevent="submitProduct">
+      <div class="edit-product-row edit-product-row--name-price">
+        <label class="edit-product-field">
+          <span>{{ $t("pages.productEditor.titleLabel") || "Tên" }}</span>
+          <input v-model="draft.fields.title" type="text">
+        </label>
 
-            <UBadge
-              variant="soft"
-              size="lg"
-              class="rounded-2xl px-6 font-black uppercase tracking-widest h-12 bg-primary-50 text-[var(--text-primary)] ring-1 ring-primary-100 shadow-sm"
-            >
-              <template #leading>
-                <Icon name="i-ph-seal-check-duotone" class="h-5 w-5 mr-3" />
-              </template>
-              {{ completionText }}
-            </UBadge>
-          </div>
-          
-          <div class="relative z-10 space-y-4">
-            <div class="flex justify-between text-[11px] font-black text-[var(--text-primary)] uppercase tracking-[0.2em] px-1">
-              <span>{{ $t('pages.productEditor.completionLabel') || 'Độ hoàn thiện' }}</span>
-              <span class="text-[var(--text-primary)]">{{ Math.round(completionPercent) }}%</span>
-            </div>
-            <div class="h-3 w-full rounded-full bg-secondary-50 ring-1 ring-secondary-100 overflow-hidden shadow-inner">
-              <div 
-                class="h-full bg-primary-500 transition-all duration-1000 shadow-[0_0_12px_rgba(var(--color-primary-500-rgb),0.5)]" 
-                :style="{ width: `${completionPercent}%` }" 
-              />
-            </div>
-          </div>
-        </div>
+        <label class="edit-product-field">
+          <span>{{ $t("pages.productEditor.priceLabel") || "Giá" }}</span>
+          <input v-model="draft.fields.price" type="text" placeholder="0.00">
+        </label>
+      </div>
 
-        <UForm :state="draft.fields" class="space-y-10">
-          <ProductEditorFields
-            v-model:title="draft.fields.title"
-            v-model:price="draft.fields.price"
-            v-model:description="draft.fields.description"
-            v-model:category="draft.fields.category"
-            v-model:condition="draft.fields.condition"
-            v-model:location="draft.fields.location"
-            v-model:currency="draft.fields.currency"
-            v-model:stock="draft.fields.stock"
-            :description-label="$t('pages.productEditor.descriptionLabel') || 'Sự mô tả'"
-            :category-options="categoryOptions"
-            :condition-options="conditionOptions"
-            :currency-options="currencyOptions"
-            :media-summary="mediaSummary"
+      <label class="edit-product-field">
+        <span>{{ $t("pages.productEditor.descriptionLabel") || "Mô tả" }}</span>
+        <textarea
+          v-model="draft.fields.description"
+          rows="4"
+          :placeholder="$t('pages.productEditor.descriptionPlaceholder')"
+        />
+      </label>
+
+      <div class="edit-product-row edit-product-row--category">
+        <label class="edit-product-field">
+          <span>Loại</span>
+          <select v-model="draft.fields.category">
+            <option v-for="option in categoryOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+
+        <label class="edit-product-field">
+          <span>Loại hình</span>
+          <select v-model="draft.fields.condition">
+            <option v-for="option in conditionOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+      </div>
+
+      <div class="edit-product-row edit-product-row--location">
+        <label class="edit-product-field">
+          <span>Địa điểm</span>
+          <input
+            v-model="draft.fields.location"
+            type="text"
+            :placeholder="$t('pages.productEditor.locationPlaceholder')"
           >
-            <template #media>
-              <ProductEditMediaManager
-                v-model:files="newFiles"
-                :current-images="currentImages"
-                :removed-count="draft.removedImageIds.length"
-                :image-button-label="imageButtonLabel"
-                @remove-current-image="removeCurrentImage"
-              />
-            </template>
-          </ProductEditorFields>
-        </UForm>
+        </label>
 
-        <FormsSubmitBar
-          :hint="saveHint"
-          :cta="$t('pages.editProductPage.submitCta') || 'Lưu thay đổi'"
-          class="rounded-[2.5rem] p-4 bg-white/90 backdrop-blur-3xl ring-1 ring-secondary-200/50 shadow-[0_-32px_64px_-16px_rgba(0,0,0,0.1)] transition-all hover:shadow-[0_-48px_80px_-24px_rgba(0,0,0,0.15)]"
-          @save="saveDraft"
-          @submit="submitProduct"
-        />
-      </section>
+        <label class="edit-product-field">
+          <span>Tiền tệ</span>
+          <select v-model="draft.fields.currency">
+            <option v-for="option in currencyOptions" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </label>
+      </div>
 
-      <aside class="lg:col-span-4 space-y-8">
-        <ProductPreviewCard
-          :preview-background="previewBackground"
-          :preview-icon="previewIcon"
-          :category-label="previewCategoryLabel"
-          :condition-label="previewConditionLabel"
-          :currency-label="previewCurrencyLabel"
-          :title="draft.fields.title"
-          :empty-title="$t('pages.editProductPage.emptyPreviewTitle') || 'Tên sản phẩm sẽ hiển thị ở đây'"
-          :description="previewDescription"
-          :price="previewPrice"
-          :stock-label="stockLabel"
-          :location="draft.fields.location"
-          :image-count="totalImageCount"
-          leading-icon="i-ph-pencil-simple"
-          trailing-icon="i-ph-floppy-disk-back"
-          :status-label="$t('pages.editProductPage.statusUpdated')"
-        />
+      <div class="edit-product-row edit-product-row--stock">
+        <label class="edit-product-field">
+          <span>Tổng số đơn vị mặt hàng</span>
+          <input
+            v-model="stockInput"
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            autocomplete="off"
+            @input="hasTouchedStockInput = true"
+          >
+        </label>
+      </div>
 
-        <ProductChecklistCard :items="checklistItems" />
+      <div class="edit-product-media">
+        <label>Ảnh</label>
+        <div class="edit-product-images">
+          <button
+            type="button"
+            class="edit-product-upload"
+            @click="fileInput?.click()"
+          >
+            <Icon name="i-ph-camera-fill" class="h-7 w-7" />
+          </button>
 
-        <ProductTipsCard
-          :title="$t('pages.editProductPage.tipsTitle')"
-          :items="editingTips"
-        />
-      </aside>
-    </div>
+          <span
+            v-for="image in currentImages"
+            :key="image.id"
+            class="edit-product-thumb"
+          >
+            <button type="button" @click="removeCurrentImage(image.id)">
+              <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+            </button>
+            <img :src="image.src" :alt="image.alt">
+          </span>
+
+          <span
+            v-for="preview in newFilePreviews"
+            :key="preview.key"
+            class="edit-product-thumb"
+          >
+            <button type="button" @click="removeNewFile(preview.index)">
+              <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+            </button>
+            <img :src="preview.src" :alt="preview.name">
+          </span>
+        </div>
+        <input
+          ref="fileInput"
+          class="hidden"
+          type="file"
+          accept="image/*"
+          multiple
+          @change="handleFileInput"
+        >
+      </div>
+
+      <div class="edit-product-actions">
+        <NuxtLink to="/my-products" class="edit-product-back">
+          <Icon name="i-ph-arrow-left" class="h-4 w-4" />
+          Quay lại
+        </NuxtLink>
+        <button type="submit" class="edit-product-submit">
+          Lưu
+        </button>
+      </div>
+    </form>
   </div>
 </template>
 
 <script setup lang="ts">
 import type {
-  ProductChecklistItem,
   ProductEditorDraft,
-  ProductHeroStat,
   ProductRecord,
-  ProductTipItem,
 } from "../../domain/types/product-editor.types"
-import { useTimeAgo, watchDebounced } from "@vueuse/core"
-import ProductChecklistCard from "../components/ChecklistCard.vue"
-import ProductEditMediaManager from "../components/EditMediaManager.vue"
-import ProductEditorFields from "../components/EditorFields.vue"
-import ProductHeroBanner from "../components/HeroBanner.vue"
-import ProductPreviewCard from "../components/PreviewCard.vue"
-import ProductTipsCard from "../components/TipsCard.vue"
+import { watchDebounced } from "@vueuse/core"
 import { useProductEditorDraft } from "../../application/composables/useProductEditorDraft"
 import { useProductEditorMeta } from "../../application/composables/useProductEditorMeta"
-import FormsSubmitBar from "../../../shared-kernel/presentation/components/forms/SubmitBar.vue"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
+
+type FilePreview = {
+  index: number
+  key: string
+  name: string
+  src: string
+}
 
 const props = defineProps<{
   productId: string
 }>()
 
 const { t } = useI18n()
-
-const {
-  categoryOptions,
-  conditionOptions,
-  currencyOptions,
-  categoryMeta,
-  conditionMap,
-  currencyMeta,
-  formatProductPrice,
-  formatProductStockLabel,
-} = useProductEditorMeta()
-
 const toast = useToast()
 const productRepository = createApiProductRepository()
+const fileInput = ref<HTMLInputElement | null>(null)
+const newFiles = shallowRef<File[]>([])
+const newFilePreviews = shallowRef<FilePreview[]>([])
+const stockInput = ref("")
+const hasTouchedStockInput = ref(false)
+
+const {
+  conditionOptions,
+  currencyOptions,
+} = useProductEditorMeta()
+
+const { data: marketplaceData } = useAsyncData(
+  "product:editor:categories",
+  () => productRepository.list({ limit: 1 }),
+  {
+    default: () => ({
+      items: [],
+      hasMore: false,
+      nextOffset: null,
+      categories: [],
+      subCategories: [],
+      distanceFilterAvailable: false,
+    }),
+  },
+)
+
 const { data: productData } = useAsyncData(
   `product:editor:${props.productId}`,
   () => productRepository.getById(props.productId),
@@ -195,138 +225,81 @@ const createDraftFromProduct = (product: ProductRecord): ProductEditorDraft => (
     condition: product.condition,
     location: product.location,
     currency: product.currency,
-    stock: product.stock > 0 ? String(product.stock) : "",
+    stock: Number.isFinite(product.stock) && product.stock > 0 ? String(product.stock) : "",
   },
   removedImageIds: [],
   lastSavedAt: null,
 })
 
 const { draft, replaceSource, markSaved } = useProductEditorDraft(storageKey, createDraftFromProduct(activeProduct.value ?? emptyProduct.value))
-const newFiles = shallowRef<File[]>([])
-const savedAgo = useTimeAgo(computed(() => draft.value.lastSavedAt || Date.now()))
-
+stockInput.value = draft.value.fields.stock
 const currentImages = computed(() =>
   (activeProduct.value?.images ?? []).filter(image => !draft.value.removedImageIds.includes(image.id)),
 )
 
+const categoryOptions = computed(() => {
+  const categories = [...(marketplaceData.value?.categories ?? [])]
+  const product = activeProduct.value
+  const currentCategory = draft.value.fields.category || product?.category || ""
+  const currentCategoryLabel = product?.categoryLabel || currentCategory
+  const hasReadableCurrentCategory = currentCategoryLabel && currentCategoryLabel !== currentCategory
+
+  if (
+    currentCategory
+    && hasReadableCurrentCategory
+    && !categories.some(category => category.value === currentCategory)
+  ) {
+    categories.unshift({
+      value: currentCategory,
+      label: currentCategoryLabel,
+    })
+  }
+
+  return categories
+})
+
 watch(
-  () => activeProduct.value,
-  () => {
-    replaceSource(createDraftFromProduct(activeProduct.value ?? emptyProduct.value))
-    newFiles.value = []
+  () => [activeProduct.value?.category, categoryOptions.value.map(category => category.value).join("|")] as const,
+  ([category]) => {
+    const options = categoryOptions.value
+    const currentCategory = draft.value.fields.category || category || ""
+
+    if (currentCategory && options.some(option => option.value === currentCategory)) {
+      draft.value.fields.category = currentCategory
+      return
+    }
+
+    if (options[0]?.value) {
+      draft.value.fields.category = options[0].value
+    }
   },
   { immediate: true },
 )
 
-const totalImageCount = computed(() => currentImages.value.length + newFiles.value.length)
+const revokePreviews = () => {
+  newFilePreviews.value.forEach((preview) => {
+    URL.revokeObjectURL(preview.src)
+  })
+  newFilePreviews.value = []
+}
 
-const completionCount = computed(() =>
-  [
-    draft.value.fields.title.trim(),
-    draft.value.fields.price.trim(),
-    draft.value.fields.description.trim(),
-    draft.value.fields.category,
-    draft.value.fields.condition,
-    draft.value.fields.location.trim(),
-    draft.value.fields.stock.trim(),
-    totalImageCount.value > 0,
-  ].filter(Boolean).length,
-)
+const refreshFilePreviews = () => {
+  if (!import.meta.client) return
 
-const completionText = computed(() => `${completionCount.value}/8 trường chính đã hoàn thiện`)
-const completionPercent = computed(() => (completionCount.value / 8) * 100)
+  revokePreviews()
+  newFilePreviews.value = newFiles.value.map((file, index) => ({
+    index,
+    key: `${file.name}-${file.lastModified}-${index}`,
+    name: file.name,
+    src: URL.createObjectURL(file),
+  }))
+}
 
-const mediaSummary = computed(() => {
-  if (totalImageCount.value === 0) return t("pages.editProductPage.noImages")
-  return totalImageCount.value === 1
-    ? t("pages.editProductPage.oneKeptImage")
-    : t("pages.editProductPage.keptImages", { count: totalImageCount.value })
-})
-
-const imageButtonLabel = computed(() =>
-  newFiles.value.length >= 6 ? "Đã đủ 6 ảnh mới" : "Thêm ảnh mới",
-)
-
-const heroStats = computed<ProductHeroStat[]>(() => [
-  {
-    label: t("pages.editProductPage.statCompletion"),
-    value: `${completionCount.value}/8`,
-    description: t("pages.editProductPage.statCompletionDescription"),
-  },
-  {
-    label: t("pages.editProductPage.statImagesLeft"),
-    value: String(currentImages.value.length),
-    description: t("pages.editProductPage.statImagesLeftDescription"),
-  },
-  {
-    label: t("pages.editProductPage.statStatus"),
-    value: activeProduct.value?.updatedAt || props.productId,
-    description: t("pages.editProductPage.statStatusDescription"),
-  },
-])
-
-const activeCategoryMeta = computed(() =>
-  categoryMeta.value[draft.value.fields.category] ?? categoryMeta.value.vehicles,
-)
-
-const previewBackground = computed(() => activeCategoryMeta.value.background)
-const previewIcon = computed(() => activeCategoryMeta.value.icon)
-const previewCategoryLabel = computed(() => activeCategoryMeta.value.label)
-const previewConditionLabel = computed(() =>
-  conditionMap.value[draft.value.fields.condition] ?? conditionMap.value.new,
-)
-const previewCurrencyLabel = computed(() => currencyMeta[draft.value.fields.currency].label)
-const previewDescription = computed(() =>
-  draft.value.fields.description.trim() || "Mô tả cập nhật sẽ hiển thị ở đây để bạn kiểm tra trước khi lưu.",
-)
-
-const previewPrice = computed(() => formatProductPrice(draft.value.fields.price, draft.value.fields.currency))
-const stockLabel = computed(() => formatProductStockLabel(draft.value.fields.stock))
-
-const saveHint = computed(() =>
-  draft.value.lastSavedAt
-    ? `Nháp chỉnh sửa được lưu cục bộ ${savedAgo.value}. Ảnh local mới chỉ phục vụ preview UI.`
-    : "Nháp chỉnh sửa chưa được lưu cục bộ. Ảnh local mới chỉ phục vụ preview UI.",
-)
-
-const checklistItems = computed<ProductChecklistItem[]>(() => [
-  {
-    label: t("pages.editProductPage.checkPrefill") || "Khởi tạo dữ liệu",
-    done: true,
-  },
-  {
-    label: t('pages.productEditor.checkTitlePriceDescription') || "Cập nhật nội dung chính",
-    done: draft.value.fields.title.trim().length > 0
-      && Number(draft.value.fields.price) > 0
-      && draft.value.fields.description.trim().length >= 20,
-  },
-  {
-    label: t('pages.productEditor.checkMediaLegacy') || "Xử lý ảnh cũ",
-    done: draft.value.removedImageIds.length >= 0,
-  },
-  {
-    label: t("pages.editProductPage.checkReady"),
-    done: totalImageCount.value > 0 && completionCount.value >= 7,
-  },
-])
-
-const editingTips = computed<ProductTipItem[]>(() => [
-  {
-    title: t("pages.editProductPage.tipSmallChanges"),
-    description: t("pages.editProductPage.tipSmallChangesDescription"),
-    icon: "i-ph-pencil-line-fill",
-  },
-  {
-    title: t("pages.editProductPage.tipRemoveOld"),
-    description: t("pages.editProductPage.tipRemoveOldDescription"),
-    icon: "i-ph-trash-fill",
-  },
-  {
-    title: t("pages.editProductPage.tipPreview"),
-    description: t("pages.editProductPage.tipPreviewDescription"),
-    icon: "i-ph-eye-fill",
-  },
-])
+const handleFileInput = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  newFiles.value = Array.from(input.files ?? [])
+  refreshFilePreviews()
+}
 
 const removeCurrentImage = (imageId: string) => {
   if (!draft.value.removedImageIds.includes(imageId)) {
@@ -334,16 +307,66 @@ const removeCurrentImage = (imageId: string) => {
   }
 }
 
-const restoreOriginal = () => {
-  replaceSource(createDraftFromProduct(activeProduct.value ?? emptyProduct.value))
-  newFiles.value = []
-
-  toast.add({
-    title: t("pages.editProductPage.restoreSuccessTitle"),
-    description: t("pages.editProductPage.restoreSuccessDescription"),
-    color: "primary",
-  })
+const removeNewFile = (index: number) => {
+  newFiles.value = newFiles.value.filter((_, fileIndex) => fileIndex !== index)
+  if (fileInput.value) {
+    fileInput.value.value = ""
+  }
+  refreshFilePreviews()
 }
+
+watch(
+  () => activeProduct.value,
+  () => {
+    const nextProduct = activeProduct.value ?? emptyProduct.value
+
+    replaceSource(createDraftFromProduct(nextProduct))
+
+    if (Number.isFinite(nextProduct.stock) && nextProduct.stock > 0) {
+      draft.value.fields.stock = String(nextProduct.stock)
+      stockInput.value = String(nextProduct.stock)
+    }
+    else {
+      stockInput.value = draft.value.fields.stock
+    }
+
+    newFiles.value = []
+    revokePreviews()
+    if (fileInput.value) {
+      fileInput.value.value = ""
+    }
+  },
+  { immediate: true },
+)
+
+watch(
+  stockInput,
+  (value) => {
+    const normalized = value.replace(/\D/g, "")
+
+    if (normalized !== value) {
+      stockInput.value = normalized
+      return
+    }
+
+    if (draft.value.fields.stock !== normalized) {
+      draft.value.fields.stock = normalized
+    }
+  },
+)
+
+watch(
+  () => draft.value.fields.stock,
+  (value) => {
+    if (hasTouchedStockInput.value) {
+      return
+    }
+
+    if (value !== stockInput.value) {
+      stockInput.value = value
+    }
+  },
+)
 
 watchDebounced(
   [() => draft.value.fields, () => draft.value.removedImageIds.slice(), () => newFiles.value.length],
@@ -353,16 +376,18 @@ watchDebounced(
   { deep: true, debounce: 800, maxWait: 2000 },
 )
 
-const saveDraft = () => {
-  markSaved()
-  toast.add({
-    title: "Đã lưu nháp chỉnh sửa",
-    description: "Thay đổi hiện tại đã được lưu cục bộ theo mã sản phẩm.",
-    color: "success",
-  })
-}
-
 const submitProduct = async () => {
+  draft.value.fields.stock = stockInput.value
+
+  const categoryExists = categoryOptions.value.some(category => category.value === draft.value.fields.category)
+  if (!draft.value.fields.category || !categoryExists) {
+    const fallbackCategory = categoryOptions.value[0]?.value
+
+    if (fallbackCategory) {
+      draft.value.fields.category = fallbackCategory
+    }
+  }
+
   try {
     await productRepository.update(props.productId, draft.value)
     markSaved()
@@ -379,7 +404,216 @@ const submitProduct = async () => {
     })
   }
 }
+
+onBeforeUnmount(() => {
+  revokePreviews()
+})
 </script>
 
 <style scoped>
+.edit-product-heading,
+.edit-product-form {
+  border: 1px solid #dbe3f2;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(13, 38, 76, 0.08);
+}
+
+.edit-product-heading {
+  margin-bottom: 16px;
+}
+
+.edit-product-heading__inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 58px;
+  padding: 0 16px;
+}
+
+.edit-product-heading__inner span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  color: #ffffff;
+  background: #0000ff;
+}
+
+.edit-product-heading h1 {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.edit-product-form {
+  padding: 18px;
+}
+
+.edit-product-row {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.edit-product-row--name-price,
+.edit-product-row--location {
+  grid-template-columns: minmax(0, 1fr) 220px;
+}
+
+.edit-product-row--category {
+  grid-template-columns: minmax(0, 1fr) 220px;
+}
+
+.edit-product-row--stock {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.edit-product-field {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+
+.edit-product-field span,
+.edit-product-media > label {
+  color: #555555;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.edit-product-field input,
+.edit-product-field textarea,
+.edit-product-field select {
+  width: 100%;
+  border: 1px solid #dbe3f2;
+  border-radius: 4px;
+  outline: 0;
+  background: #ffffff;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 500;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.edit-product-field input,
+.edit-product-field select {
+  height: 42px;
+  padding: 0 12px;
+}
+
+.edit-product-field textarea {
+  min-height: 112px;
+  resize: vertical;
+  padding: 12px;
+  line-height: 1.6;
+}
+
+.edit-product-field input:focus,
+.edit-product-field textarea:focus,
+.edit-product-field select:focus {
+  border-color: #0000ff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
+}
+
+.edit-product-media {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.edit-product-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.edit-product-upload,
+.edit-product-thumb {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  width: 92px;
+  height: 92px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe3f2;
+  border-radius: 4px;
+  background: #eef3fb;
+}
+
+.edit-product-upload {
+  color: #344258;
+  cursor: pointer;
+}
+
+.edit-product-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.edit-product-thumb button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.68);
+  cursor: pointer;
+}
+
+.edit-product-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.edit-product-back,
+.edit-product-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  border-radius: 4px;
+  border: 0;
+  cursor: pointer;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.edit-product-back {
+  color: #344258;
+  background: #eef3fb;
+}
+
+.edit-product-submit {
+  color: #ffffff;
+  background: #0000ff;
+}
+
+@media (max-width: 760px) {
+  .edit-product-row--name-price,
+  .edit-product-row--location,
+  .edit-product-row--category {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

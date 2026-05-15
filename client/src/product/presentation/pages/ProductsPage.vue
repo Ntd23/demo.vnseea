@@ -138,15 +138,15 @@
       <article
         v-for="product in visibleProducts"
         :key="product.id"
-        class="group overflow-hidden rounded-[5px] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        class="market-product-card group overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm"
       >
-        <div class="relative aspect-square overflow-hidden bg-slate-100">
-          <a :href="product.href">
+        <div class="market-product-image relative aspect-square overflow-visible bg-slate-100">
+          <NuxtLink :to="product.href" class="block h-full overflow-hidden rounded-t-[10px]">
             <NuxtImg
               v-if="product.imageUrl"
               :src="product.imageUrl"
               :alt="product.title"
-              class="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+              class="h-full w-full object-cover"
               loading="lazy"
             />
             <div
@@ -156,7 +156,7 @@
             >
               <Icon :name="product.icon" class="h-16 w-16 opacity-80" />
             </div>
-          </a>
+          </NuxtLink>
 
           <div class="absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded-[3px] bg-black/65 px-2 py-1 text-[11px] font-semibold text-white">
             <a :href="`/products?c_id=${product.categoryId}`">{{ product.categoryLabel }}</a>
@@ -164,46 +164,58 @@
           </div>
 
           <div
-            v-if="product.canContactSeller || product.canAddToCart"
-            class="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-2 bg-black/55 p-3 opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100"
+            v-if="!product.mine"
+            class="market-product-overlay pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-t-[10px] px-10"
           >
-            <a
-              class="inline-flex h-9 items-center justify-center rounded-[4px] bg-white px-3 text-[12px] font-semibold text-slate-900"
-              :href="product.href"
+            <NuxtLink
+              class="market-product-more pointer-events-auto inline-flex h-10 items-center justify-center rounded-[4px] px-5 text-[15px] font-semibold"
+              :to="product.href"
             >
               {{ $t("pages.productsPage.moreInfo") }}
-            </a>
+            </NuxtLink>
+          </div>
+
+          <div class="market-product-actions absolute bottom-0 right-4 z-20 flex translate-y-1/2 items-center justify-end gap-2">
+            <NuxtLink
+              v-if="product.mine"
+              class="market-product-action-btn market-product-action-muted inline-flex items-center justify-center text-slate-900 transition"
+              :to="product.href"
+              :title="$t('pages.productsPage.moreInfo')"
+            >
+              <Icon name="i-ph-info-fill" class="h-[29px] w-[29px]" />
+            </NuxtLink>
             <button
-              v-if="product.canContactSeller"
+              v-if="!product.mine"
               type="button"
-              class="inline-flex h-9 w-9 items-center justify-center rounded-[4px] bg-white text-slate-900"
+              class="market-product-action-btn market-product-action-muted inline-flex items-center justify-center text-slate-900 transition disabled:opacity-60"
               :title="$t('pages.productsPage.messageSeller')"
+              :disabled="!product.canContactSeller"
               @click="openSellerChat(product)"
             >
-              <Icon name="i-ph-chat-text-fill" class="h-5 w-5" />
+              <Icon name="i-ph-chat-text-fill" class="h-[29px] w-[29px]" />
             </button>
             <button
-              v-if="product.canAddToCart"
+              v-if="!product.mine"
               type="button"
-              class="inline-flex h-9 w-9 items-center justify-center rounded-[4px] text-white disabled:opacity-60"
+              class="market-product-action-btn inline-flex items-center justify-center text-white transition disabled:opacity-60"
               style="background: linear-gradient(180deg, #2437ff 0%, #0700f5 100%);"
               :title="$t('pages.productsPage.addToCart')"
-              :disabled="cartLoadingProductId === product.id"
+              :disabled="!product.canAddToCart || cartLoadingProductId === product.id"
               @click="addToCart(product.id)"
             >
-              <Icon name="i-ph-shopping-cart-simple-fill" class="h-5 w-5" />
+              <Icon name="i-ph-shopping-cart-simple-fill" class="h-[29px] w-[29px]" />
             </button>
           </div>
         </div>
 
-        <div class="p-3">
-          <a
-            :href="product.href"
+        <div class="px-3 pb-3 pt-7">
+          <NuxtLink
+            :to="product.href"
             class="line-clamp-2 min-h-[40px] text-[14px] font-semibold leading-5 text-slate-900 hover:text-primary-600"
             :title="product.title"
           >
             {{ product.title }}
-          </a>
+          </NuxtLink>
           <div
             class="mt-2 text-[18px] font-bold"
             style="color: #0700f5;"
@@ -292,3 +304,68 @@ const {
   openSellerChat,
 } = useProductMarketplace()
 </script>
+
+<style scoped>
+.market-product-card {
+  transition: box-shadow 0.2s linear;
+}
+
+.market-product-card:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.market-product-overlay {
+  background-color: rgba(0, 0, 0, 0.41);
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.33, 0.66, 0.66, 1);
+}
+
+.market-product-card:hover .market-product-overlay {
+  opacity: 1;
+}
+
+.market-product-more {
+  min-width: 132px;
+  height: 44px;
+  background-color: rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(4px);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.market-product-more:hover {
+  background-color: #fff;
+  color: #000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.market-product-actions :deep(a),
+.market-product-actions :deep(button) {
+  margin: 0 2px;
+}
+
+.market-product-action-btn {
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 9999px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  line-height: 1;
+}
+
+.market-product-action-muted {
+  background-color: #dfe5ee;
+}
+
+.market-product-action-muted:hover {
+  background-color: #d3dbe7;
+}
+</style>
