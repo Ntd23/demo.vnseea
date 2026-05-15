@@ -2,6 +2,99 @@
 if (!defined('SEPAY_CORE')) {
     define('SEPAY_CORE', true);                             // ✅ đủ 2 tham số
 }
+function Wo_SepayPaymentHasMatchedTransaction($paymentId, $sqlConnect)
+{
+    $paymentId = (int)$paymentId;
+    if ($paymentId <= 0) {
+        return false;
+    }
+
+    $q = mysqli_query(
+        $sqlConnect,
+        "SELECT sepay_id FROM " . SEPAY_TRANSACTION . "
+            WHERE matched_payment_id={$paymentId}
+            LIMIT 1"
+    );
+
+    return ($q && mysqli_num_rows($q) > 0);
+}
+
+function Wo_SepayMarkMatchedTransaction($paymentId, $userId, $orderCode, $amount, $sqlConnect)
+{
+    $paymentId = (int)$paymentId;
+    $userId = (int)$userId;
+    $amount = (int)$amount;
+    $orderCodeSql = mysqli_real_escape_string($sqlConnect, strtoupper((string)$orderCode));
+
+    mysqli_query(
+        $sqlConnect,
+        "UPDATE " . SEPAY_TRANSACTION . "
+            SET matched_payment_id={$paymentId},
+                matched_user_id={$userId}
+            WHERE UPPER(reference_code)=UPPER('{$orderCodeSql}')
+                AND transfer_amount={$amount}
+                AND (matched_payment_id IS NULL OR matched_payment_id=0 OR matched_payment_id={$paymentId})"
+    );
+}
+
+function Wo_SepayCreditWallet($payment, $sqlConnect)
+{
+    $paymentId = (int)($payment['id'] ?? 0);
+    $userId = (int)($payment['customer_id'] ?? 0);
+    $amount = (int)($payment['amount'] ?? 0);
+    $orderCode = (string)($payment['order_code'] ?? '');
+
+    if ($paymentId <= 0 || $userId <= 0 || $amount <= 0 || $orderCode === '') {
+        return false;
+    }
+
+    if (Wo_SepayPaymentHasMatchedTransaction($paymentId, $sqlConnect)) {
+        if (function_exists('cache')) {
+            cache($userId, 'users', 'delete');
+        }
+        return true;
+    }
+
+    $orderCodeSql = mysqli_real_escape_string($sqlConnect, strtoupper($orderCode));
+    $incoming = mysqli_query(
+        $sqlConnect,
+        "SELECT sepay_id FROM " . SEPAY_TRANSACTION . "
+            WHERE UPPER(reference_code)=UPPER('{$orderCodeSql}')
+                AND transfer_amount={$amount}
+                AND (matched_payment_id IS NULL OR matched_payment_id=0 OR matched_payment_id={$paymentId})
+            LIMIT 1"
+    );
+
+    if (!$incoming || mysqli_num_rows($incoming) === 0) {
+        return false;
+    }
+
+    $ok = mysqli_query(
+        $sqlConnect,
+        "UPDATE " . T_USERS . " SET wallet = wallet + {$amount}
+            WHERE user_id={$userId}"
+    );
+
+    if (!$ok) {
+        return false;
+    }
+
+    $notesSql = mysqli_real_escape_string($sqlConnect, 'sepay:' . $orderCode);
+    mysqli_query(
+        $sqlConnect,
+        "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`)
+            VALUES ({$userId}, 'WALLET', {$amount}, '{$notesSql}')"
+    );
+
+    Wo_SepayMarkMatchedTransaction($paymentId, $userId, $orderCode, $amount, $sqlConnect);
+
+    if (function_exists('cache')) {
+        cache($userId, 'users', 'delete');
+    }
+
+    return true;
+}
+
 function Wo_SepayCreateOrderQr($userId, $amount, $wo, $sqlConnect)
 {
     $amount = max(1000, (int)$amount);
@@ -13,8 +106,11 @@ function Wo_SepayCreateOrderQr($userId, $amount, $wo, $sqlConnect)
     if (!$bankAcc || !$bankCode) return ['error' => 'SePay not configured (bank_code/account).'];
     $descPrefix = (string)($wo['config']['sepay_desc_prefix'] ?? 'SE');
     $order_code = ($wo['config']['sepay_desc_prefix'] ?? 'SE') . substr(sha1(uniqid('', true)), 0, 6);
-    $accountName = $wo['config']['siteName'];
+    $accountName = trim((string)($wo['config']['sepay_account_name'] ?? ''));
     $order_code = mysqli_real_escape_string($sqlConnect, $order_code);
+    $bankCodeSql = mysqli_real_escape_string($sqlConnect, $bankCode);
+    $bankAccSql = mysqli_real_escape_string($sqlConnect, $bankAcc);
+    $accountNameSql = mysqli_real_escape_string($sqlConnect, $accountName);
     $dup = mysqli_query($sqlConnect, "SELECT id FROM " . PAYMENT . " WHERE order_code='{$order_code}' AND method='sepay' LIMIT 1");
     if ($dup && mysqli_num_rows($dup) > 0) {
         $order_code = ($wo['config']['sepay_desc_prefix'] ?? 'SE') . substr(sha1(uniqid('', true)), 0, 6);
@@ -22,17 +118,23 @@ function Wo_SepayCreateOrderQr($userId, $amount, $wo, $sqlConnect)
     }
     $sql = mysqli_query($sqlConnect, "INSERT INTO " . PAYMENT . " (`order_code`,`customer_id`,`amount`,`bank_code`,`account_number`,`account_name`,`method`,`status`,`created_at`)
           VALUES
-    ('{$order_code}',{$userId},{$amount},'{$bankCode}','{$bankAcc}','{$accountName}','sepay','pending',NOW())");
+    ('{$order_code}',{$userId},{$amount},'{$bankCodeSql}','{$bankAccSql}','{$accountNameSql}','sepay','pending',NOW())");
     // $sqlLog = mysqli_query($sqlConnect, "INSERT INTO " . SEPAY_TRANSACTION . " (`sepay_id`,`bank_code`,`account_number`,`transfer_type`,`transfer_amount`,`content`,``");
     if (!$sql) {
         return ['error' => 'DB error: ' . mysqli_error($sqlConnect)];
     }
     $payment_id = (int)mysqli_insert_id($sqlConnect);
+    $qrBankCode = strtoupper($bankCode);
+    if (in_array($qrBankCode, array('MB', 'MBBANK', 'MB BANK'), true)) {
+        $qrBankCode = 'MB';
+    }
+
     $qr_url = 'https://qr.sepay.vn/img?' . http_build_query([
-        'bank'   => $bankCode,
+        'bank'   => $qrBankCode,
         'acc'    => $bankAcc,
         'amount' => $amount,
-        'des'    => $order_code
+        'des'    => $order_code,
+        'template' => 'compact'
     ]);
     return [
         'payment_id' => $payment_id,
@@ -68,8 +170,6 @@ function Wo_SepayCheck(string $order_code_raw, int $userId, $sqlConnect)
                 LIMIT 1"
         );
         if ($tq && mysqli_num_rows($tq) > 0) {
-            $tx = mysqli_fetch_assoc($tq);
-            $sepayId_sql = mysqli_real_escape_string($sqlConnect, (string)$tx['sepay_id']);
             mysqli_begin_transaction($sqlConnect);
             $ok1 = mysqli_query(
                 $sqlConnect,
@@ -77,19 +177,8 @@ function Wo_SepayCheck(string $order_code_raw, int $userId, $sqlConnect)
                     WHERE id=" . (int)$p['id'] . " AND status='pending'"
             );
             if ($ok1 && mysqli_affected_rows($sqlConnect) === 1) {
-                $ok2 = mysqli_query(
-                    $sqlConnect,
-                    "UPDATE " . T_USERS . " SET wallet = wallet + {$amount}
-                        WHERE user_id=" . (int)$p['customer_id']
-                );
+                $ok2 = Wo_SepayCreditWallet($p, $sqlConnect);
                 if ($ok2) {
-                    mysqli_query(
-                        $sqlConnect,
-                        "UPDATE " . SEPAY_TRANSACTION . "
-                            SET matched_payment_id=" . (int)$p['id'] . ",
-                                matched_user_id=" . (int)$p['customer_id'] . "
-                            WHERE sepay_id='{$sepayId_sql}'"
-                    );
                     mysqli_commit($sqlConnect);
                     $p['status'] = 'paid';
                     $p['updated_at'] = date('Y-m-d H:i:s');
@@ -99,6 +188,20 @@ function Wo_SepayCheck(string $order_code_raw, int $userId, $sqlConnect)
             } else {
                 mysqli_rollback($sqlConnect);
             }
+        }
+    }
+    else if (Wo_SepayPaymentHasMatchedTransaction((int)$p['id'], $sqlConnect)) {
+        if (function_exists('cache')) {
+            cache((int)$p['customer_id'], 'users', 'delete');
+        }
+    }
+    else {
+        mysqli_begin_transaction($sqlConnect);
+        if (Wo_SepayCreditWallet($p, $sqlConnect)) {
+            mysqli_commit($sqlConnect);
+        }
+        else {
+            mysqli_rollback($sqlConnect);
         }
     }
     return [
@@ -187,7 +290,22 @@ function Wo_SepayReturnWebhook($wo, $sqlConnect, $givenToken)
 
     if (!$q || !mysqli_num_rows($q)) return ['http' => 200, 'body' => 'not found'];
     $p = mysqli_fetch_assoc($q);
-    if (strtolower($p['status']) === 'paid') return ['http' => 200, 'body' => 'already'];
+    if (strtolower($p['status']) === 'paid') {
+        if (!Wo_SepayPaymentHasMatchedTransaction((int)$p['id'], $sqlConnect)) {
+            mysqli_begin_transaction($sqlConnect);
+            if (Wo_SepayCreditWallet($p, $sqlConnect)) {
+                mysqli_commit($sqlConnect);
+                return ['http' => 200, 'body' => 'repaired'];
+            }
+            mysqli_rollback($sqlConnect);
+            return ['http' => 500, 'body' => 'user update fail'];
+        }
+
+        if (function_exists('cache')) {
+            cache((int)$p['customer_id'], 'users', 'delete');
+        }
+        return ['http' => 200, 'body' => 'already'];
+    }
     if ((int)$p['amount'] !== (int)$amount) return ['http' => 200, 'body' => 'amount mismatch'];
     mysqli_begin_transaction($sqlConnect);
     $ok1 = mysqli_query(
@@ -200,22 +318,11 @@ function Wo_SepayReturnWebhook($wo, $sqlConnect, $givenToken)
         return ['http' => 200, 'body' => 'no update'];
     }
 
-    $ok2 = mysqli_query(
-        $sqlConnect,
-        "UPDATE " . T_USERS . " SET wallet = wallet + " . (int)$p['amount'] . "
-            WHERE user_id=" . (int)$p['customer_id']
-    );
+    $ok2 = Wo_SepayCreditWallet($p, $sqlConnect);
     if (!$ok2) {
         mysqli_rollback($sqlConnect);
         return ['http' => 500, 'body' => 'user update fail'];
     }
-    $updLog = mysqli_query(
-        $sqlConnect,
-        "UPDATE ".SEPAY_TRANSACTION."
-         SET matched_payment_id=".(int)$p['id'].",
-             matched_user_id=".(int)$p['customer_id']."
-         WHERE sepay_id='{$sepayId_sql}'"
-    );
     mysqli_commit($sqlConnect);
     Wo_RegisterNotification([
         'notifier_id'  => (int)$p['customer_id'],

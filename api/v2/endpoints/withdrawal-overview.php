@@ -31,13 +31,13 @@ else {
             continue;
         }
 
-        if ($key == 'bank' && (empty($wo['config']['bank_withdrawal_system']) || $wo['config']['bank_withdrawal_system'] != 1)) {
+        if (!in_array((string) $key, array('paypal', 'p_paypal'), true)) {
             continue;
         }
 
         $methods[] = array(
-            'value' => (string) $key,
-            'label' => !empty($wo['lang'][$key]) ? $wo['lang'][$key] : ucfirst((string) $key),
+            'value' => 'paypal',
+            'label' => !empty($wo['lang']['paypal']) ? $wo['lang']['paypal'] : 'PayPal',
         );
     }
 
@@ -52,7 +52,7 @@ else {
         if (!$has_sepay_method) {
             $methods[] = array(
                 'value' => 'sepay',
-                'label' => 'SePay VietQR',
+                'label' => 'SePay',
             );
         }
     }
@@ -77,6 +77,7 @@ else {
                 'amount' => isset($item['amount']) ? (float) $item['amount'] : 0,
                 'method' => !empty($item['type']) ? (string) $item['type'] : '',
                 'requested' => !empty($item['time_text']) ? (string) $item['time_text'] : '',
+                'requested_at' => !empty($item['time']) ? (int) $item['time'] : 0,
                 'status' => isset($item['status']) ? (int) $item['status'] : 0,
                 'transfer_info' => !empty($item['transfer_info']) ? (string) $item['transfer_info'] : '',
             );
@@ -92,7 +93,7 @@ else {
         'currency_symbol' => Wo_GetCurrency($currency),
         'currency_rule' => Wo_GetCurrencyRule($currency),
         'methods' => $methods,
-        'bank_enabled' => (!empty($wo['config']['bank_withdrawal_system']) && $wo['config']['bank_withdrawal_system'] == 1) ? true : false,
+        'bank_enabled' => false,
         'paypal_email' => !empty($wo['user']['email']) ? $wo['user']['email'] : '',
         'has_pending_request' => Wo_IsUserPaymentRequested($wo['user']['user_id']) ? true : false,
         'history' => $history,

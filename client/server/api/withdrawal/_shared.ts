@@ -99,6 +99,7 @@ const mapHistoryItem = (item: BackendEntity): WithdrawalHistoryItem => ({
   amount: asNumber(item.amount),
   method: asString(item.method),
   requested: asString(item.requested),
+  requestedAt: asNumber(item.requested_at),
   status: mapStatus(item.status),
   transferInfo: asString(item.transfer_info),
 })

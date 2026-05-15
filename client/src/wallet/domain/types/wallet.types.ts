@@ -19,6 +19,8 @@ export type WalletTransaction = {
   id: number
   kind: string
   notes: string
+  counterpartyId: number
+  counterpartyName: string
   amount: number
   transactionDate: string
   statusTone: WalletTransactionTone
@@ -54,6 +56,7 @@ export type WalletOverview = {
 export type WalletSendDraft = {
   recipientUserId: number
   amount: number
+  note?: string
 }
 
 export type WalletTopupDraft = {

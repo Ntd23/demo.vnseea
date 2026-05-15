@@ -20,9 +20,10 @@ else {
 
     $users = array();
 
-    if (strlen($keyword) >= 2) {
+    if (strlen($keyword) >= 2 || is_numeric($keyword)) {
         $escaped = mysqli_real_escape_string($sqlConnect, $keyword);
         $current_user_id = (int) $wo['user']['user_id'];
+        $id_filter = is_numeric($keyword) ? "OR `user_id` = " . (int) $keyword : "";
         $query = mysqli_query($sqlConnect, "
             SELECT `user_id`, `username`, `first_name`, `last_name`, `avatar`, `email`
             FROM " . T_USERS . "
@@ -34,6 +35,7 @@ else {
                 OR `first_name` LIKE '%{$escaped}%'
                 OR `last_name` LIKE '%{$escaped}%'
                 OR `email` LIKE '%{$escaped}%'
+                {$id_filter}
               )
             ORDER BY `user_id` DESC
             LIMIT 8

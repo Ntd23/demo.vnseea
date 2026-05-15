@@ -2,9 +2,9 @@
 <template>
   <div class="mx-auto max-w-5xl space-y-5 pb-10">
     <section class="surface-card p-5 sm:p-6">
-      <div class="flex flex-col gap-3 sm:flex-row items-center justify-between">
-        <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
+      <div class="wallet-page-header">
+        <div class="wallet-page-header__title">
+          <div class="wallet-page-header__icon">
             <Icon name="i-ph-wallet-duotone" class="h-6 w-6" />
           </div>
           <div>
@@ -114,40 +114,87 @@
           />
 
           <div v-if="sepayTopup?.qrUrl" class="wallet-sepay-result">
-            <img
-              :src="sepayTopup.qrUrl"
-              :alt="t('pages.walletPage.sepayTitle')"
-              class="wallet-sepay-result__qr"
-            >
+            <div class="wallet-sepay-result__header">
+              <Icon name="i-ph-credit-card-duotone" class="h-5 w-5" />
+              <h3>{{ t("pages.walletPage.sepayPaymentInfoTitle") }}</h3>
+            </div>
+
+            <div class="wallet-sepay-result__body">
+              <div class="wallet-sepay-result__qr-panel">
+                <p class="wallet-sepay-result__scan-text">{{ t("pages.walletPage.sepayScanInstruction") }}</p>
+                <img
+                  :src="sepayTopup.qrUrl"
+                  :alt="t('pages.walletPage.sepayTitle')"
+                  class="wallet-sepay-result__qr"
+                >
+                <a
+                  :href="sepayTopup.qrUrl"
+                  class="wallet-sepay-result__download"
+                  download
+                >
+                  <Icon name="i-ph-download-simple-duotone" class="h-4 w-4" />
+                  {{ t("pages.walletPage.sepayDownloadQr") }}
+                </a>
+              </div>
+
             <div class="wallet-sepay-result__details">
-              <p class="wallet-sepay-result__title">{{ t("pages.walletPage.sepayTitle") }}</p>
+                <div class="wallet-sepay-result__bank-logo">
+                  <img :src="mbBankLogoUrl" alt="">
+                </div>
               <dl class="wallet-sepay-result__list">
                 <div>
-                  <dt>{{ t("pages.walletPage.sepayOrderCode") }}</dt>
-                  <dd>{{ sepayTopup.orderCode || "-" }}</dd>
-                </div>
-                <div>
                   <dt>{{ t("pages.walletPage.sepayBank") }}</dt>
-                  <dd>{{ sepayTopup.bankCode || "-" }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t("pages.walletPage.sepayAccountNumber") }}</dt>
-                  <dd>{{ sepayTopup.accountNumber || "-" }}</dd>
+                    <dd>{{ sepayBankName }}</dd>
                 </div>
                 <div>
                   <dt>{{ t("pages.walletPage.sepayAccountName") }}</dt>
-                  <dd>{{ sepayTopup.accountName || "-" }}</dd>
+                    <dd>{{ sepayTopup.accountName || "-" }}</dd>
+                </div>
+                <div>
+                  <dt>{{ t("pages.walletPage.sepayAccountNumber") }}</dt>
+                    <dd>
+                      <span>{{ sepayTopup.accountNumber || "-" }}</span>
+                      <button type="button" class="wallet-sepay-result__copy" @click="copySepayValue(sepayTopup.accountNumber)">
+                        <Icon name="i-ph-copy-duotone" class="h-4 w-4" />
+                      </button>
+                    </dd>
+                </div>
+                <div>
+                    <dt>{{ t("pages.walletPage.sepayOrderCode") }}</dt>
+                    <dd>
+                      <span>{{ sepayTopup.orderCode || "-" }}</span>
+                      <button type="button" class="wallet-sepay-result__copy" @click="copySepayValue(sepayTopup.orderCode)">
+                        <Icon name="i-ph-copy-duotone" class="h-4 w-4" />
+                      </button>
+                    </dd>
                 </div>
                 <div>
                   <dt>{{ t("pages.walletPage.sepayAmount") }}</dt>
-                  <dd>{{ formattedSepayAmount }}</dd>
+                    <dd>
+                      <span>{{ formattedSepayAmount }}</span>
+                      <button type="button" class="wallet-sepay-result__copy" @click="copySepayValue(String(sepayTopup.amount ?? ''))">
+                        <Icon name="i-ph-copy-duotone" class="h-4 w-4" />
+                      </button>
+                    </dd>
                 </div>
               </dl>
-              <p class="wallet-sepay-result__hint">{{ t("pages.walletPage.sepayDescription") }}</p>
+                <p class="wallet-sepay-result__notice">
+                  {{ t("pages.walletPage.sepayTransferNoticePrefix") }}
+                  <strong>{{ sepayTopup.orderCode || "-" }}</strong>
+                  {{ t("pages.walletPage.sepayTransferNoticeMiddle") }}
+                  <strong>{{ formattedSepayAmount }}</strong>
+                  {{ t("pages.walletPage.sepayTransferNoticeSuffix") }}
+                </p>
+              </div>
+            </div>
+
+            <div class="wallet-sepay-result__status">
+              <p>{{ t("pages.walletPage.sepayWaitingTitle") }}</p>
+              <span>{{ t("pages.walletPage.sepayWaitingSubtitle") }}</span>
               <UButton
-                block
                 color="primary"
-                class="rounded-full font-semibold"
+                variant="ghost"
+                class="wallet-sepay-result__check"
                 :loading="toppingUp"
                 icon="i-ph-arrows-clockwise-duotone"
                 @click="checkSepayTopup"
@@ -174,6 +221,9 @@
             :searching="recipientSearching"
             :submitting="sending"
             :balance="overview.balance"
+            :currency="overview.currency"
+            :currency-symbol="overview.currencySymbol"
+            :currency-rule="overview.currencyRule"
             @update:open="value => value ? openSendModal() : closeSendModal()"
             @search="searchRecipients"
             @send="sendMoney"
@@ -232,15 +282,15 @@
 </template>
 
 <script setup lang="ts">
-import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { useWalletPageVM } from "../../application/view-models/useWalletPageVM"
 import WalletHero from "../components/WalletHero.vue"
 import WalletSendForm from "../components/WalletSendForm.vue"
 import WalletTopupForm from "../components/WalletTopupForm.vue"
 import WalletTransactions from "../components/WalletTransactions.vue"
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 const receiveAmount = ref<number | null>(null)
+const mbBankLogoUrl = "https://cdn.vietqr.io/img/MB.png"
 
 const {
   overview,
@@ -253,6 +303,7 @@ const {
   recipientSearching,
   receiveQr,
   sepayTopup,
+  formattedSepayAmount,
   mutationError,
   mutationMessage,
   sending,
@@ -269,14 +320,20 @@ const {
   checkSepayTopup,
 } = useWalletPageVM()
 
-const formattedSepayAmount = computed(() =>
-  formatCurrency(sepayTopup.value?.amount ?? 0, {
-    currency: overview.value.currency,
-    currencySymbol: overview.value.currencySymbol,
-    currencyRule: overview.value.currencyRule,
-    locale: locale.value,
-  }),
-)
+const sepayBankName = computed(() => {
+  const bankCode = sepayTopup.value?.bankCode?.replace(/\s+/g, "").toUpperCase()
+  if (bankCode === "MB" || bankCode === "MBBANK") {
+    return "Ngân hàng TMCP Quân Đội"
+  }
+
+  return sepayTopup.value?.bankCode || "-"
+})
+
+const copySepayValue = async (value?: string | number | null) => {
+  const text = String(value ?? "").trim()
+  if (!text || typeof navigator === "undefined" || !navigator.clipboard) return
+  await navigator.clipboard.writeText(text)
+}
 
 useSeoMeta({
   title: () => t("pages.walletPage.seoTitle"),
@@ -285,6 +342,33 @@ useSeoMeta({
 </script>
 
 <style scoped>
+.wallet-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+.wallet-page-header__title {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.wallet-page-header__icon {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+}
+
 .wallet-action {
   display: flex;
   min-height: 54px;
@@ -382,71 +466,227 @@ useSeoMeta({
 
 .wallet-sepay-result {
   display: grid;
-  gap: 16px;
+  gap: 18px;
   margin-top: 18px;
-  border-radius: 16px;
-  background: #fafbfe;
-  padding: 16px;
+  border: 1px solid #dbeafe;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 18px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+}
+
+.wallet-sepay-result__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #7f1d1d;
+}
+
+.wallet-sepay-result__header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.wallet-sepay-result__body {
+  display: grid;
+  gap: 22px;
+}
+
+.wallet-sepay-result__qr-panel {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.wallet-sepay-result__scan-text {
+  max-width: 220px;
+  margin: 0;
+  text-align: center;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .wallet-sepay-result__qr {
-  width: min(100%, 280px);
-  aspect-ratio: 1;
+  width: min(100%, 240px);
   justify-self: center;
-  border-radius: 14px;
+  border-radius: 8px;
   background: #ffffff;
-  padding: 12px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+  padding: 0;
+  box-shadow: none;
+  display: block;
+}
+
+.wallet-sepay-result__download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  background: #ffffff;
+  padding: 7px 12px;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.wallet-sepay-result__download:hover {
+  border-color: #bfdbfe;
+  color: #1d4ed8;
 }
 
 .wallet-sepay-result__details {
   min-width: 0;
 }
 
-.wallet-sepay-result__title {
-  font-size: 15px;
-  font-weight: 800;
-  color: #0f172a;
+.wallet-sepay-result__bank-logo {
+  margin-bottom: 18px;
+}
+
+.wallet-sepay-result__bank-logo img {
+  display: block;
+  height: 24px;
+  width: auto;
 }
 
 .wallet-sepay-result__list {
   display: grid;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 14px;
+  margin: 0;
 }
 
 .wallet-sepay-result__list div {
   display: grid;
-  gap: 3px;
-  border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 8px;
+  grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
 }
 
 .wallet-sepay-result__list dt {
-  font-size: 12px;
-  font-weight: 700;
-  color: #64748b;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .wallet-sepay-result__list dd {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 0;
   overflow-wrap: anywhere;
-  font-size: 14px;
+  text-align: right;
+  color: #111827;
+  font-size: 13px;
   font-weight: 800;
-  color: #0f172a;
 }
 
-.wallet-sepay-result__hint {
-  margin: 12px 0;
+.wallet-sepay-result__copy {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #6b7280;
+  transition: all 0.15s ease;
+}
+
+.wallet-sepay-result__copy:hover {
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.wallet-sepay-result__notice {
+  margin: 18px 0 0;
+  border-left: 4px solid #facc15;
+  border-radius: 8px;
+  background: #fff8db;
+  padding: 14px 16px;
+  color: #6b4f0d;
   font-size: 13px;
   font-weight: 600;
   line-height: 1.5;
-  color: #334155;
+}
+
+.wallet-sepay-result__notice strong {
+  color: #dc2626;
+}
+
+.wallet-sepay-result__status {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  background: #fbfaff;
+  padding: 20px 16px 14px;
+  text-align: center;
+}
+
+.wallet-sepay-result__status p {
+  margin: 0;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.wallet-sepay-result__status span {
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.wallet-sepay-result__check {
+  margin-top: 8px;
+  border-top: 3px solid #991b1b;
+  border-radius: 0;
+  padding-top: 10px;
 }
 
 @media (min-width: 768px) {
-  .wallet-sepay-result {
-    grid-template-columns: 300px minmax(0, 1fr);
+  .wallet-sepay-result__body {
+    grid-template-columns: 260px minmax(0, 1fr);
     align-items: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .wallet-sepay-result {
+    padding: 14px;
+  }
+
+  .wallet-sepay-result__list div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .wallet-sepay-result__list dd {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}
+
+@media (min-width: 640px) {
+  .wallet-page-header {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .wallet-page-header :deep(.btn-secondary) {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
