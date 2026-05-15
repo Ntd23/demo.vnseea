@@ -1,271 +1,137 @@
 <template>
-  <div class="space-y-8">
-    <!-- Current Address Section -->
-    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div class="border-b border-slate-100 bg-slate-50 px-5 py-4 sm:px-6">
-        <h2 class="text-lg font-bold text-slate-900">
-          {{ hasSavedAddress
-            ? $t("checkout.shippingForm.savedAddressTitle")
-            : $t("checkout.shippingForm.noAddressTitle") }}
-        </h2>
-        <p class="mt-1 text-sm text-slate-500">
-          {{ hasSavedAddress
-            ? $t("checkout.shippingForm.savedAddressDesc")
-            : $t("checkout.shippingForm.noAddressDesc") }}
-        </p>
-      </div>
+  <UForm
+    :state="form"
+    :validate="validateForm"
+    class="sf-card"
+    @submit="saveAddress"
+    @error="handleFormError"
+  >
+    <h2 class="sf-heading">{{ $t("checkout.shippingForm.addAddressTitle", "Thông tin giao hàng") }}</h2>
 
-      <div class="p-5 sm:p-6">
-        <template v-if="latestSavedAddress">
-          <div class="flex items-center gap-3">
-            <span class="inline-flex items-center rounded-md bg-[var(--color-primary-50)] px-2 py-1 text-xs font-semibold text-[var(--color-primary-700)]">
-              {{ $t("checkout.shippingForm.recipient") }}
-            </span>
-            <p class="text-sm font-bold text-slate-900">
-              {{ latestSavedAddress.fullName }}
-            </p>
-            <span class="text-slate-300">•</span>
-            <p class="text-sm text-slate-600">
-              {{ latestSavedAddress.phone }}
-            </p>
-          </div>
+    <UAlert
+      v-if="statusAlert"
+      :color="statusAlert.color"
+      variant="subtle"
+      :icon="statusAlert.icon"
+      :title="statusAlert.title"
+      :description="statusAlert.description"
+      class="sf-alert"
+      aria-live="polite"
+    />
 
-          <p class="mt-3 text-sm text-slate-600 max-w-2xl">
-            {{ addressSummary }}
-          </p>
+    <!-- Họ và tên -->
+    <UFormField name="fullName" class="sf-field">
+      <template #label>
+        <span class="sf-label">{{ $t("checkout.shippingForm.fullName") }} <span class="sf-req">*</span></span>
+      </template>
+      <UInput
+        v-model="form.fullName"
+        autocomplete="name"
+        :placeholder="$t('checkout.shippingForm.fullNamePlaceholder')"
+        :disabled="isBusy"
+        class="w-full"
+        :ui="inputUi"
+      />
+    </UFormField>
 
-          <div class="mt-4 flex flex-wrap gap-2 text-sm text-slate-500">
-            <span class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1">{{ latestSavedAddress.city }}</span>
-            <span class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1">{{ latestSavedAddress.country }}</span>
-            <span class="rounded-md border border-slate-200 bg-slate-50 px-2 py-1">{{ $t("checkout.shippingForm.postalCodePrefix") }} {{ latestSavedAddress.postalCode }}</span>
-          </div>
+    <!-- Số điện thoại -->
+    <UFormField name="phone" class="sf-field">
+      <template #label>
+        <span class="sf-label">{{ $t("checkout.shippingForm.phone") }} <span class="sf-req">*</span></span>
+      </template>
+      <UInput
+        v-model="form.phone"
+        autocomplete="tel"
+        type="tel"
+        :placeholder="$t('checkout.shippingForm.phonePlaceholder')"
+        :disabled="isBusy"
+        class="w-full"
+        :ui="inputUi"
+      />
+    </UFormField>
+
+    <!-- Quốc gia -->
+    <UFormField name="country" class="sf-field">
+      <template #label>
+        <span class="sf-label">{{ $t("checkout.shippingForm.country") }} <span class="sf-req">*</span></span>
+      </template>
+      <UInput
+        v-model="form.country"
+        autocomplete="country-name"
+        :placeholder="$t('checkout.shippingForm.country')"
+        :disabled="isBusy"
+        class="w-full"
+        :ui="inputUi"
+      />
+    </UFormField>
+
+    <!-- Tỉnh/Thành phố + Mã bưu chính -->
+    <div class="sf-row">
+      <UFormField name="city" class="sf-field sf-field--half">
+        <template #label>
+          <span class="sf-label">{{ $t("checkout.shippingForm.city") }}</span>
         </template>
-        <p v-else class="text-sm text-slate-600">
-          {{ $t("checkout.shippingForm.addAddressHint") }}
-        </p>
-      </div>
-    </section>
-
-    <!-- Form Section -->
-    <UForm
-      :state="form"
-      :validate="validateForm"
-      class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden"
-      @submit="saveAddress"
-      @error="handleFormError"
-    >
-      <div class="border-b border-slate-100 bg-white px-5 py-5 sm:px-6 flex items-center justify-between">
-        <div>
-          <h2 class="text-lg font-bold text-slate-900">
-            {{ $t("checkout.shippingForm.addAddressTitle") }}
-          </h2>
-          <p class="mt-1 text-sm text-slate-500">
-            {{ $t("checkout.shippingForm.formDesc") }}
-          </p>
-        </div>
-        <div class="hidden sm:flex items-center gap-2 text-sm font-medium text-slate-500">
-          <Icon name="i-ph-check-circle-fill" class="h-4 w-4 text-green-500" />
-          {{ $t("checkout.shippingForm.fieldsCount", { filled: filledFieldsCount, total: totalFieldCount }) }}
-        </div>
-      </div>
-
-      <div class="p-5 sm:p-6 space-y-8">
-        <UAlert
-          v-if="statusAlert"
-          :color="statusAlert.color"
-          variant="subtle"
-          :icon="statusAlert.icon"
-          :title="statusAlert.title"
-          :description="statusAlert.description"
-          class="rounded-xl"
-          aria-live="polite"
+        <UInput
+          v-model="form.city"
+          autocomplete="address-level2"
+          :placeholder="$t('checkout.shippingForm.city')"
+          :disabled="isBusy"
+          class="w-full"
+          :ui="inputUi"
         />
+      </UFormField>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <!-- Fields -->
-          <div class="lg:col-span-8 space-y-6">
-            <!-- Recipient -->
-            <fieldset class="space-y-4">
-              <legend class="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-100 w-full pb-2">
-                {{ $t("checkout.shippingForm.recipientInfo") }}
-              </legend>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <UFormField
-                  name="fullName"
-                  :label="$t('checkout.shippingForm.fullName')"
-                  required
-                >
-                  <UInput
-                    v-model="form.fullName"
-                    autocomplete="name"
-                    size="lg"
-                    :placeholder="$t('checkout.shippingForm.fullNamePlaceholder')"
-                    :disabled="isBusy"
-                    class="w-full"
-                    :ui="inputUi"
-                  />
-                </UFormField>
+      <UFormField name="postalCode" class="sf-field sf-field--half">
+        <template #label>
+          <span class="sf-label">{{ $t("checkout.shippingForm.postalCode") }}</span>
+        </template>
+        <UInput
+          v-model="form.postalCode"
+          autocomplete="postal-code"
+          :placeholder="$t('checkout.shippingForm.postalCode')"
+          :disabled="isBusy"
+          class="w-full"
+          :ui="inputUi"
+        />
+      </UFormField>
+    </div>
 
-                <UFormField
-                  name="phone"
-                  :label="$t('checkout.shippingForm.phone')"
-                  required
-                >
-                  <UInput
-                    v-model="form.phone"
-                    autocomplete="tel"
-                    size="lg"
-                    type="tel"
-                    :placeholder="$t('checkout.shippingForm.phonePlaceholder')"
-                    :disabled="isBusy"
-                    class="w-full"
-                    :ui="inputUi"
-                  />
-                </UFormField>
-              </div>
-            </fieldset>
+    <!-- Địa chỉ chi tiết -->
+    <UFormField name="streetAddress" class="sf-field">
+      <template #label>
+        <span class="sf-label">{{ $t("checkout.shippingForm.streetAddress", "Địa chỉ chi tiết") }} <span class="sf-req">*</span></span>
+      </template>
+      <UInput
+        v-model="form.streetAddress"
+        autocomplete="street-address"
+        :placeholder="$t('checkout.shippingForm.streetAddressPlaceholder')"
+        :disabled="isBusy"
+        class="w-full"
+        :ui="inputUi"
+      />
+    </UFormField>
 
-            <!-- Region -->
-            <fieldset class="space-y-4">
-              <legend class="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-100 w-full pb-2">
-                {{ $t("checkout.shippingForm.region") }}
-              </legend>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <UFormField
-                  name="country"
-                  :label="$t('checkout.shippingForm.country')"
-                  required
-                >
-                  <UInput
-                    v-model="form.country"
-                    autocomplete="country-name"
-                    size="lg"
-                    :placeholder="$t('checkout.shippingForm.country')"
-                    :disabled="isBusy"
-                    class="w-full"
-                    :ui="inputUi"
-                  />
-                </UFormField>
+    <!-- Checkbox điều khoản -->
+    <label class="sf-terms">
+      <UCheckbox v-model="agreedTerms" :disabled="isBusy" />
+      <span>{{ $t("checkout.shippingForm.agreeTermsPrefix", "Tôi đã đọc và đồng ý với") }}
+        <a href="#" class="sf-terms-link" @click.prevent>{{ $t("checkout.shippingForm.termsAndConditions", "Điều khoản và Điều kiện") }}</a>.
+      </span>
+    </label>
 
-                <UFormField
-                  name="city"
-                  :label="$t('checkout.shippingForm.city')"
-                  required
-                >
-                  <UInput
-                    v-model="form.city"
-                    autocomplete="address-level2"
-                    size="lg"
-                    :placeholder="$t('checkout.shippingForm.city')"
-                    :disabled="isBusy"
-                    class="w-full"
-                    :ui="inputUi"
-                  />
-                </UFormField>
-
-                <UFormField
-                  name="postalCode"
-                  :label="$t('checkout.shippingForm.postalCode')"
-                  required
-                  class="sm:col-span-2"
-                >
-                  <UInput
-                    v-model="form.postalCode"
-                    autocomplete="postal-code"
-                    size="lg"
-                    :placeholder="$t('checkout.shippingForm.postalCode')"
-                    :disabled="isBusy"
-                    class="w-full"
-                    :ui="inputUi"
-                  />
-                </UFormField>
-              </div>
-            </fieldset>
-
-            <!-- Detailed Address -->
-            <fieldset class="space-y-4">
-              <legend class="text-sm font-semibold text-slate-900 mb-2 border-b border-slate-100 w-full pb-2">
-                {{ $t("checkout.shippingForm.pointDetail") }}
-              </legend>
-              <UFormField
-                name="streetAddress"
-                :label="$t('checkout.shippingForm.streetAddress')"
-                required
-              >
-                <UTextarea
-                  v-model="form.streetAddress"
-                  autocomplete="street-address"
-                  size="lg"
-                  autoresize
-                  :rows="3"
-                  :placeholder="$t('checkout.shippingForm.streetAddressPlaceholder')"
-                  :disabled="isBusy"
-                  class="w-full"
-                  :ui="textareaUi"
-                />
-              </UFormField>
-            </fieldset>
-          </div>
-
-          <!-- Preview & Actions -->
-          <div class="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-slate-100 pt-6 lg:pt-0 lg:pl-8 flex flex-col justify-between">
-            <div>
-              <p class="text-sm font-semibold text-slate-900 mb-3">
-                {{ $t("checkout.shippingForm.quickPreview") }}
-              </p>
-              <div class="rounded-xl bg-slate-50 p-4 border border-slate-100 text-sm space-y-2">
-                <p class="font-bold text-slate-900">{{ previewRecipient }}</p>
-                <p class="text-slate-600 leading-relaxed">{{ previewAddress }}</p>
-              </div>
-            </div>
-
-            <div class="mt-8 space-y-3">
-              <UButton
-                type="submit"
-                loading-auto
-                loading-icon="i-lucide-loader-2"
-                color="primary"
-                variant="solid"
-                block
-                size="lg"
-                :disabled="isSubmitDisabled"
-                class="rounded-xl h-12 text-sm font-bold shadow-sm"
-              >
-                {{ submitLabel }}
-              </UButton>
-
-              <UButton
-                type="button"
-                color="neutral"
-                variant="outline"
-                block
-                size="lg"
-                :disabled="isBusy"
-                class="rounded-xl h-12 text-sm font-medium"
-                @click="resetForm"
-              >
-                {{ $t("checkout.shippingForm.resetChanges") }}
-              </UButton>
-
-              <UButton
-                v-if="canRestoreSavedAddress"
-                type="button"
-                color="neutral"
-                variant="ghost"
-                block
-                size="md"
-                :disabled="isBusy"
-                class="text-sm font-medium"
-                @click="restoreSavedAddress"
-              >
-                {{ $t("checkout.shippingForm.restoreSavedAddress") }}
-              </UButton>
-            </div>
-          </div>
-        </div>
-      </div>
-    </UForm>
-  </div>
+    <!-- Xác nhận -->
+    <UButton
+      type="submit"
+      color="primary"
+      variant="outline"
+      block
+      :loading="isBusy"
+      :disabled="isSubmitDisabled"
+      class="sf-submit"
+    >
+      {{ submitLabel }}
+    </UButton>
+  </UForm>
 </template>
 
 <script setup lang="ts">
@@ -295,11 +161,7 @@ const toast = useToast()
 const totalFieldCount = 6
 
 const inputUi = {
-  base: "h-[3.65rem] rounded-[18px] px-4 text-[15px]",
-}
-
-const textareaUi = {
-  base: "min-h-[120px] rounded-[18px] px-4 py-3 text-[15px] leading-7",
+  base: "h-[52px] rounded-lg px-4 text-[15px]",
 }
 
 const createEmptyForm = (): ShippingAddressForm => ({
@@ -344,6 +206,7 @@ const latestSavedAddress = ref<SavedShippingAddress | null>(null)
 const submitState = ref<ShippingFormStatus>("idle")
 const draftRestored = ref(false)
 const storageHydrated = ref(false)
+const agreedTerms = ref(false)
 
 const draftStorage = useStorage<ShippingAddressForm>(
   "checkout:shipping-address-draft",
@@ -359,49 +222,9 @@ const filledFieldsCount = computed(() =>
   Object.values(form).filter(value => value.trim().length > 0).length,
 )
 
-const remainingFieldsCount = computed(() => totalFieldCount - filledFieldsCount.value)
-const completionPercent = computed(() => (filledFieldsCount.value / totalFieldCount) * 100)
 const hasCompleteForm = computed(() => filledFieldsCount.value === totalFieldCount)
 const isBusy = computed(() => submitState.value === "loading")
-const isSubmitDisabled = computed(() => isBusy.value || !hasCompleteForm.value)
-const hasSavedAddress = computed(() => Boolean(latestSavedAddress.value))
-
-const canRestoreSavedAddress = computed(() =>
-  Boolean(latestSavedAddress.value) && !isSameAddress(form, latestSavedAddress.value),
-)
-
-const addressSummary = computed(() => {
-  if (!latestSavedAddress.value) {
-    return ""
-  }
-
-  return [
-    latestSavedAddress.value.streetAddress,
-    latestSavedAddress.value.city,
-    latestSavedAddress.value.country,
-  ].filter(Boolean).join(", ")
-})
-
-const previewRecipient = computed(() => {
-  const fullName = form.fullName.trim() || t("checkout.shippingForm.noRecipientPreview")
-  const phone = form.phone.trim()
-
-  return phone ? `${fullName} · ${phone}` : fullName
-})
-
-const previewAddress = computed(() => {
-  const parts = [
-    form.streetAddress.trim() || t("checkout.shippingForm.streetAddress"),
-    form.city.trim() || t("checkout.shippingForm.city"),
-    form.country.trim() || t("checkout.shippingForm.country"),
-  ]
-
-  const postalCode = form.postalCode.trim()
-
-  return postalCode
-    ? `${parts.join(", ")} · ${t("checkout.shippingForm.postalCodePrefix")} ${postalCode}`
-    : parts.join(", ")
-})
+const isSubmitDisabled = computed(() => isBusy.value || !hasCompleteForm.value || !agreedTerms.value)
 
 const submitLabel = computed(() =>
   submitState.value === "loading"
@@ -410,15 +233,6 @@ const submitLabel = computed(() =>
 )
 
 const statusAlert = computed(() => {
-  if (submitState.value === "loading") {
-    return {
-      color: "primary" as const,
-      icon: "i-ph-spinner-gap-bold",
-      title: t("checkout.shippingForm.statusSavingTitle"),
-      description: t("checkout.shippingForm.statusSavingDescription"),
-    }
-  }
-
   if (submitState.value === "success") {
     return {
       color: "success" as const,
@@ -434,15 +248,6 @@ const statusAlert = computed(() => {
       icon: "i-ph-warning-circle-fill",
       title: t("checkout.shippingForm.statusErrorTitle"),
       description: t("checkout.shippingForm.statusErrorDescription"),
-    }
-  }
-
-  if (draftRestored.value) {
-    return {
-      color: "primary" as const,
-      icon: "i-ph-clock-counter-clockwise-fill",
-      title: t("checkout.shippingForm.draftRestoredTitle"),
-      description: t("checkout.shippingForm.draftRestoredDescription"),
     }
   }
 
@@ -586,28 +391,82 @@ async function saveAddress() {
 function handleFormError() {
   submitState.value = "error"
 }
-
-function resetForm() {
-  if (isBusy.value) {
-    return
-  }
-
-  const nextValue = latestSavedAddress.value ? { ...latestSavedAddress.value } : createEmptyForm()
-
-  Object.assign(form, nextValue)
-  draftStorage.value = nextValue
-  draftRestored.value = false
-  submitState.value = "idle"
-}
-
-function restoreSavedAddress() {
-  if (!latestSavedAddress.value || isBusy.value) {
-    return
-  }
-
-  Object.assign(form, { ...latestSavedAddress.value })
-  draftStorage.value = { ...latestSavedAddress.value }
-  draftRestored.value = false
-  submitState.value = "idle"
-}
 </script>
+
+<style scoped>
+.sf-card {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 540px;
+}
+
+.sf-heading {
+  margin: 0 0 28px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.sf-alert {
+  margin-bottom: 20px;
+  border-radius: 10px;
+}
+
+.sf-field {
+  margin-bottom: 22px;
+}
+
+.sf-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.sf-req {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.sf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.sf-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 28px 0 24px;
+  font-size: 14px;
+  color: #374151;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.sf-terms-link {
+  color: #4361ee;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sf-terms-link:hover {
+  text-decoration: underline;
+}
+
+.sf-submit {
+  height: 46px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+@media (max-width: 540px) {
+  .sf-row {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
