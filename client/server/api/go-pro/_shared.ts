@@ -63,6 +63,8 @@ const mapPackage = (
     currency,
     currencySymbol,
     color: asString(item.color) || "#0000ff",
+    image: asString(item.image),
+    nightImage: asString(item.night_image),
     features,
     isCurrent: id === currentType,
   }

@@ -24,6 +24,10 @@ function normalizeTab(value: string): MessageTabKey {
   return value === "multi" || value === "group" ? value : "user"
 }
 
+function buildUserContactId(userId: number) {
+  return `user:${userId}`
+}
+
 function decorateThreadMessages(messages: MessageItem[]) {
   return messages.map((message, index, list) => {
     const nextMessage = list[index + 1]
@@ -101,15 +105,52 @@ export function useMessagesInbox(
     },
   )
 
+  const requestedUserId = computed(() => {
+    const parsed = Number(readQueryValue(route.query.userId))
+
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0
+  })
+
+  const requestedUserName = computed(() =>
+    readQueryValue(route.query.name).trim() || t("pages.messagesPage.users"),
+  )
+
+  const inboxContacts = computed<MessageContact[]>(() => {
+    const contacts = inbox.value ?? []
+    const userId = requestedUserId.value
+
+    if (userId <= 0 || contacts.some(contact => contact.type === "user" && contact.userId === userId)) {
+      return contacts
+    }
+
+    return [
+      {
+        id: buildUserContactId(userId),
+        name: requestedUserName.value,
+        status: t("pages.messagesPage.activeRecently"),
+        isOnline: false,
+        avatarUrl: "",
+        tab: "user",
+        type: "user",
+        preview: "",
+        time: "",
+        unreadCount: 0,
+        members: [requestedUserName.value],
+        userId,
+      },
+      ...contacts,
+    ]
+  })
+
   const multiRecipientSource = computed(() =>
-    (inbox.value ?? [])
+    inboxContacts.value
       .filter(contact => contact.type === "user" && (contact.userId ?? 0) > 0),
   )
 
   const visibleContacts = computed(() => {
     const source = activeTab.value === "multi"
       ? multiRecipientSource.value
-      : inbox.value ?? []
+      : inboxContacts.value
 
     if (activeTab.value === "multi") {
       return source
@@ -212,10 +253,19 @@ export function useMessagesInbox(
     router.replace({ query: nextQuery })
   })
 
-  watch(filteredContacts, (nextContacts) => {
+  watch([filteredContacts, requestedUserId], ([nextContacts, userId]) => {
     if (activeTab.value === "multi") {
       selectedContactId.value = ""
       return
+    }
+
+    if (userId > 0) {
+      const requestedContact = nextContacts.find(contact => contact.type === "user" && contact.userId === userId)
+
+      if (requestedContact) {
+        selectedContactId.value = requestedContact.id
+        return
+      }
     }
 
     if (!nextContacts.some(contact => contact.id === selectedContactId.value)) {

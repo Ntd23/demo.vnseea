@@ -199,6 +199,7 @@
 
 <script setup lang="ts">
 import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { ProductListing } from "../../domain/types/product-marketplace.types"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 
@@ -317,23 +318,30 @@ const openImage = () => {
 }
 
 const openSellerChat = () => {
-  if (!product.value?.sellerId || !import.meta.client) return
+  if (!product.value?.sellerId) return
 
-  const chatFn = (window as unknown as {
-    Wo_OpenChatTab?: (sellerId: number, tabId: number, productId: string) => void
-  }).Wo_OpenChatTab
+  void navigateTo({
+    path: appRoutes.messages,
+    query: {
+      userId: String(product.value.sellerId),
+      name: product.value.seller || "",
+      productId: product.value.id,
+    },
+  })
+}
 
-  if (typeof chatFn === "function") {
-    chatFn(product.value.sellerId, 0, product.value.id)
-    return
+const getErrorMessage = (error: unknown) => {
+  const fetchError = error as {
+    data?: { statusMessage?: string; message?: string }
+    statusMessage?: string
+    message?: string
   }
 
-  toast.add({
-    title: "Chưa mở được chat",
-    description: "Khung chat Wowonder chưa sẵn sàng trong Nuxt.",
-    color: "warning",
-    icon: "i-ph-warning-circle",
-  })
+  return fetchError.data?.statusMessage
+    || fetchError.data?.message
+    || fetchError.statusMessage
+    || fetchError.message
+    || ""
 }
 
 const addProductToCart = async () => {
@@ -348,11 +356,19 @@ const addProductToCart = async () => {
       color: "success",
       icon: "i-ph-check-circle",
     })
+    await navigateTo(appRoutes.checkout)
   }
   catch (cartError) {
+    const message = getErrorMessage(cartError)
+
+    if (/already\s+in\s+cart/i.test(message)) {
+      await navigateTo(appRoutes.checkout)
+      return
+    }
+
     toast.add({
       title: "Không thêm được vào giỏ hàng",
-      description: cartError instanceof Error ? cartError.message : String(cartError),
+      description: message || String(cartError),
       color: "error",
       icon: "i-ph-warning-circle",
     })

@@ -48,6 +48,8 @@ export type GoProPackage = {
   currency: string
   currencySymbol: string
   color: string
+  image: string
+  nightImage: string
   features: Record<string, GoProFeatureValue>
   isCurrent: boolean
 }
