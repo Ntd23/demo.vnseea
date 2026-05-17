@@ -8050,6 +8050,7 @@ function GetFundingByUserId($user_id, $limit = 6, $offset = 0)
 				$percent       = ($new_data->raised * 100) / $new_data->amount;
 				$new_data->bar = $percent;
 			}
+			$new_data->all_donation = $db->where('funding_id', $new_data->id)->getValue(T_FUNDING_RAISE, "COUNT(*)");
 			$new_data->user_data = Wo_UserData($fund->user_id);
 			$new_data->is_donate = $db->where('funding_id', $fund->id)->where('user_id', $wo['user']['id'])->getValue(T_FUNDING_RAISE, "COUNT(*)");
 			$new_data            = (array) $new_data;
@@ -8116,6 +8117,7 @@ function GetFunding($limit = 6, $offset = 0)
 				$percent       = ($new_data->raised * 100) / $new_data->amount;
 				$new_data->bar = $percent;
 			}
+			$new_data->all_donation = $db->where('funding_id', $new_data->id)->getValue(T_FUNDING_RAISE, "COUNT(*)");
 			$new_data->user_data = Wo_UserData($fund->user_id);
 			$new_data->is_donate = $db->where('funding_id', $fund->id)->where('user_id', $wo['user']['id'])->getValue(T_FUNDING_RAISE, "COUNT(*)");
 			$new_data            = (array) $new_data;
@@ -8135,7 +8137,8 @@ function GetRecentRaise($id, $limit = 6, $offset = 0)
 	if (!empty($offset) && $offset > 0) {
 		$db->where('id', $offset, '<');
 	}
-	$funding = $db->where('funding_id', $id)->orderBy('id', 'DESC')->get(T_FUNDING_RAISE, $limit);
+	$query = $db->where('funding_id', $id)->orderBy('id', 'DESC');
+	$funding = !empty($limit) ? $query->get(T_FUNDING_RAISE, $limit) : $query->get(T_FUNDING_RAISE);
 	if (!empty($funding)) {
 		foreach ($funding as $key => $fund) {
 			$new_data            = $fund;

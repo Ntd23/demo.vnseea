@@ -1,64 +1,172 @@
-<!-- English description: Backend-backed funding detail page for the show_fund route. -->
+<!-- English description: Backend-backed funding detail page for the show_fund route with donation sidebar. -->
 <template>
-  <main class="mx-auto w-full max-w-5xl space-y-5 px-3 py-4 sm:px-5">
-    <USkeleton v-if="pending" class="h-[520px] rounded-[var(--radius-xl)]" />
+  <main class="fund-detail">
+    <USkeleton v-if="pending" class="fund-detail__skeleton" />
 
     <UAlert v-else-if="error" color="error" variant="soft" :title="String(error.message || error)" />
 
-    <article v-else-if="campaign" class="surface-card overflow-hidden">
-      <NuxtImg
-        v-if="campaign.imageUrl"
-        :src="campaign.imageUrl"
-        :alt="campaign.title"
-        width="1100"
-        height="520"
-        class="h-auto max-h-[520px] w-full object-cover"
-      />
-
-      <div class="space-y-5 p-4 sm:p-6">
-        <div class="flex items-start gap-3">
-          <NuxtImg
-            v-if="campaign.ownerAvatarUrl"
-            :src="campaign.ownerAvatarUrl"
-            :alt="campaign.ownerName"
-            width="48"
-            height="48"
-            class="h-12 w-12 rounded-full object-cover"
-          />
-          <div class="min-w-0">
-            <h1 class="text-heading">{{ campaign.title }}</h1>
-            <p class="text-caption-secondary mt-1">{{ campaign.ownerName }}</p>
-          </div>
+    <template v-else-if="campaign">
+      <section class="fund-detail__hero">
+        <NuxtImg
+          v-if="campaign.imageUrl"
+          :src="campaign.imageUrl"
+          :alt="campaign.title"
+          width="1120"
+          height="560"
+          class="fund-detail__image"
+        />
+        <div v-else class="fund-detail__image fund-detail__image--empty">
+          <Icon name="i-ph-image-square-duotone" class="h-10 w-10" />
         </div>
 
-        <p class="text-body-primary whitespace-pre-line">{{ campaign.description }}</p>
+        <div class="fund-detail__hero-body">
+          <NuxtLink to="/funding" class="fund-detail__back">
+            <Icon name="i-ph-arrow-left-bold" class="h-4 w-4" />
+            {{ t("pages.createFundingPage.backToFunding") }}
+          </NuxtLink>
 
-        <div>
-          <div class="mb-2 flex justify-between text-caption-secondary">
-            <span>{{ formatMoney(campaign.raised) }}</span>
-            <span>{{ formatMoney(campaign.amount) }}</span>
+          <div class="fund-detail__owner">
+            <NuxtImg
+              v-if="campaign.ownerAvatarUrl"
+              :src="campaign.ownerAvatarUrl"
+              :alt="campaign.ownerName"
+              width="48"
+              height="48"
+              class="fund-detail__avatar"
+            />
+            <span v-else class="fund-detail__avatar fund-detail__avatar--empty">
+              {{ ownerInitials(campaign.ownerName) }}
+            </span>
+            <div>
+              <h1>{{ campaign.title }}</h1>
+              <p>{{ campaign.ownerName || "-" }}</p>
+            </div>
           </div>
-          <UProgress :model-value="campaign.progress" color="primary" />
+        </div>
+      </section>
+
+      <div class="fund-detail__layout">
+        <div class="fund-detail__main">
+          <article class="fund-detail__story">
+            <div class="fund-detail__section-title">
+              <Icon name="i-ph-note-pencil-duotone" class="h-5 w-5" />
+              <h2>{{ t("pages.createFundingPage.storyTitle") }}</h2>
+            </div>
+            <p>{{ campaign.description }}</p>
+          </article>
+
+          <section class="fund-detail__donors">
+            <div class="fund-detail__section-title">
+              <Icon name="i-ph-users-three-duotone" class="h-5 w-5" />
+              <h2>{{ t("pages.fundingPage.donorsTitle") }}</h2>
+            </div>
+
+            <div class="fund-detail__donor-tools">
+              <UInput
+                v-model="donorSearch"
+                icon="i-ph-magnifying-glass-duotone"
+                :placeholder="t('pages.fundingPage.donorSearchPlaceholder')"
+                class="fund-detail__donor-search"
+              />
+              <label class="fund-detail__donor-sort">
+                <span>{{ t("pages.fundingPage.donorSortLabel") }}</span>
+                <select v-model="donorSort">
+                  <option value="newest">{{ t("pages.fundingPage.donorSortNewest") }}</option>
+                  <option value="amount_asc">{{ t("pages.fundingPage.donorSortAmountAsc") }}</option>
+                  <option value="amount_desc">{{ t("pages.fundingPage.donorSortAmountDesc") }}</option>
+                </select>
+              </label>
+            </div>
+
+            <div v-if="filteredDonations.length" class="fund-detail__donor-list">
+              <article
+                v-for="donation in filteredDonations"
+                :key="donation.id"
+                class="fund-detail__donor-item"
+              >
+                <NuxtImg
+                  v-if="donation.supporterAvatarUrl"
+                  :src="donation.supporterAvatarUrl"
+                  :alt="donation.supporterName"
+                  width="42"
+                  height="42"
+                  class="fund-detail__donor-avatar"
+                  loading="lazy"
+                />
+                <span v-else class="fund-detail__donor-avatar fund-detail__donor-avatar--empty">
+                  {{ ownerInitials(donation.supporterName) }}
+                </span>
+                <div>
+                  <strong>{{ donation.supporterName || "-" }}</strong>
+                  <span>{{ formatDonationDate(donation.donatedAt) }}</span>
+                </div>
+                <b>{{ formatMoney(donation.amount) }}</b>
+              </article>
+            </div>
+
+            <div v-else class="fund-detail__donor-empty">
+              <Icon name="i-ph-hand-heart-duotone" class="h-8 w-8" />
+              <p>{{ t("pages.fundingPage.donorsEmpty") }}</p>
+            </div>
+          </section>
         </div>
 
-        <UButton color="primary" class="rounded-[var(--radius-full)]" @click="openDonate">
-          {{ t("pages.fundingPage.donate") }}
-        </UButton>
+        <aside class="fund-detail__sidebar">
+          <section class="fund-detail__panel">
+            <div class="fund-detail__amount-row">
+              <div>
+                <span>{{ t("pages.fundingPage.statRaised") }}</span>
+                <strong>{{ formatMoney(campaign.raised) }}</strong>
+              </div>
+              <div>
+                <span>{{ t("pages.createFundingPage.goalLabel") }}</span>
+                <strong>{{ formatMoney(campaign.amount) }}</strong>
+              </div>
+              <div>
+                <span>{{ t("pages.fundingPage.donorsLabel") }}</span>
+                <strong>{{ campaign.donorCount }}</strong>
+              </div>
+            </div>
+
+            <div class="fund-detail__progress">
+              <div>
+                <span>{{ campaign.progress }}%</span>
+              </div>
+              <div class="fund-progress" aria-hidden="true">
+                <span :style="{ width: `${Math.min(Math.max(campaign.progress, 0), 100)}%` }"></span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="fund-detail__donate"
+              :class="{ 'fund-detail__donate--disabled': !campaign.canDonate }"
+              :disabled="!campaign.canDonate"
+              @click="openDonate"
+            >
+              <Icon name="i-ph-hand-heart-duotone" class="h-4 w-4" />
+              {{ campaign.canDonate ? t("pages.fundingPage.donate") : t("pages.fundingPage.ownerCannotDonate") }}
+            </button>
+          </section>
+        </aside>
       </div>
-    </article>
+    </template>
 
     <UModal v-model:open="donationOpen" :title="campaign?.title || t('pages.fundingPage.donateTitle')">
       <template #body>
-        <UInput
-          v-model.number="donationAmount"
-          type="number"
-          min="1"
-          :placeholder="t('pages.fundingPage.amountPlaceholder')"
-          class="w-full"
-        />
+        <div class="fund-detail__modal-body">
+          <p>{{ t("pages.fundingPage.donateModalDescription", { title: campaign?.title || "-" }) }}</p>
+          <UInput
+            v-model.number="donationAmount"
+            type="number"
+            min="1"
+            :placeholder="t('pages.fundingPage.amountPlaceholder')"
+            class="w-full"
+          />
+        </div>
       </template>
       <template #footer>
-        <div class="flex w-full justify-end gap-2">
+        <div class="fund-detail__modal-actions">
           <UButton color="neutral" variant="soft" @click="donationOpen = false">
             {{ t("pages.fundingPage.close") }}
           </UButton>
@@ -83,6 +191,8 @@ const repository = new ApiFundingRepository()
 const donationOpen = ref(false)
 const donationAmount = ref<number | null>(null)
 const donating = ref(false)
+const donorSearch = ref("")
+const donorSort = ref<"newest" | "amount_asc" | "amount_desc">("newest")
 
 const { data, pending, error, refresh } = useAsyncData(
   () => `funding-detail:${route.params.id}`,
@@ -96,6 +206,24 @@ const { data, pending, error, refresh } = useAsyncData(
 
 const campaign = computed(() => data.value?.campaign ?? null)
 
+const filteredDonations = computed(() => {
+  const keyword = donorSearch.value.trim().toLowerCase()
+  const donations = [...(campaign.value?.donations ?? [])]
+    .filter(donation => !keyword || donation.supporterName.toLowerCase().includes(keyword))
+
+  if (donorSort.value === "amount_asc") {
+    return donations.sort((left, right) => left.amount - right.amount)
+  }
+
+  if (donorSort.value === "amount_desc") {
+    return donations.sort((left, right) => right.amount - left.amount)
+  }
+
+  return donations.sort((left, right) =>
+    new Date(right.donatedAt).getTime() - new Date(left.donatedAt).getTime(),
+  )
+})
+
 const formatMoney = (amount: number) =>
   formatCurrency(amount, {
     currency: data.value?.currency,
@@ -103,13 +231,30 @@ const formatMoney = (amount: number) =>
     locale: locale.value,
   })
 
+const ownerInitials = (name: string) =>
+  name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase())
+    .join("") || "VN"
+
+const formatDonationDate = (value: string) => {
+  if (!value) return "-"
+  return new Intl.DateTimeFormat(locale.value, {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(value))
+}
+
 const openDonate = () => {
+  if (!campaign.value?.canDonate) return
   donationOpen.value = true
   donationAmount.value = null
 }
 
 const submitDonation = async () => {
-  if (!campaign.value || !donationAmount.value) return
+  if (!campaign.value || !campaign.value.canDonate || !donationAmount.value) return
   donating.value = true
 
   try {
@@ -131,3 +276,380 @@ const submitDonation = async () => {
   }
 }
 </script>
+
+<style scoped>
+.fund-detail {
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: 18px 12px 42px;
+}
+
+.fund-detail__skeleton {
+  height: 560px;
+  border-radius: 16px;
+}
+
+.fund-detail__hero,
+.fund-detail__story,
+.fund-detail__donors,
+.fund-detail__panel {
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 255, 0.06);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+.fund-detail__hero {
+  display: grid;
+}
+
+.fund-detail__image {
+  width: 100%;
+  max-height: 460px;
+  object-fit: cover;
+  background: #eef2ff;
+}
+
+.fund-detail__image--empty {
+  display: flex;
+  min-height: 280px;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
+.fund-detail__hero-body {
+  display: grid;
+  gap: 18px;
+  padding: 16px;
+}
+
+.fund-detail__back {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 9px 14px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.fund-detail__owner {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.fund-detail__avatar {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  object-fit: cover;
+}
+
+.fund-detail__avatar--empty {
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.fund-detail__owner h1 {
+  color: #0f172a;
+  font-size: 25px;
+  font-weight: 900;
+  line-height: 1.16;
+}
+
+.fund-detail__owner p,
+.fund-detail__amount-row span,
+.fund-detail__progress span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.fund-detail__layout {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.fund-detail__main {
+  display: grid;
+  gap: 14px;
+}
+
+.fund-detail__story {
+  padding: 18px;
+}
+
+.fund-detail__donors {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.fund-detail__section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0000ff;
+}
+
+.fund-detail__section-title h2 {
+  color: #0f172a;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.fund-detail__story p {
+  margin-top: 14px;
+  white-space: pre-line;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.75;
+}
+
+.fund-detail__donor-tools {
+  display: grid;
+  gap: 10px;
+}
+
+.fund-detail__donor-search {
+  width: 100%;
+}
+
+.fund-detail__donor-sort {
+  display: grid;
+  gap: 6px;
+}
+
+.fund-detail__donor-sort span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.fund-detail__donor-sort select {
+  min-height: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 8px 12px;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.fund-detail__donor-list {
+  display: grid;
+  gap: 10px;
+}
+
+.fund-detail__donor-item {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  background: #f8fafc;
+  padding: 10px;
+}
+
+.fund-detail__donor-avatar {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  object-fit: cover;
+}
+
+.fund-detail__donor-avatar--empty {
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.fund-detail__donor-item div {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.fund-detail__donor-item strong {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fund-detail__donor-item span {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fund-detail__donor-item b {
+  grid-column: 1 / -1;
+  color: #0000ff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.fund-detail__donor-empty {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  border-radius: 14px;
+  background: #f8fafc;
+  padding: 22px;
+  color: #64748b;
+  text-align: center;
+}
+
+.fund-detail__donor-empty p {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fund-detail__sidebar {
+  display: grid;
+  align-content: start;
+}
+
+.fund-detail__panel {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.fund-detail__amount-row {
+  display: grid;
+  gap: 12px;
+}
+
+.fund-detail__amount-row div {
+  display: grid;
+  gap: 5px;
+}
+
+.fund-detail__amount-row strong {
+  color: #0f172a;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.fund-detail__progress {
+  display: grid;
+  gap: 8px;
+}
+
+.fund-detail__progress div:first-child {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fund-progress {
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.fund-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #0000ff;
+}
+
+.fund-detail__donate {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #0000ff;
+  border-radius: 999px;
+  background: #0000ff;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.fund-detail__donate--disabled,
+.fund-detail__donate--disabled:hover {
+  cursor: not-allowed;
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.fund-detail__modal-body {
+  display: grid;
+  gap: 14px;
+}
+
+.fund-detail__modal-body p {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.fund-detail__modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (min-width: 860px) {
+  .fund-detail {
+    padding: 22px 20px 48px;
+  }
+
+  .fund-detail__layout {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+
+  .fund-detail__donor-tools {
+    grid-template-columns: minmax(0, 1fr) 210px;
+    align-items: end;
+  }
+
+  .fund-detail__donor-item {
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+  }
+
+  .fund-detail__donor-item b {
+    grid-column: auto;
+  }
+
+  .fund-detail__panel {
+    position: sticky;
+    top: 18px;
+  }
+}
+</style>

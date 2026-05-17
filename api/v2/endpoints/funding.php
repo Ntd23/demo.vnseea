@@ -228,43 +228,49 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
             $fund_id = Wo_Secure($_POST['id']);
             $fund = $db->where('id',$fund_id)->getOne(T_FUNDING);
             if (!empty($fund)) {
-
-
-                $notes = "Doanted to ".mb_substr($fund->title, 0, 100, "UTF-8");
-
-                $create_payment_log = mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`) VALUES ({$wo['user']['user_id']}, 'DONATE', {$amount}, '{$notes}')");
-
-                $admin_com = 0;
-                if (!empty($wo['config']['donate_percentage']) && is_numeric($wo['config']['donate_percentage']) && $wo['config']['donate_percentage'] > 0) {
-                    $admin_com = ($wo['config']['donate_percentage'] * $amount) / 100;
-                    $amount = $amount - $admin_com;
+                if ((int) $fund->user_id === (int) $wo['user']['id'] || (int) $fund->user_id === (int) $wo['user']['user_id']) {
+                    $error_code    = 8;
+                    $error_message = 'campaign owner can not donate to their own campaign';
                 }
-                $user_data = Wo_UserData($fund->user_id);
-                $db->where('user_id',$fund->user_id)->update(T_USERS,array('balance' => $user_data['balance'] + $amount));
-                cache($fund->user_id, 'users', 'delete');
-                $fund_raise_id = $db->insert(T_FUNDING_RAISE,array('user_id' => $wo['user']['user_id'],
-                                                  'funding_id' => $fund_id,
-                                                  'amount' => $amount,
-                                                  'time' => time()));
-                $post_data = array(
-                    'user_id' => Wo_Secure($wo['user']['user_id']),
-                    'fund_raise_id' => $fund_raise_id,
-                    'time' => time(),
-                    'multi_image_post' => 0
-                );
+                else {
 
-                $id = Wo_RegisterPost($post_data);
 
-                $notification_data_array = array(
-                    'recipient_id' => $fund->user_id,
-                    'type' => 'fund_donate',
-                    'url' => 'index.php?link1=show_fund&id=' . $fund->hashed_id
-                );
-                Wo_RegisterNotification($notification_data_array);
-                $response_data = array(
-                                    'api_status' => 200,
-                                    'message' => 'donated'
-                                );
+                    $notes = "Donated to ".mb_substr($fund->title, 0, 100, "UTF-8");
+
+                    $create_payment_log = mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`) VALUES ({$wo['user']['user_id']}, 'DONATE', {$amount}, '{$notes}')");
+
+                    $admin_com = 0;
+                    if (!empty($wo['config']['donate_percentage']) && is_numeric($wo['config']['donate_percentage']) && $wo['config']['donate_percentage'] > 0) {
+                        $admin_com = ($wo['config']['donate_percentage'] * $amount) / 100;
+                        $amount = $amount - $admin_com;
+                    }
+                    $user_data = Wo_UserData($fund->user_id);
+                    $db->where('user_id',$fund->user_id)->update(T_USERS,array('balance' => $user_data['balance'] + $amount));
+                    cache($fund->user_id, 'users', 'delete');
+                    $fund_raise_id = $db->insert(T_FUNDING_RAISE,array('user_id' => $wo['user']['user_id'],
+                                                      'funding_id' => $fund_id,
+                                                      'amount' => $amount,
+                                                      'time' => time()));
+                    $post_data = array(
+                        'user_id' => Wo_Secure($wo['user']['user_id']),
+                        'fund_raise_id' => $fund_raise_id,
+                        'time' => time(),
+                        'multi_image_post' => 0
+                    );
+
+                    $id = Wo_RegisterPost($post_data);
+
+                    $notification_data_array = array(
+                        'recipient_id' => $fund->user_id,
+                        'type' => 'fund_donate',
+                        'url' => 'index.php?link1=show_fund&id=' . $fund->hashed_id
+                    );
+                    Wo_RegisterNotification($notification_data_array);
+                    $response_data = array(
+                                        'api_status' => 200,
+                                        'message' => 'donated'
+                                    );
+                }
             }
             else{
                 $error_code    = 7;
@@ -284,7 +290,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                 foreach ($non_allowed as $key4 => $value4) {
                   unset($fund['user_data'][$value4]);
                 }
-                $fund['recent_donations'] = GetRecentRaise($fund_id,20);
+                $fund['recent_donations'] = GetRecentRaise($fund['id'],0);
                 if (!empty($fund['recent_donations'])) {
                     foreach ($fund['recent_donations'] as $key => $value) {
                         foreach ($non_allowed as $key4 => $value4) {
