@@ -5836,7 +5836,7 @@
     "page": {
       "title": "Thanh toán | VNSEEA",
       "description": "Hoàn tất checkout marketplace với form địa chỉ, giỏ hàng, số dư ví và tổng thanh toán.",
-      "layoutTitle": "Thủ tục thanh toán",
+      "layoutTitle": "Thanh toán",
       "layoutDescription": "Điền địa chỉ nhận hàng, kiểm tra giỏ hàng và chọn phương thức thanh toán trước khi xác nhận đơn.",
       "eyebrow": "P-14 · Thanh toán",
       "progressLabel": "Tiến độ checkout",
@@ -5845,7 +5845,7 @@
       "summaryRegion": "Tóm tắt đơn hàng"
     },
     "summary": {
-      "title": "Giỏ hàng",
+      "title": "Xem lại đơn hàng",
       "items": "{count} vật phẩm",
       "itemsPlural": "{count} vật phẩm khác nhau",
       "backToStore": "Quay trở lại cửa hàng",
@@ -5857,7 +5857,7 @@
       "walletBalance": "Ví hiện có {balance}. Bạn cần nạp thêm {amount} để tiếp tục mua hàng.",
       "walletHint": "Số dư ví hiện tại là {balance}.",
       "addFunds": "Nạp thêm vào ví",
-      "buy": "Mua",
+      "buy": "Thanh toán ngay",
       "saveAddressFirst": "Lưu địa chỉ trước",
       "processing": "Đang xử lý",
       "orderPlaced": "Đã đặt hàng",
@@ -5909,15 +5909,19 @@
       "draftLabel": "Tự lưu cục bộ",
       "allFieldsReady": "Đã đủ thông tin",
       "formTitle": "Biểu mẫu nhận hàng",
-      "addAddressTitle": "Thêm địa chỉ mới",
+      "addAddressTitle": "Thông tin giao hàng",
+      "changeAddress": "Thay đổi địa chỉ",
+      "selectAddress": "Chọn địa chỉ giao hàng",
+      "noAddresses": "Chưa có địa chỉ nào được lưu",
+      "loadingAddresses": "Đang tải địa chỉ...",
       "formDesc": "Form đã được gom theo cụm thông tin để thao tác nhanh hơn trên desktop mà vẫn gọn trên mobile.",
       "fieldsCount": "{filled}/{total} trường đã điền",
       "recipientInfo": "Thông tin người nhận",
       "recipientInfoDesc": "Nhập tên và số điện thoại để shipper liên hệ dễ hơn.",
-      "fullName": "Tên",
-      "fullNamePlaceholder": "Nhập tên người nhận",
-      "phone": "Điện thoại",
-      "phonePlaceholder": "Số điện thoại",
+      "fullName": "Họ và tên",
+      "fullNamePlaceholder": "Nhập họ và tên",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "Nhập số điện thoại",
       "region": "Khu vực giao hàng",
       "regionDesc": "Điền vị trí để hệ thống tổng hợp điểm giao hàng chính xác.",
       "country": "Quốc gia",
@@ -5925,7 +5929,7 @@
       "postalCode": "Mã Bưu Chính",
       "pointDetail": "Điểm nhận chi tiết",
       "pointDetailDesc": "Ghi rõ số nhà, tên đường, phường/xã để tránh giao thất bại.",
-      "streetAddress": "Địa chỉ nhà",
+      "streetAddress": "Địa chỉ chi tiết",
       "streetAddressPlaceholder": "Số nhà, tên đường, phường/xã...",
       "quickPreview": "Xem trước nhanh",
       "noRecipientPreview": "Chưa có tên người nhận",
@@ -5948,7 +5952,14 @@
       "validationCountryRequired": "Vui lòng nhập quốc gia.",
       "validationCityRequired": "Vui lòng nhập thành phố.",
       "validationPostalCodeRequired": "Vui lòng nhập mã bưu chính.",
-      "validationStreetRequired": "Vui lòng nhập địa chỉ nhà."
+      "validationStreetRequired": "Vui lòng nhập địa chỉ nhà.",
+      "agreeTermsPrefix": "Tôi đã đọc và đồng ý với",
+      "termsAndConditions": "Điều khoản và Điều kiện"
+    },
+    "stepper": {
+      "cart": "Giỏ hàng",
+      "confirm": "Xác nhận",
+      "payment": "Thanh toán"
     }
   },
   "orders": {

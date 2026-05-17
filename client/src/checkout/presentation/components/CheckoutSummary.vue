@@ -1,27 +1,52 @@
 <template>
-  <section
-    class="rounded-2xl border border-slate-200 bg-white shadow-sm"
-    aria-labelledby="checkout-summary-title"
-  >
-    <div class="p-5 sm:p-6">
-      <!-- Header -->
-      <div class="flex items-center justify-between border-b border-slate-100 pb-5">
-        <h2 id="checkout-summary-title" class="text-xl font-bold text-slate-900 tracking-tight">
-          {{ $t("checkout.summary.title") }}
-          <span class="text-slate-500 font-medium text-sm ml-2">({{ itemLabel }})</span>
-        </h2>
-        <UButton
-          :to="appRoutes.products"
-          color="neutral"
-          variant="link"
-          class="text-sm font-medium"
-          :padded="false"
-        >
-          {{ $t("checkout.summary.backToStore") }}
-        </UButton>
+  <section class="os-card" aria-labelledby="os-title">
+    <h2 id="os-title" class="os-heading">
+      {{ $t("checkout.summary.title") }}
+    </h2>
+
+    <!-- Items -->
+    <template v-if="items.length">
+      <div class="os-items">
+        <article v-for="item in items" :key="item.id" class="os-item">
+          <div class="os-item-img">
+            <div
+              v-if="!item.imageUrl"
+              class="os-item-img-fallback"
+              :style="{ background: item.imageStyle || defaultCardBackground }"
+            />
+            <NuxtImg
+              v-else
+              :src="item.imageUrl"
+              :alt="item.name"
+              class="os-item-img-real"
+              loading="lazy"
+            />
+          </div>
+          <div class="os-item-info">
+            <h3 class="os-item-name">{{ item.name }}</h3>
+            <span class="os-item-qty">{{ item.quantity }}x</span>
+          </div>
+          <span class="os-item-price">{{ formatVnd(item.price * item.quantity) }}</span>
+        </article>
       </div>
 
-      <!-- Alerts -->
+      <!-- Totals -->
+      <div class="os-totals">
+        <div class="os-row">
+          <span>{{ $t("checkout.summary.subtotal") }}</span>
+          <span>{{ formatVnd(subtotal) }}</span>
+        </div>
+        <div class="os-row">
+          <span>{{ $t("checkout.summary.shippingFee") }}</span>
+          <span>{{ shippingFee > 0 ? formatVnd(shippingFee) : $t("checkout.summary.free") }}</span>
+        </div>
+        <div class="os-row os-row--total">
+          <span>{{ $t("checkout.summary.totalPayment") }}</span>
+          <span>{{ formatVnd(total) }}</span>
+        </div>
+      </div>
+
+      <!-- Alert -->
       <UAlert
         v-if="statusAlert"
         :color="statusAlert.color"
@@ -29,160 +54,40 @@
         :icon="statusAlert.icon"
         :title="statusAlert.title"
         :description="statusAlert.description"
-        class="mt-5 rounded-xl"
+        class="os-alert"
         aria-live="polite"
       />
 
-      <div v-if="items.length" class="mt-6">
-        <!-- Status -->
-        <div class="grid grid-cols-2 gap-4 mb-6">
-          <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              {{ $t("checkout.summary.addressStatusLabel") }}
-            </p>
-            <p class="text-sm font-bold" :class="addressReady ? 'text-green-600' : 'text-amber-600'">
-              {{ addressReady ? $t("checkout.summary.addressReady") : $t("checkout.summary.addressMissing") }}
-            </p>
-          </div>
-          <div class="rounded-xl border border-slate-100 bg-slate-50 p-3">
-            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-              {{ $t("checkout.summary.walletStatusLabel") }}
-            </p>
-            <p class="text-sm font-bold" :class="walletShortage > 0 ? 'text-amber-600' : 'text-green-600'">
-              {{ walletShortage > 0
-                ? $t("checkout.summary.walletShortage", { amount: formatVnd(walletShortage) })
-                : $t("checkout.summary.walletReady") }}
-            </p>
-          </div>
-        </div>
-
-        <!-- Items -->
-        <div class="space-y-4 mb-6">
-          <article
-            v-for="item in items"
-            :key="item.id"
-            class="flex gap-4 group"
-          >
-            <div class="relative h-24 w-24 shrink-0 rounded-lg bg-slate-100 overflow-hidden border border-slate-200">
-              <div
-                v-if="!item.imageUrl"
-                class="absolute inset-0 opacity-50"
-                :style="{ background: item.imageStyle || defaultCardBackground }"
-              />
-              <NuxtImg
-                v-else
-                :src="item.imageUrl"
-                :alt="item.name"
-                class="absolute inset-0 h-full w-full object-cover"
-                loading="lazy"
-              />
-            </div>
-
-            <div class="flex flex-1 flex-col justify-between py-1 min-w-0">
-              <div class="flex justify-between items-start gap-4">
-                <div class="min-w-0">
-                  <h3 class="text-sm font-semibold text-slate-900 truncate">
-                    {{ item.name }}
-                  </h3>
-                  <p class="text-xs text-slate-500 mt-1">{{ $t("checkout.summary.marketplace") }}</p>
-                </div>
-                <button
-                  type="button"
-                  class="text-slate-400 hover:text-red-600 transition-colors"
-                  :aria-label="$t('checkout.summary.removeItemAria', { name: item.name })"
-                  @click="emit('removeItem', item.id)"
-                >
-                  <Icon name="i-ph-trash" class="h-4 w-4" />
-                </button>
-              </div>
-
-              <div class="flex items-center justify-between mt-2">
-                <div class="text-sm font-bold text-slate-900">
-                  {{ formatVnd(item.price) }}
-                </div>
-                <div class="flex items-center gap-3">
-                  <button
-                    type="button"
-                    class="h-6 w-6 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-                    :disabled="item.quantity <= 1 || isBusy"
-                    :aria-label="$t('checkout.summary.decreaseQuantityAria', { name: item.name })"
-                    @click="emit('decreaseQuantity', item.id)"
-                  >
-                    <Icon name="i-ph-minus" class="h-3 w-3" />
-                  </button>
-                  <span class="text-sm font-medium w-4 text-center">{{ item.quantity }}</span>
-                  <button
-                    type="button"
-                    class="h-6 w-6 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-                    :disabled="isBusy"
-                    :aria-label="$t('checkout.summary.increaseQuantityAria', { name: item.name })"
-                    @click="emit('increaseQuantity', item.id)"
-                  >
-                    <Icon name="i-ph-plus" class="h-3 w-3" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
-        </div>
-
-        <div class="border-t border-slate-200 pt-5 space-y-3">
-          <div class="flex justify-between text-sm text-slate-600">
-            <span>{{ $t("checkout.summary.subtotal") }}</span>
-            <span class="font-medium text-slate-900">{{ formatVnd(subtotal) }}</span>
-          </div>
-          <div class="flex justify-between text-sm text-slate-600">
-            <span>{{ $t("checkout.summary.shippingFee") }}</span>
-            <span class="font-medium text-slate-900">{{ shippingFee > 0 ? formatVnd(shippingFee) : $t("checkout.summary.free") }}</span>
-          </div>
-          
-          <div class="flex justify-between items-end pt-3">
-            <div>
-              <p class="text-sm font-bold text-slate-900">{{ $t("checkout.summary.totalPayment") }}</p>
-              <p class="text-xs text-slate-500 mt-0.5 max-w-[200px] leading-snug">{{ paymentHint }}</p>
-            </div>
-            <p class="text-2xl font-bold text-[var(--color-primary-600)]">{{ formatVnd(total) }}</p>
-          </div>
-        </div>
-
-        <div class="mt-6 pt-5 border-t border-slate-200">
-          <UButton
-            color="primary"
-            variant="solid"
-            block
-            size="lg"
-            :loading="isBusy"
-            :disabled="ctaDisabled"
-            class="h-12 text-[15px] font-bold rounded-xl"
-            @click="emit('submit')"
-          >
-            {{ ctaLabel }}
-          </UButton>
-        </div>
-      </div>
-
-      <div
-        v-else
-        class="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center"
+      <!-- CTA -->
+      <UButton
+        color="primary"
+        variant="solid"
+        block
+        size="lg"
+        :loading="isBusy"
+        :disabled="ctaDisabled"
+        class="os-cta"
+        @click="emit('submit')"
       >
-        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-          <Icon name="i-ph-shopping-cart-simple" class="h-6 w-6" />
-        </div>
-        <h3 class="mt-4 text-sm font-semibold text-slate-900">
-          {{ $t("checkout.summary.emptyCart") }}
-        </h3>
-        <p class="mt-1 text-sm text-slate-500">
-          {{ $t("checkout.summary.emptyCartHint") }}
-        </p>
-        <UButton
-          :to="appRoutes.products"
-          color="primary"
-          variant="outline"
-          class="mt-4 rounded-lg"
-        >
-          {{ $t("checkout.summary.backToMarketplace") }}
-        </UButton>
+        {{ ctaLabel }}
+      </UButton>
+    </template>
+
+    <!-- Empty -->
+    <div v-else class="os-empty">
+      <div class="os-empty-icon">
+        <Icon name="i-ph-shopping-cart-simple" class="h-7 w-7" />
       </div>
+      <h3 class="os-empty-title">{{ $t("checkout.summary.emptyCart") }}</h3>
+      <p class="os-empty-hint">{{ $t("checkout.summary.emptyCartHint") }}</p>
+      <UButton
+        :to="appRoutes.products"
+        color="primary"
+        variant="outline"
+        class="os-empty-cta"
+      >
+        {{ $t("checkout.summary.backToMarketplace") }}
+      </UButton>
     </div>
   </section>
 </template>
@@ -224,12 +129,6 @@ const subtotal = computed(() =>
 )
 
 const total = computed(() => subtotal.value + props.shippingFee)
-
-const itemLabel = computed(() => {
-  const count = props.items.length
-  return t(count === 1 ? "checkout.summary.items" : "checkout.summary.itemsPlural", { count })
-})
-
 const walletShortage = computed(() => Math.max(total.value - props.walletBalance, 0))
 const isBusy = computed(() => props.checkoutState === "loading")
 
@@ -274,12 +173,7 @@ const statusAlert = computed(() => {
     }
   }
 
-  return {
-    color: "success" as const,
-    icon: "i-ph-seal-check-fill",
-    title: t("checkout.summary.readyTitle"),
-    description: t("checkout.summary.readyDescription"),
-  }
+  return null
 })
 
 const ctaLabel = computed(() => {
@@ -313,23 +207,6 @@ const ctaDisabled = computed(() =>
   || props.checkoutState === "success",
 )
 
-const paymentHint = computed(() => {
-  if (!props.addressReady) {
-    return t("checkout.summary.addressMissingHint")
-  }
-
-  if (walletShortage.value > 0) {
-    return t("checkout.summary.walletBalance", {
-      balance: formatVnd(props.walletBalance),
-      amount: formatVnd(walletShortage.value),
-    })
-  }
-
-  return t("checkout.summary.walletHint", {
-    balance: formatVnd(props.walletBalance),
-  })
-})
-
 function formatVnd(value: number) {
   return formatCurrency(value, {
     currency: "VND",
@@ -337,3 +214,162 @@ function formatVnd(value: number) {
   })
 }
 </script>
+
+<style scoped>
+.os-card {
+  background: #fff;
+  padding: 0;
+  border-radius: 16px;
+}
+
+.os-heading {
+  margin: 0 0 28px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* ── Items ── */
+.os-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.os-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.os-item-img {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+.os-item-img-fallback {
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+}
+
+.os-item-img-real {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.os-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.os-item-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.os-item-qty {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.os-item-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+}
+
+/* ── Totals ── */
+.os-totals {
+  padding: 16px 0 24px;
+}
+
+.os-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.os-row--total {
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+}
+
+/* ── Alert ── */
+.os-alert {
+  margin-bottom: 16px;
+  border-radius: 10px;
+}
+
+/* ── CTA ── */
+.os-cta {
+  height: 52px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  background: #4361ee;
+}
+
+.os-cta:hover:not(:disabled) {
+  background: #3a56d4;
+}
+
+/* ── Empty ── */
+.os-empty {
+  padding: 32px 0;
+  text-align: center;
+}
+
+.os-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #9ca3af;
+  margin-bottom: 16px;
+}
+
+.os-empty-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.os-empty-hint {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.os-empty-cta {
+  margin-top: 16px;
+  border-radius: 8px;
+}
+</style>

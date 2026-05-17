@@ -12,6 +12,9 @@ export function createApiCheckoutRepository(): CheckoutRepository {
     async getSnapshot() {
       return await client.get<CheckoutSnapshot>(apiRoutes.checkout.snapshot)
     },
+    async getAddresses() {
+      return await client.get<ShippingAddress[]>(apiRoutes.checkout.addresses)
+    },
     async saveShippingAddress(address: ShippingAddress) {
       return await client.post<ShippingAddress, ShippingAddress>(apiRoutes.checkout.address, address)
     },

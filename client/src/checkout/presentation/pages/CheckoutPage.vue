@@ -13,6 +13,7 @@
         <ShippingAddressFormUI
           :initial-address="savedAddress"
           @submit="handleAddressSubmit"
+          @change-address="showAddressPicker = true"
         />
       </template>
 
@@ -30,6 +31,12 @@
         />
       </template>
     </CheckoutLayout>
+
+    <AddressPickerModal
+      v-model:open="showAddressPicker"
+      :fetch-addresses="fetchSavedAddresses"
+      @select="handlePickedAddress"
+    />
   </div>
 </template>
 
@@ -37,9 +44,13 @@
 import CheckoutLayout from "../components/CheckoutLayout.vue"
 import CheckoutSummary from "../components/CheckoutSummary.vue"
 import ShippingAddressFormUI from "../components/ShippingAddressFormUI.vue"
+import AddressPickerModal from "../components/AddressPickerModal.vue"
 import { useCheckoutPageVM } from "../../application/view-models/useCheckoutPageVM"
+import type { SavedShippingAddress } from "../../domain/types/checkout.types"
 
 const { t } = useI18n()
+const showAddressPicker = ref(false)
+
 const {
   cartItems,
   savedAddress,
@@ -54,5 +65,11 @@ const {
   decreaseQuantity,
   removeItem,
   handleCheckoutAction,
+  selectAddress,
+  fetchSavedAddresses,
 } = useCheckoutPageVM()
+
+const handlePickedAddress = (address: SavedShippingAddress) => {
+  selectAddress(address)
+}
 </script>

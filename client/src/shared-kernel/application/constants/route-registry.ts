@@ -149,6 +149,7 @@ export const apiRoutes = {
   checkout: {
     snapshot: "checkout/snapshot",
     address: "checkout/address",
+    addresses: "checkout/addresses",
     submit: "checkout/submit",
   },
   orders: {

@@ -157,6 +157,14 @@ export function useCheckoutPageVM(
     })
   }
 
+  function selectAddress(address: SavedShippingAddress) {
+    snapshot.value.shippingAddress = { ...address }
+  }
+
+  async function fetchSavedAddresses() {
+    return await repository.getAddresses()
+  }
+
   return {
     cartItems,
     savedAddress,
@@ -171,5 +179,7 @@ export function useCheckoutPageVM(
     decreaseQuantity,
     removeItem,
     handleCheckoutAction,
+    selectAddress,
+    fetchSavedAddresses,
   }
 }
