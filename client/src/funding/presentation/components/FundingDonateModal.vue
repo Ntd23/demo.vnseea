@@ -73,7 +73,7 @@
               class="justify-center rounded-[18px]"
               @click="form.amount = amount"
             >
-              {{ formatFundingCurrency(amount, locale) }}
+              {{ formatMoney(amount) }}
             </UButton>
           </div>
         </div>
@@ -174,8 +174,8 @@
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
 import type { DonationPayload, MockFundingCampaign } from "../../domain/types/funding.types"
-import { formatFundingCurrency } from "../../infrastructure/mocks/fundingCatalog"
 import FundingProgress from "./FundingProgress.vue"
 
 type DonateSubmitStatus = "idle" | "loading" | "success" | "error"
@@ -230,8 +230,14 @@ const modalDescription = computed(() => {
 
 const isBusy = computed(() => submitStatus.value === "loading")
 
+const formatMoney = (amount: number) =>
+  formatCurrency(amount, {
+    currency: "VND",
+    locale: locale.value,
+  })
+
 const formattedAmount = computed(() =>
-  formatFundingCurrency(form.amount ?? 0, locale.value),
+  formatMoney(form.amount ?? 0),
 )
 
 const selectedPreset = computed(() =>

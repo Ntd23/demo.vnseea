@@ -75,11 +75,20 @@ const mapDonation = (item: BackendEntity, baseUrl: string): FundingDonation => {
   }
 }
 
-const mapFundingCampaign = (item: BackendEntity, baseUrl: string, currentUserId = 0): FundingCampaign => {
+const mapFundingCampaign = (
+  item: BackendEntity,
+  baseUrl: string,
+  currentUserId = 0,
+  forceManage = false,
+): FundingCampaign => {
   const user = (item.user_data ?? {}) as BackendEntity
   const id = asNumber(item.id)
   const progress = asNumber(item.bar)
   const ownerId = asNumber(item.user_id) || asNumber(user.user_id) || asNumber(user.id)
+  const canManage = forceManage || (currentUserId > 0 && ownerId === currentUserId)
+  const amount = asNumber(item.amount)
+  const raised = asNumber(item.raised)
+  const isCompleted = amount > 0 && raised >= amount
   const donations = Array.isArray(item.recent_donations)
     ? item.recent_donations.map(donation => mapDonation(donation as BackendEntity, baseUrl))
     : []
@@ -95,14 +104,17 @@ const mapFundingCampaign = (item: BackendEntity, baseUrl: string, currentUserId 
     ownerAvatarUrl: normalizeUrl(user.avatar, baseUrl),
     ownerUrl: asString(user.url),
     createdAt: formatBackendDate(item.time),
-    amount: asNumber(item.amount),
-    raised: asNumber(item.raised),
+    amount,
+    raised,
     progress: Math.max(0, Math.min(100, progress)),
     donorCount: asNumber(item.all_donation) || donations.length,
     donated: asBoolean(item.is_donate),
-    canDonate: currentUserId > 0 && ownerId !== currentUserId,
+    canDonate: currentUserId > 0 && ownerId !== currentUserId && !isCompleted,
+    canManage,
+    isCompleted,
     donations,
     detailUrl: `/show_fund/${asString(item.hashed_id) || id}`,
+    editUrl: `/edit_fund/${asString(item.hashed_id) || id}`,
   }
 }
 
@@ -124,7 +136,9 @@ export async function fetchFundingCatalog(
   })
 
   const data = assertBackendApiSuccess(response, "Unable to load funding campaigns.")
-  const items = (data.data ?? []).map(item => mapFundingCampaign(item, baseUrl, currentUserId))
+  const items = (data.data ?? []).map(item =>
+    mapFundingCampaign(item, baseUrl, currentUserId, query.tab === "mine"),
+  )
 
   return {
     items,
@@ -181,6 +195,48 @@ export async function donateFundingCampaign(
   })
 
   assertBackendApiSuccess(response, "Unable to donate to funding campaign.")
+
+  return { ok: true }
+}
+
+export async function updateFundingCampaign(
+  event: H3Event,
+  body: { id?: number; title?: string; description?: string; amount?: number },
+) {
+  if (!body.id || !body.title || !body.description || !body.amount || body.amount <= 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Funding id, title, description, and amount are required.",
+    })
+  }
+
+  const response = await createBackendApiClient(event).post<BackendMutationResponse>("funding", {
+    type: "edit",
+    id: body.id,
+    title: body.title,
+    description: body.description,
+    amount: body.amount,
+  })
+
+  assertBackendApiSuccess(response, "Unable to update funding campaign.")
+
+  return { ok: true }
+}
+
+export async function deleteFundingCampaign(event: H3Event, body: { id?: number }) {
+  if (!body.id) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Funding id is required.",
+    })
+  }
+
+  const response = await createBackendApiClient(event).post<BackendMutationResponse>("funding", {
+    type: "delete",
+    id: body.id,
+  })
+
+  assertBackendApiSuccess(response, "Unable to delete funding campaign.")
 
   return { ok: true }
 }
