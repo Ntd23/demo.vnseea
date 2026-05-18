@@ -35,6 +35,10 @@ export function useCommunityGroupSettingPageVM(
   const draftRestored = ref(false)
   const storageHydrated = ref(false)
   const isSyncingDraft = ref(false)
+  const requests = ref<any[]>([])
+  const loadingRequests = ref(false)
+  const groupMembers = ref<any[]>([])
+  const loadingMembers = ref(false)
 
   const draftStorage = useStorage<CommunityGroupSettingsDraft | null>(
     `community:group-settings:${String(route.params.group || "")}`,
@@ -140,7 +144,123 @@ export function useCommunityGroupSettingPageVM(
     return null
   })
 
-  watch(group, syncDraftFromGroup, { immediate: true })
+  watch(group, (newGroup) => {
+    syncDraftFromGroup()
+    if (newGroup) {
+      fetchRequests()
+      fetchGroupMembers()
+    }
+  }, { immediate: true })
+
+  async function fetchGroupMembers() {
+    if (!group.value) return
+    loadingMembers.value = true
+    try {
+      groupMembers.value = await repository.getGroupMembers(group.value.slug)
+    }
+    catch (err) {
+      console.error("Failed to load group members:", err)
+    }
+    finally {
+      loadingMembers.value = false
+    }
+  }
+
+  async function handleKickMember(userId: number) {
+    if (!group.value) return
+    const confirmKick = window.confirm(t("community.settings.members.kickConfirm", "Bạn có chắc chắn muốn trục xuất thành viên này ra khỏi nhóm không?"))
+    if (!confirmKick) return
+
+    try {
+      await repository.kickGroupMember(group.value.slug, userId)
+
+      groupMembers.value = groupMembers.value.filter(m => m.id !== userId)
+
+      toast.add({
+        title: t("community.settings.members.kickSuccessTitle", "Đã trục xuất thành viên"),
+        description: t("community.settings.members.kickSuccessDesc", "Thành viên đã bị xóa khỏi nhóm thành công."),
+        color: "success",
+      })
+    }
+    catch (err: any) {
+      toast.add({
+        title: t("community.settings.members.kickErrorTitle", "Trục xuất thất bại"),
+        description: err?.data?.message || err?.message || t("community.settings.members.kickErrorDesc", "Không thể xóa thành viên này."),
+        color: "error",
+      })
+    }
+  }
+
+  async function fetchRequests() {
+    if (!group.value) return
+    loadingRequests.value = true
+    try {
+      requests.value = await repository.getGroupRequests(group.value.slug)
+    } catch (err) {
+      console.error("Failed to load group requests:", err)
+    } finally {
+      loadingRequests.value = false
+    }
+  }
+
+  async function handleRequestAction(userId: number, action: "accept" | "decline") {
+    if (!group.value) return
+    try {
+      await repository.respondToGroupRequest(group.value.slug, userId, action)
+
+      // Instantly remove from local requests list
+      requests.value = requests.value.filter(req => req.id !== userId)
+
+      // Show elegant feedback toast
+      toast.add({
+        title: action === "accept"
+          ? t("community.settings.requests.acceptSuccessTitle")
+          : t("community.settings.requests.declineSuccessTitle"),
+        description: action === "accept"
+          ? t("community.settings.requests.acceptSuccessDesc")
+          : t("community.settings.requests.declineSuccessDesc"),
+        color: "success",
+      })
+    }
+    catch (err: any) {
+      toast.add({
+        title: t("community.settings.requests.actionErrorTitle"),
+        description: err?.data?.message || err?.message || t("community.settings.requests.actionErrorDesc"),
+        color: "error",
+      })
+    }
+  }
+
+  async function handleApproveAll() {
+    if (!group.value || requests.value.length === 0) return
+    const originalRequests = [...requests.value]
+    loadingRequests.value = true
+    try {
+      await Promise.all(
+        originalRequests.map(req => repository.respondToGroupRequest(group.value!.slug, req.id, "accept")),
+      )
+
+      requests.value = []
+
+      toast.add({
+        title: t("community.settings.requests.acceptAllSuccessTitle"),
+        description: t("community.settings.requests.acceptAllSuccessDesc"),
+        color: "success",
+      })
+    }
+    catch (err: any) {
+      await fetchRequests()
+
+      toast.add({
+        title: t("community.settings.requests.actionErrorTitle"),
+        description: err?.data?.message || err?.message || t("community.settings.requests.actionErrorDesc"),
+        color: "error",
+      })
+    }
+    finally {
+      loadingRequests.value = false
+    }
+  }
 
   watchDebounced(
     () => normalizeDraft(draft.value),
@@ -305,6 +425,15 @@ export function useCommunityGroupSettingPageVM(
     enabledPolicies,
     totalPolicies,
     visibleMembers,
+    requests,
+    loadingRequests,
+    handleRequestAction,
+    handleApproveAll,
+    fetchRequests,
+    groupMembers,
+    loadingMembers,
+    handleKickMember,
+    fetchGroupMembers,
     appRoutes,
   }
 }
