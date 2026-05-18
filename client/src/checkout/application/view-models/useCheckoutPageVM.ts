@@ -222,9 +222,9 @@ export function useCheckoutPageVM(
           // ignore confetti errors
         }
 
-        // Wait 3.5 seconds for confetti animation, then navigate to orders page
+        // Wait 3.5 seconds for confetti animation, then navigate to purchased page
         setTimeout(async () => {
-          await navigateTo("/orders")
+          await navigateTo("/purchased")
         }, 3500)
       }
     }

@@ -63,7 +63,7 @@
           @decrease-quantity="decreaseQuantity"
           @increase-quantity="increaseQuantity"
           @remove-item="removeItem"
-          @submit="handleCheckoutAction"
+          @submit="triggerCheckoutConfirmation"
         />
       </template>
     </CheckoutLayout>
@@ -76,6 +76,15 @@
       @add-new="handleAddNewAddress"
       @edit="handleEditAddress"
     />
+
+    <!-- Modal xác nhận thanh toán -->
+    <PaymentConfirmModal
+      v-model:open="showConfirmModal"
+      :items="cartItems"
+      :wallet-balance="walletBalance"
+      :shipping-fee="shippingFee"
+      @confirm="confirmPurchase"
+    />
   </div>
 </template>
 
@@ -84,11 +93,13 @@ import CheckoutLayout from "../components/CheckoutLayout.vue"
 import CheckoutSummary from "../components/CheckoutSummary.vue"
 import ShippingAddressFormUI from "../components/ShippingAddressFormUI.vue"
 import AddressPickerModal from "../components/AddressPickerModal.vue"
+import PaymentConfirmModal from "../components/PaymentConfirmModal.vue"
 import { useCheckoutPageVM } from "../../application/view-models/useCheckoutPageVM"
 import type { SavedShippingAddress } from "../../domain/types/checkout.types"
 
 const { t } = useI18n()
 const showAddressPicker = ref(false)
+const showConfirmModal = ref(false)
 
 const {
   isLoading,
@@ -108,6 +119,27 @@ const {
   deleteAddress,
   fetchSavedAddresses,
 } = useCheckoutPageVM()
+
+const triggerCheckoutConfirmation = () => {
+  // Kiểm tra trước các điều kiện tiên quyết (đã chọn địa chỉ và đủ số dư)
+  if (!hasSavedAddress.value) {
+    handleCheckoutAction() // Gọi để kích hoạt toast báo lỗi địa chỉ của VM
+    return
+  }
+  const subtotalValue = cartItems.value.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const totalValue = subtotalValue + shippingFee.value
+  if (totalValue > walletBalance.value) {
+    handleCheckoutAction() // Gọi để kích hoạt toast báo lỗi thiếu tiền của VM
+    return
+  }
+  // Mở modal xác nhận
+  showConfirmModal.value = true
+}
+
+const confirmPurchase = () => {
+  showConfirmModal.value = false
+  handleCheckoutAction()
+}
 
 const hasItems = computed(() => cartItems.value.length > 0)
 const hasSavedAddress = computed(() => Boolean(savedAddress.value))
