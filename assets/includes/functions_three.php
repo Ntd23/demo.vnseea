@@ -5632,6 +5632,13 @@ function Wo_RegisterAdminNotification($registration_data = array())
 		}
 	}
 	$query = mysqli_query($sqlConnect, ($sql . implode(',', $val)));
+	if ($query) {
+		foreach ($registration_data['recipients'] as $user_id) {
+			if ($admin != $user_id) {
+				Wo_PublishRealtimeNotification($user_id, 0, 'notification');
+			}
+		}
+	}
 	return $query;
 }
 function Wo_HidePost($id = false)
@@ -9144,7 +9151,10 @@ function FFMPEGUpload($data)
 			'text' => $wo['lang']['video_ready_to_view'],
 			'type2' => 'ffmpeg'
 		);
-		$db->insert(T_NOTIFICATION, $notification_data_array);
+		$notification_id = $db->insert(T_NOTIFICATION, $notification_data_array);
+		if (!empty($notification_id)) {
+			Wo_PublishRealtimeNotification($wo['user']['user_id'], $notification_id, 'notification');
+		}
 	}
 	if (empty($data['video_thumb'])) {
 		$uniq_id    = rand(1111, 9999);

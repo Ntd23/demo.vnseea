@@ -74,6 +74,35 @@ const error = useError()
 const lastSafeRoute = useState("last-safe-route", () => "/home")
 const runtimeBoundaryNonce = ref(0)
 
+if (import.meta.dev) {
+  useHead({
+    script: [
+      {
+        key: "clear-stale-dev-runtime-cache",
+        innerHTML: `
+(function () {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.getRegistrations()
+    .then(function (registrations) {
+      return Promise.all(registrations.map(function (registration) {
+        return registration.unregister();
+      }));
+    })
+    .catch(function () {});
+  if ('caches' in window) {
+    caches.keys()
+      .then(function (keys) {
+        return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+      })
+      .catch(function () {});
+  }
+})();`,
+        tagPosition: "head",
+      },
+    ],
+  })
+}
+
 const pageKey = (route: { fullPath?: string, path: string }) => route.fullPath ?? route.path
 const runtimeBoundaryKey = computed(() => `${route.fullPath || route.path}::${runtimeBoundaryNonce.value}`)
 

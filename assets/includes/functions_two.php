@@ -8317,13 +8317,16 @@ function Wo_AddNotifyMemories() {
             }
         }
         if ($notify == true) {
-            $db->insert(T_NOTIFICATION, array(
+            $notification_id = $db->insert(T_NOTIFICATION, array(
                 "recipient_id" => $wo["user"]["id"],
                 "type" => "memory",
                 "text" => $wo["lang"]["memory_this_day"],
                 "url" => "index.php?link1=memories",
                 "time" => time()
             ));
+            if (!empty($notification_id)) {
+                Wo_PublishRealtimeNotification($wo["user"]["id"], $notification_id, "notification");
+            }
         }
     }
     return false;

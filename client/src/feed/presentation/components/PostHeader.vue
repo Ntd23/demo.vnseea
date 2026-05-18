@@ -78,8 +78,6 @@
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core"
 
-import { useTimeAgo } from "@vueuse/core"
-
 const { t } = useI18n()
 const route = useRoute()
 
@@ -132,12 +130,26 @@ const displayTime = computed(() => {
 
   // If it's a Unix timestamp (10+ digits)
   if (/^\d{10,}$/.test(normalized)) {
-    const timestamp = Number(normalized) * 1000
-    return useTimeAgo(new Date(timestamp)).value
+    return formatStableUnixTimestamp(Number(normalized))
   }
 
   return normalized
 })
+
+function formatStableUnixTimestamp(value: number) {
+  if (!Number.isFinite(value) || value <= 0) {
+    return ""
+  }
+
+  const date = new Date(value * 1000)
+  const day = String(date.getUTCDate()).padStart(2, "0")
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0")
+  const year = date.getUTCFullYear()
+  const hours = String(date.getUTCHours()).padStart(2, "0")
+  const minutes = String(date.getUTCMinutes()).padStart(2, "0")
+
+  return `${day}/${month}/${year} ${hours}:${minutes}`
+}
 
 const currentEventId = computed(() => {
   const match = route.path.match(/^\/events\/(\d+)(?:\/)?$/)

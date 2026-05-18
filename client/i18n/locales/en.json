@@ -2575,7 +2575,7 @@
     "messagesPage": {
       "seoTitle": "Messages | VNSEEA",
       "seoDescription": "Manage conversations on VNSEEA with a clearer user list, a stable chat window, and a cleaner message composer flow.",
-      "searchPlaceholder": "Search conversations, users, or groups",
+      "searchPlaceholder": "Search",
       "sendMultiple": "Send multiple",
       "users": "Users",
       "groups": "Groups",
@@ -2590,7 +2590,7 @@
       "noRecipientsAvailable": "No eligible recipients are available right now.",
       "multiTabTitle": "Select recipients from the left pane",
       "multiTabDescription": "The multi-send tab stays in the same left pane as the PHP page. Select recipients here, then send the shared message from the center composer.",
-      "noConversationSelectedTitle": "Choose a conversation to start",
+      "noConversationSelectedTitle": "Choose one of your friends\nAnd say Hello!",
       "noConversationSelectedDescription": "Select a user or group from the left list to load the real thread from the backend.",
       "infoPanelEmptyTitle": "Conversation details appear here",
       "infoPanelEmptyDescription": "Open a real conversation to inspect members, media, and support actions in this sidebar.",
@@ -4939,6 +4939,20 @@
       "description": "Use the navigation arrows to browse the {count} media items in this post."
     }
   },
+  "notifications": {
+    "center": {
+      "label": "Center",
+      "title": "Notifications",
+      "markRead": "Mark as read",
+      "realtime": "Realtime updates active",
+      "polling": "Polling fallback active",
+      "loading": "Loading notifications...",
+      "empty": "No notifications yet.",
+      "delete": "Delete notification",
+      "soundOn": "Sound on",
+      "soundOff": "Sound off"
+    }
+  },
   "navigation": {
     "headerBar": {
       "home": "Home",
@@ -4946,6 +4960,8 @@
       "messages": "Messages",
       "notifications": "Notifications",
       "account": "Account",
+      "noRequests": "No new requests.",
+      "groupChatRequest": "Group chat request",
       "search": "Search",
       "reels": "Reels",
       "video": "Video",

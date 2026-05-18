@@ -1,11 +1,11 @@
 <!-- Description: Renders the messages screen with the same left-list, center-thread, and right-info pane order as the PHP template. -->
 <template>
-  <div class="mx-auto h-full min-h-0 w-full max-w-[1440px] p-3 lg:p-4">
-    <div class="grid h-full min-h-0 gap-4 xl:grid-cols-[340px_minmax(0,1fr)_280px]">
+  <div class="h-full min-h-0 w-full bg-white">
+    <div class="flex h-full min-h-0">
     <!-- LEFT PANE: Chat List -->
     <aside
-      class="min-h-0"
-      :class="[mobileListOpen ? 'block' : 'hidden md:block']"
+      class="messages-page__left min-h-0 shrink-0 border-r border-[#e5e7eb] bg-white"
+      :class="{ 'messages-page__left--mobile-hidden': !mobileListOpen }"
     >
       <MessagesChatList
         v-model:active-tab="activeTab"
@@ -28,8 +28,8 @@
 
     <!-- CENTER PANE: Active Chat / Composer -->
     <main
-      class="min-h-0 min-w-0 flex-col"
-      :class="[mobileListOpen ? 'hidden md:flex' : 'flex']"
+      class="messages-page__main min-h-0 min-w-0 flex-1 flex-col bg-white"
+      :class="{ 'messages-page__main--mobile-hidden': mobileListOpen }"
     >
       <MessagesMultiComposer
         v-if="activeTab === 'multi'"
@@ -61,7 +61,7 @@
         @back="handleBackToList"
       />
 
-      <div v-if="infoPanelOpen" class="mt-4 xl:hidden">
+      <div v-if="infoPanelOpen" class="border-t border-[#e5e7eb] xl:hidden">
         <MessagesMessageSidePanel
           :contact="selectedContact"
           :empty-description="infoEmptyDescription"
@@ -74,7 +74,8 @@
 
     <!-- RIGHT PANE: Info Panel (Desktop Only) -->
     <aside
-      class="hidden min-h-0 xl:block"
+      v-if="infoPanelOpen && selectedContact"
+      class="hidden min-h-0 w-[320px] shrink-0 border-l border-[#e5e7eb] bg-white xl:block"
     >
       <MessagesMessageSidePanel
         :contact="selectedContact"
@@ -90,7 +91,7 @@
     <UModal v-model:open="groupModalOpen" :title="$t('pages.messagesPage.groupCreateTitle')">
       <template #body>
         <div class="space-y-4">
-          <div class="rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-sm text-slate-600">
+          <div class="rounded-[18px] border border-(--border-light) bg-(--bg-muted) px-4 py-3 text-sm text-(--text-secondary)">
             {{ $t("pages.messagesPage.groupCreateDescription", { count: selectedRecipients.length }) }}
           </div>
           <UInput
@@ -233,3 +234,26 @@ async function submitCreateGroup() {
   }
 }
 </script>
+
+<style scoped>
+.messages-page__left {
+  width: min(520px, 100vw);
+}
+
+.messages-page__main {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  .messages-page__left {
+    width: clamp(390px, 28vw, 520px);
+  }
+}
+
+@media (max-width: 767.98px) {
+  .messages-page__left--mobile-hidden,
+  .messages-page__main--mobile-hidden {
+    display: none;
+  }
+}
+</style>

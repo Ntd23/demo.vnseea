@@ -59,17 +59,21 @@ if (empty($error_code)) {
     if (!empty($data['notifications'])) {
     	$final_notifications= array();
         $offset = (!empty($_POST['offset']) && is_numeric($_POST['offset']) && $_POST['offset'] > 0 ? Wo_Secure($_POST['offset']) : 0);
-        $notifications = Wo_GetNotifications(array(
-            'remove_notification' => array(
+        $include_all_notifications = (!empty($_POST['include_all_notifications']) && $_POST['include_all_notifications'] == 1);
+        $notifications_options = array(
+            'offset' => $offset
+        );
+        if ($include_all_notifications !== true) {
+            $notifications_options['remove_notification'] = array(
                 'requested_to_join_group',
                 'interested_event',
                 'going_event',
                 'invited_event',
                 'forum_reply',
                 'admin_notification',
-            ),
-            'offset' => $offset
-        ));
+            );
+        }
+        $notifications = Wo_GetNotifications($notifications_options);
         
         foreach ($notifications as $notification) {
             $wo['notification'] = $notification;
@@ -359,6 +363,60 @@ if (empty($error_code)) {
                     $wo['notification']['type_text'] = $wo['lang']['created_new_post'];
                     $wo['notification']['icon'] .= 'new_post';
                 }
+                if ($wo['notification']['type'] == 'admin_notification') {
+                    $wo['notification']['type_text'] = $wo['notification']['text'];
+                    if (!empty($wo['notification']['full_link']) && $wo['notification']['type2'] != 'no_name' && $wo['notification']['type2'] != 'approve_post' && $wo['notification']['type2'] != 'approve_blog' && $wo['notification']['type2'] != 'ffmpeg' && $wo['notification']['type2'] != 'admin_status_changed' && $wo['notification']['type2'] != 'approve_product') {
+                        $wo['notification']['url'] = $wo['notification']['full_link'];
+                        $wo['notification']['ajax_url'] = $wo['notification']['full_link'];
+                    }
+                    $wo['notification']['notifier']['name'] = $wo['config']['siteName'];
+                    $wo['notification']['notifier']['avatar'] = $wo['config']['theme_url'] . "/img/icon.png";
+                    $wo['notification']['icon'] .= 'admin_notification';
+                    if ($wo['notification']['type2'] == 'admin_status_changed') {
+                        $wo['notification']['type_text'] = $wo['lang']['admin_status_changed'];
+                    }
+                    if ($wo['notification']['type2'] == 'approve_post') {
+                        $wo['notification']['type_text'] = $wo['lang']['approve_post'];
+                    }
+                    if ($wo['notification']['type2'] == 'approve_blog') {
+                        $wo['notification']['type_text'] = $wo['lang']['approve_blog'];
+                    }
+                    if ($wo['notification']['type2'] == 'refund_decline') {
+                        $wo['notification']['type_text'] = $wo['lang']['refund_decline'];
+                    }
+                    if ($wo['notification']['type2'] == 'withdraw_approve') {
+                        $wo['notification']['type_text'] = $wo['lang']['withdraw_approve'];
+                        $wo['notification']['url'] = Wo_SeoLink('index.php?link1=setting&page=payments');
+                    }
+                    if ($wo['notification']['type2'] == 'withdraw_declined') {
+                        $wo['notification']['type_text'] = $wo['lang']['withdraw_declined'];
+                        $wo['notification']['url'] = Wo_SeoLink('index.php?link1=setting&page=payments');
+                    }
+                    if ($wo['notification']['type2'] == 'coinpayments_canceled') {
+                        $wo['notification']['type_text'] = $wo['lang']['coinpayments_canceled'];
+                        $wo['notification']['url'] = Wo_SeoLink('index.php?link1=wallet');
+                    }
+                    if ($wo['notification']['type2'] == 'coinpayments_approved') {
+                        $wo['notification']['type_text'] = $wo['lang']['coinpayments_approved'];
+                        $wo['notification']['url'] = Wo_SeoLink('index.php?link1=wallet');
+                    }
+                }
+                if ($wo['notification']['type'] == 'added_tracking_info') {
+                    $wo['notification']['type_text'] = $wo['lang']['added_tracking_info'];
+                    $wo['notification']['icon'] .= 'added_tracking_info';
+                }
+                if ($wo['notification']['type'] == 'status_changed') {
+                    $wo['notification']['type_text'] = $wo['lang']['admin_status_changed'];
+                    $wo['notification']['icon'] .= 'status_changed';
+                }
+                if ($wo['notification']['type'] == 'new_review') {
+                    $wo['notification']['type_text'] = $wo['lang']['added_review_to_your_product'];
+                    $wo['notification']['icon'] .= 'new_review';
+                }
+                if ($wo['notification']['type'] == 'subscribed_to_you') {
+                    $wo['notification']['type_text'] = str_replace('{text}', $wo['notification']['text'], $wo['lang']['subscribed_to_you']);
+                    $wo['notification']['icon'] .= 'subscribed_to_you';
+                }
                 if ($wo['notification']['type2'] == 'anonymous') {
                     $wo['notification']['notifier']['name']   = $wo['lang']['anonymous']; 
                     $wo['notification']['notifier']['avatar'] = Wo_GetMedia('upload/photos/incognito.png');
@@ -401,10 +459,13 @@ if (empty($error_code)) {
             }
             array_push($final_notifications, $wo['notification']);
         }
-        $count_notifications = Wo_CountNotifications(array(
-            'unread' => true,
-            'remove_notification' => array('requested_to_join_group', 'interested_event', 'going_event', 'invited_event', 'forum_reply', 'admin_notification')
-        ));
+        $count_notifications_options = array(
+            'unread' => true
+        );
+        if ($include_all_notifications !== true) {
+            $count_notifications_options['remove_notification'] = array('requested_to_join_group', 'interested_event', 'going_event', 'invited_event', 'forum_reply', 'admin_notification');
+        }
+        $count_notifications = Wo_CountNotifications($count_notifications_options);
         $response_data['notifications'] = $final_notifications;
         $response_data['new_notifications_count'] = $count_notifications;
     }

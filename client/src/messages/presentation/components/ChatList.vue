@@ -1,45 +1,41 @@
 <!-- Description: Renders the left inbox pane with search, actions, tabs, and real conversation rows from the backend inbox. -->
 <template>
-  <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white shadow-[0_4px_20px_rgba(0,0,255,0.04)]">
-    <div class="space-y-4 border-b border-[#e2e8f0] p-4">
-      <div class="flex items-center gap-2 rounded-[18px] border border-[#e2e8f0] bg-[#f8fafc] px-3 py-2.5">
-        <Icon name="i-ph-magnifying-glass-duotone" class="h-4 w-4 text-slate-500" />
-        <input
-          :value="query"
-          type="text"
-          class="w-full bg-transparent text-sm text-[var(--text-primary)] outline-none"
-          :placeholder="$t('pages.messagesPage.searchPlaceholder')"
-          @input="emit('update:query', ($event.target as HTMLInputElement).value)"
-        >
+  <div class="flex h-full min-h-0 flex-col overflow-hidden bg-white">
+    <div class="border-b border-[#f1f5f9] px-6 py-6">
+      <div class="flex items-center gap-5">
+        <div class="flex h-16 min-w-0 flex-1 items-center gap-4 rounded-[14px] bg-[#f5f5f5] px-5">
+          <Icon name="i-ph-magnifying-glass-duotone" class="h-6 w-6 text-[#8b8b8b]" />
+          <input
+            :value="query"
+            type="text"
+            class="w-full bg-transparent text-[18px] text-[var(--text-primary)] outline-none placeholder:text-[#9ca3af]"
+            :placeholder="$t('pages.messagesPage.searchPlaceholder')"
+            @input="emit('update:query', ($event.target as HTMLInputElement).value)"
+          >
+        </div>
+
+        <div class="flex h-16 shrink-0 overflow-hidden rounded-[14px] bg-[var(--bg-brand)]">
+          <button
+            class="messages-list__top-action"
+            type="button"
+            :title="markAllLabel"
+            @click="emit('mark-all-read')"
+          >
+            <Icon v-if="!markingRead" name="i-ph-list-checks-bold" class="h-6 w-6" />
+            <Icon v-else name="i-ph-spinner-gap-bold" class="h-6 w-6 animate-spin" />
+          </button>
+          <button
+            class="messages-list__top-action"
+            type="button"
+            :title="createGroupLabel"
+            @click="emit('create-group')"
+          >
+            <Icon name="i-ph-user-plus-bold" class="h-6 w-6" />
+          </button>
+        </div>
       </div>
 
-      <div class="flex flex-wrap gap-2">
-        <UButton
-          variant="soft"
-          color="primary"
-          class="rounded-full px-4 font-semibold"
-          :loading="markingRead"
-          @click="emit('mark-all-read')"
-        >
-          <template #leading>
-            <Icon name="i-ph-checks-duotone" class="h-4 w-4" />
-          </template>
-          {{ markAllLabel }}
-        </UButton>
-        <UButton
-          variant="soft"
-          color="neutral"
-          class="rounded-full px-4 font-semibold"
-          @click="emit('create-group')"
-        >
-          <template #leading>
-            <Icon name="i-ph-users-three-duotone" class="h-4 w-4" />
-          </template>
-          {{ createGroupLabel }}
-        </UButton>
-      </div>
-
-      <div class="flex gap-2 overflow-x-auto pb-1">
+      <div class="mt-8 grid grid-cols-3 gap-4">
         <button
           v-for="tab in tabs"
           :key="tab.id"
@@ -54,7 +50,7 @@
       </div>
     </div>
 
-    <div v-if="activeTab === 'multi'" class="border-b border-[#e2e8f0] bg-[#f8fafc] p-4">
+    <div v-if="activeTab === 'multi'" class="border-b border-[#f1f5f9] bg-[#fafafa] px-6 py-4">
       <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">
         {{ $t("pages.messagesPage.composeTitle") }}
       </p>
@@ -109,13 +105,13 @@
       </UButton>
     </div>
 
-    <div class="flex items-center justify-between border-b border-[#e2e8f0] px-4 py-3">
+    <div class="flex items-center justify-between border-b border-[#f1f5f9] px-6 py-3">
       <p class="text-sm font-black text-[var(--text-primary)]">{{ resultLabel }}</p>
       <span v-if="pending" class="text-xs font-semibold text-slate-500">{{ loadingLabel }}</span>
       <span v-else class="text-xs font-semibold text-slate-500">{{ contacts.length }}</span>
     </div>
 
-    <div class="scrollbar-hide flex-1 space-y-2 overflow-y-auto p-3">
+    <div class="scrollbar-hide flex-1 space-y-1 overflow-y-auto px-4 py-4">
       <MessagesChatListItem
         v-for="contact in contacts"
         :key="contact.id"
@@ -223,20 +219,35 @@ function getContactStatus(contact: MessageContact) {
 .chat-list__tab {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  border-radius: 999px;
+  justify-content: center;
+  gap: 7px;
+  min-height: 70px;
+  border-radius: 10px;
   border: 1px solid transparent;
   background: transparent;
-  padding: 10px 14px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: 18px;
   font-weight: 700;
-  color: rgba(15, 23, 42, 0.68);
+  color: #8b8b8b;
   transition: all 0.2s ease;
 }
 
 .chat-list__tab--active {
-  border-color: rgba(37, 99, 235, 0.16);
-  background: rgba(37, 99, 235, 0.08);
-  color: #1d4ed8;
+  border-color: transparent;
+  background: #d9d4ff;
+  color: var(--text-brand);
+}
+
+.messages-list__top-action {
+  display: inline-flex;
+  width: 68px;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: background var(--duration-fast) var(--ease-default);
+}
+
+.messages-list__top-action:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 </style>

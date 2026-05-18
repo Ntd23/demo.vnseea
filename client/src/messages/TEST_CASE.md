@@ -20,7 +20,7 @@ English description: Manual QA cases for the backend-backed messages bounded con
 
 | ID | Màn hình | Route | Cách test | Kỳ vọng |
 | --- | --- | --- | --- | --- |
-| `MSG-001` | Desktop | `/messages` | Hard reload route. | Layout có đúng 3 vùng như phtml: cột trái search/action/tabs/list, cột giữa thread/composer, cột phải info panel. Không gọi mock endpoint. |
+| `MSG-001` | Desktop | `/messages` | Hard reload route. | Layout dạng split-view giống phtml: cột trái search/action/tabs/list có divider dọc, vùng giữa rộng nền trắng có empty illustration và composer đáy; cột info chỉ mở khi bấm thông tin. Không gọi mock endpoint. |
 | `MSG-002` | Desktop | `/messages` | Mở Network và reload. | Danh sách hội thoại lấy từ `/_api/messages/conversations`; route cũ `messages/inbox` chỉ còn là alias tương thích. |
 | `MSG-003` | Desktop | `/messages` | Chuyển tab `Gửi nhiều người`, `Người dùng`, `Nhóm`. | Tab multi hiện danh sách user nhận được từ backend; tab user hiện user/page chat; tab group chỉ hiện group chat. |
 | `MSG-004` | Desktop | `/messages` | Tìm kiếm theo tên hoặc preview. | Danh sách bên trái được lọc đúng, không làm mất thread đang mở hoặc vỡ panel phải. |

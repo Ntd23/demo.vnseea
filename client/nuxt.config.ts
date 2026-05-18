@@ -39,6 +39,9 @@ const publicApiBase = requireEnv("NUXT_PUBLIC_API_BASE")
 const backendApiBase = requireEnv("NUXT_BACKEND_API_BASE")
 const backendServerKey = requireEnv("NUXT_BACKEND_SERVER_KEY")
 const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL")
+const realtimeInternalUrl = process.env.REALTIME_INTERNAL_URL?.trim() || ""
+const realtimeSecret = process.env.REALTIME_SECRET?.trim() || ""
+const publicRealtimeUrl = process.env.NUXT_PUBLIC_REALTIME_URL?.trim() || ""
 const backendWebBase = normalizeBackendWebBase(
   process.env.NUXT_PUBLIC_BACKEND_WEB_BASE?.trim() || backendApiBase,
 )
@@ -75,10 +78,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     backendApiBase,
     backendServerKey,
+    realtimeInternalUrl,
+    realtimeSecret,
     public: {
       apiBase: publicApiBase,
       backendWebBase,
       siteUrl: publicSiteUrl,
+      realtimeUrl: publicRealtimeUrl,
     },
   },
   css: ["~/assets/css/main.css"],

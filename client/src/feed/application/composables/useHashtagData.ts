@@ -1,6 +1,6 @@
 // English description: Provides normalized hashtag helpers used by feed, explore, popular, and photos pages after removing mock data sources.
 
-import { createCommunitySlug } from "../../../../types/community"
+import { createCommunitySlug } from "../../../community/domain/services/community-helpers.service"
 
 export function normalizeHashtagValue(value: string) {
   return createCommunitySlug(

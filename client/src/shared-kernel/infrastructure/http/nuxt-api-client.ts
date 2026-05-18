@@ -24,7 +24,11 @@ export function useNuxtApiClient() {
       method: options.method ?? "GET",
       query: options.query,
       body: options.body,
-      headers: options.headers,
+      headers: {
+        accept: "application/json",
+        "x-requested-with": "XMLHttpRequest",
+        ...options.headers,
+      },
     }
 
     return requestFetch<TResponse>(endpoint, fetchOptions)

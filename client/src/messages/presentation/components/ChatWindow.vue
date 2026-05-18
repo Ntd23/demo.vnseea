@@ -1,8 +1,8 @@
 <!-- Description: Renders the center conversation pane with backend-backed threads and contact state. -->
 <template>
-  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white shadow-[0_4px_20px_rgba(0,0,255,0.04)]">
+  <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
     <template v-if="contact">
-      <div class="border-b border-[#e2e8f0] px-5 py-4">
+      <div class="border-b border-[#f1f5f9] px-6 py-4">
         <div class="flex items-center justify-between gap-4">
           <div class="flex min-w-0 flex-1 items-center gap-3">
             <UButton
@@ -75,27 +75,33 @@
         @load-more="emit('load-more')"
       />
 
-      <MessagesChatInput
-        v-model="inputModel"
-        :disabled="isPending"
-        @send="onSendMessage"
-      />
     </template>
 
     <div v-else class="flex flex-1 items-center justify-center p-6 sm:p-10">
-      <div class="max-w-[420px] text-center">
-        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-[22px] bg-primary-50 text-primary-600">
-          <Icon
-            :name="activeTab === 'multi' ? 'i-ph-user-list-duotone' : 'i-ph-chat-circle-text-duotone'"
-            class="h-8 w-8"
-          />
+      <div class="max-w-[520px] text-center">
+        <div class="mx-auto flex w-[210px] flex-col items-center gap-5">
+          <div class="relative h-[58px] w-[148px] rounded-[3px] bg-[#fff0cf]">
+            <span class="absolute -left-4 top-5 h-0 w-0 border-y-[12px] border-r-[18px] border-y-transparent border-r-[#fff0cf]" />
+            <span class="absolute left-7 top-4 h-1.5 w-[105px] rounded-full bg-[#ffd76a]" />
+            <span class="absolute left-7 top-8 h-1.5 w-[74px] rounded-full bg-[#ffd76a]" />
+          </div>
+          <div class="relative ml-16 h-[58px] w-[132px] rounded-[3px] bg-[#c9eff2]">
+            <span class="absolute -right-4 top-5 h-0 w-0 border-y-[12px] border-l-[18px] border-y-transparent border-l-[#c9eff2]" />
+            <span class="absolute left-4 top-4 h-1.5 w-[103px] rounded-full bg-[#88b7bd]" />
+            <span class="absolute left-4 top-8 h-1.5 w-[73px] rounded-full bg-[#88b7bd]" />
+          </div>
         </div>
-        <h3 class="mt-5 text-lg font-black text-[var(--text-primary)]">
+        <h3 class="mt-12 whitespace-pre-line text-[24px] font-medium leading-9 text-[#555]">
           {{ emptyTitle }}
         </h3>
-        <!-- Removed emptyDescription for cleaner look -->
       </div>
     </div>
+
+    <MessagesChatInput
+      v-model="inputModel"
+      :disabled="isPending || !contact"
+      @send="onSendMessage"
+    />
   </div>
 </template>
 
