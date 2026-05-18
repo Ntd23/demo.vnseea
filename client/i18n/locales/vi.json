@@ -2571,7 +2571,7 @@
     "messagesPage": {
       "seoTitle": "Tin nhắn | VNSEEA",
       "seoDescription": "Quản lý hội thoại trên VNSEEA với danh sách người dùng rõ ràng, khung chat ổn định và form gửi tin nhắn gọn hơn.",
-      "searchPlaceholder": "Tìm cuộc trò chuyện, người dùng hoặc nhóm",
+      "searchPlaceholder": "Tìm kiếm",
       "sendMultiple": "Gửi nhiều người",
       "users": "Người dùng",
       "groups": "Nhóm",
@@ -2586,7 +2586,7 @@
       "noRecipientsAvailable": "Hiện chưa có người nhận phù hợp.",
       "multiTabTitle": "Chọn người nhận ở cột bên trái",
       "multiTabDescription": "Tab gửi nhiều vẫn nằm trong pane trái như trang PHP. Chọn người nhận ở đây rồi gửi từ form giữa màn hình.",
-      "noConversationSelectedTitle": "Hãy chọn một cuộc trò chuyện",
+      "noConversationSelectedTitle": "Chọn một trong những người bạn của bạn\nVà nói Xin chào!",
       "noConversationSelectedDescription": "Chọn người dùng hoặc nhóm ở danh sách bên trái để tải thread thật từ backend.",
       "infoPanelEmptyTitle": "Chi tiết hội thoại sẽ hiện ở đây",
       "infoPanelEmptyDescription": "Mở một cuộc trò chuyện thật để xem thành viên, media và các thao tác hỗ trợ trong cột này.",
@@ -4935,6 +4935,20 @@
       "description": "Dùng mũi tên điều hướng để xem {count} media trong bài viết này."
     }
   },
+  "notifications": {
+    "center": {
+      "label": "Trung tâm",
+      "title": "Thông báo",
+      "markRead": "Đánh dấu đã xem",
+      "realtime": "Đang cập nhật realtime",
+      "polling": "Đang dự phòng bằng polling",
+      "loading": "Đang tải thông báo...",
+      "empty": "Chưa có thông báo nào.",
+      "delete": "Xóa thông báo",
+      "soundOn": "Bật âm",
+      "soundOff": "Tắt âm"
+    }
+  },
   "navigation": {
     "headerBar": {
       "home": "Trang chủ",
@@ -4942,6 +4956,8 @@
       "messages": "Tin nhắn",
       "notifications": "Thông báo",
       "account": "Tài khoản",
+      "noRequests": "Chưa có lời mời mới.",
+      "groupChatRequest": "Lời mời nhóm chat",
       "search": "Tìm kiếm",
       "reels": "Reels",
       "video": "Video",

@@ -6,16 +6,16 @@
     type="button"
     @click="$emit('click')"
   >
-    <div class="flex min-w-0 items-start gap-3">
+    <div class="flex min-w-0 items-start gap-5">
       <div class="relative shrink-0">
         <UAvatar
           :src="avatarUrl"
           :alt="name"
-          size="md"
-          :ui="{ rounded: 'rounded-[16px]' }"
+          size="3xl"
+          :ui="{ rounded: 'rounded-full' }"
         />
         <span
-          class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white"
+          class="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-white"
           :class="isOnline ? 'bg-emerald-500' : 'bg-slate-300'"
         />
       </div>
@@ -23,14 +23,14 @@
       <div class="min-w-0 flex-1">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <p class="truncate text-sm font-black text-[var(--text-primary)]">{{ name }}</p>
-            <p class="truncate text-xs text-slate-500">{{ status }}</p>
+            <p class="truncate text-[20px] font-extrabold leading-tight text-[var(--text-primary)]">{{ name }}</p>
+            <p class="mt-2 truncate text-[13px] text-slate-500">{{ status }}</p>
           </div>
-          <span class="shrink-0 text-[11px] font-semibold text-slate-400">{{ time }}</span>
+          <span class="shrink-0 text-[16px] font-medium text-slate-400">{{ time }}</span>
         </div>
 
-        <div class="mt-2 flex items-center justify-between gap-3">
-          <p class="line-clamp-2 text-sm leading-5 text-slate-600">{{ preview }}</p>
+        <div class="mt-3 flex items-center justify-between gap-3">
+          <p class="line-clamp-2 text-[18px] leading-7 text-slate-600">{{ preview }}</p>
           <span
             v-if="showSelect"
             class="chat-list-item__select"
@@ -66,18 +66,18 @@ defineEmits<{
 <style scoped>
 .chat-list-item {
   width: 100%;
-  border-radius: 18px;
+  border-radius: 14px;
   border: 1px solid transparent;
   background: #ffffff;
-  padding: 14px;
+  padding: 18px 14px;
   text-align: left;
   transition: all 0.2s ease;
 }
 
 .chat-list-item:hover,
 .chat-list-item--active {
-  border-color: rgba(37, 99, 235, 0.16);
-  background: rgba(37, 99, 235, 0.06);
+  border-color: transparent;
+  background: #f8fafc;
 }
 
 .chat-list-item__badge,

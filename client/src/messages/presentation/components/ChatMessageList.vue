@@ -2,7 +2,7 @@
 <template>
   <div
     ref="listContainer"
-    class="scrollbar-hide flex-1 min-h-0 overflow-y-auto bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.06),transparent_22%),linear-gradient(180deg,rgba(248,251,255,0.98),rgba(244,248,255,0.95))] px-4 py-6 sm:px-6"
+    class="scrollbar-hide flex-1 min-h-0 overflow-y-auto bg-white px-4 py-6 sm:px-6"
   >
     <div class="mx-auto flex w-full max-w-[1080px] flex-col gap-3">
       <div v-if="messages.length > 0" class="flex justify-center pb-2">

@@ -1,6 +1,6 @@
 <!-- Description: Renders the right info pane that mirrors the PHP message detail sidebar. -->
 <template>
-  <div class="scrollbar-hide flex h-full flex-col overflow-y-auto rounded-[24px] border border-[#e2e8f0] bg-white p-5 shadow-[0_4px_20px_rgba(0,0,255,0.04)]">
+  <div class="scrollbar-hide flex h-full flex-col overflow-y-auto bg-white p-5">
     <template v-if="contact">
       <div class="border-b border-[#e2e8f0] pb-5 text-center">
         <UAvatar

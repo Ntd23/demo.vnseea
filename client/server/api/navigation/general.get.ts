@@ -37,6 +37,7 @@ export default defineEventHandler(async (event): Promise<NavigationGeneralRespon
           "group_chat_requests",
           "count_new_messages",
         ].join(","),
+        include_all_notifications: 1,
       },
     ),
     "Unable to load navigation data.",

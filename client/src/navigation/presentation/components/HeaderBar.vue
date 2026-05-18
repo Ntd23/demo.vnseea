@@ -25,12 +25,34 @@
         <div class="ml-auto flex shrink-0 items-center gap-2">
           <NavigationLocaleSwitcher compact />
 
-          <button class="header-action-btn" type="button" :aria-label="$t('navigation.headerBar.friendRequests')">
-            <Icon name="i-ph-user-plus-duotone" class="h-[18px] w-[18px]" />
-            <span v-if="navigationSummary.friendRequestCount > 0" class="header-action-badge">
-              {{ navigationSummary.friendRequestCount }}
-            </span>
-          </button>
+          <div class="notification-popover-root">
+            <button
+              class="header-action-btn"
+              type="button"
+              :aria-label="$t('navigation.headerBar.friendRequests')"
+              @click="toggleRequests"
+            >
+              <Icon name="i-ph-user-plus-duotone" class="h-[18px] w-[18px]" />
+              <span v-if="requestCount > 0" class="header-action-badge">
+                {{ requestCount }}
+              </span>
+            </button>
+
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 translate-y-1"
+            >
+              <HeaderRequestsDropdown
+                v-if="requestsOpen"
+                class="notification-popover"
+                @navigate="requestsOpen = false"
+              />
+            </Transition>
+          </div>
 
           <NuxtLink
             :to="appRoutes.messages"
@@ -42,14 +64,39 @@
               :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-fill' : 'i-ph-chat-circle-dots-duotone'"
               class="h-[18px] w-[18px]"
             />
+            <span v-if="navigationSummary.messageCount > 0" class="header-action-badge">
+              {{ navigationSummary.messageCount }}
+            </span>
           </NuxtLink>
 
-          <button class="header-action-btn" type="button" :aria-label="$t('navigation.headerBar.notifications')">
-            <Icon name="i-ph-bell-duotone" class="h-[18px] w-[18px]" />
-            <span v-if="navigationSummary.notificationCount > 0" class="header-action-badge">
-              {{ navigationSummary.notificationCount }}
-            </span>
-          </button>
+          <div class="notification-popover-root">
+            <button
+              class="header-action-btn"
+              type="button"
+              :aria-label="$t('navigation.headerBar.notifications')"
+              @click="toggleNotifications"
+            >
+              <Icon name="i-ph-bell-duotone" class="h-[18px] w-[18px]" />
+              <span v-if="notificationCount > 0" class="header-action-badge">
+                {{ notificationCount }}
+              </span>
+            </button>
+
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 translate-y-1"
+              enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 translate-y-1"
+            >
+              <NotificationDropdown
+                v-if="notificationOpen"
+                class="notification-popover"
+                @navigate="notificationOpen = false"
+              />
+            </Transition>
+          </div>
 
           <NavigationHeaderUserMenu />
         </div>
@@ -84,6 +131,30 @@
         <!-- RIGHT GROUP: Locale + Avatar -->
         <div class="mobile-bar__group">
           <NavigationLocaleSwitcher compact />
+
+          <NuxtLink
+            :to="appRoutes.messages"
+            class="mobile-icon-btn"
+            :class="route.path === appRoutes.messages ? 'mobile-icon-btn--active' : ''"
+            :aria-label="$t('navigation.headerBar.messages')"
+          >
+            <Icon name="i-ph-chat-circle-dots-duotone" class="h-[20px] w-[20px]" />
+            <span v-if="navigationSummary.messageCount > 0" class="header-action-badge">
+              {{ navigationSummary.messageCount }}
+            </span>
+          </NuxtLink>
+
+          <button
+            class="mobile-icon-btn"
+            type="button"
+            :aria-label="$t('navigation.headerBar.notifications')"
+            @click="toggleNotifications"
+          >
+            <Icon name="i-ph-bell-duotone" class="h-[20px] w-[20px]" />
+            <span v-if="notificationCount > 0" class="header-action-badge">
+              {{ notificationCount }}
+            </span>
+          </button>
 
           <button
             class="mobile-icon-btn mobile-icon-btn--avatar"
@@ -126,6 +197,19 @@
         </button>
       </div>
     </Transition>
+
+    <Transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="opacity-0 -translate-y-2"
+      enter-to-class="opacity-100 translate-y-0"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 -translate-y-2"
+    >
+      <div v-if="notificationOpen" class="mobile-notification-panel xl:hidden">
+        <NotificationDropdown @navigate="notificationOpen = false" />
+      </div>
+    </Transition>
   </header>
 
   <!-- Mobile menu drawer -->
@@ -141,34 +225,53 @@
 import { NuxtLink } from '#components'
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
+import { useNotificationCenterStore } from "../../../notifications/application/stores/useNotificationCenterStore"
+import NotificationDropdown from "../../../notifications/presentation/components/NotificationDropdown.vue"
 import { useNavigationGeneralStore } from "../../application/stores/useNavigationGeneralStore"
+import { useNavigationRequestsStore } from "../../application/stores/useNavigationRequestsStore"
 import NavigationHeaderSearchInput from './HeaderSearchInput.vue'
+import HeaderRequestsDropdown from "./HeaderRequestsDropdown.vue"
 import NavigationHeaderUserMenu from './HeaderUserMenu.vue'
 import NavigationLocaleSwitcher from './LocaleSwitcher.vue'
 import NavigationMobileMenu from './MobileMenu.vue'
 
 const currentAuthUserStore = useCurrentAuthUserStore()
 const navigationGeneralStore = useNavigationGeneralStore()
-await callOnce("current-auth-user", () => currentAuthUserStore.hydrate())
-await callOnce("navigation-general", () => navigationGeneralStore.hydrate())
-
-const mobileMenuOpen = ref(false)
-const mobileSearchOpen = ref(false)
-
-const route = useRoute()
-const isHome = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
-const currentUser = computed(() => currentAuthUserStore.user)
-const navigationSummary = computed(() => navigationGeneralStore.summary)
-const avatarUrl = computed(() =>
-  typeof currentUser.value?.avatarUrl === "string" && currentUser.value.avatarUrl.length > 0
-    ? currentUser.value.avatarUrl
-    : "",
-)
+const navigationRequestsStore = useNavigationRequestsStore()
+const notificationCenterStore = useNotificationCenterStore()
 const backendSession = useCookie<string | null>("user_id", {
   default: () => null,
   sameSite: "lax",
   path: "/",
 })
+
+await callOnce("current-auth-user", () => currentAuthUserStore.hydrate())
+
+if (backendSession.value) {
+  await callOnce("navigation-general", () => navigationGeneralStore.hydrate())
+  await callOnce("notification-center", () => notificationCenterStore.hydrate())
+}
+
+const mobileMenuOpen = ref(false)
+const mobileSearchOpen = ref(false)
+const notificationOpen = ref(false)
+const requestsOpen = ref(false)
+
+const route = useRoute()
+const isHome = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
+const currentUser = computed(() => currentAuthUserStore.user)
+const navigationSummary = computed(() => navigationGeneralStore.summary)
+const requestCount = computed(() => navigationSummary.value.friendRequestCount + navigationSummary.value.groupChatRequestCount)
+const notificationCount = computed(() =>
+  notificationCenterStore.hydrated
+    ? notificationCenterStore.unreadCount
+    : navigationSummary.value.notificationCount,
+)
+const avatarUrl = computed(() =>
+  typeof currentUser.value?.avatarUrl === "string" && currentUser.value.avatarUrl.length > 0
+    ? currentUser.value.avatarUrl
+    : "",
+)
 const currentUserInitials = computed(() =>
   currentUser.value?.name
     ?.split(/\s+/)
@@ -182,13 +285,41 @@ const currentUserInitials = computed(() =>
 watch(() => route.path, () => {
   mobileSearchOpen.value = false
   mobileMenuOpen.value = false
+  notificationOpen.value = false
+  requestsOpen.value = false
 })
 
 onMounted(() => {
   if (backendSession.value && !currentAuthUserStore.user) {
     void currentAuthUserStore.hydrate(true)
   }
+  if (backendSession.value) {
+    void notificationCenterStore.startRealtime()
+  }
 })
+
+onBeforeUnmount(() => {
+  notificationCenterStore.stopRealtime()
+})
+
+async function toggleNotifications() {
+  notificationOpen.value = !notificationOpen.value
+  requestsOpen.value = false
+
+  if (notificationOpen.value) {
+    await notificationCenterStore.hydrate(true)
+    await notificationCenterStore.markRead()
+  }
+}
+
+async function toggleRequests() {
+  requestsOpen.value = !requestsOpen.value
+  notificationOpen.value = false
+
+  if (requestsOpen.value) {
+    await navigationRequestsStore.hydrate(true)
+  }
+}
 </script>
 
 <style scoped>
@@ -266,6 +397,29 @@ onMounted(() => {
   font-weight: 800;
   color: #ffffff;
   line-height: 1;
+}
+
+.notification-popover-root {
+  position: relative;
+}
+
+.notification-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 40;
+}
+
+.mobile-notification-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 12px;
+  right: 12px;
+  z-index: 50;
+}
+
+.mobile-notification-panel :deep(.notification-dropdown) {
+  width: 100%;
 }
 
 /* ─── Mobile bar ───────────────────────────────────────── */

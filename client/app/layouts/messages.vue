@@ -1,8 +1,8 @@
 <template>
-  <div class="phone-safe flex h-screen min-h-0 flex-col overflow-hidden bg-[#f1f4fb]">
+  <div class="phone-safe flex h-screen min-h-0 flex-col overflow-hidden bg-(--bg-base)">
     <NavigationHeaderBar />
     <div class="flex min-h-0 flex-1 overflow-hidden">
-      <main class="min-h-0 flex-1 overflow-hidden bg-white">
+      <main class="min-h-0 min-w-0 flex-1 overflow-hidden bg-(--bg-surface)">
         <slot />
       </main>
     </div>
