@@ -33,6 +33,14 @@ export function createMockOrderRepository(): OrderRepository {
         })
         .map(order => clone(order))
     },
+    async getSellerOrders(query?: GetBuyerOrdersQuery) {
+      return sellerOrdersState
+        .filter((order) => {
+          const matchesFilter = !query?.status || query.status === "all" || order.status === query.status
+          return matchesFilter && matchesSearch(order as unknown as BuyerOrder, query.search)
+        })
+        .map(order => clone(order))
+    },
     async getBuyerOrderById(id: string) {
       const order = buyerOrdersState.find(entry => entry.id === id) ?? null
       return order ? clone(order) : null

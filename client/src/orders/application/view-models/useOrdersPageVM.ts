@@ -7,14 +7,15 @@ import type {
 import { createApiOrderRepository } from "../../infrastructure/repositories/ApiOrderRepository"
 
 export function useOrdersPageVM(
+  sectionMode: "purchased" | "orders" = "orders",
   repository = createApiOrderRepository(),
 ) {
   const search = ref("")
   const activeFilter = ref<BuyerOrderFilter>("all")
 
   const { data: ordersData, status, error, refresh } = useAsyncData(
-    "orders:buyer:list",
-    () => repository.getBuyerOrders(),
+    `orders:list:${sectionMode}`,
+    () => sectionMode === "purchased" ? repository.getBuyerOrders() : repository.getSellerOrders(),
     {
       default: () => [],
     },
@@ -46,12 +47,15 @@ export function useOrdersPageVM(
         return true
       }
 
+      const sellerOrBuyer = sectionMode === "purchased" ? order.seller : ((order as any).buyerName || (order as any).storeName || "")
+      const address = sectionMode === "purchased" ? order.shippingAddress : ((order as any).buyerAddress || "")
+
       return [
         order.orderNumber,
-        order.seller,
-        order.shippingAddress,
+        sellerOrBuyer,
+        address,
         ...order.items.map(item => item.name),
-      ].some(field => field.toLowerCase().includes(keyword))
+      ].filter(Boolean).some(field => field.toLowerCase().includes(keyword))
     })
   })
 
