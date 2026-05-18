@@ -900,6 +900,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                 'url' => 'index.php?link1=timeline&u=' . $wo['user']['username']
             );
             Wo_RegisterNotification($notification_data);
+            Wo_PublishRealtimeNotification($wo['user']['id'], 0, 'group_chat_request');
 
             $response_data = array(
                                     'api_status' => 200,
@@ -928,6 +929,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                 'url' => 'index.php?link1=timeline&u=' . $wo['user']['username']
             );
             Wo_RegisterNotification($notification_data);
+            Wo_PublishRealtimeNotification($wo['user']['id'], 0, 'group_chat_request');
 
             $response_data = array(
                                     'api_status' => 200,

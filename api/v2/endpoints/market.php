@@ -130,7 +130,10 @@ elseif ($_POST['type'] == 'buy') {
                 'url' => 'index.php?link1=orders',
                 'time' => time()
             );
-            $db->insert(T_NOTIFICATION,$notification_data_array);
+            $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+            if (!empty($notification_id)) {
+                Wo_PublishRealtimeNotification($key, $notification_id, 'notification');
+            }
         }
 
         $db->where('user_id',$wo['user']['user_id'])->delete(T_USERCARD);
@@ -213,7 +216,10 @@ elseif ($_POST['type'] == 'tracking') {
             'url' => 'index.php?link1=customer_order&id='.$wo['hash_id'],
             'time' => time()
         );
-        $db->insert(T_NOTIFICATION,$notification_data_array);
+        $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+        if (!empty($notification_id)) {
+            Wo_PublishRealtimeNotification($wo['order']->user_id, $notification_id, 'notification');
+        }
         $response_data = array(
 	        'api_status' => 200,
 	        'data' => 'tracking info has been saved successfully'
@@ -293,7 +299,10 @@ elseif ($_POST['type'] == 'change_status') {
                     'url' => 'index.php?link1=order&id='.$hash_id,
                     'time' => time()
                 );
-                $db->insert(T_NOTIFICATION,$notification_data_array);
+                $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+                if (!empty($notification_id)) {
+                    Wo_PublishRealtimeNotification($wo['order']->product_owner_id, $notification_id, 'notification');
+                }
             }
             else{
                 $notification_data_array = array(
@@ -303,7 +312,10 @@ elseif ($_POST['type'] == 'change_status') {
                     'url' => 'index.php?link1=customer_order&id='.$hash_id,
                     'time' => time()
                 );
-                $db->insert(T_NOTIFICATION,$notification_data_array);
+                $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+                if (!empty($notification_id)) {
+                    Wo_PublishRealtimeNotification($wo['order']->user_id, $notification_id, 'notification');
+                }
             }
 
             $response_data = array(
@@ -363,7 +375,10 @@ elseif ($_POST['type'] == 'review') {
                 'url' => 'index.php?link1=post&id='.$product['seo_id'],
                 'time' => time()
             );
-            $db->insert(T_NOTIFICATION,$notification_data_array);
+            $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+            if (!empty($notification_id)) {
+                Wo_PublishRealtimeNotification($product['user_id'], $notification_id, 'notification');
+            }
 
             $response_data = array(
 		        'api_status' => 200,

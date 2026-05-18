@@ -219,7 +219,10 @@ if ($f == 'admin_setting' AND (Wo_IsAdmin() || Wo_IsModerator())) {
                 'url' => 'index.php?link1=customer_order&id=' . $order->hash_id,
                 'time' => time()
             );
-            $db->insert(T_NOTIFICATION, $notification_data_array);
+            $notification_id = $db->insert(T_NOTIFICATION, $notification_data_array);
+            if (!empty($notification_id)) {
+                Wo_PublishRealtimeNotification($order->user_id, $notification_id, 'notification');
+            }
             $notification_data_array = array(
                 'recipient_id' => $order->product_owner_id,
                 'type' => 'admin_notification',
@@ -227,7 +230,10 @@ if ($f == 'admin_setting' AND (Wo_IsAdmin() || Wo_IsModerator())) {
                 'url' => 'index.php?link1=order&id=' . $order->hash_id,
                 'time' => time()
             );
-            $db->insert(T_NOTIFICATION, $notification_data_array);
+            $notification_id = $db->insert(T_NOTIFICATION, $notification_data_array);
+            if (!empty($notification_id)) {
+                Wo_PublishRealtimeNotification($order->product_owner_id, $notification_id, 'notification');
+            }
             $data['status'] = 200;
         }
         header("Content-type: application/json");
@@ -265,7 +271,10 @@ if ($f == 'admin_setting' AND (Wo_IsAdmin() || Wo_IsModerator())) {
                             'url' => 'index.php?link1=customer_order&id=' . $order->hash_id,
                             'time' => time()
                         );
-                        $db->insert(T_NOTIFICATION, $notification_data_array);
+                        $notification_id = $db->insert(T_NOTIFICATION, $notification_data_array);
+                        if (!empty($notification_id)) {
+                            Wo_PublishRealtimeNotification($order->user_id, $notification_id, 'notification');
+                        }
                         $notification_data_array = array(
                             'recipient_id' => $order->product_owner_id,
                             'type' => 'admin_notification',
@@ -273,7 +282,10 @@ if ($f == 'admin_setting' AND (Wo_IsAdmin() || Wo_IsModerator())) {
                             'url' => 'index.php?link1=order&id=' . $order->hash_id,
                             'time' => time()
                         );
-                        $db->insert(T_NOTIFICATION, $notification_data_array);
+                        $notification_id = $db->insert(T_NOTIFICATION, $notification_data_array);
+                        if (!empty($notification_id)) {
+                            Wo_PublishRealtimeNotification($order->product_owner_id, $notification_id, 'notification');
+                        }
                         $data['status'] = 200;
                     }
                 }

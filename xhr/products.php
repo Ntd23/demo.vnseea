@@ -575,7 +575,10 @@ if ($f == 'products') {
                                 'url' => 'index.php?link1=orders',
                                 'time' => time()
                             );
-                            $db->insert(T_NOTIFICATION,$notification_data_array);
+                            $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+                            if (!empty($notification_id)) {
+                                Wo_PublishRealtimeNotification($key, $notification_id, 'notification');
+                            }
                         }
 
                         $db->where('user_id',$wo['user']['user_id'])->delete(T_USERCARD);
@@ -679,7 +682,10 @@ if ($f == 'products') {
                     'url' => 'index.php?link1=customer_order&id='.$hash_id,
                     'time' => time()
                 );
-                $db->insert(T_NOTIFICATION,$notification_data_array);
+                $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+                if (!empty($notification_id)) {
+                    Wo_PublishRealtimeNotification($order->user_id, $notification_id, 'notification');
+                }
                 $data['status'] = 200;
                 $data['message'] = $wo['lang']['tracking_info_has_been_saved_successfully'];
             }
@@ -746,7 +752,10 @@ if ($f == 'products') {
                             'url' => 'index.php?link1=order&id='.$hash_id,
                             'time' => time()
                         );
-                        $db->insert(T_NOTIFICATION,$notification_data_array);
+                        $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+                        if (!empty($notification_id)) {
+                            Wo_PublishRealtimeNotification($order->product_owner_id, $notification_id, 'notification');
+                        }
                         $data['recipient_id'] = $order->product_owner_id;
                     }
                     else{
@@ -761,7 +770,10 @@ if ($f == 'products') {
                             'url' => 'index.php?link1=customer_order&id='.$hash_id,
                             'time' => time()
                         );
-                        $db->insert(T_NOTIFICATION,$notification_data_array);
+                        $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+                        if (!empty($notification_id)) {
+                            Wo_PublishRealtimeNotification($order->user_id, $notification_id, 'notification');
+                        }
                         $data['recipient_id'] = $order->user_id;
                     }
                         
@@ -856,7 +868,10 @@ if ($f == 'products') {
                     'url' => 'index.php?link1=post&id='.$product['seo_id'],
                     'time' => time()
                 );
-                $db->insert(T_NOTIFICATION,$notification_data_array);
+                $notification_id = $db->insert(T_NOTIFICATION,$notification_data_array);
+                if (!empty($notification_id)) {
+                    Wo_PublishRealtimeNotification($product['user_id'], $notification_id, 'notification');
+                }
                     
                 $data['status'] = 200;
                 $data['message'] = $wo["lang"]["review_has_been_sent_successfully"];

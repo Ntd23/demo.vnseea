@@ -1,6 +1,7 @@
 // English description: Toggles backend notification sound preference through the legacy PHP request handler.
 
 import { createError } from "h3"
+import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 
 type BackendSoundToggleResponse = {
@@ -9,8 +10,21 @@ type BackendSoundToggleResponse = {
 }
 
 export default defineEventHandler(async (event) => {
+  const currentUser = await getBackendCurrentUser(event)
+  const sessionHash = typeof currentUser.session_hash === "string" ? currentUser.session_hash.trim() : ""
+
+  if (!sessionHash) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication is required.",
+      data: { reason: "Missing backend session hash." },
+    })
+  }
+
   const client = createBackendWebClient(event)
-  const response = await client.postForm<BackendSoundToggleResponse>("turn-off-sound")
+  const response = await client.postForm<BackendSoundToggleResponse>("turn-off-sound", {
+    hash_id: sessionHash,
+  })
   const status = Number(response.status ?? 0)
 
   if (status < 200 || status >= 300) {

@@ -2624,6 +2624,7 @@ function Wo_AcceptFollowRequest($following_id = 0, $follower_id = 0)
         );
         $add_activity = Wo_RegisterActivity($activity_data);
         if (Wo_RegisterNotification($notification_data) === true) {
+            Wo_PublishRealtimeNotification($follower_id, 0, 'request');
             return true;
         } else {
             return false;
@@ -2650,6 +2651,7 @@ function Wo_DeleteFollowRequest($following_id, $follower_id)
     } else {
         $query = mysqli_query($sqlConnect, " DELETE FROM " . T_FOLLOWERS . " WHERE `following_id` = {$follower_id} AND `follower_id` = {$following_id} ");
         if ($query) {
+            Wo_PublishRealtimeNotification($follower_id, 0, 'request');
             return true;
         }
     }
@@ -3014,6 +3016,38 @@ function Wo_GetFollowNotifyUsers($user_id = 0)
     return $data;
 }
 
+function Wo_PublishRealtimeNotification($recipient_id, $notification_id = 0, $kind = 'notification')
+{
+    $internal_url = trim(getenv('REALTIME_INTERNAL_URL'));
+    $secret = trim(getenv('REALTIME_SECRET'));
+    if (empty($internal_url) || empty($secret) || empty($recipient_id)) {
+        return false;
+    }
+    if (!function_exists('curl_init')) {
+        return false;
+    }
+    $payload = json_encode(array(
+        'recipientId' => (string) $recipient_id,
+        'notificationId' => (string) $notification_id,
+        'kind' => (string) $kind
+    ));
+    $endpoint = rtrim($internal_url, '/') . '/internal/notifications/publish';
+    $ch = curl_init($endpoint);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 150);
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 300);
+    curl_setopt($ch, CURLOPT_NOSIGNAL, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'X-Realtime-Secret: ' . $secret
+    ));
+    curl_exec($ch);
+    curl_close($ch);
+    return true;
+}
+
 function Wo_RegisterNotification($data = array())
 {
     global $wo, $sqlConnect;
@@ -3226,12 +3260,14 @@ function Wo_RegisterNotification($data = array())
     if (!isset($data['undo']) or $data['undo'] != true) {
         $query_three = "INSERT INTO " . T_NOTIFICATION . " (`recipient_id`, `notifier_id`, {$page_notifcation_query} {$group_notifcation_query} {$story_notifcation_query} {$blog_notifcation_query} {$event_notifcation_query} {$thread_notifcation_query} `post_id`, `comment_id`, `reply_id`, `type`, `type2`, `text`, `url`, `time` {$group_chat_notifcation_query}) VALUES (" . $recipient['user_id'] . "," . $notifier['user_id'] . ",{$page_notifcation_query2} {$group_notifcation_query2} {$story_notifcation_query2} {$blog_notifcation_query2} {$event_notifcation_query2} {$thread_notifcation_query2} " . $data['post_id'] . ",'" . $data['comment_id'] . "','" . $data['reply_id'] . "','" . $data['type'] . "','" . $data['type2'] . "','" . $data['text'] . "','{$url}'," . time() . " {$group_chat_notifcation_query2})";
         $sql_query_three = mysqli_query($sqlConnect, $query_three);
+        $realtime_notification_id = ($sql_query_three ? mysqli_insert_id($sqlConnect) : 0);
         $post_data = array();
         $admin_ids = array();
         if (!empty($data['post_id'])) {
             $post_data = Wo_PostData($data['post_id']);
         }
         $my_id = $wo['user']['user_id'];
+        $admin_realtime_ids = array();
         if (!empty($post_data['page_id'])) {
             $admin_post_id = $post_data['id'];
             $admins = Wo_GetPageAdmins($post_data['page_id'], 'user_id');
@@ -3248,6 +3284,7 @@ function Wo_RegisterNotification($data = array())
                     if ($admin['user_id'] != $wo['user']['user_id']) {
                         $admin_id = $admin['user_id'];
                         $admin_ids[] = "('$admin_id', '$my_id', '$admin_post_id','" . $data['comment_id'] . "','" . $data['reply_id'] . "','" . $data['type'] . "','" . $data['type2'] . "','" . $data['text'] . "','{$url}'," . time() . ")";
+                        $admin_realtime_ids[] = $admin_id;
                     }
                 }
             }
@@ -3256,8 +3293,15 @@ function Wo_RegisterNotification($data = array())
             $implode_query = implode(',', $admin_ids);
             $query_admins = "INSERT INTO " . T_NOTIFICATION . " (`recipient_id`, `notifier_id`, `post_id`, `comment_id`, `reply_id`, `type`, `type2`, `text`, `url`, `time`) VALUES ";
             $sql_query_three = mysqli_query($sqlConnect, $query_admins . $implode_query);
+            if ($sql_query_three) {
+                foreach ($admin_realtime_ids as $admin_realtime_id) {
+                    Wo_PublishRealtimeNotification($admin_realtime_id, 0, 'notification');
+                }
+            }
         }
         if ($sql_query_three) {
+            $realtime_kind = ($data['type'] == 'friends_request') ? 'request' : 'notification';
+            Wo_PublishRealtimeNotification($recipient['user_id'], $realtime_notification_id, $realtime_kind);
             if ($wo['config']['emailNotification'] == 1 && $recipient['emailNotification'] == 1) {
                 $send_mail = false;
                 if (($data['type'] == 'liked_post' || $data['type'] == 'reaction') && $recipient['e_liked'] == 1) {
@@ -3381,7 +3425,8 @@ function Wo_GetNotifications($data = array())
         }
         if (isset($data['remove_notification']) && !empty($data['remove_notification'])) {
             foreach ($data['remove_notification'] as $key => $remove_notification) {
-                $query_one .= ' AND `type` <> "$remove_notification"';
+                $remove_notification = Wo_Secure($remove_notification);
+                $query_one .= " AND `type` <> '{$remove_notification}'";
             }
         }
         if (isset($data['offset']) && is_numeric($data['offset']) && $data['offset'] > 0) {
@@ -3455,7 +3500,8 @@ function Wo_CountNotifications($data = array())
     }
     if (isset($data['remove_notification']) && !empty($data['remove_notification'])) {
         foreach ($data['remove_notification'] as $key => $remove_notification) {
-            $query_one .= ' AND `type` <> "$remove_notification"';
+            $remove_notification = Wo_Secure($remove_notification);
+            $query_one .= " AND `type` <> '{$remove_notification}'";
         }
     }
     $query_one .= " ORDER BY `id` DESC";
@@ -4494,6 +4540,7 @@ function Wo_RegisterMessage($ms_data = array())
             $from_id = $ms_data['from_id'];
         }
         $update_user_chats = Wo_CreateUserChat($ms_data['to_id'], $from_id);
+        Wo_PublishRealtimeNotification($ms_data['to_id'], 0, 'message');
         return $message_id;
     } else {
         return false;

@@ -1243,6 +1243,7 @@ if ($f == 'chat') {
             'url' => 'index.php?link1=timeline&u=' . $wo['user']['username']
         );
         Wo_RegisterNotification($notification_data);
+        Wo_PublishRealtimeNotification($wo['user']['id'], 0, 'group_chat_request');
         $data['status'] = 200;
         header("Content-type: application/json");
         echo json_encode($data);
@@ -1263,6 +1264,7 @@ if ($f == 'chat') {
             'url' => 'index.php?link1=timeline&u=' . $wo['user']['username']
         );
         Wo_RegisterNotification($notification_data);
+        Wo_PublishRealtimeNotification($wo['user']['id'], 0, 'group_chat_request');
         $data['status'] = 200;
         header("Content-type: application/json");
         echo json_encode($data);

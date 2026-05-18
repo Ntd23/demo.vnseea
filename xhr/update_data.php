@@ -117,7 +117,10 @@ if ($f == 'update_data') {
                     'url' => 'index.php?link1=wallet',
                     'time' => time()
                 );
-                $db->insert(T_NOTIFICATION, $notification_data_array);
+                $notification_id = $db->insert(T_NOTIFICATION, $notification_data_array);
+                if (!empty($notification_id)) {
+                    Wo_PublishRealtimeNotification($wo['user']['user_id'], $notification_id, 'notification');
+                }
             }
             elseif ($result['data']['status'] == 100) {
                 $amount   = $result['data']['checkout']['amountf'];
@@ -136,7 +139,10 @@ if ($f == 'update_data') {
                     'url' => 'index.php?link1=wallet',
                     'time' => time()
                 );
-                $db->insert(T_NOTIFICATION, $notification_data_array);
+                $notification_id = $db->insert(T_NOTIFICATION, $notification_data_array);
+                if (!empty($notification_id)) {
+                    Wo_PublishRealtimeNotification($wo['user']['user_id'], $notification_id, 'notification');
+                }
             }
         }
     }

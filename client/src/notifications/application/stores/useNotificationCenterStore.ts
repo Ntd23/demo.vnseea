@@ -206,6 +206,8 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     }
     catch (error) {
       errorMessage.value = error instanceof Error ? error.message : "Realtime notifications are unavailable."
+      connected.value = false
+      socket.value = null
       startPolling()
     }
     finally {
