@@ -5913,6 +5913,7 @@
       "walletShortage": "Thiếu {amount}",
       "walletShortageTitle": "Ví không đủ số dư",
       "walletShortageDescription": "Bạn cần nạp thêm {amount} trước khi đặt hàng.",
+      "removeItem": "Xóa sản phẩm",
       "removeItemAria": "Xóa {name} khỏi giỏ hàng",
       "decreaseQuantityAria": "Giảm số lượng của {name}",
       "increaseQuantityAria": "Tăng số lượng của {name}",
@@ -5920,6 +5921,7 @@
     },
     "shippingForm": {
       "shippingAddress": "Địa chỉ giao hàng",
+      "inUseBadge": "Đang sử dụng",
       "savedAddressTitle": "Địa chỉ đã lưu sẵn sàng",
       "noAddressTitle": "Chưa có địa chỉ nhận hàng",
       "savedAddressDesc": "Đơn hàng sẽ ưu tiên dùng địa chỉ này, bạn vẫn có thể chỉnh lại biểu mẫu bên dưới.",
@@ -5939,6 +5941,7 @@
       "selectAddress": "Chọn địa chỉ giao hàng",
       "noAddresses": "Chưa có địa chỉ nào được lưu",
       "loadingAddresses": "Đang tải địa chỉ...",
+      "addNewAddress": "Thêm địa chỉ mới",
       "formDesc": "Form đã được gom theo cụm thông tin để thao tác nhanh hơn trên desktop mà vẫn gọn trên mobile.",
       "fieldsCount": "{filled}/{total} trường đã điền",
       "recipientInfo": "Thông tin người nhận",
@@ -5979,7 +5982,14 @@
       "validationPostalCodeRequired": "Vui lòng nhập mã bưu chính.",
       "validationStreetRequired": "Vui lòng nhập địa chỉ nhà.",
       "agreeTermsPrefix": "Tôi đã đọc và đồng ý với",
-      "termsAndConditions": "Điều khoản và Điều kiện"
+      "termsAndConditions": "Điều khoản và Điều kiện",
+      "editAddress": "Chỉnh sửa địa chỉ",
+      "deleteAddress": "Xóa địa chỉ",
+      "confirmDeleteAddress": "Bạn có chắc chắn muốn xóa địa chỉ này?",
+      "deleteSuccessTitle": "Đã xóa địa chỉ",
+      "deleteSuccessDescription": "Địa chỉ đã được xóa thành công khỏi danh sách.",
+      "deleteErrorTitle": "Lỗi xóa địa chỉ",
+      "deleteErrorDescription": "Không thể xóa địa chỉ. Vui lòng thử lại sau."
     },
     "stepper": {
       "cart": "Giỏ hàng",

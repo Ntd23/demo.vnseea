@@ -160,6 +160,7 @@ elseif ($_POST['type'] == 'checkout') {
 	        } else {
 	            $wo['total'] += ($wo['product']['price'] * $wo['item']->units);
 	        }
+	        $wo['product']['units'] = $wo['item']->units;
 	        $data[] = $wo['product'];
 	    }
 	}

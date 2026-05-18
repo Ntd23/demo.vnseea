@@ -8,17 +8,53 @@
       :progress-label="$t('checkout.page.progressLabel')"
       :progress-text="progressText"
       :progress-value="progressValue"
+      :has-address="hasSavedAddress"
+      :has-items="hasItems"
     >
       <template #left>
+        <div v-if="isLoading" class="space-y-6 p-6 bg-white border border-[#e2e8f0] rounded-[16px] animate-pulse">
+          <div class="flex justify-between items-center">
+            <div class="h-6 bg-slate-200 rounded w-1/3"></div>
+            <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+          </div>
+          <div class="h-[120px] bg-slate-50 rounded-xl border border-dashed border-slate-200 flex items-center justify-center">
+            <div class="h-4 bg-slate-200 rounded w-1/2"></div>
+          </div>
+        </div>
         <ShippingAddressFormUI
+          v-else
+          ref="addressFormRef"
           :initial-address="savedAddress"
           @submit="handleAddressSubmit"
           @change-address="showAddressPicker = true"
+          @delete="handleDeleteAddress"
         />
       </template>
 
       <template #right>
+        <div v-if="isLoading" class="space-y-6 p-6 bg-white border border-[#e2e8f0] rounded-[16px] animate-pulse">
+          <div class="h-6 bg-slate-200 rounded w-1/2"></div>
+          <div class="flex gap-4">
+            <div class="w-16 h-16 bg-slate-100 rounded-lg"></div>
+            <div class="flex-1 space-y-2 py-1">
+              <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+              <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+            </div>
+          </div>
+          <div class="border-t border-slate-100 pt-4 space-y-3">
+            <div class="flex justify-between">
+              <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+              <div class="h-4 bg-slate-200 rounded w-1/6"></div>
+            </div>
+            <div class="flex justify-between">
+              <div class="h-4 bg-slate-200 rounded w-1/4"></div>
+              <div class="h-4 bg-slate-200 rounded w-1/6"></div>
+            </div>
+          </div>
+          <div class="h-[52px] bg-slate-100 rounded-xl"></div>
+        </div>
         <CheckoutSummary
+          v-else
           :items="cartItems"
           :shipping-fee="shippingFee"
           :wallet-balance="walletBalance"
@@ -35,7 +71,10 @@
     <AddressPickerModal
       v-model:open="showAddressPicker"
       :fetch-addresses="fetchSavedAddresses"
+      :delete-address="deleteAddress"
       @select="handlePickedAddress"
+      @add-new="handleAddNewAddress"
+      @edit="handleEditAddress"
     />
   </div>
 </template>
@@ -52,6 +91,7 @@ const { t } = useI18n()
 const showAddressPicker = ref(false)
 
 const {
+  isLoading,
   cartItems,
   savedAddress,
   walletBalance,
@@ -59,17 +99,34 @@ const {
   checkoutState,
   progressText,
   progressValue,
-  hasSavedAddress,
   handleAddressSubmit,
   increaseQuantity,
   decreaseQuantity,
   removeItem,
   handleCheckoutAction,
   selectAddress,
+  deleteAddress,
   fetchSavedAddresses,
 } = useCheckoutPageVM()
 
+const hasItems = computed(() => cartItems.value.length > 0)
+const hasSavedAddress = computed(() => Boolean(savedAddress.value))
+
+const addressFormRef = ref<any>(null)
+
 const handlePickedAddress = (address: SavedShippingAddress) => {
   selectAddress(address)
+}
+
+const handleAddNewAddress = () => {
+  addressFormRef.value?.clearAndFocus()
+}
+
+const handleEditAddress = (addr: SavedShippingAddress) => {
+  addressFormRef.value?.populateAndFocus(addr)
+}
+
+const handleDeleteAddress = async (id: string) => {
+  await deleteAddress(id)
 }
 </script>

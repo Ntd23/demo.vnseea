@@ -18,6 +18,22 @@ export function createApiCheckoutRepository(): CheckoutRepository {
     async saveShippingAddress(address: ShippingAddress) {
       return await client.post<ShippingAddress, ShippingAddress>(apiRoutes.checkout.address, address)
     },
+    async deleteAddress(addressId: string) {
+      await client.post<void, { id: string }>("checkout/address-delete", { id: addressId })
+    },
+    async updateCartItemQuantity(productId: string, quantity: number) {
+      await client.post<void, { productId: string; quantity: number; action: "update" }>("checkout/cart-update", {
+        productId,
+        quantity,
+        action: "update",
+      })
+    },
+    async removeCartItem(productId: string) {
+      await client.post<void, { productId: string; action: "remove" }>("checkout/cart-update", {
+        productId,
+        action: "remove",
+      })
+    },
     async submitOrder(snapshot: CheckoutSnapshot) {
       return await client.post<{ success: boolean; orderId: string }, CheckoutSnapshot>(
         apiRoutes.checkout.submit,

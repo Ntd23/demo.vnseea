@@ -5917,6 +5917,7 @@
       "walletShortage": "Missing {amount}",
       "walletShortageTitle": "Insufficient wallet balance",
       "walletShortageDescription": "Add {amount} before placing this order.",
+      "removeItem": "Remove item",
       "removeItemAria": "Remove {name} from cart",
       "decreaseQuantityAria": "Decrease quantity for {name}",
       "increaseQuantityAria": "Increase quantity for {name}",
@@ -5924,6 +5925,7 @@
     },
     "shippingForm": {
       "shippingAddress": "Shipping Address",
+      "inUseBadge": "In use",
       "savedAddressTitle": "Saved address ready",
       "noAddressTitle": "No shipping address yet",
       "savedAddressDesc": "The order will prioritize this address, you can still modify the form below.",
@@ -5977,7 +5979,14 @@
       "validationCountryRequired": "Please enter the country.",
       "validationCityRequired": "Please enter the city.",
       "validationPostalCodeRequired": "Please enter the postal code.",
-      "validationStreetRequired": "Please enter the street address."
+      "validationStreetRequired": "Please enter the street address.",
+      "editAddress": "Edit address",
+      "deleteAddress": "Delete address",
+      "confirmDeleteAddress": "Are you sure you want to delete this address?",
+      "deleteSuccessTitle": "Address deleted",
+      "deleteSuccessDescription": "The address has been successfully deleted.",
+      "deleteErrorTitle": "Delete failed",
+      "deleteErrorDescription": "Could not delete this address. Please try again later."
     }
   },
   "orders": {
