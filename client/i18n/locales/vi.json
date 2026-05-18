@@ -1469,7 +1469,7 @@
     "photosPage": {
       "seoTitle": "Ảnh | VNSEEA",
       "seoDescription": "Trang ảnh của VNSEEA với hero thư viện ảnh, bộ lọc, strip album, masonry gallery, lightbox và liên kết sang hashtag, popular, memories.",
-      "heroEyebrow": "P-35 · Photos",
+      "heroEyebrow": "Photos",
       "heroTitle": "Thư viện ảnh cộng đồng đang được xem nhiều",
       "heroDescription": "Trang /photos gom các bộ ảnh theo chủ đề, cho phép lọc theo loại nội dung, mở lightbox trực tiếp và đi nhanh sang hashtag, memories hoặc popular.",
       "heroPrimaryAction": "Mở ảnh nổi bật",
@@ -1769,7 +1769,7 @@
       "seoDescriptionSection": "Khám phá các thread mới nhất trong mục {section} của diễn đàn VNSEEA.",
       "seoDescriptionQuerySection": "Kết quả cho \"{query}\" trong mục {section} của diễn đàn VNSEEA.",
       "seoDescriptionThread": "Thread \"{title}\" trên diễn đàn VNSEEA. {excerpt}",
-      "heroEyebrow": "P-13 · Forum",
+      "heroEyebrow": "Forum",
       "heroTitle": "Theo dõi thread công khai, hỏi nhanh và giữ ngữ cảnh thảo luận rõ ràng",
       "heroDescription": "Forum VNSEEA ưu tiên listing public dễ index, filter đồng bộ với URL và khung detail đủ rõ để bạn mở thread, đọc phản hồi và tiếp tục trao đổi mà không bị mất ngữ cảnh.",
       "heroStatusAll": "Theo dõi {count} thread public, câu hỏi nổi bật và cập nhật mới từ cộng đồng VNSEEA.",
@@ -2158,7 +2158,7 @@
     "newProductPage": {
       "seoTitle": "Tạo sản phẩm mới | VNSEEA",
       "seoDescription": "Tạo tin đăng sản phẩm mới trên VNSEEA với form rõ ràng, preview ổn định và bản nháp cục bộ an toàn.",
-      "badge": "P-24 · Tạo sản phẩm",
+      "badge": "Tạo sản phẩm",
       "title": "Đăng sản phẩm mới với flow gọn và dễ kiểm tra hơn",
       "description": "Điền các trường chính, xem preview realtime và giữ bản nháp ngay trên thiết bị trong lúc chuẩn bị tin đăng.",
       "quickFill": "Điền nhanh dữ liệu mẫu",
@@ -3171,7 +3171,7 @@
       "seoDescriptionStatus": "Có {count} chiến dịch ở trạng thái {status} đang hiển thị trên VNSEEA.",
       "seoDescriptionQueryCategory": "Có {count} chiến dịch khớp với \"{query}\" trong nhóm {category} trên VNSEEA.",
       "seoDescriptionQueryStatus": "Có {count} chiến dịch khớp với \"{query}\" trong trạng thái {status} trên VNSEEA.",
-      "heroEyebrow": "P-14 · Funding",
+      "heroEyebrow": "Funding",
       "heroTitle": "Gây quỹ hỗ trợ cộng đồng",
       "heroDescription": "Khám phá và đồng hành cùng các chiến dịch ý nghĩa trên VNSEEA.",
       "createCampaign": "Tạo chiến dịch",
@@ -3443,7 +3443,7 @@
       "seoDescriptionQueryCategory": "Có {count} trò chơi khớp với \"{query}\" trong nhóm {category} trên VNSEEA.",
       "seoDescriptionQueryTab": "Có {count} trò chơi khớp với \"{query}\" trong tab {tab} trên VNSEEA.",
       "seoDescriptionGame": "Đang xem trò chơi \"{title}\" trên VNSEEA. {description}",
-      "heroEyebrow": "P-15 · Games",
+      "heroEyebrow": "Games",
       "heroTitle": "Khu trò chơi mock đủ rõ để khám phá, lọc và bắt đầu một lượt chơi ngay",
       "heroDescription": "Games trên VNSEEA ưu tiên listing công khai dễ chia sẻ, filter giữ được ngữ cảnh trên URL và modal chơi mock có trạng thái rõ để không làm người dùng đoán mò.",
       "queryBadge": "Từ khóa: \"{query}\"",
@@ -3576,7 +3576,7 @@
       "seoDescriptionBilling": "Xem các gói Go Pro của VNSEEA theo chu kỳ {billing}, với pricing và quyền lợi được trình bày rõ ràng hơn.",
       "seoDescriptionPlan": "Xem chi tiết gói {plan} của VNSEEA để so sánh quyền lợi, giới hạn và mức thanh toán phù hợp.",
       "seoDescriptionPlanBilling": "Xem gói {plan} của VNSEEA theo chu kỳ {billing}, gồm pricing, quyền lợi và luồng checkout mock rõ ràng hơn.",
-      "heroEyebrow": "P-16 · Go Pro",
+      "heroEyebrow": "Go Pro",
       "heroShortTitle": "Go Pro rõ giá, chọn nhanh",
       "heroShortDescription": "3 gói, 2 chu kỳ và checkout mock ngay trên trang.",
       "heroTitle": "Chọn gói nâng cấp rõ lợi ích, rõ giá và không làm flow thanh toán bị mơ hồ",
@@ -3844,7 +3844,7 @@
       "seoDescriptionQuery": "Xem {count} kết quả việc làm trên VNSEEA cho từ khóa \"{query}\" với filter và trạng thái route rõ ràng hơn.",
       "seoDescriptionQueryCategory": "Xem {count} việc làm cho từ khóa \"{query}\" trong nhóm {category} trên VNSEEA.",
       "seoDescriptionFilters": "Xem {count} việc làm trên VNSEEA theo bộ lọc hiện tại: {summary}.",
-      "heroEyebrow": "P-18 · Jobs",
+      "heroEyebrow": "Jobs",
       "heroTitle": "Giữ luồng tìm việc và đăng tuyển đủ rõ ngay từ listing đầu tiên",
       "heroDescription": "Job board trên VNSEEA ưu tiên route có nghĩa, filter dễ chia sẻ lại và hai flow quan trọng nhất là apply và post job đều có trạng thái phản hồi rõ ràng hơn.",
       "heroSearchChip": "Tìm: \"{query}\"",
@@ -4413,7 +4413,7 @@
     "editProductPage": {
       "seoTitle": "Chỉnh sửa sản phẩm #{id} | VNSEEA",
       "seoDescription": "Cập nhật thông tin sản phẩm trên VNSEEA với preview ổn định, quản lý ảnh rõ ràng và bản nháp cục bộ an toàn.",
-      "badge": "P-25 · Chỉnh sửa sản phẩm",
+      "badge": "Chỉnh sửa sản phẩm",
       "title": "Chỉnh sửa sản phẩm #{id}",
       "description": "Cập nhật nội dung, kiểm tra ảnh hiện có và xem trước card hiển thị trước khi lưu thay đổi.",
       "restore": "Khôi phục dữ liệu gốc",
@@ -5132,7 +5132,7 @@
       "titleSuffix": "Cài đặt VNSEEA"
     },
     "hero": {
-      "auditLabel": "P-34 · Cài đặt",
+      "auditLabel": "Cài đặt",
       "title": "Cài đặt",
       "description": "Quản lý tài khoản, quyền riêng tư, bảo mật, thông báo, thanh toán và hồ sơ nghề nghiệp.",
       "stats": {
@@ -5863,7 +5863,7 @@
       "description": "Hoàn tất checkout marketplace với form địa chỉ, giỏ hàng, số dư ví và tổng thanh toán.",
       "layoutTitle": "Thanh toán",
       "layoutDescription": "Điền địa chỉ nhận hàng, kiểm tra giỏ hàng và chọn phương thức thanh toán trước khi xác nhận đơn.",
-      "eyebrow": "P-14 · Thanh toán",
+      "eyebrow": "Thanh toán",
       "progressLabel": "Tiến độ checkout",
       "progressStatus": "{ready}/{total} bước đã sẵn sàng",
       "formRegion": "Biểu mẫu địa chỉ giao hàng",
@@ -6003,12 +6003,12 @@
       "description": "Theo dõi đơn mua, trạng thái giao hàng và tổng quan các đơn marketplace của bạn trên VNSEEA.",
       "layoutTitle": "Đơn hàng của tôi",
       "layoutDescription": "Theo dõi các đơn mua trong marketplace, kiểm tra trạng thái giao hàng và mở lại chi tiết đơn khi cần.",
-      "eyebrow": "P-15 · Đơn hàng",
-      "detailEyebrow": "P-16 · Chi tiết đơn",
+      "eyebrow": "Đơn hàng",
+      "detailEyebrow": "Chi tiết đơn",
       "detailTitle": "Chi tiết đơn #{id}",
       "detailFallbackTitle": "Chi tiết đơn hàng",
       "detailDescription": "Theo dõi trạng thái đơn, kiểm tra thông tin giao hàng và xem lại toàn bộ sản phẩm trong giao dịch.",
-      "customerEyebrow": "P-17 · Đơn khách đặt",
+      "customerEyebrow": "Đơn khách đặt",
       "customerTitle": "Đơn bán #{id}",
       "customerFallbackTitle": "Chi tiết đơn bán",
       "customerDescription": "Theo dõi một đơn bán cụ thể, kiểm tra thông tin người mua và chuẩn bị các bước cập nhật vận chuyển."
@@ -6297,7 +6297,7 @@
     },
     "creation": {
       "group": {
-        "eyebrow": "P-18 · Cộng đồng",
+        "eyebrow": "Cộng đồng",
         "title": "Tạo nhóm mới",
         "description": "Thiết lập một cộng đồng mới cho thành viên cùng trao đổi, chia sẻ nội dung và kết nối quanh một chủ đề chung.",
         "highlights": [
@@ -6312,7 +6312,7 @@
         "categoryLabel": "Loại"
       },
       "page": {
-        "eyebrow": "P-21 · Fanpage",
+        "eyebrow": "Fanpage",
         "title": "Tạo trang mới",
         "description": "Khởi tạo một fanpage cho thương hiệu, cửa hàng, chuyên gia hoặc dự án nội dung để bắt đầu đăng bài, nhận theo dõi và xây dựng hiện diện công khai.",
         "highlights": [

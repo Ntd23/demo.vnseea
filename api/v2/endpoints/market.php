@@ -194,6 +194,9 @@ elseif ($_POST['type'] == 'purchased') {
             if (!empty($order->product) && !empty($order->product['user_data'])) {
                 $order->product['user_data'] = Wo_SecureData([],$order->product['user_data']);
             }
+            if (!empty($order->address_id)) {
+                $order->address = $db->where('id', $order->address_id)->getOne(T_USER_ADDRESS);
+            }
             $purchase->orders[] = $order;
         }
         return $purchase;

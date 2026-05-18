@@ -93,7 +93,7 @@
             <div
               v-if="order.items[0]"
               class="market-order-card__image-bg"
-              :style="{ background: order.items[0].imageStyle || orderItemFallbackBackground }"
+              :style="{ backgroundImage: order.items[0].imageStyle || orderItemFallbackBackground }"
             />
             <Icon v-else name="i-ph-package-fill" class="h-7 w-7 text-white" />
           </NuxtLink>
@@ -441,6 +441,7 @@ const formatOrderCurrency = (value: number) =>
   inset: 0;
   background-size: cover !important;
   background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
 .market-order-card__body {

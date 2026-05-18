@@ -12,7 +12,7 @@
             <div
               v-if="!item.imageUrl"
               class="os-item-img-fallback"
-              :style="{ background: item.imageStyle || defaultCardBackground }"
+              :style="{ backgroundImage: item.imageStyle || defaultCardBackground }"
             />
             <NuxtImg
               v-else
@@ -277,6 +277,9 @@ function formatVnd(value: number) {
   position: absolute;
   inset: 0;
   opacity: 0.6;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .os-item-img-real {
