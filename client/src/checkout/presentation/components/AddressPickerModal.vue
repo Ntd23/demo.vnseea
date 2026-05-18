@@ -163,8 +163,16 @@ watch(isOpen, (val) => {
 
 <style scoped>
 .addr-picker {
-  padding: 24px;
-  min-width: 420px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 480px) {
+  .addr-picker {
+    padding: 24px;
+    min-width: 420px;
+  }
 }
 
 .addr-picker-header {

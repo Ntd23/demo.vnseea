@@ -240,7 +240,7 @@ useHead({
 .ck-main {
   max-width: 1140px;
   margin: 0 auto;
-  padding: 36px 24px 0;
+  padding: 36px 24px 40px;
   position: relative;
   min-height: calc(100vh - 65px);
 }

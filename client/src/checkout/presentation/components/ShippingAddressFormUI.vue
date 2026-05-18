@@ -177,7 +177,8 @@
           type="button"
           color="neutral"
           variant="outline"
-          class="flex-1 sf-submit"
+          size="xl"
+          class="flex-1 sf-submit justify-center"
           :disabled="isBusy"
           @click="cancelEdit"
         >
@@ -187,7 +188,8 @@
           type="submit"
           color="primary"
           variant="outline"
-          class="flex-1 sf-submit"
+          size="xl"
+          class="flex-1 sf-submit justify-center"
           :loading="isBusy"
           :disabled="isSubmitDisabled"
         >
@@ -664,8 +666,8 @@ defineExpose({
 }
 
 .sf-submit {
-  height: 46px;
-  border-radius: 10px;
+  height: 52px;
+  border-radius: 12px;
   font-size: 15px;
   font-weight: 700;
 }

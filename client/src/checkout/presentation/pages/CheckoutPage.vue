@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5 pb-10">
+  <div class="space-y-5">
     <CheckoutLayout
       :title="$t('checkout.page.layoutTitle')"
       :description="$t('checkout.page.layoutDescription')"
