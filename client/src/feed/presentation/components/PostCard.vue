@@ -36,7 +36,8 @@
         </div>
       </div>
 
-      <FeedPostMediaGrid v-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
+      <FeedPostMediaGrid v-if="!post.sharedPost && mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
+      <FeedSharedPostCard v-if="post.sharedPost" :post="post.sharedPost" />
 
       <div class="post-card__stats">
         <div v-if="hasReactions" class="post-card__stats-left">
@@ -194,13 +195,13 @@
     <FeedShareModal
       :open="showShare"
       :share-url="shareUrl"
-      :post="{ author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
+      :post="{ id: post.id, author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
       @close="showShare = false"
       @shared="handleShared"
     />
     <FeedLightboxViewer
       :open="lightboxOpen"
-      :items="mediaItems"
+      :items="post.sharedPost ? [] : mediaItems"
       :current-index="currentMediaIndex"
       :title="props.post.text || t('feed.postCard.lightboxTitle')"
       :description="''"
@@ -238,6 +239,7 @@ import FeedLightboxViewer from "./LightboxViewer.vue"
 import FeedPostHeader from "./PostHeader.vue"
 import FeedPostMediaGrid from "./PostMediaGrid.vue"
 import FeedShareModal from "./ShareModal.vue"
+import FeedSharedPostCard from "./SharedPostCard.vue"
 
 const { t } = useI18n()
 
