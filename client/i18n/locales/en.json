@@ -4835,6 +4835,10 @@
       "reactionSad": "Sad",
       "reactionAngry": "Angry"
     },
+    "postDetail": {
+      "notFoundTitle": "Post not found",
+      "notFoundDescription": "This post does not exist, was removed, or you no longer have permission to view it."
+    },
     "postHeader": {
       "follow": "Follow",
       "following": "Working...",

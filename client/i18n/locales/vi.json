@@ -4831,6 +4831,10 @@
       "reactionSad": "Buồn",
       "reactionAngry": "Phẫn nộ"
     },
+    "postDetail": {
+      "notFoundTitle": "Không tìm thấy bài viết",
+      "notFoundDescription": "Bài viết này không tồn tại, đã bị xóa hoặc bạn không còn quyền xem."
+    },
     "postHeader": {
       "follow": "Theo dõi",
       "following": "Đang xử lý...",

@@ -16,6 +16,7 @@ import type {
 } from "../types/feed.types"
 
 export interface FeedRepository {
+  getPostById(id: number): Promise<FeedPostRecord | null>
   getHome(input?: {
     limit?: number
     afterPostId?: number

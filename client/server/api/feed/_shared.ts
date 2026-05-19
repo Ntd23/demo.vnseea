@@ -48,6 +48,15 @@ type BackendPostsResponse = {
   }
 }
 
+type BackendSinglePostResponse = {
+  api_status?: number | string
+  post_data?: BackendEntity
+  post_comments?: BackendEntity[]
+  errors?: {
+    error_text?: string
+  }
+}
+
 type BackendRegisterCommentResponse = {
   status?: number | string
   html?: string
@@ -1260,6 +1269,42 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
     announcement: mapAnnouncement(general.announcement),
     greeting: mapHomeGreeting(currentUser, event),
   }
+}
+
+export async function fetchFeedPostById(event: H3Event, postId: number): Promise<FeedPostRecord | null> {
+  if (!postId || postId <= 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Post id is required.",
+    })
+  }
+
+  const client = createBackendApiClient(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const response = assertBackendApiSuccess(
+    await client.post<BackendSinglePostResponse, Record<string, unknown>>(
+      "get-post-data",
+      {
+        post_id: postId,
+        fetch: "post_data,post_comments",
+      },
+    ),
+    "Unable to load post detail.",
+  )
+
+  const postEntity = asRecord(response.post_data)
+
+  if (!Object.keys(postEntity).length) {
+    return null
+  }
+
+  return mapPostRecord(
+    {
+      ...postEntity,
+      get_post_comments: response.post_comments ?? [],
+    },
+    resolveMediaUrl,
+  )
 }
 
 export async function fetchExplore(event: H3Event): Promise<FeedExploreResponse> {

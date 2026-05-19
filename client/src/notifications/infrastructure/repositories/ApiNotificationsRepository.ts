@@ -7,6 +7,7 @@ import type { NotificationSummary, RealtimeTokenResponse } from "../../domain/ty
 const notificationApiRoutes = {
   summary: "notifications",
   read: "notifications/read",
+  readOne: "notifications/read-one",
   delete: "notifications/delete",
   sound: "notifications/sound",
   realtimeToken: "realtime/token",
@@ -18,6 +19,7 @@ export function createApiNotificationsRepository(): NotificationsRepository {
   return {
     getSummary: query => client.get<NotificationSummary>(notificationApiRoutes.summary, query),
     markRead: () => client.post<NotificationSummary>(notificationApiRoutes.read),
+    markOneRead: id => client.post<NotificationSummary>(notificationApiRoutes.readOne, { id }),
     deleteNotification: async (id) => {
       await client.post<{ ok: true }>(notificationApiRoutes.delete, { id })
     },

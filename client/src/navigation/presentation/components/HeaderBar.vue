@@ -1,3 +1,5 @@
+<!-- English description: Responsive global header with search, counters, notifications, and account controls. -->
+
 <template>
   <header class="sticky top-0 z-30">
     <!-- ─── Desktop header ────────────────────────────────── -->
@@ -227,6 +229,7 @@ import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import { useNotificationCenterStore } from "../../../notifications/application/stores/useNotificationCenterStore"
 import NotificationDropdown from "../../../notifications/presentation/components/NotificationDropdown.vue"
+import { useHeaderNotificationSync } from "../../application/composables/useHeaderNotificationSync"
 import { useNavigationGeneralStore } from "../../application/stores/useNavigationGeneralStore"
 import { useNavigationRequestsStore } from "../../application/stores/useNavigationRequestsStore"
 import NavigationHeaderSearchInput from './HeaderSearchInput.vue'
@@ -239,6 +242,7 @@ const currentAuthUserStore = useCurrentAuthUserStore()
 const navigationGeneralStore = useNavigationGeneralStore()
 const navigationRequestsStore = useNavigationRequestsStore()
 const notificationCenterStore = useNotificationCenterStore()
+const headerNotificationSync = useHeaderNotificationSync()
 const backendSession = useCookie<string | null>("user_id", {
   default: () => null,
   sameSite: "lax",
@@ -294,12 +298,12 @@ onMounted(() => {
     void currentAuthUserStore.hydrate(true)
   }
   if (backendSession.value) {
-    void notificationCenterStore.startRealtime()
+    void headerNotificationSync.startRealtime()
   }
 })
 
 onBeforeUnmount(() => {
-  notificationCenterStore.stopRealtime()
+  headerNotificationSync.stopRealtime()
 })
 
 async function toggleNotifications() {
@@ -308,7 +312,6 @@ async function toggleNotifications() {
 
   if (notificationOpen.value) {
     await notificationCenterStore.hydrate(true)
-    await notificationCenterStore.markRead()
   }
 }
 

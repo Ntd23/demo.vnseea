@@ -1,8 +1,9 @@
+// English description: Pinia store for backend header counters such as notifications, requests, and unread messages.
+
 import { defineStore } from "pinia"
 import { ref } from "vue"
-import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
-import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { NavigationGeneral } from "../../domain/types/navigation.types"
+import { createApiNavigationRepository } from "../../infrastructure/repositories/ApiNavigationRepository"
 
 const emptyNavigationGeneral = (): NavigationGeneral => ({
   notificationCount: 0,
@@ -28,8 +29,8 @@ export const useNavigationGeneralStore = defineStore("navigation-general", () =>
     loading.value = true
 
     try {
-      const client = useNuxtApiClient()
-      summary.value = await client.get<NavigationGeneral>(apiRoutes.navigation.general)
+      const repository = createApiNavigationRepository()
+      summary.value = await repository.getGeneral()
       hydrated.value = true
       return summary.value
     }
