@@ -35,6 +35,7 @@ export interface SearchResultItem {
   kind: SearchCollectionType
   title: string
   subtitle: string
+  avatarUrl?: string
   description: string
   href: string
   initials: string

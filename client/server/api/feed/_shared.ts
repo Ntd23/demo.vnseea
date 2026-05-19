@@ -364,6 +364,10 @@ const formatBackendTimestamp = (value: unknown) => {
   }).format(date)
 }
 
+const formatPostTime = (entity: BackendEntity) =>
+  firstString(entity, ["time_text"]) ||
+  formatBackendTimestamp(firstString(entity, ["posted", "time", "created_at"]))
+
 const normalizeFeedReactionType = (value: unknown): FeedStoryReactionType | null => {
   const reaction = asString(value)
   return isFeedStoryReaction(reaction) ? reaction : null
@@ -503,8 +507,6 @@ const buildPostText = (entity: BackendEntity) => {
   const fundData = asRecord(entity.fund_data)
   const thread = asRecord(entity.thread)
   const forum = asRecord(entity.forum)
-  const sharedInfo = asRecord(entity.shared_info)
-
   const candidates = [
     firstString(entity, ["Orginaltext", "postText_API", "postText", "text"]),
     [
@@ -536,7 +538,6 @@ const buildPostText = (entity: BackendEntity) => {
       firstString(forum, ["name", "title"]),
       firstString(forum, ["description"]),
     ].filter(Boolean).join("\n"),
-    firstString(sharedInfo, ["Orginaltext", "postText_API", "postText", "text"]),
   ]
 
   const uniqueParts = Array.from(new Set(candidates.map(stripHtml).filter(Boolean)))
@@ -685,6 +686,7 @@ const mapCommentRecord = (
 export const mapPostRecord = (
   entity: BackendEntity,
   resolveMediaUrl: (value: unknown) => string = value => asString(value),
+  depth = 0,
 ): FeedPostRecord => {
   const publisher = asRecord(entity.publisher)
   const userData = asRecord(entity.user_data)
@@ -707,6 +709,11 @@ export const mapPostRecord = (
         : "/home"
   const mentions = extractMentions(entity)
   const text = buildPostText(entity)
+  const sharedInfo = asRecord(entity.shared_info)
+  const sharedPostId = firstNumber(entity, ["parent_id", "shared_post_id"])
+  const sharedPost = depth < 1 && Object.keys(sharedInfo).length > 0
+    ? mapPostRecord(sharedInfo, resolveMediaUrl, depth + 1)
+    : null
   const feeling = extractPostFeeling(entity)
   const eventContext = extractPostEventContext(entity)
   const groupContext = extractPostGroupContext(entity)
@@ -725,6 +732,8 @@ export const mapPostRecord = (
 
   return {
     id: firstNumber(entity, ["post_id", "id"]),
+    sharedPostId: sharedPostId || undefined,
+    sharedPost,
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"])),
     authorVerified: isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
@@ -736,7 +745,7 @@ export const mapPostRecord = (
       || firstString(groupData, ["category_name", "group_title"])
       || author,
     audience: inferAudience(entity),
-    time: firstString(entity, ["time_text", "posted", "time"]) || "",
+    time: formatPostTime(entity),
     text,
     mentions,
     feeling,

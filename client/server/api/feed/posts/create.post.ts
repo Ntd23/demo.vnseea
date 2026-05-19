@@ -1,12 +1,29 @@
 // English description: Creates a new timeline post through the backend API v2 new_post endpoint, including text, feeling, image, and video uploads.
 
-import { createError, getHeader, readBody, readMultipartFormData } from "h3"
+import { createError, getCookie, getHeader, readBody, readMultipartFormData } from "h3"
 import { mapPostRecord } from "../_shared"
 import { assertBackendApiSuccess } from "../../../utils/backend-api-response"
+import { getBackendCurrentUser } from "../../../utils/backend-current-user"
+import { createBackendApiClient } from "../../../utils/backend-api-client"
+import { createBackendWebClient } from "../../../utils/backend-web-client"
 import { postBackendApiUpload } from "../../../utils/backend-api-upload"
 import type { FeedPostRecord } from "../../../../src/feed/domain/types/feed.types"
 
 type BackendCreatePostResponse = {
+  api_status?: number | string
+  post_data?: Record<string, unknown>
+  errors?: {
+    error_text?: string
+  }
+}
+
+type BackendSharePostResponse = {
+  status?: number | string
+  post_id?: number | string
+  message?: string
+}
+
+type BackendGetPostResponse = {
   api_status?: number | string
   post_data?: Record<string, unknown>
   errors?: {
@@ -31,7 +48,13 @@ type CreatePostPayload = {
   pageId?: number
   eventId?: number
   groupId?: number
+  sharedPostId?: number
 }
+
+const asString = (value: unknown) =>
+  typeof value === "string" || typeof value === "number"
+    ? String(value).trim()
+    : ""
 
 const mapAudienceToPrivacy = (value: string) => {
   if (value === "friends" || value === "connections") return "1"
@@ -73,6 +96,7 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     pageId: body.pageId ? Number(body.pageId) : undefined,
     eventId: body.eventId ? Number(body.eventId) : undefined,
     groupId: body.groupId ? Number(body.groupId) : undefined,
+    sharedPostId: body.sharedPostId ? Number(body.sharedPostId) : undefined,
   }
 }
 
@@ -119,18 +143,22 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     if (part.name === "pageId") payload.pageId = Number(value)
     if (part.name === "eventId") payload.eventId = Number(value)
     if (part.name === "groupId") payload.groupId = Number(value)
+    if (part.name === "sharedPostId") payload.sharedPostId = Number(value)
   }
 
   return payload
 }
 
 export default defineEventHandler(async (event) => {
+  const currentUser = await getBackendCurrentUser(event)
+  const currentUserId = asString(currentUser.user_id)
+  const appSessionToken = asString(getCookie(event, "user_id"))
   const contentType = getHeader(event, "content-type") || ""
   const payload = contentType.includes("multipart/form-data")
     ? await parseMultipartPayload(event)
     : await parseJsonPayload(event)
 
-  if (!payload.text && !payload.imageFile && !payload.videoFile && !payload.feeling) {
+  if (!payload.text && !payload.imageFile && !payload.videoFile && !payload.feeling && !payload.sharedPostId) {
     throw createError({
       statusCode: 400,
       statusMessage: "Post content is required.",
@@ -144,12 +172,83 @@ export default defineEventHandler(async (event) => {
     })
   }
 
+  if (!currentUserId || !appSessionToken) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication is required.",
+    })
+  }
+
+  if (payload.sharedPostId) {
+    const shareTarget = payload.groupId
+      ? "group"
+      : payload.pageId
+        ? "page"
+        : "timeline"
+    const shareTargetId = payload.groupId ?? payload.pageId ?? currentUserId
+    const webClient = createBackendWebClient(event)
+    const shareResponse = await webClient.request<BackendSharePostResponse>({
+      query: {
+        f: "share_post_on",
+        s: shareTarget,
+        type_id: shareTargetId,
+        post_id: payload.sharedPostId,
+        text: payload.text,
+      },
+    })
+    const status = Number(shareResponse.status ?? 0)
+
+    if (status < 200 || status >= 300) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: shareResponse.message || "Unable to share post.",
+        data: {
+          backendResponse: shareResponse,
+          payload: {
+            sharedPostId: payload.sharedPostId,
+            shareTarget,
+            targetId: shareTargetId,
+          },
+        },
+      })
+    }
+
+    let createdPost: FeedPostRecord | null = null
+    const createdPostId = Number(shareResponse.post_id ?? 0)
+
+    if (createdPostId > 0) {
+      try {
+        const response = assertBackendApiSuccess(
+          await createBackendApiClient(event).post<BackendGetPostResponse, Record<string, unknown>>(
+            "get-post-data",
+            {
+              post_id: createdPostId,
+              fetch: "post_data",
+            },
+          ),
+          "Unable to load shared post.",
+        )
+        createdPost = response.post_data ? mapPostRecord(response.post_data) : null
+      }
+      catch {
+        createdPost = null
+      }
+    }
+
+    return {
+      ok: true,
+      post: createdPost,
+    }
+  }
+
   const requestBody = payload.imageFile || payload.videoFile
     ? new FormData()
     : new URLSearchParams()
 
   requestBody.append("postText", payload.text)
   requestBody.append("postPrivacy", mapAudienceToPrivacy(payload.audience))
+  requestBody.append("user_id", currentUserId)
+  requestBody.append("s", appSessionToken)
 
   if (payload.pageId) {
     requestBody.append("page_id", String(payload.pageId))
@@ -186,14 +285,38 @@ export default defineEventHandler(async (event) => {
     )
   }
 
-  const response = assertBackendApiSuccess(
-    await postBackendApiUpload<BackendCreatePostResponse>(
-      event,
-      "new_post",
-      requestBody,
-    ),
-    "Unable to create post.",
+  const backendResponse = await postBackendApiUpload<BackendCreatePostResponse>(
+    event,
+    "new_post",
+    requestBody,
   )
+
+  let response: BackendCreatePostResponse
+
+  try {
+    response = assertBackendApiSuccess(
+      backendResponse,
+      "Unable to create post.",
+    )
+  }
+  catch (error) {
+    throw createError({
+      statusCode: Number((error as { statusCode?: number }).statusCode || 400),
+      statusMessage: (error as { statusMessage?: string }).statusMessage || "Unable to create post.",
+      data: {
+        backendResponse,
+        payload: {
+          textLength: payload.text.length,
+          audience: payload.audience,
+          pageId: payload.pageId,
+          eventId: payload.eventId,
+          groupId: payload.groupId,
+          hasUserId: Boolean(currentUserId),
+          hasSession: Boolean(appSessionToken),
+        },
+      },
+    })
+  }
 
   const createdPost = response.post_data
     ? mapPostRecord(response.post_data)

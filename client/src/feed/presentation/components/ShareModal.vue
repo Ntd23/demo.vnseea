@@ -98,15 +98,116 @@
                 <div class="flex flex-row items-center justify-between gap-3">
                   <button v-for="dest in destinations" :key="dest.value"
                     class="group flex flex-1 flex-col items-center gap-3 py-5 text-center transition-all duration-300 cursor-pointer"
-                    type="button" @click="selectedDest = dest.value">
+                    type="button" @click="selectDestination(dest.value)">
                     <Icon :name="dest.icon" class="h-8 w-8 transition-all duration-300"
-                      :class="selectedDest === dest.value ? 'scale-110' : 'text-slate-200 group-hover:text-slate-400'"
-                      :style="selectedDest === dest.value ? { color: 'rgba(0, 0, 255, 0.55)' } : {}" />
+                      :class="selectedDestination === dest.value ? 'scale-110' : 'text-slate-200 group-hover:text-slate-400'"
+                      :style="selectedDestination === dest.value ? { color: 'rgba(0, 0, 255, 0.55)' } : {}" />
                     <span class="text-[11px] font-black leading-tight uppercase tracking-tighter transition-colors"
-                      :class="selectedDest === dest.value ? '' : 'text-slate-400 group-hover:text-slate-600'"
-                      :style="selectedDest === dest.value ? { color: 'rgba(0, 0, 255, 0.55)' } : {}">{{
+                      :class="selectedDestination === dest.value ? '' : 'text-slate-400 group-hover:text-slate-600'"
+                      :style="selectedDestination === dest.value ? { color: 'rgba(0, 0, 255, 0.55)' } : {}">{{
                         dest.label }}</span>
                   </button>
+                </div>
+
+                <div class="mt-3 rounded-[24px] border border-slate-100 bg-slate-50/40 p-4">
+                  <div class="mb-4 flex items-start justify-between gap-3">
+                    <div>
+                      <p class="text-[15px] font-black text-slate-800">{{ destinationPanelTitle }}</p>
+                      <p class="mt-1 text-[12px] font-semibold leading-relaxed text-slate-400">
+                        {{ destinationPanelDescription }}
+                      </p>
+                    </div>
+                    <Icon :name="destinationPanelIcon" class="h-6 w-6 shrink-0 text-[var(--color-primary-500)]" />
+                  </div>
+
+                  <div v-if="selectedDestination === 'timeline'" class="rounded-[18px] bg-white p-3 shadow-sm">
+                    <div class="flex items-center gap-3">
+                      <img
+                        v-if="currentProfileTarget.avatarUrl"
+                        :src="currentProfileTarget.avatarUrl"
+                        class="h-11 w-11 rounded-full object-cover"
+                        :alt="currentProfileTarget.title"
+                      />
+                      <div
+                        v-else
+                        class="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-[13px] font-black text-white"
+                      >
+                        {{ currentProfileTarget.initials }}
+                      </div>
+                      <div class="min-w-0">
+                        <p class="truncate text-[14px] font-black text-slate-800">{{ currentProfileTarget.title }}</p>
+                        <p class="truncate text-[12px] font-bold text-slate-400">{{ currentProfileTarget.subtitle }}</p>
+                      </div>
+                      <Icon name="i-ph-check-circle-fill" class="ml-auto h-5 w-5 text-[var(--color-primary-500)]" />
+                    </div>
+                  </div>
+
+                  <div v-else class="space-y-3">
+                    <UInput
+                      v-if="selectedDestination === 'page'"
+                      v-model="pageSearch"
+                      size="lg"
+                      icon="i-ph-magnifying-glass-bold"
+                      :placeholder="t('feed.shareModal.pageSearchPlaceholder')"
+                      :ui="{ base: 'rounded-[18px] bg-white font-bold' }"
+                    />
+                    <UInput
+                      v-else-if="selectedDestination === 'group'"
+                      v-model="groupSearch"
+                      size="lg"
+                      icon="i-ph-magnifying-glass-bold"
+                      :placeholder="t('feed.shareModal.groupSearchPlaceholder')"
+                      :ui="{ base: 'rounded-[18px] bg-white font-bold' }"
+                    />
+                    <UInput
+                      v-else
+                      v-model="messageSearch"
+                      size="lg"
+                      icon="i-ph-magnifying-glass-bold"
+                      :placeholder="t('feed.shareModal.messageSearchPlaceholder')"
+                      :ui="{ base: 'rounded-[18px] bg-white font-bold' }"
+                    />
+
+                    <div v-if="destinationPending" class="flex items-center gap-2 rounded-[18px] bg-white px-4 py-3 text-[13px] font-bold text-slate-400">
+                      <Icon name="i-ph-spinner-gap-bold" class="h-4 w-4 animate-spin" />
+                      {{ t("feed.shareModal.searchLoading") }}
+                    </div>
+                    <div v-else-if="destinationTargets.length" class="max-h-56 space-y-2 overflow-y-auto pr-1">
+                      <button
+                        v-for="target in destinationTargets"
+                        :key="`${target.kind}-${target.id}`"
+                        type="button"
+                        class="flex w-full items-center gap-3 rounded-[18px] bg-white p-3 text-left shadow-sm transition-all hover:bg-slate-50 active:scale-[0.99]"
+                        :class="selectedTargetId === target.id ? 'ring-2 ring-[var(--color-primary-400)]' : 'ring-1 ring-transparent'"
+                        @click="selectTarget(target.id)"
+                      >
+                        <img
+                          v-if="target.avatarUrl"
+                          :src="target.avatarUrl"
+                          class="h-10 w-10 rounded-full object-cover"
+                          :alt="target.title"
+                        />
+                        <div
+                          v-else
+                          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[12px] font-black text-slate-500"
+                        >
+                          {{ target.initials }}
+                        </div>
+                        <div class="min-w-0">
+                          <p class="truncate text-[14px] font-black text-slate-800">{{ target.title }}</p>
+                          <p class="truncate text-[12px] font-bold text-slate-400">{{ target.subtitle }}</p>
+                        </div>
+                        <Icon
+                          v-if="selectedTargetId === target.id"
+                          name="i-ph-check-circle-fill"
+                          class="ml-auto h-5 w-5 shrink-0 text-[var(--color-primary-500)]"
+                        />
+                      </button>
+                    </div>
+                    <div v-else class="rounded-[18px] bg-white px-4 py-4 text-center text-[13px] font-bold text-slate-400">
+                      {{ destinationEmptyMessage }}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -127,9 +228,7 @@
                           v-else
                           class="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-[15px] font-black text-white shadow-sm"
                         >
-                          {{ (post?.author || 'VN').slice(0, 1).toUpperCase() }}{{ (post?.author || 'VN').split(' ').length
-                            > 1 ? (post?.author || 'VN').split(' ').pop().slice(0, 1).toUpperCase() : (post?.author ||
-                              'VN').slice(1, 2).toUpperCase() }}
+                          {{ postAuthorInitials }}
                         </div>
                       </div>
                     </div>
@@ -155,7 +254,7 @@
                   background: 'linear-gradient(to right, rgb(107, 141, 226), rgb(0 0 0 / 56%))',
                   height: '60px'
                 }"
-                :loading="status === 'loading'" :disabled="status === 'loading' || !selectedDest" @click="onShare">
+                :loading="status === 'loading'" :disabled="status === 'loading' || !canShare" @click="onShare">
                 <Transition mode="out-in" enter-active-class="transition duration-150"
                   enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100">
                   <span v-if="shared" class="flex items-center gap-2.5">
@@ -176,6 +275,11 @@
 </template>
 
 <script setup lang="ts">
+import {
+  useFeedShareModalVM,
+} from "../../application/view-models/useFeedShareModalVM"
+import type { FeedShareDestination } from "../../domain/types/feed-share.types"
+
 const { t } = useI18n()
 const route = useRoute()
 const requestURL = useRequestURL()
@@ -185,9 +289,11 @@ const props = withDefaults(defineProps<{
   open?: boolean
   shareUrl?: string
   post?: {
+    id?: number
     author: string
     text: string
     authorAvatar?: string
+    authorVerified?: boolean
   } | null
 }>(), {
   open: false,
@@ -203,8 +309,23 @@ const copied = ref(false)
 
 const caption = ref("")
 const shared = ref(false)
-const selectedDest = ref("timeline")
 const status = ref<ShareStatus>("idle")
+const {
+  selectedDestination,
+  selectedTargetId,
+  selectedTarget,
+  currentProfileTarget,
+  pageSearch,
+  groupSearch,
+  messageSearch,
+  destinationTargets,
+  destinationPending,
+  canShare,
+  selectDestination,
+  selectTarget,
+  submitShare,
+  reset: resetShareDestination,
+} = useFeedShareModalVM(toRef(props, "open"))
 
 const pageUrl = computed(() =>
   props.shareUrl || new URL(route.fullPath || route.path || "/", requestURL.origin).toString(),
@@ -239,11 +360,61 @@ const platforms = computed(() => [
 ])
 
 const destinations = computed(() => [
-  { label: t("feed.shareModal.destinationTimeline"), value: "timeline", icon: "i-ph-rows-duotone" },
-  { label: t("feed.shareModal.destinationPage"), value: "page", icon: "i-ph-flag-duotone" },
-  { label: t("feed.shareModal.destinationGroup"), value: "group", icon: "i-ph-users-three-duotone" },
-  { label: t("feed.shareModal.destinationMessage"), value: "message", icon: "i-ph-paper-plane-tilt-duotone" },
+  { label: t("feed.shareModal.destinationTimeline"), value: "timeline" as FeedShareDestination, icon: "i-ph-rows-duotone" },
+  { label: t("feed.shareModal.destinationPage"), value: "page" as FeedShareDestination, icon: "i-ph-flag-duotone" },
+  { label: t("feed.shareModal.destinationGroup"), value: "group" as FeedShareDestination, icon: "i-ph-users-three-duotone" },
+  { label: t("feed.shareModal.destinationMessage"), value: "message" as FeedShareDestination, icon: "i-ph-paper-plane-tilt-duotone" },
 ])
+
+const destinationPanelTitle = computed(() => {
+  if (selectedDestination.value === "page") return t("feed.shareModal.pagePanelTitle")
+  if (selectedDestination.value === "group") return t("feed.shareModal.groupPanelTitle")
+  if (selectedDestination.value === "message") return t("feed.shareModal.messagePanelTitle")
+
+  return t("feed.shareModal.timelinePanelTitle")
+})
+
+const destinationPanelDescription = computed(() => {
+  if (selectedDestination.value === "page") return t("feed.shareModal.pagePanelDescription")
+  if (selectedDestination.value === "group") return t("feed.shareModal.groupPanelDescription")
+  if (selectedDestination.value === "message") return t("feed.shareModal.messagePanelDescription")
+
+  return t("feed.shareModal.timelinePanelDescription")
+})
+
+const destinationPanelIcon = computed(() => {
+  if (selectedDestination.value === "page") return "i-ph-flag-duotone"
+  if (selectedDestination.value === "group") return "i-ph-users-three-duotone"
+  if (selectedDestination.value === "message") return "i-ph-paper-plane-tilt-duotone"
+
+  return "i-ph-user-circle-duotone"
+})
+
+const destinationEmptyMessage = computed(() => {
+  if (selectedDestination.value === "page") return t("feed.shareModal.pageEmpty")
+  if (selectedDestination.value === "group") return t("feed.shareModal.groupEmpty")
+
+  return t("feed.shareModal.messageEmpty")
+})
+
+const statusMessage = computed(() => {
+  if (status.value === "loading") return t("feed.shareModal.submitLoading")
+  if (status.value === "success") return t("feed.shareModal.shared")
+  if (status.value === "error") return t("feed.shareModal.shareFailed")
+
+  return ""
+})
+
+const postAuthorInitials = computed(() => {
+  const name = props.post?.author || "VN"
+  const parts = name.split(/\s+/).filter(Boolean)
+  const initials = parts
+    .slice(0, 2)
+    .map(part => part.slice(0, 1).toUpperCase())
+    .join("")
+
+  return initials || "VN"
+})
 
 async function copyShareLink() {
   if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
@@ -284,27 +455,43 @@ function openPlatform(url: string) {
 }
 
 async function onShare() {
-  if (!selectedDest.value) return
+  if (!canShare.value) return
 
   status.value = "loading"
-  await new Promise(resolve => setTimeout(resolve, 280))
-  shared.value = true
 
-  status.value = "success"
+  try {
+    const result = await submitShare({
+      caption: caption.value,
+      postText: props.post?.text,
+      postId: props.post?.id,
+    })
 
-  toast.add({
-    color: "success",
-    icon: "i-ph-share-network-fill",
-    title: t("feed.shareModal.title"),
-    description: t("feed.shareModal.shared"),
-  })
+    shared.value = true
+    status.value = "success"
 
-  emit("shared", selectedDest.value)
+    toast.add({
+      color: "success",
+      icon: "i-ph-share-network-fill",
+      title: t("feed.shareModal.title"),
+      description: t("feed.shareModal.shared"),
+    })
 
-  setTimeout(() => {
-    shared.value = false
-    emit('close')
-  }, 1400)
+    emit("shared", result.destination)
+
+    setTimeout(() => {
+      shared.value = false
+      emit('close')
+    }, 1400)
+  }
+  catch {
+    status.value = "error"
+    toast.add({
+      color: "warning",
+      icon: "i-ph-warning-circle-fill",
+      title: t("feed.shareModal.title"),
+      description: t("feed.shareModal.shareFailed"),
+    })
+  }
 }
 
 watch(() => props.open, (val) => {
@@ -313,7 +500,7 @@ watch(() => props.open, (val) => {
       caption.value = ''
       shared.value = false
       status.value = "idle"
-      selectedDest.value = 'timeline'
+      resetShareDestination()
     }, 200)
   }
 })
