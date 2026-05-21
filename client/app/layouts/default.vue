@@ -1,3 +1,4 @@
+<!-- English description: Default authenticated layout with header, sidebars, and a fixed mobile chat shortcut. -->
 <template>
   <div class="phone-safe min-h-screen bg-[#f1f4fb]" :class="isReelsPage ? 'overflow-hidden bg-black' : ''">
     <NavigationHeaderBar />
@@ -30,18 +31,15 @@
       </div>
     </div>
 
-    <!-- Mobile: Floating chat button -->
-    <Teleport to="body">
-      <button
-        v-if="!isReelsPage"
-        class="fixed bottom-4 right-3 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#0000ff] text-white shadow-[0_4px_20px_rgba(0,0,255,0.35)] transition hover:scale-105 xl:hidden"
-        style="margin-bottom: env(safe-area-inset-bottom, 0px);"
-        type="button"
-        @click="chatOpen = !chatOpen"
-      >
-        <Icon :name="chatOpen ? 'i-ph-x-bold' : 'i-ph-chat-circle-dots-fill'" class="h-5 w-5" />
-      </button>
-    </Teleport>
+    <button
+      v-if="!isReelsPage"
+      class="fixed bottom-4 right-3 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#0000ff] text-white shadow-[0_4px_20px_rgba(0,0,255,0.35)] transition hover:scale-105 xl:hidden"
+      style="margin-bottom: env(safe-area-inset-bottom, 0px);"
+      type="button"
+      @click="chatOpen = !chatOpen"
+    >
+      <Icon :name="chatOpen ? 'i-ph-x-bold' : 'i-ph-chat-circle-dots-fill'" class="h-5 w-5" />
+    </button>
   </div>
 </template>
 
@@ -101,13 +99,13 @@ const shellClass = computed(() => {
   }
 
   if (isCheckoutPage.value) {
-    return 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_295px]'
+    return 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_275px]'
   }
 
   // All content pages share same sidebar widths → no layout shift on navigation
   return showLeftSidebar.value
-    ? 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[240px_minmax(0,1fr)_280px] 2xl:grid-cols-[256px_minmax(0,1fr)_300px]'
-    : 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_280px]'
+    ? 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[220px_minmax(0,1fr)_260px] 2xl:grid-cols-[256px_minmax(0,1fr)_280px]'
+    : 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_260px]'
 })
 
 const mainClass = computed(() => {

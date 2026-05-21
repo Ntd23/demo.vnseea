@@ -1,15 +1,11 @@
 <template>
-  <UDashboardGroup storage-key="social-dashboard">
+  <UDashboardGroup>
     <UDashboardSidebar
       collapsible
       :resizable="false"
-      :ui="{
-        root: 'bg-transparent border-0',
-        body: 'p-0'
-      }"
     >
       <template #default>
-        <div class="left-sidebar">
+        <div class="left-sidebar mt-10 pt-2">
           <nav class="left-sidebar__nav scrollbar-hide">
             <div class="left-sidebar__items">
               <NavigationSidebarMenuItem
