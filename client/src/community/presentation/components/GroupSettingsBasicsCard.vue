@@ -176,15 +176,14 @@
         class="space-y-2"
         :help="t('community.settings.basics.stats.charCount', { count: (model.summary || '').trim().length }) + ' / 24 ' + t('community.settings.basics.fields.minChars')"
       >
-        <UTextarea
+        <textarea
           v-model="model.summary"
           :placeholder="$t('community.settings.basics.fields.descPlaceholder')"
-          color="primary"
-          size="xl"
-          autoresize
-          :rows="6"
-          class="w-full"
-          :ui="textareaUi"
+          rows="6"
+          class="w-full min-h-[160px] rounded-[18px] bg-white px-4 py-3 text-[15px] leading-7 text-slate-800 outline-none transition-all placeholder-slate-400"
+          style="border: 1px solid #cbd5e1 !important;"
+          @focus="$event.target.style.setProperty('border', '1px solid #0000ff', 'important')"
+          @blur="$event.target.style.setProperty('border', '1px solid #cbd5e1', 'important')"
         />
       </UFormField>
 
@@ -227,6 +226,17 @@ import type { CommunityGroupSettingsDraft } from "../../domain/types/community.t
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
 const { t } = useI18n()
+
+const isLoaded = ref(false)
+watch(
+  () => model.value?.summary,
+  (newVal) => {
+    if (newVal && !isLoaded.value) {
+      isLoaded.value = true
+    }
+  },
+  { immediate: true },
+)
 
 defineProps<{
   groupPath: string

@@ -77,6 +77,7 @@ export interface CommunityGroupRecord {
   inviteLabel?: string
   guidelines?: string[]
   joined?: boolean
+  requested?: boolean
   joinApproval?: boolean
   postApproval?: boolean
   allowMemberInvites?: boolean

@@ -25,7 +25,13 @@ export function useCommunityGroupsPageVM(
   )
 
   const pending = computed(() => status.value === "pending")
-  const groups = computed(() => groupsData.value ?? [])
+  const groups = computed(() => {
+    const list = groupsData.value ?? []
+    if (mode.value === "suggested") {
+      return list.filter(group => !group.joined && !group.requested)
+    }
+    return list
+  })
 
   const pageTitle = computed(() => {
     if (mode.value === "suggested") {
