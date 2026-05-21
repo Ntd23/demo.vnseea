@@ -28,8 +28,22 @@
     </section>
 
     <div class="mx-auto max-w-[800px] space-y-5">
+      <!-- Join Requests Management Card (Visible for group owners/admins) -->
+      <CommunityGroupSettingsRequestsCard
+        :requests="requests"
+        :loading="loadingRequests"
+        @action="handleRequestAction"
+        @approve-all="handleApproveAll"
+      />
 
-        <UForm
+      <!-- Group Members Management Card (Visible for group owners/admins) -->
+      <CommunityGroupSettingsMembersCard
+        :members="groupMembers"
+        :loading="loadingMembers"
+        @kick="handleKickMember"
+      />
+
+      <UForm
           :state="draft"
           :validate="validateDraft"
           class="space-y-4"
@@ -127,6 +141,8 @@
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityGroupSettingsBasicsCard from "../components/GroupSettingsBasicsCard.vue"
 import CommunityGroupSettingsControlsCard from "../components/GroupSettingsControlsCard.vue"
+import CommunityGroupSettingsRequestsCard from "../components/GroupSettingsRequestsCard.vue"
+import CommunityGroupSettingsMembersCard from "../components/GroupSettingsMembersCard.vue"
 import CommunitySettingsSectionCard from "../components/SettingsSectionCard.vue"
 import { useCommunityGroupSettingPageVM } from "../../application/view-models/useCommunityGroupSettingPageVM"
 
@@ -148,6 +164,13 @@ const {
   isSaveDisabled,
   enabledPolicies,
   totalPolicies,
+  requests,
+  loadingRequests,
+  handleRequestAction,
+  handleApproveAll,
+  groupMembers,
+  loadingMembers,
+  handleKickMember,
   appRoutes,
 } = useCommunityGroupSettingPageVM()
 </script>

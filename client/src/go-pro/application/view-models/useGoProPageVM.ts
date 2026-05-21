@@ -33,6 +33,31 @@ export function useGoProPageVM() {
     }
   }
 
+  const cancelingType = ref("")
+
+  const cancelPro = async (type: string) => {
+    cancelingType.value = type
+
+    try {
+      await repository.cancel()
+      await refresh()
+      toast.add({
+        color: "success",
+        title: "Hủy gói PRO thành công.",
+        description: "Tài khoản của bạn đã được chuyển về gói thường.",
+      })
+    }
+    catch (err) {
+      toast.add({
+        color: "error",
+        title: err instanceof Error ? err.message : "Không thể hủy gói PRO.",
+      })
+    }
+    finally {
+      cancelingType.value = ""
+    }
+  }
+
   return {
     packages,
     membershipSystem,
@@ -41,5 +66,7 @@ export function useGoProPageVM() {
     error,
     upgradingType,
     upgrade,
+    cancelingType,
+    cancelPro,
   }
 }

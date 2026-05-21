@@ -23,16 +23,20 @@
 
     <section class="funding-stats">
       <div>
-        <span>{{ t("pages.fundingPage.results") }}</span>
-        <strong>{{ items.length }}</strong>
-      </div>
-      <div>
-        <span>{{ t("pages.fundingPage.statRaised") }}</span>
+        <span>{{ t("pages.fundingPage.statTotalContributed") }}</span>
         <strong>{{ formatMoney(totalRaised) }}</strong>
       </div>
       <div>
-        <span>{{ t("pages.fundingPage.goalAmount", { amount: formatMoney(totalGoal) }) }}</span>
-        <strong>{{ averageProgress }}%</strong>
+        <span>{{ t("pages.fundingPage.statDonorCount") }}</span>
+        <strong>{{ totalDonations }}</strong>
+      </div>
+      <div>
+        <span>{{ t("pages.fundingPage.statCompletedFunds") }}</span>
+        <strong>{{ completedFunds }}</strong>
+      </div>
+      <div>
+        <span>{{ t("pages.fundingPage.statActiveCampaigns") }}</span>
+        <strong>{{ activeCampaigns }}</strong>
       </div>
     </section>
 
@@ -82,7 +86,12 @@
           <div v-else class="funding-card__fallback">
             <Icon name="i-ph-image-square-duotone" class="h-8 w-8" />
           </div>
-          <span class="funding-card__badge">{{ campaign.progress }}%</span>
+          <span
+            class="funding-card__badge"
+            :class="{ 'funding-card__badge--completed': campaign.isCompleted }"
+          >
+            {{ campaign.progress }}%
+          </span>
         </NuxtLink>
 
         <div class="funding-card__body">
@@ -114,7 +123,11 @@
               <span>{{ formatMoney(campaign.raised) }}</span>
               <span>{{ formatMoney(campaign.amount) }}</span>
             </div>
-            <div class="funding-progress" aria-hidden="true">
+            <div
+              class="funding-progress"
+              :class="{ 'funding-progress--completed': campaign.isCompleted }"
+              aria-hidden="true"
+            >
               <span :style="{ width: `${Math.min(Math.max(campaign.progress, 0), 100)}%` }"></span>
             </div>
           </div>
@@ -132,14 +145,30 @@
 
           <div class="funding-card__actions">
             <button
+              v-if="campaign.canDonate"
               type="button"
               class="funding-action funding-action--primary"
-              :class="{ 'funding-action--disabled': !campaign.canDonate }"
-              :disabled="!campaign.canDonate"
               @click="openDonate(campaign)"
             >
               <Icon name="i-ph-hand-heart-duotone" class="h-4 w-4" />
-              {{ campaign.canDonate ? t("pages.fundingPage.donate") : t("pages.fundingPage.ownerCannotDonate") }}
+              {{ t("pages.fundingPage.donate") }}
+            </button>
+            <NuxtLink
+              v-if="activeTab === 'mine' && campaign.canManage"
+              :to="campaign.editUrl"
+              class="funding-action"
+            >
+              <Icon name="i-ph-pencil-simple-duotone" class="h-4 w-4" />
+              {{ t("pages.fundingPage.editCampaign") }}
+            </NuxtLink>
+            <button
+              v-if="activeTab === 'mine' && campaign.canManage"
+              type="button"
+              class="funding-action funding-action--danger"
+              @click="openDelete(campaign)"
+            >
+              <Icon name="i-ph-trash-duotone" class="h-4 w-4" />
+              {{ t("pages.fundingPage.deleteCampaign") }}
             </button>
             <NuxtLink :to="campaign.detailUrl" class="funding-action">
               {{ t("pages.fundingPage.detail") }}
@@ -191,6 +220,24 @@
         </div>
       </template>
     </UModal>
+
+    <UModal v-model:open="deleteOpen" :title="t('pages.fundingPage.deleteConfirmTitle')">
+      <template #body>
+        <p class="funding-delete-copy">
+          {{ t("pages.fundingPage.deleteConfirmDescription", { title: deleteTarget?.title || "-" }) }}
+        </p>
+      </template>
+      <template #footer>
+        <div class="funding-modal-actions">
+          <UButton color="neutral" variant="soft" @click="deleteTarget = null">
+            {{ t("pages.fundingPage.close") }}
+          </UButton>
+          <UButton color="error" :loading="deleting" @click="submitDelete">
+            {{ t("pages.fundingPage.deleteCampaign") }}
+          </UButton>
+        </div>
+      </template>
+    </UModal>
   </main>
 </template>
 
@@ -210,38 +257,28 @@ const {
   error,
   loadingMore,
   donationTarget,
+  deleteTarget,
+  donationOpen,
+  deleteOpen,
   donationAmount,
   donating,
+  deleting,
+  totalRaised,
+  totalDonations,
+  completedFunds,
+  activeCampaigns,
   setTab,
   loadMore,
   openDonate,
   submitDonation,
+  openDelete,
+  submitDelete,
 } = useFundingPageVM()
 
 const tabs = computed(() => [
   { value: "browse" as const, label: t("pages.fundingPage.results"), icon: "i-ph-compass-duotone" },
   { value: "mine" as const, label: t("pages.fundingPage.ownerBadge"), icon: "i-ph-user-circle-duotone" },
 ])
-
-const donationOpen = computed({
-  get: () => Boolean(donationTarget.value),
-  set: (value) => {
-    if (!value) donationTarget.value = null
-  },
-})
-
-const totalRaised = computed(() =>
-  items.value.reduce((total, campaign) => total + campaign.raised, 0),
-)
-
-const totalGoal = computed(() =>
-  items.value.reduce((total, campaign) => total + campaign.amount, 0),
-)
-
-const averageProgress = computed(() => {
-  if (!totalGoal.value) return 0
-  return Math.round((totalRaised.value / totalGoal.value) * 100)
-})
 
 const formatMoney = (amount: number) =>
   formatCurrency(amount, {
@@ -378,6 +415,17 @@ const ownerInitials = (name: string) =>
   color: #64748b;
 }
 
+.funding-action--danger {
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.funding-action--danger:hover {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
 .funding-stats {
   display: grid;
   gap: 1px;
@@ -492,6 +540,10 @@ const ownerInitials = (name: string) =>
   font-weight: 900;
 }
 
+.funding-card__badge--completed {
+  background: rgba(22, 101, 52, 0.9);
+}
+
 .funding-card__body {
   display: grid;
   gap: 14px;
@@ -595,6 +647,10 @@ const ownerInitials = (name: string) =>
   background: #0000ff;
 }
 
+.funding-progress--completed span {
+  background: #16a34a;
+}
+
 .funding-card__actions,
 .funding-modal-actions {
   display: flex;
@@ -643,6 +699,13 @@ const ownerInitials = (name: string) =>
   line-height: 1.5;
 }
 
+.funding-delete-copy {
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 @media (min-width: 640px) {
   .funding-page {
     padding: 22px 20px 48px;
@@ -656,7 +719,7 @@ const ownerInitials = (name: string) =>
   }
 
   .funding-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .funding-grid {

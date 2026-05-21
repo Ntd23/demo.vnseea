@@ -29,6 +29,7 @@ export function useCommunityGroupDetailPageVM(
   const joinState = ref<CommunityActionState>("idle")
   const inviteState = ref<CommunityActionState>("idle")
   const joined = ref(false)
+  const requested = ref(false)
 
   const {
     group,
@@ -84,10 +85,12 @@ export function useCommunityGroupDetailPageVM(
     joinState.value = "idle"
     inviteState.value = "idle"
     joined.value = Boolean(group.value?.joined)
+    requested.value = Boolean(group.value?.requested)
   })
 
   watch(group, (value) => {
     joined.value = Boolean(value?.joined)
+    requested.value = Boolean(value?.requested)
   }, { immediate: true })
 
   async function handleJoinGroup() {
@@ -98,12 +101,13 @@ export function useCommunityGroupDetailPageVM(
     joinState.value = "loading"
 
     try {
-      const wasJoined = joined.value
+      const wasJoined = joined.value || requested.value
       const updatedGroup = await repository.joinGroup(group.value.slug)
       await refresh()
 
       joinState.value = "success"
       joined.value = Boolean(updatedGroup.joined)
+      requested.value = Boolean(updatedGroup.requested)
 
       toast.add({
         title: wasJoined ? t("pages.groupDetailPage.leaveSuccessTitle") : t("pages.groupDetailPage.joinSuccessTitle"),
@@ -196,6 +200,7 @@ export function useCommunityGroupDetailPageVM(
     joinState,
     inviteState,
     joined,
+    requested,
     group,
     members,
     privacyLabel,

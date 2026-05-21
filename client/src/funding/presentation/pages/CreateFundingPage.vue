@@ -2,18 +2,16 @@
 <template>
   <main class="create-funding">
     <section class="create-funding__header">
-      <NuxtLink to="/funding" class="create-funding__back">
-        <Icon name="i-ph-arrow-left-bold" class="h-4 w-4" />
-        {{ t("pages.createFundingPage.backToFunding") }}
-      </NuxtLink>
       <div>
         <p>{{ t("pages.createFundingPage.heroEyebrow") }}</p>
-        <h1>{{ t("pages.createFundingPage.heroTitle") }}</h1>
-        <span>{{ t("pages.createFundingPage.heroDescription") }}</span>
+        <h1>{{ isEditMode ? t("pages.createFundingPage.editHeroTitle") : t("pages.createFundingPage.heroTitle") }}</h1>
+        <span>{{ isEditMode ? t("pages.createFundingPage.editHeroDescription") : t("pages.createFundingPage.heroDescription") }}</span>
       </div>
     </section>
 
-    <form class="create-funding__layout" @submit.prevent="submit">
+    <USkeleton v-if="loadingCampaign" class="create-funding__skeleton" />
+
+    <form v-else class="create-funding__layout" @submit.prevent="submit">
       <section class="create-funding__panel">
         <div class="create-funding__section-title">
           <Icon name="i-ph-list-checks-duotone" class="h-5 w-5" />
@@ -96,7 +94,7 @@
           </NuxtLink>
           <button type="submit" class="create-funding__button create-funding__button--primary" :disabled="submitting">
             <Icon name="i-ph-paper-plane-tilt-duotone" class="h-4 w-4" />
-            {{ t("pages.createFundingPage.submitButton") }}
+            {{ isEditMode ? t("pages.createFundingPage.saveEditButton") : t("pages.createFundingPage.submitButton") }}
           </button>
         </div>
       </aside>
@@ -105,63 +103,30 @@
 </template>
 
 <script setup lang="ts">
+import { useCreateFundingPageVM } from "../../application/view-models/useCreateFundingPageVM"
+
+const props = withDefaults(defineProps<{
+  mode?: "create" | "edit"
+  campaignId?: string
+}>(), {
+  mode: "create",
+  campaignId: "",
+})
+
 const { t } = useI18n()
-const toast = useToast()
-const submitting = ref(false)
-const imageFile = ref<File | null>(null)
-const previewUrl = ref("")
-const draft = reactive({
-  title: "",
-  amount: null as number | null,
-  description: "",
+const {
+  draft,
+  imageFile,
+  previewUrl,
+  submitting,
+  loadingCampaign,
+  isEditMode,
+  onFileChange,
+  submit,
+} = useCreateFundingPageVM({
+  mode: computed(() => props.mode),
+  campaignId: computed(() => props.campaignId),
 })
-
-onBeforeUnmount(() => {
-  revokePreview()
-})
-
-const revokePreview = () => {
-  if (!previewUrl.value || !import.meta.client) return
-  URL.revokeObjectURL(previewUrl.value)
-  previewUrl.value = ""
-}
-
-const onFileChange = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  imageFile.value = input.files?.[0] ?? null
-  revokePreview()
-
-  if (imageFile.value && import.meta.client) {
-    previewUrl.value = URL.createObjectURL(imageFile.value)
-  }
-}
-
-const submit = async () => {
-  if (!draft.title || !draft.description || !draft.amount || !imageFile.value) return
-  submitting.value = true
-
-  try {
-    const form = new FormData()
-    form.append("title", draft.title)
-    form.append("amount", String(draft.amount))
-    form.append("description", draft.description)
-    form.append("image", imageFile.value)
-    await $fetch("/_api/funding/create", {
-      method: "POST",
-      body: form,
-    })
-    await navigateTo("/funding?tab=mine")
-  }
-  catch (err) {
-    toast.add({
-      color: "error",
-      title: err instanceof Error ? err.message : "Unable to create funding campaign.",
-    })
-  }
-  finally {
-    submitting.value = false
-  }
-}
 </script>
 
 <style scoped>
@@ -184,6 +149,12 @@ const submit = async () => {
   display: grid;
   gap: 14px;
   padding: 18px;
+}
+
+.create-funding__skeleton {
+  height: 520px;
+  margin-top: 14px;
+  border-radius: 16px;
 }
 
 .create-funding__header p,

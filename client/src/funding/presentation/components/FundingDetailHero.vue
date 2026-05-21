@@ -110,7 +110,7 @@
                     {{ t("pages.showFundPage.raisedLabel") }}
                   </p>
                   <p class="mt-1 text-[15px] font-black text-white">
-                    {{ formatFundingCurrency(campaign.raisedAmount, locale.value) }}
+                    {{ formatMoney(campaign.raisedAmount) }}
                   </p>
                 </div>
 
@@ -119,7 +119,7 @@
                     {{ t("pages.showFundPage.goalLabel") }}
                   </p>
                   <p class="mt-1 text-[15px] font-black text-white">
-                    {{ formatFundingCurrency(campaign.goalAmount, locale.value) }}
+                    {{ formatMoney(campaign.goalAmount) }}
                   </p>
                 </div>
               </div>
@@ -133,8 +133,8 @@
 
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
 import type { MockFundingCampaign } from "../../domain/types/funding.types"
-import { formatFundingCurrency } from "../../infrastructure/mocks/fundingCatalog"
 import FundingProgress from "./FundingProgress.vue"
 
 type StatusColor = "primary" | "warning" | "success"
@@ -146,6 +146,12 @@ const emit = defineEmits<{ donate: [campaign: MockFundingCampaign] }>()
 const { t, locale } = useI18n()
 
 const showCover = ref(true)
+
+const formatMoney = (amount: number) =>
+  formatCurrency(amount, {
+    currency: "VND",
+    locale: locale.value,
+  })
 
 const statusLabel = computed(() => {
   if (props.campaign.status === "ending") return t("pages.fundingPage.statusEnding")
