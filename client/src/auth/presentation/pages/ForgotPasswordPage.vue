@@ -1,9 +1,7 @@
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <p class="auth-form__eyebrow">{{ $t('pages.forgotPasswordPage.eyebrow') }}</p>
       <h1 class="auth-form__title">{{ $t('pages.forgotPasswordPage.title') }}</h1>
-      <p class="auth-form__subtitle">{{ $t('pages.forgotPasswordPage.subtitle') }}</p>
     </div>
 
     <!-- Status alert -->
@@ -39,7 +37,6 @@
           size="xl"
           :placeholder="$t('pages.forgotPasswordPage.emailPlaceholder')"
           class="w-full"
-          :ui="inputUi"
         />
       </UFormField>
 
@@ -52,7 +49,6 @@
             color="primary"
             size="lg"
             :label="$t('pages.forgotPasswordPage.captchaLabel')"
-            :ui="checkboxUi"
           />
           <div class="auth-captcha__brand">
             <div class="auth-captcha__shield">
@@ -102,10 +98,6 @@ const {
   handleReset,
   onFormError,
 } = useForgotPasswordPageVM()
-
-const inputUi = {
-  base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe]',
-}
 
 const checkboxUi = {
   root: 'items-center gap-3',

@@ -57,15 +57,16 @@
         <!-- Action Buttons (Clean) -->
         <div class="group-hero__actions">
           <UButton
+            v-if="group.canManage || (joined && group.allowMemberInvites)"
             color="primary"
             variant="solid"
             size="lg"
             :loading="inviteState === 'loading'"
             :disabled="inviteState === 'loading'"
-            class="group-hero__action-btn rounded-xl px-6 font-bold shadow-lg"
+            class="group-hero__action-btn rounded-xl px-8 font-bold shadow-lg"
             @click="emit('invite')"
           >
-            {{ inviteButtonLabel }}
+            <span class="whitespace-nowrap">{{ inviteButtonLabel }}</span>
           </UButton>
 
           <UButton
@@ -74,11 +75,11 @@
             size="lg"
             :loading="joinState === 'loading'"
             :disabled="joinState === 'loading'"
-            class="group-hero__action-btn rounded-xl px-5 font-bold"
+            class="group-hero__action-btn rounded-xl px-8 font-bold"
             @click="handlePrimaryAction"
           >
-            <Icon :name="primaryButtonIcon" class="mr-2 h-5 w-5" />
-            {{ joinButtonLabel }}
+            <Icon :name="primaryButtonIcon" class="mr-2 h-5 w-5 shrink-0" />
+            <span class="whitespace-nowrap">{{ joinButtonLabel }}</span>
           </UButton>
 
           <UButton
@@ -113,6 +114,7 @@ const props = defineProps<{
   joinState?: "idle" | "loading" | "success" | "error"
   inviteState?: "idle" | "loading" | "success" | "error"
   joined?: boolean
+  requested?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -136,16 +138,18 @@ const groupSummary = computed(() =>
 const joinButtonLabel = computed(() => {
   if (props.group.canManage) return t("pages.groupDetailPage.deleteGroupButton")
   if (props.joined) return t("pages.groupDetailPage.leaveButton")
+  if (props.requested) return t("pages.groupDetailPage.requestPendingButton")
   return translateText(props.group.joinLabel, t("pages.groupDetailPage.joinFallback"))
 })
 
 const primaryButtonColor = computed(() =>
-  props.group.canManage ? "error" : props.joined ? "primary" : "white",
+  props.group.canManage ? "error" : (props.joined || props.requested) ? "primary" : "white",
 )
 
 const primaryButtonIcon = computed(() => {
   if (props.group.canManage) return "i-ph-trash-bold"
   if (props.joined) return "i-ph-sign-out-bold"
+  if (props.requested) return "i-ph-clock-bold"
   return "i-ph-user-plus-bold"
 })
 

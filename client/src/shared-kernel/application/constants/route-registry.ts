@@ -27,6 +27,7 @@ export const appRoutes = {
   reels: "/reels",
   watch: "/watch",
   photos: "/photos",
+  postDetail: (id: string | number) => `/post/${encodeSegment(id)}`,
   movies: "/movies",
   memories: "/memories",
   search: "/search",
@@ -101,6 +102,7 @@ export const apiRoutes = {
     memories: "feed/memories",
     poke: "feed/poke",
     posts: {
+      detail: (id: string | number) => `feed/posts/${encodeSegment(id)}`,
       create: "feed/posts/create",
       action: "feed/posts/action",
     },
@@ -134,6 +136,10 @@ export const apiRoutes = {
     groups: "community/groups",
     groupBySlug: (slug: string) => `community/groups/${encodeSegment(slug)}`,
     groupJoin: (slug: string) => `community/groups/${encodeSegment(slug)}/join`,
+    groupRequests: (slug: string) => `community/groups/${encodeSegment(slug)}/requests`,
+    groupRequestsAction: (slug: string) => `community/groups/${encodeSegment(slug)}/requests/action`,
+    groupMembers: (slug: string) => `community/groups/${encodeSegment(slug)}/members`,
+    groupMemberKick: (slug: string) => `community/groups/${encodeSegment(slug)}/members/kick`,
     groupPosts: (slug: string) => `community/groups/${encodeSegment(slug)}/posts`,
     pages: "community/pages",
     pageBySlug: (slug: string) => `community/pages/${encodeSegment(slug)}`,
@@ -173,6 +179,7 @@ export const apiRoutes = {
   },
   search: {
     index: "search",
+    suggestions: "search/suggestions",
   },
   settings: {
     me: "settings/me",

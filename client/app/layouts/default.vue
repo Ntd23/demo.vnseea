@@ -11,7 +11,8 @@
           v-if="showLeftSidebar && !isReelsPage"
           class="hidden min-w-0 xl:sticky xl:top-[74px] xl:block xl:h-[calc(100dvh-98px)] xl:overflow-hidden"
         >
-          <NavigationLeftSidebar />
+          <NavigationLeftSidebar v-if="!isDirectoryPage" />
+          <DirectoryLeftSidebar v-else />
         </aside>
 
         <main class="min-w-0 w-full" :class="mainClass">
@@ -50,6 +51,7 @@ import NavigationHeaderBar from "../../src/navigation/presentation/components/He
 import NavigationHeaderIconNav from "../../src/navigation/presentation/components/HeaderIconNav.vue"
 import NavigationLeftSidebar from "../../src/navigation/presentation/components/LeftSidebar.vue"
 import NavigationRightSidebar from "../../src/navigation/presentation/components/RightSidebar.vue"
+import DirectoryLeftSidebar from "../../src/directory/presentation/components/LeftSidebar.vue"
 
 const chatOpen = ref(false)
 
@@ -59,6 +61,15 @@ const isCheckoutPage = computed(() => route.path === appRoutes.checkout)
 const isSearchPage = computed(() => route.path === appRoutes.search)
 const isPageDetailPage = computed(() => route.path.startsWith("/p/"))
 const isBlogDetailPage = computed(() => route.path.startsWith("/read-blog/"))
+const isDirectoryPage = computed(() => route.path.startsWith("/directory"))
+const isCreateBlogPage = computed(() => route.path === appRoutes.createBlog)
+const isFundingPage = computed(() =>
+  route.path === appRoutes.funding
+  || route.path === appRoutes.createFunding
+  || route.path.startsWith("/show_fund/")
+  || route.path.startsWith("/edit_fund/")
+)
+const isForumPage = computed(() => route.path === appRoutes.forum)
 const isHomeFeedPage = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
 const isCommunityComposerPage = computed(() =>
   route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
@@ -68,7 +79,10 @@ const showLeftSidebar = computed(() =>
   && !isCheckoutPage.value
   && !isSearchPage.value
   && !isPageDetailPage.value
-  && !isBlogDetailPage.value,
+  && !isBlogDetailPage.value
+  && !isFundingPage.value
+  && !isForumPage.value
+  && !isCreateBlogPage.value
 )
 const showRightSidebar = computed(() => !isReelsPage.value)
 // HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.

@@ -11,6 +11,17 @@ export type FeedMediaItem = {
   thumb?: string
 }
 
+export type FeedPostAttachmentCard = {
+  type: "blog" | "funding"
+  title: string
+  description: string
+  imageUrl: string
+  href: string
+  progress?: number
+  raised?: number
+  amount?: number
+}
+
 export type FeedCommentRecord = {
   id: number
   author: string
@@ -64,6 +75,8 @@ export type FeedPostMention = {
 
 export type FeedPostRecord = {
   id: number
+  sharedPostId?: number
+  sharedPost?: FeedPostRecord | null
   author: string
   authorAvatarUrl: string
   authorVerified?: boolean
@@ -98,6 +111,7 @@ export type FeedPostRecord = {
   }
   comments: FeedCommentRecord[]
   mediaItems: FeedMediaItem[]
+  attachmentCard: FeedPostAttachmentCard | null
   category: string
   primaryMediaType: "text" | "image" | "video" | "link" | "music" | "file"
   sourceLabel: string

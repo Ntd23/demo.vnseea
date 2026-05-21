@@ -25,96 +25,55 @@
 
       <h2 class="go-pro-pick">{{ pickPlanLabel }}</h2>
 
-      <div class="go-pro-table-wrap">
-        <table class="go-pro-table">
-          <thead>
-            <tr>
-              <td class="go-pro-label-col"></td>
-              <th
-                v-for="plan in packages"
-                :key="plan.id"
-                :class="{ 'is-current': plan.isCurrent }"
-              >
-                <span class="go-pro-plan-icon" :style="{ color: plan.color || fallbackPlanColor(plan.id) }">
-                  <img v-if="plan.image" :src="plan.image" :alt="plan.name">
-                  <Icon v-else :name="planIcon(plan.id)" />
-                </span>
-                <strong>{{ plan.name }}</strong>
-              </th>
-            </tr>
-          </thead>
+      <UPricingTable
+        :tiers="tiers"
+        :sections="sections"
+        class="mt-6 border border-slate-200 rounded-[18px] bg-white p-5 shadow-[0_12px_30px_rgba(15,35,110,0.06)]"
+      >
+        <template #tier-title="{ tier }">
+          <div class="flex items-center justify-center gap-2 mb-2">
+            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 p-1.5" :style="{ color: tier.color }">
+              <Icon :name="planIcon(tier.id)" class="h-5 w-5" />
+            </span>
+            <span class="font-extrabold text-[17px] text-slate-800">{{ tier.title }}</span>
+          </div>
+        </template>
 
-          <tbody>
-            <tr>
-              <td>{{ priceLabel }}</td>
-              <td
-                v-for="plan in packages"
-                :key="`${plan.id}-price`"
-                class="text-center"
-                :class="{ 'is-current': plan.isCurrent }"
+        <template #tier-button="{ tier }">
+          <div class="w-full flex flex-col items-center gap-2 justify-center py-2">
+            <div v-if="tier.isCurrent" class="flex flex-col items-center gap-2 justify-center w-full">
+              <UBadge
+                color="success"
+                variant="solid"
+                class="rounded-full px-4 py-1.5 font-bold text-[12px] inline-flex items-center gap-1 shadow-sm justify-center w-36"
               >
-                <strong>{{ formatMoney(plan.price, plan.currency, plan.currencySymbol) }}</strong>
-              </td>
-            </tr>
-
-            <tr v-for="row in featureRows" :key="row.key">
-              <td>{{ row.label }}</td>
-              <td
-                v-for="plan in packages"
-                :key="`${plan.id}-${row.key}`"
-                class="text-center"
-                :class="{ 'is-current': plan.isCurrent }"
+                <Icon name="i-ph-check-bold" class="h-3.5 w-3.5" />
+                {{ currentLabel }}
+              </UBadge>
+              <UButton
+                size="sm"
+                class="!bg-red-600 hover:!bg-red-700 !text-white rounded-full px-4 py-1.5 font-bold text-[12px] inline-flex items-center gap-1 shadow-sm transition hover:scale-[1.03] justify-center w-36 cursor-pointer"
+                :loading="cancelingType === tier.id"
+                @click="confirmCancel(tier.id)"
               >
-                <span v-if="isBooleanFeature(plan.features[row.key])" class="go-pro-feature-icon">
-                  <Icon
-                    v-if="plan.features[row.key]"
-                    name="i-ph-check-bold"
-                    class="go-pro-check"
-                  />
-                  <Icon
-                    v-else
-                    name="i-ph-x-bold"
-                    class="go-pro-cross"
-                  />
-                </span>
-                <span v-else>{{ formatFeature(row.key, plan.features[row.key]) }}</span>
-              </td>
-            </tr>
-
-            <tr>
-              <td>{{ moreInfoLabel }}</td>
-              <td
-                v-for="plan in packages"
-                :key="`${plan.id}-info`"
-                class="text-center"
-                :class="{ 'is-current': plan.isCurrent }"
-              >
-                {{ plan.name }}
-              </td>
-            </tr>
-
-            <tr>
-              <td></td>
-              <td
-                v-for="plan in packages"
-                :key="`${plan.id}-action`"
-                class="text-center"
-                :class="{ 'is-current': plan.isCurrent }"
-              >
-                <UButton
-                  class="go-pro-upgrade"
-                  :style="{ backgroundColor: plan.color || fallbackPlanColor(plan.id) }"
-                  :disabled="plan.isCurrent"
-                  :loading="upgradingType === plan.id"
-                  @click="upgrade(plan.id)"
-                >
-                  {{ plan.isCurrent ? currentLabel : upgradeLabel }}
-                </UButton>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+                <Icon name="i-ph-x-circle-bold" class="h-4 w-4" />
+                Hủy gói
+              </UButton>
+            </div>
+            <UButton
+              v-else
+              block
+              size="lg"
+              class="rounded-full font-bold transition hover:scale-[1.02] text-white hover:opacity-90 justify-center cursor-pointer"
+              :style="{ backgroundColor: tier.color }"
+              :loading="upgradingType === tier.id"
+              @click="upgrade(tier.id)"
+            >
+              {{ upgradeLabel }}
+            </UButton>
+          </div>
+        </template>
+      </UPricingTable>
 
       <section class="go-pro-features">
         <h2>{{ whyChooseLabel }}</h2>
@@ -132,12 +91,37 @@
       <h2 class="text-heading mt-3">{{ t("pages.goProPage.emptyPaymentsTitle") }}</h2>
       <p class="text-body-secondary mt-2">{{ t("pages.goProPage.emptyPaymentsDescription") }}</p>
     </UCard>
+
+    <!-- Modal xác nhận hủy gói PRO -->
+    <FoundationModalShell
+      :open="isCancelModalOpen"
+      title="Xác nhận hủy gói PRO"
+      description="Hành động này sẽ hủy đăng ký gói thành viên PRO của bạn."
+      cancel-label="Quay lại"
+      confirm-label="Đồng ý hủy"
+      confirm-color="error"
+      :confirm-loading="cancelingType !== ''"
+      @close="isCancelModalOpen = false"
+      @cancel="isCancelModalOpen = false"
+      @confirm="handleCancelConfirm"
+    >
+      <div class="space-y-3 py-2">
+        <p class="text-body-primary font-semibold text-center text-red-600 flex items-center justify-center gap-2">
+          <Icon name="i-ph-warning-circle-fill" class="h-5 w-5 shrink-0" />
+          Cảnh báo mất đặc quyền PRO
+        </p>
+        <p class="text-body-secondary text-sm text-center leading-relaxed">
+          Sau khi hủy gói PRO, các tính năng đặc quyền của bạn (như bài viết nổi bật, xem khách truy cập hồ sơ, huy hiệu xác minh và quảng bá bài viết/trang) sẽ bị dừng hoạt động ngay lập tức.
+        </p>
+      </div>
+    </FoundationModalShell>
   </main>
 </template>
 
 <script setup lang="ts">
 import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
 import { useGoProPageVM } from "../../application/view-models/useGoProPageVM"
+import FoundationModalShell from "../../../foundation/presentation/components/ModalShell.vue"
 
 const { t, locale } = useI18n()
 const {
@@ -147,7 +131,25 @@ const {
   membershipSystem,
   upgradingType,
   upgrade,
+  cancelingType,
+  cancelPro,
 } = useGoProPageVM()
+
+const isCancelModalOpen = ref(false)
+const cancelPlanId = ref("")
+
+const confirmCancel = (planId: string) => {
+  cancelPlanId.value = planId
+  isCancelModalOpen.value = true
+}
+
+const handleCancelConfirm = async () => {
+  isCancelModalOpen.value = false
+  if (cancelPlanId.value) {
+    await cancelPro(cancelPlanId.value)
+    cancelPlanId.value = ""
+  }
+}
 
 const heroDescription = "Kiểm soát hồ sơ, mở khóa nhiều quyền lợi hơn và nâng cấp tài khoản của bạn."
 const membershipNotice = "Bạn cần nâng cấp thành viên để tiếp tục sử dụng đầy đủ các tính năng trên hệ thống."
@@ -197,6 +199,45 @@ const featureRows = computed(() => {
     .map(key => ({ key, label: normalizeFeature(key) }))
 
   return [...baseFeatureRows, ...extraRows]
+})
+
+const tiers = computed(() => {
+  return packages.value.map(plan => {
+    return {
+      id: plan.id,
+      title: plan.name,
+      price: formatMoney(plan.price, plan.currency, plan.currencySymbol),
+      description: plan.name === "Star" ? "Gói cơ bản" : plan.name === "Hot" ? "Gói phổ biến" : plan.name === "Ultimatum" ? "Gói nâng cao" : "Gói đặc biệt",
+      highlight: plan.isCurrent,
+      isCurrent: plan.isCurrent,
+      color: plan.color || fallbackPlanColor(plan.id),
+    }
+  })
+})
+
+const sections = computed(() => {
+  return [
+    {
+      title: "Tính năng chi tiết",
+      features: featureRows.value.map(row => {
+        const featureTiers: Record<string, boolean | string> = {}
+        
+        packages.value.forEach(plan => {
+          const val = plan.features[row.key]
+          if (isBooleanFeature(val)) {
+            featureTiers[plan.id] = Boolean(val)
+          } else {
+            featureTiers[plan.id] = formatFeature(row.key, val)
+          }
+        })
+        
+        return {
+          title: row.label,
+          tiers: featureTiers
+        }
+      })
+    }
+  ]
 })
 
 const formatMoney = (amount: number, currency: string, currencySymbol: string) =>
@@ -347,124 +388,6 @@ const planIcon = (id: string) => {
   margin: 0 0 24px;
   text-align: center;
   font-size: 25px;
-  font-weight: 900;
-}
-
-.go-pro-table-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.go-pro-table {
-  width: 100%;
-  min-width: 820px;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-weight: 700;
-}
-
-.go-pro-table th,
-.go-pro-table td {
-  min-width: 145px;
-}
-
-.go-pro-table thead th {
-  padding: 24px 8px 12px;
-  text-align: center;
-  font-size: 17px;
-}
-
-.go-pro-table thead th.is-current {
-  border-radius: 10px 10px 0 0;
-  background: #4d4d4d;
-  color: #fff;
-}
-
-.go-pro-label-col {
-  min-width: 225px;
-}
-
-.go-pro-plan-icon {
-  position: relative;
-  display: grid;
-  width: 34px;
-  height: 34px;
-  margin: 0 auto 18px;
-  place-items: center;
-}
-
-.go-pro-plan-icon::before {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  border-radius: 999px;
-  background: currentColor;
-  content: "";
-  opacity: .15;
-}
-
-.go-pro-plan-icon :deep(svg),
-.go-pro-plan-icon img {
-  position: relative;
-  width: 32px;
-  height: 32px;
-}
-
-.go-pro-plan-icon img {
-  object-fit: contain;
-}
-
-.go-pro-table tbody td {
-  border-bottom: 1px solid var(--border-light);
-  padding: 17px 15px;
-  color: var(--text-secondary);
-  font-weight: 700;
-}
-
-.go-pro-table tbody tr td:first-child {
-  color: #494949;
-  font-weight: 900;
-}
-
-.go-pro-table tbody td.is-current {
-  border-color: rgb(255 255 255 / 8%);
-  background: #4d4d4d;
-  color: #fff;
-}
-
-.go-pro-table tbody tr:last-child td {
-  border-bottom: 0;
-}
-
-.go-pro-table tbody tr:last-child td.is-current {
-  border-radius: 0 0 10px 10px;
-}
-
-.go-pro-feature-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.go-pro-check,
-.go-pro-cross {
-  width: 24px;
-  height: 24px;
-}
-
-.go-pro-check {
-  color: #4caf50;
-}
-
-.go-pro-cross {
-  color: #bababa;
-}
-
-.go-pro-upgrade {
-  min-width: 126px;
-  justify-content: center;
-  border-radius: 999px;
-  color: #fff;
   font-weight: 900;
 }
 

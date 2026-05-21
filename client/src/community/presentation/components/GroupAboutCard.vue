@@ -32,11 +32,14 @@
       </div>
     </div>
 
-    <div class="mt-4 space-y-2 text-[13px] text-slate-500">
-      <div class="flex items-start gap-2">
+    <div v-if="!compact || group.website" class="mt-4 space-y-2 text-[13px] text-slate-500">
+      <!-- Founded Date: Only show in the full about card (not compact) -->
+      <div v-if="!compact" class="flex items-start gap-2">
         <Icon name="i-ph-calendar-blank-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
         <span>{{ foundedLabel }}</span>
       </div>
+
+      <!-- Website: Show if available -->
       <div v-if="group.website" class="flex items-start gap-2">
         <Icon name="i-ph-link-simple-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
         <a
@@ -47,10 +50,6 @@
         >
           {{ group.website }}
         </a>
-      </div>
-      <div class="flex items-start gap-2">
-        <Icon name="i-ph-users-three-bold" class="mt-0.5 h-4 w-4 text-[#0000ff]/70" />
-        <span>{{ memberCountLabel }}</span>
       </div>
     </div>
 

@@ -22,6 +22,10 @@ export interface CommunityRepository {
   createGroup(input: CommunityDraft): Promise<CommunityGroupRecord>
   updateGroup(slug: string, input: CommunityGroupSettingsDraft): Promise<CommunityGroupRecord>
   joinGroup(slug: string): Promise<CommunityGroupRecord>
+  getGroupRequests(slug: string): Promise<UserRecord[]>
+  respondToGroupRequest(slug: string, userId: number, action: "accept" | "decline"): Promise<void>
+  getGroupMembers(slug: string): Promise<UserRecord[]>
+  kickGroupMember(slug: string, userId: number): Promise<void>
   getPages(mode: CommunityPageTab): Promise<CommunityPageRecord[]>
   getPageBySlug(slug: string): Promise<CommunityPageRecord | null>
   createPage(input: CommunityDraft): Promise<CommunityPageRecord>

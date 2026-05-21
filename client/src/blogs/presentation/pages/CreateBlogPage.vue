@@ -39,30 +39,10 @@
             >
           </label>
 
-          <div class="create-blog-page__field">
-            <div class="create-blog-page__toolbar">
-              <span class="create-blog-page__label">{{ $t("pages.createBlogPage.contentLabel") }}</span>
-              <div class="create-blog-page__actions">
-                <button
-                  v-for="action in editorActions"
-                  :key="action.label"
-                  class="create-blog-page__tool"
-                  type="button"
-                  @click="applyEditorToken(action.token)"
-                >
-                  <Icon :name="action.icon" class="h-3.5 w-3.5" />
-                  {{ action.label }}
-                </button>
-              </div>
-            </div>
-
-            <textarea
-              v-model="content"
-              class="create-blog-page__textarea"
-              :placeholder="$t('pages.createBlogPage.contentPlaceholder')"
-              rows="10"
-            />
-          </div>
+          <BlogsCreateBlogContentEditor
+            v-model="content"
+            class="create-blog-page__field"
+          />
 
           <div class="create-blog-page__meta-grid">
             <label class="create-blog-page__field">
@@ -182,6 +162,7 @@
 <script setup lang="ts">
 import BlogsCreateBlogHero from "../components/CreateBlogHero.vue"
 import BlogsCreateBlogSidebar from "../components/CreateBlogSidebar.vue"
+import BlogsCreateBlogContentEditor from "../components/CreateBlogContentEditor.vue"
 import { useCreateBlogPageVM } from "../../application/view-models/useCreateBlogPageVM"
 
 const {
@@ -193,8 +174,8 @@ const {
   submitMessage,
   submitState,
   isSubmitting,
+  submitStatusIcon,
   categoryOptions,
-  editorActions,
   tagList,
   selectedCategoryLabel,
   thumbnailBackground,
@@ -203,23 +184,12 @@ const {
   heroStats,
   previewExcerpt,
   checklistItems,
-  applyEditorToken,
   cycleThumbnail,
   onThumbnailChange,
   saveDraft,
   publishBlog,
   quickFillDemo,
 } = useCreateBlogPageVM()
-
-const submitStatusIcon = computed(() => {
-  if (submitState.value === "published") return "i-ph-check-circle-fill"
-  if (submitState.value === "pending") return "i-ph-clock-countdown-fill"
-  if (submitState.value === "draft") return "i-ph-floppy-disk-fill"
-  if (submitState.value === "saving" || submitState.value === "publishing") return "i-ph-circle-notch-bold"
-  if (submitState.value === "error") return "i-ph-x-circle-fill"
-  if (submitState.value === "warning") return "i-ph-warning-circle-fill"
-  return "i-ph-info-fill"
-})
 </script>
 
 <style scoped>
@@ -315,8 +285,7 @@ const submitStatusIcon = computed(() => {
 }
 
 .create-blog-page__title-input,
-.create-blog-page__control,
-.create-blog-page__textarea {
+.create-blog-page__control {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 14px;
@@ -342,35 +311,13 @@ const submitStatusIcon = computed(() => {
   font-weight: 650;
 }
 
-.create-blog-page__textarea {
-  min-height: 320px;
-  resize: vertical;
-  padding: 16px;
-  font-size: 15px;
-  line-height: 1.8;
-}
-
 .create-blog-page__title-input:focus,
-.create-blog-page__control:focus,
-.create-blog-page__textarea:focus {
+.create-blog-page__control:focus {
   border-color: rgba(0, 0, 255, 0.25);
   background: #ffffff;
   box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
 }
 
-.create-blog-page__toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.create-blog-page__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.create-blog-page__tool,
 .create-blog-page__secondary,
 .create-blog-page__primary {
   display: inline-flex;
@@ -383,14 +330,6 @@ const submitStatusIcon = computed(() => {
   transition: all 0.15s ease;
 }
 
-.create-blog-page__tool {
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  color: #334155;
-  padding: 8px 11px;
-}
-
-.create-blog-page__tool:hover,
 .create-blog-page__secondary:hover {
   border-color: rgba(0, 0, 255, 0.14);
   background: rgba(0, 0, 255, 0.05);
@@ -626,7 +565,6 @@ const submitStatusIcon = computed(() => {
 
 @media (min-width: 768px) {
   .create-blog-page__intro,
-  .create-blog-page__toolbar,
   .create-blog-page__submit {
     flex-direction: row;
     align-items: center;

@@ -1,9 +1,7 @@
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <p class="auth-form__eyebrow">{{ $t('pages.welcomePage.eyebrow') }}</p>
       <h1 class="auth-form__title">{{ $t('pages.welcomePage.title') }}</h1>
-      <p class="auth-form__subtitle">{{ $t('pages.welcomePage.subtitle') }}</p>
     </div>
 
     <UForm
@@ -22,9 +20,8 @@
           type="text"
           autocomplete="username"
           size="xl"
-          :placeholder="$t('pages.welcomePage.loginPlaceholder') || 'Email hoặc số điện thoại'"
+          :placeholder="$t('pages.welcomePage.loginPlaceholder')"
           class="w-full"
-          :ui="inputUi"
         />
       </UFormField>
 
@@ -43,8 +40,8 @@
           :type="showPassword ? 'text' : 'password'"
           autocomplete="current-password"
           size="xl"
+          :placeholder="$t('pages.welcomePage.passwordLabel')"
           class="w-full"
-          :ui="inputUi"
         >
           <template #trailing>
             <UButton
@@ -95,9 +92,6 @@ const {
   handleSubmit: handleLogin,
 } = useLoginPageVM()
 
-const inputUi = {
-  base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe] focus:border-[#0000ff] focus:ring-4 focus:ring-[rgba(0,0,255,0.07)]',
-}
 </script>
 
 <style scoped>
