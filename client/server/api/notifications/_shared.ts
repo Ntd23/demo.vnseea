@@ -1,10 +1,10 @@
 // English description: Normalizes backend notification payloads for the Nuxt notification center.
 
 import type { H3Event } from "h3"
-import { createError } from "h3"
+import { createError, getHeader } from "h3"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
-import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 type BackendNotifier = {
   user_id?: number | string
@@ -18,12 +18,21 @@ type BackendNotification = {
   type?: string
   type_text?: string
   text?: string
+  full_link?: string
   url?: string
+  ajax_url?: string
   icon?: string
   seen?: number | string
   time?: number | string
   time_text?: string
   time_text_string?: string
+  post_id?: number | string
+  page_id?: number | string
+  group_id?: number | string
+  event_id?: number | string
+  blog_id?: number | string
+  thread_id?: number | string
+  story_id?: number | string
   notifier?: BackendNotifier
 }
 
@@ -44,6 +53,145 @@ const asString = (value: unknown) =>
 const asNumber = (value: unknown, fallback = 0) => {
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : fallback
+}
+
+const encodeRouteSegment = (value: string | number) => encodeURIComponent(String(value).trim())
+
+const normalizeKnownPath = (path: string) => {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`
+  const messageMatch = normalizedPath.match(/^\/messages\/([^/?#]+)(.*)?$/i)
+
+  if (messageMatch?.[1]) {
+    return `${appRoutes.messages}?user=${encodeRouteSegment(messageMatch[1])}`
+  }
+
+  return normalizedPath
+}
+
+const normalizeLegacyIndexUrl = (rawUrl: string, item: BackendNotification) => {
+  const queryString = rawUrl
+    .replace(/^\/?index\.php\?/i, "")
+    .replace(/^\?/, "")
+  const params = new URLSearchParams(queryString)
+  const link = asString(params.get("link1"))
+
+  if (!link) {
+    return ""
+  }
+
+  if (link === "post") {
+    const id = asString(params.get("id")) || asString(item.post_id)
+    return id ? appRoutes.postDetail(id) : ""
+  }
+
+  if (link === "timeline") {
+    const username = asString(params.get("u"))
+    return username ? appRoutes.profile(username) : ""
+  }
+
+  if (link === "messages") {
+    const user = asString(params.get("user"))
+    return user ? `${appRoutes.messages}?user=${encodeRouteSegment(user)}` : appRoutes.messages
+  }
+
+  if (link === "setting") {
+    const page = asString(params.get("page"))
+    return page ? appRoutes.settingsPage(page) : appRoutes.settings
+  }
+
+  if (link === "wallet") return appRoutes.wallet
+  if (link === "jobs") return appRoutes.jobs
+  if (link === "events") return appRoutes.events
+  if (link === "forum") return appRoutes.forum
+  if (link === "products") return appRoutes.products
+  if (link === "create-status") return appRoutes.statusCreate
+  if (link === "create-blog") return appRoutes.createBlog
+  if (link === "create-event") return appRoutes.createEvent
+
+  if (link === "show-event") {
+    const id = asString(params.get("eid")) || asString(item.event_id)
+    return id ? appRoutes.eventDetail(id) : appRoutes.events
+  }
+
+  if (link === "read-blog") {
+    const id = asString(params.get("id")) || asString(item.blog_id)
+    return id ? appRoutes.readBlog(id) : appRoutes.blogs
+  }
+
+  if (link === "show_fund") {
+    const id = asString(params.get("id"))
+    return id ? appRoutes.showFund(id) : appRoutes.funding
+  }
+
+  if (link === "order") {
+    const id = asString(params.get("id"))
+    return id ? appRoutes.orderDetail(id) : appRoutes.orders
+  }
+
+  if (link === "customer_order") {
+    const id = asString(params.get("id"))
+    return id ? appRoutes.customerOrder(id) : appRoutes.orders
+  }
+
+  if (link === "page-setting") {
+    const page = asString(params.get("page"))
+    return page ? appRoutes.pageSetting(page) : appRoutes.pages
+  }
+
+  if (link === "group-setting") {
+    const group = asString(params.get("group"))
+    return group ? appRoutes.groupSetting(group) : appRoutes.groups
+  }
+
+  if (link === "reels") {
+    const id = asString(params.get("id"))
+    return id ? `${appRoutes.reels}/${encodeRouteSegment(id)}` : appRoutes.reels
+  }
+
+  return normalizeKnownPath(`/${link}`)
+}
+
+const normalizeNotificationUrl = (event: H3Event, item: BackendNotification) => {
+  const postId = asString(item.post_id)
+  const rawUrl = asString(item.url) || asString(item.full_link)
+
+  if (postId && (!rawUrl || rawUrl === "#" || rawUrl === "/notifications")) {
+    return appRoutes.postDetail(postId)
+  }
+
+  if (!rawUrl || rawUrl === "#") {
+    return "/notifications"
+  }
+
+  if (/^\/?index\.php\?/i.test(rawUrl) || rawUrl.startsWith("?")) {
+    return normalizeLegacyIndexUrl(rawUrl, item) || "/notifications"
+  }
+
+  try {
+    const runtimeConfig = useRuntimeConfig(event)
+    const parsedUrl = new URL(rawUrl)
+    const requestHost = asString(getHeader(event, "host")).split(":")[0]
+    const knownHosts = [
+      asString(runtimeConfig.public.siteUrl),
+      asString(runtimeConfig.public.backendWebBase),
+    ].map((value) => {
+      try {
+        return value ? new URL(value).hostname : ""
+      }
+      catch {
+        return ""
+      }
+    }).concat(requestHost).filter(Boolean)
+
+    if (knownHosts.includes(parsedUrl.hostname)) {
+      return normalizeKnownPath(`${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`)
+    }
+
+    return rawUrl
+  }
+  catch {
+    return normalizeKnownPath(rawUrl)
+  }
 }
 
 const normalizeIcon = (icon: unknown) => {
@@ -112,7 +260,7 @@ export const normalizeNotificationSummary = (event: H3Event, response: BackendGe
         type: asString(item.type),
         title: notifierName || "VNSEEA",
         body,
-        url: asString(item.url) || "/notifications",
+        url: normalizeNotificationUrl(event, item),
         avatarUrl: resolveMediaUrl(item.notifier?.avatar),
         icon: normalizeIcon(item.icon || item.type),
         isUnread: asNumber(item.seen) === 0,

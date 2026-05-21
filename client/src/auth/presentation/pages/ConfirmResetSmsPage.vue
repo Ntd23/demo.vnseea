@@ -35,7 +35,6 @@
           size="xl"
           :placeholder="$t('pages.confirmResetSmsPage.codePlaceholder')"
           class="w-full"
-          :ui="inputUi"
         />
       </UFormField>
 
@@ -85,9 +84,6 @@ const {
   backToForgotPassword,
 } = useConfirmResetSmsPageVM()
 
-const inputUi = {
-  base: "rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe] focus:border-[#0000ff] focus:ring-4 focus:ring-[rgba(0,0,255,0.07)]",
-}
 </script>
 
 <style scoped>

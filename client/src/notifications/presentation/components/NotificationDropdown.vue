@@ -2,17 +2,6 @@
 
 <template>
   <section class="notification-dropdown">
-    <div class="notification-dropdown__header">
-      <button
-        v-if="store.unreadCount > 0"
-        type="button"
-        class="notification-dropdown__mark"
-        @click="store.markRead()"
-      >
-        {{ $t("notifications.center.markRead") }}
-      </button>
-    </div>
-
     <div class="notification-dropdown__status">
       <span class="notification-dropdown__status-copy">
         <span
@@ -51,7 +40,11 @@
         class="notification-dropdown__item"
         :class="{ 'notification-dropdown__item--unread': item.isUnread }"
       >
-        <NuxtLink :to="item.url" class="notification-dropdown__link" @click="$emit('navigate')">
+        <button
+          type="button"
+          class="notification-dropdown__link"
+          @click="openNotification(item)"
+        >
           <NuxtImg
             v-if="item.avatarUrl"
             :src="item.avatarUrl"
@@ -68,7 +61,7 @@
             <span>{{ item.body }}</span>
             <small>{{ item.timeText }}</small>
           </span>
-        </NuxtLink>
+        </button>
         <button
           type="button"
           class="notification-dropdown__delete"
@@ -83,13 +76,21 @@
 </template>
 
 <script setup lang="ts">
+import type { NotificationItem } from "../../domain/types/notification.types"
 import { useNotificationCenterStore } from "../../application/stores/useNotificationCenterStore"
 
-defineEmits<{
+const emit = defineEmits<{
   navigate: []
 }>()
 
 const store = useNotificationCenterStore()
+
+async function openNotification(item: NotificationItem) {
+  await store.markOneRead(item.id)
+  emit("navigate")
+  const targetUrl = item.url || "/notifications"
+  await navigateTo(targetUrl, { external: /^https?:\/\//i.test(targetUrl) })
+}
 </script>
 
 <style scoped>
@@ -101,33 +102,6 @@ const store = useNotificationCenterStore()
   border-radius: var(--radius-xl);
   background: var(--bg-surface);
   box-shadow: var(--shadow-xl);
-}
-
-.notification-dropdown__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.notification-dropdown__title {
-  font-family: var(--font-secondary);
-  font-size: var(--text-heading);
-  font-weight: var(--weight-bold);
-  color: var(--text-primary);
-}
-
-.notification-dropdown__mark {
-  border: 0;
-  border-radius: var(--radius-full);
-  background: var(--bg-surface-active);
-  color: var(--text-brand);
-  cursor: pointer;
-  font-size: var(--text-caption);
-  font-weight: var(--weight-bold);
-  padding: 8px 12px;
 }
 
 .notification-dropdown__status {
@@ -197,8 +171,13 @@ const store = useNotificationCenterStore()
   flex: 1;
   gap: var(--space-3);
   padding: var(--space-3) 38px var(--space-3) var(--space-3);
+  border: 0;
+  background: transparent;
   color: inherit;
+  cursor: pointer;
+  font: inherit;
   text-decoration: none;
+  text-align: left;
 }
 
 .notification-dropdown__avatar {

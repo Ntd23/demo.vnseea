@@ -5,6 +5,7 @@ import type { NotificationSoundToggleResponse, NotificationSummary, RealtimeToke
 export interface NotificationsRepository {
   getSummary(query?: { offset?: string | number }): Promise<NotificationSummary>
   markRead(): Promise<NotificationSummary>
+  markOneRead(id: string | number): Promise<NotificationSummary>
   deleteNotification(id: string | number): Promise<void>
   toggleSound(): Promise<NotificationSoundToggleResponse>
   getRealtimeToken(): Promise<RealtimeTokenResponse>
