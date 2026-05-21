@@ -181,10 +181,10 @@ const props = defineProps<{
   thread: ForumThread | null
   replies: ReadonlyArray<ForumReply>
   statusLabel: string
+  submitting?: boolean
 }>()
 
 const { t } = useI18n()
-const toast = useToast()
 
 const emit = defineEmits<{
   reply: [message: string]
@@ -194,7 +194,7 @@ const message = ref("")
 const fieldError = ref("")
 const submitStatus = ref<ReplySubmitStatus>("idle")
 
-const isBusy = computed(() => submitStatus.value === "loading")
+const isBusy = computed(() => submitStatus.value === "loading" || props.submitting)
 
 const statusAlert = computed(() => {
   if (submitStatus.value === "idle") return null
@@ -252,20 +252,9 @@ async function submit() {
     return
   }
 
-  submitStatus.value = "loading"
-
-  await new Promise(resolve => setTimeout(resolve, 220))
-
   emit("reply", value)
   message.value = ""
   fieldError.value = ""
-  submitStatus.value = "success"
-
-  toast.add({
-    color: "success",
-    icon: "i-ph-check-circle-fill",
-    title: t("pages.forumPage.replyStatusSuccessTitle"),
-    description: t("pages.forumPage.replyStatusSuccessDescription"),
-  })
+  submitStatus.value = "idle"
 }
 </script>

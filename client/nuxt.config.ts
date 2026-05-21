@@ -133,7 +133,11 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@vueuse/nuxt",
     "@nuxtjs/i18n",
+    "nuxt-tiptap-editor"
   ],
+  tiptap: {
+    prefix: 'Tiptap',
+  },
   i18n: {
     defaultLocale: "vi",
     langDir: "locales",

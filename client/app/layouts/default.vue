@@ -59,6 +59,14 @@ const isCheckoutPage = computed(() => route.path === appRoutes.checkout)
 const isSearchPage = computed(() => route.path === appRoutes.search)
 const isPageDetailPage = computed(() => route.path.startsWith("/p/"))
 const isBlogDetailPage = computed(() => route.path.startsWith("/read-blog/"))
+const isCreateBlogPage = computed(() => route.path === appRoutes.createBlog)
+const isFundingPage = computed(() =>
+  route.path === appRoutes.funding
+  || route.path === appRoutes.createFunding
+  || route.path.startsWith("/show_fund/")
+  || route.path.startsWith("/edit_fund/")
+)
+const isForumPage = computed(() => route.path === appRoutes.forum)
 const isHomeFeedPage = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
 const isCommunityComposerPage = computed(() =>
   route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
@@ -68,7 +76,10 @@ const showLeftSidebar = computed(() =>
   && !isCheckoutPage.value
   && !isSearchPage.value
   && !isPageDetailPage.value
-  && !isBlogDetailPage.value,
+  && !isBlogDetailPage.value
+  && !isFundingPage.value
+  && !isForumPage.value
+  && !isCreateBlogPage.value
 )
 const showRightSidebar = computed(() => !isReelsPage.value)
 // HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.

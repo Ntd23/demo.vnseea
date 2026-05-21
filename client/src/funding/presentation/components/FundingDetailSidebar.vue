@@ -84,7 +84,7 @@
                   {{ donor.name }}
                 </p>
                 <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1 text-[11px] font-bold">
-                  {{ formatFundingCurrency(donor.amount, locale.value) }}
+                  {{ formatMoney(donor.amount) }}
                 </UBadge>
               </div>
 
@@ -159,9 +159,9 @@
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
 import type { MockFundingCampaign } from "../../domain/types/funding.types"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import { formatFundingCurrency } from "../../infrastructure/mocks/fundingCatalog"
 
 type ManagementAction = "edit" | "delete" | null
 type ManagementStatus = "idle" | "loading" | "success" | "error"
@@ -172,6 +172,12 @@ const emit = defineEmits<{ donate: [campaign: MockFundingCampaign] }>()
 
 const { t, locale } = useI18n()
 const toast = useToast()
+
+const formatMoney = (amount: number) =>
+  formatCurrency(amount, {
+    currency: "VND",
+    locale: locale.value,
+  })
 
 const managementAction = ref<ManagementAction>(null)
 const managementStatus = ref<ManagementStatus>("idle")

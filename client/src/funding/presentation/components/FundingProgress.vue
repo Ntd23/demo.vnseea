@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-2">
     <div class="flex items-center justify-between gap-3 text-[12px] font-bold text-[var(--text-secondary)]">
-      <span>{{ formatFundingCurrency(raised, locale.value) }}</span>
+      <span>{{ formatMoney(raised) }}</span>
       <span>{{ percent }}%</span>
     </div>
 
@@ -13,13 +13,13 @@
     />
 
     <p class="text-[12px] font-semibold text-[var(--text-tertiary)]">
-      {{ t("pages.fundingPage.goalAmount", { amount: formatFundingCurrency(goal, locale.value) }) }}
+      {{ t("pages.fundingPage.goalAmount", { amount: formatMoney(goal) }) }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { formatFundingCurrency } from "../../infrastructure/mocks/fundingCatalog"
+import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
 
 const props = defineProps<{
   raised: number
@@ -37,10 +37,16 @@ const percent = computed(() => {
 
 const clampedPercent = computed(() => Math.min(Math.max(percent.value, 0), 100))
 
+const formatMoney = (amount: number) =>
+  formatCurrency(amount, {
+    currency: "VND",
+    locale: locale.value,
+  })
+
 const progressAriaLabel = computed(() =>
   t("pages.fundingPage.progressAriaLabel", {
-    raised: formatFundingCurrency(props.raised, locale.value),
-    goal: formatFundingCurrency(props.goal, locale.value),
+    raised: formatMoney(props.raised),
+    goal: formatMoney(props.goal),
     percent: percent.value,
   }),
 )

@@ -7,6 +7,7 @@ import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { mapCommunityPageRecord } from "../community/_shared"
+import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import {
   feedStoryReactionByBackendId,
   feedStoryReactionBackendIds,
@@ -24,6 +25,7 @@ import type {
   FeedHomeResponse,
   FeedMemoriesResponse,
   FeedMediaItem,
+  FeedPostAttachmentCard,
   FeedPostMention,
   FeedPokeActionResult,
   FeedPokeRecord,
@@ -301,6 +303,14 @@ const hasUnseenStoryState = (story: BackendEntity, owner: BackendEntity) => {
 const stripHtml = (value: string) =>
   value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
 
+const slugify = (value: string) =>
+  stripHtml(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+
 const firstDisplayNamePart = (value: string) =>
   value.trim().split(/\s+/).filter(Boolean)[0] || value.trim()
 
@@ -511,9 +521,6 @@ const extractTags = (entity: BackendEntity) => {
 
 const buildPostText = (entity: BackendEntity) => {
   const product = asRecord(entity.product)
-  const blog = asRecord(entity.blog)
-  const fund = asRecord(entity.fund)
-  const fundData = asRecord(entity.fund_data)
   const thread = asRecord(entity.thread)
   const forum = asRecord(entity.forum)
   const candidates = [
@@ -528,18 +535,6 @@ const buildPostText = (entity: BackendEntity) => {
       firstString(product, ["description"]),
     ].filter(Boolean).join("\n"),
     [
-      firstString(blog, ["title"]),
-      firstString(blog, ["description"]),
-    ].filter(Boolean).join("\n"),
-    [
-      firstString(fund, ["title"]),
-      firstString(fund, ["description"]),
-    ].filter(Boolean).join("\n"),
-    [
-      firstString(fundData, ["title"]),
-      firstString(fundData, ["description"]),
-    ].filter(Boolean).join("\n"),
-    [
       firstString(thread, ["headline", "title"]),
       firstString(thread, ["post_subject", "description"]),
     ].filter(Boolean).join("\n"),
@@ -551,6 +546,60 @@ const buildPostText = (entity: BackendEntity) => {
 
   const uniqueParts = Array.from(new Set(candidates.map(stripHtml).filter(Boolean)))
   return uniqueParts.join("\n\n")
+}
+
+const buildPostAttachmentCard = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string = value => asString(value),
+): FeedPostAttachmentCard | null => {
+  const blog = asRecord(entity.blog || entity.blog_data || entity.article)
+  const blogTitle = firstString(blog, ["title", "name"])
+  const blogId = firstNumber(entity, ["blog_id"])
+    || firstNumber(blog, ["id", "blog_id", "article_id"])
+
+  if (blogTitle || blogId > 0) {
+    const slug = blogId > 0
+      ? `${blogId}_${slugify(blogTitle) || "blog"}`
+      : slugify(blogTitle)
+
+    return {
+      type: "blog",
+      title: blogTitle || "Blog",
+      description: stripHtml(firstString(blog, ["description", "content", "body", "excerpt"])),
+      imageUrl: resolveMediaUrl(firstString(blog, ["thumbnail", "image", "cover", "avatar"])),
+      href: slug ? appRoutes.readBlog(slug) : appRoutes.blogs,
+    }
+  }
+
+  const fund = asRecord(entity.fund)
+  const fundData = asRecord(entity.fund_data)
+  const funding = Object.keys(fundData).length ? fundData : fund
+  const fundTitle = firstString(funding, ["title", "name"])
+  const fundId = firstNumber(entity, ["fund_id"])
+    || firstNumber(funding, ["id", "fund_id"])
+  const hashedId = firstString(funding, ["hashed_id", "hash_id"])
+
+  if (fundTitle || fundId > 0 || hashedId) {
+    const amount = firstNumber(funding, ["amount", "target", "goal"])
+    const raised = firstNumber(funding, ["raised", "donated", "total_raised"])
+    const rawProgress = firstNumber(funding, ["bar", "progress", "percent"])
+    const progress = amount > 0
+      ? Math.min(100, Math.max(0, Math.round((raised / amount) * 100)))
+      : Math.min(100, Math.max(0, rawProgress))
+
+    return {
+      type: "funding",
+      title: fundTitle || "Funding",
+      description: stripHtml(firstString(funding, ["description", "content", "body", "excerpt"])),
+      imageUrl: resolveMediaUrl(firstString(funding, ["image", "thumbnail", "cover", "avatar"])),
+      href: appRoutes.showFund(hashedId || fundId),
+      progress,
+      raised,
+      amount,
+    }
+  }
+
+  return null
 }
 
 const feelingLabels: Record<string, { label: string; emoji: string }> = {
@@ -727,12 +776,14 @@ export const mapPostRecord = (
   const eventContext = extractPostEventContext(entity)
   const groupContext = extractPostGroupContext(entity)
   const mediaItems = extractMediaItems(entity, author, resolveMediaUrl)
+  const attachmentCard = buildPostAttachmentCard(entity, resolveMediaUrl)
   const categoryHint = [
     firstString(sourceEntity, ["working", "school"]),
     text,
+    attachmentCard?.title ?? "",
     extractTags(entity).join(" "),
   ].join(" ")
-  const primaryMediaType = !mediaItems.length
+  const primaryMediaType = !mediaItems.length && !attachmentCard?.imageUrl
     ? "text"
     : mediaItems.some(item => item.type === "video")
       ? "video"
@@ -767,6 +818,7 @@ export const mapPostRecord = (
     },
     comments: asArray(entity.get_post_comments).map(comment => mapCommentRecord(comment, resolveMediaUrl)),
     mediaItems,
+    attachmentCard,
     category: inferCategory(categoryHint),
     primaryMediaType,
     sourceLabel: pageSlug ? "page" : groupSlug ? "group" : "feed",
