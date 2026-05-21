@@ -12,6 +12,9 @@ export function createApiOrderRepository(): OrderRepository {
     async getBuyerOrders(query?: GetBuyerOrdersQuery) {
       return await client.get<BuyerOrder[]>(apiRoutes.orders.list, query)
     },
+    async getSellerOrders(query?: GetBuyerOrdersQuery) {
+      return await client.get<SellerOrder[]>(apiRoutes.customerOrders.list, query)
+    },
     async getBuyerOrderById(id: string) {
       return await client.get<BuyerOrder | null>(apiRoutes.orders.detail(id))
     },

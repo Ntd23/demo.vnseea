@@ -9,6 +9,7 @@ export interface GetBuyerOrdersQuery {
 
 export interface OrderRepository {
   getBuyerOrders(query?: GetBuyerOrdersQuery): Promise<BuyerOrder[]>
+  getSellerOrders(query?: GetBuyerOrdersQuery): Promise<SellerOrder[]>
   getBuyerOrderById(id: string): Promise<BuyerOrder | null>
   getSellerOrderById(id: string): Promise<SellerOrder | null>
   markBuyerOrderReceived(id: string): Promise<{ success: boolean }>

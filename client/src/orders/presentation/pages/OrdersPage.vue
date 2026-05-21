@@ -89,11 +89,11 @@
           :key="order.id"
           class="market-order-card"
         >
-          <NuxtLink :to="appRoutes.orderDetail(order.id)" class="market-order-card__image">
+          <NuxtLink :to="props.activeSection === 'purchased' ? appRoutes.orderDetail(order.id) : appRoutes.customerOrder(order.id)" class="market-order-card__image">
             <div
               v-if="order.items[0]"
               class="market-order-card__image-bg"
-              :style="{ background: order.items[0].imageStyle || orderItemFallbackBackground }"
+              :style="{ backgroundImage: order.items[0].imageStyle || orderItemFallbackBackground }"
             />
             <Icon v-else name="i-ph-package-fill" class="h-7 w-7 text-white" />
           </NuxtLink>
@@ -105,7 +105,7 @@
                   {{ order.orderNumber }}
                 </p>
                 <h2 class="market-order-card__title">
-                  {{ order.seller }}
+                  {{ props.activeSection === 'purchased' ? order.seller : ((order as any).buyerName || (order as any).storeName || "Buyer") }}
                 </h2>
               </div>
               <span class="market-order-card__status" :class="buyerOrderStatusMeta[order.status].badgeClass">
@@ -132,7 +132,7 @@
 
           <div class="market-order-card__side">
             <strong>{{ formatOrderCurrency(order.total) }}</strong>
-            <NuxtLink :to="appRoutes.orderDetail(order.id)">
+            <NuxtLink :to="props.activeSection === 'purchased' ? appRoutes.orderDetail(order.id) : appRoutes.customerOrder(order.id)">
               {{ $t("orders.card.viewDetail") }}
             </NuxtLink>
           </div>
@@ -174,7 +174,7 @@ const {
   visibleOrders,
   status,
   error,
-} = useOrdersPageVM()
+} = useOrdersPageVM(props.activeSection)
 
 const pageTitle = computed(() =>
   props.activeSection === "purchased"
@@ -441,6 +441,7 @@ const formatOrderCurrency = (value: number) =>
   inset: 0;
   background-size: cover !important;
   background-position: center !important;
+  background-repeat: no-repeat !important;
 }
 
 .market-order-card__body {

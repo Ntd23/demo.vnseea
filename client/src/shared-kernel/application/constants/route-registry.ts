@@ -164,6 +164,7 @@ export const apiRoutes = {
     received: (id: string | number) => `orders/${encodeSegment(id)}/received`,
   },
   customerOrders: {
+    list: "customer-orders",
     detail: (id: string | number) => `customer-orders/${encodeSegment(id)}`,
     status: (id: string | number) => `customer-orders/${encodeSegment(id)}/status`,
   },

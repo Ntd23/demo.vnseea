@@ -22,6 +22,18 @@ export function createMockCheckoutRepository(
       saveShippingAddress(storageKey, normalized)
       return normalized
     },
+    async getAddresses() {
+      return []
+    },
+    async deleteAddress() {
+      // noop
+    },
+    async updateCartItemQuantity() {
+      // noop
+    },
+    async removeCartItem() {
+      // noop
+    },
     async submitOrder() {
       return {
         success: true,

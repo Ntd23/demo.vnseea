@@ -17,7 +17,7 @@
           </p>
           <div class="flex flex-col gap-2">
             <p class="text-sm font-black text-secondary-900 group-hover/info:text-secondary-900 transition-colors">
-              {{ $t(order.paymentMethod) }}
+              {{ $t('orders.payment.' + order.paymentMethod.toLowerCase(), order.paymentMethod) }}
             </p>
             <div class="flex flex-wrap items-center gap-3">
               <UBadge
@@ -40,12 +40,12 @@
           </p>
           <div class="space-y-2">
             <p class="text-sm font-black text-secondary-900 group-hover/ship:text-secondary-900 transition-colors">
-              {{ order.shippingProvider }}
+              {{ order.shippingProvider || $t('orders.detail.noShippingProvider', 'Chưa xác định') }}
             </p>
             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary-50 border border-secondary-100">
               <Icon name="i-ph-hash-duotone" class="h-3.5 w-3.5 text-secondary-400" />
               <p class="text-[10px] font-black text-secondary-600 uppercase tracking-widest">
-                {{ $t(order.trackingCode) }}
+                {{ order.trackingCode || $t('orders.detail.noTrackingCode', 'Chưa có') }}
               </p>
             </div>
           </div>
@@ -68,9 +68,11 @@
       <div class="flex flex-col gap-3">
         <UButton
           to="/orders"
+          color="white"
+          variant="soft"
           size="xl"
           icon="i-ph-arrow-left-duotone"
-          class="rounded-2xl bg-secondary-900 hover:bg-black text-white font-black text-xs uppercase tracking-widest h-12 shadow-lg transition-all active:scale-95"
+          class="rounded-2xl border border-secondary-200 bg-white hover:bg-secondary-50 text-secondary-900 font-black text-xs uppercase tracking-widest h-12 shadow-sm transition-all active:scale-95"
         >
           {{ $t("orders.sidebar.backToOrders") }}
         </UButton>
