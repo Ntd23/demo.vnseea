@@ -114,30 +114,30 @@ const buildTimeline = (placedAt: string, status: BuyerOrderStatus) => {
   return [
     {
       key: "created",
-      label: "orders.timeline.created",
+      label: "orders.steps.placed.label",
       time: placedAt,
-      description: "orders.timeline.createdDescription",
+      description: "orders.steps.placed.description",
       done: progress >= 1,
     },
     {
       key: "confirmed",
-      label: "orders.timeline.confirmed",
+      label: "orders.steps.processing.label",
       time: progress >= 2 ? placedAt : "",
-      description: "orders.timeline.confirmedDescription",
+      description: "orders.steps.processing.description",
       done: progress >= 2,
     },
     {
       key: "shipping",
-      label: "orders.timeline.shipping",
+      label: "orders.steps.shipping.label",
       time: progress >= 3 ? placedAt : "",
-      description: "orders.timeline.shippingDescription",
+      description: "orders.steps.shipping.description",
       done: progress >= 3,
     },
     {
       key: "delivered",
-      label: "orders.timeline.delivered",
+      label: "orders.steps.completed.label",
       time: progress >= 4 ? placedAt : "",
-      description: "orders.timeline.deliveredDescription",
+      description: "orders.steps.completed.description",
       done: progress >= 4,
     },
   ]

@@ -11,6 +11,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@hiseb/confetti": "^2.1.0",
     "@iconify-json/ph": "^1.2.2",
     "@internationalized/date": "^3.12.1",
     "@nuxt/fonts": "0.14.0",

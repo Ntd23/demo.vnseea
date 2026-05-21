@@ -1474,7 +1474,7 @@
     "photosPage": {
       "seoTitle": "Photos | VNSEEA",
       "seoDescription": "A VNSEEA photo hub with a gallery hero, filters, album strip, masonry gallery, lightbox, and direct links to hashtags, popular, and memories.",
-      "heroEyebrow": "P-35 · Photos",
+      "heroEyebrow": "Photos",
       "heroTitle": "Community photo stories people are opening most",
       "heroDescription": "The /photos page gathers themed photo sets, lets you filter by content type, opens directly into a lightbox, and jumps quickly to hashtags, memories, or popular.",
       "heroPrimaryAction": "Open featured photo",
@@ -1774,7 +1774,7 @@
       "seoDescriptionSection": "Explore the latest threads in the {section} section of the VNSEEA forum.",
       "seoDescriptionQuerySection": "Results for \"{query}\" in the {section} section of the VNSEEA forum.",
       "seoDescriptionThread": "Thread \"{title}\" on the VNSEEA forum. {excerpt}",
-      "heroEyebrow": "P-13 · Forum",
+      "heroEyebrow": "Forum",
       "heroTitle": "Track public threads, ask quickly, and keep discussion context clear",
       "heroDescription": "The VNSEEA forum favors public listings that are easy to index, filters that stay in the URL, and a detail panel clear enough for reading replies and continuing the conversation without losing context.",
       "heroStatusAll": "Follow {count} public threads, notable questions, and fresh updates from the VNSEEA community.",
@@ -2179,7 +2179,7 @@
     "newProductPage": {
       "seoTitle": "Create new product | VNSEEA",
       "seoDescription": "Create a new product listing on VNSEEA with a clearer form, stable preview, and safe local draft persistence.",
-      "badge": "P-24 · New product",
+      "badge": "New product",
       "title": "Create a new product with a cleaner review flow",
       "description": "Fill the core fields, inspect the realtime preview, and keep a local draft on this device while preparing the listing.",
       "quickFill": "Quick fill sample",
@@ -3192,7 +3192,7 @@
       "seoDescriptionStatus": "{count} campaigns with the status {status} are currently visible on VNSEEA.",
       "seoDescriptionQueryCategory": "{count} campaigns match \"{query}\" in the {category} category on VNSEEA.",
       "seoDescriptionQueryStatus": "{count} campaigns match \"{query}\" with the status {status} on VNSEEA.",
-      "heroEyebrow": "P-14 · Funding",
+      "heroEyebrow": "Funding",
       "heroTitle": "Support Community Impact",
       "heroDescription": "Explore and join meaningful campaigns on VNSEEA.",
       "createCampaign": "Create campaign",
@@ -3477,7 +3477,7 @@
       "seoDescriptionQueryCategory": "{count} games match \"{query}\" in the {category} category on VNSEEA.",
       "seoDescriptionQueryTab": "{count} games match \"{query}\" in the {tab} tab on VNSEEA.",
       "seoDescriptionGame": "You are viewing \"{title}\" on VNSEEA. {description}",
-      "heroEyebrow": "P-15 · Games",
+      "heroEyebrow": "Games",
       "heroTitle": "A mock game hub that stays clear while people browse, filter, and launch a run",
       "heroDescription": "Games on VNSEEA prioritize a public listing that can be shared, filter state that stays meaningful in the URL, and a mock play modal with explicit feedback instead of guesswork.",
       "queryBadge": "Query: \"{query}\"",
@@ -3610,7 +3610,7 @@
       "seoDescriptionBilling": "Review VNSEEA Go Pro plans under the {billing} billing cycle, with clearer pricing and benefit framing.",
       "seoDescriptionPlan": "Review the {plan} plan on VNSEEA to compare benefits, limits, and the payment level that fits best.",
       "seoDescriptionPlanBilling": "Review the {plan} plan on VNSEEA under the {billing} billing cycle, including pricing, benefits, and a clearer mock checkout flow.",
-      "heroEyebrow": "P-16 · Go Pro",
+      "heroEyebrow": "Go Pro",
       "heroShortTitle": "Go Pro pricing, quick choice",
       "heroShortDescription": "3 plans, 2 billing cycles, and mock checkout on the same page.",
       "heroTitle": "Choose an upgrade plan with clearer value, clearer pricing, and no vague payment flow",
@@ -3878,7 +3878,7 @@
       "seoDescriptionQuery": "Review {count} VNSEEA job results for \"{query}\" with clearer filter state and route context.",
       "seoDescriptionQueryCategory": "Review {count} VNSEEA jobs for \"{query}\" inside the {category} category.",
       "seoDescriptionFilters": "Review {count} VNSEEA jobs under the current filters: {summary}.",
-      "heroEyebrow": "P-18 · Jobs",
+      "heroEyebrow": "Jobs",
       "heroTitle": "Keep the job discovery and posting flow explicit from the first listing view",
       "heroDescription": "The VNSEEA jobs board prioritizes meaningful routes, shareable filter state, and clearer feedback across the two key flows: applying and posting a job.",
       "heroSearchChip": "Search: \"{query}\"",
@@ -4447,7 +4447,7 @@
     "editProductPage": {
       "seoTitle": "Edit product #{id} | VNSEEA",
       "seoDescription": "Update a product on VNSEEA with stable preview behavior, clearer image management, and safe local draft persistence.",
-      "badge": "P-25 · Edit product",
+      "badge": "Edit product",
       "title": "Edit product #{id}",
       "description": "Update the content, review current images, and inspect the listing preview before saving changes.",
       "restore": "Restore original data",
@@ -5191,7 +5191,7 @@
       "titleSuffix": "VNSEEA Settings"
     },
     "hero": {
-      "auditLabel": "P-34 · Settings",
+      "auditLabel": "Settings",
       "title": "Settings",
       "description": "Manage your account, privacy, security, notifications, billing, and professional profile.",
       "stats": {
@@ -5922,7 +5922,7 @@
       "description": "Complete your marketplace checkout with the shipping address form, cart, wallet balance, and total payment.",
       "layoutTitle": "Checkout",
       "layoutDescription": "Fill in the delivery address, verify the cart, and choose a payment method before confirming your order.",
-      "eyebrow": "P-14 · Checkout",
+      "eyebrow": "Checkout",
       "progressLabel": "Checkout progress",
       "progressStatus": "{ready}/{total} steps ready",
       "formRegion": "Shipping address form",
@@ -5972,6 +5972,7 @@
       "walletShortage": "Missing {amount}",
       "walletShortageTitle": "Insufficient wallet balance",
       "walletShortageDescription": "Add {amount} before placing this order.",
+      "removeItem": "Remove item",
       "removeItemAria": "Remove {name} from cart",
       "decreaseQuantityAria": "Decrease quantity for {name}",
       "increaseQuantityAria": "Increase quantity for {name}",
@@ -5979,6 +5980,7 @@
     },
     "shippingForm": {
       "shippingAddress": "Shipping Address",
+      "inUseBadge": "In use",
       "savedAddressTitle": "Saved address ready",
       "noAddressTitle": "No shipping address yet",
       "savedAddressDesc": "The order will prioritize this address, you can still modify the form below.",
@@ -6032,7 +6034,14 @@
       "validationCountryRequired": "Please enter the country.",
       "validationCityRequired": "Please enter the city.",
       "validationPostalCodeRequired": "Please enter the postal code.",
-      "validationStreetRequired": "Please enter the street address."
+      "validationStreetRequired": "Please enter the street address.",
+      "editAddress": "Edit address",
+      "deleteAddress": "Delete address",
+      "confirmDeleteAddress": "Are you sure you want to delete this address?",
+      "deleteSuccessTitle": "Address deleted",
+      "deleteSuccessDescription": "The address has been successfully deleted.",
+      "deleteErrorTitle": "Delete failed",
+      "deleteErrorDescription": "Could not delete this address. Please try again later."
     }
   },
   "orders": {
@@ -6041,12 +6050,12 @@
       "description": "Track your purchases, shipping status, and overview of your marketplace orders on VNSEEA.",
       "layoutTitle": "My Orders",
       "layoutDescription": "Track marketplace purchases, check delivery status, and reopen order details when needed.",
-      "eyebrow": "P-15 · Orders",
-      "detailEyebrow": "P-16 · Order Details",
+      "eyebrow": "Orders",
+      "detailEyebrow": "Order Details",
       "detailTitle": "Order Details #{id}",
       "detailFallbackTitle": "Order Details",
       "detailDescription": "Track order status, check delivery information, and review all products in the transaction.",
-      "customerEyebrow": "P-17 · Customer Orders",
+      "customerEyebrow": "Customer Orders",
       "customerTitle": "Customer Order #{id}",
       "customerFallbackTitle": "Customer Order Details",
       "customerDescription": "Follow a specific sale, check buyer information, and prepare shipment update steps."
@@ -6335,7 +6344,7 @@
     },
     "creation": {
       "group": {
-        "eyebrow": "P-18 · Community",
+        "eyebrow": "Community",
         "title": "Create new group",
         "description": "Set up a new community for members to exchange, share content, and connect around a common topic.",
         "highlights": [
@@ -6350,7 +6359,7 @@
         "categoryLabel": "Category"
       },
       "page": {
-        "eyebrow": "P-21 · Fanpage",
+        "eyebrow": "Fanpage",
         "title": "Create new page",
         "description": "Create a fanpage for your brand, store, professional, or content project to start posting, receiving followers, and building a public presence.",
         "highlights": [

@@ -3,25 +3,43 @@
     <!-- Header -->
     <header class="ck-header">
       <div class="ck-header-inner">
-        <NuxtLink to="/" class="ck-logo">VNSEEA</NuxtLink>
+        <NuxtLink to="/" class="ck-logo">
+          <img :src="logoUrl" alt="VNSEEA Logo" class="ck-logo-img" />
+        </NuxtLink>
         <nav class="ck-stepper" aria-label="Checkout steps">
-          <div class="ck-step ck-step--done">
-            <span class="ck-step-circle ck-step-circle--done">
-              <Icon name="i-ph-check-bold" class="ck-step-check" />
+          <!-- Bước 1: Giỏ hàng - DONE nếu hasItems, ngược lại ACTIVE -->
+          <div class="ck-step" :class="{ 'ck-step--done': hasItems, 'ck-step--active': !hasItems }">
+            <span class="ck-step-circle" :class="{ 'ck-step-circle--done': hasItems, 'ck-step-circle--active': !hasItems }">
+              <Icon v-if="hasItems" name="i-ph-check-bold" class="ck-step-check" />
+              <span v-else>1</span>
             </span>
-            <span class="ck-step-text">{{ $t("checkout.stepper.cart") }}</span>
-          </div>
-          <span class="ck-step-line ck-step-line--done" />
-          <div class="ck-step ck-step--done">
-            <span class="ck-step-circle ck-step-circle--done">
-              <Icon name="i-ph-check-bold" class="ck-step-check" />
+            <span class="ck-step-text" :class="{ 'ck-step-text--done': hasItems, 'ck-step-text--active': !hasItems }">
+              {{ $t("checkout.stepper.cart") }}
             </span>
-            <span class="ck-step-text">{{ $t("checkout.stepper.confirm") }}</span>
           </div>
-          <span class="ck-step-line" />
-          <div class="ck-step ck-step--active">
-            <span class="ck-step-circle ck-step-circle--active">3</span>
-            <span class="ck-step-text ck-step-text--active">{{ $t("checkout.stepper.payment") }}</span>
+          <span class="ck-step-line" :class="{ 'ck-step-line--done': hasItems }" />
+
+          <!-- Bước 2: Xác nhận (Địa chỉ) - DONE nếu hasItems && hasAddress, ACTIVE nếu hasItems && !hasAddress, ngược lại PENDING -->
+          <div class="ck-step" :class="{ 'ck-step--done': hasItems && hasAddress, 'ck-step--active': hasItems && !hasAddress }">
+            <span class="ck-step-circle" :class="{ 'ck-step-circle--done': hasItems && hasAddress, 'ck-step-circle--active': hasItems && !hasAddress }">
+              <Icon v-if="hasItems && hasAddress" name="i-ph-check-bold" class="ck-step-check" />
+              <span v-else>2</span>
+            </span>
+            <span class="ck-step-text" :class="{ 'ck-step-text--done': hasItems && hasAddress, 'ck-step-text--active': hasItems && !hasAddress }">
+              {{ $t("checkout.stepper.confirm") }}
+            </span>
+          </div>
+          <span class="ck-step-line" :class="{ 'ck-step-line--done': hasItems && hasAddress }" />
+
+          <!-- Bước 3: Thanh toán (Payment) - DONE nếu isSuccess, ACTIVE nếu !isSuccess && hasItems && hasAddress, ngược lại PENDING -->
+          <div class="ck-step" :class="{ 'ck-step--done': isSuccess, 'ck-step--active': !isSuccess && hasItems && hasAddress }">
+            <span class="ck-step-circle" :class="{ 'ck-step-circle--done': isSuccess, 'ck-step-circle--active': !isSuccess && hasItems && hasAddress }">
+              <Icon v-if="isSuccess" name="i-ph-check-bold" class="ck-step-check" />
+              <span v-else>3</span>
+            </span>
+            <span class="ck-step-text" :class="{ 'ck-step-text--done': isSuccess, 'ck-step-text--active': !isSuccess && hasItems && hasAddress }">
+              {{ $t("checkout.stepper.payment") }}
+            </span>
           </div>
         </nav>
       </div>
@@ -34,17 +52,17 @@
           <h1 class="ck-title">{{ title }}</h1>
           <slot name="left" />
         </section>
-        <aside class="ck-col-right" :aria-label="rightLabel || $t('checkout.page.summaryRegion')">
-          <div class="ck-sticky">
-            <slot name="right" />
-          </div>
-        </aside>
+        <section class="ck-col-right" :aria-label="rightLabel">
+          <slot name="right" />
+        </section>
       </div>
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
+import logoUrl from "../../../../app/assets/images/logovnseea/vnseea.png"
+
 withDefaults(defineProps<{
   title: string
   eyebrow?: string
@@ -54,6 +72,9 @@ withDefaults(defineProps<{
   progressValue?: number
   leftLabel?: string
   rightLabel?: string
+  hasAddress?: boolean
+  hasItems?: boolean
+  isSuccess?: boolean
 }>(), {
   eyebrow: "",
   description: "",
@@ -62,11 +83,14 @@ withDefaults(defineProps<{
   progressValue: 0,
   leftLabel: "",
   rightLabel: "",
+  hasAddress: false,
+  hasItems: true,
+  isSuccess: false,
 })
 
 useHead({
   bodyAttrs: {
-    style: "background:#fff;overflow:hidden",
+    style: "background:#fff;overflow-x:hidden",
   },
 })
 </script>
@@ -75,7 +99,7 @@ useHead({
 .ck-page {
   min-height: 100vh;
   background: #fff;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* ── Header ── */
@@ -102,6 +126,12 @@ useHead({
   letter-spacing: -2px;
 }
 
+.ck-logo-img {
+  height: 40px;
+  display: block;
+  object-fit: contain;
+}
+
 /* ── Stepper ── */
 .ck-stepper {
   display: flex;
@@ -116,6 +146,7 @@ useHead({
 }
 
 .ck-step-circle {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -125,16 +156,48 @@ useHead({
   font-size: 13px;
   font-weight: 700;
   flex-shrink: 0;
+  background: #f3f4f6;
+  color: #9ca3af;
+  border: 1.5px solid #e5e7eb;
+  transition: all 0.3s ease;
 }
 
 .ck-step-circle--done {
   background: #4361ee;
   color: #fff;
+  border-color: #4361ee;
 }
 
 .ck-step-circle--active {
   background: #4361ee;
   color: #fff;
+  border-color: transparent;
+  box-shadow: 0 0 0 1px rgba(67, 97, 238, 0.15);
+}
+
+.ck-step-circle--active::after {
+  content: "";
+  position: absolute;
+  top: -3.5px;
+  left: -3.5px;
+  right: -3.5px;
+  bottom: -3.5px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-top-color: #4361ee;
+  border-right-color: #4361ee;
+  border-bottom-color: rgba(67, 97, 238, 0.15);
+  border-left-color: rgba(67, 97, 238, 0.15);
+  animation: ck-spin 1.8s linear infinite;
+}
+
+@keyframes ck-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .ck-step-check {
@@ -145,8 +208,9 @@ useHead({
 .ck-step-text {
   font-size: 14px;
   font-weight: 500;
-  color: #6b7280;
+  color: #9ca3af;
   white-space: nowrap;
+  transition: all 0.3s ease;
 }
 
 .ck-step-text--active {
@@ -154,12 +218,18 @@ useHead({
   color: #111827;
 }
 
+.ck-step-text--done {
+  font-weight: 600;
+  color: #4b5563;
+}
+
 .ck-step-line {
   width: 48px;
   height: 2px;
   margin: 0 12px;
-  background: #d1d5db;
+  background: #e5e7eb;
   border-radius: 1px;
+  transition: all 0.3s ease;
 }
 
 .ck-step-line--done {
@@ -170,7 +240,7 @@ useHead({
 .ck-main {
   max-width: 1140px;
   margin: 0 auto;
-  padding: 36px 24px 0;
+  padding: 36px 24px 40px;
   position: relative;
   min-height: calc(100vh - 65px);
 }

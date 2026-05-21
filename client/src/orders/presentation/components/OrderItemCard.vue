@@ -2,10 +2,10 @@
 <template>
   <article
     v-if="variant === 'detail'"
-    class="surface-card group grid gap-6 p-5 transition-all duration-500 hover:bg-white hover:ring-primary-100 md:grid-cols-[140px_minmax(0,1fr)] md:items-start ring-1 ring-secondary-100 bg-secondary-50/10"
+    class="surface-card group order-item-article-detail p-5 transition-all duration-500 hover:bg-white hover:ring-primary-100 ring-1 ring-secondary-100 bg-secondary-50/10"
   >
-    <div class="relative mx-auto aspect-square w-full max-w-[240px] overflow-hidden rounded-2xl border border-secondary-100 bg-secondary-100 shadow-sm md:mx-0 md:h-[140px] md:w-[140px] md:max-w-none transition-transform duration-500 group-hover:scale-[1.02]">
-      <div class="absolute inset-0 transition-transform duration-700 group-hover:scale-110" :style="{ background: item.imageStyle || orderItemFallbackBackground }" />
+    <div class="order-item-image-wrapper">
+      <div class="order-item-image-bg" :style="{ backgroundImage: item.imageStyle || orderItemFallbackBackground }" />
       <div class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
       <div class="absolute inset-0 ring-1 ring-inset ring-black/5" />
       
@@ -52,8 +52,8 @@
   >
     <div class="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-secondary-100 bg-secondary-100 shadow-sm transition-transform group-hover:scale-105">
       <div
-        class="absolute inset-0"
-        :style="{ background: item.imageStyle || orderItemFallbackBackground }"
+        class="absolute inset-0 bg-cover bg-no-repeat bg-center"
+        :style="{ backgroundImage: item.imageStyle || orderItemFallbackBackground }"
       />
       <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
     </div>
@@ -115,3 +115,57 @@ const detailMetaText = computed(() =>
         })),
 )
 </script>
+
+<style scoped>
+.order-item-article-detail {
+  display: grid;
+  gap: 24px;
+}
+
+.order-item-image-wrapper {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  max-width: 240px;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background-color: #f1f5f9;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.order-item-image-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.order-item-image-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group:hover .order-item-image-bg {
+  transform: scale(1.1);
+}
+
+@media (min-width: 768px) {
+  .order-item-article-detail {
+    grid-template-columns: 140px 1fr;
+    align-items: start;
+  }
+
+  .order-item-image-wrapper {
+    margin-left: 0;
+    margin-right: 0;
+    width: 140px !important;
+    height: 140px !important;
+    max-width: none !important;
+  }
+}
+</style>

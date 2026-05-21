@@ -12,7 +12,7 @@
             <div
               v-if="!item.imageUrl"
               class="os-item-img-fallback"
-              :style="{ background: item.imageStyle || defaultCardBackground }"
+              :style="{ backgroundImage: item.imageStyle || defaultCardBackground }"
             />
             <NuxtImg
               v-else
@@ -24,7 +24,29 @@
           </div>
           <div class="os-item-info">
             <h3 class="os-item-name">{{ item.name }}</h3>
-            <span class="os-item-qty">{{ item.quantity }}x</span>
+            
+            <div class="os-item-controls">
+              <!-- Bộ tăng giảm số lượng -->
+              <div class="os-qty-selector">
+                <button
+                  type="button"
+                  class="os-qty-btn decrease"
+                  @click="emit('decreaseQuantity', item.id)"
+                  :aria-label="$t('checkout.summary.decreaseQuantityAria', { name: item.name })"
+                >
+                  <Icon name="i-ph-minus-bold" class="h-3 w-3" />
+                </button>
+                <span class="os-qty-val">{{ item.quantity }}</span>
+                <button
+                  type="button"
+                  class="os-qty-btn increase"
+                  @click="emit('increaseQuantity', item.id)"
+                  :aria-label="$t('checkout.summary.increaseQuantityAria', { name: item.name })"
+                >
+                  <Icon name="i-ph-plus-bold" class="h-3 w-3" />
+                </button>
+              </div>
+            </div>
           </div>
           <span class="os-item-price">{{ formatVnd(item.price * item.quantity) }}</span>
         </article>
@@ -138,12 +160,7 @@ const statusAlert = computed(() => {
   }
 
   if (props.checkoutState === "success") {
-    return {
-      color: "success" as const,
-      icon: "i-ph-check-circle-fill",
-      title: t("checkout.summary.purchaseSuccessTitle"),
-      description: t("checkout.summary.purchaseSuccessDescription"),
-    }
+    return null
   }
 
   if (props.checkoutState === "error") {
@@ -260,6 +277,9 @@ function formatVnd(value: number) {
   position: absolute;
   inset: 0;
   opacity: 0.6;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .os-item-img-real {
@@ -281,11 +301,71 @@ function formatVnd(value: number) {
   color: #111827;
 }
 
-.os-item-qty {
-  display: block;
-  margin-top: 3px;
+.os-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.os-qty-selector {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+.os-qty-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.os-qty-btn:hover:not(:disabled) {
+  background: #fff;
+  color: #1e293b;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.os-qty-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.os-qty-val {
+  min-width: 22px;
+  text-align: center;
   font-size: 13px;
-  color: #6b7280;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.os-item-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #ef4444;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.os-item-remove-btn:hover {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: #fca5a5;
 }
 
 .os-item-price {
