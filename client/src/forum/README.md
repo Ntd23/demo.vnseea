@@ -1,7 +1,9 @@
 # Forum bounded context
 
 - Runtime page: `src/forum/presentation/pages/ForumPage.vue`
-- Route entry file `app/pages/forum/index.vue` giữ SEO/meta và import thẳng `src/forum/presentation/pages/ForumPage.vue`
-- Forum mock data, filter logic, section normalization và formatter đã được move sang `src/forum/infrastructure/mocks/forumCatalog.ts`
-- Forum domain types đã được tách sang `src/forum/domain/types/forum.types.ts`
-- Legacy `app/components/forum/*`, `app/components/pages/ForumPage.vue`, `app/composables/useMockForumData.ts` có thể xóa sau khi build pass
+- Route entry: `app/pages/forum/index.vue` stays thin and only handles layout/SEO.
+- Presentation calls `useForumPageVM`, not `$fetch` directly.
+- View model calls `ForumRepository`; `ApiForumRepository` talks to `/_api/forum/*`.
+- Nuxt server routes bridge to PHP `api/v2/endpoints/forum.php`.
+- Current live features: forum workflow tabs (`browse`, `members`, `search`, `my_threads`, `my_messages`), current user's threads, forum thread list after choosing a forum, thread detail after choosing a topic, create thread, reply thread, URL-synced `tab`/`fid`/`tid`/`q`, and load more.
+- `src/forum/infrastructure/mocks/forumCatalog.ts` is now legacy reference only and should not be used by runtime forum UI.

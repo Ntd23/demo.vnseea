@@ -27,6 +27,7 @@ export const appRoutes = {
   reels: "/reels",
   watch: "/watch",
   photos: "/photos",
+  postDetail: (id: string | number) => `/post/${encodeSegment(id)}`,
   movies: "/movies",
   memories: "/memories",
   search: "/search",
@@ -101,6 +102,7 @@ export const apiRoutes = {
     memories: "feed/memories",
     poke: "feed/poke",
     posts: {
+      detail: (id: string | number) => `feed/posts/${encodeSegment(id)}`,
       create: "feed/posts/create",
       action: "feed/posts/action",
     },
@@ -176,6 +178,7 @@ export const apiRoutes = {
   },
   search: {
     index: "search",
+    suggestions: "search/suggestions",
   },
   settings: {
     me: "settings/me",

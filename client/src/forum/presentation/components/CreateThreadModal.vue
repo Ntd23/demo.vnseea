@@ -47,19 +47,19 @@
           </UFormField>
 
           <UFormField
-            name="section"
+            name="forumId"
             :label="t('pages.forumPage.modalSectionLabel')"
             required
             size="xl"
             class="space-y-2"
-            :error="fieldErrors.section || undefined"
+            :error="fieldErrors.forumId || undefined"
           >
             <USelect
-              v-model="form.section"
-              :items="sectionOptions"
+              v-model="form.forumId"
+              :items="forumOptions"
               value-key="value"
               label-key="label"
-              :disabled="isBusy || sectionOptions.length === 0"
+              :disabled="isBusy || forumOptions.length === 0"
               color="primary"
               size="xl"
               class="w-full"
@@ -117,7 +117,7 @@
             size="lg"
             class="rounded-full"
             :loading="isBusy"
-            :disabled="isBusy || sectionOptions.length === 0"
+            :disabled="isBusy || forumOptions.length === 0"
           >
             {{ t("pages.forumPage.modalSubmit") }}
           </UButton>
@@ -128,18 +128,18 @@
 </template>
 
 <script setup lang="ts">
-import type { ForumSection, ForumSectionKey, ForumThreadPayload } from "../../domain/types/forum.types"
+import type { ForumSummaryForum, ForumThreadPayload } from "../../domain/types/forum.types"
 
 type ModalSubmitStatus = "idle" | "loading" | "success" | "error"
 
 const props = defineProps<{
   open: boolean
-  sections: ReadonlyArray<ForumSection>
-  defaultSection?: Exclude<ForumSectionKey, "all">
+  forums: ReadonlyArray<ForumSummaryForum>
+  defaultForumId?: number
+  submitting?: boolean
 }>()
 
 const { t } = useI18n()
-const toast = useToast()
 
 const emit = defineEmits<{
   close: []
@@ -148,33 +148,35 @@ const emit = defineEmits<{
 
 const form = reactive<ForumThreadPayload>({
   title: "",
-  section: "support",
+  forumId: 0,
   message: "",
 })
 
 const fieldErrors = reactive<Record<keyof ForumThreadPayload, string>>({
   title: "",
-  section: "",
+  forumId: "",
   message: "",
 })
 
 const submitStatus = ref<ModalSubmitStatus>("idle")
 
-const sectionOptions = computed(() =>
-  props.sections
-    .filter(section => section.value !== "all")
-    .map(section => ({
-      label: section.label,
-      value: section.value,
+const forumOptions = computed(() =>
+  props.forums
+    .map(forum => ({
+      label: forum.title,
+      value: forum.id,
     })),
 )
 
-const resolvedDefaultSection = computed<Exclude<ForumSectionKey, "all">>(() => {
-  if (props.defaultSection) return props.defaultSection
-  return sectionOptions.value[0]?.value ?? "support"
+const resolvedDefaultForumId = computed(() => {
+  if (props.defaultForumId && forumOptions.value.some(option => option.value === props.defaultForumId)) {
+    return props.defaultForumId
+  }
+
+  return forumOptions.value[0]?.value ?? 0
 })
 
-const isBusy = computed(() => submitStatus.value === "loading")
+const isBusy = computed(() => submitStatus.value === "loading" || props.submitting)
 
 const statusAlert = computed(() => {
   if (submitStatus.value === "idle") return null
@@ -243,7 +245,7 @@ function clearErrors() {
 
 function resetForm() {
   form.title = ""
-  form.section = resolvedDefaultSection.value
+  form.forumId = resolvedDefaultForumId.value
   form.message = ""
   clearErrors()
   submitStatus.value = "idle"
@@ -258,19 +260,19 @@ function validateForm() {
   form.title = title
   form.message = message
 
-  if (title.length < 8) {
+  if (title.length < 10) {
     fieldErrors.title = t("pages.forumPage.modalTitleError")
   }
 
-  if (!sectionOptions.value.some(option => option.value === form.section)) {
-    fieldErrors.section = t("pages.forumPage.modalSectionError")
+  if (!forumOptions.value.some(option => option.value === form.forumId)) {
+    fieldErrors.forumId = t("pages.forumPage.modalSectionError")
   }
 
-  if (message.length < 20) {
+  if (message.length < 32) {
     fieldErrors.message = t("pages.forumPage.modalMessageError")
   }
 
-  return !fieldErrors.title && !fieldErrors.section && !fieldErrors.message
+  return !fieldErrors.title && !fieldErrors.forumId && !fieldErrors.message
 }
 
 async function submit() {
@@ -281,21 +283,11 @@ async function submit() {
 
   submitStatus.value = "loading"
 
-  await new Promise(resolve => setTimeout(resolve, 240))
-
   emit("create", {
     title: form.title,
-    section: form.section,
+    forumId: form.forumId,
     message: form.message,
   })
-
-  submitStatus.value = "success"
-
-  toast.add({
-    color: "success",
-    icon: "i-ph-check-circle-fill",
-    title: t("pages.forumPage.modalStatusSuccessTitle"),
-    description: t("pages.forumPage.modalStatusSuccessDescription"),
-  })
+  submitStatus.value = "idle"
 }
 </script>

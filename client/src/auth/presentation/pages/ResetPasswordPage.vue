@@ -3,11 +3,7 @@
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <p class="auth-form__eyebrow">{{ $t('pages.resetPasswordPage.eyebrow') }}</p>
       <h1 class="auth-form__title">{{ $t('pages.resetPasswordPage.title') }}</h1>
-      <p class="auth-form__subtitle">
-        {{ $t('pages.resetPasswordPage.subtitle') }}
-      </p>
     </div>
 
     <UAlert
@@ -35,7 +31,6 @@
           size="xl"
           :placeholder="$t('pages.resetPasswordPage.emailPlaceholder')"
           class="w-full"
-          :ui="inputUi"
         />
       </UFormField>
 
@@ -46,7 +41,6 @@
           autocomplete="new-password"
           size="xl"
           class="w-full"
-          :ui="inputUi"
         >
           <template #trailing>
             <UButton
@@ -68,7 +62,6 @@
           autocomplete="new-password"
           size="xl"
           class="w-full"
-          :ui="inputUi"
         >
           <template #trailing>
             <UButton
@@ -124,9 +117,6 @@ const {
   handleSubmit,
 } = useResetPasswordPageVM()
 
-const inputUi = {
-  base: "rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe] focus:border-[#0000ff] focus:ring-4 focus:ring-[rgba(0,0,255,0.07)]",
-}
 </script>
 
 <style scoped>

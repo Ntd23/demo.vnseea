@@ -35,7 +35,7 @@
             {{ t("pages.showFundPage.raisedLabel") }}
           </p>
           <p class="mt-1 text-[1.25rem] font-black text-[var(--text-primary)]">
-            {{ formatFundingCurrency(campaign.raisedAmount, locale.value) }}
+            {{ formatMoney(campaign.raisedAmount) }}
           </p>
         </div>
 
@@ -44,7 +44,7 @@
             {{ t("pages.showFundPage.goalLabel") }}
           </p>
           <p class="mt-1 text-[1.25rem] font-black text-[var(--text-primary)]">
-            {{ formatFundingCurrency(campaign.goalAmount, locale.value) }}
+            {{ formatMoney(campaign.goalAmount) }}
           </p>
         </div>
 
@@ -125,8 +125,8 @@
 </template>
 
 <script setup lang="ts">
+import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
 import type { MockFundingCampaign } from "../../domain/types/funding.types"
-import { formatFundingCurrency } from "../../infrastructure/mocks/fundingCatalog"
 import FundingProgress from "./FundingProgress.vue"
 
 type StatusColor = "primary" | "warning" | "success"
@@ -134,6 +134,12 @@ type StatusColor = "primary" | "warning" | "success"
 const props = defineProps<{ campaign: MockFundingCampaign }>()
 
 const { t, locale } = useI18n()
+
+const formatMoney = (amount: number) =>
+  formatCurrency(amount, {
+    currency: "VND",
+    locale: locale.value,
+  })
 
 const statusLabel = computed(() => {
   if (props.campaign.status === "ending") return t("pages.fundingPage.statusEnding")

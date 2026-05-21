@@ -1,121 +1,791 @@
-<!-- English description: Backend-backed forum sections page aligned to the WoWonder forum phtml section table. -->
+<!-- English description: Backend-backed forum workspace with forum browsing, thread listing, thread detail, creation, and replies. -->
 <template>
-  <main class="mx-auto w-full max-w-6xl space-y-5 px-3 py-4 sm:px-5">
-    <section class="surface-card p-4 sm:p-5">
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex items-center gap-3">
-          <span class="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
-            <Icon name="i-ph-chats-circle-duotone" class="h-6 w-6" />
-          </span>
-          <div>
-            <p class="text-label-secondary">Forum</p>
-            <h1 class="text-heading">{{ t("pages.forumPage.heroTitle") }}</h1>
-          </div>
+  <main class="forum-page">
+    <section class="forum-hero surface-card">
+      <div class="forum-hero__copy">
+        <span class="forum-hero__icon">
+          <Icon name="i-ph-chats-circle-duotone" />
+        </span>
+        <div>
+          <p>{{ t("pages.forumPage.heroEyebrow") }}</p>
+          <h1>{{ t("pages.forumPage.heroTitle") }}</h1>
+          <span>{{ t("pages.forumPage.heroDescription") }}</span>
         </div>
+      </div>
 
-        <UButton
-          v-if="canCreate && firstForumId"
-          :to="`/forumaddthred?fid=${firstForumId}`"
-          color="primary"
-          class="rounded-[var(--radius-full)]"
-        >
-          <Icon name="i-ph-plus-bold" class="h-4 w-4" />
-          {{ t("pages.forumPage.createThreadButton") }}
-        </UButton>
+      <div class="forum-hero__stats">
+        <div>
+          <strong>{{ totalForumCount }}</strong>
+          <span>{{ t("pages.forumPage.sectionsTitle") }}</span>
+        </div>
+        <div>
+          <strong>{{ totalThreadCount }}</strong>
+          <span>{{ t("pages.forumPage.resultsEyebrow") }}</span>
+        </div>
       </div>
     </section>
 
-    <section class="surface-card p-3">
-      <form class="flex gap-2" @submit.prevent="syncQuery">
+    <nav class="forum-tabs surface-card" aria-label="Forum tabs">
+      <button
+        v-for="tab in tabItems"
+        :key="tab.value"
+        class="forum-tab"
+        :class="{ 'forum-tab--active': activeTab === tab.value }"
+        type="button"
+        @click="selectTab(tab.value)"
+      >
+        <Icon :name="tab.icon" />
+        <span>{{ tab.label }}</span>
+      </button>
+    </nav>
+
+    <section class="forum-toolbar surface-card">
+      <form class="forum-search" @submit.prevent="syncQuery">
         <UInput
           v-model="search"
           icon="i-ph-magnifying-glass-duotone"
           :placeholder="t('pages.forumPage.searchPlaceholder')"
-          class="w-full"
+          class="forum-search__input"
         />
-        <UButton
-          type="submit"
-          color="primary"
-          class="rounded-[var(--radius-full)]"
-          :aria-label="t('pages.forumPage.searchPlaceholder')"
-        >
-          <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4" />
+        <UButton type="submit" color="primary" class="forum-icon-button" :aria-label="t('pages.forumPage.searchPlaceholder')">
+          <Icon name="i-ph-magnifying-glass-bold" />
+        </UButton>
+        <UButton v-if="search || activeForumId" type="button" color="neutral" variant="soft" class="forum-reset" @click="resetFilters">
+          <Icon name="i-ph-arrow-counter-clockwise-bold" />
+          {{ t("pages.forumPage.resetFilters") }}
         </UButton>
       </form>
-    </section>
 
-    <section v-if="pending" class="space-y-4">
-      <USkeleton v-for="index in 3" :key="index" class="h-44 rounded-[var(--radius-xl)]" />
-    </section>
-
-    <UAlert v-else-if="error" color="error" variant="soft" :title="String(error.message || error)" />
-
-    <section v-else-if="sections.length" class="space-y-4">
-      <article v-for="section in sections" :key="section.id" class="surface-card overflow-hidden">
-        <header class="border-b border-[var(--border-light)] p-4">
-          <h2 class="text-title-primary">{{ section.title }}</h2>
-          <p v-if="section.description" class="text-body-secondary mt-1">{{ section.description }}</p>
-        </header>
-
-        <div class="divide-y divide-[var(--border-light)]">
-          <NuxtLink
-            v-for="forum in section.forums"
-            :key="forum.id"
-            :to="forum.url"
-            class="grid gap-3 p-4 transition hover:bg-[var(--bg-surface-hover)] sm:grid-cols-[minmax(0,1fr)_120px]"
-          >
-            <div class="flex min-w-0 gap-3">
-              <span class="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
-                <Icon name="i-ph-chat-centered-text-duotone" class="h-5 w-5" />
-              </span>
-              <div class="min-w-0">
-                <h3 class="text-title-primary truncate">{{ forum.title }}</h3>
-                <p class="text-body-secondary mt-1 line-clamp-2">{{ forum.description }}</p>
-              </div>
-            </div>
-            <div class="text-caption-secondary flex items-center sm:justify-end">
-              {{ forum.posts }} {{ t("pages.forumPage.repliesLabel") }}
-            </div>
-          </NuxtLink>
-        </div>
-      </article>
-    </section>
-
-    <UCard v-else class="surface-card text-center" :ui="{ body: 'p-8' }">
-      <Icon name="i-ph-chats-circle-duotone" class="mx-auto h-10 w-10 text-[var(--text-tertiary)]" />
-      <h2 class="text-heading mt-3">{{ t("pages.forumPage.emptyTitle") }}</h2>
-      <p class="text-body-secondary mt-2">{{ t("pages.forumPage.emptyDescription") }}</p>
-    </UCard>
-
-    <div v-if="hasMore && !pending" class="flex justify-center">
       <UButton
-        color="neutral"
-        variant="soft"
-        class="rounded-[var(--radius-full)]"
-        :loading="loadingMore"
-        @click="loadMore"
+        v-if="canCreate && forums.length"
+        color="primary"
+        class="forum-create"
+        @click="openCreate"
       >
-        {{ t("navigation.leftSidebar.showMore") }}
+        <Icon name="i-ph-plus-bold" />
+        {{ t("pages.forumPage.createThreadButton") }}
       </UButton>
-    </div>
+    </section>
+
+    <UAlert
+      v-if="error"
+      color="warning"
+      variant="soft"
+      icon="i-ph-warning-circle-fill"
+      :title="String(error.message || error)"
+    />
+
+    <section class="forum-layout" :class="`forum-layout--${layoutMode}`">
+      <aside v-if="isForumDrilldown && activeTab !== 'my_threads'" class="forum-sidebar surface-card">
+        <div class="forum-sidebar__header">
+          <p>{{ t("pages.forumPage.sectionsEyebrow") }}</p>
+          <h2>{{ t("pages.forumPage.sectionsTitle") }}</h2>
+        </div>
+
+        <div v-if="pending && !sections.length" class="forum-sidebar__loading">
+          <USkeleton v-for="index in 5" :key="index" class="h-16 rounded-[12px]" />
+        </div>
+
+        <div v-else class="forum-section-list">
+          <div v-for="section in sections" :key="section.id" class="forum-section">
+            <div class="forum-section__heading">
+              <h3>{{ section.title }}</h3>
+              <span>{{ section.forums.length }}</span>
+            </div>
+            <p v-if="section.description">{{ section.description }}</p>
+
+            <button
+              v-for="forum in section.forums"
+              :key="forum.id"
+              class="forum-link"
+              :class="{ 'forum-link--active': forum.id === activeForumId }"
+              type="button"
+              @click="selectForum(forum.id)"
+            >
+              <span class="forum-link__icon">
+                <Icon name="i-ph-chat-centered-text-duotone" />
+              </span>
+              <span class="forum-link__body">
+                <strong>{{ forum.title }}</strong>
+                <small>{{ forum.posts }} {{ t("pages.forumPage.repliesLabel") }}</small>
+              </span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="forum-main">
+        <div class="forum-main__header surface-card">
+          <div>
+            <p>{{ mainEyebrow }}</p>
+            <h2>
+              {{ mainTitle }}
+            </h2>
+            <span>
+              {{ mainDescription }}
+            </span>
+          </div>
+          <UBadge v-if="isForumDrilldown || activeTab === 'my_threads'" color="primary" variant="subtle" class="forum-count">
+            {{ t("pages.forumPage.resultMeta", { count: threads.length }) }}
+          </UBadge>
+        </div>
+
+        <UCard v-if="activeTab === 'members'" class="surface-card forum-empty" :ui="{ body: 'p-8' }">
+          <Icon name="i-ph-users-three-duotone" />
+          <h2>{{ t("pages.forumPage.membersTitle") }}</h2>
+          <p>{{ t("pages.forumPage.membersDescription") }}</p>
+        </UCard>
+
+        <UCard v-else-if="activeTab === 'my_messages'" class="surface-card forum-empty" :ui="{ body: 'p-8' }">
+          <Icon name="i-ph-envelope-simple-duotone" />
+          <h2>{{ t("pages.forumPage.myMessagesTitle") }}</h2>
+          <p>{{ t("pages.forumPage.myMessagesDescription") }}</p>
+        </UCard>
+
+        <div v-else-if="!isForumDrilldown && activeTab !== 'my_threads'" class="forum-list-tab">
+          <article v-for="section in sections" :key="section.id" class="forum-section-card surface-card">
+            <header>
+              <div>
+                <p>{{ t("pages.forumPage.sectionsEyebrow") }}</p>
+                <h3>{{ section.title }}</h3>
+              </div>
+              <span>{{ section.forums.length }}</span>
+            </header>
+            <p v-if="section.description" class="forum-section-card__description">{{ section.description }}</p>
+            <div class="forum-section-card__forums">
+              <button
+                v-for="forum in section.forums"
+                :key="forum.id"
+                class="forum-list-item"
+                type="button"
+                @click="selectForum(forum.id)"
+              >
+                <span class="forum-link__icon">
+                  <Icon name="i-ph-chat-centered-text-duotone" />
+                </span>
+                <span>
+                  <strong>{{ forum.title }}</strong>
+                  <small>{{ forum.description }}</small>
+                </span>
+                <em>{{ forum.posts }} {{ t("pages.forumPage.repliesLabel") }}</em>
+              </button>
+            </div>
+          </article>
+        </div>
+
+        <div v-else-if="pending && (isForumDrilldown || activeTab === 'my_threads') && !threads.length" class="forum-thread-list">
+          <USkeleton v-for="index in 4" :key="index" class="h-40 rounded-[16px]" />
+        </div>
+
+        <div v-else-if="(isForumDrilldown || activeTab === 'my_threads') && threads.length" class="forum-thread-list">
+          <ForumThreadCard
+            v-for="thread in threads"
+            :key="thread.id"
+            :thread="thread"
+            :selected="thread.id === activeThreadId"
+            :local-reply-count="0"
+            @select="selectThread"
+          />
+
+          <div v-if="hasMoreThreads" class="forum-load-more">
+            <UButton color="neutral" variant="soft" :loading="loadingMore" @click="loadMoreThreads">
+              {{ t("navigation.leftSidebar.showMore") }}
+            </UButton>
+          </div>
+        </div>
+
+        <UCard v-else-if="activeTab === 'my_threads' || activeForumId" class="surface-card forum-empty" :ui="{ body: 'p-8' }">
+          <Icon name="i-ph-chat-dots-duotone" />
+          <h2>{{ t("pages.forumPage.emptyTitle") }}</h2>
+          <p>{{ t("pages.forumPage.emptyDescription") }}</p>
+        </UCard>
+
+        <UCard v-else class="surface-card forum-empty" :ui="{ body: 'p-8' }">
+          <Icon name="i-ph-list-magnifying-glass-duotone" />
+          <h2>{{ t("pages.forumPage.detailEmptyTitle") }}</h2>
+          <p>{{ t("pages.forumPage.detailEmptyDescription") }}</p>
+        </UCard>
+      </section>
+
+      <ForumThreadDetail
+        v-if="isThreadDetail"
+        class="forum-detail"
+        :thread="selectedThread"
+        :replies="selectedThread?.replies ?? []"
+        :status-label="selectedThread ? t('pages.forumPage.detailStatus', { title: selectedThread.title, count: selectedThread.repliesCount }) : ''"
+        :submitting="replying"
+        @reply="replyThread"
+      />
+    </section>
+
+    <CreateThreadModal
+      :open="createOpen"
+      :forums="forums"
+      :default-forum-id="activeForumId || forums[0]?.id"
+      :submitting="creating"
+      @close="closeCreate"
+      @create="createThread"
+    />
   </main>
 </template>
 
 <script setup lang="ts">
 import { useForumPageVM } from "../../application/view-models/useForumPageVM"
+import CreateThreadModal from "../components/CreateThreadModal.vue"
+import ForumThreadCard from "../components/ForumThreadCard.vue"
+import ForumThreadDetail from "../components/ForumThreadDetail.vue"
 
 const { t } = useI18n()
 const {
   search,
+  createOpen,
+  creating,
+  replying,
   sections,
+  forums,
+  activeForumId,
+  activeThreadId,
+  activeTab,
+  isForumDrilldown,
+  isThreadDetail,
+  activeForum,
+  forumThreads,
+  myThreads,
+  threads,
+  selectedThread,
   canCreate,
-  hasMore,
+  hasMoreThreads,
   pending,
   error,
   loadingMore,
+  totalForumCount,
+  totalThreadCount,
   syncQuery,
-  loadMore,
+  selectTab,
+  selectForum,
+  selectThread,
+  resetFilters,
+  openCreate,
+  closeCreate,
+  createThread,
+  replyThread,
+  loadMoreThreads,
 } = useForumPageVM()
 
-const firstForumId = computed(() => sections.value.flatMap(section => section.forums)[0]?.id ?? null)
+const tabItems = computed(() => [
+  { value: "browse" as const, label: t("pages.forumPage.tabForumList"), icon: "i-ph-list-bullets-duotone" },
+  { value: "members" as const, label: t("pages.forumPage.tabMembers"), icon: "i-ph-users-three-duotone" },
+  { value: "search" as const, label: t("pages.forumPage.tabSearch"), icon: "i-ph-magnifying-glass-duotone" },
+  { value: "my_threads" as const, label: t("pages.forumPage.tabMyThreads"), icon: "i-ph-user-circle-duotone" },
+  { value: "my_messages" as const, label: t("pages.forumPage.tabMyMessages"), icon: "i-ph-envelope-simple-duotone" },
+])
+
+const layoutMode = computed(() => {
+  if (activeTab.value === "my_threads") return "my_threads"
+  if (isThreadDetail.value) return "thread"
+  if (isForumDrilldown.value) return "forum"
+  return "root"
+})
+
+const mainEyebrow = computed(() => {
+  if (activeTab.value === "my_threads") return t("pages.forumPage.tabMyThreads")
+  if (activeTab.value === "members") return t("pages.forumPage.tabMembers")
+  if (activeTab.value === "my_messages") return t("pages.forumPage.tabMyMessages")
+  if (isForumDrilldown.value) return activeForum.value?.title || t("pages.forumPage.tabForumDetail")
+  if (activeTab.value === "search") return t("pages.forumPage.tabSearch")
+  return t("pages.forumPage.tabForumList")
+})
+
+const mainTitle = computed(() => {
+  if (activeTab.value === "my_threads") return t("pages.forumPage.myThreadsTitle")
+  if (activeTab.value === "members") return t("pages.forumPage.membersTitle")
+  if (activeTab.value === "my_messages") return t("pages.forumPage.myMessagesTitle")
+  if (isForumDrilldown.value) return activeForum.value ? t("pages.forumPage.resultsEyebrow") : t("pages.forumPage.tabForumDetail")
+  if (activeTab.value === "search") return t("pages.forumPage.searchTitle")
+  return t("pages.forumPage.forumListTitle")
+})
+
+const mainDescription = computed(() => {
+  if (activeTab.value === "my_threads") return t("pages.forumPage.myThreadsDescription")
+  if (activeTab.value === "members") return t("pages.forumPage.membersDescription")
+  if (activeTab.value === "my_messages") return t("pages.forumPage.myMessagesDescription")
+  if (isForumDrilldown.value) return activeForum.value?.description || t("pages.forumPage.detailEmptyDescription")
+  if (activeTab.value === "search") return t("pages.forumPage.searchDescription")
+  return t("pages.forumPage.forumListDescription")
+})
 </script>
+
+<style scoped>
+.forum-page {
+  width: min(100%, 1320px);
+  margin: 0 auto;
+  padding: 16px 12px 32px;
+  display: grid;
+  gap: 16px;
+}
+
+.forum-hero,
+.forum-toolbar,
+.forum-tabs {
+  padding: 16px;
+}
+
+.forum-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.forum-tab {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--bg-surface-hover);
+  padding: 9px 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 800;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.forum-tab svg,
+.forum-tab :deep(svg) {
+  width: 17px;
+  height: 17px;
+}
+
+.forum-tab:hover,
+.forum-tab--active {
+  border-color: rgba(0, 0, 255, 0.18);
+  background: #0000ff;
+  color: #ffffff;
+}
+
+.forum-hero {
+  display: grid;
+  gap: 16px;
+}
+
+.forum-hero__copy {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.forum-hero__icon,
+.forum-link__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-brand);
+  background: var(--bg-surface-active);
+}
+
+.forum-hero__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.forum-hero__icon svg,
+.forum-hero__icon :deep(svg) {
+  width: 26px;
+  height: 26px;
+}
+
+.forum-hero__copy p,
+.forum-sidebar__header p,
+.forum-main__header p {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.forum-hero__copy h1 {
+  margin-top: 4px;
+  color: var(--text-primary);
+  font-size: clamp(24px, 4vw, 38px);
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.forum-hero__copy span,
+.forum-main__header span,
+.forum-section p {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.forum-hero__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.forum-hero__stats div {
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--bg-surface-hover);
+}
+
+.forum-hero__stats strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.forum-hero__stats span {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.forum-toolbar,
+.forum-search {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forum-search__input {
+  width: 100%;
+}
+
+.forum-icon-button,
+.forum-reset,
+.forum-create {
+  border-radius: 999px;
+}
+
+.forum-icon-button svg,
+.forum-icon-button :deep(svg),
+.forum-reset svg,
+.forum-reset :deep(svg),
+.forum-create svg,
+.forum-create :deep(svg) {
+  width: 16px;
+  height: 16px;
+}
+
+.forum-layout {
+  display: grid;
+  gap: 16px;
+}
+
+.forum-list-tab {
+  display: grid;
+  gap: 12px;
+}
+
+.forum-section-card {
+  padding: 16px;
+}
+
+.forum-section-card header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.forum-section-card header p {
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.forum-section-card h3 {
+  margin-top: 3px;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.forum-section-card header span {
+  border-radius: 999px;
+  background: var(--bg-surface-hover);
+  padding: 5px 9px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.forum-section-card__description {
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.forum-section-card__forums {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.forum-list-item {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 10px;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.forum-list-item:hover {
+  border-color: rgba(0, 0, 255, 0.14);
+  background: var(--bg-surface-hover);
+}
+
+.forum-list-item strong,
+.forum-list-item small {
+  display: block;
+}
+
+.forum-list-item strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forum-list-item small {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.forum-list-item em {
+  grid-column: 2;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.forum-sidebar,
+.forum-main__header {
+  padding: 16px;
+}
+
+.forum-sidebar {
+  align-self: start;
+}
+
+.forum-sidebar__header h2,
+.forum-main__header h2 {
+  margin-top: 3px;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.forum-sidebar__loading,
+.forum-section-list,
+.forum-thread-list {
+  display: grid;
+  gap: 12px;
+}
+
+.forum-section {
+  display: grid;
+  gap: 8px;
+  padding-top: 14px;
+  margin-top: 14px;
+  border-top: 1px solid var(--border-light);
+}
+
+.forum-section__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.forum-section__heading h3 {
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.forum-section__heading span {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.forum-link {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 10px;
+  background: transparent;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.forum-link:hover,
+.forum-link--active {
+  border-color: rgba(0, 0, 255, 0.12);
+  background: var(--bg-surface-hover);
+}
+
+.forum-link__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+
+.forum-link__body {
+  min-width: 0;
+}
+
+.forum-link__body strong,
+.forum-link__body small {
+  display: block;
+}
+
+.forum-link__body strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.forum-link__body small {
+  margin-top: 2px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.forum-main {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.forum-main__header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.forum-count {
+  width: fit-content;
+}
+
+.forum-load-more {
+  display: flex;
+  justify-content: center;
+}
+
+.forum-empty {
+  text-align: center;
+}
+
+.forum-empty svg,
+.forum-empty :deep(svg) {
+  width: 42px;
+  height: 42px;
+  margin: 0 auto;
+  color: var(--text-tertiary);
+}
+
+.forum-empty h2 {
+  margin-top: 12px;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.forum-empty p {
+  margin: 8px auto 0;
+  max-width: 520px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.forum-detail {
+  min-width: 0;
+}
+
+@media (min-width: 720px) {
+  .forum-toolbar,
+  .forum-search {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .forum-search {
+    flex: 1;
+  }
+
+  .forum-hero {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: center;
+  }
+
+  .forum-list-item {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+  }
+
+  .forum-list-item em {
+    grid-column: auto;
+  }
+}
+
+@media (min-width: 1120px) {
+  .forum-layout--thread {
+    grid-template-columns: 280px minmax(0, 1fr) 360px;
+    align-items: start;
+  }
+
+  .forum-layout--forum {
+    grid-template-columns: 280px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .forum-layout--my_threads {
+    grid-template-columns: minmax(0, 1fr) 380px;
+    align-items: start;
+  }
+
+  .forum-layout--root {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .forum-list-tab {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+</style>

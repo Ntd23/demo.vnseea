@@ -27,6 +27,9 @@ export function createApiFeedRepository(): FeedRepository {
   const client = useNuxtApiClient()
 
   return {
+    async getPostById(id) {
+      return await client.get<FeedPostRecord | null>(apiRoutes.feed.posts.detail(id))
+    },
     async getHome(input) {
       return await client.get<FeedHomeResponse>(apiRoutes.feed.home, {
         limit: input?.limit,
@@ -145,6 +148,10 @@ export function createApiFeedRepository(): FeedRepository {
 
       if (input.groupId) {
         formData.append("groupId", String(input.groupId))
+      }
+
+      if (input.sharedPostId) {
+        formData.append("sharedPostId", String(input.sharedPostId))
       }
 
       if (input.imageFile || input.videoFile || input.feeling) {
