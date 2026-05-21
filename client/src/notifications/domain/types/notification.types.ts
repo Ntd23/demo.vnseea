@@ -23,6 +23,8 @@ export type NotificationSummary = {
 export type RealtimeTokenResponse = {
   token: string
   expiresAt: number
+  enabled?: boolean
+  url?: string
 }
 
 export type NotificationSoundToggleResponse = {

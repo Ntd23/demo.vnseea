@@ -13,7 +13,7 @@ const emptySummary = (): NotificationSummary => ({
   nextOffset: null,
 })
 
-const POLLING_INTERVAL_MS = 30000
+const POLLING_INTERVAL_MS = 10000
 type HeaderRefreshTarget = "navigation" | "requests"
 type HeaderRefreshHandler = (target: HeaderRefreshTarget) => void | Promise<void>
 
@@ -26,6 +26,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
   const lastEventAt = ref<number | null>(null)
   const errorMessage = ref("")
   const soundEnabled = ref(true)
+  const realtimeUnavailable = ref(false)
   const socket = shallowRef<Socket | null>(null)
   const pollTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
   const headerRefreshHandlers = new Set<HeaderRefreshHandler>()
@@ -98,6 +99,10 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     }
 
     pollTimer.value = window.setInterval(() => {
+      if (realtimeUnavailable.value) {
+        void connectSocket(true)
+      }
+
       if (!connected.value) {
         void hydrate(true)
       }
@@ -124,8 +129,8 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     }
   }
 
-  async function connectSocket() {
-    if (!import.meta.client || socket.value || connecting.value) {
+  async function connectSocket(allowRetry = false) {
+    if (!import.meta.client || socket.value || connecting.value || (realtimeUnavailable.value && allowRetry !== true)) {
       return
     }
 
@@ -133,6 +138,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     const realtimeUrl = String(runtimeConfig.public.realtimeUrl || "").trim()
 
     if (!realtimeUrl) {
+      realtimeUnavailable.value = true
       startPolling()
       return
     }
@@ -142,36 +148,48 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     try {
       const repository = createApiNotificationsRepository()
       const auth = await repository.getRealtimeToken()
+
+      if (!auth.enabled || !auth.token || !auth.url) {
+        realtimeUnavailable.value = true
+        connected.value = false
+        startPolling()
+        return
+      }
+
       const { io } = await import("socket.io-client")
-      const realtimeSocket = io(realtimeUrl, {
+      const realtimeSocket = io(auth.url, {
         auth: {
           token: auth.token,
         },
-        transports: ["polling", "websocket"],
+        transports: ["websocket"],
         timeout: 5000,
-        reconnection: true,
-        reconnectionAttempts: 3,
-        reconnectionDelay: 5000,
-        reconnectionDelayMax: 30000,
+        reconnection: false,
       })
 
       realtimeSocket.on("connect", () => {
         connected.value = true
+        realtimeUnavailable.value = false
         errorMessage.value = ""
       })
 
       realtimeSocket.on("disconnect", () => {
         connected.value = false
+        socket.value = null
         startPolling()
       })
 
       realtimeSocket.on("connect_error", async () => {
         connected.value = false
+        realtimeUnavailable.value = true
+        socket.value = null
+        realtimeSocket.disconnect()
         startPolling()
 
         try {
           const nextAuth = await repository.getRealtimeToken()
-          realtimeSocket.auth = { token: nextAuth.token }
+          if (nextAuth.enabled && nextAuth.token) {
+            errorMessage.value = ""
+          }
         }
         catch {
           // Polling keeps the badge fresh when realtime auth cannot refresh.
@@ -210,6 +228,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     catch (error) {
       errorMessage.value = error instanceof Error ? error.message : "Realtime notifications are unavailable."
       connected.value = false
+      realtimeUnavailable.value = true
       socket.value = null
       startPolling()
     }
@@ -223,6 +242,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
       return
     }
 
+    realtimeUnavailable.value = false
     await hydrate()
     await connectSocket()
     startPolling()

@@ -3018,8 +3018,40 @@ function Wo_GetFollowNotifyUsers($user_id = 0)
 
 function Wo_PublishRealtimeNotification($recipient_id, $notification_id = 0, $kind = 'notification')
 {
-    $internal_url = trim(getenv('REALTIME_INTERNAL_URL'));
-    $secret = trim(getenv('REALTIME_SECRET'));
+    static $realtime_config = null;
+    if ($realtime_config === null) {
+        $realtime_config = array(
+            'internal_url' => trim((string) getenv('REALTIME_INTERNAL_URL')),
+            'public_url' => trim((string) getenv('NUXT_PUBLIC_REALTIME_URL')),
+            'secret' => trim((string) getenv('REALTIME_SECRET'))
+        );
+        $env_path = dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'client' . DIRECTORY_SEPARATOR . '.env';
+        if (file_exists($env_path) && is_readable($env_path)) {
+            $env_lines = @file($env_path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            if (is_array($env_lines)) {
+                foreach ($env_lines as $env_line) {
+                    $env_line = trim((string) $env_line);
+                    if ($env_line === '' || strpos($env_line, '#') === 0 || strpos($env_line, '=') === false) {
+                        continue;
+                    }
+                    list($env_key, $env_value) = array_pad(explode('=', $env_line, 2), 2, '');
+                    $env_key = trim($env_key);
+                    $env_value = trim($env_value, " \t\n\r\0\x0B\"'");
+                    if ($env_key === 'REALTIME_INTERNAL_URL' && empty($realtime_config['internal_url'])) {
+                        $realtime_config['internal_url'] = $env_value;
+                    }
+                    if ($env_key === 'NUXT_PUBLIC_REALTIME_URL' && empty($realtime_config['public_url'])) {
+                        $realtime_config['public_url'] = $env_value;
+                    }
+                    if ($env_key === 'REALTIME_SECRET' && empty($realtime_config['secret'])) {
+                        $realtime_config['secret'] = $env_value;
+                    }
+                }
+            }
+        }
+    }
+    $internal_url = trim(!empty($realtime_config['internal_url']) ? $realtime_config['internal_url'] : (!empty($realtime_config['public_url']) ? $realtime_config['public_url'] : 'http://127.0.0.1:3015'));
+    $secret = trim((string) $realtime_config['secret']);
     if (empty($internal_url) || empty($secret) || empty($recipient_id)) {
         return false;
     }
@@ -3241,18 +3273,27 @@ function Wo_RegisterNotification($data = array())
         $group_chat_notifcation_query = ',`group_chat_id`';
         $group_chat_notifcation_query2 = ",{$group_chat_id} ";
     }
-    $query_one = " SELECT `id` FROM " . T_NOTIFICATION . " WHERE `recipient_id` = " . $recipient['user_id'] . " AND `post_id` = " . $data['post_id'] . " AND `type` = '" . $data['type'] . "'";
+    $notification_target_column = 'post_id';
+    $notification_target_value = (int) $data['post_id'];
+    if (!empty($data['reply_id'])) {
+        $notification_target_column = 'reply_id';
+        $notification_target_value = (int) $data['reply_id'];
+    } elseif (!empty($data['comment_id'])) {
+        $notification_target_column = 'comment_id';
+        $notification_target_value = (int) $data['comment_id'];
+    } elseif (!empty($data['story_id'])) {
+        $notification_target_column = 'story_id';
+        $notification_target_value = (int) $data['story_id'];
+    }
+    $query_one = " SELECT `id` FROM " . T_NOTIFICATION . " WHERE `recipient_id` = " . $recipient['user_id'] . " AND `notifier_id` = " . $notifier['user_id'] . " AND `" . $notification_target_column . "` = " . $notification_target_value . " AND `type` = '" . $data['type'] . "'";
     $sql_query_one = mysqli_query($sqlConnect, $query_one);
     if (mysqli_num_rows($sql_query_one) > 0) {
         if ($data['type'] != "following") {
-            if ($data['type'] != "reaction" && empty($data['story_id'])) {
-                $query_two = " DELETE FROM " . T_NOTIFICATION . " WHERE `recipient_id` = " . $recipient['user_id'] . " AND `post_id` = " . $data['post_id'] . " AND `type` = '" . $data['type'] . "'";
+            if ($data['type'] == "reaction" && $data['text'] == "message") {
+                $query_two = " DELETE FROM " . T_NOTIFICATION . " WHERE `recipient_id` = " . $recipient['user_id'] . " AND `notifier_id` = " . $notifier['user_id'] . " AND `type` = '" . $data['type'] . "'";
                 $sql_query_two = mysqli_query($sqlConnect, $query_two);
-            } elseif (!empty($data['story_id'])) {
-                $query_two = " DELETE FROM " . T_NOTIFICATION . " WHERE `recipient_id` = " . $recipient['user_id'] . " AND `story_id` = " . $data['story_id'] . " AND `type` = '" . $data['type'] . "'";
-                $sql_query_two = mysqli_query($sqlConnect, $query_two);
-            } elseif ($data['type'] == "reaction" && $data['text'] == "message") {
-                $query_two = " DELETE FROM " . T_NOTIFICATION . " WHERE `recipient_id` = " . $recipient['user_id'] . " AND `type` = '" . $data['type'] . "'";
+            } else {
+                $query_two = " DELETE FROM " . T_NOTIFICATION . " WHERE `recipient_id` = " . $recipient['user_id'] . " AND `notifier_id` = " . $notifier['user_id'] . " AND `" . $notification_target_column . "` = " . $notification_target_value . " AND `type` = '" . $data['type'] . "'";
                 $sql_query_two = mysqli_query($sqlConnect, $query_two);
             }
         }
@@ -3397,10 +3438,11 @@ function Wo_GetNotifications($data = array())
     if (empty($data['limit'])) {
         $data['limit'] = 15;
     }
+    $force_all_list = (!empty($data['force_all']) && $data['force_all'] === true);
     $new_notif = Wo_CountNotifications(array(
         'unread' => true
     ));
-    if ($new_notif > 0) {
+    if ($new_notif > 0 && $force_all_list !== true) {
         $query_4 = '';
         if (isset($data['type_2']) && !empty($data['type_2'])) {
             if ($data['type_2'] == 'popunder') {

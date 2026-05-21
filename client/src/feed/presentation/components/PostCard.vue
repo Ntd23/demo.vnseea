@@ -234,39 +234,41 @@
       </Transition>
     </div>
 
-    <FeedShareModal
-      :open="showShare"
-      :share-url="shareUrl"
-      :post="{ id: post.id, author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
-      @close="showShare = false"
-      @shared="handleShared"
-    />
-    <FeedLightboxViewer
-      :open="lightboxOpen"
-      :items="post.sharedPost ? [] : mediaItems"
-      :current-index="currentMediaIndex"
-      :title="props.post.text || t('feed.postCard.lightboxTitle')"
-      :description="''"
-      :author="post.author"
-      :author-avatar-url="post.authorAvatarUrl"
-      :author-path="post.authorPath"
-      :caption="post.text"
-      :time-label="post.time"
-      :like-count="likesCount"
-      :comments="localComments"
-      :current-user-name="currentAuthUserStore.user?.name"
-      :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
-      :submitting-comment="commenting"
-      :selected-reaction="selectedPostReaction"
-      @close="lightboxOpen = false"
-      @change="currentMediaIndex = $event"
-      @share="showShare = true"
-      @download="downloadMedia"
-      @like="toggleLike"
-      @react="reactToPost"
-      @comment="showComments = true"
-      @submit-comment="submitComment"
-    />
+    <ClientOnly>
+      <FeedShareModal
+        :open="showShare"
+        :share-url="shareUrl"
+        :post="{ id: post.id, author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
+        @close="showShare = false"
+        @shared="handleShared"
+      />
+      <FeedLightboxViewer
+        :open="lightboxOpen"
+        :items="post.sharedPost ? [] : mediaItems"
+        :current-index="currentMediaIndex"
+        :title="props.post.text || t('feed.postCard.lightboxTitle')"
+        :description="''"
+        :author="post.author"
+        :author-avatar-url="post.authorAvatarUrl"
+        :author-path="post.authorPath"
+        :caption="post.text"
+        :time-label="post.time"
+        :like-count="likesCount"
+        :comments="localComments"
+        :current-user-name="currentAuthUserStore.user?.name"
+        :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+        :submitting-comment="commenting"
+        :selected-reaction="selectedPostReaction"
+        @close="lightboxOpen = false"
+        @change="currentMediaIndex = $event"
+        @share="showShare = true"
+        @download="downloadMedia"
+        @like="toggleLike"
+        @react="reactToPost"
+        @comment="showComments = true"
+        @submit-comment="submitComment"
+      />
+    </ClientOnly>
   </article>
 </template>
 
