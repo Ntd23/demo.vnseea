@@ -75,6 +75,8 @@ export type FeedPostMention = {
 
 export type FeedPostRecord = {
   id: number
+  sharedPostId?: number
+  sharedPost?: FeedPostRecord | null
   author: string
   authorAvatarUrl: string
   authorVerified?: boolean

@@ -3,203 +3,133 @@
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <p class="auth-form__eyebrow">{{ $t('pages.registerPage.eyebrow') }}</p>
       <h1 class="auth-form__title">{{ $t('pages.registerPage.title') }}</h1>
-      <p class="auth-form__subtitle">{{ $t('pages.registerPage.subtitle') }}</p>
     </div>
 
-    <UForm
-      :state="state"
-      :validate="validate"
-      class="auth-form__body"
-      @submit="handleSubmit"
-    >
+    <UForm :state="state" :validate="validate" class="auth-form__body" @submit="handleSubmit">
       <div class="auth-form__row-2">
         <UFormField name="firstName" :label="$t('pages.registerPage.firstName')" required class="min-w-0">
-          <UInput
-            v-model="state.firstName"
-            size="xl"
-            :placeholder="$t('pages.registerPage.firstNamePlaceholder')"
-            class="w-full"
-            :ui="inputUi"
-          />
+          <UInput v-model="state.firstName" size="xl" :placeholder="$t('pages.registerPage.firstNamePlaceholder')"
+            class="w-full" />
         </UFormField>
         <UFormField name="lastName" :label="$t('pages.registerPage.lastName')" required class="min-w-0">
-          <UInput
-            v-model="state.lastName"
-            size="xl"
-            :placeholder="$t('pages.registerPage.lastNamePlaceholder')"
-            class="w-full"
-            :ui="inputUi"
-          />
+          <UInput v-model="state.lastName" size="xl" :placeholder="$t('pages.registerPage.lastNamePlaceholder')"
+            class="w-full" />
         </UFormField>
       </div>
 
       <UFormField name="username" :label="$t('pages.registerPage.username')" required>
-        <UInput
-          v-model="state.username"
-          type="text"
-          autocomplete="username"
-          size="xl"
-          class="w-full"
-          :placeholder="$t('pages.registerPage.usernamePlaceholder')"
-          :ui="inputUi"
-        />
+        <UInput v-model="state.username" type="text" autocomplete="username" size="xl" class="w-full"
+          :placeholder="$t('pages.registerPage.usernamePlaceholder')" />
       </UFormField>
 
-      <UFormField name="birthDay" :label="$t('pages.registerPage.birthday')">
-        <div class="auth-form__row-3">
-          <USelect
-            v-model="state.birthDay"
-            :items="dayOptions"
-            size="xl"
-            :placeholder="$t('pages.registerPage.day')"
-            class="flex-1"
-            :ui="inputUi"
-          />
-          <USelect
-            v-model="state.birthMonth"
-            :items="monthOptions"
-            size="xl"
-            :placeholder="$t('pages.registerPage.month')"
-            class="flex-1"
-            :ui="inputUi"
-          />
-          <USelect
-            v-model="state.birthYear"
-            :items="yearOptions"
-            size="xl"
-            :placeholder="$t('pages.registerPage.year')"
-            class="flex-1"
-            :ui="inputUi"
-          />
-        </div>
-      </UFormField>
+   <div class="auth-form__row-2">
+ <UFormField name="birthDay" :label="$t('pages.registerPage.birthday')" class="min-w-0">
+  <UPopover>
+    <UButton
+      color="neutral"
+      variant="outline"
+      size="xl"
+      block
+      class="justify-start font-normal"
+    >
+      {{ birthDateLabel || 'DD/MM/YYYY' }}
+    </UButton>
 
-      <UFormField name="gender" :label="$t('pages.registerPage.gender')">
-        <div class="auth-gender">
-          <label
-            v-for="g in genderOptions"
-            :key="g.value"
-            class="auth-gender__option"
-            :class="{ 'auth-gender__option--active': state.gender === g.value }"
-          >
-            <span class="auth-gender__label">{{ $t(g.labelKey) }}</span>
-            <input
-              v-model="state.gender"
-              class="auth-gender__radio"
-              name="gender"
-              type="radio"
-              :value="g.value"
-            >
-          </label>
-        </div>
-      </UFormField>
+    <template #content>
+      <UCalendar v-model="birthDate" />
+    </template>
+  </UPopover>
+</UFormField>
+
+  <UFormField name="gender" :label="$t('pages.registerPage.gender')" class="min-w-0">
+    <USelect
+      v-model="state.gender"
+      :items="genderItems"
+      :placeholder="$t('pages.registerPage.gender')"
+      size="xl"
+      class="w-full"
+    />
+  </UFormField>
+</div>
 
       <UFormField name="email" :label="$t('pages.registerPage.loginIdentity')" required>
-        <UInput
-          v-model="state.email"
-          type="text"
-          autocomplete="username"
-          size="xl"
-          :placeholder="$t('pages.registerPage.loginIdentityPlaceholder')"
-          class="w-full"
-          :ui="inputUi"
-        />
+        <UInput v-model="state.email" type="text" autocomplete="username" size="xl"
+          :placeholder="$t('pages.registerPage.loginIdentityPlaceholder')" class="w-full" />
       </UFormField>
 
       <UFormField name="password" :label="$t('pages.registerPage.newPassword')" required>
-        <UInput
-          v-model="state.password"
-          :type="showPassword ? 'text' : 'password'"
-          autocomplete="new-password"
-          size="xl"
-          class="w-full"
-          :ui="inputUi"
-        >
+        <UInput v-model="state.password" :type="showPassword ? 'text' : 'password'" autocomplete="new-password"
+          size="xl" class="w-full">
           <template #trailing>
-            <UButton
-              type="button"
-              color="neutral"
-              variant="ghost"
-              size="sm"
+            <UButton type="button" color="neutral" variant="ghost" size="sm"
               :icon="showPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'"
               :aria-label="showPassword ? $t('pages.registerPage.hidePassword') : $t('pages.registerPage.showPassword')"
-              @click="showPassword = !showPassword"
-            />
+              @click="showPassword = !showPassword" />
           </template>
         </UInput>
         <!-- Password strength bars -->
         <div class="auth-strength">
-          <div
-            v-for="i in 4"
-            :key="i"
-            class="auth-strength__bar"
-            :class="{
-              'auth-strength__bar--weak':   strength >= 1 && i === 1,
-              'auth-strength__bar--fair':   strength >= 2 && i <= 2,
-              'auth-strength__bar--good':   strength >= 3 && i <= 3,
-              'auth-strength__bar--strong': strength >= 4,
-            }"
-          />
+          <div v-for="i in 4" :key="i" class="auth-strength__bar" :class="{
+            'auth-strength__bar--weak': strength >= 1 && i === 1,
+            'auth-strength__bar--fair': strength >= 2 && i <= 2,
+            'auth-strength__bar--good': strength >= 3 && i <= 3,
+            'auth-strength__bar--strong': strength >= 4,
+          }" />
         </div>
       </UFormField>
 
       <UFormField name="confirmPassword" :label="$t('pages.registerPage.confirmPassword')" required>
-        <UInput
-          v-model="state.confirmPassword"
-          :type="showConfirmPassword ? 'text' : 'password'"
-          autocomplete="new-password"
-          size="xl"
-          :placeholder="$t('pages.registerPage.confirmPasswordPlaceholder')"
-          class="w-full"
-          :ui="inputUi"
-        >
+        <UInput v-model="state.confirmPassword" :type="showConfirmPassword ? 'text' : 'password'"
+          autocomplete="new-password" size="xl" :placeholder="$t('pages.registerPage.confirmPasswordPlaceholder')"
+          class="w-full">
           <template #trailing>
-            <UButton
-              type="button"
-              color="neutral"
-              variant="ghost"
-              size="sm"
+            <UButton type="button" color="neutral" variant="ghost" size="sm"
               :icon="showConfirmPassword ? 'i-ph-eye-slash-duotone' : 'i-ph-eye-duotone'"
               :aria-label="$t('pages.registerPage.toggleConfirmPassword')"
-              @click="showConfirmPassword = !showConfirmPassword"
-            />
+              @click="showConfirmPassword = !showConfirmPassword" />
           </template>
         </UInput>
       </UFormField>
 
-      <div class="auth-checklist">
-        <label class="auth-check">
-          <input v-model="state.hasExistingStorefront" class="auth-check__input" type="checkbox">
-          <span class="auth-check__box" />
-          <span class="auth-check__text">{{ $t('pages.registerPage.storefrontQuestion') }}</span>
-        </label>
+     <div class="auth-checklist">
+  <UCheckbox
+    v-model="state.hasExistingStorefront"
+    :label="$t('pages.registerPage.storefrontQuestion')"
+  />
 
-        <UFormField name="acceptTerms" required>
-          <label class="auth-check">
-            <input v-model="state.acceptTerms" class="auth-check__input" type="checkbox">
-            <span class="auth-check__box" />
-            <span class="auth-check__text">
-              {{ $t('pages.registerPage.termsAgreementPrefix') }}
-              <a class="auth-check__link" :href="termsHref" target="_blank" rel="noreferrer">{{ $t('pages.registerPage.terms') }}</a>
-              {{ $t('pages.registerPage.termsConnector') }}
-              <a class="auth-check__link" :href="privacyHref" target="_blank" rel="noreferrer">{{ $t('pages.registerPage.privacy') }}</a>
-            </span>
-          </label>
-        </UFormField>
-      </div>
+  <UFormField name="acceptTerms" required>
+    <UCheckbox v-model="state.acceptTerms" required="">
+      <template #label>
+        <span class="auth-check__text">
+          {{ $t('pages.registerPage.termsAgreementPrefix') }}
+          <a
+            class="auth-check__link"
+            :href="termsHref"
+            target="_blank"
+            rel="noreferrer"
+            @click.stop
+          >
+            {{ $t('pages.registerPage.terms') }}
+          </a>
+          {{ $t('pages.registerPage.termsConnector') }}
+          <a
+            class="auth-check__link"
+            :href="privacyHref"
+            target="_blank"
+            rel="noreferrer"
+            @click.stop
+          >
+            {{ $t('pages.registerPage.privacy') }}
+          </a>
+        </span>
+      </template>
+    </UCheckbox>
+  </UFormField>
+</div>
 
-      <UButton
-        type="submit"
-        color="primary"
-        variant="solid"
-        block
-        size="xl"
-        :loading="isSubmitting"
-        loading-icon="i-lucide-loader-2"
-        class="auth-submit"
-      >
+      <UButton type="submit" color="primary" variant="solid" block size="xl" :loading="isSubmitting"
+        loading-icon="i-lucide-loader-2" class="auth-submit">
         {{ isSubmitting ? $t('pages.registerPage.submitting') : $t('pages.registerPage.submit') }}
       </UButton>
 
@@ -214,6 +144,7 @@
 </template>
 
 <script setup lang="ts">
+import { CalendarDate } from '@internationalized/date'
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 import { useRegisterPageVM } from '../../application/view-models/useRegisterPageVM'
 
@@ -224,24 +155,41 @@ const { state, isSubmitting, validate, handleSubmit } = useRegisterPageVM()
 const termsHref = appRoutes.termsOfUse
 const privacyHref = appRoutes.privacyPolicy
 
-const inputUi = {
-  base: 'rounded-[14px] border-[1.5px] border-slate-200 bg-[#fafbfe]',
-}
+const birthDate = shallowRef<CalendarDate | undefined>(
+  state.birthYear && state.birthMonth && state.birthDay
+    ? new CalendarDate(
+        String(state.birthYear),
+        String(state.birthMonth),
+        String(state.birthDay)
+      )
+    : undefined
+)
 
-const dayOptions = Array.from({ length: 31 }, (_, i) => ({ label: String(i + 1), value: i + 1 }))
-const monthOptions = Array.from({ length: 12 }, (_, i) => ({
-  label: t('pages.registerPage.monthShort', { month: i + 1 }),
-  value: i + 1,
-}))
-const currentYear = new Date().getFullYear()
-const yearOptions = Array.from({ length: 70 }, (_, i) => ({ label: String(currentYear - i), value: currentYear - i }))
+watch(birthDate, (value) => {
+  state.birthDay = value ? String(value.day) : ''
+  state.birthMonth = value ? String(value.month) : ''
+  state.birthYear = value ? String(value.year) : ''
+})
+const birthDateLabel = computed(() => {
+  if (!birthDate.value) return ''
 
+  const day = String(birthDate.value.day).padStart(2, '0')
+  const month = String(birthDate.value.month).padStart(2, '0')
+  const year = birthDate.value.year
+
+  return `${day}/${month}/${year}`
+})
 const genderOptions = [
   { value: 'female', labelKey: 'pages.registerPage.female' },
   { value: 'male', labelKey: 'pages.registerPage.male' },
   { value: 'custom', labelKey: 'pages.registerPage.custom' },
 ]
-
+const genderItems = computed(() =>
+  genderOptions.map(g => ({
+    label: $t(g.labelKey),
+    value: g.value
+  }))
+)
 const strength = computed(() => {
   const p = state.password
   if (!p) return 0
@@ -286,7 +234,9 @@ const strength = computed(() => {
 }
 
 @media (min-width: 640px) {
-  .auth-form__title { font-size: 2.6rem; }
+  .auth-form__title {
+    font-size: 2.6rem;
+  }
 }
 
 .auth-form__subtitle {
@@ -330,10 +280,21 @@ const strength = computed(() => {
   transition: background 0.2s ease;
 }
 
-.auth-strength__bar--weak   { background: #ef4444; }
-.auth-strength__bar--fair   { background: #f59e0b; }
-.auth-strength__bar--good   { background: #22c55e; }
-.auth-strength__bar--strong { background: #0000ff; }
+.auth-strength__bar--weak {
+  background: #ef4444;
+}
+
+.auth-strength__bar--fair {
+  background: #f59e0b;
+}
+
+.auth-strength__bar--good {
+  background: #22c55e;
+}
+
+.auth-strength__bar--strong {
+  background: #0000ff;
+}
 
 .auth-checklist {
   display: flex;
@@ -341,37 +302,6 @@ const strength = computed(() => {
   gap: 12px;
 }
 
-.auth-check {
-  display: grid;
-  grid-template-columns: 20px 20px 1fr;
-  gap: 12px;
-  align-items: start;
-  cursor: pointer;
-}
-
-.auth-check__input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.auth-check__box {
-  grid-column: 2;
-  margin-top: 2px;
-  display: block;
-  width: 20px;
-  height: 20px;
-  border-radius: 6px;
-  border: 1.5px solid #cbd5e1;
-  background: #fff;
-  transition: all 0.15s ease;
-}
-
-.auth-check__input:checked + .auth-check__box {
-  border-color: #0000ff;
-  background: #0000ff;
-  box-shadow: inset 0 0 0 4px #fff;
-}
 
 .auth-check__text {
   font-size: 0.92rem;

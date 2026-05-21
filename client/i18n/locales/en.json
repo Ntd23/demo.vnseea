@@ -4864,6 +4864,10 @@
       "reactionSad": "Sad",
       "reactionAngry": "Angry"
     },
+    "postDetail": {
+      "notFoundTitle": "Post not found",
+      "notFoundDescription": "This post does not exist, was removed, or you no longer have permission to view it."
+    },
     "postHeader": {
       "follow": "Follow",
       "following": "Working...",
@@ -4944,6 +4948,7 @@
       "destinationTitle": "Share destination",
       "previewLabel": "Post preview",
       "shared": "Shared!",
+      "shareFailed": "Unable to share right now. Please choose a valid destination and try again.",
       "submitLoading": "Sharing...",
       "submit": "Share",
       "copyUnavailable": "This device does not support link copying right now.",
@@ -4951,7 +4956,22 @@
       "destinationTimeline": "Timeline",
       "destinationPage": "Page",
       "destinationGroup": "Group",
-      "destinationMessage": "Message"
+      "destinationMessage": "Message",
+      "timelinePanelTitle": "My profile",
+      "timelinePanelDescription": "The shared post will appear on your personal timeline.",
+      "pagePanelTitle": "Choose a page to share to",
+      "pagePanelDescription": "Search your pages or a matching page.",
+      "groupPanelTitle": "Choose a group to share to",
+      "groupPanelDescription": "Search groups and choose one from the list below.",
+      "messagePanelTitle": "Send via message",
+      "messagePanelDescription": "Search other users to send this post.",
+      "pageSearchPlaceholder": "Search pages...",
+      "groupSearchPlaceholder": "Search groups...",
+      "messageSearchPlaceholder": "Search users...",
+      "pageEmpty": "No matching pages found.",
+      "groupEmpty": "No matching groups found.",
+      "messageEmpty": "Enter a name or username to find users.",
+      "searchLoading": "Searching..."
     },
     "lightboxModal": {
       "viewTitle": "View image",

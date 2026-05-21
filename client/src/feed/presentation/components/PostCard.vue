@@ -237,13 +237,13 @@
     <FeedShareModal
       :open="showShare"
       :share-url="shareUrl"
-      :post="{ author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
+      :post="{ id: post.id, author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
       @close="showShare = false"
       @shared="handleShared"
     />
     <FeedLightboxViewer
       :open="lightboxOpen"
-      :items="mediaItems"
+      :items="post.sharedPost ? [] : mediaItems"
       :current-index="currentMediaIndex"
       :title="props.post.text || t('feed.postCard.lightboxTitle')"
       :description="''"
@@ -281,6 +281,7 @@ import FeedLightboxViewer from "./LightboxViewer.vue"
 import FeedPostHeader from "./PostHeader.vue"
 import FeedPostMediaGrid from "./PostMediaGrid.vue"
 import FeedShareModal from "./ShareModal.vue"
+import FeedSharedPostCard from "./SharedPostCard.vue"
 
 const { t } = useI18n()
 

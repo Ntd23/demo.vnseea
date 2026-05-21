@@ -2,14 +2,9 @@
 
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
-import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { HeaderRequestAction, HeaderRequestItem, HeaderRequestsSummary } from "../../domain/types/navigation-requests.types"
+import { createApiNavigationRepository } from "../../infrastructure/repositories/ApiNavigationRepository"
 import { useNavigationGeneralStore } from "./useNavigationGeneralStore"
-
-const navigationRequestApiRoutes = {
-  list: "navigation/requests",
-  action: "navigation/requests/action",
-} as const
 
 const emptySummary = (): HeaderRequestsSummary => ({
   items: [],
@@ -39,8 +34,8 @@ export const useNavigationRequestsStore = defineStore("navigation-requests", () 
     errorMessage.value = ""
 
     try {
-      const client = useNuxtApiClient()
-      summary.value = await client.get<HeaderRequestsSummary>(navigationRequestApiRoutes.list)
+      const repository = createApiNavigationRepository()
+      summary.value = await repository.getRequests()
       hydrated.value = true
       return summary.value
     }
@@ -55,13 +50,8 @@ export const useNavigationRequestsStore = defineStore("navigation-requests", () 
   }
 
   async function updateRequest(item: HeaderRequestItem, action: HeaderRequestAction) {
-    const client = useNuxtApiClient()
-
-    await client.post<{ ok: true }>(navigationRequestApiRoutes.action, {
-      id: item.id,
-      kind: item.kind,
-      action,
-    })
+    const repository = createApiNavigationRepository()
+    await repository.updateRequest(item, action)
 
     summary.value = {
       ...summary.value,
