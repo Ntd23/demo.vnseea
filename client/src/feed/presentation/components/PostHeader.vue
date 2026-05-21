@@ -20,13 +20,13 @@
             <span class="post-header__feeling-label">{{ feeling.label }}</span>
           </template>
           <template v-if="showEventContext">
-            <span class="post-header__event-arrow">→</span>
+            <Icon name="i-ph-play-fill" class="post-header__context-icon" aria-hidden="true" />
             <NuxtLink :to="eventContext.path" class="post-header__event-link">
               {{ eventContext.name }}
             </NuxtLink>
           </template>
           <template v-else-if="showGroupContext">
-            <span class="post-header__event-arrow">→</span>
+            <Icon name="i-ph-play-fill" class="post-header__context-icon" aria-hidden="true" />
             <NuxtLink :to="groupContext.path" class="post-header__event-link">
               {{ groupContext.name }}
             </NuxtLink>
@@ -331,11 +331,11 @@ function handleMenuAction(item: { key: string }) {
   text-decoration: underline;
 }
 
-.post-header__event-arrow {
-  color: #334155;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1;
+.post-header__context-icon {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+  color: #111827;
 }
 
 .post-header__feeling-text,

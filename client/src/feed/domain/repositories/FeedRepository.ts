@@ -60,6 +60,7 @@ export interface FeedRepository {
     pageId?: number
     eventId?: number
     groupId?: number
+    sharedPostId?: number
   }): Promise<FeedCreatePostResponse>
   createStory(input: {
     file: File
