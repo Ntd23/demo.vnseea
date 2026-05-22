@@ -140,9 +140,12 @@ defineEmits<{
 }
 
 .blogs-sidebar__topic {
+  position: relative;
+  z-index: 2;
   justify-content: space-between;
   gap: 10px;
   width: 100%;
+  min-height: 40px;
   border: 0;
   border-radius: 12px;
   background: transparent;
@@ -151,8 +154,14 @@ defineEmits<{
   font-size: 13px;
   font-weight: 700;
   padding: 9px 10px;
+  pointer-events: auto;
+  user-select: none;
   text-align: left;
   transition: all 0.15s ease;
+}
+
+.blogs-sidebar__topic > * {
+  pointer-events: none;
 }
 
 .blogs-sidebar__topic:hover {

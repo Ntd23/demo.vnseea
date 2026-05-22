@@ -107,6 +107,7 @@ export const apiRoutes = {
       action: "feed/posts/action",
     },
     comments: {
+      list: "feed/comments",
       action: "feed/comments/action",
       replies: "feed/comments/replies",
     },
@@ -188,6 +189,7 @@ export const apiRoutes = {
     blocked: "settings/blocked",
     unblock: "settings/unblock",
     myInfo: "settings/my-info",
+    pointsExchange: "settings/points-exchange",
   },
 } as const
 

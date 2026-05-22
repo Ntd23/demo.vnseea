@@ -2,7 +2,7 @@
   <div class="create-blog-content-editor">
     <div class="create-blog-content-editor__toolbar">
       <span class="create-blog-content-editor__label">{{ $t("pages.createBlogPage.contentLabel") }}</span>
-      <!-- <div class="create-blog-content-editor__actions">
+      <div class="create-blog-content-editor__actions" role="toolbar" :aria-label="$t('pages.createBlogPage.contentLabel')">
         <button
           v-for="action in editorTools"
           :key="action.key"
@@ -13,20 +13,25 @@
           @click="action.run()"
         >
           <Icon :name="action.icon" class="h-3.5 w-3.5" />
-          {{ action.label }}
+          <span>{{ action.label }}</span>
         </button>
-      </div> -->
+      </div>
     </div>
 
-    <div class="create-blog-content-editor__surface">
+    <div class="create-blog-content-editor__surface" :class="{ 'create-blog-content-editor__surface--ready': isEditorReady }">
       <ClientOnly>
-        <TiptapEditorContent
+        <EditorContent
           v-if="editor"
           :editor="editor"
+          class="create-blog-content-editor__content"
         />
-        <div v-else class="create-blog-content-editor__loading" />
+        <div v-else class="create-blog-content-editor__loading">
+          {{ $t("pages.createBlogPage.contentPlaceholder") }}
+        </div>
         <template #fallback>
-          <div class="create-blog-content-editor__loading" />
+          <div class="create-blog-content-editor__loading">
+            {{ $t("pages.createBlogPage.contentPlaceholder") }}
+          </div>
         </template>
       </ClientOnly>
       <span v-if="isEditorEmpty" class="create-blog-content-editor__placeholder">
@@ -37,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { TiptapEditorContent } from "#components"
+import { EditorContent } from "@tiptap/vue-3"
 import { useCreateBlogEditorVM } from "../../application/view-models/useCreateBlogEditorVM"
 
 const content = defineModel<string>({ required: true })
@@ -59,7 +64,7 @@ const {
 .create-blog-content-editor__toolbar {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .create-blog-content-editor__label {
@@ -72,27 +77,40 @@ const {
 .create-blog-content-editor__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 6px;
 }
 
 .create-blog-content-editor__tool {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
+  min-height: 34px;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #f8fafc;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
   color: #334155;
-  padding: 8px 11px;
+  padding: 8px 10px;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 700;
   transition: all 0.15s ease;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.create-blog-content-editor__tool > * {
+  pointer-events: none;
 }
 
 .create-blog-content-editor__tool:hover,
 .create-blog-content-editor__tool--active {
-  border-color: rgba(0, 0, 255, 0.14);
   background: rgba(0, 0, 255, 0.05);
   color: #0000ff;
 }
@@ -113,6 +131,10 @@ const {
   transition: all 0.15s ease;
 }
 
+.create-blog-content-editor__surface--ready {
+  background: #ffffff;
+}
+
 .create-blog-content-editor__surface:focus-within {
   border-color: rgba(0, 0, 255, 0.25);
   background: #ffffff;
@@ -130,6 +152,16 @@ const {
 }
 
 .create-blog-content-editor__loading {
+  display: flex;
+  min-height: 320px;
+  align-items: flex-start;
+  padding: 16px;
+  color: #94a3b8;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.create-blog-content-editor__content {
   min-height: 320px;
 }
 

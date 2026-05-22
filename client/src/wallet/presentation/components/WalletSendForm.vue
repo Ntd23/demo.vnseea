@@ -96,7 +96,7 @@
             v-for="recipient in recipients"
             :key="recipient.id"
             type="button"
-            class="flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition"
+            class="wallet-send-recipient flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition"
             :class="recipient.id === draft.recipientUserId ? 'border-[var(--border-strong)] bg-[var(--bg-surface-active)]' : 'border-[var(--border-light)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)]'"
             @click="selectRecipient(recipient)"
           >
@@ -509,6 +509,8 @@ function scanQrFrame(detector: InstanceType<BarcodeDetectorConstructor>) {
 }
 
 .wallet-send-selected__clear {
+  position: relative;
+  z-index: 2;
   display: flex;
   width: 34px;
   height: 34px;
@@ -519,6 +521,24 @@ function scanQrFrame(detector: InstanceType<BarcodeDetectorConstructor>) {
   border-radius: 10px;
   background: #ffffff;
   color: #64748b;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.wallet-send-selected__clear > *,
+.wallet-send-recipient > *,
+.wallet-send-confirm__close > * {
+  pointer-events: none;
+}
+
+.wallet-send-recipient {
+  position: relative;
+  z-index: 2;
+  min-height: 58px;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
 }
 
 .wallet-send-confirm {
@@ -548,6 +568,8 @@ function scanQrFrame(detector: InstanceType<BarcodeDetectorConstructor>) {
 }
 
 .wallet-send-confirm__close {
+  position: relative;
+  z-index: 2;
   display: flex;
   width: 38px;
   height: 38px;
@@ -558,6 +580,9 @@ function scanQrFrame(detector: InstanceType<BarcodeDetectorConstructor>) {
   border-radius: 12px;
   background: var(--bg-surface);
   color: var(--text-secondary);
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
 }
 
 .wallet-send-confirm__list {
@@ -587,6 +612,8 @@ function scanQrFrame(detector: InstanceType<BarcodeDetectorConstructor>) {
 }
 
 .wallet-send-confirm__actions {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;

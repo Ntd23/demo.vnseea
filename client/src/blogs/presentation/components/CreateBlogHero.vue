@@ -17,7 +17,7 @@
       <div class="create-blog-hero__actions">
         <NuxtLink to="/blogs" class="create-blog-hero__button create-blog-hero__button--secondary">
           <Icon name="i-ph-arrow-left" class="h-4 w-4" />
-          {{ $t("pages.createBlogPage.backToBlogs") }}
+          <span>{{ $t("pages.createBlogPage.backToBlogs") }}</span>
         </NuxtLink>
 
         <button
@@ -26,7 +26,7 @@
           @click="$emit('quickFill')"
         >
           <Icon name="i-ph-magic-wand-fill" class="h-4 w-4" />
-          {{ $t("pages.createBlogPage.quickFill") }}
+          <span>{{ $t("pages.createBlogPage.quickFill") }}</span>
         </button>
       </div>
     </div>
@@ -118,6 +118,8 @@ defineEmits<{
 }
 
 .create-blog-hero__button {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   min-height: 42px;
   align-items: center;
@@ -127,8 +129,15 @@ defineEmits<{
   padding: 10px 15px;
   font-size: 13px;
   font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   text-decoration: none;
   transition: all 0.15s ease;
+}
+
+.create-blog-hero__button > * {
+  pointer-events: none;
 }
 
 .create-blog-hero__button:hover {

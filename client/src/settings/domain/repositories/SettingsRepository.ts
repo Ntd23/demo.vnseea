@@ -1,6 +1,14 @@
 // English description: Domain repository contract for account settings persistence.
 
-import type { SettingSession, SettingsBlockedUser, SettingsUpdateInput, SettingsUpdateResult, SettingsUser } from "../types/settings.types"
+import type {
+  SettingSession,
+  SettingsBlockedUser,
+  SettingsPointsExchangeInput,
+  SettingsPointsExchangeResult,
+  SettingsUpdateInput,
+  SettingsUpdateResult,
+  SettingsUser,
+} from "../types/settings.types"
 
 export interface SettingsRepository {
   getCurrentUser(): Promise<SettingsUser>
@@ -10,4 +18,5 @@ export interface SettingsRepository {
   getBlockedUsers(): Promise<SettingsBlockedUser[]>
   unblockUser(userId: number): Promise<boolean>
   requestMyInfo(options: Record<string, boolean>): Promise<boolean>
+  exchangePoints(input: SettingsPointsExchangeInput): Promise<SettingsPointsExchangeResult>
 }

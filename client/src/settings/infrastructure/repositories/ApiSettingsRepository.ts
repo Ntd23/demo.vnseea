@@ -3,7 +3,14 @@
 import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { SettingsRepository } from "../../domain/repositories/SettingsRepository"
-import type { SettingsFieldValue, SettingsUpdateInput, SettingsUpdateResult, SettingsUser } from "../../domain/types/settings.types"
+import type {
+  SettingsFieldValue,
+  SettingsPointsExchangeInput,
+  SettingsPointsExchangeResult,
+  SettingsUpdateInput,
+  SettingsUpdateResult,
+  SettingsUser,
+} from "../../domain/types/settings.types"
 
 type SettingsApiUpdatePayload = Record<string, SettingsFieldValue>
 
@@ -102,6 +109,12 @@ export function createApiSettingsRepository(): SettingsRepository {
     async requestMyInfo(options) {
       const response = await client.post<{ success: boolean }>(apiRoutes.settings.myInfo, options)
       return response.success
+    },
+    async exchangePoints(input: SettingsPointsExchangeInput) {
+      return await client.post<SettingsPointsExchangeResult, SettingsPointsExchangeInput>(
+        apiRoutes.settings.pointsExchange,
+        input,
+      )
     },
   }
 }

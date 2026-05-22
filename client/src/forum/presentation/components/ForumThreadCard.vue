@@ -1,92 +1,48 @@
 <template>
-  <article>
-    <button class="block w-full text-left" type="button" :aria-pressed="selected" aria-controls="forum-thread-detail" @click="$emit('select', thread.id)">
-      <UCard
-        class="rounded-[28px] border bg-white shadow-[var(--shadow-md)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-lg)]"
-        :class="selected ? 'border-[var(--border-strong)] ring-4 ring-[var(--color-primary-50)]' : 'border-[var(--border-default)]'"
-        :ui="{ body: 'p-4 sm:p-5' }"
-      >
-        <div class="space-y-5">
-          <div class="flex flex-wrap items-center gap-2">
-            <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-bold">
-              {{ thread.sectionLabel }}
-            </UBadge>
-            <UBadge :color="statusColor" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-bold">
-              {{ statusLabel }}
-            </UBadge>
-            <UBadge
-              v-if="selected"
-              color="neutral"
-              variant="soft"
-              class="rounded-full px-3 py-1.5 text-[12px] font-bold"
-            >
+  <article class="forum-thread-card" :class="{ 'forum-thread-card--selected': selected }">
+    <button
+      class="forum-thread-card__button"
+      type="button"
+      :aria-pressed="selected"
+      aria-controls="forum-thread-detail"
+      @click="$emit('select', thread.id)"
+    >
+      <div class="forum-thread-card__main">
+        <div class="forum-thread-card__avatar">
+          <img v-if="thread.authorAvatarUrl" :src="thread.authorAvatarUrl" :alt="thread.author" loading="lazy">
+          <span v-else>{{ thread.authorInitials }}</span>
+        </div>
+
+        <div class="forum-thread-card__content">
+          <div class="forum-thread-card__meta">
+            <span class="forum-thread-card__forum">{{ thread.sectionLabel }}</span>
+            <span class="forum-thread-card__status">{{ statusLabel }}</span>
+            <span v-if="selected" class="forum-thread-card__selected">
               {{ t("pages.forumPage.selectedThreadAction") }}
-            </UBadge>
+            </span>
           </div>
 
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="min-w-0">
-              <h3 class="text-xl font-black leading-tight text-[var(--text-primary)]">
-                {{ thread.title }}
-              </h3>
-              <p class="mt-2 line-clamp-3 text-[13px] font-semibold leading-6 text-[var(--text-secondary)]">
-                {{ thread.excerpt }}
-              </p>
-            </div>
+          <h3>{{ thread.title }}</h3>
+          <p v-if="thread.excerpt">{{ thread.excerpt }}</p>
 
-            <div class="grid min-w-[190px] grid-cols-2 gap-2">
-              <div class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3">
-                <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-                  {{ t("pages.forumPage.viewsLabel") }}
-                </p>
-                <p class="mt-1 text-[15px] font-black text-[var(--text-primary)]">
-                  {{ formatForumNumber(thread.views, locale.value) }}
-                </p>
-              </div>
-              <div class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3">
-                <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-                  {{ t("pages.forumPage.repliesLabel") }}
-                </p>
-                <p class="mt-1 text-[15px] font-black text-[var(--text-primary)]">
-                  {{ displayReplyCount }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex min-w-0 items-center gap-3">
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-500)] text-[12px] font-black text-white">
-                {{ thread.authorInitials }}
-              </div>
-              <div class="min-w-0">
-                <p class="truncate text-[13px] font-extrabold text-[var(--text-primary)]">
-                  {{ thread.author }}
-                </p>
-                <p class="truncate text-[12px] font-semibold text-[var(--text-tertiary)]">
-                  {{ thread.authorRole }} · {{ thread.createdAt }}
-                </p>
-              </div>
-            </div>
-
-            <div class="flex flex-wrap items-center gap-2">
-              <UBadge
-                v-for="tag in thread.tags"
-                :key="tag"
-                color="neutral"
-                variant="soft"
-                class="rounded-full px-2.5 py-1 text-[11px] font-bold"
-              >
-                #{{ tag }}
-              </UBadge>
-              <span class="inline-flex items-center gap-1 text-[12px] font-bold text-[var(--text-primary)]">
-                <Icon name="i-ph-arrow-right-bold" class="h-3.5 w-3.5" />
-                {{ selected ? t("pages.forumPage.selectedThreadAction") : t("pages.forumPage.openThreadAction") }}
-              </span>
-            </div>
+          <div class="forum-thread-card__author">
+            <strong>{{ thread.author }}</strong>
+            <span>{{ thread.authorRole }} · {{ thread.createdAt }}</span>
           </div>
         </div>
-      </UCard>
+      </div>
+
+      <div class="forum-thread-card__stats" aria-hidden="true">
+        <span>
+          <Icon name="i-ph-eye-duotone" />
+          {{ formatForumNumber(thread.views, locale.value) }}
+        </span>
+        <span>
+          <Icon name="i-ph-chat-circle-text-duotone" />
+          {{ displayReplyCount }}
+        </span>
+        <Icon name="i-ph-caret-right-bold" class="forum-thread-card__arrow" />
+      </div>
     </button>
   </article>
 </template>
@@ -120,10 +76,176 @@ const statusLabel = computed(() => {
   if (props.thread.status === "solved") return t("pages.forumPage.statusSolved")
   return t("pages.forumPage.statusOpen")
 })
-
-const statusColor = computed(() => {
-  if (props.thread.status === "pinned") return "primary"
-  if (props.thread.status === "solved") return "success"
-  return "neutral"
-})
 </script>
+
+<style scoped>
+.forum-thread-card {
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 255, 0.04);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.forum-thread-card:hover {
+  border-color: rgba(0, 0, 255, 0.16);
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.forum-thread-card--selected {
+  border-color: rgba(0, 0, 255, 0.24);
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
+}
+
+.forum-thread-card__button {
+  display: grid;
+  width: 100%;
+  gap: 14px;
+  border: 0;
+  background: transparent;
+  padding: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.forum-thread-card__main {
+  display: flex;
+  min-width: 0;
+  gap: 12px;
+}
+
+.forum-thread-card__avatar {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.forum-thread-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.forum-thread-card__content {
+  min-width: 0;
+}
+
+.forum-thread-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+
+.forum-thread-card__forum,
+.forum-thread-card__status,
+.forum-thread-card__selected {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.forum-thread-card__forum {
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+}
+
+.forum-thread-card__status {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.forum-thread-card__selected {
+  background: #eef2ff;
+  color: #334155;
+}
+
+.forum-thread-card h3 {
+  overflow-wrap: anywhere;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.forum-thread-card p {
+  display: -webkit-box;
+  overflow: hidden;
+  margin-top: 6px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.forum-thread-card__author {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 9px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.forum-thread-card__author strong {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.forum-thread-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.forum-thread-card__stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.forum-thread-card__stats :deep(svg) {
+  width: 15px;
+  height: 15px;
+}
+
+.forum-thread-card__arrow {
+  margin-left: auto;
+  color: #0000ff;
+}
+
+@media (min-width: 720px) {
+  .forum-thread-card__button {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    padding: 16px;
+  }
+
+  .forum-thread-card__stats {
+    min-width: 132px;
+    justify-content: flex-end;
+  }
+}
+</style>

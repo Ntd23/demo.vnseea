@@ -1,59 +1,39 @@
 <template>
-  <aside class="space-y-4">
-    <UCard
-      v-if="thread"
-      class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
-      :ui="{ body: 'p-5 sm:p-6' }"
-    >
-      <p class="text-label-secondary text-[var(--text-tertiary)]">
-        {{ t("pages.forumPage.threadDetailEyebrow") }}
-      </p>
-      <h2 class="mt-2 text-xl font-black leading-tight text-[var(--text-primary)]">
-        {{ thread.title }}
-      </h2>
-      <p class="mt-3 text-[13px] font-semibold leading-6 text-[var(--text-secondary)]">
+  <aside id="forum-thread-detail" class="forum-thread-detail">
+    <section v-if="thread" class="forum-thread-detail__card">
+      <div class="forum-thread-detail__header">
+        <p>{{ t("pages.forumPage.threadDetailEyebrow") }}</p>
+        <h2>{{ thread.title }}</h2>
+        <span>{{ statusLabel }}</span>
+      </div>
+
+      <p v-if="thread.excerpt" class="forum-thread-detail__body">
         {{ thread.excerpt }}
       </p>
 
-      <UAlert
-        class="mt-4 rounded-[22px]"
-        color="neutral"
-        variant="subtle"
-        icon="i-ph-info-fill"
-        :title="thread.sectionLabel"
-        :description="statusLabel"
-      />
-
-      <div class="mt-4 flex flex-wrap gap-2">
-        <UBadge
-          v-for="tag in thread.tags"
-          :key="tag"
-          color="primary"
-          variant="subtle"
-          class="rounded-full px-3 py-1.5 text-[12px] font-bold"
-        >
-          #{{ tag }}
-        </UBadge>
+      <div class="forum-thread-detail__meta">
+        <span>
+          <Icon name="i-ph-chat-centered-text-duotone" />
+          {{ thread.sectionLabel }}
+        </span>
+        <span>
+          <Icon name="i-ph-eye-duotone" />
+          {{ thread.views }}
+        </span>
+        <span>
+          <Icon name="i-ph-clock-duotone" />
+          {{ thread.createdAt }}
+        </span>
       </div>
-    </UCard>
+    </section>
 
-    <UCard
-      id="forum-thread-detail"
-      class="rounded-[30px] border border-[var(--border-default)] bg-white shadow-[var(--shadow-md)]"
-      :ui="{ body: 'p-5 sm:p-6' }"
-    >
-      <div class="flex items-center justify-between gap-3">
+    <section class="forum-thread-detail__card">
+      <div class="forum-thread-detail__reply-head">
         <div>
-          <p class="text-label-secondary text-[var(--text-tertiary)]">
-            {{ t("pages.forumPage.repliesLabel") }}
-          </p>
-          <h3 class="mt-1 text-heading text-[var(--text-primary)]">
-            {{ t("pages.forumPage.repliesTitle") }}
-          </h3>
+          <p>{{ t("pages.forumPage.repliesLabel") }}</p>
+          <h3>{{ t("pages.forumPage.repliesTitle") }}</h3>
         </div>
-        <UBadge color="primary" variant="subtle" class="rounded-full px-3 py-1.5 text-[12px] font-bold">
-          {{ replies.length }}
-        </UBadge>
+        <span>{{ replies.length }}</span>
       </div>
 
       <UAlert
@@ -63,13 +43,13 @@
         :icon="statusAlert.icon"
         :title="statusAlert.title"
         :description="statusAlert.description"
-        class="mt-4 rounded-[22px]"
+        class="forum-thread-detail__alert"
         aria-live="polite"
       />
 
       <UAlert
         v-if="!thread"
-        class="mt-4 rounded-[22px]"
+        class="forum-thread-detail__alert"
         color="neutral"
         variant="subtle"
         icon="i-ph-chat-circle-dots-fill"
@@ -77,98 +57,70 @@
         :description="t('pages.forumPage.detailEmptyDescription')"
       />
 
-      <div v-else-if="replies.length === 0" class="mt-4">
-        <UAlert
-          class="rounded-[22px]"
-          color="neutral"
-          variant="subtle"
-          icon="i-ph-chat-dots-bold"
-          :title="t('pages.forumPage.repliesEmptyTitle')"
-          :description="t('pages.forumPage.repliesEmptyDescription')"
-        />
-      </div>
+      <UAlert
+        v-else-if="replies.length === 0"
+        class="forum-thread-detail__alert"
+        color="neutral"
+        variant="subtle"
+        icon="i-ph-chat-dots-bold"
+        :title="t('pages.forumPage.repliesEmptyTitle')"
+        :description="t('pages.forumPage.repliesEmptyDescription')"
+      />
 
-      <div v-else class="mt-4 space-y-3" role="list" aria-live="polite">
-        <div
-          v-for="reply in replies"
-          :key="reply.id"
-          class="rounded-[22px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-3"
-          role="listitem"
-        >
-          <div class="flex gap-3">
-            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-500)] text-[12px] font-black text-white">
-              {{ reply.initials }}
-            </div>
-            <div class="min-w-0">
-              <div class="flex flex-wrap items-center gap-2">
-                <p class="text-[13px] font-extrabold text-[var(--text-primary)]">
-                  {{ reply.author }}
-                </p>
-                <span class="text-[11px] font-semibold text-[var(--text-tertiary)]">
-                  {{ reply.role }}
-                </span>
-                <UBadge
-                  v-if="reply.accepted"
-                  color="success"
-                  variant="soft"
-                  class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
-                >
-                  {{ t("pages.forumPage.acceptedLabel") }}
-                </UBadge>
-              </div>
-              <p class="mt-1 text-[13px] font-semibold leading-5 text-[var(--text-secondary)]">
-                {{ reply.message }}
-              </p>
-              <p class="mt-1 text-[11px] font-semibold text-[var(--text-tertiary)]">
-                {{ reply.time }}
-              </p>
-            </div>
+      <div v-else class="forum-thread-detail__replies" role="list" aria-live="polite">
+        <article v-for="reply in replies" :key="reply.id" class="forum-thread-detail__reply" role="listitem">
+          <div class="forum-thread-detail__avatar">
+            <img v-if="reply.authorAvatarUrl" :src="reply.authorAvatarUrl" :alt="reply.author" loading="lazy">
+            <span v-else>{{ reply.initials }}</span>
           </div>
-        </div>
+          <div class="forum-thread-detail__reply-content">
+            <div class="forum-thread-detail__reply-meta">
+              <strong>{{ reply.author }}</strong>
+              <span>{{ reply.role }}</span>
+              <UBadge v-if="reply.accepted" color="success" variant="soft" class="forum-thread-detail__accepted">
+                {{ t("pages.forumPage.acceptedLabel") }}
+              </UBadge>
+            </div>
+            <p>{{ reply.message }}</p>
+            <time>{{ reply.time }}</time>
+          </div>
+        </article>
       </div>
 
-      <UForm :state="{ message }" class="mt-5" @submit="submit">
+      <UForm :state="{ message }" class="forum-thread-detail__form" @submit="submit">
         <UFormField
           name="message"
           :label="t('pages.forumPage.replyFieldLabel')"
-          size="xl"
-          class="space-y-2"
           :error="fieldError || undefined"
         >
           <UTextarea
             v-model="message"
             autoresize
-            :rows="5"
+            :rows="4"
             :disabled="isBusy || !thread"
             :placeholder="t('pages.forumPage.replyPlaceholder')"
             color="primary"
-            size="xl"
-            class="w-full"
+            class="forum-thread-detail__textarea"
             :ui="{
-              base: 'min-h-[120px] resize-y rounded-[20px] border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 py-3 text-[14px] leading-6 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
+              base: 'min-h-[112px] resize-y rounded-[12px] border-[#e2e8f0] bg-[#fafbfe] px-3 py-3 text-[13px] leading-6 text-[#334155] placeholder:text-[#94a3b8]',
             }"
           />
         </UFormField>
 
-        <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p class="text-[12px] font-semibold text-[var(--text-secondary)]">
-            {{ t("pages.forumPage.replyHelper", { count: message.trim().length }) }}
-          </p>
-
+        <div class="forum-thread-detail__actions">
+          <p>{{ t("pages.forumPage.replyHelper", { count: message.trim().length }) }}</p>
           <UButton
             type="submit"
             color="primary"
-            size="lg"
-            class="rounded-full"
             :loading="isBusy"
             :disabled="isBusy || !thread || message.trim().length === 0"
           >
-            <Icon name="i-ph-paper-plane-tilt-fill" class="mr-1.5 h-4 w-4" />
+            <Icon name="i-ph-paper-plane-tilt-fill" />
             {{ t("pages.forumPage.replySubmit") }}
           </UButton>
         </div>
       </UForm>
-    </UCard>
+    </section>
   </aside>
 </template>
 
@@ -258,3 +210,229 @@ async function submit() {
   submitStatus.value = "idle"
 }
 </script>
+
+<style scoped>
+.forum-thread-detail {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.forum-thread-detail__card {
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 255, 0.04);
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.forum-thread-detail__header p,
+.forum-thread-detail__reply-head p {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.forum-thread-detail__header h2 {
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: #0f172a;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.forum-thread-detail__header span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.forum-thread-detail__body {
+  margin-top: 12px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.forum-thread-detail__meta {
+  display: grid;
+  gap: 7px;
+  margin-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 12px;
+}
+
+.forum-thread-detail__meta span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 7px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.forum-thread-detail__meta :deep(svg) {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: #0000ff;
+}
+
+.forum-thread-detail__reply-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.forum-thread-detail__reply-head h3 {
+  margin-top: 4px;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.forum-thread-detail__reply-head > span {
+  border-radius: 999px;
+  background: rgba(0, 0, 255, 0.06);
+  padding: 4px 9px;
+  color: #0000ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.forum-thread-detail__alert {
+  margin-top: 12px;
+  border-radius: 12px;
+}
+
+.forum-thread-detail__replies {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.forum-thread-detail__reply {
+  display: flex;
+  gap: 10px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  background: #fafbfe;
+  padding: 12px;
+}
+
+.forum-thread-detail__avatar {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.forum-thread-detail__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.forum-thread-detail__reply-content {
+  min-width: 0;
+}
+
+.forum-thread-detail__reply-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.forum-thread-detail__reply-meta strong {
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.forum-thread-detail__reply-meta span,
+.forum-thread-detail__reply-content time {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.forum-thread-detail__accepted {
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.forum-thread-detail__reply-content p {
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.forum-thread-detail__reply-content time {
+  display: block;
+  margin-top: 4px;
+}
+
+.forum-thread-detail__form {
+  margin-top: 16px;
+}
+
+.forum-thread-detail__textarea {
+  width: 100%;
+}
+
+.forum-thread-detail__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.forum-thread-detail__actions p {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.forum-thread-detail__actions :deep(button) {
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.forum-thread-detail__actions :deep(svg) {
+  width: 16px;
+  height: 16px;
+}
+
+@media (min-width: 720px) {
+  .forum-thread-detail__actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+</style>

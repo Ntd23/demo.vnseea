@@ -1658,6 +1658,32 @@ export async function fetchCommentReplies(
   return (response.data ?? []).map(reply => mapCommentRecord(reply, resolveMediaUrl))
 }
 
+export async function fetchPostComments(
+  event: H3Event,
+  input: {
+    postId: number
+    limit?: number
+    offset?: number
+  },
+) {
+  const client = createBackendApiClient(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const response = assertBackendApiSuccess(
+    await client.post<BackendRecommendedResponse, Record<string, unknown>>(
+      "comments",
+      {
+        type: "fetch_comments",
+        post_id: input.postId,
+        limit: input.limit ?? 50,
+        offset: input.offset ?? 0,
+      },
+    ),
+    "Unable to load post comments.",
+  )
+
+  return (response.data ?? []).map(comment => mapCommentRecord(comment, resolveMediaUrl))
+}
+
 export async function runCommentAction(
   event: H3Event,
   input: {

@@ -1,12 +1,19 @@
 <!-- Description: Renders the feed publisher box with backend post creation and current-user session data instead of local mock submission. -->
 <template>
   <section class="publisher">
-    <div v-if="!expanded" class="publisher__compact" @click="expanded = true">
+    <div v-if="!expanded" class="publisher__compact" @click="openComposer">
       <div class="publisher__compact-avatar">
         <img v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="publisher__avatar-image">
         <span v-else>{{ currentUserInitials }}</span>
       </div>
-      <div class="publisher__compact-input" role="button" tabindex="0">
+      <div
+        class="publisher__compact-input"
+        role="button"
+        tabindex="0"
+        @click.stop="openComposer"
+        @keydown.enter.prevent="openComposer"
+        @keydown.space.prevent="openComposer"
+      >
         {{ t("feed.publisherBox.prompt") }}
       </div>
       <div class="publisher__compact-actions">
@@ -256,6 +263,12 @@ async function publish() {
   }
 }
 
+async function openComposer() {
+  expanded.value = true
+  await nextTick()
+  textareaEl.value?.focus()
+}
+
 
 const feelingPromptText = computed(() =>
   locale.value === "vi" ? "Bạn đang cảm thấy gì?" : "What are you feeling?",
@@ -268,6 +281,8 @@ const feelingSelectedText = computed(() =>
 
 <style scoped>
 .publisher__compact {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -277,6 +292,8 @@ const feelingSelectedText = computed(() =>
   border: 1px solid rgba(0, 0, 255, 0.06);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 255, 0.03);
   cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -316,22 +333,33 @@ const feelingSelectedText = computed(() =>
 }
 
 .publisher__compact-input {
+  position: relative;
+  z-index: 2;
   flex: 1;
   min-width: 0;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
   padding: 8px 14px;
   border-radius: 999px;
   background: #f1f5f9;
   font-size: 14px;
   color: #94a3b8;
   font-weight: 500;
+  cursor: text;
+  pointer-events: auto;
 }
 
 .publisher__compact-actions {
+  position: relative;
+  z-index: 3;
   display: flex;
   gap: 2px;
 }
 
 .publisher__compact-btn {
+  position: relative;
+  z-index: 3;
   display: flex;
   width: 40px;
   height: 40px;
@@ -342,7 +370,13 @@ const feelingSelectedText = computed(() =>
   background: rgba(0, 0, 255, 0.03);
   color: #64748b;
   cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.publisher__compact-btn > * {
+  pointer-events: none;
 }
 
 .publisher__compact-btn:hover {

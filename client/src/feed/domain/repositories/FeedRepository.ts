@@ -31,6 +31,7 @@ export interface FeedRepository {
   getExplore(input?: { limit?: number }): Promise<FeedExploreResponse>
   getMemories(): Promise<FeedMemoriesResponse>
   getPokes(): Promise<FeedPokeRecord[]>
+  getPostComments(input: { postId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   getCommentReplies(input: { commentId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   runPostAction(input: {
     action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide"

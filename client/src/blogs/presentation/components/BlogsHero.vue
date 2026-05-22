@@ -25,7 +25,7 @@
           @click="$emit('toggleMine')"
         >
           <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-article-fill'" class="h-4 w-4 shrink-0" />
-          {{ $t("pages.blogsPage.myArticles") }}
+          <span>{{ $t("pages.blogsPage.myArticles") }}</span>
         </button>
 
         <NuxtLink
@@ -33,7 +33,7 @@
           class="blogs-hero__primary"
         >
           <Icon name="i-ph-pencil-simple-line-fill" class="h-4 w-4 shrink-0" />
-          {{ $t("pages.blogsPage.writeBlog") }}
+          <span>{{ $t("pages.blogsPage.writeBlog") }}</span>
         </NuxtLink>
       </div>
     </div>
@@ -117,6 +117,8 @@ defineEmits<{
 
 .blogs-hero__button,
 .blogs-hero__primary {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   min-height: 42px;
   align-items: center;
@@ -126,8 +128,16 @@ defineEmits<{
   padding: 10px 15px;
   font-size: 13px;
   font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   text-decoration: none;
   transition: all 0.15s ease;
+}
+
+.blogs-hero__button > *,
+.blogs-hero__primary > * {
+  pointer-events: none;
 }
 
 .blogs-hero__button {
