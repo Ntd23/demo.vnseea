@@ -170,6 +170,7 @@ export const apiRoutes = {
   },
   messages: {
     conversations: "messages/conversations",
+    tags: "messages/tags",
     thread: "messages/thread",
     multi: "messages/multi",
     send: "messages/send",

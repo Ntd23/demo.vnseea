@@ -2,8 +2,10 @@
 <template>
   <div class="flex h-full min-h-0 w-full flex-col overflow-hidden bg-white">
     <template v-if="contact">
+      <!-- Toolbar Header -->
       <div class="border-b border-[#f1f5f9] px-6 py-4">
         <div class="flex items-center justify-between gap-4">
+          <!-- Left Recipient Metadata -->
           <div class="flex min-w-0 flex-1 items-center gap-3">
             <UButton
               variant="ghost"
@@ -26,45 +28,64 @@
                 />
               </div>
               <div class="min-w-0">
-                <h3 class="truncate text-base font-black text-[var(--text-primary)]">
+                <h3 class="chat-window__header-name">
                   {{ contact.name }}
                 </h3>
-                <p class="truncate text-sm text-slate-500">
+                <p class="chat-window__header-status">
                   {{ contactStatus }}
                 </p>
               </div>
             </button>
           </div>
 
-          <div class="flex shrink-0 items-center gap-2">
-            <UButton
-              variant="ghost"
-              color="neutral"
-              class="h-10 w-10 shrink-0 justify-center rounded-full xl:hidden"
+          <!-- Right Action Buttons (Audio call, Video call, Info, Trash) -->
+          <div class="chat-window__header-actions">
+            <!-- Audio Call -->
+            <button
+              class="chat-window__action-btn"
+              type="button"
+              :title="$t('pages.messagesPage.audioCall') || 'Bắt đầu cuộc gọi thoại'"
+              @click="onCall('audio')"
+            >
+              <Icon name="i-ph-phone-bold" class="chat-window__action-btn-icon" />
+            </button>
+
+            <!-- Video Call -->
+            <button
+              class="chat-window__action-btn"
+              type="button"
+              :title="$t('pages.messagesPage.videoCall') || 'Bắt đầu cuộc gọi video'"
+              @click="onCall('video')"
+            >
+              <Icon name="i-ph-video-camera-bold" class="chat-window__action-btn-icon" />
+            </button>
+
+            <!-- Info Panel Trigger -->
+            <button
+              class="chat-window__action-btn"
+              type="button"
+              :title="$t('pages.messagesPage.info') || 'Thông tin'"
               @click="$emit('toggle-info')"
             >
-              <Icon name="i-ph-info-duotone" class="h-5 w-5" />
-            </UButton>
-            <div class="hidden items-center gap-2 sm:flex">
-              <UButton
-                v-for="button in actionButtons"
-                :key="button.id"
-                variant="soft"
-                :color="button.id === 'delete' ? 'error' : 'neutral'"
-                class="rounded-full px-4 font-semibold"
-                :loading="button.id === 'delete' && deletingConversation"
-                @click="onAction(button.id)"
-              >
-                <template #leading>
-                  <Icon :name="button.icon" class="h-4 w-4" />
-                </template>
-                {{ button.text }}
-              </UButton>
-            </div>
+              <Icon name="i-ph-info-bold" class="chat-window__action-btn-icon" />
+            </button>
+
+            <!-- Delete/Trash Conversation -->
+            <button
+              class="chat-window__action-btn chat-window__action-btn--danger"
+              type="button"
+              :disabled="deletingConversation"
+              :title="$t('pages.messagesPage.deleteConversation') || 'Xóa cuộc trò chuyện'"
+              @click="$emit('delete-conversation')"
+            >
+              <Icon v-if="!deletingConversation" name="i-ph-trash-bold" class="chat-window__action-btn-icon" />
+              <Icon v-else name="i-ph-spinner-gap-bold" class="chat-window__action-btn-icon animate-spin" />
+            </button>
           </div>
         </div>
       </div>
 
+      <!-- Messages Stream -->
       <MessagesChatMessageList
         :contact-avatar="contact.avatarUrl"
         :empty-label="emptyThreadLabel"
@@ -75,6 +96,12 @@
         @load-more="emit('load-more')"
       />
 
+      <!-- Message input composer -->
+      <MessagesChatInput
+        v-model="inputModel"
+        :disabled="isPending || !contact"
+        @send="onSendMessage"
+      />
     </template>
 
     <div v-else class="flex flex-1 items-center justify-center p-6 sm:p-10">
@@ -96,12 +123,6 @@
         </h3>
       </div>
     </div>
-
-    <MessagesChatInput
-      v-model="inputModel"
-      :disabled="isPending || !contact"
-      @send="onSendMessage"
-    />
   </div>
 </template>
 
@@ -134,11 +155,6 @@ const emit = defineEmits<{
 
 const inputModel = ref("")
 
-const actionButtons = computed(() => [
-  { icon: "i-ph-info-duotone", id: "info", text: t("pages.messagesPage.info") },
-  { icon: "i-ph-trash-duotone", id: "delete", text: t("pages.messagesPage.deleteConversation") },
-])
-
 const contactStatus = computed(() => {
   const contact = props.contact
 
@@ -161,14 +177,87 @@ function onSendMessage(input: { text: string, file?: File | null }) {
   emit("send", input)
 }
 
-function onAction(id: string) {
-  if (id === "info") {
-    emit("toggle-info")
-    return
+function onCall(type: "audio" | "video") {
+  const contact = props.contact
+  if (contact && contact.userId) {
+    if (type === "video" && typeof window !== "undefined" && (window as any).Wo_GenerateVideoCall) {
+      (window as any).Wo_GenerateVideoCall((window as any).wo_user_id || 0, contact.userId)
+      return
+    } else if (type === "audio" && typeof window !== "undefined" && (window as any).Wo_GenerateVoiceCall) {
+      (window as any).Wo_GenerateVoiceCall((window as any).wo_user_id || 0, contact.userId)
+      return
+    }
   }
 
-  if (id === "delete") {
-    emit("delete-conversation")
-  }
+  // Fallback visual feedback if call is clicked when running outside WoWonder standalone frames
+  emit("send", { text: `[Bắt đầu cuộc gọi ${type === "video" ? "video" : "thoại"}]` })
 }
 </script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+.chat-window__header-name {
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: #414145 !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.chat-window__header-status {
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #8e8e93 !important;
+  margin-top: 4px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.chat-window__header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.chat-window__action-btn {
+  display: inline-flex !important;
+  width: 40px !important;
+  height: 40px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  color: #8e8e93 !important;
+  background-color: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+.chat-window__action-btn:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+  color: #002aff !important;
+}
+
+.chat-window__action-btn--danger:hover:not(:disabled) {
+  color: #ef4444 !important;
+  background-color: #fee2e2 !important;
+}
+
+.chat-window__action-btn:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.chat-window__action-btn-icon {
+  width: 20px !important;
+  height: 20px !important;
+}
+</style>

@@ -78,9 +78,19 @@ export function createBackendWebClient(event: H3Event) {
       })
 
       try {
-        return await client<TResponse>(backendRoutes.web.requests, {
+        const queryParams = new URLSearchParams()
+        if (options.query) {
+          for (const [k, v] of Object.entries(options.query)) {
+            if (v !== undefined && v !== null) {
+              queryParams.set(k, String(v))
+            }
+          }
+        }
+        const queryString = queryParams.toString()
+        const path = backendRoutes.web.requests + (queryString ? `?${queryString}` : "")
+
+        return await client<TResponse>(path, {
           method: "POST",
-          query: options.query,
           body: toFormBody(options.body),
           headers: options.headers,
         })

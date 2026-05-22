@@ -99,9 +99,19 @@ export async function postBackendApiUpload<TResponse>(
       const requestBody = cloneUploadBody(body)
       appendFormField(requestBody, "server_key", String(runtimeConfig.backendServerKey))
 
-      return await client<TResponse>(`api/${normalizeEndpointType(endpoint)}`, {
+      const queryParams = new URLSearchParams()
+      if (queryWithAccessToken) {
+        for (const [k, v] of Object.entries(queryWithAccessToken)) {
+          if (v !== undefined && v !== null) {
+            queryParams.set(k, String(v))
+          }
+        }
+      }
+      const queryString = queryParams.toString()
+      const path = `api/${normalizeEndpointType(endpoint)}` + (queryString ? `?${queryString}` : "")
+
+      return await client<TResponse>(path, {
         method: "POST",
-        query: queryWithAccessToken,
         body: requestBody,
       })
     }

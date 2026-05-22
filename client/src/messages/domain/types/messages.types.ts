@@ -8,6 +8,12 @@ export type MessageTab = {
   icon: string
 }
 
+export type MessageUserTag = {
+  id: number
+  name: string
+  color: string
+}
+
 export type MessageContact = {
   id: string
   name: string
@@ -26,6 +32,7 @@ export type MessageContact = {
   recipientId?: number
   memberCount?: number
   members?: string[]
+  tags?: MessageUserTag[]
 }
 
 export type MessageItem = {
@@ -65,4 +72,9 @@ export type MultiMessageSendResult = {
 export type MessageActionResult = {
   ok: boolean
   message?: string
+}
+
+export type MessageTagsPayload = {
+  labels: MessageUserTag[]
+  contacts: MessageContact[]
 }

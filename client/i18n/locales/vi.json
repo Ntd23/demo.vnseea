@@ -2656,6 +2656,8 @@
       "attachmentLabel": "Đính kèm",
       "attachmentOptional": "Tùy chọn",
       "removeAttachment": "Bỏ file",
+      "chooseFile": "Chọn file...",
+      "changeFile": "Thay đổi file",
       "multiSubmitHint": "Form này dùng lại đúng handler gửi nhiều người của trang PHP.",
       "multiSending": "Đang gửi tin nhắn...",
       "multiSendingButton": "Đang gửi...",
