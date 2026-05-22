@@ -132,20 +132,23 @@
               <div>
                 <span>{{ campaign.progress }}%</span>
               </div>
-              <div class="fund-progress" aria-hidden="true">
+              <div
+                class="fund-progress"
+                :class="{ 'fund-progress--completed': campaign.isCompleted }"
+                aria-hidden="true"
+              >
                 <span :style="{ width: `${Math.min(Math.max(campaign.progress, 0), 100)}%` }"></span>
               </div>
             </div>
 
             <button
+              v-if="campaign.canDonate"
               type="button"
               class="fund-detail__donate"
-              :class="{ 'fund-detail__donate--disabled': !campaign.canDonate }"
-              :disabled="!campaign.canDonate"
               @click="openDonate"
             >
               <Icon name="i-ph-hand-heart-duotone" class="h-4 w-4" />
-              {{ campaign.canDonate ? t("pages.fundingPage.donate") : t("pages.fundingPage.ownerCannotDonate") }}
+              {{ t("pages.fundingPage.donate") }}
             </button>
           </section>
         </aside>
@@ -181,53 +184,29 @@
 
 <script setup lang="ts">
 import { formatCurrency } from "../../../shared-kernel/application/utils/formatCurrency"
-import { ApiFundingRepository } from "../../infrastructure/repositories/ApiFundingRepository"
-import type { FundingCampaign } from "../../domain/types/funding.types"
+import { useShowFundPageVM } from "../../application/view-models/useShowFundPageVM"
 
-const route = useRoute()
-const toast = useToast()
 const { t, locale } = useI18n()
-const repository = new ApiFundingRepository()
-const donationOpen = ref(false)
-const donationAmount = ref<number | null>(null)
-const donating = ref(false)
-const donorSearch = ref("")
-const donorSort = ref<"newest" | "amount_asc" | "amount_desc">("newest")
-
-const { data, pending, error, refresh } = useAsyncData(
-  () => `funding-detail:${route.params.id}`,
-  () => $fetch<{
-    campaign: FundingCampaign
-    currency: string
-    currencySymbol: string
-  }>(`/_api/funding/${route.params.id}`),
-  { watch: [() => route.params.id] },
-)
-
-const campaign = computed(() => data.value?.campaign ?? null)
-
-const filteredDonations = computed(() => {
-  const keyword = donorSearch.value.trim().toLowerCase()
-  const donations = [...(campaign.value?.donations ?? [])]
-    .filter(donation => !keyword || donation.supporterName.toLowerCase().includes(keyword))
-
-  if (donorSort.value === "amount_asc") {
-    return donations.sort((left, right) => left.amount - right.amount)
-  }
-
-  if (donorSort.value === "amount_desc") {
-    return donations.sort((left, right) => right.amount - left.amount)
-  }
-
-  return donations.sort((left, right) =>
-    new Date(right.donatedAt).getTime() - new Date(left.donatedAt).getTime(),
-  )
-})
+const {
+  campaign,
+  currency,
+  currencySymbol,
+  pending,
+  error,
+  donationOpen,
+  donationAmount,
+  donating,
+  donorSearch,
+  donorSort,
+  filteredDonations,
+  openDonate,
+  submitDonation,
+} = useShowFundPageVM()
 
 const formatMoney = (amount: number) =>
   formatCurrency(amount, {
-    currency: data.value?.currency,
-    currencySymbol: data.value?.currencySymbol,
+    currency: currency.value,
+    currencySymbol: currencySymbol.value,
     locale: locale.value,
   })
 
@@ -247,34 +226,6 @@ const formatDonationDate = (value: string) => {
   }).format(new Date(value))
 }
 
-const openDonate = () => {
-  if (!campaign.value?.canDonate) return
-  donationOpen.value = true
-  donationAmount.value = null
-}
-
-const submitDonation = async () => {
-  if (!campaign.value || !campaign.value.canDonate || !donationAmount.value) return
-  donating.value = true
-
-  try {
-    await repository.donate({
-      id: campaign.value.id,
-      amount: donationAmount.value,
-    })
-    donationOpen.value = false
-    await refresh()
-  }
-  catch (err) {
-    toast.add({
-      color: "error",
-      title: err instanceof Error ? err.message : "Unable to donate.",
-    })
-  }
-  finally {
-    donating.value = false
-  }
-}
 </script>
 
 <style scoped>
@@ -580,6 +531,10 @@ const submitDonation = async () => {
   height: 100%;
   border-radius: inherit;
   background: #0000ff;
+}
+
+.fund-progress--completed span {
+  background: #16a34a;
 }
 
 .fund-detail__donate {

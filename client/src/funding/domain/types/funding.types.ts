@@ -95,8 +95,11 @@ export type FundingCampaign = {
   donorCount: number
   donated: boolean
   canDonate: boolean
+  canManage: boolean
+  isCompleted: boolean
   donations: FundingDonation[]
   detailUrl: string
+  editUrl: string
 }
 
 export type FundingCatalog = {
@@ -111,4 +114,24 @@ export type FundingCatalog = {
 export type FundingCatalogQuery = {
   tab?: FundingTabKey
   offset?: number | null
+}
+
+export type FundingDetail = {
+  campaign: FundingCampaign
+  canCreate: boolean
+  currency: string
+  currencySymbol: string
+}
+
+export type FundingCreateInput = {
+  title: string
+  amount: number
+  description: string
+  image: File
+}
+
+export type FundingUpdateInput = {
+  title: string
+  amount: number
+  description: string
 }

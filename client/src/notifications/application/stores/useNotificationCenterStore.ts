@@ -3,8 +3,6 @@
 import { defineStore } from "pinia"
 import { computed, ref, shallowRef } from "vue"
 import type { Socket } from "socket.io-client"
-import { useNavigationGeneralStore } from "../../../navigation/application/stores/useNavigationGeneralStore"
-import { useNavigationRequestsStore } from "../../../navigation/application/stores/useNavigationRequestsStore"
 import type { NotificationItem, NotificationSummary } from "../../domain/types/notification.types"
 import { createApiNotificationsRepository } from "../../infrastructure/repositories/ApiNotificationsRepository"
 
@@ -15,7 +13,9 @@ const emptySummary = (): NotificationSummary => ({
   nextOffset: null,
 })
 
-const POLLING_INTERVAL_MS = 3000
+const POLLING_INTERVAL_MS = 10000
+type HeaderRefreshTarget = "navigation" | "requests"
+type HeaderRefreshHandler = (target: HeaderRefreshTarget) => void | Promise<void>
 
 export const useNotificationCenterStore = defineStore("notification-center", () => {
   const summary = ref<NotificationSummary>(emptySummary())
@@ -26,8 +26,10 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
   const lastEventAt = ref<number | null>(null)
   const errorMessage = ref("")
   const soundEnabled = ref(true)
+  const realtimeUnavailable = ref(false)
   const socket = shallowRef<Socket | null>(null)
   const pollTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
+  const headerRefreshHandlers = new Set<HeaderRefreshHandler>()
 
   const items = computed<NotificationItem[]>(() => summary.value.items)
   const unreadCount = computed(() => summary.value.unreadCount)
@@ -41,15 +43,17 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     }
   }
 
-  const refreshNavigationSummary = async () => {
-    const navigationGeneralStore = useNavigationGeneralStore()
-    await navigationGeneralStore.hydrate(true)
+  const notifyHeaderRefresh = async (target: HeaderRefreshTarget) => {
+    await Promise.allSettled(
+      Array.from(headerRefreshHandlers).map(handler => handler(target)),
+    )
   }
 
-  const refreshHeaderRequests = async () => {
-    const navigationRequestsStore = useNavigationRequestsStore()
-    if (navigationRequestsStore.hydrated) {
-      await navigationRequestsStore.hydrate(true)
+  function subscribeHeaderRefresh(handler: HeaderRefreshHandler) {
+    headerRefreshHandlers.add(handler)
+
+    return () => {
+      headerRefreshHandlers.delete(handler)
     }
   }
 
@@ -68,7 +72,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     try {
       const repository = createApiNotificationsRepository()
       applySummary(await repository.getSummary())
-      await refreshNavigationSummary()
+      await notifyHeaderRefresh("navigation")
       hydrated.value = true
       return summary.value
     }
@@ -95,6 +99,10 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     }
 
     pollTimer.value = window.setInterval(() => {
+      if (realtimeUnavailable.value) {
+        void connectSocket(true)
+      }
+
       if (!connected.value) {
         void hydrate(true)
       }
@@ -121,8 +129,8 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     }
   }
 
-  async function connectSocket() {
-    if (!import.meta.client || socket.value || connecting.value) {
+  async function connectSocket(allowRetry = false) {
+    if (!import.meta.client || socket.value || connecting.value || (realtimeUnavailable.value && allowRetry !== true)) {
       return
     }
 
@@ -130,6 +138,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     const realtimeUrl = String(runtimeConfig.public.realtimeUrl || "").trim()
 
     if (!realtimeUrl) {
+      realtimeUnavailable.value = true
       startPolling()
       return
     }
@@ -139,36 +148,48 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     try {
       const repository = createApiNotificationsRepository()
       const auth = await repository.getRealtimeToken()
+
+      if (!auth.enabled || !auth.token || !auth.url) {
+        realtimeUnavailable.value = true
+        connected.value = false
+        startPolling()
+        return
+      }
+
       const { io } = await import("socket.io-client")
-      const realtimeSocket = io(realtimeUrl, {
+      const realtimeSocket = io(auth.url, {
         auth: {
           token: auth.token,
         },
-        transports: ["polling", "websocket"],
+        transports: ["websocket"],
         timeout: 5000,
-        reconnection: true,
-        reconnectionAttempts: 3,
-        reconnectionDelay: 5000,
-        reconnectionDelayMax: 30000,
+        reconnection: false,
       })
 
       realtimeSocket.on("connect", () => {
         connected.value = true
+        realtimeUnavailable.value = false
         errorMessage.value = ""
       })
 
       realtimeSocket.on("disconnect", () => {
         connected.value = false
+        socket.value = null
         startPolling()
       })
 
       realtimeSocket.on("connect_error", async () => {
         connected.value = false
+        realtimeUnavailable.value = true
+        socket.value = null
+        realtimeSocket.disconnect()
         startPolling()
 
         try {
           const nextAuth = await repository.getRealtimeToken()
-          realtimeSocket.auth = { token: nextAuth.token }
+          if (nextAuth.enabled && nextAuth.token) {
+            errorMessage.value = ""
+          }
         }
         catch {
           // Polling keeps the badge fresh when realtime auth cannot refresh.
@@ -184,21 +205,21 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
       })
 
       realtimeSocket.on("navigation:counts-changed", () => {
-        void refreshNavigationSummary()
+        void notifyHeaderRefresh("navigation")
       })
 
       realtimeSocket.on("request:new", () => {
-        void refreshNavigationSummary()
-        void refreshHeaderRequests()
+        void notifyHeaderRefresh("navigation")
+        void notifyHeaderRefresh("requests")
       })
 
       realtimeSocket.on("group-chat-request:new", () => {
-        void refreshNavigationSummary()
-        void refreshHeaderRequests()
+        void notifyHeaderRefresh("navigation")
+        void notifyHeaderRefresh("requests")
       })
 
       realtimeSocket.on("messages:count", () => {
-        void refreshNavigationSummary()
+        void notifyHeaderRefresh("navigation")
       })
 
       socket.value = realtimeSocket
@@ -207,6 +228,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     catch (error) {
       errorMessage.value = error instanceof Error ? error.message : "Realtime notifications are unavailable."
       connected.value = false
+      realtimeUnavailable.value = true
       socket.value = null
       startPolling()
     }
@@ -220,6 +242,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
       return
     }
 
+    realtimeUnavailable.value = false
     await hydrate()
     await connectSocket()
     startPolling()
@@ -241,11 +264,35 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     try {
       const repository = createApiNotificationsRepository()
       applySummary(await repository.markRead())
-      await refreshNavigationSummary()
+      await notifyHeaderRefresh("navigation")
       hydrated.value = true
     }
     catch (error) {
       errorMessage.value = error instanceof Error ? error.message : "Unable to mark notifications as read."
+    }
+  }
+
+  async function markOneRead(id: string | number) {
+    const normalizedId = String(id)
+
+    if (!normalizedId) {
+      return
+    }
+
+    const targetItem = summary.value.items.find(item => item.id === normalizedId)
+
+    if (!targetItem?.isUnread) {
+      return
+    }
+
+    try {
+      const repository = createApiNotificationsRepository()
+      applySummary(await repository.markOneRead(normalizedId))
+      await notifyHeaderRefresh("navigation")
+      hydrated.value = true
+    }
+    catch (error) {
+      errorMessage.value = error instanceof Error ? error.message : "Unable to mark notification as read."
     }
   }
 
@@ -264,7 +311,7 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
         items: summary.value.items.filter(item => item.id !== normalizedId),
         unreadCount: Math.max(0, summary.value.unreadCount - (summary.value.items.find(item => item.id === normalizedId)?.isUnread ? 1 : 0)),
       }
-      await refreshNavigationSummary()
+      await notifyHeaderRefresh("navigation")
     }
     catch (error) {
       errorMessage.value = error instanceof Error ? error.message : "Unable to delete notification."
@@ -299,7 +346,9 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
     startRealtime,
     stopRealtime,
     markRead,
+    markOneRead,
     deleteNotification,
     toggleSound,
+    subscribeHeaderRefresh,
   }
 })

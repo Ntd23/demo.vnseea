@@ -59,6 +59,18 @@ export function createApiCommunityRepository(): CommunityRepository {
     async joinGroup(slug: string) {
       return await client.post<CommunityGroupRecord>(apiRoutes.community.groupJoin(slug))
     },
+    async getGroupRequests(slug: string) {
+      return await client.get<UserRecord[]>(apiRoutes.community.groupRequests(slug))
+    },
+    async respondToGroupRequest(slug: string, userId: number, action: "accept" | "decline") {
+      await client.post<void>(apiRoutes.community.groupRequestsAction(slug), { userId, action })
+    },
+    async getGroupMembers(slug: string) {
+      return await client.get<UserRecord[]>(apiRoutes.community.groupMembers(slug))
+    },
+    async kickGroupMember(slug: string, userId: number) {
+      await client.post<void>(apiRoutes.community.groupMemberKick(slug), { userId })
+    },
     async getGroupPosts(slug, input) {
       return await client.get<FeedPostsResponse>(apiRoutes.community.groupPosts(slug), {
         limit: input?.limit,

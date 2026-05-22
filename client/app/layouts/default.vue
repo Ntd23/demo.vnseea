@@ -1,3 +1,4 @@
+<!-- English description: Default authenticated layout with header, sidebars, and a fixed mobile chat shortcut. -->
 <template>
   <div class="phone-safe min-h-screen bg-[#f1f4fb]" :class="isReelsPage ? 'overflow-hidden bg-black' : ''">
     <NavigationHeaderBar />
@@ -11,7 +12,8 @@
           v-if="showLeftSidebar && !isReelsPage"
           class="hidden min-w-0 xl:sticky xl:top-[74px] xl:block xl:h-[calc(100dvh-98px)] xl:overflow-hidden"
         >
-          <NavigationLeftSidebar />
+          <NavigationLeftSidebar v-if="!isDirectoryPage" />
+          <DirectoryLeftSidebar v-else />
         </aside>
 
         <main class="min-w-0 w-full" :class="mainClass">
@@ -29,18 +31,15 @@
       </div>
     </div>
 
-    <!-- Mobile: Floating chat button -->
-    <Teleport to="body">
-      <button
-        v-if="!isReelsPage"
-        class="fixed bottom-4 right-3 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#0000ff] text-white shadow-[0_4px_20px_rgba(0,0,255,0.35)] transition hover:scale-105 xl:hidden"
-        style="margin-bottom: env(safe-area-inset-bottom, 0px);"
-        type="button"
-        @click="chatOpen = !chatOpen"
-      >
-        <Icon :name="chatOpen ? 'i-ph-x-bold' : 'i-ph-chat-circle-dots-fill'" class="h-5 w-5" />
-      </button>
-    </Teleport>
+    <button
+      v-if="!isReelsPage"
+      class="fixed bottom-4 right-3 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#0000ff] text-white shadow-[0_4px_20px_rgba(0,0,255,0.35)] transition hover:scale-105 xl:hidden"
+      style="margin-bottom: env(safe-area-inset-bottom, 0px);"
+      type="button"
+      @click="chatOpen = !chatOpen"
+    >
+      <Icon :name="chatOpen ? 'i-ph-x-bold' : 'i-ph-chat-circle-dots-fill'" class="h-5 w-5" />
+    </button>
   </div>
 </template>
 
@@ -50,6 +49,7 @@ import NavigationHeaderBar from "../../src/navigation/presentation/components/He
 import NavigationHeaderIconNav from "../../src/navigation/presentation/components/HeaderIconNav.vue"
 import NavigationLeftSidebar from "../../src/navigation/presentation/components/LeftSidebar.vue"
 import NavigationRightSidebar from "../../src/navigation/presentation/components/RightSidebar.vue"
+import DirectoryLeftSidebar from "../../src/directory/presentation/components/LeftSidebar.vue"
 
 const chatOpen = ref(false)
 
@@ -59,6 +59,15 @@ const isCheckoutPage = computed(() => route.path === appRoutes.checkout)
 const isSearchPage = computed(() => route.path === appRoutes.search)
 const isPageDetailPage = computed(() => route.path.startsWith("/p/"))
 const isBlogDetailPage = computed(() => route.path.startsWith("/read-blog/"))
+const isDirectoryPage = computed(() => route.path.startsWith("/directory"))
+const isCreateBlogPage = computed(() => route.path === appRoutes.createBlog)
+const isFundingPage = computed(() =>
+  route.path === appRoutes.funding
+  || route.path === appRoutes.createFunding
+  || route.path.startsWith("/show_fund/")
+  || route.path.startsWith("/edit_fund/")
+)
+const isForumPage = computed(() => route.path === appRoutes.forum)
 const isHomeFeedPage = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
 const isCommunityComposerPage = computed(() =>
   route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
@@ -68,7 +77,10 @@ const showLeftSidebar = computed(() =>
   && !isCheckoutPage.value
   && !isSearchPage.value
   && !isPageDetailPage.value
-  && !isBlogDetailPage.value,
+  && !isBlogDetailPage.value
+  && !isFundingPage.value
+  && !isForumPage.value
+  && !isCreateBlogPage.value
 )
 const showRightSidebar = computed(() => !isReelsPage.value)
 // HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.
@@ -87,13 +99,13 @@ const shellClass = computed(() => {
   }
 
   if (isCheckoutPage.value) {
-    return 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_295px]'
+    return 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_275px]'
   }
 
   // All content pages share same sidebar widths → no layout shift on navigation
   return showLeftSidebar.value
-    ? 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[240px_minmax(0,1fr)_280px] 2xl:grid-cols-[256px_minmax(0,1fr)_300px]'
-    : 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_280px]'
+    ? 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[220px_minmax(0,1fr)_260px] 2xl:grid-cols-[256px_minmax(0,1fr)_280px]'
+    : 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_260px]'
 })
 
 const mainClass = computed(() => {

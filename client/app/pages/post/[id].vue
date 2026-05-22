@@ -1,14 +1,15 @@
+<!-- English description: Thin Nuxt route wrapper for a single feed post detail page used by notification deep links. -->
 <template>
-  <ProductPresentationProductDetailPage :product-id="productId" />
+  <FeedPresentationPostDetailPage :post-id="postId" />
 </template>
 
 <script setup lang="ts">
-import ProductPresentationProductDetailPage from "../../../src/product/presentation/pages/ProductDetailPage.vue"
+import FeedPresentationPostDetailPage from "../../../src/feed/presentation/pages/PostDetailPage.vue"
 
 definePageMeta({
   layout: "default",
 })
 
 const route = useRoute()
-const productId = computed(() => String(route.params.id ?? ""))
+const postId = computed(() => Number(route.params.id ?? 0) || 0)
 </script>

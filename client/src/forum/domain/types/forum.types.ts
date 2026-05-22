@@ -1,6 +1,7 @@
 // English description: Domain types for backend-backed forum sections and legacy migration shapes.
 
 export type ForumSectionKey = "all" | "announcements" | "support" | "marketplace" | "events" | "jobs" | "showcase"
+export type ForumPageTab = "browse" | "members" | "search" | "my_threads" | "my_messages"
 
 export type ForumSection = {
   label: string
@@ -11,20 +12,29 @@ export type ForumSection = {
 
 export type ForumReply = {
   id: number
+  threadId: number
+  forumId: number
   author: string
+  authorAvatarUrl: string
+  authorUrl: string
   initials: string
   role: string
+  subject: string
   message: string
   time: string
+  canManage: boolean
   accepted?: boolean
 }
 
 export type ForumThread = {
-  id: string
+  id: number
+  forumId: number
   title: string
-  section: Exclude<ForumSectionKey, "all">
+  section: Exclude<ForumSectionKey, "all"> | "support"
   sectionLabel: string
   author: string
+  authorAvatarUrl: string
+  authorUrl: string
   authorInitials: string
   authorRole: string
   status: "open" | "solved" | "pinned"
@@ -34,11 +44,20 @@ export type ForumThread = {
   excerpt: string
   tags: string[]
   replies: ForumReply[]
+  url: string
+  canManage: boolean
 }
 
 export type ForumThreadPayload = {
   title: string
-  section: Exclude<ForumSectionKey, "all">
+  forumId: number
+  message: string
+}
+
+export type ForumReplyPayload = {
+  threadId: number
+  forumId: number
+  subject?: string
   message: string
 }
 
@@ -68,4 +87,29 @@ export type ForumCatalog = {
 export type ForumCatalogQuery = {
   q?: string
   offset?: number | null
+}
+
+export type ForumThreadList = {
+  forum: ForumSummaryForum | null
+  threads: ForumThread[]
+  canCreate: boolean
+  hasMore: boolean
+  nextOffset: number | null
+}
+
+export type ForumThreadQuery = {
+  forumId?: number
+  q?: string
+  offset?: number | null
+}
+
+export type ForumThreadDetail = {
+  thread: ForumThread | null
+  canCreate: boolean
+}
+
+export type ForumMutationResult = {
+  ok: boolean
+  thread?: ForumThread | null
+  reply?: ForumReply | null
 }

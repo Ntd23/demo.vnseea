@@ -1,125 +1,133 @@
 <template>
-  <div class="left-sidebar">
-    <nav class="left-sidebar__nav scrollbar-hide">
-      <p class="left-sidebar__section-title">
-        {{ $t("navigation.leftSidebar.menu") || 'Menu' }}
-      </p>
+  <UDashboardGroup>
+    <UDashboardSidebar
+      collapsible
+      :resizable="false"
+    >
+      <template #default>
+        <div class="left-sidebar mt-10 pt-2">
+          <nav class="left-sidebar__nav scrollbar-hide">
+            <div class="left-sidebar__items">
+              <NavigationSidebarMenuItem
+                v-for="item in sidebarNav"
+                :key="item.label"
+                :to="item.to"
+                :label="$t(item.label)"
+                :icon="item.icon"
+                :active="isItemActive(item.to)"
+              />
 
-      <div class="left-sidebar__items">
-        <NavigationSidebarMenuItem
-          v-for="item in sidebarNav"
-          :key="item.label"
-          :to="item.to"
-          :label="$t(item.label)"
-          :icon="item.icon"
-          :active="isItemActive(item.to)"
-        />
+              <template v-if="expanded">
+                <NavigationSidebarMenuItem
+                  v-for="item in sidebarNavMore"
+                  :key="item.label"
+                  :to="item.to"
+                  :label="$t(item.label)"
+                  :icon="item.icon"
+                  :active="isItemActive(item.to)"
+                />
+              </template>
+            </div>
 
-        <!-- Expandable section -->
-        <template v-if="expanded">
-          <NavigationSidebarMenuItem
-            v-for="item in sidebarNavMore"
-            :key="item.label"
-            :to="item.to"
-            :label="$t(item.label)"
-            :icon="item.icon"
-            :active="isItemActive(item.to)"
-          />
-        </template>
-      </div>
+            <button
+              class="left-sidebar__toggle"
+              type="button"
+              @click="expanded = !expanded"
+            >
+              <span class="left-sidebar__toggle-icon">
+                <Icon
+                  :name="expanded ? 'i-ph-caret-up-bold' : 'i-ph-caret-down-bold'"
+                  class="h-3.5 w-3.5"
+                />
+              </span>
 
-      <!-- Show More Toggle -->
-      <button
-        class="left-sidebar__toggle"
-        type="button"
-        @click="expanded = !expanded"
-      >
-        <span class="left-sidebar__toggle-icon">
-          <Icon
-            :name="expanded ? 'i-ph-caret-up-bold' : 'i-ph-caret-down-bold'"
-            class="h-3.5 w-3.5"
-          />
-        </span>
-        <span class="left-sidebar__toggle-label">
-          {{ expanded ? $t('navigation.leftSidebar.showLess') : $t('navigation.leftSidebar.showMore') }}
-        </span>
-      </button>
-    </nav>
-  </div>
+              <span class="left-sidebar__toggle-label">
+                {{ expanded ? $t('navigation.leftSidebar.showLess') : $t('navigation.leftSidebar.showMore') }}
+              </span>
+            </button>
+          </nav>
+        </div>
+      </template>
+    </UDashboardSidebar>
+
+    <slot />
+  </UDashboardGroup>
 </template>
 
 <script setup lang="ts">
-import NavigationSidebarMenuItem from "./SidebarMenuItem.vue"
+import NavigationSidebarMenuItem from './SidebarMenuItem.vue'
 
 const route = useRoute()
 const expanded = ref(false)
 
 const sidebarNav = [
-  { label: "navigation.leftSidebar.items.feed", icon: "i-ph-house-simple-fill", to: "/" },
-  { label: "navigation.leftSidebar.items.photos", icon: "i-ph-images-fill", to: "/photos" },
-  { label: "navigation.leftSidebar.items.watch", icon: "i-ph-play-circle-fill", to: "/watch" },
-  { label: "navigation.leftSidebar.items.reels", icon: "i-ph-film-strip-fill", to: "/reels" },
-  { label: "navigation.leftSidebar.items.savedPosts", icon: "i-ph-bookmark-simple-fill", to: "/saved-posts" },
-  { label: "navigation.leftSidebar.items.popularPosts", icon: "i-ph-fire-fill", to: "/popular" },
-  { label: "navigation.leftSidebar.items.memories", icon: "i-ph-clock-counter-clockwise-fill", to: "/memories" },
-  { label: "navigation.leftSidebar.items.poke", icon: "i-ph-hand-waving-fill", to: "/poke" },
-  { label: "navigation.leftSidebar.items.myGroups", icon: "i-ph-users-three-fill", to: "/groups" },
-  { label: "navigation.leftSidebar.items.myPages", icon: "i-ph-file-text-fill", to: "/pages" },
+  { label: 'navigation.leftSidebar.items.feed', icon: 'i-ph-house-simple-fill', to: '/' },
+  { label: 'navigation.leftSidebar.items.photos', icon: 'i-ph-images-fill', to: '/photos' },
+  { label: 'navigation.leftSidebar.items.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
+  { label: 'navigation.leftSidebar.items.reels', icon: 'i-ph-film-strip-fill', to: '/reels' },
+  { label: 'navigation.leftSidebar.items.savedPosts', icon: 'i-ph-bookmark-simple-fill', to: '/saved-posts' },
+  { label: 'navigation.leftSidebar.items.popularPosts', icon: 'i-ph-fire-fill', to: '/popular' },
+  { label: 'navigation.leftSidebar.items.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
+  { label: 'navigation.leftSidebar.items.poke', icon: 'i-ph-hand-waving-fill', to: '/poke' },
+  { label: 'navigation.leftSidebar.items.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
+  { label: 'navigation.leftSidebar.items.myPages', icon: 'i-ph-file-text-fill', to: '/pages' }
 ]
 
 const sidebarNavMore = [
-  { label: "navigation.leftSidebar.items.blog", icon: "i-ph-newspaper-fill", to: "/blogs" },
-  { label: "navigation.leftSidebar.items.marketplace", icon: "i-ph-storefront-fill", to: "/products" },
-  { label: "navigation.leftSidebar.items.directory", icon: "i-ph-squares-four-fill", to: "/directory" },
-  { label: "navigation.leftSidebar.items.events", icon: "i-ph-calendar-dots-fill", to: "/events" },
-  { label: "navigation.leftSidebar.items.live", icon: "i-ph-broadcast-fill", to: "/live" },
-  { label: "navigation.leftSidebar.items.forum", icon: "i-ph-chats-circle-fill", to: "/forum" },
-  { label: "navigation.leftSidebar.items.movies", icon: "i-ph-popcorn-fill", to: "/movies" },
-  { label: "navigation.leftSidebar.items.jobs", icon: "i-ph-briefcase-fill", to: "/jobs" },
-  { label: "navigation.leftSidebar.items.games", icon: "i-ph-game-controller-fill", to: "/games" },
-  { label: "navigation.leftSidebar.items.goPro", icon: "i-ph-crown-simple-fill", to: "/go-pro" },
-  { label: "navigation.leftSidebar.items.wallet", icon: "i-ph-wallet-fill", to: "/wallet" },
-  { label: "navigation.leftSidebar.items.withdrawal", icon: "i-ph-money-wavy-fill", to: "/withdrawal" },
-  { label: "navigation.leftSidebar.items.funding", icon: "i-ph-hand-heart-fill", to: "/funding" },
+  { label: 'navigation.leftSidebar.items.blog', icon: 'i-ph-newspaper-fill', to: '/blogs' },
+  { label: 'navigation.leftSidebar.items.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
+  { label: 'navigation.leftSidebar.items.directory', icon: 'i-ph-squares-four-fill', to: '/directory' },
+  { label: 'navigation.leftSidebar.items.events', icon: 'i-ph-calendar-dots-fill', to: '/events' },
+  { label: 'navigation.leftSidebar.items.live', icon: 'i-ph-broadcast-fill', to: '/live' },
+  { label: 'navigation.leftSidebar.items.forum', icon: 'i-ph-chats-circle-fill', to: '/forum' },
+  { label: 'navigation.leftSidebar.items.movies', icon: 'i-ph-popcorn-fill', to: '/movies' },
+  { label: 'navigation.leftSidebar.items.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
+  { label: 'navigation.leftSidebar.items.games', icon: 'i-ph-game-controller-fill', to: '/games' },
+  { label: 'navigation.leftSidebar.items.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
+  { label: 'navigation.leftSidebar.items.wallet', icon: 'i-ph-wallet-fill', to: '/wallet' },
+  { label: 'navigation.leftSidebar.items.withdrawal', icon: 'i-ph-money-wavy-fill', to: '/withdrawal' },
+  { label: 'navigation.leftSidebar.items.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' }
 ]
 
 const isMarketplaceRoute = () =>
-  route.path === "/products"
-  || route.path === "/new-product"
-  || route.path === "/my-products"
-  || route.path.startsWith("/edit-product/")
-  || route.path.startsWith("/order/")
-  || route.path.startsWith("/customer_order/")
-  || route.path === "/checkout"
-  || route.path === "/orders"
+  route.path === '/products'
+  || route.path === '/new-product'
+  || route.path === '/my-products'
+  || route.path.startsWith('/edit-product/')
+  || route.path.startsWith('/order/')
+  || route.path.startsWith('/customer_order/')
+  || route.path === '/checkout'
+  || route.path === '/orders'
 
 const isEventsRoute = () =>
-  route.path === "/events"
-  || route.path.startsWith("/events/")
+  route.path === '/events'
+  || route.path.startsWith('/events/')
 
 const isGroupsRoute = () =>
-  route.path === "/groups"
-  || route.path === "/suggested-groups"
-  || route.path === "/joined_groups"
-  || route.path === "/create-group"
-  || route.path.startsWith("/g/")
-  || route.path.startsWith("/group-setting/")
+  route.path === '/groups'
+  || route.path === '/suggested-groups'
+  || route.path === '/joined_groups'
+  || route.path === '/create-group'
+  || route.path.startsWith('/g/')
+  || route.path.startsWith('/group-setting/')
 
 const isPagesRoute = () =>
-  route.path === "/pages"
-  || route.path === "/suggested-pages"
-  || route.path === "/liked-pages"
-  || route.path === "/create-page"
-  || route.path.startsWith("/p/")
-  || route.path.startsWith("/page-setting/")
+  route.path === '/pages'
+  || route.path === '/suggested-pages'
+  || route.path === '/liked-pages'
+  || route.path === '/create-page'
+  || route.path.startsWith('/p/')
+  || route.path.startsWith('/page-setting/')
 
 const isItemActive = (to: string) => {
-  const normalized = to.split("#")[0]
-  if (normalized === "/") return route.path === "/" || route.path === "/home"
-  if (normalized === "/products") return isMarketplaceRoute()
-  if (normalized === "/events") return isEventsRoute()
-  if (normalized === "/groups") return isGroupsRoute()
-  if (normalized === "/pages") return isPagesRoute()
+  const normalized = to.split('#')[0]
+
+  if (normalized === '/') return route.path === '/' || route.path === '/home'
+  if (normalized === '/products') return isMarketplaceRoute()
+  if (normalized === '/events') return isEventsRoute()
+  if (normalized === '/groups') return isGroupsRoute()
+  if (normalized === '/pages') return isPagesRoute()
+
   return route.path === normalized
 }
 </script>
@@ -153,32 +161,17 @@ const isItemActive = (to: string) => {
   }
 }
 
-.left-sidebar__section-title {
-  padding: 0 10px;
-  margin-bottom: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #94a3b8;
-}
-
 .left-sidebar__items {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.left-sidebar__divider {
-  height: 1px;
-  margin: 8px 10px;
-  background: #f1f5f9;
-}
-
 .left-sidebar__toggle {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
   padding: 8px 10px;
   margin-top: 4px;
   border-radius: 12px;
@@ -213,18 +206,18 @@ const isItemActive = (to: string) => {
 .left-sidebar__toggle-label {
   font-size: 16px;
   font-weight: 600;
-  transition: color 0.15s ease;
   color: #334155;
+  transition: color 0.15s ease;
 }
 
 .left-sidebar__toggle:hover .left-sidebar__toggle-label {
   color: #0000ff;
 }
 
-/* Scrollbar hide */
 .scrollbar-hide {
   scrollbar-width: none;
 }
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }

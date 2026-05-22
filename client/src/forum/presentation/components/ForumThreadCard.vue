@@ -93,7 +93,6 @@
 
 <script setup lang="ts">
 import type { ForumThread } from "../../domain/types/forum.types"
-import { formatForumNumber } from "../../infrastructure/mocks/forumCatalog"
 
 const props = defineProps<{
   thread: ForumThread
@@ -102,7 +101,7 @@ const props = defineProps<{
 }>()
 
 defineEmits<{
-  select: [id: string]
+  select: [id: number]
 }>()
 
 const { t, locale } = useI18n()
@@ -110,6 +109,11 @@ const { t, locale } = useI18n()
 const displayReplyCount = computed(() =>
   props.thread.repliesCount + props.localReplyCount,
 )
+
+const formatForumNumber = (value: number, localeCode = "vi") =>
+  new Intl.NumberFormat(localeCode === "vi" ? "vi-VN" : "en-US", {
+    notation: value >= 10000 ? "compact" : "standard",
+  }).format(value)
 
 const statusLabel = computed(() => {
   if (props.thread.status === "pinned") return t("pages.forumPage.statusPinned")

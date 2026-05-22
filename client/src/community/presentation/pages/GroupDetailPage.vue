@@ -54,6 +54,7 @@
         :join-state="joinState"
         :invite-state="inviteState"
         :joined="joined"
+        :requested="requested"
         @join="handleJoinGroup"
         @delete="handleDeleteGroup"
         @invite="handleInviteMembers"
@@ -77,7 +78,7 @@
           </div>
 
           <!-- Tab: About (Instant) -->
-          <div v-show="activeTab === 'about'">
+          <div v-show="activeTab === 'about'" class="flex flex-col gap-4">
             <CommunityGroupAboutCard
               v-if="group"
               :group="group"
@@ -96,9 +97,9 @@
           </div>
         </section>
 
-        <aside class="space-y-4">
+        <aside class="flex flex-col gap-4">
           <CommunityGroupAboutCard
-            v-if="group"
+            v-if="group && activeTab !== 'posts'"
             :group="group"
             :privacy-label="privacyLabel"
             :privacy-description="privacyDescription"
@@ -108,6 +109,7 @@
           />
 
           <CommunityGroupMembersCard
+            v-if="activeTab !== 'posts'"
             :members="members"
             :member-count-label="memberCountLabel"
             :invite-state="inviteState"
@@ -115,7 +117,7 @@
           />
 
           <CommunityGroupAdminCard
-            v-if="group && group.canManage"
+            v-if="group && group.canManage && activeTab !== 'posts'"
             :slug="group.slug"
           />
         </aside>
@@ -164,6 +166,7 @@ const {
   joinState,
   inviteState,
   joined,
+  requested,
   group,
   members,
   privacyLabel,

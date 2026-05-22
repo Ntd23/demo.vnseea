@@ -61,7 +61,8 @@ if (empty($error_code)) {
         $offset = (!empty($_POST['offset']) && is_numeric($_POST['offset']) && $_POST['offset'] > 0 ? Wo_Secure($_POST['offset']) : 0);
         $include_all_notifications = (!empty($_POST['include_all_notifications']) && $_POST['include_all_notifications'] == 1);
         $notifications_options = array(
-            'offset' => $offset
+            'offset' => $offset,
+            'limit' => ($include_all_notifications === true ? 100 : 20)
         );
         if ($include_all_notifications !== true) {
             $notifications_options['remove_notification'] = array(
@@ -72,6 +73,8 @@ if (empty($error_code)) {
                 'forum_reply',
                 'admin_notification',
             );
+        } else {
+            $notifications_options['force_all'] = true;
         }
         $notifications = Wo_GetNotifications($notifications_options);
         

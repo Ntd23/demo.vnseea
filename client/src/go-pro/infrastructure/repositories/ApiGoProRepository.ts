@@ -14,4 +14,10 @@ export class ApiGoProRepository implements GoProRepository {
       body: { type },
     })
   }
+
+  async cancel() {
+    await $fetch("/_api/go-pro/cancel", {
+      method: "POST",
+    })
+  }
 }

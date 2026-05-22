@@ -36,8 +36,50 @@
         </div>
       </div>
 
-      <FeedPostMediaGrid v-if="!post.sharedPost && mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
-      <FeedSharedPostCard v-if="post.sharedPost" :post="post.sharedPost" />
+      <NuxtLink
+        v-if="post.attachmentCard"
+        :to="post.attachmentCard.href"
+        class="post-card__attachment"
+        :class="`post-card__attachment--${post.attachmentCard.type}`"
+      >
+        <div class="post-card__attachment-media">
+          <NuxtImg
+            v-if="post.attachmentCard.imageUrl"
+            :src="post.attachmentCard.imageUrl"
+            :alt="post.attachmentCard.title"
+            loading="lazy"
+            class="post-card__attachment-image"
+          />
+          <div v-else class="post-card__attachment-fallback">
+            <Icon :name="attachmentIcon" />
+          </div>
+        </div>
+        <div class="post-card__attachment-body">
+          <p class="post-card__attachment-eyebrow">
+            <Icon :name="attachmentIcon" />
+            <span>{{ attachmentLabel }}</span>
+          </p>
+          <h3 class="post-card__attachment-title">{{ post.attachmentCard.title }}</h3>
+          <p v-if="post.attachmentCard.description" class="post-card__attachment-description">
+            {{ post.attachmentCard.description }}
+          </p>
+          <div v-if="post.attachmentCard.type === 'funding'" class="post-card__attachment-progress">
+            <div class="post-card__attachment-progress-top">
+              <span>{{ t("feed.postCard.fundingProgress") }}</span>
+              <strong>{{ post.attachmentCard.progress ?? 0 }}%</strong>
+            </div>
+            <div class="post-card__attachment-progress-track">
+              <span :style="{ width: `${post.attachmentCard.progress ?? 0}%` }" />
+            </div>
+          </div>
+          <span class="post-card__attachment-action">
+            {{ attachmentActionLabel }}
+            <Icon name="i-ph-arrow-right-bold" />
+          </span>
+        </div>
+      </NuxtLink>
+
+      <FeedPostMediaGrid v-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
 
       <div class="post-card__stats">
         <div v-if="hasReactions" class="post-card__stats-left">
@@ -192,39 +234,41 @@
       </Transition>
     </div>
 
-    <FeedShareModal
-      :open="showShare"
-      :share-url="shareUrl"
-      :post="{ id: post.id, author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
-      @close="showShare = false"
-      @shared="handleShared"
-    />
-    <FeedLightboxViewer
-      :open="lightboxOpen"
-      :items="post.sharedPost ? [] : mediaItems"
-      :current-index="currentMediaIndex"
-      :title="props.post.text || t('feed.postCard.lightboxTitle')"
-      :description="''"
-      :author="post.author"
-      :author-avatar-url="post.authorAvatarUrl"
-      :author-path="post.authorPath"
-      :caption="post.text"
-      :time-label="post.time"
-      :like-count="likesCount"
-      :comments="localComments"
-      :current-user-name="currentAuthUserStore.user?.name"
-      :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
-      :submitting-comment="commenting"
-      :selected-reaction="selectedPostReaction"
-      @close="lightboxOpen = false"
-      @change="currentMediaIndex = $event"
-      @share="showShare = true"
-      @download="downloadMedia"
-      @like="toggleLike"
-      @react="reactToPost"
-      @comment="showComments = true"
-      @submit-comment="submitComment"
-    />
+    <ClientOnly>
+      <FeedShareModal
+        :open="showShare"
+        :share-url="shareUrl"
+        :post="{ id: post.id, author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
+        @close="showShare = false"
+        @shared="handleShared"
+      />
+      <FeedLightboxViewer
+        :open="lightboxOpen"
+        :items="post.sharedPost ? [] : mediaItems"
+        :current-index="currentMediaIndex"
+        :title="props.post.text || t('feed.postCard.lightboxTitle')"
+        :description="''"
+        :author="post.author"
+        :author-avatar-url="post.authorAvatarUrl"
+        :author-path="post.authorPath"
+        :caption="post.text"
+        :time-label="post.time"
+        :like-count="likesCount"
+        :comments="localComments"
+        :current-user-name="currentAuthUserStore.user?.name"
+        :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+        :submitting-comment="commenting"
+        :selected-reaction="selectedPostReaction"
+        @close="lightboxOpen = false"
+        @change="currentMediaIndex = $event"
+        @share="showShare = true"
+        @download="downloadMedia"
+        @like="toggleLike"
+        @react="reactToPost"
+        @comment="showComments = true"
+        @submit-comment="submitComment"
+      />
+    </ClientOnly>
   </article>
 </template>
 
@@ -300,6 +344,24 @@ const {
 
 const postTextSegments = computed(() =>
   createPostTextMentionSegments(props.post.text, props.post.mentions ?? []),
+)
+
+const attachmentIcon = computed(() =>
+  props.post.attachmentCard?.type === "funding"
+    ? "i-ph-hand-heart-duotone"
+    : "i-ph-newspaper-clipping-duotone",
+)
+
+const attachmentLabel = computed(() =>
+  props.post.attachmentCard?.type === "funding"
+    ? t("feed.postCard.fundingAttachment")
+    : t("feed.postCard.blogAttachment"),
+)
+
+const attachmentActionLabel = computed(() =>
+  props.post.attachmentCard?.type === "funding"
+    ? t("feed.postCard.openFunding")
+    : t("feed.postCard.openBlog"),
 )
 
 async function openCommentTagging() {
@@ -379,6 +441,156 @@ function handleMediaOpen(index: number) {
 
 .post-card__media {
   margin-top: 14px;
+}
+
+.post-card__attachment {
+  display: grid;
+  gap: 0;
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  border-radius: 14px;
+  background: #ffffff;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.post-card__attachment:hover {
+  border-color: rgba(0, 0, 255, 0.18);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
+}
+
+.post-card__attachment-media {
+  position: relative;
+  min-height: 160px;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #eef2ff;
+}
+
+.post-card__attachment-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post-card__attachment-fallback {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  align-items: center;
+  justify-content: center;
+  color: #0000ff;
+}
+
+.post-card__attachment-fallback svg,
+.post-card__attachment-fallback :deep(svg) {
+  width: 42px;
+  height: 42px;
+}
+
+.post-card__attachment-body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+}
+
+.post-card__attachment-eyebrow,
+.post-card__attachment-action,
+.post-card__attachment-progress-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.post-card__attachment-eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: rgba(0, 0, 255, 0.7);
+}
+
+.post-card__attachment-eyebrow svg,
+.post-card__attachment-eyebrow :deep(svg),
+.post-card__attachment-action svg,
+.post-card__attachment-action :deep(svg) {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+.post-card__attachment-title {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.post-card__attachment-description {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.post-card__attachment-progress {
+  display: grid;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.post-card__attachment-progress-top {
+  justify-content: space-between;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.post-card__attachment-progress-top strong {
+  color: #16a34a;
+}
+
+.post-card__attachment-progress-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dcfce7;
+}
+
+.post-card__attachment-progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #16a34a;
+}
+
+.post-card__attachment-action {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0000ff;
+}
+
+@media (min-width: 640px) {
+  .post-card__attachment {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .post-card__attachment-media {
+    min-height: 100%;
+    aspect-ratio: auto;
+  }
 }
 
 .post-card__stats {
