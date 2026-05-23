@@ -1,143 +1,231 @@
+<!-- English description: Displays the host studio activity feed for live comments and join/leave events on the /live route. -->
 <template>
-  <section class="surface-card flex min-h-[620px] flex-col overflow-hidden border-none ring-1 ring-secondary-100 shadow-xl">
-    <div class="shrink-0 bg-white px-6 py-5 border-b border-secondary-50 shadow-sm relative z-10">
-      <div class="flex items-center justify-between gap-4">
-        <div class="space-y-1">
-          <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-primary)]">
-            {{ $t("pages.livePage.chatEyebrow") }}
-          </p>
-          <h2 class="text-xl font-black tracking-tight text-[var(--text-primary)] leading-none">
-            {{ $t("pages.livePage.chatTitle") }}
-          </h2>
-        </div>
-        <UBadge
-          variant="soft"
-          color="primary"
-          class="rounded-full font-black text-[10px] uppercase tracking-widest px-4 py-1.5 ring-1 ring-inset ring-primary-100"
+  <div class="chat">
+    <!-- Header -->
+    <div class="chat__head">
+      <div>
+        <p class="chat__eyebrow">Hoạt động</p>
+        <h3 class="chat__title">Bình luận trực tiếp</h3>
+      </div>
+      <div class="chat__state-badge" :class="`chat__state-badge--${liveState}`">
+        <span class="chat__state-dot" />
+        {{ stateLabel }}
+      </div>
+    </div>
+
+    <!-- Feed -->
+    <div ref="feedEl" class="chat__feed scrollbar-hide">
+      <template v-if="items.length > 0">
+        <div
+          v-for="(item, i) in items"
+          :key="i"
+          class="chat__item animate-in fade-in slide-in-from-bottom-2 duration-300"
         >
-          <template #leading>
-            <span class="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
-          </template>
-          {{ $t("pages.livePage.commentCount", { count: comments.length }) }}
-        </UBadge>
-      </div>
-    </div>
-
-    <!-- Scrollable Comments Area -->
-    <div 
-      ref="scrollEl"
-      class="flex-1 space-y-4 overflow-y-auto bg-secondary-50/20 px-6 py-6 scrollbar-hide"
-    >
-      <div
-        v-for="comment in comments"
-        :key="comment.id"
-        class="flex gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500"
-      >
-        <UAvatar
-          :src="`https://ui-avatars.com/api/?name=${comment.author}&background=0000ff&color=fff`"
-          :alt="comment.author"
-          size="sm"
-          class="shrink-0 shadow-sm ring-2 ring-white"
-          :ui="{ rounded: 'rounded-[12px]' }"
-        />
-        <div class="flex-1 min-w-0 space-y-1.5 pt-0.5">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="text-[12px] font-black uppercase tracking-widest text-[var(--text-primary)]">{{ comment.author }}</span>
-            <UBadge
-              v-if="comment.isHost"
-              variant="solid"
-              size="xs"
-              color="primary"
-              class="rounded-md font-black text-[8px] uppercase tracking-widest px-2 py-0.5"
-            >
-              {{ $t("pages.livePage.hostBadge") }}
-            </UBadge>
-            <span class="text-[10px] font-bold text-[var(--text-primary)] uppercase tracking-widest">{{ comment.time }}</span>
-          </div>
-          <div class="rounded-2xl rounded-tl-none bg-white px-5 py-3.5 ring-1 ring-secondary-100 shadow-sm">
-            <p class="text-[13px] font-medium leading-relaxed text-[var(--text-primary)]">{{ comment.message }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Input Footer -->
-    <div class="shrink-0 bg-white p-6 border-t border-secondary-50 relative z-10">
-      <form class="space-y-4" @submit.prevent="submit">
-        <label class="sr-only" for="live-message">{{ $t("pages.livePage.chatInputLabel") }}</label>
-        <div class="flex gap-3">
-          <UInput
-            id="live-message"
-            ref="inputRef"
-            v-model="message"
-            size="xl"
-            class="flex-1"
-            :placeholder="$t('pages.livePage.chatPlaceholder')"
-            :ui="{
-              base: 'h-12 rounded-2xl bg-secondary-50/50 border-none ring-1 ring-secondary-100 focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all duration-300 font-medium text-[var(--text-primary)] px-6',
-            }"
+          <UAvatar
+            :src="item.avatarUrl"
+            :text="item.name?.charAt(0) || '?'"
+            size="sm"
+            class="shrink-0 mt-0.5"
+            :ui="{ rounded: 'rounded-xl', background: 'bg-blue-100', text: 'text-blue-700 font-bold' }"
           />
-          <UButton
-            type="submit"
-            size="xl"
-            :disabled="message.trim().length === 0"
-            class="h-12 w-12 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white shadow-xl shadow-primary-500/20 transition-all active:scale-95 justify-center"
-            square
-          >
-            <Icon name="i-ph-paper-plane-tilt-bold" class="h-6 w-6" />
-          </UButton>
+          <div class="min-w-0">
+            <p class="chat__item-name">{{ item.name }}</p>
+            <p class="chat__item-text">{{ item.text }}</p>
+          </div>
         </div>
-        <div class="flex items-center gap-2 px-1">
-          <Icon name="i-ph-info-bold" class="h-3.5 w-3.5 text-[var(--text-primary)]" />
-          <p class="text-[10px] font-black uppercase tracking-widest text-[var(--text-primary)]">
-            {{ $t("pages.livePage.chatHint") }}
-          </p>
+      </template>
+
+      <div v-else class="chat__empty">
+        <div class="chat__empty-icon">
+          <Icon name="i-ph-chat-circle-dots-duotone" class="h-8 w-8 text-slate-300" />
         </div>
-      </form>
+        <p class="chat__empty-title">Chưa có bình luận</p>
+        <p class="chat__empty-desc">
+          {{ liveState === 'live' ? 'Bình luận sẽ hiển thị ngay khi có người xem.' : 'Bắt đầu livestream để nhận bình luận.' }}
+        </p>
+      </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { MockLiveComment } from "../../domain/types/live.types"
+import type { LiveStudioComment, LiveStudioState } from "../../domain/types/live.types"
 
 const props = defineProps<{
-  comments: ReadonlyArray<MockLiveComment>
+  items: ReadonlyArray<LiveStudioComment>
+  liveState: LiveStudioState
 }>()
 
-const emit = defineEmits<{ send: [message: string] }>()
+const feedEl = ref<HTMLElement | null>(null)
 
-const message = ref("")
-const scrollEl = ref<HTMLElement | null>(null)
-const inputRef = ref<any>(null)
+const stateLabel = computed(() => {
+  if (props.liveState === "live") return "Đang phát"
+  if (props.liveState === "stale") return "Mất heartbeat"
+  return "Ngoại tuyến"
+})
 
-const submit = () => {
-  const value = message.value.trim()
-  if (value.length === 0) return
-  emit("send", value)
-  message.value = ""
+watch(
+  () => props.items.length,
+  () => {
+    nextTick(() => {
+      if (feedEl.value) {
+        feedEl.value.scrollTop = feedEl.value.scrollHeight
+      }
+    })
+  },
+)
+</script>
+
+<style scoped>
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 600px;
 }
 
-// Auto scroll on new comments
-watch(() => props.comments.length, async () => {
-  await nextTick()
-  if (scrollEl.value) {
-    scrollEl.value.scrollTo({
-      top: scrollEl.value.scrollHeight,
-      behavior: 'smooth'
-    })
-  }
-})
+/* Head */
+.chat__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
 
-onMounted(() => {
-  if (scrollEl.value) {
-    scrollEl.value.scrollTop = scrollEl.value.scrollHeight
-  }
-})
+.chat__eyebrow {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
 
-defineExpose({
-  focusInput: () => {
-    inputRef.value?.input?.focus()
-  },
-})
-</script>
+.chat__title {
+  margin: 4px 0 0;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.chat__state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.chat__state-badge--live {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.chat__state-badge--stale {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #b45309;
+}
+
+.chat__state-badge--offline {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #64748b;
+}
+
+.chat__state-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* Feed */
+.chat__feed {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat__item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+
+.chat__item:hover {
+  background: #f1f5f9;
+}
+
+.chat__item-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  margin: 0;
+}
+
+.chat__item-text {
+  font-size: 14px;
+  color: #0f172a;
+  margin: 3px 0 0;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Empty */
+.chat__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  text-align: center;
+  padding: 32px 24px;
+  min-height: 300px;
+}
+
+.chat__empty-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat__empty-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+  margin: 0;
+}
+
+.chat__empty-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.6;
+  max-width: 220px;
+  margin: 0;
+}
+</style>
