@@ -33,6 +33,8 @@ const EMPTY_WALLET: WalletOverview = {
 const toErrorMessage = (error: unknown, defaultMessage: string) =>
   error instanceof Error && error.message ? error.message : defaultMessage
 
+const walletActivityKindsToHide = new Set(["POINTS_EARNED", "POINTS_DEDUCT"])
+
 export function useWalletPageVM(
   repository: WalletRepository = createApiWalletRepository(),
 ) {
@@ -40,6 +42,7 @@ export function useWalletPageVM(
   const sendModalOpen = ref(false)
   const topupFormOpen = ref(false)
   const receiveQrOpen = ref(false)
+  const receiveAmount = ref<number | null>(null)
   const selectedTopupMethod = ref("")
   const recipientResults = ref<WalletRecipient[]>([])
   const recipientSearching = ref(false)
@@ -63,6 +66,11 @@ export function useWalletPageVM(
     error.value ? toErrorMessage(error.value, t("pages.walletPage.loadError")) : "",
   )
   const overview = computed(() => data.value)
+  const walletActivityTransactions = computed(() =>
+    overview.value.transactions.filter(transaction =>
+      !walletActivityKindsToHide.has(transaction.kind.toUpperCase()),
+    ),
+  )
   const uploadTopupMethod = computed(() =>
     overview.value.topupMethods.find(method => method.type === "upload") ?? null,
   )
@@ -77,6 +85,15 @@ export function useWalletPageVM(
       locale: locale.value,
     }),
   )
+  const mbBankLogoUrl = "https://cdn.vietqr.io/img/MB.png"
+  const sepayBankName = computed(() => {
+    const bankCode = sepayTopup.value?.bankCode?.replace(/\s+/g, "").toUpperCase()
+    if (bankCode === "MB" || bankCode === "MBBANK") {
+      return "Ngân hàng TMCP Quân Đội"
+    }
+
+    return sepayTopup.value?.bankCode || "-"
+  })
 
   watch(
     () => overview.value.topupMethods,
@@ -243,19 +260,29 @@ export function useWalletPageVM(
     }
   }
 
+  const copySepayValue = async (value?: string | number | null) => {
+    const text = String(value ?? "").trim()
+    if (!text || typeof navigator === "undefined" || !navigator.clipboard) return
+    await navigator.clipboard.writeText(text)
+  }
+
   return {
     overview,
+    walletActivityTransactions,
     loading,
     errorMessage,
     sendModalOpen,
     topupFormOpen,
     receiveQrOpen,
+    receiveAmount,
     selectedTopupMethod,
     recipientResults,
     recipientSearching,
     receiveQr,
     sepayTopup,
     formattedSepayAmount,
+    mbBankLogoUrl,
+    sepayBankName,
     mutationError,
     mutationMessage,
     sending,
@@ -273,6 +300,7 @@ export function useWalletPageVM(
     sendMoney,
     createTopup,
     checkSepayTopup,
+    copySepayValue,
     refresh,
   }
 }

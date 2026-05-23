@@ -43,14 +43,14 @@
           </div>
 
           <div v-if="showStats" class="mm__stats">
-            <div v-if="formattedWallet" class="mm__stat">
+            <NuxtLink v-if="formattedWallet" :to="appRoutes.wallet" class="mm__stat" @click="close">
               <Icon name="i-ph-wallet-fill" class="mm__stat-icon" />
               <span>{{ $t("navigation.mobileMenu.walletLabel") || "Ví" }}: {{ formattedWallet }}</span>
-            </div>
-            <div v-if="formattedPoints" class="mm__stat">
+            </NuxtLink>
+            <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="mm__stat" @click="close">
               <Icon name="i-ph-circle-half-fill" class="mm__stat-icon" />
               <span>{{ $t("navigation.mobileMenu.pointsLabel") || "Điểm" }}: {{ formattedPoints }}</span>
-            </div>
+            </NuxtLink>
           </div>
 
           <button class="mm__close" type="button" :aria-label="$t('common.close')" @click="close">
@@ -223,7 +223,7 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.popularPosts', icon: 'i-ph-fire-fill', to: '/popular' },
   { label: 'navigation.mobileMenu.mainNav.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   { label: 'navigation.mobileMenu.mainNav.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
-  { label: 'navigation.mobileMenu.mainNav.wallet', icon: 'i-ph-wallet-fill', to: '/wallet' },
+  { label: 'navigation.mobileMenu.mainNav.wallet', icon: 'i-ph-wallet-fill', to: appRoutes.wallet },
   { label: 'navigation.mobileMenu.mainNav.withdrawal', icon: 'i-ph-money-wavy-fill', to: '/withdrawal' },
   { label: 'navigation.mobileMenu.mainNav.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' },
   { label: 'navigation.mobileMenu.mainNav.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
@@ -388,9 +388,18 @@ const settingsNav = computed(() => {
   display: flex;
   align-items: center;
   gap: 8px;
+  border-radius: 10px;
+  padding: 4px 6px;
   font-size: 12px;
   font-weight: 600;
   color: #475569;
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.mm__stat:hover {
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
 }
 
 .mm__stat-icon {

@@ -1,4 +1,4 @@
-<!-- English description: Wallet page that mirrors the PHP wallet order using backend-backed data. -->
+﻿<!-- English description: Wallet page that mirrors the PHP wallet order using backend-backed data. -->
 <template>
   <div class="mx-auto max-w-5xl space-y-5 pb-10">
     <section class="surface-card p-5 sm:p-6">
@@ -41,7 +41,7 @@
       <template v-else>
         <WalletHero
           :balance="overview.balance"
-          :transactions-count="overview.transactions.length"
+          :transactions-count="walletActivityTransactions.length"
           :topup-methods-count="overview.topupMethods.length"
           :currency="overview.currency"
           :currency-symbol="overview.currencySymbol"
@@ -270,7 +270,7 @@
         </section>
 
         <WalletTransactions
-          :transactions="overview.transactions"
+          :transactions="walletActivityTransactions"
           :currency="overview.currency"
           :currency-symbol="overview.currencySymbol"
           :currency-rule="overview.currencyRule"
@@ -289,21 +289,23 @@ import WalletTopupForm from "../components/WalletTopupForm.vue"
 import WalletTransactions from "../components/WalletTransactions.vue"
 
 const { t } = useI18n()
-const receiveAmount = ref<number | null>(null)
-const mbBankLogoUrl = "https://cdn.vietqr.io/img/MB.png"
 
 const {
   overview,
+  walletActivityTransactions,
   loading,
   errorMessage,
   sendModalOpen,
   topupFormOpen,
   receiveQrOpen,
+  receiveAmount,
   recipientResults,
   recipientSearching,
   receiveQr,
   sepayTopup,
   formattedSepayAmount,
+  mbBankLogoUrl,
+  sepayBankName,
   mutationError,
   mutationMessage,
   sending,
@@ -318,27 +320,9 @@ const {
   sendMoney,
   createTopup,
   checkSepayTopup,
+  copySepayValue,
 } = useWalletPageVM()
 
-const sepayBankName = computed(() => {
-  const bankCode = sepayTopup.value?.bankCode?.replace(/\s+/g, "").toUpperCase()
-  if (bankCode === "MB" || bankCode === "MBBANK") {
-    return "Ngân hàng TMCP Quân Đội"
-  }
-
-  return sepayTopup.value?.bankCode || "-"
-})
-
-const copySepayValue = async (value?: string | number | null) => {
-  const text = String(value ?? "").trim()
-  if (!text || typeof navigator === "undefined" || !navigator.clipboard) return
-  await navigator.clipboard.writeText(text)
-}
-
-useSeoMeta({
-  title: () => t("pages.walletPage.seoTitle"),
-  description: () => t("pages.walletPage.seoDescription"),
-})
 </script>
 
 <style scoped>
@@ -724,3 +708,4 @@ useSeoMeta({
   }
 }
 </style>
+

@@ -111,7 +111,7 @@
 import { computed, ref } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
-import type { SettingPage } from "../../application/composables/useSettingsData"
+import type { SettingPage } from "../../application/view-models/settings-page.types"
 
 const { t } = useI18n()
 
