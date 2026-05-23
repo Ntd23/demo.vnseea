@@ -1,5 +1,6 @@
 // English description: Nuxt API implementation of the forum repository contract.
 
+import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { ForumRepository } from "../../domain/repositories/ForumRepository"
 import type {
   ForumCatalog,
@@ -13,34 +14,30 @@ import type {
 } from "../../domain/types/forum.types"
 
 export class ApiForumRepository implements ForumRepository {
+  private readonly api = useNuxtApiClient()
+
   async getCatalog(query: ForumCatalogQuery): Promise<ForumCatalog> {
-    return await $fetch<ForumCatalog>("/_api/forum", { query })
+    return await this.api.get<ForumCatalog>("/forum", query)
   }
 
   async getThreads(query: ForumThreadQuery): Promise<ForumThreadList> {
-    return await $fetch<ForumThreadList>("/_api/forum/threads", { query })
+    return await this.api.get<ForumThreadList>("/forum/threads", query)
   }
 
   async getMyThreads(query: Omit<ForumThreadQuery, "forumId">): Promise<ForumThreadList> {
-    return await $fetch<ForumThreadList>("/_api/forum/my-threads", { query })
+    return await this.api.get<ForumThreadList>("/forum/my-threads", query)
   }
 
   async getThreadDetail(id: number): Promise<ForumThreadDetail> {
-    return await $fetch<ForumThreadDetail>(`/_api/forum/threads/${id}`)
+    return await this.api.get<ForumThreadDetail>(`/forum/threads/${id}`)
   }
 
   async createThread(payload: ForumThreadPayload): Promise<ForumMutationResult> {
-    return await $fetch<ForumMutationResult>("/_api/forum/threads", {
-      method: "POST",
-      body: payload,
-    })
+    return await this.api.post<ForumMutationResult, ForumThreadPayload>("/forum/threads", payload)
   }
 
   async replyThread(payload: ForumReplyPayload): Promise<ForumMutationResult> {
-    return await $fetch<ForumMutationResult>(`/_api/forum/threads/${payload.threadId}/replies`, {
-      method: "POST",
-      body: payload,
-    })
+    return await this.api.post<ForumMutationResult, ForumReplyPayload>(`/forum/threads/${payload.threadId}/replies`, payload)
   }
 }
 

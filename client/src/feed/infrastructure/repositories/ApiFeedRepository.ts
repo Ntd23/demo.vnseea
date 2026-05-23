@@ -79,6 +79,13 @@ export function createApiFeedRepository(): FeedRepository {
     async getPokes() {
       return await client.get<FeedPokeRecord[]>(apiRoutes.feed.poke)
     },
+    async getPostComments(input) {
+      return await client.get<FeedCommentRecord[]>(apiRoutes.feed.comments.list, {
+        postId: input.postId,
+        limit: input.limit,
+        offset: input.offset,
+      })
+    },
     async getCommentReplies(input) {
       return await client.get<FeedCommentRecord[]>(apiRoutes.feed.comments.replies, {
         commentId: input.commentId,

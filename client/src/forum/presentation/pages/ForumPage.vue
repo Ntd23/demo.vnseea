@@ -115,32 +115,9 @@
       </aside>
 
       <section class="forum-main">
-        <div class="forum-main__header surface-card">
-          <div>
-            <p>{{ mainEyebrow }}</p>
-            <h2>
-              {{ mainTitle }}
-            </h2>
-            <span>
-              {{ mainDescription }}
-            </span>
-          </div>
-          <UBadge v-if="isForumDrilldown || activeTab === 'my_threads'" color="primary" variant="subtle" class="forum-count">
-            {{ t("pages.forumPage.resultMeta", { count: threads.length }) }}
-          </UBadge>
+        <div v-if="pending && !sections.length && activeTab !== 'my_threads'" class="forum-list-tab">
+          <USkeleton v-for="index in 4" :key="index" class="h-56 rounded-[16px]" />
         </div>
-
-        <UCard v-if="activeTab === 'members'" class="surface-card forum-empty" :ui="{ body: 'p-8' }">
-          <Icon name="i-ph-users-three-duotone" />
-          <h2>{{ t("pages.forumPage.membersTitle") }}</h2>
-          <p>{{ t("pages.forumPage.membersDescription") }}</p>
-        </UCard>
-
-        <UCard v-else-if="activeTab === 'my_messages'" class="surface-card forum-empty" :ui="{ body: 'p-8' }">
-          <Icon name="i-ph-envelope-simple-duotone" />
-          <h2>{{ t("pages.forumPage.myMessagesTitle") }}</h2>
-          <p>{{ t("pages.forumPage.myMessagesDescription") }}</p>
-        </UCard>
 
         <div v-else-if="!isForumDrilldown && activeTab !== 'my_threads'" class="forum-list-tab">
           <article v-for="section in sections" :key="section.id" class="forum-section-card surface-card">
@@ -249,8 +226,6 @@ const {
   isForumDrilldown,
   isThreadDetail,
   activeForum,
-  forumThreads,
-  myThreads,
   threads,
   selectedThread,
   canCreate,
@@ -274,10 +249,7 @@ const {
 
 const tabItems = computed(() => [
   { value: "browse" as const, label: t("pages.forumPage.tabForumList"), icon: "i-ph-list-bullets-duotone" },
-  { value: "members" as const, label: t("pages.forumPage.tabMembers"), icon: "i-ph-users-three-duotone" },
-  { value: "search" as const, label: t("pages.forumPage.tabSearch"), icon: "i-ph-magnifying-glass-duotone" },
   { value: "my_threads" as const, label: t("pages.forumPage.tabMyThreads"), icon: "i-ph-user-circle-duotone" },
-  { value: "my_messages" as const, label: t("pages.forumPage.tabMyMessages"), icon: "i-ph-envelope-simple-duotone" },
 ])
 
 const layoutMode = computed(() => {
@@ -289,28 +261,19 @@ const layoutMode = computed(() => {
 
 const mainEyebrow = computed(() => {
   if (activeTab.value === "my_threads") return t("pages.forumPage.tabMyThreads")
-  if (activeTab.value === "members") return t("pages.forumPage.tabMembers")
-  if (activeTab.value === "my_messages") return t("pages.forumPage.tabMyMessages")
   if (isForumDrilldown.value) return activeForum.value?.title || t("pages.forumPage.tabForumDetail")
-  if (activeTab.value === "search") return t("pages.forumPage.tabSearch")
   return t("pages.forumPage.tabForumList")
 })
 
 const mainTitle = computed(() => {
   if (activeTab.value === "my_threads") return t("pages.forumPage.myThreadsTitle")
-  if (activeTab.value === "members") return t("pages.forumPage.membersTitle")
-  if (activeTab.value === "my_messages") return t("pages.forumPage.myMessagesTitle")
   if (isForumDrilldown.value) return activeForum.value ? t("pages.forumPage.resultsEyebrow") : t("pages.forumPage.tabForumDetail")
-  if (activeTab.value === "search") return t("pages.forumPage.searchTitle")
   return t("pages.forumPage.forumListTitle")
 })
 
 const mainDescription = computed(() => {
   if (activeTab.value === "my_threads") return t("pages.forumPage.myThreadsDescription")
-  if (activeTab.value === "members") return t("pages.forumPage.membersDescription")
-  if (activeTab.value === "my_messages") return t("pages.forumPage.myMessagesDescription")
   if (isForumDrilldown.value) return activeForum.value?.description || t("pages.forumPage.detailEmptyDescription")
-  if (activeTab.value === "search") return t("pages.forumPage.searchDescription")
   return t("pages.forumPage.forumListDescription")
 })
 </script>
@@ -319,7 +282,7 @@ const mainDescription = computed(() => {
 .forum-page {
   width: min(100%, 1320px);
   margin: 0 auto;
-  padding: 16px 12px 32px;
+  padding: 12px 12px 32px;
   display: grid;
   gap: 16px;
 }
@@ -341,13 +304,13 @@ const mainDescription = computed(() => {
   min-height: 42px;
   align-items: center;
   gap: 8px;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-  background: var(--bg-surface-hover);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fafbfe;
   padding: 9px 14px;
-  color: var(--text-secondary);
+  color: #334155;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
@@ -360,8 +323,8 @@ const mainDescription = computed(() => {
 .forum-tab:hover,
 .forum-tab--active {
   border-color: rgba(0, 0, 255, 0.18);
-  background: #0000ff;
-  color: #ffffff;
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
 }
 
 .forum-hero {
@@ -381,8 +344,8 @@ const mainDescription = computed(() => {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--text-brand);
-  background: var(--bg-surface-active);
+  color: #0000ff;
+  background: rgba(0, 0, 255, 0.06);
 }
 
 .forum-hero__icon {
@@ -400,18 +363,19 @@ const mainDescription = computed(() => {
 .forum-hero__copy p,
 .forum-sidebar__header p,
 .forum-main__header p {
-  color: var(--text-tertiary);
+  color: #94a3b8;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .forum-hero__copy h1 {
   margin-top: 4px;
-  color: var(--text-primary);
-  font-size: clamp(24px, 4vw, 38px);
-  font-weight: 900;
-  line-height: 1.08;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
 }
 
 .forum-hero__copy span,
@@ -419,7 +383,7 @@ const mainDescription = computed(() => {
 .forum-section p {
   display: block;
   margin-top: 6px;
-  color: var(--text-secondary);
+  color: #334155;
   font-size: 14px;
   line-height: 1.6;
 }
@@ -431,23 +395,23 @@ const mainDescription = computed(() => {
 }
 
 .forum-hero__stats div {
-  border: 1px solid var(--border-light);
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 12px;
-  background: var(--bg-surface-hover);
+  background: #fafbfe;
 }
 
 .forum-hero__stats strong {
   display: block;
-  color: var(--text-primary);
-  font-size: 24px;
-  font-weight: 900;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 800;
 }
 
 .forum-hero__stats span {
-  color: var(--text-tertiary);
+  color: #64748b;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .forum-toolbar,
@@ -464,7 +428,7 @@ const mainDescription = computed(() => {
 .forum-icon-button,
 .forum-reset,
 .forum-create {
-  border-radius: 999px;
+  border-radius: 12px;
 }
 
 .forum-icon-button svg,
@@ -499,31 +463,32 @@ const mainDescription = computed(() => {
 }
 
 .forum-section-card header p {
-  color: var(--text-tertiary);
+  color: #94a3b8;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .forum-section-card h3 {
   margin-top: 3px;
-  color: var(--text-primary);
-  font-size: 18px;
-  font-weight: 900;
+  color: #0f172a;
+  font-size: 17px;
+  font-weight: 800;
 }
 
 .forum-section-card header span {
   border-radius: 999px;
-  background: var(--bg-surface-hover);
+  background: #fafbfe;
   padding: 5px 9px;
-  color: var(--text-tertiary);
+  color: #64748b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .forum-section-card__description {
   margin-top: 6px;
-  color: var(--text-secondary);
+  color: #334155;
   font-size: 13px;
   line-height: 1.6;
 }
@@ -539,7 +504,7 @@ const mainDescription = computed(() => {
   grid-template-columns: 38px minmax(0, 1fr);
   gap: 10px;
   align-items: center;
-  border: 1px solid var(--border-light);
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #ffffff;
   padding: 10px;
@@ -549,7 +514,7 @@ const mainDescription = computed(() => {
 
 .forum-list-item:hover {
   border-color: rgba(0, 0, 255, 0.14);
-  background: var(--bg-surface-hover);
+  background: #fafbfe;
 }
 
 .forum-list-item strong,
@@ -559,9 +524,9 @@ const mainDescription = computed(() => {
 
 .forum-list-item strong {
   overflow: hidden;
-  color: var(--text-primary);
+  color: #0f172a;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -570,7 +535,7 @@ const mainDescription = computed(() => {
   display: -webkit-box;
   overflow: hidden;
   margin-top: 2px;
-  color: var(--text-secondary);
+  color: #334155;
   font-size: 12px;
   line-height: 1.45;
   -webkit-box-orient: vertical;
@@ -579,10 +544,10 @@ const mainDescription = computed(() => {
 
 .forum-list-item em {
   grid-column: 2;
-  color: var(--text-tertiary);
+  color: #64748b;
   font-size: 12px;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .forum-sidebar,
@@ -597,9 +562,9 @@ const mainDescription = computed(() => {
 .forum-sidebar__header h2,
 .forum-main__header h2 {
   margin-top: 3px;
-  color: var(--text-primary);
+  color: #0f172a;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .forum-sidebar__loading,
@@ -614,7 +579,7 @@ const mainDescription = computed(() => {
   gap: 8px;
   padding-top: 14px;
   margin-top: 14px;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid #f1f5f9;
 }
 
 .forum-section__heading {
@@ -625,15 +590,15 @@ const mainDescription = computed(() => {
 }
 
 .forum-section__heading h3 {
-  color: var(--text-primary);
+  color: #0f172a;
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 700;
 }
 
 .forum-section__heading span {
-  color: var(--text-tertiary);
+  color: #64748b;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .forum-link {
@@ -652,7 +617,7 @@ const mainDescription = computed(() => {
 .forum-link:hover,
 .forum-link--active {
   border-color: rgba(0, 0, 255, 0.12);
-  background: var(--bg-surface-hover);
+  background: #fafbfe;
 }
 
 .forum-link__icon {
@@ -672,18 +637,18 @@ const mainDescription = computed(() => {
 
 .forum-link__body strong {
   overflow: hidden;
-  color: var(--text-primary);
+  color: #0f172a;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .forum-link__body small {
   margin-top: 2px;
-  color: var(--text-tertiary);
+  color: #64748b;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .forum-main {
@@ -717,20 +682,20 @@ const mainDescription = computed(() => {
   width: 42px;
   height: 42px;
   margin: 0 auto;
-  color: var(--text-tertiary);
+  color: #94a3b8;
 }
 
 .forum-empty h2 {
   margin-top: 12px;
-  color: var(--text-primary);
+  color: #0f172a;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .forum-empty p {
   margin: 8px auto 0;
   max-width: 520px;
-  color: var(--text-secondary);
+  color: #334155;
   font-size: 14px;
   line-height: 1.6;
 }
@@ -766,12 +731,12 @@ const mainDescription = computed(() => {
 
 @media (min-width: 1120px) {
   .forum-layout--thread {
-    grid-template-columns: 280px minmax(0, 1fr) 360px;
+    grid-template-columns: 310px minmax(0, 1fr) 360px;
     align-items: start;
   }
 
   .forum-layout--forum {
-    grid-template-columns: 280px minmax(0, 1fr);
+    grid-template-columns: 310px minmax(0, 1fr);
     align-items: start;
   }
 

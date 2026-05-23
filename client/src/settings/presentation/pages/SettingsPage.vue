@@ -26,7 +26,13 @@
         </div>
 
         <!-- Sections -->
+        <SettingsMyPointsPanel
+          v-if="activePage.slug === 'myPoints'"
+          :user="user"
+          :on-exchange="exchangePoints"
+        />
         <SettingsSection
+          v-else
           v-for="section in activePage.sections"
           :key="section.title"
           :section="section"
@@ -42,6 +48,7 @@
 import type { SettingPage } from "../../application/composables/useSettingsData"
 import { useSettingsData } from "../../application/composables/useSettingsData"
 import SettingsHero from "../components/SettingsHero.vue"
+import SettingsMyPointsPanel from "../components/SettingsMyPointsPanel.vue"
 import SettingsSection from "../components/SettingsSection.vue"
 import SettingsSidebar from "../components/SettingsSidebar.vue"
 
@@ -53,7 +60,7 @@ const { t } = useI18n()
 const { 
   pages, user, defaultSlug, findPageBySlug, 
   updateSettings, fetchSessions, fetchBlockedUsers,
-  deleteSession, unblockUser 
+  deleteSession, unblockUser, exchangePoints 
 } = useSettingsData()
 
 const activePage = computed<SettingPage>(() =>

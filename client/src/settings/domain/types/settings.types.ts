@@ -147,3 +147,16 @@ export interface SettingsUpdateResult {
   status: string
   message: string
 }
+
+export interface SettingsPointsExchangeInput {
+  points: number
+}
+
+export interface SettingsPointsExchangeResult {
+  success: boolean
+  message: string
+  exchangedPoints: number
+  amount: number
+  points: number
+  wallet: number
+}

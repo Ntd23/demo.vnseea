@@ -135,11 +135,11 @@
           <div class="create-blog-page__submit-actions">
             <button class="create-blog-page__secondary" type="button" :disabled="isSubmitting" @click="saveDraft">
               <Icon :name="submitState === 'saving' ? 'i-ph-circle-notch-bold' : 'i-ph-floppy-disk-bold'" class="h-4 w-4" />
-              {{ $t("pages.createBlogPage.saveDraft") }}
+              <span>{{ $t("pages.createBlogPage.saveDraft") }}</span>
             </button>
             <button class="create-blog-page__primary" type="button" :disabled="isSubmitting" @click="publishBlog">
               <Icon :name="submitState === 'publishing' ? 'i-ph-circle-notch-bold' : 'i-ph-paper-plane-tilt-fill'" class="h-4 w-4" />
-              {{ $t("pages.createBlogPage.publish") }}
+              <span>{{ $t("pages.createBlogPage.publish") }}</span>
             </button>
           </div>
         </section>
@@ -320,14 +320,25 @@ const {
 
 .create-blog-page__secondary,
 .create-blog-page__primary {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
+  min-height: 42px;
   align-items: center;
   justify-content: center;
   gap: 7px;
   border-radius: 12px;
   font-size: 13px;
   font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.create-blog-page__secondary > *,
+.create-blog-page__primary > * {
+  pointer-events: none;
 }
 
 .create-blog-page__secondary:hover {
@@ -372,6 +383,8 @@ const {
 }
 
 .create-blog-page__upload {
+  position: relative;
+  z-index: 2;
   display: flex;
   cursor: pointer;
   flex-direction: column;
@@ -380,6 +393,8 @@ const {
   border: 1px dashed #cbd5e1;
   background: #f8fafc;
   padding: 18px;
+  pointer-events: auto;
+  user-select: none;
   text-align: center;
   transition: all 0.15s ease;
 }
@@ -422,9 +437,18 @@ const {
 
 .create-blog-page__preview {
   position: relative;
+  z-index: 2;
   overflow: hidden;
   border: 1px solid #e2e8f0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   text-align: left;
+}
+
+.create-blog-page__preview > * {
+  pointer-events: none;
 }
 
 .create-blog-page__preview-bg,

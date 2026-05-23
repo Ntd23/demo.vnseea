@@ -148,7 +148,7 @@
           @click="toggleReplyThread"
         >
           <Icon name="i-ph-arrow-bend-up-left" class="h-3.5 w-3.5" />
-          {{ replyActionLabel }}
+          <span>{{ replyActionLabel }}</span>
         </button>
       </div>
 
@@ -580,20 +580,32 @@ onBeforeUnmount(() => {
 }
 
 .comment-item__footer-action {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
+  min-height: 28px;
   align-items: center;
   gap: 5px;
   border: 0;
+  border-radius: 999px;
   background: transparent;
   color: var(--text-secondary);
+  padding: 5px 8px;
   font-size: 11.5px;
   font-weight: 700;
   cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: color 0.15s ease;
+}
+
+.comment-item__footer-action > * {
+  pointer-events: none;
 }
 
 .comment-item__footer-action:hover,
 .comment-item__footer-action--active {
+  background: rgba(0, 0, 255, 0.05);
   color: var(--text-brand);
 }
 

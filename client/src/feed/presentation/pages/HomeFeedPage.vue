@@ -79,7 +79,7 @@
       <div v-if="newPostsCount > 0" class="home-feed__new-posts">
         <button class="home-feed__new-posts-btn" type="button" @click="loadNewPosts">
           <Icon name="i-ph-arrow-up-bold" class="h-4 w-4" />
-          {{ t("pages.homeFeedPage.newPostsButton", { count: newPostsCount }) }}
+          <span>{{ t("pages.homeFeedPage.newPostsButton", { count: newPostsCount }) }}</span>
         </button>
       </div>
     </Transition>
@@ -95,10 +95,10 @@
         :disabled="loadingMore"
         type="button"
         @click="loadMore"
-      >
+        >
         <Icon v-if="loadingMore" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
         <Icon v-else name="i-ph-arrow-down-bold" class="h-4 w-4" />
-        {{ loadingMore ? t("pages.homeFeedPage.loadingMore") : t("pages.homeFeedPage.loadMore") }}
+        <span>{{ loadingMore ? t("pages.homeFeedPage.loadingMore") : t("pages.homeFeedPage.loadMore") }}</span>
       </button>
       <p v-else class="home-feed__all-loaded">{{ t("pages.homeFeedPage.allCaughtUp") }}</p>
     </div>
@@ -265,12 +265,17 @@ await initialize()
 
 .home-feed__new-posts,
 .home-feed__load-more {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: center;
 }
 
 .home-feed__new-posts-btn {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
+  min-height: 38px;
   align-items: center;
   gap: 6px;
   border-radius: var(--radius-full);
@@ -280,7 +285,15 @@ await initialize()
   color: var(--text-link);
   font-size: var(--text-caption);
   font-weight: var(--weight-bold);
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   box-shadow: var(--shadow-md);
+}
+
+.home-feed__new-posts-btn > *,
+.home-feed__load-more-btn > * {
+  pointer-events: none;
 }
 
 .home-feed__new-posts-btn:hover,
@@ -299,7 +312,10 @@ await initialize()
 }
 
 .home-feed__load-more-btn {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
+  min-height: 42px;
   align-items: center;
   gap: 6px;
   border-radius: var(--radius-full);
@@ -309,6 +325,9 @@ await initialize()
   color: var(--text-secondary);
   font-size: var(--text-caption);
   font-weight: var(--weight-bold);
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
 }
 
 .home-feed__load-more-btn:disabled {

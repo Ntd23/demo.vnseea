@@ -51,7 +51,7 @@
           @click="$emit('update:selectedCategory', category.value)"
         >
           <Icon :name="category.icon" class="h-3.5 w-3.5" />
-          {{ category.label }}
+          <span>{{ category.label }}</span>
         </button>
       </div>
     </div>
@@ -70,7 +70,7 @@
           @click="$emit('update:sortBy', option.value)"
         >
           <Icon :name="sortIcon(option.value)" class="h-3.5 w-3.5" />
-          {{ option.label }}
+          <span>{{ option.label }}</span>
         </button>
       </div>
 
@@ -84,7 +84,7 @@
         @click="$emit('update:mineOnly', !mineOnly)"
       >
         <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-toggle-left'" class="h-4 w-4" />
-        {{ $t("pages.blogsPage.myArticles") }}
+        <span>{{ $t("pages.blogsPage.myArticles") }}</span>
       </button>
     </div>
 
@@ -184,13 +184,21 @@ const sortIcon = (value: string) => {
 }
 
 .blogs-filters__create {
+  position: relative;
+  z-index: 2;
   flex: 0 0 auto;
   border-radius: 12px;
   padding: 10px 14px;
   font-size: 13px;
   font-weight: 800;
+  pointer-events: auto;
+  user-select: none;
   box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
   transition: all 0.15s ease;
+}
+
+.blogs-filters__create > * {
+  pointer-events: none;
 }
 
 .blogs-filters__search-wrap {
@@ -234,13 +242,25 @@ const sortIcon = (value: string) => {
 .blogs-filters__chip,
 .blogs-filters__sort,
 .blogs-filters__mine {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
+  min-height: 34px;
   align-items: center;
   gap: 6px;
   border: 1px solid transparent;
   border-radius: 12px;
   font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.blogs-filters__chip > *,
+.blogs-filters__sort > *,
+.blogs-filters__mine > * {
+  pointer-events: none;
 }
 
 .blogs-filters__chip {

@@ -18,12 +18,12 @@
     </p>
 
     <button
-      class="mt-6 inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-6 py-3 text-[13.5px] font-bold text-white shadow-[var(--shadow-brand)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-xl)]"
+      class="blogs-empty__reset mt-6 inline-flex items-center gap-2 rounded-[var(--radius-full)] bg-[var(--color-primary-500)] px-6 py-3 text-[13.5px] font-bold text-white shadow-[var(--shadow-brand)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[var(--shadow-xl)]"
       type="button"
       @click="$emit('reset')"
     >
       <Icon name="i-ph-arrow-counter-clockwise" class="h-4 w-4" />
-      {{ $t("pages.blogsPage.viewAll") }}
+      <span>{{ $t("pages.blogsPage.viewAll") }}</span>
     </button>
   </div>
 </template>
@@ -33,3 +33,17 @@ defineEmits<{
   reset: []
 }>()
 </script>
+
+<style scoped>
+.blogs-empty__reset {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.blogs-empty__reset > * {
+  pointer-events: none;
+}
+</style>

@@ -101,6 +101,8 @@ const changePage = (page: number) => {
 }
 
 .blogs-pagination__controls {
+  position: relative;
+  z-index: 2;
   justify-content: space-between;
   gap: 8px;
 }
@@ -123,11 +125,19 @@ const changePage = (page: number) => {
 }
 
 .blogs-pagination__button {
+  position: relative;
+  z-index: 2;
   border: 1px solid #e2e8f0;
   background: #fafbfe;
   color: #334155;
   cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.blogs-pagination__button > * {
+  pointer-events: none;
 }
 
 .blogs-pagination__button:not(:disabled):hover {

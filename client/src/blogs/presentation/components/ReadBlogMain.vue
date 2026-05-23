@@ -10,7 +10,7 @@
           @click="$emit('toggleLike')"
         >
           <Icon :name="liked ? 'i-ph-thumbs-up-fill' : 'i-ph-thumbs-up-duotone'" class="read-blog-main__action-icon" />
-          {{ formatCompact(displayedLikes) }}
+          <span>{{ formatCompact(displayedLikes) }}</span>
         </button>
 
         <button
@@ -21,7 +21,7 @@
           @click="$emit('toggleShare')"
         >
           <Icon name="i-ph-share-network-duotone" class="read-blog-main__action-icon" />
-          {{ $t("pages.readBlogPage.share") }}
+          <span>{{ $t("pages.readBlogPage.share") }}</span>
         </button>
       </div>
 
@@ -156,6 +156,8 @@ defineEmits<{
 }
 
 .read-blog-main__action {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -169,7 +171,13 @@ defineEmits<{
   font-size: 13px;
   font-weight: 700;
   padding: 0 13px;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.read-blog-main__action > * {
+  pointer-events: none;
 }
 
 .read-blog-main__action:hover,

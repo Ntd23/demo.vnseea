@@ -4,7 +4,7 @@ import { createApiForumRepository } from "../../infrastructure/repositories/ApiF
 import type { ForumPageTab, ForumReplyPayload, ForumThreadPayload } from "../../domain/types/forum.types"
 
 const readQueryValue = (value: unknown) => Array.isArray(value) ? String(value[0] || "") : String(value || "")
-const forumTabs = ["browse", "members", "search", "my_threads", "my_messages"] as const satisfies readonly ForumPageTab[]
+const forumTabs = ["browse", "my_threads"] as const satisfies readonly ForumPageTab[]
 const readForumTab = (value: unknown): ForumPageTab => {
   const raw = readQueryValue(value)
   return forumTabs.includes(raw as ForumPageTab) ? raw as ForumPageTab : "browse"
@@ -112,7 +112,7 @@ export function useForumPageVM(repository = createApiForumRepository()) {
     await router.push({
       path: "/forum",
       query: {
-        tab: "browse",
+        tab: activeTab.value === "search" ? "search" : "browse",
         fid: String(forumId),
         ...(search.value.trim() ? { q: search.value.trim() } : {}),
       },
@@ -124,7 +124,7 @@ export function useForumPageVM(repository = createApiForumRepository()) {
       path: "/forum",
       query: {
         ...(activeForumId.value ? { fid: String(activeForumId.value) } : {}),
-        tab: activeTab.value === "my_threads" ? "my_threads" : "browse",
+        tab: activeTab.value === "my_threads" || activeTab.value === "search" ? activeTab.value : "browse",
         tid: String(threadId),
         ...(search.value.trim() ? { q: search.value.trim() } : {}),
       },

@@ -789,6 +789,12 @@ export const useSettingsData = () => {
     return await settingsRepository.requestMyInfo(options)
   }
 
+  async function exchangePoints(points: number) {
+    const response = await settingsRepository.exchangePoints({ points })
+    await hydrate()
+    return response
+  }
+
   void hydrate()
 
   return {
@@ -806,6 +812,7 @@ export const useSettingsData = () => {
     fetchBlockedUsers,
     unblockUser,
     requestMyInfo,
+    exchangePoints,
     findPageBySlug: (slug: string) => pages.value.find(page => page.slug === slug),
   }
 }

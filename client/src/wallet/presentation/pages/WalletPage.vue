@@ -16,10 +16,10 @@
         <NuxtLink
           v-if="overview.canWithdraw"
           :to="overview.withdrawalUrl"
-          class="btn-secondary w-fit"
+          class="wallet-header-link btn-secondary w-fit"
         >
           <Icon name="i-ph-bank-duotone" class="h-4 w-4" />
-          {{ t("pages.walletPage.withdrawal") }}
+          <span>{{ t("pages.walletPage.withdrawal") }}</span>
         </NuxtLink>
       </div>
     </section>
@@ -133,7 +133,7 @@
                   download
                 >
                   <Icon name="i-ph-download-simple-duotone" class="h-4 w-4" />
-                  {{ t("pages.walletPage.sepayDownloadQr") }}
+                  <span>{{ t("pages.walletPage.sepayDownloadQr") }}</span>
                 </a>
               </div>
 
@@ -370,6 +370,8 @@ useSeoMeta({
 }
 
 .wallet-action {
+  position: relative;
+  z-index: 2;
   display: flex;
   min-height: 54px;
   align-items: center;
@@ -382,7 +384,26 @@ useSeoMeta({
   color: #334155;
   font-size: 13px;
   font-weight: 700;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.wallet-header-link,
+.wallet-sepay-result__download {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.wallet-action > *,
+.wallet-header-link > *,
+.wallet-panel-close > *,
+.wallet-sepay-result__download > *,
+.wallet-sepay-result__copy > * {
+  pointer-events: none;
 }
 
 .wallet-action:hover {
@@ -445,6 +466,8 @@ useSeoMeta({
 }
 
 .wallet-panel-close {
+  position: relative;
+  z-index: 2;
   display: flex;
   width: 38px;
   height: 38px;
@@ -455,6 +478,9 @@ useSeoMeta({
   border-radius: 12px;
   background: #ffffff;
   color: #64748b;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
 }
 
@@ -589,6 +615,8 @@ useSeoMeta({
 }
 
 .wallet-sepay-result__copy {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   width: 26px;
   height: 26px;
@@ -599,6 +627,9 @@ useSeoMeta({
   border-radius: 7px;
   background: #ffffff;
   color: #6b7280;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
 }
 
@@ -647,10 +678,13 @@ useSeoMeta({
 }
 
 .wallet-sepay-result__check {
+  position: relative;
+  z-index: 2;
   margin-top: 8px;
   border-top: 3px solid #991b1b;
   border-radius: 0;
   padding-top: 10px;
+  pointer-events: auto;
 }
 
 @media (min-width: 768px) {

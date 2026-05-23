@@ -59,6 +59,12 @@ const encodeRouteSegment = (value: string | number) => encodeURIComponent(String
 
 const normalizeKnownPath = (path: string) => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`
+  const malformedPostMatch = normalizedPath.match(/^\/post\/([^/?#&]+)&(.+)$/i)
+
+  if (malformedPostMatch?.[1] && malformedPostMatch[2]) {
+    return `${appRoutes.postDetail(malformedPostMatch[1])}?${malformedPostMatch[2]}`
+  }
+
   const messageMatch = normalizedPath.match(/^\/messages\/([^/?#]+)(.*)?$/i)
 
   if (messageMatch?.[1]) {
