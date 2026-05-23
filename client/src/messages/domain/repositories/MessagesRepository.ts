@@ -3,6 +3,7 @@
 import type {
   MessageActionResult,
   MessageContact,
+  MessageTagsPayload,
   MessageItem,
   MessageSendDraft,
   MessageThread,
@@ -11,6 +12,7 @@ import type {
 
 export interface MessagesRepository {
   getInbox(): Promise<MessageContact[]>
+  getTags(): Promise<MessageTagsPayload>
   getThread(contact: MessageContact, options?: { beforeId?: number }): Promise<MessageThread>
   sendMessage(contact: MessageContact, input: MessageSendDraft): Promise<MessageItem[]>
   sendMultiMessage(input: {
@@ -18,6 +20,10 @@ export interface MessagesRepository {
     text: string
     file?: File | null
   }): Promise<MultiMessageSendResult>
+  createTagLabel(input: { name: string, color: string }): Promise<MessageActionResult>
+  deleteTagLabel(input: { tagId: number }): Promise<MessageActionResult>
+  attachTag(input: { userId: number, tagId: number }): Promise<MessageActionResult>
+  detachTag(input: { userId: number, tagId: number }): Promise<MessageActionResult>
   markAllAsRead(): Promise<MessageActionResult>
   deleteConversation(contact: MessageContact): Promise<MessageActionResult>
   createGroup(input: {

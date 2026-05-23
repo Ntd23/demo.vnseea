@@ -8,6 +8,7 @@ import type {
   MessageContact,
   MessageItem,
   MessageSendDraft,
+  MessageTagsPayload,
   MessageThread,
   MultiMessageSendResult,
 } from "../../domain/types/messages.types"
@@ -16,6 +17,7 @@ const MESSAGES_API = {
   createGroup: "messages/group",
   deleteConversation: "messages/delete",
   markAllAsRead: "messages/read",
+  tags: "messages/tags",
 } as const
 
 const createThreadQuery = (contact: MessageContact, beforeId?: number) => ({
@@ -97,6 +99,9 @@ export function createApiMessagesRepository(): MessagesRepository {
     async getInbox() {
       return await client.get<MessageContact[]>(apiRoutes.messages.conversations)
     },
+    async getTags() {
+      return await client.get<MessageTagsPayload>(apiRoutes.messages.tags)
+    },
     async getThread(contact: MessageContact, options?: { beforeId?: number }) {
       return await client.get<MessageThread>(
         apiRoutes.messages.thread,
@@ -114,6 +119,33 @@ export function createApiMessagesRepository(): MessagesRepository {
         apiRoutes.messages.multi,
         createMultiSendBody(input),
       )
+    },
+    async createTagLabel(input) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(MESSAGES_API.tags, {
+        action: "create",
+        name: input.name,
+        color: input.color,
+      })
+    },
+    async deleteTagLabel(input) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(MESSAGES_API.tags, {
+        action: "delete",
+        tagId: input.tagId,
+      })
+    },
+    async attachTag(input) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(MESSAGES_API.tags, {
+        action: "attach",
+        userId: input.userId,
+        tagId: input.tagId,
+      })
+    },
+    async detachTag(input) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(MESSAGES_API.tags, {
+        action: "detach",
+        userId: input.userId,
+        tagId: input.tagId,
+      })
     },
     async markAllAsRead() {
       return await client.post<MessageActionResult>(MESSAGES_API.markAllAsRead)

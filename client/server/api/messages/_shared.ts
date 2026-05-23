@@ -34,7 +34,7 @@ type BackendUserThreadResponse = {
 
 type BackendCollectionResponse = {
   api_status?: number | string
-  data?: BackendEntity[]
+  data?: BackendEntity[] | BackendEntity
   errors?: {
     error_text?: string
   }
@@ -94,6 +94,58 @@ const firstString = (entity: BackendEntity, keys: string[]) => {
   return ""
 }
 
+const decodeHtmlEntities = (value: string) =>
+  value
+    .replace(/&quot;/g, "\"")
+    .replace(/&#039;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+
+const buildCallMessageLabel = (value: string, entity: BackendEntity) => {
+  const type = firstString(entity, ["type_two", "type"]).toLowerCase()
+
+  if (type.includes("call")) {
+    return type.includes("video") ? "Cuộc gọi video" : "Cuộc gọi thoại"
+  }
+
+  if (!value.startsWith("{")) {
+    return ""
+  }
+
+  try {
+    const payload = JSON.parse(value) as BackendEntity
+    const callId = asString(payload.call_id)
+    const callType = asString(payload.call_type).toLowerCase()
+
+    if (!callId && !callType) {
+      return ""
+    }
+
+    return callType.includes("video") ? "Cuộc gọi video" : "Cuộc gọi thoại"
+  }
+  catch {
+    return ""
+  }
+}
+
+const normalizeMessageText = (value: string, entity: BackendEntity) => {
+  const decoded = decodeHtmlEntities(value).replace(/\\"/g, "\"").trim()
+  const callLabel = buildCallMessageLabel(decoded, entity)
+
+  return callLabel || decoded
+}
+
+const extractCollectionMessages = (response: BackendCollectionResponse) => {
+  const directMessages = asArray(response.data)
+
+  if (directMessages.length > 0) {
+    return directMessages
+  }
+
+  return asArray(asRecord(response.data).messages)
+}
+
 const buildProfileUrl = (entity: BackendEntity, type: MessageThreadType) => {
   if (type === "page") {
     const name = firstString(entity, ["page_name", "name"])
@@ -133,8 +185,8 @@ const decryptMessageText = (value: unknown, timestamp: unknown) => {
 }
 
 const buildContactPreview = (message: BackendEntity) =>
-  decryptMessageText(message.text, message.time)
-  || firstString(message, ["media", "type_two", "type"])
+  normalizeMessageText(decryptMessageText(message.text, message.time), message)
+  || normalizeMessageText(firstString(message, ["media", "type_two", "type"]), message)
 
 const inferMediaType = (entity: BackendEntity): MessageItem["mediaType"] | undefined => {
   const rawType = firstString(entity, ["type", "type_two"]).toLowerCase()
@@ -168,7 +220,7 @@ const buildContactId = (type: MessageThreadType, numericId: number, extra?: numb
     : `${type}:${numericId}`
 
 const buildUserStatus = (entity: BackendEntity) =>
-  firstString(entity, ["lastseen", "lastseen_time_text", "lastseen_text"])
+  firstString(entity, ["lastseen_time_text", "lastseen_text", "lastseen_status"])
 
 const buildGroupStatus = (entity: BackendEntity) => {
   const memberCount = buildContactMembers(entity).length
@@ -297,7 +349,7 @@ const mapThreadMessage = (
 
   return {
     id: asNumber(entity.id),
-    text: decryptMessageText(entity.text, timestamp),
+    text: normalizeMessageText(decryptMessageText(entity.text, timestamp), entity),
     isMine: asNumber(entity.from_id) === currentUserId || asString(entity.position).startsWith("right"),
     time: firstString(entity, ["time_text"]),
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
@@ -309,8 +361,20 @@ const mapThreadMessage = (
   }
 }
 
+const sortThreadMessages = (messages: MessageItem[]) =>
+  [...messages].sort((left, right) => {
+    const leftTimestamp = left.timestamp ?? 0
+    const rightTimestamp = right.timestamp ?? 0
+
+    if (leftTimestamp !== rightTimestamp) {
+      return leftTimestamp - rightTimestamp
+    }
+
+    return left.id - right.id
+  })
+
 export const decorateThreadMessages = (messages: MessageItem[]) =>
-  messages.map((message, index, list) => {
+  sortThreadMessages(messages).map((message, index, list) => {
     const nextMessage = list[index + 1]
     const previousMessage = list[index - 1]
 
@@ -322,11 +386,14 @@ export const decorateThreadMessages = (messages: MessageItem[]) =>
   })
 
 export async function fetchInboxContacts(event: H3Event) {
-  const currentUser = await getBackendCurrentUser(event)
-  const client = createBackendApiClient(event)
-  const resolveMediaUrl = createBackendMediaUrlResolver(event)
-  const response = assertBackendApiSuccess(
-    await client.post<BackendInboxResponse, Record<string, unknown>>(
+  console.log("[fetchInboxContacts] Initiated fetch.");
+  console.log("[fetchInboxContacts] Cookies:", event.node.req.headers.cookie);
+  try {
+    const currentUser = await getBackendCurrentUser(event);
+    console.log("[fetchInboxContacts] Current User ID:", currentUser.user_id);
+    const client = createBackendApiClient(event);
+    const resolveMediaUrl = createBackendMediaUrlResolver(event);
+    const response = await client.post<BackendInboxResponse, Record<string, unknown>>(
       "get_chats",
       {
         data_type: "users,groups,pages",
@@ -334,13 +401,21 @@ export async function fetchInboxContacts(event: H3Event) {
         group_limit: 30,
         page_limit: 30,
       },
-    ),
-    "Unable to load inbox.",
-  )
+    );
 
-  return (response.data ?? [])
-    .map(entity => mapMessageContact(entity, asNumber(currentUser.user_id), resolveMediaUrl))
-    .filter(Boolean) as MessageContact[]
+    console.log("[fetchInboxContacts] Backend API Response status:", response.api_status);
+    console.log("[fetchInboxContacts] Backend API Response data count:", response.data?.length ?? 0);
+
+    const contacts = (response.data ?? [])
+      .map(entity => mapMessageContact(entity, asNumber(currentUser.user_id), resolveMediaUrl))
+      .filter(Boolean) as MessageContact[];
+
+    console.log("[fetchInboxContacts] Mapped contacts count:", contacts.length);
+    return contacts;
+  } catch (err: any) {
+    console.error("[fetchInboxContacts] Error occurred:", err.message, err.stack);
+    throw err;
+  }
 }
 
 export function readThreadQuery(event: H3Event): MessageThreadQuery {
@@ -426,7 +501,7 @@ export async function fetchMessageThread(
 
     return {
       messages: decorateThreadMessages(
-        (response.data ?? []).map(message =>
+        extractCollectionMessages(response).map(message =>
           mapThreadMessage(message, currentUserId, resolveMediaUrl),
         ),
       ),
@@ -457,7 +532,7 @@ export async function fetchMessageThread(
 
   return {
     messages: decorateThreadMessages(
-      (response.data ?? []).map(message =>
+      extractCollectionMessages(response).map(message =>
         mapThreadMessage(message, currentUserId, resolveMediaUrl),
       ),
     ),
@@ -545,7 +620,7 @@ export async function sendMessageToThread(
     )
 
     return decorateThreadMessages(
-      (response.data ?? []).map(message =>
+      extractCollectionMessages(response).map(message =>
         mapThreadMessage(message, currentUserId, resolveMediaUrl),
       ),
     )
@@ -573,7 +648,7 @@ export async function sendMessageToThread(
   )
 
   return decorateThreadMessages(
-    (response.data ?? []).map(message =>
+    extractCollectionMessages(response).map(message =>
       mapThreadMessage(message, currentUserId, resolveMediaUrl),
     ),
   )

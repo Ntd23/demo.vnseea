@@ -1,57 +1,62 @@
 <!-- Description: Renders the composer for the active thread and disables submission when no real conversation is available. -->
 <template>
-  <div class="relative z-10 shrink-0 border-t border-[#f1f5f9] bg-white px-4 py-3 sm:px-10">
-    <div class="flex items-center gap-6">
-      <div class="relative flex min-h-[72px] flex-1 items-center rounded-[14px] bg-[#f8f8f8] px-6">
+  <div class="chat-input__container">
+    <div class="chat-input__wrapper">
+      <!-- Input Box Combo -->
+      <div class="chat-input__combo">
+        <!-- Attachment Button -->
         <button
-          class="mr-5 inline-flex h-9 w-9 shrink-0 items-center justify-center text-[#b6b6b6] transition hover:text-[var(--text-brand)] disabled:cursor-not-allowed disabled:opacity-50"
+          class="chat-input__option-btn"
           type="button"
           :disabled="disabled"
           @click="fileInput?.click()"
         >
-          <Icon name="i-ph-notepad-duotone" class="h-8 w-8" />
+          <Icon name="i-ph-notepad-duotone" class="h-6 w-6" />
         </button>
+
+        <!-- Textarea Input -->
         <textarea
           ref="textarea"
           v-model="modelValue"
           rows="1"
-          class="no-scrollbar max-h-[120px] w-full resize-none bg-transparent py-2 pr-14 text-[18px] font-semibold text-[var(--text-primary)] outline-none placeholder:text-[#9ca3af]"
+          class="chat-input__textarea"
           :disabled="disabled"
           :placeholder="placeholder || $t('pages.messagesPage.composerPlaceholder')"
           @input="adjustHeight"
           @keydown.enter.prevent="onSend"
         />
+
+        <!-- Microphone Button -->
         <button
-          class="absolute right-5 top-1/2 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center text-[#b6b6b6] transition hover:text-[var(--text-brand)] disabled:cursor-not-allowed disabled:opacity-50"
+          class="chat-input__option-btn"
           type="button"
           :disabled="disabled"
         >
-          <Icon name="i-ph-microphone-duotone" class="h-8 w-8" />
+          <Icon name="i-ph-microphone-duotone" class="h-6 w-6" />
         </button>
       </div>
 
-      <UButton
-        class="h-[70px] w-[70px] shrink-0 justify-center rounded-[14px] bg-[var(--bg-brand)] text-white shadow-none transition-all hover:bg-[var(--bg-brand-hover)] active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+      <!-- Send Button -->
+      <button
+        class="chat-input__send-btn"
         :disabled="disabled"
-        square
+        type="button"
         @click="onSend"
       >
-        <Icon name="i-ph-paper-plane-tilt-bold" class="h-9 w-9" />
-      </UButton>
+        <Icon name="i-ph-paper-plane-tilt-bold" class="h-6 w-6" />
+      </button>
     </div>
 
-    <div v-if="fileModel" class="mx-auto mt-2 flex max-w-[1080px] items-center justify-between gap-3 rounded-[18px] border border-secondary-100 bg-white px-4 py-2 text-sm text-slate-600">
-      <span class="truncate">{{ fileModel.name }}</span>
-      <UButton
-        variant="ghost"
-        color="neutral"
-        size="xs"
-        class="rounded-full"
+    <!-- File Attachment Preview -->
+    <div v-if="fileModel" class="chat-input__file-preview">
+      <span class="truncate font-medium">{{ fileModel.name }}</span>
+      <button
+        class="chat-input__file-remove-btn"
         type="button"
         @click="clearFile"
       >
         {{ $t("pages.messagesPage.removeAttachment") }}
-      </UButton>
+      </button>
     </div>
 
     <input
@@ -119,3 +124,152 @@ function clearFile() {
   }
 }
 </script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+.chat-input__container {
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  border-top: 1px solid #f1f5f9;
+  background-color: #ffffff;
+  padding: 16px 20px;
+  font-family: 'Roboto', sans-serif !important;
+}
+
+@media (min-width: 640px) {
+  .chat-input__container {
+    padding: 20px 30px;
+  }
+}
+
+.chat-input__wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 100%;
+}
+
+.chat-input__combo {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-height: 56px;
+  background-color: #f8f8f8;
+  border: 1px solid #f1f1f1;
+  border-radius: 12px;
+  padding: 0 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chat-input__combo:focus-within {
+  background-color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.chat-input__option-btn {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #b6b6b6;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.chat-input__option-btn:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.06);
+  color: var(--text-brand, #a84849);
+}
+
+.chat-input__option-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.chat-input__textarea {
+  width: 100%;
+  resize: none;
+  background: transparent;
+  border: 0;
+  outline: none;
+  padding: 16px 8px;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  max-height: 120px;
+  line-height: 1.4;
+}
+
+.chat-input__textarea::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.chat-input__send-btn {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: var(--bg-brand, #a84849);
+  color: #ffffff;
+  flex-shrink: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.chat-input__send-btn:hover:not(:disabled) {
+  background-color: var(--bg-brand-hover, #c45a5b);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.chat-input__send-btn:active:not(:disabled) {
+  transform: scale(0.96);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.chat-input__send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-input__file-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.chat-input__file-remove-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.chat-input__file-remove-btn:hover {
+  background-color: #fee2e2;
+}
+</style>
