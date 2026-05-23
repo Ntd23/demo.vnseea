@@ -25,6 +25,7 @@
     "@tiptap/starter-kit": "^3.23.4",
     "@tiptap/vue-3": "^3.23.4",
     "@vueuse/nuxt": "14.2.1",
+    "livekit-client": "^2.19.0",
     "nuxt": "4.2.2",
     "nuxt-tiptap-editor": "3.3.0",
     "satori": "^0.26.0",
