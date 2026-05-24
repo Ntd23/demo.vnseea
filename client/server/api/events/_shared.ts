@@ -4,6 +4,7 @@ import { createError, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { getBackendWebBaseUrl } from "../../utils/backend-media-url"
 import type {
   EventAttendeeKind,
   EventAttendeeRecord,
@@ -67,7 +68,21 @@ const isTruthy = (value: unknown) =>
 
 const normalizeImagePath = (path: string, baseUrl: string) => {
   if (!path) return ""
-  if (/^https?:\/\//i.test(path)) return path
+  if (/^https?:\/\//i.test(path)) {
+    try {
+      const imageUrl = new URL(path)
+      const requestBase = new URL(baseUrl)
+
+      if (requestBase.protocol === "https:" && imageUrl.protocol === "http:" && imageUrl.hostname === requestBase.hostname) {
+        return `${requestBase.origin}${imageUrl.pathname}${imageUrl.search}${imageUrl.hash}`
+      }
+    }
+    catch {
+      // Keep the raw backend value when URL parsing fails.
+    }
+
+    return path
+  }
   const cleanBase = baseUrl.replace(/\/+$/, "")
   const cleanPath = path.startsWith("/") ? path : `/${path}`
   return `${cleanBase}${cleanPath}`
@@ -193,8 +208,7 @@ export const mapEventAttendeeRecord = (
 export async function fetchEventsCatalog(event: H3Event): Promise<EventsCatalogRecord> {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
   const response = assertBackendApiSuccess(
     await client.post<BackendEventsCatalogResponse, Record<string, unknown>>(
       "get-events",
@@ -251,8 +265,7 @@ export async function fetchEventsCatalog(event: H3Event): Promise<EventsCatalogR
 export async function fetchEventDetail(event: H3Event, id: string | number) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
   const response = await client.post<BackendEventDetailResponse, Record<string, unknown>>(
     "get_event_by_id",
     {
@@ -281,8 +294,7 @@ export async function fetchEventAttendees(
   limit = 24,
 ) {
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
   const response = assertBackendApiSuccess(
     await client.post<BackendEventAttendeesResponse, Record<string, unknown>>(
       "events",

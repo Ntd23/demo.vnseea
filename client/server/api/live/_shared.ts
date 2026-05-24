@@ -3,7 +3,7 @@
 import { createError, type H3Event } from "h3"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
-import { normalizeBackendBaseURL } from "../../utils/backend-api-client"
+import { createBackendMediaUrlResolver, getBackendWebBaseUrl } from "../../utils/backend-media-url"
 import type {
   GoLiveDraft,
   LiveMutationResult,
@@ -144,19 +144,7 @@ const assertLiveWebSuccess = <T extends Record<string, unknown>>(
   })
 }
 
-const getBackendWebBase = (event: H3Event) => {
-  const runtimeConfig = useRuntimeConfig(event)
-  return normalizeBackendBaseURL(String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase))
-}
-
-const normalizeImageUrl = (value: string, baseUrl: string) => {
-  if (!value) return ""
-  if (/^https?:\/\//i.test(value)) return value
-
-  const normalizedBase = baseUrl.replace(/\/+$/, "")
-  const normalizedPath = value.startsWith("/") ? value : `/${value}`
-  return `${normalizedBase}${normalizedPath}`
-}
+const getBackendWebBase = (event: H3Event) => getBackendWebBaseUrl(event)
 
 const buildInitials = (value: string) =>
   value
@@ -166,7 +154,11 @@ const buildInitials = (value: string) =>
     .map(part => part[0]?.toUpperCase() || "")
     .join("") || "LV"
 
-const mapHost = (host: BackendEntity, baseUrl: string, fallbackUser: BackendEntity): LiveStudioHost => {
+const mapHost = (
+  host: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+  fallbackUser: BackendEntity,
+): LiveStudioHost => {
   const source = Object.keys(host).length > 0 ? host : fallbackUser
   const name = asString(source.name || source.username)
 
@@ -174,17 +166,20 @@ const mapHost = (host: BackendEntity, baseUrl: string, fallbackUser: BackendEnti
     id: asNumber(source.id || source.user_id),
     name,
     username: asString(source.username),
-    avatarUrl: normalizeImageUrl(asString(source.avatar), baseUrl),
+    avatarUrl: resolveMediaUrl(asString(source.avatar)),
     initials: buildInitials(name),
     note: asString(source.note) || "Host - timeline",
   }
 }
 
-const mapActivityItem = (item: BackendEntity, baseUrl: string): LiveStudioComment => ({
+const mapActivityItem = (
+  item: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): LiveStudioComment => ({
   id: asNumber(item.id),
   author: asString(item.author),
   username: asString(item.username),
-  avatarUrl: normalizeImageUrl(asString(item.avatar), baseUrl),
+  avatarUrl: resolveMediaUrl(asString(item.avatar)),
   message: asString(item.message),
   timeText: asString(item.time_text),
   kind: asString(item.kind) === "joined"
@@ -195,7 +190,7 @@ const mapActivityItem = (item: BackendEntity, baseUrl: string): LiveStudioCommen
 
 export async function fetchLiveBootstrap(event: H3Event): Promise<LiveStudioBootstrap> {
   const currentUser = await getBackendCurrentUser(event)
-  const baseUrl = getBackendWebBase(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const response = await createBackendWebClient(event).postForm<BackendLiveBootstrapResponse>(
     "live",
     undefined,
@@ -207,7 +202,7 @@ export async function fetchLiveBootstrap(event: H3Event): Promise<LiveStudioBoot
     enabled: asBoolean(normalized.enabled),
     canUseLive: asBoolean(normalized.can_use_live),
     blockedReason: asString(normalized.blocked_reason),
-    host: mapHost(asEntity(normalized.host), baseUrl, currentUser),
+    host: mapHost(asEntity(normalized.host), resolveMediaUrl, currentUser),
     streamName: asString(normalized.stream_name),
     roomName: asString(normalized.room_name),
     wsUrl: asString(normalized.ws_url),
@@ -257,7 +252,7 @@ export async function fetchLiveHeartbeat(
     knownCommentIds?: number[]
   },
 ): Promise<LiveStudioHeartbeat> {
-  const baseUrl = getBackendWebBase(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const params = new URLSearchParams()
 
   params.append("post_id", String(input.postId))
@@ -281,9 +276,9 @@ export async function fetchLiveHeartbeat(
       ? "stale"
       : asString(normalized.still_live) === "offline" ? "offline" : "live",
     viewerCount: asNumber(normalized.viewer_count || normalized.count),
-    comments: (normalized.comments ?? []).map(item => mapActivityItem(item, baseUrl)),
-    joinedUsers: (normalized.joined ?? []).map(item => mapActivityItem(item, baseUrl)),
-    leftUsers: (normalized.left ?? []).map(item => mapActivityItem(item, baseUrl)),
+    comments: (normalized.comments ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
+    joinedUsers: (normalized.joined ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
+    leftUsers: (normalized.left ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
     reactionsCount: asNumber(normalized.reactions_count),
     sharesCount: asNumber(normalized.shares_count),
     clipsCount: asNumber(normalized.clips_count),
@@ -328,6 +323,6 @@ export async function uploadLiveThumbnail(
   return {
     success: true,
     message: asString(normalized.message) || "Live thumbnail updated.",
-    thumbnailUrl: normalizeImageUrl(asString(normalized.thumb_url), getBackendWebBase(event)),
+    thumbnailUrl: createBackendMediaUrlResolver(event)(asString(normalized.thumb_url)),
   }
 }

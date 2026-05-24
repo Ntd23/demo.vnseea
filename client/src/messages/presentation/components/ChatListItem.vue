@@ -1,99 +1,108 @@
 <!-- Description: Renders a single inbox row for the PHP-parity left conversation list. -->
 <template>
   <div
-    class="chat-list-item cursor-pointer"
-    :class="{ 'chat-list-item--active': isActive }"
+    class="cli-item"
+    :class="{ 'cli-item--active': isActive }"
     role="button"
     tabindex="0"
     @click="$emit('click')"
     @keydown.enter="$emit('click')"
     @keydown.space.prevent="$emit('click')"
   >
-    <div class="flex min-w-0 items-start gap-4">
-      <!-- Avatar Section (55x55px based on WoWonder web) -->
-      <div class="chat-list-item__avatar-container">
-        <UAvatar
-          :src="avatarUrl"
-          :alt="name"
-          class="chat-list-item__avatar-img"
-          :ui="{ rounded: 'rounded-full' }"
-        />
-        <span
-          class="absolute bottom-1 right-1 h-3.5 w-3.5 rounded-full border-2 border-white"
-          :class="isOnline ? 'bg-emerald-500' : 'bg-slate-300'"
-        />
+    <!-- Avatar -->
+    <div class="cli-avatar">
+      <div v-if="type === 'group' && !avatarUrl" class="cli-group-avatar">
+        <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
+      </div>
+      <UAvatar
+        v-else
+        :src="avatarUrl"
+        :alt="name"
+        size="md"
+        class="h-11 w-11 rounded-full"
+      />
+      <span
+        v-if="type === 'user'"
+        class="cli-online-dot"
+        :class="isOnline ? 'cli-online-dot--on' : 'cli-online-dot--off'"
+      />
+    </div>
+
+    <!-- Info -->
+    <div class="cli-body">
+      <div class="cli-row">
+        <p class="cli-name">{{ name }}</p>
+        <span class="cli-time">{{ time }}</span>
       </div>
 
-      <!-- Info Section -->
-      <div class="min-w-0 flex-1">
-        <div class="flex min-w-0 items-baseline justify-between gap-2">
-          <div class="min-w-0">
-            <p class="chat-list-item__name truncate">{{ name }}</p>
-            <p class="chat-list-item__status mt-1 truncate">{{ status }}</p>
-            <div v-if="tags.length > 0" class="chat-list-item__tags" aria-label="User tags">
-              <span
-                v-for="tag in tags"
-                :key="tag.id"
-                class="chat-list-item__tag"
-                :title="tag.name"
-                :style="{ backgroundColor: tag.color }"
-              />
-            </div>
-            <button
-              v-if="showTagAction"
-              type="button"
-              class="chat-list-item__tag-action"
-              title="Gắn nhãn"
-              @click.stop="$emit('manage-tags')"
-            >
-              <Icon name="i-ph-tag-duotone" class="h-3.5 w-3.5" />
-            </button>
-          </div>
-          <span class="chat-list-item__time shrink-0">{{ time }}</span>
+      <p v-if="!isTyping" class="cli-status">{{ status }}</p>
+
+      <div class="cli-row cli-row--bottom">
+        <p v-if="!isTyping" class="cli-preview" :class="previewClass">
+          {{ preview }}
+        </p>
+        <div v-else class="cli-typing-indicator" aria-label="Typing">
+          <span class="cli-typing-dot" style="animation-delay: 0ms" />
+          <span class="cli-typing-dot" style="animation-delay: 180ms" />
+          <span class="cli-typing-dot" style="animation-delay: 360ms" />
         </div>
 
-        <div class="mt-2.5 flex min-w-0 items-center justify-between gap-3">
-          <p
-            class="chat-list-item__preview line-clamp-1 flex-1"
-            :class="{ 'chat-list-item__preview--unread': unreadCount > 0 }"
-          >
-            {{ preview }}
-          </p>
+        <!-- Unread badge -->
+        <span v-if="!showSelect && unreadCount > 0" class="cli-badge">
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
 
-          <!-- Checkbox 'Chọn' and 'Mở chat' button under multi-send tab -->
-          <div v-if="showSelect" class="flex items-center gap-2.5 shrink-0" @click.stop>
-            <label class="chat-list-item__select-label" @click="emit('click')">
-              <span
-                class="chat-list-item__select"
-                :class="{ 'chat-list-item__select--selected': isActive }"
-              >
-                <Icon v-if="isActive" name="i-ph-check-bold" class="h-3.5 w-3.5" />
-              </span>
-              <span class="chat-list-item__select-text">Chọn</span>
-            </label>
-            <button
-              type="button"
-              class="chat-list-item__open-chat-btn"
-              @click="$emit('open-chat')"
-            >
-              Mở chat
-            </button>
-          </div>
-          <span v-else-if="unreadCount > 0" class="chat-list-item__badge">{{ unreadCount }}</span>
+        <!-- Select + open-chat (multi tab) -->
+        <div v-if="showSelect" class="cli-actions" @click.stop>
+          <label class="cli-checkbox-label" @click="emit('click')">
+            <span class="cli-checkbox" :class="{ 'cli-checkbox--checked': isActive }">
+              <Icon v-if="isActive" name="i-ph-check-bold" class="h-3 w-3" />
+            </span>
+          </label>
+          <button type="button" class="cli-open-btn" @click="$emit('open-chat')">
+            {{ $t("pages.messagesPage.openChat") }}
+          </button>
         </div>
+      </div>
+
+      <!-- Tags + tag action -->
+      <div v-if="tags.length > 0 || showTagAction" class="cli-tags-row">
+        <div v-if="tags.length > 0" class="cli-tags">
+          <span
+            v-for="tag in tags"
+            :key="tag.id"
+            class="cli-tag-dot"
+            :title="tag.name"
+            :style="{ backgroundColor: tag.color }"
+          />
+        </div>
+        <button
+          v-if="showTagAction"
+          type="button"
+          class="cli-tag-btn"
+          :title="$t('pages.messagesPage.tagActionLabel')"
+          @click.stop="$emit('manage-tags')"
+        >
+          <Icon name="i-ph-tag-duotone" class="h-3 w-3" />
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { MessageUserTag } from "../../domain/types/messages.types"
+import { computed } from "vue"
+import type { MessageThreadType, MessageUserTag } from "../../domain/types/messages.types"
 
-withDefaults(defineProps<{
+useI18n()
+
+const props = withDefaults(defineProps<{
   name: string
   avatarUrl?: string
   isActive?: boolean
+  isTyping?: boolean
   isOnline?: boolean
+  type: MessageThreadType
   preview: string
   showSelect?: boolean
   showTagAction?: boolean
@@ -110,178 +119,272 @@ const emit = defineEmits<{
   "manage-tags": []
   "open-chat": []
 }>()
+const previewClass = computed(() => ({
+  "cli-preview--unread": props.unreadCount > 0 && !props.isTyping,
+}))
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-
-.chat-list-item {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  background: #ffffff;
-  padding: 12px;
-  text-align: left;
-  transition: all 0.2s ease;
-  font-family: 'Roboto', sans-serif !important;
-}
-
-.chat-list-item:hover,
-.chat-list-item--active {
-  border-color: transparent;
-  background: #F7F7F7;
-}
-
-.chat-list-item__avatar-container {
-  position: relative;
-  width: 55px;
-  height: 55px;
-  flex-shrink: 0;
-}
-
-.chat-list-item__avatar-img {
-  width: 55px !important;
-  height: 55px !important;
-  box-shadow: inherit;
-  border: inherit;
-  object-fit: cover;
-}
-
-.chat-list-item__name {
-  font-size: 16px;
-  font-weight: 500;
-  color: #414145;
-  line-height: 1.2;
-}
-
-.chat-list-item__status {
-  font-size: 12px;
-  color: #8e8e93;
-}
-
-.chat-list-item__tags {
+.cli-item {
   display: flex;
-  gap: 4px;
-  margin-top: 5px;
-  min-height: 12px;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--duration-fast) var(--ease-default);
 }
 
-.chat-list-item__tag {
-  width: 12px;
-  height: 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 3px;
-  flex: 0 0 auto;
+.cli-item:hover {
+  background: var(--bg-surface-hover);
 }
 
-.chat-list-item__tag-action {
-  display: inline-flex;
+.cli-item--active {
+  background: var(--bg-surface-active);
+  border-color: var(--border-light);
+}
+
+/* Avatar */
+.cli-avatar {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+}
+
+.cli-online-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.cli-online-dot--on  { background: #22c55e; }
+.cli-online-dot--off { background: #94a3b8; }
+
+.cli-group-avatar {
+  display: flex;
+  width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 22px;
-  margin-top: 5px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #64748b;
+  border-radius: 14px;
+  background: rgba(0, 0, 255, 0.06);
+  color: var(--color-primary-600);
 }
 
-.chat-list-item__tag-action:hover {
-  border-color: #002aff;
-  color: #002aff;
+/* Body */
+.cli-body {
+  flex: 1;
+  min-width: 0;
 }
 
-.chat-list-item__time {
-  font-size: 13px;
-  color: #2A2A2F;
-  font-weight: 500;
+.cli-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
 }
 
-.chat-list-item__preview {
-  font-size: 14px;
-  color: #636366;
-  font-weight: 400;
+.cli-row--bottom {
+  margin-top: 3px;
+  align-items: center;
+}
+
+.cli-name {
+  font-size: var(--text-title);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
   line-height: 1.3;
+  margin: 0;
+  font-family: var(--font-primary);
 }
 
-.chat-list-item__preview--unread {
-  font-weight: 500;
-  color: #333338;
+.cli-time {
+  font-size: var(--text-caption);
+  color: var(--text-tertiary);
+  font-weight: var(--weight-medium);
+  flex-shrink: 0;
+  font-family: var(--font-primary);
 }
 
-.chat-list-item__badge,
-.chat-list-item__select {
+.cli-status {
+  font-size: var(--text-caption);
+  color: var(--text-tertiary);
+  margin: 1px 0 0;
+  font-family: var(--font-primary);
+}
+
+.cli-preview {
+  font-size: var(--text-body);
+  color: var(--text-secondary);
+  font-weight: var(--weight-regular);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-family: var(--font-primary);
+}
+
+.cli-preview--unread {
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+
+.cli-typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 20px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cli-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-primary-600);
+  animation: cli-typing-bounce 1s infinite ease-in-out;
+}
+
+@keyframes cli-typing-bounce {
+  0%, 60%, 100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* Badge */
+.cli-badge {
+  flex-shrink: 0;
+  min-width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-500);
+  color: #ffffff;
+  font-size: var(--text-micro);
+  font-weight: var(--weight-bold);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 0 4px;
+}
+
+/* Multi-tab actions */
+.cli-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-shrink: 0;
 }
 
-.chat-list-item__badge {
-  min-width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: var(--bg-brand, #1d4ed8);
-  padding: 0 5px;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 700;
+.cli-checkbox-label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-.chat-list-item__select-label {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  cursor: pointer !important;
-  user-select: none !important;
+.cli-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid var(--border-default);
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
-.chat-list-item__select-text {
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  color: #475569 !important;
+.cli-checkbox--checked {
+  background: var(--color-primary-500);
+  border-color: var(--color-primary-500);
 }
 
-.chat-list-item__open-chat-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  background-color: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 6px !important;
-  padding: 4px 10px !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  color: #475569 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
+.cli-open-btn {
+  font-size: var(--text-caption);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  background: var(--bg-muted);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  cursor: pointer;
+  font-family: var(--font-primary);
+  transition: all var(--duration-fast) var(--ease-default);
 }
 
-.chat-list-item__open-chat-btn:hover {
-  background-color: #e2e8f0 !important;
-  color: #1e293b !important;
-  border-color: #94a3b8 !important;
+.cli-open-btn:hover {
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
+  border-color: var(--border-default);
 }
 
-.chat-list-item__select {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 18px !important;
-  height: 18px !important;
-  border-radius: 4px !important;
-  border: 1px solid rgba(15, 23, 42, 0.24) !important;
-  color: #ffffff !important;
-  transition: all 0.2s ease !important;
-  background-color: #ffffff !important;
+/* Tags row */
+.cli-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 5px;
 }
 
-.chat-list-item__select--selected {
-  border-color: #002aff !important;
-  background-color: #002aff !important;
+.cli-tags {
+  display: flex;
+  gap: 3px;
+}
+
+.cli-tag-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+}
+
+.cli-tag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 18px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.cli-tag-btn:hover {
+  border-color: var(--color-primary-500);
+  color: var(--color-primary-500);
+  background: var(--color-primary-50);
+}
+
+/* Responsive: tighter on small screens */
+@media (max-width: 400px) {
+  .cli-item { padding: 8px 10px; }
+  .cli-avatar { width: 40px; height: 40px; }
 }
 </style>
-

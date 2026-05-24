@@ -67,6 +67,8 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
     fallback: "light",
+    storage: "cookie",
+    storageKey: "nuxt-color-mode",
     classSuffix: "",
   },
   nitro: {

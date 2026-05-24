@@ -9,5 +9,5 @@ export default defineNuxtPlugin(() => {
   document.documentElement.classList.remove("dark")
   document.documentElement.style.colorScheme = "light"
 
-  window.localStorage.removeItem("nuxt-color-mode")
+  window.localStorage.setItem("nuxt-color-mode", "light")
 })

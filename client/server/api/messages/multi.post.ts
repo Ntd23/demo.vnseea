@@ -80,6 +80,8 @@ const normalizeResponse = (response: BackendMultiSendResponse): MultiMessageSend
 const parseMultipartBody = async (event: H3Event) => {
   const recipientIds: unknown[] = []
   let text = ""
+  let recordFile = ""
+  let recordName = ""
   let file: MultipartFilePart | null = null
   const parts = await readMultipartFormData(event) ?? []
 
@@ -102,6 +104,16 @@ const parseMultipartBody = async (event: H3Event) => {
       continue
     }
 
+    if (part.name === "recordFile") {
+      recordFile = part.data.toString().trim()
+      continue
+    }
+
+    if (part.name === "recordName") {
+      recordName = part.data.toString().trim()
+      continue
+    }
+
     if (part.name === "recipientIds[]" || part.name === "recipientIds" || part.name === "recipients[]") {
       recipientIds.push(part.data.toString())
     }
@@ -109,6 +121,8 @@ const parseMultipartBody = async (event: H3Event) => {
 
   return {
     text,
+    recordFile,
+    recordName,
     recipientIds: normalizeRecipientIds(recipientIds),
     file,
   }
@@ -119,6 +133,8 @@ const parseJsonBody = async (event: H3Event) => {
 
   return {
     text: asString(body.text),
+    recordFile: asString(body.recordFile),
+    recordName: asString(body.recordName),
     recipientIds: normalizeRecipientIds(body.recipientIds ?? body["recipientIds[]"]),
     file: null as MultipartFilePart | null,
   }
@@ -129,12 +145,16 @@ const toBackendBody = (
   text: string,
   sessionHash: string,
   file: MultipartFilePart | null,
+  recordFile?: string,
+  recordName?: string,
 ) => {
   if (!file) {
     const body = new URLSearchParams()
 
     body.append("textSendMessage", text)
     body.append("hash_id", sessionHash)
+    if (recordFile) body.append("record-file", recordFile)
+    if (recordName) body.append("record-name", recordName)
 
     for (const recipientId of recipientIds) {
       body.append("recipients[]", String(recipientId))
@@ -162,8 +182,6 @@ const toBackendBody = (
 }
 
 export default defineEventHandler(async (event) => {
-  console.log("[multi.post.ts] Received multi-send request.");
-  console.log("[multi.post.ts] Cookies in event:", event.node.req.headers.cookie);
   const contentType = getHeader(event, "content-type") || ""
   const payload = contentType.includes("multipart/form-data")
     ? await parseMultipartBody(event)
@@ -176,16 +194,15 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  if (!payload.text && !payload.file) {
+  if (!payload.text && !payload.file && !payload.recordFile) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Message content or an attachment is required.",
+      statusMessage: "Message content, file, or recording is required.",
     })
   }
 
   const currentUser = await getBackendCurrentUser(event)
   const sessionHash = asString(currentUser.session_hash)
-  console.log("[multi.post.ts] currentUser:", currentUser.user_id, "sessionHash length:", sessionHash.length);
 
   if (!sessionHash) {
     throw createError({
@@ -197,15 +214,19 @@ export default defineEventHandler(async (event) => {
   const client = createBackendWebClient(event)
   const response = await client.postForm<BackendMultiSendResponse, FormData | URLSearchParams>(
     "messages",
-    toBackendBody(payload.recipientIds, payload.text, sessionHash, payload.file),
+    toBackendBody(
+      payload.recipientIds,
+      payload.text,
+      sessionHash,
+      payload.file,
+      payload.recordFile,
+      payload.recordName,
+    ),
     {
       s: "multi_send",
       hash: sessionHash,
     },
   )
 
-  console.log("[multi.post.ts] Backend response status:", response.status, "sent count:", response.sent);
-  const normalized = normalizeResponse(response);
-  console.log("[multi.post.ts] Normalized response status:", normalized.status, "sentCount:", normalized.sentCount);
-  return normalized;
+  return normalizeResponse(response)
 })

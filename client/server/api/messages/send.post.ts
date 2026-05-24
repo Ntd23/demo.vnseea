@@ -7,10 +7,10 @@ export default defineEventHandler(async (event) => {
   const body = await parseMessageSendBody(event)
   const text = body.text.trim()
 
-  if (!text && !body.file) {
+  if (!text && !body.file && !body.recordFile) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Message text or file is required.",
+      statusMessage: "Message text, file, or recording is required.",
     })
   }
 
@@ -21,6 +21,8 @@ export default defineEventHandler(async (event) => {
     pageId: body.pageId,
     recipientId: body.recipientId,
     text,
+    recordFile: body.recordFile,
+    recordName: body.recordName,
     file: body.file,
   })
 })

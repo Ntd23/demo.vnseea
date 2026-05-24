@@ -1,26 +1,13 @@
-// English description: Starts the backend PHP browser session without exposing the access token in the URL.
+// English description: Establishes the backend PHP browser session through the Nuxt API bridge, then forces a full app reload.
 
-import { backendRoutes } from "../../../shared-kernel/application/constants/route-registry"
-import { useBackendWebUrl } from "../../../shared-kernel/application/utils/backend-web-url"
+import { apiRoutes, appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+import { useNuxtApiClient } from "../../../shared-kernel/infrastructure/http/nuxt-api-client"
 
-export function submitBackendBrowserSession(accessToken: string) {
-  const sessionUrl = useBackendWebUrl(backendRoutes.session.setBrowserCookie)
+export async function submitBackendBrowserSession(accessToken: string) {
+  if (import.meta.server) return
 
-  if (import.meta.server) {
-    return
-  }
+  const client = useNuxtApiClient()
 
-  const form = document.createElement("form")
-  form.method = "POST"
-  form.action = sessionUrl
-  form.style.display = "none"
-
-  const tokenInput = document.createElement("input")
-  tokenInput.type = "hidden"
-  tokenInput.name = "access_token"
-  tokenInput.value = accessToken
-
-  form.appendChild(tokenInput)
-  document.body.appendChild(form)
-  form.submit()
+  await client.post(apiRoutes.auth.browserSession, { accessToken })
+  window.location.replace(`${appRoutes.feed}?cache=${Date.now()}`)
 }

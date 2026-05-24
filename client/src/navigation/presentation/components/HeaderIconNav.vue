@@ -49,12 +49,6 @@ const items = computed(() => [
     icon: 'i-ph-video-camera-fill',
     active: route.path === '/watch',
   },
-  {
-    label: 'navigation.headerIconNav.music',
-    to: '/home',
-    icon: 'i-ph-music-note-fill',
-    active: false,
-  },
 ])
 </script>
 

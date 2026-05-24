@@ -1,6 +1,6 @@
-// English description: Resolves backend media paths into absolute URLs that are safe to render through Nuxt image components.
+// English description: Resolves backend media paths into absolute URLs that stay protocol-safe across HTTP and HTTPS frontend origins.
 
-import type { H3Event } from "h3"
+import { getRequestURL, type H3Event } from "h3"
 
 const trimTrailingSlash = (value: string) => value.replace(/\/+$/, "")
 
@@ -17,15 +17,64 @@ const asString = (value: unknown) =>
     ? String(value).trim()
     : ""
 
+const toUrl = (value: string) => {
+  try {
+    return new URL(value)
+  }
+  catch {
+    return null
+  }
+}
+
+const sameHostname = (left: URL | null, right: URL | null) =>
+  !!left
+  && !!right
+  && left.hostname.toLowerCase() === right.hostname.toLowerCase()
+
+const buildRequestScopedOrigin = (event: H3Event, value?: string) => {
+  const requestUrl = getRequestURL(event)
+
+  if (requestUrl.protocol !== "https:") {
+    return ""
+  }
+
+  const targetUrl = value ? toUrl(value) : null
+
+  if (targetUrl && !sameHostname(targetUrl, requestUrl)) {
+    return ""
+  }
+
+  return requestUrl.origin.replace(/\/+$/, "")
+}
+
 export const getBackendWebBaseUrl = (event: H3Event) => {
   const runtimeConfig = useRuntimeConfig(event)
   const rawBase = asString(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const normalizedBase = trimTrailingSlash(stripBackendApiSuffix(rawBase))
+  const secureOrigin = buildRequestScopedOrigin(event, normalizedBase)
 
-  return trimTrailingSlash(stripBackendApiSuffix(rawBase))
+  if (!normalizedBase) {
+    return secureOrigin
+  }
+
+  if (!secureOrigin) {
+    return normalizedBase
+  }
+
+  const parsedBase = toUrl(normalizedBase)
+
+  if (!parsedBase) {
+    return normalizedBase
+  }
+
+  return trimTrailingSlash(`${secureOrigin}${parsedBase.pathname}`.replace(/\/+$/, ""))
 }
 
 export const createBackendMediaUrlResolver = (event: H3Event) => {
   const backendWebBase = getBackendWebBaseUrl(event)
+  const requestUrl = getRequestURL(event)
+  const secureOrigin = buildRequestScopedOrigin(event, backendWebBase)
+  const backendUrl = toUrl(backendWebBase)
 
   return (value: unknown) => {
     const rawValue = asString(value)
@@ -43,11 +92,24 @@ export const createBackendMediaUrlResolver = (event: H3Event) => {
     }
 
     if (/^https?:\/\//i.test(rawValue)) {
+      const absoluteUrl = toUrl(rawValue)
+
+      if (
+        absoluteUrl
+        && absoluteUrl.protocol === "http:"
+        && requestUrl.protocol === "https:"
+        && secureOrigin
+        && (sameHostname(absoluteUrl, requestUrl) || sameHostname(absoluteUrl, backendUrl))
+      ) {
+        return `${secureOrigin}${absoluteUrl.pathname}${absoluteUrl.search}${absoluteUrl.hash}`
+      }
+
       return rawValue
     }
 
     if (rawValue.startsWith("//")) {
-      return `${new URL(backendWebBase).protocol}${rawValue}`
+      const protocol = requestUrl.protocol || backendUrl?.protocol || "https:"
+      return `${protocol}${rawValue}`
     }
 
     try {

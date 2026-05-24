@@ -1,4 +1,4 @@
-<!-- Description: Renders one normalized message bubble from backend-provided text and media fields. -->
+<!-- Description: Renders one normalized message bubble with a PHP-style chat rhythm while keeping the current backend-backed message formats. -->
 <template>
   <div class="flex w-full flex-col animate-in fade-in slide-in-from-bottom-2 duration-500 chat-bubble__container">
     <div v-if="showTime" class="my-3 self-center sm:my-4">
@@ -14,20 +14,20 @@
           :src="avatar"
           size="xs"
           class="ring-1 ring-white shadow-sm chat-bubble__avatar"
-          :ui="{ rounded: 'rounded-full' }"
         />
         <div v-else class="w-8" />
       </div>
 
       <div class="group relative w-fit max-w-[84%] sm:max-w-[74%] lg:max-w-[42rem] chat-bubble__wrapper">
         <div
-          class="chat-bubble relative whitespace-pre-wrap px-4 py-2.5 text-[15px] leading-relaxed shadow-sm transition-all duration-300"
+          class="chat-bubble relative whitespace-pre-wrap px-4 py-3 text-[15px] leading-relaxed shadow-sm transition-all duration-300"
           :class="[
             isMine
               ? 'chat-bubble--mine text-white'
               : 'chat-bubble--theirs text-[var(--text-primary)] border border-slate-100'
           ]"
         >
+          <p v-if="showAuthor && authorName" class="chat-bubble__author">{{ authorName }}</p>
           <p v-if="text" class="whitespace-pre-wrap">{{ text }}</p>
 
           <div v-if="mediaUrl" :class="text ? 'mt-2.5' : ''">
@@ -45,10 +45,11 @@
               playsinline
             />
             <audio
-              v-else-if="mediaType === 'audio'"
+              v-else-if="mediaType === 'audio' || mediaType === 'record'"
               :src="mediaUrl"
               class="min-w-[240px] rounded-[10px]"
               controls
+              preload="none"
             />
             <a
               v-else
@@ -72,37 +73,40 @@ defineProps<{
   text: string
   isMine: boolean
   isLast?: boolean
+  showAuthor?: boolean
   time?: string
   showTime?: boolean
   avatar?: string
+  authorName?: string
   mediaUrl?: string
   mediaName?: string
-  mediaType?: "image" | "video" | "audio" | "gif" | "file"
+  mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
 }>()
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-
-.chat-bubble__container,
-.chat-bubble__wrapper {
-  font-family: 'Roboto', sans-serif !important;
+.chat-bubble {
+  font-family: var(--font-primary), sans-serif;
+  font-weight: 400;
 }
 
-.chat-bubble {
-  font-family: 'Roboto', sans-serif !important;
-  font-weight: 400;
+.chat-bubble__author {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #64748b;
 }
 
 .chat-bubble--mine {
   background: var(--bg-brand, #a84849);
-  border-radius: 12px 12px 2px 12px;
+  border-radius: 18px 18px 6px 18px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .chat-bubble--theirs {
   background: #f1f0f0;
-  border-radius: 12px 12px 12px 2px;
+  border-radius: 18px 18px 18px 6px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
