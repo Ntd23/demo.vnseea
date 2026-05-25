@@ -1,4 +1,4 @@
-English description: Test cases for the navigation bounded context, including current-user rendering, header counts, mobile menu, and chat widget shell behavior.
+English description: Test cases for the navigation bounded context, including current-user rendering, header counts, mobile menu, and the real chat widget behavior.
 
 # Test Case Navigation
 
@@ -6,7 +6,7 @@ English description: Test cases for the navigation bounded context, including cu
 
 - Owner: Dev 1
 - Context: `client/src/navigation`
-- Ap dung cho header, user menu, mobile menu, badge count, chat widget shell.
+- Ap dung cho header, user menu, mobile menu, badge count, va chat widget dung data that.
 - Nuxt API lien quan:
   - `GET /_api/auth/me`
   - `GET /_api/navigation/general`
@@ -17,7 +17,7 @@ English description: Test cases for the navigation bounded context, including cu
 | --- | --- | --- | --- | --- | --- |
 | `NAV-SMOKE-001` | `[x]` | Desktop `1440x900`, route `/home` | Reload route da login | Login roi hard reload `/home` | Header render binh thuong, khong loi Nuxt, khong hien user mock. |
 | `NAV-SMOKE-002` | `[x]` | Mobile `390x844`, route `/home` va `/messages` | Mobile menu | Bam avatar menu, mo/dong drawer | Drawer chi render 1 lan, label khong duplicate, khong loi hydration. |
-| `NAV-SMOKE-003` | `[x]` | Desktop `1440x900`, route `/home` | Chat widget shell | Mo `/home` khi chua noi chat API | Widget hien thi trang thai rong an toan, khong fake contacts/groups. |
+| `NAV-SMOKE-003` | `[x]` | Desktop `1440x900`, route `/home` | Chat widget reload | Mo `/home` khi da login | Widget tai danh sach chat that, khong con contact/group local fake. |
 
 ## Current User Va Role Gate
 
@@ -36,6 +36,17 @@ English description: Test cases for the navigation bounded context, including cu
 | `NAV-COUNT-001` | `[x]` | Desktop `1440x900`, route `/home` | Count tu backend | Mo Network khi reload `/home` | Co request `GET /_api/navigation/general`, response co message/notification/friend/group counts. |
 | `NAV-COUNT-002` | `[x]` | Desktop `1440x900`, header right actions | Count bang 0 | Dung account khong co thong bao moi | Badge an, khong hien so hardcode nhu `1` hoac `3`. |
 | `NAV-COUNT-003` | `[]` | Desktop `1440x900` va Mobile `390x844` | Backend count loi | Lam backend/proxy loi tam thoi | Header van dung duoc, count fallback ve 0. |
+
+## Chat Widget
+
+| ID | Status | Man hinh | Case | Cach test | Ky vong |
+| --- | --- | --- | --- | --- | --- |
+| `NAV-CHAT-001` | `[x]` | Desktop `1440x900`, route `/home` | Danh sach user/group that | Reload trang khi da login | Tab `Danh ba` va `Nhom` hien hoi thoai that tu `GET /_api/messages/conversations`, co preview/time/unread. |
+| `NAV-CHAT-002` | `[x]` | Desktop `1440x900`, route `/home` | User online/offline | Dung account co mot vai user dang online va offline | Avatar user co dot trang thai, dong `Dang online`/lastseen thay doi theo payload backend. |
+| `NAV-CHAT-003` | `[x]` | Desktop `1440x900`, route `/home` | Mini thread that | Click mot user hoac group trong widget | Mini overlay mo ra, tai thread that, gui text nhanh duoc, khong con sample messages. |
+| `NAV-CHAT-004` | `[x]` | Desktop `1440x900`, route `/home` | Quick send | Mo tab `Gui tin`, chon nguoi nhan, nhap text hoac attach file roi gui | Tin nhan gui thanh cong qua bridge messages that, widget refresh inbox/thread. |
+| `NAV-CHAT-005` | `[]` | Desktop `1440x900`, route `/home` | Search trong widget | Tim trong tab `Danh ba` va `Nhom` | Danh sach duoc loc theo ten, preview, status hoac thanh vien; khong lam vo widget. |
+| `NAV-CHAT-006` | `[]` | Desktop `1440x900`, route `/home` | Mo group tu widget vao messages | Click mot group trong widget, bam mo full messages | Route di `/messages?tab=group&groupId=...`, thread group dung duoc chon ngay, khong roi ve user tab dau tien. |
 
 ## Test Bang Postman: PHP API -> Nuxt Bridge
 

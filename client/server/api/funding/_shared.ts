@@ -2,8 +2,9 @@
 
 import { createError, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
-import { createBackendApiClient, normalizeBackendBaseURL } from "../../utils/backend-api-client"
+import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import type { FundingCampaign, FundingCatalog, FundingDonation, FundingTabKey } from "../../../src/funding/domain/types/funding.types"
 
 type BackendEntity = Record<string, unknown>
@@ -48,20 +49,16 @@ const asNumber = (value: unknown) => {
 
 const asBoolean = (value: unknown) => value === true || value === 1 || value === "1" || value === "true"
 
-const normalizeUrl = (value: unknown, baseUrl: string) => {
-  const raw = asString(value)
-  if (!raw) return ""
-  if (/^https?:\/\//i.test(raw)) return raw
-  return `${baseUrl.replace(/\/+$/, "")}/${raw.replace(/^\/+/, "")}`
-}
-
 const formatBackendDate = (value: unknown) => {
   const timestamp = asNumber(value)
   if (!timestamp) return ""
   return new Date(timestamp * 1000).toISOString()
 }
 
-const mapDonation = (item: BackendEntity, baseUrl: string): FundingDonation => {
+const mapDonation = (
+  item: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): FundingDonation => {
   const user = (item.user_data ?? {}) as BackendEntity
   const userId = asNumber(item.user_id) || asNumber(user.user_id) || asNumber(user.id)
 
@@ -69,7 +66,7 @@ const mapDonation = (item: BackendEntity, baseUrl: string): FundingDonation => {
     id: asNumber(item.id),
     userId,
     supporterName: asString(user.name || user.username) || `#${userId}`,
-    supporterAvatarUrl: normalizeUrl(user.avatar, baseUrl),
+    supporterAvatarUrl: resolveMediaUrl(user.avatar),
     amount: asNumber(item.amount),
     donatedAt: formatBackendDate(item.time),
   }
@@ -77,7 +74,7 @@ const mapDonation = (item: BackendEntity, baseUrl: string): FundingDonation => {
 
 const mapFundingCampaign = (
   item: BackendEntity,
-  baseUrl: string,
+  resolveMediaUrl: (value: unknown) => string,
   currentUserId = 0,
   forceManage = false,
 ): FundingCampaign => {
@@ -90,7 +87,7 @@ const mapFundingCampaign = (
   const raised = asNumber(item.raised)
   const isCompleted = amount > 0 && raised >= amount
   const donations = Array.isArray(item.recent_donations)
-    ? item.recent_donations.map(donation => mapDonation(donation as BackendEntity, baseUrl))
+    ? item.recent_donations.map(donation => mapDonation(donation as BackendEntity, resolveMediaUrl))
     : []
 
   return {
@@ -99,9 +96,9 @@ const mapFundingCampaign = (
     title: asString(item.title),
     description: asString(item.description).replace(/<br\s*\/?>/gi, "\n"),
     ownerId,
-    imageUrl: normalizeUrl(item.image, baseUrl),
+    imageUrl: resolveMediaUrl(item.image),
     ownerName: asString(user.name || user.username),
-    ownerAvatarUrl: normalizeUrl(user.avatar, baseUrl),
+    ownerAvatarUrl: resolveMediaUrl(user.avatar),
     ownerUrl: asString(user.url),
     createdAt: formatBackendDate(item.time),
     amount,
@@ -123,8 +120,7 @@ export async function fetchFundingCatalog(
   query: { tab?: FundingTabKey; offset?: number | null; limit?: number },
 ): Promise<FundingCatalog> {
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = normalizeBackendBaseURL(String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase))
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const currentUser = await getBackendCurrentUser(event).catch(() => null)
   const currentUserId = asNumber(currentUser?.user_id)
   const type = query.tab === "mine" ? "user_funding" : "funding"
@@ -137,7 +133,7 @@ export async function fetchFundingCatalog(
 
   const data = assertBackendApiSuccess(response, "Unable to load funding campaigns.")
   const items = (data.data ?? []).map(item =>
-    mapFundingCampaign(item, baseUrl, currentUserId, query.tab === "mine"),
+    mapFundingCampaign(item, resolveMediaUrl, currentUserId, query.tab === "mine"),
   )
 
   return {
@@ -152,8 +148,7 @@ export async function fetchFundingCatalog(
 
 export async function fetchFundingDetail(event: H3Event, id: string) {
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = normalizeBackendBaseURL(String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase))
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const currentUser = await getBackendCurrentUser(event).catch(() => null)
   const currentUserId = asNumber(currentUser?.user_id)
   const response = await client.post<BackendFundingDetailResponse>("funding", {
@@ -170,7 +165,7 @@ export async function fetchFundingDetail(event: H3Event, id: string) {
   }
 
   return {
-    campaign: mapFundingCampaign(data.data, baseUrl, currentUserId),
+    campaign: mapFundingCampaign(data.data, resolveMediaUrl, currentUserId),
     canCreate: Boolean(data.can_create),
     currency: asString(data.currency),
     currencySymbol: asString(data.currency_symbol),

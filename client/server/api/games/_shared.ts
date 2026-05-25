@@ -2,7 +2,8 @@
 
 import { createError, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
-import { createBackendApiClient, normalizeBackendBaseURL } from "../../utils/backend-api-client"
+import { createBackendApiClient } from "../../utils/backend-api-client"
+import { getBackendWebBaseUrl } from "../../utils/backend-media-url"
 import type { GameRecord, GamesCatalog, GamesTabKey } from "../../../src/games/domain/types/games.types"
 
 type BackendEntity = Record<string, unknown>
@@ -33,7 +34,21 @@ const asNumber = (value: unknown) => {
 const normalizeUrl = (value: unknown, baseUrl: string) => {
   const raw = asString(value)
   if (!raw) return ""
-  if (/^https?:\/\//i.test(raw)) return raw
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      const imageUrl = new URL(raw)
+      const requestBase = new URL(baseUrl)
+
+      if (requestBase.protocol === "https:" && imageUrl.protocol === "http:" && imageUrl.hostname === requestBase.hostname) {
+        return `${requestBase.origin}${imageUrl.pathname}${imageUrl.search}${imageUrl.hash}`
+      }
+    }
+    catch {
+      // Keep the raw backend value when URL parsing fails.
+    }
+
+    return raw
+  }
   return `${baseUrl.replace(/\/+$/, "")}/${raw.replace(/^\/+/, "")}`
 }
 
@@ -67,8 +82,7 @@ export async function fetchGamesCatalog(
     : "my"
   const q = String(query.q ?? "").trim()
   const limit = query.limit && query.limit > 0 ? query.limit : 20
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = normalizeBackendBaseURL(String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase))
+  const baseUrl = getBackendWebBaseUrl(event)
   const response = await createBackendApiClient(event).post<BackendGamesResponse>("games", {
     type: typeByTab(activeTab, q),
     query: q,

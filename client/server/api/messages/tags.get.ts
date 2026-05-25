@@ -68,6 +68,7 @@ const mapTaggedContact = (
     profileUrl: username ? `/@${encodeURIComponent(username)}` : "",
     status: isOnline ? "Online" : "Offline",
     isOnline,
+    lastSeenAt: lastseen || undefined,
     avatarUrl: resolveMediaUrl(asString(entity.avatar)),
     tab: "user",
     type: "user",

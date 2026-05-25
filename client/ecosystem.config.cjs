@@ -1,6 +1,7 @@
 const path = require("node:path")
 
 const clientRoot = __dirname
+process.loadEnvFile?.(path.join(clientRoot, ".env"))
 
 module.exports = {
   apps: [
@@ -45,6 +46,26 @@ module.exports = {
         REALTIME_PORT: process.env.REALTIME_PORT || "3015",
         REALTIME_SECRET: process.env.REALTIME_SECRET,
         REALTIME_CORS_ORIGIN: process.env.REALTIME_CORS_ORIGIN || process.env.NUXT_PUBLIC_SITE_URL,
+      },
+    },
+    {
+      name: "vnseea-php-upstreams",
+      cwd: clientRoot,
+      script: path.join(clientRoot, "realtime", "php-upstream-watchdog.mjs"),
+      interpreter: "node",
+      exec_mode: "fork",
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      max_memory_restart: "128M",
+      env: {
+        NODE_ENV: "production",
+        PHP_CGI_BIN: process.env.PHP_CGI_BIN,
+        PHP_INI_PATH: process.env.PHP_INI_PATH,
+        PHP_UPSTREAM_HOST: process.env.PHP_UPSTREAM_HOST || "127.0.0.1",
+        PHP_UPSTREAM_PORTS: process.env.PHP_UPSTREAM_PORTS || "9003,9004",
+        PHP_UPSTREAM_CHECK_INTERVAL_MS: process.env.PHP_UPSTREAM_CHECK_INTERVAL_MS || "5000",
+        PHP_UPSTREAM_RESPAWN_COOLDOWN_MS: process.env.PHP_UPSTREAM_RESPAWN_COOLDOWN_MS || "15000",
       },
     },
   ],

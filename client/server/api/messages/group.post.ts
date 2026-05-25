@@ -1,4 +1,4 @@
-// English description: Creates a backend group chat from selected recipients using the PHP group_chat create flow.
+// English description: Preserves the legacy group-create bridge while delegating to the PHP chat create-group flow.
 
 import { readBody } from "h3"
 import { createMessageGroup } from "./_shared"
@@ -10,5 +10,6 @@ export default defineEventHandler(async (event) => {
   return await createMessageGroup(event, {
     name: String(body.name || ""),
     recipientIds: rawIds.map(Number),
+    avatar: null,
   })
 })

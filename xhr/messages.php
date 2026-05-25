@@ -571,7 +571,9 @@ if ($f == 'messages') {
                 'file' => $_FILES["audio-blob"]["tmp_name"],
                 'name' => $_FILES['audio-blob']['name'],
                 'size' => $_FILES["audio-blob"]["size"],
-                'type' => $_FILES["audio-blob"]["type"]
+                'type' => $_FILES["audio-blob"]["type"],
+                'types' => 'mp3,wav,ogg,m4a,webm',
+                'is_sound' => 1
             );
             $media          = Wo_ShareFile($fileInfo);
             $data['url']    = $media['filename'];
@@ -588,7 +590,9 @@ if ($f == 'messages') {
                 'file' => $_FILES["audio-blob"]["tmp_name"],
                 'name' => $_FILES['audio-blob']['name'],
                 'size' => $_FILES["audio-blob"]["size"],
-                'type' => $_FILES["audio-blob"]["type"]
+                'type' => $_FILES["audio-blob"]["type"],
+                'types' => 'mp3,wav,ogg,m4a,webm',
+                'is_sound' => 1
             );
             $media          = Wo_ShareFile($fileInfo);
             if (!empty($media) && !empty($media['filename'])) {

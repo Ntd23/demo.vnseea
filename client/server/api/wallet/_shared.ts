@@ -2,9 +2,10 @@
 
 import { createError, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
-import { createBackendApiClient, getBackendBaseCandidates, normalizeBackendBaseURL } from "../../utils/backend-api-client"
+import { createBackendApiClient, getBackendBaseCandidates } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { createBackendMediaUrlResolver, getBackendWebBaseUrl } from "../../utils/backend-media-url"
 import type {
   WalletCurrentUser,
   WalletMutationResult,
@@ -80,14 +81,6 @@ const asBoolean = (value: unknown) =>
 
 const asEntity = (value: unknown): BackendEntity =>
   value && typeof value === "object" && !Array.isArray(value) ? value as BackendEntity : {}
-
-const normalizeImageUrl = (value: string, baseUrl: string) => {
-  if (!value) return ""
-  if (/^https?:\/\//i.test(value)) return value
-  const normalizedBase = baseUrl.replace(/\/+$/, "")
-  const normalizedPath = value.startsWith("/") ? value : `/${value}`
-  return `${normalizedBase}${normalizedPath}`
-}
 
 const transactionTone = (kind: string): WalletTransactionTone => {
   if (["WALLET", "RECEIVED", "SALE", "SALES"].includes(kind)) return "success"
@@ -180,31 +173,34 @@ const mapTopupMethod = (item: BackendEntity): WalletTopupMethod => ({
   note: asString(item.note),
 })
 
-const mapCurrentUser = (item: BackendEntity | undefined, baseUrl: string): WalletCurrentUser => ({
+const mapCurrentUser = (
+  item: BackendEntity | undefined,
+  resolveMediaUrl: (value: unknown) => string,
+): WalletCurrentUser => ({
   id: asNumber(item?.id),
   name: asString(item?.name),
   username: asString(item?.username),
-  avatarUrl: normalizeImageUrl(asString(item?.avatar), baseUrl),
+  avatarUrl: resolveMediaUrl(asString(item?.avatar)),
 })
 
-const mapRecipient = (item: BackendEntity, baseUrl: string): WalletRecipient => ({
+const mapRecipient = (
+  item: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): WalletRecipient => ({
   id: asNumber(item.id),
   name: asString(item.name),
   username: asString(item.username),
-  avatarUrl: normalizeImageUrl(asString(item.avatar), baseUrl),
+  avatarUrl: resolveMediaUrl(asString(item.avatar)),
 })
 
-const getBackendWebBase = (event: H3Event) => {
-  const runtimeConfig = useRuntimeConfig(event)
-  return normalizeBackendBaseURL(String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase))
-}
+const getBackendWebBase = (event: H3Event) => getBackendWebBaseUrl(event)
 
 export async function fetchWalletOverview(event: H3Event): Promise<WalletOverview> {
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).get<BackendWalletOverviewResponse>("wallet-overview"),
     "Unable to load wallet.",
   )
-  const baseUrl = getBackendWebBase(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
 
   return {
     balance: asNumber(response.balance),
@@ -218,7 +214,7 @@ export async function fetchWalletOverview(event: H3Event): Promise<WalletOvervie
       .filter(method => method.value && method.label),
     canWithdraw: asBoolean(response.can_withdraw),
     withdrawalUrl: "/withdrawal",
-    currentUser: mapCurrentUser(response.current_user, baseUrl),
+    currentUser: mapCurrentUser(response.current_user, resolveMediaUrl),
   }
 }
 
@@ -230,9 +226,9 @@ export async function searchWalletRecipients(event: H3Event, query: string): Pro
     ),
     "Unable to search recipients.",
   )
-  const baseUrl = getBackendWebBase(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
 
-  return (response.items ?? []).map(item => mapRecipient(item, baseUrl))
+  return (response.items ?? []).map(item => mapRecipient(item, resolveMediaUrl))
 }
 
 export async function getWalletReceiveQr(event: H3Event, amount: number | null): Promise<WalletReceiveQr> {

@@ -81,6 +81,7 @@ export const apiRoutes = {
   auth: {
     me: "auth/me",
     login: "auth/login",
+    browserSession: "auth/browser-session",
     register: "auth/register",
     confirmLogin: "auth/confirm-login",
     confirmAccount: "auth/confirm-account",
@@ -175,6 +176,13 @@ export const apiRoutes = {
     thread: "messages/thread",
     multi: "messages/multi",
     send: "messages/send",
+    recordUpload: "messages/record/upload",
+    typing: "messages/typing",
+    groupCreate: "messages/group/create",
+    groupParticipants: "messages/group/participants",
+    groupDetails: "messages/group/details",
+    groupCandidates: "messages/group/candidates",
+    groupMembers: "messages/group/members",
     calls: {
       answer: "messages/calls/answer",
       create: "messages/calls/create",

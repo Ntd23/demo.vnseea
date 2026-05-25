@@ -4,6 +4,7 @@ import { createError, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { getBackendWebBaseUrl } from "../../utils/backend-media-url"
 import type {
   CommunityGroupRecord,
   CommunityPageRecord,
@@ -118,7 +119,21 @@ const normalizeUrl = (value: string) => {
 
 const normalizeImagePath = (path: string, baseUrl: string) => {
   if (!path) return ""
-  if (/^https?:\/\//i.test(path)) return path
+  if (/^https?:\/\//i.test(path)) {
+    try {
+      const imageUrl = new URL(path)
+      const requestBase = new URL(baseUrl)
+
+      if (requestBase.protocol === "https:" && imageUrl.protocol === "http:" && imageUrl.hostname === requestBase.hostname) {
+        return `${requestBase.origin}${imageUrl.pathname}${imageUrl.search}${imageUrl.hash}`
+      }
+    }
+    catch {
+      // Keep the raw backend value when URL parsing fails.
+    }
+
+    return path
+  }
   const cleanBase = baseUrl.replace(/\/+$/, "")
   const cleanPath = path.startsWith("/") ? path : `/${path}`
   return `${cleanBase}${cleanPath}`
@@ -307,8 +322,7 @@ export async function fetchCommunityGroups(
 ) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
   const response = assertBackendApiSuccess(
     await client.post<BackendCommunityResponse, Record<string, unknown>>(
       "get-community",
@@ -333,8 +347,7 @@ export async function fetchCommunityGroups(
 export async function fetchSuggestedCommunityGroups(event: H3Event) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
   const response = assertBackendApiSuccess(
     await client.post<BackendRecommendedResponse, Record<string, unknown>>(
       "fetch-recommended",
@@ -361,8 +374,7 @@ export async function fetchCommunityPages(
 ) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
   const response = assertBackendApiSuccess(
     await client.post<BackendCommunityResponse, Record<string, unknown>>(
       "get-community",
@@ -386,8 +398,7 @@ export async function fetchCommunityPages(
 export async function fetchSuggestedCommunityPages(event: H3Event) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
   const response = assertBackendApiSuccess(
     await client.post<BackendRecommendedResponse, Record<string, unknown>>(
       "fetch-recommended",
@@ -469,8 +480,7 @@ export async function resolveGroupRecordBySlug(event: H3Event, slug: string) {
     })
   }
 
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
 
   return mapCommunityGroupRecord(detailResponse.group_data, {
     currentUserId: asNumber(currentUser.user_id),
@@ -493,8 +503,7 @@ export async function resolvePageRecordBySlug(event: H3Event, slug: string) {
     return null
   })
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
 
   console.log(`[resolvePageRecordBySlug] slug="${normalizedSlug}" userId=${currentUser?.user_id ?? "guest"}`)
 

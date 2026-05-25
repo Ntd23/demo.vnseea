@@ -5,6 +5,7 @@ import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { getBackendWebBaseUrl } from "../../utils/backend-media-url"
 import type {
   JobApplicationDraft,
   JobCatalogQuery,
@@ -93,7 +94,21 @@ const asBoolean = (value: unknown) =>
 
 const normalizeImageUrl = (value: string, baseUrl: string) => {
   if (!value) return ""
-  if (/^https?:\/\//i.test(value)) return value
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      const imageUrl = new URL(value)
+      const requestBase = new URL(baseUrl)
+
+      if (requestBase.protocol === "https:" && imageUrl.protocol === "http:" && imageUrl.hostname === requestBase.hostname) {
+        return `${requestBase.origin}${imageUrl.pathname}${imageUrl.search}${imageUrl.hash}`
+      }
+    }
+    catch {
+      // Keep the raw backend value when URL parsing fails.
+    }
+
+    return value
+  }
   const normalizedBase = baseUrl.replace(/\/+$/, "")
   const normalizedPath = value.startsWith("/") ? value : `/${value}`
   return `${normalizedBase}${normalizedPath}`
@@ -279,8 +294,7 @@ export async function fetchJobsCatalog(
 ): Promise<JobsCatalogRecord> {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
-  const runtimeConfig = useRuntimeConfig(event)
-  const baseUrl = String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase)
+  const baseUrl = getBackendWebBaseUrl(event)
 
   const [metaResponse, searchResponse] = await Promise.all([
     client.get<BackendJobsMetaResponse>("jobs-meta"),
