@@ -1458,6 +1458,8 @@ export async function searchMessageGroupCandidates(
     query: string
   },
 ): Promise<MessageGroupCandidate[]> {
+  const keyword = input.query.trim()
+
   if (!input.groupId || input.groupId <= 0) {
     throw createError({
       statusCode: 400,
@@ -1465,22 +1467,28 @@ export async function searchMessageGroupCandidates(
     })
   }
 
-  const client = createBackendApiClient(event)
+  if (!keyword) {
+    return []
+  }
+
+  const webClient = createBackendWebClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
-  const response = assertBackendApiSuccess(
-    await client.post<BackendCollectionResponse, Record<string, unknown>>(
-      "group_chat",
-      {
-        type: "search_addable_users",
-        id: input.groupId,
-        keyword: input.query.trim(),
-        limit: 12,
-      },
-    ),
-    "Unable to search addable group members.",
+  const response = await webClient.postForm<BackendChatParticipantsResponse>(
+    "chat",
+    undefined,
+    {
+      s: "search_parts",
+      group_id: input.groupId,
+      name: keyword,
+    },
   )
 
-  return asArray(response.data)
+  if (asNumber(response.status) !== 200) {
+    return []
+  }
+
+  return asArray(response.parts)
+    .filter(entity => !isTruthy(entity.is_member))
     .map(entity => mapGroupCandidate(entity, resolveMediaUrl))
     .filter(Boolean) as MessageGroupCandidate[]
 }

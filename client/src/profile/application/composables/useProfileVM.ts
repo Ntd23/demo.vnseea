@@ -104,9 +104,17 @@ export function useProfileVM(
     return [
       {
         id: "follow-profile",
-        label: t("pages.pageDetailPage.followFallback"),
-        icon: "i-ph-user-plus-duotone",
-        variant: "solid" as const,
+        label: profile.isFollowRequested
+          ? t("pages.pageDetailPage.followers.requestedButton")
+          : profile.isFollowing
+            ? t("pages.pageDetailPage.followingButton")
+            : t("pages.pageDetailPage.followFallback"),
+        icon: profile.isFollowRequested
+          ? "i-ph-clock-countdown-duotone"
+          : profile.isFollowing
+            ? "i-ph-user-check-duotone"
+            : "i-ph-user-plus-duotone",
+        variant: profile.isFollowing || profile.isFollowRequested ? "soft" as const : "solid" as const,
       },
       {
         id: "message-profile",
@@ -268,6 +276,8 @@ export function useProfileVM(
       avatarText: apiProfile.avatarText,
       verified: apiProfile.verified,
       isOwner: apiProfile.isOwner,
+      isFollowing: apiProfile.isFollowing,
+      isFollowRequested: apiProfile.isFollowRequested,
       roleBadge: apiProfile.headline || t("navigation.headerBar.profile"),
       statusBadge: apiProfile.statusText,
       counts: {
@@ -407,13 +417,18 @@ export function useProfileVM(
     actionPending.value = true
 
     try {
-      const result = await repository.runProfileAction({
+      await repository.runProfileAction({
         action: "follow",
         userId: currentProfile.id,
       })
 
-      actionMessage.value = result.status
       await refresh()
+      const nextProfile = data.value
+      actionMessage.value = nextProfile?.isFollowRequested
+        ? t("pages.pageDetailPage.followers.requestedButton")
+        : nextProfile?.isFollowing
+          ? t("pages.pageDetailPage.followingButton")
+          : t("pages.pageDetailPage.followFallback")
     }
     catch (error) {
       actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")

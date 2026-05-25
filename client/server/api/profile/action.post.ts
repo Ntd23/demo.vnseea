@@ -3,6 +3,8 @@
 import { createError, readBody } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
+import { createBackendWebClient } from "../../utils/backend-web-client"
+import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import type { ProfileActionResult } from "../../../src/profile/domain/types/profile.types"
 
 type ProfileActionBody = {
@@ -13,6 +15,8 @@ type ProfileActionBody = {
 type BackendFollowResponse = {
   api_status?: number | string
   follow_status?: string
+  status?: number | string
+  can_send?: number | string
   errors?: { error_text?: string }
 }
 
@@ -85,13 +89,32 @@ export default defineEventHandler(async (event): Promise<ProfileActionResult> =>
   }
 
   // ── Follow ────────────────────────────────────
-  const response = assertBackendApiSuccess(
-    await client.post<BackendFollowResponse, Record<string, unknown>>(
-      "follow-user",
-      { user_id: userId },
-    ),
-    "Unable to update profile follow state.",
+  const currentUser = await getBackendCurrentUser(event)
+  const sessionHash = typeof currentUser.session_hash === "string" ? currentUser.session_hash.trim() : ""
+
+  if (!sessionHash) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication is required.",
+      data: { reason: "Missing backend session hash." },
+    })
+  }
+
+  const webClient = createBackendWebClient(event)
+  const response = await webClient.postForm<BackendFollowResponse>(
+    "follow_user",
+    { hash_id: sessionHash },
+    { following_id: userId },
   )
+  const status = Number(response.status ?? response.api_status ?? 0)
+
+  if (status < 200 || status >= 300) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Unable to update profile follow state.",
+      data: response,
+    })
+  }
 
   return {
     ok: true,
