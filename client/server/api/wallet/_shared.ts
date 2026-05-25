@@ -156,6 +156,9 @@ const mapTransaction = (item: BackendEntity): WalletTransaction => {
     counterpartyId: asNumber(item.counterparty_id ?? extra.sender_id ?? extra.recipient_id),
     counterpartyName: asString(item.counterparty_name),
     amount: asNumber(item.amount),
+    points: asNumber(item.points ?? extra.points),
+    pointAction: asString(item.point_action ?? extra.action),
+    pointType: asString(item.point_type ?? extra.type),
     transactionDate: asString(item.transaction_dt),
     statusTone: transactionTone(kind),
   }

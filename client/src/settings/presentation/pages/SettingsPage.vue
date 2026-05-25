@@ -45,8 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SettingPage } from "../../application/composables/useSettingsData"
-import { useSettingsData } from "../../application/composables/useSettingsData"
+import { useSettingsPageVM } from "../../application/view-models/useSettingsPageVM"
 import SettingsHero from "../components/SettingsHero.vue"
 import SettingsMyPointsPanel from "../components/SettingsMyPointsPanel.vue"
 import SettingsSection from "../components/SettingsSection.vue"
@@ -56,44 +55,16 @@ const props = defineProps<{
   pageSlug?: string
 }>()
 
-const { t } = useI18n()
 const { 
-  pages, user, defaultSlug, findPageBySlug, 
-  updateSettings, fetchSessions, fetchBlockedUsers,
-  deleteSession, unblockUser, exchangePoints 
-} = useSettingsData()
-
-const activePage = computed<SettingPage>(() =>
-  findPageBySlug(props.pageSlug || defaultSlug) ?? findPageBySlug(defaultSlug)!,
-)
-
-watch(() => activePage.value.slug, (slug) => {
-  if (slug === 'manage-sessions') fetchSessions()
-  if (slug === 'blocked-users') fetchBlockedUsers()
-}, { immediate: true })
-
-async function handleItemAction(item: SettingItem) {
-  if (!item.id) return
-
-  if (activePage.value.slug === 'manage-sessions') {
-    await deleteSession(item.id as number)
-  }
-  else if (activePage.value.slug === 'blocked-users') {
-    await unblockUser(item.id as number)
-  }
-}
-
-const userInitials = computed(() => {
-  const name = user.value?.name || user.value?.username || ""
-  const parts = name.trim().split(/\s+/).filter(Boolean)
-
-  return parts.slice(0, 2).map(part => part[0]?.toUpperCase()).join("")
-})
-
-useSeoMeta({
-  title: () => `${activePage.value.label} | ${t("settings.seo.titleSuffix")}`,
-  description: () => activePage.value.description,
-})
+  pages,
+  user,
+  activePage,
+  defaultSlug,
+  userInitials,
+  updateSettings,
+  handleItemAction,
+  exchangePoints,
+} = useSettingsPageVM(() => props.pageSlug)
 </script>
 
 <style scoped>

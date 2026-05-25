@@ -59,6 +59,7 @@
           @load-more="loadOlderMessages"
           @send="sendMessage"
           @delete-conversation="deleteSelectedConversation"
+          @start-call="handleStartCall"
           @back="handleBackToList"
         />
       </main>
@@ -234,6 +235,7 @@
         </div>
       </template>
     </UModal>
+
   </div>
 </template>
 
@@ -245,6 +247,9 @@ import MessagesChatWindow from "../components/ChatWindow.vue"
 import MessagesMessageSidePanel from "../components/MessageSidePanel.vue"
 import MessagesUserDetailPanel from "../components/UserDetailPanel.vue"
 import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
+import { useMessageCalls } from "../../application/composables/useMessageCalls"
+import { useMessagesInbox } from "../../application/composables/useMessagesInbox"
+import type { MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact } from "../../domain/types/messages.types"
 
 const { t } = useI18n()
@@ -298,6 +303,7 @@ const {
   query,
   removeCreateGroupParticipant,
   removeGroupMember,
+  refreshInbox,
   selectedContact,
   selectedRecipientIds,
   selectedRecipients,
@@ -318,7 +324,11 @@ const {
   tabs,
   threadPending,
   toggleAllVisibleRecipients,
-} = useMessagesPageVM()
+} = useMessagesInbox()
+const {
+  startCall,
+  status: callStatus,
+} = useMessageCalls()
 
 const chatEmptyTitle = computed(() =>
   activeTab.value === "multi"
@@ -392,6 +402,19 @@ watch(showDesktopUserDetailPane, (value) => {
   if (value) {
     infoPanelOpen.value = false
   }
+}
+
+watch(callStatus, async (value) => {
+  if (value !== "ended") {
+    return
+  }
+
+  await refreshInbox()
+
+  const contact = selectedContact.value
+  if (contact) {
+    await selectContact(contact)
+  }
 })
 
 function openCreateGroupModal() {
@@ -419,6 +442,11 @@ function handleBackToList() {
 
 function updateGroupCandidateQuery(value: string) {
   groupCandidateQuery.value = value
+}
+function handleStartCall(type: MessageCallType) {
+  const contact = selectedContact.value
+  if (!contact) return
+  startCall(contact, type)
 }
 
 function openTagModal(contact: MessageContact) {

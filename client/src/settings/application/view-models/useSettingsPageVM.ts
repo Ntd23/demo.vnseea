@@ -1,67 +1,24 @@
-// English description: Settings page view model data that maps Nuxt UI fields to PHP phtml settings handlers.
+// English description: Settings page ViewModel that maps settings screen state and commands to the PHP-backed repository.
 
+import { toValue, type MaybeRefOrGetter } from "vue"
 import { createApiSettingsRepository } from "../../infrastructure/repositories/ApiSettingsRepository"
-import type { SettingsFieldValue, SettingsSectionSlug, SettingsUpdateInput, SettingsUser } from "../../domain/types/settings.types"
+import type {
+  SettingSession,
+  SettingsBlockedUser,
+  SettingsFieldValue,
+  SettingsSectionSlug,
+  SettingsUpdateInput,
+  SettingsUser,
+} from "../../domain/types/settings.types"
+import type {
+  SettingField,
+  SettingFieldType,
+  SettingFieldValue,
+  SettingItem,
+  SettingPage,
+} from "./settings-page.types"
 
-export type SettingFieldType = "text" | "email" | "tel" | "date" | "select" | "textarea" | "password" | "file" | "number" | "url" | "verification"
-export type SettingSectionKind = "form" | "toggles" | "list" | "danger" | "summary" | "profile-images"
-
-export type SettingField = {
-  label: string
-  key: string
-  type: SettingFieldType
-  value: string | number | boolean | File
-  description?: string
-  placeholder?: string
-  accept?: string
-  options?: string[]
-  previewUrl?: string
-  previewShape?: "avatar" | "cover" | "image"
-  span?: "full"
-  readOnly?: boolean
-}
-
-export type SettingFieldValue = SettingsFieldValue
-
-export type SettingToggle = {
-  key: string
-  label: string
-  description: string
-  enabled: boolean
-  readOnly?: boolean
-}
-
-export type SettingAction = {
-  label: string
-  icon: string
-  tone?: "primary" | "danger" | "neutral"
-}
-
-export type SettingItem = {
-  id?: string | number
-  title: string
-  description: string
-  meta?: string
-  action?: string
-}
-
-export type SettingSection = {
-  title: string
-  description: string
-  kind: SettingSectionKind
-  fields?: SettingField[]
-  toggles?: SettingToggle[]
-  items?: SettingItem[]
-  actions?: SettingAction[]
-}
-
-export type SettingPage = {
-  slug: string
-  label: string
-  icon: string
-  description: string
-  sections: SettingSection[]
-}
+export type { SettingField, SettingFieldValue, SettingItem, SettingPage }
 
 type SettingTranslate = ReturnType<typeof useI18n>["t"]
 type SettingOptionDefinition = {
@@ -700,7 +657,9 @@ const mapFieldsForSection = (
   return payload
 }
 
-export const useSettingsData = () => {
+export const useSettingsPageVM = (
+  pageSlugSource: MaybeRefOrGetter<string | undefined> = undefined,
+) => {
   const { t } = useI18n()
   const user = ref<SettingsUser | null>(null)
   const loading = ref(false)
@@ -748,12 +707,22 @@ export const useSettingsData = () => {
     return response.message
   }
 
+  const sessions = ref<SettingSession[]>([])
+  const blockedUsers = ref<SettingsBlockedUser[]>([])
+  const defaultSlug = "general"
   const pages = computed<SettingPage[]>(() =>
     createPages(t, user.value, sessions.value, blockedUsers.value),
   )
+  const findPageBySlug = (slug: string) => pages.value.find(page => page.slug === slug)
+  const activePage = computed<SettingPage>(() =>
+    findPageBySlug(toValue(pageSlugSource) || defaultSlug) ?? findPageBySlug(defaultSlug)!,
+  )
+  const userInitials = computed(() => {
+    const name = user.value?.name || user.value?.username || ""
+    const parts = name.trim().split(/\s+/).filter(Boolean)
 
-  const sessions = ref<SettingSession[]>([])
-  const blockedUsers = ref<SettingsBlockedUser[]>([])
+    return parts.slice(0, 2).map(part => part[0]?.toUpperCase()).join("")
+  })
 
   async function fetchSessions() {
     loading.value = true
@@ -795,24 +764,45 @@ export const useSettingsData = () => {
     return response
   }
 
+  async function handleItemAction(item: SettingItem) {
+    if (!item.id) return
+
+    if (activePage.value.slug === "manage-sessions") {
+      await deleteSession(item.id as number)
+      return
+    }
+
+    if (activePage.value.slug === "blocked-users") {
+      await unblockUser(item.id as number)
+    }
+  }
+
+  watch(() => activePage.value.slug, (slug) => {
+    if (slug === "manage-sessions") fetchSessions()
+    if (slug === "blocked-users") fetchBlockedUsers()
+  }, { immediate: true })
+
   void hydrate()
 
   return {
     pages,
     user,
+    activePage,
     sessions,
     blockedUsers,
     loading,
     errorMessage,
-    defaultSlug: "general",
+    defaultSlug,
+    userInitials,
     hydrate,
     updateSettings,
+    handleItemAction,
     fetchSessions,
     deleteSession,
     fetchBlockedUsers,
     unblockUser,
     requestMyInfo,
     exchangePoints,
-    findPageBySlug: (slug: string) => pages.value.find(page => page.slug === slug),
+    findPageBySlug,
   }
 }

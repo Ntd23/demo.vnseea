@@ -56,7 +56,7 @@
           type="button"
           class="wallet-activity__page-btn"
           :disabled="currentPage === 1"
-          @click="currentPage -= 1"
+          @click="previousPage"
         >
           <Icon name="i-ph-caret-left-bold" class="h-4 w-4" />
         </button>
@@ -74,7 +74,7 @@
           type="button"
           class="wallet-activity__page-btn"
           :disabled="currentPage === pageCount"
-          @click="currentPage += 1"
+          @click="nextPage"
         >
           <Icon name="i-ph-caret-right-bold" class="h-4 w-4" />
         </button>
@@ -89,11 +89,11 @@
 </template>
 
 <script setup lang="ts">
-import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import type {
   WalletCurrencyRule,
   WalletTransaction,
 } from "../../domain/types/wallet.types"
+import { useWalletTransactionsVM } from "../../application/view-models/useWalletTransactionsVM"
 
 const props = defineProps<{
   transactions: WalletTransaction[]
@@ -102,169 +102,29 @@ const props = defineProps<{
   currencyRule: WalletCurrencyRule
 }>()
 
-const { t, locale } = useI18n()
-const pageSize = 10
-const currentPage = ref(1)
-const activeFilter = ref("all")
-
-const transactionKind = (transaction: WalletTransaction) =>
-  transaction.kind.toUpperCase()
-
-const transactionGroup = (transaction: WalletTransaction) => {
-  const kind = transactionKind(transaction)
-
-  if (kind === "RECEIVED") return "received"
-  if (kind === "SENT") return "sent"
-  if (kind === "WALLET") return "wallet"
-  if (kind === "SALE" || kind === "SALES") return "sale"
-  if (kind === "DONATE") return "donate"
-  return "other"
-}
-
-const countByFilter = (value: string) =>
-  value === "all"
-    ? props.transactions.length
-    : props.transactions.filter(transaction => transactionGroup(transaction) === value).length
-
-const filters = computed(() => [
-  { value: "all", label: t("pages.walletPage.filterAll"), icon: "i-ph-list-bullets-duotone", count: countByFilter("all") },
-  { value: "received", label: t("pages.walletPage.filterReceived"), icon: "i-ph-hand-coins-duotone", count: countByFilter("received") },
-  { value: "sent", label: t("pages.walletPage.filterSent"), icon: "i-ph-paper-plane-tilt-duotone", count: countByFilter("sent") },
-  { value: "wallet", label: t("pages.walletPage.filterTopup"), icon: "i-ph-wallet-duotone", count: countByFilter("wallet") },
-  { value: "sale", label: t("pages.walletPage.filterSale"), icon: "i-ph-storefront-duotone", count: countByFilter("sale") },
-  { value: "donate", label: t("pages.walletPage.filterDonate"), icon: "i-ph-heart-duotone", count: countByFilter("donate") },
-])
-
-const filteredTransactions = computed(() =>
-  activeFilter.value === "all"
-    ? props.transactions
-    : props.transactions.filter(transaction => transactionGroup(transaction) === activeFilter.value),
+const { t } = useI18n()
+const {
+  activeFilter,
+  currentPage,
+  filters,
+  filteredTransactions,
+  paginatedTransactions,
+  pageCount,
+  setFilter,
+  previousPage,
+  nextPage,
+  formatTransactionAmount,
+  transactionTitle,
+  transactionDetail,
+  amountClass,
+  transactionIcon,
+  transactionIconClass,
+} = useWalletTransactionsVM(
+  () => props.transactions,
+  () => props.currency,
+  () => props.currencySymbol,
+  () => props.currencyRule,
 )
-
-const pageCount = computed(() =>
-  Math.max(1, Math.ceil(filteredTransactions.value.length / pageSize)),
-)
-
-const paginatedTransactions = computed(() => {
-  const start = (currentPage.value - 1) * pageSize
-  return filteredTransactions.value.slice(start, start + pageSize)
-})
-
-watch([filteredTransactions, () => props.transactions.length], () => {
-  if (currentPage.value > pageCount.value) {
-    currentPage.value = pageCount.value
-  }
-})
-
-function setFilter(value: string) {
-  activeFilter.value = value
-  currentPage.value = 1
-}
-
-const transactionDirection = (transaction: WalletTransaction) => {
-  const group = transactionGroup(transaction)
-
-  if (["sent", "donate"].includes(group)) return "out"
-  if (transactionKind(transaction) === "PURCHASE") return "out"
-  if (["received", "wallet", "sale"].includes(group)) return "in"
-  if (transaction.amount < 0) return "out"
-  if (transaction.amount > 0) return "in"
-  return "neutral"
-}
-
-const formatTransactionAmount = (transaction: WalletTransaction) => {
-  const direction = transactionDirection(transaction)
-  const formatted = formatCurrency(Math.abs(transaction.amount), {
-    currency: props.currency,
-    currencySymbol: props.currencySymbol,
-    currencyRule: props.currencyRule,
-    locale: locale.value,
-  })
-
-  if (direction === "in") return `+${formatted}`
-  if (direction === "out") return `-${formatted}`
-  return formatted
-}
-
-const transactionCounterparty = (transaction: WalletTransaction) =>
-  transaction.counterpartyName || (transaction.counterpartyId ? `#${transaction.counterpartyId}` : "-")
-
-const transactionTitle = (transaction: WalletTransaction) => {
-  const kind = transactionKind(transaction)
-  const counterparty = transactionCounterparty(transaction)
-
-  if (kind === "RECEIVED") {
-    return t("pages.walletPage.transactionReceivedTitle", { sender: counterparty })
-  }
-
-  if (kind === "SENT") {
-    return t("pages.walletPage.transactionSentTitle", { recipient: counterparty })
-  }
-
-  if (kind === "SALE" || kind === "SALES") {
-    return t("pages.walletPage.transactionSaleTitle")
-  }
-
-  if (kind === "DONATE") {
-    return t("pages.walletPage.transactionDonateTitle")
-  }
-
-  if (kind === "WALLET") {
-    return t("pages.walletPage.transactionWalletTitle")
-  }
-
-  return transaction.notes || transaction.kind || "-"
-}
-
-const transactionDetail = (transaction: WalletTransaction) => {
-  const kind = transactionKind(transaction)
-
-  if (kind === "RECEIVED" || kind === "SENT") {
-    return transaction.notes || "-"
-  }
-
-  if (kind === "SALE" || kind === "SALES") {
-    return transaction.notes || t("pages.walletPage.transactionSaleDescription")
-  }
-
-  if (kind === "DONATE") {
-    return transaction.notes
-      ? t("pages.walletPage.transactionDonateDescription", { campaign: transaction.notes })
-      : t("pages.walletPage.transactionDonateFallback")
-  }
-
-  if (kind === "WALLET") {
-    return transaction.notes || t("pages.walletPage.transactionWalletDescription")
-  }
-
-  return transaction.kind || "-"
-}
-
-const amountClass = (transaction: WalletTransaction) => {
-  const direction = transactionDirection(transaction)
-
-  if (direction === "in") return "wallet-activity__amount--positive"
-  if (direction === "out") return "wallet-activity__amount--negative"
-  return ""
-}
-
-const transactionIcon = (transaction: WalletTransaction) => {
-  const kind = transactionKind(transaction)
-
-  if (kind === "RECEIVED") return "i-ph-hand-coins-duotone"
-  if (kind === "SENT") return "i-ph-paper-plane-tilt-duotone"
-  if (kind === "WALLET") return transaction.notes.toLowerCase().includes("sepay")
-    ? "i-ph-qr-code-duotone"
-    : "i-ph-wallet-duotone"
-  if (kind === "SALE" || kind === "SALES") return "i-ph-storefront-duotone"
-  if (kind === "DONATE") return "i-ph-heart-duotone"
-  if (kind === "PRO") return "i-ph-crown-duotone"
-  if (kind === "PURCHASE") return "i-ph-shopping-bag-duotone"
-  return "i-ph-receipt-duotone"
-}
-
-const transactionIconClass = (transaction: WalletTransaction) =>
-  `wallet-activity__icon--${transactionGroup(transaction)}`
 </script>
 
 <style scoped>
@@ -394,6 +254,11 @@ const transactionIconClass = (transaction: WalletTransaction) =>
 .wallet-activity__icon--wallet {
   background: rgba(22, 163, 74, 0.1);
   color: #15803d;
+}
+
+.wallet-activity__icon--points_exchange {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
 }
 
 .wallet-activity__icon--sale {

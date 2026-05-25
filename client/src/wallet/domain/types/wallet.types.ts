@@ -22,6 +22,9 @@ export type WalletTransaction = {
   counterpartyId: number
   counterpartyName: string
   amount: number
+  points?: number
+  pointAction?: string
+  pointType?: string
   transactionDate: string
   statusTone: WalletTransactionTone
 }

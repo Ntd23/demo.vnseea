@@ -6,12 +6,12 @@
           <Icon name="i-ph-star-fill" class="h-6 w-6" />
         </span>
         <div>
-          <p class="settings-points__eyebrow">Điểm thành viên</p>
+          <p class="settings-points__eyebrow">{{ t("settings.data.pointsPanel.eyebrow") }}</p>
           <h2 id="settings-points-title" class="settings-points__title">
-            {{ formatNumber(pointsBalance) }} điểm
+            {{ t("settings.data.pointsPanel.pointsAmount", { points: formatNumber(pointsBalance) }) }}
           </h2>
           <p class="settings-points__description">
-            Đổi điểm tích lũy sang số dư ví VNSEEA để tiếp tục sử dụng trong hệ thống.
+            {{ t("settings.data.pointsPanel.description") }}
           </p>
         </div>
       </div>
@@ -19,11 +19,11 @@
       <button
         class="settings-points__exchange-button"
         type="button"
-        :disabled="maxExchangePoints < exchangeStep"
+        :disabled="maxExchangePoints < exchangeStepPoints"
         @click="openExchangeModal"
       >
         <Icon name="i-ph-swap-fill" class="h-4 w-4" />
-        <span>Đổi điểm</span>
+        <span>{{ t("settings.data.pointsPanel.exchangeButton") }}</span>
       </button>
     </div>
 
@@ -33,7 +33,7 @@
           <Icon name="i-ph-star-duotone" class="h-5 w-5" />
         </span>
         <div>
-          <p class="settings-points__stat-label">Điểm khả dụng</p>
+          <p class="settings-points__stat-label">{{ t("settings.data.pointsPanel.availablePoints") }}</p>
           <p class="settings-points__stat-value">{{ formatNumber(pointsBalance) }}</p>
         </div>
       </article>
@@ -43,8 +43,8 @@
           <Icon name="i-ph-wallet-duotone" class="h-5 w-5" />
         </span>
         <div>
-          <p class="settings-points__stat-label">Số dư ví</p>
-          <p class="settings-points__stat-value">{{ formatCurrency(walletBalance) }}</p>
+          <p class="settings-points__stat-label">{{ t("settings.data.pointsPanel.walletBalance") }}</p>
+          <p class="settings-points__stat-value">{{ formatWalletCurrency(walletBalance) }}</p>
         </div>
       </article>
 
@@ -53,43 +53,18 @@
           <Icon name="i-ph-arrows-left-right-duotone" class="h-5 w-5" />
         </span>
         <div>
-          <p class="settings-points__stat-label">Tỉ lệ quy đổi</p>
-          <p class="settings-points__stat-value">1.000 = 10.000 VND</p>
+          <p class="settings-points__stat-label">{{ t("settings.data.pointsPanel.exchangeRate") }}</p>
+          <p class="settings-points__stat-value">{{ exchangeRateLabel }}</p>
         </div>
       </article>
     </div>
 
     <div class="settings-points__body">
-      <div class="settings-points__calculator">
-        <div class="settings-points__section-heading">
-          <div>
-            <h3 class="settings-points__section-title">Ước tính quy đổi</h3>
-            <p class="settings-points__section-description">
-              Chọn số điểm theo bội số 1.000 để xem số tiền sẽ cộng vào ví.
-            </p>
-          </div>
-        </div>
-
-        <div class="settings-points__preview">
-          <div class="settings-points__preview-row">
-            <span>Có thể đổi</span>
-            <strong>{{ formatNumber(maxExchangePoints) }} điểm</strong>
-          </div>
-          <div class="settings-points__preview-row">
-            <span>Giá trị tối đa</span>
-            <strong>{{ formatCurrency(maxExchangeAmount) }}</strong>
-          </div>
-          <div class="settings-points__progress" aria-hidden="true">
-            <span :style="{ width: `${progressWidth}%` }" />
-          </div>
-        </div>
-      </div>
-
       <div class="settings-points__history">
         <div class="settings-points__section-heading">
           <div>
-            <h3 class="settings-points__section-title">Lịch sử điểm</h3>
-            <p class="settings-points__section-description">Các lần đổi điểm sang ví gần đây.</p>
+            <h3 class="settings-points__section-title">{{ t("settings.data.pointsPanel.historyTitle") }}</h3>
+            <p class="settings-points__section-description">{{ t("settings.data.pointsPanel.historyDescription") }}</p>
           </div>
           <button class="settings-points__refresh-button" type="button" @click="loadWalletHistory">
             <Icon name="i-ph-arrow-clockwise-duotone" class="h-4 w-4" />
@@ -110,13 +85,18 @@
               <p class="settings-points__history-title">{{ item.title }}</p>
               <p class="settings-points__history-meta">{{ item.meta }}</p>
             </div>
-            <strong class="settings-points__history-amount">{{ formatCurrency(item.amount) }}</strong>
+            <strong
+              class="settings-points__history-amount"
+              :class="{ 'settings-points__history-amount--negative': item.points < 0 }"
+            >
+              {{ formatSignedPoints(item.points) }}
+            </strong>
           </article>
         </div>
 
         <div v-else class="settings-points__empty">
           <Icon name="i-ph-clock-counter-clockwise-duotone" class="h-6 w-6" />
-          <p>Chưa có lịch sử đổi điểm.</p>
+          <p>{{ t("settings.data.pointsPanel.emptyHistory") }}</p>
         </div>
       </div>
     </div>
@@ -129,43 +109,57 @@
         aria-modal="true"
         aria-labelledby="settings-points-modal-title"
       >
-        <button class="settings-points-modal__backdrop" type="button" aria-label="Dong" @click="closeExchangeModal" />
+        <button class="settings-points-modal__backdrop" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="closeExchangeModal" />
 
         <form class="settings-points-modal__panel" @submit.prevent="submitExchange">
           <div class="settings-points-modal__header">
             <div>
-              <p class="settings-points__eyebrow">Quy đổi điểm</p>
-              <h2 id="settings-points-modal-title" class="settings-points-modal__title">Đổi điểm sang ví</h2>
+              <p class="settings-points__eyebrow">{{ t("settings.data.pointsPanel.modalEyebrow") }}</p>
+              <h2 id="settings-points-modal-title" class="settings-points-modal__title">{{ t("settings.data.pointsPanel.modalTitle") }}</h2>
             </div>
-            <button class="settings-points-modal__close" type="button" aria-label="Dong" @click="closeExchangeModal">
+            <button class="settings-points-modal__close" type="button" :aria-label="t('settings.data.pointsPanel.close')" @click="closeExchangeModal">
               <Icon name="i-ph-x" class="h-4 w-4" />
             </button>
           </div>
 
           <label class="settings-points-modal__field">
-            <span>Số điểm muốn đổi</span>
+            <span>{{ t("settings.data.pointsPanel.pointsInput") }}</span>
             <input
               v-model.number="exchangePoints"
               class="settings-points-modal__input"
               type="number"
-              :min="exchangeStep"
+              :min="exchangeStepPoints"
               :max="maxExchangePoints"
-              :step="exchangeStep"
+              :step="exchangeStepPoints"
             >
           </label>
 
+          <div class="settings-points__preview settings-points__preview--modal">
+            <div class="settings-points__preview-row">
+              <span>{{ t("settings.data.pointsPanel.exchangeable") }}</span>
+              <strong>{{ t("settings.data.pointsPanel.pointsAmount", { points: formatNumber(maxExchangePoints) }) }}</strong>
+            </div>
+            <div class="settings-points__preview-row">
+              <span>{{ t("settings.data.pointsPanel.maxValue") }}</span>
+              <strong>{{ formatPointCurrency(maxExchangeAmount) }}</strong>
+            </div>
+            <div class="settings-points__progress" aria-hidden="true">
+              <span :style="{ width: `${progressWidth}%` }" />
+            </div>
+          </div>
+
           <div class="settings-points-modal__summary">
             <div>
-              <span>Điểm trừ</span>
+              <span>{{ t("settings.data.pointsPanel.pointsDeducted") }}</span>
               <strong>{{ formatNumber(normalizedExchangePoints) }}</strong>
             </div>
             <div>
-              <span>Cộng vào ví</span>
-              <strong>{{ formatCurrency(exchangeAmount) }}</strong>
+              <span>{{ t("settings.data.pointsPanel.walletCredit") }}</span>
+              <strong>{{ formatPointCurrency(exchangeAmount) }}</strong>
             </div>
             <div>
-              <span>Ví sau đổi</span>
-              <strong>{{ formatCurrency(walletBalance + exchangeAmount) }}</strong>
+              <span>{{ t("settings.data.pointsPanel.walletAfterExchange") }}</span>
+              <strong>{{ formatWalletCurrency(walletBalance + exchangeWalletAmount) }}</strong>
             </div>
           </div>
 
@@ -173,7 +167,7 @@
 
           <div class="settings-points-modal__actions">
             <button class="settings-points-modal__secondary" type="button" @click="closeExchangeModal">
-              Hủy
+              {{ t("settings.data.pointsPanel.cancel") }}
             </button>
             <button
               class="settings-points-modal__primary"
@@ -181,7 +175,7 @@
               :disabled="!canSubmitExchange || isSubmitting"
             >
               <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
-              <span>{{ isSubmitting ? "Đang đổi..." : "Xác nhận đổi" }}</span>
+              <span>{{ isSubmitting ? t("settings.data.pointsPanel.submitting") : t("settings.data.pointsPanel.confirm") }}</span>
             </button>
           </div>
         </form>
@@ -192,159 +186,40 @@
 
 <script setup lang="ts">
 import type { SettingsPointsExchangeResult, SettingsUser } from "../../domain/types/settings.types"
-import { createApiWalletRepository } from "../../../wallet/infrastructure/repositories/ApiWalletRepository"
-import type { WalletTransaction } from "../../../wallet/domain/types/wallet.types"
-
-type HistoryItem = {
-  id: string
-  title: string
-  meta: string
-  amount: number
-}
+import { useSettingsMyPointsPanelVM } from "../../application/view-models/useSettingsMyPointsPanelVM"
 
 const props = defineProps<{
   user: SettingsUser | null
   onExchange: (points: number) => Promise<SettingsPointsExchangeResult>
 }>()
 
-const exchangeStep = 1000
-const exchangeAmountPerStep = 10000
-const isExchangeModalOpen = ref(false)
-const exchangePoints = ref(exchangeStep)
-const exchangeError = ref("")
-const isSubmitting = ref(false)
-const walletTransactions = ref<WalletTransaction[]>([])
-const localHistory = ref<HistoryItem[]>([])
-const walletRepository = createApiWalletRepository()
-
-const toNumber = (value: unknown) => {
-  if (typeof value === "number") return Number.isFinite(value) ? value : 0
-  const normalized = String(value ?? "").replace(/[^\d.-]/g, "")
-  const number = Number(normalized)
-  return Number.isFinite(number) ? number : 0
-}
-
-const pointsBalance = computed(() => Math.max(Math.trunc(toNumber(props.user?.points)), 0))
-const walletBalance = computed(() => Math.max(toNumber(props.user?.wallet), 0))
-const maxExchangePoints = computed(() => Math.floor(pointsBalance.value / exchangeStep) * exchangeStep)
-const maxExchangeAmount = computed(() => (maxExchangePoints.value / exchangeStep) * exchangeAmountPerStep)
-const normalizedExchangePoints = computed(() => Math.floor(toNumber(exchangePoints.value) / exchangeStep) * exchangeStep)
-const exchangeAmount = computed(() => (normalizedExchangePoints.value / exchangeStep) * exchangeAmountPerStep)
-const canSubmitExchange = computed(() =>
-  normalizedExchangePoints.value >= exchangeStep
-  && normalizedExchangePoints.value <= maxExchangePoints.value
-  && normalizedExchangePoints.value === exchangePoints.value,
-)
-const progressWidth = computed(() => {
-  if (pointsBalance.value <= 0) return 0
-  return Math.min(100, Math.round((maxExchangePoints.value / pointsBalance.value) * 100))
-})
-
-const historyItems = computed<HistoryItem[]>(() => {
-  const exchangeTransactions = walletTransactions.value
-    .filter(transaction => transaction.kind === "POINTS_EXCHANGE")
-    .map(transaction => ({
-      id: `wallet-${transaction.id}`,
-      title: transaction.notes || "Đổi điểm sang ví",
-      meta: formatDate(transaction.transactionDate),
-      amount: transaction.amount,
-    }))
-
-  return [...localHistory.value, ...exchangeTransactions].slice(0, 6)
-})
-
-watch(maxExchangePoints, (value) => {
-  if (value < exchangeStep) {
-    exchangePoints.value = exchangeStep
-    return
-  }
-
-  if (exchangePoints.value > value) {
-    exchangePoints.value = value
-  }
-}, { immediate: true })
-
-onMounted(() => {
-  void loadWalletHistory()
-})
-
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 }).format(value)
-}
-
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    maximumFractionDigits: 0,
-  }).format(value)
-}
-
-function formatDate(value: string) {
-  if (!value) return "Vừa xong"
-  const date = new Date(value.replace(" ", "T"))
-  if (Number.isNaN(date.getTime())) return value
-  return new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(date)
-}
-
-async function loadWalletHistory() {
-  try {
-    const overview = await walletRepository.getOverview()
-    walletTransactions.value = overview.transactions
-  }
-  catch {
-    walletTransactions.value = []
-  }
-}
-
-function openExchangeModal() {
-  exchangeError.value = ""
-  exchangePoints.value = maxExchangePoints.value >= exchangeStep ? exchangeStep : exchangeStep
-  isExchangeModalOpen.value = true
-}
-
-function closeExchangeModal() {
-  if (isSubmitting.value) return
-  isExchangeModalOpen.value = false
-  exchangeError.value = ""
-}
-
-async function submitExchange() {
-  exchangeError.value = ""
-
-  if (!canSubmitExchange.value) {
-    exchangeError.value = "Vui lòng nhập số điểm hợp lệ theo bội số 1.000."
-    return
-  }
-
-  isSubmitting.value = true
-
-  try {
-    const result = await props.onExchange(normalizedExchangePoints.value)
-
-    localHistory.value.unshift({
-      id: `local-${Date.now()}`,
-      title: `Đổi ${formatNumber(result.exchangedPoints)} điểm sang ví`,
-      meta: "Vừa xong",
-      amount: result.amount,
-    })
-
-    await loadWalletHistory()
-    closeExchangeModal()
-  }
-  catch (error) {
-    exchangeError.value = error instanceof Error ? error.message : "Không thể đổi điểm lúc này."
-  }
-  finally {
-    isSubmitting.value = false
-  }
-}
+const {
+  t,
+  pointsBalance,
+  walletBalance,
+  exchangeStepPoints,
+  maxExchangePoints,
+  maxExchangeAmount,
+  normalizedExchangePoints,
+  exchangeAmount,
+  exchangeWalletAmount,
+  exchangeRateLabel,
+  canSubmitExchange,
+  progressWidth,
+  historyItems,
+  isExchangeModalOpen,
+  exchangePoints,
+  exchangeError,
+  isSubmitting,
+  formatNumber,
+  formatSignedPoints,
+  formatPointCurrency,
+  formatWalletCurrency,
+  loadWalletHistory,
+  openExchangeModal,
+  closeExchangeModal,
+  submitExchange,
+} = useSettingsMyPointsPanelVM(() => props.user, props.onExchange)
 </script>
 
 <style scoped>
@@ -356,7 +231,6 @@ async function submitExchange() {
 
 .settings-points__hero,
 .settings-points__stat,
-.settings-points__calculator,
 .settings-points__history {
   border: 1px solid rgba(0, 0, 255, 0.05);
   border-radius: 16px;
@@ -517,12 +391,9 @@ async function submitExchange() {
 }
 
 .settings-points__body {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 14px;
+  display: block;
 }
 
-.settings-points__calculator,
 .settings-points__history {
   padding: 16px;
 }
@@ -557,6 +428,10 @@ async function submitExchange() {
   padding: 14px;
   border-radius: 14px;
   background: #fafbfe;
+}
+
+.settings-points__preview--modal {
+  margin-top: 14px;
 }
 
 .settings-points__preview-row {
@@ -672,6 +547,10 @@ async function submitExchange() {
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
+}
+
+.settings-points__history-amount--negative {
+  color: #dc2626;
 }
 
 .settings-points__empty {

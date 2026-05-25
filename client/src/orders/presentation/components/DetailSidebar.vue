@@ -67,17 +67,6 @@
 
       <div class="flex flex-col gap-3">
         <UButton
-          to="/orders"
-          color="white"
-          variant="soft"
-          size="xl"
-          icon="i-ph-arrow-left-duotone"
-          class="rounded-2xl border border-secondary-200 bg-white hover:bg-secondary-50 text-secondary-900 font-black text-xs uppercase tracking-widest h-12 shadow-sm transition-all active:scale-95"
-        >
-          {{ $t("orders.sidebar.backToOrders") }}
-        </UButton>
-
-        <UButton
           color="white"
           variant="soft"
           size="xl"

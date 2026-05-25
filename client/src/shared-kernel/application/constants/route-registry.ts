@@ -183,6 +183,15 @@ export const apiRoutes = {
     groupDetails: "messages/group/details",
     groupCandidates: "messages/group/candidates",
     groupMembers: "messages/group/members",
+    calls: {
+      answer: "messages/calls/answer",
+      create: "messages/calls/create",
+      decline: "messages/calls/decline",
+      end: "messages/calls/end",
+      incoming: "messages/calls/incoming",
+      payload: "messages/calls/payload",
+      status: "messages/calls/status",
+    },
   },
   navigation: {
     general: "navigation/general",
