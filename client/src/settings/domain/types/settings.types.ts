@@ -53,6 +53,19 @@ export interface SettingsUser {
   verified?: boolean
   wallet?: string | number
   points?: string | number
+  pointsConfig?: {
+    pointAllowWithdrawal: boolean
+    dollarToPointCost: number
+    adsCurrency: string
+    currencySymbol: string
+    pointBaseCurrency: string
+    walletCurrency: string
+    walletExchangeRate: number
+    displayCurrency: string
+    displayCurrencySymbol: string
+    displayExchangeRate: number
+    exchangeUpdate: number
+  }
   role?: SettingsRole
   avatar?: string
   cover?: string

@@ -64,13 +64,21 @@
       </NuxtErrorBoundary>
     </NuxtLayout>
     <UToaster />
+    <MessagesMessageCallGlobalHost :poll-incoming="Boolean(backendUserSession)" />
   </UApp>
 </template>
 
 <script setup lang="ts">
+import MessagesMessageCallGlobalHost from "../src/messages/presentation/components/MessageCallGlobalHost.vue"
+
 const route = useRoute()
 const nuxtApp = useNuxtApp()
 const error = useError()
+const backendUserSession = useCookie<string | null>("user_id", {
+  default: () => null,
+  sameSite: "lax",
+  path: "/",
+})
 const lastSafeRoute = useState("last-safe-route", () => "/home")
 const runtimeBoundaryNonce = ref(0)
 

@@ -6,7 +6,7 @@ import { backendRoutes } from "../../src/shared-kernel/application/constants/rou
 import { getBackendBaseCandidates } from "./backend-api-client"
 
 type BackendWebFormValue = string | number | boolean | null | undefined
-type BackendWebFormBody = Record<string, BackendWebFormValue>
+type BackendWebFormBody = Record<string, BackendWebFormValue> | URLSearchParams | FormData
 
 export interface BackendWebRequest<TBody = BackendWebFormBody> {
   query?: ApiQuery

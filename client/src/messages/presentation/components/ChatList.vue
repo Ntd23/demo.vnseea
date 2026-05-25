@@ -1,238 +1,268 @@
-<!-- Description: Renders the left inbox pane with search, actions, tabs, inline multi-sender, and real conversation rows from the backend inbox. -->
+<!-- Description: Renders the inbox sidebar with search, user/group tabs, and the multi-send panel for text, file, and recording drafts. -->
 <template>
-  <div class="scrollbar-hide flex h-full flex-col overflow-y-auto bg-white">
-    <!-- Header Block -->
-    <div class="border-b border-[#f1f5f9] px-5 py-5 shrink-0">
-      <div class="flex items-center gap-4">
-        <!-- Search Input -->
-        <div class="flex h-12 min-w-0 flex-1 items-center gap-3 rounded-[12px] bg-[#f6f6f6] px-4 transition duration-200 focus-within:bg-white focus-within:shadow-[0_1px_2px_rgba(0,0,0,0.12)] focus-within:ring-1 focus-within:ring-black/5">
-          <Icon name="i-ph-magnifying-glass-duotone" class="h-5 w-5 text-[#8e8e93]" />
+  <div class="flex h-full flex-col bg-white">
+
+    <!-- ── Header: Search + Actions ─────────────────── -->
+    <div class="shrink-0 px-4 pt-5 pb-3">
+      <div class="flex items-center gap-2">
+        <div class="relative flex-1">
+          <Icon name="i-ph-magnifying-glass" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
           <input
             :value="query"
-            type="text"
-            class="w-full bg-transparent text-[15px] font-medium text-[var(--text-primary)] outline-none placeholder:text-[#9ca3af]"
+            type="search"
+            class="cl-search"
             :placeholder="$t('pages.messagesPage.searchPlaceholder')"
             @input="emit('update:query', ($event.target as HTMLInputElement).value)"
           >
         </div>
 
-        <!-- Top Actions Wrapper -->
-        <div class="messages-list__top-actions-wrapper">
-          <button
-            class="messages-list__top-action"
-            type="button"
-            :title="markAllLabel"
-            @click="emit('mark-all-read')"
-          >
-            <Icon v-if="!markingRead" name="i-ph-list-checks-bold" class="messages-list__top-action-icon" />
-            <Icon v-else name="i-ph-spinner-gap-bold" class="messages-list__top-action-icon animate-spin" />
+        <UTooltip :text="markAllLabel">
+          <button class="cl-icon-btn" type="button" :disabled="markingRead" @click="emit('mark-all-read')">
+            <Icon v-if="!markingRead" name="i-ph-list-checks-bold" class="h-4.5 w-4.5" />
+            <Icon v-else name="i-ph-spinner-gap-bold" class="h-4.5 w-4.5 animate-spin" />
           </button>
-          <button
-            class="messages-list__top-action"
-            type="button"
-            :title="createGroupLabel"
-            @click="emit('create-group')"
-          >
-            <Icon name="i-ph-user-plus-bold" class="messages-list__top-action-icon" />
+        </UTooltip>
+
+        <UTooltip :text="createGroupLabel">
+          <button class="cl-icon-btn cl-icon-btn--primary" type="button" @click="emit('create-group')">
+            <Icon name="i-ph-pencil-simple-bold" class="h-4.5 w-4.5" />
           </button>
-        </div>
+        </UTooltip>
       </div>
 
-      <!-- Tab Buttons in 1 Row (Parity with WoWonder Web) -->
-      <div class="chat-list__tabs-container">
+      <!-- ── Tabs ──────────────────────────────────── -->
+      <div class="mt-4 flex items-center gap-1 rounded-[var(--radius-md)] bg-[var(--bg-muted)] p-1">
         <button
           v-for="tab in tabs"
           :key="tab.id"
-          class="chat-list__tab"
-          :class="{ 'chat-list__tab--active': activeTab === tab.id }"
           type="button"
+          class="cl-tab"
+          :class="activeTab === tab.id ? 'cl-tab--active' : ''"
           @click="emit('update:activeTab', tab.id)"
         >
-          <div class="relative flex items-center justify-center">
-            <Icon :name="tab.icon" class="chat-list__tab-icon" />
+          <div class="relative">
+            <Icon :name="tab.icon" class="h-4 w-4" />
             <span
               v-if="tab.id === 'multi' && selectedRecipients.length > 0"
-              class="absolute -top-1.5 -right-2.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#ef4444] px-1 text-[9px] font-bold text-white shadow-sm"
+              class="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white"
             >
               {{ selectedRecipients.length }}
             </span>
           </div>
-          <span class="chat-list__tab-label">{{ tab.label }}</span>
+          <span>{{ tab.label }}</span>
         </button>
       </div>
     </div>
 
-    <!-- Inline Multi-Send Compose Controls (Strict Parity with WoWonder left panel form) -->
-    <div v-if="activeTab === 'multi'" class="chat-list__multi-composer shrink-0">
-      <!-- Title -->
-      <div class="flex items-center justify-between mb-3.5">
-        <h4 class="text-xs font-bold uppercase tracking-[0.08em] text-[#8e8e93] m-0">
-          {{ $t("pages.messagesPage.composeTitle") }}
-        </h4>
-        <span class="text-[11px] font-bold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5">
+    <!-- ── Multi-send composer panel ────────────────── -->
+    <div v-if="activeTab === 'multi'" class="shrink-0 border-b border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-4">
+      <div class="mb-3 flex items-center justify-between">
+        <span class="text-label-secondary">{{ $t("pages.messagesPage.composeTitle") }}</span>
+        <span class="rounded-full bg-white px-2.5 py-0.5 text-[11px] font-semibold text-[var(--text-secondary)] shadow-sm">
           {{ selectedCountLabel }}
         </span>
       </div>
 
-      <div class="mb-3">
-        <label class="block text-xs font-bold text-[#8e8e93] mb-1.5 uppercase tracking-wide">
-          {{ tagFilterLabel }}
-        </label>
-        <select
-          class="chat-list__tag-filter"
-          :value="activeTagFilter"
-          @change="emit('update:activeTagFilter', ($event.target as HTMLSelectElement).value)"
-        >
-          <option value="">{{ chooseTagLabel }}</option>
-          <option value="0">{{ allTaggedUsersLabel }}</option>
-          <option
-            v-for="tag in messageTagLabels ?? []"
-            :key="tag.id"
-            :value="String(tag.id)"
+      <div class="space-y-3">
+        <div>
+          <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+            {{ tagFilterLabel }}
+          </label>
+          <select
+            class="cl-select"
+            :value="activeTagFilter"
+            @change="emit('update:activeTagFilter', ($event.target as HTMLSelectElement).value)"
           >
-            {{ tag.name }}
-          </option>
-        </select>
-        <p v-if="activeTagFilter" class="mt-1.5 text-[11px] font-semibold text-slate-500">
-          {{ tagFilterStatus }}
-        </p>
-      </div>
-
-      <!-- Selected Recipients Names (Chips Inline parity with WoWonder) -->
-      <div class="mb-3">
-        <label class="block text-xs font-bold text-[#8e8e93] mb-1.5 uppercase tracking-wide">
-          {{ $t("pages.messagesPage.sendTo") || 'Gửi tới' }}:
-        </label>
-        <div class="text-xs font-semibold text-slate-700 bg-slate-100 rounded-lg p-2.5 min-h-[32px] break-words leading-relaxed border border-slate-200">
-          {{ selectedNamesList || $t("pages.messagesPage.noRecipientsSelected") || 'Chưa chọn người nhận nào.' }}
+            <option value="">{{ chooseTagLabel }}</option>
+            <option value="0">{{ allTaggedUsersLabel }}</option>
+            <option
+              v-for="tag in messageTagLabels ?? []"
+              :key="tag.id"
+              :value="String(tag.id)"
+            >
+              {{ tag.name }}
+            </option>
+          </select>
+          <p v-if="activeTagFilter" class="mt-1.5 text-[11px] text-[var(--text-tertiary)]">
+            {{ tagFilterStatus }}
+          </p>
         </div>
-      </div>
 
-      <!-- Content Textarea -->
-      <div class="mb-3">
-        <label class="block text-xs font-bold text-[#8e8e93] mb-1.5 uppercase tracking-wide">
-          {{ $t("pages.messagesPage.content") || 'Nội dung' }}
-        </label>
-        <textarea
-          :value="multiText"
-          @input="emit('update:multiText', ($event.target as HTMLTextAreaElement).value)"
-          rows="3"
-          class="chat-list__multi-textarea"
-          placeholder="Nhập nội dung tin nhắn..."
+        <div>
+          <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
+            {{ $t("pages.messagesPage.sendTo") }}
+          </label>
+          <div class="min-h-[40px] rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white px-3 py-2.5 text-[var(--text-body)] text-sm text-[var(--text-primary)]">
+            <span v-if="selectedNamesList" class="font-medium">{{ selectedNamesList }}</span>
+            <span v-else class="text-[var(--text-tertiary)]">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
+          </div>
+        </div>
+
+        <UTextarea
+          :model-value="multiText"
+          autoresize
+          :rows="3"
+          :placeholder="$t('pages.messagesPage.messagePlaceholder')"
+          :ui="{ base: 'rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white shadow-none text-sm' }"
+          @update:model-value="emit('update:multiText', String($event || ''))"
+        />
+
+        <div class="rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white p-3">
+          <UFileUpload
+            v-model="multiFileModel"
+            :multiple="false"
+            layout="list"
+            highlight
+            :label="$t('pages.messagesPage.chooseFile')"
+            :description="$t('pages.messagesPage.attachmentOptional')"
+            class="w-full"
+          />
+        </div>
+
+        <div v-if="activeRecordDraft || isRecording" class="rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white px-4 py-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="h-2 w-2 rounded-full" :class="isRecording ? 'animate-pulse bg-rose-500' : 'bg-[var(--color-primary-500)]'" />
+              <div>
+                <p class="text-sm font-semibold text-[var(--text-primary)]">
+                  {{ isRecording ? $t('pages.messagesPage.recordingInProgress') : $t('pages.messagesPage.recordReady') }}
+                </p>
+                <p class="text-xs text-[var(--text-tertiary)]">{{ formattedRecordDuration }}</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <UButton v-if="isRecording" type="button" color="warning" variant="soft" icon="i-ph-stop-circle-duotone" class="rounded-full" size="sm" @click="stopRecordingDraft">
+                {{ $t("pages.messagesPage.stopRecording") }}
+              </UButton>
+              <UButton v-else-if="activeRecordDraft" type="button" color="neutral" variant="soft" icon="i-ph-trash-duotone" class="rounded-full" size="sm" @click="discardRecording">
+                {{ $t("pages.messagesPage.discardRecording") }}
+              </UButton>
+            </div>
+          </div>
+          <audio v-if="activeRecordDraft" :src="activeRecordDraft.previewUrl" class="mt-3 w-full" controls preload="none" />
+        </div>
+
+        <UAlert
+          v-if="permissionDenied || errorMessage"
+          color="error"
+          variant="subtle"
+          icon="i-ph-warning-circle-duotone"
+          :title="$t('pages.messagesPage.recordPermissionTitle')"
+          :description="permissionDenied ? $t('pages.messagesPage.recordPermissionDenied') : errorMessage"
+          class="rounded-[var(--radius-md)]"
+        />
+
+        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-light)] pt-3">
+          <label class="inline-flex cursor-pointer items-center gap-2 text-xs font-medium text-[var(--text-secondary)]">
+            <input
+              type="checkbox"
+              :checked="allVisibleRecipientsSelected"
+              class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+              @change="emit('toggle-all-recipients')"
+            >
+            <span>{{ $t("pages.messagesPage.selectAll") }}</span>
+          </label>
+          <div class="flex items-center gap-2">
+            <UTooltip :text="isRecording ? $t('pages.messagesPage.stopRecording') : $t('pages.messagesPage.startRecording')">
+              <UButton
+                type="button"
+                color="neutral"
+                :variant="isRecording ? 'solid' : 'soft'"
+                :icon="isRecording ? 'i-ph-stop-circle-duotone' : 'i-ph-microphone-duotone'"
+                class="rounded-full"
+                size="sm"
+                :disabled="multiPending || !isSupported"
+                @click="handleRecordButton"
+              />
+            </UTooltip>
+            <UButton
+              type="button"
+              color="primary"
+              icon="i-ph-paper-plane-tilt-bold"
+              class="rounded-full px-4"
+              size="sm"
+              :loading="multiPending"
+              :disabled="multiPending || !canSendMulti"
+              @click="emit('send-multi')"
+            >
+              {{ multiPending ? $t("pages.messagesPage.multiSendingButton") : $t("pages.messagesPage.sendMessage") }}
+            </UButton>
+          </div>
+        </div>
+
+        <UAlert
+          v-if="statusMessage"
+          :color="statusColor"
+          variant="subtle"
+          :description="statusMessage"
+          class="rounded-[var(--radius-md)]"
         />
       </div>
+    </div>
 
-      <!-- Attachment input (optional) -->
-      <div class="mb-4">
-        <label class="block text-xs font-bold text-[#8e8e93] mb-1.5 uppercase tracking-wide">
-          {{ $t("pages.messagesPage.attachmentLabel") || 'Đính kèm (tùy chọn)' }}
-        </label>
-        <div class="flex items-center gap-2">
-          <input
-            ref="fileInputRef"
-            type="file"
-            class="hidden"
-            @change="onMultiFileChange"
-          />
-          <button
-            type="button"
-            class="chat-list__file-btn"
-            @click="triggerFileInput"
-          >
-            <Icon name="i-ph-paperclip-bold" class="h-4 w-4" />
-            <span>{{ multiFile ? changeFileLabel : chooseFileLabel }}</span>
-          </button>
-          <span v-if="multiFile" class="text-xs text-slate-600 truncate max-w-[130px] font-medium">
-            {{ multiFile.name }}
-          </span>
-          <button
-            v-if="multiFile"
-            type="button"
-            class="text-[#ef4444] hover:text-[#dc2626] p-1 flex items-center justify-center transition"
-            @click="clearMultiFile"
-          >
-            <Icon name="i-ph-x-bold" class="h-4 w-4" />
-          </button>
+    <!-- ── Contacts header ───────────────────────── -->
+    <div class="flex items-center justify-between px-4 py-2.5">
+      <span class="text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-tertiary)]">{{ resultLabel }}</span>
+      <span class="text-[11px] font-semibold text-[var(--text-tertiary)]">
+        <span v-if="pending" class="animate-pulse">{{ loadingLabel }}</span>
+        <span v-else>{{ contacts.length }}</span>
+      </span>
+    </div>
+
+    <!-- ── Contact list ──────────────────────────── -->
+    <UScrollArea class="min-h-0 flex-1 px-3 pb-3">
+      <div class="space-y-0.5">
+        <MessagesChatListItem
+          v-for="contact in contacts"
+          :key="contact.id"
+          :avatar-url="contact.avatarUrl"
+          :is-active="isContactActive(contact)"
+          :is-typing="activeTab === 'user' && isContactTyping(contact)"
+          :is-online="contact.isOnline"
+          :name="contact.name"
+          :preview="contact.preview"
+          :show-select="activeTab === 'multi'"
+          :show-tag-action="activeTab === 'user' && contact.type === 'user'"
+          :status="getContactStatus(contact)"
+          :tags="contact.tags ?? []"
+          :time="contact.time"
+          :type="contact.type"
+          :unread-count="contact.unreadCount"
+          @click="emit('select-user', contact)"
+          @manage-tags="emit('manage-tags', contact)"
+          @open-chat="emit('open-chat', contact)"
+        />
+
+        <div v-if="pending" class="space-y-1.5 px-1 pt-1">
+          <USkeleton v-for="i in 4" :key="i" class="h-[68px] rounded-[var(--radius-md)]" />
+        </div>
+
+        <div
+          v-else-if="contacts.length === 0"
+          class="flex flex-col items-center gap-2 rounded-[var(--radius-md)] border border-dashed border-[var(--border-default)] bg-[var(--bg-muted)] px-4 py-10 text-center"
+        >
+          <Icon name="i-ph-chat-circle-dashed-duotone" class="h-8 w-8 text-[var(--text-tertiary)]" />
+          <span class="text-sm text-[var(--text-secondary)]">{{ emptyLabel }}</span>
         </div>
       </div>
-
-      <!-- Checklist Controllers: Toggle all and Submit -->
-      <div class="flex items-center justify-between gap-3 pt-3 border-t border-[#f1f5f9]">
-        <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            :checked="allVisibleRecipientsSelected"
-            class="rounded border-slate-300 text-[#002aff] focus:ring-[#002aff] h-4 w-4 transition"
-            @change="emit('toggle-all-recipients')"
-          />
-          <span>{{ $t("pages.messagesPage.selectAll") || 'Chọn tất cả' }}</span>
-        </label>
-
-        <button
-          type="button"
-          class="chat-list__multi-send-btn"
-          :disabled="multiPending || !canSendMulti"
-          @click="emit('send-multi')"
-        >
-          <Icon v-if="!multiPending" name="i-ph-paper-plane-tilt-bold" class="h-4 w-4" />
-          <Icon v-else name="i-ph-spinner-gap-bold" class="h-4 w-4 animate-spin" />
-          <span>{{ multiPending ? $t("pages.messagesPage.multiSendingButton") || 'Đang gửi...' : $t("pages.messagesPage.sendMessage") || 'Gửi tin nhắn' }}</span>
-        </button>
-      </div>
-
-      <!-- Feedback Banner -->
-      <div
-        v-if="statusMessage"
-        class="mt-3.5 rounded-[10px] px-3.5 py-2.5 text-xs font-semibold"
-        :class="statusClass"
-      >
-        {{ statusMessage }}
-      </div>
-    </div>
-
-    <!-- Active Conversations / Results Title -->
-    <div class="flex items-center justify-between border-b border-[#f1f5f9] px-5 py-3 shrink-0">
-      <p class="text-xs font-bold uppercase tracking-[0.08em] text-[#8e8e93]">{{ resultLabel }}</p>
-      <span v-if="pending" class="text-xs font-semibold text-slate-400">{{ loadingLabel }}</span>
-      <span v-else class="text-xs font-bold text-slate-500">{{ contacts.length }}</span>
-    </div>
-
-    <div class="scrollbar-hide overflow-y-auto space-y-1.5 px-3 py-3 bg-white shrink-0" style="max-height: 380px;">
-      <MessagesChatListItem
-        v-for="contact in contacts"
-        :key="contact.id"
-        :avatar-url="contact.avatarUrl"
-        :is-active="isContactActive(contact)"
-        :is-online="contact.isOnline"
-        :name="contact.name"
-        :preview="contact.preview"
-        :show-select="activeTab === 'multi'"
-        :show-tag-action="activeTab === 'user' && contact.type === 'user'"
-        :status="getContactStatus(contact)"
-        :tags="contact.tags ?? []"
-        :time="contact.time"
-        :unread-count="contact.unreadCount"
-        @click="emit('select-user', contact)"
-        @manage-tags="emit('manage-tags', contact)"
-        @open-chat="emit('open-chat', contact)"
-      />
-
-      <div v-if="!pending && contacts.length === 0" class="rounded-[12px] border border-dashed border-[#cbd5e1] bg-[#f8fafc] px-4 py-8 text-center text-sm text-slate-500">
-        {{ emptyLabel }}
-      </div>
-    </div>
+    </UScrollArea>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { MessageContact, MessageTab, MessageTabKey, MessageUserTag } from "../../domain/types/messages.types"
+import { computed, watch } from "vue"
+import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
+import type { MessageContact, MessageRecordDraft, MessageTab, MessageTabKey, MessageUserTag } from "../../domain/types/messages.types"
 import MessagesChatListItem from "./ChatListItem.vue"
+
+const multiRecordModel = defineModel<MessageRecordDraft | null>("multiRecord", { default: null })
 
 const props = defineProps<{
   activeTab: MessageTabKey
   activeTagFilter?: string
   allVisibleRecipientsSelected?: boolean
   contacts: MessageContact[]
+  isContactTyping: (contact: MessageContact) => boolean
   messageTagLabels?: MessageUserTag[]
   pending?: boolean
   query: string
@@ -248,26 +278,7 @@ const props = defineProps<{
   statusTone?: "neutral" | "success" | "warning" | "error"
 }>()
 
-const { t, te, locale } = useI18n()
-
-const chooseFileLabel = computed(() => {
-  const key = 'pages.messagesPage.chooseFile'
-  const translated = t(key)
-  if (translated && translated !== key) {
-    return translated
-  }
-  return locale.value === 'en' ? 'Choose file...' : 'Chọn file...'
-})
-
-const changeFileLabel = computed(() => {
-  const key = 'pages.messagesPage.changeFile'
-  const translated = t(key)
-  if (translated && translated !== key) {
-    return translated
-  }
-  return locale.value === 'en' ? 'Change file' : 'Thay đổi file'
-})
-
+const { t } = useI18n()
 const emit = defineEmits<{
   "select-user": [user: MessageContact]
   "create-group": []
@@ -283,293 +294,186 @@ const emit = defineEmits<{
   "open-chat": [user: MessageContact]
 }>()
 
-const fileInputRef = ref<HTMLInputElement | null>(null)
+const {
+  isSupported, isRecording, permissionDenied, errorMessage,
+  durationMs, recordDraft, startRecording, stopRecording, clearRecording,
+} = useMessageRecorder()
+
+const multiFileModel = computed<File | null>({
+  get: () => props.multiFile,
+  set: (file) => { emit("update:multiFile", file ?? null) },
+})
+
+watch(recordDraft, (draft) => { multiRecordModel.value = draft })
+watch(() => props.multiFile, (file) => { if (file && recordDraft.value) clearRecording() })
+watch(() => multiRecordModel.value, (draft) => {
+  if (!draft && recordDraft.value && !isRecording.value) clearRecording()
+})
 
 const markAllLabel = computed(() => t("pages.messagesPage.markAllRead"))
 const createGroupLabel = computed(() => t("pages.messagesPage.newGroupChat"))
 const loadingLabel = computed(() => t("pages.messagesPage.loadingConversations"))
-const tagFilterLabel = computed(() => t("pages.messagesPage.label") || "Nhãn")
-const chooseTagLabel = computed(() => t("pages.messagesPage.chooseTag") || "Chọn nhãn...")
-const allTaggedUsersLabel = computed(() => locale.value === "en" ? "All tagged users" : "Tất cả người đã gắn thẻ")
-const tagFilterStatus = computed(() => {
-  if (!props.activeTagFilter) {
-    return ""
-  }
-
-  const label = props.activeTagFilter === "0"
-    ? allTaggedUsersLabel.value
-    : props.messageTagLabels?.find(tag => String(tag.id) === props.activeTagFilter)?.name || chooseTagLabel.value
-
-  return locale.value === "en"
-    ? `Filtering by ${label}`
-    : `Đang lọc theo ${label}`
-})
-
+const tagFilterLabel = computed(() => t("pages.messagesPage.label"))
+const chooseTagLabel = computed(() => t("pages.messagesPage.chooseTag"))
+const allTaggedUsersLabel = computed(() => t("pages.messagesPage.allTaggedUsers"))
+const activeRecordDraft = computed(() => multiRecordModel.value || recordDraft.value)
 const resultLabel = computed(() =>
   props.activeTab === "multi"
     ? t("pages.messagesPage.availableRecipients")
     : t("pages.messagesPage.visibleConversations"),
 )
-
 const emptyLabel = computed(() =>
   props.activeTab === "multi"
     ? t("pages.messagesPage.noRecipientsAvailable")
     : t("pages.messagesPage.noMatchingConversations"),
 )
-
 const selectedCountLabel = computed(() =>
-  t("pages.messagesPage.selectedRecipientsCount", {
-    count: props.selectedRecipients.length,
-  }),
+  t("pages.messagesPage.selectedRecipientsCount", { count: props.selectedRecipients.length }),
 )
-
-const selectedNamesList = computed(() => {
-  return props.selectedRecipients.map(u => u.name).join(', ')
+const selectedNamesList = computed(() =>
+  props.selectedRecipients.map(c => c.name).join(", "),
+)
+const tagFilterStatus = computed(() => {
+  if (!props.activeTagFilter) return ""
+  const label = props.activeTagFilter === "0"
+    ? allTaggedUsersLabel.value
+    : props.messageTagLabels?.find(tag => String(tag.id) === props.activeTagFilter)?.name || chooseTagLabel.value
+  return t("pages.messagesPage.filteringBy", { label })
 })
-
 const canSendMulti = computed(() =>
-  props.selectedRecipients.length > 0 &&
-  (props.multiText.trim().length > 0 || Boolean(props.multiFile))
+  props.selectedRecipients.length > 0
+  && (props.multiText.trim().length > 0 || Boolean(props.multiFile) || Boolean(activeRecordDraft.value)),
 )
-
-const statusClass = computed(() => {
-  if (props.statusTone === "success") {
-    return "bg-emerald-50 text-emerald-700 border border-emerald-100"
-  }
-  if (props.statusTone === "warning") {
-    return "bg-amber-50 text-amber-700 border border-amber-100"
-  }
-  if (props.statusTone === "error") {
-    return "bg-rose-50 text-rose-700 border border-rose-100"
-  }
-  return "bg-slate-100 text-slate-700 border border-slate-200"
+const formattedRecordDuration = computed(() => {
+  const src = isRecording.value ? durationMs.value : (activeRecordDraft.value?.durationMs ?? durationMs.value)
+  const total = Math.max(Math.floor(src / 1000), 0)
+  const m = Math.floor(total / 60)
+  const s = total % 60
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
 })
-
-function triggerFileInput() {
-  fileInputRef.value?.click()
-}
-
-function onMultiFileChange(event: Event) {
-  const input = event.target as HTMLInputElement
-  const file = input.files?.[0] ?? null
-  emit("update:multiFile", file)
-}
-
-function clearMultiFile() {
-  emit("update:multiFile", null)
-  if (fileInputRef.value) {
-    fileInputRef.value.value = ""
-  }
-}
+const statusColor = computed(() => {
+  if (props.statusTone === "success") return "success"
+  if (props.statusTone === "warning") return "warning"
+  if (props.statusTone === "error") return "error"
+  return "neutral"
+})
 
 function isContactActive(contact: MessageContact) {
-  if (props.activeTab === "multi") {
+  if (props.activeTab === "multi")
     return Boolean(contact.userId && props.selectedRecipientIds?.includes(contact.userId))
-  }
-
   return props.selectedContactId === contact.id
 }
 
 function getContactStatus(contact: MessageContact) {
-  if (contact.type === "group" && contact.memberCount) {
-    return t("pages.messagesPage.groupMembersStatus", {
-      count: contact.memberCount,
-    })
-  }
-
+  if (contact.type === "group" && contact.memberCount)
+    return t("pages.messagesPage.groupMembersStatus", { count: contact.memberCount })
+  if (contact.type === "user" && contact.isOnline)
+    return t("pages.messagesPage.activeNow")
   return contact.status || t("pages.messagesPage.activeRecently")
 }
+
+async function handleRecordButton() {
+  if (isRecording.value) { await stopRecordingDraft(); return }
+  emit("update:multiFile", null)
+  await startRecording()
+}
+
+async function stopRecordingDraft() { await stopRecording() }
+function discardRecording() { clearRecording(); multiRecordModel.value = null }
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+/* Search input */
+.cl-search {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px 0 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
+  color: var(--text-primary);
+  font-size: var(--text-body);
+  font-family: var(--font-primary);
+  outline: none;
+  transition: border-color var(--duration-fast) var(--ease-default),
+              box-shadow var(--duration-fast) var(--ease-default);
+}
+.cl-search:focus {
+  border-color: var(--border-strong);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
+}
+.cl-search::placeholder { color: var(--text-tertiary); }
 
-.chat-list__tabs-container {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: stretch !important;
-  justify-content: space-between !important;
-  gap: 8px !important;
-  margin-top: 20px !important;
-  width: 100% !important;
+/* Icon buttons */
+.cl-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  flex-shrink: 0;
+}
+.cl-icon-btn:hover { background: var(--bg-surface-hover); color: var(--text-primary); border-color: var(--border-default); }
+.cl-icon-btn:disabled { opacity: 0.5; cursor: default; }
+
+.cl-icon-btn--primary {
+  background: var(--bg-brand);
+  color: #ffffff;
+  border-color: transparent;
+}
+.cl-icon-btn--primary:hover { background: var(--bg-brand-hover); color: #ffffff; }
+
+/* Tab pills */
+.cl-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--text-body);
+  font-weight: var(--weight-medium);
+  font-family: var(--font-primary);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--ease-default);
+  white-space: nowrap;
+}
+.cl-tab:hover:not(.cl-tab--active) {
+  background: rgba(255,255,255,0.6);
+  color: var(--text-primary);
+}
+.cl-tab--active {
+  background: var(--bg-surface);
+  color: var(--color-primary-600);
+  font-weight: var(--weight-semibold);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px var(--border-light);
 }
 
-.chat-list__tab {
-  flex: 1 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 5px !important;
-  min-height: 62px !important;
-  border-radius: 10px !important;
-  background-color: transparent !important;
-  border: none !important;
-  padding: 6px 2px !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  color: #8e8e93 !important;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  cursor: pointer !important;
-  line-height: 1.2 !important;
-  text-align: center !important;
+/* Select */
+.cl-select {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: var(--text-body);
+  font-family: var(--font-primary);
+  outline: none;
+  cursor: pointer;
+  transition: border-color var(--duration-fast);
 }
-
-.chat-list__tab-icon {
-  width: 20px !important;
-  height: 20px !important;
-  color: #8e8e93 !important;
-  transition: color 0.2s ease !important;
-}
-
-.chat-list__tab:hover {
-  background-color: rgba(0, 0, 0, 0.04) !important;
-  color: #555555 !important;
-}
-
-.chat-list__tab:hover .chat-list__tab-icon {
-  color: #555555 !important;
-}
-
-.chat-list__tab--active {
-  background-color: #e8ecfb !important;
-  color: #002aff !important;
-}
-
-.chat-list__tab--active .chat-list__tab-icon {
-  color: #002aff !important;
-}
-
-.chat-list__tab-label {
-  display: block !important;
-  white-space: pre-line !important;
-  word-break: break-word !important;
-}
-
-.messages-list__top-actions-wrapper {
-  display: flex !important;
-  height: 48px !important;
-  flex-shrink: 0 !important;
-  overflow: hidden !important;
-  border-radius: 12px !important;
-  background-color: #002aff !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-.messages-list__top-action {
-  display: inline-flex !important;
-  width: 48px !important;
-  height: 48px !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: #ffffff !important;
-  background: transparent !important;
-  border: none !important;
-  cursor: pointer !important;
-  transition: background-color 0.2s ease !important;
-}
-
-.messages-list__top-action:hover {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-}
-
-.messages-list__top-action-icon {
-  width: 20px !important;
-  height: 20px !important;
-  color: #ffffff !important;
-}
-
-.chat-list__multi-composer {
-  font-family: 'Roboto', sans-serif !important;
-  background-color: #fafafa !important;
-  border-bottom: 1px solid #f1f5f9 !important;
-  padding: 16px 20px !important;
-}
-
-.chat-list__multi-textarea {
-  width: 100% !important;
-  resize: none !important;
-  background-color: #ffffff !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 8px !important;
-  padding: 8px 12px !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 13px !important;
-  color: #1e293b !important;
-  outline: none !important;
-  transition: all 0.2s ease !important;
-}
-
-.chat-list__multi-textarea:focus {
-  border-color: #002aff !important;
-  box-shadow: 0 0 0 2px rgba(0, 42, 255, 0.08) !important;
-}
-
-.chat-list__tag-filter {
-  width: 100% !important;
-  height: 38px !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 8px !important;
-  background: #ffffff !important;
-  color: #334155 !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 13px !important;
-  font-weight: 600 !important;
-  outline: none !important;
-  padding: 0 10px !important;
-}
-
-.chat-list__tag-filter:focus {
-  border-color: #002aff !important;
-  box-shadow: 0 0 0 2px rgba(0, 42, 255, 0.08) !important;
-}
-
-.chat-list__file-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  background-color: #f1f5f9 !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 6px !important;
-  padding: 6px 12px !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  color: #475569 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-}
-
-.chat-list__file-btn:hover {
-  background-color: #e2e8f0 !important;
-  color: #1e293b !important;
-}
-
-.chat-list__multi-send-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  background-color: #002aff !important;
-  color: #ffffff !important;
-  border: none !important;
-  border-radius: 8px !important;
-  padding: 8px 16px !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  transition: all 0.2s ease !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-}
-
-.chat-list__multi-send-btn:hover:not(:disabled) {
-  background-color: #0022d1 !important;
-}
-
-.chat-list__multi-send-btn:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-}
+.cl-select:focus { border-color: var(--border-strong); }
 </style>

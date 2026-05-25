@@ -4657,6 +4657,18 @@ function Wo_RegisterMessageGroup($ms_data = array())
         if (!empty($ms_data['from_id'])) {
             $from_id = $ms_data['from_id'];
         }
+        $group_members = Wo_GetGChatMemebers($ms_data['group_id']);
+        if (is_array($group_members)) {
+            foreach ($group_members as $group_member) {
+                $member_id = 0;
+                if (is_array($group_member) && !empty($group_member['user_id'])) {
+                    $member_id = (int) $group_member['user_id'];
+                }
+                if ($member_id > 0 && $member_id != $from_id) {
+                    Wo_PublishRealtimeNotification($member_id, 0, 'message');
+                }
+            }
+        }
         return $message_id;
     } else {
         return false;
@@ -4725,6 +4737,18 @@ function Wo_RegisterGroupMessage($ms_data = array())
     $query = mysqli_query($sqlConnect, " INSERT INTO " . T_MESSAGES . " ({$fields}) VALUES ({$data})");
     if ($query) {
         $message_id = mysqli_insert_id($sqlConnect);
+        $group_members = Wo_GetGChatMemebers($ms_data['group_id']);
+        if (is_array($group_members)) {
+            foreach ($group_members as $group_member) {
+                $member_id = 0;
+                if (is_array($group_member) && !empty($group_member['user_id'])) {
+                    $member_id = (int) $group_member['user_id'];
+                }
+                if ($member_id > 0 && $member_id != (int) $ms_data['from_id']) {
+                    Wo_PublishRealtimeNotification($member_id, 0, 'message');
+                }
+            }
+        }
         return $message_id;
     } else {
         return false;
@@ -5567,6 +5591,8 @@ function Wo_ShareFile($data = array(), $type = 0, $crop = true)
     }
     $new_string = pathinfo($data['name'], PATHINFO_FILENAME) . '.' . strtolower(pathinfo($data['name'], PATHINFO_EXTENSION));
     $file_extension = pathinfo($new_string, PATHINFO_EXTENSION);
+    $normalized_mime_type = !empty($data['type']) ? strtolower($data['type']) : '';
+    $is_sound_upload = !empty($data['is_sound']) || in_array($file_extension, array('mp3', 'wav', 'ogg', 'm4a')) || ($file_extension == 'webm' && strpos($normalized_mime_type, 'audio/') === 0);
     if ($data['is_video'] == 0) {
         if ($wo['config']['fileSharing'] == 1) {
             if (isset($data['types'])) {
@@ -5588,15 +5614,15 @@ function Wo_ShareFile($data = array(), $type = 0, $crop = true)
     if ($file_extension == 'jpg' || $file_extension == 'jpeg' || $file_extension == 'png' || $file_extension == 'gif') {
         $folder = 'photos';
         $fileType = 'image';
+    } else if ($is_sound_upload) {
+        $folder = 'sounds';
+        $fileType = 'soundFile';
     } else if ($file_extension == 'mp4' || $file_extension == 'mov' || $file_extension == 'webm' || $file_extension == 'flv' || $file_extension == 'mkv') {
         $folder = 'videos';
         $fileType = 'video';
     } elseif (!empty($data['is_video']) && $data['is_video'] == 1) {
         $folder = 'videos';
         $fileType = 'video';
-    } else if ($file_extension == 'mp3' || $file_extension == 'wav') {
-        $folder = 'sounds';
-        $fileType = 'soundFile';
     } else {
         $folder = 'files';
         $fileType = 'file';
@@ -5608,6 +5634,15 @@ function Wo_ShareFile($data = array(), $type = 0, $crop = true)
         $mime_types = explode(',', str_replace(' ', '', $wo['config']['mime_types'] . ',application/json,application/octet-stream'));
         if (Wo_IsAdmin()) {
             $mime_types = explode(',', str_replace(' ', '', $wo['config']['mime_types'] . ',application/json,application/octet-stream,image/svg+xml'));
+        }
+        if ($is_sound_upload) {
+            $mime_types = array_unique(array_merge($mime_types, array(
+                'audio/webm',
+                'video/webm',
+                'audio/ogg',
+                'audio/mp4',
+                'audio/x-m4a',
+            )));
         }
         if (!in_array($data['type'], $mime_types)) {
             return false;
@@ -5738,7 +5773,8 @@ function Wo_DisplaySharedFile($media, $placement = '', $cache = false, $is_video
         if ($file_extension == 'doc' || $file_extension == 'docx') {
             $file .= '<i class="fa ' . $icon_size . ' fa-file-word-o"></i> ' . $wo['media']['name'];
         }
-        if ($file_extension == 'mp3' || $file_extension == 'wav') {
+        $is_sound_file = ($file_extension == 'mp3' || $file_extension == 'wav' || $file_extension == 'ogg' || $file_extension == 'm4a' || ($file_extension == 'webm' && strpos($wo['media']['file'], '_soundFile.') !== false));
+        if ($is_sound_file) {
             if ($placement == 'chat') {
                 $file .= '<i class="fa ' . $icon_size . ' fa-music"></i> ' . $wo['media']['name'];
             } else if ($placement == 'message') {

@@ -1,9 +1,10 @@
 // Description: Loads inbox contacts and message threads from the Nuxt API bridge using backend data only.
 
 import type {
+  MessageComposerDraft,
   MessageContact,
   MessageItem,
-  MessageSendDraft,
+  MessageRecordDraft,
   MessageTab,
   MessageTabKey,
   MessageTagsPayload,
@@ -70,10 +71,18 @@ function decorateThreadMessages(messages: MessageItem[]) {
   return sortThreadMessages(messages).map((message, index, list) => {
     const nextMessage = list[index + 1]
     const previousMessage = list[index - 1]
+    const isGroupThread = message.threadType === "group"
+    const senderChangedFromPrevious = !previousMessage
+      || previousMessage.isMine
+      || previousMessage.senderId !== message.senderId
+    const senderChangedToNext = !nextMessage
+      || nextMessage.isMine !== message.isMine
+      || (isGroupThread && !message.isMine && nextMessage.senderId !== message.senderId)
 
     return {
       ...message,
-      isLast: !nextMessage || nextMessage.isMine !== message.isMine,
+      isLast: senderChangedToNext,
+      showAuthor: isGroupThread && !message.isMine && Boolean(message.authorName) && senderChangedFromPrevious,
       showTime: !previousMessage || Math.abs((message.timestamp ?? 0) - (previousMessage.timestamp ?? 0)) > 1800,
     }
   })
@@ -117,13 +126,15 @@ export function useMessagesInbox(
   const activeTagFilter = ref("")
   const multiText = ref("")
   const multiFile = ref<File | null>(null)
+  const multiRecord = ref<MessageRecordDraft | null>(null)
   const multiFeedback = ref<{ tone: MessageFeedbackTone, message: string } | null>(null)
+  const remoteTyping = ref(false)
+  const typingUserIds = ref<number[]>([])
   const isLoadingMore = ref(false)
   const isSending = ref(false)
   const isMultiSending = ref(false)
   const isMarkingRead = ref(false)
   const isDeletingConversation = ref(false)
-  const isCreatingGroup = ref(false)
   const isUpdatingTags = ref(false)
 
   const tabs = computed<MessageTab[]>(() => [
@@ -162,6 +173,12 @@ export function useMessagesInbox(
     return Number.isFinite(parsed) && parsed > 0 ? parsed : 0
   })
 
+  const requestedGroupId = computed(() => {
+    const parsed = Number(readQueryValue(route.query.groupId))
+
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0
+  })
+
   const requestedUserName = computed(() =>
     readQueryValue(route.query.name).trim() || t("pages.messagesPage.users"),
   )
@@ -180,27 +197,29 @@ export function useMessagesInbox(
         : contact,
     )
 
-    if (userId <= 0 || mergedContacts.some(contact => contact.type === "user" && contact.userId === userId)) {
-      return mergedContacts
+    let nextContacts = mergedContacts
+
+    if (userId > 0 && !mergedContacts.some(contact => contact.type === "user" && contact.userId === userId)) {
+      nextContacts = [
+        mergeContactTags({
+          id: buildUserContactId(userId),
+          name: requestedUserName.value,
+          status: t("pages.messagesPage.activeRecently"),
+          isOnline: false,
+          avatarUrl: "",
+          tab: "user",
+          type: "user",
+          preview: "",
+          time: "",
+          unreadCount: 0,
+          members: [requestedUserName.value],
+          userId,
+        }, taggedByUserId.get(userId)),
+        ...nextContacts,
+      ]
     }
 
-    return [
-      mergeContactTags({
-        id: buildUserContactId(userId),
-        name: requestedUserName.value,
-        status: t("pages.messagesPage.activeRecently"),
-        isOnline: false,
-        avatarUrl: "",
-        tab: "user",
-        type: "user",
-        preview: "",
-        time: "",
-        unreadCount: 0,
-        members: [requestedUserName.value],
-        userId,
-      }, taggedByUserId.get(userId)),
-      ...mergedContacts,
-    ]
+    return nextContacts
   })
 
   const taggedRecipientSource = computed(() => {
@@ -312,7 +331,7 @@ export function useMessagesInbox(
 
   const messages = computed(() => thread.value?.messages ?? [])
   const messageTagLabels = computed(() => messageTags.value?.labels ?? [])
-  const isTyping = computed(() => Boolean(thread.value?.typing))
+  const isTyping = computed(() => Boolean(thread.value?.typing || remoteTyping.value))
   const inboxPending = computed(() => inboxStatus.value === "pending")
   const threadPending = computed(() => threadStatus.value === "pending" || isLoadingMore.value || isSending.value)
   const multiFeedbackMessage = computed(() => multiFeedback.value?.message ?? "")
@@ -345,13 +364,22 @@ export function useMessagesInbox(
     router.replace({ query: nextQuery })
   })
 
-  watch([filteredContacts, requestedUserId], ([nextContacts, userId]) => {
+  watch([filteredContacts, requestedUserId, requestedGroupId], ([nextContacts, userId, groupId]) => {
     if (activeTab.value === "multi") {
       selectedContactId.value = ""
       return
     }
 
-    if (userId > 0) {
+    if (groupId > 0 && activeTab.value === "group") {
+      const requestedGroup = nextContacts.find(contact => contact.type === "group" && contact.groupId === groupId)
+
+      if (requestedGroup) {
+        selectedContactId.value = requestedGroup.id
+        return
+      }
+    }
+
+    if (userId > 0 && activeTab.value === "user") {
       const requestedContact = nextContacts.find(contact => contact.type === "user" && contact.userId === userId)
 
       if (requestedContact) {
@@ -454,6 +482,7 @@ export function useMessagesInbox(
       && selectedContactId.value === contact.id
 
     selectedContactId.value = contact.id
+    remoteTyping.value = false
 
     if (!isSameContact) {
       thread.value = { messages: [], typing: false }
@@ -553,25 +582,40 @@ export function useMessagesInbox(
     }
   }
 
-  async function sendMessage(input: MessageSendDraft) {
+  async function uploadRecordDraft(input: MessageRecordDraft) {
+    return await repository.uploadRecord(input.blob, input.fileName, {
+      mimeType: input.mimeType,
+      durationMs: input.durationMs,
+    })
+  }
+
+  async function sendMessage(input: MessageComposerDraft) {
     const contact = selectedContact.value
 
     if (!contact || isSending.value) {
       return
     }
 
-    if (!input.text.trim() && !input.file) {
+    if (!input.text.trim() && !input.file && !input.record) {
       return
     }
 
     isSending.value = true
 
     try {
-      const createdMessages = await repository.sendMessage(contact, input)
+      const uploadedRecord = input.record
+        ? await uploadRecordDraft(input.record)
+        : null
+      const createdMessages = await repository.sendMessage(contact, {
+        text: input.text.trim(),
+        file: input.file,
+        record: uploadedRecord,
+      })
       thread.value = {
         messages: mergeMessages(messages.value, createdMessages, "append"),
         typing: false,
       }
+      remoteTyping.value = false
       await refreshInbox()
     }
     catch {
@@ -636,49 +680,6 @@ export function useMessagesInbox(
     }
   }
 
-  async function createGroupChat(name: string) {
-    if (isCreatingGroup.value) {
-      return false
-    }
-
-    if (selectedRecipientIds.value.length === 0) {
-      setMultiFeedbackMessage("error", t("pages.messagesPage.multiMissingRecipients"))
-      return false
-    }
-
-    isCreatingGroup.value = true
-
-    try {
-      await repository.createGroup({
-        name,
-        recipientIds: selectedRecipientIds.value,
-      })
-      clearMultiSelection()
-      activeTab.value = "group"
-      await refreshInbox()
-
-      toast.add({
-        title: t("pages.messagesPage.groupCreateSuccessTitle"),
-        description: t("pages.messagesPage.groupCreateSuccessDescription"),
-        color: "success",
-      })
-
-      return true
-    }
-    catch {
-      toast.add({
-        title: t("pages.messagesPage.groupCreateErrorTitle"),
-        description: t("pages.messagesPage.groupCreateErrorDescription"),
-        color: "error",
-      })
-
-      return false
-    }
-    finally {
-      isCreatingGroup.value = false
-    }
-  }
-
   async function sendMultiMessage() {
     if (isMultiSending.value) {
       return
@@ -691,7 +692,7 @@ export function useMessagesInbox(
 
     const text = multiText.value.trim()
 
-    if (!text && !multiFile.value) {
+    if (!text && !multiFile.value && !multiRecord.value) {
       setMultiFeedbackMessage("error", t("pages.messagesPage.multiMissingContent"))
       return
     }
@@ -700,10 +701,14 @@ export function useMessagesInbox(
     setMultiFeedbackMessage("neutral", t("pages.messagesPage.multiSending"))
 
     try {
+      const uploadedRecord = multiRecord.value
+        ? await uploadRecordDraft(multiRecord.value)
+        : null
       const result = await repository.sendMultiMessage({
         recipientIds: selectedRecipientIds.value,
         text,
         file: multiFile.value,
+        record: uploadedRecord,
       })
 
       if (result.invalidFile === 1) {
@@ -721,6 +726,7 @@ export function useMessagesInbox(
         }))
         multiText.value = ""
         multiFile.value = null
+        multiRecord.value = null
         clearMultiSelection()
       }
       else if (result.status === 207) {
@@ -754,6 +760,39 @@ export function useMessagesInbox(
     finally {
       isMultiSending.value = false
     }
+  }
+
+  function setRemoteTyping(value: boolean) {
+    remoteTyping.value = value
+  }
+
+  function clearRemoteTyping() {
+    remoteTyping.value = false
+  }
+
+  function setContactTyping(userId: number, value: boolean) {
+    if (userId <= 0) {
+      return
+    }
+
+    const nextIds = new Set(typingUserIds.value)
+
+    if (value) {
+      nextIds.add(userId)
+    }
+    else {
+      nextIds.delete(userId)
+    }
+
+    typingUserIds.value = [...nextIds]
+  }
+
+  function isContactTyping(contact: MessageContact) {
+    const userId = contact.userId ?? 0
+
+    return contact.type === "user"
+      && userId > 0
+      && typingUserIds.value.includes(userId)
   }
 
   async function loadOlderMessages() {
@@ -792,12 +831,10 @@ export function useMessagesInbox(
     inboxError,
     inboxPending,
     attachTag,
-    createGroupChat,
     createTagLabel,
     deleteSelectedConversation,
     deleteTagLabel,
     detachTag,
-    isCreatingGroup,
     isDeletingConversation,
     isMarkingRead,
     isMultiSending,
@@ -810,10 +847,16 @@ export function useMessagesInbox(
     multiFeedbackMessage,
     multiFeedbackTone,
     multiFile,
+    multiRecord,
     multiText,
     query,
     refreshInbox,
     refreshMessageTags,
+    refreshThread,
+    isContactTyping,
+    setRemoteTyping,
+    setContactTyping,
+    clearRemoteTyping,
     selectedContact,
     selectedRecipientIds,
     selectedRecipients,

@@ -172,6 +172,30 @@ io.on("connection", (socket) => {
 
   socket.join(`user:${userId}`)
   socket.emit("notification:ready", { userId })
+
+  socket.on("message:typing", (payload = {}) => {
+    const recipientId = String(payload.recipientId || "").trim()
+
+    if (!recipientId || recipientId === userId) {
+      return
+    }
+
+    io.to(`user:${recipientId}`).emit("message:typing", {
+      senderId: Number(userId) || userId,
+    })
+  })
+
+  socket.on("message:typing-stop", (payload = {}) => {
+    const recipientId = String(payload.recipientId || "").trim()
+
+    if (!recipientId || recipientId === userId) {
+      return
+    }
+
+    io.to(`user:${recipientId}`).emit("message:typing-stop", {
+      senderId: Number(userId) || userId,
+    })
+  })
 })
 
 server.listen(port, host, () => {

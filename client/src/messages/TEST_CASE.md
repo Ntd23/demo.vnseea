@@ -1,4 +1,4 @@
-English description: Manual QA cases for the backend-backed messages bounded context, including inbox, user/group/page threads, multi-send, media attachments, and group creation.
+<!-- Description: Manual QA coverage for the backend-backed messages context, including user chat, multi-send, group chat, typing, recording, and create-group parity with the PHP modal. -->
 
 # Test Case Messages
 
@@ -6,41 +6,91 @@ English description: Manual QA cases for the backend-backed messages bounded con
 
 - Context: `client/src/messages`
 - Route chính: `/messages`
-- API bridge: `/_api/messages/conversations`, `/_api/messages/thread`, `/_api/messages/send`, `/_api/messages/multi`, `/_api/messages/read`, `/_api/messages/delete`, `/_api/messages/group`
-- Baseline phtml: `themes/wowonder/layout/messages/content.phtml`
+- Baseline PHP:
+  - `themes/wowonder/layout/messages/content.phtml`
+  - `xhr/messages.php`
+  - `xhr/chat.php`
+- API bridge đang dùng:
+  - `GET /_api/messages/conversations`
+  - `GET /_api/messages/thread`
+  - `POST /_api/messages/send`
+  - `POST /_api/messages/multi`
+  - `POST /_api/messages/record/upload`
+  - `POST /_api/messages/typing`
+  - `POST /_api/messages/read`
+  - `POST /_api/messages/delete`
+  - `GET /_api/messages/group/details`
+  - `GET /_api/messages/group/candidates`
+  - `POST /_api/messages/group/members`
+  - `GET /_api/messages/group/participants`
+  - `POST /_api/messages/group/create`
 
 ## Chuẩn bị
 
 - Đăng nhập bằng session PHP hợp lệ.
-- Tài khoản test có ít nhất một hội thoại user, một group chat và một page chat nếu muốn kiểm đủ 3 loại thread.
-- Chuẩn bị một ảnh nhỏ hoặc file hợp lệ để test gửi đính kèm.
-- Viewport cần kiểm: desktop `1440x900`, mobile `390x844`.
+- Có ít nhất:
+  - 1 hội thoại 1:1
+  - 1 group chat
+  - 2 user để test typing và realtime
+- Chuẩn bị:
+  - 1 file hợp lệ để gửi
+  - quyền microphone để test record
+  - 1 ảnh JPG hoặc PNG để test avatar nhóm
+- Viewport:
+  - desktop `1440x900`
+  - mobile `390x844`
 
 ## Test cases
 
-| ID | Màn hình | Route | Cách test | Kỳ vọng |
-| --- | --- | --- | --- | --- |
-| `MSG-001` | Desktop | `/messages` | Hard reload route. | Layout dạng split-view giống phtml: cột trái search/action/tabs/list có divider dọc, vùng giữa rộng nền trắng có empty illustration và composer đáy; cột info chỉ mở khi bấm thông tin. Không gọi mock endpoint. |
-| `MSG-002` | Desktop | `/messages` | Mở Network và reload. | Danh sách hội thoại lấy từ `/_api/messages/conversations`; route cũ `messages/inbox` chỉ còn là alias tương thích. |
-| `MSG-003` | Desktop | `/messages` | Chuyển tab `Gửi nhiều người`, `Người dùng`, `Nhóm`. | Tab multi hiện danh sách user nhận được từ backend; tab user hiện user/page chat; tab group chỉ hiện group chat. |
-| `MSG-004` | Desktop | `/messages` | Tìm kiếm theo tên hoặc preview. | Danh sách bên trái được lọc đúng, không làm mất thread đang mở hoặc vỡ panel phải. |
-| `MSG-005` | Desktop | `/messages` | Chọn một user chat. | Thread tải từ `/_api/messages/thread`; header, avatar, trạng thái và info panel đổi theo contact đã chọn. |
-| `MSG-006` | Desktop | `/messages` | Gửi tin nhắn text. | Composer gọi `/_api/messages/send`; message mới xuất hiện cuối thread; inbox được refresh để cập nhật preview. |
-| `MSG-007` | Desktop | `/messages` | Gửi tin nhắn có file/ảnh. | `/_api/messages/send` gửi multipart; bubble hiển thị media đúng loại ảnh/video/audio/file nếu backend trả media. |
-| `MSG-008` | Desktop | `/messages` | Bấm `Tải tin nhắn cũ`. | API gọi lại thread với `beforeId`; tin nhắn cũ chèn lên đầu và không bị trùng ID. |
-| `MSG-009` | Desktop | `/messages` | Bấm `Đánh dấu đã đọc`. | Gọi `/_api/messages/read`; unread count trong inbox giảm theo phản hồi backend. |
-| `MSG-010` | Desktop | `/messages` | Mở một user/page chat rồi bấm `Xóa`. | Gọi `/_api/messages/delete`; hội thoại biến khỏi danh sách hoặc trạng thái được refresh từ backend. |
-| `MSG-011` | Desktop | `/messages?tab=multi` | Chọn nhiều user, nhập text rồi gửi. | Gọi `/_api/messages/multi`; trạng thái success/partial/error theo đúng phản hồi PHP `messages&s=multi_send`. |
-| `MSG-012` | Desktop | `/messages?tab=multi` | Chọn nhiều user, nhập tên nhóm từ nút `Chat nhóm mới`, submit. | Gọi `/_api/messages/group`; danh sách group được refresh từ backend và không tạo group local-only. |
-| `MSG-013` | Mobile | `/messages` | Hard reload, chọn contact, mở info. | UI stack theo mobile, không ép 3 cột ngang; composer vẫn dùng được và không che nội dung thread. |
-| `MSG-014` | Mobile | `/messages?tab=multi` | Vào tab gửi nhiều, chọn ít nhất một người nhận, bấm `Mở khung soạn`, gửi text hoặc file. | Mobile không tự ẩn list trước khi chọn người nhận; composer mở ở màn hình riêng, nút quay lại đưa về list, payload vẫn đi qua `/_api/messages/multi`. |
-| `MSG-015` | Desktop/Mobile | `/messages` | Tắt mạng hoặc dùng session hết hạn rồi thao tác gửi/xóa/tạo group. | Hiện toast lỗi i18n, không thêm dữ liệu giả vào UI. |
+| ID | Route | Cách test | Kỳ vọng |
+| --- | --- | --- | --- |
+| `MSG-001` | `/messages` | Hard reload route trên desktop. | Layout split-view đúng: trái là search + tabs + list, phải là thread/composer. |
+| `MSG-002` | `/messages` | Mở Network rồi reload. | Inbox đi qua `/_api/messages/conversations`, thread đi qua `/_api/messages/thread`, không gọi raw PHP từ presentation. |
+| `MSG-003` | `/messages` | Chuyển 3 tab `Send multiple`, `Users`, `Groups`. | Cả 3 tab còn hoạt động, không mất flow multi hay group. |
+| `MSG-004` | `/messages` | Tìm theo tên hoặc preview. | Danh sách bên trái lọc đúng theo query. |
+| `MSG-005` | `/messages` | Chọn 1 user chat. | Thread thật được tải, composer hỗ trợ `text`, `file`, `record`. |
+| `MSG-006` | `/messages` | Gửi `text-only` trong 1:1. | Gọi `/_api/messages/send`, message mới xuất hiện cuối thread, inbox preview được refresh. |
+| `MSG-007` | `/messages` | Gửi `file-only` trong 1:1. | `/_api/messages/send` đi multipart đúng, bubble render file hoặc media đúng loại. |
+| `MSG-008` | `/messages` | Ghi âm rồi gửi `record-only` trong 1:1. | Upload qua `/_api/messages/record/upload`, sau đó gửi qua `/_api/messages/send`, thread render audio player. |
+| `MSG-009` | `/messages` | Nhập text rồi ghi âm, gửi `text+record`. | Flow thành công, không trộn `file + record`. |
+| `MSG-010` | `/messages` | Chọn file rồi bắt đầu ghi âm. | File bị clear trước khi ghi âm. |
+| `MSG-011` | `/messages` | Ghi âm xong rồi chọn file. | Record draft bị clear, composer chỉ giữ file. |
+| `MSG-012` | `/messages` | User A mở thread với user B, A bắt đầu nhập. | User B thấy typing indicator dạng `...` trong thread và ở row tab `Users`. |
+| `MSG-013` | `/messages` | User A dừng nhập, blur input, đổi thread hoặc gửi tin. | User B mất typing indicator. |
+| `MSG-014` | `/messages?tab=group` | Mở group thread rồi nhập. | Group không hiện typing indicator. |
+| `MSG-015` | `/messages?tab=multi` | Chọn nhiều user, gửi `text-only`. | Gọi `/_api/messages/multi`, feedback đúng theo response thật. |
+| `MSG-016` | `/messages?tab=multi` | Chọn nhiều user, gửi `file-only`. | Multi-send thành công với file. |
+| `MSG-017` | `/messages?tab=multi` | Chọn nhiều user, gửi `record-only`. | Upload record trước rồi `multi_send` thật. |
+| `MSG-018` | `/messages?tab=group` | Mở info panel của group do bạn sở hữu. | Panel hiển thị member roster thật từ `/_api/messages/group/details`, không còn card hardcode. |
+| `MSG-019` | `/messages?tab=group` | Tìm user trong ô mời ở info panel rồi bấm `Add`. | Gọi `/_api/messages/group/candidates` và `/_api/messages/group/members`, backend trả success, candidate biến khỏi list. |
+| `MSG-020` | `/messages?tab=group` | Bấm `Kick` ở một thành viên. | Gọi `/_api/messages/group/members` với action remove, member list và count được refresh từ backend. |
+| `MSG-021` | `/messages?tab=group` | Đăng nhập bằng account không phải owner rồi mở info panel group. | Không gọi `/_api/messages/group/candidates`, không hiện ô mời hay nút `Kick`. |
+| `MSG-022` | `/messages` | Bấm nút tạo nhóm mới. | Mở modal riêng đúng shell phtml: có tên nhóm, ô search member, selected list, avatar upload. Không còn phụ thuộc recipient đang chọn ở tab multi. |
+| `MSG-023` | `/messages` | Mở modal tạo nhóm nhưng chưa gõ ô search. | Không gọi `/_api/messages/group/participants`. |
+| `MSG-024` | `/messages` | Trong modal tạo nhóm, nhập từ khóa tìm người. | Gọi `/_api/messages/group/participants`, candidate list hiển thị đúng từ `xhr/chat.php?s=get_parts`. |
+| `MSG-025` | `/messages` | Bấm chọn 1 candidate trong modal tạo nhóm. | Candidate được thêm vào selected list, counter tăng, candidate biến khỏi danh sách search. |
+| `MSG-026` | `/messages` | Bấm bỏ 1 member đã chọn trong modal tạo nhóm. | Member bị xóa khỏi selected list, counter giảm. |
+| `MSG-027` | `/messages` | Tạo nhóm với tên dưới 4 ký tự. | Modal hiển thị đúng error text backend từ `xhr/chat.php?s=create_group`. |
+| `MSG-028` | `/messages` | Tạo nhóm khi chưa chọn member nào. | Modal hiển thị lỗi bridge rằng cần ít nhất 1 thành viên. |
+| `MSG-029` | `/messages` | Upload avatar sai loại trong modal tạo nhóm. | Modal hiển thị đúng error text backend, không đóng modal. |
+| `MSG-030` | `/messages` | Tạo nhóm thành công với tên, member, avatar hợp lệ. | Gọi `/_api/messages/group/create`, modal đóng, form reset sạch, tab chuyển sang `Groups`, inbox refresh, thread group mới được mở ngay. |
+| `MSG-031` | `/messages` | Bấm `Load more` trong thread có lịch sử dài. | Gọi thread với `beforeId`, message cũ prepend lên đầu mà không trùng ID. |
+| `MSG-032` | `/messages` | Có tin nhắn mới từ user khác khi socket đang sống. | Inbox preview và active thread refresh mà không cần hard reload. |
+| `MSG-033` | `/messages` | Tắt realtime service rồi gửi/nhận tin. | Message mới vẫn cập nhật bằng polling fallback; typing 1:1 không còn realtime. |
+| `MSG-034` | `/messages` | Test trên mobile: chọn contact rồi quay lại. | Flow mobile vẫn là list -> thread -> back, không làm vỡ desktop layout. |
+| `MSG-035` | `/messages` | Từ chối quyền microphone rồi bấm ghi âm. | Composer hiển thị lỗi quyền microphone rõ ràng, không crash. |
 
 ## Kiểm tra tĩnh
 
 ```powershell
 cd client
-rg -n "mock|fallback|messageOne|messageTwo|contactName|Van Nguyen" src/messages server/api/messages app/pages/messages.vue -g "!TEST_CASE.md" -g "!README.md"
+rg -n "recipient_is_typing|remove_typing|upload_record|multi_send|send_message" src/messages server/api/messages
+rg -n "group_chat\\s*\"?,?\\s*\\{\\s*type:\\s*\"create\"" src/messages server/api/messages
+rg -n "group/participants|group/create" src/messages server/api/messages
 ```
 
-Kỳ vọng không có mock/fallback runtime active trong context messages.
+Kỳ vọng:
+
+- Runtime active không còn dùng selected recipients của tab multi để tạo group.
+- Create-group flow active dùng `xhr/chat.php` bridge qua `/_api/messages/group/participants` và `/_api/messages/group/create`.
+- Add/kick group hiện có không bị ảnh hưởng.

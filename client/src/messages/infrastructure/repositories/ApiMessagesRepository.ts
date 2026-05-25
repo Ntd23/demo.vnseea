@@ -1,4 +1,4 @@
-// Description: Implements the messages repository against Nuxt server API bridges.
+// Description: Implements the messages repository against Nuxt server API bridges for inbox, sending, recording, typing, and realtime auth.
 
 import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
@@ -6,15 +6,22 @@ import type { MessagesRepository } from "../../domain/repositories/MessagesRepos
 import type {
   MessageActionResult,
   MessageContact,
+  MessageGroupCandidate,
+  MessageGroupCreateCandidate,
+  MessageCreateGroupResult,
+  MessageGroupDetails,
   MessageItem,
+  MessageRealtimeToken,
+  MessageTypingState,
   MessageSendDraft,
   MessageTagsPayload,
   MessageThread,
   MultiMessageSendResult,
+  UploadedMessageRecord,
 } from "../../domain/types/messages.types"
 
 const MESSAGES_API = {
-  createGroup: "messages/group",
+  createGroup: apiRoutes.messages.groupCreate,
   deleteConversation: "messages/delete",
   markAllAsRead: "messages/read",
   tags: "messages/tags",
@@ -36,10 +43,16 @@ const normalizeRecipientIds = (recipientIds: number[]) =>
       .filter(id => Number.isFinite(id) && id > 0),
   )]
 
+const createRecordPayload = (record?: UploadedMessageRecord | null) => ({
+  recordFile: record?.url || "",
+  recordName: record?.name || "",
+})
+
 const createMultiSendBody = (input: {
   recipientIds: number[]
   text: string
   file?: File | null
+  record?: UploadedMessageRecord | null
 }) => {
   const recipientIds = normalizeRecipientIds(input.recipientIds)
 
@@ -52,6 +65,8 @@ const createMultiSendBody = (input: {
       formData.append("recipientIds[]", String(recipientId))
     }
 
+    if (input.record?.url) formData.append("recordFile", input.record.url)
+    if (input.record?.name) formData.append("recordName", input.record.name)
     formData.append("file", input.file, input.file.name)
 
     return formData
@@ -60,6 +75,7 @@ const createMultiSendBody = (input: {
   return {
     recipientIds,
     text: input.text,
+    ...createRecordPayload(input.record),
   }
 }
 
@@ -81,6 +97,8 @@ const createSingleSendBody = (
     if (thread.pageId) formData.append("pageId", String(thread.pageId))
     if (thread.recipientId) formData.append("recipientId", String(thread.recipientId))
 
+    if (input.record?.url) formData.append("recordFile", input.record.url)
+    if (input.record?.name) formData.append("recordName", input.record.name)
     formData.append("file", input.file, input.file.name)
 
     return formData
@@ -89,6 +107,7 @@ const createSingleSendBody = (
   return {
     ...thread,
     text,
+    ...createRecordPayload(input.record),
   }
 }
 
@@ -119,6 +138,57 @@ export function createApiMessagesRepository(): MessagesRepository {
         apiRoutes.messages.multi,
         createMultiSendBody(input),
       )
+    },
+    async uploadRecord(blob, filename, options) {
+      const formData = new FormData()
+      const mimeType = options?.mimeType || blob.type || "audio/webm"
+
+      formData.append(
+        "audioBlob",
+        blob instanceof File ? blob : new File([blob], filename, { type: mimeType }),
+        filename,
+      )
+      formData.append("audioFilename", filename)
+      formData.append("mimeType", mimeType)
+
+      if (Number.isFinite(options?.durationMs)) {
+        formData.append("durationMs", String(options?.durationMs))
+      }
+
+      return await client.post<UploadedMessageRecord, FormData>(
+        apiRoutes.messages.recordUpload,
+        formData,
+      )
+    },
+    async setTyping(userId) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(
+        apiRoutes.messages.typing,
+        {
+          action: "start",
+          userId,
+        },
+      )
+    },
+    async clearTyping(userId) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(
+        apiRoutes.messages.typing,
+        {
+          action: "stop",
+          userId,
+        },
+      )
+    },
+    async getTyping(userId) {
+      return await client.post<MessageTypingState, Record<string, unknown>>(
+        apiRoutes.messages.typing,
+        {
+          action: "status",
+          userId,
+        },
+      )
+    },
+    async getRealtimeToken() {
+      return await client.get<MessageRealtimeToken>("realtime/token")
     },
     async createTagLabel(input) {
       return await client.post<MessageActionResult, Record<string, unknown>>(MESSAGES_API.tags, {
@@ -156,12 +226,69 @@ export function createApiMessagesRepository(): MessagesRepository {
         createThreadQuery(contact),
       )
     },
-    async createGroup(input) {
+    async getGroupDetails(groupId) {
+      return await client.get<MessageGroupDetails>(
+        apiRoutes.messages.groupDetails,
+        { groupId },
+      )
+    },
+    async searchCreateGroupParticipants(query) {
+      return await client.get<MessageGroupCreateCandidate[]>(
+        apiRoutes.messages.groupParticipants,
+        { query },
+      )
+    },
+    async searchGroupCandidates(groupId, query) {
+      return await client.get<MessageGroupCandidate[]>(
+        apiRoutes.messages.groupCandidates,
+        { groupId, query },
+      )
+    },
+    async addGroupMembers(groupId, userIds) {
       return await client.post<MessageActionResult, Record<string, unknown>>(
+        apiRoutes.messages.groupMembers,
+        {
+          action: "add",
+          groupId,
+          userIds: normalizeRecipientIds(userIds),
+        },
+      )
+    },
+    async removeGroupMember(groupId, userId) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(
+        apiRoutes.messages.groupMembers,
+        {
+          action: "remove",
+          groupId,
+          userId,
+        },
+      )
+    },
+    async createGroup(input) {
+      const recipientIds = normalizeRecipientIds(input.recipientIds)
+
+      if (input.avatar) {
+        const formData = new FormData()
+
+        formData.append("name", input.name)
+
+        for (const recipientId of recipientIds) {
+          formData.append("recipientIds[]", String(recipientId))
+        }
+
+        formData.append("avatar", input.avatar, input.avatar.name)
+
+        return await client.post<MessageCreateGroupResult, FormData>(
+          MESSAGES_API.createGroup,
+          formData,
+        )
+      }
+
+      return await client.post<MessageCreateGroupResult, Record<string, unknown>>(
         MESSAGES_API.createGroup,
         {
           name: input.name,
-          recipientIds: normalizeRecipientIds(input.recipientIds),
+          recipientIds,
         },
       )
     },

@@ -50,10 +50,10 @@
                 <Icon name="i-ph-wallet-fill" class="user-menu__stat-icon" />
                 <span>{{ $t("navigation.mobileMenu.walletLabel") || "Wallet" }}: {{ formattedWallet }}</span>
               </NuxtLink>
-              <div v-if="formattedPoints" class="user-menu__stat">
+              <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="user-menu__stat" @click="open = false">
                 <Icon name="i-ph-circle-half-fill" class="user-menu__stat-icon" />
                 <span>{{ $t("navigation.mobileMenu.pointsLabel") || "Points" }}: {{ formattedPoints }}</span>
-              </div>
+              </NuxtLink>
             </div>
           </div>
         </div>
@@ -342,6 +342,7 @@ const systemActions = computed(() => {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 4px 6px;
   border-radius: 10px;
   font-size: 12.5px;
   font-weight: 500;

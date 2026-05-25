@@ -1,4 +1,4 @@
-// Description: Defines normalized message types for inbox tabs, thread payloads, and backend-backed message actions.
+// Description: Defines normalized message types for inbox tabs, thread payloads, realtime typing, and backend-backed message actions.
 export type MessageTabKey = "multi" | "user" | "group"
 export type MessageThreadType = "user" | "group" | "page"
 
@@ -20,6 +20,7 @@ export type MessageContact = {
   profileUrl?: string
   status: string
   isOnline: boolean
+  lastSeenAt?: number
   avatarUrl: string
   tab: MessageTabKey
   type: MessageThreadType
@@ -35,28 +36,109 @@ export type MessageContact = {
   tags?: MessageUserTag[]
 }
 
+export type MessageGroupMember = {
+  userId: number
+  name: string
+  username?: string
+  avatarUrl: string
+  profileUrl?: string
+  isOwner: boolean
+  isSelf: boolean
+}
+
+export type MessageGroupCandidate = {
+  userId: number
+  name: string
+  username?: string
+  avatarUrl: string
+  profileUrl?: string
+}
+
+export type MessageGroupCreateCandidate = {
+  userId: number
+  name: string
+  username?: string
+  avatarUrl: string
+  profileUrl?: string
+}
+
+export type MessageGroupCreateDraft = {
+  name: string
+  recipientIds: number[]
+  avatar?: File | null
+}
+
+export type MessageGroupDetails = {
+  groupId: number
+  name: string
+  avatarUrl: string
+  ownerId: number
+  canManage: boolean
+  memberCount: number
+  members: MessageGroupMember[]
+}
+
 export type MessageItem = {
   id: number
   text: string
   isMine: boolean
   isLast?: boolean
+  showAuthor?: boolean
   time?: string
   showTime?: boolean
   avatar?: string
   timestamp?: number
+  senderId?: number
+  authorName?: string
+  threadType?: MessageThreadType
   mediaUrl?: string
   mediaName?: string
-  mediaType?: "image" | "video" | "audio" | "gif" | "file"
+  mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
+}
+
+export type MessageRecordDraft = {
+  blob: Blob
+  fileName: string
+  mimeType: string
+  durationMs: number
+  previewUrl: string
+}
+
+export type UploadedMessageRecord = {
+  url: string
+  name: string
+  mimeType: string
+  durationMs: number
+  previewUrl?: string
+}
+
+export type MessageComposerDraft = {
+  text: string
+  file?: File | null
+  record?: MessageRecordDraft | null
 }
 
 export type MessageSendDraft = {
   text: string
   file?: File | null
+  record?: UploadedMessageRecord | null
 }
 
 export type MessageThread = {
   messages: MessageItem[]
   typing: boolean
+}
+
+export type MessageTypingState = {
+  enabled: boolean
+  typing: boolean
+}
+
+export type MessageRealtimeToken = {
+  token: string
+  expiresAt: number
+  enabled: boolean
+  url: string
 }
 
 export type MultiMessageSendResult = {
@@ -72,6 +154,10 @@ export type MultiMessageSendResult = {
 export type MessageActionResult = {
   ok: boolean
   message?: string
+}
+
+export type MessageCreateGroupResult = MessageActionResult & {
+  groupId?: number
 }
 
 export type MessageTagsPayload = {

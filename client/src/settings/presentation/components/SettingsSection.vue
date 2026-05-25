@@ -172,7 +172,12 @@
 </template>
 
 <script setup lang="ts">
-import type { SettingField, SettingFieldValue, SettingSection } from "../../application/composables/useSettingsData"
+import type {
+  SettingField,
+  SettingFieldValue,
+  SettingItem,
+  SettingSection,
+} from "../../application/view-models/settings-page.types"
 import SettingsField from "./SettingsField.vue"
 import SettingsProfileImages from "./SettingsProfileImages.vue"
 

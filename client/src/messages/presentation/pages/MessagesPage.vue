@@ -1,4 +1,4 @@
-<!-- Description: Renders the messages screen with the same left-list, center-thread, and right-info pane order as the PHP template. -->
+<!-- Description: Renders the messages workspace with a docked desktop user detail pane while preserving mobile slideovers and group management flows. -->
 <template>
   <div class="h-full min-h-0 w-full overflow-hidden bg-white">
     <div class="flex h-full min-h-0 overflow-hidden">
@@ -11,11 +11,13 @@
           v-model:query="query"
           v-model:multi-text="multiText"
           v-model:multi-file="multiFile"
+          v-model:multi-record="multiRecord"
           :multi-pending="isMultiSending"
           :status-message="multiFeedbackMessage"
           :status-tone="multiFeedbackTone"
           :all-visible-recipients-selected="allVisibleRecipientsSelected"
           :contacts="filteredContacts"
+          :is-contact-typing="isContactTyping"
           :message-tag-labels="messageTagLabels"
           :active-tag-filter="activeTagFilter"
           :pending="inboxPending"
@@ -45,80 +47,94 @@
           :empty-description="chatEmptyDescription"
           :empty-thread-label="emptyThreadLabel"
           :empty-title="chatEmptyTitle"
+          :group-details="groupDetails"
           :is-pending="threadPending"
           :is-typing="isTyping"
           :messages="messages"
           :deleting-conversation="isDeletingConversation"
+          :user-detail-docked="showDesktopUserDetailPane"
+          @typing-start="startComposerTyping"
+          @typing-stop="stopComposerTyping"
           @toggle-info="infoPanelOpen = !infoPanelOpen"
           @load-more="loadOlderMessages"
           @send="sendMessage"
           @delete-conversation="deleteSelectedConversation"
+          @start-call="handleStartCall"
           @back="handleBackToList"
         />
-
-        <div v-if="infoPanelOpen && selectedContact" class="border-t border-[#e5e7eb] xl:hidden">
-          <MessagesMessageSidePanel
-            :contact="selectedContact"
-            :empty-description="infoEmptyDescription"
-            :empty-title="infoEmptyTitle"
-            :deleting-conversation="isDeletingConversation"
-            @delete-conversation="deleteSelectedConversation"
-          />
-        </div>
       </main>
 
-      <!-- RIGHT PANE: Info Panel (Desktop Only) -->
       <aside
-        v-if="infoPanelOpen && selectedContact"
-        class="hidden min-h-0 w-[320px] shrink-0 border-l border-[#e5e7eb] bg-white xl:block"
+        v-if="showDesktopUserDetailPane"
+        class="messages-page__detail hidden h-full min-h-0 shrink-0 border-l border-[#e5e7eb] bg-[#fcfdff] xl:flex"
       >
-        <MessagesMessageSidePanel
+        <MessagesUserDetailPanel
           :contact="selectedContact"
+          :deleting-conversation="isDeletingConversation"
           :empty-description="infoEmptyDescription"
           :empty-title="infoEmptyTitle"
-          :deleting-conversation="isDeletingConversation"
           @delete-conversation="deleteSelectedConversation"
         />
       </aside>
     </div>
 
-    <!-- Group modal -->
-    <UModal v-model:open="groupModalOpen" :title="$t('pages.messagesPage.groupCreateTitle')">
+    <USlideover
+      v-if="selectedContact"
+      v-model:open="infoPanelOpen"
+      :title="infoPanelTitle"
+      :ui="{
+        content: 'sm:max-w-[380px] p-0',
+        body: 'p-0 sm:p-0',
+      }"
+    >
       <template #body>
-        <div class="space-y-4">
-          <div class="rounded-[18px] border border-(--border-light) bg-(--bg-muted) px-4 py-3 text-sm text-(--text-secondary)">
-            {{ $t("pages.messagesPage.groupCreateDescription", { count: selectedRecipients.length }) }}
-          </div>
-          <UInput
-            v-model="groupName"
-            :placeholder="$t('pages.messagesPage.groupNamePlaceholder')"
-            size="lg"
+        <div class="h-[100dvh] sm:h-full">
+          <MessagesUserDetailPanel
+            v-if="selectedContact.type === 'user'"
+            :contact="selectedContact"
+            :deleting-conversation="isDeletingConversation"
+            :empty-description="infoEmptyDescription"
+            :empty-title="infoEmptyTitle"
+            @delete-conversation="deleteSelectedConversation"
+          />
+          <MessagesMessageSidePanel
+            v-else
+            :contact="selectedContact"
+            :group-candidate-query="groupCandidateQuery"
+            :group-candidates="groupCandidates"
+            :group-candidates-pending="groupCandidatesPending"
+            :group-details="groupDetails"
+            :group-details-pending="groupDetailsPending"
+            :updating-group-members="isUpdatingGroupMembers"
+            :empty-description="infoEmptyDescription"
+            :empty-title="infoEmptyTitle"
+            :deleting-conversation="isDeletingConversation"
+            @update:group-candidate-query="updateGroupCandidateQuery"
+            @add-group-member="addGroupMember"
+            @remove-group-member="removeGroupMember"
+            @delete-conversation="deleteSelectedConversation"
           />
         </div>
       </template>
-      <template #footer>
-        <div class="flex w-full items-center justify-end gap-3">
-          <UButton
-            variant="soft"
-            color="neutral"
-            class="rounded-full px-4 font-semibold"
-            @click="groupModalOpen = false"
-          >
-            {{ $t("pages.messagesPage.cancel") }}
-          </UButton>
-          <UButton
-            class="rounded-full px-5 font-semibold"
-            :loading="isCreatingGroup"
-            :disabled="selectedRecipients.length === 0 || groupName.trim().length < 4"
-            @click="submitCreateGroup"
-          >
-            {{ $t("pages.messagesPage.groupCreateSubmit") }}
-          </UButton>
-        </div>
-      </template>
-    </UModal>
+    </USlideover>
 
-    <UModal v-model:open="tagModalOpen" title="Thẻ phân loại" :ui="{ content: 'sm:max-w-[640px]' }">
+    <MessagesCreateGroupModal
+      v-model:open="createGroupOpenModel"
+      v-model:name="createGroupName"
+      v-model:query="createGroupQuery"
+      v-model:avatar="createGroupAvatarModel"
+      :avatar-preview-url="createGroupAvatarPreviewUrl"
+      :candidates="createGroupCandidates"
+      :error-message="createGroupErrorMessage"
+      :pending="isCreatingGroup"
+      :search-pending="createGroupCandidatesPending"
+      :selected-candidates="createGroupSelectedCandidates"
+      @select-candidate="addCreateGroupParticipant"
+      @remove-candidate="removeCreateGroupParticipant"
+      @submit="submitCreateGroup"
+    />
+
+    <UModal v-model:open="tagModalOpen" :title="$t('pages.messagesPage.tagModalTitle')" :ui="{ content: 'sm:max-w-[640px]' }">
       <template #body>
         <div class="messages-tag-modal">
           <div class="messages-tag-modal__tabs">
@@ -128,7 +144,7 @@
               :class="{ 'messages-tag-modal__tab--active': tagModalTab === 'assign' }"
               @click="tagModalTab = 'assign'"
             >
-              Gắn thẻ
+              {{ $t("pages.messagesPage.tagAssignTab") }}
             </button>
             <button
               type="button"
@@ -136,12 +152,12 @@
               :class="{ 'messages-tag-modal__tab--active': tagModalTab === 'manage' }"
               @click="tagModalTab = 'manage'"
             >
-              Quản lý thẻ
+              {{ $t("pages.messagesPage.tagManageTab") }}
             </button>
           </div>
 
           <section v-if="tagModalTab === 'assign'" class="messages-tag-modal__panel">
-            <h3 class="messages-tag-modal__title">Danh sách thẻ của bạn</h3>
+            <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagListTitle") }}</h3>
             <div class="messages-tag-modal__list">
               <div
                 v-for="tag in messageTagLabels"
@@ -159,22 +175,22 @@
                   :disabled="isUpdatingTags"
                   @click="toggleContactTag(tag.id)"
                 >
-                  {{ contactHasTag(tag.id) ? 'Gỡ' : 'Gắn' }}
+                  {{ contactHasTag(tag.id) ? $t("pages.messagesPage.remove") : $t("pages.messagesPage.attach") }}
                 </button>
               </div>
               <p v-if="messageTagLabels.length === 0" class="messages-tag-modal__empty">
-                Chưa có thẻ nào.
+                {{ $t("pages.messagesPage.tagEmpty") }}
               </p>
             </div>
             <p class="messages-tag-modal__hint">
-              Mẹo: nhấn “Gắn/Gỡ” để áp dụng cho đối tượng hiện tại.
+              {{ $t("pages.messagesPage.tagApplyHint") }}
             </p>
           </section>
 
           <section v-else class="messages-tag-modal__panel">
-            <h3 class="messages-tag-modal__title">Quản lý danh sách thẻ</h3>
+            <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagManageListTitle") }}</h3>
             <div class="messages-tag-modal__create">
-              <UInput v-model="newTagName" placeholder="Tên thẻ mới" size="lg" />
+              <UInput v-model="newTagName" :placeholder="$t('pages.messagesPage.tagCreatePlaceholder')" size="lg" />
               <input v-model="newTagColor" type="color" class="messages-tag-modal__color">
               <UButton
                 size="lg"
@@ -182,7 +198,7 @@
                 :disabled="newTagName.trim().length === 0"
                 @click="submitCreateTag"
               >
-                Tạo
+                {{ $t("pages.messagesPage.create") }}
               </UButton>
             </div>
 
@@ -202,67 +218,95 @@
                   :disabled="isUpdatingTags"
                   @click="deleteTagLabel(tag.id)"
                 >
-                  Xóa
+                  {{ $t("pages.messagesPage.delete") }}
                 </button>
               </div>
               <p v-if="messageTagLabels.length === 0" class="messages-tag-modal__empty">
-                Chưa có thẻ nào.
+                {{ $t("pages.messagesPage.tagEmpty") }}
               </p>
             </div>
           </section>
 
           <div class="messages-tag-modal__footer">
             <UButton color="neutral" variant="soft" size="lg" @click="tagModalOpen = false">
-              Đóng
+              {{ $t("pages.messagesPage.close") }}
             </UButton>
           </div>
         </div>
       </template>
     </UModal>
+
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue"
 import MessagesChatList from "../components/ChatList.vue"
+import MessagesCreateGroupModal from "../components/CreateGroupModal.vue"
 import MessagesChatWindow from "../components/ChatWindow.vue"
 import MessagesMessageSidePanel from "../components/MessageSidePanel.vue"
+import MessagesUserDetailPanel from "../components/UserDetailPanel.vue"
+import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
+import { useMessageCalls } from "../../application/composables/useMessageCalls"
 import { useMessagesInbox } from "../../application/composables/useMessagesInbox"
+import type { MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact } from "../../domain/types/messages.types"
 
 const { t } = useI18n()
 const infoPanelOpen = ref(false)
-const groupModalOpen = ref(false)
 const tagModalOpen = ref(false)
 const tagModalTab = ref<"assign" | "manage">("assign")
 const tagModalContact = ref<MessageContact | null>(null)
-const groupName = ref("")
 const newTagName = ref("")
 const newTagColor = ref("#3b82f6")
 const mobileListOpen = ref(true)
 const {
   activeTagFilter,
   activeTab,
+  addCreateGroupParticipant,
+  addGroupMember,
   attachTag,
   allVisibleRecipientsSelected,
+  closeCreateGroupModal,
+  createGroupAvatarFile,
+  createGroupAvatarPreviewUrl,
+  createGroupCandidates,
+  createGroupCandidatesPending,
+  createGroupErrorMessage,
+  createGroupModalOpen,
+  createGroupName,
+  createGroupQuery,
+  createGroupSelectedCandidates,
   filteredContacts,
+  groupCandidateQuery,
+  groupCandidates,
+  groupCandidatesPending,
+  groupDetails,
+  groupDetailsPending,
   inboxPending,
+  isContactTyping,
   isCreatingGroup,
   isDeletingConversation,
   isMarkingRead,
   isMultiSending,
   isTyping,
+  isUpdatingGroupMembers,
   loadOlderMessages,
   messages,
   messageTagLabels,
   multiFeedbackMessage,
   multiFeedbackTone,
   multiFile,
+  multiRecord,
   multiText,
+  openCreateGroupModal: openCreateGroupModalVm,
   query,
+  removeCreateGroupParticipant,
+  removeGroupMember,
+  refreshInbox,
   selectedContact,
   selectedRecipientIds,
   selectedRecipients,
-  createGroupChat,
   createTagLabel,
   deleteSelectedConversation,
   deleteTagLabel,
@@ -271,12 +315,20 @@ const {
   isUpdatingTags,
   selectContact,
   setActiveTagFilter,
+  setCreateGroupAvatar,
   sendMessage,
   sendMultiMessage,
+  submitCreateGroup,
+  startComposerTyping,
+  stopComposerTyping,
   tabs,
   threadPending,
   toggleAllVisibleRecipients,
 } = useMessagesInbox()
+const {
+  startCall,
+  status: callStatus,
+} = useMessageCalls()
 
 const chatEmptyTitle = computed(() =>
   activeTab.value === "multi"
@@ -306,6 +358,35 @@ const emptyThreadLabel = computed(() =>
   t("pages.messagesPage.emptyThread"),
 )
 
+const showDesktopUserDetailPane = computed(() =>
+  activeTab.value === "user" && selectedContact.value?.type === "user",
+)
+
+const infoPanelTitle = computed(() =>
+  selectedContact.value?.type === "user"
+    ? t("pages.messagesPage.profile")
+    : t("pages.messagesPage.info"),
+)
+
+const createGroupOpenModel = computed({
+  get: () => createGroupModalOpen.value,
+  set: (value: boolean) => {
+    if (value) {
+      openCreateGroupModalVm()
+      return
+    }
+
+    closeCreateGroupModal()
+  },
+})
+
+const createGroupAvatarModel = computed({
+  get: () => createGroupAvatarFile.value,
+  set: (value: File | null) => {
+    setCreateGroupAvatar(value ?? null)
+  },
+})
+
 const tagModalLiveContact = computed(() => {
   const userId = tagModalContact.value?.userId ?? 0
 
@@ -317,10 +398,28 @@ watch(selectedContact, () => {
   infoPanelOpen.value = false
 })
 
+watch(showDesktopUserDetailPane, (value) => {
+  if (value) {
+    infoPanelOpen.value = false
+  }
+}
+
+watch(callStatus, async (value) => {
+  if (value !== "ended") {
+    return
+  }
+
+  await refreshInbox()
+
+  const contact = selectedContact.value
+  if (contact) {
+    await selectContact(contact)
+  }
+})
+
 function openCreateGroupModal() {
-  activeTab.value = "multi"
   mobileListOpen.value = true
-  groupModalOpen.value = true
+  openCreateGroupModalVm()
 }
 
 async function handleSelectContact(contact: MessageContact) {
@@ -339,6 +438,15 @@ function handleOpenChatFromMulti(contact: MessageContact) {
 function handleBackToList() {
   mobileListOpen.value = true
   infoPanelOpen.value = false
+}
+
+function updateGroupCandidateQuery(value: string) {
+  groupCandidateQuery.value = value
+}
+function handleStartCall(type: MessageCallType) {
+  const contact = selectedContact.value
+  if (!contact) return
+  startCall(contact, type)
 }
 
 function openTagModal(contact: MessageContact) {
@@ -384,14 +492,6 @@ async function submitCreateTag() {
   }
 }
 
-async function submitCreateGroup() {
-  const didCreate = await createGroupChat(groupName.value)
-
-  if (didCreate) {
-    groupModalOpen.value = false
-    groupName.value = ""
-  }
-}
 </script>
 
 <style scoped>
@@ -405,6 +505,10 @@ async function submitCreateGroup() {
   display: flex;
   height: 100%;
   overflow: hidden;
+}
+
+.messages-page__detail {
+  width: 320px;
 }
 
 .messages-tag-modal {
@@ -542,6 +646,12 @@ async function submitCreateGroup() {
 @media (min-width: 768px) {
   .messages-page__left {
     width: clamp(390px, 28vw, 520px);
+  }
+}
+
+@media (min-width: 1536px) {
+  .messages-page__detail {
+    width: 360px;
   }
 }
 

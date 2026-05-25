@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import type { SettingField, SettingFieldValue } from "../../application/composables/useSettingsData"
+import type { SettingField, SettingFieldValue } from "../../application/view-models/settings-page.types"
 
 const props = defineProps<{
   fields: SettingField[]
