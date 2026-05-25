@@ -3,7 +3,7 @@
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
-import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 type BackendRequestUser = Record<string, unknown> & {
   user_id?: number | string
@@ -22,6 +22,13 @@ type BackendGroupChatRequest = Record<string, unknown> & {
   user_id?: number | string
   user_data?: {
     name?: string
+  }
+  group_tab?: Record<string, unknown> & {
+    group_id?: number | string
+    group_name?: string
+    name?: string
+    avatar?: string
+    user_id?: number | string
   }
 }
 
@@ -44,6 +51,24 @@ const asString = (value: unknown) =>
 const asCount = (value: unknown) => {
   const count = Number(value ?? 0)
   return Number.isFinite(count) && count > 0 ? count : 0
+}
+
+const asRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+
+const buildGroupChatRequestUrl = (id: string, title: string) => {
+  const params = new URLSearchParams({
+    tab: "group",
+    groupId: id,
+  })
+
+  if (title) {
+    params.set("name", title)
+  }
+
+  return `${appRoutes.messages}?${params.toString()}`
 }
 
 export default defineEventHandler(async (event) => {
@@ -71,14 +96,20 @@ export default defineEventHandler(async (event) => {
     .filter(request => request.id && request.title)
 
   const groupChatRequests = (Array.isArray(response.group_chat_requests) ? response.group_chat_requests : [])
-    .map(request => ({
-      id: asString(request.group_id) || asString(request.id),
-      kind: "group_chat" as const,
-      title: asString(request.group_name) || asString(request.name),
-      subtitle: asString(request.user_data?.name) || asString(request.user_id),
-      avatarUrl: resolveMediaUrl(request.avatar),
-      url: "",
-    }))
+    .map((request) => {
+      const groupTab = asRecord(request.group_tab)
+      const id = asString(request.group_id) || asString(groupTab.group_id) || asString(request.id)
+      const title = asString(request.group_name) || asString(groupTab.group_name) || asString(request.name) || asString(groupTab.name)
+
+      return {
+        id,
+        kind: "group_chat" as const,
+        title,
+        subtitle: asString(request.user_data?.name) || asString(groupTab.user_id) || asString(request.user_id),
+        avatarUrl: resolveMediaUrl(request.avatar || groupTab.avatar),
+        url: id ? buildGroupChatRequestUrl(id, title) : "",
+      }
+    })
     .filter(request => request.id && request.title)
 
   return {

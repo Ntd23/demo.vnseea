@@ -168,6 +168,7 @@ const buildCallMessageLabel = (value: string, entity: BackendEntity) => {
 const parseCallLogPayload = (value: string, entity: BackendEntity) => {
   const type = firstString(entity, ["type_two", "type"]).toLowerCase()
   const decoded = decodeHtmlEntities(value).replace(/\\"/g, "\"").trim()
+  const isGroupCall = type.includes("group_call")
 
   if (!type.includes("call") && !decoded.startsWith("{")) {
     return null
@@ -185,6 +186,9 @@ const parseCallLogPayload = (value: string, entity: BackendEntity) => {
       call_type: callType === "video" || type.includes("video") ? "video" as const : "audio" as const,
       status: firstString(payload, ["status"]),
       duration: asNumber(payload.duration),
+      call_id: asNumber(payload.call_id),
+      group_id: asNumber(payload.group_id),
+      is_group: isGroupCall || asNumber(payload.group_id) > 0,
     }
   }
   catch {
@@ -196,6 +200,9 @@ const parseCallLogPayload = (value: string, entity: BackendEntity) => {
       call_type: type.includes("video") ? "video" as const : "audio" as const,
       status: "",
       duration: 0,
+      call_id: 0,
+      group_id: asNumber(entity.group_id),
+      is_group: isGroupCall,
     }
   }
 }
@@ -488,6 +495,7 @@ const mapThreadMessage = (
   currentUserId: number,
   resolveMediaUrl: (value: unknown) => string,
   threadType: MessageThreadType,
+  activeGroupCall?: BackendEntity,
 ): MessageItem => {
   const timestamp = asNumber(entity.time)
   const rawText = decryptMessageText(entity.text, timestamp)
@@ -497,6 +505,8 @@ const mapThreadMessage = (
   const mediaUrl = buildMediaUrl(entity, resolveMediaUrl)
   const mediaType = inferMediaType(entity)
   const senderId = asNumber(entity.from_id)
+  const activeGroupCallId = asNumber(activeGroupCall?.id)
+  const activeGroupCallParticipantCount = asNumber(activeGroupCall?.participant_count)
 
   return {
     id: asNumber(entity.id),
@@ -517,6 +527,13 @@ const mapThreadMessage = (
           type: callLog.call_type,
           status: callLog.status,
           duration: callLog.duration,
+          callId: callLog.call_id || undefined,
+          groupId: callLog.group_id || asNumber(entity.group_id) || undefined,
+          isGroup: callLog.is_group || undefined,
+          isActive: callLog.is_group && callLog.call_id > 0 && activeGroupCallId === callLog.call_id,
+          participantCount: callLog.is_group && activeGroupCallId === callLog.call_id
+            ? activeGroupCallParticipantCount
+            : undefined,
         }
       : undefined,
   }
@@ -745,10 +762,13 @@ export async function fetchMessageThread(
       "Unable to load group messages.",
     )
 
+    const responseData = asRecord(response.data)
+    const activeGroupCall = asRecord(responseData.active_call)
+
     return {
       messages: decorateThreadMessages(
         extractCollectionMessages(response).map(message =>
-          mapThreadMessage(message, currentUserId, resolveMediaUrl, "group"),
+          mapThreadMessage(message, currentUserId, resolveMediaUrl, "group", activeGroupCall),
         ),
       ),
       typing: false,

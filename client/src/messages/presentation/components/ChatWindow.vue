@@ -79,6 +79,33 @@
                 />
               </UTooltip>
             </template>
+            <template v-else-if="contact.type === 'group'">
+              <UTooltip :text="$t('pages.messagesPage.groupAudioCall')">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-ph-phone-bold"
+                  class="h-10 w-10 justify-center rounded-full"
+                  :loading="callActionPending"
+                  :disabled="callActionPending"
+                  @click="handleStartCall('audio')"
+                />
+              </UTooltip>
+
+              <UTooltip :text="$t('pages.messagesPage.groupVideoCall')">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-ph-video-camera-bold"
+                  class="h-10 w-10 justify-center rounded-full"
+                  :loading="callActionPending"
+                  :disabled="callActionPending"
+                  @click="handleStartCall('video')"
+                />
+              </UTooltip>
+            </template>
 
             <UTooltip :text="$t('pages.messagesPage.info')">
               <UButton
@@ -116,6 +143,7 @@
         :loading-label="loadingLabel"
         :messages="messages"
         @load-more="$emit('load-more')"
+        @retry-call="$emit('start-call', $event)"
       />
 
       <MessagesChatInput
@@ -154,7 +182,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue"
-import type { MessageCallType } from "../../domain/types/calls.types"
+import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
 import type { MessageComposerDraft, MessageContact, MessageGroupDetails, MessageItem, MessageTabKey } from "../../domain/types/messages.types"
 import MessagesChatInput from "./ChatInput.vue"
 import MessagesChatMessageList from "./ChatMessageList.vue"
@@ -184,7 +212,7 @@ const emit = defineEmits<{
   "back": []
   "typing-start": []
   "typing-stop": []
-  "start-call": [type: MessageCallType]
+  "start-call": [payload: MessageCallType | MessageCallLogAction]
 }>()
 
 const inputModel = ref("")
@@ -228,7 +256,7 @@ function handleToggleInfo() {
 }
 
 function handleStartCall(type: MessageCallType) {
-  if (!props.contact?.userId || props.contact.type !== "user") {
+  if (!props.contact || (props.contact.type === "user" && !props.contact.userId) || (props.contact.type === "group" && !props.contact.groupId)) {
     return
   }
 

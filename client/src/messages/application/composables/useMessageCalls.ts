@@ -19,15 +19,34 @@ type RingingCall = {
   }
 }
 
+type RingingGroupCall = {
+  id: number
+  type: MessageCallType
+  direction: "incoming" | "outgoing"
+  groupId: number
+  groupName: string
+  avatar?: string
+  url?: string
+}
+
+type ActiveGroupCall = {
+  id: number
+  type: MessageCallType
+}
+
 type MessageCallOptions = {
   pollIncoming?: boolean | Ref<boolean>
 }
 
 const POLL_INTERVAL_MS = 2000
+const INCOMING_POLL_INTERVAL_MS = 5000
 const NO_ANSWER_MS = 43000
 let outgoingPoll: ReturnType<typeof setInterval> | null = null
 let incomingPoll: ReturnType<typeof setInterval> | null = null
 let noAnswerTimer: ReturnType<typeof setTimeout> | null = null
+let incomingPollPending = false
+let incomingPollingConsumers = 0
+let nextIncomingPollType: MessageCallType = "video"
 
 export function useMessageCalls(
   repository = createApiMessageCallsRepository(),
@@ -35,6 +54,8 @@ export function useMessageCalls(
 ) {
   const ringingCall = useState<RingingCall | null>("messages:call:ringing", () => null)
   const activeSession = useState<MessageCallSession | null>("messages:call:active", () => null)
+  const activeGroupCall = useState<ActiveGroupCall | null>("messages:group-call:active", () => null)
+  const ringingGroupCall = useState<RingingGroupCall | null>("messages:group-call:ringing", () => null)
   const status = useState<MessageCallStatus>("messages:call:status", () => "idle")
   const errorMessage = useState("messages:call:error", () => "")
   const isCallActionPending = useState("messages:call:pending", () => false)
@@ -107,7 +128,7 @@ export function useMessageCalls(
   }
 
   const startCall = async (contact: MessageContact, type: MessageCallType) => {
-    if (!contact.userId || isCallActionPending.value || ringingCall.value || activeSession.value) {
+    if (!contact.userId || isCallActionPending.value || ringingCall.value || activeSession.value || activeGroupCall.value) {
       return
     }
 
@@ -141,6 +162,42 @@ export function useMessageCalls(
     catch (error: any) {
       status.value = "error"
       errorMessage.value = error?.statusMessage || "Can not start call."
+    }
+    finally {
+      isCallActionPending.value = false
+    }
+  }
+
+  const startGroupCall = async (contact: MessageContact, type: MessageCallType) => {
+    if (!contact.groupId || contact.type !== "group" || isCallActionPending.value || activeGroupCall.value) {
+      return
+    }
+
+    isCallActionPending.value = true
+    errorMessage.value = ""
+
+    try {
+      const result = await repository.createGroupCall({
+        groupId: contact.groupId,
+        type,
+      })
+
+      if (result.status !== 200 || result.id <= 0) {
+        status.value = "error"
+        errorMessage.value = "Can not start group call."
+        return
+      }
+
+      ringingGroupCall.value = null
+      activeGroupCall.value = {
+        id: result.id,
+        type: result.type,
+      }
+      status.value = "active"
+    }
+    catch (error: any) {
+      status.value = "error"
+      errorMessage.value = error?.statusMessage || "Can not start group call."
     }
     finally {
       isCallActionPending.value = false
@@ -223,7 +280,7 @@ export function useMessageCalls(
   }
 
   const pollIncoming = async (type: MessageCallType) => {
-    if (ringingCall.value || activeSession.value) {
+    if (ringingCall.value || ringingGroupCall.value || activeSession.value || activeGroupCall.value) {
       return
     }
 
@@ -268,43 +325,181 @@ export function useMessageCalls(
   }
 
   const pollIncomingTypes = async () => {
-    if (activeSession.value) {
+    if (incomingPollPending || activeSession.value || activeGroupCall.value || (import.meta.client && document.visibilityState === "hidden")) {
       return
     }
 
-    if (ringingCall.value?.direction === "incoming") {
-      const stillRinging = await validateCurrentIncomingCall()
-      if (stillRinging) {
+    incomingPollPending = true
+
+    try {
+      if (ringingCall.value?.direction === "incoming") {
+        const stillRinging = await validateCurrentIncomingCall()
+        if (stillRinging) {
+          return
+        }
+      }
+
+      if (ringingCall.value) {
         return
       }
-    }
 
-    if (ringingCall.value) {
-      return
-    }
+      const type = nextIncomingPollType
+      nextIncomingPollType = type === "video" ? "audio" : "video"
+      await pollIncoming(type)
 
-    await pollIncoming("video")
-    await pollIncoming("audio")
+      if (!ringingCall.value && !ringingGroupCall.value && !activeSession.value && !activeGroupCall.value) {
+        const incomingGroup = await repository.getIncomingGroupCall().catch(() => null)
+
+        if (incomingGroup?.id) {
+          ringingGroupCall.value = {
+            id: incomingGroup.id,
+            type: incomingGroup.type,
+            direction: "incoming",
+            groupId: incomingGroup.groupId,
+            groupName: incomingGroup.groupName,
+            avatar: incomingGroup.avatar,
+            url: incomingGroup.url,
+          }
+          status.value = "ringing"
+        }
+      }
+    }
+    finally {
+      incomingPollPending = false
+    }
   }
+
+  let ownsIncomingPolling = false
 
   const startIncomingPolling = () => {
     if (!import.meta.client) {
       return
     }
+
+    if (!ownsIncomingPolling) {
+      incomingPollingConsumers += 1
+      ownsIncomingPolling = true
+    }
+
     if (incomingPoll) {
       return
     }
-    pollIncomingTypes()
+
+    void pollIncomingTypes()
     incomingPoll = setInterval(() => {
-      pollIncomingTypes()
-    }, 3500)
+      void pollIncomingTypes()
+    }, INCOMING_POLL_INTERVAL_MS)
   }
 
   const stopIncomingPolling = () => {
-    if (incomingPoll) {
+    if (!ownsIncomingPolling) {
+      return
+    }
+
+    ownsIncomingPolling = false
+    incomingPollingConsumers = Math.max(0, incomingPollingConsumers - 1)
+
+    if (incomingPollingConsumers === 0 && incomingPoll) {
       clearInterval(incomingPoll)
       incomingPoll = null
     }
+  }
+
+  const answerGroupCall = async () => {
+    const call = ringingGroupCall.value
+
+    if (!call || isCallActionPending.value) {
+      return
+    }
+
+    isCallActionPending.value = true
+    errorMessage.value = ""
+
+    try {
+      const result = await repository.joinGroupCall({ id: call.id })
+
+      if (result.status !== 200 || result.id <= 0) {
+        status.value = "error"
+        errorMessage.value = "Can not join group call."
+        return
+      }
+
+      ringingGroupCall.value = null
+      activeGroupCall.value = {
+        id: result.id,
+        type: result.type,
+      }
+      status.value = "active"
+    }
+    catch (error: any) {
+      status.value = "error"
+      errorMessage.value = error?.statusMessage || "Can not join group call."
+    }
+    finally {
+      isCallActionPending.value = false
+    }
+  }
+
+  const joinGroupCall = async (callId: number) => {
+    if (!callId || isCallActionPending.value) {
+      return
+    }
+
+    isCallActionPending.value = true
+    errorMessage.value = ""
+
+    try {
+      const result = await repository.joinGroupCall({ id: callId })
+
+      if (result.status !== 200 || result.id <= 0) {
+        status.value = "error"
+        errorMessage.value = "Can not join group call."
+        return
+      }
+
+      activeGroupCall.value = {
+        id: result.id,
+        type: result.type,
+      }
+      status.value = "active"
+    }
+    catch (error: any) {
+      status.value = "error"
+      errorMessage.value = error?.statusMessage || "Can not join group call."
+    }
+    finally {
+      isCallActionPending.value = false
+    }
+  }
+
+  const declineGroupCall = async () => {
+    const call = ringingGroupCall.value
+
+    if (!call) {
+      return
+    }
+
+    await repository.declineGroupCall({ id: call.id }).catch(() => null)
+    ringingGroupCall.value = null
+    status.value = "declined"
+  }
+
+  const cancelGroupCall = async () => {
+    const call = ringingGroupCall.value
+
+    if (!call) {
+      return
+    }
+
+    await repository.leaveGroupCall({ id: call.id }).catch(() => null)
+    clearOutgoingTimers()
+    ringingGroupCall.value = null
+    status.value = "idle"
+  }
+
+  const finishGroupCall = () => {
+    activeGroupCall.value = null
+    status.value = "ended"
   }
 
   let stopPollingWatch: (() => void) | null = null
@@ -335,15 +530,23 @@ export function useMessageCalls(
 
   return {
     activeSession,
+    activeGroupCall,
+    answerGroupCall,
     answerIncomingCall,
     cancelOutgoingCall,
+    cancelGroupCall,
+    declineGroupCall,
     declineIncomingCall,
     errorMessage,
     finishActiveCall,
+    finishGroupCall,
     isCallActionPending,
+    joinGroupCall,
     resetRinging,
+    ringingGroupCall,
     ringingCall,
     startCall,
+    startGroupCall,
     status,
   }
 }

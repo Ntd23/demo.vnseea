@@ -20,6 +20,43 @@
 
       <div class="group relative w-fit max-w-[84%] sm:max-w-[74%] lg:max-w-[42rem] chat-bubble__wrapper">
         <div
+          v-if="callLog"
+          class="chat-bubble__call-card"
+          :class="{ 'chat-bubble__call-card--missed': isMissedCallLog }"
+        >
+          <div class="chat-bubble__call-head">
+            <UButton
+              :icon="callIcon"
+              color="neutral"
+              variant="outline"
+              size="xl"
+              square
+              class="chat-bubble__call-icon-btn"
+              tabindex="-1"
+            />
+            <div class="chat-bubble__call-copy">
+              <p class="chat-bubble__call-title">
+                {{ callTitle }}
+              </p>
+              <p class="chat-bubble__call-subtitle">
+                {{ callSubtitle }}
+              </p>
+            </div>
+          </div>
+          <UButton
+            color="neutral"
+            variant="outline"
+            size="xl"
+            block
+            class="chat-bubble__call-again"
+            @click="emit('retry-call', callActionPayload)"
+          >
+            {{ callButtonLabel }}
+          </UButton>
+        </div>
+
+        <div
+          v-else
           class="chat-bubble relative whitespace-pre-wrap px-4 py-3 text-[15px] leading-relaxed shadow-sm transition-all duration-300"
           :class="[
             isMine
@@ -69,6 +106,8 @@
 </template>
 
 <script setup lang="ts">
+import type { MessageCallLogAction } from "../../domain/types/calls.types"
+
 const props = defineProps<{
   text: string
   isMine: boolean
@@ -84,30 +123,69 @@ const props = defineProps<{
   callLog?: {
     type: "audio" | "video"
     status: string
-    duration: number
+    duration?: number
+    callId?: number
+    groupId?: number
+    isGroup?: boolean
+    isActive?: boolean
+    participantCount?: number
   }
 }>()
+
+const emit = defineEmits<{
+  "retry-call": [payload: MessageCallLogAction]
+}>()
+
+const { t } = useI18n()
+
+const isMissedCallLog = computed(() => {
+  if (!props.callLog) {
+    return false
+  }
+
+  return !props.isMine && (props.callLog.status === "no_answer" || props.callLog.status === "missed")
+})
 
 const callTitle = computed(() => {
   if (!props.callLog) {
     return ""
   }
 
-  const base = props.callLog.type === "video" ? "Cuoc goi video" : "Cuoc goi thoai"
+  const call = props.callLog.type === "video"
+    ? t("pages.messagesPage.callLogVideo")
+    : t("pages.messagesPage.callLogAudio")
 
-  if (props.callLog.status === "no_answer") {
-    return `${base} - khong tra loi`
+  if (props.callLog.status === "no_answer" || props.callLog.status === "missed") {
+    return props.isMine
+      ? t("pages.messagesPage.callLogNoAnswer", { call })
+      : t("pages.messagesPage.callLogMissed", { call })
   }
 
   if (props.callLog.status === "cancelled") {
-    return `${base} - da huy`
+    return t("pages.messagesPage.callLogCancelled", { call })
   }
 
   if (props.callLog.status === "declined") {
-    return `${base} - bi tu choi`
+    return props.isMine
+      ? t("pages.messagesPage.callLogRecipientDeclined", { call })
+      : t("pages.messagesPage.callLogDeclined", { call })
   }
 
-  return base
+  return call
+})
+
+const callIcon = computed(() => {
+  if (!props.callLog) {
+    return "i-ph-phone-x-bold"
+  }
+
+  if (props.callLog.status === "no_answer" || props.callLog.status === "missed") {
+    return "i-ph-phone-x-bold"
+  }
+
+  return props.callLog.type === "video"
+    ? "i-ph-video-camera-fill"
+    : "i-ph-phone-call-fill"
 })
 
 const callDurationLabel = computed(() => {
@@ -121,10 +199,55 @@ const callDurationLabel = computed(() => {
   const minutes = Math.floor((seconds % 3600) / 60)
   const remainingSeconds = seconds % 60
 
-  return hours > 0
-    ? `${hours}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`
-    : `${minutes}:${String(remainingSeconds).padStart(2, "0")}`
+  if (hours > 0) {
+    return t("pages.messagesPage.callLogDurationHours", {
+      hours,
+      minutes,
+    })
+  }
+
+  if (minutes > 0) {
+    return remainingSeconds > 0
+      ? t("pages.messagesPage.callLogDurationMinutesSeconds", {
+          minutes,
+          seconds: remainingSeconds,
+        })
+      : t("pages.messagesPage.callLogDurationMinutes", {
+          minutes,
+        })
+  }
+
+  return t("pages.messagesPage.callLogDurationSeconds", {
+    seconds: remainingSeconds,
+  })
 })
+
+const callSubtitle = computed(() => {
+  if (props.callLog?.isGroup && props.callLog.isActive && props.callLog.participantCount) {
+    return t("pages.messagesPage.groupCallActiveParticipants", {
+      count: props.callLog.participantCount,
+    })
+  }
+
+  if (callDurationLabel.value) {
+    return callDurationLabel.value
+  }
+
+  return props.time || ""
+})
+
+const callActionPayload = computed<MessageCallLogAction>(() => ({
+  type: props.callLog?.type ?? "video",
+  action: props.callLog?.isGroup && props.callLog.isActive && props.callLog.callId ? "join" : "start",
+  callId: props.callLog?.callId,
+  groupId: props.callLog?.groupId,
+}))
+
+const callButtonLabel = computed(() =>
+  callActionPayload.value.action === "join"
+    ? t("pages.messagesPage.callLogJoin")
+    : t("pages.messagesPage.callLogRetry"),
+)
 </script>
 
 <style scoped>
@@ -153,32 +276,33 @@ const callDurationLabel = computed(() => {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.chat-bubble__call-log {
-  display: inline-flex;
-  align-items: center;
+.chat-bubble__call-card {
+  width: min(250px, 74vw);
+  border-radius: 18px;
+  background: #f1f1f1;
+  padding: 14px 14px 12px;
+}
+
+.chat-bubble__call-head {
+  display: grid;
+  grid-template-columns: 46px 1fr;
   gap: 10px;
-  min-width: 168px;
-}
-
-.chat-bubble__call-icon {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  flex: 0 0 auto;
-  font-size: 18px;
 }
 
-.chat-bubble__call-icon--mine {
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
+.chat-bubble__call-icon-btn {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 999px !important;
+  color: #050505 !important;
+  background: #e2e5e9 !important;
+  pointer-events: none;
 }
 
-.chat-bubble__call-icon--theirs {
-  background: #ffffff;
-  color: var(--bg-brand, #a84849);
+.chat-bubble__call-card--missed .chat-bubble__call-icon-btn {
+  color: #dc2626 !important;
+  background: #fee2e2 !important;
+  border-color: #fecaca !important;
 }
 
 .chat-bubble__call-copy {
@@ -189,16 +313,48 @@ const callDurationLabel = computed(() => {
 }
 
 .chat-bubble__call-title {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.25;
+  color: #050505;
+  font-size: 16px;
+  font-weight: 750;
+  line-height: 1.08;
 }
 
-.chat-bubble__call-duration {
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.25;
-  opacity: 0.76;
+.chat-bubble__call-card--missed .chat-bubble__call-title,
+.chat-bubble__call-card--missed .chat-bubble__call-subtitle {
+  color: #dc2626;
+}
+
+.chat-bubble__call-subtitle {
+  color: #65676b;
+  font-size: 14px;
+  font-weight: 450;
+  line-height: 1.12;
+  padding: 5px 0 5px 0;
+}
+
+.chat-bubble__call-again {
+  margin-top: 12px;
+  min-height: 44px;
+  border-radius: 8px !important;
+  background: #868687 !important;
+  color: #050505 !important;
+  font-size: 18px !important;
+  font-weight: 650 !important;
+}
+
+.chat-bubble__call-card--missed .chat-bubble__call-again {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+  border-color: #dc2626 !important;
+}
+
+.chat-bubble__call-again:hover {
+  background: #d8dce2 !important;
+}
+
+.chat-bubble__call-card--missed .chat-bubble__call-again:hover {
+  background: #b91c1c !important;
+  border-color: #b91c1c !important;
 }
 
 .chat-bubble__avatar {
