@@ -15,6 +15,19 @@ export type SettingsMeResponse = Record<string, unknown> & {
   about?: string
   verified?: boolean
   wallet?: number | string
+  pointsConfig?: {
+    pointAllowWithdrawal: boolean
+    dollarToPointCost: number
+    adsCurrency: string
+    currencySymbol: string
+    pointBaseCurrency: string
+    walletCurrency: string
+    walletExchangeRate: number
+    displayCurrency: string
+    displayCurrencySymbol: string
+    displayExchangeRate: number
+    exchangeUpdate: number
+  }
 }
 
 const asString = (value: unknown) =>
@@ -34,8 +47,16 @@ const roleFromAdminFlag = (value: unknown) => {
   return "user"
 }
 
+const asNumber = (value: unknown) => {
+  const normalized = Number(value)
+  return Number.isFinite(normalized) ? normalized : 0
+}
+
 export default defineEventHandler(async (event): Promise<SettingsMeResponse> => {
   const user = await getBackendCurrentUser(event)
+  const pointsConfig = user.points_config && typeof user.points_config === "object"
+    ? user.points_config as Record<string, unknown>
+    : {}
 
   const name = asString(user.name) || asString(user.username) || "User"
 
@@ -54,6 +75,19 @@ export default defineEventHandler(async (event): Promise<SettingsMeResponse> => 
     about: asString(user.about),
     verified: asBooleanNumber(user.verified),
     wallet: asString(user.wallet),
+    pointsConfig: {
+      pointAllowWithdrawal: asBooleanNumber(pointsConfig.point_allow_withdrawal),
+      dollarToPointCost: asNumber(pointsConfig.dollar_to_point_cost),
+      adsCurrency: asString(pointsConfig.ads_currency) || "USD",
+      currencySymbol: asString(pointsConfig.currency_symbol) || "$",
+      pointBaseCurrency: asString(pointsConfig.point_base_currency) || "USD",
+      walletCurrency: asString(pointsConfig.wallet_currency) || asString(pointsConfig.ads_currency) || "USD",
+      walletExchangeRate: asNumber(pointsConfig.wallet_exchange_rate) || 1,
+      displayCurrency: asString(pointsConfig.display_currency) || "VND",
+      displayCurrencySymbol: asString(pointsConfig.display_currency_symbol) || "₫",
+      displayExchangeRate: asNumber(pointsConfig.display_exchange_rate),
+      exchangeUpdate: asNumber(pointsConfig.exchange_update),
+    },
     role: roleFromAdminFlag(user.admin),
   }
 })

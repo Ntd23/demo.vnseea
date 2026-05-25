@@ -47,6 +47,11 @@ export type MessageItem = {
   mediaUrl?: string
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file"
+  callLog?: {
+    type: "audio" | "video"
+    status: string
+    duration: number
+  }
 }
 
 export type MessageSendDraft = {

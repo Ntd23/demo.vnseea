@@ -104,6 +104,14 @@ const decodeHtmlEntities = (value: string) =>
 
 const buildCallMessageLabel = (value: string, entity: BackendEntity) => {
   const type = firstString(entity, ["type_two", "type"]).toLowerCase()
+  const callLog = parseCallLogPayload(value, entity)
+
+  if (callLog) {
+    const title = callLog.call_type === "video" ? "Cuoc goi video" : "Cuoc goi thoai"
+    const duration = formatCallDuration(callLog.duration)
+
+    return duration ? `${title} - ${duration}` : title
+  }
 
   if (type.includes("call")) {
     return type.includes("video") ? "Cuộc gọi video" : "Cuộc gọi thoại"
@@ -127,6 +135,57 @@ const buildCallMessageLabel = (value: string, entity: BackendEntity) => {
   catch {
     return ""
   }
+}
+
+const parseCallLogPayload = (value: string, entity: BackendEntity) => {
+  const type = firstString(entity, ["type_two", "type"]).toLowerCase()
+  const decoded = decodeHtmlEntities(value).replace(/\\"/g, "\"").trim()
+
+  if (!type.includes("call") && !decoded.startsWith("{")) {
+    return null
+  }
+
+  try {
+    const payload = JSON.parse(decoded) as BackendEntity
+    const callType = firstString(payload, ["call_type"]).toLowerCase()
+
+    if (!callType && !type.includes("call")) {
+      return null
+    }
+
+    return {
+      call_type: callType === "video" || type.includes("video") ? "video" as const : "audio" as const,
+      status: firstString(payload, ["status"]),
+      duration: asNumber(payload.duration),
+    }
+  }
+  catch {
+    if (!type.includes("call")) {
+      return null
+    }
+
+    return {
+      call_type: type.includes("video") ? "video" as const : "audio" as const,
+      status: "",
+      duration: 0,
+    }
+  }
+}
+
+const formatCallDuration = (seconds: number) => {
+  const duration = Math.max(0, Math.floor(seconds))
+
+  if (duration <= 0) {
+    return ""
+  }
+
+  const hours = Math.floor(duration / 3600)
+  const minutes = Math.floor((duration % 3600) / 60)
+  const remainingSeconds = duration % 60
+
+  return hours > 0
+    ? `${hours}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`
+    : `${minutes}:${String(remainingSeconds).padStart(2, "0")}`
 }
 
 const normalizeMessageText = (value: string, entity: BackendEntity) => {
@@ -342,6 +401,8 @@ const mapThreadMessage = (
   resolveMediaUrl: (value: unknown) => string,
 ): MessageItem => {
   const timestamp = asNumber(entity.time)
+  const rawText = decryptMessageText(entity.text, timestamp)
+  const callLog = parseCallLogPayload(rawText, entity)
   const userData = asRecord(entity.user_data)
   const messageUser = asRecord(entity.messageUser)
   const mediaUrl = buildMediaUrl(entity, resolveMediaUrl)
@@ -349,7 +410,7 @@ const mapThreadMessage = (
 
   return {
     id: asNumber(entity.id),
-    text: normalizeMessageText(decryptMessageText(entity.text, timestamp), entity),
+    text: normalizeMessageText(rawText, entity),
     isMine: asNumber(entity.from_id) === currentUserId || asString(entity.position).startsWith("right"),
     time: firstString(entity, ["time_text"]),
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
@@ -358,6 +419,13 @@ const mapThreadMessage = (
     mediaUrl,
     mediaName: firstString(entity, ["mediaFileName", "media_file_name", "filename"]),
     mediaType,
+    callLog: callLog
+      ? {
+          type: callLog.call_type,
+          status: callLog.status,
+          duration: callLog.duration,
+        }
+      : undefined,
   }
 }
 

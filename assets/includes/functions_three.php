@@ -126,6 +126,18 @@ function Wo_RegisterPoint($post_id, $type, $action = '+', $user_id = 0)
 	}
 	$query = mysqli_query($sqlConnect, $query_one);
 	if ($query) {
+		$point_log_kind = $action == '-' ? 'POINTS_DEDUCT' : 'POINTS_EARNED';
+		$point_log_amount = $action == '-' ? 0 - (float) $wallet : (float) $wallet;
+		$point_log_notes = mysqli_real_escape_string($sqlConnect, $type);
+		$point_log_extra = mysqli_real_escape_string($sqlConnect, json_encode(array(
+			'points' => (int) $points,
+			'action' => $action,
+			'type' => $type,
+			'rate_points' => (float) $dollar_to_point_cost,
+			'base_currency' => 'USD',
+			'base_amount' => (float) $wallet
+		), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+		mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`, `extra`) VALUES ({$user_id}, '{$point_log_kind}', {$point_log_amount}, '{$point_log_notes}', '{$point_log_extra}')");
 		cache($user_id, 'users', 'delete');
 		return true;
 	}

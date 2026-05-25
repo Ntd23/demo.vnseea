@@ -4,6 +4,8 @@ import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { SettingsRepository } from "../../domain/repositories/SettingsRepository"
 import type {
+  SettingSession,
+  SettingsBlockedUser,
   SettingsFieldValue,
   SettingsPointsExchangeInput,
   SettingsPointsExchangeResult,

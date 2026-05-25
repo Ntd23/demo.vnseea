@@ -28,9 +28,18 @@
               : 'chat-bubble--theirs text-[var(--text-primary)] border border-slate-100'
           ]"
         >
-          <p v-if="text" class="whitespace-pre-wrap">{{ text }}</p>
+          <div v-if="callLog" class="chat-bubble__call-log">
+            <span class="chat-bubble__call-icon" :class="isMine ? 'chat-bubble__call-icon--mine' : 'chat-bubble__call-icon--theirs'">
+              <Icon :name="callLog.type === 'video' ? 'i-ph-video-camera-bold' : 'i-ph-phone-bold'" />
+            </span>
+            <span class="chat-bubble__call-copy">
+              <span class="chat-bubble__call-title">{{ callTitle }}</span>
+              <span v-if="callDurationLabel" class="chat-bubble__call-duration">{{ callDurationLabel }}</span>
+            </span>
+          </div>
+          <p v-else-if="text" class="whitespace-pre-wrap">{{ text }}</p>
 
-          <div v-if="mediaUrl" :class="text ? 'mt-2.5' : ''">
+          <div v-if="mediaUrl" :class="text || callLog ? 'mt-2.5' : ''">
             <NuxtImg
               v-if="mediaType === 'image' || mediaType === 'gif'"
               :src="mediaUrl"
@@ -68,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   text: string
   isMine: boolean
   isLast?: boolean
@@ -78,7 +87,50 @@ defineProps<{
   mediaUrl?: string
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file"
+  callLog?: {
+    type: "audio" | "video"
+    status: string
+    duration: number
+  }
 }>()
+
+const callTitle = computed(() => {
+  if (!props.callLog) {
+    return ""
+  }
+
+  const base = props.callLog.type === "video" ? "Cuoc goi video" : "Cuoc goi thoai"
+
+  if (props.callLog.status === "no_answer") {
+    return `${base} - khong tra loi`
+  }
+
+  if (props.callLog.status === "cancelled") {
+    return `${base} - da huy`
+  }
+
+  if (props.callLog.status === "declined") {
+    return `${base} - bi tu choi`
+  }
+
+  return base
+})
+
+const callDurationLabel = computed(() => {
+  const seconds = Math.max(0, Math.floor(props.callLog?.duration ?? 0))
+
+  if (seconds <= 0) {
+    return ""
+  }
+
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainingSeconds = seconds % 60
+
+  return hours > 0
+    ? `${hours}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`
+    : `${minutes}:${String(remainingSeconds).padStart(2, "0")}`
+})
 </script>
 
 <style scoped>
@@ -104,6 +156,54 @@ defineProps<{
   background: #f1f0f0;
   border-radius: 12px 12px 12px 2px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.chat-bubble__call-log {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 168px;
+}
+
+.chat-bubble__call-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  font-size: 18px;
+}
+
+.chat-bubble__call-icon--mine {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.chat-bubble__call-icon--theirs {
+  background: #ffffff;
+  color: var(--bg-brand, #a84849);
+}
+
+.chat-bubble__call-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.chat-bubble__call-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.chat-bubble__call-duration {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  opacity: 0.76;
 }
 
 .chat-bubble__avatar {

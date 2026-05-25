@@ -12,6 +12,9 @@ type BackendPointsExchangeResponse = {
   amount?: number | string
   points?: number | string
   wallet?: number | string
+  points_config?: {
+    dollar_to_point_cost?: number | string
+  }
   errors?: {
     error_text?: string
   }
@@ -26,10 +29,10 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<{ points?: number | string }>(event)
   const points = Math.trunc(asNumber(body?.points))
 
-  if (points < 1000 || points % 1000 !== 0) {
+  if (points < 1) {
     throw createError({
       statusCode: 422,
-      statusMessage: "Points must be exchanged in blocks of 1000.",
+      statusMessage: "Points must be greater than zero.",
     })
   }
 

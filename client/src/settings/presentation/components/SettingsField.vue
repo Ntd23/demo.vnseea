@@ -146,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SettingField } from "../../application/composables/useSettingsData"
+import type { SettingField } from "../../application/view-models/settings-page.types"
 
 const props = defineProps<{ field: SettingField }>()
 const emit = defineEmits<{

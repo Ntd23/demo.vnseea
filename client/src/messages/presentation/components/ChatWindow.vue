@@ -44,6 +44,7 @@
             <button
               class="chat-window__action-btn"
               type="button"
+              :disabled="contact.type !== 'user'"
               :title="$t('pages.messagesPage.audioCall') || 'Bắt đầu cuộc gọi thoại'"
               @click="onCall('audio')"
             >
@@ -54,6 +55,7 @@
             <button
               class="chat-window__action-btn"
               type="button"
+              :disabled="contact.type !== 'user'"
               :title="$t('pages.messagesPage.videoCall') || 'Bắt đầu cuộc gọi video'"
               @click="onCall('video')"
             >
@@ -127,6 +129,7 @@
 </template>
 
 <script setup lang="ts">
+import type { MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact, MessageItem, MessageTabKey } from "../../domain/types/messages.types"
 import MessagesChatInput from "./ChatInput.vue"
 import MessagesChatMessageList from "./ChatMessageList.vue"
@@ -151,6 +154,7 @@ const emit = defineEmits<{
   "send": [input: { text: string, file?: File | null }]
   "delete-conversation": []
   "back": []
+  "start-call": [type: MessageCallType]
 }>()
 
 const inputModel = ref("")
@@ -177,20 +181,10 @@ function onSendMessage(input: { text: string, file?: File | null }) {
   emit("send", input)
 }
 
-function onCall(type: "audio" | "video") {
+function onCall(type: MessageCallType) {
   const contact = props.contact
-  if (contact && contact.userId) {
-    if (type === "video" && typeof window !== "undefined" && (window as any).Wo_GenerateVideoCall) {
-      (window as any).Wo_GenerateVideoCall((window as any).wo_user_id || 0, contact.userId)
-      return
-    } else if (type === "audio" && typeof window !== "undefined" && (window as any).Wo_GenerateVoiceCall) {
-      (window as any).Wo_GenerateVoiceCall((window as any).wo_user_id || 0, contact.userId)
-      return
-    }
-  }
-
-  // Fallback visual feedback if call is clicked when running outside WoWonder standalone frames
-  emit("send", { text: `[Bắt đầu cuộc gọi ${type === "video" ? "video" : "thoại"}]` })
+  if (!contact?.userId || contact.type !== "user") return
+  emit("start-call", type)
 }
 </script>
 
