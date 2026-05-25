@@ -51,6 +51,7 @@
           :is-pending="threadPending"
           :is-typing="isTyping"
           :messages="messages"
+          :call-action-pending="isCallActionPending"
           :deleting-conversation="isDeletingConversation"
           :user-detail-docked="showDesktopUserDetailPane"
           @typing-start="startComposerTyping"
@@ -58,8 +59,8 @@
           @toggle-info="infoPanelOpen = !infoPanelOpen"
           @load-more="loadOlderMessages"
           @send="sendMessage"
+          @start-call="startSelectedContactCall"
           @delete-conversation="deleteSelectedConversation"
-          @start-call="handleStartCall"
           @back="handleBackToList"
         />
       </main>
@@ -246,9 +247,8 @@ import MessagesCreateGroupModal from "../components/CreateGroupModal.vue"
 import MessagesChatWindow from "../components/ChatWindow.vue"
 import MessagesMessageSidePanel from "../components/MessageSidePanel.vue"
 import MessagesUserDetailPanel from "../components/UserDetailPanel.vue"
-import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
 import { useMessageCalls } from "../../application/composables/useMessageCalls"
-import { useMessagesInbox } from "../../application/composables/useMessagesInbox"
+import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
 import type { MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact } from "../../domain/types/messages.types"
 
@@ -260,6 +260,10 @@ const tagModalContact = ref<MessageContact | null>(null)
 const newTagName = ref("")
 const newTagColor = ref("#3b82f6")
 const mobileListOpen = ref(true)
+const {
+  isCallActionPending,
+  startCall,
+} = useMessageCalls()
 const {
   activeTagFilter,
   activeTab,
@@ -303,7 +307,6 @@ const {
   query,
   removeCreateGroupParticipant,
   removeGroupMember,
-  refreshInbox,
   selectedContact,
   selectedRecipientIds,
   selectedRecipients,
@@ -324,11 +327,7 @@ const {
   tabs,
   threadPending,
   toggleAllVisibleRecipients,
-} = useMessagesInbox()
-const {
-  startCall,
-  status: callStatus,
-} = useMessageCalls()
+} = useMessagesPageVM()
 
 const chatEmptyTitle = computed(() =>
   activeTab.value === "multi"
@@ -402,19 +401,6 @@ watch(showDesktopUserDetailPane, (value) => {
   if (value) {
     infoPanelOpen.value = false
   }
-}
-
-watch(callStatus, async (value) => {
-  if (value !== "ended") {
-    return
-  }
-
-  await refreshInbox()
-
-  const contact = selectedContact.value
-  if (contact) {
-    await selectContact(contact)
-  }
 })
 
 function openCreateGroupModal() {
@@ -440,13 +426,18 @@ function handleBackToList() {
   infoPanelOpen.value = false
 }
 
+async function startSelectedContactCall(type: MessageCallType) {
+  const contact = selectedContact.value
+
+  if (!contact || contact.type !== "user") {
+    return
+  }
+
+  await startCall(contact, type)
+}
+
 function updateGroupCandidateQuery(value: string) {
   groupCandidateQuery.value = value
-}
-function handleStartCall(type: MessageCallType) {
-  const contact = selectedContact.value
-  if (!contact) return
-  startCall(contact, type)
 }
 
 function openTagModal(contact: MessageContact) {

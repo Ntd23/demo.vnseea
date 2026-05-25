@@ -324,18 +324,14 @@ async function toggleCamera() {
 
 async function flipCamera() {
   if (!room || !cameraEnabled.value) return
-  let cameraTrack: LocalVideoTrack | null = null
-  room.localParticipant.videoTrackPublications.forEach((publication) => {
-    if (publication.track instanceof LocalVideoTrack) {
-      cameraTrack = publication.track
-    }
-  })
+  const cameraTrack = Array.from(room.localParticipant.videoTrackPublications.values())
+    .map(publication => publication.track)
+    .find((track): track is LocalVideoTrack => track instanceof LocalVideoTrack)
+
   if (!cameraTrack) return
 
   currentFacingMode = currentFacingMode === "user" ? "environment" : "user"
-  await cameraTrack.restartTrack({ facingMode: { ideal: currentFacingMode } }).catch(() =>
-    cameraTrack?.restartTrack({ facingMode: currentFacingMode }),
-  )
+  await cameraTrack.restartTrack({ facingMode: currentFacingMode }).catch(() => null)
 }
 
 function completeCall() {

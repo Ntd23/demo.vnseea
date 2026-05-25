@@ -80,7 +80,7 @@ const props = defineProps<{
   authorName?: string
   mediaUrl?: string
   mediaName?: string
-  mediaType?: "image" | "video" | "audio" | "gif" | "file"
+  mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
   callLog?: {
     type: "audio" | "video"
     status: string
