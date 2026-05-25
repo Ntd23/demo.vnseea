@@ -393,9 +393,14 @@ const tagModalLiveContact = computed(() => {
     ?? tagModalContact.value
 })
 
-watch(selectedContact, () => {
-  infoPanelOpen.value = false
-})
+watch(
+  () => selectedContact.value
+    ? `${selectedContact.value.type}:${selectedContact.value.userId ?? selectedContact.value.groupId ?? selectedContact.value.id}`
+    : "",
+  () => {
+    infoPanelOpen.value = false
+  },
+)
 
 watch(showDesktopUserDetailPane, (value) => {
   if (value) {

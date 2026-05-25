@@ -52,6 +52,8 @@ export interface ProfileApiResponse {
   avatarText: string
   verified: boolean
   isOwner: boolean
+  isFollowing: boolean
+  isFollowRequested: boolean
   statusText: string
   website?: string
   working?: string
