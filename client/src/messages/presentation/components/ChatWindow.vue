@@ -51,51 +51,58 @@
             </button>
           </div>
 
-          <!-- Right Action Buttons (Audio call, Video call, Info, Trash) -->
-          <div class="chat-window__header-actions">
-            <!-- Audio Call -->
-            <button
-              class="chat-window__action-btn"
-              type="button"
-              :disabled="contact.type !== 'user'"
-              :title="$t('pages.messagesPage.audioCall') || 'Bắt đầu cuộc gọi thoại'"
-              @click="onCall('audio')"
-            >
-              <Icon name="i-ph-phone-bold" class="chat-window__action-btn-icon" />
-            </button>
+          <div class="flex items-center gap-2">
+            <template v-if="contact.type === 'user'">
+              <UTooltip :text="$t('pages.messagesPage.call')">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-ph-phone-bold"
+                  class="h-10 w-10 justify-center rounded-full"
+                  :loading="callActionPending"
+                  :disabled="callActionPending"
+                  @click="handleStartCall('audio')"
+                />
+              </UTooltip>
 
-            <!-- Video Call -->
-            <button
-              class="chat-window__action-btn"
-              type="button"
-              :disabled="contact.type !== 'user'"
-              :title="$t('pages.messagesPage.videoCall') || 'Bắt đầu cuộc gọi video'"
-              @click="onCall('video')"
-            >
-              <Icon name="i-ph-video-camera-bold" class="chat-window__action-btn-icon" />
-            </button>
+              <UTooltip :text="$t('pages.messagesPage.video')">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-ph-video-camera-bold"
+                  class="h-10 w-10 justify-center rounded-full"
+                  :loading="callActionPending"
+                  :disabled="callActionPending"
+                  @click="handleStartCall('video')"
+                />
+              </UTooltip>
+            </template>
 
-            <!-- Info Panel Trigger -->
-            <button
-              class="chat-window__action-btn"
-              type="button"
-              :title="$t('pages.messagesPage.info') || 'Thông tin'"
-              @click="$emit('toggle-info')"
-            >
-              <Icon name="i-ph-info-bold" class="chat-window__action-btn-icon" />
-            </button>
+            <UTooltip :text="$t('pages.messagesPage.info')">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                icon="i-ph-info-bold"
+                class="h-10 w-10 justify-center rounded-full"
+                :class="userDetailDocked && contact.type === 'user' ? 'xl:hidden' : ''"
+                @click="handleToggleInfo"
+              />
+            </UTooltip>
 
-            <!-- Delete/Trash Conversation -->
-            <button
-              class="chat-window__action-btn chat-window__action-btn--danger"
-              type="button"
-              :disabled="deletingConversation"
-              :title="$t('pages.messagesPage.deleteConversation') || 'Xóa cuộc trò chuyện'"
-              @click="$emit('delete-conversation')"
-            >
-              <Icon v-if="!deletingConversation" name="i-ph-trash-bold" class="chat-window__action-btn-icon" />
-              <Icon v-else name="i-ph-spinner-gap-bold" class="chat-window__action-btn-icon animate-spin" />
-            </button>
+            <UTooltip :text="$t('pages.messagesPage.deleteConversation')">
+              <UButton
+                type="button"
+                color="error"
+                variant="ghost"
+                :icon="deletingConversation ? 'i-ph-spinner-gap-bold' : 'i-ph-trash-bold'"
+                class="h-10 w-10 justify-center rounded-full"
+                :loading="deletingConversation"
+                @click="$emit('delete-conversation')"
+              />
+            </UTooltip>
           </div>
         </div>
       </div>
@@ -146,8 +153,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from "vue"
 import type { MessageCallType } from "../../domain/types/calls.types"
-import type { MessageContact, MessageItem, MessageTabKey } from "../../domain/types/messages.types"
+import type { MessageComposerDraft, MessageContact, MessageGroupDetails, MessageItem, MessageTabKey } from "../../domain/types/messages.types"
 import MessagesChatInput from "./ChatInput.vue"
 import MessagesChatMessageList from "./ChatMessageList.vue"
 
@@ -162,6 +170,7 @@ const props = defineProps<{
   messages: MessageItem[]
   isTyping?: boolean
   deletingConversation?: boolean
+  callActionPending?: boolean
   userDetailDocked?: boolean
 }>()
 
@@ -216,9 +225,13 @@ function onSendMessage(input: MessageComposerDraft) {
 
 function handleToggleInfo() {
   emit("toggle-info")
-function onCall(type: MessageCallType) {
-  const contact = props.contact
-  if (!contact?.userId || contact.type !== "user") return
+}
+
+function handleStartCall(type: MessageCallType) {
+  if (!props.contact?.userId || props.contact.type !== "user") {
+    return
+  }
+
   emit("start-call", type)
 }
 </script>
