@@ -20,7 +20,7 @@
         v-for="method in methods"
         :key="method.value"
         type="button"
-        class="flex min-h-20 items-center gap-3 rounded-2xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-60"
+        class="withdrawal-request__method flex min-h-20 items-center gap-3 rounded-2xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-60"
         :class="method.value === draft.method ? 'border-[var(--border-strong)] bg-[var(--bg-surface-active)]' : 'border-[var(--border-light)] bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-hover)]'"
         :disabled="disabled"
         @click="selectMethod(method.value)"
@@ -215,3 +215,17 @@ function submit() {
   emit("request", { ...draft })
 }
 </script>
+
+<style scoped>
+.withdrawal-request__method {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.withdrawal-request__method > * {
+  pointer-events: none;
+}
+</style>

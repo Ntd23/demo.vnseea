@@ -13,9 +13,9 @@
           </div>
         </div>
 
-        <NuxtLink to="/wallet" class="btn-secondary w-fit">
+        <NuxtLink to="/wallet" class="withdrawal-page__back btn-secondary w-fit">
           <Icon name="i-ph-arrow-left-bold" class="h-4 w-4" />
-          {{ t("pages.withdrawalPage.goBack") }}
+          <span>{{ t("pages.withdrawalPage.goBack") }}</span>
         </NuxtLink>
       </div>
     </section>
@@ -128,3 +128,16 @@ useSeoMeta({
   description: () => t("pages.withdrawalPage.seoDescription"),
 })
 </script>
+
+<style scoped>
+.withdrawal-page__back {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.withdrawal-page__back > * {
+  pointer-events: none;
+}
+</style>

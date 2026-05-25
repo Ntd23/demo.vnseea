@@ -176,6 +176,8 @@ function submit() {
 }
 
 .wallet-topup-form__method {
+  position: relative;
+  z-index: 2;
   display: flex;
   min-height: 80px;
   align-items: center;
@@ -184,8 +186,15 @@ function submit() {
   border-radius: 14px;
   background: #ffffff;
   padding: 12px 14px;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   text-align: left;
   transition: all 0.15s ease;
+}
+
+.wallet-topup-form__method > * {
+  pointer-events: none;
 }
 
 .wallet-topup-form__method:hover {

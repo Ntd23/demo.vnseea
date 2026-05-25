@@ -9,5 +9,10 @@ export default defineAppConfig({
       error: "red",
       neutral: "slate",
     },
+    button: {
+      slots: {
+        base: "relative cursor-pointer pointer-events-auto select-none",
+      },
+    },
   },
 })

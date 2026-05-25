@@ -2660,6 +2660,8 @@
       "attachmentLabel": "Attachment",
       "attachmentOptional": "Optional",
       "removeAttachment": "Remove file",
+      "chooseFile": "Choose file...",
+      "changeFile": "Change file",
       "multiSubmitHint": "This uses the same legacy multi-send handler as the PHP page.",
       "multiSending": "Sending messages...",
       "multiSendingButton": "Sending...",

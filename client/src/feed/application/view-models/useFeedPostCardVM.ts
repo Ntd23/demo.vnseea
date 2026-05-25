@@ -44,6 +44,7 @@ export function useFeedPostCardVM(
   const liking = ref(false)
   const commenting = ref(false)
   const reporting = ref(false)
+  const loadingComments = ref(false)
 
   const postAnchorId = computed(() => post.value ? `feed-post-${post.value.id}` : "")
   const postReactionOptions = computed(() =>
@@ -65,6 +66,7 @@ export function useFeedPostCardVM(
       : feedPostPreviewReactionAssets,
   )
   const hasReactions = computed(() => likesCount.value > 0)
+  const commentsCount = computed(() => Math.max(localComments.value.length, post.value?.stats.comments ?? 0))
   const hasPostContent = computed(() =>
     Boolean(post.value?.text.trim() || post.value?.tags.length),
   )
@@ -248,6 +250,7 @@ export function useFeedPostCardVM(
 
       localComments.value = [...localComments.value, comment]
       showComments.value = true
+      await refreshComments()
       actionState.value = "success"
       actionMessage.value = t("feed.postCard.commentAddedMessage")
 
@@ -265,6 +268,49 @@ export function useFeedPostCardVM(
     finally {
       commenting.value = false
     }
+  }
+
+  async function refreshComments() {
+    const currentPost = post.value
+
+    if (!currentPost || loadingComments.value) {
+      return
+    }
+
+    loadingComments.value = true
+
+    try {
+      const comments = await repository.getPostComments({
+        postId: currentPost.id,
+        limit: 50,
+        offset: 0,
+      })
+
+      if (comments.length) {
+        localComments.value = comments
+      }
+    }
+    catch (error) {
+      actionState.value = "error"
+      actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+    }
+    finally {
+      loadingComments.value = false
+    }
+  }
+
+  function openComments() {
+    showComments.value = true
+    void refreshComments()
+  }
+
+  function toggleComments() {
+    if (showComments.value) {
+      showComments.value = false
+      return
+    }
+
+    openComments()
   }
 
   function handleShared() {
@@ -419,12 +465,14 @@ export function useFeedPostCardVM(
     actionState,
     actionMessage,
     commenting,
+    loadingComments,
     postAnchorId,
     postReactionOptions,
     activePostReactionAsset,
     activePostReactionLabel,
     previewReactions,
     hasReactions,
+    commentsCount,
     hasPostContent,
     mediaItems,
     shareUrl,
@@ -439,6 +487,9 @@ export function useFeedPostCardVM(
     reactToPost,
     onOpenMedia,
     submitComment,
+    refreshComments,
+    openComments,
+    toggleComments,
     handleShared,
     handleMenuAction,
     downloadMedia,

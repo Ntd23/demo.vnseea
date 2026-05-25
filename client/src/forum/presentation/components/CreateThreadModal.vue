@@ -8,10 +8,10 @@
     <template #body>
       <UForm :state="form" class="space-y-5" @submit="submit">
         <div class="space-y-2">
-          <p class="text-label-secondary text-[var(--text-primary)]">
+          <p class="text-[12px] font-bold text-[#0f172a]">
             {{ t("pages.forumPage.modalEyebrow") }}
           </p>
-          <p class="text-body-secondary">
+          <p class="text-[13px] font-medium leading-6 text-[#334155]">
             {{ t("pages.forumPage.modalDescription") }}
           </p>
         </div>
@@ -23,7 +23,7 @@
           :icon="statusAlert.icon"
           :title="statusAlert.title"
           :description="statusAlert.description"
-          class="rounded-[22px]"
+          class="rounded-[12px]"
           aria-live="polite"
         />
 
@@ -84,14 +84,14 @@
               size="xl"
               class="w-full"
               :ui="{
-                base: 'min-h-[160px] resize-y rounded-[20px] border-[var(--border-default)] bg-[var(--bg-surface-hover)] px-4 py-3 text-[14px] leading-6 text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
+                base: 'min-h-[160px] resize-y rounded-[12px] border-[#e2e8f0] bg-[#fafbfe] px-3 py-3 text-[13px] leading-6 text-[#334155] placeholder:text-[#94a3b8]',
               }"
             />
           </UFormField>
         </div>
 
-        <div class="flex flex-col gap-3 rounded-[22px] bg-[var(--bg-surface-hover)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p class="text-[12px] font-semibold leading-5 text-[var(--text-secondary)]">
+        <div class="flex flex-col gap-3 rounded-[12px] bg-[#fafbfe] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p class="text-[12px] font-semibold leading-5 text-[#334155]">
             {{ t("pages.forumPage.modalHelper") }}
           </p>
           <UBadge color="neutral" variant="soft" class="rounded-full px-3 py-1.5 text-[12px] font-semibold">
@@ -105,7 +105,7 @@
             color="neutral"
             variant="outline"
             size="lg"
-            class="rounded-full"
+            class="rounded-[12px]"
             :disabled="isBusy"
             @click="emit('close')"
           >
@@ -115,7 +115,7 @@
             type="submit"
             color="primary"
             size="lg"
-            class="rounded-full"
+            class="rounded-[12px]"
             :loading="isBusy"
             :disabled="isBusy || forumOptions.length === 0"
           >
@@ -221,7 +221,7 @@ watch(
 )
 
 watch(
-  () => [form.title, form.section, form.message],
+  () => [form.title, form.forumId, form.message],
   () => {
     if (submitStatus.value !== "loading") {
       submitStatus.value = "idle"
@@ -239,7 +239,7 @@ function handleOpenChange(nextOpen: boolean) {
 
 function clearErrors() {
   fieldErrors.title = ""
-  fieldErrors.section = ""
+  fieldErrors.forumId = ""
   fieldErrors.message = ""
 }
 

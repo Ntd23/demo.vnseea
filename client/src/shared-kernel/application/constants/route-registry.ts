@@ -107,6 +107,7 @@ export const apiRoutes = {
       action: "feed/posts/action",
     },
     comments: {
+      list: "feed/comments",
       action: "feed/comments/action",
       replies: "feed/comments/replies",
     },
@@ -170,6 +171,7 @@ export const apiRoutes = {
   },
   messages: {
     conversations: "messages/conversations",
+    tags: "messages/tags",
     thread: "messages/thread",
     multi: "messages/multi",
     send: "messages/send",
@@ -188,6 +190,7 @@ export const apiRoutes = {
     blocked: "settings/blocked",
     unblock: "settings/unblock",
     myInfo: "settings/my-info",
+    pointsExchange: "settings/points-exchange",
   },
 } as const
 

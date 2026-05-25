@@ -305,6 +305,8 @@ const transactionIconClass = (transaction: WalletTransaction) =>
 }
 
 .wallet-activity__filter {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   min-height: 38px;
   flex-shrink: 0;
@@ -317,6 +319,15 @@ const transactionIconClass = (transaction: WalletTransaction) =>
   color: #475569;
   font-size: 12px;
   font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.wallet-activity__filter > *,
+.wallet-activity__page > *,
+.wallet-activity__page-btn > * {
+  pointer-events: none;
 }
 
 .wallet-activity__filter strong {
@@ -473,6 +484,8 @@ const transactionIconClass = (transaction: WalletTransaction) =>
 
 .wallet-activity__page,
 .wallet-activity__page-btn {
+  position: relative;
+  z-index: 2;
   display: flex;
   min-width: 34px;
   height: 34px;
@@ -484,6 +497,9 @@ const transactionIconClass = (transaction: WalletTransaction) =>
   color: #475569;
   font-size: 12px;
   font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
 }
 
 .wallet-activity__page--active {

@@ -6,7 +6,9 @@ import type {
   MessageSendDraft,
   MessageTab,
   MessageTabKey,
+  MessageTagsPayload,
   MessageThread,
+  MessageUserTag,
 } from "../../domain/types/messages.types"
 import { createApiMessagesRepository } from "../../infrastructure/repositories/ApiMessagesRepository"
 
@@ -28,8 +30,44 @@ function buildUserContactId(userId: number) {
   return `user:${userId}`
 }
 
+function mergeUserTags(left: MessageUserTag[] = [], right: MessageUserTag[] = []) {
+  const tags = new Map<number, MessageUserTag>()
+
+  for (const tag of [...left, ...right]) {
+    if (tag.id > 0) {
+      tags.set(tag.id, tag)
+    }
+  }
+
+  return [...tags.values()]
+}
+
+function mergeContactTags(contact: MessageContact, taggedContact?: MessageContact) {
+  if (!taggedContact) {
+    return contact
+  }
+
+  return {
+    ...contact,
+    tags: mergeUserTags(contact.tags, taggedContact.tags),
+  }
+}
+
+function sortThreadMessages(messages: MessageItem[]) {
+  return [...messages].sort((left, right) => {
+    const leftTimestamp = left.timestamp ?? 0
+    const rightTimestamp = right.timestamp ?? 0
+
+    if (leftTimestamp !== rightTimestamp) {
+      return leftTimestamp - rightTimestamp
+    }
+
+    return left.id - right.id
+  })
+}
+
 function decorateThreadMessages(messages: MessageItem[]) {
-  return messages.map((message, index, list) => {
+  return sortThreadMessages(messages).map((message, index, list) => {
     const nextMessage = list[index + 1]
     const previousMessage = list[index - 1]
 
@@ -76,6 +114,7 @@ export function useMessagesInbox(
   const query = ref("")
   const selectedContactId = ref("")
   const selectedRecipientIds = ref<number[]>([])
+  const activeTagFilter = ref("")
   const multiText = ref("")
   const multiFile = ref<File | null>(null)
   const multiFeedback = ref<{ tone: MessageFeedbackTone, message: string } | null>(null)
@@ -85,6 +124,7 @@ export function useMessagesInbox(
   const isMarkingRead = ref(false)
   const isDeletingConversation = ref(false)
   const isCreatingGroup = ref(false)
+  const isUpdatingTags = ref(false)
 
   const tabs = computed<MessageTab[]>(() => [
     { id: "multi", label: t("pages.messagesPage.sendMultiple"), icon: "i-ph-user-list-duotone" },
@@ -105,6 +145,17 @@ export function useMessagesInbox(
     },
   )
 
+  const {
+    data: messageTags,
+    refresh: refreshMessageTags,
+  } = useAsyncData<MessageTagsPayload>(
+    "messages:tags",
+    () => repository.getTags(),
+    {
+      default: () => ({ labels: [], contacts: [] }),
+    },
+  )
+
   const requestedUserId = computed(() => {
     const parsed = Number(readQueryValue(route.query.userId))
 
@@ -118,13 +169,23 @@ export function useMessagesInbox(
   const inboxContacts = computed<MessageContact[]>(() => {
     const contacts = inbox.value ?? []
     const userId = requestedUserId.value
+    const taggedByUserId = new Map(
+      (messageTags.value?.contacts ?? [])
+        .map(contact => [contact.userId ?? 0, contact] as const)
+        .filter(([id]) => id > 0),
+    )
+    const mergedContacts = contacts.map(contact =>
+      contact.type === "user"
+        ? mergeContactTags(contact, taggedByUserId.get(contact.userId ?? 0))
+        : contact,
+    )
 
-    if (userId <= 0 || contacts.some(contact => contact.type === "user" && contact.userId === userId)) {
-      return contacts
+    if (userId <= 0 || mergedContacts.some(contact => contact.type === "user" && contact.userId === userId)) {
+      return mergedContacts
     }
 
     return [
-      {
+      mergeContactTags({
         id: buildUserContactId(userId),
         name: requestedUserName.value,
         status: t("pages.messagesPage.activeRecently"),
@@ -137,15 +198,44 @@ export function useMessagesInbox(
         unreadCount: 0,
         members: [requestedUserName.value],
         userId,
-      },
-      ...contacts,
+      }, taggedByUserId.get(userId)),
+      ...mergedContacts,
     ]
   })
 
-  const multiRecipientSource = computed(() =>
-    inboxContacts.value
-      .filter(contact => contact.type === "user" && (contact.userId ?? 0) > 0),
-  )
+  const taggedRecipientSource = computed(() => {
+    const contactsByUserId = new Map<number, MessageContact>()
+
+    for (const contact of messageTags.value?.contacts ?? []) {
+      const userId = contact.userId ?? 0
+
+      if (userId <= 0) {
+        continue
+      }
+
+      const current = contactsByUserId.get(userId)
+      contactsByUserId.set(userId, current ? mergeContactTags(current, contact) : contact)
+    }
+
+    return [...contactsByUserId.values()]
+  })
+
+  const multiRecipientSource = computed(() => {
+    const tagId = activeTagFilter.value
+    const baseContacts = tagId
+      ? taggedRecipientSource.value
+      : inboxContacts.value.filter(contact => contact.type === "user" && (contact.userId ?? 0) > 0)
+
+    if (!tagId || tagId === "0") {
+      return baseContacts
+    }
+
+    const selectedTagId = Number(tagId)
+
+    return baseContacts.filter(contact =>
+      contact.tags?.some(tag => tag.id === selectedTagId),
+    )
+  })
 
   const visibleContacts = computed(() => {
     const source = activeTab.value === "multi"
@@ -169,6 +259,7 @@ export function useMessagesInbox(
 
       return contact.name.toLowerCase().includes(normalizedQuery)
         || contact.preview.toLowerCase().includes(normalizedQuery)
+        || (contact.tags ?? []).some(tag => tag.name.toLowerCase().includes(normalizedQuery))
     }),
   )
 
@@ -220,6 +311,7 @@ export function useMessagesInbox(
   )
 
   const messages = computed(() => thread.value?.messages ?? [])
+  const messageTagLabels = computed(() => messageTags.value?.labels ?? [])
   const isTyping = computed(() => Boolean(thread.value?.typing))
   const inboxPending = computed(() => inboxStatus.value === "pending")
   const threadPending = computed(() => threadStatus.value === "pending" || isLoadingMore.value || isSending.value)
@@ -272,6 +364,15 @@ export function useMessagesInbox(
       selectedContactId.value = nextContacts[0]?.id ?? ""
     }
   }, { immediate: true })
+
+  watch([activeTagFilter, filteredContacts, activeTab], async ([tagFilter]) => {
+    if (activeTab.value !== "multi" || !tagFilter) {
+      return
+    }
+
+    await nextTick()
+    selectedRecipientIds.value = visibleRecipientIds.value
+  }, { flush: "post" })
 
   function showThreadError() {
     toast.add({
@@ -349,13 +450,106 @@ export function useMessagesInbox(
       return
     }
 
-    const shouldRefresh = activeTab.value === contact.tab
+    const isSameContact = activeTab.value === contact.tab
       && selectedContactId.value === contact.id
 
     selectedContactId.value = contact.id
 
-    if (shouldRefresh) {
-      await loadThread()
+    if (!isSameContact) {
+      thread.value = { messages: [], typing: false }
+    }
+
+    await nextTick()
+    await loadThread()
+  }
+
+  function setActiveTagFilter(tagId: string) {
+    activeTagFilter.value = tagId
+    multiFeedback.value = null
+  }
+
+  async function createTagLabel(input: { name: string, color: string }) {
+    if (isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.createTagLabel(input)
+      await refreshMessageTags()
+      return result.ok
+    }
+    catch {
+      toast.add({
+        title: t("pages.messagesPage.multiNetworkErrorTitle"),
+        description: t("pages.messagesPage.multiNetworkErrorDescription"),
+        color: "error",
+      })
+      return false
+    }
+    finally {
+      isUpdatingTags.value = false
+    }
+  }
+
+  async function deleteTagLabel(tagId: number) {
+    if (tagId <= 0 || isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.deleteTagLabel({ tagId })
+      await refreshMessageTags()
+
+      if (activeTagFilter.value === String(tagId)) {
+        activeTagFilter.value = ""
+      }
+
+      return result.ok
+    }
+    finally {
+      isUpdatingTags.value = false
+    }
+  }
+
+  async function attachTag(contact: MessageContact, tagId: number) {
+    const userId = contact.userId ?? 0
+
+    if (userId <= 0 || tagId <= 0 || isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.attachTag({ userId, tagId })
+      await refreshMessageTags()
+      return result.ok
+    }
+    finally {
+      isUpdatingTags.value = false
+    }
+  }
+
+  async function detachTag(contact: MessageContact, tagId: number) {
+    const userId = contact.userId ?? 0
+
+    if (userId <= 0 || tagId <= 0 || isUpdatingTags.value) {
+      return false
+    }
+
+    isUpdatingTags.value = true
+
+    try {
+      const result = await repository.detachTag({ userId, tagId })
+      await refreshMessageTags()
+      return result.ok
+    }
+    finally {
+      isUpdatingTags.value = false
     }
   }
 
@@ -591,31 +785,40 @@ export function useMessagesInbox(
   }
 
   return {
+    activeTagFilter,
     activeTab,
     allVisibleRecipientsSelected,
     filteredContacts,
     inboxError,
     inboxPending,
+    attachTag,
     createGroupChat,
+    createTagLabel,
     deleteSelectedConversation,
+    deleteTagLabel,
+    detachTag,
     isCreatingGroup,
     isDeletingConversation,
     isMarkingRead,
     isMultiSending,
+    isUpdatingTags,
     isTyping,
     loadOlderMessages,
     markAllAsRead,
     messages,
+    messageTagLabels,
     multiFeedbackMessage,
     multiFeedbackTone,
     multiFile,
     multiText,
     query,
     refreshInbox,
+    refreshMessageTags,
     selectedContact,
     selectedRecipientIds,
     selectedRecipients,
     selectContact,
+    setActiveTagFilter,
     sendMessage,
     sendMultiMessage,
     tabs,

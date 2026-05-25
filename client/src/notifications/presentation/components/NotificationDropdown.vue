@@ -85,10 +85,21 @@ const emit = defineEmits<{
 
 const store = useNotificationCenterStore()
 
+function normalizeNotificationTarget(rawUrl: string) {
+  const targetUrl = rawUrl || "/notifications"
+  const malformedPostMatch = targetUrl.match(/^\/post\/([^/?#&]+)&(.+)$/i)
+
+  if (malformedPostMatch?.[1] && malformedPostMatch[2]) {
+    return `/post/${encodeURIComponent(malformedPostMatch[1])}?${malformedPostMatch[2]}`
+  }
+
+  return targetUrl
+}
+
 async function openNotification(item: NotificationItem) {
   await store.markOneRead(item.id)
   emit("navigate")
-  const targetUrl = item.url || "/notifications"
+  const targetUrl = normalizeNotificationTarget(item.url)
   await navigateTo(targetUrl, { external: /^https?:\/\//i.test(targetUrl) })
 }
 </script>

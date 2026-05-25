@@ -20,7 +20,7 @@
 
     <button class="blogs-results__reset" type="button" @click="$emit('reset')">
       <Icon name="i-ph-arrow-counter-clockwise" class="h-3.5 w-3.5" />
-      {{ $t("pages.blogsPage.reset") }}
+      <span>{{ $t("pages.blogsPage.reset") }}</span>
     </button>
   </div>
 </template>
@@ -92,8 +92,11 @@ defineEmits<{
 }
 
 .blogs-results__reset {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   width: fit-content;
+  min-height: 36px;
   align-items: center;
   gap: 7px;
   border: 1px solid #e2e8f0;
@@ -103,7 +106,14 @@ defineEmits<{
   padding: 9px 12px;
   font-size: 12.5px;
   font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.blogs-results__reset > * {
+  pointer-events: none;
 }
 
 .blogs-results__reset:hover {

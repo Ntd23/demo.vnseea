@@ -9,6 +9,11 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const userId = useCookie<string | null>("user_id")
+
+if (!userId.value) {
+  await navigateTo("/welcome")
+}
 
 useHead({
   title: () => t("pages.livePage.seoTitle"),

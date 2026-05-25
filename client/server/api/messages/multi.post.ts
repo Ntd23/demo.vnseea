@@ -162,6 +162,8 @@ const toBackendBody = (
 }
 
 export default defineEventHandler(async (event) => {
+  console.log("[multi.post.ts] Received multi-send request.");
+  console.log("[multi.post.ts] Cookies in event:", event.node.req.headers.cookie);
   const contentType = getHeader(event, "content-type") || ""
   const payload = contentType.includes("multipart/form-data")
     ? await parseMultipartBody(event)
@@ -183,6 +185,7 @@ export default defineEventHandler(async (event) => {
 
   const currentUser = await getBackendCurrentUser(event)
   const sessionHash = asString(currentUser.session_hash)
+  console.log("[multi.post.ts] currentUser:", currentUser.user_id, "sessionHash length:", sessionHash.length);
 
   if (!sessionHash) {
     throw createError({
@@ -201,5 +204,8 @@ export default defineEventHandler(async (event) => {
     },
   )
 
-  return normalizeResponse(response)
+  console.log("[multi.post.ts] Backend response status:", response.status, "sent count:", response.sent);
+  const normalized = normalizeResponse(response);
+  console.log("[multi.post.ts] Normalized response status:", normalized.status, "sentCount:", normalized.sentCount);
+  return normalized;
 })

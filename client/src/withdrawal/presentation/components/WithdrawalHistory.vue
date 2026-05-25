@@ -269,6 +269,8 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 }
 
 .withdrawal-history__filter {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   min-height: 38px;
   flex-shrink: 0;
@@ -281,6 +283,15 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
   color: #475569;
   font-size: 12px;
   font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.withdrawal-history__filter > *,
+.withdrawal-history__page > *,
+.withdrawal-history__page-btn > * {
+  pointer-events: none;
 }
 
 .withdrawal-history__filter strong {
@@ -433,6 +444,8 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
 
 .withdrawal-history__page,
 .withdrawal-history__page-btn {
+  position: relative;
+  z-index: 2;
   display: flex;
   min-width: 34px;
   height: 34px;
@@ -444,6 +457,9 @@ const statusBadgeClass = (status: WithdrawalStatus) => {
   color: #475569;
   font-size: 12px;
   font-weight: 800;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
 }
 
 .withdrawal-history__page--active {

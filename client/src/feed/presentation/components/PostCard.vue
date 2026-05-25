@@ -100,7 +100,7 @@
           <span class="post-card__stat-count">{{ likesCount }}</span>
         </div>
         <div class="post-card__stats-right">
-          <span>{{ t("feed.postCard.commentsCount", { count: localComments.length }) }}</span>
+          <span>{{ t("feed.postCard.commentsCount", { count: commentsCount }) }}</span>
           <span>{{ t("feed.postCard.sharesCount", { count: sharesCount }) }}</span>
         </div>
       </div>
@@ -173,7 +173,7 @@
           :class="{ 'post-card__action-btn--active': showComments }"
           type="button"
           :aria-pressed="showComments"
-          @click="showComments = !showComments"
+          @click="toggleComments"
         >
           <Icon name="i-ph-chat-circle-fill" class="post-card__action-icon" />
           <span>{{ t("feed.postCard.comment") }}</span>
@@ -201,15 +201,21 @@
       <div v-if="localComments.length && !showComments" class="post-card__comment-peek">
         <div class="post-card__comment-peek-row">
           <div class="post-card__comment-avatar">
-            {{ localComments[0]?.author.split(" ").map(w => w[0]).join("") }}
+            <img
+              v-if="previewComment?.authorAvatarUrl"
+              :src="previewComment.authorAvatarUrl"
+              :alt="previewComment.author"
+              class="post-card__comment-avatar-image"
+            >
+            <span v-else>{{ previewCommentInitials }}</span>
           </div>
           <div class="post-card__comment-bubble">
-            <p class="post-card__comment-author">{{ localComments[0]?.author }}</p>
-            <p class="post-card__comment-text">{{ localComments[0]?.text }}</p>
+            <p class="post-card__comment-author">{{ previewComment?.author }}</p>
+            <p class="post-card__comment-text">{{ previewComment?.text }}</p>
           </div>
         </div>
-        <button v-if="localComments.length > 1" class="post-card__comment-more" type="button" @click="showComments = true">
-          {{ t("feed.postCard.viewMoreComments", { count: localComments.length - 1 }) }}
+        <button v-if="localComments.length > 1" class="post-card__comment-more" type="button" @click.stop="openComments">
+          <span>{{ t("feed.postCard.viewMoreComments", { count: localComments.length - 1 }) }}</span>
         </button>
       </div>
 
@@ -265,7 +271,7 @@
         @download="downloadMedia"
         @like="toggleLike"
         @react="reactToPost"
-        @comment="showComments = true"
+        @comment="openComments"
         @submit-comment="submitComment"
       />
     </ClientOnly>
@@ -322,6 +328,7 @@ const {
   activePostReactionLabel,
   previewReactions,
   hasReactions,
+  commentsCount,
   hasPostContent,
   mediaItems,
   shareUrl,
@@ -340,11 +347,26 @@ const {
   downloadMedia,
   isOwner,
   isAdmin,
+  openComments,
+  toggleComments,
 } = useFeedPostCardVM(toRef(props, "post"))
 
 const postTextSegments = computed(() =>
   createPostTextMentionSegments(props.post.text, props.post.mentions ?? []),
 )
+
+const previewComment = computed(() => localComments.value[0] ?? null)
+const previewCommentInitials = computed(() => {
+  const author = previewComment.value?.author ?? ""
+  const initials = author
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(word => word[0]?.toUpperCase() ?? "")
+    .join("")
+
+  return initials || "?"
+})
 
 const attachmentIcon = computed(() =>
   props.post.attachmentCard?.type === "funding"
@@ -654,6 +676,9 @@ function handleMediaOpen(index: number) {
 }
 
 .post-card__actions {
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
@@ -664,10 +689,13 @@ function handleMediaOpen(index: number) {
 
 .post-card__reaction-action {
   position: relative;
+  z-index: 3;
   min-width: 0;
 }
 
 .post-card__action-btn {
+  position: relative;
+  z-index: 2;
   display: flex;
   width: 100%;
   min-width: 0;
@@ -684,7 +712,13 @@ function handleMediaOpen(index: number) {
   line-height: 1.2;
   color: #64748b;
   cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: all 0.15s ease;
+}
+
+.post-card__action-btn > * {
+  pointer-events: none;
 }
 
 .post-card__action-btn span {
@@ -795,6 +829,8 @@ function handleMediaOpen(index: number) {
 }
 
 .post-card__comment-peek {
+  position: relative;
+  z-index: 2;
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid rgba(0, 0, 255, 0.05);
@@ -818,6 +854,14 @@ function handleMediaOpen(index: number) {
   font-size: 9px;
   font-weight: 700;
   color: #475569;
+  overflow: hidden;
+}
+
+.post-card__comment-avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .post-card__comment-bubble {
@@ -841,18 +885,33 @@ function handleMediaOpen(index: number) {
 }
 
 .post-card__comment-more {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
   margin-left: 36px;
   margin-top: 6px;
+  border-radius: 999px;
   font-size: 12.5px;
   font-weight: 600;
   color: rgba(0, 0, 255, 0.55);
   background: none;
   border: none;
+  padding: 5px 8px;
   cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
   transition: color 0.15s ease;
 }
 
+.post-card__comment-more > * {
+  pointer-events: none;
+}
+
 .post-card__comment-more:hover {
+  background: rgba(0, 0, 255, 0.05);
   color: #0000ff;
 }
 

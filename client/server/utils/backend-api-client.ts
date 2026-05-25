@@ -58,6 +58,35 @@ const toBackendFormBody = (body: unknown) => {
   return params
 }
 
+const parseBackendApiResponse = <TResponse>(response: unknown): TResponse => {
+  if (typeof response !== "string") {
+    return response as TResponse
+  }
+
+  const trimmed = response.trim()
+  const jsonStart = trimmed.startsWith("{") || trimmed.startsWith("[")
+    ? 0
+    : Math.min(
+        ...["{", "["]
+          .map(marker => trimmed.indexOf(marker))
+          .filter(index => index >= 0),
+      )
+  const directJson = Number.isFinite(jsonStart)
+    ? trimmed.slice(jsonStart)
+    : ""
+
+  if (!directJson) {
+    return response as TResponse
+  }
+
+  try {
+    return JSON.parse(directJson) as TResponse
+  }
+  catch {
+    return response as TResponse
+  }
+}
+
 export function createBackendApiClient(event: H3Event) {
   const runtimeConfig = useRuntimeConfig(event)
   const backendAccessToken = getCookie(event, "user_id")
@@ -134,12 +163,24 @@ export function createBackendApiClient(event: H3Event) {
       })
 
       try {
-        return await client<TResponse>(`api/${normalizeEndpointType(endpoint)}`, {
+        const queryParams = new URLSearchParams()
+        if (query) {
+          for (const [k, v] of Object.entries(query)) {
+            if (v !== undefined && v !== null) {
+              queryParams.set(k, String(v))
+            }
+          }
+        }
+        const queryString = queryParams.toString()
+        const path = `api/${normalizeEndpointType(endpoint)}` + (queryString ? `?${queryString}` : "")
+
+        const response = await client<unknown>(path, {
           method,
-          query,
           body: finalBody,
           headers: options.headers,
         })
+
+        return parseBackendApiResponse<TResponse>(response)
       }
       catch (error) {
         lastError = error
