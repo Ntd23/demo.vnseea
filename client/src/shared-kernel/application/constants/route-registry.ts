@@ -175,6 +175,15 @@ export const apiRoutes = {
     thread: "messages/thread",
     multi: "messages/multi",
     send: "messages/send",
+    calls: {
+      answer: "messages/calls/answer",
+      create: "messages/calls/create",
+      decline: "messages/calls/decline",
+      end: "messages/calls/end",
+      incoming: "messages/calls/incoming",
+      payload: "messages/calls/payload",
+      status: "messages/calls/status",
+    },
   },
   navigation: {
     general: "navigation/general",

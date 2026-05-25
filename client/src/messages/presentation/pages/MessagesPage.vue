@@ -53,6 +53,7 @@
           @load-more="loadOlderMessages"
           @send="sendMessage"
           @delete-conversation="deleteSelectedConversation"
+          @start-call="handleStartCall"
           @back="handleBackToList"
         />
 
@@ -219,6 +220,7 @@
         </div>
       </template>
     </UModal>
+
   </div>
 </template>
 
@@ -226,7 +228,9 @@
 import MessagesChatList from "../components/ChatList.vue"
 import MessagesChatWindow from "../components/ChatWindow.vue"
 import MessagesMessageSidePanel from "../components/MessageSidePanel.vue"
+import { useMessageCalls } from "../../application/composables/useMessageCalls"
 import { useMessagesInbox } from "../../application/composables/useMessagesInbox"
+import type { MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact } from "../../domain/types/messages.types"
 
 const { t } = useI18n()
@@ -259,6 +263,7 @@ const {
   multiFile,
   multiText,
   query,
+  refreshInbox,
   selectedContact,
   selectedRecipientIds,
   selectedRecipients,
@@ -277,6 +282,10 @@ const {
   threadPending,
   toggleAllVisibleRecipients,
 } = useMessagesInbox()
+const {
+  startCall,
+  status: callStatus,
+} = useMessageCalls()
 
 const chatEmptyTitle = computed(() =>
   activeTab.value === "multi"
@@ -317,6 +326,19 @@ watch(selectedContact, () => {
   infoPanelOpen.value = false
 })
 
+watch(callStatus, async (value) => {
+  if (value !== "ended") {
+    return
+  }
+
+  await refreshInbox()
+
+  const contact = selectedContact.value
+  if (contact) {
+    await selectContact(contact)
+  }
+})
+
 function openCreateGroupModal() {
   activeTab.value = "multi"
   mobileListOpen.value = true
@@ -339,6 +361,12 @@ function handleOpenChatFromMulti(contact: MessageContact) {
 function handleBackToList() {
   mobileListOpen.value = true
   infoPanelOpen.value = false
+}
+
+function handleStartCall(type: MessageCallType) {
+  const contact = selectedContact.value
+  if (!contact) return
+  startCall(contact, type)
 }
 
 function openTagModal(contact: MessageContact) {
