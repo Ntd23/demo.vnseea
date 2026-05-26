@@ -11,21 +11,24 @@
   >
     <!-- Avatar -->
     <div class="cli-avatar">
-      <div v-if="type === 'group' && !avatarUrl" class="cli-group-avatar">
-        <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
-      </div>
-      <UAvatar
-        v-else
-        :src="avatarUrl"
-        :alt="name"
-        size="md"
-        class="h-11 w-11 rounded-full"
-      />
-      <span
-        v-if="type === 'user'"
-        class="cli-online-dot"
-        :class="isOnline ? 'cli-online-dot--on' : 'cli-online-dot--off'"
-      />
+      <UChip
+        :show="type === 'user' ? isOnline : type === 'group' && isOnline"
+        position="bottom-right"
+        color="success"
+        :ui="{ base: '!bg-emerald-500' }"
+        inset
+      >
+        <div v-if="type === 'group' && !avatarUrl" class="cli-group-avatar">
+          <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
+        </div>
+        <UAvatar
+          v-else
+          :src="avatarUrl"
+          :alt="name"
+          size="md"
+          class="h-11 w-11 rounded-full"
+        />
+      </UChip>
     </div>
 
     <!-- Info -->
@@ -156,26 +159,13 @@ const previewClass = computed(() => ({
   height: 44px;
 }
 
-.cli-online-dot {
-  position: absolute;
-  bottom: 1px;
-  right: 1px;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  border: 2px solid white;
-}
-
-.cli-online-dot--on  { background: #22c55e; }
-.cli-online-dot--off { background: #94a3b8; }
-
 .cli-group-avatar {
   display: flex;
   width: 44px;
   height: 44px;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
+  border-radius: 50%;
   background: rgba(0, 0, 255, 0.06);
   color: var(--color-primary-600);
 }

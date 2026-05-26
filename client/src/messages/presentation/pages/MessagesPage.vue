@@ -17,6 +17,7 @@
           :status-tone="multiFeedbackTone"
           :all-visible-recipients-selected="allVisibleRecipientsSelected"
           :contacts="filteredContacts"
+          :is-contact-online="isContactOnline"
           :is-contact-typing="isContactTyping"
           :message-tag-labels="messageTagLabels"
           :active-tag-filter="activeTagFilter"
@@ -48,6 +49,8 @@
           :empty-thread-label="emptyThreadLabel"
           :empty-title="chatEmptyTitle"
           :group-details="groupDetails"
+          :group-typing-avatar-url="activeGroupTypingAvatarUrl"
+          :inbox-pending="inboxPending"
           :is-pending="threadPending"
           :is-typing="isTyping"
           :messages="messages"
@@ -106,12 +109,16 @@
             :group-candidates-pending="groupCandidatesPending"
             :group-details="groupDetails"
             :group-details-pending="groupDetailsPending"
+            :messages="messages"
+            :updating-group-details="isUpdatingGroupDetails"
             :updating-group-members="isUpdatingGroupMembers"
             :empty-description="infoEmptyDescription"
             :empty-title="infoEmptyTitle"
             :deleting-conversation="isDeletingConversation"
             @update:group-candidate-query="updateGroupCandidateQuery"
+            @update-group="updateGroupDetails"
             @add-group-member="addGroupMember"
+            @add-group-members="addGroupMembers"
             @remove-group-member="removeGroupMember"
             @delete-conversation="deleteSelectedConversation"
           />
@@ -267,10 +274,12 @@ const {
   startGroupCall,
 } = useMessageCalls()
 const {
+  activeGroupTypingAvatarUrl,
   activeTagFilter,
   activeTab,
   addCreateGroupParticipant,
   addGroupMember,
+  addGroupMembers,
   attachTag,
   allVisibleRecipientsSelected,
   closeCreateGroupModal,
@@ -291,9 +300,11 @@ const {
   groupDetailsPending,
   inboxPending,
   isContactTyping,
+  isContactOnline,
   isCreatingGroup,
   isDeletingConversation,
   isMarkingRead,
+  isUpdatingGroupDetails,
   isMultiSending,
   isTyping,
   isUpdatingGroupMembers,
@@ -324,6 +335,7 @@ const {
   sendMessage,
   sendMultiMessage,
   submitCreateGroup,
+  updateGroupDetails,
   startComposerTyping,
   stopComposerTyping,
   tabs,

@@ -1,4 +1,4 @@
-// English description: Synchronizes messages inbox, active threads, and one-to-one typing state through Socket.IO with status-sync fallback for the active user thread.
+// English description: Synchronizes messages inbox, active threads, and typing state through Socket.IO with status-sync fallback for the active user thread.
 
 import { computed, ref, shallowRef, watch } from "vue"
 import type { Ref } from "vue"
@@ -8,6 +8,7 @@ import type { MessageContact, MessageTabKey } from "../../domain/types/messages.
 
 const POLLING_INTERVAL_MS = 10000
 const TYPING_IDLE_TIMEOUT_MS = 2400
+const TYPING_HEARTBEAT_INTERVAL_MS = 1800
 const TYPING_STATUS_SYNC_INTERVAL_MS = 2000
 
 type MessageRealtimeOptions = {
@@ -16,8 +17,23 @@ type MessageRealtimeOptions = {
   selectedContact: Ref<MessageContact | null>
   refreshInbox: () => Promise<unknown>
   refreshThread: () => Promise<unknown>
-  setRemoteTyping: (value: boolean) => void
-  setContactTyping: (userId: number, value: boolean) => void
+  setRemoteTyping: (value: boolean, userId?: number) => void
+  setGroupContactTyping: (groupId: number, value: boolean) => void
+  setUserContactTyping: (userId: number, value: boolean) => void
+}
+
+type TypingTarget = {
+  key: string
+  type: "user" | "group"
+  userId: number
+  groupId: number
+}
+
+type TypingPayload = {
+  senderId?: number | string
+  userId?: number | string
+  recipientId?: number | string
+  groupId?: number | string
 }
 
 export function useMessageRealtime(options: MessageRealtimeOptions) {
@@ -27,15 +43,68 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
   const socket = shallowRef<Socket | null>(null)
   const pollTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
   const typingIdleTimer = shallowRef<ReturnType<typeof window.setTimeout> | null>(null)
+  const typingHeartbeatTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
   const typingStatusTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
-  const remoteTypingTimers = shallowRef<Map<number, ReturnType<typeof window.setTimeout>>>(new Map())
-  const activeTypingRecipientId = ref(0)
+  const remoteTypingTimers = shallowRef<Map<string, ReturnType<typeof window.setTimeout>>>(new Map())
+  const activeTypingTargetKey = ref("")
 
   const isUserThread = computed(() =>
     options.activeTab.value === "user"
     && options.selectedContact.value?.type === "user"
     && (options.selectedContact.value.userId ?? 0) > 0,
   )
+
+  const isGroupThread = computed(() =>
+    options.activeTab.value === "group"
+    && options.selectedContact.value?.type === "group"
+    && (options.selectedContact.value.groupId ?? 0) > 0,
+  )
+
+  const resolveTypingTarget = (contact?: MessageContact | null): TypingTarget | null => {
+    if (!contact) {
+      return null
+    }
+
+    if (contact.type === "user" && (contact.userId ?? 0) > 0) {
+      const userId = contact.userId ?? 0
+
+      return {
+        key: `user:${userId}`,
+        type: "user",
+        userId,
+        groupId: 0,
+      }
+    }
+
+    if (contact.type === "group" && (contact.groupId ?? 0) > 0) {
+      const groupId = contact.groupId ?? 0
+
+      return {
+        key: `group:${groupId}`,
+        type: "group",
+        userId: 0,
+        groupId,
+      }
+    }
+
+    return null
+  }
+
+  const selectedTypingTarget = computed(() =>
+    resolveTypingTarget(options.selectedContact.value),
+  )
+
+  const setTargetTyping = (target: TypingTarget, value: boolean) => {
+    if (target.type === "group") {
+      options.setGroupContactTyping(target.groupId, value)
+    }
+    else {
+      options.setUserContactTyping(target.userId, value)
+    }
+  }
+
+  const isSelectedTarget = (target: TypingTarget) =>
+    selectedTypingTarget.value?.key === target.key
 
   const clearTypingIdleTimer = () => {
     if (import.meta.client && typingIdleTimer.value) {
@@ -44,37 +113,72 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
     }
   }
 
-  const clearRemoteTypingTimer = (userId: number) => {
-    if (!import.meta.client || userId <= 0) {
+  const clearRemoteTypingTimer = (targetKey: string) => {
+    if (!import.meta.client || !targetKey) {
       return
     }
 
-    const timer = remoteTypingTimers.value.get(userId)
+    const timer = remoteTypingTimers.value.get(targetKey)
 
     if (timer) {
       window.clearTimeout(timer)
-      remoteTypingTimers.value.delete(userId)
+      remoteTypingTimers.value.delete(targetKey)
     }
   }
 
-  const scheduleRemoteTypingExpiry = (userId: number) => {
-    if (!import.meta.client || userId <= 0) {
+  const clearTypingHeartbeatTimer = () => {
+    if (import.meta.client && typingHeartbeatTimer.value) {
+      window.clearInterval(typingHeartbeatTimer.value)
+      typingHeartbeatTimer.value = null
+    }
+  }
+
+  const sendTypingHeartbeat = async (target: TypingTarget) => {
+    if (target.type === "user") {
+      try {
+        await options.repository.setTyping(target.userId)
+      }
+      catch {
+        // Silent: typing is auxiliary state.
+      }
+
+      socket.value?.emit("message:typing", {
+        recipientId: target.userId,
+      })
+
       return
     }
 
-    clearRemoteTypingTimer(userId)
+    try {
+      await options.repository.setGroupTyping(target.groupId)
+    }
+    catch {
+      // Silent: typing is auxiliary state.
+    }
+
+    socket.value?.emit("message:typing", {
+      groupId: target.groupId,
+    })
+  }
+
+  const scheduleRemoteTypingExpiry = (target: TypingTarget) => {
+    if (!import.meta.client) {
+      return
+    }
+
+    clearRemoteTypingTimer(target.key)
 
     const timer = window.setTimeout(() => {
-      options.setContactTyping(userId, false)
+      setTargetTyping(target, false)
 
-      if ((options.selectedContact.value?.userId ?? 0) === userId) {
+      if (isSelectedTarget(target)) {
         options.setRemoteTyping(false)
       }
 
-      remoteTypingTimers.value.delete(userId)
+      remoteTypingTimers.value.delete(target.key)
     }, TYPING_IDLE_TIMEOUT_MS + 1000)
 
-    remoteTypingTimers.value.set(userId, timer)
+    remoteTypingTimers.value.set(target.key, timer)
   }
 
   const stopTypingStatusSync = () => {
@@ -171,32 +275,60 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
         void refreshFromIncomingMessage()
       })
 
-      realtimeSocket.on("message:typing", (payload: { senderId?: number | string } = {}) => {
-        const senderId = Number(payload.senderId || 0)
+      realtimeSocket.on("message:typing", (payload: TypingPayload = {}) => {
+        const groupId = Number(payload.groupId || 0)
+        const senderId = Number(payload.senderId || payload.userId || 0)
+        const target = groupId > 0
+          ? {
+              key: `group:${groupId}`,
+              type: "group" as const,
+              userId: senderId,
+              groupId,
+            }
+          : {
+              key: `user:${senderId}`,
+              type: "user" as const,
+              userId: senderId,
+              groupId: 0,
+            }
 
-        if (senderId <= 0) {
+        if ((target.type === "user" && target.userId <= 0) || (target.type === "group" && target.groupId <= 0)) {
           return
         }
 
-        options.setContactTyping(senderId, true)
-        scheduleRemoteTypingExpiry(senderId)
+        setTargetTyping(target, true)
+        scheduleRemoteTypingExpiry(target)
 
-        if ((options.selectedContact.value?.userId ?? 0) === senderId) {
-          options.setRemoteTyping(true)
+        if (isSelectedTarget(target)) {
+          options.setRemoteTyping(true, target.userId)
         }
       })
 
-      realtimeSocket.on("message:typing-stop", (payload: { senderId?: number | string } = {}) => {
-        const senderId = Number(payload.senderId || 0)
+      realtimeSocket.on("message:typing-stop", (payload: TypingPayload = {}) => {
+        const groupId = Number(payload.groupId || 0)
+        const senderId = Number(payload.senderId || payload.userId || 0)
+        const target = groupId > 0
+          ? {
+              key: `group:${groupId}`,
+              type: "group" as const,
+              userId: senderId,
+              groupId,
+            }
+          : {
+              key: `user:${senderId}`,
+              type: "user" as const,
+              userId: senderId,
+              groupId: 0,
+            }
 
-        if (senderId <= 0) {
+        if ((target.type === "user" && target.userId <= 0) || (target.type === "group" && target.groupId <= 0)) {
           return
         }
 
-        clearRemoteTypingTimer(senderId)
-        options.setContactTyping(senderId, false)
+        clearRemoteTypingTimer(target.key)
+        setTargetTyping(target, false)
 
-        if ((options.selectedContact.value?.userId ?? 0) === senderId) {
+        if (isSelectedTarget(target)) {
           options.setRemoteTyping(false)
         }
       })
@@ -222,98 +354,190 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
     try {
       const status = await options.repository.getTyping(userId)
       const typing = status.enabled && status.typing
+      const target = {
+        key: `user:${userId}`,
+        type: "user" as const,
+        userId,
+        groupId: 0,
+      }
 
-      options.setRemoteTyping(typing)
-      options.setContactTyping(userId, typing)
+      options.setRemoteTyping(typing, userId)
+      options.setUserContactTyping(userId, typing)
 
       if (typing) {
-        scheduleRemoteTypingExpiry(userId)
+        scheduleRemoteTypingExpiry(target)
       }
       else {
-        clearRemoteTypingTimer(userId)
+        clearRemoteTypingTimer(target.key)
       }
     }
     catch {
       options.setRemoteTyping(false)
-      options.setContactTyping(userId, false)
-      clearRemoteTypingTimer(userId)
+      options.setUserContactTyping(userId, false)
+      clearRemoteTypingTimer(`user:${userId}`)
     }
   }
 
-  const startTypingStatusSync = () => {
-    if (!import.meta.client || typingStatusTimer.value || !isUserThread.value) {
-      return
-    }
-
-    const userId = options.selectedContact.value?.userId ?? 0
-
-    if (userId <= 0) {
+  const syncGroupTypingState = async (groupId: number) => {
+    if (groupId <= 0) {
       options.setRemoteTyping(false)
       return
     }
 
-    void syncTypingState(userId)
+    try {
+      const status = await options.repository.getGroupTyping(groupId)
+      const typing = status.enabled && status.typing
+      const target = {
+        key: `group:${groupId}`,
+        type: "group" as const,
+        userId: status.activeUserIds?.[0] ?? 0,
+        groupId,
+      }
+
+      options.setRemoteTyping(typing, target.userId)
+      options.setGroupContactTyping(groupId, typing)
+
+      if (typing) {
+        scheduleRemoteTypingExpiry(target)
+      }
+      else {
+        clearRemoteTypingTimer(target.key)
+      }
+    }
+    catch {
+      options.setRemoteTyping(false)
+      options.setGroupContactTyping(groupId, false)
+      clearRemoteTypingTimer(`group:${groupId}`)
+    }
+  }
+
+  const startTypingStatusSync = () => {
+    if (!import.meta.client || typingStatusTimer.value || (!isUserThread.value && !isGroupThread.value)) {
+      return
+    }
+
+    const userId = options.selectedContact.value?.userId ?? 0
+    const groupId = options.selectedContact.value?.groupId ?? 0
+
+    if (isUserThread.value && userId <= 0) {
+      options.setRemoteTyping(false)
+      return
+    }
+
+    if (isGroupThread.value && groupId <= 0) {
+      options.setRemoteTyping(false)
+      return
+    }
+
+    if (isUserThread.value) {
+      void syncTypingState(userId)
+    }
+    else {
+      void syncGroupTypingState(groupId)
+    }
+
     typingStatusTimer.value = window.setInterval(() => {
       const activeUserId = options.selectedContact.value?.userId ?? 0
+      const activeGroupId = options.selectedContact.value?.groupId ?? 0
 
-      if (!isUserThread.value || activeUserId <= 0) {
+      if (!isUserThread.value && !isGroupThread.value) {
         stopTypingStatusSync()
         options.setRemoteTyping(false)
         return
       }
 
-      void syncTypingState(activeUserId)
+      if (isUserThread.value && activeUserId > 0) {
+        void syncTypingState(activeUserId)
+      }
+      else if (isGroupThread.value && activeGroupId > 0) {
+        void syncGroupTypingState(activeGroupId)
+      }
     }, TYPING_STATUS_SYNC_INTERVAL_MS)
   }
 
-  const stopTyping = async (userId = activeTypingRecipientId.value) => {
+  const stopTyping = async (contact = options.selectedContact.value) => {
     clearTypingIdleTimer()
+    clearTypingHeartbeatTimer()
 
-    if (userId <= 0) {
-      activeTypingRecipientId.value = 0
+    const target = resolveTypingTarget(contact)
+
+    if (!target && !activeTypingTargetKey.value) {
+      activeTypingTargetKey.value = ""
       return
     }
 
-    activeTypingRecipientId.value = 0
+    const activeKey = target?.key || activeTypingTargetKey.value
+    activeTypingTargetKey.value = ""
 
-    try {
-      await options.repository.clearTyping(userId)
-    }
-    catch {
-      // Silent: clearing typing should not block messaging.
+    if (target?.type === "user") {
+      try {
+        await options.repository.clearTyping(target.userId)
+      }
+      catch {
+        // Silent: clearing typing should not block messaging.
+      }
     }
 
-    socket.value?.emit("message:typing-stop", {
-      recipientId: userId,
-    })
+    if (target?.type === "group") {
+      try {
+        await options.repository.clearGroupTyping(target.groupId)
+      }
+      catch {
+        // Silent: clearing typing should not block messaging.
+      }
+
+      socket.value?.emit("message:typing-stop", { groupId: target.groupId })
+      return
+    }
+
+    if (target?.type === "user") {
+      socket.value?.emit("message:typing-stop", { recipientId: target.userId })
+      return
+    }
+
+    const [type, rawId] = activeKey.split(":")
+    const id = Number(rawId || 0)
+
+    if (type === "group" && id > 0) {
+      try {
+        await options.repository.clearGroupTyping(id)
+      }
+      catch {
+        // Silent: clearing typing should not block messaging.
+      }
+
+      socket.value?.emit("message:typing-stop", { groupId: id })
+    }
+    else if (type === "user" && id > 0) {
+      socket.value?.emit("message:typing-stop", { recipientId: id })
+    }
   }
 
-  const startTyping = async (userId: number) => {
-    if (userId <= 0) {
+  const startTyping = async (contact: MessageContact) => {
+    const target = resolveTypingTarget(contact)
+
+    if (!target) {
       return
     }
 
     clearTypingIdleTimer()
-    typingIdleTimer.value = window.setTimeout(() => {
-      void stopTyping(userId)
-    }, TYPING_IDLE_TIMEOUT_MS)
 
-    if (activeTypingRecipientId.value === userId) {
+    if (activeTypingTargetKey.value === target.key) {
       return
     }
 
-    activeTypingRecipientId.value = userId
-
-    try {
-      await options.repository.setTyping(userId)
-    }
-    catch {
-      // Silent: typing is auxiliary state.
+    if (activeTypingTargetKey.value) {
+      await stopTyping(null)
     }
 
-    socket.value?.emit("message:typing", {
-      recipientId: userId,
-    })
+    activeTypingTargetKey.value = target.key
+    await sendTypingHeartbeat(target)
+
+    if (import.meta.client) {
+      typingHeartbeatTimer.value = window.setInterval(() => {
+        void sendTypingHeartbeat(target)
+      }, TYPING_HEARTBEAT_INTERVAL_MS)
+    }
   }
 
   const start = async () => {
@@ -331,10 +555,11 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
 
   const stop = async () => {
     clearTypingIdleTimer()
+    clearTypingHeartbeatTimer()
     stopTypingStatusSync()
     stopPolling()
-    for (const userId of remoteTypingTimers.value.keys()) {
-      clearRemoteTypingTimer(userId)
+    for (const targetKey of remoteTypingTimers.value.keys()) {
+      clearRemoteTypingTimer(targetKey)
     }
     await stopTyping()
 
@@ -349,11 +574,21 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
   }
 
   watch(
-    () => [options.activeTab.value, options.selectedContact.value?.type || "", options.selectedContact.value?.userId || 0] as const,
+    () => [
+      options.activeTab.value,
+      options.selectedContact.value?.type || "",
+      options.selectedContact.value?.userId || 0,
+      options.selectedContact.value?.groupId || 0,
+    ] as const,
     ([tab, type, userId]) => {
       stopTypingStatusSync()
 
       if (tab === "user" && type === "user" && userId > 0) {
+        startTypingStatusSync()
+        return
+      }
+
+      if (tab === "group" && type === "group") {
         startTypingStatusSync()
         return
       }

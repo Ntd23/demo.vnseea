@@ -76,7 +76,13 @@ export function useMessageRecorder() {
   }
 
   const startRecording = async () => {
-    if (!isSupported.value || isRecording.value) {
+    if (!isSupported.value) {
+      permissionDenied.value = false
+      errorMessage.value = "Trinh duyet hoac ket noi hien tai khong ho tro ghi am."
+      return false
+    }
+
+    if (isRecording.value) {
       return false
     }
 

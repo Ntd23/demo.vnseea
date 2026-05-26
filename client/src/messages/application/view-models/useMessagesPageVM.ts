@@ -1,13 +1,15 @@
-// English description: Coordinates inbox state, realtime message refresh, one-to-one typing, and group member management for the messages page.
+// English description: Coordinates inbox state, realtime message refresh, typing, and group member management for the messages page.
 
-import { onBeforeUnmount, onMounted, watch } from "vue"
+import { onBeforeUnmount, onMounted, shallowRef, watch } from "vue"
 import { useMessagesInbox } from "../composables/useMessagesInbox"
 import { useMessageRealtime } from "../composables/useMessageRealtime"
 import { createApiMessagesRepository } from "../../infrastructure/repositories/ApiMessagesRepository"
 import type {
   MessageComposerDraft,
+  MessageContact,
   MessageGroupCandidate,
   MessageGroupCreateCandidate,
+  MessageGroupUpdateDraft,
 } from "../../domain/types/messages.types"
 
 export function useMessagesPageVM() {
@@ -22,11 +24,13 @@ export function useMessagesPageVM() {
     refreshInbox: async () => await inbox.refreshInbox(),
     refreshThread: async () => await inbox.refreshThread(),
     setRemoteTyping: inbox.setRemoteTyping,
-    setContactTyping: inbox.setContactTyping,
+    setGroupContactTyping: inbox.setGroupContactTyping,
+    setUserContactTyping: inbox.setUserContactTyping,
   })
   const groupCandidateQuery = ref("")
   const debouncedGroupCandidateQuery = ref("")
   const isUpdatingGroupMembers = ref(false)
+  const isUpdatingGroupDetails = ref(false)
   const createGroupModalOpen = ref(false)
   const createGroupName = ref("")
   const createGroupQuery = ref("")
@@ -37,6 +41,7 @@ export function useMessagesPageVM() {
   const createGroupErrorMessage = ref("")
   const isCreatingGroup = ref(false)
   const createGroupCandidatesPending = ref(false)
+  const onlineStatusRefreshTimer = shallowRef<ReturnType<typeof window.setInterval> | null>(null)
   const selectedCreateGroupUserIds = computed(() =>
     new Set(createGroupSelectedCandidates.value.map(candidate => candidate.userId)),
   )
@@ -48,7 +53,7 @@ export function useMessagesPageVM() {
   const selectedGroupId = computed(() => {
     const contact = inbox.selectedContact.value
 
-    if (inbox.activeTab.value !== "group" || contact?.type !== "group") {
+    if (contact?.type !== "group") {
       return 0
     }
 
@@ -72,24 +77,87 @@ export function useMessagesPageVM() {
     },
   )
 
-  const selectedGroupCanManage = computed(() =>
-    groupDetails.value?.groupId === selectedGroupId.value
-    && Boolean(groupDetails.value?.canManage),
-  )
+  const isContactOnline = (contact: MessageContact) => {
+    if (contact.type !== "group") {
+      return contact.isOnline
+    }
+
+    if (groupDetails.value?.groupId !== contact.groupId) {
+      return contact.isOnline
+    }
+
+    return contact.isOnline
+      || groupDetails.value.members.some(member => !member.isSelf && member.isOnline)
+  }
+
+  const activeGroupTypingAvatarUrl = computed(() => {
+    const typingUserId = inbox.remoteTypingUserId.value
+
+    if (typingUserId <= 0 || groupDetails.value?.groupId !== selectedGroupId.value) {
+      return ""
+    }
+
+    return groupDetails.value.members.find(member => member.userId === typingUserId)?.avatarUrl || ""
+  })
+
+  const logOnlineState = (source: string) => {
+    if (!import.meta.dev || !import.meta.client) {
+      return
+    }
+
+    const selected = inbox.selectedContact.value
+    const visibleContacts = inbox.filteredContacts.value.map(contact => ({
+      id: contact.id,
+      type: contact.type,
+      name: contact.name,
+      isOnline: isContactOnline(contact),
+      rawIsOnline: contact.isOnline,
+      status: contact.status,
+      lastSeenAt: contact.lastSeenAt,
+      memberCount: contact.memberCount,
+    }))
+    const selectedGroupMembers = groupDetails.value?.members.map(member => ({
+      userId: member.userId,
+      name: member.name,
+      isOnline: Boolean(member.isOnline),
+      isSelf: member.isSelf,
+      isOwner: member.isOwner,
+    })) ?? []
+
+    console.table(visibleContacts)
+    console.info("[messages:online-state]", {
+      source,
+      activeTab: inbox.activeTab.value,
+      selected: selected
+        ? {
+            id: selected.id,
+            type: selected.type,
+            name: selected.name,
+            isOnline: isContactOnline(selected),
+            rawIsOnline: selected.isOnline,
+            status: selected.status,
+            lastSeenAt: selected.lastSeenAt,
+            groupId: selected.groupId,
+            userId: selected.userId,
+          }
+        : null,
+      selectedGroupMembers,
+    })
+  }
 
   const {
     data: groupCandidates,
     status: groupCandidatesStatus,
     refresh: refreshGroupCandidates,
   } = useAsyncData<MessageGroupCandidate[]>(
-    () => selectedGroupId.value > 0 && selectedGroupCanManage.value
+    () => selectedGroupId.value > 0
       ? `messages:group-candidates:${selectedGroupId.value}:${debouncedGroupCandidateQuery.value}`
       : "messages:group-candidates:none",
-    () => selectedGroupId.value > 0 && selectedGroupCanManage.value
+    () => selectedGroupId.value > 0
       ? repository.searchGroupCandidates(selectedGroupId.value, debouncedGroupCandidateQuery.value)
       : Promise.resolve([]),
     {
-      watch: [selectedGroupId, debouncedGroupCandidateQuery, selectedGroupCanManage],
+      watch: [selectedGroupId, debouncedGroupCandidateQuery],
       default: () => [],
     },
   )
@@ -108,21 +176,21 @@ export function useMessagesPageVM() {
   const stopComposerTyping = async () => {
     const contact = inbox.selectedContact.value
 
-    if (inbox.activeTab.value !== "user" || contact?.type !== "user" || !contact.userId) {
+    if (!contact) {
       return
     }
 
-    await realtime.stopTyping(contact.userId)
+    await realtime.stopTyping(contact)
   }
 
   const startComposerTyping = async () => {
     const contact = inbox.selectedContact.value
 
-    if (inbox.activeTab.value !== "user" || contact?.type !== "user" || !contact.userId) {
+    if (!contact) {
       return
     }
 
-    await realtime.startTyping(contact.userId)
+    await realtime.startTyping(contact)
   }
 
   const sendMessage = async (input: MessageComposerDraft) => {
@@ -266,22 +334,22 @@ export function useMessagesPageVM() {
 
     await refreshGroupDetails()
 
-    if (selectedGroupCanManage.value) {
-      await refreshGroupCandidates()
-    }
+    await refreshGroupCandidates()
 
     await inbox.refreshInbox()
   }
 
-  const addGroupMember = async (userId: number) => {
-    if (selectedGroupId.value <= 0 || userId <= 0 || isUpdatingGroupMembers.value) {
+  const addGroupMembers = async (userIds: number[]) => {
+    const normalizedUserIds = [...new Set(userIds.map(Number).filter(userId => Number.isFinite(userId) && userId > 0))]
+
+    if (selectedGroupId.value <= 0 || normalizedUserIds.length === 0 || isUpdatingGroupMembers.value) {
       return false
     }
 
     isUpdatingGroupMembers.value = true
 
     try {
-      await repository.addGroupMembers(selectedGroupId.value, [userId])
+      await repository.addGroupMembers(selectedGroupId.value, normalizedUserIds)
       await refreshActiveGroupState()
       toast.add({
         title: t("pages.messagesPage.groupInviteSuccessTitle"),
@@ -302,6 +370,8 @@ export function useMessagesPageVM() {
       isUpdatingGroupMembers.value = false
     }
   }
+
+  const addGroupMember = async (userId: number) => await addGroupMembers([userId])
 
   const removeGroupMember = async (userId: number) => {
     if (selectedGroupId.value <= 0 || userId <= 0 || isUpdatingGroupMembers.value) {
@@ -330,6 +400,40 @@ export function useMessagesPageVM() {
     }
     finally {
       isUpdatingGroupMembers.value = false
+    }
+  }
+
+  const updateGroupDetails = async (input: Omit<MessageGroupUpdateDraft, "groupId">) => {
+    if (selectedGroupId.value <= 0 || isUpdatingGroupDetails.value) {
+      return false
+    }
+
+    isUpdatingGroupDetails.value = true
+
+    try {
+      await repository.updateGroup({
+        groupId: selectedGroupId.value,
+        name: input.name,
+        avatar: input.avatar,
+      })
+      await refreshActiveGroupState()
+      toast.add({
+        title: "Đã cập nhật nhóm",
+        description: "Thông tin nhóm đã được cập nhật.",
+        color: "success",
+      })
+      return true
+    }
+    catch (error) {
+      toast.add({
+        title: "Không thể cập nhật nhóm",
+        description: resolveErrorMessage(error, "Vui lòng kiểm tra tên nhóm hoặc ảnh đại diện rồi thử lại."),
+        color: "error",
+      })
+      return false
+    }
+    finally {
+      isUpdatingGroupDetails.value = false
     }
   }
 
@@ -377,13 +481,29 @@ export function useMessagesPageVM() {
   )
 
   watch(
-    () => [inbox.activeTab.value, inbox.selectedContact.value?.type || "", inbox.selectedContact.value?.userId || 0] as const,
-    async ([, nextType], [, prevType, prevUserId]) => {
+    () => [
+      inbox.activeTab.value,
+      inbox.selectedContact.value?.type || "",
+      inbox.selectedContact.value?.userId || 0,
+      inbox.selectedContact.value?.groupId || 0,
+    ] as const,
+    async ([, nextType], [, prevType, prevUserId, prevGroupId]) => {
       if (prevType === "user" && prevUserId > 0) {
-        await realtime.stopTyping(prevUserId)
+        await realtime.stopTyping({ type: "user", userId: prevUserId } as MessageContact)
+      }
+
+      if (prevType === "group" && prevGroupId > 0) {
+        await realtime.stopTyping({ type: "group", groupId: prevGroupId } as MessageContact)
       }
 
       if (nextType !== "user") {
+        const contact = inbox.selectedContact.value
+
+        if (contact?.type === "group") {
+          inbox.setRemoteTyping(inbox.isContactTyping(contact))
+          return
+        }
+
         inbox.clearRemoteTyping()
         return
       }
@@ -397,12 +517,36 @@ export function useMessagesPageVM() {
     debouncedGroupCandidateQuery.value = ""
   }, { immediate: true })
 
+  watch(
+    [
+      () => inbox.filteredContacts.value.map(contact => `${contact.id}:${isContactOnline(contact) ? 1 : 0}:${contact.status}:${contact.lastSeenAt ?? 0}`).join("|"),
+      () => groupDetails.value?.members.map(member => `${member.userId}:${member.isOnline ? 1 : 0}`).join("|") ?? "",
+    ],
+    () => logOnlineState("watch"),
+    { immediate: true },
+  )
+
   onMounted(() => {
     void realtime.start()
     void syncActiveTypingState()
+
+    onlineStatusRefreshTimer.value = window.setInterval(() => {
+      void inbox.refreshInbox()
+
+      if (selectedGroupId.value > 0) {
+        void refreshGroupDetails()
+      }
+
+      logOnlineState("interval")
+    }, 30000)
   })
 
   onBeforeUnmount(() => {
+    if (onlineStatusRefreshTimer.value) {
+      window.clearInterval(onlineStatusRefreshTimer.value)
+      onlineStatusRefreshTimer.value = null
+    }
+
     revokeCreateGroupAvatarPreview()
     void realtime.stop()
   })
@@ -411,6 +555,7 @@ export function useMessagesPageVM() {
     ...inbox,
     addCreateGroupParticipant,
     addGroupMember,
+    addGroupMembers,
     closeCreateGroupModal,
     createGroupAvatarFile,
     createGroupAvatarPreviewUrl,
@@ -426,7 +571,10 @@ export function useMessagesPageVM() {
     groupCandidatesPending: computed(() => groupCandidatesStatus.value === "pending"),
     groupDetails,
     groupDetailsPending: computed(() => groupDetailsStatus.value === "pending"),
+    activeGroupTypingAvatarUrl,
     isCreatingGroup,
+    isContactOnline,
+    isUpdatingGroupDetails,
     isUpdatingGroupMembers,
     openCreateGroupModal,
     removeGroupMember,
@@ -436,6 +584,7 @@ export function useMessagesPageVM() {
     startComposerTyping,
     stopComposerTyping,
     submitCreateGroup,
+    updateGroupDetails,
     realtimeConnected: realtime.connected,
     pollingFallbackActive: realtime.pollingFallbackActive,
     isContactTyping: inbox.isContactTyping,

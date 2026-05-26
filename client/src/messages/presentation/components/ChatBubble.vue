@@ -9,12 +9,20 @@
 
     <div class="flex w-full items-end gap-2.5" :class="isMine ? 'justify-end' : 'justify-start'">
       <div v-if="!isMine" class="mb-0.5 shrink-0 self-end">
-        <UAvatar
+        <UChip
           v-if="isLast && avatar"
-          :src="avatar"
-          size="xs"
-          class="ring-1 ring-white shadow-sm chat-bubble__avatar"
-        />
+          :show="Boolean(senderIsOnline)"
+          position="bottom-right"
+          color="success"
+          :ui="{ base: '!bg-emerald-500' }"
+          inset
+        >
+          <UAvatar
+            :src="avatar"
+            size="xs"
+            class="ring-1 ring-white shadow-sm chat-bubble__avatar"
+          />
+        </UChip>
         <div v-else class="w-8" />
       </div>
 
@@ -116,6 +124,7 @@ const props = defineProps<{
   time?: string
   showTime?: boolean
   avatar?: string
+  senderIsOnline?: boolean
   authorName?: string
   mediaUrl?: string
   mediaName?: string

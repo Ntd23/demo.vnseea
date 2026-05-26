@@ -1,12 +1,15 @@
-// Description: ViewModel for the group call page — owns all API interactions with the call backend, exposing reactive state to the View.
+// Description: ViewModel for the group call page; owns API interactions with the call backend and exposes reactive state to the View.
 
 import type { Ref } from "vue"
 import type { MessageGroupCallCandidate, MessageGroupCallPayload, MessageGroupCallSync } from "../../domain/types/calls.types"
+import type { MessageCallsRepository } from "../../domain/repositories/MessageCallsRepository"
 import { createApiMessageCallsRepository } from "../../infrastructure/repositories/ApiMessageCallsRepository"
 
-export function useGroupCallPageVM(callId: Ref<number>) {
+export function useGroupCallPageVM(
+  callId: Ref<number>,
+  repository: MessageCallsRepository = createApiMessageCallsRepository(),
+) {
   const runtimeConfig = useRuntimeConfig()
-  const repository = createApiMessageCallsRepository()
 
   const payload = ref<MessageGroupCallPayload | null>(null)
   const loading = ref(true)
@@ -106,6 +109,10 @@ export function useGroupCallPageVM(callId: Ref<number>) {
     selectedCandidateIds.value = []
   }
 
+  function setLoadError(message: string): void {
+    loadError.value = message
+  }
+
   async function inviteSelected(): Promise<boolean> {
     if (!payload.value || selectedCandidateIds.value.length === 0) {
       return false
@@ -143,6 +150,7 @@ export function useGroupCallPageVM(callId: Ref<number>) {
     fetchCandidates,
     toggleCandidate,
     clearSelectedCandidates,
+    setLoadError,
     inviteSelected,
   }
 }
