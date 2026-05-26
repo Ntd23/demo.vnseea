@@ -249,7 +249,7 @@ import MessagesMessageSidePanel from "../components/MessageSidePanel.vue"
 import MessagesUserDetailPanel from "../components/UserDetailPanel.vue"
 import { useMessageCalls } from "../../application/composables/useMessageCalls"
 import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
-import type { MessageCallType } from "../../domain/types/calls.types"
+import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact } from "../../domain/types/messages.types"
 
 const { t } = useI18n()
@@ -262,7 +262,9 @@ const newTagColor = ref("#3b82f6")
 const mobileListOpen = ref(true)
 const {
   isCallActionPending,
+  joinGroupCall,
   startCall,
+  startGroupCall,
 } = useMessageCalls()
 const {
   activeTagFilter,
@@ -431,14 +433,27 @@ function handleBackToList() {
   infoPanelOpen.value = false
 }
 
-async function startSelectedContactCall(type: MessageCallType) {
-  const contact = selectedContact.value
-
-  if (!contact || contact.type !== "user") {
+async function startSelectedContactCall(input: MessageCallType | MessageCallLogAction) {
+  if (typeof input === "object" && input.action === "join" && input.callId) {
+    await joinGroupCall(input.callId)
     return
   }
 
-  await startCall(contact, type)
+  const type = typeof input === "object" ? input.type : input
+  const contact = selectedContact.value
+
+  if (!contact) {
+    return
+  }
+
+  if (contact.type === "group") {
+    await startGroupCall(contact, type)
+    return
+  }
+
+  if (contact.type === "user") {
+    await startCall(contact, type)
+  }
 }
 
 function updateGroupCandidateQuery(value: string) {

@@ -98,6 +98,11 @@ export type MessageItem = {
     type: "audio" | "video"
     status: string
     duration?: number
+    callId?: number
+    groupId?: number
+    isGroup?: boolean
+    isActive?: boolean
+    participantCount?: number
   }
 }
 

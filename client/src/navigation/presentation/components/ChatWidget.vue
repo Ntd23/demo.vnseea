@@ -288,59 +288,25 @@
             <p>{{ $t("navigation.chatWidget.emptyMessages") }}</p>
           </div>
 
-          <div v-else class="space-y-3">
-            <div
+          <div v-else class="chat-widget__mini-thread">
+            <ChatBubble
               v-for="message in miniMessages"
               :key="message.id"
-              class="chat-widget__mini-row"
-              :class="message.isMine ? 'chat-widget__mini-row--sent' : 'chat-widget__mini-row--received'"
-            >
-              <div
-                class="chat-widget__mini-bubble"
-                :class="message.isMine ? 'chat-widget__mini-bubble--sent' : 'chat-widget__mini-bubble--received'"
-              >
-                <p
-                  v-if="activeMiniContact?.type === 'group' && !message.isMine && message.showAuthor && message.authorName"
-                  class="chat-widget__mini-author"
-                >
-                  {{ message.authorName }}
-                </p>
-                <p v-if="message.text" class="whitespace-pre-wrap">{{ message.text }}</p>
-
-                <NuxtImg
-                  v-if="message.mediaUrl && (message.mediaType === 'image' || message.mediaType === 'gif')"
-                  :src="message.mediaUrl"
-                  :alt="message.mediaName || message.text || 'Message media'"
-                  class="chat-widget__mini-media"
-                />
-                <video
-                  v-else-if="message.mediaUrl && message.mediaType === 'video'"
-                  :src="message.mediaUrl"
-                  class="chat-widget__mini-media"
-                  controls
-                  playsinline
-                />
-                <audio
-                  v-else-if="message.mediaUrl && (message.mediaType === 'audio' || message.mediaType === 'record')"
-                  :src="message.mediaUrl"
-                  class="chat-widget__mini-audio"
-                  controls
-                  preload="none"
-                />
-                <a
-                  v-else-if="message.mediaUrl"
-                  :href="message.mediaUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="chat-widget__mini-file"
-                >
-                  <Icon name="i-ph-paperclip-duotone" class="h-3.5 w-3.5" />
-                  <span>{{ message.mediaName || message.mediaUrl }}</span>
-                </a>
-
-                <p v-if="message.time" class="chat-widget__mini-time">{{ message.time }}</p>
-              </div>
-            </div>
+              :text="message.text"
+              :is-mine="message.isMine"
+              :is-last="message.isLast"
+              :show-author="activeMiniContact?.type === 'group' && message.showAuthor"
+              :time="message.time"
+              :show-time="message.showTime"
+              :avatar="message.avatar || activeMiniContact?.avatarUrl"
+              :author-name="message.authorName"
+              :media-url="message.mediaUrl"
+              :media-name="message.mediaName"
+              :media-type="message.mediaType"
+              :call-log="message.callLog"
+              class="chat-widget__mini-chat-bubble"
+              @retry-call="openFullMessages(activeMiniContact)"
+            />
           </div>
         </div>
 
@@ -371,6 +337,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from "vue"
+import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
 import { useChatWidgetVM } from "../../application/composables/useChatWidgetVM"
 
 const tabs = [
@@ -887,6 +854,68 @@ watch(
   overflow-y: auto;
   padding: 14px;
   background: linear-gradient(180deg, rgba(248, 250, 252, 0.55) 0%, rgba(255, 255, 255, 1) 100%);
+}
+
+.chat-widget__mini-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper) {
+  max-width: 86%;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble) {
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__call-card) {
+  width: min(190px, 72vw);
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__call-head) {
+  grid-template-columns: 36px 1fr;
+  gap: 8px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__call-icon-btn) {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__call-icon-btn .iconify) {
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__call-title) {
+  font-size: 13px;
+  line-height: 1.12;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__call-subtitle) {
+  font-size: 12px;
+  padding: 3px 0 0;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__call-again) {
+  margin-top: 8px;
+  min-height: 34px;
+  border-radius: 7px !important;
+  font-size: 13px !important;
 }
 
 .chat-widget__mini-row {

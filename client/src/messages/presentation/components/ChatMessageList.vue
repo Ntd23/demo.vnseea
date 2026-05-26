@@ -20,6 +20,7 @@
         v-for="msg in messages"
         :key="msg.id"
         v-bind="msg"
+        @retry-call="emit('retry-call', $event)"
       />
 
       <div v-if="isPending && messages.length === 0" class="rounded-[20px] border border-dashed border-[#dbe3f2] bg-white/80 px-5 py-8 text-center text-sm text-slate-500">
@@ -50,6 +51,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
+import type { MessageCallLogAction } from "../../domain/types/calls.types"
 import type { MessageItem, MessageThreadType } from "../../domain/types/messages.types"
 import MessagesChatBubble from "./ChatBubble.vue"
 
@@ -63,8 +65,9 @@ const props = defineProps<{
   messages: MessageItem[]
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   "load-more": []
+  "retry-call": [payload: MessageCallLogAction]
 }>()
 
 const listContainer = ref<HTMLElement | null>(null)

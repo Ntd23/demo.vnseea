@@ -35,3 +35,75 @@ export type MessageCallCreateResult = {
   busy?: boolean
   message?: string
 }
+
+export type MessageGroupCallResult = {
+  status: number
+  id: number
+  groupId: number
+  type: MessageCallType
+  url: string
+  groupName: string
+  participantCount: number
+  isExisting?: boolean
+}
+
+export type MessageIncomingGroupCall = {
+  id: number
+  groupId: number
+  type: MessageCallType
+  url: string
+  groupName: string
+  avatar?: string
+}
+
+export type MessageCallLogAction = {
+  type: MessageCallType
+  action: "start" | "join"
+  callId?: number
+  groupId?: number
+}
+
+export type MessageGroupCallParticipant = {
+  userId: number
+  name: string
+  username?: string
+  avatar?: string
+  joinedAt?: number
+}
+
+export type MessageGroupCallCandidate = {
+  userId: number
+  name: string
+  username?: string
+  avatar?: string
+}
+
+export type MessageGroupCallPayload = {
+  status: number
+  id: number
+  groupId: number
+  type: MessageCallType
+  roomName: string
+  wsUrl: string
+  token: string
+  livekitConfigured: boolean
+  startedAt: number
+  serverNow: number
+  participantCount: number
+  groupName: string
+  groupAvatar?: string
+  currentUser: MessageCallPeer
+  participants: MessageGroupCallParticipant[]
+}
+
+export type MessageGroupCallSync = {
+  status: number
+  id: number
+  groupId: number
+  type: MessageCallType
+  callStatus: string
+  participantCount: number
+  groupName: string
+  groupAvatar?: string
+  participants: MessageGroupCallParticipant[]
+}

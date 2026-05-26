@@ -9,20 +9,23 @@
             <h2>{{ session.peer.name }}</h2>
             <p>{{ statusLabel }}</p>
             <span>{{ elapsedLabel }}</span>
-            <button
+            <UButton
               v-if="audioPlaybackBlocked"
-              type="button"
+              icon="i-ph-speaker-high-bold"
+              color="neutral"
+              variant="solid"
               class="message-call__sound-button"
+              aria-label="Bat am thanh"
               @click="resumeRemoteAudio"
             >
               Bat am thanh
-            </button>
+            </UButton>
           </div>
         </div>
 
         <div v-if="session.type === 'video'" ref="localMedia" class="message-call__local">
           <div v-if="!localVideoActive" class="message-call__local-placeholder">
-            <Icon name="i-ph-video-camera-slash-bold" />
+            <UIcon name="i-ph-video-camera-slash-bold" />
           </div>
         </div>
       </div>
@@ -30,53 +33,68 @@
       <div ref="audioSink" class="message-call__audio-sink" />
 
       <div class="message-call__toolbar">
-        <button
+        <UButton
           v-if="audioPlaybackBlocked"
-          type="button"
+          icon="i-ph-speaker-high-bold"
+          color="neutral"
+          variant="solid"
+          square
           class="message-call__control message-call__control--sound"
-          title="Enable sound"
+          aria-label="Bat am thanh"
           @click="resumeRemoteAudio"
-        >
-          <Icon name="i-ph-speaker-high-bold" />
-        </button>
-        <button
-          type="button"
+        />
+        <UButton
+          :icon="remoteAudioMuted ? 'i-ph-speaker-slash-bold' : 'i-ph-speaker-high-bold'"
+          color="neutral"
+          variant="solid"
+          square
+          class="message-call__control"
+          :class="{ 'message-call__control--muted': remoteAudioMuted }"
+          :aria-label="remoteAudioMuted ? 'Bat am thanh nguoi doi dien' : 'Tat am thanh nguoi doi dien'"
+          @click="toggleRemoteAudio"
+        />
+        <UButton
+          :icon="micEnabled ? 'i-ph-microphone-bold' : 'i-ph-microphone-slash-bold'"
+          color="neutral"
+          variant="solid"
+          square
           class="message-call__control"
           :class="{ 'message-call__control--muted': !micEnabled }"
           :disabled="!mediaSupported"
-          title="Microphone"
+          aria-label="Microphone"
           @click="toggleMic"
-        >
-          <Icon :name="micEnabled ? 'i-ph-microphone-bold' : 'i-ph-microphone-slash-bold'" />
-        </button>
-        <button
+        />
+        <UButton
           v-if="session.type === 'video'"
-          type="button"
+          :icon="cameraEnabled ? 'i-ph-video-camera-bold' : 'i-ph-video-camera-slash-bold'"
+          color="neutral"
+          variant="solid"
+          square
           class="message-call__control"
           :class="{ 'message-call__control--muted': !cameraEnabled }"
           :disabled="!mediaSupported"
-          title="Camera"
+          aria-label="Camera"
           @click="toggleCamera"
-        >
-          <Icon :name="cameraEnabled ? 'i-ph-video-camera-bold' : 'i-ph-video-camera-slash-bold'" />
-        </button>
-        <button
+        />
+        <UButton
           v-if="session.type === 'video'"
-          type="button"
+          icon="i-ph-camera-rotate-bold"
+          color="neutral"
+          variant="solid"
+          square
           class="message-call__control"
-          title="Switch camera"
+          aria-label="Switch camera"
           @click="flipCamera"
-        >
-          <Icon name="i-ph-camera-rotate-bold" />
-        </button>
-        <button
-          type="button"
+        />
+        <UButton
+          icon="i-ph-phone-disconnect-bold"
+          color="error"
+          variant="solid"
+          square
           class="message-call__control message-call__control--end"
-          title="End call"
+          aria-label="End call"
           @click="endCall"
-        >
-          <Icon name="i-ph-phone-disconnect-bold" />
-        </button>
+        />
       </div>
     </div>
   </Teleport>
@@ -108,6 +126,7 @@ const audioSink = ref<HTMLElement | null>(null)
 const statusLabel = ref("Connecting")
 const micEnabled = ref(true)
 const cameraEnabled = ref(props.session.type === "video")
+const remoteAudioMuted = ref(false)
 const remoteVideoActive = ref(false)
 const localVideoActive = ref(false)
 const audioPlaybackBlocked = ref(false)
@@ -169,6 +188,17 @@ function resumeRemoteAudio() {
   remoteAudioElements.forEach(element => playRemoteAudio(element))
 }
 
+function syncRemoteAudioMuted() {
+  remoteAudioElements.forEach((element) => {
+    element.muted = remoteAudioMuted.value
+  })
+}
+
+function toggleRemoteAudio() {
+  remoteAudioMuted.value = !remoteAudioMuted.value
+  syncRemoteAudioMuted()
+}
+
 function attachRemoteTrack(track: RemoteTrack, participant: RemoteParticipant) {
   const element = track.attach() as HTMLMediaElement
   element.autoplay = true
@@ -185,6 +215,7 @@ function attachRemoteTrack(track: RemoteTrack, participant: RemoteParticipant) {
   }
 
   remoteAudioElements.push(element)
+  element.muted = remoteAudioMuted.value
   audioSink.value?.appendChild(element)
   playRemoteAudio(element)
 }
@@ -372,6 +403,7 @@ onBeforeUnmount(() => {
   z-index: 80;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   background: #070a12;
   color: #ffffff;
 }
@@ -439,6 +471,11 @@ onBeforeUnmount(() => {
   font-weight: 800;
 }
 
+.message-call__sound-button :deep(.iconify) {
+  width: 18px;
+  height: 18px;
+}
+
 .message-call__local {
   position: fixed;
   top: max(18px, env(safe-area-inset-top));
@@ -493,15 +530,18 @@ onBeforeUnmount(() => {
 }
 
 .message-call__control {
-  display: inline-flex;
   width: 68px;
   height: 68px;
-  align-items: center;
   justify-content: center;
   border-radius: 999px;
   background: rgba(51, 65, 85, 0.92);
   color: #ffffff;
   font-size: 28px;
+}
+
+.message-call__control :deep(.iconify) {
+  width: 28px;
+  height: 28px;
 }
 
 .message-call__control:disabled {
@@ -523,20 +563,54 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 640px) {
+  .message-call {
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+  }
+
+  .message-call__stage {
+    width: 100vw;
+    height: 100svh;
+    max-height: none;
+    min-height: 100svh;
+    flex: 1 1 auto;
+    aspect-ratio: auto;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .message-call__remote,
+  .message-call__poster {
+    border-radius: 0;
+  }
+
+  .message-call__remote :deep(video) {
+    object-fit: cover;
+  }
+
   .message-call__local {
-    width: min(36vw, 150px);
+    top: max(22px, calc(env(safe-area-inset-top) + 14px));
+    right: 14px;
+    width: min(36vw, 144px);
     border-radius: 18px;
   }
 
   .message-call__toolbar {
-    gap: 8px;
-    padding: 8px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    gap: 10px;
+    padding: 10px;
   }
 
   .message-call__control {
-    width: clamp(56px, 17vw, 66px);
-    height: clamp(56px, 17vw, 66px);
-    font-size: 24px;
+    width: clamp(62px, 18vw, 72px);
+    height: clamp(62px, 18vw, 72px);
+    font-size: 26px;
+  }
+
+  .message-call__control :deep(.iconify) {
+    width: 26px;
+    height: 26px;
   }
 }
 </style>
