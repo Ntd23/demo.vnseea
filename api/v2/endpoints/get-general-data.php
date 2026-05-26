@@ -535,6 +535,11 @@ if (empty($error_code)) {
     if (!empty($data['count_new_messages'])) {
         $response_data['count_new_messages'] =  Wo_CountMessages(array('new' => true), 'interval');
     }
+    if (!empty($data['video_count'])) {
+        $video_query = mysqli_query($sqlConnect, "SELECT COUNT(*) AS count FROM " . T_POSTS . " WHERE postPrivacy = '0' AND (postYoutube <> '' OR postVine <> '' OR postFacebook <> '' OR postDailymotion <> '' OR postVimeo <> '' OR postPlaytube <> '' OR postFile LIKE '%_video%')");
+        $video_count_data = mysqli_fetch_assoc($video_query);
+        $response_data['video_count'] = (int)$video_count_data['count'];
+    }
     if (!empty($data['announcement'])) {
         $response_data['announcement'] =  Wo_GetHomeAnnouncements();
         if (!empty($response_data['announcement'])) {

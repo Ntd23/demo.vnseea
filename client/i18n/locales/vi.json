@@ -5313,6 +5313,12 @@
     "seo": {
       "titleSuffix": "Cài đặt VNSEEA"
     },
+    "general": {
+      "languageBadge": "Ngôn ngữ",
+      "languageTitle": "Ngôn ngữ ứng dụng",
+      "languageRowTitle": "Ngôn ngữ hiển thị",
+      "languageRowDesc": "Chọn ngôn ngữ mặc định cho giao diện ứng dụng của bạn"
+    },
     "hero": {
       "auditLabel": "Cài đặt",
       "title": "Cài đặt",

@@ -190,11 +190,11 @@
       </div>
 
       <UAlert
-        v-if="actionState !== 'idle' && actionMessage"
+        v-if="actionState === 'error' && actionMessage"
         class="mt-3 rounded-2xl"
-        :color="actionState === 'error' ? 'warning' : 'success'"
+        color="warning"
         variant="subtle"
-        :icon="actionState === 'error' ? 'i-ph-warning-circle-fill' : 'i-ph-check-circle-fill'"
+        icon="i-ph-warning-circle-fill"
         :description="actionMessage"
       />
 
