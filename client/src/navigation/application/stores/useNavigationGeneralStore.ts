@@ -10,6 +10,7 @@ const emptyNavigationGeneral = (): NavigationGeneral => ({
   friendRequestCount: 0,
   groupChatRequestCount: 0,
   messageCount: 0,
+  videoCount: 0,
 })
 
 export const useNavigationGeneralStore = defineStore("navigation-general", () => {

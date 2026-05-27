@@ -5317,6 +5317,12 @@
     "seo": {
       "titleSuffix": "VNSEEA Settings"
     },
+    "general": {
+      "languageBadge": "Language",
+      "languageTitle": "Application Language",
+      "languageRowTitle": "Display Language",
+      "languageRowDesc": "Select the default language for your user interface"
+    },
     "hero": {
       "auditLabel": "Settings",
       "title": "Settings",

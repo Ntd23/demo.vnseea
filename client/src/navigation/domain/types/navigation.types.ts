@@ -5,4 +5,5 @@ export interface NavigationGeneral {
   friendRequestCount: number
   groupChatRequestCount: number
   messageCount: number
+  videoCount: number
 }
