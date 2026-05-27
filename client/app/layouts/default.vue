@@ -1,6 +1,10 @@
 <!-- English description: Default authenticated layout with header, sidebars, and a fixed mobile chat shortcut. -->
 <template>
   <div class="phone-safe min-h-screen bg-[#f1f4fb]" :class="isReelsPage ? 'overflow-hidden bg-black' : ''">
+    <ClientOnly>
+      <HeaderSearchContent />
+    </ClientOnly>
+
     <NavigationHeaderBar />
 
     <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden xl:h-[calc(100dvh-73px)]' : ''">
@@ -46,6 +50,7 @@
 <script setup>
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import NavigationHeaderBar from "../../src/navigation/presentation/components/HeaderBar.vue"
+import HeaderSearchContent from "../../src/navigation/presentation/components/HeaderSearchContent.client.vue"
 import NavigationHeaderIconNav from "../../src/navigation/presentation/components/HeaderIconNav.vue"
 import NavigationLeftSidebar from "../../src/navigation/presentation/components/LeftSidebar.vue"
 import NavigationRightSidebar from "../../src/navigation/presentation/components/RightSidebar.vue"

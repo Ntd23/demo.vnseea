@@ -17,6 +17,7 @@ const deviceLabel = (label: string, fallback: string, index: number) =>
   label.trim() || `${fallback} ${index + 1}`
 
 export function useLiveKitStudio() {
+  const { t } = useI18n()
   const previewHost = ref<HTMLElement | null>(null)
   const cameraOptions = ref<LiveStudioDeviceOption[]>([])
   const microphoneOptions = ref<LiveStudioDeviceOption[]>([])
@@ -68,12 +69,12 @@ export function useLiveKitStudio() {
 
     cameraOptions.value = cameras.map((device, index) => ({
       deviceId: device.deviceId,
-      label: deviceLabel(device.label || "", "Camera", index),
+      label: deviceLabel(device.label || "", t("pages.livePage.studio.cameraLabel"), index),
     }))
 
     microphoneOptions.value = microphones.map((device, index) => ({
       deviceId: device.deviceId,
-      label: deviceLabel(device.label || "", "Microphone", index),
+      label: deviceLabel(device.label || "", t("pages.livePage.studio.microphoneLabel"), index),
     }))
 
     if (!selectedCameraId.value && cameraOptions.value[0]) {
@@ -152,7 +153,7 @@ export function useLiveKitStudio() {
 
   async function ensurePreview(force = false) {
     if (!mediaSupported.value) {
-      previewError.value = "Trình duyệt hiện tại không hỗ trợ camera hoặc microphone."
+      previewError.value = t("pages.livePage.studio.previewUnsupported")
       previewReady.value = false
       return
     }
@@ -191,7 +192,7 @@ export function useLiveKitStudio() {
       stopTracks()
       previewError.value = error instanceof Error
         ? error.message
-        : "Không thể truy cập camera hoặc microphone."
+        : t("pages.livePage.studio.previewAccessError")
     }
     finally {
       previewLoading.value = false
@@ -260,7 +261,7 @@ export function useLiveKitStudio() {
     await ensurePreview()
 
     if (!localTracks.length) {
-      throw new Error("Không có track local để phát trực tiếp.")
+      throw new Error(t("pages.livePage.studio.previewMissingTrack"))
     }
 
     const module = await ensureModule()

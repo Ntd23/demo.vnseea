@@ -63,6 +63,15 @@ const resolvePhpIniPath = (phpCgiPath) => {
 
 const isPortListening = (targetHost, targetPort) =>
   new Promise((resolve) => {
+    if (process.platform === "win32") {
+      const output = readCommandOutput("netstat.exe", ["-ano", "-p", "tcp"])
+      const escapedHost = targetHost.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      const pattern = new RegExp(`\\s(?:${escapedHost}|0\\.0\\.0\\.0):${targetPort}\\s+\\S+\\s+LISTENING\\s+\\d+`, "i")
+
+      resolve(pattern.test(output))
+      return
+    }
+
     const socket = new net.Socket()
 
     const finalize = (value) => {
@@ -80,11 +89,25 @@ const isPortListening = (targetHost, targetPort) =>
 
 const spawnPhpWorker = (phpCgiPath, phpIniPath, targetPort) => {
   const workingDirectory = dirname(phpCgiPath)
-  const args = ["-c", phpIniPath, "-b", `${host}:${targetPort}`]
+  const args = [
+    "-c",
+    phpIniPath,
+    "-d",
+    "display_errors=0",
+    "-d",
+    "log_errors=1",
+    "-b",
+    `${host}:${targetPort}`,
+  ]
 
   const child = spawn(phpCgiPath, args, {
     cwd: workingDirectory,
     detached: true,
+    env: {
+      ...process.env,
+      PHP_FCGI_CHILDREN: process.env.PHP_FCGI_CHILDREN || "1",
+      PHP_FCGI_MAX_REQUESTS: process.env.PHP_FCGI_MAX_REQUESTS || "0",
+    },
     stdio: "ignore",
     windowsHide: true,
   })
