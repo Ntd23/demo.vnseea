@@ -12,7 +12,7 @@ export type FeedMediaItem = {
 }
 
 export type FeedPostAttachmentCard = {
-  type: "blog" | "funding"
+  type: "blog" | "funding" | "product"
   title: string
   description: string
   imageUrl: string
@@ -57,6 +57,7 @@ export type FeedPostActionResult = {
   commentId?: number
   commentsCount?: number
   attachment?: FeedCommentAttachment
+  pollOptions?: FeedPollOptionRecord[]
   reaction?: FeedStoryReactionType | null
   reactionsCount?: number
   reply?: FeedCommentRecord
@@ -73,11 +74,20 @@ export type FeedPostMention = {
   displayName: string
 }
 
+export type FeedPollOptionRecord = {
+  id: number
+  text: string
+  votes: number
+  percentage: number
+  selected: boolean
+}
+
 export type FeedPostRecord = {
   id: number
   sharedPostId?: number
   sharedPost?: FeedPostRecord | null
   authorId?: number
+  colorId?: number
   author: string
   authorAvatarUrl: string
   authorVerified?: boolean
@@ -103,6 +113,7 @@ export type FeedPostRecord = {
     label: string
     emoji: string
   } | null
+  pollOptions: FeedPollOptionRecord[]
   tags: string[]
   stats: {
     likes: number

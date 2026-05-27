@@ -4999,7 +4999,7 @@
       "advancedChipTitle": "Extra options",
       "actionImage": "Image",
       "actionVideo": "Video",
-      "actionPoll": "Poll",
+      "actionPoll": "Create poll",
       "actionGif": "GIF",
       "actionFeeling": "Feeling",
       "actionAudio": "Audio",
@@ -5010,6 +5010,13 @@
       "chipAddLocation": "Add location",
       "chipTagFriends": "Tag friends",
       "chipColors": "Colors",
+      "colorPurpleBlue": "Purple blue",
+      "colorCherryPink": "Cherry pink",
+      "colorSunsetGold": "Sunset gold",
+      "colorDeepOcean": "Deep ocean",
+      "colorSkyBlue": "Sky blue",
+      "colorMintGreen": "Mint green",
+      "colorOption": "Color {id}",
       "audienceTitle": "Visibility",
       "audiencePublic": "Public",
       "audienceConnections": "My connections",
@@ -5037,7 +5044,13 @@
       "statusSuccessTitle": "Mock post is ready",
       "statusSuccessDescription": "You can continue drafting the next update in the same composer.",
       "statusErrorTitle": "Add some text before posting",
-      "statusErrorDescription": "Enter at least a short description so the post is not empty."
+      "statusErrorDescription": "Enter at least a short description so the post is not empty.",
+      "pollTitle": "Create a poll",
+      "pollAddAnswer": "Add answer",
+      "pollAnswerPlaceholder": "Answer {n}",
+      "pollValidationError": "Enter a question and at least 2 answers for the poll.",
+      "pollRemoveAnswer": "Remove answer",
+      "more": "More"
     },
     "storyCarousel": {
       "createStory": "Create story",
@@ -5129,9 +5142,13 @@
       "justNow": "Just now",
       "blogAttachment": "Blog article",
       "fundingAttachment": "Funding campaign",
+      "productAttachment": "Product listing",
       "openBlog": "Read article",
       "openFunding": "View campaign",
+      "openProduct": "View product",
       "fundingProgress": "Progress",
+      "pollOptionVotes": "{count} votes",
+      "pollTotalVotes": "{count} total votes",
       "lightboxDownloadMessage": "Prepared the mock media download action."
     },
     "shareModal": {
@@ -5201,6 +5218,32 @@
       "delete": "Delete notification",
       "soundOn": "Sound on",
       "soundOff": "Sound off"
+    }
+  },
+  "boostedPage": {
+    "posts": {
+      "title": "Boosted posts",
+      "description": "Track the posts currently boosted through your Pro package benefits.",
+      "managePlan": "Manage Pro plan",
+      "packageNotice": "You are a {typeName} member, you can boost {canBoost} posts at the same time.",
+      "visibilityNotice": "All members in our community can view boosted posts.",
+      "unavailableTitle": "Unable to load boosted posts",
+      "emptyTitle": "No boosted posts yet",
+      "emptyDescription": "Posts you boost will appear here."
+    },
+    "pages": {
+      "title": "Boosted pages",
+      "description": "Track the pages currently boosted through your Pro package benefits.",
+      "managePlan": "Manage Pro plan",
+      "packageNotice": "You are a {typeName} member, you can boost {canBoost} pages at the same time.",
+      "visibilityNotice": "All members in our community can view boosted pages.",
+      "unavailableTitle": "Unable to load boosted pages",
+      "emptyTitle": "No boosted pages yet",
+      "emptyDescription": "Pages you boost will appear here.",
+      "boosted": "Boosted",
+      "openPage": "Open page",
+      "noSummary": "VNSEEA page",
+      "likes": "{count} likes"
     }
   },
   "navigation": {
@@ -5274,6 +5317,8 @@
         "settings": "Settings",
         "register": "Register",
         "registration": "Registration",
+        "boostedPosts": "Boosted posts",
+        "boostedPages": "Boosted pages",
         "editProfile": "Edit profile",
         "generalSettings": "General settings",
         "adminArea": "Admin area",

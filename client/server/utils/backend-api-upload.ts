@@ -7,8 +7,17 @@ import {
   normalizeBackendBaseURL,
 } from "./backend-api-client"
 
-const normalizeEndpointType = (endpoint: string) =>
-  endpoint.endsWith(".php") ? endpoint.slice(0, -4) : endpoint
+const normalizeEndpointType = (endpoint: string) => {
+  if (endpoint.endsWith(".php")) {
+    return endpoint
+  }
+
+  if (endpoint.includes("/")) {
+    return `${endpoint}.php`
+  }
+
+  return endpoint
+}
 
 const appendFormField = (
   body: FormData | URLSearchParams,

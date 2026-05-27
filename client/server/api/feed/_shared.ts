@@ -27,6 +27,7 @@ import type {
   FeedMediaItem,
   FeedPostAttachmentCard,
   FeedPostMention,
+  FeedPollOptionRecord,
   FeedPokeActionResult,
   FeedPokeRecord,
   FeedPostRecord,
@@ -114,6 +115,15 @@ type BackendPokeResponse = {
   api_status?: number | string
   data?: BackendEntity[]
   message_data?: string
+  errors?: {
+    error_text?: string
+  }
+}
+
+type BackendVotePollResponse = {
+  api_status?: number | string
+  votes?: BackendEntity[]
+  voted_id?: number | string
   errors?: {
     error_text?: string
   }
@@ -246,6 +256,24 @@ const getPostReaction = (entity: BackendEntity) => {
     count: asNumber(reaction.count),
     reactions,
   }
+}
+
+const mapPollOptions = (entity: BackendEntity): FeedPollOptionRecord[] => {
+  const votedId = firstNumber(entity, ["voted_id", "votedId"])
+
+  return asArray(entity.options)
+    .map(option => {
+      const id = firstNumber(option, ["id", "option_id"])
+
+      return {
+        id,
+        text: firstString(option, ["text", "option_text", "answer"]),
+        votes: firstNumber(option, ["option_votes", "votes", "votes_count"]),
+        percentage: firstNumber(option, ["percentage_num", "percentage"]),
+        selected: votedId > 0 && id === votedId,
+      }
+    })
+    .filter(option => option.id > 0 && option.text)
 }
 
 const extractPostEventContext = (entity: BackendEntity): FeedPostRecord["eventContext"] => {
@@ -522,6 +550,14 @@ const buildPostText = (entity: BackendEntity) => {
   const product = asRecord(entity.product)
   const thread = asRecord(entity.thread)
   const forum = asRecord(entity.forum)
+  const productTitle = stripHtml(firstString(product, ["name", "title"]))
+  const productDescription = stripHtml(firstString(product, ["description"]))
+  const productGeneratedText = [
+    productTitle,
+    productDescription,
+    [productTitle, productDescription].filter(Boolean).join("\n"),
+    [productTitle, productDescription].filter(Boolean).join(" "),
+  ].map(value => value.replace(/\s+/g, " ").trim().toLowerCase()).filter(Boolean)
   const candidates = [
     firstString(entity, ["Orginaltext", "postText_API", "postText", "text"]),
     [
@@ -529,10 +565,6 @@ const buildPostText = (entity: BackendEntity) => {
       firstString(entity, ["postLinkContent"]),
     ].filter(Boolean).join("\n"),
     firstString(entity, ["postMap"]),
-    [
-      firstString(product, ["name", "title"]),
-      firstString(product, ["description"]),
-    ].filter(Boolean).join("\n"),
     [
       firstString(thread, ["headline", "title"]),
       firstString(thread, ["post_subject", "description"]),
@@ -544,6 +576,11 @@ const buildPostText = (entity: BackendEntity) => {
   ]
 
   const uniqueParts = Array.from(new Set(candidates.map(stripHtml).filter(Boolean)))
+    .filter((part) => {
+      const normalized = part.replace(/\s+/g, " ").trim().toLowerCase()
+
+      return !productGeneratedText.includes(normalized)
+    })
   return uniqueParts.join("\n\n")
 }
 
@@ -595,6 +632,40 @@ const buildPostAttachmentCard = (
       progress,
       raised,
       amount,
+    }
+  }
+
+  const product = asRecord(entity.product || entity.product_data)
+  const productTitle = firstString(product, ["name", "title"])
+  const productId = firstNumber(entity, ["product_id"])
+    || firstNumber(product, ["id", "product_id"])
+
+  if (productTitle || productId > 0) {
+    const images = asUnknownArray(product.images)
+    const firstImage = asRecord(images[0])
+    const imageUrl = resolveMediaUrl(
+      asString(images[0])
+      || firstString(firstImage, ["image_org", "image", "src", "url"])
+      || firstString(product, ["image", "thumbnail", "cover"]),
+    )
+    const price = firstString(product, ["price_format"])
+      || firstString(product, ["price_text"])
+      || firstString(product, ["price"])
+    const description = [
+      price,
+      stripHtml(firstString(product, ["description"])),
+    ].filter(Boolean).join(" - ")
+    const rawUrl = firstString(product, ["url"])
+    const href = rawUrl
+      ? rawUrl
+      : appRoutes.postDetail(firstNumber(entity, ["post_id", "id"]) || productId)
+
+    return {
+      type: "product",
+      title: productTitle || "Product",
+      description,
+      imageUrl,
+      href,
     }
   }
 
@@ -790,6 +861,7 @@ export const mapPostRecord = (
       ? "video"
       : "image"
   const postReaction = getPostReaction(entity)
+  const pollOptions = mapPollOptions(entity)
   const liveStreamName = firstString(entity, ["stream_name", "streamName"])
   const liveTime = firstNumber(entity, ["live_time", "liveTime"])
   const liveEnded = isTruthy(entity.live_ended)
@@ -806,6 +878,7 @@ export const mapPostRecord = (
     sharedPostId: sharedPostId || undefined,
     sharedPost,
     authorId: authorId || undefined,
+    colorId: firstNumber(entity, ["color_id"]) || undefined,
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"])),
     authorVerified: isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
@@ -821,6 +894,7 @@ export const mapPostRecord = (
     text,
     mentions,
     feeling,
+    pollOptions,
     tags: extractTags(entity),
     stats: {
       likes: postReaction.count || firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
@@ -1255,6 +1329,29 @@ const buildPostsResponse = (posts: FeedPostRecord[], limit: number): FeedPostsRe
   nextOffset: posts.at(-1)?.id ?? null,
 })
 
+const isProductPostEntity = (entity: BackendEntity) =>
+  firstNumber(entity, ["product_id"]) > 0
+  || Object.keys(asRecord(entity.product || entity.product_data)).length > 0
+
+const buildHomePostsResponse = (
+  rawPosts: BackendEntity[],
+  limit: number,
+  resolveMediaUrl: (value: unknown) => string,
+): FeedPostsResponse => {
+  const posts = rawPosts
+    .filter(post => !isProductPostEntity(post))
+    .map(post => mapPostRecord(post, resolveMediaUrl))
+  const lastRawPost = rawPosts.at(-1)
+
+  return {
+    posts,
+    hasMore: rawPosts.length >= limit,
+    nextOffset: lastRawPost
+      ? firstNumber(lastRawPost, ["post_id", "id"]) || posts.at(-1)?.id || null
+      : null,
+  }
+}
+
 export async function fetchFeedPosts(
   event: H3Event,
   input: {
@@ -1342,7 +1439,7 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
   const general = assertBackendApiSuccess(generalResponse, "Unable to load announcement.")
 
   return {
-    ...buildPostsResponse((posts.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)), limit),
+    ...buildHomePostsResponse(posts.data ?? [], limit, resolveMediaUrl),
     stories: flattenStorySequences(storySequences, currentUserId),
     announcement: mapAnnouncement(general.announcement),
     greeting: mapHomeGreeting(currentUser, event),
@@ -1464,13 +1561,13 @@ export async function runPokeAction(
       "poke",
       input.action === "create"
         ? {
-            type: "create",
-            user_id: input.userId,
-          }
+          type: "create",
+          user_id: input.userId,
+        }
         : {
-            type: "remove",
-            poke_id: input.pokeId,
-          },
+          type: "remove",
+          poke_id: input.pokeId,
+        },
     ),
     "Unable to update poke request.",
   )
@@ -1484,8 +1581,9 @@ export async function runPokeAction(
 export async function runPostAction(
   event: H3Event,
   input: {
-    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide"
+    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll"
     postId: number
+    optionId?: number
     reaction?: string
     text?: string
     imageFile?: BackendMultipartFile | null
@@ -1600,15 +1698,42 @@ export async function runPostAction(
         ? undefined
         : attachmentUrl
           ? {
-              type: input.gifFile ? "gif" as const : "image" as const,
-              url: attachmentUrl,
-              name: mediaFile?.filename,
-            }
+            type: input.gifFile ? "gif" as const : "image" as const,
+            url: attachmentUrl,
+            name: mediaFile?.filename,
+          }
           : undefined,
     }
   }
 
   const client = createBackendApiClient(event)
+
+  if (input.action === "votePoll") {
+    if (!input.optionId) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: "Poll option id is required.",
+      })
+    }
+
+    const response = assertBackendApiSuccess(
+      await client.post<BackendVotePollResponse, Record<string, unknown>>(
+        "vote_up",
+        {
+          id: input.optionId,
+        },
+      ),
+      "Unable to vote on poll.",
+    )
+
+    return {
+      ok: true,
+      pollOptions: mapPollOptions({
+        options: response.votes ?? [],
+        voted_id: asNumber(response.voted_id),
+      }),
+    }
+  }
 
   if (input.action === "hide") {
     assertBackendApiSuccess(

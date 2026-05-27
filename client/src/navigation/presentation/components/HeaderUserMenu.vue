@@ -59,16 +59,16 @@
         </div>
 
         <div class="user-menu__section">
-          <NuxtLink
+          <button
             v-for="item in quickActions"
             :key="item.label"
-            :to="item.to"
+            type="button"
             class="user-menu__item"
-            @click="open = false"
+            @click="closeAndNavigate(item.to)"
           >
             <Icon :name="item.icon" class="user-menu__item-icon" />
             <span class="user-menu__item-label">{{ $t(item.label) }}</span>
-          </NuxtLink>
+          </button>
         </div>
 
         <div v-if="systemActions.length > 0" class="user-menu__divider" />
@@ -177,12 +177,40 @@ const formattedPoints = computed(() => {
 })
 const showStats = computed(() => Boolean(formattedWallet.value || formattedPoints.value))
 
-const quickActions = computed(() => [
-  { label: "navigation.mobileMenu.mainNav.advertising", icon: "i-ph-megaphone-fill", to: "/ads" },
-  { label: "navigation.mobileMenu.settingsNav.editProfile", icon: "i-ph-pencil-simple-fill", to: appRoutes.settingsPage("general") },
-  { label: "navigation.mobileMenu.settingsNav.generalSettings", icon: "i-ph-users-fill", to: appRoutes.settings },
-  { label: "navigation.mobileMenu.settingsNav.registration", icon: "i-ph-clipboard-text-fill", to: appRoutes.register },
-])
+function closeAndNavigate(to: string) {
+  open.value = false
+  void navigateTo(to)
+}
+
+const quickActions = computed(() => {
+  const items = [
+    { label: "navigation.mobileMenu.mainNav.advertising", icon: "i-ph-megaphone-fill", to: "/ads" },
+  ]
+
+  if (currentUser.value?.isPro && currentUser.value?.canBoostPosts) {
+    items.push({
+      label: "navigation.mobileMenu.settingsNav.boostedPosts",
+      icon: "i-ph-lightning-fill",
+      to: appRoutes.boostedPosts,
+    })
+  }
+
+  if (currentUser.value?.isPro && currentUser.value?.canBoostPages) {
+    items.push({
+      label: "navigation.mobileMenu.settingsNav.boostedPages",
+      icon: "i-ph-lightning-fill",
+      to: appRoutes.boostedPages,
+    })
+  }
+
+  items.push(
+    { label: "navigation.mobileMenu.settingsNav.editProfile", icon: "i-ph-pencil-simple-fill", to: appRoutes.settingsPage("general") },
+    { label: "navigation.mobileMenu.settingsNav.generalSettings", icon: "i-ph-users-fill", to: appRoutes.settings },
+    { label: "navigation.mobileMenu.settingsNav.registration", icon: "i-ph-clipboard-text-fill", to: appRoutes.register },
+  )
+
+  return items
+})
 
 const adminCpUrl = useBackendWebUrl(appRoutes.adminCp)
 const systemActions = computed(() => {
@@ -373,14 +401,19 @@ a.user-menu__stat:hover {
 
 .user-menu__item {
   display: flex;
+  width: 100%;
   align-items: center;
   gap: 12px;
   padding: 14px 18px;
+  border: 0;
+  background: transparent;
   text-decoration: none;
   color: #1e293b;
   font-size: 13px;
   font-weight: 600;
+  text-align: left;
   transition: background 0.12s ease;
+  cursor: pointer;
 }
 
 .user-menu__item:hover {

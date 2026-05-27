@@ -8,6 +8,10 @@ export interface CurrentAuthUser {
   role: "user" | "moderator" | "admin"
   isAdmin: boolean
   isModerator: boolean
+  isPro?: boolean
+  proType?: string
+  canBoostPosts?: boolean
+  canBoostPages?: boolean
   wallet?: number | string
   points?: number
 }
