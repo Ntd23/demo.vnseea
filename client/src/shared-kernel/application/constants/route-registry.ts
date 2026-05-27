@@ -174,6 +174,8 @@ export const apiRoutes = {
     conversations: "messages/conversations",
     tags: "messages/tags",
     thread: "messages/thread",
+    reactions: "messages/reactions",
+    deleteMessage: "messages/delete-message",
     multi: "messages/multi",
     send: "messages/send",
     presence: "messages/presence",

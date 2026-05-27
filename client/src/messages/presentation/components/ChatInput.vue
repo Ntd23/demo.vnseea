@@ -24,10 +24,9 @@
               <UTooltip :text="$t('pages.messagesPage.sendMessage')">
                 <UButton
                   type="button"
-                  color="primary"
                   variant="solid"
                   icon="i-ph-paper-plane-tilt-bold"
-                  class="chat-input-send-button"
+                  class="chat-input-send-button btn-primary"
                   :disabled="disabled || !canSend"
                   @click="submitMessage"
                 />

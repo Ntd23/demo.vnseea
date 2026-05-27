@@ -18,12 +18,23 @@ import type {
   MultiMessageSendResult,
   UploadedMessageRecord,
 } from "../types/messages.types"
+import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 
 export interface MessagesRepository {
   getInbox(): Promise<MessageContact[]>
   getTags(): Promise<MessageTagsPayload>
   getThread(contact: MessageContact, options?: { beforeId?: number }): Promise<MessageThread>
   sendMessage(contact: MessageContact, input: MessageSendDraft): Promise<MessageItem[]>
+  reactToMessage(input: { messageId: number, reaction: FeedStoryReactionType }): Promise<MessageActionResult & {
+    messageId: number
+    reaction: FeedStoryReactionType
+  }>
+  deleteMessage(input: { messageId: number }): Promise<MessageActionResult & {
+    messageId: number
+    deletedAt: number
+    deletedTime: string
+    deletedByName?: string
+  }>
   sendMultiMessage(input: {
     recipientIds: number[]
     text: string

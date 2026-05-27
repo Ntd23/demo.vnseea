@@ -29,21 +29,12 @@
           <slot />
         </main>
 
-        <aside v-if="showRightSidebar" class="hidden min-w-0 xl:sticky xl:top-[74px] xl:block">
+        <aside v-if="showRightSidebar" class="hidden min-w-0 xl:sticky xl:top-[74px] xl:z-20 xl:block xl:h-[calc(100dvh-90px)] xl:overflow-visible">
           <NavigationRightSidebar />
         </aside>
       </div>
     </div>
 
-    <button
-      v-if="!isReelsPage"
-      class="fixed bottom-4 right-3 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#0000ff] text-white shadow-[0_4px_20px_rgba(0,0,255,0.35)] transition hover:scale-105 xl:hidden"
-      style="margin-bottom: env(safe-area-inset-bottom, 0px);"
-      type="button"
-      @click="chatOpen = !chatOpen"
-    >
-      <Icon :name="chatOpen ? 'i-ph-x-bold' : 'i-ph-chat-circle-dots-fill'" class="h-5 w-5" />
-    </button>
   </div>
 </template>
 
@@ -55,8 +46,6 @@ import NavigationHeaderIconNav from "../../src/navigation/presentation/component
 import NavigationLeftSidebar from "../../src/navigation/presentation/components/LeftSidebar.vue"
 import NavigationRightSidebar from "../../src/navigation/presentation/components/RightSidebar.vue"
 import DirectoryLeftSidebar from "../../src/directory/presentation/components/LeftSidebar.vue"
-
-const chatOpen = ref(false)
 
 const route = useRoute()
 const isReelsPage = computed(() => route.path === appRoutes.reels)
@@ -133,7 +122,4 @@ const mainClass = computed(() => {
   return 'pb-10'
 })
 
-watch(() => route.fullPath, () => {
-  if (route.path !== appRoutes.reels) chatOpen.value = false
-})
 </script>

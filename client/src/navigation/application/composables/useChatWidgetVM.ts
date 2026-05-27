@@ -1,9 +1,10 @@
 // English description: Orchestrates the right-sidebar chat widget with real inbox data, mini-thread loading, quick send actions, and user online presence refresh.
 
-import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue"
+import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue"
 import type { Socket } from "socket.io-client"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
-import type { MessageContact, MessageItem, MessageSendDraft, MessageThread } from "../../../messages/domain/types/messages.types"
+import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
+import type { MessageContact, MessageItem, MessageRecordDraft, MessageSendDraft, MessageTagsPayload, MessageThread, MessageUserTag } from "../../../messages/domain/types/messages.types"
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
 
 type ChatWidgetTab = "send" | "contacts" | "groups"
@@ -35,18 +36,33 @@ function filterContacts(contacts: MessageContact[], keyword: string) {
   })
 }
 
+function mergeUserTags(left: MessageUserTag[] = [], right: MessageUserTag[] = []) {
+  const tags = new Map<number, MessageUserTag>()
+
+  for (const tag of [...left, ...right]) {
+    if (tag.id > 0) {
+      tags.set(tag.id, tag)
+    }
+  }
+
+  return [...tags.values()]
+}
+
+function mergeContactTags(contact: MessageContact, taggedContact?: MessageContact) {
+  if (!taggedContact) {
+    return contact
+  }
+
+  return {
+    ...contact,
+    tags: mergeUserTags(contact.tags, taggedContact.tags),
+  }
+}
+
 function createEmptyThread(): MessageThread {
   return {
     messages: [],
     typing: false,
-  }
-}
-
-function createSendDraft(text: string, file: File | null): MessageSendDraft {
-  return {
-    text: text.trim(),
-    file,
-    record: null,
   }
 }
 
@@ -128,13 +144,16 @@ export function useChatWidgetVM() {
 
   const activeTab = ref<ChatWidgetTab>("contacts")
   const search = ref("")
+  const activeSendTagFilter = ref("")
   const sendTo = ref("")
   const sendMessage = ref("")
   const attachFile = ref<File | null>(null)
-  const selectedSendTargetId = ref("")
+  const selectedSendRecipientIds = ref<number[]>([])
 
   const miniChatOpen = ref(false)
+  const miniChatAutoOpenVersion = ref(0)
   const miniChatMessage = ref("")
+  const miniAttachFile = ref<File | null>(null)
   const activeMiniContactId = ref("")
   const miniThread = ref<MessageThread>(createEmptyThread())
   const isLoadingThread = ref(false)
@@ -142,6 +161,8 @@ export function useChatWidgetVM() {
   const isSendingMini = ref(false)
   const socket = shallowRef<Socket | null>(null)
   const refreshTimer = shallowRef<number | null>(null)
+  const unreadSnapshot = shallowRef<Map<string, number>>(new Map())
+  const hasUnreadSnapshot = ref(false)
 
   const {
     data: inbox,
@@ -154,6 +175,17 @@ export function useChatWidgetVM() {
       default: () => [],
     },
   )
+  const hasLoadedInboxOnce = computed(() => (inbox.value?.length ?? 0) > 0)
+
+  const {
+    data: messageTags,
+  } = useAsyncData<MessageTagsPayload>(
+    "navigation:chat-widget:tags",
+    () => repository.getTags(),
+    {
+      default: () => ({ labels: [], contacts: [] }),
+    },
+  )
 
   const allContacts = computed(() =>
     (inbox.value ?? []).filter(contact =>
@@ -161,9 +193,17 @@ export function useChatWidgetVM() {
     ),
   )
 
-  const userContacts = computed(() =>
-    allContacts.value.filter(contact => contact.type === "user"),
-  )
+  const userContacts = computed(() => {
+    const taggedByUserId = new Map(
+      (messageTags.value?.contacts ?? [])
+        .map(contact => [contact.userId ?? 0, contact] as const)
+        .filter(([id]) => id > 0),
+    )
+
+    return allContacts.value
+      .filter(contact => contact.type === "user")
+      .map(contact => mergeContactTags(contact, taggedByUserId.get(contact.userId ?? 0)))
+  })
 
   const groupContacts = computed(() =>
     allContacts.value.filter(contact => contact.type === "group"),
@@ -181,15 +221,50 @@ export function useChatWidgetVM() {
     filterContacts(groupContacts.value, search.value),
   )
 
-  const selectedSendTarget = computed(() =>
-    allContacts.value.find(contact => contact.id === selectedSendTargetId.value) ?? null,
-  )
+  const taggedSendRecipientSource = computed(() => {
+    const contactsByUserId = new Map<number, MessageContact>()
+
+    for (const contact of messageTags.value?.contacts ?? []) {
+      const userId = contact.userId ?? 0
+
+      if (userId <= 0) {
+        continue
+      }
+
+      const current = contactsByUserId.get(userId)
+      contactsByUserId.set(userId, current ? mergeContactTags(current, contact) : contact)
+    }
+
+    return [...contactsByUserId.values()]
+  })
+
+  const sendRecipientSource = computed(() => {
+    const tagId = activeSendTagFilter.value
+    const baseContacts = tagId ? taggedSendRecipientSource.value : userContacts.value
+
+    if (!tagId || tagId === "0") {
+      return baseContacts
+    }
+
+    const selectedTagId = Number(tagId)
+
+    return baseContacts.filter(contact =>
+      contact.tags?.some(tag => tag.id === selectedTagId),
+    )
+  })
 
   const sendCandidates = computed(() => {
-    const source = [...userContacts.value, ...groupContacts.value]
-    const filtered = filterContacts(source, sendTo.value)
+    const filtered = filterContacts(sendRecipientSource.value, sendTo.value)
 
-    return filtered.slice(0, 6)
+    return filtered
+  })
+
+  const selectedSendRecipients = computed(() => {
+    const selectedIds = new Set(selectedSendRecipientIds.value)
+
+    return sendRecipientSource.value.filter(contact =>
+      selectedIds.has(contact.userId ?? 0),
+    )
   })
 
   const activeMiniContact = computed(() =>
@@ -200,33 +275,29 @@ export function useChatWidgetVM() {
     miniThread.value.messages.slice(-14),
   )
 
-  const implicitSendTarget = computed(() => {
-    const keyword = normalizeKeyword(sendTo.value)
-
-    if (!keyword) {
-      return null
-    }
-
-    return sendCandidates.value.find(contact =>
-      normalizeKeyword(contact.name) === keyword,
-    ) ?? null
-  })
-
-  const activeSendTarget = computed(() =>
-    selectedSendTarget.value ?? implicitSendTarget.value,
+  const visibleSendRecipientIds = computed(() =>
+    sendCandidates.value
+      .map(contact => contact.userId ?? 0)
+      .filter(id => id > 0),
   )
 
-  const isLoadingInbox = computed(() => inboxStatus.value === "pending")
+  const allVisibleSendRecipientsSelected = computed(() =>
+    visibleSendRecipientIds.value.length > 0
+    && visibleSendRecipientIds.value.every(id => selectedSendRecipientIds.value.includes(id)),
+  )
+
+  const isLoadingInbox = computed(() => inboxStatus.value === "pending" && !hasLoadedInboxOnce.value)
+  const messageTagLabels = computed(() => messageTags.value?.labels ?? [])
 
   const canSendQuickMessage = computed(() =>
-    Boolean(activeSendTarget.value)
+    selectedSendRecipientIds.value.length > 0
     && (sendMessage.value.trim().length > 0 || Boolean(attachFile.value))
     && !isSendingQuick.value,
   )
 
   const canSendMiniMessage = computed(() =>
     Boolean(activeMiniContact.value)
-    && miniChatMessage.value.trim().length > 0
+    && (miniChatMessage.value.trim().length > 0 || Boolean(miniAttachFile.value))
     && !isSendingMini.value,
   )
 
@@ -254,39 +325,80 @@ export function useChatWidgetVM() {
     return contact.preview || ""
   }
 
+  function updateUnreadSnapshot(contacts = allContacts.value) {
+    unreadSnapshot.value = new Map(
+      contacts.map(contact => [contact.id, contact.unreadCount ?? 0]),
+    )
+    hasUnreadSnapshot.value = true
+  }
+
+  function findNewIncomingContact(contacts = allContacts.value) {
+    if (!hasUnreadSnapshot.value) {
+      updateUnreadSnapshot(contacts)
+      return null
+    }
+
+    const previous = unreadSnapshot.value
+
+    return contacts.find((contact) => {
+      const unreadCount = contact.unreadCount ?? 0
+      const previousUnreadCount = previous.get(contact.id) ?? 0
+
+      return unreadCount > previousUnreadCount
+    }) ?? null
+  }
+
   function clearQuickSendForm(options?: { preserveRecipient?: boolean }) {
     sendMessage.value = ""
     attachFile.value = null
 
     if (!options?.preserveRecipient) {
       sendTo.value = ""
-      selectedSendTargetId.value = ""
+      activeSendTagFilter.value = ""
+      selectedSendRecipientIds.value = []
     }
   }
 
-  function selectSendTarget(contact: MessageContact) {
-    selectedSendTargetId.value = contact.id
-    sendTo.value = contact.name
-  }
+  function toggleSendRecipient(contact: MessageContact) {
+    const userId = contact.userId ?? 0
 
-  function clearSendTarget() {
-    selectedSendTargetId.value = ""
-    sendTo.value = ""
-  }
-
-  function resolveSelectedSendTarget() {
-    if (selectedSendTarget.value) {
-      return selectedSendTarget.value
+    if (userId <= 0) {
+      return
     }
 
-    const exactMatch = implicitSendTarget.value
+    const nextIds = new Set(selectedSendRecipientIds.value)
 
-    if (exactMatch) {
-      selectSendTarget(exactMatch)
-      return exactMatch
+    if (nextIds.has(userId)) {
+      nextIds.delete(userId)
+    }
+    else {
+      nextIds.add(userId)
     }
 
-    return null
+    selectedSendRecipientIds.value = [...nextIds]
+  }
+
+  function toggleAllVisibleSendRecipients() {
+    const visibleIds = visibleSendRecipientIds.value
+
+    if (visibleIds.length === 0) {
+      return
+    }
+
+    if (allVisibleSendRecipientsSelected.value) {
+      const visibleIdSet = new Set(visibleIds)
+      selectedSendRecipientIds.value = selectedSendRecipientIds.value.filter(id => !visibleIdSet.has(id))
+      return
+    }
+
+    selectedSendRecipientIds.value = [...new Set([
+      ...selectedSendRecipientIds.value,
+      ...visibleIds,
+    ])]
+  }
+
+  function clearSendRecipients() {
+    selectedSendRecipientIds.value = []
   }
 
   async function refreshInboxSafely(options?: { silent?: boolean }) {
@@ -304,6 +416,23 @@ export function useChatWidgetVM() {
     }
   }
 
+  async function refreshFromIncomingMessage() {
+    await refreshInboxSafely({ silent: true })
+
+    const incomingContact = findNewIncomingContact()
+    updateUnreadSnapshot()
+
+    if (!incomingContact) {
+      if (miniChatOpen.value) {
+        await refreshMiniThread({ silent: true })
+      }
+      return
+    }
+
+    await openMiniChat(incomingContact)
+    miniChatAutoOpenVersion.value += 1
+  }
+
   async function refreshMiniThread(options?: { silent?: boolean }) {
     const contact = activeMiniContact.value
 
@@ -312,7 +441,10 @@ export function useChatWidgetVM() {
       return
     }
 
-    isLoadingThread.value = true
+    const shouldShowLoading = !options?.silent && miniThread.value.messages.length === 0
+    if (shouldShowLoading) {
+      isLoadingThread.value = true
+    }
 
     try {
       miniThread.value = await repository.getThread(contact)
@@ -327,7 +459,9 @@ export function useChatWidgetVM() {
       }
     }
     finally {
-      isLoadingThread.value = false
+      if (shouldShowLoading) {
+        isLoadingThread.value = false
+      }
     }
   }
 
@@ -335,12 +469,14 @@ export function useChatWidgetVM() {
     activeMiniContactId.value = contact.id
     miniChatOpen.value = true
     miniChatMessage.value = ""
+    miniAttachFile.value = null
     await refreshMiniThread()
   }
 
   function closeMiniChat() {
     miniChatOpen.value = false
     miniChatMessage.value = ""
+    miniAttachFile.value = null
     activeMiniContactId.value = ""
     miniThread.value = createEmptyThread()
   }
@@ -353,10 +489,15 @@ export function useChatWidgetVM() {
     ])
   }
 
-  async function sendQuickMessage() {
-    const contact = resolveSelectedSendTarget()
+  async function uploadRecordDraft(input: MessageRecordDraft) {
+    return await repository.uploadRecord(input.blob, input.fileName, {
+      mimeType: input.mimeType,
+      durationMs: input.durationMs,
+    })
+  }
 
-    if (!contact) {
+  async function sendQuickMessage() {
+    if (selectedSendRecipientIds.value.length === 0) {
       toast.add({
         title: t("navigation.chatWidget.recipientRequiredTitle"),
         description: t("navigation.chatWidget.recipientRequiredDescription"),
@@ -377,11 +518,38 @@ export function useChatWidgetVM() {
     isSendingQuick.value = true
 
     try {
-      await repository.sendMessage(contact, createSendDraft(sendMessage.value, attachFile.value))
+      const result = await repository.sendMultiMessage({
+        recipientIds: selectedSendRecipientIds.value,
+        text: sendMessage.value.trim(),
+        file: attachFile.value,
+        record: null,
+      })
+
+      if (result.status !== 200 && result.status !== 207) {
+        throw new Error(result.error || "Unable to send multi message")
+      }
+
       await refreshInboxSafely({ silent: true })
-      clearQuickSendForm({ preserveRecipient: true })
-      activeTab.value = contact.type === "group" ? "groups" : "contacts"
-      await openMiniChat(contact)
+
+      if (result.status === 200) {
+        clearQuickSendForm()
+        activeTab.value = "contacts"
+        toast.add({
+          title: t("pages.messagesPage.multiSendSuccess", {
+            count: result.sentCount,
+          }),
+          color: "success",
+        })
+        return
+      }
+
+      toast.add({
+        title: t("pages.messagesPage.multiSendPartial", {
+          sent: result.sentCount,
+          failed: result.failedCount,
+        }),
+        color: "warning",
+      })
     }
     catch {
       toast.add({
@@ -395,23 +563,28 @@ export function useChatWidgetVM() {
     }
   }
 
-  async function sendMiniMessage() {
+  async function sendMiniMessage(options?: { record?: MessageRecordDraft | null, textOverride?: string }) {
     const contact = activeMiniContact.value
-    const text = miniChatMessage.value.trim()
+    const text = options?.textOverride ?? miniChatMessage.value.trim()
+    const recordDraft = options?.record ?? null
 
-    if (!contact || !text) {
+    if (!contact || (!text && !miniAttachFile.value && !recordDraft)) {
       return
     }
 
     isSendingMini.value = true
 
     try {
+      const uploadedRecord = recordDraft
+        ? await uploadRecordDraft(recordDraft)
+        : null
       await sendMessageToContact(contact, {
         text,
-        file: null,
-        record: null,
+        file: miniAttachFile.value,
+        record: uploadedRecord,
       })
       miniChatMessage.value = ""
+      miniAttachFile.value = null
     }
     catch {
       toast.add({
@@ -423,6 +596,68 @@ export function useChatWidgetVM() {
     finally {
       isSendingMini.value = false
     }
+  }
+
+  async function reactToMiniMessage(messageId: number, reaction: FeedStoryReactionType) {
+    if (!messageId || messageId <= 0) {
+      return null
+    }
+
+    const result = await repository.reactToMessage({
+      messageId,
+      reaction,
+    })
+
+    miniThread.value = {
+      ...miniThread.value,
+      messages: miniThread.value.messages.map(message =>
+        message.id === messageId
+          ? { ...message, selectedReaction: result.reaction }
+          : message,
+      ),
+    }
+
+    return result
+  }
+
+  async function deleteMiniMessage(messageId: number) {
+    if (!messageId || messageId <= 0) {
+      return null
+    }
+
+    const result = await repository.deleteMessage({ messageId })
+
+    miniThread.value = {
+      ...miniThread.value,
+      messages: miniThread.value.messages.map(message =>
+        message.id === messageId
+          ? {
+              ...message,
+              text: "",
+              mediaUrl: "",
+              mediaName: "",
+              mediaType: undefined,
+              selectedReaction: null,
+              isDeleted: true,
+              deletedAt: result.deletedAt,
+              deletedTime: result.deletedTime,
+              deletedByName: result.deletedByName,
+            }
+          : message,
+      ),
+    }
+
+    return result
+  }
+
+  function onMiniFile(event: Event) {
+    const input = event.target as HTMLInputElement
+    miniAttachFile.value = input.files?.[0] ?? null
+    input.value = ""
+  }
+
+  function clearMiniFile() {
+    miniAttachFile.value = null
   }
 
   function onFile(event: Event) {
@@ -456,11 +691,7 @@ export function useChatWidgetVM() {
     }
 
     refreshTimer.value = window.setInterval(() => {
-      void refreshInboxSafely({ silent: true })
-
-      if (miniChatOpen.value) {
-        void refreshMiniThread({ silent: true })
-      }
+      void refreshFromIncomingMessage()
     }, INBOX_REFRESH_INTERVAL_MS)
   }
 
@@ -496,11 +727,7 @@ export function useChatWidgetVM() {
       })
 
       realtimeSocket.on("messages:count", () => {
-        void refreshInboxSafely({ silent: true })
-
-        if (miniChatOpen.value) {
-          void refreshMiniThread({ silent: true })
-        }
+        void refreshFromIncomingMessage()
       })
 
       realtimeSocket.on("disconnect", () => {
@@ -519,27 +746,37 @@ export function useChatWidgetVM() {
     }
   }
 
-  watch(sendTo, (value) => {
-    const currentTarget = selectedSendTarget.value
-
-    if (!currentTarget) {
-      return
-    }
-
-    if (normalizeKeyword(currentTarget.name) !== normalizeKeyword(value)) {
-      selectedSendTargetId.value = ""
-    }
-  })
-
-  watch(allContacts, (contacts) => {
+  watch([allContacts, messageTags], ([contacts, tagsPayload]) => {
     if (activeMiniContactId.value && !contacts.some(contact => contact.id === activeMiniContactId.value)) {
       closeMiniChat()
     }
 
-    if (selectedSendTargetId.value && !contacts.some(contact => contact.id === selectedSendTargetId.value)) {
-      clearSendTarget()
+    const availableUserIds = new Set(
+      [...contacts, ...(tagsPayload?.contacts ?? [])]
+        .map(contact => contact.userId ?? 0)
+        .filter(id => id > 0),
+    )
+    selectedSendRecipientIds.value = selectedSendRecipientIds.value.filter(id => availableUserIds.has(id))
+
+    if (!hasUnreadSnapshot.value && contacts.length > 0) {
+      updateUnreadSnapshot(contacts)
+      return
     }
+
+    const contactIds = new Set(contacts.map(contact => contact.id))
+    unreadSnapshot.value = new Map(
+      [...unreadSnapshot.value.entries()].filter(([contactId]) => contactIds.has(contactId)),
+    )
   })
+
+  watch([activeSendTagFilter, sendCandidates], async ([tagFilter]) => {
+    if (!tagFilter) {
+      return
+    }
+
+    await nextTick()
+    selectedSendRecipientIds.value = visibleSendRecipientIds.value
+  }, { flush: "post" })
 
   onMounted(() => {
     startRefreshTimer()
@@ -559,16 +796,21 @@ export function useChatWidgetVM() {
   return {
     activeTab,
     search,
+    activeSendTagFilter,
     sendTo,
     sendMessage,
     attachFile,
-    selectedSendTarget,
+    allVisibleSendRecipientsSelected,
     sendCandidates,
+    selectedSendRecipientIds,
+    selectedSendRecipients,
     filteredContacts,
     filteredGroups,
     onlineCount,
     miniChatOpen,
+    miniChatAutoOpenVersion,
     miniChatMessage,
+    miniAttachFile,
     activeMiniContact,
     miniMessages,
     isLoadingInbox,
@@ -579,12 +821,18 @@ export function useChatWidgetVM() {
     canSendMiniMessage,
     buildPresenceLabel,
     buildPreviewLabel,
-    selectSendTarget,
-    clearSendTarget,
+    messageTagLabels,
+    clearSendRecipients,
+    toggleAllVisibleSendRecipients,
+    toggleSendRecipient,
     openMiniChat,
     closeMiniChat,
     sendQuickMessage,
     sendMiniMessage,
+    reactToMiniMessage,
+    deleteMiniMessage,
+    onMiniFile,
+    clearMiniFile,
     onFile,
     clearFile,
     openFullMessages,

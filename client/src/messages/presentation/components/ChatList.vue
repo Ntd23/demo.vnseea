@@ -55,19 +55,23 @@
     </div>
 
     <!-- ── Multi-send composer panel ────────────────── -->
-    <div v-if="activeTab === 'multi'" class="shrink-0 border-b border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-4">
-      <div class="mb-3 flex items-center justify-between">
-        <span class="text-label-secondary">{{ $t("pages.messagesPage.composeTitle") }}</span>
-        <span class="rounded-full bg-white px-2.5 py-0.5 text-[11px] font-semibold text-[var(--text-secondary)] shadow-sm">
-          {{ selectedCountLabel }}
-        </span>
+    <div v-if="activeTab === 'multi'" class="cl-multi-panel">
+      <div class="cl-multi-header">
+        <div class="cl-multi-title">
+          <span class="cl-multi-title-icon">
+            <Icon name="i-ph-paper-plane-tilt-duotone" class="h-4 w-4" />
+          </span>
+          <span>{{ $t("pages.messagesPage.composeTitle") }}</span>
+        </div>
+        <span class="cl-selected-count">{{ selectedCountLabel }}</span>
       </div>
 
-      <div class="space-y-3">
-        <div>
-          <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
-            {{ tagFilterLabel }}
-          </label>
+      <div class="cl-multi-stack">
+        <section class="cl-filter-card">
+          <div class="cl-field-heading">
+            <Icon name="i-ph-tag-duotone" class="h-3.5 w-3.5" />
+            <span>{{ tagFilterLabel }}</span>
+          </div>
           <select
             class="cl-select"
             :value="activeTagFilter"
@@ -83,20 +87,68 @@
               {{ tag.name }}
             </option>
           </select>
-          <p v-if="activeTagFilter" class="mt-1.5 text-[11px] text-[var(--text-tertiary)]">
-            {{ tagFilterStatus }}
-          </p>
-        </div>
 
-        <div>
-          <label class="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--text-tertiary)]">
-            {{ $t("pages.messagesPage.sendTo") }}
-          </label>
-          <div class="min-h-[40px] rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white px-3 py-2.5 text-[var(--text-body)] text-sm text-[var(--text-primary)]">
-            <span v-if="selectedNamesList" class="font-medium">{{ selectedNamesList }}</span>
-            <span v-else class="text-[var(--text-tertiary)]">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
+          <div v-if="activeTagFilter" class="cl-tag-filter-status">
+            <div class="cl-avatar-stack" aria-hidden="true">
+              <UAvatar
+                v-for="recipient in selectedAvatarRecipients"
+                :key="recipient.id"
+                :src="recipient.avatarUrl"
+                :alt="recipient.name"
+                size="xs"
+                class="cl-stacked-avatar"
+              />
+              <span v-if="selectedOverflowCount > 0" class="cl-stacked-more">
+                +{{ selectedOverflowCount }}
+              </span>
+            </div>
+            <p>{{ tagFilterStatus }}</p>
           </div>
-        </div>
+        </section>
+
+        <section>
+          <div class="cl-recipient-heading">
+            <div class="cl-field-heading cl-field-heading--inline">
+              <Icon name="i-ph-users-three-duotone" class="h-3.5 w-3.5" />
+              <span>
+                {{ $t("pages.messagesPage.sendTo") }}
+              </span>
+            </div>
+            <label class="cl-select-all">
+              <input
+                type="checkbox"
+                :checked="allVisibleRecipientsSelected"
+                class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+                @change="emit('toggle-all-recipients')"
+              >
+              <span>{{ $t("pages.messagesPage.selectAll") }}</span>
+            </label>
+          </div>
+          <div class="cl-recipient-box" :class="{ 'cl-recipient-box--empty': selectedRecipients.length === 0 }">
+            <div v-if="selectedRecipients.length > 0" class="cl-recipient-chips">
+              <div
+                v-for="recipient in selectedPreviewRecipients"
+                :key="recipient.id"
+                class="cl-recipient-chip"
+              >
+                <UAvatar :src="recipient.avatarUrl" :alt="recipient.name" size="xs" />
+                <span>{{ recipient.name }}</span>
+                <button
+                  type="button"
+                  class="cl-recipient-remove"
+                  :title="$t('pages.messagesPage.remove')"
+                  @click.stop="emit('select-user', recipient)"
+                >
+                  <Icon name="i-ph-x-bold" class="h-2.5 w-2.5" />
+                </button>
+              </div>
+              <span v-if="selectedChipOverflowCount > 0" class="cl-recipient-chip cl-recipient-chip--more">
+                +{{ selectedChipOverflowCount }}
+              </span>
+            </div>
+            <span v-else class="cl-recipient-empty">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
+          </div>
+        </section>
 
         <UTextarea
           :model-value="multiText"
@@ -107,7 +159,7 @@
           @update:model-value="emit('update:multiText', String($event || ''))"
         />
 
-        <div class="rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white p-3">
+        <div class="cl-upload-box">
           <UFileUpload
             v-model="multiFileModel"
             :multiple="false"
@@ -117,29 +169,6 @@
             :description="$t('pages.messagesPage.attachmentOptional')"
             class="w-full"
           />
-        </div>
-
-        <div v-if="activeRecordDraft || isRecording" class="rounded-[var(--radius-md)] border border-[var(--border-light)] bg-white px-4 py-3">
-          <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <span class="h-2 w-2 rounded-full" :class="isRecording ? 'animate-pulse bg-rose-500' : 'bg-[var(--color-primary-500)]'" />
-              <div>
-                <p class="text-sm font-semibold text-[var(--text-primary)]">
-                  {{ isRecording ? $t('pages.messagesPage.recordingInProgress') : $t('pages.messagesPage.recordReady') }}
-                </p>
-                <p class="text-xs text-[var(--text-tertiary)]">{{ formattedRecordDuration }}</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <UButton v-if="isRecording" type="button" color="warning" variant="soft" icon="i-ph-stop-circle-duotone" class="rounded-full" size="sm" @click="stopRecordingDraft">
-                {{ $t("pages.messagesPage.stopRecording") }}
-              </UButton>
-              <UButton v-else-if="activeRecordDraft" type="button" color="neutral" variant="soft" icon="i-ph-trash-duotone" class="rounded-full" size="sm" @click="discardRecording">
-                {{ $t("pages.messagesPage.discardRecording") }}
-              </UButton>
-            </div>
-          </div>
-          <audio v-if="activeRecordDraft" :src="activeRecordDraft.previewUrl" class="mt-3 w-full" controls preload="none" />
         </div>
 
         <UAlert
@@ -152,34 +181,20 @@
           class="rounded-[var(--radius-md)]"
         />
 
-        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-[var(--border-light)] pt-3">
-          <label class="inline-flex cursor-pointer items-center gap-2 text-xs font-medium text-[var(--text-secondary)]">
-            <input
-              type="checkbox"
-              :checked="allVisibleRecipientsSelected"
-              class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
-              @change="emit('toggle-all-recipients')"
-            >
-            <span>{{ $t("pages.messagesPage.selectAll") }}</span>
-          </label>
+        <UAlert
+          v-if="statusMessage && statusTone !== 'success'"
+          :color="statusColor"
+          variant="subtle"
+          :description="statusMessage"
+          class="rounded-[var(--radius-md)]"
+        />
+
+        <div class="cl-multi-actions">
           <div class="flex items-center gap-2">
-            <UTooltip :text="isRecording ? $t('pages.messagesPage.stopRecording') : $t('pages.messagesPage.startRecording')">
-              <UButton
-                type="button"
-                color="neutral"
-                :variant="isRecording ? 'solid' : 'soft'"
-                :icon="isRecording ? 'i-ph-stop-circle-duotone' : 'i-ph-microphone-duotone'"
-                class="rounded-full"
-                size="sm"
-                :disabled="multiPending || !isSupported"
-                @click="handleRecordButton"
-              />
-            </UTooltip>
             <UButton
               type="button"
-              color="primary"
               icon="i-ph-paper-plane-tilt-bold"
-              class="rounded-full px-4"
+              class="rounded-full px-4 btn-primary"
               size="sm"
               :loading="multiPending"
               :disabled="multiPending || !canSendMulti"
@@ -189,24 +204,7 @@
             </UButton>
           </div>
         </div>
-
-        <UAlert
-          v-if="statusMessage"
-          :color="statusColor"
-          variant="subtle"
-          :description="statusMessage"
-          class="rounded-[var(--radius-md)]"
-        />
       </div>
-    </div>
-
-    <!-- ── Contacts header ───────────────────────── -->
-    <div class="flex items-center justify-between px-4 py-2.5">
-      <span class="text-[11px] font-bold uppercase tracking-[0.07em] text-[var(--text-tertiary)]">{{ resultLabel }}</span>
-      <span class="text-[11px] font-semibold text-[var(--text-tertiary)]">
-        <span v-if="pending" class="animate-pulse">{{ loadingLabel }}</span>
-        <span v-else>{{ contacts.length }}</span>
-      </span>
     </div>
 
     <!-- ── Contact list ──────────────────────────── -->
@@ -356,9 +354,10 @@ const emptyLabel = computed(() =>
 const selectedCountLabel = computed(() =>
   t("pages.messagesPage.selectedRecipientsCount", { count: props.selectedRecipients.length }),
 )
-const selectedNamesList = computed(() =>
-  props.selectedRecipients.map(c => c.name).join(", "),
-)
+const selectedAvatarRecipients = computed(() => props.selectedRecipients.slice(0, 5))
+const selectedOverflowCount = computed(() => Math.max(props.selectedRecipients.length - selectedAvatarRecipients.value.length, 0))
+const selectedPreviewRecipients = computed(() => props.selectedRecipients.slice(0, 10))
+const selectedChipOverflowCount = computed(() => Math.max(props.selectedRecipients.length - selectedPreviewRecipients.value.length, 0))
 const tagFilterStatus = computed(() => {
   if (!props.activeTagFilter) return ""
   const label = props.activeTagFilter === "0"
@@ -490,6 +489,265 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px var(--border-light);
 }
 
+.cl-multi-panel {
+  display: flex;
+  max-height: min(620px, calc(100% - 118px));
+  min-height: 0;
+  flex: 0 1 auto;
+  flex-direction: column;
+  border-bottom: 1px solid var(--border-light);
+  background: #f8fafc;
+  padding: 14px 16px 0;
+}
+
+.cl-multi-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cl-multi-title {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.cl-multi-title-icon {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: rgba(0, 0, 255, 0.06);
+  color: var(--color-primary-600);
+}
+
+.cl-selected-count {
+  display: inline-flex;
+  min-height: 24px;
+  flex-shrink: 0;
+  align-items: center;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 3px 9px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.cl-multi-stack {
+  display: grid;
+  gap: 12px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: 16px;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.cl-multi-stack::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cl-multi-stack::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.cl-filter-card,
+.cl-recipient-box,
+.cl-upload-box {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+}
+
+.cl-filter-card {
+  padding: 11px;
+}
+
+.cl-field-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cl-field-heading--inline {
+  margin-bottom: 0;
+}
+
+.cl-recipient-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.cl-select-all {
+  display: inline-flex;
+  flex-shrink: 0;
+  cursor: pointer;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.cl-tag-filter-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  margin-top: 10px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.cl-tag-filter-status p {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cl-avatar-stack {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  padding-left: 6px;
+}
+
+.cl-stacked-avatar,
+.cl-stacked-more {
+  margin-left: -6px;
+  box-shadow: 0 0 0 2px #ffffff;
+}
+
+.cl-stacked-more {
+  display: inline-flex;
+  min-width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: var(--color-primary-600);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.cl-recipient-box {
+  min-height: 48px;
+  padding: 8px;
+}
+
+.cl-recipient-box--empty {
+  display: flex;
+  align-items: center;
+  border-style: dashed;
+  background: #fafbfe;
+  padding: 11px 12px;
+}
+
+.cl-recipient-chips {
+  display: flex;
+  max-height: 88px;
+  flex-wrap: wrap;
+  gap: 6px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.cl-recipient-chip {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(0, 0, 255, 0.08);
+  border-radius: 999px;
+  background: rgba(0, 0, 255, 0.04);
+  padding: 3px 8px 3px 3px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.cl-recipient-chip span:not(.cl-recipient-chip--more) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cl-recipient-remove {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  color: var(--text-tertiary);
+  transition: all 0.15s ease;
+}
+
+.cl-recipient-remove:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.cl-recipient-chip--more {
+  padding: 5px 9px;
+  background: #f1f5f9;
+  color: var(--text-tertiary);
+}
+
+.cl-recipient-empty {
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.cl-upload-box {
+  padding: 11px;
+}
+
+.cl-multi-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: end;
+  gap: 12px;
+  border-top: 1px solid var(--border-light);
+  background: #f8fafc;
+  padding: 12px 0 14px;
+}
+
 /* Select */
 .cl-select {
   width: 100%;
@@ -497,7 +755,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   padding: 0 12px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
-  background: var(--bg-surface);
+  background: #fafbfe;
   color: var(--text-primary);
   font-size: var(--text-body);
   font-family: var(--font-primary);
