@@ -6,12 +6,14 @@ import type {
   LiveStudioBootstrap,
   LiveStudioHeartbeat,
   LiveStudioSession,
+  LiveViewerSession,
 } from "../types/live.types"
 
 export interface LiveRepository {
   getBootstrap(): Promise<LiveStudioBootstrap>
   createSession(input: GoLiveDraft): Promise<LiveStudioSession>
-  getHeartbeat(postId: number, knownCommentIds?: number[]): Promise<LiveStudioHeartbeat>
+  joinViewer(postId: number): Promise<LiveViewerSession>
+  getHeartbeat(postId: number, knownCommentIds?: number[], page?: "live" | "story", knownReactionIds?: number[]): Promise<LiveStudioHeartbeat>
   endSession(postId: number): Promise<LiveMutationResult>
   uploadThumbnail(postId: number, thumbnailFile: File): Promise<LiveMutationResult>
 }

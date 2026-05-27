@@ -44,6 +44,16 @@ export type LiveStudioSession = {
   privacy: string
 }
 
+export type LiveViewerSession = {
+  postId: number
+  streamName: string
+  roomName: string
+  wsUrl: string
+  token: string
+  streamState: LiveStudioState
+  heartbeatAge: number
+}
+
 export type LiveStudioComment = {
   id: number
   author: string
@@ -55,12 +65,21 @@ export type LiveStudioComment = {
   isHost: boolean
 }
 
+export type LiveStudioReactionEvent = {
+  id: number
+  value: string
+  author: string
+  username: string
+  avatarUrl: string
+}
+
 export type LiveStudioHeartbeat = {
   stillLive: LiveStudioState
   viewerCount: number
   comments: LiveStudioComment[]
   joinedUsers: LiveStudioComment[]
   leftUsers: LiveStudioComment[]
+  reactionEvents: LiveStudioReactionEvent[]
   reactionsCount: number
   sharesCount: number
   clipsCount: number

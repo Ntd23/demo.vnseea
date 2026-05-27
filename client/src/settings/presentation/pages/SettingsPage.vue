@@ -31,14 +31,16 @@
           :user="user"
           :on-exchange="exchangePoints"
         />
-        <SettingsSection
-          v-else
-          v-for="section in activePage.sections"
-          :key="section.title"
-          :section="section"
-          :on-save="fields => updateSettings(activePage.slug, fields)"
-          :on-action="handleItemAction"
-        />
+        <template v-else>
+          <SettingsSection
+            v-for="section in activePage.sections"
+            :key="section.title"
+            :section="section"
+            :on-save="fields => updateSettings(activePage.slug, fields)"
+            :on-action="handleItemAction"
+          />
+          <NavigationLocaleSwitcher v-if="activePage.slug === 'general'" />
+        </template>
       </main>
     </div>
   </div>
@@ -50,6 +52,7 @@ import SettingsHero from "../components/SettingsHero.vue"
 import SettingsMyPointsPanel from "../components/SettingsMyPointsPanel.vue"
 import SettingsSection from "../components/SettingsSection.vue"
 import SettingsSidebar from "../components/SettingsSidebar.vue"
+import NavigationLocaleSwitcher from "../../../navigation/presentation/components/LocaleSwitcher.vue"
 
 const props = defineProps<{
   pageSlug?: string

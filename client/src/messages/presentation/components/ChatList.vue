@@ -217,8 +217,8 @@
           :key="contact.id"
           :avatar-url="contact.avatarUrl"
           :is-active="isContactActive(contact)"
-          :is-typing="activeTab === 'user' && isContactTyping(contact)"
-          :is-online="contact.isOnline"
+          :is-typing="activeTab !== 'multi' && isContactTyping(contact)"
+          :is-online="isContactOnline(contact)"
           :name="contact.name"
           :preview="contact.preview"
           :show-select="activeTab === 'multi'"
@@ -233,8 +233,32 @@
           @open-chat="emit('open-chat', contact)"
         />
 
-        <div v-if="pending" class="space-y-1.5 px-1 pt-1">
-          <USkeleton v-for="i in 4" :key="i" class="h-[68px] rounded-[var(--radius-md)]" />
+        <div v-if="pending && contacts.length === 0" class="space-y-0.5" aria-hidden="true">
+          <div
+            v-for="i in skeletonRowCount"
+            :key="i"
+            class="cl-skeleton-item"
+            :class="{ 'cl-skeleton-item--active': i === 1 }"
+          >
+            <div class="cl-skeleton-avatar">
+              <USkeleton class="cl-skeleton-avatar-shape" />
+              <span v-if="activeTab !== 'group' && i === 1" class="cl-skeleton-online-dot" />
+            </div>
+            <div class="cl-skeleton-body">
+              <div class="cl-skeleton-row cl-skeleton-row--top">
+                <USkeleton class="cl-skeleton-name" :class="{ 'cl-skeleton-name--wide': i % 3 === 0 }" />
+                <USkeleton class="cl-skeleton-time" />
+              </div>
+              <USkeleton class="cl-skeleton-status" :class="{ 'cl-skeleton-status--group': activeTab === 'group' }" />
+              <div class="cl-skeleton-row cl-skeleton-row--bottom">
+                <USkeleton class="cl-skeleton-preview" :class="{ 'cl-skeleton-preview--wide': i % 2 === 0 }" />
+              </div>
+              <div class="cl-skeleton-tags-row">
+                <USkeleton class="cl-skeleton-tag" />
+                <USkeleton v-if="activeTab === 'user' && i === 3" class="cl-skeleton-color-tag" />
+              </div>
+            </div>
+          </div>
         </div>
 
         <div
@@ -262,6 +286,7 @@ const props = defineProps<{
   activeTagFilter?: string
   allVisibleRecipientsSelected?: boolean
   contacts: MessageContact[]
+  isContactOnline?: (contact: MessageContact) => boolean
   isContactTyping: (contact: MessageContact) => boolean
   messageTagLabels?: MessageUserTag[]
   pending?: boolean
@@ -313,6 +338,7 @@ watch(() => multiRecordModel.value, (draft) => {
 const markAllLabel = computed(() => t("pages.messagesPage.markAllRead"))
 const createGroupLabel = computed(() => t("pages.messagesPage.newGroupChat"))
 const loadingLabel = computed(() => t("pages.messagesPage.loadingConversations"))
+const skeletonRowCount = computed(() => props.activeTab === "group" ? 5 : 7)
 const tagFilterLabel = computed(() => t("pages.messagesPage.label"))
 const chooseTagLabel = computed(() => t("pages.messagesPage.chooseTag"))
 const allTaggedUsersLabel = computed(() => t("pages.messagesPage.allTaggedUsers"))
@@ -364,10 +390,14 @@ function isContactActive(contact: MessageContact) {
   return props.selectedContactId === contact.id
 }
 
+function isContactOnline(contact: MessageContact) {
+  return props.isContactOnline?.(contact) ?? contact.isOnline
+}
+
 function getContactStatus(contact: MessageContact) {
   if (contact.type === "group" && contact.memberCount)
     return t("pages.messagesPage.groupMembersStatus", { count: contact.memberCount })
-  if (contact.type === "user" && contact.isOnline)
+  if (contact.type === "user" && isContactOnline(contact))
     return t("pages.messagesPage.activeNow")
   return contact.status || t("pages.messagesPage.activeRecently")
 }
@@ -476,4 +506,127 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   transition: border-color var(--duration-fast);
 }
 .cl-select:focus { border-color: var(--border-strong); }
+
+.cl-skeleton-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  min-height: 92px;
+}
+
+.cl-skeleton-item--active {
+  border-color: #dbe3ff;
+  background: #f6f8ff;
+}
+
+.cl-skeleton-avatar {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+}
+
+.cl-skeleton-avatar-shape {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 999px !important;
+  background: #e8edf4 !important;
+}
+
+.cl-skeleton-online-dot {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+  background: #3b82c4;
+}
+
+.cl-skeleton-body {
+  min-width: 0;
+  flex: 1;
+  padding-top: 1px;
+}
+
+.cl-skeleton-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cl-skeleton-row--bottom {
+  margin-top: 7px;
+  align-items: center;
+}
+
+.cl-skeleton-name {
+  width: 96px;
+  height: 19px;
+  border-radius: 999px;
+  background: #dfe5ee !important;
+}
+
+.cl-skeleton-name--wide {
+  width: 118px;
+}
+
+.cl-skeleton-time {
+  width: 46px;
+  height: 14px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #e8edf4 !important;
+}
+
+.cl-skeleton-status {
+  width: 112px;
+  height: 14px;
+  margin-top: 7px;
+  border-radius: 999px;
+  background: #e8edf4 !important;
+}
+
+.cl-skeleton-status--group {
+  width: 92px;
+}
+
+.cl-skeleton-preview {
+  width: 170px;
+  height: 17px;
+  border-radius: 999px;
+  background: #e8edf4 !important;
+}
+
+.cl-skeleton-preview--wide {
+  width: 220px;
+}
+
+.cl-skeleton-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.cl-skeleton-tag {
+  width: 28px;
+  height: 20px;
+  border-radius: 999px;
+  background: #e8edf4 !important;
+}
+
+.cl-skeleton-color-tag {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  background: #fde68a !important;
+}
 </style>

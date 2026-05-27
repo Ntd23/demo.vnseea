@@ -89,7 +89,7 @@ const props = withDefaults(defineProps<{
 })
 
 const sort = ref<"top" | "newest">("top")
-const initialVisibleCount = 10
+const initialVisibleCount = 5
 const visibleCount = ref(initialVisibleCount)
 
 watch(
@@ -112,7 +112,7 @@ const visibleComments = computed(() =>
 )
 
 function loadMoreComments() {
-  visibleCount.value = Math.min(visibleCount.value + 5, sortedComments.value.length)
+  visibleCount.value = Math.min(visibleCount.value + 10, sortedComments.value.length)
 }
 </script>
 

@@ -64,6 +64,9 @@ export default defineNuxtConfig({
   features: {
     inlineStyles: true,
   },
+  ui: {
+    content: true,
+  },
   colorMode: {
     preference: "light",
     fallback: "light",

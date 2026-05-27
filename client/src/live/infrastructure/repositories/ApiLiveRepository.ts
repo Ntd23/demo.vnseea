@@ -9,6 +9,7 @@ import type {
   LiveStudioBootstrap,
   LiveStudioHeartbeat,
   LiveStudioSession,
+  LiveViewerSession,
 } from "../../domain/types/live.types"
 
 export function createApiLiveRepository(): LiveRepository {
@@ -26,15 +27,31 @@ export function createApiLiveRepository(): LiveRepository {
       )
     },
 
-    async getHeartbeat(postId: number, knownCommentIds: number[] = []) {
+    async joinViewer(postId: number) {
+      return await client.post<LiveViewerSession, { postId: number }>(
+        liveApiRoutes.join,
+        { postId },
+      )
+    },
+
+    async getHeartbeat(
+      postId: number,
+      knownCommentIds: number[] = [],
+      page: "live" | "story" = "live",
+      knownReactionIds: number[] = [],
+    ) {
       return await client.post<LiveStudioHeartbeat, {
         postId: number
         knownCommentIds: number[]
+        knownReactionIds: number[]
+        page: "live" | "story"
       }>(
         liveApiRoutes.heartbeat,
         {
           postId,
           knownCommentIds,
+          knownReactionIds,
+          page,
         },
       )
     },

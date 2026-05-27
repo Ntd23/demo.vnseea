@@ -22,8 +22,10 @@ import type {
 
 const MESSAGES_API = {
   createGroup: apiRoutes.messages.groupCreate,
+  updateGroup: apiRoutes.messages.groupUpdate,
   deleteConversation: "messages/delete",
   markAllAsRead: "messages/read",
+  presence: apiRoutes.messages.presence,
   tags: "messages/tags",
 } as const
 
@@ -187,6 +189,33 @@ export function createApiMessagesRepository(): MessagesRepository {
         },
       )
     },
+    async setGroupTyping(groupId) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(
+        apiRoutes.messages.groupTyping,
+        {
+          action: "start",
+          groupId,
+        },
+      )
+    },
+    async clearGroupTyping(groupId) {
+      return await client.post<MessageActionResult, Record<string, unknown>>(
+        apiRoutes.messages.groupTyping,
+        {
+          action: "stop",
+          groupId,
+        },
+      )
+    },
+    async getGroupTyping(groupId) {
+      return await client.post<MessageTypingState, Record<string, unknown>>(
+        apiRoutes.messages.groupTyping,
+        {
+          action: "status",
+          groupId,
+        },
+      )
+    },
     async getRealtimeToken() {
       return await client.get<MessageRealtimeToken>("realtime/token")
     },
@@ -219,6 +248,9 @@ export function createApiMessagesRepository(): MessagesRepository {
     },
     async markAllAsRead() {
       return await client.post<MessageActionResult>(MESSAGES_API.markAllAsRead)
+    },
+    async markPresenceOnline() {
+      return await client.post<MessageActionResult>(MESSAGES_API.presence)
     },
     async deleteConversation(contact) {
       return await client.post<MessageActionResult, Record<string, unknown>>(
@@ -289,6 +321,34 @@ export function createApiMessagesRepository(): MessagesRepository {
         {
           name: input.name,
           recipientIds,
+        },
+      )
+    },
+    async updateGroup(input) {
+      const name = input.name?.trim() || ""
+
+      if (input.avatar) {
+        const formData = new FormData()
+
+        formData.append("groupId", String(input.groupId))
+
+        if (name) {
+          formData.append("name", name)
+        }
+
+        formData.append("avatar", input.avatar, input.avatar.name)
+
+        return await client.post<MessageActionResult, FormData>(
+          MESSAGES_API.updateGroup,
+          formData,
+        )
+      }
+
+      return await client.post<MessageActionResult, Record<string, unknown>>(
+        MESSAGES_API.updateGroup,
+        {
+          groupId: input.groupId,
+          name,
         },
       )
     },

@@ -25,7 +25,7 @@
 
         <!-- Right actions -->
         <div class="ml-auto flex shrink-0 items-center gap-2">
-          <NavigationLocaleSwitcher compact />
+
 
           <div class="notification-popover-root">
             <button
@@ -132,7 +132,7 @@
 
         <!-- RIGHT GROUP: Locale + Avatar -->
         <div class="mobile-bar__group">
-          <NavigationLocaleSwitcher compact />
+
 
           <NuxtLink
             :to="appRoutes.messages"
@@ -235,7 +235,6 @@ import { useNavigationRequestsStore } from "../../application/stores/useNavigati
 import NavigationHeaderSearchInput from './HeaderSearchInput.vue'
 import HeaderRequestsDropdown from "./HeaderRequestsDropdown.vue"
 import NavigationHeaderUserMenu from './HeaderUserMenu.vue'
-import NavigationLocaleSwitcher from './LocaleSwitcher.vue'
 import NavigationMobileMenu from './MobileMenu.vue'
 
 const currentAuthUserStore = useCurrentAuthUserStore()

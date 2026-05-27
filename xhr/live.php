@@ -266,6 +266,7 @@ if ($f == 'live') {
                     $shares_count = intval(Wo_CountShares($post_id)) + intval(Wo_CountPostShare($post_id));
                     $clips_count = 0;
                     $structured_comments = array();
+                    $structured_reactions = array();
                     $joined_payload = array();
                     $left_payload = array();
                     if (isset($post_data['clips_count'])) {
@@ -277,6 +278,33 @@ if ($f == 'live') {
                     $html_count = 0;
                     $viewer_count = 0;
                     if (intval(!empty($post_data['live_ended']) ? $post_data['live_ended'] : 0) == 0) {
+                        if (!empty($_POST['reaction_ids'])) {
+                            $reaction_ids = array();
+                            foreach ($_POST['reaction_ids'] as $key => $one_id) {
+                                if (is_numeric($one_id) && intval($one_id) > 0) {
+                                    $reaction_ids[] = Wo_Secure($one_id);
+                                }
+                            }
+                            if (!empty($reaction_ids)) {
+                                $db->where('id', $reaction_ids, 'NOT IN')->where('id', end($reaction_ids), '>');
+                            }
+                        }
+                        $live_reactions = $db->where('post_id', $post_id)->orderBy('id', 'DESC')->get(T_REACTIONS, 8);
+                        if (!empty($live_reactions)) {
+                            $live_reactions = array_reverse($live_reactions);
+                            foreach ($live_reactions as $reaction_row) {
+                                $reaction_user = Wo_UserData($reaction_row->user_id);
+                                if (!empty($reaction_user)) {
+                                    $structured_reactions[] = array(
+                                        'id' => intval($reaction_row->id),
+                                        'value' => !empty($reaction_row->reaction) ? strval($reaction_row->reaction) : '',
+                                        'author' => !empty($reaction_user['name']) ? $reaction_user['name'] : '',
+                                        'username' => !empty($reaction_user['username']) ? $reaction_user['username'] : '',
+                                        'avatar' => !empty($reaction_user['avatar']) ? $reaction_user['avatar'] : ''
+                                    );
+                                }
+                            }
+                        }
                         $user_comment_row = $db->where('post_id', $post_id)->where('user_id', $wo['user']['id'])->getOne(T_COMMENTS);
                         $user_comment = is_object($user_comment_row) ? (array) $user_comment_row : (is_array($user_comment_row) ? $user_comment_row : array());
                     if (!empty($user_comment)) {
@@ -390,6 +418,7 @@ if ($f == 'live') {
                         'shares_count' => $shares_count,
                         'clips_count' => $clips_count,
                         'comments' => $structured_comments,
+                        'reactions' => $structured_reactions,
                         'joined' => $joined_payload,
                         'left' => $left_payload
                     );
@@ -434,6 +463,7 @@ if ($f == 'live') {
                         'clips_count' => $clips_count,
                         'viewer_count' => 0,
                         'comments' => array(),
+                        'reactions' => array(),
                         'joined' => array(),
                         'left' => array()
                     );

@@ -20,10 +20,17 @@
               type="button"
               @click="handleToggleInfo"
             >
-              <div class="relative shrink-0">
+              <UChip
+                :show="contact.type === 'user' ? contact.isOnline : groupHasActiveMember"
+                position="bottom-right"
+                color="success"
+                :ui="{ base: '!bg-emerald-500' }"
+                inset
+                class="shrink-0"
+              >
                 <div
                   v-if="contact.type === 'group' && !headerAvatarUrl"
-                  class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-primary-50 text-primary-600"
+                  class="flex h-11 w-11 items-center justify-center rounded-full bg-primary-50 text-primary-600"
                 >
                   <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
                 </div>
@@ -31,14 +38,9 @@
                   v-else
                   :src="headerAvatarUrl"
                   size="lg"
-                  class="rounded-[16px]"
+                  class="rounded-full"
                 />
-                <span
-                  v-if="contact.type === 'user'"
-                  class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white"
-                  :class="contact.isOnline ? 'bg-emerald-500' : 'bg-slate-300'"
-                />
-              </div>
+              </UChip>
 
               <div class="min-w-0">
                 <h3 class="truncate text-[16px] font-semibold text-[var(--text-primary)]">
@@ -51,57 +53,91 @@
             </button>
           </div>
 
-          <!-- Right Action Buttons (Audio call, Video call, Info, Trash) -->
-          <div class="chat-window__header-actions">
-            <!-- Audio Call -->
-            <button
-              class="chat-window__action-btn"
-              type="button"
-              :disabled="contact.type !== 'user'"
-              :title="$t('pages.messagesPage.audioCall') || 'Bắt đầu cuộc gọi thoại'"
-              @click="onCall('audio')"
-            >
-              <Icon name="i-ph-phone-bold" class="chat-window__action-btn-icon" />
-            </button>
+          <div class="flex items-center gap-2">
+            <template v-if="contact.type === 'user'">
+              <UTooltip :text="$t('pages.messagesPage.call')">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-ph-phone-bold"
+                  class="h-10 w-10 justify-center rounded-full"
+                  :loading="callActionPending"
+                  :disabled="callActionPending"
+                  @click="handleStartCall('audio')"
+                />
+              </UTooltip>
 
-            <!-- Video Call -->
-            <button
-              class="chat-window__action-btn"
-              type="button"
-              :disabled="contact.type !== 'user'"
-              :title="$t('pages.messagesPage.videoCall') || 'Bắt đầu cuộc gọi video'"
-              @click="onCall('video')"
-            >
-              <Icon name="i-ph-video-camera-bold" class="chat-window__action-btn-icon" />
-            </button>
+              <UTooltip :text="$t('pages.messagesPage.video')">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-ph-video-camera-bold"
+                  class="h-10 w-10 justify-center rounded-full"
+                  :loading="callActionPending"
+                  :disabled="callActionPending"
+                  @click="handleStartCall('video')"
+                />
+              </UTooltip>
+            </template>
+            <template v-else-if="contact.type === 'group'">
+              <UTooltip :text="$t('pages.messagesPage.groupAudioCall')">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-ph-phone-bold"
+                  class="h-10 w-10 justify-center rounded-full"
+                  :loading="callActionPending"
+                  :disabled="callActionPending"
+                  @click="handleStartCall('audio')"
+                />
+              </UTooltip>
 
-            <!-- Info Panel Trigger -->
-            <button
-              class="chat-window__action-btn"
-              type="button"
-              :title="$t('pages.messagesPage.info') || 'Thông tin'"
-              @click="$emit('toggle-info')"
-            >
-              <Icon name="i-ph-info-bold" class="chat-window__action-btn-icon" />
-            </button>
+              <UTooltip :text="$t('pages.messagesPage.groupVideoCall')">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  icon="i-ph-video-camera-bold"
+                  class="h-10 w-10 justify-center rounded-full"
+                  :loading="callActionPending"
+                  :disabled="callActionPending"
+                  @click="handleStartCall('video')"
+                />
+              </UTooltip>
+            </template>
 
-            <!-- Delete/Trash Conversation -->
-            <button
-              class="chat-window__action-btn chat-window__action-btn--danger"
-              type="button"
-              :disabled="deletingConversation"
-              :title="$t('pages.messagesPage.deleteConversation') || 'Xóa cuộc trò chuyện'"
-              @click="$emit('delete-conversation')"
-            >
-              <Icon v-if="!deletingConversation" name="i-ph-trash-bold" class="chat-window__action-btn-icon" />
-              <Icon v-else name="i-ph-spinner-gap-bold" class="chat-window__action-btn-icon animate-spin" />
-            </button>
+            <UTooltip :text="$t('pages.messagesPage.info')">
+              <UButton
+                type="button"
+                color="neutral"
+                variant="ghost"
+                icon="i-ph-info-bold"
+                class="h-10 w-10 justify-center rounded-full"
+                :class="userDetailDocked && contact.type === 'user' ? 'xl:hidden' : ''"
+                @click="handleToggleInfo"
+              />
+            </UTooltip>
+
+            <UTooltip :text="$t('pages.messagesPage.deleteConversation')">
+              <UButton
+                type="button"
+                color="error"
+                variant="ghost"
+                :icon="deletingConversation ? 'i-ph-spinner-gap-bold' : 'i-ph-trash-bold'"
+                class="h-10 w-10 justify-center rounded-full"
+                :loading="deletingConversation"
+                @click="$emit('delete-conversation')"
+              />
+            </UTooltip>
           </div>
         </div>
       </div>
 
       <MessagesChatMessageList
-        :contact-avatar="contact.avatarUrl"
+        :contact-avatar="typingAvatarUrl"
         :contact-type="contact.type"
         :empty-label="emptyThreadLabel"
         :is-pending="isPending"
@@ -109,16 +145,42 @@
         :loading-label="loadingLabel"
         :messages="messages"
         @load-more="$emit('load-more')"
+        @retry-call="$emit('start-call', $event)"
       />
 
       <MessagesChatInput
         v-model="inputModel"
-        :disabled="isPending || !contact"
+        :disabled="!contact"
         @typing-start="$emit('typing-start')"
         @typing-stop="$emit('typing-stop')"
         @send="onSendMessage"
       />
     </template>
+
+    <div v-else-if="inboxPending" class="flex min-h-0 flex-1 flex-col bg-white">
+      <div class="border-b border-[var(--border-light)] bg-[#fcfdff] px-4 py-4 sm:px-6">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex min-w-0 flex-1 items-center gap-3">
+            <USkeleton class="chat-window-header-skeleton__avatar" />
+            <div class="chat-window-header-skeleton__copy">
+              <USkeleton class="chat-window-header-skeleton__title" />
+              <USkeleton class="chat-window-header-skeleton__status" />
+            </div>
+          </div>
+          <div class="chat-window-header-skeleton__actions">
+            <USkeleton v-for="i in 4" :key="i" class="chat-window-header-skeleton__icon" />
+          </div>
+        </div>
+      </div>
+
+      <MessagesChatMessageList
+        contact-type="user"
+        :empty-label="emptyThreadLabel"
+        :is-pending="true"
+        :loading-label="loadingLabel"
+        :messages="[]"
+      />
+    </div>
 
     <div v-else class="flex flex-1 items-center justify-center p-6 sm:p-10">
       <div class="max-w-[520px] text-center">
@@ -146,8 +208,9 @@
 </template>
 
 <script setup lang="ts">
-import type { MessageCallType } from "../../domain/types/calls.types"
-import type { MessageContact, MessageItem, MessageTabKey } from "../../domain/types/messages.types"
+import { computed, ref } from "vue"
+import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
+import type { MessageComposerDraft, MessageContact, MessageGroupDetails, MessageItem, MessageTabKey } from "../../domain/types/messages.types"
 import MessagesChatInput from "./ChatInput.vue"
 import MessagesChatMessageList from "./ChatMessageList.vue"
 
@@ -155,13 +218,16 @@ const props = defineProps<{
   activeTab: MessageTabKey
   contact?: MessageContact | null
   groupDetails?: MessageGroupDetails | null
+  groupTypingAvatarUrl?: string
   emptyDescription: string
   emptyThreadLabel: string
   emptyTitle: string
   isPending?: boolean
+  inboxPending?: boolean
   messages: MessageItem[]
   isTyping?: boolean
   deletingConversation?: boolean
+  callActionPending?: boolean
   userDetailDocked?: boolean
 }>()
 
@@ -175,13 +241,19 @@ const emit = defineEmits<{
   "back": []
   "typing-start": []
   "typing-stop": []
-  "start-call": [type: MessageCallType]
+  "start-call": [payload: MessageCallType | MessageCallLogAction]
 }>()
 
 const inputModel = ref("")
 
 const headerAvatarUrl = computed(() =>
   props.groupDetails?.avatarUrl || props.contact?.avatarUrl || "",
+)
+
+const typingAvatarUrl = computed(() =>
+  props.contact?.type === "group"
+    ? props.groupTypingAvatarUrl || ""
+    : headerAvatarUrl.value,
 )
 
 const headerName = computed(() =>
@@ -196,9 +268,13 @@ const contactStatus = computed(() => {
   }
 
   if (contact.type === "group") {
-    return t("pages.messagesPage.groupMembersStatus", {
-      count: props.groupDetails?.memberCount ?? contact.memberCount ?? 0,
-    })
+    const count = props.groupDetails?.memberCount ?? contact.memberCount ?? 0
+    const onlineCount = groupOnlineMemberCount.value
+    const memberStatus = t("pages.messagesPage.groupMembersStatus", { count })
+
+    return onlineCount > 0
+      ? `${memberStatus}, ${onlineCount} đang hoạt động`
+      : memberStatus
   }
 
   if (contact.isOnline) {
@@ -208,6 +284,18 @@ const contactStatus = computed(() => {
   return contact.status || t("pages.messagesPage.activeRecently")
 })
 
+const groupHasActiveMember = computed(() =>
+  props.contact?.type === "group"
+  && Boolean(
+    groupOnlineMemberCount.value > 0
+    || props.contact.isOnline,
+  ),
+)
+
+const groupOnlineMemberCount = computed(() =>
+  props.groupDetails?.members.filter(member => !member.isSelf && member.isOnline).length ?? 0,
+)
+
 const loadingLabel = computed(() => t("pages.messagesPage.loadingMessages"))
 
 function onSendMessage(input: MessageComposerDraft) {
@@ -216,9 +304,57 @@ function onSendMessage(input: MessageComposerDraft) {
 
 function handleToggleInfo() {
   emit("toggle-info")
-function onCall(type: MessageCallType) {
-  const contact = props.contact
-  if (!contact?.userId || contact.type !== "user") return
+}
+
+function handleStartCall(type: MessageCallType) {
+  if (!props.contact || (props.contact.type === "user" && !props.contact.userId) || (props.contact.type === "group" && !props.contact.groupId)) {
+    return
+  }
+
   emit("start-call", type)
 }
 </script>
+
+<style scoped>
+.chat-window-header-skeleton__avatar {
+  width: 44px !important;
+  height: 44px !important;
+  flex: 0 0 44px;
+  border-radius: 999px !important;
+  background: #e8edf4 !important;
+}
+
+.chat-window-header-skeleton__copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-window-header-skeleton__title {
+  width: 158px !important;
+  height: 18px !important;
+  border-radius: 999px !important;
+  background: #dfe5ee !important;
+}
+
+.chat-window-header-skeleton__status {
+  width: 122px !important;
+  height: 14px !important;
+  margin-top: 7px;
+  border-radius: 999px !important;
+  background: #e8edf4 !important;
+}
+
+.chat-window-header-skeleton__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.chat-window-header-skeleton__icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 999px !important;
+  background: #e8edf4 !important;
+}
+</style>

@@ -79,7 +79,21 @@
         </div>
       </NuxtLink>
 
-      <FeedPostMediaGrid v-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
+      <ClientOnly v-if="post.isLive">
+        <FeedLivePostPlayer
+          :post-id="post.id"
+          :initial-state="post.liveState"
+          :initial-viewer-count="post.liveViewerCount"
+          :author-user-id="post.authorId"
+          :author="post.author"
+          :author-avatar-url="post.authorAvatarUrl"
+          @react="reactToPost"
+          @comment="openComments"
+          @share="showShare = true"
+        />
+      </ClientOnly>
+
+      <FeedPostMediaGrid v-else-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
 
       <div class="post-card__stats">
         <div v-if="hasReactions" class="post-card__stats-left">
@@ -190,11 +204,11 @@
       </div>
 
       <UAlert
-        v-if="actionState !== 'idle' && actionMessage"
+        v-if="actionState === 'error' && actionMessage"
         class="mt-3 rounded-2xl"
-        :color="actionState === 'error' ? 'warning' : 'success'"
+        color="warning"
         variant="subtle"
-        :icon="actionState === 'error' ? 'i-ph-warning-circle-fill' : 'i-ph-check-circle-fill'"
+        icon="i-ph-warning-circle-fill"
         :description="actionMessage"
       />
 
@@ -286,6 +300,7 @@ import type { FeedPostRecord } from "../../domain/types/feed.types"
 import FeedCommentComposer from "./CommentComposer.vue"
 import FeedCommentList from "./CommentList.vue"
 import FeedLightboxViewer from "./LightboxViewer.vue"
+import FeedLivePostPlayer from "./LivePostPlayer.vue"
 import FeedPostHeader from "./PostHeader.vue"
 import FeedPostMediaGrid from "./PostMediaGrid.vue"
 import FeedShareModal from "./ShareModal.vue"

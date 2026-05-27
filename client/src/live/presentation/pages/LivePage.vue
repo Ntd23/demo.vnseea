@@ -19,79 +19,101 @@
         <template v-else>
           <!-- Alerts -->
           <div v-if="bootstrapErrorMessage || blockedReasonMessage || errorMessage || statusMessage" class="studio__alerts">
-            <UAlert v-if="bootstrapErrorMessage" color="error" variant="soft" title="Không tải được studio" :description="bootstrapErrorMessage" class="rounded-2xl" />
-            <UAlert v-else-if="blockedReasonMessage" color="warning" variant="soft" title="Studio bị chặn" :description="blockedReasonMessage" class="rounded-2xl" />
-            <UAlert v-if="errorMessage" color="error" variant="soft" title="Có lỗi xảy ra" :description="errorMessage" class="rounded-2xl" />
-            <UAlert v-if="statusMessage" :color="liveState === 'offline' ? 'neutral' : 'primary'" variant="soft" title="Trạng thái" :description="statusMessage" class="rounded-2xl" />
+            <UAlert v-if="bootstrapErrorMessage" color="error" variant="soft" :title="t('pages.livePage.studio.bootstrapErrorTitle')" :description="bootstrapErrorMessage" class="rounded-2xl" />
+            <UAlert v-else-if="blockedReasonMessage" color="warning" variant="soft" :title="t('pages.livePage.studio.blockedTitle')" :description="blockedReasonMessage" class="rounded-2xl" />
+            <UAlert v-if="errorMessage" color="error" variant="soft" :title="t('pages.livePage.studio.errorTitle')" :description="errorMessage" class="rounded-2xl" />
+            <UAlert v-if="statusMessage" :color="liveState === 'offline' ? 'neutral' : 'primary'" variant="soft" :title="t('pages.livePage.studio.statusTitle')" :description="statusMessage" class="rounded-2xl" />
           </div>
 
           <!-- Host info -->
           <div class="studio__host">
             <UAvatar
               :src="bootstrap.host?.avatarUrl || undefined"
-              :alt="bootstrap.host?.name || 'Host'"
+              :alt="bootstrap.host?.name || t('pages.livePage.studio.hostFallback')"
               size="lg"
               class="shrink-0"
               :ui="{ rounded: 'rounded-2xl' }"
             />
             <div class="min-w-0">
-              <p class="studio__host-name">{{ bootstrap.host?.name || "Host" }}</p>
-              <p class="studio__host-role">{{ bootstrap.host?.note || "Người tổ chức" }}</p>
+              <p class="studio__host-name">{{ bootstrap.host?.name || t("pages.livePage.studio.hostFallback") }}</p>
+              <p class="studio__host-role">{{ bootstrap.host?.note || t("pages.livePage.studio.hostRoleFallback") }}</p>
             </div>
           </div>
 
           <!-- Setup fields -->
           <div class="studio__fields">
             <div class="studio__field">
-              <label class="studio__label">Nơi đăng</label>
+              <label class="studio__label">{{ t("pages.livePage.studio.destinationLabel") }}</label>
               <div class="studio__select-wrap">
-                <select :value="bootstrap.destination" disabled class="studio__select">
+                <USelect
+                  :model-value="bootstrap.destination"
+                  :items="destinationSelectOptions"
+                  value-key="value"
+                  label-key="label"
+                  disabled
+                  color="primary"
+                  size="xl"
+                  class="w-full"
+                  :ui="{ base: 'rounded-2xl bg-white border-slate-200' }"
+                />
+                <select v-if="false" :value="bootstrap.destination" disabled class="studio__select">
                   <option v-for="opt in bootstrap.destinationOptions" :key="opt.value" :value="opt.value">
-                    {{ opt.value === "timeline" ? "Timeline cá nhân" : opt.label }}
+                    {{ opt.value === "timeline" ? t("pages.livePage.studio.destinationTimeline") : opt.label }}
                   </option>
                 </select>
-                <Icon name="i-ph-caret-down-bold" class="studio__select-icon" />
+                <UIcon v-if="false" name="i-ph-caret-down-bold" class="studio__select-icon" />
               </div>
             </div>
 
             <div class="studio__field">
-              <label class="studio__label">Quyền riêng tư</label>
+              <label class="studio__label">{{ t("pages.livePage.studio.privacyLabel") }}</label>
               <div class="studio__select-wrap">
-                <select v-model="privacy" class="studio__select" :disabled="Boolean(session)">
+                <USelect
+                  v-model="privacy"
+                  :items="privacySelectOptions"
+                  value-key="value"
+                  label-key="label"
+                  :disabled="Boolean(session)"
+                  color="primary"
+                  size="xl"
+                  class="w-full"
+                  :ui="{ base: 'rounded-2xl bg-white border-slate-200' }"
+                />
+                <select v-if="false" v-model="privacy" class="studio__select" :disabled="Boolean(session)">
                   <option v-for="opt in bootstrap.privacyOptions" :key="opt.value" :value="opt.value">
                     {{ privacyLabel(opt.value) }}
                   </option>
                 </select>
-                <Icon name="i-ph-caret-down-bold" class="studio__select-icon" />
+                <UIcon v-if="false" name="i-ph-caret-down-bold" class="studio__select-icon" />
               </div>
             </div>
 
             <div class="studio__field">
-              <label class="studio__label">Tiêu đề buổi live</label>
+              <label class="studio__label">{{ t("pages.livePage.studio.titleLabel") }}</label>
               <UInput
                 v-model="title"
-                placeholder="Ví dụ: Cập nhật dự án tuần này"
+                :placeholder="t('pages.livePage.studio.titlePlaceholder')"
                 :disabled="Boolean(session)"
                 :ui="{ base: 'rounded-2xl bg-white border-slate-200 focus:border-blue-500' }"
               />
             </div>
 
             <div class="studio__field">
-              <label class="studio__label">Mô tả</label>
+              <label class="studio__label">{{ t("pages.livePage.studio.descriptionLabel") }}</label>
               <UTextarea
                 v-model="description"
                 :rows="3"
-                placeholder="Mô tả ngắn nội dung buổi live..."
+                :placeholder="t('pages.livePage.studio.descriptionPlaceholder')"
                 :disabled="Boolean(session)"
                 :ui="{ base: 'rounded-2xl bg-white border-slate-200 focus:border-blue-500' }"
               />
             </div>
 
             <div class="studio__field">
-              <label class="studio__label">Thumbnail</label>
+              <label class="studio__label">{{ t("pages.livePage.studio.thumbnailLabel") }}</label>
               <label class="studio__file-btn">
-                <Icon name="i-ph-image-duotone" class="h-4 w-4 text-slate-500" />
-                <span>{{ thumbnailFile ? thumbnailFile.name : "Chọn ảnh thumbnail" }}</span>
+                <UIcon name="i-ph-image-duotone" class="h-4 w-4 text-slate-500" />
+                <span>{{ thumbnailFile ? thumbnailFile.name : t("pages.livePage.studio.thumbnailButton") }}</span>
                 <input type="file" accept="image/*" class="sr-only" @change="handleThumbnailChange">
               </label>
             </div>
@@ -99,9 +121,9 @@
 
           <!-- Device controls -->
           <div class="studio__device-section">
-            <p class="studio__section-label">Thiết bị</p>
+            <p class="studio__section-label">{{ t("pages.livePage.studio.devicesLabel") }}</p>
             <div class="studio__field">
-              <label class="studio__label">Camera</label>
+              <label class="studio__label">{{ t("pages.livePage.studio.cameraLabel") }}</label>
               <div class="studio__select-wrap">
                 <select
                   v-model="selectedCameraId"
@@ -113,12 +135,12 @@
                     {{ opt.label }}
                   </option>
                 </select>
-                <Icon name="i-ph-caret-down-bold" class="studio__select-icon" />
+                <UIcon v-if="false" name="i-ph-caret-down-bold" class="studio__select-icon" />
               </div>
             </div>
 
             <div class="studio__field">
-              <label class="studio__label">Microphone</label>
+              <label class="studio__label">{{ t("pages.livePage.studio.microphoneLabel") }}</label>
               <div class="studio__select-wrap">
                 <select
                   v-model="selectedMicrophoneId"
@@ -130,19 +152,37 @@
                     {{ opt.label }}
                   </option>
                 </select>
-                <Icon name="i-ph-caret-down-bold" class="studio__select-icon" />
+                <UIcon v-if="false" name="i-ph-caret-down-bold" class="studio__select-icon" />
               </div>
             </div>
 
             <div class="studio__media-toggles">
-              <button class="studio__toggle-btn" :class="{ 'studio__toggle-btn--off': videoMuted }" type="button" @click="toggleVideo">
-                <Icon :name="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'" class="h-4 w-4" />
-                <span>{{ videoMuted ? "Bật cam" : "Tắt cam" }}</span>
-              </button>
-              <button class="studio__toggle-btn" :class="{ 'studio__toggle-btn--off': audioMuted }" type="button" @click="toggleAudio">
-                <Icon :name="audioMuted ? 'i-ph-microphone-slash-bold' : 'i-ph-microphone-bold'" class="h-4 w-4" />
-                <span>{{ audioMuted ? "Bật mic" : "Tắt mic" }}</span>
-              </button>
+              <UButton
+                :icon="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'"
+                :label="videoMuted ? t('pages.livePage.studio.enableCamera') : t('pages.livePage.studio.disableCamera')"
+                :color="videoMuted ? 'error' : 'neutral'"
+                :variant="videoMuted ? 'soft' : 'outline'"
+                size="md"
+                class="studio__toggle-btn"
+                @click="toggleVideo"
+              />
+              <template v-if="false">
+                <UIcon :name="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'" class="h-4 w-4" />
+                <span>{{ videoMuted ? t("pages.livePage.studio.enableCamera") : t("pages.livePage.studio.disableCamera") }}</span>
+              </template>
+              <UButton
+                :icon="audioMuted ? 'i-ph-microphone-slash-bold' : 'i-ph-microphone-bold'"
+                :label="audioMuted ? t('pages.livePage.studio.enableMicrophone') : t('pages.livePage.studio.disableMicrophone')"
+                :color="audioMuted ? 'error' : 'neutral'"
+                :variant="audioMuted ? 'soft' : 'outline'"
+                size="md"
+                class="studio__toggle-btn"
+                @click="toggleAudio"
+              />
+              <template v-if="false">
+                <UIcon :name="audioMuted ? 'i-ph-microphone-slash-bold' : 'i-ph-microphone-bold'" class="h-4 w-4" />
+                <span>{{ audioMuted ? t("pages.livePage.studio.enableMicrophone") : t("pages.livePage.studio.disableMicrophone") }}</span>
+              </template>
             </div>
           </div>
 
@@ -158,9 +198,9 @@
               @click="handleStartLive"
             >
               <template #leading>
-                <Icon name="i-ph-broadcast-bold" class="h-5 w-5" />
+                <UIcon name="i-ph-broadcast-bold" class="h-5 w-5" />
               </template>
-              Phát trực tiếp
+              {{ t("pages.livePage.studio.startBroadcast") }}
             </UButton>
             <UButton
               v-else
@@ -171,9 +211,9 @@
               @click="handleEndLive"
             >
               <template #leading>
-                <Icon name="i-ph-stop-circle-bold" class="h-5 w-5" />
+                <UIcon name="i-ph-stop-circle-bold" class="h-5 w-5" />
               </template>
-              Kết thúc livestream
+              {{ t("pages.livePage.studio.endBroadcast") }}
             </UButton>
           </div>
         </template>
@@ -184,40 +224,141 @@
 
         <!-- Video stage -->
         <div class="studio__stage-card">
-          <!-- Stage status bar -->
-          <div class="studio__stage-bar">
-            <div class="flex items-center gap-2">
-              <span class="studio__live-dot" :class="session ? 'studio__live-dot--live' : 'studio__live-dot--off'" />
-              <span class="studio__stage-bar-label">{{ session ? "ĐANG PHÁT" : "XEM TRƯỚC" }}</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <UBadge
-                :color="liveStateBadgeColor"
-                variant="soft"
-                class="rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider"
-              >
-                {{ liveStateLabel }}
-              </UBadge>
-              <div class="studio__viewer-count">
-                <Icon name="i-ph-eye-duotone" class="h-3.5 w-3.5" />
-                <span>{{ viewerCount }}</span>
-              </div>
-            </div>
-          </div>
 
           <!-- Video frame + fullscreen overlay -->
           <div ref="previewStageHost" class="studio__stage">
             <div v-if="showStagePlaceholder" class="studio__stage-placeholder">
               <div class="studio__stage-icon-wrap">
-                <Icon name="i-ph-video-camera-duotone" class="h-10 w-10 text-slate-300" />
+                <UIcon name="i-ph-video-camera-duotone" class="h-10 w-10 text-slate-300" />
               </div>
               <p class="studio__stage-placeholder-title">{{ stageTitle }}</p>
               <p class="studio__stage-placeholder-desc">{{ stageDescription }}</p>
             </div>
             <!-- Fullscreen icon (overlay, inside video) -->
-            <button class="studio__fullscreen-btn" type="button" @click="toggleFullscreen">
-              <Icon :name="isFullscreen ? 'i-ph-arrows-in-bold' : 'i-ph-arrows-out-bold'" class="h-5 w-5" />
-            </button>
+            <UButton
+              :icon="isFullscreen ? 'i-ph-arrows-in-bold' : 'i-ph-arrows-out-bold'"
+              :aria-label="isFullscreen ? t('pages.livePage.viewer.exitFullscreen') : t('pages.livePage.viewer.openFullscreen')"
+              color="neutral"
+              variant="solid"
+              size="lg"
+              square
+              class="studio__fullscreen-btn"
+              :ui="{ base: 'absolute right-3.5 top-3.5 z-[80] rounded-full bg-black/60 text-white shadow-lg ring-1 ring-white/20 hover:bg-black/75' }"
+              @click="toggleFullscreen"
+            />
+            <template v-if="false">
+              <UIcon :name="isFullscreen ? 'i-ph-arrows-in-bold' : 'i-ph-arrows-out-bold'" class="h-5 w-5" />
+            </template>
+
+            <div v-if="isFullscreen && session" class="studio__fs-overlay">
+              <div class="studio__fs-topbar">
+                <div class="studio__fs-host">
+                  <UAvatar
+                    :src="bootstrap.host?.avatarUrl || undefined"
+                    :alt="bootstrap.host?.name || t('pages.livePage.studio.hostFallback')"
+                    size="lg"
+                  />
+                  <div class="min-w-0">
+                    <p class="studio__fs-name">{{ bootstrap.host?.name || t("pages.livePage.studio.hostFallback") }}</p>
+                    <div class="studio__fs-meta">
+                      <UBadge color="error" variant="solid" class="rounded-full px-3 py-1 text-[10px] font-bold">{{ t("pages.livePage.statusLiveUpper") }}</UBadge>
+                      <span><UIcon name="i-ph-eye-duotone" /> {{ viewerCount }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="studio__fs-comments">
+                <div v-if="fullscreenComments.length === 0" class="studio__fs-empty">
+                  {{ t("pages.livePage.studio.noNewComments") }}
+                </div>
+                <article
+                  v-for="item in fullscreenComments"
+                  :key="`${item.kind}-${item.id}-${item.username}-${item.timeText}`"
+                  class="studio__fs-comment"
+                >
+                  <UAvatar :src="item.avatarUrl || undefined" :alt="item.author" size="sm" />
+                  <div class="studio__fs-comment-body">
+                    <strong>{{ item.author }}</strong>
+                    <span>{{ item.message }}</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="studio__fs-hearts">
+                <img
+                  v-for="reaction in floatingReactions"
+                  :key="reaction.id"
+                  :src="reaction.src"
+                  alt=""
+                  class="studio__fs-heart"
+                  :style="{ left: `${reaction.x}%` }"
+                  draggable="false"
+                >
+              </div>
+            </div>
+
+            <div v-if="session && !isFullscreen" class="studio__stage-activity-overlay">
+              <div class="studio__stage-comments">
+                <div v-if="fullscreenComments.length === 0" class="studio__stage-empty">
+                  {{ t("pages.livePage.studio.noNewComments") }}
+                </div>
+                <article
+                  v-for="item in fullscreenComments"
+                  :key="`stage-video-${item.kind}-${item.id}-${item.username}-${item.timeText}`"
+                  class="studio__stage-comment"
+                >
+                  <UAvatar :src="item.avatarUrl || undefined" :alt="item.author" size="xs" />
+                  <div class="studio__stage-comment-body">
+                    <strong>{{ item.author }}</strong>
+                    <span>{{ item.message }}</span>
+                  </div>
+                </article>
+              </div>
+
+            </div>
+
+            <div v-if="session && !isFullscreen" class="studio__stage-hearts">
+              <img
+                v-for="reaction in floatingReactions"
+                :key="reaction.id"
+                :src="reaction.src"
+                alt=""
+                class="studio__stage-heart"
+                :style="{ left: `${reaction.x}%` }"
+                draggable="false"
+              >
+            </div>
+          </div>
+
+          <div v-if="session && !isFullscreen" class="studio__activity-panel">
+            <div class="studio__activity-head">
+              <div>
+                <p class="studio__activity-eyebrow">{{ t("pages.livePage.studio.activityEyebrow") }}</p>
+                <h2 class="studio__activity-title">{{ t("pages.livePage.studio.activityTitle") }}</h2>
+              </div>
+              <div class="studio__activity-stats">
+                <span><UIcon name="i-ph-heart-fill" /> {{ reactionsCount }}</span>
+                <span><UIcon name="i-ph-share-fat-fill" /> {{ sharesCount }}</span>
+              </div>
+            </div>
+
+            <div class="studio__activity-list">
+              <div v-if="fullscreenComments.length === 0" class="studio__activity-empty">
+                {{ t("pages.livePage.studio.noNewComments") }}
+              </div>
+              <article
+                v-for="item in fullscreenComments"
+                :key="`stage-${item.kind}-${item.id}-${item.username}-${item.timeText}`"
+                class="studio__activity-comment"
+              >
+                <UAvatar :src="item.avatarUrl || undefined" :alt="item.author" size="sm" />
+                <div class="studio__activity-comment-body">
+                  <strong>{{ item.author }}</strong>
+                  <span>{{ item.message }}</span>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </main>
@@ -227,6 +368,7 @@
 </template>
 
 <script setup lang="ts">
+import { feedReactionAssets } from "../../../feed/application/constants/reaction-assets"
 import { useLiveKitStudio } from "../../application/composables/useLiveKitStudio"
 import { useLiveStudioPageVM } from "../../application/view-models/useLiveStudioPageVM"
 
@@ -241,6 +383,7 @@ const previewStageHost = ref<HTMLElement | null>(null)
 const {
   bootstrap, bootstrapLoading, bootstrapErrorMessage, blockedReasonMessage,
   title, description, privacy, thumbnailFile, session, liveState, viewerCount,
+  reactionsCount, sharesCount, activityItems, reactionEvents,
   canStart, starting, ending, statusMessage, errorMessage,
   setThumbnail, startLive, endLive, refreshBootstrap,
 } = useLiveStudioPageVM()
@@ -270,16 +413,30 @@ watch(
 )
 
 const privacyLabel = (v: string) => {
-  if (v === "1") return "Bạn bè / người theo dõi"
-  if (v === "2") return "Người theo dõi bạn"
-  if (v === "3") return "Chỉ mình tôi"
-  return "Công khai"
+  if (v === "1") return t("pages.livePage.studio.privacyFriends")
+  if (v === "2") return t("pages.livePage.studio.privacyFollowers")
+  if (v === "3") return t("pages.livePage.studio.privacyOnlyMe")
+  return t("pages.livePage.studio.privacyPublic")
 }
 
+const destinationSelectOptions = computed(() =>
+  bootstrap.value.destinationOptions.map(option => ({
+    label: option.value === "timeline" ? t("pages.livePage.studio.destinationTimeline") : option.label,
+    value: option.value,
+  })),
+)
+
+const privacySelectOptions = computed(() =>
+  bootstrap.value.privacyOptions.map(option => ({
+    label: privacyLabel(option.value),
+    value: option.value,
+  })),
+)
+
 const liveStateLabel = computed(() => {
-  if (liveState.value === "live") return "Đang phát"
-  if (liveState.value === "stale") return "Mất heartbeat"
-  return "Ngoại tuyến"
+  if (liveState.value === "live") return t("pages.livePage.studio.liveStateLive")
+  if (liveState.value === "stale") return t("pages.livePage.studio.liveStateStale")
+  return t("pages.livePage.studio.liveStateOffline")
 })
 
 const liveStateBadgeColor = computed(() => {
@@ -293,21 +450,21 @@ const showStagePlaceholder = computed(() =>
 )
 
 const stageTitle = computed(() => {
-  if (!mediaSupported.value) return "Trình duyệt không hỗ trợ camera / microphone"
-  if (previewLoading.value) return "Đang khởi động camera..."
-  if (previewError.value) return "Không thể mở camera"
-  if (videoMuted.value) return "Camera đang tắt"
-  if (session.value) return "Preview đang sẵn sàng"
-  return "Kết nối camera trước khi phát"
+  if (!mediaSupported.value) return t("pages.livePage.studio.stageUnsupported")
+  if (previewLoading.value) return t("pages.livePage.studio.stageStartingCamera")
+  if (previewError.value) return t("pages.livePage.studio.stageCameraError")
+  if (videoMuted.value) return t("pages.livePage.studio.stageCameraOff")
+  if (session.value) return t("pages.livePage.studio.stagePreviewReady")
+  return t("pages.livePage.studio.stageConnectCamera")
 })
 
 const stageDescription = computed(() => {
   if (previewError.value) return previewError.value
-  if (!mediaSupported.value) return "Thử trình duyệt desktop mới hơn hoặc cấp quyền camera / mic."
-  if (previewLoading.value) return "Studio đang xin quyền thiết bị và dựng preview local."
-  if (videoMuted.value) return "Bật camera để hiển thị khung hình trên sân khấu."
-  if (session.value) return "Đang publish lên phòng LiveKit."
-  return "Sau khi camera sẵn sàng, nhập tiêu đề rồi bắt đầu livestream."
+  if (!mediaSupported.value) return t("pages.livePage.studio.stageUnsupportedDescription")
+  if (previewLoading.value) return t("pages.livePage.studio.stageStartingCameraDescription")
+  if (videoMuted.value) return t("pages.livePage.studio.stageCameraOffDescription")
+  if (session.value) return t("pages.livePage.studio.stagePublishingDescription")
+  return t("pages.livePage.studio.stageConnectCameraDescription")
 })
 
 async function handleStartLive() {
@@ -344,6 +501,71 @@ function toggleFullscreen() {
 }
 
 const isFullscreen = ref(false)
+const floatingReactions = ref<Array<{ id: number; src: string; x: number }>>([])
+const animatedReactionIds = new Set<number>()
+
+const fullscreenComments = computed(() =>
+  activityItems.value.filter(item => item.kind === "comment").slice(-6),
+)
+
+function reactionAssetSrc(value: string) {
+  return feedReactionAssets.find(asset =>
+    asset.value === value || String(asset.backendId) === value,
+  )?.src ?? feedReactionAssets[0]?.src ?? ""
+}
+
+function pushFloatingReaction(src: string, seed: number) {
+  if (!src) {
+    return
+  }
+
+  const reaction = {
+    id: Date.now() + seed,
+    src,
+    x: 12 + Math.random() * 72,
+  }
+
+  floatingReactions.value = [...floatingReactions.value.slice(-8), reaction]
+  window.setTimeout(() => {
+    floatingReactions.value = floatingReactions.value.filter(item => item.id !== reaction.id)
+  }, 2600)
+}
+
+watch(reactionEvents, (nextEvents) => {
+  if (!import.meta.client || !session.value) {
+    return
+  }
+
+  nextEvents.forEach((event) => {
+    if (event.id > 0 && animatedReactionIds.has(event.id)) {
+      return
+    }
+
+    if (event.id > 0) {
+      animatedReactionIds.add(event.id)
+    }
+
+    pushFloatingReaction(reactionAssetSrc(event.value), event.id)
+  })
+})
+
+watch(reactionsCount, (nextValue, previousValue = 0) => {
+  if (!import.meta.client || !session.value || nextValue <= previousValue || reactionEvents.value.length > 0) {
+    return
+  }
+
+  const asset = feedReactionAssets[(nextValue + previousValue) % feedReactionAssets.length]
+  pushFloatingReaction(asset.src, nextValue)
+})
+
+watch(session, (nextSession) => {
+  if (nextSession) {
+    return
+  }
+
+  animatedReactionIds.clear()
+  floatingReactions.value = []
+})
 
 onMounted(() => {
   document.addEventListener("fullscreenchange", () => {
@@ -377,7 +599,6 @@ onMounted(() => {
 .studio__sidebar {
   background: #ffffff;
   border-radius: 20px;
-  border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
   padding: 24px;
   display: flex;
@@ -406,7 +627,6 @@ onMounted(() => {
   padding: 14px;
   border-radius: 16px;
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
 }
 
 .studio__host-name {
@@ -459,7 +679,6 @@ onMounted(() => {
   height: 44px;
   padding: 0 36px 0 14px;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
   background: #ffffff;
   color: #0f172a;
   font-size: 14px;
@@ -519,6 +738,12 @@ onMounted(() => {
   color: #2563eb;
 }
 
+.studio__fields > .studio__field:nth-of-type(n + 3),
+.studio__device-section > .studio__section-label,
+.studio__device-section > .studio__field {
+  display: none;
+}
+
 .studio__sidebar-action {
   margin-top: auto;
 }
@@ -527,9 +752,9 @@ onMounted(() => {
 .studio__device-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid #f1f5f9;
+  gap: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 
 .studio__section-label {
@@ -553,7 +778,7 @@ onMounted(() => {
 .studio__media-toggles {
   display: flex;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 4px;
   flex-wrap: wrap;
 }
 
@@ -563,7 +788,6 @@ onMounted(() => {
   gap: 7px;
   padding: 8px 16px;
   border-radius: 999px;
-  border: 1px solid #e2e8f0;
   background: #f8fafc;
   color: #374151;
   font-size: 13px;
@@ -591,7 +815,6 @@ onMounted(() => {
 
 .studio__toggle-btn--ghost:hover {
   background: #f1f5f9;
-  border-color: #e2e8f0;
   color: #374151;
 }
 
@@ -599,7 +822,6 @@ onMounted(() => {
 .studio__stage-card {
   background: #ffffff;
   border-radius: 20px;
-  border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
   overflow: hidden;
 }
@@ -676,7 +898,6 @@ onMounted(() => {
   height: 100%;
   object-fit: cover;
   display: block;
-  background: #020617;
 }
 
 .studio__stage-placeholder {
@@ -719,25 +940,362 @@ onMounted(() => {
 
 .studio__fullscreen-btn {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  z-index: 10;
+  top: 14px;
+  right: 14px;
+  z-index: 80;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
   border: none;
-  background: rgba(0, 0, 0, 0.45);
-  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 0, 0, 0.62);
+  color: #ffffff;
   cursor: pointer;
   backdrop-filter: blur(6px);
-  transition: background 0.15s;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  transition: background 0.15s, transform 0.15s;
 }
 
 .studio__fullscreen-btn:hover {
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.78);
+  transform: translateY(-1px);
+}
+
+.studio__fs-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.52), transparent 28%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.72), transparent 42%);
+}
+
+.studio__fs-topbar {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  right: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.studio__fs-host {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.studio__fs-name {
+  margin: 0;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.studio__fs-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.studio__fs-meta span,
+.studio__fs-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.studio__fs-comments {
+  position: absolute;
+  left: 24px;
+  right: 168px;
+  bottom: 26px;
+  display: flex;
+  max-width: 620px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.studio__fs-empty {
+  width: fit-content;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.52);
+  padding: 10px 14px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+}
+
+.studio__fs-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.studio__fs-comment-body {
+  display: grid;
+  gap: 3px;
+  border-radius: 20px;
+  padding: 10px 14px;
+  color: #ffffff;
+}
+
+.studio__fs-comment-body strong {
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 12px;
+}
+
+.studio__fs-comment-body span {
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.studio__fs-actions {
+  position: absolute;
+  right: 24px;
+  bottom: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.studio__fs-counter {
+  min-width: 62px;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.56);
+  padding: 12px 14px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  backdrop-filter: blur(12px);
+}
+
+.studio__fs-counter svg,
+.studio__fs-counter :deep(svg) {
+  width: 20px;
+  height: 20px;
+}
+
+.studio__fs-hearts {
+  position: absolute;
+  inset: 0;
+  z-index: 24;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.studio__fs-heart {
+  position: absolute;
+  bottom: 8%;
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  animation: studioHeartRise 2.6s ease-out forwards;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.28));
+}
+
+.studio__stage-hearts {
+  position: absolute;
+  inset: 0;
+  z-index: 24;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.studio__stage-heart {
+  position: absolute;
+  bottom: 8%;
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  animation: studioHeartRise 2.6s ease-out forwards;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.28));
+}
+
+.studio__stage-activity-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  background:
+    linear-gradient(0deg, rgba(2, 6, 23, 0.62), transparent 42%),
+    linear-gradient(90deg, rgba(2, 6, 23, 0.38), transparent 42%);
+}
+
+.studio__stage-comments {
+  position: absolute;
+  left: 18px;
+  right: 112px;
+  bottom: 18px;
+  display: flex;
+  max-height: 158px;
+  max-width: 540px;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.studio__stage-empty {
+  width: fit-content;
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.54);
+  padding: 8px 12px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.studio__stage-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.studio__stage-comment-body {
+  display: grid;
+  gap: 2px;
+  border-radius: 16px;
+  padding: 8px 11px;
+  color: #ffffff;
+}
+
+.studio__stage-comment-body strong {
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 11px;
+}
+
+.studio__stage-comment-body span {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.studio__stage-actions {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.studio__stage-counter {
+  display: inline-flex;
+  min-width: 54px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.58);
+  padding: 9px 11px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.studio__activity-panel {
+  display: none;
+  gap: 14px;
+  background: #ffffff;
+  padding: 16px 18px 18px;
+}
+
+.studio__activity-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.studio__activity-eyebrow {
+  margin: 0;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.studio__activity-title {
+  margin: 3px 0 0;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.studio__activity-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.studio__activity-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  padding: 8px 11px;
+}
+
+.studio__activity-list {
+  display: grid;
+  max-height: 220px;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.studio__activity-empty {
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 12px 14px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.studio__activity-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.studio__activity-comment-body {
+  display: grid;
+  gap: 3px;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 9px 12px;
+  color: #0f172a;
+}
+
+.studio__activity-comment-body strong {
+  color: #475569;
+  font-size: 12px;
+}
+
+.studio__activity-comment-body span {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+@keyframes studioHeartRise {
+  0% { transform: translate3d(0, 20px, 0) scale(0.72) rotate(-8deg); opacity: 0; }
+  10% { opacity: 1; }
+  38% { transform: translate3d(16px, -112px, 0) scale(1.02) rotate(7deg); }
+  72% { opacity: 0.82; }
+  100% { transform: translate3d(-18px, -280px, 0) scale(1.18) rotate(-10deg); opacity: 0; }
 }
 
 :fullscreen .studio__stage,

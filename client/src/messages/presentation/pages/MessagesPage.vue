@@ -17,6 +17,7 @@
           :status-tone="multiFeedbackTone"
           :all-visible-recipients-selected="allVisibleRecipientsSelected"
           :contacts="filteredContacts"
+          :is-contact-online="isContactOnline"
           :is-contact-typing="isContactTyping"
           :message-tag-labels="messageTagLabels"
           :active-tag-filter="activeTagFilter"
@@ -48,9 +49,12 @@
           :empty-thread-label="emptyThreadLabel"
           :empty-title="chatEmptyTitle"
           :group-details="groupDetails"
+          :group-typing-avatar-url="activeGroupTypingAvatarUrl"
+          :inbox-pending="inboxPending"
           :is-pending="threadPending"
           :is-typing="isTyping"
           :messages="messages"
+          :call-action-pending="isCallActionPending"
           :deleting-conversation="isDeletingConversation"
           :user-detail-docked="showDesktopUserDetailPane"
           @typing-start="startComposerTyping"
@@ -58,8 +62,8 @@
           @toggle-info="infoPanelOpen = !infoPanelOpen"
           @load-more="loadOlderMessages"
           @send="sendMessage"
+          @start-call="startSelectedContactCall"
           @delete-conversation="deleteSelectedConversation"
-          @start-call="handleStartCall"
           @back="handleBackToList"
         />
       </main>
@@ -105,12 +109,16 @@
             :group-candidates-pending="groupCandidatesPending"
             :group-details="groupDetails"
             :group-details-pending="groupDetailsPending"
+            :messages="messages"
+            :updating-group-details="isUpdatingGroupDetails"
             :updating-group-members="isUpdatingGroupMembers"
             :empty-description="infoEmptyDescription"
             :empty-title="infoEmptyTitle"
             :deleting-conversation="isDeletingConversation"
             @update:group-candidate-query="updateGroupCandidateQuery"
+            @update-group="updateGroupDetails"
             @add-group-member="addGroupMember"
+            @add-group-members="addGroupMembers"
             @remove-group-member="removeGroupMember"
             @delete-conversation="deleteSelectedConversation"
           />
@@ -246,10 +254,9 @@ import MessagesCreateGroupModal from "../components/CreateGroupModal.vue"
 import MessagesChatWindow from "../components/ChatWindow.vue"
 import MessagesMessageSidePanel from "../components/MessageSidePanel.vue"
 import MessagesUserDetailPanel from "../components/UserDetailPanel.vue"
-import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
 import { useMessageCalls } from "../../application/composables/useMessageCalls"
-import { useMessagesInbox } from "../../application/composables/useMessagesInbox"
-import type { MessageCallType } from "../../domain/types/calls.types"
+import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
+import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact } from "../../domain/types/messages.types"
 
 const { t } = useI18n()
@@ -261,10 +268,18 @@ const newTagName = ref("")
 const newTagColor = ref("#3b82f6")
 const mobileListOpen = ref(true)
 const {
+  isCallActionPending,
+  joinGroupCall,
+  startCall,
+  startGroupCall,
+} = useMessageCalls()
+const {
+  activeGroupTypingAvatarUrl,
   activeTagFilter,
   activeTab,
   addCreateGroupParticipant,
   addGroupMember,
+  addGroupMembers,
   attachTag,
   allVisibleRecipientsSelected,
   closeCreateGroupModal,
@@ -285,9 +300,11 @@ const {
   groupDetailsPending,
   inboxPending,
   isContactTyping,
+  isContactOnline,
   isCreatingGroup,
   isDeletingConversation,
   isMarkingRead,
+  isUpdatingGroupDetails,
   isMultiSending,
   isTyping,
   isUpdatingGroupMembers,
@@ -303,7 +320,6 @@ const {
   query,
   removeCreateGroupParticipant,
   removeGroupMember,
-  refreshInbox,
   selectedContact,
   selectedRecipientIds,
   selectedRecipients,
@@ -319,16 +335,13 @@ const {
   sendMessage,
   sendMultiMessage,
   submitCreateGroup,
+  updateGroupDetails,
   startComposerTyping,
   stopComposerTyping,
   tabs,
   threadPending,
   toggleAllVisibleRecipients,
-} = useMessagesInbox()
-const {
-  startCall,
-  status: callStatus,
-} = useMessageCalls()
+} = useMessagesPageVM()
 
 const chatEmptyTitle = computed(() =>
   activeTab.value === "multi"
@@ -394,26 +407,18 @@ const tagModalLiveContact = computed(() => {
     ?? tagModalContact.value
 })
 
-watch(selectedContact, () => {
-  infoPanelOpen.value = false
-})
+watch(
+  () => selectedContact.value
+    ? `${selectedContact.value.type}:${selectedContact.value.userId ?? selectedContact.value.groupId ?? selectedContact.value.id}`
+    : "",
+  () => {
+    infoPanelOpen.value = false
+  },
+)
 
 watch(showDesktopUserDetailPane, (value) => {
   if (value) {
     infoPanelOpen.value = false
-  }
-}
-
-watch(callStatus, async (value) => {
-  if (value !== "ended") {
-    return
-  }
-
-  await refreshInbox()
-
-  const contact = selectedContact.value
-  if (contact) {
-    await selectContact(contact)
   }
 })
 
@@ -440,13 +445,31 @@ function handleBackToList() {
   infoPanelOpen.value = false
 }
 
+async function startSelectedContactCall(input: MessageCallType | MessageCallLogAction) {
+  if (typeof input === "object" && input.action === "join" && input.callId) {
+    await joinGroupCall(input.callId)
+    return
+  }
+
+  const type = typeof input === "object" ? input.type : input
+  const contact = selectedContact.value
+
+  if (!contact) {
+    return
+  }
+
+  if (contact.type === "group") {
+    await startGroupCall(contact, type)
+    return
+  }
+
+  if (contact.type === "user") {
+    await startCall(contact, type)
+  }
+}
+
 function updateGroupCandidateQuery(value: string) {
   groupCandidateQuery.value = value
-}
-function handleStartCall(type: MessageCallType) {
-  const contact = selectedContact.value
-  if (!contact) return
-  startCall(contact, type)
 }
 
 function openTagModal(contact: MessageContact) {

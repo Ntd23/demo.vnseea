@@ -7,6 +7,7 @@ import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
+import { getMessageUserPresenceState } from "./_presence"
 import type {
   MessageContact,
   MessageGroupCandidate,
@@ -108,6 +109,13 @@ const asArray = (value: unknown): BackendEntity[] =>
     ? value.map(item => asRecord(item))
     : []
 
+const asEntityList = (value: unknown): BackendEntity[] =>
+  Array.isArray(value)
+    ? value.map(item => asRecord(item))
+    : value && typeof value === "object"
+      ? [asRecord(value)]
+      : []
+
 const firstString = (entity: BackendEntity, keys: string[]) => {
   for (const key of keys) {
     const value = asString(entity[key])
@@ -168,6 +176,7 @@ const buildCallMessageLabel = (value: string, entity: BackendEntity) => {
 const parseCallLogPayload = (value: string, entity: BackendEntity) => {
   const type = firstString(entity, ["type_two", "type"]).toLowerCase()
   const decoded = decodeHtmlEntities(value).replace(/\\"/g, "\"").trim()
+  const isGroupCall = type.includes("group_call")
 
   if (!type.includes("call") && !decoded.startsWith("{")) {
     return null
@@ -185,6 +194,9 @@ const parseCallLogPayload = (value: string, entity: BackendEntity) => {
       call_type: callType === "video" || type.includes("video") ? "video" as const : "audio" as const,
       status: firstString(payload, ["status"]),
       duration: asNumber(payload.duration),
+      call_id: asNumber(payload.call_id),
+      group_id: asNumber(payload.group_id),
+      is_group: isGroupCall || asNumber(payload.group_id) > 0,
     }
   }
   catch {
@@ -196,6 +208,9 @@ const parseCallLogPayload = (value: string, entity: BackendEntity) => {
       call_type: type.includes("video") ? "video" as const : "audio" as const,
       status: "",
       duration: 0,
+      call_id: 0,
+      group_id: asNumber(entity.group_id),
+      is_group: isGroupCall,
     }
   }
 }
@@ -315,10 +330,30 @@ const buildMediaUrl = (
   return source ? resolveMediaUrl(source) : ""
 }
 
+const getGroupParts = (entity: BackendEntity) =>
+  asArray(entity.parts).length
+    ? asArray(entity.parts)
+    : asArray(entity.members).length
+      ? asArray(entity.members)
+      : asArray(entity.users)
+
 const buildContactMembers = (entity: BackendEntity) =>
-  asArray(entity.parts)
-    .map(part => firstString(part, ["name", "username"]))
+  getGroupParts(entity)
+    .map((part) => {
+      const userData = asRecord(part.user_data)
+      return firstString({ ...userData, ...part }, ["name", "username"])
+    })
     .filter(Boolean)
+
+const buildGroupOnlineState = (entity: BackendEntity, currentUserId: number) =>
+  getGroupParts(entity).some((part) => {
+    const member = { ...asRecord(part.user_data), ...part }
+    const userId = asNumber(member.user_id) || asNumber(member.id)
+
+    return userId > 0
+      && userId !== currentUserId
+      && buildUserOnlineState(member, buildLastSeenAt(member))
+  })
 
 const buildMemberProfileUrl = (entity: BackendEntity) => {
   const username = firstString(entity, ["username"])
@@ -331,7 +366,7 @@ const buildContactId = (type: MessageThreadType, numericId: number, extra?: numb
     : `${type}:${numericId}`
 
 const buildLastSeenStatus = (entity: BackendEntity) =>
-  firstString(entity, ["lastseen_status"]).toLowerCase()
+  firstString(entity, ["lastseen_status", "online_status"]).toLowerCase()
 
 const buildUserStatus = (entity: BackendEntity) => {
   const explicitStatus = buildLastSeenStatus(entity)
@@ -349,13 +384,20 @@ const buildUserStatus = (entity: BackendEntity) => {
 }
 
 const buildUserOnlineState = (entity: BackendEntity, lastSeenAt: number) => {
+  const userId = asNumber(entity.user_id) || asNumber(entity.id)
+  const bridgedPresence = getMessageUserPresenceState(userId)
+
+  if (bridgedPresence !== undefined) {
+    return bridgedPresence
+  }
+
   const explicitStatus = buildLastSeenStatus(entity)
 
-  if (explicitStatus === "on" || explicitStatus === "online") {
+  if (explicitStatus === "on" || explicitStatus === "online" || explicitStatus === "active") {
     return true
   }
 
-  if (explicitStatus === "off" || explicitStatus === "offline") {
+  if (explicitStatus === "off" || explicitStatus === "offline" || explicitStatus === "inactive") {
     return false
   }
 
@@ -363,7 +405,7 @@ const buildUserOnlineState = (entity: BackendEntity, lastSeenAt: number) => {
 }
 
 const buildLastSeenAt = (entity: BackendEntity) => {
-  const lastSeenAt = asNumber(entity.lastseen)
+  const lastSeenAt = asNumber(entity.lastseen) || asNumber(entity.last_seen) || asNumber(entity.lastSeenAt)
   return lastSeenAt > 0 ? lastSeenAt : 0
 }
 
@@ -433,7 +475,7 @@ const mapMessageContact = (
       id: buildContactId("group", groupId),
       name,
       status: buildGroupStatus(entity),
-      isOnline: false,
+      isOnline: buildGroupOnlineState(entity, currentUserId),
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "group",
       preview: buildContactPreview(lastMessage),
@@ -488,6 +530,7 @@ const mapThreadMessage = (
   currentUserId: number,
   resolveMediaUrl: (value: unknown) => string,
   threadType: MessageThreadType,
+  activeGroupCall?: BackendEntity,
 ): MessageItem => {
   const timestamp = asNumber(entity.time)
   const rawText = decryptMessageText(entity.text, timestamp)
@@ -497,6 +540,9 @@ const mapThreadMessage = (
   const mediaUrl = buildMediaUrl(entity, resolveMediaUrl)
   const mediaType = inferMediaType(entity)
   const senderId = asNumber(entity.from_id)
+  const senderProfile = { user_id: senderId, ...messageUser, ...userData }
+  const activeGroupCallId = asNumber(activeGroupCall?.id)
+  const activeGroupCallParticipantCount = asNumber(activeGroupCall?.participant_count)
 
   return {
     id: asNumber(entity.id),
@@ -505,6 +551,9 @@ const mapThreadMessage = (
     time: firstString(entity, ["time_text"]),
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
       || firstString(messageUser, ["avatar", "avatar_full"])),
+    senderIsOnline: senderId !== currentUserId
+      ? buildUserOnlineState(senderProfile, buildLastSeenAt(senderProfile))
+      : false,
     timestamp,
     senderId,
     authorName: buildDisplayName(userData) || buildDisplayName(messageUser),
@@ -517,6 +566,13 @@ const mapThreadMessage = (
           type: callLog.call_type,
           status: callLog.status,
           duration: callLog.duration,
+          callId: callLog.call_id || undefined,
+          groupId: callLog.group_id || asNumber(entity.group_id) || undefined,
+          isGroup: callLog.is_group || undefined,
+          isActive: callLog.is_group && callLog.call_id > 0 && activeGroupCallId === callLog.call_id,
+          participantCount: callLog.is_group && activeGroupCallId === callLog.call_id
+            ? activeGroupCallParticipantCount
+            : undefined,
         }
       : undefined,
   }
@@ -528,8 +584,9 @@ const mapGroupMember = (
   currentUserId: number,
   resolveMediaUrl: (value: unknown) => string,
 ): MessageGroupMember | null => {
-  const userId = asNumber(entity.user_id)
-  const name = buildDisplayName(entity)
+  const member = { ...asRecord(entity.user_data), ...entity }
+  const userId = asNumber(member.user_id) || asNumber(member.id)
+  const name = buildDisplayName(member)
 
   if (userId <= 0 || !name) {
     return null
@@ -538,9 +595,10 @@ const mapGroupMember = (
   return {
     userId,
     name,
-    username: firstString(entity, ["username"]),
-    avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
-    profileUrl: buildMemberProfileUrl(entity),
+    username: firstString(member, ["username"]),
+    avatarUrl: resolveMediaUrl(firstString(member, ["avatar", "avatar_full"])),
+    profileUrl: buildMemberProfileUrl(member),
+    isOnline: buildUserOnlineState(member, buildLastSeenAt(member)),
     isOwner: userId === ownerId,
     isSelf: userId === currentUserId,
   }
@@ -553,13 +611,13 @@ const mapGroupDetails = (
 ): MessageGroupDetails | null => {
   const groupId = asNumber(entity.group_id)
   const name = firstString(entity, ["group_name", "name"])
-  const ownerId = asNumber(entity.user_id)
+  const ownerId = asNumber(entity.user_id) || asNumber(entity.owner_id)
 
-  if (groupId <= 0 || !name || ownerId <= 0) {
+  if (groupId <= 0 || !name) {
     return null
   }
 
-  const members = asArray(entity.parts)
+  const members = getGroupParts(entity)
     .map(member => mapGroupMember(member, ownerId, currentUserId, resolveMediaUrl))
     .filter(Boolean) as MessageGroupMember[]
 
@@ -745,10 +803,13 @@ export async function fetchMessageThread(
       "Unable to load group messages.",
     )
 
+    const responseData = asRecord(response.data)
+    const activeGroupCall = asRecord(responseData.active_call)
+
     return {
       messages: decorateThreadMessages(
         extractCollectionMessages(response).map(message =>
-          mapThreadMessage(message, currentUserId, resolveMediaUrl, "group"),
+          mapThreadMessage(message, currentUserId, resolveMediaUrl, "group", activeGroupCall),
         ),
       ),
       typing: false,
@@ -1084,6 +1145,61 @@ export async function parseCreateMessageGroupBody(event: H3Event) {
   }
 }
 
+export async function parseUpdateMessageGroupBody(event: H3Event) {
+  const contentType = getHeader(event, "content-type") || ""
+
+  if (!contentType.includes("multipart/form-data")) {
+    const body = await readBody<Record<string, unknown>>(event)
+
+    return {
+      groupId: asNumber(body.groupId),
+      name: asString(body.name),
+      avatar: null,
+    }
+  }
+
+  const parts = await readMultipartFormData(event) ?? []
+  let groupId = 0
+  let name = ""
+  let avatar: {
+    filename?: string
+    type?: string
+    data: Buffer
+  } | null = null
+
+  for (const part of parts) {
+    if (!part.name) {
+      continue
+    }
+
+    if (part.filename && part.name === "avatar") {
+      avatar = {
+        filename: part.filename,
+        type: part.type,
+        data: part.data,
+      }
+      continue
+    }
+
+    const value = part.data.toString()
+
+    if (part.name === "groupId") {
+      groupId = asNumber(value)
+      continue
+    }
+
+    if (part.name === "name") {
+      name = value
+    }
+  }
+
+  return {
+    groupId,
+    name: asString(name),
+    avatar,
+  }
+}
+
 export async function uploadMessageRecord(
   event: H3Event,
   input: {
@@ -1381,6 +1497,77 @@ export async function createMessageGroup(
   }
 }
 
+export async function updateMessageGroupDetails(
+  event: H3Event,
+  input: {
+    groupId: number
+    name?: string
+    avatar?: {
+      filename?: string
+      type?: string
+      data: Buffer
+    } | null
+  },
+) {
+  const groupId = asNumber(input.groupId)
+  const name = asString(input.name)
+  const client = createBackendApiClient(event)
+
+  if (groupId <= 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "A valid groupId is required.",
+    })
+  }
+
+  if (!name && !input.avatar) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "A group name or avatar is required.",
+    })
+  }
+
+  const body = input.avatar
+    ? (() => {
+        const formData = new FormData()
+
+        formData.append("type", "edit")
+        formData.append("id", String(groupId))
+
+        if (name) {
+          formData.append("group_name", name)
+        }
+
+        formData.append(
+          "avatar",
+          new Blob([toBlobChunk(input.avatar!.data)], { type: input.avatar!.type || "application/octet-stream" }),
+          input.avatar!.filename || "group-avatar",
+        )
+
+        return formData
+      })()
+    : new URLSearchParams({
+        type: "edit",
+        id: String(groupId),
+        group_name: name,
+      })
+
+  const response = assertBackendApiSuccess(
+    await client.post<BackendCollectionResponse, FormData | URLSearchParams>(
+      "group_chat",
+      body,
+    ),
+    "Unable to update group chat.",
+  )
+
+  const backendMessage = asString((response as BackendEntity).message_data)
+
+  return {
+    ok: true,
+    message: backendMessage || undefined,
+  }
+}
+
 export async function searchCreateMessageGroupParticipants(
   event: H3Event,
   query: string,
@@ -1424,22 +1611,50 @@ export async function fetchMessageGroupDetails(
 
   const currentUser = await getBackendCurrentUser(event)
   const currentUserId = asNumber(currentUser.user_id)
+  const sessionHash = asString(currentUser.session_hash)
   const client = createBackendApiClient(event)
+  const webClient = createBackendWebClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
-  const response = assertBackendApiSuccess(
-    await client.post<BackendCollectionResponse, Record<string, unknown>>(
-      "group_chat",
-      {
-        type: "get_by_id",
-        id: groupId,
-      },
-    ),
-    "Unable to load group details.",
-  )
+  let groupDetails: MessageGroupDetails | null | undefined
 
-  const groupDetails = asArray(response.data)
-    .map(entity => mapGroupDetails(entity, currentUserId, resolveMediaUrl))
-    .find(Boolean)
+  try {
+    const response = assertBackendApiSuccess(
+      await client.post<BackendCollectionResponse, Record<string, unknown>>(
+        "group_chat",
+        {
+          type: "get_by_id",
+          id: groupId,
+        },
+      ),
+      "Unable to load group details.",
+    )
+
+    groupDetails = asEntityList(response.data)
+      .map(entity => mapGroupDetails(entity, currentUserId, resolveMediaUrl))
+      .find(Boolean)
+  }
+  catch {
+    groupDetails = null
+  }
+
+  if ((!groupDetails || groupDetails.members.length === 0) && sessionHash) {
+    const legacyResponse = await webClient.postForm<{
+      status?: number | string
+      group?: BackendEntity
+    }>(
+      "chat",
+      undefined,
+      {
+        s: "get_group_info",
+        group_id: groupId,
+        hash: sessionHash,
+      },
+    )
+
+    if (asNumber(legacyResponse.status) === 200) {
+      groupDetails = mapGroupDetails(asRecord(legacyResponse.group), currentUserId, resolveMediaUrl)
+    }
+  }
 
   if (!groupDetails) {
     throw createError({
@@ -1458,6 +1673,8 @@ export async function searchMessageGroupCandidates(
     query: string
   },
 ): Promise<MessageGroupCandidate[]> {
+  const keyword = input.query.trim()
+
   if (!input.groupId || input.groupId <= 0) {
     throw createError({
       statusCode: 400,
@@ -1466,23 +1683,47 @@ export async function searchMessageGroupCandidates(
   }
 
   const client = createBackendApiClient(event)
+  const webClient = createBackendWebClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
-  const response = assertBackendApiSuccess(
-    await client.post<BackendCollectionResponse, Record<string, unknown>>(
-      "group_chat",
-      {
-        type: "search_addable_users",
-        id: input.groupId,
-        keyword: input.query.trim(),
-        limit: 12,
-      },
-    ),
-    "Unable to search addable group members.",
-  )
 
-  return asArray(response.data)
-    .map(entity => mapGroupCandidate(entity, resolveMediaUrl))
-    .filter(Boolean) as MessageGroupCandidate[]
+  try {
+    const response = assertBackendApiSuccess(
+      await client.post<BackendCollectionResponse, Record<string, unknown>>(
+        "group_chat",
+        {
+          type: "search_addable_users",
+          id: input.groupId,
+          keyword,
+          limit: 25,
+        },
+      ),
+      "Unable to search group candidates.",
+    )
+
+    return asEntityList(response.data)
+      .map(entity => mapGroupCandidate(entity, resolveMediaUrl))
+      .filter(Boolean) as MessageGroupCandidate[]
+  }
+  catch {
+    const response = await webClient.postForm<BackendChatParticipantsResponse>(
+      "chat",
+      undefined,
+      {
+        s: "search_parts",
+        group_id: input.groupId,
+        name: keyword,
+      },
+    )
+
+    if (asNumber(response.status) !== 200) {
+      return []
+    }
+
+    return asArray(response.parts)
+      .filter(entity => !isTruthy(entity.is_member))
+      .map(entity => mapGroupCandidate(entity, resolveMediaUrl))
+      .filter(Boolean) as MessageGroupCandidate[]
+  }
 }
 
 export async function updateMessageGroupMembers(

@@ -57,6 +57,16 @@ const isTruthy = (value: unknown) =>
   || value === "yes"
   || value === "true"
 
+const readFollowState = (value: unknown) => {
+  const normalized = asNumber(value)
+
+  if (normalized === 1 || normalized === 2) {
+    return normalized
+  }
+
+  return isTruthy(value) ? 1 : 0
+}
+
 const asRecord = (value: unknown): BackendProfileEntity =>
   value && typeof value === "object" && !Array.isArray(value)
     ? value as BackendProfileEntity
@@ -301,6 +311,11 @@ export default defineEventHandler(async (event): Promise<ProfileApiResponse | nu
     fetchUserAlbums(client, resolveMediaUrl, profileUserId),
     fetchUserProducts(client, resolveMediaUrl, profileUserId),
   ])
+  const currentUserId = asNumber(currentUser.user_id)
+  const currentUserInFollowers = Boolean((response.followers ?? []).some(entry =>
+    asNumber(entry.user_id ?? entry.id) === currentUserId,
+  ))
+  const followState = readFollowState(user.is_following) || (currentUserInFollowers ? 1 : 0)
 
   return {
     id: profileUserId,
@@ -312,7 +327,9 @@ export default defineEventHandler(async (event): Promise<ProfileApiResponse | nu
     avatarUrl: resolveMediaUrl(firstString(user, ["avatar_full", "avatar"])) || undefined,
     avatarText: createInitials(displayName),
     verified: isTruthy(user.verified),
-    isOwner: profileUserId === asNumber(currentUser.user_id),
+    isOwner: profileUserId === currentUserId,
+    isFollowing: followState === 1,
+    isFollowRequested: followState === 2,
     statusText: firstString(user, ["lastseen_time_text", "gender_text"]),
     website: firstString(user, ["website"]),
     working: firstString(user, ["working"]),

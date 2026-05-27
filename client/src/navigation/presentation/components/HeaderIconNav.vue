@@ -21,7 +21,17 @@
 </template>
 
 <script setup lang="ts">
+import { useNavigationGeneralStore } from "../../application/stores/useNavigationGeneralStore"
+
 const route = useRoute()
+const navigationGeneralStore = useNavigationGeneralStore()
+
+const videoBadge = computed(() => {
+  const count = navigationGeneralStore.summary.videoCount ?? 0
+  if (count <= 0) return ""
+  if (count > 100) return "99+"
+  return String(count)
+})
 
 const items = computed(() => [
   {
@@ -41,7 +51,7 @@ const items = computed(() => [
     to: '/reels',
     icon: 'i-ph-film-strip-fill',
     active: route.path === '/reels',
-    logoBadge: 'V',
+    logoBadge: videoBadge.value,
   },
   {
     label: 'navigation.headerIconNav.video',

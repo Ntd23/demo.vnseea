@@ -129,7 +129,8 @@ export function useMessagesInbox(
   const multiRecord = ref<MessageRecordDraft | null>(null)
   const multiFeedback = ref<{ tone: MessageFeedbackTone, message: string } | null>(null)
   const remoteTyping = ref(false)
-  const typingUserIds = ref<number[]>([])
+  const remoteTypingUserId = ref(0)
+  const typingContactIds = ref<string[]>([])
   const isLoadingMore = ref(false)
   const isSending = ref(false)
   const isMultiSending = ref(false)
@@ -762,37 +763,71 @@ export function useMessagesInbox(
     }
   }
 
-  function setRemoteTyping(value: boolean) {
+  function setRemoteTyping(value: boolean, userId = 0) {
     remoteTyping.value = value
+
+    if (value) {
+      remoteTypingUserId.value = userId
+      return
+    }
+
+    remoteTypingUserId.value = 0
   }
 
   function clearRemoteTyping() {
     remoteTyping.value = false
+    remoteTypingUserId.value = 0
   }
 
-  function setContactTyping(userId: number, value: boolean) {
+  function setTypingContact(contactId: string, value: boolean) {
+    if (!contactId) {
+      return
+    }
+
+    const nextIds = new Set(typingContactIds.value)
+
+    if (value) {
+      nextIds.add(contactId)
+    }
+    else {
+      nextIds.delete(contactId)
+    }
+
+    typingContactIds.value = [...nextIds]
+  }
+
+  function setUserContactTyping(userId: number, value: boolean) {
     if (userId <= 0) {
       return
     }
 
-    const nextIds = new Set(typingUserIds.value)
+    setTypingContact(buildUserContactId(userId), value)
+  }
 
-    if (value) {
-      nextIds.add(userId)
-    }
-    else {
-      nextIds.delete(userId)
+  function setGroupContactTyping(groupId: number, value: boolean) {
+    if (groupId <= 0) {
+      return
     }
 
-    typingUserIds.value = [...nextIds]
+    setTypingContact(`group:${groupId}`, value)
   }
 
   function isContactTyping(contact: MessageContact) {
-    const userId = contact.userId ?? 0
+    if (contact.type === "user") {
+      const userId = contact.userId ?? 0
 
-    return contact.type === "user"
-      && userId > 0
-      && typingUserIds.value.includes(userId)
+      return userId > 0
+        && typingContactIds.value.includes(buildUserContactId(userId))
+    }
+
+    if (contact.type === "group") {
+      const groupId = contact.groupId ?? 0
+
+      return groupId > 0
+        && typingContactIds.value.includes(`group:${groupId}`)
+    }
+
+    return false
   }
 
   async function loadOlderMessages() {
@@ -853,9 +888,11 @@ export function useMessagesInbox(
     refreshInbox,
     refreshMessageTags,
     refreshThread,
+    remoteTypingUserId,
     isContactTyping,
     setRemoteTyping,
-    setContactTyping,
+    setUserContactTyping,
+    setGroupContactTyping,
     clearRemoteTyping,
     selectedContact,
     selectedRecipientIds,

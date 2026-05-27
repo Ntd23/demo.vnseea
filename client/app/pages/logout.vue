@@ -17,16 +17,42 @@ import { useCurrentAuthUserStore } from "../../src/auth/application/stores/useCu
 
 const currentAuthUserStore = useCurrentAuthUserStore()
 const backendLogoutUrl = useBackendWebUrl(backendRoutes.auth.logout)
-currentAuthUserStore.clear()
+
+const markPresenceOffline = async () => {
+  try {
+    if (import.meta.server) {
+      const requestFetch = useRequestFetch()
+      await requestFetch("/_api/messages/presence", {
+        method: "POST",
+        body: { action: "offline" },
+      })
+      return
+    }
+
+    await $fetch("/_api/messages/presence", {
+      method: "POST",
+      body: { action: "offline" },
+    })
+  }
+  catch {
+    // Logout must continue even if the best-effort chat presence update fails.
+  }
+}
 
 if (import.meta.server) {
+  await markPresenceOffline()
+  currentAuthUserStore.clear()
+
   await navigateTo(backendLogoutUrl, {
     external: true,
     redirectCode: 302,
   })
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await markPresenceOffline()
+  currentAuthUserStore.clear()
+
   void navigateTo(backendLogoutUrl, {
     external: true,
     replace: true,

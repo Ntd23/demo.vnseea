@@ -75,9 +75,8 @@
               :text="profile.avatarText"
               class="profile-page__avatar"
               :ui="{
-                rounded: 'rounded-full',
-                background: 'bg-primary-600',
-                text: 'text-white font-black text-3xl',
+                root: 'rounded-full bg-primary-600',
+                fallback: 'text-white font-black text-3xl',
               }"
             />
             <button v-if="profile.isOwner" class="profile-page__avatar-btn" type="button">
@@ -723,7 +722,6 @@ import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
 import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import { useProfileVM } from "../../application/composables/useProfileVM"
-import { onClickOutside } from "@vueuse/core"
 
 const route = useRoute()
 
