@@ -1,37 +1,41 @@
 <!-- Description: Renders the active thread composer with a PHP-style core shell for text, file, and voice note sending plus one-to-one typing events. -->
 <template>
   <div class="border-t border-[var(--border-light)] bg-[#fcfdff] px-4 py-4 sm:px-6">
-    <div class="rounded-[24px] border border-[var(--border-light)] bg-white p-3 shadow-[0_12px_24px_rgba(15,23,42,0.04)]">
-      <div class="flex items-end gap-3">
-        <UTooltip :text="$t('pages.messagesPage.attachmentLabel')">
-          <UButton
-            type="button"
-            color="neutral"
-            variant="soft"
-            icon="i-ph-paperclip-duotone"
-            class="h-11 w-11 shrink-0 justify-center rounded-full"
-            :disabled="disabled || isRecording"
-            @click="toggleAttachmentPanel"
-          />
-        </UTooltip>
+    <div class="chat-input-shell">
+      <div class="chat-input-main-row">
+        <div class="chat-input-body">
+          <div class="chat-input-field-wrap">
+            <UTextarea
+              v-model="modelValue"
+              autoresize
+              class="chat-input-textarea-control"
+              :rows="1"
+              :disabled="disabled"
+              :placeholder="placeholder || $t('pages.messagesPage.composerPlaceholder')"
+              :ui="{
+                base: 'chat-input-textarea',
+              }"
+              @input="handleTypingInput"
+              @focus="handleTypingFocus"
+              @keydown.enter.exact.prevent="submitMessage"
+            />
 
-        <div class="min-w-0 flex-1 space-y-3">
-          <UTextarea
-            v-model="modelValue"
-            autoresize
-            :rows="1"
-            :disabled="disabled"
-            :placeholder="placeholder || $t('pages.messagesPage.composerPlaceholder')"
-            :ui="{
-              base: 'rounded-[22px] border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 text-[15px] leading-6 shadow-none',
-            }"
-            @input="handleTypingInput"
-            @focus="handleTypingFocus"
-            @blur="emit('typing-stop')"
-            @keydown.enter.exact.prevent="submitMessage"
-          />
+            <div class="chat-input-send-wrap">
+              <UTooltip :text="$t('pages.messagesPage.sendMessage')">
+                <UButton
+                  type="button"
+                  color="primary"
+                  variant="solid"
+                  icon="i-ph-paper-plane-tilt-bold"
+                  class="chat-input-send-button"
+                  :disabled="disabled || !canSend"
+                  @click="submitMessage"
+                />
+              </UTooltip>
+            </div>
+          </div>
 
-          <div v-if="attachmentPanelOpen && !recordDraft" class="rounded-[20px] border border-[var(--border-light)] bg-[var(--bg-muted)] p-3">
+          <div v-if="attachmentPanelOpen && !recordDraft" class="chat-input-panel">
             <UFileUpload
               v-model="attachmentFile"
               :multiple="false"
@@ -126,28 +130,28 @@
           />
         </div>
 
-        <div class="flex shrink-0 items-center gap-2">
+        <div class="chat-input-actions-right">
+          <UTooltip :text="$t('pages.messagesPage.attachmentLabel')">
+            <UButton
+              type="button"
+              color="neutral"
+              variant="soft"
+              icon="i-ph-paperclip-duotone"
+              class="chat-input-icon-button"
+              :disabled="disabled || isRecording"
+              @click="toggleAttachmentPanel"
+            />
+          </UTooltip>
+
           <UTooltip :text="isRecording ? $t('pages.messagesPage.stopRecording') : $t('pages.messagesPage.startRecording')">
             <UButton
               type="button"
               color="neutral"
               :variant="isRecording ? 'solid' : 'soft'"
               :icon="isRecording ? 'i-ph-stop-circle-duotone' : 'i-ph-microphone-duotone'"
-              class="h-11 w-11 justify-center rounded-full"
-              :disabled="disabled || !isSupported"
+              class="chat-input-icon-button"
+              :disabled="disabled"
               @click="handleRecordButton"
-            />
-          </UTooltip>
-
-          <UTooltip :text="$t('pages.messagesPage.sendMessage')">
-            <UButton
-              type="button"
-              color="primary"
-              variant="solid"
-              icon="i-ph-paper-plane-tilt-bold"
-              class="h-11 w-11 justify-center rounded-full shadow-[0_10px_24px_rgba(0,42,255,0.18)]"
-              :disabled="disabled || !canSend"
-              @click="submitMessage"
             />
           </UTooltip>
         </div>
@@ -208,6 +212,12 @@ watch(attachmentFile, (file) => {
 watch(recordDraft, (draft) => {
   if (draft && attachmentFile.value) {
     attachmentFile.value = null
+  }
+})
+
+watch(modelValue, (value) => {
+  if (!value.trim()) {
+    emit("typing-stop")
   }
 })
 
@@ -287,3 +297,108 @@ function submitMessage() {
   resetComposerState()
 }
 </script>
+
+<style scoped>
+.chat-input-shell {
+  border-radius: 24px;
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  padding: 12px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
+}
+
+.chat-input-main-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-input-actions-right {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-input-icon-button {
+  width: 44px !important;
+  height: 44px !important;
+  justify-content: center;
+  border-radius: 999px !important;
+}
+
+.chat-input-body {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-input-field-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 46px;
+  min-width: 0;
+  flex: 1;
+}
+
+:deep(.chat-input-textarea-control) {
+  width: 100%;
+  display: block;
+}
+
+:deep(.chat-input-textarea) {
+  min-height: 46px;
+  width: 100%;
+  border-radius: 999px !important;
+  border: 1px solid var(--border-light) !important;
+  background: var(--bg-muted) !important;
+  padding: 11px 56px 11px 18px !important;
+  color: var(--text-primary);
+  font-size: 15px;
+  line-height: 24px;
+  box-shadow: none !important;
+  resize: none;
+}
+
+.chat-input-send-wrap {
+  position: absolute;
+  right: 5px;
+  top: 23px;
+  z-index: 2;
+  transform: translateY(-50%);
+}
+
+.chat-input-send-button {
+  width: 36px !important;
+  height: 36px !important;
+  justify-content: center;
+  border-radius: 999px !important;
+  /* position: absolute !important; */
+  /* right: 4px !important; */
+  box-shadow: 0 10px 24px rgba(0, 42, 255, 0.18);
+}
+
+.chat-input-panel {
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
+  padding: 12px;
+}
+
+@media (max-width: 520px) {
+  .chat-input-main-row {
+    gap: 8px;
+  }
+
+  .chat-input-actions-right {
+    gap: 6px;
+  }
+
+  .chat-input-icon-button {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+</style>

@@ -20,10 +20,17 @@
               type="button"
               @click="handleToggleInfo"
             >
-              <div class="relative shrink-0">
+              <UChip
+                :show="contact.type === 'user' ? contact.isOnline : groupHasActiveMember"
+                position="bottom-right"
+                color="success"
+                :ui="{ base: '!bg-emerald-500' }"
+                inset
+                class="shrink-0"
+              >
                 <div
                   v-if="contact.type === 'group' && !headerAvatarUrl"
-                  class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-primary-50 text-primary-600"
+                  class="flex h-11 w-11 items-center justify-center rounded-full bg-primary-50 text-primary-600"
                 >
                   <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
                 </div>
@@ -31,14 +38,9 @@
                   v-else
                   :src="headerAvatarUrl"
                   size="lg"
-                  class="rounded-[16px]"
+                  class="rounded-full"
                 />
-                <span
-                  v-if="contact.type === 'user'"
-                  class="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-white"
-                  :class="contact.isOnline ? 'bg-emerald-500' : 'bg-slate-300'"
-                />
-              </div>
+              </UChip>
 
               <div class="min-w-0">
                 <h3 class="truncate text-[16px] font-semibold text-[var(--text-primary)]">
@@ -135,7 +137,7 @@
       </div>
 
       <MessagesChatMessageList
-        :contact-avatar="contact.avatarUrl"
+        :contact-avatar="typingAvatarUrl"
         :contact-type="contact.type"
         :empty-label="emptyThreadLabel"
         :is-pending="isPending"
@@ -148,12 +150,37 @@
 
       <MessagesChatInput
         v-model="inputModel"
-        :disabled="isPending || !contact"
+        :disabled="!contact"
         @typing-start="$emit('typing-start')"
         @typing-stop="$emit('typing-stop')"
         @send="onSendMessage"
       />
     </template>
+
+    <div v-else-if="inboxPending" class="flex min-h-0 flex-1 flex-col bg-white">
+      <div class="border-b border-[var(--border-light)] bg-[#fcfdff] px-4 py-4 sm:px-6">
+        <div class="flex items-center justify-between gap-4">
+          <div class="flex min-w-0 flex-1 items-center gap-3">
+            <USkeleton class="chat-window-header-skeleton__avatar" />
+            <div class="chat-window-header-skeleton__copy">
+              <USkeleton class="chat-window-header-skeleton__title" />
+              <USkeleton class="chat-window-header-skeleton__status" />
+            </div>
+          </div>
+          <div class="chat-window-header-skeleton__actions">
+            <USkeleton v-for="i in 4" :key="i" class="chat-window-header-skeleton__icon" />
+          </div>
+        </div>
+      </div>
+
+      <MessagesChatMessageList
+        contact-type="user"
+        :empty-label="emptyThreadLabel"
+        :is-pending="true"
+        :loading-label="loadingLabel"
+        :messages="[]"
+      />
+    </div>
 
     <div v-else class="flex flex-1 items-center justify-center p-6 sm:p-10">
       <div class="max-w-[520px] text-center">
@@ -191,10 +218,12 @@ const props = defineProps<{
   activeTab: MessageTabKey
   contact?: MessageContact | null
   groupDetails?: MessageGroupDetails | null
+  groupTypingAvatarUrl?: string
   emptyDescription: string
   emptyThreadLabel: string
   emptyTitle: string
   isPending?: boolean
+  inboxPending?: boolean
   messages: MessageItem[]
   isTyping?: boolean
   deletingConversation?: boolean
@@ -221,6 +250,12 @@ const headerAvatarUrl = computed(() =>
   props.groupDetails?.avatarUrl || props.contact?.avatarUrl || "",
 )
 
+const typingAvatarUrl = computed(() =>
+  props.contact?.type === "group"
+    ? props.groupTypingAvatarUrl || ""
+    : headerAvatarUrl.value,
+)
+
 const headerName = computed(() =>
   props.groupDetails?.name || props.contact?.name || "",
 )
@@ -233,9 +268,13 @@ const contactStatus = computed(() => {
   }
 
   if (contact.type === "group") {
-    return t("pages.messagesPage.groupMembersStatus", {
-      count: props.groupDetails?.memberCount ?? contact.memberCount ?? 0,
-    })
+    const count = props.groupDetails?.memberCount ?? contact.memberCount ?? 0
+    const onlineCount = groupOnlineMemberCount.value
+    const memberStatus = t("pages.messagesPage.groupMembersStatus", { count })
+
+    return onlineCount > 0
+      ? `${memberStatus}, ${onlineCount} đang hoạt động`
+      : memberStatus
   }
 
   if (contact.isOnline) {
@@ -244,6 +283,18 @@ const contactStatus = computed(() => {
 
   return contact.status || t("pages.messagesPage.activeRecently")
 })
+
+const groupHasActiveMember = computed(() =>
+  props.contact?.type === "group"
+  && Boolean(
+    groupOnlineMemberCount.value > 0
+    || props.contact.isOnline,
+  ),
+)
+
+const groupOnlineMemberCount = computed(() =>
+  props.groupDetails?.members.filter(member => !member.isSelf && member.isOnline).length ?? 0,
+)
 
 const loadingLabel = computed(() => t("pages.messagesPage.loadingMessages"))
 
@@ -263,3 +314,47 @@ function handleStartCall(type: MessageCallType) {
   emit("start-call", type)
 }
 </script>
+
+<style scoped>
+.chat-window-header-skeleton__avatar {
+  width: 44px !important;
+  height: 44px !important;
+  flex: 0 0 44px;
+  border-radius: 999px !important;
+  background: #e8edf4 !important;
+}
+
+.chat-window-header-skeleton__copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-window-header-skeleton__title {
+  width: 158px !important;
+  height: 18px !important;
+  border-radius: 999px !important;
+  background: #dfe5ee !important;
+}
+
+.chat-window-header-skeleton__status {
+  width: 122px !important;
+  height: 14px !important;
+  margin-top: 7px;
+  border-radius: 999px !important;
+  background: #e8edf4 !important;
+}
+
+.chat-window-header-skeleton__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.chat-window-header-skeleton__icon {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 999px !important;
+  background: #e8edf4 !important;
+}
+</style>

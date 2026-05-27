@@ -6,6 +6,7 @@ import type {
   MessageGroupCandidate,
   MessageGroupCreateCandidate,
   MessageGroupCreateDraft,
+  MessageGroupUpdateDraft,
   MessageCreateGroupResult,
   MessageGroupDetails,
   MessageRealtimeToken,
@@ -40,12 +41,16 @@ export interface MessagesRepository {
   setTyping(userId: number): Promise<MessageActionResult>
   clearTyping(userId: number): Promise<MessageActionResult>
   getTyping(userId: number): Promise<MessageTypingState>
+  setGroupTyping(groupId: number): Promise<MessageActionResult>
+  clearGroupTyping(groupId: number): Promise<MessageActionResult>
+  getGroupTyping(groupId: number): Promise<MessageTypingState>
   getRealtimeToken(): Promise<MessageRealtimeToken>
   createTagLabel(input: { name: string, color: string }): Promise<MessageActionResult>
   deleteTagLabel(input: { tagId: number }): Promise<MessageActionResult>
   attachTag(input: { userId: number, tagId: number }): Promise<MessageActionResult>
   detachTag(input: { userId: number, tagId: number }): Promise<MessageActionResult>
   markAllAsRead(): Promise<MessageActionResult>
+  markPresenceOnline(): Promise<MessageActionResult>
   deleteConversation(contact: MessageContact): Promise<MessageActionResult>
   getGroupDetails(groupId: number): Promise<MessageGroupDetails>
   searchCreateGroupParticipants(query: string): Promise<MessageGroupCreateCandidate[]>
@@ -53,4 +58,5 @@ export interface MessagesRepository {
   addGroupMembers(groupId: number, userIds: number[]): Promise<MessageActionResult>
   removeGroupMember(groupId: number, userId: number): Promise<MessageActionResult>
   createGroup(input: MessageGroupCreateDraft): Promise<MessageCreateGroupResult>
+  updateGroup(input: MessageGroupUpdateDraft): Promise<MessageActionResult>
 }

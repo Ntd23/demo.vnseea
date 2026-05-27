@@ -42,6 +42,7 @@ export type MessageGroupMember = {
   username?: string
   avatarUrl: string
   profileUrl?: string
+  isOnline?: boolean
   isOwner: boolean
   isSelf: boolean
 }
@@ -68,6 +69,12 @@ export type MessageGroupCreateDraft = {
   avatar?: File | null
 }
 
+export type MessageGroupUpdateDraft = {
+  groupId: number
+  name?: string
+  avatar?: File | null
+}
+
 export type MessageGroupDetails = {
   groupId: number
   name: string
@@ -89,6 +96,7 @@ export type MessageItem = {
   avatar?: string
   timestamp?: number
   senderId?: number
+  senderIsOnline?: boolean
   authorName?: string
   threadType?: MessageThreadType
   mediaUrl?: string
@@ -142,6 +150,7 @@ export type MessageThread = {
 export type MessageTypingState = {
   enabled: boolean
   typing: boolean
+  activeUserIds?: number[]
 }
 
 export type MessageRealtimeToken = {
