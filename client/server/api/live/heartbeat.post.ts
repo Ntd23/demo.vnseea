@@ -7,6 +7,8 @@ export default defineEventHandler(async (event) => {
   const body = await readBody<{
     postId?: number | string
     knownCommentIds?: number[]
+    knownReactionIds?: number[]
+    page?: "live" | "story"
   }>(event)
   const postId = Number(body?.postId ?? 0)
 
@@ -19,8 +21,14 @@ export default defineEventHandler(async (event) => {
 
   return await fetchLiveHeartbeat(event, {
     postId,
+    page: body?.page === "story" ? "story" : "live",
     knownCommentIds: Array.isArray(body?.knownCommentIds)
       ? body.knownCommentIds
+          .map(id => Number(id))
+          .filter(id => Number.isFinite(id) && id > 0)
+      : [],
+    knownReactionIds: Array.isArray(body?.knownReactionIds)
+      ? body.knownReactionIds
           .map(id => Number(id))
           .filter(id => Number.isFinite(id) && id > 0)
       : [],

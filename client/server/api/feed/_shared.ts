@@ -32,7 +32,6 @@ import type {
   FeedPostRecord,
   FeedPostsResponse,
   FeedStoryRecord,
-  FeedStoryReactionType,
 } from "../../../src/feed/domain/types/feed.types"
 
 type BackendEntity = Record<string, unknown>
@@ -751,6 +750,8 @@ export const mapPostRecord = (
   const pageData = asRecord(entity.page_data)
   const groupData = asRecord(entity.group_data)
   const sourceEntity = Object.keys(publisher).length > 0 ? publisher : userData
+  const authorId = firstNumber(sourceEntity, ["user_id", "id"])
+    || firstNumber(entity, ["user_id", "owner_id"])
   const author = firstString(sourceEntity, ["name", "username"])
     || firstString(pageData, ["page_title", "page_name"])
     || firstString(groupData, ["group_title", "group_name"])
@@ -789,11 +790,22 @@ export const mapPostRecord = (
       ? "video"
       : "image"
   const postReaction = getPostReaction(entity)
+  const liveStreamName = firstString(entity, ["stream_name", "streamName"])
+  const liveTime = firstNumber(entity, ["live_time", "liveTime"])
+  const liveEnded = isTruthy(entity.live_ended)
+  const liveHeartbeatAge = liveTime > 0 ? Math.max(0, Math.floor(Date.now() / 1000) - liveTime) : 0
+  const isLive = firstString(entity, ["postType", "post_type", "type"]) === "live" || Boolean(liveStreamName)
+  const liveState = !isLive
+    ? null
+    : liveEnded || !liveTime || liveHeartbeatAge > 45
+      ? "offline"
+      : liveHeartbeatAge > 10 ? "stale" : "live"
 
   return {
     id: firstNumber(entity, ["post_id", "id"]),
     sharedPostId: sharedPostId || undefined,
     sharedPost,
+    authorId: authorId || undefined,
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"])),
     authorVerified: isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
@@ -816,6 +828,11 @@ export const mapPostRecord = (
       shares: firstNumber(entity, ["post_shares", "shares", "shares_count"]),
       views: firstNumber(entity, ["post_views", "view_count", "views"]),
     },
+    isLive,
+    liveState,
+    liveStreamName: liveStreamName || undefined,
+    liveViewerCount: firstNumber(entity, ["live_sub_users", "live_viewer_count", "viewer_count", "live_count"]),
+    liveHeartbeatAge,
     comments: asArray(entity.get_post_comments).map(comment => mapCommentRecord(comment, resolveMediaUrl)),
     mediaItems,
     attachmentCard,

@@ -7,6 +7,7 @@ import type {
   GoLiveDraft,
   LiveStudioBootstrap,
   LiveStudioComment,
+  LiveStudioReactionEvent,
   LiveStudioSession,
   LiveStudioState,
 } from "../../domain/types/live.types"
@@ -46,6 +47,7 @@ export function useLiveStudioPageVM(
   repository: LiveRepository = createApiLiveRepository(),
 ) {
   const router = useRouter()
+  const { t } = useI18n()
 
   const title = ref("")
   const description = ref("")
@@ -60,6 +62,7 @@ export function useLiveStudioPageVM(
   const clipsCount = ref(0)
   const heartbeatAge = ref(0)
   const activityItems = ref<LiveStudioComment[]>([])
+  const reactionEvents = ref<LiveStudioReactionEvent[]>([])
   const starting = ref(false)
   const ending = ref(false)
   const heartbeatLoading = ref(false)
@@ -67,6 +70,7 @@ export function useLiveStudioPageVM(
   const statusMessage = ref("")
   const errorMessage = ref("")
   const knownCommentIds = ref<number[]>([])
+  const knownReactionIds = ref<number[]>([])
 
   const { data, status, error, refresh } = useAsyncData(
     "live:studio-bootstrap",
@@ -79,21 +83,21 @@ export function useLiveStudioPageVM(
   const bootstrap = computed(() => data.value ?? EMPTY_BOOTSTRAP)
   const bootstrapLoading = computed(() => status.value === "pending")
   const bootstrapErrorMessage = computed(() =>
-    error.value ? toErrorMessage(error.value, "Không thể tải studio phát trực tiếp.") : "",
+    error.value ? toErrorMessage(error.value, t("pages.livePage.studio.vmBootstrapError")) : "",
   )
 
   const blockedReasonMessage = computed(() => {
     switch (bootstrap.value.blockedReason) {
       case "live_video_disabled":
-        return "Tính năng phát trực tiếp đang tắt trong cấu hình hệ thống."
+        return t("pages.livePage.studio.vmLiveVideoDisabled")
       case "live_permission_disabled":
-        return "Tài khoản hiện tại chưa được cấp quyền phát trực tiếp."
+        return t("pages.livePage.studio.vmLivePermissionDisabled")
       case "livekit_not_ready":
-        return "LiveKit backend chưa sẵn sàng."
+        return t("pages.livePage.studio.vmLiveKitNotReady")
       case "live_already_running":
-        return "Bạn đang có một buổi phát trực tiếp khác đang hoạt động."
+        return t("pages.livePage.studio.vmLiveAlreadyRunning")
       case "bootstrap_failed":
-        return "Không thể cấp thông tin host studio từ backend."
+        return t("pages.livePage.studio.vmMissingHost")
       default:
         return ""
     }
@@ -135,6 +139,8 @@ export function useLiveStudioPageVM(
         const heartbeat = await repository.getHeartbeat(
           session.value.postId,
           knownCommentIds.value,
+          "live",
+          knownReactionIds.value,
         )
 
         liveState.value = heartbeat.stillLive
@@ -168,6 +174,24 @@ export function useLiveStudioPageVM(
           }
         }
 
+        if (heartbeat.reactionEvents.length > 0) {
+          const nextReactionIds = new Set(knownReactionIds.value)
+          const freshReactions = heartbeat.reactionEvents.filter((item) => {
+            if (item.id <= 0 || nextReactionIds.has(item.id)) {
+              return false
+            }
+
+            nextReactionIds.add(item.id)
+            return true
+          })
+
+          if (freshReactions.length > 0) {
+            reactionEvents.value = [...reactionEvents.value, ...freshReactions].slice(-48)
+          }
+
+          knownReactionIds.value = Array.from(nextReactionIds).slice(-96)
+        }
+
         const nextCommentIds = new Set(knownCommentIds.value)
 
         heartbeat.comments.forEach((item) => {
@@ -180,7 +204,7 @@ export function useLiveStudioPageVM(
 
         if (heartbeat.stillLive === "offline") {
           pauseHeartbeat()
-          statusMessage.value = "Buổi phát trực tiếp đã kết thúc trên backend."
+          statusMessage.value = t("pages.livePage.studio.vmBackendEnded")
         }
       }
       catch (heartbeatError) {
@@ -191,7 +215,7 @@ export function useLiveStudioPageVM(
 
         statusMessage.value = toErrorMessage(
           heartbeatError,
-          "Không thể đồng bộ hoạt động livestream.",
+          t("pages.livePage.studio.vmSyncError"),
         )
       }
       finally {
@@ -237,7 +261,7 @@ export function useLiveStudioPageVM(
 
     starting.value = true
     errorMessage.value = ""
-    statusMessage.value = "Đang khởi tạo phòng phát trực tiếp..."
+    statusMessage.value = t("pages.livePage.studio.vmCreatingRoom")
 
     const draft: GoLiveDraft = {
       title: title.value.trim(),
@@ -266,7 +290,9 @@ export function useLiveStudioPageVM(
       session.value = createdSession
       liveState.value = "live"
       knownCommentIds.value = []
+      knownReactionIds.value = []
       activityItems.value = []
+      reactionEvents.value = []
       viewerCount.value = 0
       reactionsCount.value = 0
       sharesCount.value = 0
@@ -282,7 +308,7 @@ export function useLiveStudioPageVM(
         catch (thumbnailError) {
           statusMessage.value = toErrorMessage(
             thumbnailError,
-            "Livestream đã được tạo nhưng chưa tải được thumbnail.",
+            t("pages.livePage.studio.vmThumbnailUploadWarning"),
           )
         }
         finally {
@@ -290,7 +316,7 @@ export function useLiveStudioPageVM(
         }
       }
 
-      statusMessage.value = "Đang phát trực tiếp."
+      statusMessage.value = t("pages.livePage.studio.vmBroadcasting")
       await refreshHeartbeatNow()
       resumeHeartbeat()
       return createdSession
@@ -303,7 +329,7 @@ export function useLiveStudioPageVM(
 
       errorMessage.value = toErrorMessage(
         startError,
-        "Không thể bắt đầu phát trực tiếp.",
+        t("pages.livePage.studio.vmStartError"),
       )
       statusMessage.value = ""
       session.value = null
@@ -322,7 +348,12 @@ export function useLiveStudioPageVM(
     }
 
     heartbeatLoading.value = false
-    await repository.getHeartbeat(session.value.postId, knownCommentIds.value).then((heartbeat) => {
+    await repository.getHeartbeat(
+      session.value.postId,
+      knownCommentIds.value,
+      "live",
+      knownReactionIds.value,
+    ).then((heartbeat) => {
       liveState.value = heartbeat.stillLive
       viewerCount.value = heartbeat.viewerCount
       reactionsCount.value = heartbeat.reactionsCount
@@ -335,11 +366,16 @@ export function useLiveStudioPageVM(
         ...heartbeat.joinedUsers,
         ...heartbeat.leftUsers,
       ].slice(-24)
+      reactionEvents.value = heartbeat.reactionEvents.slice(-48)
 
       knownCommentIds.value = heartbeat.comments
         .map(item => item.id)
         .filter(id => id > 0)
         .slice(-48)
+      knownReactionIds.value = heartbeat.reactionEvents
+        .map(item => item.id)
+        .filter(id => id > 0)
+        .slice(-96)
     }).catch(async (heartbeatError) => {
       if (isAuthError(heartbeatError)) {
         await router.push("/welcome")
@@ -348,7 +384,7 @@ export function useLiveStudioPageVM(
 
       statusMessage.value = toErrorMessage(
         heartbeatError,
-        "Không thể lấy hoạt động livestream.",
+        t("pages.livePage.studio.vmActivityError"),
       )
     })
   }
@@ -369,12 +405,14 @@ export function useLiveStudioPageVM(
       session.value = null
       liveState.value = "offline"
       knownCommentIds.value = []
+      knownReactionIds.value = []
       viewerCount.value = 0
       reactionsCount.value = 0
       sharesCount.value = 0
       clipsCount.value = 0
       heartbeatAge.value = 0
       activityItems.value = []
+      reactionEvents.value = []
       statusMessage.value = result.message
       await refresh()
     }
@@ -386,7 +424,7 @@ export function useLiveStudioPageVM(
 
       errorMessage.value = toErrorMessage(
         endError,
-        "Không thể kết thúc livestream.",
+        t("pages.livePage.studio.vmEndError"),
       )
     }
     finally {
@@ -414,7 +452,7 @@ export function useLiveStudioPageVM(
 
       errorMessage.value = toErrorMessage(
         uploadError,
-        "Không thể cập nhật thumbnail livestream.",
+        t("pages.livePage.studio.vmThumbnailUpdateError"),
       )
     }
     finally {
@@ -439,6 +477,7 @@ export function useLiveStudioPageVM(
     clipsCount,
     heartbeatAge,
     activityItems,
+    reactionEvents,
     recentCommentCount,
     livePostUrl,
     currentTitle,

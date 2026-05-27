@@ -4,6 +4,7 @@ import { createError, type H3Event } from "h3"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver, getBackendWebBaseUrl } from "../../utils/backend-media-url"
+import { fetchFeedPostById } from "../feed/_shared"
 import type {
   GoLiveDraft,
   LiveMutationResult,
@@ -11,7 +12,9 @@ import type {
   LiveStudioComment,
   LiveStudioHeartbeat,
   LiveStudioHost,
+  LiveStudioReactionEvent,
   LiveStudioSession,
+  LiveViewerSession,
 } from "../../../src/live/domain/types/live.types"
 
 type BackendEntity = Record<string, unknown>
@@ -47,6 +50,20 @@ type BackendLiveSessionResponse = {
   started_at?: number | string
 }
 
+type BackendLiveJoinResponse = {
+  status?: number | string
+  message?: string
+  error?: string
+  removed?: string
+  post_id?: number | string
+  stream_name?: string
+  room_name?: string
+  ws_url?: string
+  token?: string
+  stream_state?: string
+  heartbeat_age?: number | string
+}
+
 type BackendLiveHeartbeatResponse = {
   status?: number | string
   message?: string
@@ -62,6 +79,7 @@ type BackendLiveHeartbeatResponse = {
   comments?: BackendEntity[]
   joined?: BackendEntity[]
   left?: BackendEntity[]
+  reactions?: BackendEntity[]
 }
 
 type BackendLiveMutationResponse = {
@@ -188,6 +206,17 @@ const mapActivityItem = (
   isHost: asBoolean(item.is_host),
 })
 
+const mapReactionEvent = (
+  item: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string,
+): LiveStudioReactionEvent => ({
+  id: asNumber(item.id),
+  value: asString(item.value || item.reaction),
+  author: asString(item.author),
+  username: asString(item.username),
+  avatarUrl: resolveMediaUrl(asString(item.avatar)),
+})
+
 export async function fetchLiveBootstrap(event: H3Event): Promise<LiveStudioBootstrap> {
   const currentUser = await getBackendCurrentUser(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
@@ -245,22 +274,54 @@ export async function createLiveSession(
   }
 }
 
+export async function joinLiveSession(
+  event: H3Event,
+  postId: number,
+): Promise<LiveViewerSession> {
+  const response = await createBackendWebClient(event).postForm<BackendLiveJoinResponse>(
+    "live",
+    { post_id: postId },
+    { s: "join" },
+  )
+  const normalized = assertLiveWebSuccess(response, "Unable to join live session.")
+
+  return {
+    postId: asNumber(normalized.post_id) || postId,
+    streamName: asString(normalized.stream_name),
+    roomName: asString(normalized.room_name),
+    wsUrl: asString(normalized.ws_url),
+    token: asString(normalized.token),
+    streamState: asString(normalized.stream_state) === "stale"
+      ? "stale"
+      : asString(normalized.stream_state) === "offline" ? "offline" : "live",
+    heartbeatAge: asNumber(normalized.heartbeat_age),
+  }
+}
+
 export async function fetchLiveHeartbeat(
   event: H3Event,
   input: {
     postId: number
     knownCommentIds?: number[]
+    knownReactionIds?: number[]
+    page?: "live" | "story"
   },
 ): Promise<LiveStudioHeartbeat> {
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const params = new URLSearchParams()
 
   params.append("post_id", String(input.postId))
-  params.append("page", "live")
+  params.append("page", input.page === "story" ? "story" : "live")
 
   ;(input.knownCommentIds ?? []).forEach((id, index) => {
     if (Number.isFinite(id) && id > 0) {
       params.append(`ids[${index}]`, String(id))
+    }
+  })
+
+  ;(input.knownReactionIds ?? []).forEach((id, index) => {
+    if (Number.isFinite(id) && id > 0) {
+      params.append(`reaction_ids[${index}]`, String(id))
     }
   })
 
@@ -270,6 +331,16 @@ export async function fetchLiveHeartbeat(
     { s: "check_comments" },
   )
   const normalized = assertLiveWebSuccess(response, "Unable to refresh live activity.")
+  let postReactionsCount = 0
+  let postSharesCount = 0
+
+  try {
+    const post = await fetchFeedPostById(event, input.postId)
+    postReactionsCount = post?.stats.likes ?? 0
+    postSharesCount = post?.stats.shares ?? 0
+  }
+  catch {
+  }
 
   return {
     stillLive: asString(normalized.still_live) === "stale"
@@ -279,8 +350,9 @@ export async function fetchLiveHeartbeat(
     comments: (normalized.comments ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
     joinedUsers: (normalized.joined ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
     leftUsers: (normalized.left ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
-    reactionsCount: asNumber(normalized.reactions_count),
-    sharesCount: asNumber(normalized.shares_count),
+    reactionEvents: (normalized.reactions ?? []).map(item => mapReactionEvent(item, resolveMediaUrl)),
+    reactionsCount: Math.max(asNumber(normalized.reactions_count), postReactionsCount),
+    sharesCount: Math.max(asNumber(normalized.shares_count), postSharesCount),
     clipsCount: asNumber(normalized.clips_count),
     heartbeatAge: asNumber(normalized.heartbeat_age),
   }

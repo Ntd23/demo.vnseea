@@ -77,6 +77,7 @@ export type FeedPostRecord = {
   id: number
   sharedPostId?: number
   sharedPost?: FeedPostRecord | null
+  authorId?: number
   author: string
   authorAvatarUrl: string
   authorVerified?: boolean
@@ -109,6 +110,11 @@ export type FeedPostRecord = {
     shares: number
     views: number
   }
+  isLive: boolean
+  liveState: "live" | "stale" | "offline" | null
+  liveStreamName?: string
+  liveViewerCount?: number
+  liveHeartbeatAge?: number
   comments: FeedCommentRecord[]
   mediaItems: FeedMediaItem[]
   attachmentCard: FeedPostAttachmentCard | null
