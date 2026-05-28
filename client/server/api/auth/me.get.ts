@@ -12,6 +12,10 @@ type BackendCurrentUserPayload = {
   username?: string
   avatar?: string
   admin?: number | string
+  is_pro?: number | string
+  pro_type?: number | string
+  can_boost_posts?: number | string
+  can_boost_pages?: number | string
   wallet?: number | string
   points?: number | string
 }
@@ -80,6 +84,10 @@ export default defineEventHandler(async (event): Promise<CurrentAuthUser | null>
       role: adminLevel === 1 ? "admin" : adminLevel === 2 ? "moderator" : "user",
       isAdmin: adminLevel === 1,
       isModerator: adminLevel === 2,
+      isPro: Number(user.is_pro ?? 0) > 0,
+      proType: asNonEmptyString(String(user.pro_type ?? "")),
+      canBoostPosts: Number(user.can_boost_posts ?? 0) > 0,
+      canBoostPages: Number(user.can_boost_pages ?? 0) > 0,
       wallet: user.wallet,
       points: user.points !== undefined && user.points !== null
         ? Number(user.points)

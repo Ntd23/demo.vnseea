@@ -1,6 +1,10 @@
 <!-- Description: Renders a normalized feed post with real backend media, like, report, and comment actions instead of mock-local content. -->
 <template>
-  <article :id="postAnchorId" class="post-card">
+  <article 
+    :id="postAnchorId" 
+    class="post-card"
+    :class="{ 'post-card--colored': Boolean(postColorStyles) }"
+  >
     <div class="post-card__body">
       <FeedPostHeader
         :author="post.author"
@@ -18,7 +22,11 @@
         @menu-action="handleMenuAction"
       />
 
-      <div v-if="hasPostContent" class="post-card__content">
+      <div
+        v-if="hasPostContent"
+        class="post-card__content"
+        :style="postColorStyles ? { background: postColorStyles.bg, color: postColorStyles.text } : {}"
+      >
         <p v-if="post.text" class="post-card__text">
           <template v-for="segment in postTextSegments" :key="segment.key">
             <span :class="{ 'post-card__mention': segment.isMention }">{{ segment.text }}</span>
@@ -34,6 +42,30 @@
             {{ formatHashtagLabel(tag) }}
           </NuxtLink>
         </div>
+      </div>
+
+      <div v-if="localPollOptions.length" class="post-card__poll">
+        <button
+          v-for="option in localPollOptions"
+          :key="option.id"
+          type="button"
+          class="post-card__poll-option"
+          :class="{ 'post-card__poll-option--selected': option.selected }"
+          :disabled="pollVoting"
+          @click="votePoll(option.id)"
+        >
+          <div class="post-card__poll-fill" :style="{ width: `${Math.min(option.percentage, 100)}%` }" />
+          <div class="post-card__poll-content">
+            <span class="post-card__poll-text">{{ option.text }}</span>
+            <span class="post-card__poll-meta">
+              <strong>{{ option.percentage }}%</strong>
+              <small>{{ t("feed.postCard.pollOptionVotes", { count: option.votes }) }}</small>
+            </span>
+          </div>
+        </button>
+        <p class="post-card__poll-summary">
+          {{ t("feed.postCard.pollTotalVotes", { count: pollVotesTotal }) }}
+        </p>
       </div>
 
       <NuxtLink
@@ -294,6 +326,7 @@
 
 <script setup lang="ts">
 import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useHashtagData"
+import { useFeedPostColors } from "../../application/composables/useFeedPostColors"
 import { createPostTextMentionSegments } from "../../application/utils/feed-mentions"
 import { useFeedPostCardVM } from "../../application/view-models/useFeedPostCardVM"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
@@ -307,6 +340,7 @@ import FeedShareModal from "./ShareModal.vue"
 import FeedSharedPostCard from "./SharedPostCard.vue"
 
 const { t } = useI18n()
+const { defaultPostColor, postColorById } = useFeedPostColors()
 
 const props = defineProps<{
   post: FeedPostRecord
@@ -331,17 +365,20 @@ const {
   lightboxOpen,
   currentMediaIndex,
   localComments,
+  localPollOptions,
   likesCount,
   sharesCount,
   actionState,
   actionMessage,
   commenting,
+  pollVoting,
   commentActionRepository,
   postAnchorId,
   postReactionOptions,
   activePostReactionAsset,
   activePostReactionLabel,
   previewReactions,
+  pollVotesTotal,
   hasReactions,
   commentsCount,
   hasPostContent,
@@ -355,6 +392,7 @@ const {
   handlePostReactionButtonClick,
   toggleLike,
   reactToPost,
+  votePoll,
   onOpenMedia,
   submitComment,
   handleShared,
@@ -369,6 +407,12 @@ const {
 const postTextSegments = computed(() =>
   createPostTextMentionSegments(props.post.text, props.post.mentions ?? []),
 )
+
+const postColorStyles = computed(() => {
+  if (!props.post.colorId) return null
+
+  return postColorById.value[props.post.colorId] || defaultPostColor.value
+})
 
 const previewComment = computed(() => localComments.value[0] ?? null)
 const previewCommentInitials = computed(() => {
@@ -386,19 +430,25 @@ const previewCommentInitials = computed(() => {
 const attachmentIcon = computed(() =>
   props.post.attachmentCard?.type === "funding"
     ? "i-ph-hand-heart-duotone"
-    : "i-ph-newspaper-clipping-duotone",
+    : props.post.attachmentCard?.type === "product"
+      ? "i-ph-shopping-bag-open-duotone"
+      : "i-ph-newspaper-clipping-duotone",
 )
 
 const attachmentLabel = computed(() =>
   props.post.attachmentCard?.type === "funding"
     ? t("feed.postCard.fundingAttachment")
-    : t("feed.postCard.blogAttachment"),
+    : props.post.attachmentCard?.type === "product"
+      ? t("feed.postCard.productAttachment")
+      : t("feed.postCard.blogAttachment"),
 )
 
 const attachmentActionLabel = computed(() =>
   props.post.attachmentCard?.type === "funding"
     ? t("feed.postCard.openFunding")
-    : t("feed.postCard.openBlog"),
+    : props.post.attachmentCard?.type === "product"
+      ? t("feed.postCard.openProduct")
+      : t("feed.postCard.openBlog"),
 )
 
 async function openCommentTagging() {
@@ -478,6 +528,89 @@ function handleMediaOpen(index: number) {
 
 .post-card__media {
   margin-top: 14px;
+}
+
+.post-card__poll {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.post-card__poll-option {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 10px;
+  background: #f8fafc;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.post-card__poll-option--selected {
+  border-color: rgba(20, 32, 255, 0.35);
+}
+
+.post-card__poll-option:disabled {
+  cursor: default;
+}
+
+.post-card__poll-option:not(:disabled):hover {
+  border-color: rgba(20, 32, 255, 0.25);
+}
+
+.post-card__poll-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: rgba(20, 32, 255, 0.1);
+}
+
+.post-card__poll-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+}
+
+.post-card__poll-text,
+.post-card__poll-meta {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.post-card__poll-meta {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  color: #1420ff;
+  text-align: right;
+}
+
+.post-card__poll-meta strong {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.post-card__poll-meta small {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.post-card__poll-summary {
+  margin: 2px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .post-card__attachment {
@@ -937,5 +1070,34 @@ function handleMediaOpen(index: number) {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+/* Colored post specific styles */
+.post-card--colored {
+  background: #ffffff;
+}
+
+.post-card--colored .post-card__content {
+  display: flex;
+  min-height: 260px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  padding: 28px 20px;
+}
+
+.post-card--colored .post-card__text {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  line-height: 1.6 !important;
+  color: inherit !important;
+  width: 100%;
+}
+
+.post-card--colored .post-card__mention {
+  color: #ffffff !important;
+  text-decoration: underline;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 </style>

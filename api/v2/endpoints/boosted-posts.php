@@ -1,5 +1,5 @@
 <?php
-// English description: Exposes active Pro packages as JSON for the Nuxt go-pro bridge using backend package configuration.
+// English description: Returns current user's boosted posts for the Nuxt account menu route.
 
 $response_data = array(
     'api_status' => 400
@@ -28,22 +28,24 @@ if (empty($wo['loggedin']) && !empty($_GET['access_token'])) {
     }
 }
 
-$packages = array();
-foreach ($wo['pro_packages'] as $key => $package) {
-    if (empty($package['status'])) {
-        continue;
-    }
-
-    $package['type'] = $key;
-    $packages[] = $package;
+if (empty($wo['loggedin']) || empty($wo['user']['user_id'])) {
+    $error_code = 2;
+    $error_message = 'Authentication is required';
+}
+else if ($wo['user']['is_pro'] == 0) {
+    $error_code = 4;
+    $error_message = 'Pro membership is required';
+}
+else if (in_array($wo['user']['pro_type'], array_keys($wo['pro_packages'])) && $wo['pro_packages'][$wo['user']['pro_type']]['posts_promotion'] < 1) {
+    $error_code = 5;
+    $error_message = 'Your Pro package does not include boosted posts';
 }
 
-$response_data = array(
-    'api_status' => 200,
-    'membership_system' => !empty($wo['config']['membership_system']),
-    'currency' => $wo['config']['currency'],
-    'currency_symbol' => $wo['config']['currency_symbol_array'][$wo['config']['currency']],
-    'current_pro_type' => !empty($wo['user']['pro_type']) ? $wo['user']['pro_type'] : '',
-    'current_is_pro' => !empty($wo['user']['is_pro']),
-    'packages' => $packages
-);
+if (empty($error_code)) {
+    $posts = Wo_GetBoostedPosts($wo['user']['user_id']);
+
+    $response_data = array(
+        'api_status' => 200,
+        'data' => is_array($posts) ? $posts : array()
+    );
+}

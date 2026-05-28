@@ -1,6 +1,21 @@
 <!-- Description: Renders the feed publisher box with backend post creation and current-user session data instead of local mock submission. -->
 <template>
   <section class="publisher">
+    <input
+      ref="imageInputRef"
+      class="publisher__file-input"
+      type="file"
+      accept="image/png,image/jpeg,image/gif"
+      @change="selectImageFile"
+    >
+    <input
+      ref="videoInputRef"
+      class="publisher__file-input"
+      type="file"
+      accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v"
+      @change="selectVideoFile"
+    >
+
     <div v-if="!expanded" class="publisher__compact" @click="openComposer">
       <div class="publisher__compact-avatar">
         <img v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="publisher__avatar-image">
@@ -23,7 +38,7 @@
           class="publisher__compact-btn"
           :title="action.label"
           type="button"
-          @click.stop="handleCompactAction(action.value)"
+          @click.stop="handleCompactActionOverride(action.value)"
         >
           <Icon :name="action.icon" class="h-5 w-5" />
         </button>
@@ -48,7 +63,7 @@
         {{ statusMessage }}
       </div>
 
-      <div class="publisher__textarea-shell">
+      <div v-if="!showProductForm" class="publisher__textarea-shell" :class="{ 'publisher__textarea-shell--colored': Boolean(activeColorOption) }" :style="activeColorOption ? { background: activeColorOption.bg, color: activeColorOption.text } : {}">
         <div class="publisher__textarea-highlight" aria-hidden="true">
           <template v-for="segment in highlightedDraftSegments" :key="segment.key">
             <span :class="{ 'publisher__textarea-mention': segment.isMention }">{{ segment.text }}</span>
@@ -56,7 +71,7 @@
         </div>
         <textarea
           ref="textareaEl"
-          v-model="draft.text"
+          v-model="draftText"
           class="publisher__textarea"
           :placeholder="t('feed.publisherBox.composerPlaceholder')"
           maxlength="280"
@@ -64,11 +79,119 @@
           autocomplete="off"
           autocapitalize="off"
           autocorrect="off"
-          @input="updateMentionQuery"
+          @input="handleInput"
           @click="updateMentionQuery"
           @keyup="handleTextareaKeyup"
           @keydown.esc.prevent="closeMentionSuggestions"
         />
+      </div>
+
+      <!-- Sell Product Form -->
+      <div v-else class="publisher__product-form">
+        <p class="publisher__product-title">
+          <Icon name="i-ph-shopping-cart-bold" class="h-5 w-5 mr-1 text-orange-500" />
+          {{ locale === "vi" ? "Đăng bán sản phẩm" : "List a Product for Sale" }}
+        </p>
+        
+        <div class="publisher__product-grid">
+          <div class="publisher__product-field">
+            <label class="publisher__product-label">{{ locale === "vi" ? "Tên sản phẩm *" : "Product Name *" }}</label>
+            <input 
+              v-model="productForm.name" 
+              type="text" 
+              class="publisher__product-input" 
+              :placeholder="locale === 'vi' ? 'Bạn đang bán gì?' : 'What are you selling?'"
+              required
+            >
+          </div>
+
+          <div class="publisher__product-row-2">
+            <div class="publisher__product-field">
+              <label class="publisher__product-label">{{ locale === "vi" ? "Giá *" : "Price *" }}</label>
+              <div class="publisher__price-wrapper">
+                <input 
+                  v-model="productForm.price" 
+                  type="text" 
+                  class="publisher__product-input" 
+                  placeholder="0.00"
+                  required
+                >
+                <select v-model="productForm.currency" class="publisher__product-select publisher__currency-select">
+                  <option value="₫">₫ (VND)</option>
+                  <option value="$">$ (USD)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="publisher__product-field">
+              <label class="publisher__product-label">{{ locale === "vi" ? "Danh mục *" : "Category *" }}</label>
+              <select v-model="productForm.category" class="publisher__product-select">
+                <option value="1">{{ locale === "vi" ? "Trang phục & Phụ kiện" : "Apparel & Accessories" }}</option>
+                <option value="2">{{ locale === "vi" ? "Ô tô & Xe cộ" : "Autos & Vehicles" }}</option>
+                <option value="3">{{ locale === "vi" ? "Sản phẩm trẻ em" : "Baby & Children's Products" }}</option>
+                <option value="4">{{ locale === "vi" ? "Làm đẹp & Sức khỏe" : "Beauty Products & Services" }}</option>
+                <option value="5">{{ locale === "vi" ? "Máy tính & Thiết bị ngoại vi" : "Computers & Peripherals" }}</option>
+                <option value="6">{{ locale === "vi" ? "Điện tử dân dụng" : "Consumer Electronics" }}</option>
+                <option value="10">{{ locale === "vi" ? "Nhà & Vườn" : "Home & Garden" }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="publisher__product-row-2">
+            <div class="publisher__product-field">
+              <label class="publisher__product-label">{{ locale === "vi" ? "Tình trạng" : "Condition" }}</label>
+              <select v-model="productForm.type" class="publisher__product-select">
+                <option value="0">{{ locale === "vi" ? "Mới" : "New" }}</option>
+                <option value="1">{{ locale === "vi" ? "Đã sử dụng" : "Used" }}</option>
+              </select>
+            </div>
+
+            <div class="publisher__product-field">
+              <label class="publisher__product-label">{{ locale === "vi" ? "Địa điểm" : "Location" }}</label>
+              <input 
+                v-model="productForm.location" 
+                type="text" 
+                class="publisher__product-input" 
+                :placeholder="locale === 'vi' ? 'Hà Nội, Việt Nam...' : 'Location...'"
+              >
+            </div>
+          </div>
+
+          <div class="publisher__product-field">
+            <label class="publisher__product-label">{{ locale === "vi" ? "Mô tả sản phẩm *" : "Description *" }}</label>
+            <textarea 
+              v-model="productForm.description" 
+              class="publisher__product-textarea" 
+              :placeholder="locale === 'vi' ? 'Thêm thông tin mô tả chi tiết sản phẩm...' : 'Add details about your product...'"
+              rows="3"
+              required
+            />
+          </div>
+
+          <div class="publisher__product-field">
+            <label class="publisher__product-label">{{ locale === "vi" ? "Hình ảnh sản phẩm *" : "Product Image *" }}</label>
+            <div class="publisher__product-image-uploader" @click="productImageInput?.click()">
+              <input
+                ref="productImageInput"
+                type="file"
+                accept="image/png,image/jpeg,image/gif"
+                class="hidden"
+                @change="e => productForm.imageFile = e.target.files ? e.target.files[0] : null"
+              >
+              <div v-if="productForm.imageFile" class="publisher__product-image-preview">
+                <Icon name="i-ph-image-square-bold" class="h-5 w-5 mr-1 text-green-500" />
+                <span class="truncate flex-1">{{ productForm.imageFile.name }}</span>
+                <button type="button" class="publisher__product-image-remove" @click.stop="productForm.imageFile = null">
+                  <Icon name="i-ph-x-bold" class="h-4 w-4" />
+                </button>
+              </div>
+              <div v-else class="publisher__product-image-placeholder">
+                <Icon name="i-ph-upload-simple-bold" class="h-6 w-6 text-slate-400 mb-1" />
+                <span>{{ locale === "vi" ? "Chọn hình ảnh sản phẩm" : "Upload product image" }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div v-if="showMentionSuggestions" class="publisher__mention-popover">
@@ -102,20 +225,7 @@
         </div>
       </div>
 
-      <input
-        ref="imageInputRef"
-        class="publisher__file-input"
-        type="file"
-        accept="image/png,image/jpeg,image/gif"
-        @change="selectImageFile"
-      >
-      <input
-        ref="videoInputRef"
-        class="publisher__file-input"
-        type="file"
-        accept="video/mp4,video/webm,video/ogg,video/quicktime,video/x-m4v"
-        @change="selectVideoFile"
-      >
+
 
       <div v-if="selectedMediaLabel || activeFeeling" class="publisher__selection-row">
         <div v-if="selectedMediaLabel" class="publisher__selection-pill">
@@ -145,10 +255,13 @@
               'publisher__action-chip--active':
                 (action.value === 'image' && selectedMediaType === 'image')
                 || (action.value === 'video' && selectedMediaType === 'video')
-                || (action.value === 'feeling' && Boolean(activeFeeling)),
+                || (action.value === 'feeling' && Boolean(activeFeeling))
+                || (action.value === 'poll' && showPollForm)
+                || (action.value === 'colors' && showColorsPicker)
+                || (action.value === 'product' && showProductForm),
             }"
             type="button"
-            @click="handleAction(action.value)"
+            @click="handleActionOverride(action.value)"
           >
             <Icon :name="action.icon" class="h-4 w-4" />
             <span class="publisher__action-label">{{ action.label }}</span>
@@ -159,6 +272,10 @@
           <span class="publisher__count" :class="{ 'publisher__count--warn': draft.text.length > 240 }">
             {{ draft.text.length }}/280
           </span>
+          <button class="publisher__live-btn" type="button" @click="goToLive">
+            <Icon name="i-ph-video-camera-bold" class="h-4.5 w-4.5 text-slate-600" />
+            <span>{{ locale === 'vi' ? 'Trực tiếp' : 'Go Live' }}</span>
+          </button>
           <button class="publisher__submit-btn" type="button" :disabled="submitting || !canPublish" @click="publish">
             <Icon v-if="submitting" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
             <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
@@ -181,6 +298,68 @@
           <span>{{ feeling.label }}</span>
         </button>
       </div>
+
+      <!-- Post background colors picker -->
+      <div v-if="showColorsPicker" class="publisher__colors-picker">
+        <button
+          type="button"
+          class="publisher__color-chip publisher__color-chip--none"
+          :class="{ 'publisher__color-chip--active': selectedColorId === null }"
+          @click="selectedColorId = null"
+          :title="locale === 'vi' ? 'Không dùng màu nền' : 'No background'"
+        >
+          <Icon name="i-ph-prohibit-bold" class="h-4 w-4 text-slate-500" />
+        </button>
+        <button
+          v-for="colorOpt in postColorOptions"
+          :key="colorOpt.id"
+          type="button"
+          class="publisher__color-chip"
+          :class="{ 'publisher__color-chip--active': selectedColorId === colorOpt.id }"
+          :style="{ background: colorOpt.bg }"
+          @click="selectedColorId = colorOpt.id"
+          :title="colorOpt.label"
+        />
+      </div>
+
+      <div v-if="showPollForm" class="publisher__poll-form">
+        <p class="publisher__poll-title">
+          <Icon name="i-ph-list-checks-bold" class="h-4 w-4" />
+          {{ t('feed.publisherBox.actionPoll') }}
+        </p>
+        <div class="publisher__poll-answers">
+          <div
+            v-for="(_, idx) in pollAnswers"
+            :key="idx"
+            class="publisher__poll-answer-row"
+          >
+            <input
+              v-model="pollAnswers[idx]"
+              class="publisher__poll-input"
+              type="text"
+              :placeholder="t('feed.publisherBox.pollAnswerPlaceholder', { n: idx + 1 })"
+            >
+            <button
+              v-if="pollAnswers.length > 2"
+              type="button"
+              class="publisher__poll-remove"
+              :title="t('feed.publisherBox.pollRemoveAnswer')"
+              @click="removePollAnswer(idx)"
+            >
+              <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+        <button
+          v-if="pollAnswers.length < 10"
+          type="button"
+          class="publisher__poll-add"
+          @click="addPollAnswer"
+        >
+          <Icon name="i-ph-plus-bold" class="h-3.5 w-3.5" />
+          {{ t('feed.publisherBox.pollAddAnswer') }}
+        </button>
+      </div>
     </div>
   </section>
 </template>
@@ -201,7 +380,10 @@ const emit = defineEmits<{
   created: [post: FeedPostRecord | null]
 }>()
 
-// textarea auto-size via @vueuse/core — input synced to draft.text watcher
+const imageInputRef = ref<HTMLInputElement | null>(null)
+const videoInputRef = ref<HTMLInputElement | null>(null)
+const productImageInput = ref<HTMLInputElement | null>(null)
+
 const {
   textareaEl,
   expanded,
@@ -219,22 +401,36 @@ const {
   selectedMediaLabel,
   selectedMediaType,
   showFeelingPicker,
+  showPollForm,
+  pollAnswers,
   canPublish,
   handleCompactAction,
   handleAction,
-  imageInputRef,
-  videoInputRef,
   selectImageFile,
   selectVideoFile,
   clearSelectedMedia,
   selectFeeling,
+  addPollAnswer,
+  removePollAnswer,
   publish: publishPost,
+  selectedColorId,
+  showColorsPicker,
+  postColorOptions,
+  showProductForm,
+  productForm,
 } = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId, props.eventId, props.groupId)
 
+const activeColorOption = computed(() => {
+  if (selectedColorId.value === null) return null
+  return postColorOptions.value.find(opt => opt.id === selectedColorId.value) || null
+})
+
 const draftText = computed({
-  get: () => draft.value.text,
+  get: () => draft.value?.text || "",
   set: (value: string) => {
-    draft.value.text = value
+    if (draft.value) {
+      draft.value.text = value
+    }
   },
 })
 
@@ -258,14 +454,91 @@ const {
 async function publish() {
   await publishPost()
 
-  if (!draft.value.text) {
+  if (!draft.value?.text) {
     clearSelectedMentions()
+  }
+}
+
+function resizeTextarea() {
+  if (textareaEl.value) {
+    textareaEl.value.style.height = "auto"
+    textareaEl.value.style.height = `${textareaEl.value.scrollHeight}px`
+  }
+}
+
+function handleInput(e: Event) {
+  updateMentionQuery(e)
+  resizeTextarea()
+}
+
+function handleActionOverride(value: any) {
+  console.log("[FeedPublisherBox] handleActionOverride triggered for value:", value)
+  try {
+    if (value === "image") {
+      showFeelingPicker.value = false
+      showPollForm.value = false
+      showColorsPicker.value = false
+      showProductForm.value = false
+      console.log("[FeedPublisherBox] Clicking imageInputRef:", imageInputRef.value)
+      imageInputRef.value?.click()
+      expanded.value = true
+      return
+    }
+
+    if (value === "video") {
+      showFeelingPicker.value = false
+      showPollForm.value = false
+      showColorsPicker.value = false
+      showProductForm.value = false
+      console.log("[FeedPublisherBox] Clicking videoInputRef:", videoInputRef.value)
+      videoInputRef.value?.click()
+      expanded.value = true
+      return
+    }
+
+    console.log("[FeedPublisherBox] Calling standard handleAction for:", value)
+    handleAction(value)
+  } catch (error) {
+    console.error("[FeedPublisherBox] Error in handleActionOverride:", error)
+  }
+}
+
+function handleCompactActionOverride(value: any) {
+  console.log("[FeedPublisherBox] handleCompactActionOverride triggered for value:", value)
+  try {
+    if (value === "image") {
+      showFeelingPicker.value = false
+      showPollForm.value = false
+      showColorsPicker.value = false
+      showProductForm.value = false
+      console.log("[FeedPublisherBox] Clicking compact imageInputRef:", imageInputRef.value)
+      imageInputRef.value?.click()
+      expanded.value = true
+      return
+    }
+
+    if (value === "video") {
+      showFeelingPicker.value = false
+      showPollForm.value = false
+      showColorsPicker.value = false
+      showProductForm.value = false
+      console.log("[FeedPublisherBox] Clicking compact videoInputRef:", videoInputRef.value)
+      videoInputRef.value?.click()
+      expanded.value = true
+      return
+    }
+
+    console.log("[FeedPublisherBox] Calling standard handleCompactAction for:", value)
+    handleCompactAction(value)
+  } catch (error) {
+    console.error("[FeedPublisherBox] Error in handleCompactActionOverride:", error)
   }
 }
 
 async function openComposer() {
   expanded.value = true
   await nextTick()
+  resizeTextarea()
   textareaEl.value?.focus()
 }
 
@@ -277,6 +550,10 @@ const feelingPromptText = computed(() =>
 const feelingSelectedText = computed(() =>
   locale.value === "vi" ? "Đang cảm thấy" : "Feeling",
 )
+
+function goToLive() {
+  navigateTo("/live")
+}
 </script>
 
 <style scoped>
@@ -373,10 +650,6 @@ const feelingSelectedText = computed(() =>
   pointer-events: auto;
   user-select: none;
   transition: all 0.15s ease;
-}
-
-.publisher__compact-btn > * {
-  pointer-events: none;
 }
 
 .publisher__compact-btn:hover {
@@ -779,6 +1052,8 @@ const feelingSelectedText = computed(() =>
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(0, 0, 255, 0.2);
   transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .publisher__submit-btn:hover {
@@ -790,8 +1065,366 @@ const feelingSelectedText = computed(() =>
   transform: scale(0.97);
 }
 
+.publisher__live-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 999px;
+  background: #f1f5f9;
+  padding: 8px 18px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.publisher__live-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+.publisher__live-btn:active {
+  transform: scale(0.97);
+}
+
 .publisher__submit-btn:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+/* Poll form */
+.publisher__poll-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 0 2px;
+  border-top: 1px solid #f1f5f9;
+  animation: publisher-in 0.18s ease;
+}
+
+.publisher__poll-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 4px;
+  color: #31a38c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.publisher__poll-answers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.publisher__poll-answer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.publisher__poll-input {
+  flex: 1;
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fafbfe;
+  font-size: 13.5px;
+  color: #334155;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.publisher__poll-input:focus {
+  border-color: rgba(0, 0, 255, 0.2);
+}
+
+.publisher__poll-input::placeholder {
+  color: #94a3b8;
+}
+
+.publisher__poll-remove {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  flex-shrink: 0;
+}
+
+.publisher__poll-remove:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.publisher__poll-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 7px 14px;
+  border: 1.5px dashed rgba(49, 163, 140, 0.4);
+  border-radius: 10px;
+  background: rgba(49, 163, 140, 0.04);
+  color: #31a38c;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.publisher__poll-add:hover {
+  background: rgba(49, 163, 140, 0.1);
+  border-color: rgba(49, 163, 140, 0.6);
+}
+
+/* Post Colors Picker */
+.publisher__colors-picker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px dashed rgba(0, 0, 255, 0.08);
+  animation: publisher-in 0.18s ease;
+}
+
+.publisher__color-chip {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.publisher__color-chip:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.08);
+}
+
+.publisher__color-chip--active {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 2.5px #0000ff, 0 3px 6px rgba(0,0,0,0.15);
+}
+
+.publisher__color-chip--none {
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.publisher__color-chip--none.publisher__color-chip--active {
+  border-color: #0000ff;
+}
+
+/* Colored Composer Preview */
+.publisher__textarea-shell--colored {
+  position: relative;
+  border-radius: 12px;
+  padding: 24px !important;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+  transition: background 0.3s ease;
+}
+
+.publisher__textarea-shell--colored .publisher__textarea {
+  background: transparent !important;
+  color: inherit !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  text-align: center !important;
+  min-height: 100px !important;
+  line-height: 1.5 !important;
+  padding: 0 !important;
+  caret-color: currentColor;
+}
+
+.publisher__textarea-shell--colored .publisher__textarea::placeholder {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.publisher__textarea-shell--colored .publisher__textarea-highlight {
+  display: none !important;
+}
+
+/* Product Form */
+.publisher__product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid rgba(0, 0, 255, 0.05);
+  animation: publisher-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.publisher__product-title {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+  margin: 0;
+}
+
+.publisher__product-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.publisher__product-row-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 520px) {
+  .publisher__product-row-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.publisher__product-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.publisher__product-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+}
+
+.publisher__product-input,
+.publisher__product-select,
+.publisher__product-textarea {
+  font-family: inherit;
+  font-size: 13.5px;
+  color: #0f172a;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.publisher__product-input:focus,
+.publisher__product-select:focus,
+.publisher__product-textarea:focus {
+  border-color: #0000ff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.1);
+}
+
+.publisher__price-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.publisher__price-wrapper .publisher__product-input {
+  flex: 1;
+}
+
+.publisher__currency-select {
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.publisher__product-textarea {
+  resize: vertical;
+}
+
+/* Product Uploader */
+.publisher__product-image-uploader {
+  display: flex;
+  min-height: 72px;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #ffffff;
+  cursor: pointer;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  transition: all 0.15s ease;
+}
+
+.publisher__product-image-uploader:hover {
+  border-color: #0000ff;
+  background: rgba(0, 0, 255, 0.02);
+}
+
+.publisher__product-image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.publisher__product-image-preview {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.publisher__product-image-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.publisher__product-image-remove:hover {
+  background: #fee2e2;
+  color: #dc2626;
 }
 </style>

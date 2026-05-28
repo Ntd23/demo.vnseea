@@ -9,7 +9,7 @@
         </h1>
         <p>{{ heroDescription }}</p>
       </div>
-      <img class="go-pro-hero__rocket" src="/themes/wowonder/img/go-pro/rocket.svg" alt="" aria-hidden="true">
+      <img class="go-pro-hero__rocket" :src="'/themes/wowonder/img/go-pro/rocket.svg'" alt="" aria-hidden="true">
     </section>
 
     <section v-if="pending" class="go-pro-panel">

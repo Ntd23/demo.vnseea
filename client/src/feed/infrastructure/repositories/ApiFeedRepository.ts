@@ -102,6 +102,10 @@ export function createApiFeedRepository(): FeedRepository {
         formData.append("action", input.action)
         formData.append("postId", String(input.postId))
 
+        if (input.optionId) {
+          formData.append("optionId", String(input.optionId))
+        }
+
         if (input.text) {
           formData.append("text", input.text)
         }
@@ -161,7 +165,15 @@ export function createApiFeedRepository(): FeedRepository {
         formData.append("sharedPostId", String(input.sharedPostId))
       }
 
-      if (input.imageFile || input.videoFile || input.feeling) {
+      if (input.colorId) {
+        formData.append("colorId", String(input.colorId))
+      }
+
+      for (const answer of input.pollAnswers ?? []) {
+        formData.append("answer[]", answer)
+      }
+
+      if (input.imageFile || input.videoFile || input.feeling || input.colorId || input.pollAnswers?.length) {
         if (input.audience) {
           formData.append("audience", input.audience)
         }
@@ -186,7 +198,22 @@ export function createApiFeedRepository(): FeedRepository {
 
       return await client.post<FeedCreatePostResponse, Record<string, unknown>>(
         apiRoutes.feed.posts.create,
-        input,
+        input as unknown as Record<string, unknown>,
+      )
+    },
+    async createProduct(input) {
+      const formData = new FormData()
+      formData.append("name", input.name)
+      formData.append("price", input.price)
+      formData.append("category", input.category)
+      formData.append("description", input.description)
+      formData.append("location", input.location)
+      formData.append("type", input.type)
+      formData.append("postPhotos", input.imageFile, input.imageFile.name)
+
+      return await client.post<{ ok: boolean; status: number; href: string; message: string }, FormData>(
+        apiRoutes.feed.product.create,
+        formData,
       )
     },
     async createStory(input) {

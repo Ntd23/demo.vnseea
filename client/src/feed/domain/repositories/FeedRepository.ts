@@ -34,8 +34,9 @@ export interface FeedRepository {
   getPostComments(input: { postId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   getCommentReplies(input: { commentId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   runPostAction(input: {
-    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide"
+    action: "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll"
     postId: number
+    optionId?: number
     reaction?: FeedStoryReactionType
     text?: string
     imageFile?: File
@@ -62,7 +63,18 @@ export interface FeedRepository {
     eventId?: number
     groupId?: number
     sharedPostId?: number
+    colorId?: number
+    pollAnswers?: string[]
   }): Promise<FeedCreatePostResponse>
+  createProduct(input: {
+    name: string
+    price: string
+    category: string
+    description: string
+    location: string
+    type: string
+    imageFile: File
+  }): Promise<{ ok: boolean; status: number; href: string; message: string }>
   createStory(input: {
     file: File
     fileType: "image" | "video"
