@@ -128,6 +128,11 @@ if (empty($current_user_id)) {
         }
     }
 
+    $current_pro_type = isset($current_user['pro_type']) ? (string) $current_user['pro_type'] : '';
+    $current_pro_package = (!empty($current_pro_type) && !empty($wo['pro_packages'][$current_pro_type]) && is_array($wo['pro_packages'][$current_pro_type]))
+        ? $wo['pro_packages'][$current_pro_type]
+        : array();
+
     $response_data = array(
         'api_status' => 200,
         'user_data' => array(
@@ -194,8 +199,10 @@ if (empty($current_user_id)) {
             'css_file' => !empty($current_user['css_file']) ? $current_user['css_file'] : '',
             'verified' => isset($current_user['verified']) ? (int) $current_user['verified'] : 0,
             'active' => isset($current_user['active']) ? (int) $current_user['active'] : 0,
-            'pro_type' => isset($current_user['pro_type']) ? (string) $current_user['pro_type'] : '',
+            'pro_type' => $current_pro_type,
             'is_pro' => isset($current_user['is_pro']) ? (int) $current_user['is_pro'] : 0,
+            'can_boost_posts' => !empty($current_pro_package['posts_promotion']) ? (int) $current_pro_package['posts_promotion'] : 0,
+            'can_boost_pages' => !empty($current_pro_package['pages_promotion']) ? (int) $current_pro_package['pages_promotion'] : 0,
             'wallet' => $current_user['wallet'] ?? null,
             'points' => $current_user['points'] ?? null,
             'points_config' => array(

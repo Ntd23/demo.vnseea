@@ -1,10 +1,12 @@
 // English description: Go Pro page view-model that loads backend packages and submits upgrade requests.
 
 import { ApiGoProRepository } from "../../infrastructure/repositories/ApiGoProRepository"
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 
 export function useGoProPageVM() {
   const toast = useToast()
   const repository = new ApiGoProRepository()
+  const currentAuthUserStore = useCurrentAuthUserStore()
   const upgradingType = ref("")
   const { data, pending, error, refresh } = useAsyncData(
     "go-pro:catalog",
@@ -20,6 +22,7 @@ export function useGoProPageVM() {
 
     try {
       await repository.upgrade(type)
+      await currentAuthUserStore.hydrate(true)
       await refresh()
     }
     catch (err) {
@@ -40,6 +43,7 @@ export function useGoProPageVM() {
 
     try {
       await repository.cancel()
+      await currentAuthUserStore.hydrate(true)
       await refresh()
       toast.add({
         color: "success",

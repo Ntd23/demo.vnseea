@@ -2,6 +2,7 @@
 
 import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
+import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessagesRepository } from "../../domain/repositories/MessagesRepository"
 import type {
   MessageActionResult,
@@ -133,6 +134,23 @@ export function createApiMessagesRepository(): MessagesRepository {
       return await client.post<MessageItem[], FormData | Record<string, unknown>>(
         apiRoutes.messages.send,
         createSingleSendBody(contact, input),
+      )
+    },
+    async reactToMessage(input) {
+      return await client.post<MessageActionResult & { messageId: number, reaction: FeedStoryReactionType }, Record<string, unknown>>(
+        apiRoutes.messages.reactions,
+        input,
+      )
+    },
+    async deleteMessage(input) {
+      return await client.post<MessageActionResult & {
+        messageId: number
+        deletedAt: number
+        deletedTime: string
+        deletedByName?: string
+      }, Record<string, unknown>>(
+        apiRoutes.messages.deleteMessage,
+        input,
       )
     },
     async sendMultiMessage(input) {

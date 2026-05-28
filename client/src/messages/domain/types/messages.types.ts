@@ -1,4 +1,6 @@
 // Description: Defines normalized message types for inbox tabs, thread payloads, realtime typing, and backend-backed message actions.
+import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
+
 export type MessageTabKey = "multi" | "user" | "group"
 export type MessageThreadType = "user" | "group" | "page"
 
@@ -102,6 +104,11 @@ export type MessageItem = {
   mediaUrl?: string
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
+  selectedReaction?: FeedStoryReactionType | null
+  isDeleted?: boolean
+  deletedAt?: number
+  deletedTime?: string
+  deletedByName?: string
   callLog?: {
     type: "audio" | "video"
     status: string

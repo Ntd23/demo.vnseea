@@ -49,6 +49,8 @@ type CreatePostPayload = {
   eventId?: number
   groupId?: number
   sharedPostId?: number
+  colorId?: number
+  pollAnswers: string[]
 }
 
 const asString = (value: unknown) =>
@@ -97,6 +99,10 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     eventId: body.eventId ? Number(body.eventId) : undefined,
     groupId: body.groupId ? Number(body.groupId) : undefined,
     sharedPostId: body.sharedPostId ? Number(body.sharedPostId) : undefined,
+    colorId: body.colorId ? Number(body.colorId) : undefined,
+    pollAnswers: Array.isArray(body.pollAnswers)
+      ? body.pollAnswers.map(asString).filter(Boolean)
+      : [],
   }
 }
 
@@ -111,6 +117,8 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     pageId: undefined,
     eventId: undefined,
     groupId: undefined,
+    colorId: undefined,
+    pollAnswers: [],
   }
 
   for (const part of parts) {
@@ -144,7 +152,11 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     if (part.name === "eventId") payload.eventId = Number(value)
     if (part.name === "groupId") payload.groupId = Number(value)
     if (part.name === "sharedPostId") payload.sharedPostId = Number(value)
+    if (part.name === "colorId" || part.name === "post_color") payload.colorId = Number(value)
+    if (part.name === "answer[]" || part.name === "answer") payload.pollAnswers.push(value)
   }
+
+  payload.pollAnswers = payload.pollAnswers.map(answer => answer.trim()).filter(Boolean)
 
   return payload
 }
@@ -158,10 +170,17 @@ export default defineEventHandler(async (event) => {
     ? await parseMultipartPayload(event)
     : await parseJsonPayload(event)
 
-  if (!payload.text && !payload.imageFile && !payload.videoFile && !payload.feeling && !payload.sharedPostId) {
+  if (!payload.text && !payload.imageFile && !payload.videoFile && !payload.feeling && !payload.sharedPostId && !payload.pollAnswers.length) {
     throw createError({
       statusCode: 400,
       statusMessage: "Post content is required.",
+    })
+  }
+
+  if (payload.pollAnswers.length > 0 && (!payload.text || payload.pollAnswers.length < 2)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Poll question and at least two answers are required.",
     })
   }
 
@@ -265,6 +284,14 @@ export default defineEventHandler(async (event) => {
   if (payload.feeling) {
     requestBody.append("feeling_type", "feelings")
     requestBody.append("feeling", payload.feeling)
+  }
+
+  if (payload.colorId) {
+    requestBody.append("post_color", String(payload.colorId))
+  }
+
+  for (const answer of payload.pollAnswers) {
+    requestBody.append("answer[]", answer)
   }
 
   if (payload.imageFile) {

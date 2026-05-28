@@ -41,6 +41,8 @@ export const appRoutes = {
   forum: "/forum",
   games: "/games",
   goPro: "/go-pro",
+  boostedPosts: "/boosted-posts",
+  boostedPages: "/boosted-pages",
   live: "/live",
   poke: "/poke",
   checkout: "/checkout",
@@ -102,10 +104,14 @@ export const apiRoutes = {
     photos: "feed/photos",
     memories: "feed/memories",
     poke: "feed/poke",
+    postColors: "feed/post-colors",
     posts: {
       detail: (id: string | number) => `feed/posts/${encodeSegment(id)}`,
       create: "feed/posts/create",
       action: "feed/posts/action",
+    },
+    product: {
+      create: "product/create",
     },
     comments: {
       list: "feed/comments",
@@ -174,6 +180,8 @@ export const apiRoutes = {
     conversations: "messages/conversations",
     tags: "messages/tags",
     thread: "messages/thread",
+    reactions: "messages/reactions",
+    deleteMessage: "messages/delete-message",
     multi: "messages/multi",
     send: "messages/send",
     presence: "messages/presence",
@@ -207,6 +215,10 @@ export const apiRoutes = {
   },
   navigation: {
     general: "navigation/general",
+  },
+  boosted: {
+    posts: "boosted/posts",
+    pages: "boosted/pages",
   },
   search: {
     index: "search",

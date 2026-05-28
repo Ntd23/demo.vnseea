@@ -8,6 +8,12 @@ import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { getMessageUserPresenceState } from "./_presence"
+import {
+  feedStoryReactionByBackendId,
+  feedStoryReactionBackendIds,
+  isFeedStoryReaction,
+  type FeedStoryReactionType,
+} from "../../../src/feed/domain/constants/story-reactions"
 import type {
   MessageContact,
   MessageGroupCandidate,
@@ -59,6 +65,21 @@ type BackendChatParticipantsResponse = {
 type BackendChatCreateGroupResponse = {
   status?: number | string
   group_id?: number | string
+  message?: string
+}
+
+type BackendMessageReactionResponse = {
+  status?: number | string
+  reactions?: string
+  like_lang?: string
+  can_send?: number | string
+}
+
+type BackendMessageRecallResponse = {
+  status?: number | string
+  message_id?: number | string
+  deleted_at?: number | string
+  deleted_by_name?: string
   message?: string
 }
 
@@ -116,6 +137,37 @@ const asEntityList = (value: unknown): BackendEntity[] =>
       ? [asRecord(value)]
       : []
 
+const messageReactionNameMap: Record<string, FeedStoryReactionType> = {
+  like: "Like",
+  love: "Love",
+  haha: "HaHa",
+  wow: "Wow",
+  sad: "Sad",
+  angry: "Angry",
+}
+
+const parseMessageReactionHtml = (value: unknown): FeedStoryReactionType | null => {
+  const html = asString(value)
+
+  if (!html) {
+    return null
+  }
+
+  const classMatch = html.match(/like-btn-([a-z0-9]+)/i)
+  const altMatch = html.match(/alt=["']([^"']+)["']/i)
+  const rawValue = (classMatch?.[1] || altMatch?.[1] || "").trim()
+
+  if (!rawValue) {
+    return null
+  }
+
+  if (feedStoryReactionByBackendId[rawValue]) {
+    return feedStoryReactionByBackendId[rawValue]
+  }
+
+  return messageReactionNameMap[rawValue.toLowerCase()] ?? null
+}
+
 const firstString = (entity: BackendEntity, keys: string[]) => {
   for (const key of keys) {
     const value = asString(entity[key])
@@ -132,6 +184,34 @@ const decodeHtmlEntities = (value: string) =>
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
+
+const MESSAGE_RECALLED_PREFIX = "__VNSEEA_MESSAGE_RECALLED__:"
+
+const parseRecalledMessagePayload = (value: string) => {
+  const decoded = decodeHtmlEntities(value).replace(/\\"/g, "\"").trim()
+
+  if (!decoded.startsWith(MESSAGE_RECALLED_PREFIX)) {
+    return null
+  }
+
+  try {
+    const payload = JSON.parse(
+      Buffer.from(decoded.slice(MESSAGE_RECALLED_PREFIX.length), "base64").toString("utf8"),
+    ) as BackendEntity
+    const deletedAt = asNumber(payload.deleted_at)
+
+    return {
+      deletedAt,
+      deletedByName: firstString(payload, ["deleted_by_name", "name", "username"]),
+    }
+  }
+  catch {
+    return {
+      deletedAt: 0,
+      deletedByName: "",
+    }
+  }
+}
 
 const stripHtml = (value: string) =>
   decodeHtmlEntities(value).replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
@@ -231,6 +311,12 @@ const formatCallDuration = (seconds: number) => {
     : `${minutes}:${String(remainingSeconds).padStart(2, "0")}`
 }
 
+const formatMessageTime = (seconds: number) =>
+  new Date(seconds * 1000).toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+
 const normalizeMessageText = (value: string, entity: BackendEntity) => {
   const decoded = decodeHtmlEntities(value).replace(/\\"/g, "\"").trim()
   const callLabel = buildCallMessageLabel(decoded, entity)
@@ -286,9 +372,16 @@ const decryptMessageText = (value: unknown, timestamp: unknown) => {
   }
 }
 
-const buildContactPreview = (message: BackendEntity) =>
-  normalizeMessageText(decryptMessageText(message.text, message.time), message)
-  || normalizeMessageText(firstString(message, ["media", "type_two", "type"]), message)
+const buildContactPreview = (message: BackendEntity) => {
+  const text = decryptMessageText(message.text, message.time)
+
+  if (parseRecalledMessagePayload(text)) {
+    return "Tin nhắn đã được thu hồi"
+  }
+
+  return normalizeMessageText(text, message)
+    || normalizeMessageText(firstString(message, ["media", "type_two", "type"]), message)
+}
 
 const inferMediaType = (entity: BackendEntity): MessageItem["mediaType"] | undefined => {
   const rawType = firstString(entity, ["type", "type_two"]).toLowerCase()
@@ -534,6 +627,7 @@ const mapThreadMessage = (
 ): MessageItem => {
   const timestamp = asNumber(entity.time)
   const rawText = decryptMessageText(entity.text, timestamp)
+  const recalledPayload = parseRecalledMessagePayload(rawText)
   const callLog = parseCallLogPayload(rawText, entity)
   const userData = asRecord(entity.user_data)
   const messageUser = asRecord(entity.messageUser)
@@ -546,7 +640,7 @@ const mapThreadMessage = (
 
   return {
     id: asNumber(entity.id),
-    text: normalizeMessageText(decryptMessageText(entity.text, timestamp), entity),
+    text: recalledPayload ? "" : normalizeMessageText(rawText, entity),
     isMine: senderId === currentUserId || asString(entity.position).startsWith("right"),
     time: firstString(entity, ["time_text"]),
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
@@ -558,9 +652,13 @@ const mapThreadMessage = (
     senderId,
     authorName: buildDisplayName(userData) || buildDisplayName(messageUser),
     threadType,
-    mediaUrl,
-    mediaName: firstString(entity, ["mediaFileName", "media_file_name", "filename"]),
-    mediaType,
+    mediaUrl: recalledPayload ? "" : mediaUrl,
+    mediaName: recalledPayload ? "" : firstString(entity, ["mediaFileName", "media_file_name", "filename"]),
+    mediaType: recalledPayload ? undefined : mediaType,
+    isDeleted: Boolean(recalledPayload),
+    deletedAt: recalledPayload?.deletedAt || undefined,
+    deletedTime: recalledPayload?.deletedAt ? formatMessageTime(recalledPayload.deletedAt) : undefined,
+    deletedByName: recalledPayload?.deletedByName || undefined,
     callLog: callLog
       ? {
           type: callLog.call_type,
@@ -696,6 +794,76 @@ export const decorateThreadMessages = (messages: MessageItem[]) =>
     }
   })
 
+async function fetchThreadMessageReactions(
+  event: H3Event,
+  input: MessageThreadQuery,
+): Promise<Map<number, FeedStoryReactionType>> {
+  const currentUser = await getBackendCurrentUser(event)
+  const sessionHash = asString(currentUser.session_hash)
+
+  if (!sessionHash) {
+    return new Map()
+  }
+
+  const query: Record<string, unknown> = {
+    s: "get_new_messages",
+    hash: sessionHash,
+    hash_id: sessionHash,
+    message_id: 0,
+  }
+
+  if (input.type === "user" && input.userId) {
+    query.user_id = input.userId
+  }
+  else if (input.type === "group" && input.groupId) {
+    query.group_id = input.groupId
+  }
+  else if (input.type === "page" && input.pageId && input.recipientId) {
+    query.page_id = input.pageId
+    query.from_id = input.recipientId
+  }
+  else {
+    return new Map()
+  }
+
+  try {
+    const response = await createBackendWebClient(event).postForm<{
+      reactions?: Array<{ id?: number | string, reactions?: string }>
+    }>("messages", undefined, query)
+
+    return new Map(
+      (response.reactions ?? [])
+        .map((item) => {
+          const messageId = asNumber(item.id)
+          const reaction = parseMessageReactionHtml(item.reactions)
+          return [messageId, reaction] as const
+        })
+        .filter(([messageId, reaction]) => messageId > 0 && Boolean(reaction)) as Array<[number, FeedStoryReactionType]>,
+    )
+  }
+  catch {
+    return new Map()
+  }
+}
+
+async function decorateThreadMessagesWithReactions(
+  event: H3Event,
+  input: MessageThreadQuery,
+  messages: MessageItem[],
+) {
+  const decoratedMessages = decorateThreadMessages(messages)
+  const reactions = await fetchThreadMessageReactions(event, input)
+
+  if (reactions.size === 0) {
+    return decoratedMessages
+  }
+
+  return decoratedMessages.map(message => ({
+    ...message,
+    selectedReaction: reactions.get(message.id) ?? message.selectedReaction ?? null,
+  }))
+}
+
 export async function fetchInboxContacts(event: H3Event) {
   try {
     const currentUser = await getBackendCurrentUser(event)
@@ -773,7 +941,9 @@ export async function fetchMessageThread(
     )
 
     return {
-      messages: decorateThreadMessages(
+      messages: await decorateThreadMessagesWithReactions(
+        event,
+        input,
         (response.messages ?? []).map(message =>
           mapThreadMessage(message, currentUserId, resolveMediaUrl, "user"),
         ),
@@ -807,7 +977,9 @@ export async function fetchMessageThread(
     const activeGroupCall = asRecord(responseData.active_call)
 
     return {
-      messages: decorateThreadMessages(
+      messages: await decorateThreadMessagesWithReactions(
+        event,
+        input,
         extractCollectionMessages(response).map(message =>
           mapThreadMessage(message, currentUserId, resolveMediaUrl, "group", activeGroupCall),
         ),
@@ -838,7 +1010,9 @@ export async function fetchMessageThread(
   )
 
   return {
-    messages: decorateThreadMessages(
+    messages: await decorateThreadMessagesWithReactions(
+      event,
+      input,
       extractCollectionMessages(response).map(message =>
         mapThreadMessage(message, currentUserId, resolveMediaUrl, "page"),
       ),
@@ -1026,6 +1200,101 @@ export async function sendMessageToThread(
   )
 
   return normalizeCreatedMessages(extractCollectionMessages(response))
+}
+
+export async function registerMessageReaction(
+  event: H3Event,
+  input: {
+    messageId: number
+    reaction: FeedStoryReactionType
+  },
+) {
+  const messageId = asNumber(input.messageId)
+
+  if (messageId <= 0 || !isFeedStoryReaction(input.reaction)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "A valid message reaction payload is required.",
+    })
+  }
+
+  const response = await createBackendWebClient(event).postForm<BackendMessageReactionResponse>(
+    "messages",
+    undefined,
+    {
+      s: "register_reaction",
+      message_id: messageId,
+      reaction: feedStoryReactionBackendIds[input.reaction],
+    },
+  )
+
+  if (asNumber(response.status) !== 200) {
+    throw createError({
+      statusCode: 502,
+      statusMessage: "Unable to react to the message.",
+    })
+  }
+
+  return {
+    ok: true,
+    messageId,
+    reaction: parseMessageReactionHtml(response.reactions) ?? input.reaction,
+  }
+}
+
+export async function recallMessage(
+  event: H3Event,
+  input: {
+    messageId: number
+  },
+) {
+  const messageId = asNumber(input.messageId)
+
+  if (messageId <= 0) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "A valid message id is required.",
+    })
+  }
+
+  const currentUser = await getBackendCurrentUser(event)
+  const sessionHash = asString(currentUser.session_hash)
+
+  if (!sessionHash) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication is required.",
+    })
+  }
+
+  const response = await createBackendWebClient(event).postForm<BackendMessageRecallResponse>(
+    "messages",
+    {
+      hash_id: sessionHash,
+    },
+    {
+      s: "recall_message",
+      message_id: messageId,
+      hash: sessionHash,
+    },
+  )
+
+  if (asNumber(response.status) !== 200) {
+    throw createError({
+      statusCode: 502,
+      statusMessage: asString(response.message) || "Unable to delete the message.",
+    })
+  }
+
+  const deletedAt = asNumber(response.deleted_at) || Math.floor(Date.now() / 1000)
+
+  return {
+    ok: true,
+    messageId,
+    deletedAt,
+    deletedTime: formatMessageTime(deletedAt),
+    deletedByName: asString(response.deleted_by_name) || undefined,
+  }
 }
 
 export async function parseMessageSendBody(event: H3Event): Promise<MultipartMessageInput> {

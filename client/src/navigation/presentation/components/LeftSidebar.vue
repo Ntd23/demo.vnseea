@@ -1,57 +1,46 @@
 <template>
-  <UDashboardGroup>
-    <UDashboardSidebar
-      collapsible
-      :resizable="false"
-    >
-      <template #default>
-        <div class="left-sidebar mt-10 pt-2">
-          <nav class="left-sidebar__nav scrollbar-hide">
-            <div class="left-sidebar__items">
-              <NavigationSidebarMenuItem
-                v-for="item in sidebarNav"
-                :key="item.label"
-                :to="item.to"
-                :label="$t(item.label)"
-                :icon="item.icon"
-                :active="isItemActive(item.to)"
-              />
+  <div class="left-sidebar mt-10 pt-2">
+    <nav class="left-sidebar__nav scrollbar-hide">
+      <div class="left-sidebar__items">
+        <NavigationSidebarMenuItem
+          v-for="item in sidebarNav"
+          :key="item.label"
+          :to="item.to"
+          :label="$t(item.label)"
+          :icon="item.icon"
+          :active="isItemActive(item.to)"
+        />
 
-              <template v-if="expanded">
-                <NavigationSidebarMenuItem
-                  v-for="item in sidebarNavMore"
-                  :key="item.label"
-                  :to="item.to"
-                  :label="$t(item.label)"
-                  :icon="item.icon"
-                  :active="isItemActive(item.to)"
-                />
-              </template>
-            </div>
+        <template v-if="expanded">
+          <NavigationSidebarMenuItem
+            v-for="item in sidebarNavMore"
+            :key="item.label"
+            :to="item.to"
+            :label="$t(item.label)"
+            :icon="item.icon"
+            :active="isItemActive(item.to)"
+          />
+        </template>
+      </div>
 
-            <button
-              class="left-sidebar__toggle"
-              type="button"
-              @click="expanded = !expanded"
-            >
-              <span class="left-sidebar__toggle-icon">
-                <Icon
-                  :name="expanded ? 'i-ph-caret-up-bold' : 'i-ph-caret-down-bold'"
-                  class="h-3.5 w-3.5"
-                />
-              </span>
+      <button
+        class="left-sidebar__toggle"
+        type="button"
+        @click="expanded = !expanded"
+      >
+        <span class="left-sidebar__toggle-icon">
+          <Icon
+            :name="expanded ? 'i-ph-caret-up-bold' : 'i-ph-caret-down-bold'"
+            class="h-3.5 w-3.5"
+          />
+        </span>
 
-              <span class="left-sidebar__toggle-label">
-                {{ expanded ? $t('navigation.leftSidebar.showLess') : $t('navigation.leftSidebar.showMore') }}
-              </span>
-            </button>
-          </nav>
-        </div>
-      </template>
-    </UDashboardSidebar>
-
-    <slot />
-  </UDashboardGroup>
+        <span class="left-sidebar__toggle-label">
+          {{ expanded ? $t('navigation.leftSidebar.showLess') : $t('navigation.leftSidebar.showMore') }}
+        </span>
+      </button>
+    </nav>
+  </div>
 </template>
 
 <script setup lang="ts">

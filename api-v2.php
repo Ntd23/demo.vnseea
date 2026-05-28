@@ -49,6 +49,10 @@ if ($server_key != $wo['config']['widnows_app_api_key']) {
 $api                        = "api/v2/endpoints/$type.php";
 $pages_without_access_token = array(
     'get-site-settings',
+    'get-post-colors',
+    'go-pro',
+    'boosted-posts',
+    'boosted-pages',
     'active_account_sms',
     'auth',
     'regsiter',
@@ -62,6 +66,10 @@ $pages_without_access_token = array(
 );
 $pages_without_loggedin     = array(
     'get-site-settings',
+    'get-post-colors',
+    'go-pro',
+    'boosted-posts',
+    'boosted-pages',
     'active_account_sms',
     'auth',
     'regsiter',

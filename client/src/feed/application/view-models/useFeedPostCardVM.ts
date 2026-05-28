@@ -12,6 +12,7 @@ import { defaultFeedStoryReaction } from "../../domain/constants/story-reactions
 import type {
   FeedCommentRecord,
   FeedCommentSubmitPayload,
+  FeedPollOptionRecord,
   FeedPostRecord,
   FeedStoryReactionType,
 } from "../../domain/types/feed.types"
@@ -37,12 +38,14 @@ export function useFeedPostCardVM(
   const lightboxOpen = ref(false)
   const currentMediaIndex = ref(0)
   const localComments = ref<FeedCommentRecord[]>([])
+  const localPollOptions = ref<FeedPollOptionRecord[]>([])
   const likesCount = ref(0)
   const sharesCount = ref(0)
   const actionState = ref<"idle" | "success" | "error">("idle")
   const actionMessage = ref("")
   const liking = ref(false)
   const commenting = ref(false)
+  const pollVoting = ref(false)
   const reporting = ref(false)
   const loadingComments = ref(false)
 
@@ -64,6 +67,9 @@ export function useFeedPostCardVM(
     selectedPostReaction.value
       ? [feedReactionAssetByValue[selectedPostReaction.value]]
       : feedPostPreviewReactionAssets,
+  )
+  const pollVotesTotal = computed(() =>
+    localPollOptions.value.reduce((total, option) => total + option.votes, 0),
   )
   const hasReactions = computed(() => likesCount.value > 0)
   const commentsCount = computed(() => Math.max(localComments.value.length, post.value?.stats.comments ?? 0))
@@ -100,6 +106,7 @@ export function useFeedPostCardVM(
     (value) => {
       if (!value) {
         localComments.value = []
+        localPollOptions.value = []
         likesCount.value = 0
         sharesCount.value = 0
         liked.value = false
@@ -115,6 +122,7 @@ export function useFeedPostCardVM(
       }
 
       localComments.value = [...value.comments]
+      localPollOptions.value = [...value.pollOptions]
       likesCount.value = value.stats.likes
       sharesCount.value = value.stats.shares
       liked.value = false
@@ -267,6 +275,56 @@ export function useFeedPostCardVM(
     }
     finally {
       commenting.value = false
+    }
+  }
+
+  async function votePoll(optionId: number) {
+    const currentPost = post.value
+
+    if (pollVoting.value || !currentPost) {
+      return
+    }
+
+    pollVoting.value = true
+
+    try {
+      const response = await repository.runPostAction({
+        action: "votePoll",
+        postId: currentPost.id,
+        optionId,
+      })
+
+      if (response.pollOptions?.length) {
+        localPollOptions.value = response.pollOptions
+      }
+      else {
+        const isRemovingCurrentVote = localPollOptions.value.some(option => option.id === optionId && option.selected)
+        const nextOptions = localPollOptions.value.map(option => ({
+          ...option,
+          votes:
+            option.id === optionId
+              ? isRemovingCurrentVote
+                ? Math.max(0, option.votes - 1)
+                : option.votes + 1
+              : !isRemovingCurrentVote && option.selected
+                ? Math.max(0, option.votes - 1)
+                : option.votes,
+          selected: !isRemovingCurrentVote && option.id === optionId,
+        }))
+        const totalVotes = nextOptions.reduce((total, option) => total + option.votes, 0)
+
+        localPollOptions.value = nextOptions.map(option => ({
+          ...option,
+          percentage: totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0,
+        }))
+      }
+    }
+    catch (error) {
+      actionState.value = "error"
+      actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+    }
+    finally {
+      pollVoting.value = false
     }
   }
 
@@ -460,17 +518,20 @@ export function useFeedPostCardVM(
     lightboxOpen,
     currentMediaIndex,
     localComments,
+    localPollOptions,
     likesCount,
     sharesCount,
     actionState,
     actionMessage,
     commenting,
+    pollVoting,
     loadingComments,
     postAnchorId,
     postReactionOptions,
     activePostReactionAsset,
     activePostReactionLabel,
     previewReactions,
+    pollVotesTotal,
     hasReactions,
     commentsCount,
     hasPostContent,
@@ -487,6 +548,7 @@ export function useFeedPostCardVM(
     reactToPost,
     onOpenMedia,
     submitComment,
+    votePoll,
     refreshComments,
     openComments,
     toggleComments,

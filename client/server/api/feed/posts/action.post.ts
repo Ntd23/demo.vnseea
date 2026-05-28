@@ -13,6 +13,7 @@ type MultipartFilePart = {
 type PostActionPayload = {
   action: string
   postId: number
+  optionId: number
   reaction: string
   text: string
   imageFile: MultipartFilePart | null
@@ -26,6 +27,7 @@ const parseJsonPayload = async (event: H3Event): Promise<PostActionPayload> => {
   return {
     action: String(body.action ?? "").trim(),
     postId: Number(body.postId ?? 0) || 0,
+    optionId: Number(body.optionId ?? 0) || 0,
     reaction: typeof body.reaction === "string" ? body.reaction.trim() : "",
     text: typeof body.text === "string" ? body.text.trim() : "",
     imageFile: null,
@@ -39,6 +41,7 @@ const parseMultipartPayload = async (event: H3Event): Promise<PostActionPayload>
   const payload: PostActionPayload = {
     action: "",
     postId: 0,
+    optionId: 0,
     reaction: "",
     text: "",
     imageFile: null,
@@ -75,6 +78,7 @@ const parseMultipartPayload = async (event: H3Event): Promise<PostActionPayload>
 
     if (part.name === "action") payload.action = value
     if (part.name === "postId") payload.postId = Number(value) || 0
+    if (part.name === "optionId") payload.optionId = Number(value) || 0
     if (part.name === "reaction") payload.reaction = value
     if (part.name === "text") payload.text = value
   }
@@ -87,9 +91,9 @@ export default defineEventHandler(async (event) => {
   const payload = contentType.includes("multipart/form-data")
     ? await parseMultipartPayload(event)
     : await parseJsonPayload(event)
-  const { action, postId, reaction, text } = payload
+  const { action, postId, optionId, reaction, text } = payload
 
-  if (!["like", "reaction", "comment", "save", "report", "unsave", "delete", "hide"].includes(action)) {
+  if (!["like", "reaction", "comment", "save", "report", "unsave", "delete", "hide", "votePoll"].includes(action)) {
     throw createError({
       statusCode: 400,
       statusMessage: "Post action is invalid.",
@@ -100,6 +104,13 @@ export default defineEventHandler(async (event) => {
     throw createError({
       statusCode: 400,
       statusMessage: "Post id is required.",
+    })
+  }
+
+  if (action === "votePoll" && !optionId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Poll option id is required.",
     })
   }
 
@@ -118,8 +129,9 @@ export default defineEventHandler(async (event) => {
   }
 
   return await runPostAction(event, {
-    action: action as "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide",
+    action: action as "like" | "reaction" | "comment" | "save" | "report" | "unsave" | "delete" | "hide" | "votePoll",
     postId,
+    optionId,
     reaction,
     text,
     imageFile: payload.imageFile,
