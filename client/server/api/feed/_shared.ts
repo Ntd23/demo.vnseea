@@ -30,6 +30,9 @@ import type {
   FeedPollOptionRecord,
   FeedPokeActionResult,
   FeedPokeRecord,
+  FeedPostReactionSummary,
+  FeedPostReactionUser,
+  FeedPostReactionsResponse,
   FeedPostRecord,
   FeedPostsResponse,
   FeedStoryRecord,
@@ -255,6 +258,89 @@ const getPostReaction = (entity: BackendEntity) => {
     reaction: reactionType,
     count: asNumber(reaction.count),
     reactions,
+  }
+}
+
+type BackendPostReactionsResponse = {
+  api_status?: number | string
+  reactions?: BackendEntity[]
+  users?: BackendEntity[]
+  errors?: {
+    error_text?: string
+  }
+}
+
+const mapPostReactionUsers = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string = value => asString(value),
+) => {
+  const reaction = asRecord(entity.reaction)
+  const source = [
+    ...asArray(reaction.users),
+    ...asArray(reaction.reactions),
+    ...asArray(entity.reaction_users),
+    ...asArray(entity.reactions_users),
+    ...asArray(entity.post_reactions),
+  ]
+
+  return source
+    .flatMap((item) => {
+      const record = asRecord(item)
+      const user = asRecord(record.user || record.user_data || record.publisher)
+      const id = firstNumber(record, ["user_id", "id"]) || firstNumber(user, ["user_id", "id"])
+      const username = firstString(record, ["username"]) || firstString(user, ["username"])
+      const name = firstString(record, ["name", "full_name"]) || firstString(user, ["name", "full_name", "username"]) || username
+      const reactionType = normalizeReactionType(firstString(record, ["reaction", "type"]) || firstString(user, ["reaction", "type"]))
+
+      if (id <= 0 || !name || !reactionType) {
+        return []
+      }
+
+      return [{
+        id,
+        name,
+        avatarUrl: resolveMediaUrl(firstString(record, ["avatar", "avatar_url", "avatar_full"]) || firstString(user, ["avatar", "avatar_url", "avatar_full", "avatar_org"])),
+        profilePath: username ? `/@${username}` : undefined,
+        reaction: reactionType,
+        isFollowing: isTruthy(record.is_following) || isTruthy(user.is_following) || isTruthy(record.is_friend) || isTruthy(user.is_friend),
+      }]
+    })
+}
+
+const mapBackendPostReactionUser = (
+  entity: BackendEntity,
+  resolveMediaUrl: (value: unknown) => string = value => asString(value),
+): FeedPostReactionUser | null => {
+  const id = firstNumber(entity, ["user_id", "id"])
+  const username = firstString(entity, ["username"])
+  const name = firstString(entity, ["name", "full_name", "first_name"]) || username
+  const reaction = normalizeReactionType(firstString(entity, ["reaction", "type"]))
+
+  if (id <= 0 || !name || !reaction) {
+    return null
+  }
+
+  return {
+    id,
+    name,
+    avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_url", "avatar_full", "avatar_org"])),
+    profilePath: username ? `/@${username}` : undefined,
+    reaction,
+    isFollowing: isTruthy(entity.is_following) || isTruthy(entity.is_followed) || isTruthy(entity.is_friend),
+  }
+}
+
+const mapBackendPostReactionSummary = (entity: BackendEntity): FeedPostReactionSummary | null => {
+  const reaction = normalizeReactionType(firstString(entity, ["reaction", "type"]))
+  const count = firstNumber(entity, ["count", "total"])
+
+  if (!reaction || count <= 0) {
+    return null
+  }
+
+  return {
+    reaction,
+    count,
   }
 }
 
@@ -861,6 +947,7 @@ export const mapPostRecord = (
       ? "video"
       : "image"
   const postReaction = getPostReaction(entity)
+  const reactionUsers = mapPostReactionUsers(entity, resolveMediaUrl)
   const pollOptions = mapPollOptions(entity)
   const liveStreamName = firstString(entity, ["stream_name", "streamName"])
   const liveTime = firstNumber(entity, ["live_time", "liveTime"])
@@ -918,6 +1005,7 @@ export const mapPostRecord = (
     isLiked: postReaction.isLiked,
     reaction: postReaction.reaction,
     reactions: postReaction.reactions,
+    reactionUsers,
   }
 }
 
@@ -1480,6 +1568,38 @@ export async function fetchFeedPostById(event: H3Event, postId: number): Promise
     },
     resolveMediaUrl,
   )
+}
+
+export async function fetchFeedPostReactions(
+  event: H3Event,
+  input: {
+    postId: number
+    reaction?: string
+    limit?: number
+    offset?: number
+  },
+): Promise<FeedPostReactionsResponse> {
+  const client = createBackendApiClient(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const reaction = input.reaction ? feedStoryReactionBackendIds[input.reaction as FeedStoryReactionType] ?? input.reaction : undefined
+  const response = assertBackendApiSuccess(
+    await client.get<BackendPostReactionsResponse>("post-reactions", {
+      post_id: input.postId,
+      reaction,
+      limit: input.limit,
+      offset: input.offset,
+    }),
+    "Unable to load post reactions.",
+  )
+
+  return {
+    reactions: asArray(response.reactions)
+      .map(mapBackendPostReactionSummary)
+      .filter((summary): summary is FeedPostReactionSummary => Boolean(summary)),
+    users: asArray(response.users)
+      .map(user => mapBackendPostReactionUser(user, resolveMediaUrl))
+      .filter((user): user is FeedPostReactionUser => Boolean(user)),
+  }
 }
 
 export async function fetchExplore(event: H3Event): Promise<FeedExploreResponse> {

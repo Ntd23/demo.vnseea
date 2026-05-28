@@ -128,7 +128,12 @@
       <FeedPostMediaGrid v-else-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
 
       <div class="post-card__stats">
-        <div v-if="hasReactions" class="post-card__stats-left">
+        <button
+          v-if="hasReactions"
+          class="post-card__stats-left post-card__stats-left--button"
+          type="button"
+          @click="openReactionModal()"
+        >
           <div class="post-card__reaction-emojis">
             <span
               v-for="reaction in previewReactions"
@@ -144,7 +149,7 @@
             </span>
           </div>
           <span class="post-card__stat-count">{{ likesCount }}</span>
-        </div>
+        </button>
         <div class="post-card__stats-right">
           <span>{{ t("feed.postCard.commentsCount", { count: commentsCount }) }}</span>
           <span>{{ t("feed.postCard.sharesCount", { count: sharesCount }) }}</span>
@@ -320,12 +325,106 @@
         @comment="openComments"
         @submit-comment="submitComment"
       />
+      <Teleport to="body">
+        <Transition
+          enter-active-class="transition duration-150 ease-out"
+          enter-from-class="opacity-0"
+          enter-to-class="opacity-100"
+          leave-active-class="transition duration-100 ease-in"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+        >
+          <div
+            v-if="reactionModalOpen"
+            class="post-card__reaction-modal-backdrop"
+            @click.self="closeReactionModal"
+          >
+            <section class="post-card__reaction-modal" role="dialog" aria-modal="true">
+              <div class="post-card__reaction-modal-tabs">
+                <button
+                  v-for="tab in reactionTabs"
+                  :key="tab.value"
+                  type="button"
+                  class="post-card__reaction-modal-tab"
+                  :class="{ 'post-card__reaction-modal-tab--active': activeReactionFilter === tab.value }"
+                  @click="openReactionModal(tab.value)"
+                >
+                  <span v-if="tab.value === 'all'">{{ tab.label }}</span>
+                  <img
+                    v-if="tab.asset"
+                    :src="tab.asset.src"
+                    :alt="tab.label"
+                    class="post-card__reaction-modal-tab-icon"
+                    draggable="false"
+                  >
+                  <strong v-if="tab.value !== 'all' && tab.count > 0">{{ tab.count }}</strong>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                class="post-card__reaction-modal-close"
+                :aria-label="t('feed.postCard.reactionModalClose')"
+                @click="closeReactionModal"
+              >
+                <Icon name="i-ph-x-bold" />
+              </button>
+
+              <div class="post-card__reaction-modal-list">
+                <div v-if="reactionUsersLoading" class="post-card__reaction-loading">
+                  <USkeleton v-for="index in 5" :key="index" class="h-12 rounded-xl" />
+                </div>
+                <template v-else>
+                  <div
+                    v-for="user in reactionModalUsers"
+                    :key="`${user.id}-${user.reaction}`"
+                    class="post-card__reaction-user"
+                  >
+                    <NuxtLink
+                      :to="user.profilePath || '#'"
+                      class="post-card__reaction-user-link"
+                    >
+                      <span class="post-card__reaction-user-avatar">
+                        <UAvatar
+                          :src="user.avatarUrl"
+                          :alt="user.name"
+                          size="lg"
+                        />
+                        <img
+                          :src="postReactionAssetByValue[user.reaction].src"
+                          :alt="t(postReactionAssetByValue[user.reaction].labelKey)"
+                          class="post-card__reaction-user-badge"
+                          draggable="false"
+                        > 
+                      </span>
+                      <span class="post-card__reaction-user-name">{{ user.name }}</span>
+                    </NuxtLink>
+                    <button
+                      v-if="!user.isFollowing"
+                      type="button"
+                      class="post-card__reaction-add-friend"
+                    >
+                      <Icon name="i-ph-user-plus-fill" />
+                      <span>{{ t("feed.postCard.reactionAddFriend") }}</span>
+                    </button>
+                  </div>
+                </template>
+
+                <div v-if="!reactionUsersLoading && reactionModalUsers.length === 0" class="post-card__reaction-empty">
+                  {{ t("feed.postCard.reactionNoUsers") }}
+                </div>
+              </div>
+            </section>
+          </div>
+        </Transition>
+      </Teleport>
     </ClientOnly>
   </article>
 </template>
 
 <script setup lang="ts">
 import { createHashtagPath, formatHashtagLabel } from "../../application/composables/useHashtagData"
+import { feedReactionAssetByValue as postReactionAssetByValue } from "../../application/constants/reaction-assets"
 import { useFeedPostColors } from "../../application/composables/useFeedPostColors"
 import { createPostTextMentionSegments } from "../../application/utils/feed-mentions"
 import { useFeedPostCardVM } from "../../application/view-models/useFeedPostCardVM"
@@ -363,6 +462,9 @@ const {
   selectedPostReaction,
   postReactionTrayOpen,
   lightboxOpen,
+  reactionModalOpen,
+  reactionUsersLoading,
+  activeReactionFilter,
   currentMediaIndex,
   localComments,
   localPollOptions,
@@ -378,6 +480,8 @@ const {
   activePostReactionAsset,
   activePostReactionLabel,
   previewReactions,
+  reactionTabs,
+  reactionModalUsers,
   pollVotesTotal,
   hasReactions,
   commentsCount,
@@ -402,6 +506,8 @@ const {
   isAdmin,
   openComments,
   toggleComments,
+  openReactionModal,
+  closeReactionModal,
 } = useFeedPostCardVM(toRef(props, "post"))
 
 const postTextSegments = computed(() =>
@@ -781,6 +887,18 @@ function handleMediaOpen(index: number) {
   gap: 6px;
 }
 
+.post-card__stats-left--button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.post-card__stats-left--button:hover .post-card__stat-count {
+  text-decoration: underline;
+}
+
 .post-card__reaction-emojis {
   display: flex;
   align-items: center;
@@ -821,6 +939,204 @@ function handleMediaOpen(index: number) {
   gap: 12px;
   font-size: 12.5px;
   color: #94a3b8;
+}
+
+.post-card__reaction-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.28);
+  padding: 24px;
+}
+
+.post-card__reaction-modal {
+  position: relative;
+  display: flex;
+  width: min(684px, calc(100vw - 32px));
+  max-height: min(550px, calc(100dvh - 48px));
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.26);
+}
+
+.post-card__reaction-modal-tabs {
+  display: flex;
+  min-height: 76px;
+  align-items: stretch;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 14px 78px 0 28px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.post-card__reaction-modal-tab {
+  position: relative;
+  display: inline-flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  padding: 0 14px 14px;
+  color: #65676b;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.post-card__reaction-modal-tab--active {
+  color: #0000ff;
+}
+
+.post-card__reaction-modal-tab--active::after {
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  left: 8px;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: #0000ff;
+  content: "";
+}
+
+.post-card__reaction-modal-tab-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.post-card__reaction-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  display: inline-flex;
+  width: 46px;
+  height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: #e4e6eb;
+  color: #050505;
+  cursor: pointer;
+}
+
+.post-card__reaction-modal-close svg,
+.post-card__reaction-modal-close :deep(svg) {
+  width: 24px;
+  height: 24px;
+}
+
+.post-card__reaction-modal-list {
+  display: grid;
+  gap: 10px;
+  overflow-y: auto;
+  padding: 18px 20px 24px;
+}
+
+.post-card__reaction-user {
+  display: flex;
+  min-height: 60px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.post-card__reaction-user-link {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+  color: #050505;
+  text-decoration: none;
+}
+
+.post-card__reaction-user-avatar {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.post-card__reaction-user-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -1px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  object-fit: contain;
+}
+
+.post-card__reaction-user-name {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post-card__reaction-add-friend {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: #e4e6eb;
+  padding: 0 14px;
+  color: #050505;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.post-card__reaction-add-friend svg,
+.post-card__reaction-add-friend :deep(svg) {
+  width: 19px;
+  height: 19px;
+}
+
+.post-card__reaction-empty {
+  padding: 42px 16px;
+  color: #65676b;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .post-card__reaction-modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .post-card__reaction-modal {
+    width: 100%;
+    max-height: 82dvh;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .post-card__reaction-modal-tabs {
+    padding-left: 14px;
+  }
+
+  .post-card__reaction-user {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .post-card__reaction-add-friend {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .post-card__actions {

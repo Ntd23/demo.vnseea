@@ -5149,6 +5149,10 @@
       "fundingProgress": "Progress",
       "pollOptionVotes": "{count} votes",
       "pollTotalVotes": "{count} total votes",
+      "reactionAll": "All",
+      "reactionAddFriend": "Follow",
+      "reactionModalClose": "Close",
+      "reactionNoUsers": "No people data is available for this reaction yet.",
       "lightboxDownloadMessage": "Prepared the mock media download action."
     },
     "shareModal": {
@@ -5445,7 +5449,7 @@
       "sendErrorTitle": "Unable to send message",
       "sendErrorDescription": "The system could not send the message. Please try again.",
       "tabSend": "Send",
-      "tabContacts": "Contacts",
+      "tabContacts": "Friends",
       "tabGroups": "Groups"
     },
     "headerSearchInput": {

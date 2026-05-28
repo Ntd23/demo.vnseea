@@ -372,7 +372,7 @@ const decryptMessageText = (value: unknown, timestamp: unknown) => {
   }
 }
 
-const buildContactPreview = (message: BackendEntity) => {
+const buildContactPreviewLegacy = (message: BackendEntity) => {
   const text = decryptMessageText(message.text, message.time)
 
   if (parseRecalledMessagePayload(text)) {
@@ -413,6 +413,134 @@ const buildDisplayName = (entity: BackendEntity) => {
   }
 
   return firstString(entity, ["username"])
+}
+
+const MESSAGE_REPLY_PREFIX = "__VNSEEA_MINI_REPLY__:"
+
+const normalizeInlineMessageText = (value = "") =>
+  value
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim()
+
+const parseReplyMessagePreview = (value: string) => {
+  const normalized = normalizeInlineMessageText(value)
+  const [replyLine, ...bodyLines] = normalized.split("\n")
+
+  if (replyLine?.startsWith(MESSAGE_REPLY_PREFIX)) {
+    try {
+      const payload = JSON.parse(decodeURIComponent(replyLine.slice(MESSAGE_REPLY_PREFIX.length))) as {
+        author?: string
+        quote?: string
+      }
+
+      return {
+        author: normalizeInlineMessageText(payload.author || ""),
+        quote: normalizeInlineMessageText(payload.quote || ""),
+        body: normalizeInlineMessageText(bodyLines.join("\n")),
+      }
+    }
+    catch {
+      return null
+    }
+  }
+
+  if (!replyLine?.startsWith("\u21AA ")) {
+    return null
+  }
+
+  const rawReply = replyLine.slice(2).trim()
+  const separatorIndex = rawReply.indexOf(": ")
+  const author = separatorIndex > 0 ? rawReply.slice(0, separatorIndex) : ""
+  const quote = separatorIndex > 0 ? rawReply.slice(separatorIndex + 2) : rawReply
+
+  return {
+    author: normalizeInlineMessageText(author),
+    quote: normalizeInlineMessageText(quote),
+    body: normalizeInlineMessageText(bodyLines.join("\n")),
+  }
+}
+
+const buildContactPreviewSender = (
+  message: BackendEntity,
+  currentUserId: number,
+  fallbackName: string,
+) => {
+  const senderId = asNumber(message.from_id)
+
+  if (senderId > 0 && senderId === currentUserId) {
+    return "Bạn"
+  }
+
+  return buildDisplayName(asRecord(message.user_data))
+    || buildDisplayName(asRecord(message.messageUser))
+    || fallbackName
+}
+
+const buildMediaPreviewLabel = (senderName: string, mediaType?: MessageItem["mediaType"]) => {
+  if (!mediaType) {
+    return ""
+  }
+
+  if (mediaType === "image" || mediaType === "gif") {
+    return `${senderName} đã gửi 1 ảnh`
+  }
+
+  if (mediaType === "video") {
+    return `${senderName} đã gửi 1 video`
+  }
+
+  if (mediaType === "audio" || mediaType === "record") {
+    return `${senderName} đã gửi 1 tin nhắn thoại`
+  }
+
+  return `${senderName} đã gửi 1 tệp`
+}
+
+const buildContactPreview = (
+  message: BackendEntity,
+  currentUserId: number,
+  currentUserName: string,
+  fallbackName = "",
+) => {
+  const text = decryptMessageText(message.text, message.time)
+
+  if (parseRecalledMessagePayload(text)) {
+    return "Tin nhắn đã được thu hồi"
+  }
+
+  const normalizedText = normalizeMessageText(text, message)
+  const senderName = buildContactPreviewSender(message, currentUserId, fallbackName)
+  const mediaPreview = buildMediaPreviewLabel(senderName, inferMediaType(message))
+  const replyMeta = parseReplyMessagePreview(normalizedText)
+
+  if (replyMeta) {
+    const replyAuthor = replyMeta.author || ""
+    const senderId = asNumber(message.from_id)
+    const isReplyToCurrentUser = senderId > 0
+      && senderId !== currentUserId
+      && Boolean(replyAuthor)
+      && [currentUserName, "Bạn", "You"]
+        .filter(Boolean)
+        .some(name => name.toLowerCase() === replyAuthor.toLowerCase())
+    const target = isReplyToCurrentUser ? "bạn" : replyAuthor || replyMeta.quote
+    const body = replyMeta.body || mediaPreview
+
+    if (target && body) {
+      return `${senderName} đã trả lời ${target}: ${body}`
+    }
+
+    if (body) {
+      return `${senderName} đã trả lời: ${body}`
+    }
+
+    return `${senderName} đã trả lời tin nhắn`
+  }
+
+  return normalizedText
+    || mediaPreview
+    || buildContactPreviewLegacy(message)
 }
 
 const buildMediaUrl = (
@@ -513,6 +641,7 @@ const buildPageStatus = (entity: BackendEntity) =>
 const mapMessageContact = (
   entity: BackendEntity,
   currentUserId: number,
+  currentUserName: string,
   resolveMediaUrl: (value: unknown) => string,
 ): MessageContact | null => {
   const type = asString(entity.chat_type) as MessageThreadType
@@ -541,7 +670,7 @@ const mapMessageContact = (
       lastSeenAt: lastSeenAt || undefined,
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "user",
-      preview: buildContactPreview(lastMessage),
+      preview: buildContactPreview(lastMessage, currentUserId, currentUserName, name),
       time: firstString(lastMessage, ["time_text"]),
       unreadCount: asNumber(entity.message_count),
       members: [firstString(entity, ["name", "username"])].filter(Boolean),
@@ -571,7 +700,7 @@ const mapMessageContact = (
       isOnline: buildGroupOnlineState(entity, currentUserId),
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "group",
-      preview: buildContactPreview(lastMessage),
+      preview: buildContactPreview(lastMessage, currentUserId, currentUserName, name),
       time: firstString(lastMessage, ["time_text"]),
       unreadCount: asNumber(entity.message_count),
       members,
@@ -603,7 +732,7 @@ const mapMessageContact = (
       isOnline: false,
       avatarUrl: resolveMediaUrl(firstString(entity, ["avatar", "avatar_full"])),
       tab: "user",
-      preview: buildContactPreview(lastMessage),
+      preview: buildContactPreview(lastMessage, currentUserId, currentUserName, name),
       time: firstString(lastMessage, ["time_text"]),
       unreadCount: 0,
       members: [
@@ -879,8 +1008,10 @@ export async function fetchInboxContacts(event: H3Event) {
       },
     )
 
+    const currentUserId = asNumber(currentUser.user_id)
+    const currentUserName = buildDisplayName(asRecord(currentUser))
     const contacts = (response.data ?? [])
-      .map(entity => mapMessageContact(entity, asNumber(currentUser.user_id), resolveMediaUrl))
+      .map(entity => mapMessageContact(entity, currentUserId, currentUserName, resolveMediaUrl))
       .filter(Boolean) as MessageContact[]
 
     return contacts

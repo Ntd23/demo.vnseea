@@ -1,7 +1,7 @@
 <!-- English description: Responsive global header with search, counters, notifications, and account controls. -->
 
 <template>
-  <header class="sticky top-0 z-30">
+  <header class="sticky top-0 z-[100]">
     <!-- ─── Desktop header ────────────────────────────────── -->
     <div class="hidden border-b border-[#dfe6ff] bg-white/95 shadow-[0_10px_26px_rgba(15,35,110,0.08)] backdrop-blur xl:block">
       <div class="mx-auto flex h-16 w-full max-w-[1880px] items-center gap-4 px-5">
@@ -409,7 +409,7 @@ async function toggleRequests() {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  z-index: 40;
+  z-index: 110;
 }
 
 .mobile-notification-panel {
@@ -417,7 +417,7 @@ async function toggleRequests() {
   top: calc(100% + 8px);
   left: 12px;
   right: 12px;
-  z-index: 50;
+  z-index: 110;
 }
 
 .mobile-notification-panel :deep(.notification-dropdown) {

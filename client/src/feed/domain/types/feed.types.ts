@@ -68,6 +68,20 @@ export type FeedPostReactionSummary = {
   count: number
 }
 
+export type FeedPostReactionUser = {
+  id: number
+  name: string
+  avatarUrl: string
+  profilePath?: string
+  reaction: FeedStoryReactionType
+  isFollowing?: boolean
+}
+
+export type FeedPostReactionsResponse = {
+  reactions: FeedPostReactionSummary[]
+  users: FeedPostReactionUser[]
+}
+
 export type FeedPostMention = {
   username: string
   name: string
@@ -137,6 +151,7 @@ export type FeedPostRecord = {
   isLiked: boolean
   reaction: FeedStoryReactionType | null
   reactions: FeedPostReactionSummary[]
+  reactionUsers: FeedPostReactionUser[]
 }
 
 export type FeedPostsResponse = {
