@@ -1,5 +1,5 @@
 <template>
-  <div class="left-sidebar mt-10 pt-2">
+  <div class="left-sidebar pt-2">
     <nav class="left-sidebar__nav scrollbar-hide">
       <div class="left-sidebar__items">
         <NavigationSidebarMenuItem

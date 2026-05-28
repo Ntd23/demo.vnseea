@@ -326,102 +326,100 @@
               class="chat-widget__avatar-menu"
               :style="avatarMenuStyle"
             >
-              <div class="chat-widget__avatar-menu-header">
-                <UAvatar
-                  :src="avatarMenuContact.avatarUrl"
-                  :alt="avatarMenuContact.name"
-                  size="lg"
-                  class="rounded-full"
-                />
-                <div class="chat-widget__avatar-menu-info">
-                  <span class="chat-widget__avatar-menu-name">{{ avatarMenuContact.name }}</span>
-                  <span
-                    class="chat-widget__avatar-menu-status"
-                    :class="{ 'chat-widget__avatar-menu-status--online': avatarMenuContact.isOnline }"
-                  >
-                    <span class="chat-widget__avatar-menu-dot" />
-                    {{ buildPresenceLabel(avatarMenuContact) }}
-                  </span>
+              <div class="chat-widget__avatar-menu-section">
+                <div class="chat-widget__avatar-menu-item chat-widget__avatar-menu-item--muted">
+                  <Icon name="i-ph-lock-key-duotone" class="h-5 w-5" />
+                  <span>{{ $t("navigation.chatWidget.endToEndEncrypted") }}</span>
                 </div>
-              </div>
-              <div class="chat-widget__avatar-menu-divider" />
-              <button
-                v-if="avatarMenuContact.profileUrl"
-                type="button"
-                class="chat-widget__avatar-menu-item"
-                @click="goToAvatarProfile"
-              >
-                <span class="chat-widget__avatar-menu-icon">
+                <button
+                  type="button"
+                  class="chat-widget__avatar-menu-item"
+                  @click="openFullMessagesFromAvatarMenu"
+                >
+                  <Icon name="i-ph-chat-circle-dots-duotone" class="h-5 w-5" />
+                  <span>{{ $t("navigation.chatWidget.openInMessenger") }}</span>
+                </button>
+                <button
+                  v-if="avatarMenuContact.profileUrl"
+                  type="button"
+                  class="chat-widget__avatar-menu-item"
+                  @click="goToAvatarProfile"
+                >
                   <Icon name="i-ph-user-circle-duotone" class="h-5 w-5" />
-                </span>
-                <span>{{ $t('navigation.chatWidget.viewProfile') }}</span>
-              </button>
-              <button
-                type="button"
-                class="chat-widget__avatar-menu-item"
-                @click="chatWithAvatarContact"
-              >
-                <span class="chat-widget__avatar-menu-icon">
-                  <Icon name="i-ph-chat-teardrop-dots-duotone" class="h-5 w-5" />
-                </span>
-                <span>{{ $t('navigation.chatWidget.actionOpenMessages') }}</span>
-              </button>
-              <button
-                type="button"
-                class="chat-widget__avatar-menu-item"
-                @click="callAvatarContact('audio')"
-              >
-                <span class="chat-widget__avatar-menu-icon">
+                  <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
+                </button>
+              </div>
+
+              <div class="chat-widget__avatar-menu-section">
+                <button type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('audio')">
                   <Icon name="i-ph-phone-duotone" class="h-5 w-5" />
-                </span>
-                <span>{{ $t('navigation.chatWidget.audioCall') }}</span>
-              </button>
-              <button
-                type="button"
-                class="chat-widget__avatar-menu-item"
-                @click="callAvatarContact('video')"
-              >
-                <span class="chat-widget__avatar-menu-icon">
+                  <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
+                </button>
+                <button type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('video')">
                   <Icon name="i-ph-video-camera-duotone" class="h-5 w-5" />
-                </span>
-                <span>{{ $t('navigation.chatWidget.videoCall') }}</span>
-              </button>
-              <div class="chat-widget__avatar-menu-divider" />
-              <button
-                type="button"
-                class="chat-widget__avatar-menu-item chat-widget__avatar-menu-item--danger"
-                @click="closeAvatarMenu"
-              >
-                <span class="chat-widget__avatar-menu-icon">
+                  <span>{{ $t("navigation.chatWidget.videoCall") }}</span>
+                </button>
+              </div>
+
+              <div class="chat-widget__avatar-menu-section">
+                <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
+                  <Icon name="i-ph-palette-duotone" class="h-5 w-5" />
+                  <span>{{ $t("navigation.chatWidget.changeTheme") }}</span>
+                </button>
+                <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
+                  <Icon name="i-ph-thumbs-up-duotone" class="h-5 w-5" />
+                  <span>{{ $t("navigation.chatWidget.changeReaction") }}</span>
+                </button>
+                <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
+                  <Icon name="i-ph-pencil-simple-duotone" class="h-5 w-5" />
+                  <span>{{ $t("navigation.chatWidget.nickname") }}</span>
+                </button>
+              </div>
+
+              <div class="chat-widget__avatar-menu-section">
+                <button type="button" class="chat-widget__avatar-menu-item" @click="openMessagesTabFromAvatarMenu('multi')">
+                  <Icon name="i-ph-users-three-duotone" class="h-5 w-5" />
+                  <span>{{ $t("navigation.chatWidget.createGroup") }}</span>
+                </button>
+                <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
+                  <Icon name="i-ph-bell-slash-duotone" class="h-5 w-5" />
+                  <span>{{ $t("navigation.chatWidget.muteNotifications") }}</span>
+                </button>
+                <button type="button" class="chat-widget__avatar-menu-item chat-widget__avatar-menu-item--danger" @click="closeAvatarMenu">
                   <Icon name="i-ph-user-minus-duotone" class="h-5 w-5" />
-                </span>
-                <span>{{ $t('navigation.chatWidget.blockUser') }}</span>
-              </button>
+                  <span>{{ $t("navigation.chatWidget.blockUser") }}</span>
+                </button>
+              </div>
             </div>
           </Transition>
         </Teleport>
       </div>
       
-      <div v-if="miniChatOpen && activeMiniContact && !miniChatMinimized" class="chat-widget__mini">
+      <div
+        v-for="(miniSession, miniSessionIndex) in openMiniChatSessions"
+        :key="miniSession.contact.id"
+        class="chat-widget__mini"
+        :class="`chat-widget__mini--${miniSessionIndex + 1}`"
+      >
         <div class="chat-widget__mini-header">
           <div class="chat-widget__mini-identity">
             <NuxtLink
-              v-if="activeMiniContact.type === 'user'"
-              :to="activeMiniContact.profileUrl || '#'"
+              v-if="miniSession.contact.type === 'user'"
+              :to="miniSession.contact.profileUrl || '#'"
               class="chat-widget__mini-avatar-link"
               :title="$t('navigation.chatWidget.viewProfile')"
-              @click="showMiniHeaderMenu = false"
+              @click="activeMiniHeaderContactId = null"
             >
               <UChip
-                :show="Boolean(activeMiniContact.isOnline)"
+                :show="Boolean(miniSession.contact.isOnline)"
                 position="bottom-right"
                 color="success"
                 inset
                 :ui="{ base: '!bg-emerald-500' }"
               >
                 <UAvatar
-                  :src="activeMiniContact.avatarUrl"
-                  :alt="activeMiniContact.name"
+                  :src="miniSession.contact.avatarUrl"
+                  :alt="miniSession.contact.name"
                   size="sm"
                   class="rounded-full"
                 />
@@ -433,10 +431,10 @@
             <button
               type="button"
               class="chat-widget__mini-name-btn"
-              @click="toggleMiniHeaderMenu"
+              @click.stop="toggleMiniHeaderMenu(miniSession)"
             >
-              <span class="chat-widget__mini-title">{{ activeMiniContact.name }}</span>
-              <span class="chat-widget__mini-status">{{ buildPresenceLabel(activeMiniContact) }}</span>
+              <span class="chat-widget__mini-title">{{ miniSession.contact.name }}</span>
+              <span class="chat-widget__mini-status">{{ buildPresenceLabel(miniSession.contact) }}</span>
             </button>
           </div>
 
@@ -444,18 +442,18 @@
             <button
               class="chat-widget__header-btn"
               type="button"
-              :title="activeMiniContact.type === 'group' ? $t('pages.messagesPage.groupAudioCall') : $t('pages.messagesPage.callLogAudio')"
+              :title="miniSession.contact.type === 'group' ? $t('pages.messagesPage.groupAudioCall') : $t('pages.messagesPage.callLogAudio')"
               :disabled="isCallActionPending"
-              @click="startMiniCall('audio')"
+              @click="startMiniCall(miniSession, 'audio')"
             >
               <Icon name="i-ph-phone-duotone" class="h-3.5 w-3.5" />
             </button>
             <button
               class="chat-widget__header-btn"
               type="button"
-              :title="activeMiniContact.type === 'group' ? $t('pages.messagesPage.groupVideoCall') : $t('pages.messagesPage.callLogVideo')"
+              :title="miniSession.contact.type === 'group' ? $t('pages.messagesPage.groupVideoCall') : $t('pages.messagesPage.callLogVideo')"
               :disabled="isCallActionPending"
-              @click="startMiniCall('video')"
+              @click="startMiniCall(miniSession, 'video')"
             >
               <Icon name="i-ph-video-camera-duotone" class="h-3.5 w-3.5" />
             </button>
@@ -463,7 +461,7 @@
               class="chat-widget__header-btn"
               type="button"
               :title="$t('navigation.chatWidget.minimizeChat')"
-              @click="miniChatMinimized = true"
+              @click="minimizeMiniSession(miniSession)"
             >
               <Icon name="i-ph-minus-bold" class="h-3.5 w-3.5" />
             </button>
@@ -471,204 +469,149 @@
               class="chat-widget__header-btn"
               type="button"
               :title="$t('navigation.chatWidget.actionOpenMessages')"
-              @click="openFullMessages(activeMiniContact)"
+              @click="openFullMessages(miniSession.contact)"
             >
               <Icon name="i-ph-arrows-out-simple-duotone" class="h-3.5 w-3.5" />
             </button>
-            <button class="chat-widget__header-btn" type="button" @click="closeMiniChat">
+            <button class="chat-widget__header-btn" type="button" @click="closeMiniSession(miniSession)">
               <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
 
-        <div v-if="showMiniHeaderMenu" class="chat-widget__mini-menu">
+        <div v-if="showMiniHeaderMenuFor(miniSession)" ref="miniHeaderMenuRef" class="chat-widget__mini-menu">
           <div class="chat-widget__mini-menu-section">
             <div class="chat-widget__mini-menu-item chat-widget__mini-menu-item--muted">
-              <Icon name="i-ph-lock-key-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-lock-key-duotone" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.endToEndEncrypted") }}</span>
             </div>
             <button
               type="button"
               class="chat-widget__mini-menu-item"
-              @click="openFullMessagesFromMiniMenu"
+              @click="openFullMessagesFromMiniMenu(miniSession)"
             >
-              <Icon name="i-ph-chat-circle-dots-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-chat-circle-dots-duotone" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.openInMessenger") }}</span>
             </button>
             <button
-              v-if="activeMiniContact.profileUrl"
+              v-if="miniSession.contact.profileUrl"
               type="button"
               class="chat-widget__mini-menu-item"
-              @click="openMiniProfile"
+              @click="openMiniProfile(miniSession)"
             >
-              <Icon name="i-ph-user-circle-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-user-circle-duotone" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
             </button>
           </div>
 
           <div class="chat-widget__mini-menu-section">
-            <button type="button" class="chat-widget__mini-menu-item" @click="startMiniCallFromMenu('audio')">
-              <Icon name="i-ph-phone-duotone" class="h-5 w-5" />
-              <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
-            </button>
-            <button type="button" class="chat-widget__mini-menu-item" @click="startMiniCallFromMenu('video')">
-              <Icon name="i-ph-video-camera-duotone" class="h-5 w-5" />
-              <span>{{ $t("navigation.chatWidget.videoCall") }}</span>
-            </button>
-          </div>
-
-          <div class="chat-widget__mini-menu-section">
             <button type="button" class="chat-widget__mini-menu-item" @click="closeMiniHeaderMenu">
-              <Icon name="i-ph-palette-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-circle-fill" class="h-5 w-5 text-[#5b5cff]" />
               <span>{{ $t("navigation.chatWidget.changeTheme") }}</span>
             </button>
             <button type="button" class="chat-widget__mini-menu-item" @click="closeMiniHeaderMenu">
-              <Icon name="i-ph-thumbs-up-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-thumbs-up-fill" class="h-5 w-5 text-[#5b5cff]" />
               <span>{{ $t("navigation.chatWidget.changeReaction") }}</span>
             </button>
             <button type="button" class="chat-widget__mini-menu-item" @click="closeMiniHeaderMenu">
-              <Icon name="i-ph-pencil-simple-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-pencil-simple-duotone" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.nickname") }}</span>
             </button>
           </div>
 
           <div class="chat-widget__mini-menu-section">
             <button type="button" class="chat-widget__mini-menu-item" @click="openMessagesTabFromMiniMenu('multi')">
-              <Icon name="i-ph-users-three-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-users-three-duotone" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.createGroup") }}</span>
             </button>
             <button type="button" class="chat-widget__mini-menu-item" @click="closeMiniHeaderMenu">
-              <Icon name="i-ph-bell-slash-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-bell-slash-duotone" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.muteNotifications") }}</span>
             </button>
             <button type="button" class="chat-widget__mini-menu-item chat-widget__mini-menu-item--danger" @click="closeMiniHeaderMenu">
-              <Icon name="i-ph-user-minus-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-user-minus-duotone" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.blockUser") }}</span>
             </button>
           </div>
         </div>
 
-        <div ref="miniMessagesViewport" class="chat-widget__mini-messages">
-          <div v-if="isLoadingThread" class="space-y-3">
+        <div
+          :ref="element => setMiniMessagesViewport(miniSession.contactId, element)"
+          class="chat-widget__mini-messages"
+        >
+          <div v-if="miniSession.isLoading" class="space-y-3">
             <USkeleton v-for="index in 3" :key="index" class="h-12 rounded-2xl" />
           </div>
 
-          <div v-else-if="miniMessages.length === 0" class="chat-widget__empty chat-widget__empty--mini">
+          <div v-else-if="miniSession.messages.length === 0" class="chat-widget__empty chat-widget__empty--mini">
             <Icon name="i-ph-chat-teardrop-text-duotone" class="chat-widget__empty-icon" />
             <p>{{ $t("navigation.chatWidget.emptyMessages") }}</p>
           </div>
 
           <div v-else class="chat-widget__mini-thread">
             <div
-              v-for="message in miniMessages"
+              v-for="message in miniSession.messages"
               :key="message.id"
               class="chat-widget__mini-message"
               :class="{ 'chat-widget__mini-message--mine': message.isMine }"
             >
-              <div
-                v-if="!message.isDeleted && getMiniReplyMeta(message)"
-                class="chat-widget__mini-message-reply"
-                :class="{ 'chat-widget__mini-message-reply--mine': message.isMine }"
-              >
-                <div class="chat-widget__mini-message-reply-title">
-                  <Icon name="i-ph-arrow-bend-up-left-fill" class="h-3.5 w-3.5" />
-                  <span>{{ getMiniReplyTitle(message) }}</span>
-                </div>
-                <div class="chat-widget__mini-message-reply-quote">
-                  {{ getMiniReplyMeta(message)?.quote }}
-                </div>
-              </div>
-              <div
-                class="chat-widget__mini-bubble-frame"
-                :class="{ 'chat-widget__mini-bubble-frame--mine': message.isMine }"
-                :title="getMiniMessageTimelineTitle(message)"
-              >
-                <ChatBubble
-                  :text="getMiniBubbleText(message)"
-                  :is-mine="message.isMine"
-                  :is-last="message.isLast"
-                  :show-author="activeMiniContact?.type === 'group' && message.showAuthor"
-                  :time="message.time"
-                  :show-time="message.showTime"
-                  :avatar="message.avatar || activeMiniContact?.avatarUrl"
-                  :sender-is-online="getMiniMessageSenderOnline(message)"
-                  :author-name="message.authorName"
-                  :media-url="message.isDeleted ? undefined : message.mediaUrl"
-                  :media-name="message.isDeleted ? undefined : message.mediaName"
-                  :media-type="message.isDeleted ? undefined : message.mediaType"
-                  :call-log="message.isDeleted ? undefined : message.callLog"
-                  class="chat-widget__mini-chat-bubble"
-                  :class="{ 'chat-widget__mini-chat-bubble--deleted': message.isDeleted }"
-                  @retry-call="openFullMessages(activeMiniContact)"
-                />
-                <span v-if="!message.isDeleted && getMiniMessageReaction(message)" class="chat-widget__mini-reaction">
-                  <img
-                    :src="getMiniMessageReaction(message)?.src"
-                    :alt="$t(getMiniMessageReaction(message)?.labelKey ?? defaultMiniReaction.labelKey)"
-                  >
-                </span>
-                <div v-if="!message.isDeleted" class="chat-widget__mini-message-tools">
-                  <button
-                    type="button"
-                    class="chat-widget__mini-message-tool"
-                    :title="$t('navigation.chatWidget.reactToMessage')"
-                    @click="toggleMiniReactionPicker(message.id)"
-                  >
-                    <Icon name="i-ph-smiley-duotone" class="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    class="chat-widget__mini-message-tool"
-                    :title="$t('navigation.chatWidget.replyMessage')"
-                    @click="replyToMiniMessage(message)"
-                  >
-                    <Icon name="i-ph-arrow-bend-up-left-bold" class="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    v-if="message.isMine"
-                    type="button"
-                    class="chat-widget__mini-message-tool chat-widget__mini-message-tool--danger"
-                    :title="$t('navigation.chatWidget.deleteMessage')"
-                    @click="deleteMiniMessageAction(message)"
-                  >
-                    <Icon name="i-ph-trash-duotone" class="h-3.5 w-3.5" />
-                  </button>
-                </div>
-                <div
-                  v-if="!message.isDeleted && activeMiniReactionPickerId === message.id"
-                  class="chat-widget__mini-reaction-picker"
-                  :class="{ 'chat-widget__mini-reaction-picker--mine': message.isMine }"
-                >
-                  <button
-                    v-for="reaction in miniReactionOptions"
-                    :key="reaction.value"
-                    type="button"
-                    class="chat-widget__mini-reaction-option"
-                    :title="$t(reaction.labelKey)"
-                    @click="setMiniReaction(message.id, reaction)"
-                  >
-                    <img :src="reaction.src" :alt="$t(reaction.labelKey)">
-                  </button>
-                </div>
-              </div>
+              <ChatBubble
+                :text="getMiniBubbleText(message)"
+                :is-mine="message.isMine"
+                :is-last="message.isLast"
+                :show-author="miniSession.contact.type === 'group' && message.showAuthor"
+                :time="message.time"
+                :show-time="message.showTime"
+                :avatar="message.avatar || miniSession.contact.avatarUrl"
+                :sender-is-online="getMiniMessageSenderOnline(miniSession, message)"
+                :author-name="message.authorName"
+                :timeline-title="getMiniMessageTimelineTitle(message)"
+                :reply-title="!message.isDeleted && getMiniReplyMeta(message) ? getMiniReplyTitle(message) : undefined"
+                :reply-quote="!message.isDeleted && !getMiniReplyMeta(message)?.mediaUrl && !isMiniImageFileQuote(getMiniReplyMeta(message)?.quote) ? getMiniReplyMeta(message)?.quote : undefined"
+                :reply-media-url="!message.isDeleted ? getMiniReplyMeta(message)?.mediaUrl : undefined"
+                :reaction-src="!message.isDeleted ? getMiniMessageReaction(message)?.src : undefined"
+                :reaction-alt="!message.isDeleted ? $t(getMiniMessageReaction(message)?.labelKey ?? defaultMiniReaction.labelKey) : undefined"
+                :show-tools="!message.isDeleted"
+                :reaction-picker-open="activeMiniReactionPickerId === message.id"
+                :reaction-options="miniBubbleReactionOptions"
+                :can-delete="message.isMine"
+                :media-url="message.isDeleted ? undefined : message.mediaUrl"
+                :media-name="message.isDeleted ? undefined : message.mediaName"
+                :media-type="message.isDeleted ? undefined : message.mediaType"
+                :call-log="message.isDeleted ? undefined : message.callLog"
+                class="chat-widget__mini-chat-bubble"
+                :class="{ 'chat-widget__mini-chat-bubble--deleted': message.isDeleted }"
+                @avatar-click="openMiniMessageAvatarMenu(miniSession, message, $event)"
+                @retry-call="openFullMessages(miniSession.contact)"
+                @toggle-reaction-picker="toggleMiniReactionPicker(message.id)"
+                @select-reaction="setMiniReactionByValue(message.id, $event.value)"
+                @reply="replyToMiniMessage(message)"
+                @delete="deleteMiniMessageAction(message)"
+              />
             </div>
           </div>
         </div>
 
-        <div v-if="miniReplyTarget || miniAttachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
+        <div v-if="miniReplyTarget || miniSession.attachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
           <div v-if="miniReplyTarget" class="chat-widget__mini-reply-preview">
             <div class="chat-widget__mini-reply-copy">
               <strong>{{ miniReplyTitle }}</strong>
-              <span>{{ miniReplyPreviewText }}</span>
+              <NuxtImg
+                v-if="miniReplyPreviewMediaUrl"
+                :src="miniReplyPreviewMediaUrl"
+                :alt="miniReplyPreviewText || miniReplyTitle"
+                class="chat-widget__mini-reply-image"
+              />
+              <span v-if="!miniReplyPreviewMediaUrl">{{ miniReplyPreviewText }}</span>
             </div>
             <button type="button" class="chat-widget__mini-preview-clear" @click="miniReplyTarget = null">
               <Icon name="i-ph-x-bold" class="h-3 w-3" />
             </button>
           </div>
-          <div v-if="miniAttachFile" class="chat-widget__mini-file-preview">
+          <div v-if="miniSession.attachFile" class="chat-widget__mini-file-preview">
             <Icon name="i-ph-paperclip-duotone" class="h-3.5 w-3.5" />
-            <span>{{ miniAttachFile.name }}</span>
-            <button type="button" @click="clearMiniFile">
+            <span>{{ miniSession.attachFile.name }}</span>
+            <button type="button" @click="clearMiniFile(miniSession.contact.id)">
               <Icon name="i-ph-x-bold" class="h-3 w-3" />
             </button>
           </div>
@@ -682,65 +625,73 @@
         </div>
 
         <div class="chat-widget__mini-input-wrap">
-          <input ref="miniImageInput" type="file" accept="image/*" class="hidden" @change="handleMiniFileChange">
-          <input ref="miniFileInput" type="file" class="hidden" @change="handleMiniFileChange">
+          <div class="chat-widget__mini-input-shell">
+            <UInput
+              v-model="miniSession.message"
+              :placeholder="$t('navigation.chatWidget.miniInputPlaceholder')"
+              class="chat-widget__mini-input"
+              :ui="{
+                base: 'chat-widget__mini-input-control',
+              }"
+              @keydown.enter.exact.prevent="submitMiniMessage(miniSession)"
+            />
+            <button
+              type="button"
+              class="chat-widget__mini-send-btn"
+              :disabled="!canSubmitMiniMessage(miniSession)"
+              :title="$t('navigation.chatWidget.sendMessage')"
+              @click="submitMiniMessage(miniSession)"
+            >
+              <UIcon
+                :name="miniSession.isSending ? 'i-ph-circle-notch-bold' : 'i-ph-paper-plane-right-fill'"
+                class="chat-widget__mini-send-icon btn-primary"
+                :class="{ 'animate-spin': miniSession.isSending }"
+              />
+            </button>
+          </div>
+           <input ref="miniImageInput" type="file" accept="image/*" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
+          <input ref="miniFileInput" type="file" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
+           <button
+            type="button"
+            class="chat-widget__mini-tool-btn"
+            :class="{ 'chat-widget__mini-tool-btn--active': isMiniRecording }"
+            :title="$t('pages.messagesPage.startRecording')"
+            :disabled="!isMiniRecordSupported"
+            @click="handleMiniRecordButton(miniSession)"
+          >
+            <Icon :name="isMiniRecording ? 'i-ph-stop-circle-duotone' : 'i-ph-microphone-duotone'" class="h-4 w-4" />
+          </button>
           <button type="button" class="chat-widget__mini-tool-btn" :title="$t('pages.messagesPage.attachmentLabel')" @click="miniImageInput?.click()">
             <Icon name="i-ph-image-duotone" class="h-4 w-4" />
           </button>
           <button type="button" class="chat-widget__mini-tool-btn" :title="$t('navigation.chatWidget.chooseFile')" @click="miniFileInput?.click()">
             <Icon name="i-ph-paperclip-duotone" class="h-4 w-4" />
           </button>
-          <button
-            type="button"
-            class="chat-widget__mini-tool-btn"
-            :class="{ 'chat-widget__mini-tool-btn--active': isMiniRecording }"
-            :title="$t('pages.messagesPage.startRecording')"
-            :disabled="!isMiniRecordSupported"
-            @click="handleMiniRecordButton"
-          >
-            <Icon :name="isMiniRecording ? 'i-ph-stop-circle-duotone' : 'i-ph-microphone-duotone'" class="h-4 w-4" />
-          </button>
-          <UInput
-            v-model="miniChatMessage"
-            :placeholder="$t('navigation.chatWidget.miniInputPlaceholder')"
-            class="chat-widget__mini-input"
-            :ui="{
-              base: 'chat-widget__mini-input-control',
-            }"
-            @keydown.enter.exact.prevent="submitMiniMessage"
-          />
-          <UButton
-            type="button"
-            variant="solid"
-            icon="i-ph-paper-plane-right-fill"
-            class="chat-widget__mini-send-btn btn-primary"
-            :loading="isSendingMini"
-            :disabled="!canSubmitMiniMessage"
-            @click="submitMiniMessage"
-          />
         </div>
       </div>
     </div>
     
 
     <button
-      v-if="miniChatOpen && activeMiniContact && miniChatMinimized"
+      v-for="(launcher, launcherIndex) in miniLaunchers"
+      :key="launcher.id"
       type="button"
       class="chat-widget__mini-launcher"
-      :title="activeMiniContact.name"
-      @click="miniChatMinimized = false"
+      :class="`chat-widget__mini-launcher--${launcherIndex + 1}`"
+      :title="launcher.name"
+      @click="restoreMiniLauncher(launcher)"
     >
       <UChip
-        :show="miniChatHasNewMessage"
+        :show="Boolean(launcher.unreadCount && launcher.unreadCount > 0)"
         position="top-right"
         color="success"
         inset
         :ui="{ base: '!bg-emerald-500' }"
       >
         <UAvatar
-          v-if="activeMiniContact.type === 'user'"
-          :src="activeMiniContact.avatarUrl"
-          :alt="activeMiniContact.name"
+          v-if="launcher.type === 'user'"
+          :src="launcher.avatarUrl"
+          :alt="launcher.name"
           size="lg"
           class="rounded-full"
         />
@@ -749,17 +700,57 @@
         </div>
       </UChip>
     </button>
+
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-150 ease-out"
+        enter-from-class="opacity-0 scale-95 translate-y-1"
+        enter-to-class="opacity-100 scale-100 translate-y-0"
+        leave-active-class="transition duration-100 ease-in"
+        leave-from-class="opacity-100 scale-100 translate-y-0"
+        leave-to-class="opacity-0 scale-95 translate-y-1"
+      >
+        <div
+          v-if="messageAvatarMenuContact"
+          ref="messageAvatarMenuRef"
+          class="chat-widget__message-avatar-menu"
+          :style="messageAvatarMenuStyle"
+        >
+          <button
+            v-if="messageAvatarMenuContact.profileUrl"
+            type="button"
+            class="chat-widget__message-avatar-menu-item"
+            @click="goToMessageAvatarProfile"
+          >
+            <UIcon name="i-ph-user-circle-duotone" class="h-5 w-5" />
+            <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
+          </button>
+          <button type="button" class="chat-widget__message-avatar-menu-item chat-widget__message-avatar-menu-item--danger" @click="closeMessageAvatarMenu">
+            <UIcon name="i-ph-user-minus-duotone" class="h-5 w-5" />
+            <span>{{ $t("navigation.chatWidget.blockUser") }}</span>
+          </button>
+          <button type="button" class="chat-widget__message-avatar-menu-item" @click="callMessageAvatarContact('audio')">
+            <UIcon name="i-ph-phone-duotone" class="h-5 w-5" />
+            <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
+          </button>
+          <button type="button" class="chat-widget__message-avatar-menu-item" @click="callMessageAvatarContact('video')">
+            <UIcon name="i-ph-video-camera-duotone" class="h-5 w-5" />
+            <span>{{ $t("navigation.chatWidget.videoCall") }}</span>
+          </button>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from "vue"
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { defaultFeedReactionAsset, feedReactionAssetByValue, feedReactionAssets, type FeedReactionAsset } from "../../../feed/application/constants/reaction-assets"
 import { useMessageCalls } from "../../../messages/application/composables/useMessageCalls"
 import { useMessageRecorder } from "../../../messages/application/composables/useMessageRecorder"
 import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
 import type { MessageCallType } from "../../../messages/domain/types/calls.types"
-import type { MessageItem } from "../../../messages/domain/types/messages.types"
+import type { MessageContact, MessageItem } from "../../../messages/domain/types/messages.types"
 import { useChatWidgetVM } from "../../application/composables/useChatWidgetVM"
 
 const tabs = [
@@ -771,8 +762,8 @@ const tabs = [
   },
   {
     value: "contacts",
-    icon: "i-ph-address-book-duotone",
-    activeIcon: "i-ph-address-book-fill",
+    icon: "i-ph-users-duotone",
+    activeIcon: "i-ph-users-fill",
     label: "navigation.chatWidget.tabContacts",
   },
   {
@@ -787,9 +778,10 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const { t } = useI18n()
 const miniImageInput = ref<HTMLInputElement | null>(null)
 const miniFileInput = ref<HTMLInputElement | null>(null)
-const miniMessagesViewport = ref<HTMLElement | null>(null)
-const miniChatMinimized = ref(false)
-const showMiniHeaderMenu = ref(false)
+const miniMessagesViewports = new Map<string, HTMLElement>()
+const miniHeaderMenuRef = ref<HTMLElement | null>(null)
+const messageAvatarMenuRef = ref<HTMLElement | null>(null)
+const activeMiniHeaderContactId = ref<string | null>(null)
 const miniReactionOptions = feedReactionAssets
 const defaultMiniReaction = defaultFeedReactionAsset
 
@@ -797,6 +789,9 @@ const defaultMiniReaction = defaultFeedReactionAsset
 type AvatarMenuContact = (typeof filteredContacts)['value'][number]
 const avatarMenuContact = ref<AvatarMenuContact | null>(null)
 const avatarMenuStyle = ref<Record<string, string>>({})
+const messageAvatarMenuContact = ref<AvatarMenuContact | null>(null)
+const messageAvatarMenuStyle = ref<Record<string, string>>({})
+const messageAvatarMenuMessageId = ref<number | null>(null)
 const activeMiniReactionPickerId = ref<number | null>(null)
 const miniMessageReactions = ref<Record<number, FeedReactionAsset | undefined>>({})
 const miniReplyTarget = ref<MessageItem | null>(null)
@@ -829,17 +824,12 @@ const {
   filteredGroups,
   onlineCount,
   miniChatOpen,
+  miniChatSessions,
   miniChatAutoOpenVersion,
-  miniChatMessage,
-  miniAttachFile,
   activeMiniContact,
-  miniMessages,
   isLoadingInbox,
-  isLoadingThread,
   isSendingQuick,
-  isSendingMini,
   canSendQuickMessage,
-  canSendMiniMessage,
   buildPresenceLabel,
   buildPreviewLabel,
   messageTagLabels,
@@ -847,6 +837,8 @@ const {
   toggleSendRecipient,
   openMiniChat: openMiniChatVm,
   closeMiniChat: closeMiniChatVm,
+  minimizeMiniChat,
+  restoreMiniChat,
   sendQuickMessage,
   sendMiniMessage,
   reactToMiniMessage,
@@ -859,12 +851,20 @@ const {
   openMessagesTab,
 } = useChatWidgetVM()
 
+type MiniChatSessionView = (typeof miniChatSessions)["value"][number]
+
 const showSendCandidates = computed(() => {
   return sendCandidates.value.length > 0
 })
 
-const miniChatHasNewMessage = computed(() =>
-  Boolean(activeMiniContact.value?.unreadCount && activeMiniContact.value.unreadCount > 0),
+const openMiniChatSessions = computed(() =>
+  miniChatSessions.value.filter(session => !session.minimized),
+)
+const miniLaunchers = computed(() =>
+  miniChatSessions.value
+    .filter(session => session.minimized)
+    .map(session => session.contact)
+    .slice(0, 2),
 )
 const activeMiniRecordDraft = computed(() => miniRecordDraft.value)
 const miniReplyAuthor = computed(() => {
@@ -888,46 +888,92 @@ const miniReplyPreviewText = computed(() =>
     ? getMiniBubbleText(miniReplyTarget.value) || miniReplyTarget.value.mediaName || t("navigation.chatWidget.replyingToMessage")
     : t("navigation.chatWidget.replyingToMessage"),
 )
-const canSubmitMiniMessage = computed(() =>
-  !isMiniRecording.value
-  && (
-    canSendMiniMessage.value
-    || Boolean(activeMiniRecordDraft.value)
-    || Boolean(miniReplyTarget.value && miniChatMessage.value.trim())
-  ),
+const miniReplyPreviewMediaUrl = computed(() =>
+  miniReplyTarget.value
+  && miniReplyTarget.value.mediaUrl
+  && (miniReplyTarget.value.mediaType === "image" || miniReplyTarget.value.mediaType === "gif")
+    ? miniReplyTarget.value.mediaUrl
+    : "",
 )
+const miniBubbleReactionOptions = computed(() =>
+  miniReactionOptions.map(reaction => ({
+    value: reaction.value,
+    src: reaction.src,
+    label: t(reaction.labelKey),
+  })),
+)
+function canSubmitMiniMessage(session: MiniChatSessionView) {
+  return !isMiniRecording.value
+    && (
+      session.canSend
+      || Boolean(activeMiniRecordDraft.value)
+      || Boolean(miniReplyTarget.value && session.message.trim())
+    )
+}
 
 async function openMiniChat(contact: Parameters<typeof openMiniChatVm>[0]) {
-  miniChatMinimized.value = false
-  showMiniHeaderMenu.value = false
+  activeMiniHeaderContactId.value = null
+  closeMessageAvatarMenu()
   miniReplyTarget.value = null
   activeMiniReactionPickerId.value = null
   clearMiniRecording()
   await openMiniChatVm(contact)
+  await nextTick()
+  scrollMiniMessagesToBottom(contact.id)
 }
 
 function closeMiniChat() {
-  miniChatMinimized.value = false
-  showMiniHeaderMenu.value = false
+  activeMiniHeaderContactId.value = null
+  closeMessageAvatarMenu()
   miniReplyTarget.value = null
   activeMiniReactionPickerId.value = null
   clearMiniRecording()
   closeMiniChatVm()
 }
 
-function toggleMiniHeaderMenu() {
-  showMiniHeaderMenu.value = !showMiniHeaderMenu.value
+function closeMiniSession(session: MiniChatSessionView) {
+  activeMiniHeaderContactId.value = null
+  closeMessageAvatarMenu()
+  miniReplyTarget.value = null
+  activeMiniReactionPickerId.value = null
+  clearMiniRecording()
+  closeMiniChatVm(session.contactId)
+}
+
+function minimizeMiniSession(session: MiniChatSessionView) {
+  activeMiniHeaderContactId.value = null
+  activeMiniReactionPickerId.value = null
+  closeMessageAvatarMenu()
+  minimizeMiniChat(session.contactId)
+}
+
+async function restoreMiniLauncher(contact: MessageContact) {
+  activeMiniHeaderContactId.value = null
+  restoreMiniChat(contact.id)
+  await nextTick()
+  scrollMiniMessagesToBottom(contact.id)
+}
+
+function toggleMiniHeaderMenu(session: MiniChatSessionView) {
+  activeMiniHeaderContactId.value = activeMiniHeaderContactId.value === session.contact.id
+    ? null
+    : session.contact.id
+  closeMessageAvatarMenu()
+}
+
+function showMiniHeaderMenuFor(session: MiniChatSessionView) {
+  return activeMiniHeaderContactId.value === session.contact.id
 }
 
 function closeMiniHeaderMenu() {
-  showMiniHeaderMenu.value = false
+  activeMiniHeaderContactId.value = null
 }
 
 function openAvatarMenu(contact: AvatarMenuContact, event: MouseEvent) {
   const target = event.currentTarget as HTMLElement
   const rect = target.getBoundingClientRect()
-  const menuWidth = 224
-  const menuHeight = 280
+  const menuWidth = 300
+  const menuHeight = 430
   const vw = window.innerWidth
   const vh = window.innerHeight
 
@@ -952,6 +998,17 @@ function openAvatarMenu(contact: AvatarMenuContact, event: MouseEvent) {
 
 function closeAvatarMenu() {
   avatarMenuContact.value = null
+}
+
+async function openFullMessagesFromAvatarMenu() {
+  const contact = avatarMenuContact.value
+  closeAvatarMenu()
+  await openFullMessages(contact)
+}
+
+async function openMessagesTabFromAvatarMenu(tab: "user" | "group" | "multi") {
+  closeAvatarMenu()
+  await openMessagesTab(tab)
 }
 
 async function goToAvatarProfile() {
@@ -982,28 +1039,91 @@ async function callAvatarContact(type: 'audio' | 'video') {
   }
 }
 
-async function openMiniProfile() {
-  const profileUrl = activeMiniContact.value?.profileUrl
-  closeMiniHeaderMenu()
+function openMiniMessageAvatarMenu(session: MiniChatSessionView, message: MessageItem, event: MouseEvent) {
+  const contact = session.contact
+
+  if (!contact || message.isMine) {
+    return
+  }
+
+  if (messageAvatarMenuContact.value && messageAvatarMenuMessageId.value === message.id) {
+    closeMessageAvatarMenu()
+    return
+  }
+
+  const target = event.currentTarget as HTMLElement
+  const rect = target.getBoundingClientRect()
+  const menuWidth = 270
+  const menuHeight = 198
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+
+  let left = rect.left + 12
+  let top = rect.top - menuHeight - 10
+
+  if (left + menuWidth > vw - 8) {
+    left = vw - menuWidth - 8
+  }
+  if (top < 8) {
+    top = Math.min(vh - menuHeight - 8, rect.bottom + 10)
+  }
+
+  messageAvatarMenuStyle.value = {
+    position: "fixed",
+    left: `${Math.max(8, left)}px`,
+    top: `${Math.max(8, top)}px`,
+    zIndex: "10000",
+  }
+  messageAvatarMenuContact.value = {
+    ...contact,
+    name: message.authorName || contact.name,
+    avatarUrl: message.avatar || contact.avatarUrl,
+  } as AvatarMenuContact
+  messageAvatarMenuMessageId.value = message.id
+  activeMiniHeaderContactId.value = null
+}
+
+function closeMessageAvatarMenu() {
+  messageAvatarMenuContact.value = null
+  messageAvatarMenuMessageId.value = null
+}
+
+function closeFloatingMenusOnOutsideClick(event: MouseEvent) {
+  const target = event.target as Node | null
+
+  if (!target) {
+    return
+  }
+
+  if (activeMiniHeaderContactId.value && !miniHeaderMenuRef.value?.contains(target)) {
+    activeMiniHeaderContactId.value = null
+  }
+
+  if (messageAvatarMenuContact.value && !messageAvatarMenuRef.value?.contains(target)) {
+    closeMessageAvatarMenu()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", closeFloatingMenusOnOutsideClick)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", closeFloatingMenusOnOutsideClick)
+})
+
+async function goToMessageAvatarProfile() {
+  const profileUrl = messageAvatarMenuContact.value?.profileUrl
+  closeMessageAvatarMenu()
 
   if (profileUrl) {
     await navigateTo(profileUrl)
   }
 }
 
-async function openFullMessagesFromMiniMenu() {
-  const contact = activeMiniContact.value
-  closeMiniHeaderMenu()
-  await openFullMessages(contact)
-}
-
-async function openMessagesTabFromMiniMenu(tab: "user" | "group" | "multi") {
-  closeMiniHeaderMenu()
-  await openMessagesTab(tab)
-}
-
-async function startMiniCall(type: MessageCallType) {
-  const contact = activeMiniContact.value
+async function callMessageAvatarContact(type: "audio" | "video") {
+  const contact = messageAvatarMenuContact.value
+  closeMessageAvatarMenu()
 
   if (!contact) {
     return
@@ -1019,12 +1139,49 @@ async function startMiniCall(type: MessageCallType) {
   }
 }
 
-function getMiniMessageSenderOnline(message: { isMine: boolean, senderIsOnline?: boolean }) {
+async function openMiniProfile(session: MiniChatSessionView) {
+  const profileUrl = session.contact.profileUrl
+  closeMiniHeaderMenu()
+
+  if (profileUrl) {
+    await navigateTo(profileUrl)
+  }
+}
+
+async function openFullMessagesFromMiniMenu(session: MiniChatSessionView) {
+  const contact = session.contact
+  closeMiniHeaderMenu()
+  await openFullMessages(contact)
+}
+
+async function openMessagesTabFromMiniMenu(tab: "user" | "group" | "multi") {
+  closeMiniHeaderMenu()
+  await openMessagesTab(tab)
+}
+
+async function startMiniCall(session: MiniChatSessionView, type: MessageCallType) {
+  const contact = session.contact
+
+  if (!contact) {
+    return
+  }
+
+  if (contact.type === "group") {
+    await startGroupCall(contact, type)
+    return
+  }
+
+  if (contact.type === "user") {
+    await startCall(contact, type)
+  }
+}
+
+function getMiniMessageSenderOnline(session: MiniChatSessionView, message: { isMine: boolean, senderIsOnline?: boolean }) {
   if (message.isMine) {
     return false
   }
 
-  return message.senderIsOnline ?? activeMiniContact.value?.isOnline ?? false
+  return message.senderIsOnline ?? session.contact.isOnline ?? false
 }
 
 function toggleMiniReactionPicker(messageId: number) {
@@ -1061,6 +1218,16 @@ async function setMiniReaction(messageId: number, reaction: FeedReactionAsset) {
   }
 }
 
+async function setMiniReactionByValue(messageId: number, reactionValue: string) {
+  const reaction = miniReactionOptions.find(item => item.value === reactionValue)
+
+  if (!reaction) {
+    return
+  }
+
+  await setMiniReaction(messageId, reaction)
+}
+
 async function deleteMiniMessageAction(message: MessageItem) {
   if (!message.isMine || message.isDeleted) {
     return
@@ -1087,11 +1254,6 @@ async function deleteMiniMessageAction(message: MessageItem) {
   }
 }
 
-async function startMiniCallFromMenu(type: MessageCallType) {
-  closeMiniHeaderMenu()
-  await startMiniCall(type)
-}
-
 function replyToMiniMessage(message: MessageItem) {
   if (message.isDeleted) {
     return
@@ -1106,12 +1268,22 @@ function buildMiniReplyText(text: string) {
     return normalizeMiniMessageText(text)
   }
 
-  const source = normalizeMiniMessageText(getMiniBubbleText(miniReplyTarget.value) || miniReplyTarget.value.mediaName || "Tin nhan")
+  const isImageReply = Boolean(
+    miniReplyTarget.value.mediaUrl
+    && (miniReplyTarget.value.mediaType === "image" || miniReplyTarget.value.mediaType === "gif"),
+  )
+  const source = normalizeMiniMessageText(
+    isImageReply
+      ? "Tin nhan"
+      : getMiniBubbleText(miniReplyTarget.value) || miniReplyTarget.value.mediaName || "Tin nhan",
+  )
   const snippet = source.length > 72 ? `${source.slice(0, 72)}...` : source
   const author = miniReplyAuthor.value || "Tin nhan"
   const payload = encodeURIComponent(JSON.stringify({
     author,
     quote: snippet,
+    mediaUrl: isImageReply ? miniReplyTarget.value.mediaUrl : "",
+    mediaType: isImageReply ? miniReplyTarget.value.mediaType : "",
   }))
 
   return `${MINI_REPLY_PREFIX}${payload}\n${normalizeMiniMessageText(text)}`
@@ -1126,11 +1298,15 @@ function getMiniReplyMeta(message: MessageItem) {
       const payload = JSON.parse(decodeURIComponent(replyLine.slice(MINI_REPLY_PREFIX.length))) as {
         author?: string
         quote?: string
+        mediaUrl?: string
+        mediaType?: MessageItem["mediaType"]
       }
 
       return {
         author: normalizeMiniMessageText(payload.author || ""),
         quote: normalizeMiniMessageText(payload.quote || ""),
+        mediaUrl: payload.mediaUrl || "",
+        mediaType: payload.mediaType || "",
         body: normalizeMiniMessageText(bodyLines.join("\n")),
       }
     }
@@ -1151,6 +1327,8 @@ function getMiniReplyMeta(message: MessageItem) {
   return {
     author: normalizeMiniMessageText(author),
     quote: normalizeMiniMessageText(quote),
+    mediaUrl: "",
+    mediaType: "",
     body: normalizeMiniMessageText(bodyLines.join("\n")),
   }
 }
@@ -1221,9 +1399,14 @@ function normalizeMiniMessageText(value: string) {
     .trim()
 }
 
-async function submitMiniMessage() {
-  const text = buildMiniReplyText(miniChatMessage.value.trim())
+function isMiniImageFileQuote(value?: string) {
+  return /\.(png|jpe?g|webp|bmp|gif)$/i.test(value || "")
+}
+
+async function submitMiniMessage(session: MiniChatSessionView) {
+  const text = buildMiniReplyText(session.message.trim())
   await sendMiniMessage({
+    contactId: session.contactId,
     textOverride: text,
     record: activeMiniRecordDraft.value,
   })
@@ -1231,25 +1414,25 @@ async function submitMiniMessage() {
   clearMiniRecording()
 }
 
-async function sendMiniLike() {
-  await sendMiniMessage({ textOverride: "\u{1F44D}" })
+async function sendMiniLike(session: MiniChatSessionView) {
+  await sendMiniMessage({ contactId: session.contactId, textOverride: "\u{1F44D}" })
 }
 
-function handleMiniFileChange(event: Event) {
+function handleMiniFileChange(session: MiniChatSessionView, event: Event) {
   if (miniRecordDraft.value || isMiniRecording.value) {
     clearMiniRecording()
   }
 
-  onMiniFile(event)
+  onMiniFile(event, session.contactId)
 }
 
-async function handleMiniRecordButton() {
+async function handleMiniRecordButton(session: MiniChatSessionView) {
   if (isMiniRecording.value) {
     await stopMiniRecording()
     return
   }
 
-  clearMiniFile()
+  clearMiniFile(session.contactId)
   await startMiniRecording()
 }
 
@@ -1257,16 +1440,29 @@ function discardMiniRecording() {
   clearMiniRecording()
 }
 
-function scrollMiniMessagesToBottom() {
-  if (!miniMessagesViewport.value) {
+function setMiniMessagesViewport(contactId: string, element: unknown) {
+  if (element instanceof HTMLElement) {
+    miniMessagesViewports.set(contactId, element)
     return
   }
 
-  miniMessagesViewport.value.scrollTop = miniMessagesViewport.value.scrollHeight
+  miniMessagesViewports.delete(contactId)
+}
+
+function scrollMiniMessagesToBottom(contactId?: string) {
+  const viewports = contactId
+    ? miniMessagesViewports.get(contactId)
+      ? [miniMessagesViewports.get(contactId) as HTMLElement]
+      : []
+    : [...miniMessagesViewports.values()]
+
+  for (const viewport of viewports) {
+    viewport.scrollTop = viewport.scrollHeight
+  }
 }
 
 watch(
-  () => [miniChatOpen.value, miniMessages.value.length] as const,
+  () => [miniChatOpen.value, miniChatSessions.value.map(session => session.messages.length).join(",")] as const,
   async ([open]) => {
     if (!open) {
       return
@@ -1280,8 +1476,7 @@ watch(
 
 watch(miniChatAutoOpenVersion, (version) => {
   if (version > 0) {
-    miniChatMinimized.value = false
-    showMiniHeaderMenu.value = false
+    activeMiniHeaderContactId.value = null
   }
 })
 </script>
@@ -1289,6 +1484,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 <style scoped>
 .chat-widget {
   position: relative;
+  z-index: 0;
   display: flex;
   height: 100%;
   max-height: 100%;
@@ -1932,17 +2128,22 @@ watch(miniChatAutoOpenVersion, (version) => {
   position: absolute;
   right: calc(100% + 12px);
   bottom: 0;
-  z-index: 50;
+  z-index: 60;
   display: flex;
   width: min(350px, calc(100vw - 32px));
   max-height: min(560px, calc(100dvh - 112px));
   min-height: 0;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 18px;
   border: 1px solid rgba(0, 0, 255, 0.08);
   background: #ffffff;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16);
+}
+
+.chat-widget__mini--2 {
+  right: calc(100% + 374px);
+  z-index: 59;
 }
 
 .chat-widget__mini-header {
@@ -1953,6 +2154,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   gap: 10px;
   padding: 12px 14px;
   border-bottom: 1px solid #f1f5f9;
+  border-radius: 18px 18px 0 0;
   background: #fafbfe;
 }
 
@@ -1967,7 +2169,11 @@ watch(miniChatAutoOpenVersion, (version) => {
 .chat-widget__mini-avatar-link {
   display: inline-flex;
   flex-shrink: 0;
+  border: none;
   border-radius: 999px;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
 }
 
 .chat-widget__mini-name-btn {
@@ -2007,74 +2213,84 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__mini-menu {
   position: absolute;
-  top: 58px;
-  left: 14px;
-  z-index: 80;
-  width: min(310px, calc(100% - 28px));
-  max-height: min(430px, calc(100dvh - 190px));
-  overflow-y: auto;
-  overflow-x: hidden;
-  border-radius: 14px;
-  border: 1px solid rgba(226, 232, 240, 0.95);
+  top: 26px;
+  right: calc(100% - 50px);
+  z-index: 70;
+  width: min(390px, calc(100vw - 24px));
+  max-height: min(520px, calc(100dvh - 88px));
+  overflow: visible;
+  border-radius: 14px 0 14px 14px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
   background: #ffffff;
-  padding: 8px 0;
-  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.2);
+  padding: 9px 16px 11px;
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.22), 0 2px 10px rgba(15, 23, 42, 0.1);
 }
 
 .chat-widget__mini-menu::before {
   position: absolute;
-  top: -7px;
-  left: 18px;
-  width: 14px;
-  height: 14px;
-  border-top: 1px solid rgba(226, 232, 240, 0.95);
-  border-left: 1px solid rgba(226, 232, 240, 0.95);
-  background: #ffffff;
+  top: 0;
+  right: -17px;
+  display: block;
+  width: 0;
+  height: 0;
+  border-top: 18px solid #ffffff;
+  border-right: 18px solid transparent;
   content: "";
-  transform: rotate(45deg);
+  filter: drop-shadow(5px 1px 4px rgba(15, 23, 42, 0.08));
+  pointer-events: none;
 }
 
 .chat-widget__mini-menu-section {
   position: relative;
   display: grid;
-  gap: 1px;
-  padding: 6px 10px;
+  gap: 2px;
+  padding: 5px 0;
 }
 
 .chat-widget__mini-menu-section + .chat-widget__mini-menu-section {
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid #d9dde3;
+  margin-top: 6px;
+  padding-top: 10px;
 }
 
 .chat-widget__mini-menu-item {
   display: flex;
   width: 100%;
-  min-height: 38px;
+  min-height: 40px;
   align-items: center;
-  gap: 11px;
+  gap: 15px;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: transparent;
   padding: 8px 10px;
-  color: #111827;
-  font-size: 13px;
-  font-weight: 700;
+  color: #1f2933;
+  font-size: 14px;
+  font-weight: 750;
   text-align: left;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
+.chat-widget__mini-menu-item > .iconify {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  color: #20242a;
+}
+
 .chat-widget__mini-menu-item:hover {
-  background: #f8fafc;
+  background: #f2f3f5;
   color: #0000ff;
 }
 
 .chat-widget__mini-menu-item--muted {
   cursor: default;
-  color: #334155;
+  background: #f2f3f5;
+  color: #1f2933;
 }
 
 .chat-widget__mini-menu-item--muted:hover {
-  background: transparent;
-  color: #334155;
+  background: #f2f3f5;
+  color: #1f2933;
 }
 
 .chat-widget__mini-menu-item--danger {
@@ -2114,194 +2330,6 @@ watch(miniChatAutoOpenVersion, (version) => {
 .chat-widget__mini-message--mine {
   align-items: flex-end;
   padding-inline: 38px 0;
-}
-
-.chat-widget__mini-bubble-frame {
-  position: relative;
-  display: flex;
-  width: fit-content;
-  max-width: 86%;
-  flex-direction: column;
-  align-items: flex-start;
-  z-index: 1;
-}
-
-.chat-widget__mini-bubble-frame--mine {
-  align-items: flex-end;
-}
-
-.chat-widget__mini-bubble-frame .chat-widget__mini-chat-bubble {
-  width: auto !important;
-  max-width: 100%;
-}
-
-.chat-widget__mini-message-tools {
-  display: inline-flex;
-  position: absolute;
-  top: 50%;
-  right: -106px;
-  z-index: 50;
-  align-items: center;
-  gap: 3px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
-  padding: 3px;
-  opacity: 0;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
-  transform: translateY(-50%) scale(0.96);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-.chat-widget__mini-message--mine .chat-widget__mini-message-tools {
-  right: auto;
-  left: -106px;
-}
-
-.chat-widget__mini-bubble-frame:hover .chat-widget__mini-message-tools,
-.chat-widget__mini-bubble-frame:focus-within .chat-widget__mini-message-tools {
-  opacity: 1;
-  transform: translateY(-50%) scale(1);
-}
-
-.chat-widget__mini-message-tool {
-  display: inline-flex;
-  width: 26px;
-  height: 26px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: transparent;
-  color: #64748b;
-  font-size: 13px;
-  transition: all 0.15s ease;
-}
-
-.chat-widget__mini-message-tool:hover {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
-}
-
-.chat-widget__mini-message-tool--danger:hover {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.chat-widget__mini-reaction-picker {
-  position: absolute;
-  right: -2px;
-  bottom: calc(100% - 6px);
-  z-index: 70;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 999px;
-  background: #ffffff;
-  padding: 5px 7px;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
-}
-
-.chat-widget__mini-reaction-picker--mine {
-  right: auto;
-  left: -2px;
-}
-
-.chat-widget__mini-reaction-option {
-  display: inline-flex;
-  width: 28px;
-  height: 28px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  transition: background 0.15s ease, transform 0.15s ease;
-}
-
-.chat-widget__mini-reaction-option:hover {
-  background: #f8fafc;
-  transform: translateY(-2px) scale(1.08);
-}
-
-.chat-widget__mini-reaction-option img {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;
-}
-
-.chat-widget__mini-message-reply {
-  display: flex;
-  max-width: 82%;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 5px;
-  margin: 0 0 4px 42px;
-  color: #65676b;
-}
-
-.chat-widget__mini-message-reply--mine {
-  align-items: flex-end;
-  margin-right: 8px;
-  margin-left: 0;
-}
-
-.chat-widget__mini-message-reply-title {
-  display: inline-flex;
-  max-width: 100%;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.chat-widget__mini-message-reply-title span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chat-widget__mini-message-reply-quote {
-  max-width: min(220px, 72%);
-  overflow: hidden;
-  border-radius: 14px;
-  background: #f1f0f0;
-  padding: 8px 12px;
-  color: #65676b;
-  font-size: 12px;
-  line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chat-widget__mini-message-reply--mine .chat-widget__mini-message-reply-quote {
-  max-width: min(220px, 82%);
-}
-
-.chat-widget__mini-reaction {
-  display: inline-flex;
-  position: absolute;
-  right: -8px;
-  bottom: -12px;
-  z-index: 60;
-  width: 26px;
-  height: 26px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: #ffffff;
-  padding: 3px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
-}
-
-.chat-widget__mini-reaction img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-}
-
-.chat-widget__mini-message--mine .chat-widget__mini-reaction {
-  right: auto;
-  left: -8px;
 }
 
 .chat-widget__mini-chat-bubble--deleted :deep(.chat-bubble) {
@@ -2450,6 +2478,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   flex-shrink: 0;
   align-items: center;
   gap: 6px;
+  border-radius:0 0 18px 18px;
   border-top: 1px solid #f1f5f9;
   background: #ffffff;
   padding: 10px 12px 12px;
@@ -2504,6 +2533,15 @@ watch(miniChatAutoOpenVersion, (version) => {
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.chat-widget__mini-reply-image {
+  width: 46px;
+  height: 46px;
+  margin-top: 2px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  object-fit: cover;
 }
 
 .chat-widget__mini-reply-copy span,
@@ -2573,13 +2611,19 @@ watch(miniChatAutoOpenVersion, (version) => {
   flex: 1;
 }
 
+.chat-widget__mini-input-shell {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+
 :deep(.chat-widget__mini-input-control) {
   width: 100%;
   height: 42px;
   border: 1px solid #dbe3f2 !important;
   border-radius: 999px !important;
   background: #f8fafc !important;
-  padding: 0 16px !important;
+  padding: 0 46px 0 16px !important;
   color: #0f172a;
   font-size: 14px;
   font-weight: 500;
@@ -2599,24 +2643,40 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__mini-send-btn {
-  width: 38px !important;
-  height: 38px !important;
-  min-width: 38px !important;
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  display: inline-flex;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  align-items: center;
   justify-content: center;
+  border: none;
   border-radius: 999px !important;
-  box-shadow: 0 8px 18px rgba(0, 42, 255, 0.2);
+  background: transparent !important;
+  color: var(--ui-primary) !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  transform: translateY(-50%);
 }
 
-.chat-widget__mini-send-btn :deep(.iconify) {
+.chat-widget__mini-send-icon {
   width: 19px;
   height: 19px;
+}
+
+.chat-widget__mini-send-btn:disabled {
+  color: color-mix(in srgb, var(--ui-primary) 42%, transparent) !important;
+  cursor: default;
+  opacity: 1;
 }
 
 .chat-widget__mini-launcher {
   position: absolute;
   right: 14px;
   bottom: 72px;
-  z-index: 55;
+  z-index: 60;
   display: inline-flex;
   width: 48px;
   height: 48px;
@@ -2668,63 +2728,28 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 /* ── Avatar context menu ── */
 .chat-widget__avatar-menu {
-  min-width: 224px;
-  border-radius: 16px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
+  width: min(320px, calc(100vw - 16px));
+  max-height: min(470px, calc(100dvh - 16px));
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.85);
   background: #ffffff;
-  padding: 6px 0;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18), 0 4px 14px rgba(15, 23, 42, 0.08);
+  padding: 8px;
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.22), 0 2px 8px rgba(15, 23, 42, 0.12);
   transform-origin: top left;
 }
 
-.chat-widget__avatar-menu-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px 12px;
+.chat-widget__avatar-menu-section {
+  display: grid;
+  gap: 2px;
+  padding: 4px 0;
 }
 
-.chat-widget__avatar-menu-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 3px;
-}
-
-.chat-widget__avatar-menu-name {
-  font-size: 13px;
-  font-weight: 800;
-  color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chat-widget__avatar-menu-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.chat-widget__avatar-menu-status--online {
-  color: #16a34a;
-}
-
-.chat-widget__avatar-menu-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: currentColor;
-  flex-shrink: 0;
-}
-
-.chat-widget__avatar-menu-divider {
-  height: 1px;
-  background: #f1f5f9;
-  margin: 4px 0;
+.chat-widget__avatar-menu-section + .chat-widget__avatar-menu-section {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 4px;
+  padding-top: 7px;
 }
 
 .chat-widget__avatar-menu-item {
@@ -2732,21 +2757,40 @@ watch(miniChatAutoOpenVersion, (version) => {
   width: 100%;
   min-height: 42px;
   align-items: center;
-  gap: 11px;
+  gap: 13px;
   border: none;
+  border-radius: 8px;
   background: transparent;
-  padding: 8px 14px;
-  color: #111827;
-  font-size: 13.5px;
-  font-weight: 700;
+  padding: 8px 10px;
+  color: #1f2933;
+  font-size: 14px;
+  font-weight: 750;
   text-align: left;
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease;
 }
 
+.chat-widget__avatar-menu-item > .iconify {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  color: #20242a;
+}
+
 .chat-widget__avatar-menu-item:hover {
-  background: #f1f5f9;
+  background: #f2f3f5;
   color: #0000ff;
+}
+
+.chat-widget__avatar-menu-item--muted {
+  cursor: default;
+  background: #f2f3f5;
+  color: #1f2933;
+}
+
+.chat-widget__avatar-menu-item--muted:hover {
+  background: #f2f3f5;
+  color: #1f2933;
 }
 
 .chat-widget__avatar-menu-item--danger {
@@ -2794,24 +2838,40 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__mini-send-btn {
-  width: 38px !important;
-  height: 38px !important;
-  min-width: 38px !important;
+  position: absolute !important;
+  top: 50% !important;
+  right: 4px !important;
+  display: inline-flex;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  align-items: center;
   justify-content: center;
+  border: none;
   border-radius: 999px !important;
-  box-shadow: 0 8px 18px rgba(0, 42, 255, 0.2);
+  background: transparent !important;
+  color: var(--ui-primary) !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  transform: translateY(-50%);
 }
 
-.chat-widget__mini-send-btn :deep(.iconify) {
+.chat-widget__mini-send-icon {
   width: 19px;
   height: 19px;
+}
+
+.chat-widget__mini-send-btn:disabled {
+  color: color-mix(in srgb, var(--ui-primary) 42%, transparent) !important;
+  cursor: default;
+  opacity: 1;
 }
 
 .chat-widget__mini-launcher {
   position: absolute;
   right: 14px;
   bottom: 72px;
-  z-index: 55;
+  z-index: 60;
   display: inline-flex;
   width: 48px;
   height: 48px;
@@ -2821,6 +2881,10 @@ watch(miniChatAutoOpenVersion, (version) => {
   background: #ffffff;
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chat-widget__mini-launcher--2 {
+  bottom: 128px;
 }
 
 .chat-widget__mini-launcher:hover {
@@ -2953,24 +3017,58 @@ watch(miniChatAutoOpenVersion, (version) => {
   color: #b91c1c;
 }
 
-.chat-widget__avatar-menu-icon {
-  display: inline-flex;
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
+.chat-widget__message-avatar-menu {
+  width: min(270px, calc(100vw - 24px));
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: 13px 13px 13px 0;
+  background: #ffffff;
+  padding: 8px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.2), 0 2px 8px rgba(15, 23, 42, 0.1);
+  transform-origin: top left;
+}
+
+.chat-widget__message-avatar-menu::after {
+  position: absolute;
+  left: 0;
+  bottom: -12px;
+  width: 0;
+  height: 0;
+  border-top: 13px solid #ffffff;
+  border-right: 18px solid transparent;
+  content: "";
+}
+
+.chat-widget__message-avatar-menu-item {
+  display: flex;
+  width: 100%;
+  min-height: 40px;
   align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: #f1f5f9;
-  color: inherit;
-  transition: background 0.12s ease;
+  gap: 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  padding: 8px 10px;
+  color: #1f2933;
+  font-size: 14px;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
 }
 
-.chat-widget__avatar-menu-item:hover .chat-widget__avatar-menu-icon {
-  background: rgba(0, 0, 255, 0.08);
+.chat-widget__message-avatar-menu-item > .iconify {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  color: #111827;
 }
 
-.chat-widget__avatar-menu-item--danger:hover .chat-widget__avatar-menu-icon {
-  background: #fee2e2;
+.chat-widget__message-avatar-menu-item:hover {
+  background: #f2f3f5;
 }
+
+.chat-widget__message-avatar-menu-item--danger:hover {
+  color: #dc2626;
+}
+
 </style>

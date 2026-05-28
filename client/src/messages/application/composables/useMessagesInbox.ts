@@ -11,7 +11,12 @@ import type {
   MessageThread,
   MessageUserTag,
 } from "../../domain/types/messages.types"
+import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import { createApiMessagesRepository } from "../../infrastructure/repositories/ApiMessagesRepository"
+import {
+  buildReplyMessageText,
+  getMessageDisplayText,
+} from "../utils/message-bubble-content"
 
 type MessageFeedbackTone = "neutral" | "success" | "warning" | "error"
 
@@ -137,6 +142,8 @@ export function useMessagesInbox(
   const isMarkingRead = ref(false)
   const isDeletingConversation = ref(false)
   const isUpdatingTags = ref(false)
+  const activeReactionPickerId = ref<number | null>(null)
+  const replyTarget = ref<MessageItem | null>(null)
 
   const tabs = computed<MessageTab[]>(() => [
     { id: "multi", label: t("pages.messagesPage.sendMultiple"), icon: "i-ph-user-list-duotone" },
@@ -337,6 +344,34 @@ export function useMessagesInbox(
   const threadPending = computed(() => threadStatus.value === "pending" || isLoadingMore.value || isSending.value)
   const multiFeedbackMessage = computed(() => multiFeedback.value?.message ?? "")
   const multiFeedbackTone = computed<MessageFeedbackTone>(() => multiFeedback.value?.tone ?? "neutral")
+  const replyAuthor = computed(() => {
+    if (!replyTarget.value) {
+      return ""
+    }
+
+    if (replyTarget.value.isMine) {
+      return t("pages.messagesPage.you")
+    }
+
+    return replyTarget.value.authorName || selectedContact.value?.name || ""
+  })
+  const replyTitle = computed(() =>
+    replyAuthor.value
+      ? t("navigation.chatWidget.replyingTo", { name: replyAuthor.value })
+      : t("navigation.chatWidget.replyingToMessage"),
+  )
+  const replyPreviewText = computed(() =>
+    replyTarget.value
+      ? getMessageDisplayText(replyTarget.value) || replyTarget.value.mediaName || t("navigation.chatWidget.replyingToMessage")
+      : t("navigation.chatWidget.replyingToMessage"),
+  )
+  const replyPreviewMediaUrl = computed(() =>
+    replyTarget.value
+    && replyTarget.value.mediaUrl
+    && (replyTarget.value.mediaType === "image" || replyTarget.value.mediaType === "gif")
+      ? replyTarget.value.mediaUrl
+      : "",
+  )
 
   watch(() => route.query.tab, (value) => {
     const normalizedTab = normalizeTab(readQueryValue(value))
@@ -488,9 +523,11 @@ export function useMessagesInbox(
 
     selectedContactId.value = contact.id
     remoteTyping.value = false
+    activeReactionPickerId.value = null
 
     if (!isSameContact) {
       thread.value = { messages: [], typing: false }
+      replyTarget.value = null
     }
 
     await nextTick()
@@ -608,11 +645,17 @@ export function useMessagesInbox(
     isSending.value = true
 
     try {
+      const text = buildReplyMessageText({
+        text: input.text,
+        target: replyTarget.value,
+        author: replyAuthor.value,
+        fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
+      })
       const uploadedRecord = input.record
         ? await uploadRecordDraft(input.record)
         : null
       const createdMessages = await repository.sendMessage(contact, {
-        text: input.text.trim(),
+        text,
         file: input.file,
         record: uploadedRecord,
       })
@@ -621,6 +664,7 @@ export function useMessagesInbox(
         typing: false,
       }
       remoteTyping.value = false
+      replyTarget.value = null
       await refreshInbox()
     }
     catch {
@@ -632,6 +676,101 @@ export function useMessagesInbox(
     }
     finally {
       isSending.value = false
+    }
+  }
+
+  function patchThreadMessage(
+    messageId: number,
+    patcher: (message: MessageItem) => MessageItem,
+  ) {
+    if (!thread.value) {
+      return
+    }
+
+    thread.value = {
+      ...thread.value,
+      messages: decorateThreadMessages(
+        thread.value.messages.map(message =>
+          message.id === messageId ? patcher(message) : message,
+        ),
+      ),
+    }
+  }
+
+  function toggleReactionPicker(messageId: number) {
+    activeReactionPickerId.value = activeReactionPickerId.value === messageId ? null : messageId
+  }
+
+  async function reactToThreadMessage(messageId: number, reaction: FeedStoryReactionType) {
+    const target = messages.value.find(message => message.id === messageId)
+
+    if (!target || target.isDeleted) {
+      return null
+    }
+
+    const previousReaction = target.selectedReaction ?? null
+    activeReactionPickerId.value = null
+    patchThreadMessage(messageId, message => ({ ...message, selectedReaction: reaction }))
+
+    try {
+      const result = await repository.reactToMessage({ messageId, reaction })
+      patchThreadMessage(messageId, message => ({ ...message, selectedReaction: result.reaction }))
+      return result
+    }
+    catch {
+      patchThreadMessage(messageId, message => ({ ...message, selectedReaction: previousReaction }))
+      return null
+    }
+  }
+
+  function replyToThreadMessage(message: MessageItem) {
+    if (message.isDeleted) {
+      return
+    }
+
+    replyTarget.value = message
+    activeReactionPickerId.value = null
+  }
+
+  function clearReplyTarget() {
+    replyTarget.value = null
+  }
+
+  async function deleteThreadMessage(message: MessageItem) {
+    if (!message.isMine || message.isDeleted || message.id <= 0) {
+      return null
+    }
+
+    const previousMessage = messages.value.find(item => item.id === message.id)
+    activeReactionPickerId.value = null
+
+    try {
+      const result = await repository.deleteMessage({ messageId: message.id })
+      patchThreadMessage(message.id, item => ({
+        ...item,
+        text: "",
+        mediaUrl: "",
+        mediaName: "",
+        mediaType: undefined,
+        selectedReaction: null,
+        isDeleted: true,
+        deletedAt: result.deletedAt,
+        deletedTime: result.deletedTime,
+        deletedByName: result.deletedByName,
+      }))
+
+      if (replyTarget.value?.id === message.id) {
+        replyTarget.value = null
+      }
+
+      return result
+    }
+    catch {
+      if (previousMessage) {
+        patchThreadMessage(message.id, () => previousMessage)
+      }
+
+      return null
     }
   }
 
@@ -869,6 +1008,7 @@ export function useMessagesInbox(
   }
 
   return {
+    activeReactionPickerId,
     activeTagFilter,
     activeTab,
     allVisibleRecipientsSelected,
@@ -878,6 +1018,7 @@ export function useMessagesInbox(
     attachTag,
     createTagLabel,
     deleteSelectedConversation,
+    deleteThreadMessage,
     deleteTagLabel,
     detachTag,
     isDeletingConversation,
@@ -898,8 +1039,14 @@ export function useMessagesInbox(
     refreshInbox,
     refreshMessageTags,
     refreshThread,
+    reactToThreadMessage,
     remoteTypingUserId,
+    replyPreviewText,
+    replyPreviewMediaUrl,
+    replyTarget,
+    replyTitle,
     isContactTyping,
+    clearReplyTarget,
     setRemoteTyping,
     setUserContactTyping,
     setGroupContactTyping,
@@ -909,11 +1056,13 @@ export function useMessagesInbox(
     selectedRecipients,
     selectContact,
     setActiveTagFilter,
+    replyToThreadMessage,
     sendMessage,
     sendMultiMessage,
     tabs,
     threadError,
     threadPending,
     toggleAllVisibleRecipients,
+    toggleReactionPicker,
   }
 }

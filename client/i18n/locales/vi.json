@@ -5145,6 +5145,10 @@
       "fundingProgress": "Tiến độ",
       "pollOptionVotes": "{count} người chọn",
       "pollTotalVotes": "{count} lượt bình chọn",
+      "reactionAll": "Tất cả",
+      "reactionAddFriend": "Theo dõi",
+      "reactionModalClose": "Đóng",
+      "reactionNoUsers": "Chưa có dữ liệu người thả cảm xúc cho mục này.",
       "lightboxDownloadMessage": "Đã chuẩn bị thao tác tải media trong giao diện mô phỏng."
     },
     "shareModal": {
@@ -5441,7 +5445,7 @@
       "sendErrorTitle": "Không thể gửi tin nhắn",
       "sendErrorDescription": "Hệ thống chưa gửi được tin nhắn. Hãy thử lại sau.",
       "tabSend": "Gửi tin",
-      "tabContacts": "Danh bạ",
+      "tabContacts": "Bạn bè",
       "tabGroups": "Nhóm"
     },
     "headerSearchInput": {

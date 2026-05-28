@@ -8,8 +8,24 @@ import type { MessageContact, MessageItem, MessageRecordDraft, MessageSendDraft,
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
 
 type ChatWidgetTab = "send" | "contacts" | "groups"
+type MiniChatSession = {
+  contactId: string
+  message: string
+  attachFile: File | null
+  thread: MessageThread
+  isLoading: boolean
+  isSending: boolean
+  minimized: boolean
+  openedAt: number
+}
+type MiniChatSessionView = MiniChatSession & {
+  contact: MessageContact
+  messages: MessageItem[]
+  canSend: boolean
+}
 
 const INBOX_REFRESH_INTERVAL_MS = 20000
+const MAX_MINI_CHAT_SESSIONS = 2
 
 function normalizeKeyword(value: string) {
   return value.trim().toLowerCase()
@@ -150,15 +166,9 @@ export function useChatWidgetVM() {
   const attachFile = ref<File | null>(null)
   const selectedSendRecipientIds = ref<number[]>([])
 
-  const miniChatOpen = ref(false)
   const miniChatAutoOpenVersion = ref(0)
-  const miniChatMessage = ref("")
-  const miniAttachFile = ref<File | null>(null)
-  const activeMiniContactId = ref("")
-  const miniThread = ref<MessageThread>(createEmptyThread())
-  const isLoadingThread = ref(false)
+  const miniChatSessions = ref<MiniChatSession[]>([])
   const isSendingQuick = ref(false)
-  const isSendingMini = ref(false)
   const socket = shallowRef<Socket | null>(null)
   const refreshTimer = shallowRef<number | null>(null)
   const unreadSnapshot = shallowRef<Map<string, number>>(new Map())
@@ -267,13 +277,57 @@ export function useChatWidgetVM() {
     )
   })
 
+  const activeMiniSession = computed(() =>
+    miniChatSessions.value.find(session => !session.minimized) ?? miniChatSessions.value[0] ?? null,
+  )
   const activeMiniContact = computed(() =>
-    allContacts.value.find(contact => contact.id === activeMiniContactId.value) ?? null,
+    activeMiniSession.value
+      ? allContacts.value.find(contact => contact.id === activeMiniSession.value?.contactId) ?? null
+      : null,
   )
-
+  const miniChatOpen = computed(() => miniChatSessions.value.length > 0)
+  const miniChatMessage = computed({
+    get: () => activeMiniSession.value?.message ?? "",
+    set: (value: string) => {
+      if (activeMiniSession.value) {
+        activeMiniSession.value.message = value
+      }
+    },
+  })
+  const miniAttachFile = computed({
+    get: () => activeMiniSession.value?.attachFile ?? null,
+    set: (value: File | null) => {
+      if (activeMiniSession.value) {
+        activeMiniSession.value.attachFile = value
+      }
+    },
+  })
   const miniMessages = computed<MessageItem[]>(() =>
-    miniThread.value.messages.slice(-14),
+    activeMiniSession.value?.thread.messages.slice(-14) ?? [],
   )
+  const isLoadingThread = computed(() => Boolean(activeMiniSession.value?.isLoading))
+  const isSendingMini = computed(() => Boolean(activeMiniSession.value?.isSending))
+  const miniChatSessionsView = computed<MiniChatSessionView[]>(() => {
+    const sessions: MiniChatSessionView[] = []
+
+    for (const session of miniChatSessions.value) {
+      const contact = allContacts.value.find(item => item.id === session.contactId) ?? null
+
+      if (!contact) {
+        continue
+      }
+
+      sessions.push(Object.assign(session, {
+        contact,
+        messages: session.thread.messages.slice(-14),
+        canSend: Boolean(contact)
+          && (session.message.trim().length > 0 || Boolean(session.attachFile))
+          && !session.isSending,
+      }))
+    }
+
+    return sessions
+  })
 
   const visibleSendRecipientIds = computed(() =>
     sendCandidates.value
@@ -423,9 +477,7 @@ export function useChatWidgetVM() {
     updateUnreadSnapshot()
 
     if (!incomingContact) {
-      if (miniChatOpen.value) {
-        await refreshMiniThread({ silent: true })
-      }
+      await refreshAllMiniThreads({ silent: true })
       return
     }
 
@@ -433,21 +485,31 @@ export function useChatWidgetVM() {
     miniChatAutoOpenVersion.value += 1
   }
 
-  async function refreshMiniThread(options?: { silent?: boolean }) {
-    const contact = activeMiniContact.value
+  function getSessionContact(session: MiniChatSession) {
+    return allContacts.value.find(contact => contact.id === session.contactId) ?? null
+  }
+
+  function findMiniSession(contactId: string) {
+    return miniChatSessions.value.find(session => session.contactId === contactId) ?? null
+  }
+
+  async function refreshMiniThread(session = activeMiniSession.value, options?: { silent?: boolean }) {
+    const contact = session ? getSessionContact(session) : null
 
     if (!contact) {
-      miniThread.value = createEmptyThread()
+      if (session) {
+        session.thread = createEmptyThread()
+      }
       return
     }
 
-    const shouldShowLoading = !options?.silent && miniThread.value.messages.length === 0
+    const shouldShowLoading = !options?.silent && session.thread.messages.length === 0
     if (shouldShowLoading) {
-      isLoadingThread.value = true
+      session.isLoading = true
     }
 
     try {
-      miniThread.value = await repository.getThread(contact)
+      session.thread = await repository.getThread(contact)
     }
     catch {
       if (!options?.silent) {
@@ -460,32 +522,77 @@ export function useChatWidgetVM() {
     }
     finally {
       if (shouldShowLoading) {
-        isLoadingThread.value = false
+        session.isLoading = false
       }
     }
   }
 
+  async function refreshAllMiniThreads(options?: { silent?: boolean }) {
+    await Promise.all(miniChatSessions.value.map(session => refreshMiniThread(session, options)))
+  }
+
   async function openMiniChat(contact: MessageContact) {
-    activeMiniContactId.value = contact.id
-    miniChatOpen.value = true
-    miniChatMessage.value = ""
-    miniAttachFile.value = null
-    await refreshMiniThread()
+    const existingSession = findMiniSession(contact.id)
+
+    if (existingSession) {
+      existingSession.minimized = false
+      existingSession.openedAt = Date.now()
+      miniChatSessions.value = [
+        existingSession,
+        ...miniChatSessions.value.filter(session => session.contactId !== contact.id),
+      ]
+      await refreshMiniThread(existingSession)
+      return
+    }
+
+    const nextSession: MiniChatSession = {
+      contactId: contact.id,
+      message: "",
+      attachFile: null,
+      thread: createEmptyThread(),
+      isLoading: false,
+      isSending: false,
+      minimized: false,
+      openedAt: Date.now(),
+    }
+
+    miniChatSessions.value = [
+      nextSession,
+      ...miniChatSessions.value,
+    ].slice(0, MAX_MINI_CHAT_SESSIONS)
+    await refreshMiniThread(nextSession)
   }
 
-  function closeMiniChat() {
-    miniChatOpen.value = false
-    miniChatMessage.value = ""
-    miniAttachFile.value = null
-    activeMiniContactId.value = ""
-    miniThread.value = createEmptyThread()
+  function closeMiniChat(contactId = activeMiniSession.value?.contactId ?? "") {
+    miniChatSessions.value = miniChatSessions.value.filter(session => session.contactId !== contactId)
   }
 
-  async function sendMessageToContact(contact: MessageContact, draft: MessageSendDraft) {
+  function minimizeMiniChat(contactId = activeMiniSession.value?.contactId ?? "") {
+    const session = findMiniSession(contactId)
+
+    if (session) {
+      session.minimized = true
+    }
+  }
+
+  function restoreMiniChat(contactId: string) {
+    const session = findMiniSession(contactId)
+
+    if (session) {
+      session.minimized = false
+      session.openedAt = Date.now()
+      miniChatSessions.value = [
+        session,
+        ...miniChatSessions.value.filter(item => item.contactId !== contactId),
+      ]
+    }
+  }
+
+  async function sendMessageToContact(contact: MessageContact, draft: MessageSendDraft, session = activeMiniSession.value) {
     await repository.sendMessage(contact, draft)
     await Promise.all([
       refreshInboxSafely({ silent: true }),
-      refreshMiniThread({ silent: true }),
+      session ? refreshMiniThread(session, { silent: true }) : refreshAllMiniThreads({ silent: true }),
     ])
   }
 
@@ -563,16 +670,17 @@ export function useChatWidgetVM() {
     }
   }
 
-  async function sendMiniMessage(options?: { record?: MessageRecordDraft | null, textOverride?: string }) {
-    const contact = activeMiniContact.value
-    const text = options?.textOverride ?? miniChatMessage.value.trim()
+  async function sendMiniMessage(options?: { contactId?: string, record?: MessageRecordDraft | null, textOverride?: string }) {
+    const session = options?.contactId ? findMiniSession(options.contactId) : activeMiniSession.value
+    const contact = session ? getSessionContact(session) : null
+    const text = options?.textOverride ?? session?.message.trim() ?? ""
     const recordDraft = options?.record ?? null
 
-    if (!contact || (!text && !miniAttachFile.value && !recordDraft)) {
+    if (!session || !contact || (!text && !session.attachFile && !recordDraft)) {
       return
     }
 
-    isSendingMini.value = true
+    session.isSending = true
 
     try {
       const uploadedRecord = recordDraft
@@ -580,11 +688,11 @@ export function useChatWidgetVM() {
         : null
       await sendMessageToContact(contact, {
         text,
-        file: miniAttachFile.value,
+        file: session.attachFile,
         record: uploadedRecord,
-      })
-      miniChatMessage.value = ""
-      miniAttachFile.value = null
+      }, session)
+      session.message = ""
+      session.attachFile = null
     }
     catch {
       toast.add({
@@ -594,7 +702,7 @@ export function useChatWidgetVM() {
       })
     }
     finally {
-      isSendingMini.value = false
+      session.isSending = false
     }
   }
 
@@ -608,14 +716,17 @@ export function useChatWidgetVM() {
       reaction,
     })
 
-    miniThread.value = {
-      ...miniThread.value,
-      messages: miniThread.value.messages.map(message =>
-        message.id === messageId
-          ? { ...message, selectedReaction: result.reaction }
-          : message,
-      ),
-    }
+    miniChatSessions.value = miniChatSessions.value.map(session => ({
+      ...session,
+      thread: {
+        ...session.thread,
+        messages: session.thread.messages.map(message =>
+          message.id === messageId
+            ? { ...message, selectedReaction: result.reaction }
+            : message,
+        ),
+      },
+    }))
 
     return result
   }
@@ -627,37 +738,46 @@ export function useChatWidgetVM() {
 
     const result = await repository.deleteMessage({ messageId })
 
-    miniThread.value = {
-      ...miniThread.value,
-      messages: miniThread.value.messages.map(message =>
-        message.id === messageId
-          ? {
-              ...message,
-              text: "",
-              mediaUrl: "",
-              mediaName: "",
-              mediaType: undefined,
-              selectedReaction: null,
-              isDeleted: true,
-              deletedAt: result.deletedAt,
-              deletedTime: result.deletedTime,
-              deletedByName: result.deletedByName,
-            }
-          : message,
-      ),
-    }
+    miniChatSessions.value = miniChatSessions.value.map(session => ({
+      ...session,
+      thread: {
+        ...session.thread,
+        messages: session.thread.messages.map(message =>
+          message.id === messageId
+            ? {
+                ...message,
+                text: "",
+                mediaUrl: "",
+                mediaName: "",
+                mediaType: undefined,
+                selectedReaction: null,
+                isDeleted: true,
+                deletedAt: result.deletedAt,
+                deletedTime: result.deletedTime,
+                deletedByName: result.deletedByName,
+              }
+            : message,
+        ),
+      },
+    }))
 
     return result
   }
 
-  function onMiniFile(event: Event) {
+  function onMiniFile(event: Event, contactId = activeMiniSession.value?.contactId ?? "") {
     const input = event.target as HTMLInputElement
-    miniAttachFile.value = input.files?.[0] ?? null
+    const session = contactId ? findMiniSession(contactId) : activeMiniSession.value
+    if (session) {
+      session.attachFile = input.files?.[0] ?? null
+    }
     input.value = ""
   }
 
-  function clearMiniFile() {
-    miniAttachFile.value = null
+  function clearMiniFile(contactId = activeMiniSession.value?.contactId ?? "") {
+    const session = contactId ? findMiniSession(contactId) : activeMiniSession.value
+    if (session) {
+      session.attachFile = null
+    }
   }
 
   function onFile(event: Event) {
@@ -747,9 +867,9 @@ export function useChatWidgetVM() {
   }
 
   watch([allContacts, messageTags], ([contacts, tagsPayload]) => {
-    if (activeMiniContactId.value && !contacts.some(contact => contact.id === activeMiniContactId.value)) {
-      closeMiniChat()
-    }
+    miniChatSessions.value = miniChatSessions.value.filter(session =>
+      contacts.some(contact => contact.id === session.contactId),
+    )
 
     const availableUserIds = new Set(
       [...contacts, ...(tagsPayload?.contacts ?? [])]
@@ -808,6 +928,7 @@ export function useChatWidgetVM() {
     filteredGroups,
     onlineCount,
     miniChatOpen,
+    miniChatSessions: miniChatSessionsView,
     miniChatAutoOpenVersion,
     miniChatMessage,
     miniAttachFile,
@@ -827,6 +948,8 @@ export function useChatWidgetVM() {
     toggleSendRecipient,
     openMiniChat,
     closeMiniChat,
+    minimizeMiniChat,
+    restoreMiniChat,
     sendQuickMessage,
     sendMiniMessage,
     reactToMiniMessage,

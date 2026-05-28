@@ -107,6 +107,7 @@ export const apiRoutes = {
     postColors: "feed/post-colors",
     posts: {
       detail: (id: string | number) => `feed/posts/${encodeSegment(id)}`,
+      reactions: (id: string | number) => `feed/posts/${encodeSegment(id)}/reactions`,
       create: "feed/posts/create",
       action: "feed/posts/action",
     },

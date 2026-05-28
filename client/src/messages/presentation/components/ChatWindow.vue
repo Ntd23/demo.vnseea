@@ -144,9 +144,40 @@
         :is-typing="isTyping"
         :loading-label="loadingLabel"
         :messages="messages"
+        :active-reaction-picker-id="activeReactionPickerId"
         @load-more="$emit('load-more')"
         @retry-call="$emit('start-call', $event)"
+        @toggle-reaction-picker="$emit('toggle-reaction-picker', $event)"
+        @select-reaction="(messageId, reaction) => $emit('select-reaction', messageId, reaction)"
+        @reply-message="$emit('reply-message', $event)"
+        @delete-message="$emit('delete-message', $event)"
       />
+
+      <div v-if="replyTarget" class="chat-window-reply">
+        <div class="chat-window-reply__bar" />
+        <div class="chat-window-reply__copy">
+          <p class="chat-window-reply__title">
+            {{ replyTitle }}
+          </p>
+          <NuxtImg
+            v-if="replyPreviewMediaUrl"
+            :src="replyPreviewMediaUrl"
+            :alt="replyPreviewText || replyTitle || 'Reply image'"
+            class="chat-window-reply__image"
+          />
+          <p v-if="!replyPreviewMediaUrl" class="chat-window-reply__text">
+            {{ replyPreviewText }}
+          </p>
+        </div>
+        <UButton
+          type="button"
+          color="neutral"
+          variant="ghost"
+          icon="i-ph-x-bold"
+          class="chat-window-reply__close"
+          @click="$emit('clear-reply')"
+        />
+      </div>
 
       <MessagesChatInput
         v-model="inputModel"
@@ -211,6 +242,7 @@
 import { computed, ref } from "vue"
 import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
 import type { MessageComposerDraft, MessageContact, MessageGroupDetails, MessageItem, MessageTabKey } from "../../domain/types/messages.types"
+import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import MessagesChatInput from "./ChatInput.vue"
 import MessagesChatMessageList from "./ChatMessageList.vue"
 
@@ -225,6 +257,11 @@ const props = defineProps<{
   isPending?: boolean
   inboxPending?: boolean
   messages: MessageItem[]
+  activeReactionPickerId?: number | null
+  replyTarget?: MessageItem | null
+  replyTitle?: string
+  replyPreviewText?: string
+  replyPreviewMediaUrl?: string
   isTyping?: boolean
   deletingConversation?: boolean
   callActionPending?: boolean
@@ -242,6 +279,11 @@ const emit = defineEmits<{
   "typing-start": []
   "typing-stop": []
   "start-call": [payload: MessageCallType | MessageCallLogAction]
+  "toggle-reaction-picker": [messageId: number]
+  "select-reaction": [messageId: number, reaction: FeedStoryReactionType]
+  "reply-message": [message: MessageItem]
+  "delete-message": [message: MessageItem]
+  "clear-reply": []
 }>()
 
 const inputModel = ref("")
@@ -356,5 +398,58 @@ function handleStartCall(type: MessageCallType) {
   height: 40px !important;
   border-radius: 999px !important;
   background: #e8edf4 !important;
+}
+
+.chat-window-reply {
+  display: grid;
+  grid-template-columns: 3px minmax(0, 1fr) 36px;
+  gap: 10px;
+  align-items: center;
+  border-top: 1px solid #eef2f7;
+  background: #fbfcfe;
+  padding: 9px 14px;
+}
+
+.chat-window-reply__bar {
+  width: 3px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--bg-brand, #a84849);
+}
+
+.chat-window-reply__copy {
+  min-width: 0;
+}
+
+.chat-window-reply__title {
+  color: #1f2937;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.chat-window-reply__text {
+  overflow: hidden;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-window-reply__image {
+  width: 46px;
+  height: 46px;
+  margin-top: 4px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  object-fit: cover;
+}
+
+.chat-window-reply__close {
+  width: 34px !important;
+  height: 34px !important;
+  justify-content: center;
+  border-radius: 999px !important;
 }
 </style>

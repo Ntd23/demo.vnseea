@@ -3,7 +3,6 @@
 import { useTimeoutFn } from "@vueuse/core"
 import {
   defaultFeedReactionAsset,
-  feedPostPreviewReactionAssets,
   feedReactionAssetByValue,
   feedReactionAssets,
 } from "../constants/reaction-assets"
@@ -14,6 +13,8 @@ import type {
   FeedCommentSubmitPayload,
   FeedPollOptionRecord,
   FeedPostRecord,
+  FeedPostReactionSummary,
+  FeedPostReactionUser,
   FeedStoryReactionType,
 } from "../../domain/types/feed.types"
 import type { FeedCommentActionRepository } from "./useFeedCommentItemVM"
@@ -39,6 +40,8 @@ export function useFeedPostCardVM(
   const currentMediaIndex = ref(0)
   const localComments = ref<FeedCommentRecord[]>([])
   const localPollOptions = ref<FeedPollOptionRecord[]>([])
+  const localReactionSummaries = ref<FeedPostReactionSummary[]>([])
+  const localReactionUsers = ref<FeedPostReactionUser[]>([])
   const likesCount = ref(0)
   const sharesCount = ref(0)
   const actionState = ref<"idle" | "success" | "error">("idle")
@@ -48,6 +51,9 @@ export function useFeedPostCardVM(
   const pollVoting = ref(false)
   const reporting = ref(false)
   const loadingComments = ref(false)
+  const reactionModalOpen = ref(false)
+  const reactionUsersLoading = ref(false)
+  const activeReactionFilter = ref<FeedStoryReactionType | "all">("all")
 
   const postAnchorId = computed(() => post.value ? `feed-post-${post.value.id}` : "")
   const postReactionOptions = computed(() =>
@@ -63,11 +69,57 @@ export function useFeedPostCardVM(
       : defaultFeedReactionAsset,
   )
   const activePostReactionLabel = computed(() => t(activePostReactionAsset.value.labelKey))
-  const previewReactions = computed(() =>
-    selectedPostReaction.value
-      ? [feedReactionAssetByValue[selectedPostReaction.value]]
-      : feedPostPreviewReactionAssets,
+  const sortedReactionSummaries = computed(() =>
+    [...localReactionSummaries.value]
+      .filter(item => item.count > 0)
+      .sort((left, right) => right.count - left.count),
   )
+  const previewReactions = computed(() =>
+    sortedReactionSummaries.value
+      .slice(0, 3)
+      .map(item => feedReactionAssetByValue[item.reaction])
+      .filter(Boolean),
+  )
+  const reactionTabs = computed(() => [
+    {
+      value: "all" as const,
+      label: t("feed.postCard.reactionAll"),
+      count: likesCount.value,
+      asset: null,
+    },
+    ...sortedReactionSummaries.value.map(summary => ({
+      value: summary.reaction,
+      label: t(feedReactionAssetByValue[summary.reaction].labelKey),
+      count: summary.count,
+      asset: feedReactionAssetByValue[summary.reaction],
+    })),
+  ])
+  const reactionModalUsers = computed(() => {
+    const usersById = new Map<number, FeedPostReactionUser>()
+
+    for (const user of localReactionUsers.value) {
+      usersById.set(user.id, user)
+    }
+
+    const currentUser = currentAuthUserStore.user
+    if (currentUser?.id && selectedPostReaction.value) {
+      usersById.set(currentUser.id, {
+        id: currentUser.id,
+        name: currentUser.name || t("feed.postCard.commentAuthor"),
+        avatarUrl: currentUser.avatarUrl || "",
+        profilePath: currentUser.username ? `/@${currentUser.username}` : undefined,
+        reaction: selectedPostReaction.value,
+        isFollowing: true,
+      })
+    }
+
+    const users = [...usersById.values()]
+    if (activeReactionFilter.value === "all") {
+      return users
+    }
+
+    return users.filter(user => user.reaction === activeReactionFilter.value)
+  })
   const pollVotesTotal = computed(() =>
     localPollOptions.value.reduce((total, option) => total + option.votes, 0),
   )
@@ -107,6 +159,8 @@ export function useFeedPostCardVM(
       if (!value) {
         localComments.value = []
         localPollOptions.value = []
+        localReactionSummaries.value = []
+        localReactionUsers.value = []
         likesCount.value = 0
         sharesCount.value = 0
         liked.value = false
@@ -116,6 +170,9 @@ export function useFeedPostCardVM(
         actionMessage.value = ""
         showComments.value = false
         showShare.value = false
+        reactionModalOpen.value = false
+        reactionUsersLoading.value = false
+        activeReactionFilter.value = "all"
         lightboxOpen.value = false
         currentMediaIndex.value = 0
         return
@@ -123,15 +180,24 @@ export function useFeedPostCardVM(
 
       localComments.value = [...value.comments]
       localPollOptions.value = [...value.pollOptions]
-      likesCount.value = value.stats.likes
+      localReactionSummaries.value = value.reactions.length > 0
+        ? [...value.reactions]
+        : value.stats.likes > 0 && value.reaction
+          ? [{ reaction: value.reaction, count: value.stats.likes }]
+          : []
+      localReactionUsers.value = [...value.reactionUsers]
+      likesCount.value = value.stats.likes || value.reactions.reduce((total, item) => total + item.count, 0)
       sharesCount.value = value.stats.shares
-      liked.value = false
-      selectedPostReaction.value = null
+      liked.value = value.isLiked
+      selectedPostReaction.value = value.reaction
       postReactionTrayOpen.value = false
       actionState.value = "idle"
       actionMessage.value = ""
       showComments.value = false
       showShare.value = false
+      reactionModalOpen.value = false
+      reactionUsersLoading.value = false
+      activeReactionFilter.value = "all"
       lightboxOpen.value = false
       currentMediaIndex.value = 0
     },
@@ -208,6 +274,11 @@ export function useFeedPostCardVM(
         likesCount.value += 1
       }
 
+      localReactionSummaries.value = updateReactionSummaries(
+        localReactionSummaries.value,
+        reaction,
+        selectedPostReaction.value,
+      )
       selectedPostReaction.value = reaction
       liked.value = true
       postReactionTrayOpen.value = false
@@ -371,6 +442,76 @@ export function useFeedPostCardVM(
     openComments()
   }
 
+  function updateReactionSummaries(
+    summaries: FeedPostReactionSummary[],
+    nextReaction: FeedStoryReactionType,
+    previousReaction: FeedStoryReactionType | null,
+  ) {
+    const countsByReaction = new Map<FeedStoryReactionType, number>()
+
+    for (const summary of summaries) {
+      countsByReaction.set(summary.reaction, summary.count)
+    }
+
+    if (previousReaction && previousReaction !== nextReaction) {
+      countsByReaction.set(previousReaction, Math.max(0, (countsByReaction.get(previousReaction) ?? 0) - 1))
+    }
+
+    if (!previousReaction || previousReaction !== nextReaction) {
+      countsByReaction.set(nextReaction, (countsByReaction.get(nextReaction) ?? 0) + 1)
+    }
+
+    return feedReactionAssets
+      .map(asset => ({
+        reaction: asset.value,
+        count: countsByReaction.get(asset.value) ?? 0,
+      }))
+      .filter(summary => summary.count > 0)
+  }
+
+  async function loadPostReactions(filter: FeedStoryReactionType | "all" = "all") {
+    const currentPost = post.value
+
+    if (!currentPost || reactionUsersLoading.value) {
+      return
+    }
+
+    reactionUsersLoading.value = true
+
+    try {
+      const response = await repository.getPostReactions({
+        postId: currentPost.id,
+        reaction: filter,
+        limit: 100,
+      })
+
+      localReactionSummaries.value = response.reactions
+      localReactionUsers.value = response.users
+      const nextLikesCount = response.reactions.reduce((total, summary) => total + summary.count, 0)
+
+      if (nextLikesCount > 0) {
+        likesCount.value = nextLikesCount
+      }
+    }
+    catch (error) {
+      actionState.value = "error"
+      actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+    }
+    finally {
+      reactionUsersLoading.value = false
+    }
+  }
+
+  async function openReactionModal(filter: FeedStoryReactionType | "all" = "all") {
+    activeReactionFilter.value = filter
+    reactionModalOpen.value = true
+    await loadPostReactions(filter)
+  }
+
+  function closeReactionModal() {
+    reactionModalOpen.value = false
+  }
+
   function handleShared() {
     const currentPost = post.value
 
@@ -526,11 +667,16 @@ export function useFeedPostCardVM(
     commenting,
     pollVoting,
     loadingComments,
+    reactionModalOpen,
+    reactionUsersLoading,
+    activeReactionFilter,
     postAnchorId,
     postReactionOptions,
     activePostReactionAsset,
     activePostReactionLabel,
     previewReactions,
+    reactionTabs,
+    reactionModalUsers,
     pollVotesTotal,
     hasReactions,
     commentsCount,
@@ -552,6 +698,9 @@ export function useFeedPostCardVM(
     refreshComments,
     openComments,
     toggleComments,
+    openReactionModal,
+    closeReactionModal,
+    loadPostReactions,
     handleShared,
     handleMenuAction,
     downloadMedia,
