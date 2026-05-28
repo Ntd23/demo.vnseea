@@ -425,6 +425,10 @@ export function useMessagesInbox(
     selectedRecipientIds.value = []
   }
 
+  function clearMultiFeedbackMessage() {
+    multiFeedback.value = null
+  }
+
   function toggleRecipient(contact: MessageContact) {
     const userId = contact.userId ?? 0
 
@@ -722,9 +726,15 @@ export function useMessagesInbox(
         setMultiFeedbackMessage("error", t("pages.messagesPage.invalidFileProOnly"))
       }
       else if (result.status === 200) {
-        setMultiFeedbackMessage("success", t("pages.messagesPage.multiSendSuccess", {
+        const successMessage = t("pages.messagesPage.multiSendSuccess", {
           count: result.sentCount,
-        }))
+        })
+
+        clearMultiFeedbackMessage()
+        toast.add({
+          title: successMessage,
+          color: "success",
+        })
         multiText.value = ""
         multiFile.value = null
         multiRecord.value = null
