@@ -5272,7 +5272,7 @@
       "walletBalance": "Ví: {amount}",
       "points": "Điểm: {points}",
       "mainNav": {
-        "search": "Tìm kiếm",
+        "search": "Tìm kiếm gần đây",
         "pages": "Các trang",
         "myProducts": "Sản phẩm của tôi",
         "marketplace": "Thị trường",
@@ -5334,6 +5334,7 @@
       "showLess": "Ẩn bớt",
       "items": {
         "feed": "Nguồn cấp tin tức",
+        "searchNearby": "Tìm kiếm gần đây",
         "photos": "Tập ảnh",
         "watch": "Xem",
         "reels": "Cuộn phim",
@@ -6720,6 +6721,9 @@
         "namePlaceholder": "Ví dụ: Studio Nội thất Mộc Mây",
         "slugPlaceholder": "studio-noi-that-moc-may",
         "categoryLabel": "Loại trang",
+        "locationLabel": "Địa chỉ kinh doanh",
+        "locationPlaceholder": "Tìm và chọn địa chỉ Google",
+        "locationHint": "Bắt buộc để hiển thị bản đồ và tìm page gần bạn.",
         "submitLabel": "Tạo trang",
         "identitySectionLabel": "Định danh fanpage",
         "identitySectionTitle": "Tên trang gọn, dễ nhớ và đúng nhận diện",
@@ -6785,6 +6789,9 @@
         "urlLabel": "Đường dẫn URL",
         "descriptionLabel": "Mô tả",
         "categoryLabel": "Danh mục",
+        "locationLabel": "Địa chỉ",
+        "locationPlaceholder": "Tìm và chọn địa chỉ Google",
+        "locationHint": "Chọn gợi ý để VNSEEA lưu tọa độ cho tìm kiếm gần đây.",
         "statusLoadingTitle": "Đang kiểm tra thông tin {entity}",
         "statusLoadingDescription": "VNSEEA đang rà lại tên, URL, mô tả và phân loại trước khi mở bước tiếp theo.",
         "statusSuccessTitle": "{entity} đã sẵn sàng",
@@ -6798,7 +6805,8 @@
         "validationSlugInvalid": "URL chỉ nên gồm chữ thường, số và dấu gạch nối.",
         "validationDescriptionRequired": "Mô tả nên đủ rõ, tối thiểu 24 ký tự.",
         "validationPrivacyRequired": "Chọn loại hiển thị cho nhóm.",
-        "validationCategoryRequired": "Chọn một danh mục phù hợp."
+        "validationCategoryRequired": "Chọn một danh mục phù hợp.",
+        "validationLocationRequired": "Chọn địa chỉ Google để lưu tọa độ cho tìm kiếm gần đây."
       },
       "insights": {
         "preview": "Xem trước",
@@ -7338,6 +7346,7 @@
           "category": "Loại trang",
           "location": "Khu vực hiển thị",
           "locationPlaceholder": "Ví dụ: Đà Nẵng · Giao hàng toàn quốc",
+          "locationHint": "Chọn gợi ý địa chỉ Google để cập nhật tọa độ bản đồ.",
           "website": "Website hoặc landing page",
           "websitePlaceholder": "vnseea.vn/p/ten-fanpage",
           "ownerLabel": "Nhãn thương hiệu",

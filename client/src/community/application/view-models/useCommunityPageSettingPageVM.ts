@@ -1,6 +1,7 @@
 // English description: Owns page settings draft persistence, preview mapping, validation, and backend save flow for the page settings route.
 
 import { useStorage, watchDebounced } from "@vueuse/core"
+import { normalizeLocationSelection } from "../../../location/domain/types/location.types"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useCommunityPageDetail } from "../composables/useCommunityPageDetail"
 import { createCommunityPageSettingsDraft } from "../factories/community-drafts"
@@ -72,7 +73,10 @@ export function useCommunityPageSettingPageVM(
       website: draft.value.showWebsite
         ? ((draft.value.website || "").trim() || page.value.website)
         : undefined,
-      locationLabel: (draft.value.locationLabel || "").trim() || page.value.locationLabel,
+      locationLabel: (normalizeLocationSelection(draft.value.location).address || draft.value.locationLabel || "").trim() || page.value.locationLabel,
+      lat: normalizeLocationSelection(draft.value.location).lat ?? page.value.lat,
+      lng: normalizeLocationSelection(draft.value.location).lng ?? page.value.lng,
+      placeId: normalizeLocationSelection(draft.value.location).placeId || page.value.placeId,
       category: draft.value.category,
       ctaLabel: (draft.value.ctaLabel || "").trim() || page.value.ctaLabel,
       responseLabel: (draft.value.responseLabel || "").trim() || page.value.responseLabel,
@@ -320,6 +324,12 @@ export function useCommunityPageSettingPageVM(
       name: translateText(value.name, value.slug),
       summary: translateText(value.summary),
       locationLabel: translateText(value.locationLabel),
+      location: normalizeLocationSelection({
+        address: translateText(value.locationLabel),
+        lat: value.lat ?? null,
+        lng: value.lng ?? null,
+        placeId: value.placeId ?? "",
+      }),
       // Technical/Value fields must NOT be localized as strings 
       // or they break the backend value mapping
       ctaLabel: value.ctaLabel || "",
@@ -337,6 +347,10 @@ export function useCommunityPageSettingPageVM(
       summary: (value.summary || "").trim(),
       website: (value.website || "").trim(),
       locationLabel: (value.locationLabel || "").trim(),
+      location: normalizeLocationSelection({
+        ...value.location,
+        address: (value.location?.address || value.locationLabel || "").trim(),
+      }),
       category: (value.category || "").trim(),
       ctaLabel: (value.ctaLabel || "").trim(),
       responseLabel: (value.responseLabel || "").trim(),

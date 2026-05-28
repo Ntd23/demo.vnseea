@@ -18,6 +18,7 @@
     "@nuxt/fonts": "0.14.0",
     "@nuxt/icon": "2.2.1",
     "@nuxt/image": "2.0.0",
+    "@nuxt/scripts": "^1.1.1",
     "@nuxt/ui": "4.6.1",
     "@nuxtjs/i18n": "^10.2.4",
     "@nuxtjs/mdc": "^0.22.0",
@@ -38,5 +39,8 @@
     "vue": "^3.5.32",
     "vue-router": "^5.0.4"
   },
-  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+  "devDependencies": {
+    "@types/google.maps": "^3.64.1"
+  }
 }

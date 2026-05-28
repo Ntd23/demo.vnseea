@@ -13,6 +13,9 @@ export type SettingsMeResponse = Record<string, unknown> & {
   countryId?: string
   website?: string
   about?: string
+  address?: string
+  lat?: string
+  lng?: string
   verified?: boolean
   wallet?: number | string
   pointsConfig?: {
@@ -73,6 +76,9 @@ export default defineEventHandler(async (event): Promise<SettingsMeResponse> => 
     countryId: asString(user.country_id),
     website: asString(user.website),
     about: asString(user.about),
+    address: asString(user.address),
+    lat: asString(user.lat),
+    lng: asString(user.lng),
     verified: asBooleanNumber(user.verified),
     wallet: asString(user.wallet),
     pointsConfig: {

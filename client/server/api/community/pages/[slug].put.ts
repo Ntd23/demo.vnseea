@@ -42,6 +42,12 @@ const appendOptionalUrl = (formData: FormData, key: string, value: unknown) => {
   }
 }
 
+const numberText = (value: unknown) => {
+  const normalized = Number(value)
+
+  return Number.isFinite(normalized) ? String(normalized) : ""
+}
+
 const mapPageCtaInputToBackendId = (value: unknown) => {
   const input = String(value || "").trim().toLowerCase()
 
@@ -130,7 +136,16 @@ export default defineEventHandler(async (event) => {
   formData.append("page_title", String(body.name || page.name).trim())
   formData.append("page_description", String(body.summary || page.summary).trim())
   formData.append("page_category", mapPageCategoryToBackendId(body.category || page.category))
-  formData.append("address", String(body.locationLabel || "").trim())
+  formData.append("address", String(body.locationLabel || body.location?.address || "").trim())
+  if (numberText(body.lat || body.location?.lat)) {
+    formData.append("lat", numberText(body.lat || body.location?.lat))
+  }
+  if (numberText(body.lng || body.location?.lng)) {
+    formData.append("lng", numberText(body.lng || body.location?.lng))
+  }
+  if (String(body.placeId || body.place_id || body.location?.placeId || "").trim()) {
+    formData.append("place_id", String(body.placeId || body.place_id || body.location?.placeId || "").trim())
+  }
   formData.append("company", String(body.ownerLabel || "").trim())
   appendOptionalUrl(formData, "website", body.website)
   formData.append("call_action_type", mapPageCtaInputToBackendId(body.ctaLabel) || "0")

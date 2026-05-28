@@ -1,3 +1,4 @@
+<!-- English description: Desktop directory sidebar navigation for category shortcuts and nearby search access. -->
 <template>
   <div class="bg-white border border-[var(--border-default)] rounded-[24px] p-3.5 shadow-[0_4px_20px_-2px_rgba(0,0,100,0.02)] space-y-0.5">
     <button
@@ -20,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
@@ -27,7 +29,8 @@ const route = useRoute()
 const router = useRouter()
 
 const categories = [
-  { value: "posts", label: "Posts", icon: "i-ph-newspaper-clipping-fill", accentClass: "posts" },
+  { value: "posts", label: "Nguồn cấp tin tức", icon: "i-ph-newspaper-clipping-fill", accentClass: "posts", to: appRoutes.directory },
+  { value: "nearby-search", label: "Tìm kiếm gần đây", icon: "i-ph-map-pin-fill", accentClass: "nearby-search", to: appRoutes.searchNearby },
   { value: "users", label: "Người dùng", icon: "i-ph-user-circle-fill", accentClass: "users" },
   { value: "pages", label: "Các trang", icon: "i-ph-flag-fill", accentClass: "pages" },
   { value: "groups", label: "Tập đoàn", icon: "i-ph-users-three-fill", accentClass: "groups" },
@@ -42,6 +45,8 @@ const categories = [
 ] as const
 
 const activeTab = computed(() => {
+  if (route.path === appRoutes.searchNearby) return "nearby-search"
+
   const slug = route.params.slug
   if (slug) {
     let s = String(slug).toLowerCase()
@@ -59,11 +64,7 @@ const activeTab = computed(() => {
 })
 
 function selectCategory(category: any) {
-  if (category.value === "posts") {
-    router.push("/directory")
-  } else {
-    router.push(`/directory/${category.value}`)
-  }
+  router.push(category.to ?? `${appRoutes.directory}/${category.value}`)
 }
 </script>
 
@@ -115,7 +116,11 @@ function selectCategory(category: any) {
 .sidebar-nav-item.active.posts { background-color: #fee2e2 !important; color: #ef4444 !important; }
 .sidebar-icon-box.active.posts { background-color: #ef4444 !important; color: #ffffff !important; }
 
-/* 2. Users (Người dùng) */
+/* 2. Nearby search */
+.sidebar-nav-item.active.nearby-search { background-color: var(--bg-surface-active) !important; color: var(--text-brand) !important; }
+.sidebar-icon-box.active.nearby-search { background-color: var(--bg-brand) !important; color: var(--text-inverse) !important; }
+
+/* 3. Users (Người dùng) */
 .sidebar-nav-item.active.users { background-color: #e0f2fe !important; color: #0284c7 !important; }
 .sidebar-icon-box.active.users { background-color: #0284c7 !important; color: #ffffff !important; }
 

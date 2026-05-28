@@ -58,6 +58,8 @@ const toApiUpdatePayload = (input: SettingsUpdateInput) => {
   if (input.working !== undefined) payload.working = input.working
   if (input.workingLink !== undefined) payload.working_link = input.workingLink
   if (input.address !== undefined) payload.address = input.address
+  if (input.lat !== undefined) payload.lat = input.lat
+  if (input.lng !== undefined) payload.lng = input.lng
   if (input.school !== undefined) payload.school = input.school
   if (input.relationship !== undefined) payload.relationship = input.relationship
   if (input.completed !== undefined) payload.completed = input.completed

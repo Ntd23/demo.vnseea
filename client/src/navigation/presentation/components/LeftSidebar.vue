@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import NavigationSidebarMenuItem from './SidebarMenuItem.vue'
 
 const route = useRoute()
@@ -51,6 +52,7 @@ const expanded = ref(false)
 
 const sidebarNav = [
   { label: 'navigation.leftSidebar.items.feed', icon: 'i-ph-house-simple-fill', to: '/' },
+  { label: 'navigation.leftSidebar.items.searchNearby', icon: 'i-ph-map-pin-fill', to: appRoutes.searchNearby },
   { label: 'navigation.leftSidebar.items.photos', icon: 'i-ph-images-fill', to: '/photos' },
   { label: 'navigation.leftSidebar.items.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
   { label: 'navigation.leftSidebar.items.reels', icon: 'i-ph-film-strip-fill', to: '/reels' },

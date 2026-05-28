@@ -1,8 +1,5 @@
 <template>
   <div class="settings-page pb-10">
-    <!-- Compact hero banner -->
-    <SettingsHero />
-
     <!-- Two-column layout -->
     <div class="settings-page__layout">
       <!-- Left nav sidebar -->
@@ -72,6 +69,8 @@ const {
 
 <style scoped>
 .settings-page {
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -82,6 +81,8 @@ const {
 
 /* ─── Two-column layout ───────────────── */
 .settings-page__layout {
+  width: 100%;
+  min-width: 0;
   display: flex;
   align-items: flex-start;
   gap: 16px;

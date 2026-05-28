@@ -113,6 +113,22 @@ export function createApiCommunityRepository(): CommunityRepository {
         }
       })
 
+      if (input.location) {
+        formData.set("locationLabel", input.location.address)
+
+        if (input.location.lat !== null) {
+          formData.set("lat", String(input.location.lat))
+        }
+
+        if (input.location.lng !== null) {
+          formData.set("lng", String(input.location.lng))
+        }
+
+        if (input.location.placeId) {
+          formData.set("placeId", input.location.placeId)
+        }
+      }
+
       if (input.avatarFile) formData.append("avatar", input.avatarFile)
       if (input.bannerFile) formData.append("banner", input.bannerFile)
 
