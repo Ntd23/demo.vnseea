@@ -65,6 +65,7 @@
           />
           <div class="min-w-0 flex-1">
             <h2 class="text-title-primary truncate">{{ game.title }}</h2>
+            <p class="text-caption-secondary mt-1 line-clamp-2">{{ game.description }}</p>
             <p class="text-caption-secondary mt-1">
               {{ game.players }} {{ t("pages.gamesPage.playersLabel") }}
             </p>
@@ -98,6 +99,52 @@
         {{ t("navigation.leftSidebar.showMore") }}
       </UButton>
     </div>
+
+    <Teleport to="body">
+      <div
+        v-if="activeGame"
+        class="fixed inset-0 z-[80] flex flex-col overflow-hidden bg-[#faf8ef]"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div class="flex h-14 shrink-0 items-center justify-between border-b border-white/10 bg-slate-950 px-3 text-white sm:px-5">
+          <div class="min-w-0">
+            <p class="truncate text-sm font-semibold">{{ activeGame.title }}</p>
+            <p class="text-xs text-white/60">HTML5 self-host</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <UButton
+              color="neutral"
+              variant="soft"
+              size="sm"
+              class="rounded-[var(--radius-full)]"
+              :to="activeGame.url"
+              target="_blank"
+            >
+              <Icon name="i-ph-arrow-square-out-bold" class="h-4 w-4" />
+              Mở tab
+            </UButton>
+            <UButton
+              color="neutral"
+              variant="soft"
+              size="sm"
+              class="rounded-[var(--radius-full)]"
+              @click="closeGame"
+            >
+              <Icon name="i-ph-x-bold" class="h-4 w-4" />
+              Đóng
+            </UButton>
+          </div>
+        </div>
+        <iframe
+          :src="activeGame.url"
+          :title="activeGame.title"
+          class="block min-h-0 flex-1 border-0 bg-[#faf8ef]"
+          allow="autoplay; fullscreen; gamepad; clipboard-write"
+          allowfullscreen
+        />
+      </div>
+    </Teleport>
   </main>
 </template>
 
@@ -109,6 +156,7 @@ const {
   activeTab,
   search,
   items,
+  activeGame,
   hasMore,
   pending,
   error,
@@ -118,6 +166,7 @@ const {
   syncQuery,
   loadMore,
   play,
+  closeGame,
 } = useGamesPageVM()
 
 const tabs = [

@@ -1,10 +1,3 @@
-// English description: Bridges the play/start game action to the backend games API.
+// English description: Acknowledge local self-hosted game play starts without calling the PHP backend.
 
-import { readBody } from "h3"
-import { addGameToMyList } from "./_shared"
-
-export default defineEventHandler(async (event) => {
-  const body = await readBody<{ gameId?: number }>(event)
-
-  return await addGameToMyList(event, Number(body.gameId || 0))
-})
+export default defineEventHandler(() => ({ ok: true }))
