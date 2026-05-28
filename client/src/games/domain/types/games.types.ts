@@ -54,6 +54,8 @@ export type GameRecord = {
   title: string
   avatarUrl: string
   url: string
+  category: string
+  description: string
   lastPlay: string
   players: number
   isMine: boolean
