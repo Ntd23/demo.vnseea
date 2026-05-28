@@ -80,6 +80,11 @@ export default defineNuxtConfig({
   alias: {
     "#shared-kernel": resolve(__dirname, "src/shared-kernel"),
   },
+  scripts: {
+    registry: {
+      googleMaps: { trigger: "manual" },
+    },
+  },
   runtimeConfig: {
     backendApiBase,
     backendServerKey,
@@ -90,6 +95,11 @@ export default defineNuxtConfig({
       backendWebBase,
       siteUrl: publicSiteUrl,
       realtimeUrl: publicRealtimeUrl,
+      scripts: {
+        googleMaps: {
+          apiKey: process.env.NUXT_PUBLIC_SCRIPTS_GOOGLE_MAPS_API_KEY || "",
+        },
+      },
     },
   },
   css: ["~/assets/css/main.css"],
@@ -132,6 +142,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "@nuxt/ui",
+    "@nuxt/scripts",
     "@nuxtjs/seo",
     "@nuxt/icon",
     "@nuxt/image",

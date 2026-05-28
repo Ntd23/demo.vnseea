@@ -1,6 +1,8 @@
 // English description: Bridges Nuxt settings updates to the same PHP requests.php handlers used by phtml settings.
 
 import { createError, deleteCookie, getHeader, readBody, readMultipartFormData, type H3Event } from "h3"
+import { assertBackendApiSuccess } from "../../utils/backend-api-response"
+import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 
@@ -37,6 +39,14 @@ const yesNo = (value: unknown) => {
 
 const text = (value: unknown) =>
   value === undefined || value === null ? "" : String(value)
+
+const isFiniteNumberLike = (value: unknown) => {
+  if (value === undefined || value === null || value === "") {
+    return false
+  }
+
+  return Number.isFinite(Number(value))
+}
 
 const normalizeVerified = (value: unknown) =>
   value === true || value === 1 || value === "1" || value === "verified"
@@ -84,6 +94,8 @@ const supportedSections: Record<string, SectionConfig> = {
       "working",
       "working_link",
       "address",
+      "lat",
+      "lng",
       "school",
       "relationship",
       "completed",
@@ -339,6 +351,26 @@ export default defineEventHandler(async (event) => {
       statusMessage: stripHtml(response.message || "Unable to update settings."),
       data: response,
     })
+  }
+
+  if (section === "profile" && (isFiniteNumberLike(payload.lat) || isFiniteNumberLike(payload.lng))) {
+    const coordinatePayload: Record<string, string> = {}
+
+    if (isFiniteNumberLike(payload.lat)) {
+      coordinatePayload.lat = text(payload.lat)
+    }
+
+    if (isFiniteNumberLike(payload.lng)) {
+      coordinatePayload.lng = text(payload.lng)
+    }
+
+    if (Object.keys(coordinatePayload).length > 0) {
+      const apiClient = createBackendApiClient(event)
+      assertBackendApiSuccess(
+        await apiClient.post("update-user-data", coordinatePayload),
+        "Unable to update location coordinates.",
+      )
+    }
   }
 
   return {

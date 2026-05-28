@@ -67,10 +67,7 @@
           :model-value="toggleValues[toggle.key]"
           :disabled="toggle.readOnly"
           size="md"
-          :ui="{
-            active: 'bg-[#0000ff]',
-            inactive: 'bg-[#e2e8f0]',
-          }"
+         
           @update:model-value="value => handleToggleChange(toggle.key, value)"
         />
       </div>
@@ -148,10 +145,6 @@
         icon="i-ph-check-circle-fill"
         :title="savedMessage"
         class="rounded-[10px] border border-[rgba(0,0,255,0.12)] bg-[rgba(0,0,255,0.05)]"
-        :ui="{
-          title: 'text-[12px] font-semibold text-[#0000ff]',
-          icon: { base: 'text-[#0000ff] h-4 w-4' },
-        }"
       />
     </Transition>
 
@@ -162,10 +155,6 @@
         icon="i-ph-warning-circle-fill"
         :title="errorMessage"
         class="rounded-[10px] border border-[rgba(220,38,38,0.12)] bg-[#fef2f2]"
-        :ui="{
-          title: 'text-[12px] font-semibold text-[#dc2626]',
-          icon: { base: 'text-[#dc2626] h-4 w-4' },
-        }"
       />
     </Transition>
   </section>
@@ -312,6 +301,9 @@ const sectionIcon = computed(() => {
 
 <style scoped>
 .settings-section {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   background: #ffffff;
   border: 1px solid #f1f5f9;
   border-radius: 18px;
@@ -415,9 +407,15 @@ const sectionIcon = computed(() => {
 
 /* ─── Fields Grid ─────────────────────── */
 .settings-section__fields {
+  width: 100%;
+  min-width: 0;
   display: grid;
   gap: 20px 24px;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-section__fields > * {
+  min-width: 0;
 }
 
 .settings-section__field--full {
@@ -425,8 +423,24 @@ const sectionIcon = computed(() => {
 }
 
 @media (max-width: 768px) {
+  .settings-section {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .settings-section__header-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .settings-section__save-button {
+    width: 100%;
+    justify-content: center;
+  }
+
   .settings-section__fields {
-    grid-template-columns: 1fr;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

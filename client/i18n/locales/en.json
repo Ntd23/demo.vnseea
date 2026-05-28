@@ -5280,7 +5280,7 @@
       "walletBalance": "Wallet: {amount}",
       "points": "Points: {points}",
       "mainNav": {
-        "search": "Search",
+        "search": "Nearby search",
         "pages": "Pages",
         "myProducts": "My products",
         "marketplace": "Marketplace",
@@ -5342,6 +5342,7 @@
       "showLess": "Show less",
       "items": {
         "feed": "News feed",
+        "searchNearby": "Nearby search",
         "photos": "Photos",
         "watch": "Watch",
         "reels": "Reels",
@@ -6716,6 +6717,9 @@
         "namePlaceholder": "Example: Moc May Furniture Studio",
         "slugPlaceholder": "moc-may-furniture-studio",
         "categoryLabel": "Page type",
+        "locationLabel": "Business address",
+        "locationPlaceholder": "Search and choose a Google address",
+        "locationHint": "Required for map and nearby page discovery.",
         "submitLabel": "Create page",
         "identitySectionLabel": "Fanpage identity",
         "identitySectionTitle": "Short, easy to remember, and identifiable page name",
@@ -6781,6 +6785,9 @@
         "urlLabel": "URL Path",
         "descriptionLabel": "Description",
         "categoryLabel": "Category",
+        "locationLabel": "Address",
+        "locationPlaceholder": "Search and choose a Google address",
+        "locationHint": "Choose a suggestion so VNSEEA can store coordinates for nearby search.",
         "statusLoadingTitle": "Checking {entity} information",
         "statusLoadingDescription": "VNSEEA is reviewing the name, URL, description, and category before opening the next step.",
         "statusSuccessTitle": "{entity} is ready",
@@ -6794,7 +6801,8 @@
         "validationSlugInvalid": "The URL should only contain lowercase letters, numbers, and hyphens.",
         "validationDescriptionRequired": "The description should be clear enough, at least 24 characters.",
         "validationPrivacyRequired": "Choose a visibility type for the group.",
-        "validationCategoryRequired": "Choose a suitable category."
+        "validationCategoryRequired": "Choose a suitable category.",
+        "validationLocationRequired": "Choose a Google address so nearby search can store coordinates."
       },
       "insights": {
         "preview": "Preview",
@@ -7335,6 +7343,7 @@
           "category": "Page category",
           "location": "Display area",
           "locationPlaceholder": "Example: Da Nang · Nationwide Delivery",
+          "locationHint": "Choose a Google address suggestion to update map coordinates.",
           "website": "Website or landing page",
           "websitePlaceholder": "vnseea.vn/p/fanpage-name",
           "ownerLabel": "Brand label",

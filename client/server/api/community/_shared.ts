@@ -108,6 +108,20 @@ const firstNumber = (entity: BackendEntity, keys: string[]) => {
   return 0
 }
 
+const firstNullableNumber = (entity: BackendEntity, keys: string[]) => {
+  for (const key of keys) {
+    const rawValue = entity[key]
+    if (rawValue === undefined || rawValue === null || rawValue === "") {
+      continue
+    }
+
+    const value = Number(rawValue)
+    if (Number.isFinite(value)) return value
+  }
+
+  return null
+}
+
 const toUniqueList = (values: Array<string | undefined>) =>
   Array.from(new Set(values.map(value => value?.trim()).filter(Boolean) as string[]))
 
@@ -259,6 +273,9 @@ export const mapCommunityGroupRecord = (
     ]),
     website: normalizeUrl(firstString(entity, ["website"])),
     locationLabel: firstString(entity, ["address", "location"]),
+    lat: firstNullableNumber(entity, ["lat", "page_lat"]),
+    lng: firstNullableNumber(entity, ["lng", "page_lng"]),
+    placeId: firstString(entity, ["place_id", "page_place_id"]),
     foundedLabel: firstString(entity, ["registered", "time_text"]),
     canManage: isTruthy(entity.is_owner) || (ownerId > 0 && ownerId === options.currentUserId),
     guidelines: [],

@@ -14,6 +14,7 @@ export type SettingFieldType =
   | "number"
   | "url"
   | "verification"
+  | "location"
 
 export type SettingSectionKind =
   | "form"
@@ -27,7 +28,7 @@ export type SettingField = {
   label: string
   key: string
   type: SettingFieldType
-  value: string | number | boolean | File
+  value: SettingsFieldValue
   description?: string
   placeholder?: string
   accept?: string

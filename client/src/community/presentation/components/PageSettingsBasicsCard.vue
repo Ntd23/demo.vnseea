@@ -110,13 +110,11 @@
           size="xl"
           class="space-y-2"
         >
-          <UInput
-            v-model="model.locationLabel"
+          <GooglePlaceField
+            v-model="locationModel"
             :placeholder="$t('community.pageSettings.basics.fields.locationPlaceholder')"
-            color="primary"
-            size="xl"
-            class="w-full"
-            :ui="inputUi"
+            :helper-text="$t('community.pageSettings.basics.fields.locationHint')"
+            require-coordinates
           />
         </UFormField>
       </div>
@@ -212,6 +210,8 @@
 
 <script setup lang="ts">
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
+import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
+import { normalizeLocationSelection } from "../../../location/domain/types/location.types"
 import {
   createCommunitySlug,
 } from "../../domain/services/community-helpers.service"
@@ -256,6 +256,15 @@ const categoryItems = computed(() =>
 const suggestedSlug = computed(() =>
   createCommunitySlug(model.value.name),
 )
+
+const locationModel = computed({
+  get: () => normalizeLocationSelection(model.value.location),
+  set: (value) => {
+    const location = normalizeLocationSelection(value)
+    model.value.location = location
+    model.value.locationLabel = location.address
+  },
+})
 
 const tagCount = computed(() =>
   model.value.tags

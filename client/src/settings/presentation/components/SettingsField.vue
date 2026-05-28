@@ -4,11 +4,7 @@
   <UFormField
     :label="field.label"
     :help="field.description"
-    class="w-full"
-    :ui="{
-      label: { base: 'text-[11px] font-semibold text-[#64748b] mb-1.5 block' },
-      help: 'text-[11px] font-medium text-[#94a3b8] mt-1 leading-snug',
-    }"
+    class="settings-field w-full min-w-0"
   >
     <!-- Textarea -->
     <UTextarea
@@ -17,13 +13,20 @@
       :placeholder="field.placeholder"
       :disabled="field.readOnly"
       :rows="4"
-      class="w-full"
-      :ui="{
-        base: 'rounded-[10px] border border-[#e2e8f0] bg-[#fafbfe] text-[13px] font-medium text-[#334155] placeholder:text-[#94a3b8] focus:border-[rgba(0,0,255,0.25)] focus:bg-white transition-[border-color,background-color] duration-150 resize-y',
-      }"
+      class="w-full min-w-0"
+      
     />
 
     <!-- Select: ≤3 options → radio pills, >3 options → USelect dropdown -->
+    <GooglePlaceField
+      v-else-if="field.type === 'location'"
+      :model-value="locationValue"
+      :placeholder="field.placeholder"
+      :disabled="field.readOnly"
+      require-coordinates
+      @update:model-value="setLocation"
+    />
+
     <div
       v-else-if="field.type === 'select' && (field.options?.length ?? 0) <= 3"
       class="settings-field__pills"
@@ -58,10 +61,7 @@
       :placeholder="field.placeholder"
       :disabled="field.readOnly"
       size="md"
-      class="w-full"
-      :ui="{
-        trigger: 'rounded-[10px] border border-[#e2e8f0] bg-[#fafbfe] text-[13px] font-medium text-[#334155] focus:border-[rgba(0,0,255,0.25)] focus:bg-white transition-[border-color,background-color] duration-150',
-      }"
+      class="w-full min-w-0"
     />
 
     <!-- Verification state — chip buttons -->
@@ -133,10 +133,8 @@
       :placeholder="field.placeholder"
       :disabled="field.readOnly"
       size="md"
-      class="w-full"
-      :ui="{
-        base: 'rounded-[10px] border border-[#e2e8f0] bg-[#fafbfe] text-[13px] font-medium text-[#334155] placeholder:text-[#94a3b8] focus:border-[rgba(0,0,255,0.25)] focus:bg-white transition-[border-color,background-color] duration-150',
-      }"
+      class="w-full min-w-0"
+      
     >
       <template #leading>
         <Icon :name="fieldIcon" class="h-4 w-4 text-[#94a3b8]" />
@@ -146,6 +144,11 @@
 </template>
 
 <script setup lang="ts">
+import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
+import {
+  normalizeLocationSelection,
+  type LocationSelection,
+} from "../../../location/domain/types/location.types"
 import type { SettingField } from "../../application/view-models/settings-page.types"
 
 const props = defineProps<{ field: SettingField }>()
@@ -180,6 +183,15 @@ const fieldIcon = computed(() => {
 const isVerified = computed(() => value.value === true || value.value === 1 || value.value === "1")
 const verifiedLabel = computed(() => t("settings.data.fields.verified"))
 const unverifiedLabel = computed(() => t("settings.data.fields.notVerified"))
+const locationValue = computed(() => {
+  const isFile = typeof File !== "undefined" && value.value instanceof File
+
+  if (typeof value.value === "object" && value.value !== null && !isFile) {
+    return normalizeLocationSelection(value.value as Partial<LocationSelection>)
+  }
+
+  return normalizeLocationSelection({ address: String(value.value ?? "") })
+})
 const previewUrl = computed(() => objectPreviewUrl.value || props.field.previewUrl || "")
 const canUseNuxtPicturePreview = computed(() =>
   Boolean(previewUrl.value)
@@ -207,6 +219,10 @@ function setVerified(v: boolean) {
   value.value = v
 }
 
+function setLocation(nextValue: LocationSelection) {
+  value.value = nextValue
+}
+
 function handleFileChange(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
@@ -226,6 +242,14 @@ onBeforeUnmount(revokeObjectPreview)
 </script>
 
 <style scoped>
+.settings-field :deep([data-slot="root"]),
+.settings-field :deep([data-slot="base"]) {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 /* ─── Radio option pills ──────────────── */
 .settings-field__pills {
   display: flex;

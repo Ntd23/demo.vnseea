@@ -1,5 +1,7 @@
 // English description: Defines normalized community group and page domain records used by Nuxt API-backed screens.
 
+import type { LocationSelection } from "../../../location/domain/types/location.types"
+
 export type CommunityPrivacy = "public" | "private" | "secret"
 
 export interface CommunityOption {
@@ -15,6 +17,7 @@ export interface CommunityDraft {
   description: string
   privacy: CommunityPrivacy
   category: string
+  location?: LocationSelection
 }
 
 export type CommunityGroupTab = "mine" | "suggested" | "joined"
@@ -35,6 +38,9 @@ export interface CommunityPageRecord {
   responseLabel: string
   website?: string
   locationLabel?: string
+  lat?: number | null
+  lng?: number | null
+  placeId?: string
   foundedLabel?: string
   ctaLabel?: string
   canManage?: boolean
@@ -122,6 +128,7 @@ export interface CommunityPageSettingsDraft {
   summary: string
   website: string
   locationLabel: string
+  location: LocationSelection
   category: string
   ctaLabel: string
   responseLabel: string

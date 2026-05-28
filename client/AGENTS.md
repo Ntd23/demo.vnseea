@@ -75,6 +75,7 @@ This file governs all work inside `client/`.
 - Compare behavior between:
   - `http://127.0.0.1:3000`
   - the Laragon custom domain
+- Do not run `nuxt prepare`, `nuxi prepare`, or `nuxt build` while a Nuxt dev server is running for this project. Those commands regenerate `.nuxt` and can remove `.nuxt/dist/server/server.mjs`, breaking the active dev server until `pnpm dev` is restarted.
 - For reload, hydration, or unstyled-page issues, inspect:
   - `/_nuxt/*.css`
   - `/_nuxt/*.js`

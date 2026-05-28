@@ -1,6 +1,8 @@
 // English description: Domain types for account settings data and update commands.
 
-export type SettingsFieldValue = string | number | boolean | File
+import type { LocationSelection } from "../../../location/domain/types/location.types"
+
+export type SettingsFieldValue = string | number | boolean | File | LocationSelection
 export type SettingsSectionSlug =
   | "general"
   | "profile"
@@ -75,6 +77,8 @@ export interface SettingsUser {
   working?: string
   working_link?: string
   address?: string
+  lat?: string | number
+  lng?: string | number
   school?: string
   school_completed?: number | string
   relationship_id?: string
@@ -137,6 +141,8 @@ export interface SettingsUpdateInput {
   working?: SettingsFieldValue
   workingLink?: SettingsFieldValue
   address?: SettingsFieldValue
+  lat?: SettingsFieldValue
+  lng?: SettingsFieldValue
   school?: SettingsFieldValue
   relationship?: SettingsFieldValue
   completed?: SettingsFieldValue

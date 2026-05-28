@@ -31,6 +31,7 @@ export const appRoutes = {
   movies: "/movies",
   memories: "/memories",
   search: "/search",
+  searchNearby: "/search-nearby",
   statusCreate: "/status/create",
   products: "/products",
   newProduct: "/new-product",
@@ -224,6 +225,10 @@ export const apiRoutes = {
   search: {
     index: "search",
     suggestions: "search/suggestions",
+  },
+  searchNearby: {
+    index: "search-nearby",
+    suggestions: "search-nearby/suggestions",
   },
   settings: {
     me: "settings/me",

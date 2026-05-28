@@ -30,6 +30,7 @@
       entity-label="community.creation.common.entityLabelPage"
       :category-options="communityPageCategoryOptions"
       :show-privacy="false"
+      show-location
       :url-prefix="communityPageUrlPrefix"
       :name-label="$t('community.creation.page.nameLabel')"
       :name-placeholder="$t('community.creation.page.namePlaceholder')"
@@ -38,6 +39,9 @@
       :description-label="$t('community.creation.common.descriptionLabel')"
       :description-placeholder="$t('community.creation.common.introHint', { entity: $t('community.creation.common.entityLabelPage') })"
       :category-label="$t('community.creation.page.categoryLabel')"
+      :location-label="$t('community.creation.page.locationLabel')"
+      :location-placeholder="$t('community.creation.page.locationPlaceholder')"
+      :location-hint="$t('community.creation.page.locationHint')"
       :back-label="$t('community.creation.common.back')"
       :back-to="appRoutes.pages"
       :submit-label="$t('community.creation.page.submitLabel')"
