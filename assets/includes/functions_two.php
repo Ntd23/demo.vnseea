@@ -8269,14 +8269,18 @@ function Wo_GetPokeById($id) {
     return $data;
 }
 function Wo_GetAllColors() {
-    global $sqlConnect, $wo, $db;
-    $data      = array();
-    $query_one = $db->get(T_COLORS);
-    if ($query_one) {
-        foreach ($query_one as $key => $fetched_data) {
-            $data["" . $fetched_data->id . ""] = $fetched_data;
+    global $sqlConnect, $wo;
+
+    $data = array();
+
+    $query_one = mysqli_query($sqlConnect, "SELECT * FROM " . T_COLORS);
+
+    if ($query_one && mysqli_num_rows($query_one) > 0) {
+        while ($fetched_data = mysqli_fetch_assoc($query_one)) {
+            $data["" . $fetched_data['id'] . ""] = (object) $fetched_data;
         }
     }
+
     return $data;
 }
 function Wo_GetMemoriesPosts($user_id) {

@@ -1,4 +1,5 @@
 <?php
+
 // API v2 is not yet finished, you have to use the old API version.
 header_remove('Server');
 header("Content-type: application/json");
