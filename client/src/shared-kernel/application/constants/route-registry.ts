@@ -31,6 +31,7 @@ export const appRoutes = {
   movies: "/movies",
   memories: "/memories",
   search: "/search",
+  searchNearby: "/search-nearby",
   statusCreate: "/status/create",
   products: "/products",
   newProduct: "/new-product",
@@ -107,6 +108,7 @@ export const apiRoutes = {
     postColors: "feed/post-colors",
     posts: {
       detail: (id: string | number) => `feed/posts/${encodeSegment(id)}`,
+      reactions: (id: string | number) => `feed/posts/${encodeSegment(id)}/reactions`,
       create: "feed/posts/create",
       action: "feed/posts/action",
     },
@@ -223,6 +225,10 @@ export const apiRoutes = {
   search: {
     index: "search",
     suggestions: "search/suggestions",
+  },
+  searchNearby: {
+    index: "search-nearby",
+    suggestions: "search-nearby/suggestions",
   },
   settings: {
     me: "settings/me",

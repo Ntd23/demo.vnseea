@@ -25,6 +25,11 @@ export function useGamesPageVM() {
   )
 
   const items = computed(() => data.value?.items ?? [])
+  const activeGame = computed(() => {
+    const gameId = Number(readQueryValue(route.query.game))
+
+    return items.value.find(game => game.id === gameId) || null
+  })
   const hasMore = computed(() => Boolean(data.value?.hasMore))
   const loadingMore = ref(false)
 
@@ -73,7 +78,14 @@ export function useGamesPageVM() {
 
     try {
       await repository.play(game.id)
-      await navigateTo(game.url, { external: /^https?:\/\//i.test(game.url) })
+      await router.push({
+        path: "/games",
+        query: {
+          ...(activeTab.value === "my" ? {} : { tab: activeTab.value }),
+          ...(search.value.trim() ? { q: search.value.trim() } : {}),
+          game: String(game.id),
+        },
+      })
       await refresh()
     }
     catch (err) {
@@ -87,10 +99,21 @@ export function useGamesPageVM() {
     }
   }
 
+  const closeGame = async () => {
+    await router.push({
+      path: "/games",
+      query: {
+        ...(activeTab.value === "my" ? {} : { tab: activeTab.value }),
+        ...(search.value.trim() ? { q: search.value.trim() } : {}),
+      },
+    })
+  }
+
   return {
     activeTab,
     search,
     items,
+    activeGame,
     hasMore,
     pending,
     error,
@@ -100,5 +123,6 @@ export function useGamesPageVM() {
     syncQuery,
     loadMore,
     play,
+    closeGame,
   }
 }

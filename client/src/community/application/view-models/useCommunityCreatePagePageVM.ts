@@ -1,6 +1,7 @@
 // English description: Manages the create-page draft lifecycle and backend submission flow for the community create page route.
 
 import { useStorage } from "@vueuse/core"
+import { hasLocationCoordinates } from "../../../location/domain/types/location.types"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { createCommunityPageDraft } from "../factories/community-drafts"
 import { getCommunityPagePath } from "../../domain/services/community-helpers.service"
@@ -54,7 +55,9 @@ export function useCommunityCreatePagePageVM(
     || !(draft.value.name || "").trim()
     || !(draft.value.slug || "").trim()
     || (draft.value.description || "").trim().length < 24
-    || !draft.value.category,
+    || !draft.value.category
+    || !(draft.value.location?.address || "").trim()
+    || !hasLocationCoordinates(draft.value.location),
   )
 
   onMounted(async () => {
@@ -115,6 +118,7 @@ export function useCommunityCreatePagePageVM(
       && value.description === defaultDraft.description
       && value.privacy === defaultDraft.privacy
       && value.category === defaultDraft.category
+      && JSON.stringify(value.location ?? null) === JSON.stringify(defaultDraft.location ?? null)
   }
 
   return {

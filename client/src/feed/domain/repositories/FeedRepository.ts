@@ -10,6 +10,8 @@ import type {
   FeedPokeActionResult,
   FeedPokeRecord,
   FeedPostActionResult,
+  FeedPostRecord,
+  FeedPostReactionsResponse,
   FeedPostsResponse,
   FeedStoryActionResult,
   FeedStoryReactionType,
@@ -31,6 +33,7 @@ export interface FeedRepository {
   getExplore(input?: { limit?: number }): Promise<FeedExploreResponse>
   getMemories(): Promise<FeedMemoriesResponse>
   getPokes(): Promise<FeedPokeRecord[]>
+  getPostReactions(input: { postId: number; reaction?: FeedStoryReactionType | "all"; limit?: number; offset?: number }): Promise<FeedPostReactionsResponse>
   getPostComments(input: { postId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   getCommentReplies(input: { commentId: number; limit?: number; offset?: number }): Promise<FeedCommentRecord[]>
   runPostAction(input: {

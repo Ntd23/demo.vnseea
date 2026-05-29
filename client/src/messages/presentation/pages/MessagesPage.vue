@@ -54,6 +54,11 @@
           :is-pending="threadPending"
           :is-typing="isTyping"
           :messages="messages"
+          :active-reaction-picker-id="activeReactionPickerId"
+          :reply-target="replyTarget"
+          :reply-title="replyTitle"
+          :reply-preview-text="replyPreviewText"
+          :reply-preview-media-url="replyPreviewMediaUrl"
           :call-action-pending="isCallActionPending"
           :deleting-conversation="isDeletingConversation"
           :user-detail-docked="showDesktopUserDetailPane"
@@ -62,6 +67,11 @@
           @toggle-info="infoPanelOpen = !infoPanelOpen"
           @load-more="loadOlderMessages"
           @send="sendMessage"
+          @toggle-reaction-picker="toggleReactionPicker"
+          @select-reaction="reactToThreadMessage"
+          @reply-message="replyToThreadMessage"
+          @delete-message="deleteThreadMessage"
+          @clear-reply="clearReplyTarget"
           @start-call="startSelectedContactCall"
           @delete-conversation="deleteSelectedConversation"
           @back="handleBackToList"
@@ -275,6 +285,7 @@ const {
 } = useMessageCalls()
 const {
   activeGroupTypingAvatarUrl,
+  activeReactionPickerId,
   activeTagFilter,
   activeTab,
   addCreateGroupParticipant,
@@ -283,6 +294,7 @@ const {
   attachTag,
   allVisibleRecipientsSelected,
   closeCreateGroupModal,
+  clearReplyTarget,
   createGroupAvatarFile,
   createGroupAvatarPreviewUrl,
   createGroupCandidates,
@@ -320,11 +332,17 @@ const {
   query,
   removeCreateGroupParticipant,
   removeGroupMember,
+  reactToThreadMessage,
+  replyPreviewMediaUrl,
+  replyPreviewText,
+  replyTarget,
+  replyTitle,
   selectedContact,
   selectedRecipientIds,
   selectedRecipients,
   createTagLabel,
   deleteSelectedConversation,
+  deleteThreadMessage,
   deleteTagLabel,
   detachTag,
   markAllAsRead,
@@ -332,6 +350,7 @@ const {
   selectContact,
   setActiveTagFilter,
   setCreateGroupAvatar,
+  replyToThreadMessage,
   sendMessage,
   sendMultiMessage,
   submitCreateGroup,
@@ -341,6 +360,7 @@ const {
   tabs,
   threadPending,
   toggleAllVisibleRecipients,
+  toggleReactionPicker,
 } = useMessagesPageVM()
 
 const chatEmptyTitle = computed(() =>

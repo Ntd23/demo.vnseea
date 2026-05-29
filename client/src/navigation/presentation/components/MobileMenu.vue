@@ -203,7 +203,7 @@ function isNavItemActive(to: string) {
 watch(() => route.path, () => { isOpen.value = false })
 
 const mainNav = [
-  { label: 'navigation.mobileMenu.mainNav.search', icon: 'i-ph-magnifying-glass-fill', to: '/search' },
+  { label: 'navigation.mobileMenu.mainNav.search', icon: 'i-ph-map-pin-fill', to: appRoutes.searchNearby },
   { label: 'navigation.mobileMenu.mainNav.pages', icon: 'i-ph-flag-fill', to: '/pages' },
   { label: 'navigation.mobileMenu.mainNav.myProducts', icon: 'i-ph-package-fill', to: '/my-products' },
   { label: 'navigation.mobileMenu.mainNav.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },

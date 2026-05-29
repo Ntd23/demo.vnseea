@@ -108,6 +108,20 @@
           </UFormField>
         </div>
 
+        <UFormField
+          v-if="showLocation"
+          :label="locationLabelText"
+          name="location"
+          required
+        >
+          <GooglePlaceField
+            v-model="locationModel"
+            :placeholder="locationPlaceholderText"
+            :helper-text="locationHintText"
+            require-coordinates
+          />
+        </UFormField>
+
         <!-- Buttons -->
         <div class="flex items-center justify-between pt-8">
           <UButton
@@ -137,6 +151,12 @@
 </template>
 
 <script setup lang="ts">
+import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
+import {
+  emptyLocationSelection,
+  hasLocationCoordinates,
+  normalizeLocationSelection,
+} from "../../../location/domain/types/location.types"
 import {
   createCommunitySlug,
 } from "../../domain/services/community-helpers.service"
@@ -175,6 +195,10 @@ const props = withDefaults(defineProps<{
   descriptionLabel?: string
   descriptionPlaceholder?: string
   categoryLabel?: string
+  showLocation?: boolean
+  locationLabel?: string
+  locationPlaceholder?: string
+  locationHint?: string
   urlPrefix?: string
   submitState?: CreationSubmitState
   submitDisabled?: boolean
@@ -190,6 +214,10 @@ const props = withDefaults(defineProps<{
   descriptionLabel: "",
   descriptionPlaceholder: "",
   categoryLabel: "",
+  showLocation: false,
+  locationLabel: "",
+  locationPlaceholder: "",
+  locationHint: "",
   urlPrefix: communityUrlPrefix,
   submitState: "idle",
   submitDisabled: false,
@@ -201,6 +229,9 @@ const nameLabelText = computed(() => props.nameLabel || t("community.creation.co
 const urlLabelText = computed(() => props.urlLabel || t("community.creation.common.urlLabel"))
 const descriptionLabelText = computed(() => props.descriptionLabel || t("community.creation.common.descriptionLabel"))
 const categoryLabelText = computed(() => props.categoryLabel || t("community.creation.common.categoryLabel"))
+const locationLabelText = computed(() => props.locationLabel || t("community.creation.common.locationLabel"))
+const locationPlaceholderText = computed(() => props.locationPlaceholder || t("community.creation.common.locationPlaceholder"))
+const locationHintText = computed(() => props.locationHint || t("community.creation.common.locationHint"))
 
 const isBusy = computed(() => props.submitState === "loading")
 const isSubmitDisabled = computed(() => props.submitDisabled || isBusy.value)
@@ -218,6 +249,13 @@ const categoryItems = computed(() =>
     label: t(option.label),
   })),
 )
+
+const locationModel = computed({
+  get: () => normalizeLocationSelection(model.value.location ?? emptyLocationSelection()),
+  set: (value) => {
+    model.value.location = normalizeLocationSelection(value)
+  },
+})
 
 watch(
   () => model.value.name,
@@ -239,6 +277,9 @@ const validateForm = (state: CommunityDraft): CreationFormError[] => {
   if ((state.description || "").trim().length < 24) errors.push({ name: "description", message: t("community.creation.common.validationDescriptionRequired") })
   if (props.showPrivacy && !state.privacy) errors.push({ name: "privacy", message: t("community.creation.common.validationPrivacyRequired") })
   if (!state.category) errors.push({ name: "category", message: t("community.creation.common.validationCategoryRequired") })
+  if (props.showLocation && (!(state.location?.address || "").trim() || !hasLocationCoordinates(state.location))) {
+    errors.push({ name: "location", message: t("community.creation.common.validationLocationRequired") })
+  }
   return errors
 }
 </script>

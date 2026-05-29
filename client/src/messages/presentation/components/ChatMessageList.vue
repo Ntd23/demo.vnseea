@@ -20,7 +20,26 @@
         v-for="msg in messages"
         :key="msg.id"
         v-bind="msg"
+        :text="getBubbleText(msg)"
+        :timeline-title="getMessageTimelineTitle(msg)"
+        :reply-title="getReplyMeta(msg) && !msg.isDeleted ? getReplyTitle(msg) : undefined"
+        :reply-quote="getReplyMeta(msg) && !msg.isDeleted && !getReplyMeta(msg)?.mediaUrl && !isImageFileQuote(getReplyMeta(msg)?.quote) ? getReplyMeta(msg)?.quote : undefined"
+        :reply-media-url="getReplyMeta(msg) && !msg.isDeleted ? getReplyMeta(msg)?.mediaUrl : undefined"
+        :reaction-src="!msg.isDeleted ? getMessageReaction(msg)?.src : undefined"
+        :reaction-alt="!msg.isDeleted && getMessageReaction(msg) ? t(getMessageReaction(msg)!.labelKey) : undefined"
+        :show-tools="!msg.isDeleted"
+        :reaction-picker-open="activeReactionPickerId === msg.id"
+        :reaction-options="bubbleReactionOptions"
+        :can-delete="msg.isMine"
+        :media-url="msg.isDeleted ? undefined : msg.mediaUrl"
+        :media-name="msg.isDeleted ? undefined : msg.mediaName"
+        :media-type="msg.isDeleted ? undefined : msg.mediaType"
+        :is-deleted="msg.isDeleted"
         @retry-call="emit('retry-call', $event)"
+        @toggle-reaction-picker="emit('toggle-reaction-picker', msg.id)"
+        @select-reaction="emit('select-reaction', msg.id, $event.value)"
+        @reply="emit('reply-message', msg)"
+        @delete="emit('delete-message', msg)"
       />
 
       <div v-if="isPending && messages.length === 0" class="messages-thread-skeleton" aria-hidden="true">
@@ -88,11 +107,23 @@
 
 <script setup lang="ts">
 import { computed } from "vue"
+import {
+  defaultFeedReactionAsset,
+  feedReactionAssetByValue,
+  feedReactionAssets,
+} from "../../../feed/application/constants/reaction-assets"
+import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessageCallLogAction } from "../../domain/types/calls.types"
 import type { MessageItem, MessageThreadType } from "../../domain/types/messages.types"
+import {
+  formatMessageClock,
+  getMessageDisplayText,
+  getMessageReplyMeta,
+} from "../../application/utils/message-bubble-content"
 import MessagesChatBubble from "./ChatBubble.vue"
 
 const props = defineProps<{
+  activeReactionPickerId?: number | null
   contactAvatar?: string
   contactType?: MessageThreadType
   emptyLabel: string
@@ -105,8 +136,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   "load-more": []
   "retry-call": [payload: MessageCallLogAction]
+  "toggle-reaction-picker": [messageId: number]
+  "select-reaction": [messageId: number, reaction: FeedStoryReactionType]
+  "reply-message": [message: MessageItem]
+  "delete-message": [message: MessageItem]
 }>()
 
+const { t } = useI18n()
 const listContainer = ref<HTMLElement | null>(null)
 const threadWidthClass = computed(() =>
   props.contactType === "user" ? "max-w-[760px]" : "max-w-[920px]",
@@ -122,6 +158,67 @@ const skeletonMessages = computed(() => {
     { id: 5, mine: false, author: group, long: true, lines: 2, size: group ? "xl" : "lg" },
   ]
 })
+const bubbleReactionOptions = computed(() =>
+  feedReactionAssets.map(reaction => ({
+    value: reaction.value,
+    src: reaction.src,
+    label: t(reaction.labelKey),
+  })),
+)
+
+function getReplyMeta(message: MessageItem) {
+  return getMessageReplyMeta(message)
+}
+
+function getMessageReaction(message: MessageItem) {
+  return message.selectedReaction
+    ? feedReactionAssetByValue[message.selectedReaction] ?? defaultFeedReactionAsset
+    : undefined
+}
+
+function getBubbleText(message: MessageItem) {
+  return getMessageDisplayText(message, {
+    selfDeletedLabel: t("navigation.chatWidget.youDeletedMessage"),
+    otherDeletedLabel: t("navigation.chatWidget.userDeletedMessage", {
+      name: message.deletedByName || message.authorName || "",
+    }),
+  })
+}
+
+function getMessageTimelineTitle(message: MessageItem) {
+  const sentTime = message.time || formatMessageClock(message.timestamp)
+  const deletedTime = message.deletedTime || formatMessageClock(message.deletedAt)
+  const lines = []
+
+  if (sentTime) {
+    lines.push(t("navigation.chatWidget.messageSentAt", { time: sentTime }))
+  }
+
+  if (message.isDeleted && deletedTime) {
+    lines.push(t("navigation.chatWidget.messageDeletedAt", { time: deletedTime }))
+  }
+
+  return lines.join("\n")
+}
+
+function getReplyTitle(message: MessageItem) {
+  const meta = getReplyMeta(message)
+  const author = meta?.author || ""
+
+  if (message.isMine) {
+    return author
+      ? t("navigation.chatWidget.youRepliedTo", { name: author })
+      : t("navigation.chatWidget.youReplied")
+  }
+
+  return author
+    ? t("navigation.chatWidget.userRepliedTo", { name: author })
+    : t("navigation.chatWidget.userReplied")
+}
+
+function isImageFileQuote(value?: string) {
+  return /\.(png|jpe?g|webp|bmp|gif)$/i.test(value || "")
+}
 
 function scrollToBottom(behavior: ScrollBehavior = "smooth") {
   if (!listContainer.value) {

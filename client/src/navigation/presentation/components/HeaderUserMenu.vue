@@ -311,7 +311,7 @@ const systemActions = computed(() => {
   position: absolute;
   right: 0;
   top: 100%;
-  z-index: 50;
+  z-index: 110;
   margin-top: 8px;
   width: 318px;
   overflow: hidden;

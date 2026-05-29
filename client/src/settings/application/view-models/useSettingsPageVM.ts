@@ -2,6 +2,10 @@
 
 import { toValue, type MaybeRefOrGetter } from "vue"
 import { createApiSettingsRepository } from "../../infrastructure/repositories/ApiSettingsRepository"
+import {
+  normalizeLocationSelection,
+  type LocationSelection,
+} from "../../../location/domain/types/location.types"
 import type {
   SettingSession,
   SettingsBlockedUser,
@@ -179,6 +183,18 @@ const toHtmlBirthday = (value: unknown) => {
 const isTrue = (value: unknown) =>
   value === true || value === 1 || value === "1" || value === "on" || value === "enabled"
 
+const toNullableNumber = (value: unknown) => {
+  const normalized = Number(value)
+
+  return Number.isFinite(normalized) ? normalized : null
+}
+
+const isLocationValue = (value: SettingsFieldValue): value is LocationSelection =>
+  typeof value === "object"
+  && value !== null
+  && !(typeof File !== "undefined" && value instanceof File)
+  && "address" in value
+
 const hasAdminSettingsRights = (user: SettingsUser | null) =>
   user?.role === "admin" || user?.role === "moderator"
 
@@ -266,7 +282,11 @@ const profilePage = (t: SettingTranslate, user: SettingsUser | null): SettingPag
       field("about", fieldText(t, "about"), "textarea", user?.about ?? ""),
       field("working", fieldText(t, "working"), "text", user?.working ?? ""),
       field("working_link", fieldText(t, "workingLink"), "url", user?.working_link ?? ""),
-      field("address", fieldText(t, "address"), "text", user?.address ?? ""),
+      field("address", fieldText(t, "address"), "location", normalizeLocationSelection({
+        address: user?.address ?? "",
+        lat: toNullableNumber(user?.lat),
+        lng: toNullableNumber(user?.lng),
+      }), undefined, { span: "full" }),
       field("school", fieldText(t, "school"), "text", user?.school ?? ""),
       field("relationship", fieldText(t, "relationship"), "select", optionLabel(t, relationshipOptions, user?.relationship_id), optionLabels(t, relationshipOptions)),
       field("completed", fieldText(t, "schoolCompleted"), "select", optionLabel(t, binaryOptions, isTrue(user?.school_completed) ? "1" : "0"), optionLabels(t, binaryOptions)),
@@ -605,6 +625,21 @@ const mapFieldsForSection = (
   const payload: Record<string, SettingsFieldValue> = {}
 
   for (const [key, value] of Object.entries(fields)) {
+    if (key === "address" && isLocationValue(value)) {
+      const location = normalizeLocationSelection(value)
+      payload.address = location.address
+
+      if (location.lat !== null) {
+        payload.lat = location.lat
+      }
+
+      if (location.lng !== null) {
+        payload.lng = location.lng
+      }
+
+      continue
+    }
+
     switch (key) {
       case "gender":
         payload[key] = optionValue(t, genderOptions, value)

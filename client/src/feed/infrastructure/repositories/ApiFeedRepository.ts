@@ -13,6 +13,8 @@ import type {
   FeedPokeActionResult,
   FeedPokeRecord,
   FeedPostActionResult,
+  FeedPostRecord,
+  FeedPostReactionsResponse,
   FeedPostsResponse,
   FeedStoryActionResult,
   FeedStoryReactionType,
@@ -78,6 +80,13 @@ export function createApiFeedRepository(): FeedRepository {
     },
     async getPokes() {
       return await client.get<FeedPokeRecord[]>(apiRoutes.feed.poke)
+    },
+    async getPostReactions(input) {
+      return await client.get<FeedPostReactionsResponse>(apiRoutes.feed.posts.reactions(input.postId), {
+        reaction: input.reaction && input.reaction !== "all" ? input.reaction : undefined,
+        limit: input.limit,
+        offset: input.offset,
+      })
     },
     async getPostComments(input) {
       return await client.get<FeedCommentRecord[]>(apiRoutes.feed.comments.list, {

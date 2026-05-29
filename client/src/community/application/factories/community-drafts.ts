@@ -1,5 +1,6 @@
 // Description: Creates normalized community draft objects without UI-only fallback copy.
 
+import { normalizeLocationSelection } from "../../../location/domain/types/location.types"
 import { getDefaultCommunityCategory, getDefaultCommunityPageCategory } from "../../domain/services/community-helpers.service"
 import type {
   CommunityDraft,
@@ -51,6 +52,12 @@ export function createCommunityPageSettingsDraft(
     summary: page?.summary ?? "",
     website: page?.website ?? "",
     locationLabel: page?.locationLabel ?? "",
+    location: normalizeLocationSelection({
+      address: page?.locationLabel ?? "",
+      lat: page?.lat ?? null,
+      lng: page?.lng ?? null,
+      placeId: page?.placeId ?? "",
+    }),
     category: page?.category ?? getDefaultCommunityPageCategory(),
     ctaLabel: page?.ctaLabel ?? "",
     responseLabel: page?.responseLabel ?? "",
@@ -73,5 +80,11 @@ export function createCommunityPageDraft(page?: CommunityPageRecord): CommunityD
     description: page?.summary ?? "",
     privacy: "public",
     category: page?.category ?? getDefaultCommunityPageCategory(),
+    location: normalizeLocationSelection({
+      address: page?.locationLabel ?? "",
+      lat: page?.lat ?? null,
+      lng: page?.lng ?? null,
+      placeId: page?.placeId ?? "",
+    }),
   }
 }
