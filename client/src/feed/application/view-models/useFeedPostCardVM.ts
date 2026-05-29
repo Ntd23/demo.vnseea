@@ -153,10 +153,13 @@ export function useFeedPostCardVM(
     },
   }
 
+  let lastPostId: number | null = null
+
   watch(
     post,
     (value) => {
       if (!value) {
+        lastPostId = null
         localComments.value = []
         localPollOptions.value = []
         localReactionSummaries.value = []
@@ -168,7 +171,8 @@ export function useFeedPostCardVM(
         postReactionTrayOpen.value = false
         actionState.value = "idle"
         actionMessage.value = ""
-        showComments.value = false
+        // Do not reset showComments.value to false here to prevent momentary reactivity/null glitches in parent-rendered lists from closing it.
+        // If a different post is loaded later, isDifferentPost check below will handle resetting showComments correctly.
         showShare.value = false
         reactionModalOpen.value = false
         reactionUsersLoading.value = false
@@ -177,6 +181,9 @@ export function useFeedPostCardVM(
         currentMediaIndex.value = 0
         return
       }
+
+      const isDifferentPost = lastPostId !== null && String(lastPostId) !== String(value.id)
+      lastPostId = value.id
 
       localComments.value = [...value.comments]
       localPollOptions.value = [...value.pollOptions]
@@ -190,16 +197,19 @@ export function useFeedPostCardVM(
       sharesCount.value = value.stats.shares
       liked.value = value.isLiked
       selectedPostReaction.value = value.reaction
-      postReactionTrayOpen.value = false
-      actionState.value = "idle"
-      actionMessage.value = ""
-      showComments.value = false
-      showShare.value = false
-      reactionModalOpen.value = false
-      reactionUsersLoading.value = false
-      activeReactionFilter.value = "all"
-      lightboxOpen.value = false
-      currentMediaIndex.value = 0
+
+      if (isDifferentPost) {
+        postReactionTrayOpen.value = false
+        actionState.value = "idle"
+        actionMessage.value = ""
+        showComments.value = false
+        showShare.value = false
+        reactionModalOpen.value = false
+        reactionUsersLoading.value = false
+        activeReactionFilter.value = "all"
+        lightboxOpen.value = false
+        currentMediaIndex.value = 0
+      }
     },
     { deep: true, immediate: true },
   )
@@ -246,7 +256,11 @@ export function useFeedPostCardVM(
       return
     }
 
-    await reactToPost(defaultFeedStoryReaction.value)
+    if (selectedPostReaction.value) {
+      await reactToPost(selectedPostReaction.value)
+    } else {
+      await reactToPost(defaultFeedStoryReaction.value)
+    }
   }
 
   async function toggleLike() {
@@ -262,6 +276,7 @@ export function useFeedPostCardVM(
 
     liking.value = true
     const hadLocalReaction = Boolean(selectedPostReaction.value)
+    const isRemoving = hadLocalReaction && selectedPostReaction.value === reaction
 
     try {
       await repository.runPostAction({
@@ -270,17 +285,42 @@ export function useFeedPostCardVM(
         reaction,
       })
 
-      if (!hadLocalReaction) {
-        likesCount.value += 1
-      }
+      if (isRemoving) {
+        likesCount.value = Math.max(0, likesCount.value - 1)
+        localReactionSummaries.value = updateReactionSummaries(
+          localReactionSummaries.value,
+          null,
+          selectedPostReaction.value,
+        )
+        selectedPostReaction.value = null
+        liked.value = false
 
-      localReactionSummaries.value = updateReactionSummaries(
-        localReactionSummaries.value,
-        reaction,
-        selectedPostReaction.value,
-      )
-      selectedPostReaction.value = reaction
-      liked.value = true
+        if (post.value) {
+          post.value.isLiked = false
+          post.value.reaction = null
+          post.value.stats.likes = likesCount.value
+          post.value.reactions = [...localReactionSummaries.value]
+        }
+      } else {
+        if (!hadLocalReaction) {
+          likesCount.value += 1
+        }
+
+        localReactionSummaries.value = updateReactionSummaries(
+          localReactionSummaries.value,
+          reaction,
+          selectedPostReaction.value,
+        )
+        selectedPostReaction.value = reaction
+        liked.value = true
+
+        if (post.value) {
+          post.value.isLiked = true
+          post.value.reaction = reaction
+          post.value.stats.likes = likesCount.value
+          post.value.reactions = [...localReactionSummaries.value]
+        }
+      }
       postReactionTrayOpen.value = false
     }
     catch (error) {
@@ -328,8 +368,12 @@ export function useFeedPostCardVM(
       }
 
       localComments.value = [...localComments.value, comment]
+      if (post.value) {
+        post.value.comments = [...localComments.value]
+        post.value.stats.comments = localComments.value.length
+      }
       showComments.value = true
-      await refreshComments()
+      void refreshComments()
       actionState.value = "success"
       actionMessage.value = t("feed.postCard.commentAddedMessage")
 
@@ -367,6 +411,9 @@ export function useFeedPostCardVM(
 
       if (response.pollOptions?.length) {
         localPollOptions.value = response.pollOptions
+        if (post.value) {
+          post.value.pollOptions = [...response.pollOptions]
+        }
       }
       else {
         const isRemovingCurrentVote = localPollOptions.value.some(option => option.id === optionId && option.selected)
@@ -388,6 +435,9 @@ export function useFeedPostCardVM(
           ...option,
           percentage: totalVotes > 0 ? Math.round((option.votes / totalVotes) * 100) : 0,
         }))
+        if (post.value) {
+          post.value.pollOptions = [...localPollOptions.value]
+        }
       }
     }
     catch (error) {
@@ -417,6 +467,10 @@ export function useFeedPostCardVM(
 
       if (comments.length) {
         localComments.value = comments
+        if (post.value) {
+          post.value.comments = [...comments]
+          post.value.stats.comments = comments.length
+        }
       }
     }
     catch (error) {
@@ -444,7 +498,7 @@ export function useFeedPostCardVM(
 
   function updateReactionSummaries(
     summaries: FeedPostReactionSummary[],
-    nextReaction: FeedStoryReactionType,
+    nextReaction: FeedStoryReactionType | null,
     previousReaction: FeedStoryReactionType | null,
   ) {
     const countsByReaction = new Map<FeedStoryReactionType, number>()
@@ -453,11 +507,11 @@ export function useFeedPostCardVM(
       countsByReaction.set(summary.reaction, summary.count)
     }
 
-    if (previousReaction && previousReaction !== nextReaction) {
+    if (previousReaction) {
       countsByReaction.set(previousReaction, Math.max(0, (countsByReaction.get(previousReaction) ?? 0) - 1))
     }
 
-    if (!previousReaction || previousReaction !== nextReaction) {
+    if (nextReaction && nextReaction !== previousReaction) {
       countsByReaction.set(nextReaction, (countsByReaction.get(nextReaction) ?? 0) + 1)
     }
 

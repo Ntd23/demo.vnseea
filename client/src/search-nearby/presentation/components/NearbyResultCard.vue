@@ -17,9 +17,6 @@
     <div class="nearby-result-card__content">
       <div class="nearby-result-card__meta-row">
         <span class="nearby-result-card__distance">{{ distanceLabel }}</span>
-        <span class="nearby-result-card__type">
-          {{ item.type === "page" ? "Trang" : "Người dùng" }}
-        </span>
       </div>
       <h2 class="nearby-result-card__title">{{ item.title }}</h2>
       <p class="nearby-result-card__subtitle">{{ item.subtitle }}</p>
@@ -29,9 +26,22 @@
       </p>
 
       <div class="nearby-result-card__actions">
-        <NuxtLink class="nearby-result-card__action" :to="item.href">
-          {{ item.type === "page" ? "Mở trang" : "Xem hồ sơ" }}
-        </NuxtLink>
+        <button
+          v-if="item.type === 'page'"
+          class="nearby-result-card__action"
+          type="button"
+          @click.stop="$emit('pin', item)"
+        >
+          {{ item.pinned ? "Bỏ ghim" : "Ghim" }}
+        </button>
+        <button
+          v-else
+          class="nearby-result-card__action"
+          type="button"
+          @click.stop="$emit('focusOrigin')"
+        >
+          Vị trí của tôi
+        </button>
         <button
           class="nearby-result-card__action nearby-result-card__action--primary"
           type="button"
@@ -39,7 +49,7 @@
         >
           Chỉ đường
         </button>
-        <button class="nearby-result-card__action" type="button" @click.stop="copyLink">
+        <button class="nearby-result-card__action" type="button" @click.stop="shareResult">
           Chia sẻ
         </button>
       </div>
@@ -57,6 +67,8 @@ const props = defineProps<{
 
 defineEmits<{
   select: [item: NearbySearchItem]
+  focusOrigin: []
+  pin: [item: NearbySearchItem]
   directions: [item: NearbySearchItem]
 }>()
 
@@ -81,28 +93,41 @@ const distanceLabel = computed(() => {
 const coordinateLabel = computed(() => {
   if (props.item.lat === null || props.item.lng === null) return ""
 
-  return `${props.item.lat}, ${props.item.lng}`
+  return `${props.item.lat},${props.item.lng}`
 })
 
-async function copyLink() {
-  if (!import.meta.client || !navigator.clipboard) {
+async function shareResult() {
+  if (!import.meta.client) {
     return
   }
 
-  const url = new URL(props.item.href, window.location.origin).toString()
-  await navigator.clipboard.writeText(url).catch(() => {})
+  const detailUrl = props.item.type === "place"
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(props.item.locationLabel || props.item.title)}`
+    : new URL(props.item.href, window.location.origin).toString()
+  const payload = {
+    title: props.item.title,
+    text: props.item.locationLabel || props.item.subtitle || props.item.title,
+    url: detailUrl,
+  }
+
+  if (navigator.share) {
+    await navigator.share(payload).catch(() => {})
+    return
+  }
+
+  await navigator.clipboard?.writeText(detailUrl).catch(() => {})
 }
 </script>
 
 <style scoped>
 .nearby-result-card {
   display: grid;
-  grid-template-columns: 76px minmax(0, 1fr);
-  gap: 22px;
-  min-width: min(100%, 560px);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  background: color-mix(in srgb, var(--bg-surface) 93%, transparent);
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 20px;
+  min-width: min(100%, 1220px);
+  border: 2px solid color-mix(in srgb, var(--bg-brand) 22%, var(--border-default));
+  border-radius: 32px;
+  background: color-mix(in srgb, var(--bg-surface) 96%, transparent);
   box-shadow: var(--shadow-lg);
   cursor: pointer;
   padding: 20px;
@@ -118,8 +143,8 @@ async function copyLink() {
 
 .nearby-result-card__avatar {
   display: flex;
-  height: 76px;
-  width: 76px;
+  height: 84px;
+  width: 84px;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -146,31 +171,22 @@ async function copyLink() {
   gap: 8px;
 }
 
-.nearby-result-card__distance,
-.nearby-result-card__type {
+.nearby-result-card__distance {
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
+  background: var(--bg-surface-active);
+  color: var(--text-link);
   font-size: var(--text-caption);
   font-weight: var(--weight-extrabold);
   padding: 6px 12px;
 }
 
-.nearby-result-card__distance {
-  background: var(--bg-surface-active);
-  color: var(--text-link);
-}
-
-.nearby-result-card__type {
-  background: var(--bg-muted);
-  color: var(--color-secondary-600);
-}
-
 .nearby-result-card__title {
-  margin-top: 14px;
+  margin-top: 10px;
   overflow: hidden;
   color: var(--text-primary);
-  font-size: 24px;
+  font-size: 28px;
   font-weight: var(--weight-extrabold);
   line-height: 1.1;
   text-overflow: ellipsis;
@@ -203,16 +219,16 @@ async function copyLink() {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 18px;
 }
 
 .nearby-result-card__action {
   display: inline-flex;
-  min-height: 46px;
+  min-height: 54px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
+  border-radius: 18px;
   background: var(--color-secondary-50);
   color: var(--color-secondary-800);
   cursor: pointer;

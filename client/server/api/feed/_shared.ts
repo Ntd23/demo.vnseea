@@ -887,7 +887,7 @@ const mapCommentRecord = (
     authorAvatarUrl: resolveMediaUrl(firstString(publisher, ["avatar", "avatar_full"])),
     authorPath: username ? `/@${username}` : undefined,
     role: firstString(publisher, ["working", "school"]) || author,
-    text: stripHtml(firstString(entity, ["text", "Orginaltext", "comment"])),
+    text: stripHtml(firstString(entity, ["Orginaltext", "text", "comment"])),
     time: firstString(entity, ["time_text", "posted"]) || formatBackendTimestamp(entity.time),
     attachment,
     reactionsCount: firstNumber(reaction, ["count", "reactions_count", "total"]),
@@ -986,7 +986,7 @@ export const mapPostRecord = (
     stats: {
       likes: postReaction.count || firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
       comments: firstNumber(entity, ["post_comments", "comments", "comments_count", "comments_count_total"]),
-      shares: firstNumber(entity, ["post_shares", "shares", "shares_count"]),
+      shares: firstNumber(entity, ["post_share", "post_shares", "shares", "shares_count"]),
       views: firstNumber(entity, ["post_views", "view_count", "views"]),
     },
     isLive,

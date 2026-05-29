@@ -17,7 +17,7 @@
               }"
               @input="handleTypingInput"
               @focus="handleTypingFocus"
-              @keydown.enter.exact.prevent="submitMessage"
+              @keydown.enter.exact.prevent="handleEnterKey"
             />
 
             <div class="chat-input-send-wrap">
@@ -274,6 +274,15 @@ function discardRecording() {
   clearRecording()
 }
 
+const isSubmitting = ref(false)
+
+function handleEnterKey(event: KeyboardEvent) {
+  if (event.isComposing) {
+    return
+  }
+  submitMessage()
+}
+
 function resetComposerState() {
   modelValue.value = ""
   attachmentFile.value = null
@@ -283,9 +292,11 @@ function resetComposerState() {
 }
 
 function submitMessage() {
-  if (!canSend.value) {
+  if (!canSend.value || isSubmitting.value) {
     return
   }
+
+  isSubmitting.value = true
 
   emit("send", {
     text: modelValue.value.trim(),
@@ -294,6 +305,10 @@ function submitMessage() {
   })
 
   resetComposerState()
+
+  setTimeout(() => {
+    isSubmitting.value = false
+  }, 300)
 }
 </script>
 

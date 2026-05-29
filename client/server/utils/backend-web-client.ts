@@ -15,7 +15,13 @@ export interface BackendWebRequest<TBody = BackendWebFormBody> {
 }
 
 const toFormBody = (body: unknown) => {
-  if (body instanceof URLSearchParams || body instanceof FormData) {
+  if (
+    !body ||
+    body instanceof URLSearchParams ||
+    body instanceof FormData ||
+    (body && (body as any).constructor?.name === "FormData") ||
+    typeof (body as any).append === "function"
+  ) {
     return body
   }
 

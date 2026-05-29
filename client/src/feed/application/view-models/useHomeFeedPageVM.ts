@@ -137,6 +137,10 @@ export function useHomeFeedPageVM(
     await fetchHome(true)
   })
 
+  function removePost(postId: number) {
+    posts.value = posts.value.filter(post => post.id !== postId)
+  }
+
   async function initialize() {
     await fetchHome(true)
     initialized.value = true
@@ -156,6 +160,7 @@ export function useHomeFeedPageVM(
     loadNewPosts,
     loadMore,
     handlePostCreated,
+    removePost,
     initialize,
   }
 }

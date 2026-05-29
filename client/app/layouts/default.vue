@@ -55,6 +55,7 @@ const isPageDetailPage = computed(() => route.path.startsWith("/p/"))
 const isBlogDetailPage = computed(() => route.path.startsWith("/read-blog/"))
 const isDirectoryPage = computed(() => route.path.startsWith("/directory"))
 const isCreateBlogPage = computed(() => route.path === appRoutes.createBlog)
+const isLivePage = computed(() => route.path === appRoutes.live)
 const isFundingPage = computed(() =>
   route.path === appRoutes.funding
   || route.path === appRoutes.createFunding
@@ -75,8 +76,9 @@ const showLeftSidebar = computed(() =>
   && !isFundingPage.value
   && !isForumPage.value
   && !isCreateBlogPage.value
+  && !isLivePage.value
 )
-const showRightSidebar = computed(() => !isReelsPage.value)
+const showRightSidebar = computed(() => !isReelsPage.value && !isLivePage.value)
 // HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.
 // Using a whitelist to avoid it leaking onto Groups, Events, Jobs, etc.
 const iconNavPages = new Set([
@@ -94,6 +96,10 @@ const shellClass = computed(() => {
 
   if (isCheckoutPage.value) {
     return 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_275px]'
+  }
+
+  if (isLivePage.value) {
+    return 'max-w-[1880px] px-0 md:px-0 xl:grid-cols-1'
   }
 
   // All content pages share same sidebar widths → no layout shift on navigation
@@ -117,6 +123,10 @@ const mainClass = computed(() => {
 
   if (isSearchPage.value) {
     return 'pb-8'
+  }
+
+  if (isLivePage.value) {
+    return 'pb-0'
   }
 
   return 'pb-10'

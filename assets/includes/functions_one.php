@@ -8559,7 +8559,7 @@ function Wo_GetPostReactionsTypes($object_id, $col = "post", $type = "post")
     if (mysqli_num_rows($sql_query_one)) {
         while ($fetched_data = mysqli_fetch_assoc($sql_query_one)) {
             $reactions[$fetched_data['reaction']] = 1;
-            if ($wo['loggedin'] && $fetched_data['user_id'] == $wo['user']['id']) {
+            if ($wo['loggedin'] && ($fetched_data['user_id'] == $wo['user']['id'] || $fetched_data['user_id'] == $wo['user']['user_id'])) {
                 $reactions['is_reacted'] = true;
                 $reactions['type'] = $fetched_data['reaction'];
             }

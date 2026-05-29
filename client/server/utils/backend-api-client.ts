@@ -41,7 +41,14 @@ export const getBackendBaseCandidates = (value: string) => {
 }
 
 const toBackendFormBody = (body: unknown) => {
-  if (!body || typeof body !== "object" || body instanceof FormData || body instanceof URLSearchParams) {
+  if (
+    !body ||
+    typeof body !== "object" ||
+    body instanceof FormData ||
+    body instanceof URLSearchParams ||
+    (body && body.constructor?.name === "FormData") ||
+    typeof (body as any).append === "function"
+  ) {
     return body
   }
 
@@ -137,7 +144,7 @@ export function createBackendApiClient(event: H3Event) {
     else {
       // For POST/PUT/PATCH, server_key can be in body
       const requestBody = toBackendFormBody(options.body)
-      if (requestBody instanceof FormData) {
+      if (requestBody && (requestBody instanceof FormData || requestBody.constructor?.name === "FormData" || typeof (requestBody as any).append === "function")) {
         finalBody = requestBody
         finalBody.append("server_key", String(runtimeConfig.backendServerKey))
       }

@@ -633,7 +633,7 @@
               :ui="{
                 base: 'chat-widget__mini-input-control',
               }"
-              @keydown.enter.exact.prevent="submitMiniMessage(miniSession)"
+              @keydown.enter.exact.prevent="handleMiniEnterKey($event, miniSession)"
             />
             <button
               type="button"
@@ -902,7 +902,12 @@ const miniBubbleReactionOptions = computed(() =>
     label: t(reaction.labelKey),
   })),
 )
+const miniSubmittingMap = ref<Record<string, boolean>>({})
+
 function canSubmitMiniMessage(session: MiniChatSessionView) {
+  if (miniSubmittingMap.value[session.contactId]) {
+    return false
+  }
   return !isMiniRecording.value
     && (
       session.canSend
@@ -1403,8 +1408,29 @@ function isMiniImageFileQuote(value?: string) {
   return /\.(png|jpe?g|webp|bmp|gif)$/i.test(value || "")
 }
 
+function handleMiniEnterKey(event: KeyboardEvent, session: MiniChatSessionView) {
+  if (event.isComposing) {
+    return
+  }
+  submitMiniMessage(session)
+}
+
 async function submitMiniMessage(session: MiniChatSessionView) {
-  const text = buildMiniReplyText(session.message.trim())
+  const contactId = session.contactId
+  if (miniSubmittingMap.value[contactId]) {
+    return
+  }
+
+  const trimmed = session.message.trim()
+  if (!trimmed && !activeMiniRecordDraft.value && !session.attachFile) {
+    return
+  }
+
+  miniSubmittingMap.value[contactId] = true
+
+  const text = buildMiniReplyText(trimmed)
+  session.message = ""
+
   await sendMiniMessage({
     contactId: session.contactId,
     textOverride: text,
@@ -1412,6 +1438,10 @@ async function submitMiniMessage(session: MiniChatSessionView) {
   })
   miniReplyTarget.value = null
   clearMiniRecording()
+
+  setTimeout(() => {
+    miniSubmittingMap.value[contactId] = false
+  }, 300)
 }
 
 async function sendMiniLike(session: MiniChatSessionView) {

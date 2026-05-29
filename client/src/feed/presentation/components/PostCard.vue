@@ -19,7 +19,7 @@
         :is-saved="post.isSaved"
         :is-owner="isOwner"
         :is-admin="isAdmin"
-        @menu-action="handleMenuAction"
+        @menu-action="onMenuAction"
       />
 
       <div
@@ -124,6 +124,8 @@
           @share="showShare = true"
         />
       </ClientOnly>
+
+      <FeedSharedPostCard v-else-if="post.sharedPost" :post="post.sharedPost" class="mt-4" />
 
       <FeedPostMediaGrid v-else-if="mediaItems.length" class="post-card__media" :items="mediaItems" @open="handleMediaOpen" />
 
@@ -448,7 +450,20 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   open: [index: number]
+  deleted: [postId: number]
+  hidden: [postId: number]
 }>()
+
+async function onMenuAction(action: string) {
+  await handleMenuAction(action)
+  if (actionState.value === "success") {
+    if (action === "delete") {
+      emit("deleted", props.post.id)
+    } else if (action === "hide") {
+      emit("hidden", props.post.id)
+    }
+  }
+}
 const commentComposerRef = ref<{
   focus: () => void
   insertMentionTrigger: () => void
