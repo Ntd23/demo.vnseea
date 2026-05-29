@@ -67,15 +67,14 @@
       </div>
 
       <!-- ── FULLSCREEN OVERLAYS ── -->
-      <UButton
-        :icon="isFullscreen ? 'i-ph-arrows-in-bold' : 'i-ph-arrows-out-bold'"
+      <button
+        type="button"
         :aria-label="isFullscreen ? t('pages.livePage.viewer.exitFullscreen') : t('pages.livePage.viewer.openFullscreen')"
         class="feed-live-player__fullscreen-btn"
-        :ui="{
-          base: 'rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-white hover:bg-white/20 hover:border-white/30 active:scale-90 transition-all duration-150 flex items-center justify-center shadow-lg',
-        }"
         @click="toggleFullscreen"
-      />
+      >
+        <UIcon :name="isFullscreen ? 'i-ph-arrows-in-bold' : 'i-ph-arrows-out-bold'" class="feed-live-player__fullscreen-icon" />
+      </button>
 
       <template v-if="isFullscreen">
         <!-- Bottom gradient -->
@@ -236,7 +235,7 @@
             size="2xs"
             :ui="{ base: 'flex-shrink-0' }"
           />
-          <span class="feed-live-player__activity-name">{{ item.username }}</span>
+          <span class="feed-live-player__activity-name">{{ item.username || item.author }}</span>
           <span v-if="item.kind === 'comment'" class="feed-live-player__activity-msg">{{ item.message }}</span>
           <span v-else-if="item.kind === 'joined'" class="feed-live-player__activity-msg feed-live-player__activity-msg--system">{{ t("pages.livePage.viewer.joinedActivity") }}</span>
           <span v-else class="feed-live-player__activity-msg feed-live-player__activity-msg--system">{{ t("pages.livePage.viewer.leftActivity") }}</span>
@@ -292,6 +291,7 @@ const isFullscreen = ref(false)
 const canHover = ref(false)
 const commentDraft = ref("")
 const commentSubmitting = ref(false)
+const reactionSubmitting = ref(false)
 const followPending = ref(false)
 const followedByViewer = ref(false)
 const activityItems = ref<import("../../../live/domain/types/live.types").LiveStudioComment[]>([])
@@ -422,14 +422,43 @@ function spawnFloatingReaction(src: string) {
   }, 2200)
 }
 
-function selectReaction(reaction: FeedStoryReactionType) {
+async function selectReaction(reaction: FeedStoryReactionType) {
+  if (reactionSubmitting.value) {
+    return
+  }
+
+  reactionSubmitting.value = true
   selectedReaction.value = reaction
   reactionTrayOpen.value = false
   const asset = feedReactionAssets.find(item => item.value === reaction)
   if (asset) {
     spawnFloatingReaction(asset.src)
   }
-  emit("react", reaction)
+
+  try {
+    try {
+      await feedRepository.runPostAction({
+        action: "reaction",
+        postId: props.postId,
+        reaction,
+      })
+    }
+    catch {
+      await feedRepository.runPostAction({
+        action: "like",
+        postId: props.postId,
+      })
+    }
+
+    liveReactionsCount.value += 1
+  }
+  catch (error) {
+    selectedReaction.value = null
+    joinError.value = error instanceof Error ? error.message : t("pages.livePage.viewer.commentError")
+  }
+  finally {
+    reactionSubmitting.value = false
+  }
 }
 
 function openReactionTrayForHover() {
@@ -682,16 +711,42 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 14px;
   right: 14px;
-  z-index: 30;
-  width: 36px;
-  height: 36px;
+  z-index: 80;
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.68);
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.feed-live-player__fullscreen-btn:hover {
+  background: rgba(15, 23, 42, 0.82);
+  border-color: rgba(255, 255, 255, 0.36);
+  transform: translateY(-1px);
+}
+
+.feed-live-player__fullscreen-btn:active {
+  transform: scale(0.96);
+}
+
+.feed-live-player__fullscreen-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .feed-live-player__stage--fullscreen .feed-live-player__fullscreen-btn {
   top: 20px;
   right: 20px;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
 }
 
 /* Viewer count pill */
@@ -920,6 +975,34 @@ onBeforeUnmount(() => {
   gap: 10px;
 }
 
+.feed-live-player__comment-reaction-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.feed-live-player__comment-reaction-tray {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 10px);
+  z-index: 32;
+  display: flex;
+  gap: 8px;
+  max-width: min(320px, calc(100vw - 48px));
+  overflow-x: auto;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.68);
+  padding: 8px 10px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, 0.24);
+}
+
+.feed-live-player__comment-selected-reaction {
+  display: block;
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
 .feed-live-player__stage--fullscreen .feed-live-player__comment-form {
   left: 24px;
   right: 24px;
@@ -944,9 +1027,9 @@ onBeforeUnmount(() => {
 
 .feed-live-player__activity-feed--fullscreen {
   left: 24px;
-  bottom: 88px;
+  bottom: 168px;
   width: 320px;
-  max-height: 220px;
+  max-height: min(240px, calc(100vh - 300px));
 }
 
 .feed-live-player__activity-item {
@@ -955,9 +1038,6 @@ onBeforeUnmount(() => {
   gap: 6px;
   padding: 5px 10px;
   border-radius: 999px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   animation: flp-fadeUp 0.3s var(--ease-default) both;
   max-width: 100%;
   overflow: hidden;

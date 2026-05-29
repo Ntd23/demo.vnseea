@@ -70,7 +70,7 @@ const normalizeType = (value: unknown): NearbySearchType => {
 const normalizeDistance = (value: unknown) => {
   const numeric = Number(value)
 
-  if (!Number.isFinite(numeric)) return 25
+  if (!Number.isFinite(numeric)) return 5
 
   return Math.min(Math.max(Math.round(numeric), 1), 1000)
 }

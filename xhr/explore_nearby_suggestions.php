@@ -44,6 +44,21 @@ if ($f == 'explore_nearby_suggestions') {
 			$origin_lng = null;
 		}
 	}
+	$column_exists = function($table, $column) use ($sqlConnect) {
+		static $cache = array();
+		$key = $table . ':' . $column;
+		if (isset($cache[$key])) {
+			return $cache[$key];
+		}
+		$table = preg_replace('/[^a-zA-Z0-9_]/', '', $table);
+		$column = Wo_Secure($column);
+		$query = mysqli_query($sqlConnect, "SHOW COLUMNS FROM `{$table}` LIKE '{$column}'");
+		$cache[$key] = ($query && mysqli_num_rows($query) > 0);
+		return $cache[$key];
+	};
+	$user_has_address = $column_exists(T_USERS, 'address');
+	$user_has_place_id = $column_exists(T_USERS, 'place_id');
+	$page_has_place_id = $column_exists(T_PAGES, 'place_id');
 
 	$has_origin = ($origin_lat !== null && $origin_lng !== null);
 	$max_distance_meters = $distance * 1000;
@@ -108,13 +123,34 @@ if ($f == 'explore_nearby_suggestions') {
 	$page_sql_where = " WHERE `active` = '1' AND `address` <> '' AND `lat` <> '' AND `lng` <> '' AND `lat` <> '0' AND `lng` <> '0'";
 
 	if ($keyword !== '') {
-		$user_sql_where .= " AND ((`username` LIKE '%{$keyword}%') OR CONCAT(`first_name`, ' ', `last_name`) LIKE '%{$keyword}%')";
-		$page_sql_where .= " AND ((`page_name` LIKE '%{$keyword}%') OR (`page_title` LIKE '%{$keyword}%') OR (`address` LIKE '%{$keyword}%'))";
+		$user_search = array(
+			"`username` LIKE '%{$keyword}%'",
+			"CONCAT(`first_name`, ' ', `last_name`) LIKE '%{$keyword}%'"
+		);
+		if ($user_has_address) {
+			$user_search[] = "`address` LIKE '%{$keyword}%'";
+		}
+		if ($user_has_place_id) {
+			$user_search[] = "`place_id` LIKE '%{$keyword}%'";
+		}
+		$page_search = array(
+			"`page_name` LIKE '%{$keyword}%'",
+			"`page_title` LIKE '%{$keyword}%'",
+			"`address` LIKE '%{$keyword}%'"
+		);
+		if ($page_has_place_id) {
+			$page_search[] = "`place_id` LIKE '%{$keyword}%'";
+		}
+		$user_sql_where .= " AND (" . implode(' OR ', $user_search) . ")";
+		$page_sql_where .= " AND (" . implode(' OR ', $page_search) . ")";
 	}
 
 	if ($wo['loggedin'] == true) {
 		$logged_user_id = Wo_Secure($wo['user']['user_id']);
 		$user_sql_where .= " AND `user_id` <> '{$logged_user_id}'";
+		if ($keyword === '' && ($type === 'all' || $type === 'user')) {
+			$user_sql_where .= " AND `user_id` IN (SELECT `following_id` FROM " . T_FOLLOWERS . " WHERE `follower_id` = '{$logged_user_id}' AND `following_id` <> '{$logged_user_id}' AND `active` = '1')";
+		}
 		$user_sql_where .= " AND `user_id` NOT IN (SELECT `blocked` FROM " . T_BLOCKS . " WHERE `blocker` = '{$logged_user_id}')";
 		$user_sql_where .= " AND `user_id` NOT IN (SELECT `blocker` FROM " . T_BLOCKS . " WHERE `blocked` = '{$logged_user_id}')";
 	}
@@ -140,7 +176,7 @@ if ($f == 'explore_nearby_suggestions') {
 				'id' => (int) $user['user_id'],
 				'title' => $user['name'],
 				'subtitle' => (!empty($user['username']) ? '@' . $user['username'] : ''),
-				'location' => '',
+				'location' => (!empty($user['address']) ? $user['address'] : ''),
 				'avatar' => (!empty($user['avatar']) ? $user['avatar'] : ''),
 				'url' => (!empty($user['url']) ? $user['url'] : ''),
 				'ajax_url' => (!empty($user['username']) ? '?link1=timeline&u=' . $user['username'] : ''),

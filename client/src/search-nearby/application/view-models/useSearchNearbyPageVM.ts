@@ -10,27 +10,9 @@ import type {
   NearbySearchType,
 } from "../../domain/types/search-nearby.types"
 
-const searchTypes: NearbySearchType[] = ["all", "user", "page"]
-
-const normalizeType = (value: unknown): NearbySearchType => {
-  const text = Array.isArray(value) ? String(value[0] || "") : String(value || "")
-
-  return searchTypes.includes(text as NearbySearchType) ? text as NearbySearchType : "all"
-}
-
-const normalizeDistance = (value: unknown) => {
-  const text = Array.isArray(value) ? value[0] : value
-  const numeric = Number(text)
-
-  if (!Number.isFinite(numeric)) return 25
-
-  return Math.min(Math.max(Math.round(numeric), 1), 1000)
-}
-
 const readString = (value: unknown) =>
   Array.isArray(value) ? String(value[0] || "") : String(value || "")
 
-const searchDebounceMs = 700
 const suggestionDebounceMs = 300
 const minSearchKeywordLength = 3
 
@@ -46,25 +28,24 @@ const emptyResponse = (): NearbySearchResponse => ({
 
 export function useSearchNearbyPageVM() {
   const route = useRoute()
-  const router = useRouter()
   const repository = createApiNearbySearchRepository()
 
   const searchText = ref(readString(route.query.q))
-  const selectedType = ref<NearbySearchType>(normalizeType(route.query.type))
-  const distanceKm = ref(normalizeDistance(route.query.distance))
+  const selectedType = ref<NearbySearchType>("user")
+  const distanceKm = ref(5)
   const selectedItemId = ref("")
   const originFocusKey = ref(0)
   const loading = ref(true)
   const hasLoadedOnce = ref(false)
   const errorMessage = ref("")
   const response = ref<NearbySearchResponse>(emptyResponse())
-  const debouncedSearchText = refDebounced(searchText, searchDebounceMs)
   const debouncedSuggestionText = refDebounced(searchText, suggestionDebounceMs)
   const suggestions = ref<NearbySearchItem[]>([])
   const suggestionsLoading = ref(false)
   const selectedSuggestionItem = shallowRef<NearbySearchItem | null>(null)
   const routeTargetItem = shallowRef<NearbySearchItem | null>(null)
   const routeErrorMessage = ref("")
+  const pinnedPageIds = ref<string[]>([])
   let requestSequence = 0
   let suggestionRequestSequence = 0
   let isApplyingSuggestion = false
@@ -75,13 +56,9 @@ export function useSearchNearbyPageVM() {
     { label: "Trang", value: "page" as const, icon: "i-ph-flag-fill" },
   ])
 
-  const debouncedKeyword = computed(() => debouncedSearchText.value.trim())
-  const shouldSearchNearby = computed(() =>
-    debouncedKeyword.value.length === 0 || debouncedKeyword.value.length >= minSearchKeywordLength,
-  )
   const nearbyQuery = computed<NearbySearchQuery>(() => ({
-    q: debouncedKeyword.value,
-    type: selectedType.value,
+    q: "",
+    type: "all",
     distanceKm: distanceKm.value,
     limit: 40,
   }))
@@ -92,21 +69,36 @@ export function useSearchNearbyPageVM() {
   )
   const suggestionQuery = computed<NearbySearchQuery>(() => ({
     q: suggestionKeyword.value,
-    type: selectedType.value,
+    type: "all",
     distanceKm: distanceKm.value,
     limit: 8,
   }))
 
-  const items = computed(() =>
-    selectedSuggestionItem.value ? [selectedSuggestionItem.value] : response.value.items,
+  const withPinnedState = (sourceItems: NearbySearchItem[]) =>
+    sourceItems.map(item => ({
+      ...item,
+      pinned: pinnedPageIds.value.includes(item.id),
+    }))
+
+  const mapItems = computed(() => {
+    const merged = [...response.value.items]
+    const selected = selectedSuggestionItem.value
+
+    if (selected && !merged.some(item => item.id === selected.id)) {
+      merged.unshift(selected)
+    }
+
+    return withPinnedState(merged)
+  })
+  const cardItems = computed(() =>
+    withPinnedState(selectedSuggestionItem.value ? [selectedSuggestionItem.value] : response.value.items),
   )
+  const items = mapItems
   const origin = computed(() => response.value.origin)
   const needsLocation = computed(() => response.value.status === "needs_location")
   const hasOrigin = computed(() => origin.value.lat !== null && origin.value.lng !== null)
-  const hasResults = computed(() => items.value.length > 0)
-  const isSearchInputSettling = computed(() =>
-    searchText.value.trim() !== debouncedSearchText.value.trim(),
-  )
+  const hasResults = computed(() => cardItems.value.length > 0)
+  const isSearchInputSettling = computed(() => false)
   const displayLoading = computed(() =>
     loading.value && !hasLoadedOnce.value && !isSearchInputSettling.value,
   )
@@ -123,20 +115,10 @@ export function useSearchNearbyPageVM() {
   const resultCountLabel = computed(() => `${items.value.length} kết quả`)
 
   const selectedItem = computed(() =>
-    items.value.find(item => item.id === selectedItemId.value) || null,
+    mapItems.value.find(item => item.id === selectedItemId.value) || null,
   )
 
   async function refresh() {
-    if (!shouldSearchNearby.value) {
-      return
-    }
-
-    if (selectedSuggestionItem.value) {
-      loading.value = false
-      hasLoadedOnce.value = true
-      return
-    }
-
     const requestId = ++requestSequence
     const requestQuery = { ...nearbyQuery.value }
 
@@ -146,7 +128,7 @@ export function useSearchNearbyPageVM() {
     try {
       const nextResponse = await repository.searchNearby(requestQuery)
 
-      if (requestId !== requestSequence || searchText.value.trim() !== requestQuery.q) {
+      if (requestId !== requestSequence) {
         return
       }
 
@@ -157,7 +139,7 @@ export function useSearchNearbyPageVM() {
       }
     }
     catch (error) {
-      if (requestId !== requestSequence || searchText.value.trim() !== requestQuery.q) {
+      if (requestId !== requestSequence) {
         return
       }
 
@@ -246,10 +228,30 @@ export function useSearchNearbyPageVM() {
     })
   }
 
+  function togglePinnedPage(item: NearbySearchItem) {
+    if (item.type !== "page") {
+      return
+    }
+
+    pinnedPageIds.value = pinnedPageIds.value.includes(item.id)
+      ? pinnedPageIds.value.filter(id => id !== item.id)
+      : [...pinnedPageIds.value, item.id]
+    selectedItemId.value = item.id
+  }
+
   function requestDirections(item: NearbySearchItem) {
+    isApplyingSuggestion = true
+    selectedSuggestionItem.value = item
     selectedItemId.value = item.id
     routeTargetItem.value = item
     routeErrorMessage.value = ""
+    originFocusKey.value += 1
+    suggestions.value = []
+    suggestionsLoading.value = false
+
+    nextTick(() => {
+      isApplyingSuggestion = false
+    })
   }
 
   function clearRoute() {
@@ -267,43 +269,38 @@ export function useSearchNearbyPageVM() {
     originFocusKey.value += 1
   }
 
+  function focusDeviceLocation(lat: number, lng: number) {
+    response.value = {
+      ...response.value,
+      status: "ready",
+      origin: {
+        address: "Vị trí hiện tại",
+        lat,
+        lng,
+      },
+    }
+    focusOrigin()
+  }
+
   function clearSearch() {
     searchText.value = ""
-    selectedType.value = "all"
-    distanceKm.value = 25
+    selectedType.value = "user"
+    distanceKm.value = 5
     suggestions.value = []
+    pinnedPageIds.value = []
     clearPinnedResult()
   }
 
-  function syncRoute() {
-    if (!shouldSearchNearby.value) {
-      return
-    }
-
-    const query: Record<string, string> = {}
-    const keyword = debouncedKeyword.value
-
-    if (keyword) query.q = keyword
-    if (selectedType.value !== "all") query.type = selectedType.value
-    if (distanceKm.value !== 25) query.distance = String(distanceKm.value)
-
-    void router.replace({ path: appRoutes.searchNearby, query })
-  }
-
   watch(
-    () => [route.query.q, route.query.type, route.query.distance],
+    () => route.query.q,
     () => {
       const nextSearch = readString(route.query.q)
-      const nextType = normalizeType(route.query.type)
-      const nextDistance = normalizeDistance(route.query.distance)
 
       if (nextSearch !== searchText.value) searchText.value = nextSearch
-      if (nextType !== selectedType.value) selectedType.value = nextType
-      if (nextDistance !== distanceKm.value) distanceKm.value = nextDistance
     },
   )
 
-  watch([searchText, selectedType, distanceKm], () => {
+  watch(searchText, () => {
     if (isApplyingSuggestion) {
       return
     }
@@ -317,12 +314,10 @@ export function useSearchNearbyPageVM() {
       clearRoute()
     }
   })
-  watch([debouncedSearchText, selectedType, distanceKm], syncRoute)
   watch(nearbyQuery, () => { void refresh() }, { immediate: import.meta.client })
   watch(suggestionQuery, () => { void refreshSuggestions() })
 
   return {
-    appRoutes,
     searchText,
     selectedType,
     distanceKm,
@@ -332,9 +327,12 @@ export function useSearchNearbyPageVM() {
     selectedSuggestionItem,
     routeTargetItem,
     routeErrorMessage,
+    pinnedPageIds,
     tabs,
     origin,
     items,
+    mapItems,
+    cardItems,
     suggestions,
     suggestionsLoading,
     loading,
@@ -352,10 +350,12 @@ export function useSearchNearbyPageVM() {
     selectType,
     selectItem,
     selectSuggestion,
+    togglePinnedPage,
     requestDirections,
     clearRoute,
     handleRouteError,
     focusOrigin,
+    focusDeviceLocation,
     clearSearch,
   }
 }
