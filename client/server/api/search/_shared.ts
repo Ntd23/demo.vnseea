@@ -49,6 +49,7 @@ export type SearchApiResult = {
   accent: string
   popularityScore: number
   recentScore: number
+  isFollowing?: boolean
 }
 
 export type SearchApiResponse = Record<SearchApiResultKind, SearchApiResult[]>
@@ -145,6 +146,7 @@ export function mapUsers(users: BackendSearchEntity[] = [], resolveMediaUrl: (va
       accent: "#0000ff",
       popularityScore: Number(followers || 0),
       recentScore: 100 - index,
+      isFollowing: Number(user.is_following ?? 0) === 1 || user.is_following === "yes" || user.is_following === true || Number(user.is_friend ?? 0) === 1 || user.is_friend === "yes",
     }
   })
 }

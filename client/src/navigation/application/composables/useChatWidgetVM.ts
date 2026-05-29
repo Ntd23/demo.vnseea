@@ -8,6 +8,11 @@ import type { MessageContact, MessageItem, MessageRecordDraft, MessageSendDraft,
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
 
 type ChatWidgetTab = "send" | "contacts" | "groups"
+type MiniChatDraft = {
+  text: string
+  file: File | null
+  record: MessageRecordDraft | null
+}
 type MiniChatSession = {
   contactId: string
   message: string
@@ -17,6 +22,7 @@ type MiniChatSession = {
   isSending: boolean
   minimized: boolean
   openedAt: number
+  sendQueue?: MiniChatDraft[]
 }
 type MiniChatSessionView = MiniChatSession & {
   contact: MessageContact
@@ -554,6 +560,7 @@ export function useChatWidgetVM() {
       isSending: false,
       minimized: false,
       openedAt: Date.now(),
+      sendQueue: [],
     }
 
     miniChatSessions.value = [
@@ -670,6 +677,40 @@ export function useChatWidgetVM() {
     }
   }
 
+  async function processMiniSendQueue(session: MiniChatSession, contact: MessageContact) {
+    if (!session.sendQueue || session.sendQueue.length === 0 || session.isSending) {
+      return
+    }
+
+    const draft = session.sendQueue[0]
+    session.isSending = true
+
+    try {
+      const uploadedRecord = draft.record
+        ? await uploadRecordDraft(draft.record)
+        : null
+      await sendMessageToContact(contact, {
+        text: draft.text,
+        file: draft.file,
+        record: uploadedRecord,
+      }, session)
+
+      session.sendQueue.shift()
+    }
+    catch {
+      toast.add({
+        title: t("navigation.chatWidget.sendErrorTitle"),
+        description: t("navigation.chatWidget.sendErrorDescription"),
+        color: "error",
+      })
+      session.sendQueue.shift()
+    }
+    finally {
+      session.isSending = false
+      void processMiniSendQueue(session, contact)
+    }
+  }
+
   async function sendMiniMessage(options?: { contactId?: string, record?: MessageRecordDraft | null, textOverride?: string }) {
     const session = options?.contactId ? findMiniSession(options.contactId) : activeMiniSession.value
     const contact = session ? getSessionContact(session) : null
@@ -680,30 +721,20 @@ export function useChatWidgetVM() {
       return
     }
 
-    session.isSending = true
+    if (!session.sendQueue) {
+      session.sendQueue = []
+    }
 
-    try {
-      const uploadedRecord = recordDraft
-        ? await uploadRecordDraft(recordDraft)
-        : null
-      await sendMessageToContact(contact, {
-        text,
-        file: session.attachFile,
-        record: uploadedRecord,
-      }, session)
-      session.message = ""
-      session.attachFile = null
-    }
-    catch {
-      toast.add({
-        title: t("navigation.chatWidget.sendErrorTitle"),
-        description: t("navigation.chatWidget.sendErrorDescription"),
-        color: "error",
-      })
-    }
-    finally {
-      session.isSending = false
-    }
+    session.sendQueue.push({
+      text,
+      file: session.attachFile,
+      record: recordDraft,
+    })
+
+    session.message = ""
+    session.attachFile = null
+
+    void processMiniSendQueue(session, contact)
   }
 
   async function reactToMiniMessage(messageId: number, reaction: FeedStoryReactionType) {

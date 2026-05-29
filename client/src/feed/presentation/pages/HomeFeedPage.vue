@@ -85,7 +85,13 @@
     </Transition>
 
     <div class="home-feed__posts">
-      <FeedPostCard v-for="post in visiblePosts" :key="post.id" :post="post" />
+      <FeedPostCard
+        v-for="post in visiblePosts"
+        :key="post.id"
+        :post="post"
+        @deleted="removePost"
+        @hidden="removePost"
+      />
     </div>
 
     <div class="home-feed__load-more">
@@ -126,6 +132,7 @@ const {
   loadNewPosts,
   loadMore,
   handlePostCreated,
+  removePost,
   initialize,
 } = useHomeFeedPageVM()
 

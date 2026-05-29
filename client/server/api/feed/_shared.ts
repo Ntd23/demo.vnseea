@@ -986,7 +986,7 @@ export const mapPostRecord = (
     stats: {
       likes: postReaction.count || firstNumber(entity, ["post_likes", "likes", "likes_count", "likes_count_total"]),
       comments: firstNumber(entity, ["post_comments", "comments", "comments_count", "comments_count_total"]),
-      shares: firstNumber(entity, ["post_shares", "shares", "shares_count"]),
+      shares: firstNumber(entity, ["post_share", "post_shares", "shares", "shares_count"]),
       views: firstNumber(entity, ["post_views", "view_count", "views"]),
     },
     isLive,

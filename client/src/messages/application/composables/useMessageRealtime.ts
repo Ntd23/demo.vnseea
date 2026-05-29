@@ -256,6 +256,11 @@ export function useMessageRealtime(options: MessageRealtimeOptions) {
         connected.value = true
         pollingFallbackActive.value = false
         stopPolling()
+        
+        const sessionHash = useCookie("user_id").value
+        if (sessionHash) {
+          realtimeSocket.emit("join", { user_id: sessionHash })
+        }
       })
 
       realtimeSocket.on("disconnect", () => {
