@@ -22,10 +22,14 @@ const props = defineProps<{
   selectedItemId: string
   originFocusKey: number
   routeTargetItem: NearbySearchItem | null
+  pinnedPageIds?: string[]
+  zoomInKey?: number
+  zoomOutKey?: number
 }>()
 
 const emit = defineEmits<{
   select: [item: NearbySearchItem]
+  directions: [item: NearbySearchItem]
   routeError: [message: string]
 }>()
 
@@ -37,9 +41,11 @@ const markerConstructor = shallowRef<typeof google.maps.Marker | null>(null)
 const directionsServiceConstructor = shallowRef<typeof google.maps.DirectionsService | null>(null)
 const directionsRendererConstructor = shallowRef<typeof google.maps.DirectionsRenderer | null>(null)
 const directionsRenderer = shallowRef<google.maps.DirectionsRenderer | null>(null)
+const placesService = shallowRef<google.maps.places.PlacesService | null>(null)
 let routeRequestSequence = 0
 
 const { load } = useScriptGoogleMaps({
+  libraries: ["places"],
   trigger: "manual",
 })
 
@@ -115,15 +121,113 @@ function clearRoute() {
   }
 }
 
-function createMarkerIcon(color: string, selected = false): google.maps.Symbol {
+function createPinIcon(color: string, selected = false): google.maps.Icon {
+  const width = selected ? 42 : 38
+  const height = selected ? 54 : 48
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 38 48">
+      <path d="M19 46S3 28.5 3 17.5C3 8.4 10.2 1 19 1s16 7.4 16 16.5C35 28.5 19 46 19 46Z" fill="${color}" stroke="#fff" stroke-width="3"/>
+      <circle cx="19" cy="17" r="8" fill="#fff"/>
+    </svg>
+  `.trim()
+
   return {
-    path: google.maps.SymbolPath.CIRCLE,
-    fillColor: color,
-    fillOpacity: 1,
-    scale: selected ? 12 : 10,
-    strokeColor: "#ffffff",
-    strokeWeight: selected ? 4 : 3,
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new window.google.maps.Size(width, height),
+    anchor: new window.google.maps.Point(width / 2, height),
+    labelOrigin: new window.google.maps.Point(width + 34, 17),
   }
+}
+
+function createOriginIcon(selected = false): google.maps.Icon {
+  const size = selected ? 50 : 46
+  const arrowScale = selected ? 1 : 0.94
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 50 50">
+      <circle cx="25" cy="25" r="22" fill="#2563eb" fill-opacity="0.18"/>
+      <circle cx="25" cy="25" r="16" fill="#ffffff" stroke="#2563eb" stroke-width="4"/>
+      <g transform="translate(25 25) scale(${arrowScale}) rotate(45) translate(-25 -25)">
+        <path d="M25 12 36 36 25 31 14 36 25 12Z" fill="#2563eb"/>
+      </g>
+    </svg>
+  `.trim()
+
+  return {
+    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
+    scaledSize: new window.google.maps.Size(size, size),
+    anchor: new window.google.maps.Point(size / 2, size / 2),
+  }
+}
+
+function isMobileViewport() {
+  return import.meta.client && window.matchMedia("(max-width: 760px)").matches
+}
+
+function calculateDistanceMeters(lat: number, lng: number) {
+  if (props.origin.lat === null || props.origin.lng === null) {
+    return null
+  }
+
+  const earthRadiusMeters = 6371000
+  const toRad = (value: number) => value * Math.PI / 180
+  const latFrom = toRad(props.origin.lat)
+  const lngFrom = toRad(props.origin.lng)
+  const latTo = toRad(lat)
+  const lngTo = toRad(lng)
+  const latDelta = latTo - latFrom
+  const lngDelta = lngTo - lngFrom
+  const angle = 2 * Math.asin(Math.sqrt(
+    Math.sin(latDelta / 2) ** 2
+    + Math.cos(latFrom) * Math.cos(latTo) * Math.sin(lngDelta / 2) ** 2,
+  ))
+
+  return Math.round(earthRadiusMeters * angle)
+}
+
+function handleGooglePoiClick(event: google.maps.MapMouseEvent & { placeId?: string, stop?: () => void }) {
+  const placeId = event.placeId
+
+  if (!placeId || !placesService.value) {
+    return
+  }
+
+  event.stop?.()
+  placesService.value.getDetails(
+    {
+      placeId,
+      fields: ["formatted_address", "geometry", "place_id", "name"],
+    },
+    (place, status) => {
+      const okStatus = window.google?.maps?.places?.PlacesServiceStatus?.OK
+
+      if (status !== okStatus || !place?.geometry?.location) {
+        emit("routeError", "Không đọc được địa điểm Google Maps này.")
+        return
+      }
+
+      const lat = place.geometry.location.lat()
+      const lng = place.geometry.location.lng()
+      const title = String(place.name || place.formatted_address || "Google Maps").trim()
+      const address = String(place.formatted_address || title).trim()
+      const item: NearbySearchItem = {
+        id: `place-${place.place_id || placeId}`,
+        backendId: 0,
+        type: "place",
+        title,
+        subtitle: "Google Maps",
+        description: "",
+        locationLabel: address,
+        avatarUrl: "",
+        href: `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(String(place.place_id || placeId))}&query=${encodeURIComponent(address)}`,
+        lat,
+        lng,
+        distanceMeters: calculateDistanceMeters(lat, lng),
+      }
+
+      emit("select", item)
+      emit("directions", item)
+    },
+  )
 }
 
 function fitMarkers() {
@@ -144,13 +248,19 @@ function fitMarkers() {
 
   if (coordinates.length <= 1) {
     map.setCenter(currentCenter.value)
-    map.setZoom(13)
+    map.setZoom(isMobileViewport() ? 15 : 13)
     return
   }
 
   const bounds = new window.google.maps.LatLngBounds()
   coordinates.forEach(point => bounds.extend(point))
-  map.fitBounds(bounds, 80)
+  map.fitBounds(bounds, isMobileViewport() ? 48 : 80)
+
+  if (isMobileViewport()) {
+    window.google.maps.event.addListenerOnce(map, "idle", () => {
+      map.setZoom(Math.max(map.getZoom() ?? 13, 14))
+    })
+  }
 }
 
 function focusSelectedItem() {
@@ -176,6 +286,26 @@ function focusOrigin() {
   map.setZoom(Math.max(map.getZoom() ?? 14, 15))
 }
 
+function zoomIn() {
+  const map = mapInstance.value
+
+  if (!map) {
+    return
+  }
+
+  map.setZoom(Math.min((map.getZoom() ?? 13) + 1, 21))
+}
+
+function zoomOut() {
+  const map = mapInstance.value
+
+  if (!map) {
+    return
+  }
+
+  map.setZoom(Math.max((map.getZoom() ?? 13) - 1, 3))
+}
+
 function renderMarkers() {
   const map = mapInstance.value
   const Marker = markerConstructor.value
@@ -193,8 +323,8 @@ function renderMarkers() {
       map,
       position: { lat: props.origin.lat, lng: props.origin.lng },
       title: "Vị trí của tôi",
-      icon: createMarkerIcon("#2563eb", !props.selectedItemId),
-      zIndex: 20,
+      icon: createOriginIcon(!props.selectedItemId),
+      zIndex: 40,
     }))
   }
 
@@ -203,21 +333,28 @@ function renderMarkers() {
       return
     }
 
+    const pinnedPage = item.type === "page" && props.pinnedPageIds?.includes(item.id)
     const marker = new Marker({
       map,
       position: { lat: item.lat, lng: item.lng },
       title: item.title,
-      icon: createMarkerIcon(item.type === "page" ? "#059669" : "#dc2626", item.id === props.selectedItemId),
-      label: {
-        text: item.type === "page" ? "P" : "U",
-        color: "#ffffff",
-        fontSize: "11px",
-        fontWeight: "800",
-      },
+      icon: createPinIcon(item.type === "page" ? "#16a34a" : item.type === "place" ? "#2563eb" : "#ef4444", item.id === props.selectedItemId),
+      label: pinnedPage
+        ? {
+            text: item.title.slice(0, 22),
+            color: "#0f172a",
+            fontSize: "12px",
+            fontWeight: "800",
+            className: "nearby-map__pin-label",
+          }
+        : undefined,
       zIndex: item.id === props.selectedItemId ? 30 : 10,
     })
 
-    marker.addListener("click", () => emit("select", item))
+    marker.addListener("click", () => {
+      emit("select", item)
+      emit("directions", item)
+    })
     markers.push(marker)
   })
 
@@ -262,7 +399,7 @@ function renderRoute() {
   const renderer = new DirectionsRenderer({
     map,
     suppressMarkers: true,
-    preserveViewport: false,
+    preserveViewport: true,
     polylineOptions: {
       strokeColor: "#2563eb",
       strokeOpacity: 0.95,
@@ -309,19 +446,34 @@ async function initializeMap() {
     return
   }
 
+  // Đợi window.google.maps sẵn sàng (tối đa 5 giây)
+  let retries = 25
+  while (!window.google?.maps && retries > 0) {
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    retries--
+  }
+
   if (!window.google?.maps) {
     mapError.value = "Google Maps chua san sang."
     return
   }
 
-  let constructors: Awaited<ReturnType<typeof resolveMapConstructors>>
+  let constructors: Awaited<ReturnType<typeof resolveMapConstructors>> = null
+  retries = 15
 
-  try {
-    constructors = await resolveMapConstructors()
-  }
-  catch {
-    mapError.value = "Khong tai duoc Google Maps cho ten mien hien tai."
-    return
+  // Đợi thêm để resolveMapConstructors có thể lấy đủ các libraries như maps, marker, routes
+  while (retries > 0) {
+    try {
+      constructors = await resolveMapConstructors()
+      if (constructors) {
+        break
+      }
+    }
+    catch {
+      // Bỏ qua lỗi tạm thời khi các library chưa load xong
+    }
+    await new Promise((resolve) => setTimeout(resolve, 200))
+    retries--
   }
 
   if (!constructors) {
@@ -334,13 +486,17 @@ async function initializeMap() {
   directionsRendererConstructor.value = constructors.DirectionsRenderer
   mapInstance.value = new constructors.Map(mapElement.value, {
     center: currentCenter.value,
-    zoom: 13,
+    zoom: isMobileViewport() ? 15 : 13,
     clickableIcons: true,
-    fullscreenControl: true,
+    fullscreenControl: false,
     mapTypeControl: false,
     streetViewControl: false,
-    zoomControl: true,
+    zoomControl: false,
   })
+  placesService.value = window.google?.maps?.places?.PlacesService
+    ? new window.google.maps.places.PlacesService(mapInstance.value)
+    : null
+  mapInstance.value.addListener("click", handleGooglePoiClick)
 
   renderMarkers()
   renderRoute()
@@ -362,12 +518,23 @@ watch(
 )
 
 watch(
+  () => props.zoomInKey,
+  () => zoomIn(),
+)
+
+watch(
+  () => props.zoomOutKey,
+  () => zoomOut(),
+)
+
+watch(
   () => [
     props.routeTargetItem?.id,
     props.routeTargetItem?.lat,
     props.routeTargetItem?.lng,
     props.origin.lat,
     props.origin.lng,
+    props.pinnedPageIds?.join(","),
   ],
   () => renderRoute(),
 )
@@ -413,5 +580,29 @@ onBeforeUnmount(() => {
 .nearby-map__error-icon {
   height: 18px;
   width: 18px;
+}
+
+:global(.nearby-map__pin-label) {
+  position: relative;
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.16);
+  padding: 6px 10px;
+  transform: translateX(2px);
+  white-space: nowrap;
+}
+
+:global(.nearby-map__pin-label::before) {
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  border-bottom: 1px solid rgba(203, 213, 225, 0.9);
+  border-left: 1px solid rgba(203, 213, 225, 0.9);
+  background: rgba(255, 255, 255, 0.92);
+  content: "";
+  transform: translateY(-50%) rotate(45deg);
 }
 </style>

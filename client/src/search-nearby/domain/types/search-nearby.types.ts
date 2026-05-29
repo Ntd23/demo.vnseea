@@ -2,6 +2,7 @@
 
 export type NearbySearchType = "all" | "user" | "page"
 export type NearbySearchStatus = "ready" | "needs_location"
+export type NearbySearchItemType = Exclude<NearbySearchType, "all"> | "place"
 
 export interface NearbySearchQuery {
   q: string
@@ -19,7 +20,7 @@ export interface NearbySearchOrigin {
 export interface NearbySearchItem {
   id: string
   backendId: number
-  type: Exclude<NearbySearchType, "all">
+  type: NearbySearchItemType
   title: string
   subtitle: string
   description: string
@@ -29,6 +30,7 @@ export interface NearbySearchItem {
   lat: number | null
   lng: number | null
   distanceMeters: number | null
+  pinned?: boolean
 }
 
 export interface NearbySearchResponse {

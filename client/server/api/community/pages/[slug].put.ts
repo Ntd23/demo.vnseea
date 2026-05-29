@@ -144,7 +144,7 @@ export default defineEventHandler(async (event) => {
     formData.append("lng", numberText(body.lng || body.location?.lng))
   }
   if (String(body.placeId || body.place_id || body.location?.placeId || "").trim()) {
-    formData.append("place_id", String(body.placeId || body.place_id || body.location?.placeId || "").trim())
+    formData.append("page_place_id", String(body.placeId || body.place_id || body.location?.placeId || "").trim())
   }
   formData.append("company", String(body.ownerLabel || "").trim())
   appendOptionalUrl(formData, "website", body.website)

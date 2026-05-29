@@ -3,220 +3,37 @@
   <div class="studio">
     <div class="studio__shell studio__shell--2col">
 
-      <!-- ── LEFT SIDEBAR: Setup ───────────────────────── -->
-      <aside class="studio__sidebar">
-        <template v-if="bootstrapLoading">
-          <div class="studio__skeleton-stack">
-            <USkeleton class="h-16 w-full rounded-2xl" />
-            <USkeleton class="h-10 w-3/4 rounded-xl" />
-            <USkeleton class="h-10 w-full rounded-2xl" />
-            <USkeleton class="h-10 w-full rounded-2xl" />
-            <USkeleton class="h-24 w-full rounded-2xl" />
-            <USkeleton class="h-12 w-full rounded-2xl" />
-          </div>
-        </template>
-
-        <template v-else>
-          <!-- Alerts -->
-          <div v-if="bootstrapErrorMessage || blockedReasonMessage || errorMessage || statusMessage" class="studio__alerts">
-            <UAlert v-if="bootstrapErrorMessage" color="error" variant="soft" :title="t('pages.livePage.studio.bootstrapErrorTitle')" :description="bootstrapErrorMessage" class="rounded-2xl" />
-            <UAlert v-else-if="blockedReasonMessage" color="warning" variant="soft" :title="t('pages.livePage.studio.blockedTitle')" :description="blockedReasonMessage" class="rounded-2xl" />
-            <UAlert v-if="errorMessage" color="error" variant="soft" :title="t('pages.livePage.studio.errorTitle')" :description="errorMessage" class="rounded-2xl" />
-            <UAlert v-if="statusMessage" :color="liveState === 'offline' ? 'neutral' : 'primary'" variant="soft" :title="t('pages.livePage.studio.statusTitle')" :description="statusMessage" class="rounded-2xl" />
-          </div>
-
-          <!-- Host info -->
-          <div class="studio__host">
-            <UAvatar
-              :src="bootstrap.host?.avatarUrl || undefined"
-              :alt="bootstrap.host?.name || t('pages.livePage.studio.hostFallback')"
-              size="lg"
-              class="shrink-0"
-              :ui="{ rounded: 'rounded-2xl' }"
-            />
-            <div class="min-w-0">
-              <p class="studio__host-name">{{ bootstrap.host?.name || t("pages.livePage.studio.hostFallback") }}</p>
-              <p class="studio__host-role">{{ bootstrap.host?.note || t("pages.livePage.studio.hostRoleFallback") }}</p>
-            </div>
-          </div>
-
-          <!-- Setup fields -->
-          <div class="studio__fields">
-            <div class="studio__field">
-              <label class="studio__label">{{ t("pages.livePage.studio.destinationLabel") }}</label>
-              <div class="studio__select-wrap">
-                <USelect
-                  :model-value="bootstrap.destination"
-                  :items="destinationSelectOptions"
-                  value-key="value"
-                  label-key="label"
-                  disabled
-                  color="primary"
-                  size="xl"
-                  class="w-full"
-                  :ui="{ base: 'rounded-2xl bg-white border-slate-200' }"
-                />
-                <select v-if="false" :value="bootstrap.destination" disabled class="studio__select">
-                  <option v-for="opt in bootstrap.destinationOptions" :key="opt.value" :value="opt.value">
-                    {{ opt.value === "timeline" ? t("pages.livePage.studio.destinationTimeline") : opt.label }}
-                  </option>
-                </select>
-                <UIcon v-if="false" name="i-ph-caret-down-bold" class="studio__select-icon" />
-              </div>
-            </div>
-
-            <div class="studio__field">
-              <label class="studio__label">{{ t("pages.livePage.studio.privacyLabel") }}</label>
-              <div class="studio__select-wrap">
-                <USelect
-                  v-model="privacy"
-                  :items="privacySelectOptions"
-                  value-key="value"
-                  label-key="label"
-                  :disabled="Boolean(session)"
-                  color="primary"
-                  size="xl"
-                  class="w-full"
-                  :ui="{ base: 'rounded-2xl bg-white border-slate-200' }"
-                />
-                <select v-if="false" v-model="privacy" class="studio__select" :disabled="Boolean(session)">
-                  <option v-for="opt in bootstrap.privacyOptions" :key="opt.value" :value="opt.value">
-                    {{ privacyLabel(opt.value) }}
-                  </option>
-                </select>
-                <UIcon v-if="false" name="i-ph-caret-down-bold" class="studio__select-icon" />
-              </div>
-            </div>
-
-            <div class="studio__field">
-              <label class="studio__label">{{ t("pages.livePage.studio.titleLabel") }}</label>
-              <UInput
-                v-model="title"
-                :placeholder="t('pages.livePage.studio.titlePlaceholder')"
-                :disabled="Boolean(session)"
-                :ui="{ base: 'rounded-2xl bg-white border-slate-200 focus:border-blue-500' }"
-              />
-            </div>
-
-            <div class="studio__field">
-              <label class="studio__label">{{ t("pages.livePage.studio.descriptionLabel") }}</label>
-              <UTextarea
-                v-model="description"
-                :rows="3"
-                :placeholder="t('pages.livePage.studio.descriptionPlaceholder')"
-                :disabled="Boolean(session)"
-                :ui="{ base: 'rounded-2xl bg-white border-slate-200 focus:border-blue-500' }"
-              />
-            </div>
-
-            <div class="studio__field">
-              <label class="studio__label">{{ t("pages.livePage.studio.thumbnailLabel") }}</label>
-              <label class="studio__file-btn">
-                <UIcon name="i-ph-image-duotone" class="h-4 w-4 text-slate-500" />
-                <span>{{ thumbnailFile ? thumbnailFile.name : t("pages.livePage.studio.thumbnailButton") }}</span>
-                <input type="file" accept="image/*" class="sr-only" @change="handleThumbnailChange">
-              </label>
-            </div>
-          </div>
-
-          <!-- Device controls -->
-          <div class="studio__device-section">
-            <p class="studio__section-label">{{ t("pages.livePage.studio.devicesLabel") }}</p>
-            <div class="studio__field">
-              <label class="studio__label">{{ t("pages.livePage.studio.cameraLabel") }}</label>
-              <div class="studio__select-wrap">
-                <select
-                  v-model="selectedCameraId"
-                  class="studio__select"
-                  :disabled="roomConnected || previewLoading || cameraOptions.length === 0"
-                  @change="handleCameraChange"
-                >
-                  <option v-for="opt in cameraOptions" :key="opt.deviceId" :value="opt.deviceId">
-                    {{ opt.label }}
-                  </option>
-                </select>
-                <UIcon v-if="false" name="i-ph-caret-down-bold" class="studio__select-icon" />
-              </div>
-            </div>
-
-            <div class="studio__field">
-              <label class="studio__label">{{ t("pages.livePage.studio.microphoneLabel") }}</label>
-              <div class="studio__select-wrap">
-                <select
-                  v-model="selectedMicrophoneId"
-                  class="studio__select"
-                  :disabled="roomConnected || previewLoading || microphoneOptions.length === 0"
-                  @change="handleMicrophoneChange"
-                >
-                  <option v-for="opt in microphoneOptions" :key="opt.deviceId" :value="opt.deviceId">
-                    {{ opt.label }}
-                  </option>
-                </select>
-                <UIcon v-if="false" name="i-ph-caret-down-bold" class="studio__select-icon" />
-              </div>
-            </div>
-
-            <div class="studio__media-toggles">
-              <UButton
-                :icon="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'"
-                :label="videoMuted ? t('pages.livePage.studio.enableCamera') : t('pages.livePage.studio.disableCamera')"
-                :color="videoMuted ? 'error' : 'neutral'"
-                :variant="videoMuted ? 'soft' : 'outline'"
-                size="md"
-                class="studio__toggle-btn"
-                @click="toggleVideo"
-              />
-              <template v-if="false">
-                <UIcon :name="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'" class="h-4 w-4" />
-                <span>{{ videoMuted ? t("pages.livePage.studio.enableCamera") : t("pages.livePage.studio.disableCamera") }}</span>
-              </template>
-              <UButton
-                :icon="audioMuted ? 'i-ph-microphone-slash-bold' : 'i-ph-microphone-bold'"
-                :label="audioMuted ? t('pages.livePage.studio.enableMicrophone') : t('pages.livePage.studio.disableMicrophone')"
-                :color="audioMuted ? 'error' : 'neutral'"
-                :variant="audioMuted ? 'soft' : 'outline'"
-                size="md"
-                class="studio__toggle-btn"
-                @click="toggleAudio"
-              />
-              <template v-if="false">
-                <UIcon :name="audioMuted ? 'i-ph-microphone-slash-bold' : 'i-ph-microphone-bold'" class="h-4 w-4" />
-                <span>{{ audioMuted ? t("pages.livePage.studio.enableMicrophone") : t("pages.livePage.studio.disableMicrophone") }}</span>
-              </template>
-            </div>
-          </div>
-
-          <!-- Action button -->
-          <div class="studio__sidebar-action">
-            <UButton
-              v-if="!session"
-              size="xl"
-              color="primary"
-              class="w-full justify-center rounded-2xl font-bold"
-              :loading="starting"
-              :disabled="!canStart || previewLoading || !mediaSupported"
-              @click="handleStartLive"
-            >
-              <template #leading>
-                <UIcon name="i-ph-broadcast-bold" class="h-5 w-5" />
-              </template>
-              {{ t("pages.livePage.studio.startBroadcast") }}
-            </UButton>
-            <UButton
-              v-else
-              size="xl"
-              color="error"
-              class="w-full justify-center rounded-2xl font-bold"
-              :loading="ending"
-              @click="handleEndLive"
-            >
-              <template #leading>
-                <UIcon name="i-ph-stop-circle-bold" class="h-5 w-5" />
-              </template>
-              {{ t("pages.livePage.studio.endBroadcast") }}
-            </UButton>
-          </div>
-        </template>
+      <LiveSetupPanel
+        v-if="!session"
+        v-model:title="title"
+        v-model:privacy="privacy"
+        :bootstrap="bootstrap"
+        :bootstrap-loading="bootstrapLoading"
+        :bootstrap-error-message="bootstrapErrorMessage"
+        :blocked-reason-message="blockedReasonMessage"
+        :error-message="errorMessage"
+        :status-message="statusMessage"
+        :live-state="liveState"
+        :destination-select-options="destinationSelectOptions"
+        :privacy-select-options="privacySelectOptions"
+        :can-start="canStart"
+        :starting="starting"
+        :preview-loading="previewLoading"
+        :media-supported="mediaSupported"
+        :audio-muted="audioMuted"
+        :video-muted="videoMuted"
+        @toggle-video="toggleVideo"
+        @toggle-audio="toggleAudio"
+        @start-live="handleStartLive"
+      />
+      <aside v-else class="studio__side-panel">
+        <LiveChat
+          :items="chatItems"
+          :live-state="liveState"
+          :sending="chatSending"
+          :error-message="chatErrorMessage"
+          @send="handleSendChatMessage"
+        />
       </aside>
 
       <!-- ── CENTER: Stage ────────────────────────────── -->
@@ -224,7 +41,6 @@
 
         <!-- Video stage -->
         <div class="studio__stage-card">
-
           <!-- Video frame + fullscreen overlay -->
           <div ref="previewStageHost" class="studio__stage">
             <div v-if="showStagePlaceholder" class="studio__stage-placeholder">
@@ -250,6 +66,46 @@
               <UIcon :name="isFullscreen ? 'i-ph-arrows-in-bold' : 'i-ph-arrows-out-bold'" class="h-5 w-5" />
             </template>
 
+            <div v-if="session" class="studio__stage-controls">
+              <span class="studio__live-timer">
+                <span class="studio__live-dot studio__live-dot--live" />
+                {{ liveElapsedLabel }}
+              </span>
+              <UButton
+                :icon="videoMuted ? 'i-ph-video-camera-slash-bold' : 'i-ph-video-camera-bold'"
+                :aria-label="videoMuted ? t('pages.livePage.studio.enableCamera') : t('pages.livePage.studio.disableCamera')"
+                :color="videoMuted ? 'error' : 'neutral'"
+                variant="solid"
+                size="md"
+                square
+                class="studio__stage-control-btn"
+                @click="toggleVideo"
+              />
+              <UButton
+                :icon="audioMuted ? 'i-ph-microphone-slash-bold' : 'i-ph-microphone-bold'"
+                :aria-label="audioMuted ? t('pages.livePage.studio.enableMicrophone') : t('pages.livePage.studio.disableMicrophone')"
+                :color="audioMuted ? 'error' : 'neutral'"
+                variant="solid"
+                size="md"
+                square
+                class="studio__stage-control-btn"
+                @click="toggleAudio"
+              />
+              <UButton
+                color="error"
+                variant="solid"
+                size="md"
+                class="studio__stage-end-btn"
+                :loading="ending"
+                @click="handleEndLive"
+              >
+                <template #leading>
+                  <UIcon name="i-ph-stop-circle-bold" class="h-4 w-4" />
+                </template>
+                {{ t("pages.livePage.studio.endBroadcast") }}
+              </UButton>
+            </div>
+
             <div v-if="isFullscreen && session" class="studio__fs-overlay">
               <div class="studio__fs-topbar">
                 <div class="studio__fs-host">
@@ -268,23 +124,6 @@
                 </div>
               </div>
 
-              <div class="studio__fs-comments">
-                <div v-if="fullscreenComments.length === 0" class="studio__fs-empty">
-                  {{ t("pages.livePage.studio.noNewComments") }}
-                </div>
-                <article
-                  v-for="item in fullscreenComments"
-                  :key="`${item.kind}-${item.id}-${item.username}-${item.timeText}`"
-                  class="studio__fs-comment"
-                >
-                  <UAvatar :src="item.avatarUrl || undefined" :alt="item.author" size="sm" />
-                  <div class="studio__fs-comment-body">
-                    <strong>{{ item.author }}</strong>
-                    <span>{{ item.message }}</span>
-                  </div>
-                </article>
-              </div>
-
               <div class="studio__fs-hearts">
                 <img
                   v-for="reaction in floatingReactions"
@@ -296,26 +135,43 @@
                   draggable="false"
                 >
               </div>
-            </div>
 
-            <div v-if="session && !isFullscreen" class="studio__stage-activity-overlay">
-              <div class="studio__stage-comments">
-                <div v-if="fullscreenComments.length === 0" class="studio__stage-empty">
-                  {{ t("pages.livePage.studio.noNewComments") }}
-                </div>
+              <div class="studio__fs-comments">
                 <article
-                  v-for="item in fullscreenComments"
-                  :key="`stage-video-${item.kind}-${item.id}-${item.username}-${item.timeText}`"
-                  class="studio__stage-comment"
+                  v-for="item in chatItems.slice(-8)"
+                  :key="`fs-${item.kind}-${item.id}-${item.username}-${item.timeText}`"
+                  class="studio__fs-comment"
                 >
                   <UAvatar :src="item.avatarUrl || undefined" :alt="item.author" size="xs" />
-                  <div class="studio__stage-comment-body">
-                    <strong>{{ item.author }}</strong>
+                  <div class="studio__fs-comment-body">
+                    <strong>{{ item.username || item.author }}</strong>
                     <span>{{ item.message }}</span>
                   </div>
                 </article>
               </div>
 
+              <form class="studio__fs-chat-form" @submit.prevent="submitFullscreenChat">
+                <input
+                  v-model="fullscreenChatDraft"
+                  class="studio__fs-chat-input"
+                  :disabled="chatSending || liveState !== 'live'"
+                  :placeholder="t('pages.livePage.viewer.commentPlaceholder')"
+                >
+                <UButton
+                  type="submit"
+                  color="primary"
+                  square
+                  :loading="chatSending"
+                  :disabled="chatSending || liveState !== 'live' || fullscreenChatDraft.trim().length === 0"
+                  class="studio__fs-chat-send"
+                  :aria-label="t('pages.livePage.viewer.submitComment')"
+                >
+                  <template #leading>
+                    <UIcon name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
+                  </template>
+                </UButton>
+                <p v-if="chatErrorMessage" class="studio__fs-chat-error">{{ chatErrorMessage }}</p>
+              </form>
             </div>
 
             <div v-if="session && !isFullscreen" class="studio__stage-hearts">
@@ -331,33 +187,35 @@
             </div>
           </div>
 
-          <div v-if="session && !isFullscreen" class="studio__activity-panel">
-            <div class="studio__activity-head">
-              <div>
-                <p class="studio__activity-eyebrow">{{ t("pages.livePage.studio.activityEyebrow") }}</p>
-                <h2 class="studio__activity-title">{{ t("pages.livePage.studio.activityTitle") }}</h2>
-              </div>
-              <div class="studio__activity-stats">
-                <span><UIcon name="i-ph-heart-fill" /> {{ reactionsCount }}</span>
-                <span><UIcon name="i-ph-share-fat-fill" /> {{ sharesCount }}</span>
+          <div class="studio__stage-topbar">
+            <div class="studio__stage-status">
+              <span
+                class="studio__live-dot"
+                :class="liveState === 'live' ? 'studio__live-dot--live' : 'studio__live-dot--off'"
+              />
+              <div class="min-w-0">
+                <p class="studio__stage-kicker">
+                  {{ session ? t("pages.livePage.studio.broadcastingUpper") : t("pages.livePage.studio.previewUpper") }}
+                </p>
+                <h1 class="studio__stage-heading">
+                  {{ session?.title || title || t("pages.livePage.seoTitle") }}
+                </h1>
               </div>
             </div>
 
-            <div class="studio__activity-list">
-              <div v-if="fullscreenComments.length === 0" class="studio__activity-empty">
-                {{ t("pages.livePage.studio.noNewComments") }}
-              </div>
-              <article
-                v-for="item in fullscreenComments"
-                :key="`stage-${item.kind}-${item.id}-${item.username}-${item.timeText}`"
-                class="studio__activity-comment"
-              >
-                <UAvatar :src="item.avatarUrl || undefined" :alt="item.author" size="sm" />
-                <div class="studio__activity-comment-body">
-                  <strong>{{ item.author }}</strong>
-                  <span>{{ item.message }}</span>
-                </div>
-              </article>
+            <div class="studio__stage-metrics">
+              <span class="studio__viewer-count">
+                <UIcon name="i-ph-eye-duotone" class="h-4 w-4" />
+                {{ viewerCount }}
+              </span>
+              <span class="studio__viewer-count">
+                <UIcon name="i-ph-heart-fill" class="h-4 w-4" />
+                {{ reactionsCount }}
+              </span>
+              <span class="studio__viewer-count">
+                <UIcon name="i-ph-share-fat-fill" class="h-4 w-4" />
+                {{ sharesCount }}
+              </span>
             </div>
           </div>
         </div>
@@ -369,10 +227,14 @@
 
 <script setup lang="ts">
 import { feedReactionAssets } from "../../../feed/application/constants/reaction-assets"
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository"
 import { useLiveKitStudio } from "../../application/composables/useLiveKitStudio"
 import { useLiveStudioPageVM } from "../../application/view-models/useLiveStudioPageVM"
+import LiveChat from "../components/LiveChat.vue"
+import LiveSetupPanel from "../components/LiveSetupPanel.vue"
 
 const { t } = useI18n()
+const feedRepository = createApiFeedRepository()
 useSeoMeta({
   title: () => t("pages.livePage.seoTitle"),
   description: () => t("pages.livePage.seoDescription"),
@@ -382,17 +244,16 @@ const previewStageHost = ref<HTMLElement | null>(null)
 
 const {
   bootstrap, bootstrapLoading, bootstrapErrorMessage, blockedReasonMessage,
-  title, description, privacy, thumbnailFile, session, liveState, viewerCount,
+  title, description, privacy, session, liveState, viewerCount,
   reactionsCount, sharesCount, activityItems, reactionEvents,
   canStart, starting, ending, statusMessage, errorMessage,
-  setThumbnail, startLive, endLive, refreshBootstrap,
+  startLive, endLive,
 } = useLiveStudioPageVM()
 
 const {
   mediaSupported, previewLoading, previewReady, previewError,
-  cameraOptions, microphoneOptions, selectedCameraId, selectedMicrophoneId,
-  roomConnected, audioMuted, videoMuted,
-  ensurePreview, setCamera, setMicrophone, toggleAudio, toggleVideo,
+  audioMuted, videoMuted,
+  ensurePreview, toggleAudio, toggleVideo,
   connect, disconnect, setPreviewHost,
 } = useLiveKitStudio()
 
@@ -409,7 +270,7 @@ watch(
 
 watch(
   () => liveState.value,
-  (state) => { if (state === "offline" && roomConnected.value) disconnect() },
+  (state) => { if (state === "offline") disconnect() },
 )
 
 const privacyLabel = (v: string) => {
@@ -439,7 +300,7 @@ const liveStateLabel = computed(() => {
   return t("pages.livePage.studio.liveStateOffline")
 })
 
-const liveStateBadgeColor = computed(() => {
+const liveStateBadgeColor = computed<"success" | "warning" | "neutral">(() => {
   if (liveState.value === "live") return "success"
   if (liveState.value === "stale") return "warning"
   return "neutral"
@@ -478,19 +339,6 @@ async function handleEndLive() {
   await endLive(() => { disconnect() })
 }
 
-async function handleCameraChange(e: Event) {
-  await setCamera((e.target as HTMLSelectElement).value)
-}
-
-async function handleMicrophoneChange(e: Event) {
-  await setMicrophone((e.target as HTMLSelectElement).value)
-}
-
-function handleThumbnailChange(e: Event) {
-  const input = e.target as HTMLInputElement
-  setThumbnail(input.files?.[0] ?? null)
-}
-
 function toggleFullscreen() {
   if (document.fullscreenElement) {
     void document.exitFullscreen()
@@ -501,12 +349,93 @@ function toggleFullscreen() {
 }
 
 const isFullscreen = ref(false)
+const liveClockNow = ref(Date.now())
+const chatSending = ref(false)
+const chatErrorMessage = ref("")
+const fullscreenChatDraft = ref("")
 const floatingReactions = ref<Array<{ id: number; src: string; x: number }>>([])
 const animatedReactionIds = new Set<number>()
+let liveClockTimer: ReturnType<typeof window.setInterval> | null = null
 
-const fullscreenComments = computed(() =>
-  activityItems.value.filter(item => item.kind === "comment").slice(-6),
+const chatItems = computed(() =>
+  activityItems.value.filter(item => item.kind === "comment").slice(-24),
 )
+
+const liveElapsedLabel = computed(() => {
+  if (!session.value?.startedAt) {
+    return "00:00"
+  }
+
+  const startedAt = new Date(session.value.startedAt).getTime()
+
+  if (!Number.isFinite(startedAt)) {
+    return "00:00"
+  }
+
+  const totalSeconds = Math.max(0, Math.floor((liveClockNow.value - startedAt) / 1000))
+  const hours = Math.floor(totalSeconds / 3600)
+  const minutes = Math.floor((totalSeconds % 3600) / 60)
+  const seconds = totalSeconds % 60
+  const paddedMinutes = String(minutes).padStart(2, "0")
+  const paddedSeconds = String(seconds).padStart(2, "0")
+
+  return hours > 0
+    ? `${hours}:${paddedMinutes}:${paddedSeconds}`
+    : `${paddedMinutes}:${paddedSeconds}`
+})
+
+async function handleSendChatMessage(message: string) {
+  if (!session.value || chatSending.value) {
+    return
+  }
+
+  chatSending.value = true
+  chatErrorMessage.value = ""
+
+  try {
+    const result = await feedRepository.runPostAction({
+      action: "comment",
+      postId: session.value.postId,
+      text: message,
+    })
+
+    activityItems.value = [
+      ...activityItems.value,
+      {
+        id: result.commentId ?? -Date.now(),
+        author: bootstrap.value.host?.name || t("pages.livePage.studio.hostFallback"),
+        username: bootstrap.value.host?.username || "",
+        avatarUrl: bootstrap.value.host?.avatarUrl || "",
+        message,
+        timeText: t("pages.livePage.justNow"),
+        kind: "comment",
+        isHost: true,
+      },
+    ].slice(-24)
+  }
+  catch (error) {
+    chatErrorMessage.value = error instanceof Error
+      ? error.message
+      : t("pages.livePage.viewer.commentError")
+  }
+  finally {
+    chatSending.value = false
+  }
+}
+
+async function submitFullscreenChat() {
+  const message = fullscreenChatDraft.value.trim()
+
+  if (!message || chatSending.value || liveState.value !== "live") {
+    return
+  }
+
+  await handleSendChatMessage(message)
+
+  if (!chatErrorMessage.value) {
+    fullscreenChatDraft.value = ""
+  }
+}
 
 function reactionAssetSrc(value: string) {
   return feedReactionAssets.find(asset =>
@@ -567,45 +496,73 @@ watch(session, (nextSession) => {
   floatingReactions.value = []
 })
 
+function handleFullscreenChange() {
+  isFullscreen.value = Boolean(document.fullscreenElement)
+}
+
 onMounted(() => {
-  document.addEventListener("fullscreenchange", () => {
-    isFullscreen.value = Boolean(document.fullscreenElement)
-  })
+  document.addEventListener("fullscreenchange", handleFullscreenChange)
+  liveClockTimer = window.setInterval(() => {
+    liveClockNow.value = Date.now()
+  }, 1000)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener("fullscreenchange", handleFullscreenChange)
+
+  if (liveClockTimer) {
+    window.clearInterval(liveClockTimer)
+    liveClockTimer = null
+  }
 })
 </script>
 
 <style scoped>
 /* ── Page shell ───────────────────────────────────────── */
 .studio {
-  min-height: 100vh;
-  background: #f1f5f9;
-  padding: 24px 16px 48px;
+  min-height: calc(100vh - 65px);
+  background: #f1f4fb;
+  padding: 12px 16px 16px;
 }
 
 .studio__shell {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
-  max-width: 1200px;
+  max-width: 1480px;
   margin: 0 auto;
 }
 
 .studio__shell--2col {
-  grid-template-columns: 320px minmax(0, 1fr);
+  grid-template-columns: minmax(280px, 320px) minmax(0, 1fr);
+}
+
+.studio__side-panel {
+  position: sticky;
+  top: 82px;
+  display: flex;
+  height: min(680px, calc(100vh - 104px));
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 255, 0.04);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 /* ── Sidebar ──────────────────────────────────────────── */
 .studio__sidebar {
   background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-  padding: 24px;
+  border: 1px solid rgba(0, 0, 255, 0.04);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
   position: sticky;
-  top: 84px;
+  top: 82px;
 }
 
 .studio__skeleton-stack {
@@ -624,9 +581,9 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px;
+  padding: 12px;
   border-radius: 16px;
-  background: #f8fafc;
+  background: #fafbfe;
 }
 
 .studio__host-name {
@@ -648,7 +605,7 @@ onMounted(() => {
 .studio__fields {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   flex: 1;
 }
 
@@ -666,7 +623,6 @@ onMounted(() => {
   font-size: 12px;
   font-weight: 600;
   color: #64748b;
-  letter-spacing: 0.02em;
 }
 
 /* Selects */
@@ -679,9 +635,10 @@ onMounted(() => {
   height: 44px;
   padding: 0 36px 0 14px;
   border-radius: 12px;
-  background: #ffffff;
-  color: #0f172a;
-  font-size: 14px;
+  border: 1px solid #e2e8f0;
+  background: #fafbfe;
+  color: #334155;
+  font-size: 13px;
   font-weight: 500;
   appearance: none;
   cursor: pointer;
@@ -690,8 +647,8 @@ onMounted(() => {
 }
 
 .studio__select:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+  border-color: rgba(0, 0, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
 }
 
 .studio__select:disabled {
@@ -723,8 +680,8 @@ onMounted(() => {
   gap: 10px;
   padding: 12px 16px;
   border-radius: 12px;
-  border: 1.5px dashed #cbd5e1;
-  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  background: #fafbfe;
   color: #475569;
   font-size: 13px;
   font-weight: 500;
@@ -733,9 +690,9 @@ onMounted(() => {
 }
 
 .studio__file-btn:hover {
-  border-color: #3b82f6;
-  background: #eff6ff;
-  color: #2563eb;
+  border-color: rgba(0, 0, 255, 0.22);
+  background: rgba(0, 0, 255, 0.04);
+  color: #0000ff;
 }
 
 .studio__fields > .studio__field:nth-of-type(n + 3),
@@ -820,19 +777,59 @@ onMounted(() => {
 
 /* Stage card */
 .studio__stage-card {
+  position: relative;
   background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0, 0, 255, 0.04);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   overflow: hidden;
 }
 
-.studio__stage-bar {
+.studio__stage-topbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 64px;
+  z-index: 70;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  border-bottom: 1px solid #f1f5f9;
-  background: #ffffff;
+  gap: 16px;
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+
+.studio__stage-status {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+}
+
+.studio__stage-kicker {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.studio__stage-heading {
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio__stage-metrics {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
 }
 
 .studio__live-dot {
@@ -868,16 +865,30 @@ onMounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  min-height: 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  padding: 6px 10px;
   font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.studio__state-badge {
+  min-height: 28px;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .studio__stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #0f172a;
+  height: min(calc(100vh - 102px), calc((100vw - 384px) * 0.5625));
+  min-height: 420px;
+  max-height: 760px;
+  background: #020617;
   overflow: hidden;
 }
 
@@ -963,6 +974,49 @@ onMounted(() => {
   transform: translateY(-1px);
 }
 
+.studio__stage-controls {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 82;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.studio__live-timer {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.64);
+  padding: 8px 12px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  backdrop-filter: blur(10px);
+}
+
+.studio__stage-control-btn,
+.studio__stage-end-btn {
+  min-height: 36px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.64);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(10px);
+}
+
+.studio__stage-end-btn {
+  margin-left: auto;
+  padding-inline: 14px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .studio__fs-overlay {
   position: absolute;
   inset: 0;
@@ -1018,12 +1072,16 @@ onMounted(() => {
 .studio__fs-comments {
   position: absolute;
   left: 24px;
-  right: 168px;
-  bottom: 26px;
+  right: auto;
+  bottom: 150px;
+  z-index: 26;
   display: flex;
-  max-width: 620px;
+  width: min(420px, calc(100vw - 48px));
+  max-height: min(300px, calc(100vh - 250px));
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .studio__fs-empty {
@@ -1044,9 +1102,12 @@ onMounted(() => {
 .studio__fs-comment-body {
   display: grid;
   gap: 3px;
-  border-radius: 20px;
-  padding: 10px 14px;
+  max-width: 100%;
+  border-radius: 16px;
+  background: rgba(2, 6, 23, 0.54);
+  padding: 8px 12px;
   color: #ffffff;
+  backdrop-filter: blur(10px);
 }
 
 .studio__fs-comment-body strong {
@@ -1055,8 +1116,67 @@ onMounted(() => {
 }
 
 .studio__fs-comment-body span {
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.45;
+}
+
+.studio__fs-chat-form {
+  position: absolute;
+  left: 24px;
+  right: auto;
+  bottom: 100px;
+  z-index: 34;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 44px;
+  width: min(420px, calc(100vw - 48px));
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.studio__fs-chat-input {
+  min-width: 0;
+  width: 100%;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0 16px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.studio__fs-chat-input::placeholder {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.studio__fs-chat-input:focus {
+  border-color: rgba(255, 255, 255, 0.36);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.studio__fs-chat-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.studio__fs-chat-send {
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 999px;
+}
+
+.studio__fs-chat-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #fecaca;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .studio__fs-actions {
@@ -1309,9 +1429,14 @@ onMounted(() => {
   border-radius: 0;
 }
 
+:fullscreen .studio__stage-controls,
+:-webkit-full-screen .studio__stage-controls {
+  bottom: 15px;
+}
+
 
 /* ── Responsive ───────────────────────────────────────── */
-@media (max-width: 1024px) {
+@media (max-width: 1180px) {
   .studio__shell,
   .studio__shell--2col {
     grid-template-columns: 1fr;
@@ -1320,19 +1445,128 @@ onMounted(() => {
   .studio__sidebar {
     position: static;
   }
+
+  .studio__side-panel {
+    position: static;
+    height: 420px;
+    min-height: 0;
+  }
+
+  .studio__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .studio__sidebar-action {
+    margin-top: 0;
+  }
+
+  .studio__stage {
+    height: min(calc(100vh - 300px), calc((100vw - 32px) * 0.5625));
+    min-height: 360px;
+  }
 }
 
 @media (max-width: 640px) {
   .studio {
-    padding: 12px 12px 40px;
+    min-height: calc(100vh - 56px);
+    padding: 8px 10px 12px;
   }
 
   .studio__shell {
-    gap: 14px;
+    gap: 12px;
+  }
+
+  .studio__side-panel {
+    height: 360px;
+  }
+
+  .studio__sidebar {
+    padding: 14px;
+  }
+
+  .studio__fields {
+    grid-template-columns: 1fr;
+  }
+
+  .studio__stage-topbar {
+    top: 10px;
+    left: 10px;
+    right: 58px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    padding: 9px 10px;
+  }
+
+  .studio__stage-metrics {
+    width: 100%;
+    flex-wrap: wrap;
   }
 
   .studio__stage {
-    aspect-ratio: 4 / 3;
+    height: min(calc(100vh - 360px), calc((100vw - 20px) * 0.75));
+    min-height: 300px;
+    max-height: 520px;
+  }
+
+  .studio__stage-heading {
+    max-width: calc(100vw - 70px);
+    font-size: 15px;
+  }
+
+  .studio__stage-placeholder {
+    padding: 24px 18px;
+  }
+
+  .studio__stage-comments {
+    right: 18px;
+    max-height: 132px;
+  }
+
+  .studio__stage-controls {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    flex-wrap: wrap;
+  }
+
+  .studio__stage-end-btn {
+    width: 100%;
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .studio__fs-comments {
+    left: 12px;
+    right: auto;
+    bottom: 150px;
+    width: calc(100vw - 24px);
+    max-height: min(220px, calc(100vh - 260px));
+  }
+
+  .studio__fs-comment-body {
+    max-width: calc(100vw - 76px);
+  }
+
+  .studio__fs-chat-form {
+    left: 12px;
+    right: auto;
+    bottom: 100px;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    width: calc(100vw - 24px);
+    gap: 8px;
+  }
+
+  .studio__fs-chat-input,
+  .studio__fs-chat-send {
+    height: 42px;
+    min-height: 42px;
+  }
+
+  :fullscreen .studio__stage-controls,
+  :-webkit-full-screen .studio__stage-controls {
+    bottom: 68px;
   }
 }
 </style>

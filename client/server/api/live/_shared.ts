@@ -4,7 +4,8 @@ import { createError, type H3Event } from "h3"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver, getBackendWebBaseUrl } from "../../utils/backend-media-url"
-import { fetchFeedPostById } from "../feed/_shared"
+import { fetchFeedPostById, fetchPostComments } from "../feed/_shared"
+import type { FeedCommentRecord } from "../../../src/feed/domain/types/feed.types"
 import type {
   GoLiveDraft,
   LiveMutationResult,
@@ -217,6 +218,51 @@ const mapReactionEvent = (
   avatarUrl: resolveMediaUrl(asString(item.avatar)),
 })
 
+const usernameFromAuthorPath = (value?: string) =>
+  asString(value).replace(/^\/?@/, "")
+
+const mapFeedCommentToLiveComment = (
+  comment: FeedCommentRecord,
+  postAuthor: string,
+): LiveStudioComment => ({
+  id: comment.id,
+  author: comment.author,
+  username: usernameFromAuthorPath(comment.authorPath) || comment.author,
+  avatarUrl: comment.authorAvatarUrl ?? "",
+  message: comment.text,
+  timeText: comment.time ?? "",
+  kind: "comment",
+  isHost: Boolean(postAuthor) && comment.author === postAuthor,
+})
+
+const mergeLiveComments = (
+  primary: LiveStudioComment[],
+  fallback: LiveStudioComment[],
+) => {
+  const seen = new Set<string>()
+
+  return [...primary, ...fallback]
+    .filter((item) => {
+      const key = item.id > 0
+        ? `id:${item.id}`
+        : `body:${item.username}:${item.message}:${item.timeText}`
+
+      if (seen.has(key) || item.kind !== "comment" || !item.message) {
+        return false
+      }
+
+      seen.add(key)
+      return true
+    })
+    .sort((a, b) => {
+      if (a.id > 0 && b.id > 0) {
+        return a.id - b.id
+      }
+
+      return 0
+    })
+}
+
 export async function fetchLiveBootstrap(event: H3Event): Promise<LiveStudioBootstrap> {
   const currentUser = await getBackendCurrentUser(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
@@ -333,21 +379,46 @@ export async function fetchLiveHeartbeat(
   const normalized = assertLiveWebSuccess(response, "Unable to refresh live activity.")
   let postReactionsCount = 0
   let postSharesCount = 0
+  let postAuthor = ""
+  let postComments: LiveStudioComment[] = []
+  const knownCommentIds = new Set(
+    (input.knownCommentIds ?? []).filter(id => Number.isFinite(id) && id > 0),
+  )
 
   try {
     const post = await fetchFeedPostById(event, input.postId)
     postReactionsCount = post?.stats.likes ?? 0
     postSharesCount = post?.stats.shares ?? 0
+    postAuthor = post?.author ?? ""
   }
   catch {
   }
+
+  try {
+    const comments = await fetchPostComments(event, {
+      postId: input.postId,
+      limit: 50,
+      offset: 0,
+    })
+
+    postComments = comments
+      .filter(comment => comment.id <= 0 || !knownCommentIds.has(comment.id))
+      .map(comment => mapFeedCommentToLiveComment(comment, postAuthor))
+  }
+  catch {
+  }
+
+  const comments = mergeLiveComments(
+    (normalized.comments ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
+    postComments,
+  )
 
   return {
     stillLive: asString(normalized.still_live) === "stale"
       ? "stale"
       : asString(normalized.still_live) === "offline" ? "offline" : "live",
     viewerCount: asNumber(normalized.viewer_count || normalized.count),
-    comments: (normalized.comments ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
+    comments,
     joinedUsers: (normalized.joined ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
     leftUsers: (normalized.left ?? []).map(item => mapActivityItem(item, resolveMediaUrl)),
     reactionEvents: (normalized.reactions ?? []).map(item => mapReactionEvent(item, resolveMediaUrl)),
