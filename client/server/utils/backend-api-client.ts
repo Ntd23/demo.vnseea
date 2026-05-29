@@ -114,13 +114,10 @@ export function createBackendApiClient(event: H3Event) {
 
   const forwardedHeaders: HeadersInit = {}
 
-  const cookie = event.node.req.headers.cookie
   const authorization = event.node.req.headers.authorization
 
-  if (cookie) {
-    forwardedHeaders.cookie = cookie
-  }
-
+  // Do not forward browser cookies to the PHP backend.
+  // Old WoWonder cookies like switched_accounts can break backend API login.
   if (authorization) {
     forwardedHeaders.authorization = authorization
   }

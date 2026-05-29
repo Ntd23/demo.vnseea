@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "NODE_OPTIONS=--max-old-space-size=4096 nuxt build",
     "dev": "node scripts/dev-with-php-upstreams.mjs",
     "dev:nuxt": "nuxt dev",
     "generate": "nuxt generate",

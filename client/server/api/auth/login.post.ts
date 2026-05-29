@@ -1,4 +1,4 @@
-import { createError, readBody } from "h3"
+import { createError, readBody, setCookie } from "h3"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import type { LoginInput, LoginResult } from "../../../src/auth/domain/types/auth.types"
@@ -48,6 +48,25 @@ export default defineEventHandler(async (event): Promise<LoginResult> => {
   )
 
   const hasAccessToken = Boolean(response.access_token)
+  if (hasAccessToken && response.access_token) {
+  setCookie(event, "user_id", response.access_token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+  })
+
+  if (response.user_id) {
+    setCookie(event, "logged_user_id", String(response.user_id), {
+      httpOnly: false,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    })
+  }
+}
 
   return {
     success: true,

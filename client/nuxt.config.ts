@@ -1,20 +1,20 @@
 // English description: Configures the Nuxt frontend runtime, backend bridge endpoints, and allowed remote image hosts.
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import { resolve } from "node:path"
-import { fileURLToPath } from "node:url"
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const __dirname = fileURLToPath(new URL(".", import.meta.url))
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-process.loadEnvFile?.(resolve(__dirname, ".env"))
+process.loadEnvFile?.(resolve(__dirname, ".env"));
 
 function requireEnv(name: string) {
-  const value = process.env[name]?.trim()
+  const value = process.env[name]?.trim();
 
   if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
+    throw new Error(`Missing required environment variable: ${name}`);
   }
 
-  return value
+  return value;
 }
 
 function normalizeBackendWebBase(value: string) {
@@ -23,36 +23,38 @@ function normalizeBackendWebBase(value: string) {
     .replace(/\/+$/, "")
     .replace(/\/api\/v2\/endpoints$/i, "")
     .replace(/\/api-v2\.php$/i, "")
-    .replace(/\/api$/i, "")
+    .replace(/\/api$/i, "");
 }
 
 function extractHostname(value: string) {
   try {
-    return new URL(value).hostname
-  }
-  catch {
-    return ""
+    return new URL(value).hostname;
+  } catch {
+    return "";
   }
 }
 
-const publicApiBase = requireEnv("NUXT_PUBLIC_API_BASE")
-const backendApiBase = requireEnv("NUXT_BACKEND_API_BASE")
-const backendServerKey = requireEnv("NUXT_BACKEND_SERVER_KEY")
-const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL")
-const realtimeInternalUrl = process.env.REALTIME_INTERNAL_URL?.trim() || ""
-const realtimeSecret = process.env.REALTIME_SECRET?.trim() || ""
-const publicRealtimeUrl = process.env.NUXT_PUBLIC_REALTIME_URL?.trim() || ""
+const publicApiBase = requireEnv("NUXT_PUBLIC_API_BASE");
+const backendApiBase = requireEnv("NUXT_BACKEND_API_BASE");
+const backendServerKey = requireEnv("NUXT_BACKEND_SERVER_KEY");
+const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL");
+const realtimeInternalUrl = process.env.REALTIME_INTERNAL_URL?.trim() || "";
+const realtimeSecret = process.env.REALTIME_SECRET?.trim() || "";
+const publicRealtimeUrl = process.env.NUXT_PUBLIC_REALTIME_URL?.trim() || "";
 const backendWebBase = normalizeBackendWebBase(
   process.env.NUXT_PUBLIC_BACKEND_WEB_BASE?.trim() || backendApiBase,
-)
-const imageDomains = Array.from(new Set([
-  extractHostname(publicSiteUrl),
-  extractHostname(backendWebBase),
-].filter(Boolean)))
+);
+const imageDomains = Array.from(
+  new Set(
+    [extractHostname(publicSiteUrl), extractHostname(backendWebBase)].filter(
+      Boolean,
+    ),
+  ),
+);
 const allowedHosts = requireEnv("NUXT_ALLOWED_HOSTS")
   .split(",")
-  .map(host => host.trim())
-  .filter(Boolean)
+  .map((host) => host.trim())
+  .filter(Boolean);
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
@@ -76,6 +78,20 @@ export default defineNuxtConfig({
   },
   nitro: {
     apiBaseURL: "/_api",
+    externals: {
+      inline: [
+        "vue",
+        "vue-router",
+        "pinia",
+        "@vueuse/core",
+        "@vueuse/nuxt",
+        "@pinia/nuxt",
+        "nuxt-tiptap-editor",
+        "@tiptap/vue-3",
+        "@tiptap/core",
+        "@tiptap/starter-kit",
+      ],
+    },
   },
   alias: {
     "#shared-kernel": resolve(__dirname, "src/shared-kernel"),
@@ -104,9 +120,7 @@ export default defineNuxtConfig({
   },
   css: ["~/assets/css/main.css"],
   imports: {
-    dirs: [
-      resolve(__dirname, "src/shared-kernel/application/composables"),
-    ],
+    dirs: [resolve(__dirname, "src/shared-kernel/application/composables")],
   },
   devServer: {
     host: process.env.NUXT_DEV_HOST,
@@ -139,6 +153,29 @@ export default defineNuxtConfig({
     server: {
       allowedHosts,
     },
+    optimizeDeps: {
+      include: [
+        "vue",
+        "vue-router",
+        "pinia",
+        "@vueuse/core",
+        "@tiptap/vue-3",
+        "@tiptap/core",
+        "@tiptap/starter-kit",
+      ],
+    },
+    ssr: {
+      noExternal: [
+        "vue",
+        "vue-router",
+        "pinia",
+        "@vueuse/core",
+        "nuxt-tiptap-editor",
+        "@tiptap/vue-3",
+        "@tiptap/core",
+        "@tiptap/starter-kit",
+      ],
+    },
   },
   modules: [
     "@nuxt/ui",
@@ -149,10 +186,10 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@vueuse/nuxt",
     "@nuxtjs/i18n",
-    "nuxt-tiptap-editor"
+    "nuxt-tiptap-editor",
   ],
   tiptap: {
-    prefix: 'Tiptap',
+    prefix: "Tiptap",
   },
   i18n: {
     defaultLocale: "vi",
@@ -163,4 +200,4 @@ export default defineNuxtConfig({
     ],
     strategy: "no_prefix",
   },
-})
+});
