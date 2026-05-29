@@ -138,6 +138,7 @@ export function useMessagesInbox(
   const typingContactIds = ref<string[]>([])
   const isLoadingMore = ref(false)
   const isSending = ref(false)
+  const sendQueue = ref<MessageComposerDraft[]>([])
   const isMultiSending = ref(false)
   const isMarkingRead = ref(false)
   const isDeletingConversation = ref(false)
@@ -631,31 +632,21 @@ export function useMessagesInbox(
     })
   }
 
-  async function sendMessage(input: MessageComposerDraft) {
+  async function processSendQueue() {
     const contact = selectedContact.value
-
-    if (!contact || isSending.value) {
+    if (!contact || isSending.value || sendQueue.value.length === 0) {
       return
     }
 
-    if (!input.text.trim() && !input.file && !input.record) {
-      return
-    }
-
+    const input = sendQueue.value[0]
     isSending.value = true
 
     try {
-      const text = buildReplyMessageText({
-        text: input.text,
-        target: replyTarget.value,
-        author: replyAuthor.value,
-        fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
-      })
       const uploadedRecord = input.record
         ? await uploadRecordDraft(input.record)
         : null
       const createdMessages = await repository.sendMessage(contact, {
-        text,
+        text: input.text,
         file: input.file,
         record: uploadedRecord,
       })
@@ -664,7 +655,7 @@ export function useMessagesInbox(
         typing: false,
       }
       remoteTyping.value = false
-      replyTarget.value = null
+      sendQueue.value.shift()
       await refreshInbox()
     }
     catch {
@@ -673,10 +664,34 @@ export function useMessagesInbox(
         description: t("pages.messagesPage.sendErrorDescription"),
         color: "error",
       })
+      sendQueue.value.shift()
     }
     finally {
       isSending.value = false
+      void processSendQueue()
     }
+  }
+
+  function sendMessage(input: MessageComposerDraft) {
+    if (!input.text.trim() && !input.file && !input.record) {
+      return
+    }
+
+    const text = buildReplyMessageText({
+      text: input.text,
+      target: replyTarget.value,
+      author: replyAuthor.value,
+      fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
+    })
+
+    sendQueue.value.push({
+      text,
+      file: input.file,
+      record: input.record,
+    })
+
+    replyTarget.value = null
+    void processSendQueue()
   }
 
   function patchThreadMessage(
