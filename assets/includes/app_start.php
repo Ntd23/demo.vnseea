@@ -392,24 +392,40 @@ include_once "assets/includes/onesignal_config.php";
 
 // manage packages
 $wo["pro_packages"]       = Wo_GetAllProInfo();
+$wo["genders"]             = array();
 try {
     $wo["genders"]             = Wo_GetGenders($wo["language"], $langs);
+} catch (Exception $e) {}
+
+$wo["page_categories"]     = array();
+try {
     $wo["page_categories"]     = Wo_GetCategories(T_PAGES_CATEGORY);
+} catch (Exception $e) {}
+
+$wo["group_categories"]    = array();
+try {
     $wo["group_categories"]    = Wo_GetCategories(T_GROUPS_CATEGORY);
+} catch (Exception $e) {}
+
+$wo["blog_categories"]     = array();
+try {
     $wo["blog_categories"]     = Wo_GetCategories(T_BLOGS_CATEGORY);
+} catch (Exception $e) {}
+
+$wo["products_categories"] = array();
+try {
     $wo["products_categories"] = Wo_GetCategories(T_PRODUCTS_CATEGORY);
+} catch (Exception $e) {}
+
+$wo["job_categories"]      = array();
+try {
     $wo["job_categories"]      = Wo_GetCategories(T_JOB_CATEGORY);
+} catch (Exception $e) {}
+
+$wo["reactions_types"]     = array();
+try {
     $wo["reactions_types"]     = Wo_GetReactionsTypes();
-}
-catch (Exception $e) {
-    $wo["genders"]             = array();
-    $wo["page_categories"]     = array();
-    $wo["group_categories"]    = array();
-    $wo["blog_categories"]     = array();
-    $wo["products_categories"] = array();
-    $wo["job_categories"]      = array();
-    $wo["reactions_types"]     = array();
-}
+} catch (Exception $e) {}
 Wo_GetSubCategories();
 $wo["config"]["currency_array"]        = (array) json_decode($wo["config"]["currency_array"]);
 $wo["config"]["currency_symbol_array"] = (array) json_decode($wo["config"]["currency_symbol_array"]);

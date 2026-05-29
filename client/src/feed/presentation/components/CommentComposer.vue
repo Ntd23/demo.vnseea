@@ -96,12 +96,13 @@
                 <div v-if="emojiOpen" class="comment-composer__emoji-tray">
                   <button
                     v-for="emoji in emojiOptions"
-                    :key="emoji"
+                    :key="emoji.value"
                     class="comment-composer__emoji"
                     type="button"
-                    @click="insertEmoji(emoji)"
+                    :title="emoji.label"
+                    @click="insertEmoji(emoji.text)"
                   >
-                    {{ emoji }}
+                    <span class="text-xl leading-none">{{ emoji.text }}</span>
                   </button>
                 </div>
               </div>
@@ -855,7 +856,6 @@ defineExpose({
   border: 1px solid var(--border-default);
   border-radius: 24px;
   transition: all 0.2s ease;
-  overflow: hidden;
 }
 
 .comment-composer__input-wrap:focus-within {
@@ -1183,11 +1183,11 @@ defineExpose({
 
 .comment-composer__emoji-tray {
   position: absolute;
-  left: 0;
+  right: 0;
   bottom: calc(100% + 8px);
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(5, 30px);
+  grid-template-columns: repeat(6, 30px);
   gap: 4px;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
