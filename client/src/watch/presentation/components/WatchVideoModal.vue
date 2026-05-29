@@ -281,6 +281,7 @@ const {
   submitComment,
   handleMenuAction,
   downloadMedia,
+  refreshComments,
 } = useFeedPostCardVM(toRef(props, "post") as Ref<FeedPostRecord>)
 
 const formattedTime = computed(() => {
@@ -362,11 +363,19 @@ watch(() => props.post, () => {
     videoRef.value.load()
     videoRef.value.play()
   }
+  if (props.post) {
+    refreshComments()
+  }
 })
 
 watch(() => props.open, (isOpen) => {
-  if (isOpen && import.meta.client) {
-    document.body.style.overflow = "hidden"
+  if (isOpen) {
+    if (import.meta.client) {
+      document.body.style.overflow = "hidden"
+    }
+    if (props.post) {
+      refreshComments()
+    }
   } else if (import.meta.client) {
     document.body.style.overflow = ""
   }

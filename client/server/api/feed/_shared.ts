@@ -887,7 +887,7 @@ const mapCommentRecord = (
     authorAvatarUrl: resolveMediaUrl(firstString(publisher, ["avatar", "avatar_full"])),
     authorPath: username ? `/@${username}` : undefined,
     role: firstString(publisher, ["working", "school"]) || author,
-    text: stripHtml(firstString(entity, ["text", "Orginaltext", "comment"])),
+    text: stripHtml(firstString(entity, ["Orginaltext", "text", "comment"])),
     time: firstString(entity, ["time_text", "posted"]) || formatBackendTimestamp(entity.time),
     attachment,
     reactionsCount: firstNumber(reaction, ["count", "reactions_count", "total"]),
