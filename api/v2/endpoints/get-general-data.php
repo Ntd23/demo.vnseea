@@ -52,9 +52,18 @@ if (empty($error_code)) {
         $data[$value] = $value;
     }
     if (empty($wo['user']['timezone'])) {
-        $wo['user']['timezone'] = 'UTC';
-    }
-    $timezone      = new DateTimeZone($wo['user']['timezone']);
+    $wo['user']['timezone'] = 'UTC';
+}
+
+if ($wo['user']['timezone'] == 'Asia/Saigon') {
+    $wo['user']['timezone'] = 'Asia/Ho_Chi_Minh';
+}
+
+if (!in_array($wo['user']['timezone'], timezone_identifiers_list())) {
+    $wo['user']['timezone'] = 'UTC';
+}
+
+$timezone = new DateTimeZone($wo['user']['timezone']);
 
     if (!empty($data['notifications'])) {
     	$final_notifications= array();
