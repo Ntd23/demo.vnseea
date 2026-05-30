@@ -538,6 +538,7 @@
         <div
           :ref="element => setMiniMessagesViewport(miniSession.contactId, element)"
           class="chat-widget__mini-messages"
+          @scroll="handleMiniScroll($event, miniSession)"
         >
           <div v-if="miniSession.isLoading" class="space-y-3">
             <USkeleton v-for="index in 3" :key="index" class="h-12 rounded-2xl" />
@@ -549,6 +550,9 @@
           </div>
 
           <div v-else class="chat-widget__mini-thread">
+            <div v-if="miniSession.isLoadingMore" class="flex justify-center py-2">
+              <UIcon name="i-ph-circle-notch-bold" class="h-4 w-4 animate-spin text-primary-500" />
+            </div>
             <div
               v-for="message in miniSession.messages"
               :key="message.id"
@@ -751,7 +755,7 @@ import { useMessageRecorder } from "../../../messages/application/composables/us
 import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
 import type { MessageCallType } from "../../../messages/domain/types/calls.types"
 import type { MessageContact, MessageItem } from "../../../messages/domain/types/messages.types"
-import { useChatWidgetVM } from "../../application/composables/useChatWidgetVM"
+import { useChatWidgetVM } from "../../application/view-models/useChatWidgetVM"
 
 const tabs = [
   {
@@ -849,6 +853,7 @@ const {
   clearFile,
   openFullMessages,
   openMessagesTab,
+  loadOlderMiniMessages,
 } = useChatWidgetVM()
 
 type MiniChatSessionView = (typeof miniChatSessions)["value"][number]
@@ -1477,6 +1482,16 @@ function setMiniMessagesViewport(contactId: string, element: unknown) {
   }
 
   miniMessagesViewports.delete(contactId)
+}
+
+async function handleMiniScroll(event: Event, session: MiniChatSessionView) {
+  const target = event.target as HTMLElement
+  if (target.scrollTop === 0 && !session.isLoadingMore) {
+    const previousScrollHeight = target.scrollHeight
+    await loadOlderMiniMessages(session.contactId)
+    await nextTick()
+    target.scrollTop = target.scrollHeight - previousScrollHeight
+  }
 }
 
 function scrollMiniMessagesToBottom(contactId?: string) {

@@ -5,10 +5,12 @@ import type { Socket } from "socket.io-client"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessageContact, MessageItem, MessageRecordDraft, MessageSendDraft, MessageTagsPayload, MessageThread, MessageUserTag } from "../../../messages/domain/types/messages.types"
+import type { MessagesRepository } from "../../../messages/domain/repositories/MessagesRepository"
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
 
 type ChatWidgetTab = "send" | "contacts" | "groups"
 type MiniChatDraft = {
+  tempId: number
   text: string
   file: File | null
   record: MessageRecordDraft | null
@@ -19,6 +21,7 @@ type MiniChatSession = {
   attachFile: File | null
   thread: MessageThread
   isLoading: boolean
+  isLoadingMore: boolean
   isSending: boolean
   minimized: boolean
   openedAt: number
@@ -30,7 +33,7 @@ type MiniChatSessionView = MiniChatSession & {
   canSend: boolean
 }
 
-const INBOX_REFRESH_INTERVAL_MS = 20000
+const INBOX_REFRESH_INTERVAL_MS = 6000
 const MAX_MINI_CHAT_SESSIONS = 2
 
 function normalizeKeyword(value: string) {
@@ -86,6 +89,40 @@ function createEmptyThread(): MessageThread {
     messages: [],
     typing: false,
   }
+}
+
+function sortMiniMessages(messages: MessageItem[]) {
+  return [...messages].sort((left, right) => {
+    const leftTimestamp = left.timestamp ?? 0
+    const rightTimestamp = right.timestamp ?? 0
+
+    if (leftTimestamp !== rightTimestamp) {
+      return leftTimestamp - rightTimestamp
+    }
+
+    return left.id - right.id
+  })
+}
+
+function decorateMiniMessages(messages: MessageItem[]) {
+  return sortMiniMessages(messages).map((message, index, list) => {
+    const nextMessage = list[index + 1]
+    const previousMessage = list[index - 1]
+    const isGroupThread = message.threadType === "group"
+    const senderChangedFromPrevious = !previousMessage
+      || previousMessage.isMine
+      || previousMessage.senderId !== message.senderId
+    const senderChangedToNext = !nextMessage
+      || nextMessage.isMine !== message.isMine
+      || (isGroupThread && !message.isMine && nextMessage.senderId !== message.senderId)
+
+    return {
+      ...message,
+      isLast: senderChangedToNext,
+      showAuthor: isGroupThread && !message.isMine && Boolean(message.authorName) && senderChangedFromPrevious,
+      showTime: !previousMessage || Math.abs((message.timestamp ?? 0) - (previousMessage.timestamp ?? 0)) > 1800,
+    }
+  })
 }
 
 function formatLastSeenLabel(lastSeenAt: number | undefined, t: ReturnType<typeof useI18n>["t"]) {
@@ -158,11 +195,17 @@ function buildMessagesRouteQuery(contact?: MessageContact | null) {
   return {}
 }
 
-export function useChatWidgetVM() {
+const cachedInbox = ref<MessageContact[]>([])
+const cachedTags = ref<MessageTagsPayload>({ labels: [], contacts: [] })
+const cachedThreads = new Map<string, MessageThread>()
+
+export function useChatWidgetVM(
+  repository: MessagesRepository = createApiMessagesRepository(),
+) {
   const { t } = useI18n()
   const router = useRouter()
   const toast = useToast()
-  const repository = createApiMessagesRepository()
+  const nuxtApp = useNuxtApp()
 
   const activeTab = ref<ChatWidgetTab>("contacts")
   const search = ref("")
@@ -177,7 +220,7 @@ export function useChatWidgetVM() {
   const isSendingQuick = ref(false)
   const socket = shallowRef<Socket | null>(null)
   const refreshTimer = shallowRef<number | null>(null)
-  const unreadSnapshot = shallowRef<Map<string, number>>(new Map())
+  const unreadSnapshot = shallowRef<Map<string, { unreadCount: number, preview: string }>>(new Map())
   const hasUnreadSnapshot = ref(false)
 
   const {
@@ -186,9 +229,41 @@ export function useChatWidgetVM() {
     refresh: refreshInboxData,
   } = useAsyncData(
     "navigation:chat-widget:inbox",
-    () => repository.getInbox(),
+    async () => {
+      const data = await repository.getInbox()
+      if (import.meta.client) {
+        cachedInbox.value = data
+        try {
+          sessionStorage.setItem("cache:chat-widget:inbox", JSON.stringify(data))
+        }
+        catch {}
+      }
+      return data
+    },
     {
-      default: () => [],
+      default: () => {
+        if (import.meta.client) {
+          if (cachedInbox.value.length > 0) {
+            return cachedInbox.value
+          }
+          try {
+            const saved = sessionStorage.getItem("cache:chat-widget:inbox")
+            if (saved) {
+              const parsed = JSON.parse(saved)
+              cachedInbox.value = parsed
+              return parsed
+            }
+          }
+          catch {}
+        }
+        return []
+      },
+      getCachedData(key) {
+        if (cachedInbox.value.length > 0 && (!inbox || !inbox.value || inbox.value.length === 0)) {
+          return cachedInbox.value
+        }
+        return undefined
+      },
     },
   )
   const hasLoadedInboxOnce = computed(() => (inbox.value?.length ?? 0) > 0)
@@ -197,9 +272,41 @@ export function useChatWidgetVM() {
     data: messageTags,
   } = useAsyncData<MessageTagsPayload>(
     "navigation:chat-widget:tags",
-    () => repository.getTags(),
+    async () => {
+      const data = await repository.getTags()
+      if (import.meta.client) {
+        cachedTags.value = data
+        try {
+          sessionStorage.setItem("cache:chat-widget:tags", JSON.stringify(data))
+        }
+        catch {}
+      }
+      return data
+    },
     {
-      default: () => ({ labels: [], contacts: [] }),
+      default: () => {
+        if (import.meta.client) {
+          if (cachedTags.value.labels.length > 0 || cachedTags.value.contacts.length > 0) {
+            return cachedTags.value
+          }
+          try {
+            const saved = sessionStorage.getItem("cache:chat-widget:tags")
+            if (saved) {
+              const parsed = JSON.parse(saved)
+              cachedTags.value = parsed
+              return parsed
+            }
+          }
+          catch {}
+        }
+        return { labels: [], contacts: [] }
+      },
+      getCachedData(key) {
+        if ((cachedTags.value.labels.length > 0 || cachedTags.value.contacts.length > 0) && (!messageTags || !messageTags.value || (messageTags.value.labels.length === 0 && messageTags.value.contacts.length === 0))) {
+          return cachedTags.value
+        }
+        return undefined
+      },
     },
   )
 
@@ -309,7 +416,7 @@ export function useChatWidgetVM() {
     },
   })
   const miniMessages = computed<MessageItem[]>(() =>
-    activeMiniSession.value?.thread.messages.slice(-14) ?? [],
+    activeMiniSession.value ? decorateMiniMessages(activeMiniSession.value.thread.messages) : [],
   )
   const isLoadingThread = computed(() => Boolean(activeMiniSession.value?.isLoading))
   const isSendingMini = computed(() => Boolean(activeMiniSession.value?.isSending))
@@ -325,7 +432,7 @@ export function useChatWidgetVM() {
 
       sessions.push(Object.assign(session, {
         contact,
-        messages: session.thread.messages.slice(-14),
+        messages: decorateMiniMessages(session.thread.messages),
         canSend: Boolean(contact)
           && (session.message.trim().length > 0 || Boolean(session.attachFile))
           && !session.isSending,
@@ -387,24 +494,50 @@ export function useChatWidgetVM() {
 
   function updateUnreadSnapshot(contacts = allContacts.value) {
     unreadSnapshot.value = new Map(
-      contacts.map(contact => [contact.id, contact.unreadCount ?? 0]),
+      contacts.map(contact => [contact.id, {
+        unreadCount: contact.unreadCount ?? 0,
+        preview: contact.preview ?? "",
+      }]),
     )
     hasUnreadSnapshot.value = true
   }
 
   function findNewIncomingContact(contacts = allContacts.value) {
+    console.log("[ChatWidgetVM] findNewIncomingContact check, hasUnreadSnapshot:", hasUnreadSnapshot.value, "contacts count:", contacts.length)
     if (!hasUnreadSnapshot.value) {
-      updateUnreadSnapshot(contacts)
+      console.log("[ChatWidgetVM] findNewIncomingContact skipped because hasUnreadSnapshot is false")
       return null
     }
 
     const previous = unreadSnapshot.value
+    console.log("[ChatWidgetVM] previous snapshot entries:", [...previous.entries()])
 
     return contacts.find((contact) => {
-      const unreadCount = contact.unreadCount ?? 0
-      const previousUnreadCount = previous.get(contact.id) ?? 0
+      const prev = previous.get(contact.id)
+      if (!prev) {
+        const isMine = contact.preview?.startsWith("Bạn:") || contact.preview?.startsWith("You:")
+        console.log(`[ChatWidgetVM] Contact ${contact.name} not in previous snapshot. preview: '${contact.preview}', isMine: ${isMine}`)
+        return contact.preview && !isMine
+      }
 
-      return unreadCount > previousUnreadCount
+      const unreadCount = contact.unreadCount ?? 0
+      const preview = contact.preview ?? ""
+
+      const unreadIncreased = unreadCount > prev.unreadCount
+      const isMine = preview.startsWith("Bạn:") || preview.startsWith("You:")
+      const previewChanged = preview !== prev.preview && !isMine
+
+      console.log(`[ChatWidgetVM] Contact ${contact.name}:`, {
+        prevUnread: prev.unreadCount,
+        newUnread: unreadCount,
+        unreadIncreased,
+        prevPreview: prev.preview,
+        newPreview: preview,
+        previewChanged,
+        isMine
+      })
+
+      return unreadIncreased || previewChanged
     }) ?? null
   }
 
@@ -477,16 +610,24 @@ export function useChatWidgetVM() {
   }
 
   async function refreshFromIncomingMessage() {
+    console.log("[ChatWidgetVM] refreshFromIncomingMessage triggered")
+    await new Promise(resolve => setTimeout(resolve, 800))
+    console.log("[ChatWidgetVM] refreshFromIncomingMessage: calling refreshInboxSafely...")
     await refreshInboxSafely({ silent: true })
+    console.log("[ChatWidgetVM] refreshFromIncomingMessage: inbox refreshed. contacts size now:", allContacts.value.length)
 
     const incomingContact = findNewIncomingContact()
+    console.log("[ChatWidgetVM] refreshFromIncomingMessage: findNewIncomingContact returned:", incomingContact ? incomingContact.name : "null")
     updateUnreadSnapshot()
 
+    await refreshAllMiniThreads({ silent: true })
+
     if (!incomingContact) {
-      await refreshAllMiniThreads({ silent: true })
+      console.log("[ChatWidgetVM] refreshFromIncomingMessage: no incoming contact found, stopping")
       return
     }
 
+    console.log("[ChatWidgetVM] refreshFromIncomingMessage: opening mini chat for:", incomingContact.name)
     await openMiniChat(incomingContact)
     miniChatAutoOpenVersion.value += 1
   }
@@ -515,7 +656,47 @@ export function useChatWidgetVM() {
     }
 
     try {
-      session.thread = await repository.getThread(contact)
+      const incomingThread = await repository.getThread(contact)
+      if (session.thread.messages.length === 0) {
+        session.thread = incomingThread
+      }
+      else {
+        const incomingTexts = new Set(incomingThread.messages.filter(m => m.isMine).map(m => m.text))
+        const currentMessages = session.thread.messages.filter(msg => {
+          if (msg.id < 0 && incomingTexts.has(msg.text)) {
+            return false
+          }
+          return true
+        })
+
+        const merged = [...currentMessages, ...incomingThread.messages]
+        const seen = new Set<number>()
+        const unique = merged.filter((msg) => {
+          if (seen.has(msg.id)) {
+            return false
+          }
+          seen.add(msg.id)
+          return true
+        })
+        unique.sort((a, b) => {
+          const aTime = a.timestamp ?? 0
+          const bTime = b.timestamp ?? 0
+          if (aTime !== bTime) {
+            return aTime - bTime
+          }
+          return a.id - b.id
+        })
+        session.thread.messages = unique
+        session.thread.typing = incomingThread.typing
+      }
+
+      if (import.meta.client) {
+        cachedThreads.set(contact.id, session.thread)
+        try {
+          sessionStorage.setItem(`cache:chat-widget:thread:${contact.id}`, JSON.stringify(session.thread))
+        }
+        catch {}
+      }
     }
     catch {
       if (!options?.silent) {
@@ -537,10 +718,61 @@ export function useChatWidgetVM() {
     await Promise.all(miniChatSessions.value.map(session => refreshMiniThread(session, options)))
   }
 
+  async function loadOlderMiniMessages(contactId: string) {
+    const session = findMiniSession(contactId)
+    const contact = session ? getSessionContact(session) : null
+    const firstMessageId = session?.thread.messages[0]?.id
+
+    if (!session || !contact || !firstMessageId || session.isLoadingMore) {
+      return
+    }
+
+    session.isLoadingMore = true
+
+    try {
+      const olderThread = await repository.getThread(contact, { beforeId: firstMessageId })
+
+      if (olderThread.messages.length > 0) {
+        const merged = [...olderThread.messages, ...session.thread.messages]
+        const seen = new Set<number>()
+        const unique = merged.filter((msg) => {
+          if (seen.has(msg.id)) {
+            return false
+          }
+          seen.add(msg.id)
+          return true
+        })
+
+        unique.sort((a, b) => {
+          const aTime = a.timestamp ?? 0
+          const bTime = b.timestamp ?? 0
+          if (aTime !== bTime) {
+            return aTime - bTime
+          }
+          return a.id - b.id
+        })
+
+        session.thread.messages = unique
+      }
+    }
+    catch {
+      toast.add({
+        title: t("navigation.chatWidget.threadErrorTitle"),
+        description: t("navigation.chatWidget.threadErrorDescription"),
+        color: "error",
+      })
+    }
+    finally {
+      session.isLoadingMore = false
+    }
+  }
+
   async function openMiniChat(contact: MessageContact) {
+    console.log("[ChatWidgetVM] openMiniChat called for:", contact.name, "contact ID:", contact.id)
     const existingSession = findMiniSession(contact.id)
 
     if (existingSession) {
+      console.log("[ChatWidgetVM] openMiniChat: existing session found, restoring minimized=false")
       existingSession.minimized = false
       existingSession.openedAt = Date.now()
       miniChatSessions.value = [
@@ -551,12 +783,27 @@ export function useChatWidgetVM() {
       return
     }
 
+    let cachedThread = cachedThreads.get(contact.id)
+    if (!cachedThread && import.meta.client) {
+      try {
+        const saved = sessionStorage.getItem(`cache:chat-widget:thread:${contact.id}`)
+        if (saved) {
+          cachedThread = JSON.parse(saved)
+          if (cachedThread) {
+            cachedThreads.set(contact.id, cachedThread)
+          }
+        }
+      }
+      catch {}
+    }
+
     const nextSession: MiniChatSession = {
       contactId: contact.id,
       message: "",
       attachFile: null,
-      thread: createEmptyThread(),
+      thread: cachedThread ?? createEmptyThread(),
       isLoading: false,
+      isLoadingMore: false,
       isSending: false,
       minimized: false,
       openedAt: Date.now(),
@@ -689,11 +936,37 @@ export function useChatWidgetVM() {
       const uploadedRecord = draft.record
         ? await uploadRecordDraft(draft.record)
         : null
-      await sendMessageToContact(contact, {
+
+      const createdMessages = await repository.sendMessage(contact, {
         text: draft.text,
         file: draft.file,
         record: uploadedRecord,
-      }, session)
+      })
+
+      const realMsg = createdMessages?.[0]
+      if (realMsg) {
+        session.thread.messages = session.thread.messages.map(msg =>
+          msg.id === draft.tempId ? { ...realMsg, isLast: msg.isLast } : msg
+        )
+
+        const contactInInbox = inbox.value.find(c => c.id === contact.id)
+        if (contactInInbox) {
+          contactInInbox.preview = realMsg.text || (realMsg.mediaType ? `[${realMsg.mediaType}]` : "")
+          contactInInbox.time = realMsg.time || t("navigation.chatWidget.justNow") || "Vừa xong"
+        }
+      } else {
+        session.thread.messages = session.thread.messages.filter(msg => msg.id !== draft.tempId)
+      }
+
+      void refreshInboxSafely({ silent: true })
+
+      if (import.meta.client) {
+        cachedThreads.set(contact.id, session.thread)
+        try {
+          sessionStorage.setItem(`cache:chat-widget:thread:${contact.id}`, JSON.stringify(session.thread))
+        }
+        catch {}
+      }
 
       session.sendQueue.shift()
     }
@@ -703,6 +976,7 @@ export function useChatWidgetVM() {
         description: t("navigation.chatWidget.sendErrorDescription"),
         color: "error",
       })
+      session.thread.messages = session.thread.messages.filter(msg => msg.id !== draft.tempId)
       session.sendQueue.shift()
     }
     finally {
@@ -725,7 +999,45 @@ export function useChatWidgetVM() {
       session.sendQueue = []
     }
 
+    const tempId = -Math.floor(Math.random() * 1000000)
+    let mediaType: MessageItem["mediaType"] = undefined
+    let mediaName = ""
+
+    if (session.attachFile) {
+      mediaName = session.attachFile.name
+      const fileType = session.attachFile.type
+      if (fileType.startsWith("image/")) mediaType = "image"
+      else if (fileType.startsWith("video/")) mediaType = "video"
+      else if (fileType.startsWith("audio/")) mediaType = "audio"
+      else if (fileType.includes("gif")) mediaType = "gif"
+      else mediaType = "file"
+    }
+    else if (recordDraft) {
+      mediaType = "record"
+      mediaName = recordDraft.fileName
+    }
+
+    const optimisticMessage: MessageItem = {
+      id: tempId,
+      text,
+      isMine: true,
+      time: t("navigation.chatWidget.sendingStatus") || "Đang gửi...",
+      timestamp: Math.floor(Date.now() / 1000),
+      mediaName,
+      mediaType,
+      mediaUrl: recordDraft ? recordDraft.previewUrl : session.attachFile ? URL.createObjectURL(session.attachFile) : undefined,
+    }
+
+    session.thread.messages = [...session.thread.messages, optimisticMessage]
+
+    const contactInInbox = inbox.value.find(c => c.id === contact.id)
+    if (contactInInbox) {
+      contactInInbox.preview = text || (mediaType ? `[${mediaType}]` : "")
+      contactInInbox.time = t("navigation.chatWidget.sendingStatus") || "Đang gửi..."
+    }
+
     session.sendQueue.push({
+      tempId,
       text,
       file: session.attachFile,
       record: recordDraft,
@@ -856,18 +1168,23 @@ export function useChatWidgetVM() {
   }
 
   async function connectRealtime() {
+    console.log("[ChatWidgetVM] connectRealtime starting...")
     if (!import.meta.client || socket.value) {
+      console.log("[ChatWidgetVM] connectRealtime: client side only check failed or socket already exists")
       return
     }
 
     try {
       const auth = await repository.getRealtimeToken()
+      console.log("[ChatWidgetVM] getRealtimeToken returned:", auth)
 
       if (!auth.enabled || !auth.token || !auth.url) {
+        console.log("[ChatWidgetVM] connectRealtime: auth check failed")
         return
       }
 
       const { io } = await import("socket.io-client")
+      console.log("[ChatWidgetVM] Connecting to socket url:", auth.url)
       const realtimeSocket = io(auth.url, {
         auth: {
           token: auth.token,
@@ -877,22 +1194,37 @@ export function useChatWidgetVM() {
         reconnection: false,
       })
 
+      realtimeSocket.on("connect", () => {
+        console.log("[ChatWidgetVM] Socket connected successfully!")
+        const sessionHash = useCookie("user_id").value
+        if (sessionHash) {
+          console.log("[ChatWidgetVM] Socket emitting join with user_id:", sessionHash)
+          realtimeSocket.emit("join", { user_id: sessionHash })
+        } else {
+          console.log("[ChatWidgetVM] Socket connect warning: user_id cookie is empty!")
+        }
+      })
+
       realtimeSocket.on("messages:count", () => {
+        console.log("[ChatWidgetVM] Socket received 'messages:count' event!")
         void refreshFromIncomingMessage()
       })
 
-      realtimeSocket.on("disconnect", () => {
+      realtimeSocket.on("disconnect", (reason) => {
+        console.log("[ChatWidgetVM] Socket disconnected. Reason:", reason)
         socket.value = null
       })
 
-      realtimeSocket.on("connect_error", () => {
+      realtimeSocket.on("connect_error", (err) => {
+        console.error("[ChatWidgetVM] Socket connect_error:", err)
         realtimeSocket.disconnect()
         socket.value = null
       })
 
       socket.value = realtimeSocket
     }
-    catch {
+    catch (err) {
+      console.error("[ChatWidgetVM] connectRealtime try-catch error:", err)
       socket.value = null
     }
   }
@@ -908,11 +1240,6 @@ export function useChatWidgetVM() {
         .filter(id => id > 0),
     )
     selectedSendRecipientIds.value = selectedSendRecipientIds.value.filter(id => availableUserIds.has(id))
-
-    if (!hasUnreadSnapshot.value && contacts.length > 0) {
-      updateUnreadSnapshot(contacts)
-      return
-    }
 
     const contactIds = new Set(contacts.map(contact => contact.id))
     unreadSnapshot.value = new Map(
@@ -931,8 +1258,22 @@ export function useChatWidgetVM() {
 
   onMounted(() => {
     startRefreshTimer()
-    void refreshInboxSafely()
+    void refreshInboxSafely().then(() => {
+      if (!hasUnreadSnapshot.value && allContacts.value.length > 0) {
+        updateUnreadSnapshot(allContacts.value)
+      }
+    })
     void connectRealtime()
+
+    // Fallback watcher in case initial loading or cache is empty
+    if (!hasUnreadSnapshot.value) {
+      const unwatch = watch(inboxStatus, (status) => {
+        if (status === "success" && allContacts.value.length > 0) {
+          updateUnreadSnapshot(allContacts.value)
+          unwatch()
+        }
+      })
+    }
   })
 
   onBeforeUnmount(() => {
@@ -991,5 +1332,6 @@ export function useChatWidgetVM() {
     clearFile,
     openFullMessages,
     openMessagesTab,
+    loadOlderMiniMessages,
   }
 }
