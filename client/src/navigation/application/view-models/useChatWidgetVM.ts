@@ -19,6 +19,7 @@ type MiniChatSession = {
   contactId: string
   message: string
   attachFile: File | null
+  attachFilePreviewUrl?: string | null
   thread: MessageThread
   isLoading: boolean
   isLoadingMore: boolean
@@ -213,6 +214,16 @@ export function useChatWidgetVM(
   const sendTo = ref("")
   const sendMessage = ref("")
   const attachFile = ref<File | null>(null)
+  const attachFilePreviewUrl = ref<string | null>(null)
+  watch(attachFile, (newFile) => {
+    if (attachFilePreviewUrl.value) {
+      URL.revokeObjectURL(attachFilePreviewUrl.value)
+      attachFilePreviewUrl.value = null
+    }
+    if (newFile && newFile.type.startsWith("image/")) {
+      attachFilePreviewUrl.value = URL.createObjectURL(newFile)
+    }
+  })
   const selectedSendRecipientIds = ref<number[]>([])
 
   const miniChatAutoOpenVersion = ref(0)
@@ -503,20 +514,16 @@ export function useChatWidgetVM(
   }
 
   function findNewIncomingContact(contacts = allContacts.value) {
-    console.log("[ChatWidgetVM] findNewIncomingContact check, hasUnreadSnapshot:", hasUnreadSnapshot.value, "contacts count:", contacts.length)
     if (!hasUnreadSnapshot.value) {
-      console.log("[ChatWidgetVM] findNewIncomingContact skipped because hasUnreadSnapshot is false")
       return null
     }
 
     const previous = unreadSnapshot.value
-    console.log("[ChatWidgetVM] previous snapshot entries:", [...previous.entries()])
 
     return contacts.find((contact) => {
       const prev = previous.get(contact.id)
       if (!prev) {
         const isMine = contact.preview?.startsWith("Bạn:") || contact.preview?.startsWith("You:")
-        console.log(`[ChatWidgetVM] Contact ${contact.name} not in previous snapshot. preview: '${contact.preview}', isMine: ${isMine}`)
         return contact.preview && !isMine
       }
 
@@ -526,16 +533,6 @@ export function useChatWidgetVM(
       const unreadIncreased = unreadCount > prev.unreadCount
       const isMine = preview.startsWith("Bạn:") || preview.startsWith("You:")
       const previewChanged = preview !== prev.preview && !isMine
-
-      console.log(`[ChatWidgetVM] Contact ${contact.name}:`, {
-        prevUnread: prev.unreadCount,
-        newUnread: unreadCount,
-        unreadIncreased,
-        prevPreview: prev.preview,
-        newPreview: preview,
-        previewChanged,
-        isMine
-      })
 
       return unreadIncreased || previewChanged
     }) ?? null
@@ -610,24 +607,18 @@ export function useChatWidgetVM(
   }
 
   async function refreshFromIncomingMessage() {
-    console.log("[ChatWidgetVM] refreshFromIncomingMessage triggered")
     await new Promise(resolve => setTimeout(resolve, 800))
-    console.log("[ChatWidgetVM] refreshFromIncomingMessage: calling refreshInboxSafely...")
     await refreshInboxSafely({ silent: true })
-    console.log("[ChatWidgetVM] refreshFromIncomingMessage: inbox refreshed. contacts size now:", allContacts.value.length)
 
     const incomingContact = findNewIncomingContact()
-    console.log("[ChatWidgetVM] refreshFromIncomingMessage: findNewIncomingContact returned:", incomingContact ? incomingContact.name : "null")
     updateUnreadSnapshot()
 
     await refreshAllMiniThreads({ silent: true })
 
     if (!incomingContact) {
-      console.log("[ChatWidgetVM] refreshFromIncomingMessage: no incoming contact found, stopping")
       return
     }
 
-    console.log("[ChatWidgetVM] refreshFromIncomingMessage: opening mini chat for:", incomingContact.name)
     await openMiniChat(incomingContact)
     miniChatAutoOpenVersion.value += 1
   }
@@ -768,11 +759,9 @@ export function useChatWidgetVM(
   }
 
   async function openMiniChat(contact: MessageContact) {
-    console.log("[ChatWidgetVM] openMiniChat called for:", contact.name, "contact ID:", contact.id)
     const existingSession = findMiniSession(contact.id)
 
     if (existingSession) {
-      console.log("[ChatWidgetVM] openMiniChat: existing session found, restoring minimized=false")
       existingSession.minimized = false
       existingSession.openedAt = Date.now()
       miniChatSessions.value = [
@@ -1044,6 +1033,10 @@ export function useChatWidgetVM(
     })
 
     session.message = ""
+    if (session.attachFilePreviewUrl) {
+      URL.revokeObjectURL(session.attachFilePreviewUrl)
+      session.attachFilePreviewUrl = null
+    }
     session.attachFile = null
 
     void processMiniSendQueue(session, contact)
@@ -1111,7 +1104,15 @@ export function useChatWidgetVM(
     const input = event.target as HTMLInputElement
     const session = contactId ? findMiniSession(contactId) : activeMiniSession.value
     if (session) {
-      session.attachFile = input.files?.[0] ?? null
+      if (session.attachFilePreviewUrl) {
+        URL.revokeObjectURL(session.attachFilePreviewUrl)
+        session.attachFilePreviewUrl = null
+      }
+      const file = input.files?.[0] ?? null
+      session.attachFile = file
+      if (file && file.type.startsWith("image/")) {
+        session.attachFilePreviewUrl = URL.createObjectURL(file)
+      }
     }
     input.value = ""
   }
@@ -1119,7 +1120,11 @@ export function useChatWidgetVM(
   function clearMiniFile(contactId = activeMiniSession.value?.contactId ?? "") {
     const session = contactId ? findMiniSession(contactId) : activeMiniSession.value
     if (session) {
+      if (session.attachFilePreviewUrl) {
+        URL.revokeObjectURL(session.attachFilePreviewUrl)
+      }
       session.attachFile = null
+      session.attachFilePreviewUrl = null
     }
   }
 
@@ -1168,23 +1173,18 @@ export function useChatWidgetVM(
   }
 
   async function connectRealtime() {
-    console.log("[ChatWidgetVM] connectRealtime starting...")
     if (!import.meta.client || socket.value) {
-      console.log("[ChatWidgetVM] connectRealtime: client side only check failed or socket already exists")
       return
     }
 
     try {
       const auth = await repository.getRealtimeToken()
-      console.log("[ChatWidgetVM] getRealtimeToken returned:", auth)
 
       if (!auth.enabled || !auth.token || !auth.url) {
-        console.log("[ChatWidgetVM] connectRealtime: auth check failed")
         return
       }
 
       const { io } = await import("socket.io-client")
-      console.log("[ChatWidgetVM] Connecting to socket url:", auth.url)
       const realtimeSocket = io(auth.url, {
         auth: {
           token: auth.token,
@@ -1195,36 +1195,28 @@ export function useChatWidgetVM(
       })
 
       realtimeSocket.on("connect", () => {
-        console.log("[ChatWidgetVM] Socket connected successfully!")
         const sessionHash = useCookie("user_id").value
         if (sessionHash) {
-          console.log("[ChatWidgetVM] Socket emitting join with user_id:", sessionHash)
           realtimeSocket.emit("join", { user_id: sessionHash })
-        } else {
-          console.log("[ChatWidgetVM] Socket connect warning: user_id cookie is empty!")
         }
       })
 
       realtimeSocket.on("messages:count", () => {
-        console.log("[ChatWidgetVM] Socket received 'messages:count' event!")
         void refreshFromIncomingMessage()
       })
 
-      realtimeSocket.on("disconnect", (reason) => {
-        console.log("[ChatWidgetVM] Socket disconnected. Reason:", reason)
+      realtimeSocket.on("disconnect", () => {
         socket.value = null
       })
 
-      realtimeSocket.on("connect_error", (err) => {
-        console.error("[ChatWidgetVM] Socket connect_error:", err)
+      realtimeSocket.on("connect_error", () => {
         realtimeSocket.disconnect()
         socket.value = null
       })
 
       socket.value = realtimeSocket
     }
-    catch (err) {
-      console.error("[ChatWidgetVM] connectRealtime try-catch error:", err)
+    catch {
       socket.value = null
     }
   }
@@ -1283,6 +1275,15 @@ export function useChatWidgetVM(
       socket.value.disconnect()
       socket.value = null
     }
+
+    if (attachFilePreviewUrl.value) {
+      URL.revokeObjectURL(attachFilePreviewUrl.value)
+    }
+    miniChatSessions.value.forEach((session) => {
+      if (session.attachFilePreviewUrl) {
+        URL.revokeObjectURL(session.attachFilePreviewUrl)
+      }
+    })
   })
 
   return {
@@ -1292,6 +1293,7 @@ export function useChatWidgetVM(
     sendTo,
     sendMessage,
     attachFile,
+    attachFilePreviewUrl,
     allVisibleSendRecipientsSelected,
     sendCandidates,
     selectedSendRecipientIds,

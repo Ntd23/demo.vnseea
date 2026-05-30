@@ -184,16 +184,30 @@
               <Icon name="i-ph-paperclip-duotone" class="h-4 w-4" />
               <span>{{ $t("navigation.chatWidget.chooseFile") }}</span>
             </button>
-            <span v-if="attachFile" class="chat-widget__file-name">{{ attachFile.name }}</span>
-            <button
-              v-if="attachFile"
-              class="chat-widget__clear-btn"
-              type="button"
-              :title="$t('navigation.chatWidget.clearAttachment')"
-              @click="clearFile"
-            >
-              <Icon name="i-ph-x-bold" class="h-3 w-3" />
-            </button>
+            <template v-if="attachFile">
+              <div v-if="attachFilePreviewUrl" class="chat-widget__image-preview-container">
+                <img :src="attachFilePreviewUrl" class="chat-widget__image-preview" alt="Preview" />
+                <button
+                  class="chat-widget__image-preview-clear"
+                  type="button"
+                  :title="$t('navigation.chatWidget.clearAttachment')"
+                  @click="clearFile"
+                >
+                  <Icon name="i-ph-x-bold" class="h-3 w-3" />
+                </button>
+              </div>
+              <template v-else>
+                <span class="chat-widget__file-name">{{ attachFile.name }}</span>
+                <button
+                  class="chat-widget__clear-btn"
+                  type="button"
+                  :title="$t('navigation.chatWidget.clearAttachment')"
+                  @click="clearFile"
+                >
+                  <Icon name="i-ph-x-bold" class="h-3 w-3" />
+                </button>
+              </template>
+            </template>
           </div>
         </div>
       </div>
@@ -612,12 +626,20 @@
               <Icon name="i-ph-x-bold" class="h-3 w-3" />
             </button>
           </div>
-          <div v-if="miniSession.attachFile" class="chat-widget__mini-file-preview">
-            <Icon name="i-ph-paperclip-duotone" class="h-3.5 w-3.5" />
-            <span>{{ miniSession.attachFile.name }}</span>
-            <button type="button" @click="clearMiniFile(miniSession.contact.id)">
-              <Icon name="i-ph-x-bold" class="h-3 w-3" />
-            </button>
+          <div v-if="miniSession.attachFile" class="chat-widget__mini-file-preview-container">
+            <div v-if="miniSession.attachFilePreviewUrl" class="chat-widget__mini-image-preview-wrapper">
+              <img :src="miniSession.attachFilePreviewUrl" class="chat-widget__mini-image-preview" alt="Preview" />
+              <button type="button" class="chat-widget__mini-image-preview-clear" @click="clearMiniFile(miniSession.contact.id)">
+                <Icon name="i-ph-x-bold" class="h-3 w-3" />
+              </button>
+            </div>
+            <div v-else class="chat-widget__mini-file-preview">
+              <Icon name="i-ph-paperclip-duotone" class="h-3.5 w-3.5" />
+              <span>{{ miniSession.attachFile.name }}</span>
+              <button type="button" @click="clearMiniFile(miniSession.contact.id)">
+                <Icon name="i-ph-x-bold" class="h-3 w-3" />
+              </button>
+            </div>
           </div>
           <div v-if="activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-file-preview">
             <Icon name="i-ph-microphone-duotone" class="h-3.5 w-3.5" />
@@ -653,9 +675,9 @@
               />
             </button>
           </div>
-           <input ref="miniImageInput" type="file" accept="image/*" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
-          <input ref="miniFileInput" type="file" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
-           <button
+          <input :id="`mini-image-input-${miniSession.contact.id}`" type="file" accept="image/*" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
+          <input :id="`mini-file-input-${miniSession.contact.id}`" type="file" class="hidden" @change="handleMiniFileChange(miniSession, $event)">
+          <button
             type="button"
             class="chat-widget__mini-tool-btn"
             :class="{ 'chat-widget__mini-tool-btn--active': isMiniRecording }"
@@ -665,10 +687,10 @@
           >
             <Icon :name="isMiniRecording ? 'i-ph-stop-circle-duotone' : 'i-ph-microphone-duotone'" class="h-4 w-4" />
           </button>
-          <button type="button" class="chat-widget__mini-tool-btn" :title="$t('pages.messagesPage.attachmentLabel')" @click="miniImageInput?.click()">
+          <button type="button" class="chat-widget__mini-tool-btn" :title="$t('pages.messagesPage.attachmentLabel')" @click="triggerMiniFileInput('image', miniSession.contact.id)">
             <Icon name="i-ph-image-duotone" class="h-4 w-4" />
           </button>
-          <button type="button" class="chat-widget__mini-tool-btn" :title="$t('navigation.chatWidget.chooseFile')" @click="miniFileInput?.click()">
+          <button type="button" class="chat-widget__mini-tool-btn" :title="$t('navigation.chatWidget.chooseFile')" @click="triggerMiniFileInput('file', miniSession.contact.id)">
             <Icon name="i-ph-paperclip-duotone" class="h-4 w-4" />
           </button>
         </div>
@@ -780,8 +802,6 @@ const tabs = [
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const { t } = useI18n()
-const miniImageInput = ref<HTMLInputElement | null>(null)
-const miniFileInput = ref<HTMLInputElement | null>(null)
 const miniMessagesViewports = new Map<string, HTMLElement>()
 const miniHeaderMenuRef = ref<HTMLElement | null>(null)
 const messageAvatarMenuRef = ref<HTMLElement | null>(null)
@@ -820,6 +840,7 @@ const {
   sendTo,
   sendMessage,
   attachFile,
+  attachFilePreviewUrl,
   allVisibleSendRecipientsSelected,
   sendCandidates,
   selectedSendRecipientIds,
@@ -930,6 +951,15 @@ async function openMiniChat(contact: Parameters<typeof openMiniChatVm>[0]) {
   await openMiniChatVm(contact)
   await nextTick()
   scrollMiniMessagesToBottom(contact.id)
+}
+
+function triggerMiniFileInput(type: 'image' | 'file', contactId: string) {
+  if (!import.meta.client) return
+  const inputId = type === 'image' ? `mini-image-input-${contactId}` : `mini-file-input-${contactId}`
+  const inputEl = document.getElementById(inputId) as HTMLInputElement | null
+  if (inputEl) {
+    inputEl.click()
+  }
 }
 
 function closeMiniChat() {
@@ -2353,6 +2383,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   max-height: none;
   overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
   padding: 14px;
   background: linear-gradient(180deg, rgba(248, 250, 252, 0.55) 0%, rgba(255, 255, 255, 1) 100%);
 }
@@ -3113,6 +3144,92 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__message-avatar-menu-item--danger:hover {
+  color: #dc2626;
+}
+
+.chat-widget__image-preview-container {
+  position: relative;
+  display: inline-flex;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: visible;
+  padding: 4px;
+  background: #ffffff;
+  margin-left: 8px;
+}
+
+.chat-widget__image-preview {
+  max-width: 60px;
+  max-height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.chat-widget__image-preview-clear {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #ef4444;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
+}
+
+.chat-widget__image-preview-clear:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.chat-widget__mini-file-preview-container {
+  display: flex;
+  width: 100%;
+}
+
+.chat-widget__mini-image-preview-wrapper {
+  position: relative;
+  display: inline-flex;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: visible;
+  padding: 4px;
+  background: #ffffff;
+}
+
+.chat-widget__mini-image-preview {
+  max-width: 50px;
+  max-height: 50px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.chat-widget__mini-image-preview-clear {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #ef4444;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
+}
+
+.chat-widget__mini-image-preview-clear:hover {
+  background: #fef2f2;
   color: #dc2626;
 }
 
