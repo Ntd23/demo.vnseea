@@ -8006,9 +8006,20 @@ function Wo_RegisterActivity($data = array())
     } else {
         $follow_id = Wo_Secure($data['follow_id']);
     }
-    @$post_id = Wo_Secure($data['post_id']);
-    @$user_id = Wo_Secure($data['user_id']);
-    @$post_user_id = Wo_Secure($data['post_user_id']);
+    $post_id = 0;
+if (!empty($data['post_id']) && is_numeric($data['post_id']) && $data['post_id'] > 0) {
+    $post_id = Wo_Secure($data['post_id']);
+}
+
+$user_id = 0;
+if (!empty($data['user_id']) && is_numeric($data['user_id']) && $data['user_id'] > 0) {
+    $user_id = Wo_Secure($data['user_id']);
+}
+
+$post_user_id = 0;
+if (!empty($data['post_user_id']) && is_numeric($data['post_user_id']) && $data['post_user_id'] > 0) {
+    $post_user_id = Wo_Secure($data['post_user_id']);
+}
     @$activity_type = Wo_Secure($data['activity_type']);
     // @$follow_id = Wo_Secure($data['follow_id']);
     $time = time();
