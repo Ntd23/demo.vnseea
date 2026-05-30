@@ -387,6 +387,7 @@ onMounted(() => {
   startTimer()
   connect().catch(() => {
     statusLabel.value = "Can not connect"
+    completeCall()
   })
 })
 

@@ -101,7 +101,7 @@ export function assertBackendStatus(response: BackendCallResponse, message: stri
 export function mapCreateResult(response: BackendCallResponse, type: MessageCallType): MessageCallCreateResult {
   return {
     status: asNumber(response.status),
-    id: asNumber(response.id),
+    id: asNumber(response.id) || asNumber(response.call_id),
     type,
     provider: asString(response.provider) || "livekit",
     busy: response.busy === true || response.busy === 1 || response.busy === "1",
@@ -131,11 +131,11 @@ export function mapLiveKitSession(response: BackendCallResponse, direction: "inc
   const livekit = asRecord(response.livekit)
   const currentUser = asRecord(response.current_user)
   const peer = asRecord(response.peer)
-  const id = asNumber(call.id)
-  const type = normalizeCallType(call.type)
-  const wsUrl = asString(livekit.ws_url)
+  const id = asNumber(call.id) || asNumber(call.call_id) || asNumber(response.call_id)
+  const type = normalizeCallType(call.type || call.call_type || response.call_type)
+  const wsUrl = asString(livekit.ws_url) || asString(livekit.url) || asString(response.ws_url)
   const token = asString(livekit.token)
-  const roomName = asString(call.room_name)
+  const roomName = asString(call.room_name) || asString(livekit.room_name) || asString(response.room_name)
 
   if (!id || !wsUrl || !token || !roomName) {
     throw createError({

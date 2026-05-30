@@ -143,10 +143,11 @@
               <Transition name="feed-live-player__tray">
                 <div v-if="reactionTrayOpen" class="feed-live-player__reaction-tray">
                   <button
-                    v-for="reaction in feedReactionAssets"
+                    v-for="(reaction, reactionIndex) in feedReactionAssets"
                     :key="reaction.value"
                     type="button"
                     class="feed-live-player__reaction-option"
+                    :style="{ '--reaction-index': String(reactionIndex) }"
                     :aria-label="reaction.value"
                     @click="selectReaction(reaction.value)"
                   >
@@ -918,6 +919,8 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   backdrop-filter: blur(12px);
   z-index: 30;
+  animation: live-reaction-tray-in 0.16s ease-out both;
+  will-change: transform, opacity;
 }
 
 .feed-live-player__reaction-option {
@@ -930,11 +933,14 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: 50%;
   cursor: pointer;
+  touch-action: manipulation;
   transition: transform 0.18s var(--ease-bounce);
+  will-change: transform;
 }
 
-.feed-live-player__reaction-option:hover {
-  transform: translateY(-4px);
+.feed-live-player__reaction-option:hover,
+.feed-live-player__reaction-option:focus-visible {
+  transform: translateY(-8px) scale(1.16);
 }
 
 .feed-live-player__reaction-image {
@@ -942,6 +948,19 @@ onBeforeUnmount(() => {
   width: 32px;
   height: 32px;
   object-fit: contain;
+  pointer-events: none;
+}
+
+@keyframes live-reaction-tray-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .feed-live-player__selected-reaction {

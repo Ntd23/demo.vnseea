@@ -72,7 +72,10 @@ export function useFeedPostCardVM(
   const sortedReactionSummaries = computed(() =>
     [...localReactionSummaries.value]
       .filter(item => item.count > 0)
-      .sort((left, right) => right.count - left.count),
+      .sort((left, right) =>
+        feedReactionAssets.findIndex(asset => asset.value === left.reaction)
+        - feedReactionAssets.findIndex(asset => asset.value === right.reaction),
+      ),
   )
   const previewReactions = computed(() =>
     sortedReactionSummaries.value
@@ -113,7 +116,16 @@ export function useFeedPostCardVM(
       })
     }
 
-    const users = [...usersById.values()]
+    const reactionOrder = new Map(feedReactionAssets.map((asset, index) => [asset.value, index]))
+    const users = [...usersById.values()].sort((left, right) => {
+      const reactionDiff = (reactionOrder.get(left.reaction) ?? 99) - (reactionOrder.get(right.reaction) ?? 99)
+
+      if (reactionDiff !== 0) {
+        return reactionDiff
+      }
+
+      return left.name.localeCompare(right.name)
+    })
     if (activeReactionFilter.value === "all") {
       return users
     }
