@@ -24,7 +24,10 @@ jobs:
           script_stop: true
           script: |
             set -e
+            export PATH="/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
+echo "node=$(node -v)"
+echo "pnpm=$(pnpm -v)"
             DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
 
             echo "==> Go to project"
