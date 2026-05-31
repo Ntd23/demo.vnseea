@@ -24,11 +24,23 @@ jobs:
           script_stop: true
           script: |
             set -e
-            export PATH="/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
-			echo "node=$(node -v)"
-			echo "pnpm=$(/root/.local/share/pnpm/bin/pnpm -v)"
-            
+            export PATH="/root/.local/share/pnpm/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
+            PNPM="/root/.local/share/pnpm/bin/pnpm"
+
+            echo "DEBUG_WORKFLOW_VERSION=2026-05-31-1200"
+            echo "PATH=$PATH"
+            echo "node=$(node -v)"
+            echo "pnpm_path=$PNPM"
+
+            if [ ! -x "$PNPM" ]; then
+              echo "ERROR: pnpm binary not found at $PNPM"
+              ls -la /root/.local/share/pnpm/bin || true
+              exit 1
+            fi
+
+            echo "pnpm_version=$($PNPM -v)"
+
             DEPLOY_PATH="${{ secrets.DEPLOY_PATH }}"
 
             echo "==> Go to project"
@@ -47,17 +59,12 @@ jobs:
             echo "==> Build Nuxt client"
             cd "$DEPLOY_PATH/client"
 
-            pm2 stop vnseea-client || pm2 stop 2 || true
-
             rm -rf .output .nuxt node_modules/.vite
 
-            echo "DEBUG_WORKFLOW_VERSION=2026-05-31-1150"
-            echo "PATH=$PATH"
-			echo "pnpm_cmd=$(command -v pnpm || true)"
-			echo "pnpm_abs=$(/root/.local/share/pnpm/bin/pnpm -v)"
-            
-            /root/.local/share/pnpm/bin/pnpm install --frozen-lockfile
-		    /root/.local/share/pnpm/bin/pnpm build
+            "$PNPM" install --frozen-lockfile
+
+            export NODE_OPTIONS="--max-old-space-size=4096"
+            "$PNPM" build
 
             test -f .output/server/index.mjs
 
