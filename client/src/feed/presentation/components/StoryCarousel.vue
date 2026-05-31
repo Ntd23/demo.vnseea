@@ -233,20 +233,21 @@
                     @pointerdown.stop
                   >
                     <button
-                      v-for="reaction in storyReactionOptions"
+                      v-for="(reaction, reactionIndex) in storyReactionOptions"
                       :key="reaction.value"
                       class="story-viewer__reaction-option"
                       :class="{ 'story-viewer__reaction-option--active': activeStoryReaction === reaction.value }"
+                      :style="{ '--reaction-index': String(reactionIndex) }"
                       type="button"
                       @click="reactToStory(reaction.value)"
                     >
                       <img
                         :src="reaction.src"
-                      :alt="reaction.label"
-                      class="story-viewer__reaction-symbol"
-                      draggable="false"
-                    >
-                  </button>
+                        :alt="reaction.label"
+                        class="story-viewer__reaction-symbol"
+                        draggable="false"
+                      >
+                    </button>
                   </div>
                 </Transition>
 
@@ -673,6 +674,8 @@ const {
   padding: 0;
   box-shadow: none;
   filter: drop-shadow(0 12px 18px rgba(0, 0, 0, 0.42));
+  animation: story-reaction-tray-in 0.16s ease-out both;
+  will-change: transform, opacity;
 }
 
 .story-viewer__reaction-option {
@@ -686,18 +689,35 @@ const {
   background: transparent;
   padding: 0;
   cursor: pointer;
+  touch-action: manipulation;
   transition: background 0.15s ease, transform 0.15s ease;
+  will-change: transform;
 }
 
 .story-viewer__reaction-option:hover,
+.story-viewer__reaction-option:focus-visible,
 .story-viewer__reaction-option--active {
   background: transparent;
+  transform: translateY(-8px) scale(1.18);
 }
 
 .story-viewer__reaction-symbol {
   width: 25px;
   height: 25px;
   object-fit: contain;
+  pointer-events: none;
+}
+
+@keyframes story-reaction-tray-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .story-viewer__bar-reply {

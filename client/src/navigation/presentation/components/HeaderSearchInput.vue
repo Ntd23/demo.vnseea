@@ -5,13 +5,12 @@
       <LazyUContentSearchButton
         :label="$t('navigation.headerSearchInput.placeholder')"
         icon="i-ph-magnifying-glass-duotone"
-        color="neutral"
-        variant="outline"
+        color="none"
+        variant="none"
         :collapsed="false"
         :kbds="['ctrl', 'k']"
-        class="header-search-trigger rounded-xl bg-white/120 backdrop-blur shadow-[0_8px_40px_rgba(0,0,255,0.14),0_2px_8px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,255,0.05)_inset]"
+        class="header-search-fallback header-search-trigger"
         :ui="{
-          base: 'h-10 w-full justify-between rounded-[var(--radius-lg)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 text-[var(--text-primary)] shadow-none transition-all hover:bg-white hover:border-[var(--border-strong)] hover:shadow-[0_0_0_3px_rgba(0,0,255,0.07)] focus-within:bg-white focus-within:border-[var(--border-strong)]',
           label: 'flex-1 text-left truncate text-sm font-normal text-[var(--text-tertiary)]',
           leadingIcon: 'h-4 w-4 shrink-0 text-[var(--text-tertiary)]',
           trailing: 'ms-auto flex items-center gap-1',

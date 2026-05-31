@@ -1276,6 +1276,12 @@ defineExpose({
     border-radius: 20px;
   }
 
+  .comment-composer__highlight,
+  .comment-composer__textarea {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
   .comment-composer__inline-actions {
     justify-content: flex-end;
     padding: 0 8px 8px;

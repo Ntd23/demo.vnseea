@@ -55,8 +55,18 @@
           </UButton>
         </div>
 
-        <div v-if="scanning" class="wallet-send-scan">
-          <video ref="videoRef" class="wallet-send-scan__video" muted playsinline />
+        <div v-show="scanning" class="wallet-send-scan">
+          <div id="qr-reader" class="wallet-send-scan__reader" />
+        </div>
+
+        <div class="flex flex-col gap-2 rounded-2xl bg-[var(--bg-surface-hover)] border border-[var(--border-light)] p-4 text-center text-xs">
+          <span class="font-bold text-[var(--text-secondary)]">Hoặc tải lên hình ảnh chứa mã QR để quét nhanh:</span>
+          <input
+            type="file"
+            accept="image/*"
+            class="mx-auto block text-xs cursor-pointer text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            @change="scanQrFile"
+          >
         </div>
 
         <div v-if="draft.recipientUserId" class="wallet-send-selected">
@@ -228,16 +238,29 @@ const selectedRecipientLabel = ref("")
 const localError = ref("")
 const transferNote = ref("")
 const confirmOpen = ref(false)
-const videoRef = ref<HTMLVideoElement | null>(null)
 const scanning = ref(false)
-let scanStream: MediaStream | null = null
-let scanFrame = 0
 const draft = reactive<WalletSendDraft>({
   recipientUserId: 0,
   amount: 0,
 })
 
 const { locale } = useI18n()
+const toast = useToast()
+
+onMounted(() => {
+  if (typeof window !== "undefined") {
+    const globalWin = window as any
+    if (!globalWin.Html5Qrcode) {
+      const script = document.createElement("script")
+      script.src = "https://unpkg.com/html5-qrcode"
+      script.async = true
+      script.onload = () => {
+        console.log("html5-qrcode loaded successfully")
+      }
+      document.head.appendChild(script)
+    }
+  }
+})
 
 const selectedRecipient = computed(() =>
   props.recipients.find(recipient => recipient.id === draft.recipientUserId) ?? null,
@@ -263,17 +286,7 @@ const confirmationDate = computed(() =>
   }).format(new Date()),
 )
 
-type BarcodeDetectorConstructor = new (options?: { formats?: string[] }) => {
-  detect(source: CanvasImageSource): Promise<Array<{ rawValue: string }>>
-}
-
-const getBarcodeDetector = () => {
-  const detector = (globalThis as typeof globalThis & {
-    BarcodeDetector?: BarcodeDetectorConstructor
-  }).BarcodeDetector
-
-  return detector ?? null
-}
+let directScanner: any = null
 
 watch(recipientQuery, (query) => {
   emit("search", query)
@@ -410,76 +423,93 @@ function confirmTransfer() {
 
 async function startQrScan() {
   localError.value = ""
-  const BarcodeDetector = getBarcodeDetector()
 
-  if (!BarcodeDetector || !navigator.mediaDevices?.getUserMedia) {
+  if (typeof window === "undefined" || !(window as any).Html5Qrcode) {
     localError.value = t("pages.walletPage.errorQrScanUnsupported")
     return
   }
 
   try {
     scanning.value = true
-    scanStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "environment" },
-      audio: false,
-    })
     await nextTick()
 
-    if (!videoRef.value) {
-      stopQrScan()
-      return
+    directScanner = new (window as any).Html5Qrcode("qr-reader")
+    const config = {
+      fps: 12,
+      qrbox: { width: 250, height: 250 },
+      aspectRatio: 1.777,
     }
 
-    videoRef.value.srcObject = scanStream
-    await videoRef.value.play()
-    scanQrFrame(new BarcodeDetector({ formats: ["qr_code"] }))
+    const cameras = await (window as any).Html5Qrcode.getCameras()
+    const preferred = (cameras || []).find((cam: any) =>
+      /back|rear|environment/i.test((cam.label || "").toLowerCase()),
+    )
+    const cameraConfig = preferred ? { deviceId: { exact: preferred.id } } : { facingMode: "environment" }
+
+    await directScanner.start(
+      cameraConfig,
+      config,
+      (decodedText: string) => {
+        qrPayload.value = decodedText
+        applyQrPayload()
+      },
+      () => {},
+    )
   }
-  catch {
+  catch (err) {
     stopQrScan()
     localError.value = t("pages.walletPage.errorQrScan")
+    console.error("Camera scan start failed:", err)
   }
 }
 
-function stopQrScan() {
+async function stopQrScan() {
   scanning.value = false
 
-  if (scanFrame) {
-    cancelAnimationFrame(scanFrame)
-    scanFrame = 0
+  if (directScanner) {
+    try {
+      await directScanner.stop()
+    } catch (_) {}
+    try {
+      await directScanner.clear()
+    } catch (_) {}
+    directScanner = null
   }
 
-  if (scanStream) {
-    for (const track of scanStream.getTracks()) {
-      track.stop()
-    }
-    scanStream = null
-  }
-
-  if (videoRef.value) {
-    videoRef.value.srcObject = null
+  const readerEl = document.getElementById("qr-reader")
+  if (readerEl) {
+    readerEl.innerHTML = ""
   }
 }
 
-function scanQrFrame(detector: InstanceType<BarcodeDetectorConstructor>) {
-  const video = videoRef.value
+async function scanQrFile(event: Event) {
+  localError.value = ""
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
 
-  if (!scanning.value || !video) return
+  if (typeof window === "undefined" || !(window as any).Html5Qrcode) {
+    localError.value = t("pages.walletPage.errorQrScanUnsupported")
+    return
+  }
 
-  detector.detect(video)
-    .then((codes) => {
-      const value = codes[0]?.rawValue
-      if (value) {
-        qrPayload.value = value
-        applyQrPayload()
-        return
-      }
-
-      scanFrame = requestAnimationFrame(() => scanQrFrame(detector))
+  try {
+    const decodedText = await (window as any).Html5Qrcode.scanFile(file, true)
+    qrPayload.value = decodedText
+    applyQrPayload()
+    toast.add({
+      color: "success",
+      icon: "i-ph-check-circle-fill",
+      title: locale.value === "vi" ? "Quét mã thành công" : "QR scanned successfully",
+      description: locale.value === "vi" 
+        ? "Đã đọc thành công thông tin ví người nhận từ tệp ảnh QR."
+        : "Successfully read wallet recipient info from the uploaded QR image.",
     })
-    .catch(() => {
-      stopQrScan()
-      localError.value = t("pages.walletPage.errorQrScan")
-    })
+  } catch (err) {
+    localError.value = locale.value === "vi"
+      ? "Không tìm thấy hoặc không đọc được mã QR từ hình ảnh này."
+      : "Could not read or find a QR code from the uploaded image."
+    console.error("File QR scan failed:", err)
+  }
 }
 </script>
 
@@ -491,11 +521,17 @@ function scanQrFrame(detector: InstanceType<BarcodeDetectorConstructor>) {
   background: #0f172a;
 }
 
-.wallet-send-scan__video {
-  display: block;
-  width: 100%;
+.wallet-send-scan__reader :deep(video) {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
   aspect-ratio: 16 / 10;
-  object-fit: cover;
+  object-fit: cover !important;
+}
+
+.wallet-send-scan__reader :deep(#qr-reader__dashboard),
+.wallet-send-scan__reader :deep(#qr-reader__status_span) {
+  display: none !important;
 }
 
 .wallet-send-selected {

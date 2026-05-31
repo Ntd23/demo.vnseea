@@ -123,15 +123,6 @@
           </div>
         </div>
 
-        <UAlert
-          v-if="actionMessage"
-          color="primary"
-          variant="subtle"
-          icon="i-ph-check-circle-fill"
-          :description="actionMessage"
-          class="mx-4 mb-3 rounded-2xl sm:mx-6"
-        />
-
         <!-- Divider -->
         <div class="profile-page__divider" />
 
@@ -741,7 +732,6 @@ const username = computed(() => {
 
 const {
   activeTab,
-  actionMessage,
   actionPending,
   copy,
   displayedTimelinePosts,

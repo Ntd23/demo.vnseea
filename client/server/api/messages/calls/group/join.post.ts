@@ -19,10 +19,10 @@ export default defineEventHandler(async (event) => {
 
   return {
     status: asNumber(response.status),
-    id: asNumber(response.id),
+    id: asNumber(response.id) || asNumber(response.call_id),
     groupId: asNumber(response.group_id),
     type: normalizeCallType(response.call_type),
-    url: buildGroupCallRoute(asNumber(response.id), response.call_type),
+    url: buildGroupCallRoute(asNumber(response.id) || asNumber(response.call_id), response.call_type),
     groupName: asString(response.group_name),
     participantCount: asNumber(response.participant_count),
   }

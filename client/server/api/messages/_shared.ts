@@ -1215,22 +1215,29 @@ export async function sendMessageToThread(
       })
     }
 
-    const legacyResponse = await webClient.postForm<{ status?: number | string }>(
-      "messages",
-      createLegacyBody({
-        user_id: input.userId,
-        textSendMessage: input.text,
-        "record-file": input.recordFile,
-        "record-name": input.recordName,
-        hash_id: sessionHash,
-      }, input.file),
-      {
-        s: "send_message",
-        hash: sessionHash,
-      },
-    )
+    let legacyResponse: { status?: number | string } | null = null
+    try {
+      legacyResponse = await webClient.postForm<{ status?: number | string }>(
+        "messages",
+        createLegacyBody({
+          user_id: input.userId,
+          textSendMessage: input.text,
+          "record-file": input.recordFile,
+          "record-name": input.recordName,
+          hash_id: sessionHash,
+        }, input.file),
+        {
+          s: "send_message",
+          hash: sessionHash,
+        },
+      )
+    }
+    catch {
+      // Bỏ qua lỗi kết nối / parse từ legacy PHP nếu thực tế tin nhắn vẫn lưu thành công.
+      // Dưới đây apiClient.post('get_user_messages') sẽ thực hiện fetch và kiểm tra.
+    }
 
-    if (asNumber(legacyResponse.status) !== 200) {
+    if (legacyResponse && asNumber(legacyResponse.status) !== 200 && asNumber(legacyResponse.status) !== 0) {
       throw createError({
         statusCode: 502,
         statusMessage: "Unable to send user message.",
@@ -1269,22 +1276,29 @@ export async function sendMessageToThread(
       })
     }
 
-    const legacyResponse = await webClient.postForm<{ status?: number | string }>(
-      "messages",
-      createLegacyBody({
-        group_id: input.groupId,
-        textSendMessage: input.text,
-        "record-file": input.recordFile,
-        "record-name": input.recordName,
-        hash_id: sessionHash,
-      }, input.file),
-      {
-        s: "send_message",
-        hash: sessionHash,
-      },
-    )
+    let legacyResponse: { status?: number | string } | null = null
+    try {
+      legacyResponse = await webClient.postForm<{ status?: number | string }>(
+        "messages",
+        createLegacyBody({
+          group_id: input.groupId,
+          textSendMessage: input.text,
+          "record-file": input.recordFile,
+          "record-name": input.recordName,
+          hash_id: sessionHash,
+        }, input.file),
+        {
+          s: "send_message",
+          hash: sessionHash,
+        },
+      )
+    }
+    catch {
+      // Bỏ qua lỗi kết nối / parse từ legacy PHP nếu thực tế tin nhắn vẫn lưu thành công.
+      // Dưới đây apiClient.post('group_chat') sẽ thực hiện fetch và kiểm tra.
+    }
 
-    if (asNumber(legacyResponse.status) !== 200) {
+    if (legacyResponse && asNumber(legacyResponse.status) !== 200 && asNumber(legacyResponse.status) !== 0) {
       throw createError({
         statusCode: 502,
         statusMessage: "Unable to send group message.",
