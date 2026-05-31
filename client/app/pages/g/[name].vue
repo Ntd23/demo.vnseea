@@ -5,33 +5,31 @@
 
 <script setup lang="ts">
 import CommunityPresentationGroupDetailPage from "../../../src/community/presentation/pages/GroupDetailPage.vue"
-import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { usePublicSeoMeta } from "../../../src/seo/application/composables/usePublicSeoMeta"
+import { createApiPublicSeoRepository } from "../../../src/seo/infrastructure/repositories/ApiPublicSeoRepository"
 
 definePageMeta({ layout: "default" })
 
-const { t } = useI18n()
 const route = useRoute()
-const requestURL = useRequestURL()
 const slug = computed(() => String(route.params.name || ""))
-
-const canonicalUrl = computed(() =>
-  new URL(appRoutes.groupDetail(slug.value), requestURL.origin).toString(),
+const seoRepository = createApiPublicSeoRepository()
+const { data: seoMeta, error: seoError } = await useAsyncData(
+  () => `seo:group:${slug.value}`,
+  () => slug.value
+    ? seoRepository.getPublicSeo({ routeType: "group", identifier: slug.value })
+    : Promise.resolve(null),
+  {
+    watch: [slug],
+    default: () => null,
+  },
 )
 
-useSeoMeta({
-  title: () => `${t("pages.groupDetailPage.seoFallbackTitle")} | VNSEEA`,
-  description: () => t("pages.groupDetailPage.seoFallbackDescription"),
-  ogTitle: () => `${t("pages.groupDetailPage.seoFallbackTitle")} | VNSEEA`,
-  ogDescription: () => t("pages.groupDetailPage.seoFallbackDescription"),
-  ogUrl: () => canonicalUrl.value,
-})
+if (seoError.value) {
+  throw createError({
+    statusCode: seoError.value.statusCode || 404,
+    statusMessage: seoError.value.statusMessage || "Group not found.",
+  })
+}
 
-useHead({
-  link: [
-    {
-      rel: "canonical",
-      href: canonicalUrl,
-    },
-  ],
-})
+usePublicSeoMeta(seoMeta)
 </script>

@@ -70,10 +70,13 @@
 
 <script setup lang="ts">
 import MessagesMessageCallGlobalHost from "../src/messages/presentation/components/MessageCallGlobalHost.vue"
+import { useSiteBrandingHead } from "../src/site-branding/application/composables/useSiteBrandingHead"
+import { useSiteBrandingStore } from "../src/site-branding/application/stores/useSiteBrandingStore"
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()
 const error = useError()
+const siteBrandingStore = useSiteBrandingStore()
 const backendUserSession = useCookie<string | null>("user_id", {
   default: () => null,
   sameSite: "lax",
@@ -81,6 +84,9 @@ const backendUserSession = useCookie<string | null>("user_id", {
 })
 const lastSafeRoute = useState("last-safe-route", () => "/home")
 const runtimeBoundaryNonce = ref(0)
+
+await callOnce("site-branding", () => siteBrandingStore.hydrate())
+useSiteBrandingHead()
 
 if (import.meta.dev) {
   useHead({
