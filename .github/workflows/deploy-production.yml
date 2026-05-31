@@ -51,6 +51,11 @@ jobs:
 
             rm -rf .output .nuxt node_modules/.vite
 
+            echo "DEBUG_WORKFLOW_VERSION=2026-05-31-1150"
+            echo "PATH=$PATH"
+			echo "pnpm_cmd=$(command -v pnpm || true)"
+			echo "pnpm_abs=$(/root/.local/share/pnpm/bin/pnpm -v)"
+            
             /root/.local/share/pnpm/bin/pnpm install --frozen-lockfile
 		    /root/.local/share/pnpm/bin/pnpm build
 
