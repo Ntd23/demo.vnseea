@@ -10,7 +10,7 @@
     shortcut="ctrl_k"
     :fuse="{ fuseOptions: { includeMatches: true, threshold: 0.35 } }"
     :ui="{
-      modal: 'sm:max-w-xl overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-light)] bg-white/120 backdrop-blur-sm shadow-[0_8px_40px_rgba(0,0,255,0.14),0_2px_8px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,255,0.05)_inset]',
+      modal: 'sm:max-w-xl overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-light)] bg-white/95 backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,255,0.06),0_2px_8px_rgba(0,0,0,0.04)]',
       input: [
         'border-0 border-b border-[rgba(0,0,255,0.08)] bg-transparent',
         'text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
