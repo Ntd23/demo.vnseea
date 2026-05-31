@@ -20,9 +20,9 @@ export function useProfileVM(
 ) {
   const { t, locale } = useI18n()
   const router = useRouter()
+  const toast = useToast()
   const activeTab = ref<ProfileTabKey>("timeline")
   const actionPending = ref(false)
-  const actionMessage = ref("")
   const postSearchQuery = ref("")
   const initialSkeletonVisible = ref(true)
   const timelineLoadingMore = ref(false)
@@ -340,7 +340,6 @@ export function useProfileVM(
 
   watch(resolvedUsername, () => {
     activeTab.value = "timeline"
-    actionMessage.value = ""
     productsExpanded.value = false
   })
 
@@ -406,7 +405,13 @@ export function useProfileVM(
     }
 
     if (actionId === "message-profile") {
-      await router.push(`/messages?user=${encodeURIComponent(currentProfile.username)}`)
+      await router.push({
+        path: "/messages",
+        query: {
+          userId: String(currentProfile.id),
+          name: currentProfile.displayName || currentProfile.username,
+        },
+      })
       return
     }
 
@@ -417,21 +422,50 @@ export function useProfileVM(
     actionPending.value = true
 
     try {
-      await repository.runProfileAction({
+      const wasFollowing = currentProfile.isFollowing
+      const wasActive = wasFollowing || currentProfile.isFollowRequested
+      const result = await repository.runProfileAction({
         action: "follow",
         userId: currentProfile.id,
       })
+      const normalizedStatus = result.status.toLowerCase()
+      const statusSaysRequested = normalizedStatus.includes("request")
+      const statusSaysUnfollowed = /unfollow|remove|delete|not_follow|none|0/.test(normalizedStatus)
+      const statusSaysFollowing = !statusSaysUnfollowed && /follow|following|1/.test(normalizedStatus)
+      const nextIsRequested = statusSaysRequested || (!wasActive && normalizedStatus === "requested")
+      const nextIsFollowing = statusSaysFollowing || (!wasActive && !nextIsRequested && !statusSaysUnfollowed)
+      const followerDelta = wasFollowing && !nextIsFollowing
+        ? -1
+        : !wasFollowing && nextIsFollowing
+          ? 1
+          : 0
 
-      await refresh()
-      const nextProfile = data.value
-      actionMessage.value = nextProfile?.isFollowRequested
-        ? t("pages.pageDetailPage.followers.requestedButton")
-        : nextProfile?.isFollowing
-          ? t("pages.pageDetailPage.followingButton")
-          : t("pages.pageDetailPage.followFallback")
+      data.value = {
+        ...currentProfile,
+        isFollowing: nextIsFollowing,
+        isFollowRequested: nextIsRequested,
+        followersCount: Math.max(0, currentProfile.followersCount + followerDelta),
+      }
+
+      const title = nextIsRequested
+        ? "Đã gửi yêu cầu theo dõi"
+        : nextIsFollowing
+          ? "Đã theo dõi"
+          : "Đã hủy theo dõi"
+
+      toast.add({
+        title,
+        color: "success",
+        icon: nextIsFollowing || nextIsRequested ? "i-ph-user-check-fill" : "i-ph-user-minus-duotone",
+      })
     }
     catch (error) {
-      actionMessage.value = error instanceof Error ? error.message : t("feed.publisherBox.statusErrorDescription")
+      toast.add({
+        title: "Không thể cập nhật theo dõi",
+        description: t("feed.publisherBox.statusErrorDescription"),
+        color: "error",
+        icon: "i-ph-warning-circle-fill",
+      })
     }
     finally {
       actionPending.value = false
@@ -440,7 +474,6 @@ export function useProfileVM(
 
   return {
     activeTab,
-    actionMessage,
     actionPending,
     albums,
     copy,

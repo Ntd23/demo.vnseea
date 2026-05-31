@@ -180,10 +180,11 @@
               @pointerdown.stop
             >
               <button
-                v-for="reaction in postReactionOptions"
+                v-for="(reaction, reactionIndex) in postReactionOptions"
                 :key="reaction.value"
                 class="post-card__reaction-option"
                 :class="{ 'post-card__reaction-option--active': selectedPostReaction === reaction.value }"
+                :style="{ '--reaction-index': String(reactionIndex) }"
                 type="button"
                 :aria-label="reaction.label"
                 @click="reactToPost(reaction.value)"
@@ -200,7 +201,7 @@
 
           <button
             class="post-card__action-btn"
-            :class="{ 'post-card__action-btn--active': liked }"
+            :class="{ 'post-card__action-btn--active': liked, 'post-card__action-btn--reacted': selectedPostReaction }"
             type="button"
             :aria-pressed="liked"
             :aria-label="activePostReactionLabel"
@@ -1172,6 +1173,15 @@ function handleMediaOpen(index: number) {
   min-width: 0;
 }
 
+.post-card__reaction-action::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  bottom: 100%;
+  height: 18px;
+}
+
 .post-card__action-btn {
   position: relative;
   z-index: 2;
@@ -1215,6 +1225,10 @@ function handleMediaOpen(index: number) {
 .post-card__action-btn--active {
   background: rgba(0, 0, 255, 0.06);
   color: #0000ff;
+}
+
+.post-card__action-btn--reacted .post-card__action-reaction-image {
+  animation: post-reaction-selected-pop 0.32s cubic-bezier(0.2, 1.35, 0.35, 1);
 }
 
 .post-card__action-icon {
@@ -1267,18 +1281,21 @@ function handleMediaOpen(index: number) {
 
 .post-card__reaction-tray {
   position: absolute;
-  bottom: calc(100% + 8px);
+  bottom: calc(100% + 2px);
   left: 50%;
   z-index: 20;
   display: flex;
   gap: 10px;
   transform: translateX(-50%);
   border-radius: 999px;
-  border: 0;
-  background: transparent;
-  padding: 0;
-  box-shadow: none;
-  filter: drop-shadow(0 10px 18px rgba(15, 23, 42, 0.22));
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.98);
+  padding: 8px 10px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.16);
+  filter: none;
+  transform-origin: 50% 100%;
+  animation: post-reaction-tray-in 0.16s ease-out both;
+  will-change: transform, opacity;
 }
 
 .post-card__reaction-option {
@@ -1292,19 +1309,105 @@ function handleMediaOpen(index: number) {
   background: transparent;
   padding: 0;
   cursor: pointer;
+  touch-action: manipulation;
   transition: background 0.15s ease, transform 0.15s ease;
+  will-change: transform;
 }
 
 .post-card__reaction-option:hover,
+.post-card__reaction-option:focus-visible,
 .post-card__reaction-option--active {
   background: transparent;
-  transform: translateY(-5px) scale(1.08);
+  transform: translateY(-8px) scale(1.18);
 }
 
 .post-card__reaction-option-image {
   width: 28px;
   height: 28px;
   object-fit: contain;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+@keyframes post-reaction-tray-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes post-reaction-selected-pop {
+  0% {
+    transform: scale(0.72) rotate(-8deg);
+  }
+
+  65% {
+    transform: scale(1.24) rotate(4deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@media (max-width: 520px) {
+  .post-card__reaction-action {
+    position: static;
+  }
+
+  .post-card__reaction-action::before {
+    display: none;
+  }
+
+  .post-card__reaction-tray {
+    bottom: 42px;
+    left: 12px;
+    right: 12px;
+    justify-content: space-between;
+    gap: 4px;
+    transform: none;
+    animation-name: post-reaction-tray-in-mobile;
+  }
+
+  .post-card__reaction-option {
+    width: 36px;
+    height: 36px;
+  }
+
+  .post-card__reaction-option:hover,
+  .post-card__reaction-option:focus-visible,
+  .post-card__reaction-option--active {
+    transform: translateY(-6px) scale(1.12);
+  }
+
+  .post-card__reaction-option-image {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+@keyframes post-reaction-tray-in-mobile {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-card__reaction-tray,
+  .post-card__action-btn--reacted .post-card__action-reaction-image {
+    animation: none;
+  }
 }
 
 .post-card__comment-peek {

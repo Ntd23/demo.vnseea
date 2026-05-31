@@ -19,6 +19,11 @@ import {
 } from "../utils/message-bubble-content"
 
 type MessageFeedbackTone = "neutral" | "success" | "warning" | "error"
+type QueuedMessageDraft = {
+  contact: MessageContact
+  contactKey: string
+  input: MessageComposerDraft
+}
 
 function readQueryValue(value: unknown) {
   if (Array.isArray(value)) {
@@ -34,6 +39,45 @@ function normalizeTab(value: string): MessageTabKey {
 
 function buildUserContactId(userId: number) {
   return `user:${userId}`
+}
+
+function buildContactKey(contact: MessageContact | null) {
+  if (!contact) {
+    return ""
+  }
+
+  return [
+    contact.type,
+    contact.userId ?? 0,
+    contact.groupId ?? 0,
+    contact.pageId ?? 0,
+    contact.recipientId ?? 0,
+    contact.id,
+  ].join(":")
+}
+
+function clearRequestedThreadQuery(query: Record<string, unknown>) {
+  const nextQuery = { ...query }
+
+  delete nextQuery.userId
+  delete nextQuery.groupId
+  delete nextQuery.name
+  delete nextQuery.avatar
+
+  return nextQuery
+}
+
+function clearRequestedThreadQuerySilently() {
+  if (!import.meta.client) {
+    return
+  }
+
+  const url = new URL(window.location.href)
+  url.searchParams.delete("userId")
+  url.searchParams.delete("groupId")
+  url.searchParams.delete("name")
+  url.searchParams.delete("avatar")
+  window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`)
 }
 
 function mergeUserTags(left: MessageUserTag[] = [], right: MessageUserTag[] = []) {
@@ -127,6 +171,7 @@ export function useMessagesInbox(
   const activeTab = ref<MessageTabKey>(normalizeTab(readQueryValue(route.query.tab)))
   const query = ref("")
   const selectedContactId = ref("")
+  const ignoredRequestedThreadKey = ref("")
   const selectedRecipientIds = ref<number[]>([])
   const activeTagFilter = ref("")
   const multiText = ref("")
@@ -138,7 +183,7 @@ export function useMessagesInbox(
   const typingContactIds = ref<string[]>([])
   const isLoadingMore = ref(false)
   const isSending = ref(false)
-  const sendQueue = ref<MessageComposerDraft[]>([])
+  const sendQueue = ref<QueuedMessageDraft[]>([])
   const isMultiSending = ref(false)
   const isMarkingRead = ref(false)
   const isDeletingConversation = ref(false)
@@ -191,6 +236,9 @@ export function useMessagesInbox(
   const requestedUserName = computed(() =>
     readQueryValue(route.query.name).trim() || t("pages.messagesPage.users"),
   )
+  const requestedUserAvatar = computed(() =>
+    readQueryValue(route.query.avatar).trim(),
+  )
 
   const inboxContacts = computed<MessageContact[]>(() => {
     const contacts = inbox.value ?? []
@@ -215,7 +263,7 @@ export function useMessagesInbox(
           name: requestedUserName.value,
           status: t("pages.messagesPage.activeRecently"),
           isOnline: false,
-          avatarUrl: "",
+          avatarUrl: requestedUserAvatar.value,
           tab: "user",
           type: "user",
           preview: "",
@@ -389,7 +437,7 @@ export function useMessagesInbox(
       return
     }
 
-    const nextQuery = { ...route.query }
+    const nextQuery = clearRequestedThreadQuery(route.query)
 
     if (value === "user") {
       delete nextQuery.tab
@@ -405,6 +453,20 @@ export function useMessagesInbox(
     if (activeTab.value === "multi") {
       selectedContactId.value = ""
       return
+    }
+
+    const requestedThreadKey = userId > 0
+      ? `user:${userId}`
+      : groupId > 0
+        ? `group:${groupId}`
+        : ""
+
+    if (!requestedThreadKey) {
+      ignoredRequestedThreadKey.value = ""
+    }
+    else if (requestedThreadKey === ignoredRequestedThreadKey.value) {
+      userId = 0
+      groupId = 0
     }
 
     if (groupId > 0 && activeTab.value === "group") {
@@ -519,12 +581,31 @@ export function useMessagesInbox(
       return
     }
 
+    const requestedThreadKey = requestedUserId.value > 0
+      ? `user:${requestedUserId.value}`
+      : requestedGroupId.value > 0
+        ? `group:${requestedGroupId.value}`
+        : ""
+    const selectedThreadKey = contact.type === "user" && (contact.userId ?? 0) > 0
+      ? `user:${contact.userId}`
+      : contact.type === "group" && (contact.groupId ?? 0) > 0
+        ? `group:${contact.groupId}`
+        : ""
+
+    if (requestedThreadKey && requestedThreadKey !== selectedThreadKey) {
+      ignoredRequestedThreadKey.value = requestedThreadKey
+    }
+
     const isSameContact = activeTab.value === contact.tab
       && selectedContactId.value === contact.id
 
     selectedContactId.value = contact.id
     remoteTyping.value = false
     activeReactionPickerId.value = null
+
+    if (requestedThreadKey && requestedThreadKey !== selectedThreadKey) {
+      clearRequestedThreadQuerySilently()
+    }
 
     if (!isSameContact) {
       thread.value = { messages: [], typing: false }
@@ -633,12 +714,12 @@ export function useMessagesInbox(
   }
 
   async function processSendQueue() {
-    const contact = selectedContact.value
-    if (!contact || isSending.value || sendQueue.value.length === 0) {
+    if (isSending.value || sendQueue.value.length === 0) {
       return
     }
 
-    const input = sendQueue.value[0]
+    const queuedMessage = sendQueue.value[0]
+    const { contact, contactKey, input } = queuedMessage
     isSending.value = true
 
     try {
@@ -650,11 +731,13 @@ export function useMessagesInbox(
         file: input.file,
         record: uploadedRecord,
       })
-      thread.value = {
-        messages: mergeMessages(messages.value, createdMessages, "append"),
-        typing: false,
+      if (buildContactKey(selectedContact.value) === contactKey) {
+        thread.value = {
+          messages: mergeMessages(messages.value, createdMessages, "append"),
+          typing: false,
+        }
+        remoteTyping.value = false
       }
-      remoteTyping.value = false
       sendQueue.value.shift()
       await refreshInbox()
     }
@@ -677,6 +760,12 @@ export function useMessagesInbox(
       return
     }
 
+    const contact = selectedContact.value
+
+    if (!contact || activeTab.value === "multi") {
+      return
+    }
+
     const text = buildReplyMessageText({
       text: input.text,
       target: replyTarget.value,
@@ -685,9 +774,13 @@ export function useMessagesInbox(
     })
 
     sendQueue.value.push({
-      text,
-      file: input.file,
-      record: input.record,
+      contact,
+      contactKey: buildContactKey(contact),
+      input: {
+        text,
+        file: input.file,
+        record: input.record,
+      },
     })
 
     replyTarget.value = null

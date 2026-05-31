@@ -99,11 +99,12 @@
               @pointerdown.stop
             >
               <button
-                v-for="reaction in reactionOptions"
+                v-for="(reaction, reactionIndex) in reactionOptions"
                 :key="reaction.value"
                 type="button"
                 class="comment-item__reaction-option"
                 :class="{ 'comment-item__reaction-option--active': localSelectedReaction === reaction.value }"
+                :style="{ '--reaction-index': String(reactionIndex) }"
                 :aria-label="reaction.label"
                 @click="reactToComment(reaction.value)"
               >
@@ -552,6 +553,9 @@ onBeforeUnmount(() => {
   background: var(--bg-surface);
   padding: 6px 8px;
   box-shadow: var(--shadow-md);
+  transform-origin: 22px 100%;
+  animation: comment-reaction-tray-in 0.16s ease-out both;
+  will-change: transform, opacity;
 }
 
 .comment-item__reaction-option {
@@ -564,19 +568,65 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   background: transparent;
   cursor: pointer;
+  touch-action: manipulation;
   transition: transform 0.15s ease, background 0.15s ease;
+  will-change: transform;
 }
 
 .comment-item__reaction-option:hover,
+.comment-item__reaction-option:focus-visible,
 .comment-item__reaction-option--active {
   background: var(--bg-surface-hover);
-  transform: translateY(-2px);
+  transform: translateY(-6px) scale(1.14);
 }
 
 .comment-item__reaction-option-image {
   width: 22px;
   height: 22px;
   object-fit: contain;
+  pointer-events: none;
+}
+
+@keyframes comment-reaction-tray-in {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 520px) {
+  .comment-item__reaction-tray {
+    gap: 3px;
+    padding: 7px 8px;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+  }
+
+  .comment-item__reaction-option {
+    width: 32px;
+    height: 32px;
+  }
+
+  .comment-item__reaction-option:hover,
+  .comment-item__reaction-option:focus-visible,
+  .comment-item__reaction-option--active {
+    transform: translateY(-4px) scale(1.1);
+  }
+
+  .comment-item__reaction-option-image {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comment-item__reaction-tray {
+    animation: none;
+  }
 }
 
 .comment-item__footer-action {

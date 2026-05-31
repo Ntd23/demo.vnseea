@@ -283,10 +283,10 @@ function stopCallSound() {
   }
 }
 
-function startCallSound(direction: "incoming" | "outgoing") {
+function startCallSound(type: "audio" | "video") {
   stopCallSound()
 
-  callSound = new Audio(direction === "incoming" ? videoCallSoundUrl : audioCallSoundUrl)
+  callSound = new Audio(type === "video" ? videoCallSoundUrl : audioCallSoundUrl)
   callSound.loop = true
   callSound.preload = "auto"
   callSound.volume = 0.9
@@ -327,7 +327,7 @@ watch(
   () => ringingCall.value ? `${ringingCall.value.direction}:${ringingCall.value.type}:${ringingCall.value.id}` : "",
   () => {
     if (ringingCall.value) {
-      startCallSound(ringingCall.value.direction)
+      startCallSound(ringingCall.value.type)
       return
     }
 
@@ -340,7 +340,7 @@ watch(
   () => ringingGroupCall.value ? `group:${ringingGroupCall.value.type}:${ringingGroupCall.value.id}` : "",
   () => {
     if (ringingGroupCall.value) {
-      startCallSound(ringingGroupCall.value.direction)
+      startCallSound(ringingGroupCall.value.type)
       return
     }
 

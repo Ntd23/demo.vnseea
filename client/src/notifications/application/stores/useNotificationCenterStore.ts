@@ -261,14 +261,35 @@ export const useNotificationCenterStore = defineStore("notification-center", () 
   }
 
   async function markRead() {
+    const previousSummary = summary.value
+    summary.value = {
+      ...summary.value,
+      items: summary.value.items.map(item => ({
+        ...item,
+        isUnread: false,
+      })),
+      unreadCount: 0,
+    }
+    hydrated.value = true
+    void notifyHeaderRefresh("navigation")
+
     try {
       const repository = createApiNotificationsRepository()
-      applySummary(await repository.markRead())
+      const nextSummary = await repository.markRead()
+      applySummary({
+        ...nextSummary,
+        items: nextSummary.items.map(item => ({
+          ...item,
+          isUnread: false,
+        })),
+        unreadCount: 0,
+      })
       await notifyHeaderRefresh("navigation")
-      hydrated.value = true
     }
     catch (error) {
+      summary.value = previousSummary
       errorMessage.value = error instanceof Error ? error.message : "Unable to mark notifications as read."
+      await notifyHeaderRefresh("navigation")
     }
   }
 

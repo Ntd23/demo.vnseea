@@ -291,17 +291,27 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
   async function toggleMic() {
     if (!room || !mediaSupported.value) return
     const next = !micEnabled.value
-    await room.localParticipant.setMicrophoneEnabled(next)
-    micEnabled.value = next
-    updateParticipantFromPublications(room.localParticipant, true)
+    try {
+      await room.localParticipant.setMicrophoneEnabled(next)
+      micEnabled.value = next
+      updateParticipantFromPublications(room.localParticipant, true)
+    }
+    catch {
+      micEnabled.value = !next
+    }
   }
 
   async function toggleCamera() {
     if (!room || payload.value?.type === "audio" || !mediaSupported.value) return
     const next = !cameraEnabled.value
-    await room.localParticipant.setCameraEnabled(next)
-    cameraEnabled.value = next
-    updateParticipantFromPublications(room.localParticipant, true)
+    try {
+      await room.localParticipant.setCameraEnabled(next)
+      cameraEnabled.value = next
+      updateParticipantFromPublications(room.localParticipant, true)
+    }
+    catch {
+      cameraEnabled.value = !next
+    }
   }
 
   function toggleRemoteAudio() {
@@ -327,9 +337,13 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
   async function runSync() {
     if (hasLeft) return
 
-    const sync = await vm.syncCall()
+    const sync = await vm.syncCall().catch(() => null)
 
     if (!sync || sync.status !== 200 || sync.callStatus !== "active") {
+      if (!sync) {
+        return
+      }
+
       options.onEnded()
       return
     }

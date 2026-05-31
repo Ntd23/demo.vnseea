@@ -107,8 +107,12 @@ export default defineEventHandler(async (event): Promise<ProfileActionResult> =>
     { following_id: userId },
   )
   const status = Number(response.status ?? response.api_status ?? 0)
+  const followStatus = typeof response.follow_status === "string" ? response.follow_status.trim() : ""
+  const hasBackendError = Boolean(response.errors?.error_text)
+  const hasExplicitStatus = status > 0
+  const looksSuccessful = followStatus.length > 0 || Number(response.can_send ?? 0) === 1
 
-  if (status < 200 || status >= 300) {
+  if (hasBackendError || (!looksSuccessful && hasExplicitStatus && (status < 200 || status >= 300))) {
     throw createError({
       statusCode: 400,
       statusMessage: "Unable to update profile follow state.",
@@ -118,6 +122,6 @@ export default defineEventHandler(async (event): Promise<ProfileActionResult> =>
 
   return {
     ok: true,
-    status: response.follow_status || "updated",
+    status: followStatus || "updated",
   }
 })
