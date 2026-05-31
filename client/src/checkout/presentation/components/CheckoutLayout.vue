@@ -1,10 +1,18 @@
+<!-- English description: Provides the checkout shell with dynamic backend branding and step navigation. -->
 <template>
   <div class="ck-page">
     <!-- Header -->
     <header class="ck-header">
       <div class="ck-header-inner">
         <NuxtLink to="/" class="ck-logo">
-          <img :src="logoUrl" alt="VNSEEA Logo" class="ck-logo-img" />
+          <img
+            v-if="checkoutLogoUrl && !checkoutLogoFailed"
+            :src="checkoutLogoUrl"
+            :alt="checkoutLogoAlt"
+            class="ck-logo-img"
+            @error="checkoutLogoFailed = true"
+          />
+          <span v-else class="ck-logo-text">{{ checkoutBrandName }}</span>
         </NuxtLink>
         <nav class="ck-stepper" aria-label="Checkout steps">
           <!-- Bước 1: Giỏ hàng - DONE nếu hasItems, ngược lại ACTIVE -->
@@ -61,7 +69,8 @@
 </template>
 
 <script setup lang="ts">
-import logoUrl from "../../../../app/assets/images/logovnseea/vnseea.png"
+import { storeToRefs } from "pinia"
+import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
 
 withDefaults(defineProps<{
   title: string
@@ -86,6 +95,18 @@ withDefaults(defineProps<{
   hasAddress: false,
   hasItems: true,
   isSuccess: false,
+})
+
+const siteBrandingStore = useSiteBrandingStore()
+const { branding } = storeToRefs(siteBrandingStore)
+const checkoutLogoFailed = ref(false)
+
+const checkoutBrandName = computed(() => branding.value.siteName || "VNSEEA")
+const checkoutLogoUrl = computed(() => branding.value.logoUrl)
+const checkoutLogoAlt = computed(() => `${checkoutBrandName.value} Logo`)
+
+watch(checkoutLogoUrl, () => {
+  checkoutLogoFailed.value = false
 })
 
 useHead({
@@ -128,8 +149,14 @@ useHead({
 
 .ck-logo-img {
   height: 40px;
+  max-width: 160px;
   display: block;
   object-fit: contain;
+}
+
+.ck-logo-text {
+  display: inline-block;
+  color: #1B08FF;
 }
 
 /* ── Stepper ── */

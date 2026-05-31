@@ -218,6 +218,12 @@ export const apiRoutes = {
   navigation: {
     general: "navigation/general",
   },
+  site: {
+    branding: "site/branding",
+  },
+  seo: {
+    public: "seo/public",
+  },
   boosted: {
     posts: "boosted/posts",
     pages: "boosted/pages",
@@ -256,6 +262,7 @@ export const backendRoutes = {
     confirmResetPasswordSms: "confirm-reset-password-sms",
     search: "search",
     generalData: "get-general-data",
+    siteSettings: "get-site-settings",
     userData: "get-user-data",
     updateUserData: "update-user-data",
   },
