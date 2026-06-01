@@ -36,6 +36,8 @@ export interface NearbySearchBridgeOptions {
   type: unknown
   distance: unknown
   limit: unknown
+  originLat?: unknown
+  originLng?: unknown
   defaultLimit?: number
   maxLimit?: number
 }
@@ -133,9 +135,15 @@ export async function fetchNearbySearchFromBackend(
   options: NearbySearchBridgeOptions,
 ): Promise<NearbySearchResponse> {
   const currentUser = await getBackendCurrentUser(event)
-  const originLat = asNullableNumber(currentUser.lat)
-  const originLng = asNullableNumber(currentUser.lng)
-  const originAddress = asString(currentUser.address)
+  const requestedOriginLat = asNullableNumber(options.originLat)
+  const requestedOriginLng = asNullableNumber(options.originLng)
+  const profileOriginLat = asNullableNumber(currentUser.lat)
+  const profileOriginLng = asNullableNumber(currentUser.lng)
+  const originLat = requestedOriginLat ?? profileOriginLat
+  const originLng = requestedOriginLng ?? profileOriginLng
+  const originAddress = requestedOriginLat !== null && requestedOriginLng !== null
+    ? "Vị trí hiện tại"
+    : asString(currentUser.address)
 
   if (originLat === null || originLng === null) {
     return {

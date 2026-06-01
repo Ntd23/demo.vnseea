@@ -9,6 +9,8 @@ export interface NearbySearchQuery {
   type: NearbySearchType
   distanceKm: number
   limit: number
+  originLat?: number | null
+  originLng?: number | null
 }
 
 export interface NearbySearchOrigin {

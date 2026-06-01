@@ -208,7 +208,7 @@
     </div>
 
     <!-- ── Contact list ──────────────────────────── -->
-    <UScrollArea class="min-h-0 flex-1 px-3 pb-3">
+    <div class="cl-scroll-list min-h-0 flex-1 px-3 pb-3">
       <div class="space-y-0.5">
         <MessagesChatListItem
           v-for="contact in contacts"
@@ -267,7 +267,7 @@
           <span class="text-sm text-[var(--text-secondary)]">{{ emptyLabel }}</span>
         </div>
       </div>
-    </UScrollArea>
+    </div>
   </div>
 </template>
 
@@ -764,6 +764,22 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   transition: border-color var(--duration-fast);
 }
 .cl-select:focus { border-color: var(--border-strong); }
+
+.cl-scroll-list {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.cl-scroll-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cl-scroll-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #cbd5e1;
+}
 
 .cl-skeleton-item {
   display: flex;

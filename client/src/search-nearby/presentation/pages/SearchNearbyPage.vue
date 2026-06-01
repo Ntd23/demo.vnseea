@@ -58,7 +58,7 @@
               <span class="nearby-map-page__suggestion-copy">
                 <span class="nearby-map-page__suggestion-title">{{ item.label }}</span>
                 <span class="nearby-map-page__suggestion-meta">
-                  {{ item.kind === "place" ? "Google Maps" : item.raw?.type === "page" ? "Trang" : "Người dùng" }} · {{ item.distanceLabel }}
+                  {{ item.kind === "place" ? item.distanceLabel : `${item.raw?.type === "page" ? "Trang" : "Người dùng"} · ${item.distanceLabel}` }}
                 </span>
               </span>
           </button>
@@ -122,6 +122,7 @@
           <NearbyResultCard
             v-for="item in cardItems"
             :key="item.id"
+            class="nearby-map-page__card"
             :item="item"
             :active="selectedItemId === item.id || (!selectedItemId && item.id === cardItems[0]?.id)"
             @select="selectItem"
@@ -289,6 +290,7 @@ type NearbySuggestionOption = {
   distanceLabel: string
   kind: "nearby" | "place"
   placeId?: string
+  distanceMeters?: number | null
 }
 
 type GooglePlaceSuggestion = {
@@ -296,6 +298,21 @@ type GooglePlaceSuggestion = {
   label: string
   secondaryText: string
   placeId: string
+  distanceMeters: number | null
+}
+
+function compareDistance(
+  left: { distanceMeters?: number | null, label: string },
+  right: { distanceMeters?: number | null, label: string },
+) {
+  const leftDistance = left.distanceMeters ?? Number.POSITIVE_INFINITY
+  const rightDistance = right.distanceMeters ?? Number.POSITIVE_INFINITY
+
+  if (leftDistance !== rightDistance) {
+    return leftDistance - rightDistance
+  }
+
+  return left.label.localeCompare(right.label)
 }
 
 type LocationPermissionState = "checking" | "granted" | "denied" | "unsupported"
@@ -315,6 +332,7 @@ const {
   suggestionsLoading,
   displayLoading,
   errorMessage,
+  hasOrigin,
   needsLocation,
   hasResults,
   emptyTitle,
@@ -332,7 +350,7 @@ const {
   clearSearch,
 } = useSearchNearbyPageVM()
 
-const searchPlaceholder = "Tìm theo tên, địa chỉ Google hoặc place_id..."
+const searchPlaceholder = "Tìm Page hoặc địa chỉ Google..."
 
 const googlePlaceSuggestions = ref<GooglePlaceSuggestion[]>([])
 const googlePlacesLoading = ref(false)
@@ -361,23 +379,30 @@ const suggestionOptions = computed<NearbySuggestionOption[]>(() =>
       raw: item,
       distanceLabel: formatDistance(item.distanceMeters),
       kind: "nearby" as const,
+      distanceMeters: item.distanceMeters,
     })),
     ...googlePlaceSuggestions.value.map(item => ({
       id: item.id,
       label: item.label,
       raw: null,
-      distanceLabel: item.secondaryText,
+      distanceLabel: [
+        item.distanceMeters === null ? "" : formatDistance(item.distanceMeters),
+        item.secondaryText,
+      ].filter(Boolean).join(" · "),
       kind: "place" as const,
       placeId: item.placeId,
+      distanceMeters: item.distanceMeters,
     })),
-  ],
+  ].sort(compareDistance),
 )
 
 const showSuggestionPanel = computed(() =>
   isSuggestionPanelOpen.value
   && (searchText.value.trim().length > 0 || suggestionOptions.value.length > 0),
 )
-const canUseNearbyMap = computed(() => locationPermissionState.value === "granted")
+const canUseNearbyMap = computed(() =>
+  locationPermissionState.value === "granted" || hasOrigin.value,
+)
 const locationPermissionTitle = computed(() => {
   if (locationPermissionState.value === "checking") return "Đang xin quyền chia sẻ vị trí"
   if (locationPermissionState.value === "denied") return "Quyền vị trí đang bị chặn"
@@ -505,7 +530,7 @@ async function toggleMapFullscreen() {
 
 async function requestLocationPermission() {
   if (!import.meta.client || !navigator.geolocation) {
-    locationPermissionState.value = "unsupported"
+    locationPermissionState.value = hasOrigin.value ? "granted" : "unsupported"
     return
   }
 
@@ -529,12 +554,12 @@ async function requestLocationPermission() {
       focusDeviceLocation(position.coords.latitude, position.coords.longitude)
     },
     () => {
-      locationPermissionState.value = "denied"
+      locationPermissionState.value = hasOrigin.value ? "granted" : "denied"
     },
     {
-      enableHighAccuracy: true,
-      maximumAge: 30000,
-      timeout: 10000,
+      enableHighAccuracy: false,
+      maximumAge: 300000,
+      timeout: 20000,
     },
   )
 }
@@ -570,7 +595,7 @@ async function refreshGooglePlaceSuggestions() {
   const requestId = googlePlaceRequestId.value + 1
   googlePlaceRequestId.value = requestId
 
-  if (query.length < 3) {
+  if (!isSuggestionPanelOpen.value || query.length < 3) {
     googlePlaceSuggestions.value = []
     googlePlacesLoading.value = false
     return
@@ -590,6 +615,9 @@ async function refreshGooglePlaceSuggestions() {
         location: origin.value.lat !== null && origin.value.lng !== null
           ? new window.google.maps.LatLng(origin.value.lat, origin.value.lng)
           : undefined,
+        origin: origin.value.lat !== null && origin.value.lng !== null
+          ? new window.google.maps.LatLng(origin.value.lat, origin.value.lng)
+          : undefined,
         radius: origin.value.lat !== null && origin.value.lng !== null ? 25000 : undefined,
       },
       (predictions, status) => {
@@ -604,6 +632,9 @@ async function refreshGooglePlaceSuggestions() {
               label: prediction.structured_formatting?.main_text || prediction.description,
               secondaryText: prediction.structured_formatting?.secondary_text || prediction.description,
               placeId: prediction.place_id || prediction.description,
+              distanceMeters: Number.isFinite(prediction.distance_meters)
+                ? Math.round(Number(prediction.distance_meters))
+                : null,
             }))
           : []
         const looksLikePlaceId = query.length >= 8 && !/\s/.test(query)
@@ -614,6 +645,7 @@ async function refreshGooglePlaceSuggestions() {
                 label: query,
                 secondaryText: "Google place_id",
                 placeId: query,
+                distanceMeters: null,
               },
               ...predictedPlaces,
             ].slice(0, 5)
@@ -666,7 +698,7 @@ async function selectGooglePlace(option: NearbySuggestionOption) {
           backendId: 0,
           type: "place",
           title,
-          subtitle: "Google Maps",
+          subtitle: "Địa chỉ",
           description: "",
           locationLabel: address,
           avatarUrl: "",
@@ -690,7 +722,9 @@ async function selectGooglePlace(option: NearbySuggestionOption) {
 watch(
   () => searchText.value.trim(),
   () => {
-    void refreshGooglePlaceSuggestions()
+    if (isSuggestionPanelOpen.value) {
+      void refreshGooglePlaceSuggestions()
+    }
   },
 )
 
@@ -851,14 +885,16 @@ onBeforeUnmount(() => {
 }
 
 .nearby-map-page__search-input {
+  -webkit-appearance: none;
   width: 100%;
   min-width: 0;
   border: 0;
   outline: 0;
   background: transparent;
   color: var(--text-primary);
-  font-size: var(--text-body);
+  font-size: 16px;
   font-weight: var(--weight-extrabold);
+  line-height: 1.2;
 }
 
 .nearby-map-page__search-input::placeholder {
@@ -886,6 +922,7 @@ onBeforeUnmount(() => {
   display: grid;
   max-height: min(360px, calc(100dvh - 116px));
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   border: 1px solid var(--border-default);
   border-radius: 22px;
   background: #fff;
@@ -906,6 +943,7 @@ onBeforeUnmount(() => {
   font: inherit;
   padding: 8px;
   text-align: left;
+  touch-action: manipulation;
 }
 
 .nearby-map-page__suggestion:hover {
@@ -1035,7 +1073,7 @@ onBeforeUnmount(() => {
 
 .nearby-map-page__bottom {
   position: absolute;
-  bottom: 20px;
+  bottom: max(20px, env(safe-area-inset-bottom, 0px));
   left: 50%;
   z-index: 8;
   width: min(100% - 32px, 1320px);
@@ -1044,10 +1082,6 @@ onBeforeUnmount(() => {
 
 .nearby-map-page__panel {
   overflow: hidden;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-xl);
-  background: color-mix(in srgb, var(--bg-muted) 88%, transparent);
-  box-shadow: var(--shadow-xl);
   padding: 18px;
 }
 
@@ -1111,16 +1145,30 @@ onBeforeUnmount(() => {
 }
 
 .nearby-map-page__cards {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
+  display: grid;
+  max-height: min(31dvh, 270px);
+  gap: 10px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 2px;
-  scroll-snap-type: x proximity;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text-secondary) 32%, transparent) transparent;
+  -webkit-overflow-scrolling: touch;
 }
 
-.nearby-map-page__cards > * {
-  flex: 0 0 100%;
-  scroll-snap-align: center;
+.nearby-map-page__card {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.nearby-map-page__cards::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nearby-map-page__cards::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-secondary) 32%, transparent);
 }
 
 .nearby-map-page__state,
@@ -1261,10 +1309,10 @@ onBeforeUnmount(() => {
   }
 
   .nearby-map-page__topbar {
-    top: 12px;
+    top: max(10px, env(safe-area-inset-top, 0px));
     flex-direction: row;
     align-items: stretch;
-    width: calc(100% - 20px);
+    width: calc(100% - 16px);
     gap: 8px;
   }
 
@@ -1282,8 +1330,48 @@ onBeforeUnmount(() => {
   }
 
   .nearby-map-page__search-field {
-    height: 48px;
-    padding: 0 14px;
+    height: 50px;
+    border-radius: 18px;
+    padding: 0 13px;
+  }
+
+  .nearby-map-page__search-input {
+    font-size: 16px;
+    font-weight: var(--weight-bold);
+  }
+
+  .nearby-map-page__search-icon,
+  .nearby-map-page__search-loading {
+    width: 18px;
+    height: 18px;
+  }
+
+  .nearby-map-page__suggestions {
+    top: calc(100% + 6px);
+    max-height: min(44dvh, 340px);
+    border-radius: 18px;
+    padding: 6px;
+  }
+
+  .nearby-map-page__suggestion {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 9px;
+    min-height: 54px;
+    border-radius: 14px;
+    padding: 8px;
+  }
+
+  .nearby-map-page__suggestion-avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nearby-map-page__suggestion-title {
+    font-size: 14px;
+  }
+
+  .nearby-map-page__suggestion-meta {
+    font-size: 12px;
   }
 
   .nearby-map-page__location-button {
@@ -1301,6 +1389,7 @@ onBeforeUnmount(() => {
   .nearby-map-page__map-controls {
     right: 10px;
     gap: 8px;
+    transform: translateY(-42%);
   }
 
   .nearby-map-page__map-control {
@@ -1309,13 +1398,12 @@ onBeforeUnmount(() => {
   }
 
   .nearby-map-page__bottom {
-    bottom: 10px;
-    width: calc(100% - 16px);
+    bottom: max(8px, env(safe-area-inset-bottom, 0px));
+    width: calc(100% - 12px);
   }
 
   .nearby-map-page__panel {
-    border-radius: 22px;
-    padding: 12px;
+    padding: 8px;
   }
 
   .nearby-map-page__filters {
@@ -1329,6 +1417,40 @@ onBeforeUnmount(() => {
   .nearby-map-page__count {
     justify-self: start;
   }
+
+  .nearby-map-page__cards {
+    max-height: min(34dvh, 300px);
+    gap: 8px;
+    padding: 1px 2px;
+  }
+
+  .nearby-map-page__state,
+  .nearby-map-page__empty {
+    min-height: 96px;
+    border-radius: 18px;
+    padding: 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .nearby-map-page__topbar {
+    width: calc(100% - 12px);
+  }
+
+  .nearby-map-page__map-controls {
+    right: 8px;
+  }
+
+  .nearby-map-page__map-control {
+    width: 38px;
+    height: 38px;
+  }
+
+  .nearby-map-page__cards {
+    max-height: min(33dvh, 280px);
+  }
+
 }
 
 /* Premium Location Guide Styles */

@@ -24,23 +24,25 @@
       </div>
 
       <div class="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
-      <UFormField :label="t('pages.walletPage.amountLabel')">
-        <UInputNumber
-          v-model="draft.amount"
-          :min="1"
-          class="w-full"
-        />
-      </UFormField>
+        <UFormField :label="t('pages.walletPage.amountLabel')">
+          <UInput
+            v-model="amountInput"
+            inputmode="numeric"
+            autocomplete="off"
+            class="w-full"
+            @update:model-value="formatAmountInput"
+          />
+        </UFormField>
 
-      <UFormField :label="t('pages.walletPage.topupMethod')">
-        <USelect
-          v-model="draft.method"
-          :items="methods"
-          label-key="label"
-          value-key="value"
-          class="w-full"
-        />
-      </UFormField>
+        <UFormField :label="t('pages.walletPage.topupMethod')">
+          <USelect
+            v-model="draft.method"
+            :items="methods"
+            label-key="label"
+            value-key="value"
+            class="w-full"
+          />
+        </UFormField>
       </div>
     </div>
 
@@ -101,9 +103,10 @@ const emit = defineEmits<{
   topup: [payload: WalletTopupDraft]
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const receiptFile = ref<File | null>(null)
 const localError = ref("")
+const amountInput = ref("")
 const draft = reactive<WalletTopupDraft>({
   amount: 0,
   method: "",
@@ -126,6 +129,22 @@ watch(
   },
   { immediate: true },
 )
+
+const parseAmountInput = (value: unknown) => {
+  const digits = String(value ?? "").replace(/\D/g, "")
+  const amount = Number(digits)
+
+  return Number.isFinite(amount) ? amount : 0
+}
+
+function formatAmountInput(value: unknown) {
+  const amount = parseAmountInput(value)
+  draft.amount = amount
+  amountInput.value = amount > 0
+    ? new Intl.NumberFormat(locale.value).format(amount)
+    : ""
+  localError.value = ""
+}
 
 function onReceiptChange(event: Event) {
   const input = event.target as HTMLInputElement

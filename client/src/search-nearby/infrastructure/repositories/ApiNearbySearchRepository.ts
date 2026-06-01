@@ -17,6 +17,8 @@ export function createApiNearbySearchRepository(): NearbySearchRepository {
     type: query.type,
     distance: query.distanceKm,
     limit: query.limit,
+    originLat: query.originLat ?? undefined,
+    originLng: query.originLng ?? undefined,
   })
 
   return {
