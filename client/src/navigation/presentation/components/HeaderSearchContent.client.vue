@@ -10,23 +10,28 @@
     shortcut="ctrl_k"
     :fuse="{ fuseOptions: { includeMatches: true, threshold: 0.35 } }"
     :ui="{
-      modal: 'sm:max-w-xl overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-light)] bg-white/95 backdrop-blur-md shadow-[0_12px_40px_rgba(0,0,255,0.06),0_2px_8px_rgba(0,0,0,0.04)]',
+      class:'rounded-[var(--radius-xl)]',
+      modal: 'sm:max-w-xl overflow-hidden rounded-[var(--radius-xl)] search-glass-modal shadow-[0_20px_60px_rgba(0,0,255,0.25),0_4px_16px_rgba(0,0,0,0.12)]',
       input: [
-        'border-0 border-b border-[rgba(0,0,255,0.08)] bg-transparent',
-        'text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]',
+        'border-0 search-glass-input bg-transparent',
+        'text-white placeholder:text-white/55',
         'rounded-none focus:ring-0 h-12 px-4 text-sm font-medium',
       ],
       group: 'p-1.5',
-      groupLabel: 'px-2 py-1 text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--text-tertiary)]',
-      item: 'rounded-[var(--radius-md)] px-2 py-1.5 gap-2.5',
-      itemLabel: 'text-sm font-semibold text-[var(--text-primary)]',
-      itemDescription: 'text-xs text-[var(--text-tertiary)] truncate',
-      itemTrailing: 'text-[10px] font-bold uppercase tracking-[0.07em] text-[var(--text-tertiary)]',
-      itemIcon: 'h-4 w-4',
+      groupLabel: 'px-2 py-1 text-[10px] font-bold uppercase tracking-[0.07em] text-white/45',
+      item: {
+        base: 'rounded-[var(--radius-md)] px-2 py-1.5 gap-2.5 transition-all duration-150 cursor-pointer',
+        active: 'bg-white/15 text-white',
+        inactive: 'text-white/80',
+      },
+      itemLabel: 'text-sm font-semibold text-white',
+      itemDescription: 'text-xs text-white truncate',
+      itemTrailing: 'text-[10px] font-bold uppercase tracking-[0.07em] text-white/45',
+      itemIcon: 'h-4 w-4 text-white',
       itemAvatar: 'rounded-[6px]',
       itemAvatarSize: 'xs',
-      empty: 'py-6 text-sm text-[var(--text-secondary)]',
-      footer: 'border-t border-[rgba(0,0,255,0.06)] bg-transparent px-3 py-2',
+      empty: 'py-6 text-sm text-white/60',
+      footer: 'search-glass-footer bg-transparent px-3 py-2 text-white/55',
     }"
   />
 </template>
@@ -181,3 +186,84 @@ function submitSearch(value = search.value) {
   void router.push({ path: '/search', query: keyword ? { q: keyword } : {} })
 }
 </script>
+
+<style>
+/* Glass morphism search palette — brand blue tint + blur */
+.search-glass-modal {
+  background: linear-gradient(
+    270deg,
+    #0000ff 0%,
+    #0000ffc4 100%
+  ) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  /* outline bypasses global .border { border-width: 0 } override */
+  outline: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  outline-offset: 0;
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.12) inset,
+    0 20px 60px rgba(0, 0, 255, 0.28),
+    0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    border: 1px solid white;
+    border-radius: 20px;
+}
+
+/* Force all child texts inside the modal to white tones */
+.search-glass-modal,
+.search-glass-modal * {
+  color: #ffffff !important;
+}
+
+/* Text hierarchy: Group labels / section headers */
+.search-glass-modal [class*="groupLabel"],
+.search-glass-modal [class*="group-label"],
+.search-glass-modal [role="group"] > div:first-child,
+.search-glass-modal [role="group"] > span:first-child,
+.search-glass-modal [role="presentation"] {
+  color: rgba(255, 255, 255, 0.55) !important;
+  font-weight: 700 !important;
+}
+
+/* Text hierarchy: Descriptions, Suffixes, and Trailing metadata */
+.search-glass-modal [class*="itemDescription"],
+.search-glass-modal [class*="itemTrailing"],
+.search-glass-modal [class*="item-description"],
+.search-glass-modal [class*="item-trailing"],
+.search-glass-modal [class*="empty"],
+.search-glass-modal [class*="footer"] {
+  color: rgba(255, 255, 255, 0.60) !important;
+}
+
+/* Placeholder inside input */
+.search-glass-modal input::placeholder {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* Icons and Close/Search Buttons */
+.search-glass-modal button,
+.search-glass-modal svg,
+.search-glass-modal [class*="icon"],
+.search-glass-modal [class*="button"] {
+  color: rgba(255, 255, 255, 0.80) !important;
+}
+
+/* Active item highlight */
+.search-glass-modal [class*="item"][class*="active"],
+.search-glass-modal [class*="item"]:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Separator below the input */
+.search-glass-input {
+  border-bottom-width: 1.5px !important;
+  border-bottom-style: solid !important;
+  border-bottom-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Separator above the footer */
+.search-glass-footer {
+  border-top-width: 1.5px !important;
+  border-top-style: solid !important;
+  border-top-color: rgba(255, 255, 255, 0.12) !important;
+}
+</style>

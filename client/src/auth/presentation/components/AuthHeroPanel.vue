@@ -1,64 +1,127 @@
+<!-- English description: Renders the branded visual hero panel shared by guest authentication pages. -->
 <template>
   <aside class="auth-hero" aria-labelledby="auth-hero-title">
     <!-- Background effects -->
     <div class="auth-hero__bg" aria-hidden="true">
-      <span class="auth-hero__orb auth-hero__orb--a" />
+      <span class="auth-hero__orb auth-hero__orb--a animate-pulse" />
       <span class="auth-hero__orb auth-hero__orb--b" />
-      <span class="auth-hero__orb auth-hero__orb--c" />
+      <span class="auth-hero__orb auth-hero__orb--c animate-pulse" />
       <span class="auth-hero__grid" />
     </div>
 
-    <!-- Brand -->
-    <header class="auth-hero__brand">
-      <div class="auth-hero__brand-icon">V</div>
-      <div>
-        <p class="auth-hero__brand-tag">{{ $t('navigation.headerLogo.tagline') }}</p>
-        <p class="auth-hero__brand-name">VNSEEA</p>
-      </div>
-    </header>
-
-    <!-- Copy -->
-    <div class="auth-hero__copy">
-      <h2 id="auth-hero-title" class="auth-hero__title">
-        {{ resolvedTitle }}
-      </h2>
-      <p class="auth-hero__subtitle">{{ resolvedSubtitle }}</p>
+    <!-- Centered Header Wrapper (Aligns logo with content area) -->
+    <div class="auth-hero__header-wrapper sm:w-[30%] xl:w-[50%]">
+      <header v-if="hasBrandIdentity" class="auth-hero__brand">
+        <div class="auth-hero__brand-shell">
+          <div class="auth-hero__brand-icon">
+            <img
+              v-if="displayLogoUrl && !logoFailed"
+              :src="displayLogoUrl"
+              :alt="logoAlt"
+              class="auth-hero__brand-logo"
+              @error="logoFailed = true"
+            >
+            <Icon v-else name="i-ph-sparkles-fill" class="h-10 w-10 text-white" />
+          </div>
+          <div class="auth-hero__brand-ring" />
+        </div>
+      </header>
     </div>
 
-    <!-- Feature cards -->
-    <div class="auth-hero__cards" aria-hidden="true">
-      <div class="auth-hero__card auth-hero__card--main">
-        <span class="auth-hero__card-pill">{{ $t('navigation.headerLogo.tagline') }}</span>
-        <p class="auth-hero__card-title">{{ resolvedTitle }}</p>
-        <p class="auth-hero__card-body">{{ resolvedSubtitle }}</p>
-      </div>
-
-      <div class="auth-hero__card-row">
-        <div class="auth-hero__card auth-hero__card--mini">
-          <span class="auth-hero__mini-icon">
-            <Icon name="i-ph-users-three-fill" class="h-4 w-4" />
-          </span>
-          <div>
-            <p class="auth-hero__mini-label">{{ $t('auth.heroPanel.communityLabel') }}</p>
-            <p class="auth-hero__mini-value">{{ $t('auth.heroPanel.communityValue') }}</p>
+    <!-- Unified Visual & Form Core -->
+    <div class="auth-hero__visual-core">
+      <!-- Left side: Graphical interactive widgets (Hidden on mobile, visible on desktop) -->
+      <div class="auth-hero__graphics" aria-hidden="true">
+        <!-- 1. Central Portal (Globe & Network) -->
+        <div class="hero-widget hero-widget--central">
+          <div class="hero-widget__orbit">
+            <div class="hero-widget__node hero-widget__node--center">
+              <Icon name="i-ph-globe-hemisphere-east-duotone" class="w-12 h-12 text-white" />
+            </div>
+            <!-- Orbiting Nodes -->
+            <div class="hero-widget__node hero-widget__node--orbit-1">
+              <Icon name="i-ph-chat-circle-dots-duotone" class="w-5 h-5 text-blue-300" />
+            </div>
+            <div class="hero-widget__node hero-widget__node--orbit-2">
+              <Icon name="i-ph-heart-duotone" class="w-5 h-5 text-rose-300" />
+            </div>
+            <div class="hero-widget__node hero-widget__node--orbit-3">
+              <Icon name="i-ph-paper-plane-tilt-duotone" class="w-5 h-5 text-emerald-300" />
+            </div>
+            <div class="hero-widget__node hero-widget__node--orbit-4">
+              <Icon name="i-ph-phone-duotone" class="w-5 h-5 text-amber-300" />
+            </div>
           </div>
         </div>
 
-        <div class="auth-hero__card auth-hero__card--mini">
-          <span class="auth-hero__mini-icon">
-            <Icon name="i-ph-lightning-fill" class="h-4 w-4" />
-          </span>
-          <div>
-            <p class="auth-hero__mini-label">{{ $t('auth.heroPanel.activityLabel') }}</p>
-            <p class="auth-hero__mini-value">{{ $t('auth.heroPanel.activityValue') }}</p>
+        <!-- 2. Asymmetric Floating Widgets -->
+        <div class="hero-widget-grid">
+          <!-- Widget A: Connections & Sharing -->
+          <div class="hero-widget hero-widget--glass hero-widget--a">
+            <div class="widget-header">
+              <Icon name="i-ph-share-network-duotone" class="w-6 h-6 text-blue-400" />
+              <div class="widget-status-dot" />
+            </div>
+            <div class="widget-avatars">
+              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="w-6 h-6 text-white/90" /></span>
+              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="w-6 h-6 text-white/70" /></span>
+              <span class="widget-avatar-shell"><Icon name="i-ph-user-circle-duotone" class="w-6 h-6 text-white/50" /></span>
+              <span class="widget-avatar-add"><Icon name="i-ph-plus-bold" class="w-3 h-3 text-white" /></span>
+            </div>
+          </div>
+
+          <!-- Widget B: Boost / Lightning -->
+          <div class="hero-widget hero-widget--glass hero-widget--b">
+            <div class="widget-icon-box widget-icon-box--amber">
+              <Icon name="i-ph-lightning-duotone" class="w-6 h-6 text-amber-400 animate-pulse" />
+            </div>
+            <div class="widget-bars">
+              <span class="widget-bar" style="height: 12px; animation-delay: 0.1s;" />
+              <span class="widget-bar" style="height: 24px; animation-delay: 0.2s;" />
+              <span class="widget-bar widget-bar--active animate-pulse" style="height: 38px; animation-delay: 0.3s;" />
+              <span class="widget-bar" style="height: 18px; animation-delay: 0.4s;" />
+            </div>
+          </div>
+
+          <!-- Widget C: Media & Music -->
+          <div class="hero-widget hero-widget--glass hero-widget--c">
+            <div class="widget-icon-box widget-icon-box--rose">
+              <Icon name="i-ph-music-notes-simple-duotone" class="w-6 h-6 text-rose-400" />
+            </div>
+            <div class="widget-wave">
+              <span class="wave-bar" style="animation-delay: 0.1s;" />
+              <span class="wave-bar" style="animation-delay: 0.3s;" />
+              <span class="wave-bar" style="animation-delay: 0.2s;" />
+              <span class="wave-bar" style="animation-delay: 0.4s;" />
+            </div>
+          </div>
+
+          <!-- Widget D: Security & Crown -->
+          <div class="hero-widget hero-widget--glass hero-widget--d">
+            <div class="widget-badge-circle">
+              <Icon name="i-ph-shield-check-duotone" class="w-8 h-8 text-emerald-400" />
+            </div>
+            <div class="widget-badge-mini">
+              <Icon name="i-ph-crown-duotone" class="w-4 h-4 text-amber-300" />
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Right side: Authentication Form Card (Slot) -->
+      <main class="auth-hero__form-container mt-[-37.5!important]"> <!-- Negative top margin to counteract padding and prevent scrollbar -->
+        <div class="auth-hero__form-card">
+          <slot />
+        </div>
+      </main>
     </div>
   </aside>
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from "pinia"
+import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
+
 const props = withDefaults(defineProps<{
   title: string
   subtitle: string
@@ -70,9 +133,18 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
+const siteBrandingStore = useSiteBrandingStore()
+const { branding } = storeToRefs(siteBrandingStore)
+const logoFailed = ref(false)
 
-const resolvedTitle = computed(() => props.title.trim() || t('auth.heroPanel.defaultTitle'))
-const resolvedSubtitle = computed(() => props.subtitle.trim() || t('auth.heroPanel.defaultSubtitle'))
+const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
+const displayLogoUrl = computed(() => branding.value.nightLogoUrl || branding.value.logoUrl)
+const logoAlt = computed(() => brandName.value ? `${brandName.value} Logo` : "Site logo")
+const hasBrandIdentity = computed(() => Boolean(displayLogoUrl.value && !logoFailed.value) || Boolean(brandName.value))
+
+watch(displayLogoUrl, () => {
+  logoFailed.value = false
+})
 </script>
 
 <style scoped>
@@ -81,13 +153,20 @@ const resolvedSubtitle = computed(() => props.subtitle.trim() || t('auth.heroPan
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 2rem;
-  padding: 2.5rem;
+  padding: 1.5rem 1rem;
   width: 100%;
-  min-height: 100%;
-  overflow: hidden;
+  min-height: 100svh;
+  overflow-x: hidden; /* Block horizontal scrollbar completely */
   color: #ffffff;
+  background: linear-gradient(160deg, #1e3c72 0%, #1d2b64 50%, #0f2027 100%);
+}
+
+@media (min-width: 1024px) {
+  .auth-hero {
+    padding: 2rem 3rem;
+    height: 100vh; /* Lock height on desktop */
+    overflow-y: hidden; /* Hide vertical scrollbar completely on desktop */
+  }
 }
 
 /* ─── Background ───────────────────────────────────────── */
@@ -100,196 +179,462 @@ const resolvedSubtitle = computed(() => props.subtitle.trim() || t('auth.heroPan
 .auth-hero__orb {
   position: absolute;
   border-radius: 999px;
-  filter: blur(56px);
-  opacity: 0.55;
+  filter: blur(72px);
+  opacity: 0.45;
 }
 
 .auth-hero__orb--a {
-  top: -4%;
-  left: -6%;
-  width: 14rem;
-  height: 14rem;
+  top: -8%;
+  left: -8%;
+  width: 22rem;
+  height: 22rem;
   background: rgba(255, 255, 255, 0.18);
+  animation-duration: 4s;
 }
 
 .auth-hero__orb--b {
   right: -5%;
-  top: 30%;
-  width: 18rem;
-  height: 18rem;
-  background: rgba(80, 220, 255, 0.15);
+  top: 20%;
+  width: 26rem;
+  height: 26rem;
+  background: rgba(20, 80, 255, 0.22);
 }
 
 .auth-hero__orb--c {
-  left: 20%;
-  bottom: -5%;
-  width: 16rem;
-  height: 16rem;
-  background: rgba(255, 255, 255, 0.10);
+  left: 10%;
+  bottom: -8%;
+  width: 24rem;
+  height: 24rem;
+  background: rgba(255, 255, 255, 0.08);
+  animation-duration: 5s;
 }
 
 .auth-hero__grid {
   position: absolute;
   inset: 0;
-  opacity: 0.12;
+  opacity: 0.07;
   background-image:
-    linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
-  background-size: 36px 36px;
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-/* ─── Brand header ─────────────────────────────────────── */
-.auth-hero__brand,
-.auth-hero__copy,
-.auth-hero__cards {
+/* ─── Centered Header Wrapper ──────────────────────────── */
+.auth-hero__header-wrapper {
   position: relative;
-  z-index: 1;
+  z-index: 15;
+  width: 30%;
+  max-width: 76rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .auth-hero__brand {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+}
+
+.auth-hero__brand-shell {
+  position: relative;
+  display: inline-flex;
+  padding: 4px;
 }
 
 .auth-hero__brand-icon {
   display: flex;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 5.5rem !important;
+  height: 5.5rem !important;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.12);
-  font-size: 1.2rem;
-  font-weight: 900;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+  border-radius: var(--radius-xl);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: var(--shadow-lg), 0 0 32px rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 2;
+  transition: transform var(--duration-normal) var(--ease-default);
 }
 
-.auth-hero__brand-tag {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.7);
+.auth-hero__brand-icon:hover {
+  transform: scale(1.05);
 }
 
-.auth-hero__brand-name {
-  font-size: 1.5rem;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  margin-top: 0.05rem;
+.auth-hero__brand-logo {
+  width: 3.85rem !important;
+  height: 3.85rem !important;
+  object-fit: contain;
 }
 
-/* ─── Copy ─────────────────────────────────────────────── */
-.auth-hero__copy {
-  max-width: 32rem;
+.auth-hero__brand-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 28px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.25);
+  animation: rotate-orbit 40s linear infinite;
+  pointer-events: none;
+}
+
+/* ─── Unified Core ─────────────────────────────────────── */
+.auth-hero__visual-core {
+  position: relative;
+  z-index: 2;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.auth-hero__title {
-  font-size: clamp(2.2rem, 4vw, 4.2rem);
-  font-weight: 900;
-  line-height: 0.93;
-  letter-spacing: -0.07em;
-}
-
-.auth-hero__subtitle {
-  margin-top: 1.25rem;
-  max-width: 28rem;
-  font-size: 1rem;
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.82);
-}
-
-/* ─── Feature cards ────────────────────────────────────── */
-.auth-hero__cards {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
-.auth-hero__card-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.9rem;
-}
-
-.auth-hero__card {
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.09);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(20px);
-}
-
-.auth-hero__card--main {
-  border-radius: 1.75rem;
-  padding: 1.4rem 1.5rem;
-}
-
-.auth-hero__card-pill {
-  display: inline-flex;
   align-items: center;
-  border-radius: 999px;
-  padding: 0.35rem 0.75rem;
-  background: rgba(255, 255, 255, 0.08);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.68);
+  gap: 2rem;
+  width: 100%;
+  margin-top: 2rem; /* Compact mobile top margin */
 }
 
-.auth-hero__card-title {
-  margin-top: 0.9rem;
-  font-size: 1.35rem;
-  font-weight: 900;
-  line-height: 1.08;
-  letter-spacing: -0.04em;
+@media (min-width: 1024px) {
+  .auth-hero__visual-core {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 4rem;
+    max-width: 76rem;
+    margin: 0rem auto 0; /* Tiny top margin on desktop to avoid scrollbar */
+  }
 }
 
-.auth-hero__card-body {
-  margin-top: 0.65rem;
-  font-size: 0.9rem;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.78);
+/* Left side: Graphics */
+.auth-hero__graphics {
+  display: none; /* Hidden on mobile */
 }
 
-.auth-hero__card--mini {
+@media (min-width: 1024px) {
+  .auth-hero__graphics {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3.5rem;
+    flex: 1;
+    max-width: 32rem;
+  }
+}
+
+/* Right side: Form container & card */
+.auth-hero__form-container {
+  width: 100%;
   display: flex;
-  gap: 0.8rem;
-  align-items: flex-start;
-  border-radius: 1.25rem;
-  padding: 0.9rem 1rem;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  flex: 1;
 }
 
-.auth-hero__mini-icon {
-  display: inline-flex;
-  width: 2rem;
-  height: 2rem;
-  flex-shrink: 0;
+@media (min-width: 1024px) {
+  .auth-hero__form-container {
+    transform: translateY(-95px); /* Cleanly pulls the form upwards on desktop */
+  }
+}
+
+.auth-hero__form-card {
+  width: 100%;
+  max-width: 26rem; /* Sleeker, more compact width */
+  background: rgba(255, 255, 255, 0.96);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem 1.25rem; /* Highly compact padding to prevent scrollbar */
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.05),
+    0 20px 50px rgba(15, 32, 67, 0.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+@media (min-width: 640px) {
+  .auth-hero__form-card {
+    padding: 2rem 2.25rem; /* Elegant, compact padding on desktop */
+  }
+}
+
+.auth-hero__form-card:hover {
+  transform: translateY(-2px);
+}
+
+/* ─── Central Portal (Planetary Orbit) ─────────────────── */
+.hero-widget--central {
+  position: relative;
+  display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0.75rem;
-  background: rgba(255, 255, 255, 0.14);
 }
 
-.auth-hero__mini-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.68);
+@keyframes rotate-orbit {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.auth-hero__mini-value {
-  margin-top: 0.2rem;
-  font-size: 0.92rem;
-  font-weight: 700;
-  line-height: 1.4;
+.hero-widget__orbit {
+  position: relative;
+  width: 14rem;
+  height: 14rem;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: rotate-orbit 32s linear infinite;
+}
+
+.hero-widget__node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--duration-normal) var(--ease-default);
+}
+
+.hero-widget__node--center {
+  position: relative;
+  width: 5.5rem;
+  height: 5.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: var(--shadow-brand), 0 0 32px rgba(255, 255, 255, 0.12);
+  z-index: 5;
+}
+
+@keyframes counter-rotate {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.hero-widget__node--orbit-1,
+.hero-widget__node--orbit-2,
+.hero-widget__node--orbit-3,
+.hero-widget__node--orbit-4 {
+  width: 2.25rem;
+  height: 2.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.hero-widget__node--orbit-1 *,
+.hero-widget__node--orbit-2 *,
+.hero-widget__node--orbit-3 *,
+.hero-widget__node--orbit-4 * {
+  animation: counter-rotate 32s linear infinite;
+}
+
+.hero-widget__node--orbit-1 {
+  top: -1.125rem;
+  left: calc(50% - 1.125rem);
+}
+
+.hero-widget__node--orbit-2 {
+  right: -1.125rem;
+  top: calc(50% - 1.125rem);
+}
+
+.hero-widget__node--orbit-3 {
+  bottom: -1.125rem;
+  left: calc(50% - 1.125rem);
+}
+
+.hero-widget__node--orbit-4 {
+  left: -1.125rem;
+  top: calc(50% - 1.125rem);
+}
+
+/* ─── Floating Widgets Grid ────────────────────────────── */
+.hero-widget-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.hero-widget--glass {
+  border: 1px solid var(--border-light);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: transform var(--duration-normal) var(--ease-default), border-color var(--duration-normal) var(--ease-default), background var(--duration-normal) var(--ease-default);
+}
+
+.hero-widget--glass:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Widget A: Connections */
+.hero-widget--a {
+  grid-column: span 1;
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.widget-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+  box-shadow: 0 0 10px var(--color-success);
+}
+
+.widget-avatars {
+  display: flex;
+  align-items: center;
+}
+
+.widget-avatar-shell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: -0.5rem;
+}
+
+.widget-avatar-shell:first-child {
+  margin-left: 0;
+}
+
+.widget-avatar-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-brand);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin-left: -0.5rem;
+  box-shadow: var(--shadow-brand);
+}
+
+/* Widget B: Boost / Activity Bars */
+.hero-widget--b {
+  grid-column: span 1;
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.widget-icon-box {
+  display: inline-flex;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.widget-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.widget-bar {
+  width: 6px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.widget-bar--active {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.4);
+}
+
+/* Widget C: Audio visualizer / Wave */
+.hero-widget--c {
+  grid-column: span 1;
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@keyframes audio-wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+
+.widget-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 24px;
+}
+
+.wave-bar {
+  width: 3px;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.3);
+  animation: audio-wave 1.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* Widget D: Floating Crown / Shield */
+@keyframes float-badge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.hero-widget--d {
+  grid-column: span 1;
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 4.75rem;
+  animation: float-badge 4s ease-in-out infinite;
+}
+
+.widget-badge-circle {
+  display: inline-flex;
+  padding: 12px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-md);
+}
+
+.widget-badge-mini {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: inline-flex;
+  padding: 4px;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: var(--bg-brand);
+  box-shadow: var(--shadow-brand);
 }
 </style>

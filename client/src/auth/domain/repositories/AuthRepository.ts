@@ -1,3 +1,5 @@
+// English description: Auth repository contract used by auth view-models and API-backed implementations.
+
 import type {
   ConfirmAccountInput,
   ConfirmAccountResult,
@@ -10,6 +12,7 @@ import type {
   ForgotPasswordResult,
   LoginInput,
   LoginResult,
+  RegisterAccountConfig,
   RegisterAccountInput,
   RegisterAccountResult,
   ResetPasswordInput,
@@ -18,6 +21,7 @@ import type {
 
 export interface AuthRepository {
   getCurrentUser(): Promise<CurrentAuthUser | null>
+  getRegisterConfig(): Promise<RegisterAccountConfig>
   login(input: LoginInput): Promise<LoginResult>
   register(input: RegisterAccountInput): Promise<RegisterAccountResult>
   confirmLogin(input: ConfirmLoginInput): Promise<ConfirmLoginResult>

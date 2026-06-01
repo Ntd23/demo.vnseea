@@ -1,3 +1,5 @@
+// English description: Auth domain types shared by the presentation, view-model, and Nuxt API bridge.
+
 export type AuthIdentity = string
 
 export interface CurrentAuthUser {
@@ -51,7 +53,7 @@ export interface ConfirmLoginResult {
 export interface RegisterAccountInput {
   firstName: string
   lastName: string
-  username: string
+  username?: string
   email: AuthIdentity
   password: string
   confirmPassword: string
@@ -61,6 +63,10 @@ export interface RegisterAccountInput {
   gender: string
   hasExistingStorefront: boolean
   acceptTerms: boolean
+}
+
+export interface RegisterAccountConfig {
+  autoUsername: boolean
 }
 
 export interface RegisterAccountResult {

@@ -1,3 +1,4 @@
+<!-- English description: Hosts guest authentication pages with backend-driven branding in the shared auth shell. -->
 <template>
   <AuthSplitShell :hero-props="heroProps">
     <slot />
@@ -5,11 +6,17 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from "pinia"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { useSiteBrandingStore } from "../../src/site-branding/application/stores/useSiteBrandingStore"
 import AuthSplitShell from "../../src/auth/presentation/components/AuthSplitShell.vue"
 
 const { t } = useI18n()
 const route = useRoute()
+const siteBrandingStore = useSiteBrandingStore()
+const { branding } = storeToRefs(siteBrandingStore)
+const siteName = computed(() => branding.value.siteName || branding.value.siteTitle)
+const accountLabel = computed(() => siteName.value ? `your ${siteName.value} account` : "your account")
 
 const heroProps = computed(() => {
   if (route.path.endsWith(appRoutes.register)) {
@@ -42,7 +49,7 @@ const heroProps = computed(() => {
 
   if (route.path.endsWith(appRoutes.confirmAccount)) {
     return {
-      title: "Verify your VNSEEA account",
+      title: `Verify ${accountLabel.value}`,
       subtitle: "Use the code sent by email or SMS so the backend can activate the account and start a real web session.",
       imageAlt: "Verify account",
     }
@@ -51,7 +58,9 @@ const heroProps = computed(() => {
   if (route.path.endsWith(appRoutes.confirmResetSms)) {
     return {
       title: "Confirm your phone reset code",
-      subtitle: "Once the SMS code is verified, VNSEEA will open the password reset form for this account.",
+      subtitle: siteName.value
+        ? `Once the SMS code is verified, ${siteName.value} will open the password reset form for this account.`
+        : "Once the SMS code is verified, the password reset form will open for this account.",
       imageAlt: "Confirm phone reset code",
     }
   }

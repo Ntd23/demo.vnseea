@@ -24,9 +24,18 @@ const normalizeProfileUsername = (value: unknown) => {
   }
 }
 
+const reservedBackendProfileSegments = new Set(["ads", "advertise"])
+
 const username = computed(() => {
   return normalizeProfileUsername(route.params.username)
 })
+
+if (reservedBackendProfileSegments.has(username.value.toLowerCase())) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: "Route is reserved by the backend.",
+  })
+}
 
 const seoRepository = createApiPublicSeoRepository()
 const { data: seoMeta, error: seoError } = await useAsyncData(

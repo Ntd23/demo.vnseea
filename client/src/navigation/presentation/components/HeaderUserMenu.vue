@@ -184,7 +184,7 @@ function closeAndNavigate(to: string) {
 
 const quickActions = computed(() => {
   const items = [
-    { label: "navigation.mobileMenu.mainNav.advertising", icon: "i-ph-megaphone-fill", to: "/ads" },
+    { label: "navigation.mobileMenu.mainNav.advertising", icon: "i-ph-megaphone-fill", to: appRoutes.ads },
   ]
 
   if (currentUser.value?.isPro && currentUser.value?.canBoostPosts) {

@@ -3,22 +3,18 @@
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
-      <h1 class="auth-form__title">{{ $t('pages.registerPage.title') }}</h1>
+      <h3 class="auth-form__title">{{ $t('pages.registerPage.title') }}</h3>
     </div>
 
     <UForm :state="state" :validate="validate" class="auth-form__body" @submit="handleSubmit">
-      <div class="auth-form__row-2">
-        <UFormField name="firstName" :label="$t('pages.registerPage.firstName')" required class="min-w-0">
-          <UInput v-model="state.firstName" size="xl" :placeholder="$t('pages.registerPage.firstNamePlaceholder')"
-            class="w-full" />
-        </UFormField>
-        <UFormField name="lastName" :label="$t('pages.registerPage.lastName')" required class="min-w-0">
-          <UInput v-model="state.lastName" size="xl" :placeholder="$t('pages.registerPage.lastNamePlaceholder')"
+      <div v-if="autoUsername">
+        <UFormField name="firstName" :label="$t('pages.registerPage.username')" required>
+          <UInput v-model="state.firstName" size="xl" :placeholder="$t('pages.registerPage.usernamePlaceholder')"
             class="w-full" />
         </UFormField>
       </div>
 
-      <UFormField name="username" :label="$t('pages.registerPage.username')" required>
+      <UFormField v-else name="username" :label="$t('pages.registerPage.username')" required>
         <UInput v-model="state.username" type="text" autocomplete="username" size="xl" class="w-full"
           :placeholder="$t('pages.registerPage.usernamePlaceholder')" />
       </UFormField>
@@ -151,24 +147,25 @@ import { useRegisterPageVM } from '../../application/view-models/useRegisterPage
 const { t } = useI18n()
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
-const { state, isSubmitting, validate, handleSubmit } = useRegisterPageVM()
+const { state, autoUsername, isSubmitting, validate, hydrateRegisterConfig, handleSubmit } = useRegisterPageVM()
+await hydrateRegisterConfig()
 const termsHref = appRoutes.termsOfUse
 const privacyHref = appRoutes.privacyPolicy
 
 const birthDate = shallowRef<CalendarDate | undefined>(
   state.birthYear && state.birthMonth && state.birthDay
     ? new CalendarDate(
-        String(state.birthYear),
-        String(state.birthMonth),
-        String(state.birthDay)
+        Number(state.birthYear),
+        Number(state.birthMonth),
+        Number(state.birthDay)
       )
     : undefined
 )
 
 watch(birthDate, (value) => {
-  state.birthDay = value ? String(value.day) : ''
-  state.birthMonth = value ? String(value.month) : ''
-  state.birthYear = value ? String(value.year) : ''
+  state.birthDay = value ? value.day : null
+  state.birthMonth = value ? value.month : null
+  state.birthYear = value ? value.year : null
 })
 const birthDateLabel = computed(() => {
   if (!birthDate.value) return ''
@@ -226,18 +223,13 @@ const strength = computed(() => {
 }
 
 .auth-form__title {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   font-weight: 900;
   line-height: 0.95;
   letter-spacing: -0.06em;
   color: #0f172a;
 }
 
-@media (min-width: 640px) {
-  .auth-form__title {
-    font-size: 2.6rem;
-  }
-}
 
 .auth-form__subtitle {
   font-size: 0.95rem;

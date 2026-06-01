@@ -9,18 +9,19 @@
       @error="logoFailed = true"
     >
     <div
-      v-else
+      v-else-if="brandName"
       class="flex h-9 w-9 items-center justify-center rounded-2xl text-sm font-extrabold text-white"
       :class="inverted ? 'bg-white/16 ring-1 ring-white/20' : 'bg-[var(--brand-ink)]'"
     >
       {{ fallbackInitial }}
     </div>
-    <div v-if="!displayLogoUrl || logoFailed">
+    <div v-if="brandName && (!displayLogoUrl || logoFailed)">
       <p
+        v-if="brandEyebrow"
         class="text-[10px] font-semibold uppercase tracking-[0.06em]"
         :class="inverted ? 'text-white/70' : 'text-[var(--icon-primary)]'"
       >
-        {{ $t("navigation.headerLogo.tagline") }}
+        {{ brandEyebrow }}
       </p>
       <p class="text-sm font-extrabold leading-none" :class="inverted ? 'text-white' : 'text-slate-900'">
         {{ brandName }}
@@ -45,14 +46,19 @@ const siteBrandingStore = useSiteBrandingStore()
 const { branding } = storeToRefs(siteBrandingStore)
 const logoFailed = ref(false)
 
-const brandName = computed(() => branding.value.siteName || "VNSEEA")
+const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
 const displayLogoUrl = computed(() =>
   props.inverted && branding.value.nightLogoUrl
     ? branding.value.nightLogoUrl
     : branding.value.logoUrl,
 )
-const logoAlt = computed(() => `${brandName.value} Logo`)
-const fallbackInitial = computed(() => brandName.value.trim().charAt(0).toUpperCase() || "V")
+const logoAlt = computed(() => brandName.value ? `${brandName.value} Logo` : "Site logo")
+const fallbackInitial = computed(() => brandName.value.trim().charAt(0).toUpperCase())
+const brandEyebrow = computed(() => {
+  const title = branding.value.siteTitle.trim()
+
+  return title && title !== brandName.value ? title : ""
+})
 
 watch(displayLogoUrl, () => {
   logoFailed.value = false

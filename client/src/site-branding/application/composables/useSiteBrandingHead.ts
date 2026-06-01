@@ -3,26 +3,32 @@
 import { storeToRefs } from "pinia"
 import { useSiteBrandingStore } from "../stores/useSiteBrandingStore"
 
-const legacySuffixPattern = /\s\|\sVNSEEA$/i
+const legacySuffixPattern = /\s\|\s[^|]+$/i
 
 export function useSiteBrandingHead() {
   const store = useSiteBrandingStore()
   const { branding } = storeToRefs(store)
 
   useHead(() => {
-    const siteName = branding.value.siteName || "VNSEEA"
+    const siteName = branding.value.siteName || branding.value.siteTitle
     const siteTitle = branding.value.siteTitle || siteName
-    const faviconUrl = branding.value.faviconUrl || "/favicon.ico"
+    const faviconUrl = branding.value.faviconUrl
     const meta: Array<Record<string, string>> = [
-      {
-        property: "og:site_name",
-        content: siteName,
-      },
+      ...(siteName
+        ? [{
+            property: "og:site_name",
+            content: siteName,
+          }]
+        : []),
     ]
 
     return {
       titleTemplate: (titleChunk?: string) => {
         const normalizedTitle = String(titleChunk || "").replace(legacySuffixPattern, "").trim()
+
+        if (!siteTitle) {
+          return normalizedTitle
+        }
 
         if (!normalizedTitle || normalizedTitle === siteTitle) {
           return siteTitle
@@ -31,11 +37,13 @@ export function useSiteBrandingHead() {
         return `${normalizedTitle} | ${siteTitle}`
       },
       link: [
-        {
-          key: "site-favicon",
-          rel: "icon",
-          href: faviconUrl,
-        },
+        ...(faviconUrl
+          ? [{
+              key: "site-favicon",
+              rel: "icon",
+              href: faviconUrl,
+            }]
+          : []),
       ],
       meta,
     }

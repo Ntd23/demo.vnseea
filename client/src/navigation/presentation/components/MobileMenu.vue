@@ -213,7 +213,7 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.events', icon: 'i-ph-calendar-blank-fill', to: '/events' },
   { label: 'navigation.mobileMenu.mainNav.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
   { label: 'navigation.mobileMenu.mainNav.forum', icon: 'i-ph-chats-circle-fill', to: '/forum' },
-  { label: 'navigation.mobileMenu.mainNav.advertising', icon: 'i-ph-megaphone-fill', to: '/ads' },
+  { label: 'navigation.mobileMenu.mainNav.advertising', icon: 'i-ph-megaphone-fill', to: appRoutes.ads },
   { label: 'navigation.mobileMenu.mainNav.photos', icon: 'i-ph-images-fill', to: '/photos' },
   { label: 'navigation.mobileMenu.mainNav.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
   { label: 'navigation.mobileMenu.mainNav.reels', icon: 'i-ph-film-strip-fill', to: '/reels' },

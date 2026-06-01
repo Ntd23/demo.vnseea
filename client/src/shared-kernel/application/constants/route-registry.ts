@@ -42,6 +42,10 @@ export const appRoutes = {
   forum: "/forum",
   games: "/games",
   goPro: "/go-pro",
+  ads: "/ads",
+  adsCreate: "/ads/create",
+  adsEdit: (id: string | number) => `/ads/edit/${encodeSegment(id)}`,
+  adsChart: (id: string | number) => `/ads/chart/${encodeSegment(id)}`,
   boostedPosts: "/boosted-posts",
   boostedPages: "/boosted-pages",
   live: "/live",
@@ -86,6 +90,7 @@ export const apiRoutes = {
     login: "auth/login",
     browserSession: "auth/browser-session",
     register: "auth/register",
+    registerConfig: "auth/register-config",
     confirmLogin: "auth/confirm-login",
     confirmAccount: "auth/confirm-account",
     forgotPassword: "auth/forgot-password",
@@ -227,6 +232,14 @@ export const apiRoutes = {
   boosted: {
     posts: "boosted/posts",
     pages: "boosted/pages",
+  },
+  ads: {
+    list: "ads",
+    options: "ads/options",
+    create: "ads",
+    detail: (id: string | number) => `ads/${encodeSegment(id)}`,
+    stats: (id: string | number) => `ads/${encodeSegment(id)}/stats`,
+    status: (id: string | number) => `ads/${encodeSegment(id)}/status`,
   },
   search: {
     index: "search",

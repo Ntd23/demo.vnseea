@@ -1,3 +1,5 @@
+// English description: Bridges Nuxt registration requests to the backend account creation API.
+
 import { readBody, createError } from "h3"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
@@ -16,11 +18,41 @@ type BackendRegisterResponse = {
   }
 }
 
+type BackendSiteSettingsResponse = {
+  api_status?: number | string
+  public_config?: Record<string, unknown>
+  errors?: {
+    error_text?: string
+  }
+}
+
+const isEnabled = (value: unknown) =>
+  value === true
+  || value === 1
+  || value === "1"
+  || value === "true"
+
+async function resolveAutoUsername(event: Parameters<typeof createBackendApiClient>[0]) {
+  const client = createBackendApiClient(event)
+  const response = assertBackendApiSuccess(
+    await client.post<BackendSiteSettingsResponse, Record<string, unknown>>(
+      backendRoutes.api.siteSettings,
+      {},
+    ),
+    "Unable to load registration settings.",
+  )
+
+  return isEnabled(response.public_config?.auto_username)
+}
+
 export default defineEventHandler(async (event): Promise<RegisterAccountResult> => {
   const client = createBackendApiClient(event)
   const body = await readBody<RegisterAccountInput>(event)
   const identity = body.email?.trim() ?? ""
   const username = body.username?.trim() ?? ""
+  const firstName = body.firstName?.trim() ?? ""
+  const lastName = body.lastName?.trim() ?? ""
+  const autoUsername = await resolveAutoUsername(event)
   const digitsOnly = identity.replace(/\D/g, "")
   const isEmailIdentity = identity.includes("@")
   const email = isEmailIdentity ? identity : (digitsOnly ? `phone_${digitsOnly}@vnseea.invalid` : "")
@@ -33,18 +65,25 @@ export default defineEventHandler(async (event): Promise<RegisterAccountResult> 
     })
   }
 
-  if (!username) {
+  if (!autoUsername && !username) {
     throw createError({
       statusCode: 422,
       statusMessage: "Username is required.",
     })
   }
 
+  if (autoUsername && !firstName) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "First name is required.",
+    })
+  }
+
   const response = assertBackendApiSuccess(
     await client.post<BackendRegisterResponse, Record<string, unknown>>(backendRoutes.api.createAccount, {
-      username,
-      first_name: body.firstName,
-      last_name: body.lastName,
+      username: autoUsername ? undefined : username,
+      first_name: autoUsername ? firstName : undefined,
+      last_name: autoUsername && lastName ? lastName : undefined,
       email,
       phone_num: phoneNum || undefined,
       password: body.password,
