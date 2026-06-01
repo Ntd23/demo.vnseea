@@ -28,18 +28,28 @@
       <div class="home-feed__section-header">
         <div>
           <p class="home-feed__eyebrow">{{ copy.orderEyebrow }}</p>
-          <h2 class="home-feed__title">{{ copy.orderTitle }}</h2>
+          <h2 class="home-feed__title">{{ activeOrderOption?.label || copy.orderTitle }}</h2>
         </div>
+        <button
+          class="home-feed__filter-toggle"
+          :class="{ 'home-feed__filter-toggle--active': isOrderMenuOpen }"
+          type="button"
+          :aria-expanded="isOrderMenuOpen"
+          :aria-label="copy.orderTitle"
+          @click="isOrderMenuOpen = !isOrderMenuOpen"
+        >
+          <Icon name="i-ph-sliders-horizontal-bold" class="h-5 w-5" />
+        </button>
       </div>
 
-      <div class="home-feed__order-list">
+      <div v-if="isOrderMenuOpen" class="home-feed__order-popover">
         <button
           v-for="option in orderOptions"
           :key="option.key"
           class="home-feed__order-button"
           :class="{ 'home-feed__order-button--active': activeOrder === option.key }"
           type="button"
-          @click="activeOrder = option.key"
+          @click="selectOrder(option.key)"
         >
           <span class="font-semibold">{{ option.label }}</span>
           <span class="home-feed__order-description">{{ option.description }}</span>
@@ -136,6 +146,14 @@ const {
   initialize,
 } = useHomeFeedPageVM()
 
+const isOrderMenuOpen = ref(false)
+const activeOrderOption = computed(() => orderOptions.value.find(option => option.key === activeOrder.value) ?? null)
+
+function selectOrder(key: typeof activeOrder.value) {
+  activeOrder.value = key
+  isOrderMenuOpen.value = false
+}
+
 await initialize()
 </script>
 
@@ -161,6 +179,7 @@ await initialize()
 .home-feed__section-header {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
@@ -247,13 +266,50 @@ await initialize()
 }
 
 .home-feed__order-card {
+  position: relative;
   display: none;
+}
+
+.home-feed__order-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: var(--space-4);
+  z-index: 20;
+  display: grid;
+  width: min(320px, calc(100vw - 32px));
+  gap: 8px;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface);
+  padding: 10px;
+  box-shadow: var(--shadow-lg);
+}
+
+.home-feed__filter-toggle {
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.home-feed__filter-toggle--active,
+.home-feed__filter-toggle:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-surface-active);
+  color: var(--text-link);
 }
 
 .home-feed__order-button {
   display: flex;
-  min-width: 220px;
-  flex: 1 1 220px;
+  width: 100%;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;

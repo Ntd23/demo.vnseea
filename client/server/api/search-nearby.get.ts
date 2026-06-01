@@ -12,6 +12,8 @@ export default defineEventHandler(async (event): Promise<NearbySearchResponse> =
     type: query.type,
     distance: query.distance,
     limit: query.limit,
+    originLat: query.originLat || query.origin_lat,
+    originLng: query.originLng || query.origin_lng,
     defaultLimit: 40,
     maxLimit: 80,
   })

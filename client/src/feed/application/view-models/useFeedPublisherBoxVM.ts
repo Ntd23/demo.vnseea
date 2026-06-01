@@ -80,6 +80,7 @@ export function useFeedPublisherBoxVM(
   const compactActions = computed(() => [
     { value: "image" as const, icon: "i-ph-image-bold", label: t("feed.publisherBox.actionImage") },
     { value: "video" as const, icon: "i-ph-video-camera-bold", label: t("feed.publisherBox.actionVideo") },
+    { value: "poll" as const, icon: "i-ph-list-checks-bold", label: t("feed.publisherBox.actionPoll") },
     { value: "story" as const, icon: "i-ph-sparkle-bold", label: t("feed.publisherBox.actionStory") },
   ])
 

@@ -9,17 +9,26 @@
     @click="$emit('select', item)"
     @keydown.enter="$emit('select', item)"
   >
-    <div class="nearby-result-card__avatar">
-      <img v-if="item.avatarUrl" :src="item.avatarUrl" :alt="item.title">
-      <span v-else>{{ initials }}</span>
-    </div>
-
     <div class="nearby-result-card__content">
-      <div class="nearby-result-card__meta-row">
-        <span class="nearby-result-card__distance">{{ distanceLabel }}</span>
+      <div class="nearby-result-card__header">
+        <div class="nearby-result-card__avatar">
+          <img v-if="item.avatarUrl" :src="item.avatarUrl" :alt="item.title">
+          <span v-else>{{ initials }}</span>
+        </div>
+
+        <div class="nearby-result-card__identity">
+          <h2 class="nearby-result-card__title">{{ item.title }}</h2>
+          <p class="nearby-result-card__subtitle">{{ item.subtitle }}</p>
+        </div>
+
+        <div class="nearby-result-card__facts">
+          <span class="nearby-result-card__distance">{{ distanceLabel }}</span>
+          <span v-if="coordinateLabel" class="nearby-result-card__coordinates">
+            <Icon name="i-ph-crosshair-simple-fill" />
+            <span>{{ coordinateLabel }}</span>
+          </span>
+        </div>
       </div>
-      <h2 class="nearby-result-card__title">{{ item.title }}</h2>
-      <p class="nearby-result-card__subtitle">{{ item.subtitle }}</p>
       <p class="nearby-result-card__location">
         <Icon name="i-ph-map-pin-fill" />
         <span>{{ item.locationLabel || coordinateLabel }}</span>
@@ -121,16 +130,14 @@ async function shareResult() {
 
 <style scoped>
 .nearby-result-card {
-  display: grid;
-  grid-template-columns: 84px minmax(0, 1fr);
-  gap: 20px;
-  min-width: min(100%, 1220px);
+  display: block;
+  width: 100%;
   border: 2px solid color-mix(in srgb, var(--bg-brand) 22%, var(--border-default));
-  border-radius: 32px;
+  border-radius: 20px;
   background: color-mix(in srgb, var(--bg-surface) 96%, transparent);
   box-shadow: var(--shadow-lg);
   cursor: pointer;
-  padding: 20px;
+  padding: 16px;
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -141,17 +148,25 @@ async function shareResult() {
   transform: translateY(-1px);
 }
 
+.nearby-result-card__header {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
 .nearby-result-card__avatar {
   display: flex;
-  height: 84px;
-  width: 84px;
+  height: 52px;
+  width: 52px;
+  flex: 0 0 52px;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
   background: linear-gradient(145deg, var(--color-primary-100) 0%, var(--color-primary-200) 100%);
   color: var(--text-link);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: var(--weight-extrabold);
 }
 
@@ -165,15 +180,25 @@ async function shareResult() {
   min-width: 0;
 }
 
-.nearby-result-card__meta-row {
+.nearby-result-card__identity {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.nearby-result-card__facts {
   display: flex;
+  min-width: 0;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
 }
 
-.nearby-result-card__distance {
+.nearby-result-card__distance,
+.nearby-result-card__coordinates {
   display: inline-flex;
+  min-width: 0;
   align-items: center;
+  gap: 5px;
   border-radius: 999px;
   background: var(--bg-surface-active);
   color: var(--text-link);
@@ -182,13 +207,23 @@ async function shareResult() {
   padding: 6px 12px;
 }
 
+.nearby-result-card__coordinates {
+  max-width: 220px;
+  color: var(--text-secondary);
+}
+
+.nearby-result-card__coordinates span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .nearby-result-card__title {
-  margin-top: 10px;
   overflow: hidden;
   color: var(--text-primary);
-  font-size: 28px;
+  font-size: 18px;
   font-weight: var(--weight-extrabold);
-  line-height: 1.1;
+  line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -202,6 +237,10 @@ async function shareResult() {
   font-weight: var(--weight-bold);
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.nearby-result-card__subtitle {
+  margin-top: 3px;
 }
 
 .nearby-result-card__location {
@@ -235,7 +274,10 @@ async function shareResult() {
   font-family: inherit;
   font-size: 13px;
   font-weight: var(--weight-extrabold);
+  line-height: 1.15;
   text-decoration: none;
+  text-align: center;
+  touch-action: manipulation;
   transition: all 0.15s ease;
 }
 
@@ -258,31 +300,87 @@ async function shareResult() {
 
 @media (max-width: 640px) {
   .nearby-result-card {
-    grid-template-columns: 54px minmax(0, 1fr);
-    gap: 14px;
-    border-radius: 20px;
-    padding: 14px;
+    border-width: 1px;
+    border-radius: 16px;
+    padding: 12px;
+  }
+
+  .nearby-result-card__header {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
   }
 
   .nearby-result-card__avatar {
-    height: 54px;
-    width: 54px;
-    font-size: 16px;
+    height: 44px;
+    width: 44px;
+    flex-basis: 44px;
+    font-size: 14px;
+  }
+
+  .nearby-result-card__identity {
+    min-width: 0;
+  }
+
+  .nearby-result-card__facts {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    gap: 6px;
   }
 
   .nearby-result-card__title {
-    font-size: 18px;
+    font-size: 16px;
+  }
+
+  .nearby-result-card__subtitle,
+  .nearby-result-card__location {
+    font-size: 12px;
+  }
+
+  .nearby-result-card__location {
+    align-items: flex-start;
+    white-space: normal;
+  }
+
+  .nearby-result-card__location span {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .nearby-result-card__distance,
+  .nearby-result-card__coordinates {
+    max-width: 100%;
+    padding: 5px 9px;
+    font-size: 11px;
   }
 
   .nearby-result-card__actions {
-    grid-column: 1 / -1;
-    gap: 8px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    margin-top: 12px;
   }
 
   .nearby-result-card__action {
-    min-height: 40px;
-    border-radius: 12px;
-    font-size: 12px;
+    min-height: 38px;
+    border-radius: 10px;
+    padding: 0 6px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .nearby-result-card__actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .nearby-result-card__action {
+    min-height: 36px;
+    padding: 0 4px;
+    font-size: 10px;
   }
 }
 </style>

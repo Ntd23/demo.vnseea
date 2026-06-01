@@ -26,13 +26,26 @@ const emptyResponse = (): NearbySearchResponse => ({
   items: [],
 })
 
+const sortByDistance = (items: NearbySearchItem[]) =>
+  [...items].sort((left, right) => {
+    const leftDistance = left.distanceMeters ?? Number.POSITIVE_INFINITY
+    const rightDistance = right.distanceMeters ?? Number.POSITIVE_INFINITY
+
+    if (leftDistance !== rightDistance) {
+      return leftDistance - rightDistance
+    }
+
+    return left.title.localeCompare(right.title)
+  })
+
 export function useSearchNearbyPageVM() {
   const route = useRoute()
   const repository = createApiNearbySearchRepository()
 
   const searchText = ref(readString(route.query.q))
-  const selectedType = ref<NearbySearchType>("user")
+  const selectedType = ref<NearbySearchType>("all")
   const distanceKm = ref(5)
+  const deviceOrigin = ref<{ lat: number, lng: number } | null>(null)
   const selectedItemId = ref("")
   const originFocusKey = ref(0)
   const loading = ref(true)
@@ -58,9 +71,11 @@ export function useSearchNearbyPageVM() {
 
   const nearbyQuery = computed<NearbySearchQuery>(() => ({
     q: "",
-    type: "all",
+    type: selectedType.value,
     distanceKm: distanceKm.value,
     limit: 40,
+    originLat: deviceOrigin.value?.lat ?? null,
+    originLng: deviceOrigin.value?.lng ?? null,
   }))
   const suggestionKeyword = computed(() => debouncedSuggestionText.value.trim())
   const shouldFetchSuggestions = computed(() =>
@@ -69,9 +84,11 @@ export function useSearchNearbyPageVM() {
   )
   const suggestionQuery = computed<NearbySearchQuery>(() => ({
     q: suggestionKeyword.value,
-    type: "all",
+    type: "page",
     distanceKm: distanceKm.value,
     limit: 8,
+    originLat: deviceOrigin.value?.lat ?? null,
+    originLng: deviceOrigin.value?.lng ?? null,
   }))
 
   const withPinnedState = (sourceItems: NearbySearchItem[]) =>
@@ -81,7 +98,7 @@ export function useSearchNearbyPageVM() {
     }))
 
   const mapItems = computed(() => {
-    const merged = [...response.value.items]
+    const merged = sortByDistance(response.value.items)
     const selected = selectedSuggestionItem.value
 
     if (selected && !merged.some(item => item.id === selected.id)) {
@@ -91,7 +108,7 @@ export function useSearchNearbyPageVM() {
     return withPinnedState(merged)
   })
   const cardItems = computed(() =>
-    withPinnedState(selectedSuggestionItem.value ? [selectedSuggestionItem.value] : response.value.items),
+    withPinnedState(selectedSuggestionItem.value ? [selectedSuggestionItem.value] : sortByDistance(response.value.items)),
   )
   const items = mapItems
   const origin = computed(() => response.value.origin)
@@ -185,7 +202,7 @@ export function useSearchNearbyPageVM() {
         }
       }
 
-      suggestions.value = nextResponse.items
+      suggestions.value = sortByDistance(nextResponse.items)
     }
     catch {
       if (requestId === suggestionRequestSequence) {
@@ -270,6 +287,7 @@ export function useSearchNearbyPageVM() {
   }
 
   function focusDeviceLocation(lat: number, lng: number) {
+    deviceOrigin.value = { lat, lng }
     response.value = {
       ...response.value,
       status: "ready",
@@ -284,7 +302,7 @@ export function useSearchNearbyPageVM() {
 
   function clearSearch() {
     searchText.value = ""
-    selectedType.value = "user"
+    selectedType.value = "all"
     distanceKm.value = 5
     suggestions.value = []
     pinnedPageIds.value = []
