@@ -1,3 +1,5 @@
+// English description: Nuxt API backed implementation of the auth repository contract.
+
 import type { AuthRepository } from "../../domain/repositories/AuthRepository"
 import type {
   ConfirmAccountInput,
@@ -11,6 +13,7 @@ import type {
   ForgotPasswordResult,
   LoginInput,
   LoginResult,
+  RegisterAccountConfig,
   RegisterAccountInput,
   RegisterAccountResult,
   ResetPasswordInput,
@@ -27,6 +30,9 @@ export function createApiAuthRepository(): AuthRepository {
       return await client.get<CurrentAuthUser | null>(
         apiRoutes.auth.me,
       )
+    },
+    async getRegisterConfig() {
+      return await client.get<RegisterAccountConfig>(apiRoutes.auth.registerConfig)
     },
     async login(input: LoginInput): Promise<LoginResult> {
       return await client.post<LoginResult, LoginInput>(

@@ -10,10 +10,10 @@ export interface SiteBranding {
 }
 
 export const createDefaultSiteBranding = (): SiteBranding => ({
-  siteName: "VNSEEA",
-  siteTitle: "VNSEEA",
+  siteName: "",
+  siteTitle: "",
   siteDescription: "",
   logoUrl: "",
   nightLogoUrl: "",
-  faviconUrl: "/favicon.ico",
+  faviconUrl: "",
 })

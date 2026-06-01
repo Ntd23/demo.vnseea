@@ -2,6 +2,7 @@
 
 import type { FormError } from "@nuxt/ui"
 import type {
+  RegisterAccountConfig,
   RegisterAccountInput,
   RegisterAccountResult,
 } from "../../domain/types/auth.types"
@@ -52,6 +53,10 @@ const createDefaultState = (): RegisterAccountInput => ({
   acceptTerms: false,
 })
 
+const createDefaultRegisterConfig = (): RegisterAccountConfig => ({
+  autoUsername: true,
+})
+
 const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
     data?: { statusMessage?: string; message?: string }
@@ -73,28 +78,56 @@ export function useRegisterPageVM(
   const toast = useToast()
 
   const state = reactive<RegisterAccountInput>(createDefaultState())
+  const registerConfig = ref<RegisterAccountConfig>(createDefaultRegisterConfig())
+  const registerConfigLoading = ref(false)
+  const registerConfigLoaded = ref(false)
   const submitState = ref<"idle" | "loading" | "success" | "error">("idle")
   const submitMessage = ref("")
   const lastResult = ref<RegisterAccountResult | null>(null)
+  const autoUsername = computed(() => registerConfig.value.autoUsername)
+
+  async function hydrateRegisterConfig(force = false) {
+    if (registerConfigLoading.value) {
+      return registerConfig.value
+    }
+
+    if (registerConfigLoaded.value && !force) {
+      return registerConfig.value
+    }
+
+    registerConfigLoading.value = true
+
+    try {
+      registerConfig.value = await repository.getRegisterConfig()
+      registerConfigLoaded.value = true
+      return registerConfig.value
+    }
+    catch {
+      registerConfig.value = createDefaultRegisterConfig()
+      registerConfigLoaded.value = true
+      return registerConfig.value
+    }
+    finally {
+      registerConfigLoading.value = false
+    }
+  }
 
   const validate = (currentState: RegisterAccountInput): RegisterValidationError[] => {
     const errors: RegisterValidationError[] = []
 
-    if (!currentState.firstName.trim()) {
+    if (autoUsername.value && !currentState.firstName.trim()) {
       errors.push({ name: "firstName", message: t("pages.registerPage.validationFirstNameRequired") })
     }
 
-    if (!currentState.lastName.trim()) {
-      errors.push({ name: "lastName", message: t("pages.registerPage.validationLastNameRequired") })
-    }
+    const username = currentState.username?.trim() ?? ""
 
-    if (!currentState.username.trim()) {
+    if (!autoUsername.value && !username) {
       errors.push({ name: "username", message: t("pages.registerPage.validationUsernameRequired") })
     }
-    else if (!USERNAME_REGEX.test(currentState.username.trim())) {
+    else if (!autoUsername.value && !USERNAME_REGEX.test(username)) {
       errors.push({ name: "username", message: t("pages.registerPage.validationUsernamePattern") })
     }
-    else if (currentState.username.trim().length < 5 || currentState.username.trim().length > 32) {
+    else if (!autoUsername.value && (username.length < 5 || username.length > 32)) {
       errors.push({ name: "username", message: t("pages.registerPage.validationUsernameLength") })
     }
 
@@ -147,6 +180,7 @@ export function useRegisterPageVM(
     try {
       const result = await repository.register({
         ...state,
+        username: autoUsername.value ? "" : state.username,
       })
 
       lastResult.value = result
@@ -220,11 +254,16 @@ export function useRegisterPageVM(
 
   return {
     state,
+    registerConfig,
+    registerConfigLoading,
+    registerConfigLoaded,
+    autoUsername,
     submitState,
     submitMessage,
     lastResult,
     isSubmitting,
     validate,
+    hydrateRegisterConfig,
     handleSubmit,
   }
 }
