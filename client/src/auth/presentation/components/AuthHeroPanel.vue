@@ -115,11 +115,23 @@
         </div>
       </main>
     </div>
+
+    <nav v-if="cmsLinks.length" class="auth-hero__cms-links" aria-label="Public site links">
+      <NuxtLink
+        v-for="link in cmsLinks"
+        :key="link.to"
+        class="auth-hero__cms-link"
+        :to="link.to"
+      >
+        {{ link.label }}
+      </NuxtLink>
+    </nav>
   </aside>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
+import { useCmsFooterLinksVM } from "../../../cms/application/view-models/useCmsFooterLinksVM"
 import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
 
 const props = withDefaults(defineProps<{
@@ -135,6 +147,7 @@ const props = withDefaults(defineProps<{
 const { t } = useI18n()
 const siteBrandingStore = useSiteBrandingStore()
 const { branding } = storeToRefs(siteBrandingStore)
+const { links: cmsLinks } = useCmsFooterLinksVM()
 const logoFailed = ref(false)
 
 const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
@@ -362,6 +375,41 @@ watch(displayLogoUrl, () => {
 
 .auth-hero__form-card:hover {
   transform: translateY(-2px);
+}
+
+/* Public CMS footer links */
+.auth-hero__cms-links {
+  position: relative;
+  z-index: 15;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 0.85rem;
+  width: 100%;
+  max-width: 72rem;
+  margin: 1.25rem auto 0;
+  padding: 0 1rem;
+}
+
+.auth-hero__cms-link {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.4;
+  text-decoration: none;
+  transition: color var(--duration-normal) var(--ease-default);
+}
+
+.auth-hero__cms-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+@media (min-width: 1024px) {
+  .auth-hero__cms-links {
+    margin-top: 0.75rem;
+  }
 }
 
 /* ─── Central Portal (Planetary Orbit) ─────────────────── */

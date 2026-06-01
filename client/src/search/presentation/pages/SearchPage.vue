@@ -1,3 +1,4 @@
+<!-- English description: Renders the global search results page with filters and footer links. -->
 <template>
   <div class="mx-auto max-w-[1320px] space-y-8 pb-16 pt-8 px-4 sm:px-6">
     <SearchFiltersPanel
@@ -244,10 +245,10 @@ function normalizeKeyword(value: string) {
 
 const footerLinks = [
   { label: "community.search.footer.home", to: appRoutes.feed },
-  { label: "community.search.footer.about", to: undefined },
+  { label: "community.search.footer.about", to: appRoutes.terms("about-us") },
   { label: "community.search.footer.contact", to: undefined },
-  { label: "community.search.footer.privacy", to: undefined },
-  { label: "community.search.footer.terms", to: undefined },
+  { label: "community.search.footer.privacy", to: appRoutes.privacyPolicy },
+  { label: "community.search.footer.terms", to: appRoutes.termsOfUse },
   { label: "community.search.footer.blog", to: appRoutes.blogs },
   { label: "community.search.footer.developers", to: undefined },
 ]

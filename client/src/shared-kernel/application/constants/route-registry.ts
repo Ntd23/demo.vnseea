@@ -12,6 +12,8 @@ export const appRoutes = {
   forgotPassword: "/forgot-password",
   termsOfUse: "/terms/terms",
   privacyPolicy: "/terms/privacy-policy",
+  terms: (type: string) => `/terms/${encodeSegment(type)}`,
+  customPage: (pageName: string) => `/site-pages/${encodeSegment(pageName)}`,
   confirmLogin: "/confirm-login",
   resetPassword: "/reset-password",
   confirmAccount: "/confirm-account",
@@ -226,6 +228,10 @@ export const apiRoutes = {
   site: {
     branding: "site/branding",
   },
+  cms: {
+    page: "cms/page",
+    pages: "cms/pages",
+  },
   seo: {
     public: "seo/public",
   },
@@ -276,6 +282,7 @@ export const backendRoutes = {
     search: "search",
     generalData: "get-general-data",
     siteSettings: "get-site-settings",
+    cmsPages: "cms-pages",
     userData: "get-user-data",
     updateUserData: "update-user-data",
   },
