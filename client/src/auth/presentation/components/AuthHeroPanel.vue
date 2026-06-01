@@ -10,7 +10,7 @@
     </div>
 
     <!-- Centered Header Wrapper (Aligns logo with content area) -->
-    <div class="auth-hero__header-wrapper sm:w-[30%] xl:w-[50%]">
+    <div class="auth-hero__header-wrapper">
       <header v-if="hasBrandIdentity" class="auth-hero__brand">
         <div class="auth-hero__brand-shell">
           <div class="auth-hero__brand-icon">
@@ -230,7 +230,11 @@ watch(displayLogoUrl, () => {
   align-items: center;
   justify-content: flex-start;
 }
-
+@media (min-width: 1024px) {
+  .auth-hero__header-wrapper {
+    margin-left: 100px;
+  }
+}
 .auth-hero__brand {
   position: relative;
   display: flex;

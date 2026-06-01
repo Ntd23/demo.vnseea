@@ -269,8 +269,8 @@ export function useChatWidgetVM(
         }
         return []
       },
-      getCachedData(key) {
-        if (cachedInbox.value.length > 0 && (!inbox || !inbox.value || inbox.value.length === 0)) {
+      getCachedData() {
+        if (cachedInbox.value.length > 0) {
           return cachedInbox.value
         }
         return undefined
@@ -312,8 +312,8 @@ export function useChatWidgetVM(
         }
         return { labels: [], contacts: [] }
       },
-      getCachedData(key) {
-        if ((cachedTags.value.labels.length > 0 || cachedTags.value.contacts.length > 0) && (!messageTags || !messageTags.value || (messageTags.value.labels.length === 0 && messageTags.value.contacts.length === 0))) {
+      getCachedData() {
+        if (cachedTags.value.labels.length > 0 || cachedTags.value.contacts.length > 0) {
           return cachedTags.value
         }
         return undefined
