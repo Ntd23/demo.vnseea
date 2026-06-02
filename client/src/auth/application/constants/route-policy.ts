@@ -1,4 +1,6 @@
-const publicPaths = new Set([
+// English description: Defines public and protected Nuxt route access policy for backend-session auth.
+
+const guestOnlyPaths = new Set([
   "/welcome",
   "/register",
   "/forgot-password",
@@ -6,9 +8,21 @@ const publicPaths = new Set([
   "/confirm-account",
   "/confirm-reset-sms",
   "/reset-password",
+])
+
+const publicPaths = new Set([
+  ...guestOnlyPaths,
   "/logout",
 ])
 
-export const isPublicPath = (path: string) => publicPaths.has(path)
+const publicPrefixes = [
+  "/terms/",
+  "/site-pages/",
+]
+
+export const isPublicPath = (path: string) =>
+  publicPaths.has(path) || publicPrefixes.some(prefix => path.startsWith(prefix))
+
+export const isGuestOnlyPath = (path: string) => guestOnlyPaths.has(path)
 
 export const isProtectedPath = (path: string) => !isPublicPath(path)
