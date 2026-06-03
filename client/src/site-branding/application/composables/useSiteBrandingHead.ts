@@ -10,24 +10,19 @@ export function useSiteBrandingHead() {
   const { branding } = storeToRefs(store)
 
   useHead(() => {
-    const siteName = branding.value.siteName || branding.value.siteTitle
+    const siteName = branding.value.siteName || branding.value.siteTitle || "VNSEEA"
     const siteTitle = branding.value.siteTitle || siteName
-    const faviconUrl = branding.value.faviconUrl
-    const meta: Array<Record<string, string>> = [
-      ...(siteName
-        ? [{
-            property: "og:site_name",
-            content: siteName,
-          }]
-        : []),
-    ]
+    const siteDescription = branding.value.siteDescription || ""
+    const faviconUrl = branding.value.faviconUrl || ""
 
     return {
       titleTemplate: (titleChunk?: string) => {
-        const normalizedTitle = String(titleChunk || "").replace(legacySuffixPattern, "").trim()
+        const normalizedTitle = String(titleChunk || "")
+          .replace(legacySuffixPattern, "")
+          .trim()
 
         if (!siteTitle) {
-          return normalizedTitle
+          return normalizedTitle || siteName
         }
 
         if (!normalizedTitle || normalizedTitle === siteTitle) {
@@ -36,16 +31,65 @@ export function useSiteBrandingHead() {
 
         return `${normalizedTitle} | ${siteTitle}`
       },
-      link: [
-        ...(faviconUrl
-          ? [{
+
+      link: faviconUrl
+        ? [
+            {
               key: "site-favicon",
               rel: "icon",
+              type: "image/png",
               href: faviconUrl,
-            }]
+            },
+            {
+              key: "site-shortcut-icon",
+              rel: "shortcut icon",
+              type: "image/png",
+              href: faviconUrl,
+            },
+            {
+              key: "site-apple-touch-icon",
+              rel: "apple-touch-icon",
+              href: faviconUrl,
+            },
+          ]
+        : [],
+
+      meta: [
+        {
+          key: "application-name",
+          name: "application-name",
+          content: siteName,
+        },
+        {
+          key: "apple-mobile-web-app-title",
+          name: "apple-mobile-web-app-title",
+          content: siteName,
+        },
+        {
+          key: "og-site-name",
+          property: "og:site_name",
+          content: siteName,
+        },
+        {
+          key: "og-title",
+          property: "og:title",
+          content: siteTitle,
+        },
+        ...(siteDescription
+          ? [
+              {
+                key: "description",
+                name: "description",
+                content: siteDescription,
+              },
+              {
+                key: "og-description",
+                property: "og:description",
+                content: siteDescription,
+              },
+            ]
           : []),
       ],
-      meta,
     }
   })
 }

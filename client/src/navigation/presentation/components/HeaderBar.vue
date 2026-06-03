@@ -35,7 +35,7 @@
               @click="toggleRequests"
             >
               <Icon name="i-ph-user-plus-duotone" class="h-[18px] w-[18px]" />
-              <span v-if="requestCount > 0" class="header-action-badge">
+              <span v-if="isClientReady && requestCount > 0" class="header-action-badge">
                 {{ requestCount }}
               </span>
             </button>
@@ -66,7 +66,7 @@
               :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-fill' : 'i-ph-chat-circle-dots-duotone'"
               class="h-[18px] w-[18px]"
             />
-            <span v-if="navigationSummary.messageCount > 0" class="header-action-badge">
+            <span v-if="isClientReady && navigationSummary.messageCount > 0" class="header-action-badge">
               {{ navigationSummary.messageCount }}
             </span>
           </NuxtLink>
@@ -79,7 +79,7 @@
               @click="toggleNotifications"
             >
               <Icon name="i-ph-bell-duotone" class="h-[18px] w-[18px]" />
-              <span v-if="notificationCount > 0" class="header-action-badge">
+              <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
                 {{ notificationCount }}
               </span>
             </button>
@@ -100,7 +100,14 @@
             </Transition>
           </div>
 
-          <NavigationHeaderUserMenu />
+        	<ClientOnly>
+  <NavigationHeaderUserMenu />
+
+  <template #fallback>
+    <div class="h-[38px] w-[156px] rounded-full border border-[#e2e8f0] bg-white"></div>
+  </template>
+</ClientOnly>
+        
         </div>
       </div>
     </div>
@@ -141,7 +148,7 @@
             :aria-label="$t('navigation.headerBar.messages')"
           >
             <Icon name="i-ph-chat-circle-dots-duotone" class="h-[20px] w-[20px]" />
-            <span v-if="navigationSummary.messageCount > 0" class="header-action-badge">
+            <span v-if="isClientReady && navigationSummary.messageCount > 0" class="header-action-badge">
               {{ navigationSummary.messageCount }}
             </span>
           </NuxtLink>
@@ -153,27 +160,40 @@
             @click="toggleNotifications"
           >
             <Icon name="i-ph-bell-duotone" class="h-[20px] w-[20px]" />
-            <span v-if="notificationCount > 0" class="header-action-badge">
+            <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
               {{ notificationCount }}
             </span>
           </button>
 
-          <button
-            class="mobile-icon-btn mobile-icon-btn--avatar"
-            type="button"
-            :aria-label="$t('navigation.headerBar.account')"
-            @click="mobileMenuOpen = true"
-          >
-            <NuxtImg
-              v-if="avatarUrl"
-              :src="avatarUrl"
-              :alt="currentUser.name"
-              class="h-[20px] w-[20px] rounded-full object-cover"
-              width="20"
-              height="20"
-            />
-            <span v-else class="mobile-avatar-fallback">{{ currentUserInitials }}</span>
-          </button>
+          <ClientOnly>
+  <button
+    class="mobile-icon-btn mobile-icon-btn--avatar"
+    type="button"
+    :aria-label="$t('navigation.headerBar.account')"
+    @click="mobileMenuOpen = true"
+  >
+    <NuxtImg
+      v-if="avatarUrl"
+      :src="avatarUrl"
+      :alt="currentUser?.name || 'User'"
+      class="h-[20px] w-[20px] rounded-full object-cover"
+      width="20"
+      height="20"
+    />
+    <span v-else class="mobile-avatar-fallback">{{ currentUserInitials }}</span>
+  </button>
+
+  <template v-slot:fallback>
+    <button
+      class="mobile-icon-btn mobile-icon-btn--avatar"
+      type="button"
+      :aria-label="$t('navigation.headerBar.account')"
+      disabled
+    >
+      <span class="mobile-avatar-fallback">U</span>
+    </button>
+  </template>
+</ClientOnly>
         </div>
       </div>
     </div>
@@ -248,18 +268,18 @@ const backendSession = useCookie<string | null>("user_id", {
   path: "/",
 })
 
-await callOnce("current-auth-user", () => currentAuthUserStore.hydrate())
+// await callOnce("current-auth-user", () => currentAuthUserStore.hydrate())
 
-if (backendSession.value) {
-  await callOnce("navigation-general", () => navigationGeneralStore.hydrate())
-  await callOnce("notification-center", () => notificationCenterStore.hydrate())
-}
+// if (backendSession.value) {
+//   await callOnce("navigation-general", () => navigationGeneralStore.hydrate())
+//   await callOnce("notification-center", () => notificationCenterStore.hydrate())
+// }
 
 const mobileMenuOpen = ref(false)
 const mobileSearchOpen = ref(false)
 const notificationOpen = ref(false)
 const requestsOpen = ref(false)
-
+const isClientReady = ref(false)
 const route = useRoute()
 const isHome = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
 const currentUser = computed(() => currentAuthUserStore.user)
@@ -292,11 +312,13 @@ watch(() => route.path, () => {
   requestsOpen.value = false
 })
 
-onMounted(() => {
-  if (backendSession.value && !currentAuthUserStore.user) {
-    void currentAuthUserStore.hydrate(true)
-  }
+onMounted(async () => {
+  isClientReady.value = true
+
   if (backendSession.value) {
+    await currentAuthUserStore.hydrate(true)
+    await navigationGeneralStore.hydrate()
+    await notificationCenterStore.hydrate()
     void headerNotificationSync.startRealtime()
   }
 })

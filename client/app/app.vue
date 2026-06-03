@@ -64,7 +64,9 @@
       </NuxtErrorBoundary>
     </NuxtLayout>
     <UToaster />
-    <MessagesMessageCallGlobalHost :poll-incoming="Boolean(backendUserSession)" />
+    <ClientOnly>
+  <MessagesMessageCallGlobalHost :poll-incoming="Boolean(backendUserSession)" />
+</ClientOnly>
   </UApp>
 </template>
 

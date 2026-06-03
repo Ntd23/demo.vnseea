@@ -64,6 +64,7 @@ export default defineNuxtConfig({
       include: ["../src/**/*"]
     }
   },
+
   experimental: {
     // Avoid dev app-manifest build-id mismatches behind the PHP/Nginx proxy.
     appManifest: false,
@@ -155,6 +156,9 @@ export default defineNuxtConfig({
     zeroRuntime: true,
   },
   vite: {
+  define: {
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: true,
+  },
     server: {
       allowedHosts,
     },
@@ -205,4 +209,8 @@ export default defineNuxtConfig({
     ],
     strategy: "no_prefix",
   },
+	 sourcemap: {
+    server: true,
+    client: true
+  }
 });

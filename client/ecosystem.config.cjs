@@ -17,6 +17,7 @@ module.exports = {
       max_memory_restart: "1G",
       env: {
         NODE_ENV: "production",
+        NODE_OPTIONS: "--use-system-ca --max-old-space-size=4096",
         HOST: process.env.HOST,
         PORT: process.env.PORT,
         NITRO_HOST: process.env.NITRO_HOST || process.env.HOST,

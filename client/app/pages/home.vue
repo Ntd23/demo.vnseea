@@ -1,5 +1,11 @@
 <template>
-  <FeedPresentationHomeFeedPage />
+  <ClientOnly>
+    <FeedPresentationHomeFeedPage />
+
+    <template v-slot:fallback>
+      <div class="min-h-screen bg-[#f5f7fb]"></div>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
