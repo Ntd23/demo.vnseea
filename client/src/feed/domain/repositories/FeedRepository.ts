@@ -60,6 +60,7 @@ export interface FeedRepository {
     text: string
     audience?: string
     imageFile?: File
+    imageFiles?: File[]
     videoFile?: File
     feeling?: string
     pageId?: number

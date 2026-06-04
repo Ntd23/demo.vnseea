@@ -6,6 +6,7 @@
       class="publisher__file-input"
       type="file"
       accept="image/png,image/jpeg,image/gif"
+      multiple
       @change="selectImageFile"
     >
     <input

@@ -1,4 +1,4 @@
-// English description: Creates a new timeline post through the backend API v2 new_post endpoint, including text, feeling, image, and video uploads.
+// English description: Creates a new timeline post through the backend API v2 new_post endpoint, including text, feeling, image gallery, and video uploads.
 
 import { createError, getCookie, getHeader, readBody, readMultipartFormData } from "h3"
 import { mapPostRecord } from "../_shared"
@@ -6,6 +6,7 @@ import { assertBackendApiSuccess } from "../../../utils/backend-api-response"
 import { getBackendCurrentUser } from "../../../utils/backend-current-user"
 import { createBackendApiClient } from "../../../utils/backend-api-client"
 import { createBackendWebClient } from "../../../utils/backend-web-client"
+import { createBackendMediaUrlResolver } from "../../../utils/backend-media-url"
 import { postBackendApiUpload } from "../../../utils/backend-api-upload"
 import type { FeedPostRecord } from "../../../../src/feed/domain/types/feed.types"
 
@@ -35,11 +36,11 @@ type CreatePostPayload = {
   text: string
   audience: string
   feeling: string
-  imageFile: {
+  imageFiles: {
     filename?: string
     type?: string
     data: Buffer
-  } | null
+  }[]
   videoFile: {
     filename?: string
     type?: string
@@ -93,7 +94,7 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
     text: typeof body.text === "string" ? body.text.trim() : "",
     audience: typeof body.audience === "string" ? body.audience.trim() : "public",
     feeling: typeof body.feeling === "string" ? body.feeling.trim() : "",
-    imageFile: null,
+    imageFiles: [],
     videoFile: null,
     pageId: body.pageId ? Number(body.pageId) : undefined,
     eventId: body.eventId ? Number(body.eventId) : undefined,
@@ -112,7 +113,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     text: "",
     audience: "public",
     feeling: "",
-    imageFile: null,
+    imageFiles: [],
     videoFile: null,
     pageId: undefined,
     eventId: undefined,
@@ -134,7 +135,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
       }
 
       if (part.name === "postPhotos[]" || part.name === "postPhotos") {
-        payload.imageFile = file
+        payload.imageFiles.push(file)
       }
       else if (part.name === "postVideo") {
         payload.videoFile = file
@@ -163,6 +164,7 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
 
 export default defineEventHandler(async (event) => {
   const currentUser = await getBackendCurrentUser(event)
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const currentUserId = asString(currentUser.user_id)
   const appSessionToken = asString(getCookie(event, "user_id"))
   const contentType = getHeader(event, "content-type") || ""
@@ -170,7 +172,7 @@ export default defineEventHandler(async (event) => {
     ? await parseMultipartPayload(event)
     : await parseJsonPayload(event)
 
-  if (!payload.text && !payload.imageFile && !payload.videoFile && !payload.feeling && !payload.sharedPostId && !payload.pollAnswers.length) {
+  if (!payload.text && !payload.imageFiles.length && !payload.videoFile && !payload.feeling && !payload.sharedPostId && !payload.pollAnswers.length) {
     throw createError({
       statusCode: 400,
       statusMessage: "Post content is required.",
@@ -247,7 +249,7 @@ export default defineEventHandler(async (event) => {
           ),
           "Unable to load shared post.",
         )
-        createdPost = response.post_data ? mapPostRecord(response.post_data) : null
+        createdPost = response.post_data ? mapPostRecord(response.post_data, resolveMediaUrl) : null
       }
       catch {
         createdPost = null
@@ -260,7 +262,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const requestBody = payload.imageFile || payload.videoFile
+  const requestBody = payload.imageFiles.length || payload.videoFile
     ? new FormData()
     : new URLSearchParams()
 
@@ -294,14 +296,14 @@ export default defineEventHandler(async (event) => {
     requestBody.append("answer[]", answer)
   }
 
-  if (payload.imageFile) {
+  payload.imageFiles.forEach((imageFile, index) => {
     requestBody.append(
       "postPhotos[]",
-      new File([payload.imageFile.data], payload.imageFile.filename || "post-image.jpg", {
-        type: payload.imageFile.type || "image/jpeg",
+      new File([imageFile.data], imageFile.filename || `post-image-${index + 1}.jpg`, {
+        type: imageFile.type || "image/jpeg",
       }),
     )
-  }
+  })
 
   if (payload.videoFile) {
     requestBody.append(
@@ -338,6 +340,7 @@ export default defineEventHandler(async (event) => {
           pageId: payload.pageId,
           eventId: payload.eventId,
           groupId: payload.groupId,
+          imageCount: payload.imageFiles.length,
           hasUserId: Boolean(currentUserId),
           hasSession: Boolean(appSessionToken),
         },
@@ -346,7 +349,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const createdPost = response.post_data
-    ? mapPostRecord(response.post_data)
+    ? mapPostRecord(response.post_data, resolveMediaUrl)
     : null
 
   return {

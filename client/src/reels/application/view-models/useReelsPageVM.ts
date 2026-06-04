@@ -14,9 +14,9 @@ export function useReelsPageVM(
   const errorMessage = ref("")
   const reels = ref<FeedPostRecord[]>([])
   const activeIndex = ref(0)
-  const touchStartY = ref<number | null>(null)
-  const touchStartX = ref<number | null>(null)
-  const touchStartedFromLeftEdge = ref(false)
+  const gestureStartY = ref<number | null>(null)
+  const gestureStartX = ref<number | null>(null)
+  const gestureStartedFromLeftEdge = ref(false)
   const wheelLocked = ref(false)
   const videoRef = ref<HTMLVideoElement | null>(null)
   const currentTime = ref(0)
@@ -115,38 +115,37 @@ export function useReelsPageVM(
     navigateTo("/")
   }
 
-  function onTouchStart(event: TouchEvent) {
-    const touch = event.changedTouches[0]
-    touchStartY.value = touch?.clientY ?? null
-    touchStartX.value = touch?.clientX ?? null
-    touchStartedFromLeftEdge.value = (touch?.clientX ?? Number.POSITIVE_INFINITY) <= 28
+  function startGesture(clientX: number, clientY: number) {
+    gestureStartY.value = clientY
+    gestureStartX.value = clientX
+    gestureStartedFromLeftEdge.value = clientX <= 36
   }
 
-  function onTouchEnd(event: TouchEvent) {
-    const startY = touchStartY.value
-    const startX = touchStartX.value
-    const touch = event.changedTouches[0]
-    const endY = touch?.clientY ?? null
-    const endX = touch?.clientX ?? null
-    touchStartY.value = null
-    touchStartX.value = null
+  function finishGesture(clientX: number, clientY: number) {
+    const startY = gestureStartY.value
+    const startX = gestureStartX.value
+    const startedFromLeftEdge = gestureStartedFromLeftEdge.value
+    gestureStartY.value = null
+    gestureStartX.value = null
+    gestureStartedFromLeftEdge.value = false
 
-    if (startY == null || startX == null || endY == null || endX == null) {
+    if (startY == null || startX == null) {
       return
     }
 
-    const deltaY = startY - endY
-    const deltaX = endX - startX
+    if (feedPostVM.showComments.value) {
+      return
+    }
 
-    if (touchStartedFromLeftEdge.value && deltaX > 72 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      touchStartedFromLeftEdge.value = false
+    const deltaY = startY - clientY
+    const deltaX = clientX - startX
+
+    if (startedFromLeftEdge && deltaX > 82 && Math.abs(deltaX) > Math.abs(deltaY)) {
       exitFullscreen()
       return
     }
 
-    touchStartedFromLeftEdge.value = false
-
-    if (Math.abs(deltaY) < 50 || Math.abs(deltaY) < Math.abs(deltaX)) {
+    if (Math.abs(deltaY) < 64 || Math.abs(deltaY) < Math.abs(deltaX)) {
       return
     }
 
@@ -156,6 +155,34 @@ export function useReelsPageVM(
     }
 
     prevReel()
+  }
+
+  function onPointerDown(event: PointerEvent) {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return
+    }
+
+    startGesture(event.clientX, event.clientY)
+  }
+
+  function onPointerUp(event: PointerEvent) {
+    finishGesture(event.clientX, event.clientY)
+  }
+
+  function onTouchStart(event: TouchEvent) {
+    const touch = event.changedTouches[0]
+
+    if (!touch) return
+
+    startGesture(touch.clientX, touch.clientY)
+  }
+
+  function onTouchEnd(event: TouchEvent) {
+    const touch = event.changedTouches[0]
+
+    if (!touch) return
+
+    finishGesture(touch.clientX, touch.clientY)
   }
 
   function onWheel(event: WheelEvent) {
@@ -222,6 +249,8 @@ export function useReelsPageVM(
     nextReel,
     prevReel,
     exitFullscreen,
+    onPointerDown,
+    onPointerUp,
     onTouchStart,
     onTouchEnd,
     handleWheel,

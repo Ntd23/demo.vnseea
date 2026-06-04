@@ -1,3 +1,13 @@
+<?php
+// English description: Renders one admin page row including map pin approval status.
+$map_pin_status = Wo_NormalizePageMapPinStatus(!empty($wo['pagelist']['map_pin_status']) ? $wo['pagelist']['map_pin_status'] : 'none');
+$map_pin_label_class = array(
+   'none' => 'bg-secondary',
+   'pending' => 'bg-warning',
+   'approved' => 'bg-success',
+   'rejected' => 'bg-danger',
+);
+?>
 <tr class="setting-pagelist" id="PageID_<?php echo $wo['pagelist']['page_id']?>" data-page-id="<?php echo $wo['pagelist']['page_id']?>" data_selected="<?php echo $wo['pagelist']['page_id']?>">
    <td><input type="checkbox" id="check-data-<?php echo $wo['pagelist']['page_id']?>" class="delete-checkbox filled-in"><label for="check-data-<?php echo $wo['pagelist']['page_id']?>"></label></td>
    <td><?php echo $wo['pagelist']['page_id']?></td>
@@ -18,5 +28,12 @@
    <td>
       <a target = "_blank" class="btn bg-info admn_table_btn" href="<?php echo Wo_SeoLink('index.php?link1=page-setting&page=' . $wo['pagelist']['page_name']) ?>">Chỉnh sửa</a>
       <button onclick="Wo_DeletePage(<?php echo $wo['pagelist']['page_id']?>,'hide');" type="button" class="btn bg-danger admn_table_btn">Delete</button>
+   </td>
+   <td id="PageMapPin_<?php echo $wo['pagelist']['page_id']?>">
+      <span class="badge <?php echo $map_pin_label_class[$map_pin_status]; ?>"><?php echo ucfirst($map_pin_status); ?></span>
+      <?php if ($map_pin_status === 'pending') { ?>
+         <button onclick="Wo_UpdatePageMapPin(<?php echo $wo['pagelist']['page_id']?>,'approved');" type="button" class="btn bg-success admn_table_btn">Approve</button>
+         <button onclick="Wo_UpdatePageMapPin(<?php echo $wo['pagelist']['page_id']?>,'rejected');" type="button" class="btn bg-danger admn_table_btn">Reject</button>
+      <?php } ?>
    </td>
 </tr>

@@ -3,23 +3,25 @@
 <template>
   <header class="sticky top-0 z-[100]">
     <!-- ─── Desktop header ────────────────────────────────── -->
-    <div class="hidden border-b border-[#dfe6ff] bg-white/95 shadow-[0_10px_26px_rgba(15,35,110,0.08)] backdrop-blur xl:block">
+    <div style="padding: 0 30px" class="hidden border-b border-[#dfe6ff] bg-white/95 shadow-[0_10px_26px_rgba(15,35,110,0.08)] backdrop-blur xl:block">
       <div class="mx-auto flex h-16 w-full max-w-[1880px] items-center gap-4 px-5">
-        <!-- Home pill -->
-        <div class="flex shrink-0 items-center gap-2 rounded-full border border-[#e2e8f0] bg-white p-1">
-          <NuxtLink
-            :to="appRoutes.feed"
-            class="desktop-pill"
-            :class="isHome ? 'desktop-pill--active' : 'desktop-pill--inactive'"
-            :aria-label="$t('navigation.headerBar.home')"
+        <NuxtLink
+          :to="appRoutes.feed"
+          class="header-home-link"
+          :aria-label="$t('navigation.headerBar.home')"
+        >
+          <img
+            v-if="faviconUrl && !faviconFailed"
+            :src="faviconUrl"
+            :alt="faviconAlt"
+            class="header-home-favicon header-home-favicon--desktop"
+            @error="faviconFailed = true"
           >
-            <Icon name="i-ph-house-fill" class="h-4.5 w-4.5" />
-            <span>{{ $t("navigation.headerBar.home") }}</span>
-          </NuxtLink>
-        </div>
+          <Icon v-else name="i-ph-house-fill" class="h-5 w-5" />
+        </NuxtLink>
 
         <!-- Search -->
-        <div class="min-w-0 max-w-[780px] flex-1">
+        <div class="min-w-0 max-w-195 flex-1">
           <NavigationHeaderSearchInput />
         </div>
 
@@ -119,11 +121,17 @@
         <div class="mobile-bar__group">
           <NuxtLink
             :to="appRoutes.feed"
-            class="mobile-icon-btn"
-            :class="isHome ? 'mobile-icon-btn--active' : ''"
+            class="mobile-home-link"
             :aria-label="$t('navigation.headerBar.home')"
           >
-            <Icon name="i-ph-house-fill" class="h-[20px] w-[20px]" />
+            <img
+              v-if="faviconUrl && !faviconFailed"
+              :src="faviconUrl"
+              :alt="faviconAlt"
+              class="header-home-favicon header-home-favicon--mobile"
+              @error="faviconFailed = true"
+            >
+            <Icon v-else name="i-ph-house-fill" class="h-[22px] w-[22px]" />
           </NuxtLink>
 
           <button
@@ -245,9 +253,11 @@
 
 <script setup lang="ts">
 import { NuxtLink } from '#components'
+import { storeToRefs } from "pinia"
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import { useNotificationCenterStore } from "../../../notifications/application/stores/useNotificationCenterStore"
+import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
 import NotificationDropdown from "../../../notifications/presentation/components/NotificationDropdown.vue"
 import { useHeaderNotificationSync } from "../../application/composables/useHeaderNotificationSync"
 import { useNavigationGeneralStore } from "../../application/stores/useNavigationGeneralStore"
@@ -258,10 +268,12 @@ import NavigationHeaderUserMenu from './HeaderUserMenu.vue'
 import NavigationMobileMenu from './MobileMenu.vue'
 
 const currentAuthUserStore = useCurrentAuthUserStore()
+const siteBrandingStore = useSiteBrandingStore()
 const navigationGeneralStore = useNavigationGeneralStore()
 const navigationRequestsStore = useNavigationRequestsStore()
 const notificationCenterStore = useNotificationCenterStore()
 const headerNotificationSync = useHeaderNotificationSync()
+const { branding } = storeToRefs(siteBrandingStore)
 const backendSession = useCookie<string | null>("user_id", {
   default: () => null,
   sameSite: "lax",
@@ -280,8 +292,11 @@ const mobileSearchOpen = ref(false)
 const notificationOpen = ref(false)
 const requestsOpen = ref(false)
 const isClientReady = ref(false)
+const faviconFailed = ref(false)
 const route = useRoute()
-const isHome = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
+const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
+const faviconUrl = computed(() => branding.value.faviconUrl)
+const faviconAlt = computed(() => brandName.value ? `${brandName.value} icon` : "Site icon")
 const currentUser = computed(() => currentAuthUserStore.user)
 const navigationSummary = computed(() => navigationGeneralStore.summary)
 const requestCount = computed(() => navigationSummary.value.friendRequestCount + navigationSummary.value.groupChatRequestCount)
@@ -310,6 +325,10 @@ watch(() => route.path, () => {
   mobileMenuOpen.value = false
   notificationOpen.value = false
   requestsOpen.value = false
+})
+
+watch(faviconUrl, () => {
+  faviconFailed.value = false
 })
 
 onMounted(async () => {
@@ -371,6 +390,43 @@ async function toggleRequests() {
 .desktop-pill--inactive:hover {
   color: #0000ff;
   background: #f5f8ff;
+}
+
+.header-home-link,
+.mobile-home-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.header-home-link {
+  width: 34px;
+  height: 34px;
+}
+
+.mobile-home-link {
+  width: 40px;
+  height: 40px;
+}
+
+.header-home-favicon {
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.header-home-favicon--desktop {
+  width: 30px;
+  height: 30px;
+}
+
+.header-home-favicon--mobile {
+  width: 22px;
+  height: 22px;
 }
 
 /* ─── Desktop action buttons ───────────────────────────── */

@@ -68,6 +68,8 @@ export function createCommunityPageSettingsDraft(
     showLikeCount: true,
     showWebsite: true,
     recommendRelatedPages: true,
+    mapPinRequested: page?.mapPinStatus === "pending" || page?.mapPinStatus === "approved",
+    mapPinStatus: page?.mapPinStatus ?? "none",
     avatarUrl: page?.avatarUrl,
     bannerUrl: page?.banner,
   }
@@ -86,5 +88,6 @@ export function createCommunityPageDraft(page?: CommunityPageRecord): CommunityD
       lng: page?.lng ?? null,
       placeId: page?.placeId ?? "",
     }),
+    mapPinRequested: page?.mapPinStatus === "pending" || page?.mapPinStatus === "approved",
   }
 }

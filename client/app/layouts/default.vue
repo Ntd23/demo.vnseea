@@ -1,48 +1,45 @@
 <!-- English description: Default authenticated layout with header, sidebars, and a fixed mobile chat shortcut. -->
 <template>
-  <div class="phone-safe min-h-screen bg-[#f1f4fb]" :class="isReelsPage ? 'overflow-hidden bg-black' : ''">
+  <div class="phone-safe min-h-screen bg-[#f1f4fb]" :class="isReelsPage ? 'overflow-hidden' : ''">
     <ClientOnly>
       <HeaderSearchContent />
     </ClientOnly>
 
     <ClientOnly>
-  <NavigationHeaderBar />
+      <NavigationHeaderBar />
 
-  <template v-slot:fallback>
-    <div class="h-16 border-b border-[#dfe6ff] bg-white"></div>
-  </template>
-</ClientOnly>
+      <template v-slot:fallback>
+        <div class="h-16 border-b border-[#dfe6ff] bg-white"></div>
+      </template>
+    </ClientOnly>
 
-    <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden xl:h-[calc(100dvh-73px)]' : ''">
-      <div
-        class="mx-auto grid w-full grid-cols-1 gap-4 xl:items-start"
-        :class="shellClass"
-      >
-        <aside
-          v-if="showLeftSidebar && !isReelsPage"
-          class="hidden min-w-0 xl:sticky xl:top-[74px] xl:z-10 xl:block xl:h-[calc(100dvh-98px)] xl:overflow-hidden"
-        >
+    <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden bg-black xl:h-[calc(100dvh-73px)]' : ''">
+      <div class="mx-auto grid w-full grid-cols-1 gap-4 xl:items-start" :class="shellClass">
+        <aside v-if="showLeftSidebar && !isReelsPage"
+          class="hidden min-w-0 xl:sticky xl:top-[74px] xl:z-10 xl:block xl:h-[calc(100dvh-98px)] xl:overflow-hidden">
           <ClientOnly>
-  <NavigationLeftSidebar v-if="!isDirectoryPage" />
-  <DirectoryLeftSidebar v-else />
-</ClientOnly>
+            <NavigationLeftSidebar v-if="!isDirectoryPage" />
+            <DirectoryLeftSidebar v-else />
+          </ClientOnly>
         </aside>
 
         <main class="relative z-0 min-w-0 w-full" :class="mainClass">
           <ClientOnly>
-  <div v-if="showHeaderIconNav" class="sticky top-[56px] z-20 mb-4 mt-2 xl:hidden">
-    <div class="overflow-hidden rounded-[1.4rem] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)]">
-      <NavigationHeaderIconNav />
-    </div>
-  </div>
-</ClientOnly>
+            <div v-if="showHeaderIconNav" class="sticky top-[56px] z-20 mb-4 mt-2 xl:hidden">
+              <div
+                class="overflow-hidden rounded-[1.4rem] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)]">
+                <NavigationHeaderIconNav />
+              </div>
+            </div>
+          </ClientOnly>
           <slot />
         </main>
 
-        <aside v-if="showRightSidebar" class="hidden min-w-0 xl:sticky xl:top-[74px] xl:z-50 xl:block xl:h-[calc(100dvh-90px)] xl:overflow-visible">
-         <ClientOnly>
-  <NavigationRightSidebar />
-</ClientOnly>
+        <aside v-if="showRightSidebar"
+          class="hidden min-w-0 xl:sticky xl:top-[74px] xl:z-50 xl:block xl:h-[calc(100dvh-90px)] xl:overflow-visible">
+          <ClientOnly>
+            <NavigationRightSidebar />
+          </ClientOnly>
         </aside>
       </div>
     </div>

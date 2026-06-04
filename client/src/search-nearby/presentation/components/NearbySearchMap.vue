@@ -22,7 +22,6 @@ const props = defineProps<{
   selectedItemId: string
   originFocusKey: number
   routeTargetItem: NearbySearchItem | null
-  pinnedPageIds?: string[]
   zoomInKey?: number
   zoomOutKey?: number
 }>()
@@ -333,7 +332,7 @@ function renderMarkers() {
       return
     }
 
-    const pinnedPage = item.type === "page" && props.pinnedPageIds?.includes(item.id)
+    const pinnedPage = item.type === "page" && item.pinned === true
     const marker = new Marker({
       map,
       position: { lat: item.lat, lng: item.lng },
@@ -399,7 +398,7 @@ function renderRoute() {
   const renderer = new DirectionsRenderer({
     map,
     suppressMarkers: true,
-    preserveViewport: true,
+    preserveViewport: false,
     polylineOptions: {
       strokeColor: "#2563eb",
       strokeOpacity: 0.95,
@@ -534,7 +533,7 @@ watch(
     props.routeTargetItem?.lng,
     props.origin.lat,
     props.origin.lng,
-    props.pinnedPageIds?.join(","),
+    props.items.map(item => `${item.id}:${item.pinned ? 1 : 0}`).join(","),
   ],
   () => renderRoute(),
 )

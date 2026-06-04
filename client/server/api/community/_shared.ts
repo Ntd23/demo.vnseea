@@ -99,6 +99,12 @@ const firstString = (entity: BackendEntity, keys: string[]) => {
   return ""
 }
 
+const normalizePageMapPinStatus = (value: unknown): CommunityPageRecord["mapPinStatus"] => {
+  const status = asString(value).toLowerCase()
+
+  return status === "pending" || status === "approved" || status === "rejected" ? status : "none"
+}
+
 const firstNumber = (entity: BackendEntity, keys: string[]) => {
   for (const key of keys) {
     const value = asNumber(entity[key])
@@ -323,6 +329,7 @@ export const mapCommunityPageRecord = (
     lat: firstNullableNumber(entity, ["lat", "page_lat"]),
     lng: firstNullableNumber(entity, ["lng", "page_lng"]),
     placeId: firstString(entity, ["place_id", "page_place_id"]),
+    mapPinStatus: normalizePageMapPinStatus(entity.map_pin_status),
     foundedLabel: firstString(entity, ["registered", "time_text"]),
     ctaLabel: mapCtaIdToLabel(entity.call_action_type) || firstString(entity, ["call_action_type_text"]),
     canManage: isTruthy(entity.is_owner) || (ownerId > 0 && ownerId === options.currentUserId),

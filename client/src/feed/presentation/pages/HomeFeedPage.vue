@@ -104,19 +104,24 @@
       />
     </div>
 
-    <div class="home-feed__load-more">
-      <button
-        v-if="!allLoaded"
-        class="home-feed__load-more-btn"
-        :disabled="loadingMore"
-        type="button"
-        @click="loadMore"
-        >
-        <Icon v-if="loadingMore" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
-        <Icon v-else name="i-ph-arrow-down-bold" class="h-4 w-4" />
-        <span>{{ loadingMore ? t("pages.homeFeedPage.loadingMore") : t("pages.homeFeedPage.loadMore") }}</span>
-      </button>
-      <p v-else class="home-feed__all-loaded">{{ t("pages.homeFeedPage.allCaughtUp") }}</p>
+    <div v-if="!allLoaded" ref="loadMoreSentinel" class="home-feed__load-more" aria-live="polite">
+      <div class="home-feed__load-more-skeleton" :aria-label="t('pages.homeFeedPage.loadingMore')">
+        <article v-for="index in 2" :key="index" class="home-feed__post-skeleton surface-card">
+          <div class="home-feed__post-skeleton-header">
+            <USkeleton class="home-feed__post-skeleton-avatar" />
+            <div class="home-feed__post-skeleton-copy">
+              <USkeleton class="home-feed__post-skeleton-line home-feed__post-skeleton-line--title" />
+              <USkeleton class="home-feed__post-skeleton-line home-feed__post-skeleton-line--meta" />
+            </div>
+          </div>
+          <USkeleton class="home-feed__post-skeleton-line home-feed__post-skeleton-line--body" />
+          <USkeleton class="home-feed__post-skeleton-media" />
+        </article>
+      </div>
+      <span class="sr-only">{{ loadingMore ? t("pages.homeFeedPage.loadingMore") : t("pages.homeFeedPage.loadMore") }}</span>
+    </div>
+    <div v-else class="home-feed__load-more">
+      <p class="home-feed__all-loaded">{{ t("pages.homeFeedPage.allCaughtUp") }}</p>
     </div>
   </div>
 </template>
@@ -147,12 +152,27 @@ const {
 } = useHomeFeedPageVM()
 
 const isOrderMenuOpen = ref(false)
+const loadMoreSentinel = ref<HTMLElement | null>(null)
 const activeOrderOption = computed(() => orderOptions.value.find(option => option.key === activeOrder.value) ?? null)
 
 function selectOrder(key: typeof activeOrder.value) {
   activeOrder.value = key
   isOrderMenuOpen.value = false
 }
+
+useIntersectionObserver(
+  loadMoreSentinel,
+  ([entry]) => {
+    if (!entry?.isIntersecting || allLoaded.value || loadingMore.value) {
+      return
+    }
+
+    void loadMore()
+  },
+  {
+    rootMargin: "520px 0px",
+  },
+)
 
 await initialize()
 </script>
@@ -331,6 +351,7 @@ await initialize()
   position: relative;
   z-index: 2;
   display: flex;
+  width: 100%;
   justify-content: center;
 }
 
@@ -372,6 +393,65 @@ await initialize()
 
 .home-feed__load-more {
   padding: 8px 0 24px;
+}
+
+.home-feed__load-more-skeleton {
+  display: grid;
+  width: 100%;
+  gap: 16px;
+}
+
+.home-feed__post-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  background: var(--bg-surface);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.home-feed__post-skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-feed__post-skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-full);
+}
+
+.home-feed__post-skeleton-copy {
+  display: grid;
+  flex: 1;
+  gap: 8px;
+}
+
+.home-feed__post-skeleton-line {
+  height: 12px;
+  border-radius: var(--radius-full);
+}
+
+.home-feed__post-skeleton-line--title {
+  width: min(180px, 54%);
+}
+
+.home-feed__post-skeleton-line--meta {
+  width: min(120px, 38%);
+}
+
+.home-feed__post-skeleton-line--body {
+  width: min(420px, 86%);
+}
+
+.home-feed__post-skeleton-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
 }
 
 .home-feed__load-more-btn {

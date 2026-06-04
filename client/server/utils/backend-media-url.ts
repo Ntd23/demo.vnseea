@@ -31,6 +31,9 @@ const sameHostname = (left: URL | null, right: URL | null) =>
   && !!right
   && left.hostname.toLowerCase() === right.hostname.toLowerCase()
 
+const isPublicBackendAssetPath = (pathname: string) =>
+  /^\/(?:upload|themes|cache|media)\//i.test(pathname)
+
 const buildRequestScopedOrigin = (event: H3Event, value?: string) => {
   const requestUrl = getRequestURL(event)
 
@@ -102,6 +105,15 @@ export const createBackendMediaUrlResolver = (event: H3Event) => {
         && (sameHostname(absoluteUrl, requestUrl) || sameHostname(absoluteUrl, backendUrl))
       ) {
         return `${secureOrigin}${absoluteUrl.pathname}${absoluteUrl.search}${absoluteUrl.hash}`
+      }
+
+      if (
+        absoluteUrl
+        && absoluteUrl.protocol === "http:"
+        && requestUrl.protocol === "https:"
+        && isPublicBackendAssetPath(absoluteUrl.pathname)
+      ) {
+        return `${requestUrl.origin}${absoluteUrl.pathname}${absoluteUrl.search}${absoluteUrl.hash}`
       }
 
       return rawValue

@@ -182,7 +182,12 @@ export function createApiFeedRepository(): FeedRepository {
         formData.append("answer[]", answer)
       }
 
-      if (input.imageFile || input.videoFile || input.feeling || input.colorId || input.pollAnswers?.length) {
+      const imageFiles = [
+        ...(input.imageFiles ?? []),
+        ...(input.imageFile ? [input.imageFile] : []),
+      ]
+
+      if (imageFiles.length || input.videoFile || input.feeling || input.colorId || input.pollAnswers?.length) {
         if (input.audience) {
           formData.append("audience", input.audience)
         }
@@ -191,8 +196,8 @@ export function createApiFeedRepository(): FeedRepository {
           formData.append("feeling", input.feeling)
         }
 
-        if (input.imageFile) {
-          formData.append("postPhotos[]", input.imageFile, input.imageFile.name)
+        for (const imageFile of imageFiles) {
+          formData.append("postPhotos[]", imageFile, imageFile.name)
         }
 
         if (input.videoFile) {

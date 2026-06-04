@@ -58,7 +58,6 @@ export function useSearchNearbyPageVM() {
   const selectedSuggestionItem = shallowRef<NearbySearchItem | null>(null)
   const routeTargetItem = shallowRef<NearbySearchItem | null>(null)
   const routeErrorMessage = ref("")
-  const pinnedPageIds = ref<string[]>([])
   let requestSequence = 0
   let suggestionRequestSequence = 0
   let isApplyingSuggestion = false
@@ -91,12 +90,6 @@ export function useSearchNearbyPageVM() {
     originLng: deviceOrigin.value?.lng ?? null,
   }))
 
-  const withPinnedState = (sourceItems: NearbySearchItem[]) =>
-    sourceItems.map(item => ({
-      ...item,
-      pinned: pinnedPageIds.value.includes(item.id),
-    }))
-
   const mapItems = computed(() => {
     const merged = sortByDistance(response.value.items)
     const selected = selectedSuggestionItem.value
@@ -105,10 +98,10 @@ export function useSearchNearbyPageVM() {
       merged.unshift(selected)
     }
 
-    return withPinnedState(merged)
+    return merged
   })
   const cardItems = computed(() =>
-    withPinnedState(selectedSuggestionItem.value ? [selectedSuggestionItem.value] : sortByDistance(response.value.items)),
+    selectedSuggestionItem.value ? [selectedSuggestionItem.value] : sortByDistance(response.value.items),
   )
   const items = mapItems
   const origin = computed(() => response.value.origin)
@@ -245,17 +238,6 @@ export function useSearchNearbyPageVM() {
     })
   }
 
-  function togglePinnedPage(item: NearbySearchItem) {
-    if (item.type !== "page") {
-      return
-    }
-
-    pinnedPageIds.value = pinnedPageIds.value.includes(item.id)
-      ? pinnedPageIds.value.filter(id => id !== item.id)
-      : [...pinnedPageIds.value, item.id]
-    selectedItemId.value = item.id
-  }
-
   function requestDirections(item: NearbySearchItem) {
     isApplyingSuggestion = true
     selectedSuggestionItem.value = item
@@ -286,8 +268,15 @@ export function useSearchNearbyPageVM() {
     originFocusKey.value += 1
   }
 
-  function focusDeviceLocation(lat: number, lng: number) {
-    deviceOrigin.value = { lat, lng }
+  function setCurrentDeviceLocation(
+    lat: number,
+    lng: number,
+    options: { focus?: boolean, updateSearchOrigin?: boolean } = {},
+  ) {
+    if (options.updateSearchOrigin || !deviceOrigin.value) {
+      deviceOrigin.value = { lat, lng }
+    }
+
     response.value = {
       ...response.value,
       status: "ready",
@@ -297,7 +286,24 @@ export function useSearchNearbyPageVM() {
         lng,
       },
     }
-    focusOrigin()
+
+    if (options.focus) {
+      focusOrigin()
+    }
+  }
+
+  function focusDeviceLocation(lat: number, lng: number) {
+    setCurrentDeviceLocation(lat, lng, {
+      focus: true,
+      updateSearchOrigin: true,
+    })
+  }
+
+  function updateDeviceLocation(lat: number, lng: number) {
+    setCurrentDeviceLocation(lat, lng, {
+      focus: false,
+      updateSearchOrigin: false,
+    })
   }
 
   function clearSearch() {
@@ -305,7 +311,6 @@ export function useSearchNearbyPageVM() {
     selectedType.value = "all"
     distanceKm.value = 5
     suggestions.value = []
-    pinnedPageIds.value = []
     clearPinnedResult()
   }
 
@@ -345,7 +350,6 @@ export function useSearchNearbyPageVM() {
     selectedSuggestionItem,
     routeTargetItem,
     routeErrorMessage,
-    pinnedPageIds,
     tabs,
     origin,
     items,
@@ -368,12 +372,12 @@ export function useSearchNearbyPageVM() {
     selectType,
     selectItem,
     selectSuggestion,
-    togglePinnedPage,
     requestDirections,
     clearRoute,
     handleRouteError,
     focusOrigin,
     focusDeviceLocation,
+    updateDeviceLocation,
     clearSearch,
   }
 }

@@ -10,7 +10,6 @@
         :selected-item-id="selectedItemId"
         :origin-focus-key="originFocusKey"
         :route-target-item="routeTargetItem"
-        :pinned-page-ids="pinnedPageIds"
         :zoom-in-key="mapZoomInKey"
         :zoom-out-key="mapZoomOutKey"
         @select="selectItem"
@@ -127,7 +126,6 @@
             :active="selectedItemId === item.id || (!selectedItemId && item.id === cardItems[0]?.id)"
             @select="selectItem"
             @focus-origin="focusOrigin"
-            @pin="togglePinnedPage"
             @directions="requestDirections"
           />
         </div>
@@ -323,7 +321,6 @@ const {
   selectedItemId,
   routeTargetItem,
   routeErrorMessage,
-  pinnedPageIds,
   originFocusKey,
   origin,
   mapItems,
@@ -341,12 +338,12 @@ const {
   refreshSuggestions,
   selectItem,
   selectSuggestion,
-  togglePinnedPage,
   requestDirections,
   clearRoute,
   handleRouteError,
   focusOrigin,
   focusDeviceLocation,
+  updateDeviceLocation,
   clearSearch,
 } = useSearchNearbyPageVM()
 
@@ -365,6 +362,9 @@ const locationPermissionState = ref<LocationPermissionState>("checking")
 const showGuide = ref(false)
 const guideTab = ref<"ios" | "android" | "desktop">("ios")
 let searchBlurTimer: ReturnType<typeof setTimeout> | null = null
+let locationWatchId: number | null = null
+let shouldFocusNextLocationUpdate = false
+let lastLiveLocation: { lat: number, lng: number, updatedAt: number } | null = null
 
 const { load: loadGoogleMaps } = useScriptGoogleMaps({
   libraries: ["places"],
@@ -450,6 +450,23 @@ function calculateDistanceMeters(lat: number, lng: number) {
   const lngFrom = toRad(origin.value.lng)
   const latTo = toRad(lat)
   const lngTo = toRad(lng)
+  const latDelta = latTo - latFrom
+  const lngDelta = lngTo - lngFrom
+  const angle = 2 * Math.asin(Math.sqrt(
+    Math.sin(latDelta / 2) ** 2
+    + Math.cos(latFrom) * Math.cos(latTo) * Math.sin(lngDelta / 2) ** 2,
+  ))
+
+  return Math.round(earthRadiusMeters * angle)
+}
+
+function calculatePointDistanceMeters(from: { lat: number, lng: number }, to: { lat: number, lng: number }) {
+  const earthRadiusMeters = 6371000
+  const toRad = (value: number) => value * Math.PI / 180
+  const latFrom = toRad(from.lat)
+  const lngFrom = toRad(from.lng)
+  const latTo = toRad(to.lat)
+  const lngTo = toRad(to.lng)
   const latDelta = latTo - latFrom
   const lngDelta = lngTo - lngFrom
   const angle = 2 * Math.asin(Math.sqrt(
@@ -548,17 +565,50 @@ async function requestLocationPermission() {
   if (locationPermissionState.value !== "granted") {
     locationPermissionState.value = "checking"
   }
-  navigator.geolocation.getCurrentPosition(
+  shouldFocusNextLocationUpdate = shouldFocusNextLocationUpdate || !hasOrigin.value
+
+  if (locationWatchId !== null) {
+    locationPermissionState.value = "granted"
+    if (hasOrigin.value) {
+      focusOrigin()
+    }
+    return
+  }
+
+  locationWatchId = navigator.geolocation.watchPosition(
     (position) => {
+      const nextLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      }
+      const now = Date.now()
+      const movedEnough = !lastLiveLocation
+        || calculatePointDistanceMeters(lastLiveLocation, nextLocation) >= 8
+        || now - lastLiveLocation.updatedAt >= 5000
+
+      if (!movedEnough) {
+        return
+      }
+
+      const shouldFocus = shouldFocusNextLocationUpdate || !lastLiveLocation
+      lastLiveLocation = { ...nextLocation, updatedAt: now }
+      shouldFocusNextLocationUpdate = false
       locationPermissionState.value = "granted"
-      focusDeviceLocation(position.coords.latitude, position.coords.longitude)
+
+      if (shouldFocus) {
+        focusDeviceLocation(nextLocation.lat, nextLocation.lng)
+        return
+      }
+
+      updateDeviceLocation(nextLocation.lat, nextLocation.lng)
     },
     () => {
       locationPermissionState.value = hasOrigin.value ? "granted" : "denied"
+      locationWatchId = null
     },
     {
-      enableHighAccuracy: false,
-      maximumAge: 300000,
+      enableHighAccuracy: true,
+      maximumAge: 5000,
       timeout: 20000,
     },
   )
@@ -735,6 +785,10 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (searchBlurTimer) {
     clearTimeout(searchBlurTimer)
+  }
+  if (locationWatchId !== null && import.meta.client && navigator.geolocation) {
+    navigator.geolocation.clearWatch(locationWatchId)
+    locationWatchId = null
   }
 })
 </script>
@@ -1073,16 +1127,17 @@ onBeforeUnmount(() => {
 
 .nearby-map-page__bottom {
   position: absolute;
-  bottom: max(20px, env(safe-area-inset-bottom, 0px));
-  left: 50%;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 8;
-  width: min(100% - 32px, 1320px);
-  transform: translateX(-50%);
+  width: 100%;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .nearby-map-page__panel {
   overflow: hidden;
-  padding: 18px;
+  padding: 0;
 }
 
 .nearby-map-page__filters {
@@ -1150,7 +1205,6 @@ onBeforeUnmount(() => {
   gap: 10px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 2px;
   scroll-snap-type: y mandatory;
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--text-secondary) 32%, transparent) transparent;
@@ -1158,6 +1212,8 @@ onBeforeUnmount(() => {
 }
 
 .nearby-map-page__card {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
@@ -1184,7 +1240,6 @@ onBeforeUnmount(() => {
   color: var(--color-secondary-600);
   font-size: var(--text-body);
   font-weight: var(--weight-extrabold);
-  padding: 18px;
   text-align: center;
 }
 
@@ -1398,12 +1453,12 @@ onBeforeUnmount(() => {
   }
 
   .nearby-map-page__bottom {
-    bottom: max(8px, env(safe-area-inset-bottom, 0px));
-    width: calc(100% - 12px);
+    bottom: 0;
+    width: 100%;
   }
 
   .nearby-map-page__panel {
-    padding: 8px;
+    padding: 0;
   }
 
   .nearby-map-page__filters {

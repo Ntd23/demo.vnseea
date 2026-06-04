@@ -1,4 +1,5 @@
 <?php 
+// English description: Renders the admin table for managing community pages and map pin approvals.
 
 $page           = (!empty($_GET['page-id']) && is_numeric($_GET['page-id'])) ? $_GET['page-id'] : 1;
 $filter_keyword = (!empty($_GET['query'])) ? Wo_Secure($_GET['query']) : '';
@@ -155,7 +156,7 @@ if (($page > $db->totalPages) && !empty($_GET['page-id'])) {
                         </form>
                       </div>
                     </div>
-                   <input type="hidden" id="hash_id" name="hash_id" value="<?php echo Wo_CreateSession();?>">
+                   <input type="hidden" id="hash_id" name="hash_id" value="<?php echo Wo_CreateMainSession();?>">
                    <div class="clearfix"></div>
                     <div class="table-responsive1">
                         <table class="table table-bordered table-striped table-hover">
@@ -182,6 +183,7 @@ if (($page > $db->totalPages) && !empty($_GET['page-id'])) {
                                       <svg onclick="location.href = '<?php echo(Wo_LoadAdminLinkSettings('manage-pages?page-id=1').$sort_link."&sort=DESC_c") ?>'" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#000000" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-arrow-down cursor-p"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
                                   <?php } ?></th>
   					                  <th>Hành động</th>
+                              <th>Map pin</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -340,4 +342,19 @@ function Wo_DeletePage(page_id,type = 'show') {
   $.get(Wo_Ajax_Requests_File(),{f:'admin_setting',s:'delete_user_page',page_id: page_id, hash_id:hash_id});
 }
 
+function Wo_UpdatePageMapPin(page_id, status) {
+  hash_id = $('.main_session').val() || $('#hash_id').val();
+  $('#PageMapPin_' + page_id).find('button').attr('disabled', true);
+  $.post(Wo_Ajax_Requests_File() + '?f=admin_setting&s=update_page_map_pin&hash=' + hash_id, {
+    page_id: page_id,
+    status: status
+  }, function(data) {
+    if (data && data.status == 200) {
+      location.reload();
+      return;
+    }
+    $('#PageMapPin_' + page_id).find('button').attr('disabled', false);
+    alert('Unable to update map pin status.');
+  });
+}
 </script>

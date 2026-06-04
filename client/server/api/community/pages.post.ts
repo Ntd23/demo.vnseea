@@ -12,6 +12,7 @@ type CreatePageBody = {
   slug?: string
   description?: string
   category?: string
+  mapPinRequested?: boolean | string | number
   location?: {
     address?: string
     lat?: number | string | null
@@ -99,6 +100,7 @@ export default defineEventHandler(async (event) => {
       page_lat: lat,
       page_lng: lng,
       page_place_id: text(body.location?.placeId),
+      map_pin_requested: body.mapPinRequested === true || body.mapPinRequested === "1" || body.mapPinRequested === 1 ? "1" : "0",
       hash_id: text(currentUser.session_hash),
     },
     { s: "create_page" },

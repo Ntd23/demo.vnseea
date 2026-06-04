@@ -1,4 +1,5 @@
 <?php
+// English description: Shared backend domain functions for social entities, pages, groups, media, and messaging.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -1614,6 +1615,131 @@ function Wo_RegisterPage($registration_data = array()) {
     } else {
         return false;
     }
+}
+
+function Wo_PageTableHasColumn($column_name = '') {
+    global $sqlConnect;
+    static $page_columns = null;
+
+    if (empty($column_name)) {
+        return false;
+    }
+    if ($page_columns === null) {
+        $page_columns = array();
+        $columns_query = mysqli_query($sqlConnect, "SHOW COLUMNS FROM " . T_PAGES);
+        if ($columns_query) {
+            while ($column = mysqli_fetch_assoc($columns_query)) {
+                if (!empty($column['Field'])) {
+                    $page_columns[$column['Field']] = true;
+                }
+            }
+        }
+    }
+
+    return !empty($page_columns[$column_name]);
+}
+
+function Wo_EnsurePageMapPinColumns() {
+    global $sqlConnect;
+    static $checked = false;
+
+    if ($checked) {
+        return true;
+    }
+
+    $columns = array(
+        'map_pin_status' => "ALTER TABLE " . T_PAGES . " ADD COLUMN `map_pin_status` VARCHAR(16) NOT NULL DEFAULT 'none'",
+        'map_pin_requested_at' => "ALTER TABLE " . T_PAGES . " ADD COLUMN `map_pin_requested_at` INT(11) NOT NULL DEFAULT 0",
+        'map_pin_reviewed_at' => "ALTER TABLE " . T_PAGES . " ADD COLUMN `map_pin_reviewed_at` INT(11) NOT NULL DEFAULT 0",
+        'map_pin_reviewed_by' => "ALTER TABLE " . T_PAGES . " ADD COLUMN `map_pin_reviewed_by` INT(11) NOT NULL DEFAULT 0",
+    );
+
+    foreach ($columns as $column => $alter_query) {
+        if (!Wo_PageTableHasColumn($column)) {
+            mysqli_query($sqlConnect, $alter_query);
+        }
+    }
+
+    $checked = true;
+    return true;
+}
+
+function Wo_NormalizePageMapPinStatus($status = '') {
+    $status = strtolower(trim((string) $status));
+    return in_array($status, array('none', 'pending', 'approved', 'rejected'), true) ? $status : 'none';
+}
+
+function Wo_PageHasValidMapPinLocation($page_data = array()) {
+    return !empty($page_data['address'])
+        && isset($page_data['lat'])
+        && isset($page_data['lng'])
+        && is_numeric($page_data['lat'])
+        && is_numeric($page_data['lng'])
+        && !((float) $page_data['lat'] == 0 && (float) $page_data['lng'] == 0);
+}
+
+function Wo_GetPageMapPinRequestUpdateData($current_page = array(), $incoming_data = array(), $requested = false) {
+    Wo_EnsurePageMapPinColumns();
+
+    $status = Wo_NormalizePageMapPinStatus(!empty($current_page['map_pin_status']) ? $current_page['map_pin_status'] : 'none');
+    $merged_page = array_merge($current_page, $incoming_data);
+    $location_keys = array('address', 'lat', 'lng', 'place_id');
+    $location_changed = false;
+
+    foreach ($location_keys as $key) {
+        if (array_key_exists($key, $incoming_data) && (string) ($current_page[$key] ?? '') !== (string) $incoming_data[$key]) {
+            $location_changed = true;
+            break;
+        }
+    }
+
+    $has_valid_location = Wo_PageHasValidMapPinLocation($merged_page);
+    $update_data = array();
+
+    if (!$has_valid_location && $status === 'approved' && $location_changed) {
+        $update_data['map_pin_status'] = 'none';
+        $update_data['map_pin_requested_at'] = 0;
+        $update_data['map_pin_reviewed_at'] = 0;
+        $update_data['map_pin_reviewed_by'] = 0;
+        return $update_data;
+    }
+
+    if (($requested || ($status === 'approved' && $location_changed)) && $has_valid_location) {
+        if ($status !== 'approved' || $location_changed) {
+            $update_data['map_pin_status'] = 'pending';
+            $update_data['map_pin_requested_at'] = time();
+            $update_data['map_pin_reviewed_at'] = 0;
+            $update_data['map_pin_reviewed_by'] = 0;
+        }
+    }
+
+    return $update_data;
+}
+
+function Wo_UpdatePageMapPinReview($page_id = 0, $status = '') {
+    global $wo;
+
+    Wo_EnsurePageMapPinColumns();
+
+    $status = Wo_NormalizePageMapPinStatus($status);
+    if (empty($page_id) || !is_numeric($page_id) || !in_array($status, array('approved', 'rejected'), true)) {
+        return false;
+    }
+
+    $page = Wo_PageData($page_id);
+    if (empty($page) || !is_array($page)) {
+        return false;
+    }
+
+    if ($status === 'approved' && !Wo_PageHasValidMapPinLocation($page)) {
+        return false;
+    }
+
+    return Wo_UpdatePageData($page_id, array(
+        'map_pin_status' => $status,
+        'map_pin_reviewed_at' => time(),
+        'map_pin_reviewed_by' => !empty($wo['user']['user_id']) ? $wo['user']['user_id'] : 0,
+    ));
 }
 function Wo_GetMyPages($user_id = false, $limit = 0, $offset = 0) {
     global $sqlConnect, $wo;

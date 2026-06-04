@@ -3,6 +3,7 @@
 import type { LocationSelection } from "../../../location/domain/types/location.types"
 
 export type CommunityPrivacy = "public" | "private" | "secret"
+export type CommunityPageMapPinStatus = "none" | "pending" | "approved" | "rejected"
 
 export interface CommunityOption {
   label: string
@@ -18,6 +19,7 @@ export interface CommunityDraft {
   privacy: CommunityPrivacy
   category: string
   location?: LocationSelection
+  mapPinRequested?: boolean
 }
 
 export type CommunityGroupTab = "mine" | "suggested" | "joined"
@@ -41,6 +43,7 @@ export interface CommunityPageRecord {
   lat?: number | null
   lng?: number | null
   placeId?: string
+  mapPinStatus?: CommunityPageMapPinStatus
   foundedLabel?: string
   ctaLabel?: string
   canManage?: boolean
@@ -139,6 +142,8 @@ export interface CommunityPageSettingsDraft {
   showLikeCount: boolean
   showWebsite: boolean
   recommendRelatedPages: boolean
+  mapPinRequested?: boolean
+  mapPinStatus?: CommunityPageMapPinStatus
   avatarUrl?: string
   bannerUrl?: string
   avatarFile?: File

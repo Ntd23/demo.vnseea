@@ -1,30 +1,64 @@
+<!-- Description: Renders feed post media in a stable Facebook-style gallery grid for one or many backend media items. -->
 <template>
-  <div class="media-grid" :class="items.length > 1 ? 'media-grid--multi' : ''">
-    <template v-for="(item, index) in items" :key="`${item.src}-${index}`">
-      <button v-if="item.type === 'image'" class="media-grid__item" type="button"
-        :aria-label="t('feed.postMediaGrid.openLabel', { index: index + 1 })" @click="emit('open', index)">
-        <img :src="item.src" :alt="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
-          class="media-grid__img" loading="lazy">
+  <div class="media-grid" :class="gridClass">
+    <template v-for="(item, index) in visibleItems" :key="`${item.src}-${index}`">
+      <button
+        v-if="item.type === 'image'"
+        class="media-grid__item"
+        :class="`media-grid__item--slot-${index + 1}`"
+        type="button"
+        :aria-label="t('feed.postMediaGrid.openLabel', { index: index + 1 })"
+        @click="emit('open', index)"
+      >
+        <img
+          :src="item.src"
+          :alt="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
+          class="media-grid__img"
+          loading="lazy"
+          decoding="async"
+        >
+        <span v-if="isMoreSlot(index)" class="media-grid__more">
+          +{{ hiddenCount }}
+        </span>
       </button>
 
-      <div v-else class="media-grid__item media-grid__item--video">
-        <video ref="videoRefs" :aria-label="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
-          class="media-grid__img media-grid__video" autoplay controls loop playsinline preload="auto"
-          @loadedmetadata="playVideoWithSound">
+      <div
+        v-else
+        class="media-grid__item media-grid__item--video"
+        :class="`media-grid__item--slot-${index + 1}`"
+      >
+        <video
+          ref="videoRefs"
+          :aria-label="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
+          class="media-grid__img media-grid__video"
+          autoplay
+          controls
+          loop
+          playsinline
+          preload="auto"
+          @loadedmetadata="playVideoWithSound"
+        >
           <source :src="item.src" :type="item.mime || 'video/mp4'">
         </video>
+        <button
+          v-if="isMoreSlot(index)"
+          class="media-grid__more media-grid__more--button"
+          type="button"
+          :aria-label="t('feed.postMediaGrid.openLabel', { index: index + 1 })"
+          @click="emit('open', index)"
+        >
+          +{{ hiddenCount }}
+        </button>
       </div>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useIntersectionObserver } from "@vueuse/core"
-
 const { t } = useI18n()
 const videoRefs = ref<HTMLVideoElement[]>([])
 
-defineProps<{
+const props = defineProps<{
   items: Array<{
     type: "image" | "video"
     src: string
@@ -35,6 +69,20 @@ defineProps<{
 
 const emit = defineEmits<{ open: [index: number] }>()
 
+const validItems = computed(() => props.items.filter(item => item.src))
+const visibleLimit = computed(() => validItems.value.length >= 5 ? 5 : 4)
+const visibleItems = computed(() => validItems.value.slice(0, visibleLimit.value))
+const visibleCount = computed(() => visibleItems.value.length)
+const hiddenCount = computed(() => Math.max(validItems.value.length - visibleItems.value.length, 0))
+const gridClass = computed(() => [
+  `media-grid--count-${Math.min(Math.max(visibleCount.value, 1), 5)}`,
+  hiddenCount.value > 0 ? "media-grid--has-more" : "",
+])
+
+function isMoreSlot(index: number) {
+  return hiddenCount.value > 0 && index === visibleItems.value.length - 1
+}
+
 function playVideoWithSound(event: Event) {
   const video = event.currentTarget as HTMLVideoElement | null
 
@@ -44,10 +92,10 @@ function playVideoWithSound(event: Event) {
 }
 
 function playVisibleVideo(video: HTMLVideoElement) {
-  video.muted = true // Phải tắt tiếng mới autoplay được trên hầu hết trình duyệt
+  video.muted = true
   video.volume = 1
   void video.play().catch(() => {
-    // Nếu vẫn lỗi, trình duyệt yêu cầu người dùng click vào trang web trước
+    // Browser autoplay rules can still require a user gesture.
   })
 }
 
@@ -76,47 +124,160 @@ onMounted(() => {
 <style scoped>
 .media-grid {
   display: grid;
-  gap: 6px;
+  gap: 2px;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--color-secondary-200);
 }
 
-.media-grid--multi {
-  grid-template-columns: repeat(2, 1fr);
+.media-grid--count-1 {
+  background: var(--bg-muted);
+}
+
+.media-grid--count-2,
+.media-grid--count-4,
+.media-grid--count-5 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  aspect-ratio: 16 / 9;
+}
+
+.media-grid--count-3 {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  aspect-ratio: 16 / 9;
+}
+
+.media-grid--count-4 {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.media-grid--count-5 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1.35fr) minmax(0, 1fr);
+  aspect-ratio: 1.32 / 1;
+}
+
+.media-grid--count-3 .media-grid__item--slot-1 {
+  grid-row: span 2;
+}
+
+.media-grid--count-5 .media-grid__item--slot-1,
+.media-grid--count-5 .media-grid__item--slot-2 {
+  grid-column: span 3;
+}
+
+.media-grid--count-5 .media-grid__item--slot-3,
+.media-grid--count-5 .media-grid__item--slot-4,
+.media-grid--count-5 .media-grid__item--slot-5 {
+  grid-column: span 2;
 }
 
 .media-grid__item {
   position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
   overflow: hidden;
-  border-radius: 14px;
-  background: #f1f5f9;
+  border: 0;
+  border-radius: 0;
+  background: var(--color-secondary-900);
+  padding: 0;
   text-align: left;
-  border: none;
   cursor: pointer;
 }
 
 .media-grid__item--video {
   cursor: default;
-  background: #000000; /* Nền đen cho video */
+  background: #000000;
 }
 
 .media-grid__img {
-  width: 100%;
-  height: auto;
-  max-height: 500px; /* Giới hạn chiều cao cho video/ảnh dài */
-  object-fit: contain; /* Hiện đầy đủ nội dung, không bị cắt */
   display: block;
-  transition: transform 0.25s ease;
+  width: 100%;
+  height: 100%;
+  background: var(--color-secondary-900);
+  object-fit: contain;
+  object-position: center;
+  transition: filter var(--duration-normal) var(--ease-default);
+}
+
+.media-grid--count-1 .media-grid__item {
+  display: flex;
+  max-height: 560px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--bg-muted);
+}
+
+.media-grid--count-1 .media-grid__img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 560px;
+  object-fit: contain;
+}
+
+.media-grid--count-1 .media-grid__item--video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 560px;
+  background: #000000;
+}
+
+.media-grid--count-1 .media-grid__video {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  object-fit: cover;
 }
 
 .media-grid__item:hover .media-grid__img {
-  transform: scale(1.02);
+  filter: brightness(0.96);
 }
 
 .media-grid__item--video:hover .media-grid__img,
 .media-grid__video:hover {
-  transform: none;
+  filter: none;
 }
 
 .media-grid__video {
   cursor: default;
+}
+
+.media-grid__more {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: rgba(15, 23, 42, 0.62);
+  color: #ffffff;
+  font-size: clamp(28px, 7vw, 46px);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.media-grid__more--button {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+@media (max-width: 520px) {
+  .media-grid--count-2,
+  .media-grid--count-3,
+  .media-grid--count-4 {
+    aspect-ratio: 1 / 0.78;
+  }
+
+  .media-grid--count-5 {
+    aspect-ratio: 1 / 0.86;
+  }
 }
 </style>
