@@ -118,6 +118,7 @@ export function useCommunityCreatePagePageVM(
       && value.description === defaultDraft.description
       && value.privacy === defaultDraft.privacy
       && value.category === defaultDraft.category
+      && Boolean(value.mapPinRequested) === Boolean(defaultDraft.mapPinRequested)
       && JSON.stringify(value.location ?? null) === JSON.stringify(defaultDraft.location ?? null)
   }
 

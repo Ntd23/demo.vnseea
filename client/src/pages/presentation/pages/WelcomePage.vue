@@ -1,3 +1,4 @@
+<!-- English description: Renders the guest login form without exposing credentials through URL fallback submits. -->
 <template>
   <div class="auth-form">
     <div class="auth-form__head">
@@ -7,8 +8,10 @@
     <UForm
       :state="state"
       :validate="validate"
+      method="post"
+      action="/welcome"
       class="auth-form__body"
-      @submit="handleLogin"
+      @submit.prevent="handleLogin"
     >
       <UFormField
         name="login"
@@ -45,6 +48,7 @@
         >
           <template #trailing>
             <UButton
+              type="button"
               color="neutral"
               variant="ghost"
               size="sm"

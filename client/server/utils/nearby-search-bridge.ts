@@ -24,6 +24,7 @@ type BackendNearbyItem = Record<string, unknown> & {
   lat?: number | string | null
   lng?: number | string | null
   distance_meters?: number | string | null
+  pinned?: boolean | number | string
 }
 
 type BackendNearbyResponse = {
@@ -62,6 +63,9 @@ const asNumber = (value: unknown) => {
 
   return Number.isFinite(numeric) ? numeric : 0
 }
+
+const asBoolean = (value: unknown) =>
+  value === true || value === 1 || value === "1" || value === "true" || value === "yes"
 
 const normalizeType = (value: unknown): NearbySearchType => {
   const type = asString(value)
@@ -127,6 +131,7 @@ const mapBackendItem = (
     lat,
     lng,
     distanceMeters: asNullableNumber(item.distance_meters),
+    pinned: type === "page" && asBoolean(item.pinned),
   }
 }
 

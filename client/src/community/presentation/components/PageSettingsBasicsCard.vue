@@ -1,3 +1,4 @@
+<!-- English description: Renders editable page basics including location and map pin request status. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.basics.eyebrow')"
@@ -117,6 +118,17 @@
             require-coordinates
           />
         </UFormField>
+      </div>
+
+      <div class="page-settings-basics__map-pin">
+        <UCheckbox
+          v-model="mapPinRequestedModel"
+          label="Yêu cầu ghim trên bản đồ"
+          description="Admin sẽ duyệt trước khi tên trang hiển thị trực tiếp trên bản đồ tìm kiếm gần đây."
+        />
+        <span class="page-settings-basics__map-pin-status">
+          {{ mapPinStatusLabel }}
+        </span>
       </div>
 
       <div class="grid gap-5 lg:grid-cols-2">
@@ -266,6 +278,21 @@ const locationModel = computed({
   },
 })
 
+const mapPinRequestedModel = computed({
+  get: () => Boolean(model.value.mapPinRequested),
+  set: (value: boolean) => {
+    model.value.mapPinRequested = value
+  },
+})
+
+const mapPinStatusLabel = computed(() => {
+  if (model.value.mapPinStatus === "approved") return "Đã duyệt ghim"
+  if (model.value.mapPinStatus === "pending") return "Đang chờ admin duyệt"
+  if (model.value.mapPinStatus === "rejected") return "Yêu cầu đã bị từ chối"
+
+  return "Chưa yêu cầu ghim"
+})
+
 const tagCount = computed(() =>
   model.value.tags
     .split(",")
@@ -325,6 +352,35 @@ const tagCount = computed(() =>
   border-radius: 16px;
   background: #f8fafc;
   padding: 13px 16px;
+}
+
+.page-settings-basics__map-pin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #f8fafc;
+  padding: 14px 16px;
+}
+
+.page-settings-basics__map-pin-status {
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 11px;
+}
+
+@media (max-width: 640px) {
+  .page-settings-basics__map-pin {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 .page-settings-basics :deep(input),

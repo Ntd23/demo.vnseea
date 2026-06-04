@@ -103,6 +103,7 @@ export function createApiCommunityRepository(): CommunityRepository {
         "showLikeCount",
         "showWebsite",
         "recommendRelatedPages",
+        "mapPinRequested",
       ]
 
       fields.forEach((key) => {

@@ -14,8 +14,9 @@
       v-else-if="activeReel"
       class="reels-page__container"
       @wheel="handleWheel"
-      @touchstart.passive="onTouchStart"
-      @touchend.passive="onTouchEnd"
+      @pointerdown.passive="onPointerDown"
+      @pointerup.passive="onPointerUp"
+      @pointercancel.passive="onPointerUp"
     >
       <!-- Main Content Area -->
       <main class="reels-page__main">
@@ -147,7 +148,7 @@
       <FeedShareModal
         :open="showShare"
         :share-url="shareUrl"
-        :post="{ author: activeReel.author, text: activeReel.text }"
+        :post="{ id: activeReel.id, author: activeReel.author, text: activeReel.text, authorAvatar: activeReel.authorAvatarUrl, authorVerified: activeReel.authorVerified }"
         @close="showShare = false"
         @shared="handleShared"
       />
@@ -238,8 +239,8 @@ const {
   videoRef,
   isPlaying,
   progress,
-  onTouchStart,
-  onTouchEnd,
+  onPointerDown,
+  onPointerUp,
   handleWheel,
   updateProgress,
   onMetadataLoaded,
@@ -277,11 +278,13 @@ useSeoMeta({
 
 <style scoped>
 .reels-page {
-  min-height: 100vh;
+  height: 100%;
+  min-height: 0;
   background-color: #020617;
   color: #ffffff;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .reels-page__status {
@@ -307,8 +310,10 @@ useSeoMeta({
 .reels-page__container {
   display: flex;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
+  touch-action: none;
+  user-select: none;
 }
 
 .reels-page__main {
@@ -322,7 +327,7 @@ useSeoMeta({
 
 .reels-page__stage {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -331,7 +336,7 @@ useSeoMeta({
 }
 
 .reels-page__player-box {
-  height: 100vh;
+  height: 100%;
   width: 100%;
   background-color: #000;
   position: relative;

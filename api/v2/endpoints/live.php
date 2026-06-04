@@ -1,4 +1,5 @@
 <?php
+// English description: Handles mobile API live stream create, heartbeat, join, and end actions.
 
 if (empty($_POST['type'])) {
 	$error_code    = 4;
@@ -235,41 +236,31 @@ else{
 
     if ($_POST['type'] == 'delete') {
         if (!empty($_POST['post_id']) && is_numeric($_POST['post_id']) && $_POST['post_id'] > 0) {
-            $db->where('post_id',Wo_Secure($_POST['post_id']))->where('user_id',$wo['user']['id'])->update(T_POSTS,array('live_ended' => 1));
-            if ($wo['config']['live_video_save'] == 0) {
-                // $db->where('post_id',Wo_Secure($_POST['post_id']))->where('user_id',$wo['user']['id'])->delete(T_POSTS);
-                // $db->where('parent_id',Wo_Secure($_POST['post_id']))->delete(T_POSTS);
-
-                Wo_DeletePost(Wo_Secure($_POST['post_id']));
+            $post_id = Wo_Secure($_POST['post_id']);
+            $post = $db->where('post_id',$post_id)->where('user_id',$wo['user']['id'])->getOne(T_POSTS);
+            if (!empty($post)) {
+                $db->where('post_id',$post_id)->where('user_id',$wo['user']['id'])->update(T_POSTS,array('live_ended' => 1,'live_time' => 0));
+                if ($wo['config']['agora_live_video'] == 1 && !empty($wo['config']['agora_app_id']) && !empty($wo['config']['agora_customer_id']) && !empty($wo['config']['agora_customer_certificate']) && $wo['config']['live_video_save'] == 1) {
+                    try {
+                        $stream_parts = !empty($post->stream_name) ? explode('_', $post->stream_name) : array();
+                        StopCloudRecording(array('resourceId' => $post->agora_resource_id,
+                                                 'sid' => $post->agora_sid,
+                                                 'cname' => $post->stream_name,
+                                                 'post_id' => $post->post_id,
+                                                 'token' => $post->agora_token,
+                                                 'uid' => !empty($stream_parts[2]) ? $stream_parts[2] : 12));
+                    } catch (Exception $e) {
+                    }
+                }
+                Wo_DeletePost($post_id);
                 $response_data = array(
                                     'api_status' => 200,
                                     'message' => 'deleted successfully'
                                 );
             }
             else{
-                if ($wo['config']['agora_live_video'] == 1 && !empty($wo['config']['agora_app_id']) && !empty($wo['config']['agora_customer_id']) && !empty($wo['config']['agora_customer_certificate']) && $wo['config']['live_video_save'] == 1) {
-                    $post = $db->where('post_id',Wo_Secure($_POST['post_id']))->getOne(T_POSTS);
-                    if (!empty($post)) {
-                        StopCloudRecording(array('resourceId' => $post->agora_resource_id,
-                                                 'sid' => $post->agora_sid,
-                                                 'cname' => $post->stream_name,
-                                                 'post_id' => $post->post_id,
-                                                 'uid' => explode('_', $post->stream_name)[2]));
-                    }
-                }
-                if ($wo['config']['agora_live_video'] == 1 && $wo['config']['amazone_s3_2'] != 1) {
-                    try {
-                        Wo_DeletePost(Wo_Secure($_POST['post_id']));
-                        $response_data = array(
-                                            'api_status' => 200,
-                                            'message' => 'deleted successfully'
-                                        );
-                    } catch (Exception $e) {
-                        $error_code    = 6;
-                        $error_message = 'something went wrong';
-                        
-                    }
-                }
+                $error_code    = 6;
+                $error_message = 'post not found';
             }
         }
         else{

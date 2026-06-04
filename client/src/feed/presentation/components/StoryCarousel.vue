@@ -68,221 +68,223 @@
       <Icon name="i-ph-caret-right-bold" class="h-3.5 w-3.5" />
     </button>
 
-    <Transition
-      enter-active-class="transition duration-200 ease-out"
-      enter-from-class="opacity-0 scale-95"
-      enter-to-class="opacity-100 scale-100"
-      leave-active-class="transition duration-150 ease-in"
-      leave-to-class="opacity-0 scale-95"
-    >
-      <div
-        v-if="activeStoryData"
-        class="story-viewer"
-        @click.self="closeStory"
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-to-class="opacity-0 scale-95"
       >
         <div
-          ref="dialogRef"
-          class="story-viewer__dialog"
-          :style="{ '--story-viewer-gradient': activeStoryData?.gradient || fallbackGradient }"
-          role="dialog"
-          aria-modal="true"
-          tabindex="-1"
-          @touchstart.passive="onStoryTouchStart"
-          @touchend.passive="onStoryTouchEnd"
+          v-if="activeStoryData"
+          class="story-viewer"
+          @click.self="closeStory"
         >
-          <video
-            v-if="activeStoryIsVideo && activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
-            :key="`video-${activeStoryData.id}`"
-            :src="activeStoryData.media"
-            :poster="activeStoryData.poster || undefined"
-            class="story-viewer__media"
-            autoplay
-            muted
-            playsinline
-            controls
-            preload="metadata"
-            controlslist="nodownload"
-            @ended="nextStory"
-            @error="markStoryMediaFailed(activeStoryData?.id)"
-          />
-          <NuxtImg
-            v-else-if="activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
-            :key="`image-${activeStoryData.id}`"
-            :src="activeStoryData.media"
-            :alt="activeStoryData.title || activeStoryData.author"
-            class="story-viewer__media"
-            loading="eager"
-            sizes="100vw sm:500px"
-            @error="markStoryMediaFailed(activeStoryData?.id)"
-          />
-          <div v-else class="story-viewer__fallback">
-            <div class="story-viewer__fallback-avatar">
-              {{ activeStoryData?.avatar }}
-            </div>
-            <p class="story-viewer__fallback-title">{{ activeStoryData?.title || activeStoryData?.author }}</p>
-          </div>
-          <div class="story-viewer__shade" />
-
-          <div class="story-viewer__progress">
-            <div
-              v-for="(item, itemIndex) in storyQueue"
-              :key="`${item.id}-${itemIndex}`"
-              class="story-viewer__progress-track"
-            >
-              <div
-                class="story-viewer__progress-fill"
-                :class="{ 'story-viewer__progress-fill--active': itemIndex === activeStoryItemIndex }"
-              />
-            </div>
-          </div>
-
-          <div class="story-viewer__author">
-            <div class="story-viewer__author-avatar">
-              <NuxtImg
-                v-if="activeStoryData?.avatarUrl"
-                :src="activeStoryData.avatarUrl"
-                :alt="activeStoryData.author"
-                class="story-viewer__author-avatar-image"
-                sizes="38px"
-              />
-              <span v-else>{{ activeStoryData?.avatar }}</span>
-            </div>
-            <div>
-              <p class="story-viewer__author-name">{{ activeStoryData?.author }}</p>
-              <p v-if="activeStoryData?.meta" class="story-viewer__author-meta">{{ activeStoryData.meta }}</p>
-            </div>
-            <UBadge
-              v-if="activeStoryIsMine"
-              class="story-viewer__views-pill"
-              color="neutral"
-              variant="soft"
-              :aria-label="activeStoryViewsLabel"
-              :title="activeStoryViewsLabel"
-            >
-              <Icon name="i-ph-eye-fill" class="h-[14px] w-[14px]" />
-              <span>{{ activeStoryData?.views ?? 0 }}</span>
-            </UBadge>
-          </div>
-
-          <button
-            class="story-viewer__close"
-            type="button"
-            @click="closeStory"
+          <div
+            ref="dialogRef"
+            class="story-viewer__dialog"
+            :style="{ '--story-viewer-gradient': activeStoryData?.gradient || fallbackGradient }"
+            role="dialog"
+            aria-modal="true"
+            tabindex="-1"
+            @touchstart.passive="onStoryTouchStart"
+            @touchend.passive="onStoryTouchEnd"
           >
-            <Icon name="i-ph-x-bold" class="h-4 w-4" />
-          </button>
-
-          <button
-            class="story-viewer__nav story-viewer__nav--previous"
-            type="button"
-            :aria-label="$t('feed.storyCarousel.previousStory')"
-            @click="prevStory"
-          />
-          <button
-            class="story-viewer__nav story-viewer__nav--next"
-            type="button"
-            :aria-label="$t('feed.storyCarousel.nextStory')"
-            @click="nextStory"
-          />
-
-          <div class="story-viewer__footer">
-            <!-- Caption block -->
-            <div v-if="activeStoryData?.caption" class="story-viewer__caption">
-              <p class="story-viewer__text">{{ activeStoryData.caption }}</p>
+            <video
+              v-if="activeStoryIsVideo && activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
+              :key="`video-${activeStoryData.id}`"
+              :src="activeStoryData.media"
+              :poster="activeStoryData.poster || undefined"
+              class="story-viewer__media"
+              autoplay
+              muted
+              playsinline
+              controls
+              preload="metadata"
+              controlslist="nodownload"
+              @ended="nextStory"
+              @error="markStoryMediaFailed(activeStoryData?.id)"
+            />
+            <NuxtImg
+              v-else-if="activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
+              :key="`image-${activeStoryData.id}`"
+              :src="activeStoryData.media"
+              :alt="activeStoryData.title || activeStoryData.author"
+              class="story-viewer__media"
+              loading="eager"
+              sizes="100vw sm:500px"
+              @error="markStoryMediaFailed(activeStoryData?.id)"
+            />
+            <div v-else class="story-viewer__fallback">
+              <div class="story-viewer__fallback-avatar">
+                {{ activeStoryData?.avatar }}
+              </div>
+              <p class="story-viewer__fallback-title">{{ activeStoryData?.title || activeStoryData?.author }}</p>
             </div>
+            <div class="story-viewer__shade" />
 
-            <div v-if="canInteractWithActiveStory" class="story-viewer__bar">
-              <div class="story-viewer__bar-reply" @click="focusReply">
-                <UInput
-                  ref="replyInputRef"
-                  v-model="replyText"
-                  class="story-viewer__bar-reply-input"
-                  variant="none"
-                  :placeholder="t('feed.storyCarousel.replyStory')"
-                  type="text"
-                  :disabled="storyActionState === 'loading'"
-                  @keydown.enter.prevent="sendReply"
-                  @keydown.escape.prevent="replyText = ''"
-                />
-                <UButton
-                  v-if="replyText.trim()"
-                  class="story-viewer__bar-send"
-                  icon="i-ph-paper-plane-tilt-fill"
-                  size="sm"
-                  color="primary"
-                  variant="solid"
-                  type="button"
-                  :aria-label="t('feed.storyCarousel.sendReply')"
-                  :loading="storyActionState === 'loading'"
-                  @click.stop="sendReply"
+            <div class="story-viewer__progress">
+              <div
+                v-for="(item, itemIndex) in storyQueue"
+                :key="`${item.id}-${itemIndex}`"
+                class="story-viewer__progress-track"
+              >
+                <div
+                  class="story-viewer__progress-fill"
+                  :class="{ 'story-viewer__progress-fill--active': itemIndex === activeStoryItemIndex }"
                 />
               </div>
+            </div>
 
-              <div class="story-viewer__reaction-shell">
-                <Transition
-                  enter-active-class="transition duration-150 ease-out"
-                  enter-from-class="opacity-0 scale-95"
-                  enter-to-class="opacity-100 scale-100"
-                  leave-active-class="transition duration-100 ease-in"
-                  leave-to-class="opacity-0 scale-95"
-                >
-                  <div
-                    v-if="reactionTrayOpen"
-                    class="story-viewer__reaction-tray"
-                    @click.stop
-                    @pointerdown.stop
+            <div class="story-viewer__author">
+              <div class="story-viewer__author-avatar">
+                <NuxtImg
+                  v-if="activeStoryData?.avatarUrl"
+                  :src="activeStoryData.avatarUrl"
+                  :alt="activeStoryData.author"
+                  class="story-viewer__author-avatar-image"
+                  sizes="38px"
+                />
+                <span v-else>{{ activeStoryData?.avatar }}</span>
+              </div>
+              <div>
+                <p class="story-viewer__author-name">{{ activeStoryData?.author }}</p>
+                <p v-if="activeStoryData?.meta" class="story-viewer__author-meta">{{ activeStoryData.meta }}</p>
+              </div>
+              <UBadge
+                v-if="activeStoryIsMine"
+                class="story-viewer__views-pill"
+                color="neutral"
+                variant="soft"
+                :aria-label="activeStoryViewsLabel"
+                :title="activeStoryViewsLabel"
+              >
+                <Icon name="i-ph-eye-fill" class="h-[14px] w-[14px]" />
+                <span>{{ activeStoryData?.views ?? 0 }}</span>
+              </UBadge>
+            </div>
+
+            <button
+              class="story-viewer__close"
+              type="button"
+              @click="closeStory"
+            >
+              <Icon name="i-ph-x-bold" class="h-4 w-4" />
+            </button>
+
+            <button
+              class="story-viewer__nav story-viewer__nav--previous"
+              type="button"
+              :aria-label="$t('feed.storyCarousel.previousStory')"
+              @click="prevStory"
+            />
+            <button
+              class="story-viewer__nav story-viewer__nav--next"
+              type="button"
+              :aria-label="$t('feed.storyCarousel.nextStory')"
+              @click="nextStory"
+            />
+
+            <div class="story-viewer__footer">
+              <!-- Caption block -->
+              <div v-if="activeStoryData?.caption" class="story-viewer__caption">
+                <p class="story-viewer__text">{{ activeStoryData.caption }}</p>
+              </div>
+
+              <div v-if="canInteractWithActiveStory" class="story-viewer__bar">
+                <div class="story-viewer__bar-reply" @click="focusReply">
+                  <UInput
+                    ref="replyInputRef"
+                    v-model="replyText"
+                    class="story-viewer__bar-reply-input"
+                    variant="none"
+                    :placeholder="t('feed.storyCarousel.replyStory')"
+                    type="text"
+                    :disabled="storyActionState === 'loading'"
+                    @keydown.enter.prevent="sendReply"
+                    @keydown.escape.prevent="replyText = ''"
+                  />
+                  <UButton
+                    v-if="replyText.trim()"
+                    class="story-viewer__bar-send"
+                    icon="i-ph-paper-plane-tilt-fill"
+                    size="sm"
+                    color="primary"
+                    variant="solid"
+                    type="button"
+                    :aria-label="t('feed.storyCarousel.sendReply')"
+                    :loading="storyActionState === 'loading'"
+                    @click.stop="sendReply"
+                  />
+                </div>
+
+                <div class="story-viewer__reaction-shell">
+                  <Transition
+                    enter-active-class="transition duration-150 ease-out"
+                    enter-from-class="opacity-0 scale-95"
+                    enter-to-class="opacity-100 scale-100"
+                    leave-active-class="transition duration-100 ease-in"
+                    leave-to-class="opacity-0 scale-95"
                   >
-                    <button
-                      v-for="(reaction, reactionIndex) in storyReactionOptions"
-                      :key="reaction.value"
-                      class="story-viewer__reaction-option"
-                      :class="{ 'story-viewer__reaction-option--active': activeStoryReaction === reaction.value }"
-                      :style="{ '--reaction-index': String(reactionIndex) }"
-                      type="button"
-                      @click="reactToStory(reaction.value)"
+                    <div
+                      v-if="reactionTrayOpen"
+                      class="story-viewer__reaction-tray"
+                      @click.stop
+                      @pointerdown.stop
                     >
+                      <button
+                        v-for="(reaction, reactionIndex) in storyReactionOptions"
+                        :key="reaction.value"
+                        class="story-viewer__reaction-option"
+                        :class="{ 'story-viewer__reaction-option--active': activeStoryReaction === reaction.value }"
+                        :style="{ '--reaction-index': String(reactionIndex) }"
+                        type="button"
+                        @click="reactToStory(reaction.value)"
+                      >
+                        <img
+                          :src="reaction.src"
+                          :alt="reaction.label"
+                          class="story-viewer__reaction-symbol"
+                          draggable="false"
+                        >
+                      </button>
+                    </div>
+                  </Transition>
+
+                  <UButton
+                    class="story-viewer__bar-react"
+                    :class="{ 'story-viewer__bar-react--active': Boolean(activeReactionOption) }"
+                    type="button"
+                    color="neutral"
+                    variant="soft"
+                    :aria-label="t('feed.storyCarousel.reactStory')"
+                    :disabled="storyActionState === 'loading'"
+                    @pointerdown.stop.prevent="startReactionPress"
+                    @pointerup.stop.prevent="finishReactionPress"
+                    @pointerleave="cancelReactionPress"
+                    @pointercancel="cancelReactionPress"
+                  >
+                    <span class="story-viewer__bar-react-symbol">
                       <img
-                        :src="reaction.src"
-                        :alt="reaction.label"
-                        class="story-viewer__reaction-symbol"
+                        :src="activeReactionOption?.src ?? defaultFeedReactionAsset.src"
+                        :alt="activeReactionOption?.label ?? t(defaultFeedReactionAsset.labelKey)"
+                        class="story-viewer__bar-react-image"
                         draggable="false"
                       >
-                    </button>
-                  </div>
-                </Transition>
-
-                <UButton
-                  class="story-viewer__bar-react"
-                  :class="{ 'story-viewer__bar-react--active': Boolean(activeReactionOption) }"
-                  type="button"
-                  color="neutral"
-                  variant="soft"
-                  :aria-label="t('feed.storyCarousel.reactStory')"
-                  :disabled="storyActionState === 'loading'"
-                  @pointerdown.stop.prevent="startReactionPress"
-                  @pointerup.stop.prevent="finishReactionPress"
-                  @pointerleave="cancelReactionPress"
-                  @pointercancel="cancelReactionPress"
-                >
-                  <span class="story-viewer__bar-react-symbol">
-                    <img
-                      :src="activeReactionOption?.src ?? defaultFeedReactionAsset.src"
-                      :alt="activeReactionOption?.label ?? t(defaultFeedReactionAsset.labelKey)"
-                      class="story-viewer__bar-react-image"
-                      draggable="false"
-                    >
-                  </span>
-                </UButton>
+                    </span>
+                  </UButton>
+                </div>
               </div>
-            </div>
 
-            <p v-if="storyActionError" class="story-viewer__action-error">
-              {{ storyActionError }}
-            </p>
+              <p v-if="storyActionError" class="story-viewer__action-error">
+                {{ storyActionError }}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -354,8 +356,8 @@ const {
   display: flex;
   align-items: stretch;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.86);
-  backdrop-filter: blur(10px);
+  background: #050505;
+  overscroll-behavior: contain;
 }
 
 @media (min-width: 1024px) {

@@ -196,7 +196,8 @@ export function useFeedShareModalVM(open: Ref<boolean>) {
   }) {
     const caption = input.caption?.trim()
     const postText = input.postText?.trim()
-    const parts = [caption, postText].filter(Boolean)
+    const shareUrl = input.shareUrl?.trim()
+    const parts = [caption, postText, shareUrl].filter(Boolean)
 
     return parts.join("\n\n") || postText || ""
   }
@@ -205,11 +206,12 @@ export function useFeedShareModalVM(open: Ref<boolean>) {
     caption?: string
     postText?: string
     postId?: number
+    shareUrl?: string
   }) {
     const target = selectedTarget.value
     const text = input.postId
       ? selectedDestination.value === "message"
-        ? [input.caption?.trim(), input.postText?.trim()].filter(Boolean).join("\n\n")
+        ? [input.caption?.trim(), input.postText?.trim(), input.shareUrl?.trim()].filter(Boolean).join("\n\n")
         : (input.caption?.trim() ?? "")
       : createShareText(input)
 

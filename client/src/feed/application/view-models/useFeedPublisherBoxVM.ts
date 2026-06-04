@@ -31,7 +31,7 @@ export function useFeedPublisherBoxVM(
   const showFeelingPicker = ref(false)
   const showPollForm = ref(false)
   const pollAnswers = ref<string[]>(["", ""])
-  const imageFile = ref<File | null>(null)
+  const imageFiles = ref<File[]>([])
   const videoFile = ref<File | null>(null)
 
   const selectedColorId = ref<number | null>(null)
@@ -116,10 +116,12 @@ export function useFeedPublisherBoxVM(
   )
 
   const selectedMediaLabel = computed(() =>
-    imageFile.value?.name || videoFile.value?.name || "",
+    imageFiles.value.length > 1
+      ? `${imageFiles.value.length} ${locale.value === "vi" ? "ảnh" : "photos"}`
+      : imageFiles.value[0]?.name || videoFile.value?.name || "",
   )
   const selectedMediaType = computed<"image" | "video" | "">(() => {
-    if (imageFile.value) {
+    if (imageFiles.value.length > 0) {
       return "image"
     }
 
@@ -150,7 +152,7 @@ export function useFeedPublisherBoxVM(
 
     return Boolean(
       draft.value?.text?.trim()
-      || imageFile.value
+      || imageFiles.value.length > 0
       || videoFile.value
       || draft.value?.feeling,
     )
@@ -199,7 +201,7 @@ export function useFeedPublisherBoxVM(
   })
 
   function resetSelectedMedia() {
-    imageFile.value = null
+    imageFiles.value = []
     videoFile.value = null
 
     if (imageInputRef.value) {
@@ -308,14 +310,14 @@ export function useFeedPublisherBoxVM(
   }
 
   function selectImageFile(event: Event) {
-    const file = (event.target as HTMLInputElement).files?.[0]
+    const files = Array.from((event.target as HTMLInputElement).files ?? [])
 
-    if (!file) {
+    if (!files.length) {
       return
     }
 
     videoFile.value = null
-    imageFile.value = file
+    imageFiles.value = files
     showFeelingPicker.value = false
   }
 
@@ -326,7 +328,7 @@ export function useFeedPublisherBoxVM(
       return
     }
 
-    imageFile.value = null
+    imageFiles.value = []
     videoFile.value = file
     showFeelingPicker.value = false
   }
@@ -411,7 +413,7 @@ export function useFeedPublisherBoxVM(
           text: draft.value?.text || "",
           audience: draft.value?.audience || "public",
           feeling: draft.value?.feeling || undefined,
-          imageFile: imageFile.value || undefined,
+          imageFiles: imageFiles.value.length ? imageFiles.value : undefined,
           videoFile: videoFile.value || undefined,
           pageId,
           eventId,

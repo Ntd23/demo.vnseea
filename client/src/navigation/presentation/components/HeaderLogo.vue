@@ -1,4 +1,4 @@
-<!-- English description: Renders the header brand mark using backend branding with a resilient text fallback. -->
+<!-- English description: Renders the header favicon brand mark using backend branding with a resilient text fallback. -->
 <template>
   <NuxtLink :to="to" class="flex items-center gap-2.5">
     <img
@@ -47,12 +47,8 @@ const { branding } = storeToRefs(siteBrandingStore)
 const logoFailed = ref(false)
 
 const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
-const displayLogoUrl = computed(() =>
-  props.inverted && branding.value.nightLogoUrl
-    ? branding.value.nightLogoUrl
-    : branding.value.logoUrl,
-)
-const logoAlt = computed(() => brandName.value ? `${brandName.value} Logo` : "Site logo")
+const displayLogoUrl = computed(() => branding.value.faviconUrl)
+const logoAlt = computed(() => brandName.value ? `${brandName.value} icon` : "Site icon")
 const fallbackInitial = computed(() => brandName.value.trim().charAt(0).toUpperCase())
 const brandEyebrow = computed(() => {
   const title = branding.value.siteTitle.trim()

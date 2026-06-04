@@ -5,6 +5,8 @@ import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFe
 
 type FeedOrderKey = "all" | "following"
 
+const HOME_FEED_PAGE_SIZE = 20
+
 export function useHomeFeedPageVM(
   repository = createApiFeedRepository(),
 ) {
@@ -72,7 +74,7 @@ export function useHomeFeedPageVM(
 
   async function fetchHome(reset = true) {
     const response = await repository.getHome({
-      limit: 6,
+      limit: HOME_FEED_PAGE_SIZE,
       afterPostId: reset ? undefined : nextOffset.value ?? undefined,
       followingOnly: activeOrder.value === "following",
     })

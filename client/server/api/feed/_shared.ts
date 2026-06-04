@@ -806,11 +806,13 @@ const extractMediaItems = (
   }
 
   const appendMediaValue = (value: string, type: "image" | "video", thumb?: string) => {
-    if (!value) return
+    const normalizedValue = value.trim()
+
+    if (!normalizedValue || normalizedValue === "#" || normalizedValue === "0") return
 
     appendItem({
       type,
-      src: value,
+      src: normalizedValue,
       alt: fallbackAlt,
       thumb,
       mime: type === "video" ? "video/mp4" : undefined,
@@ -818,14 +820,27 @@ const extractMediaItems = (
   }
 
   const albumSources = [
-    ...asArray(entity.photo_album),
-    ...asArray(entity.album),
-    ...asArray(entity.photo_multi),
-    ...asArray(entity.images),
+    ...asUnknownArray(entity.photo_album),
+    ...asUnknownArray(entity.album),
+    ...asUnknownArray(entity.photo_multi),
+    ...asUnknownArray(entity.images),
   ]
 
-  for (const media of albumSources) {
-    const src = resolveMediaUrl(firstString(media, ["image", "filename", "postFile", "src"]))
+  for (const mediaValue of albumSources) {
+    const media = asRecord(mediaValue)
+    const rawSource = asString(mediaValue) || firstString(media, [
+      "image",
+      "image_url",
+      "url",
+      "src",
+      "filename",
+      "file",
+      "postFile",
+      "image_org",
+      "thumb",
+      "thumbnail",
+    ])
+    const src = resolveMediaUrl(rawSource)
     appendMediaValue(src, isVideoUrl(src) ? "video" : "image")
   }
 
@@ -914,15 +929,23 @@ export const mapPostRecord = (
     || firstString(groupData, ["group_title", "group_name"])
     || "User"
   const authorUsername = firstString(sourceEntity, ["username"])
+  const pageId = firstNumber(entity, ["page_id"])
+    || firstNumber(pageData, ["page_id", "id"])
+    || firstNumber(sourceEntity, ["page_id"])
+  const groupId = firstNumber(entity, ["group_id"])
+    || firstNumber(groupData, ["group_id", "id"])
+    || firstNumber(sourceEntity, ["group_id"])
   const pageSlug = firstString(pageData, ["page_name"])
+    || (pageId ? firstString(sourceEntity, ["page_name", "username"]) : "")
   const groupSlug = firstString(groupData, ["group_name"])
+    || (groupId ? firstString(sourceEntity, ["group_name", "username"]) : "")
   const sourcePath = pageSlug
-    ? `/p/${pageSlug}`
+    ? appRoutes.pageDetail(pageSlug)
     : groupSlug
-      ? `/g/${groupSlug}`
+      ? appRoutes.groupDetail(groupSlug)
       : authorUsername
-        ? `/@${authorUsername}`
-        : "/home"
+        ? appRoutes.profile(authorUsername)
+        : appRoutes.feed
   const mentions = extractMentions(entity)
   const text = buildPostText(entity)
   const sharedInfo = asRecord(entity.shared_info)
@@ -969,7 +992,11 @@ export const mapPostRecord = (
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"])),
     authorVerified: isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
-    authorPath: authorUsername ? `/@${authorUsername}` : sourcePath,
+    authorPath: pageSlug || groupSlug
+      ? sourcePath
+      : authorUsername
+        ? appRoutes.profile(authorUsername)
+        : sourcePath,
     eventContext,
     groupContext,
     role: firstString(sourceEntity, ["working", "school", "address"])
@@ -1497,7 +1524,7 @@ export async function fetchFeedHome(event: H3Event): Promise<FeedHomeResponse> {
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const currentUserId = asNumber(currentUser.user_id)
-  const limit = resolveLimit(event, 8, 20)
+  const limit = resolveLimit(event, 20, 20)
   const afterPostId = resolveOffset(event)
   const query = getQuery(event)
   const postType = Array.isArray(query.postType) ? query.postType[0] : query.postType

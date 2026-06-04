@@ -33,6 +33,41 @@ const firstString = (source: BackendSiteSettingsPublicConfig, keys: string[]) =>
   return ""
 }
 
+const buildThemeAssetUrl = (
+  publicConfig: BackendSiteSettingsPublicConfig,
+  fileName: string,
+) => {
+  const themeUrl = firstString(publicConfig, ["theme_url", "themeUrl"])
+
+  if (!themeUrl) {
+    return ""
+  }
+
+  return `${themeUrl.replace(/\/+$/, "")}/img/${fileName}`
+}
+
+const isBackendPublicAssetPath = (pathname: string) =>
+  pathname.startsWith("/themes/") || pathname.startsWith("/upload/")
+
+const toSameOriginAssetPath = (value: string) => {
+  if (!value) {
+    return ""
+  }
+
+  try {
+    const assetUrl = new URL(value, "http://localhost")
+
+    if (isBackendPublicAssetPath(assetUrl.pathname)) {
+      return `${assetUrl.pathname}${assetUrl.search}${assetUrl.hash}`
+    }
+
+    return value
+  }
+  catch {
+    return value
+  }
+}
+
 export default defineEventHandler(async (event): Promise<SiteBranding> => {
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
@@ -47,13 +82,21 @@ export default defineEventHandler(async (event): Promise<SiteBranding> => {
   const publicConfig = response.public_config ?? {}
   const siteName = firstString(publicConfig, ["siteName", "site_name"]) || fallback.siteName
   const siteTitle = firstString(publicConfig, ["siteTitle", "site_title"]) || siteName
+  const logoExtension = firstString(publicConfig, ["logo_extension", "logoExtension"]) || "png"
+  const faviconExtension = firstString(publicConfig, ["favicon_extension", "faviconExtension"]) || "png"
+  const logoSource = firstString(publicConfig, ["logo_url", "logoUrl", "logo"])
+    || buildThemeAssetUrl(publicConfig, `logo.${logoExtension}`)
+  const nightLogoSource = firstString(publicConfig, ["night_logo_url", "nightLogoUrl", "night_logo", "nightLogo"])
+    || buildThemeAssetUrl(publicConfig, `night-logo.${logoExtension}`)
+  const faviconSource = firstString(publicConfig, ["favicon_url", "faviconUrl", "favicon"])
+    || buildThemeAssetUrl(publicConfig, `icon.${faviconExtension}`)
 
   return {
     siteName,
     siteTitle,
     siteDescription: firstString(publicConfig, ["siteDesc", "siteDescription", "site_description"]),
-    logoUrl: resolveMediaUrl(firstString(publicConfig, ["logo_url", "logoUrl"])),
-    nightLogoUrl: resolveMediaUrl(firstString(publicConfig, ["night_logo_url", "nightLogoUrl"])),
-    faviconUrl: resolveMediaUrl(firstString(publicConfig, ["favicon_url", "faviconUrl"])) || fallback.faviconUrl,
+    logoUrl: toSameOriginAssetPath(resolveMediaUrl(logoSource)),
+    nightLogoUrl: toSameOriginAssetPath(resolveMediaUrl(nightLogoSource)),
+    faviconUrl: toSameOriginAssetPath(resolveMediaUrl(faviconSource)) || fallback.faviconUrl,
   }
 })

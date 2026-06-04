@@ -14,10 +14,6 @@
         />
         <span v-else>{{ userInitials }}</span>
       </div>
-      <div class="user-menu__trigger-info">
-        <p class="user-menu__trigger-name">{{ currentUser?.name || "User" }}</p>
-        <p v-if="secondaryLabel" class="user-menu__trigger-role">{{ secondaryLabel }}</p>
-      </div>
       <Icon name="i-ph-caret-down-bold" class="user-menu__caret" :class="{ 'user-menu__caret--open': open }" />
     </button>
 
@@ -243,10 +239,13 @@ const systemActions = computed(() => {
 
 .user-menu__trigger {
   display: flex;
+  width: 82px;
+  height: 46px;
   align-items: center;
-  gap: 8px;
-  padding: 4px 10px 4px 4px;
-  border-radius: 999px;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 16px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
   cursor: pointer;
@@ -269,31 +268,6 @@ const systemActions = computed(() => {
   font-size: 11px;
   font-weight: 800;
   color: #ffffff;
-}
-
-.user-menu__trigger-info {
-  display: none;
-  text-align: left;
-}
-
-@media (min-width: 1280px) {
-  .user-menu__trigger-info {
-    display: block;
-  }
-}
-
-.user-menu__trigger-name {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #0f172a;
-  line-height: 1.2;
-}
-
-.user-menu__trigger-role {
-  font-size: 10.5px;
-  font-weight: 500;
-  color: #94a3b8;
-  line-height: 1.2;
 }
 
 .user-menu__caret {

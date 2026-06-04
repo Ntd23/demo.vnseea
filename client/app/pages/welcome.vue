@@ -1,3 +1,4 @@
+<!-- English description: Thin guest login route wrapper with noindex metadata and sanitized canonical URL. -->
 <template>
   <PagesWelcomePage />
 </template>
@@ -10,10 +11,9 @@ definePageMeta({
 })
 
 const { t } = useI18n()
-const route = useRoute()
 const requestURL = useRequestURL()
 
-const canonicalUrl = computed(() => new URL(route.fullPath || '/welcome', requestURL.origin).toString())
+const canonicalUrl = computed(() => new URL('/welcome', requestURL.origin).toString())
 
 useSeoMeta({
   title: () => t('pages.welcomePage.seoTitle'),

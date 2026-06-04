@@ -146,6 +146,7 @@ export default defineEventHandler(async (event) => {
   if (String(body.placeId || body.place_id || body.location?.placeId || "").trim()) {
     formData.append("page_place_id", String(body.placeId || body.place_id || body.location?.placeId || "").trim())
   }
+  formData.append("map_pin_requested", body.mapPinRequested === "1" || body.mapPinRequested === true ? "1" : "0")
   formData.append("company", String(body.ownerLabel || "").trim())
   appendOptionalUrl(formData, "website", body.website)
   formData.append("call_action_type", mapPageCtaInputToBackendId(body.ctaLabel) || "0")

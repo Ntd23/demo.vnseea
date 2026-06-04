@@ -36,15 +36,6 @@
 
       <div class="nearby-result-card__actions">
         <button
-          v-if="item.type === 'page'"
-          class="nearby-result-card__action"
-          type="button"
-          @click.stop="$emit('pin', item)"
-        >
-          {{ item.pinned ? "Bỏ ghim" : "Ghim" }}
-        </button>
-        <button
-          v-else
           class="nearby-result-card__action"
           type="button"
           @click.stop="$emit('focusOrigin')"
@@ -77,7 +68,6 @@ const props = defineProps<{
 defineEmits<{
   select: [item: NearbySearchItem]
   focusOrigin: []
-  pin: [item: NearbySearchItem]
   directions: [item: NearbySearchItem]
 }>()
 

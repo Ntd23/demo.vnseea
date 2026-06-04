@@ -1,3 +1,4 @@
+<!-- English description: Renders the shared community create form with optional page location and map pin request controls. -->
 <template>
   <div class="space-y-6">
     <div class="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
@@ -122,6 +123,14 @@
           />
         </UFormField>
 
+        <UCheckbox
+          v-if="showMapPinRequest"
+          v-model="mapPinRequestedModel"
+          label="Yêu cầu ghim trên bản đồ"
+          description="Admin sẽ duyệt trước khi tên trang hiển thị trực tiếp trên bản đồ tìm kiếm gần đây."
+          class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+        />
+
         <!-- Buttons -->
         <div class="flex items-center justify-between pt-8">
           <UButton
@@ -196,6 +205,7 @@ const props = withDefaults(defineProps<{
   descriptionPlaceholder?: string
   categoryLabel?: string
   showLocation?: boolean
+  showMapPinRequest?: boolean
   locationLabel?: string
   locationPlaceholder?: string
   locationHint?: string
@@ -215,6 +225,7 @@ const props = withDefaults(defineProps<{
   descriptionPlaceholder: "",
   categoryLabel: "",
   showLocation: false,
+  showMapPinRequest: false,
   locationLabel: "",
   locationPlaceholder: "",
   locationHint: "",
@@ -254,6 +265,13 @@ const locationModel = computed({
   get: () => normalizeLocationSelection(model.value.location ?? emptyLocationSelection()),
   set: (value) => {
     model.value.location = normalizeLocationSelection(value)
+  },
+})
+
+const mapPinRequestedModel = computed({
+  get: () => Boolean(model.value.mapPinRequested),
+  set: (value: boolean) => {
+    model.value.mapPinRequested = value
   },
 })
 

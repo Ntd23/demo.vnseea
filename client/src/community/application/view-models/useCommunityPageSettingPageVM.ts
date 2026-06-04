@@ -289,6 +289,7 @@ export function useCommunityPageSettingPageVM(
           ...restoredDraft,
           avatarUrl: baseDraft.avatarUrl,
           bannerUrl: baseDraft.bannerUrl,
+          mapPinStatus: baseDraft.mapPinStatus,
         }, true)
         isInitialized.value = true
         return
@@ -356,6 +357,8 @@ export function useCommunityPageSettingPageVM(
       responseLabel: (value.responseLabel || "").trim(),
       ownerLabel: (value.ownerLabel || "").trim(),
       tags: (value.tags || "").split(",").map(tag => tag.trim()).filter(Boolean).join(", "),
+      mapPinRequested: Boolean(value.mapPinRequested),
+      mapPinStatus: value.mapPinStatus ?? "none",
     }
   }
 

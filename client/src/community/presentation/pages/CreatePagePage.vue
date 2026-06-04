@@ -31,6 +31,7 @@
       :category-options="communityPageCategoryOptions"
       :show-privacy="false"
       show-location
+      show-map-pin-request
       :url-prefix="communityPageUrlPrefix"
       :name-label="$t('community.creation.page.nameLabel')"
       :name-placeholder="$t('community.creation.page.namePlaceholder')"

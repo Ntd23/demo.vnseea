@@ -1,4 +1,5 @@
 <?php
+// English description: Updates page profile data through the public API while preserving backend validation rules.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -18,6 +19,7 @@ if (empty($_POST['page_id'])) {
 }
 
 if (empty($error_code)) {
+    Wo_EnsurePageMapPinColumns();
 	$page = Wo_PageData($_POST['page_id']);
 	if (empty($page)) {
 		$error_code    = 2;
@@ -30,6 +32,10 @@ if (empty($error_code)) {
 		$escape = array('server_key');
 		if (isset($page_data['server_key'])) {
 			unset($page_data['server_key']);
+		}
+		$map_pin_requested = !empty($page_data['map_pin_requested']);
+		if (isset($page_data['map_pin_requested'])) {
+			unset($page_data['map_pin_requested']);
 		}
 		if (isset($page_data['page_place_id'])) {
 			$page_data['place_id'] = $page_data['page_place_id'];
@@ -177,6 +183,11 @@ if (empty($error_code)) {
             if (!empty($_POST['youtube'])) {
             	$page_data['youtube'] = Wo_Secure($_POST['youtube']);
             }
+
+            $page_data = array_merge(
+                $page_data,
+                Wo_GetPageMapPinRequestUpdateData($page, $page_data, $map_pin_requested)
+            );
 
             if (!empty($_POST['background_image_status'])) {
                 if ($_POST['background_image_status'] == 'defualt') {
