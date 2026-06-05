@@ -1,4 +1,4 @@
-<!-- Description: Renders the reels route as a fullscreen media viewer with feed-powered reactions, comments, sharing, and save controls. -->
+<!-- English description: Renders the reels route as a fullscreen media viewer with feed-powered reactions, comments, sharing, and save controls. -->
 <template>
   <div class="reels-page">
     <!-- Loading State -->
@@ -82,15 +82,18 @@
                     @mouseenter="openPostReactionTray"
                     @mouseleave="closePostReactionTray"
                   >
-                    <button
+                    <UButton
+                      type="button"
+                      color="info"
+                      variant="link"
                       class="reels-page__action-btn"
                       :class="{ 'reels-page__action-btn--active': liked }"
+                      :aria-label="t('pages.reelsPage.like')"
                       @click="handlePostReactionButtonClick"
                     >
                        <img v-if="selectedPostReaction" :src="activePostReactionAsset.src" class="h-8 w-8">
                        <Icon v-else name="i-ph-thumbs-up-bold" class="h-8 w-8" />
-                       <span class="reels-page__action-label">{{ likesCount }}</span>
-                    </button>
+                    </UButton>
 
                     <!-- Reaction Tray -->
                     <Transition
@@ -116,29 +119,55 @@
                </div>
 
                <div class="reels-page__action-item">
-                  <button class="reels-page__action-btn" @click="toggleComments">
+                  <UButton
+                    type="button"
+                    color="info"
+                    variant="link"
+                    class="reels-page__action-btn"
+                    :aria-label="t('pages.reelsPage.comment')"
+                    @click="toggleComments"
+                  >
                      <Icon name="i-ph-chat-circle-bold" class="h-8 w-8" />
-                     <span class="reels-page__action-label">{{ activeReel.stats.comments }}</span>
-                  </button>
+                  </UButton>
                </div>
 
                <div class="reels-page__action-item">
-                  <button class="reels-page__action-btn" @click="showShare = true">
+                  <UButton
+                    type="button"
+                    color="info"
+                    variant="link"
+                    class="reels-page__action-btn"
+                    :aria-label="t('pages.reelsPage.share')"
+                    @click="showShare = true"
+                  >
                      <Icon name="i-ph-share-fat-bold" class="h-8 w-8" />
-                     <span class="reels-page__action-label">{{ sharesCount }}</span>
-                  </button>
+                  </UButton>
                </div>
 
                <div class="reels-page__action-item">
-                  <button class="reels-page__action-btn" @click="handleMenuAction('save')">
+                  <UButton
+                    type="button"
+                    color="info"
+                    variant="link"
+                    class="reels-page__action-btn"
+                    :aria-label="t('pages.reelsPage.save')"
+                    @click="handleMenuAction('save')"
+                  >
                      <Icon name="i-ph-bookmark-simple-bold" class="h-8 w-8" />
-                  </button>
+                  </UButton>
                </div>
 
                <div class="reels-page__action-item">
-                  <button class="reels-page__action-btn" @click="handleMenuAction('report')">
+                  <UButton
+                    type="button"
+                    color="info"
+                    variant="link"
+                    class="reels-page__action-btn"
+                    :aria-label="t('pages.reelsPage.more')"
+                    @click="showOptions = true"
+                  >
                      <Icon name="i-ph-dots-three-bold" class="h-8 w-8" />
-                  </button>
+                  </UButton>
                </div>
             </div>
          </div>
@@ -152,6 +181,45 @@
         @close="showShare = false"
         @shared="handleShared"
       />
+
+      <UModal
+        v-model:open="showOptions"
+        :title="t('pages.reelsPage.optionsTitle')"
+        :ui="{ content: 'sm:max-w-[420px]' }"
+      >
+        <template #body>
+          <div class="reels-page__options">
+            <UButton
+              type="button"
+              color="error"
+              variant="soft"
+              size="lg"
+              block
+              icon="i-ph-flag-duotone"
+              class="justify-start rounded-xl"
+              @click="reportActiveReel"
+            >
+              <span class="reels-page__option-text">
+                <strong>{{ t("pages.reelsPage.report") }}</strong>
+              </span>
+            </UButton>
+          </div>
+        </template>
+
+        <template #footer>
+          <div class="flex w-full justify-end">
+            <UButton
+              type="button"
+              color="neutral"
+              variant="outline"
+              class="rounded-xl"
+              @click="showOptions = false"
+            >
+              {{ t("pages.reelsPage.cancel") }}
+            </UButton>
+          </div>
+        </template>
+      </UModal>
 
       <!-- Comment Bottom Sheet -->
       <Transition
@@ -178,9 +246,15 @@
               <div class="reels-page__sheet-title">
                  {{ t('pages.watchPage.commentsTitle') }} ({{ activeReel.stats.comments }})
               </div>
-              <button class="reels-page__sheet-close" @click="showComments = false">
-                 <Icon name="i-ph-x-bold" class="h-5 w-5" />
-              </button>
+              <UButton
+                type="button"
+                color="neutral"
+                variant="soft"
+                icon="i-ph-x-bold"
+                class="reels-page__sheet-close"
+                :aria-label="t('pages.reelsPage.close')"
+                @click="showComments = false"
+              />
            </header>
 
            <div class="reels-page__sheet-content scrollbar-hide">
@@ -231,6 +305,7 @@ import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue
 import { useReelsPageVM } from "../../application/view-models/useReelsPageVM"
 
 const { t } = useI18n()
+const showOptions = ref(false)
 const {
   loading,
   errorMessage,
@@ -269,6 +344,11 @@ const {
   handleMenuAction,
   toggleComments,
 } = useReelsPageVM()
+
+async function reportActiveReel() {
+  await handleMenuAction("report")
+  showOptions.value = false
+}
 
 useSeoMeta({
   title: () => t("pages.reelsPage.seoTitle"),
@@ -384,6 +464,7 @@ useSeoMeta({
 .reels-page__action-btn {
   width: 58px;
   height: 58px;
+  padding: 0 !important;
   border-radius: 50%;
   color: #ffffff;
   display: flex;
@@ -567,6 +648,33 @@ useSeoMeta({
   z-index: 100;
   pointer-events: auto;
   white-space: nowrap;
+}
+
+.reels-page__options {
+  display: grid;
+  gap: 12px;
+}
+
+.reels-page__option-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  text-align: left;
+}
+
+.reels-page__option-text strong {
+  color: #991b1b;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.reels-page__option-text small {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: normal;
 }
 
 .reels-page__reaction-option {
