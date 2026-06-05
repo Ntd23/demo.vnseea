@@ -25,7 +25,7 @@
 
         <main class="relative z-0 min-w-0 w-full" :class="mainClass">
           <ClientOnly>
-            <div v-if="showHeaderIconNav" class="sticky top-[56px] z-20 mb-4 mt-2 xl:hidden">
+            <div v-if="showHeaderIconNav" class="sticky top-15 z-20 mb-4 mt-2 xl:hidden">
               <div
                 class="overflow-hidden rounded-[1.4rem] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)]">
                 <NavigationHeaderIconNav />
