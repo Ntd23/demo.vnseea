@@ -7,105 +7,136 @@
         <span>
           <Icon name="i-ph-shopping-bag-open-fill" class="h-5 w-5" />
         </span>
-        <h1>Sửa sản phẩm</h1>
+        <h1>{{ $t("pages.editProductPage.badge") }}</h1>
       </div>
     </section>
 
     <form class="edit-product-form" @submit.prevent="submitProduct">
       <div class="edit-product-row edit-product-row--name-price">
-        <label class="edit-product-field">
-          <span>{{ $t("pages.productEditor.titleLabel") || "Tên" }}</span>
-          <input v-model="draft.fields.title" type="text">
-        </label>
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.titleLabel')">
+          <UInput
+            v-model="draft.fields.title"
+            class="w-full"
+            size="lg"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
 
-        <label class="edit-product-field">
-          <span>{{ $t("pages.productEditor.priceLabel") || "Giá" }}</span>
-          <input v-model="draft.fields.price" type="text" placeholder="0.00">
-        </label>
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.priceLabel')">
+          <UInput
+            v-model="draft.fields.price"
+            class="w-full"
+            size="lg"
+            placeholder="0.00"
+            inputmode="decimal"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
       </div>
 
-      <label class="edit-product-field">
-        <span>{{ $t("pages.productEditor.descriptionLabel") || "Mô tả" }}</span>
-        <textarea
+      <UFormField class="edit-product-field" :label="$t('pages.productEditor.descriptionLabel')">
+        <UTextarea
           v-model="draft.fields.description"
+          class="w-full"
           rows="4"
+          autoresize
           :placeholder="$t('pages.productEditor.descriptionPlaceholder')"
+          :ui="{ base: 'rounded-xl' }"
         />
-      </label>
+      </UFormField>
 
       <div class="edit-product-row edit-product-row--category">
-        <label class="edit-product-field">
-          <span>Loại</span>
-          <select v-model="draft.fields.category">
-            <option v-for="option in categoryOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.categoryLabel')">
+          <USelect
+            v-model="draft.fields.category"
+            class="w-full"
+            :items="categoryOptions"
+            value-key="value"
+            label-key="label"
+            size="lg"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
 
-        <label class="edit-product-field">
-          <span>Loại hình</span>
-          <select v-model="draft.fields.condition">
-            <option v-for="option in conditionOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.conditionLabel')">
+          <USelect
+            v-model="draft.fields.condition"
+            class="w-full"
+            :items="conditionOptions"
+            value-key="value"
+            label-key="label"
+            size="lg"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
       </div>
 
       <div class="edit-product-row edit-product-row--location">
-        <label class="edit-product-field">
-          <span>Địa điểm</span>
-          <input
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.locationLabel')">
+          <UInput
             v-model="draft.fields.location"
-            type="text"
+            class="w-full"
+            size="lg"
             :placeholder="$t('pages.productEditor.locationPlaceholder')"
-          >
-        </label>
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
 
-        <label class="edit-product-field">
-          <span>Tiền tệ</span>
-          <select v-model="draft.fields.currency">
-            <option v-for="option in currencyOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.currencyLabel')">
+          <USelect
+            v-model="draft.fields.currency"
+            class="w-full"
+            :items="currencyOptions"
+            value-key="value"
+            label-key="label"
+            size="lg"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
       </div>
 
       <div class="edit-product-row edit-product-row--stock">
-        <label class="edit-product-field">
-          <span>Tổng số đơn vị mặt hàng</span>
-          <input
+        <UFormField class="edit-product-field" :label="$t('pages.productEditor.stockLabel')">
+          <UInput
             v-model="stockInput"
-            type="text"
+            class="w-full"
+            size="lg"
             inputmode="numeric"
             pattern="[0-9]*"
             autocomplete="off"
+            :ui="{ base: 'h-11 rounded-xl' }"
             @input="hasTouchedStockInput = true"
-          >
-        </label>
+          />
+        </UFormField>
       </div>
 
       <div class="edit-product-media">
-        <label>Ảnh</label>
+        <label>{{ $t("pages.productEditor.mediaLabel") }}</label>
         <div class="edit-product-images">
-          <button
+          <UButton
             type="button"
+            color="neutral"
+            variant="soft"
             class="edit-product-upload"
+            icon="i-ph-camera-fill"
+            :aria-label="$t('pages.newProductPage.addImage')"
             @click="fileInput?.click()"
-          >
-            <Icon name="i-ph-camera-fill" class="h-7 w-7" />
-          </button>
+          />
 
           <span
             v-for="image in currentImages"
             :key="image.id"
             class="edit-product-thumb"
           >
-            <button type="button" @click="removeCurrentImage(image.id)">
-              <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
-            </button>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="solid"
+              size="xs"
+              icon="i-ph-x-bold"
+              class="edit-product-thumb__remove"
+              @click="removeCurrentImage(image.id)"
+            />
             <img :src="image.src" :alt="image.alt">
           </span>
 
@@ -114,9 +145,15 @@
             :key="preview.key"
             class="edit-product-thumb"
           >
-            <button type="button" @click="removeNewFile(preview.index)">
-              <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
-            </button>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="solid"
+              size="xs"
+              icon="i-ph-x-bold"
+              class="edit-product-thumb__remove"
+              @click="removeNewFile(preview.index)"
+            />
             <img :src="preview.src" :alt="preview.name">
           </span>
         </div>
@@ -131,13 +168,23 @@
       </div>
 
       <div class="edit-product-actions">
-        <NuxtLink to="/my-products" class="edit-product-back">
-          <Icon name="i-ph-arrow-left" class="h-4 w-4" />
-          Quay lại
-        </NuxtLink>
-        <button type="submit" class="edit-product-submit">
-          Lưu
-        </button>
+        <UButton
+          to="/my-products"
+          color="neutral"
+          variant="soft"
+          icon="i-ph-arrow-left"
+          class="edit-product-back"
+        >
+          {{ $t("pages.productEditor.back") }}
+        </UButton>
+        <UButton
+          type="submit"
+          color="primary"
+          icon="i-ph-floppy-disk-fill"
+          class="edit-product-submit"
+        >
+          {{ $t("pages.productEditor.save") }}
+        </UButton>
       </div>
     </form>
   </div>
@@ -413,10 +460,10 @@ onBeforeUnmount(() => {
 <style scoped>
 .edit-product-heading,
 .edit-product-form {
-  border: 1px solid #dbe3f2;
-  border-radius: 8px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 16px;
   background: #ffffff;
-  box-shadow: 0 2px 6px rgba(13, 38, 76, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .edit-product-heading {
@@ -439,14 +486,14 @@ onBeforeUnmount(() => {
   height: 32px;
   border-radius: 999px;
   color: #ffffff;
-  background: #0000ff;
+  background: linear-gradient(180deg, #2233ff 0%, var(--color-brand, #0000ff) 100%);
 }
 
 .edit-product-heading h1 {
   margin: 0;
-  color: #111827;
+  color: var(--text-primary, #0f172a);
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .edit-product-form {
@@ -478,45 +525,10 @@ onBeforeUnmount(() => {
   margin-bottom: 14px;
 }
 
-.edit-product-field span,
 .edit-product-media > label {
-  color: #555555;
+  color: var(--text-secondary, #334155);
   font-size: 13px;
-  font-weight: 800;
-}
-
-.edit-product-field input,
-.edit-product-field textarea,
-.edit-product-field select {
-  width: 100%;
-  border: 1px solid #dbe3f2;
-  border-radius: 4px;
-  outline: 0;
-  background: #ffffff;
-  color: #111827;
-  font-size: 15px;
-  font-weight: 500;
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
-}
-
-.edit-product-field input,
-.edit-product-field select {
-  height: 42px;
-  padding: 0 12px;
-}
-
-.edit-product-field textarea {
-  min-height: 112px;
-  resize: vertical;
-  padding: 12px;
-  line-height: 1.6;
-}
-
-.edit-product-field input:focus,
-.edit-product-field textarea:focus,
-.edit-product-field select:focus {
-  border-color: #0000ff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
+  font-weight: 700;
 }
 
 .edit-product-media {
@@ -540,8 +552,8 @@ onBeforeUnmount(() => {
   height: 92px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dbe3f2;
-  border-radius: 4px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 12px;
   background: #eef3fb;
 }
 
@@ -590,7 +602,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 7px;
   min-height: 40px;
-  border-radius: 4px;
+  border-radius: 12px;
   border: 0;
   cursor: pointer;
   padding: 0 16px;
@@ -606,7 +618,8 @@ onBeforeUnmount(() => {
 
 .edit-product-submit {
   color: #ffffff;
-  background: #0000ff;
+  background: linear-gradient(180deg, #2233ff 0%, var(--color-brand, #0000ff) 100%);
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
 }
 
 @media (max-width: 760px) {

@@ -17,18 +17,18 @@
     <div class="min-w-0 flex-1 space-y-4">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div class="min-w-0 space-y-1">
-          <p class="text-lg font-black text-secondary-900 tracking-tight group-hover:text-secondary-900 transition-colors">
-            {{ $t(item.name) }}
+          <p class="order-item-title text-lg font-black text-secondary-900 tracking-tight group-hover:text-secondary-900 transition-colors">
+            {{ displayOrderText(item.name) }}
           </p>
           <div class="flex items-center gap-2">
             <div class="h-1.5 w-1.5 rounded-full bg-primary-500" />
-            <p class="text-[11px] font-black uppercase tracking-widest text-secondary-400">
+            <p class="order-item-meta text-[11px] font-black uppercase tracking-widest text-secondary-400">
               {{ detailMetaText }}
             </p>
           </div>
         </div>
 
-        <p class="text-xl font-black text-secondary-900 tracking-tight">
+        <p class="order-item-price text-xl font-black text-secondary-900 tracking-tight">
           {{ formatOrderCurrency(item.price * item.quantity) }}
         </p>
       </div>
@@ -40,7 +40,7 @@
         </UBadge>
         <UBadge v-if="paymentMethod" color="white" variant="soft" class="rounded-lg bg-white ring-1 ring-secondary-100 px-3 py-1.5 font-black text-[10px] uppercase tracking-widest text-secondary-500 shadow-sm">
           <Icon name="i-ph-credit-card-duotone" class="mr-1.5 h-3.5 w-3.5" />
-          {{ $t(paymentMethod) }}
+          {{ displayOrderPaymentMethod(paymentMethod) }}
         </UBadge>
       </div>
     </div>
@@ -62,7 +62,7 @@
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
           <p class="truncate text-sm font-black text-secondary-900 group-hover:text-secondary-900 transition-colors">
-            {{ $t(item.name) }}
+            {{ displayOrderText(item.name) }}
           </p>
           <p class="text-[10px] font-black uppercase tracking-widest text-secondary-900">
             {{ $t("orders.card.qtyCompact", { count: item.quantity }) }}
@@ -79,6 +79,7 @@
 
 <script setup lang="ts">
 import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import { useOrderDisplayText } from "../../application/composables/useOrderDisplayText"
 import { orderItemFallbackBackground } from "../../application/composables/useOrderPresentation"
 import type { OrderItem } from "../../domain/types/orders.types"
 
@@ -96,6 +97,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t, locale } = useI18n()
+const { displayOrderPaymentMethod, displayOrderText } = useOrderDisplayText()
 
 const formatOrderCurrency = (value: number) =>
   formatCurrency(value, {
@@ -120,6 +122,7 @@ const detailMetaText = computed(() =>
 .order-item-article-detail {
   display: grid;
   gap: 24px;
+  min-width: 0;
 }
 
 .order-item-image-wrapper {
@@ -154,9 +157,46 @@ const detailMetaText = computed(() =>
   transform: scale(1.1);
 }
 
+.order-item-article-detail p {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 480px) {
+  .order-item-article-detail {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 12px !important;
+    border-radius: 14px;
+  }
+
+  .order-item-image-wrapper {
+    width: 88px !important;
+    height: 88px !important;
+    margin: 0;
+    border-radius: 12px;
+  }
+
+  .order-item-title {
+    font-size: 14px !important;
+    line-height: 1.2;
+  }
+
+  .order-item-meta {
+    font-size: 9px !important;
+    line-height: 1.25;
+    letter-spacing: 0.04em !important;
+  }
+
+  .order-item-price {
+    font-size: 15px !important;
+    line-height: 1.2;
+  }
+}
+
 @media (min-width: 768px) {
   .order-item-article-detail {
-    grid-template-columns: 140px 1fr;
+    grid-template-columns: 140px minmax(0, 1fr);
     align-items: start;
   }
 

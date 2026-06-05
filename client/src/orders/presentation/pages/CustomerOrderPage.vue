@@ -72,7 +72,7 @@
                   {{ order.shippingProvider }}
                 </p>
                 <p class="mt-2 text-[12px] text-slate-500">
-                  {{ $t("orders.detail.trackingCodeLabel", { code: $t(order.trackingCode) }) }}
+                  {{ $t("orders.detail.trackingCodeLabel", { code: displayOrderText(order.trackingCode) }) }}
                 </p>
               </div>
 
@@ -84,7 +84,7 @@
                   {{ formatOrderCurrency(order.payoutAmount) }}
                 </p>
                 <p class="mt-1 text-[13px] text-slate-500">
-                  {{ $t(order.payoutWindow) }}
+                  {{ displayOrderText(order.payoutWindow) }}
                 </p>
               </div>
             </div>
@@ -140,7 +140,7 @@
                       {{ $t("orders.summary.totalPayment") }}
                     </p>
                     <p class="mt-2 text-[14px] font-black text-[#243b63]">
-                    {{ $t(order.paymentMethod) }}
+                    {{ displayOrderPaymentMethod(order.paymentMethod) }}
                     </p>
                     <p class="mt-2 text-[13px] text-slate-500">
                       {{ order.paymentReference }}
@@ -158,7 +158,7 @@
                       {{ $t("orders.detail.estimatedWindow") }}
                     </p>
                     <p class="mt-2 text-[14px] font-black text-[#243b63]">
-                      {{ $t(order.deliveryWindow) }}
+                      {{ displayOrderText(order.deliveryWindow) }}
                     </p>
                     <p class="mt-2 text-[13px] text-slate-500">
                       {{ $t("orders.detail.buyer") }}: {{ order.buyerPhone }}
@@ -232,6 +232,7 @@
 import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CheckoutLayout from "../../../checkout/presentation/components/CheckoutLayout.vue"
+import { useOrderDisplayText } from "../../application/composables/useOrderDisplayText"
 import { useOrderPresentation } from "../../application/composables/useOrderPresentation"
 import { useSellerOrderDetailVM } from "../../application/view-models/useSellerOrderDetailVM"
 import {
@@ -256,6 +257,7 @@ const payoutMeta = computed(() =>
 )
 
 const { t, locale } = useI18n()
+const { displayOrderPaymentMethod, displayOrderText } = useOrderDisplayText()
 
 const formatOrderCurrency = (value: number) =>
   formatCurrency(value, {

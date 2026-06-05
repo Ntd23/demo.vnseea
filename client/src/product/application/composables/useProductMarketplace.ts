@@ -1,8 +1,8 @@
 // English description: Product marketplace view helpers aligned with the PHP Wowonder marketplace API.
 
-import { formatCurrency as formatSharedCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { watchDebounced } from "@vueuse/core"
+import { formatProductPrice } from "../formatters/product-currency"
 import type {
   ProductCategory,
   ProductDistanceValue,
@@ -122,20 +122,7 @@ export const useProductMarketplace = (
     selectedDistance.value !== "0" && productData.value?.distanceFilterAvailable === false,
   )
 
-  const formatProductCurrency = (product: ProductListing) => {
-    if (product.priceFormat) {
-      const symbol = product.currencySymbol?.trim()
-
-      return symbol ? `${symbol}${product.priceFormat}` : product.priceFormat
-    }
-
-    return formatSharedCurrency(product.price, {
-      currency: product.currency || "VND",
-      currencySymbol: product.currencySymbol,
-      currencyRule: product.currencyRule,
-      locale: locale.value,
-    })
-  }
+  const formatProductCurrency = (product: ProductListing) => formatProductPrice(product, locale.value)
 
   const formatDistance = (value: number) =>
     value > 0

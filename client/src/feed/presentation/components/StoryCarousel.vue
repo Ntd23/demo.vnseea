@@ -1,4 +1,4 @@
-<!-- Description: Displays real backend stories in the same rail-first order as the PHP home feed without mock reaction handlers. -->
+<!-- English description: Displays real backend stories in the same rail-first order as the PHP home feed without mock reaction handlers. -->
 <template>
   <div class="story-rail">
     <div
@@ -93,6 +93,7 @@
           >
             <video
               v-if="activeStoryIsVideo && activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
+              ref="activeVideoRef"
               :key="`video-${activeStoryData.id}`"
               :src="activeStoryData.media"
               :poster="activeStoryData.poster || undefined"
@@ -100,11 +101,11 @@
               autoplay
               muted
               playsinline
-              controls
               preload="metadata"
-              controlslist="nodownload"
               @ended="nextStory"
               @error="markStoryMediaFailed(activeStoryData?.id)"
+              @pause="syncActiveVideoPlaybackState"
+              @play="syncActiveVideoPlaybackState"
             />
             <NuxtImg
               v-else-if="activeStoryData?.media && !failedMediaStoryIds.has(activeStoryData.id)"
@@ -124,7 +125,7 @@
             </div>
             <div class="story-viewer__shade" />
 
-            <div class="story-viewer__progress">
+            <div v-if="!activeStoryIsVideo" class="story-viewer__progress">
               <div
                 v-for="(item, itemIndex) in storyQueue"
                 :key="`${item.id}-${itemIndex}`"
@@ -185,6 +186,18 @@
               :aria-label="$t('feed.storyCarousel.nextStory')"
               @click="nextStory"
             />
+
+            <button
+              v-if="activeStoryIsVideo"
+              class="story-viewer__video-toggle"
+              type="button"
+              :aria-label="activeVideoPaused ? 'Play story video' : 'Pause story video'"
+              @click.stop="toggleActiveVideoPlayback"
+            >
+              <span v-if="activeVideoPaused" class="story-viewer__video-toggle-indicator">
+                <Icon name="i-ph-play-fill" />
+              </span>
+            </button>
 
             <div class="story-viewer__footer">
               <!-- Caption block -->
@@ -303,12 +316,14 @@ const props = defineProps<{
 const {
   scrollRef,
   dialogRef,
+  activeVideoRef,
   replyInputRef,
   canScrollLeft,
   canScrollRight,
   activeStoryItemIndex,
   replyText,
   reactionTrayOpen,
+  activeVideoPaused,
   storyActionState,
   storyActionError,
   storyReactionOptions,
@@ -339,6 +354,8 @@ const {
   sendReply,
   nextStory,
   prevStory,
+  toggleActiveVideoPlayback,
+  syncActiveVideoPlaybackState,
   onStoryTouchStart,
   onStoryTouchEnd,
 } = useFeedStoryCarouselVM(toRef(props, "stories"))
@@ -558,6 +575,41 @@ const {
 .story-viewer__nav--next {
   right: 0;
   width: 33%;
+}
+
+.story-viewer__video-toggle {
+  position: absolute;
+  top: 78px;
+  right: 33%;
+  bottom: 86px;
+  left: 33%;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.story-viewer__video-toggle-indicator {
+  display: inline-flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.42);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px);
+}
+
+.story-viewer__video-toggle-indicator svg,
+.story-viewer__video-toggle-indicator :deep(svg) {
+  width: 30px;
+  height: 30px;
+  transform: translateX(2px);
 }
 
 .story-viewer__footer {

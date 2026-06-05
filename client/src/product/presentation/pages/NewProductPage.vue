@@ -7,120 +7,152 @@
         <span>
           <Icon name="i-ph-storefront-fill" class="h-5 w-5" />
         </span>
-        <h1>Tạo sản phẩm</h1>
+        <h1>{{ $t("pages.newProductPage.badge") }}</h1>
       </div>
     </section>
 
     <form class="new-product-form" @submit.prevent="submitProduct">
       <div class="new-product-row new-product-row--name-price">
-        <label class="new-product-field">
-          <span>Tên sản phẩm</span>
-          <input v-model="draft.fields.title" type="text" autocomplete="off">
-        </label>
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.titleLabel')">
+          <UInput
+            v-model="draft.fields.title"
+            class="w-full"
+            size="lg"
+            autocomplete="off"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
 
-        <label class="new-product-field">
-          <span>Giá bán</span>
-          <input v-model="draft.fields.price" type="text" inputmode="decimal" placeholder="0.00">
-        </label>
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.priceLabel')">
+          <UInput
+            v-model="draft.fields.price"
+            class="w-full"
+            size="lg"
+            inputmode="decimal"
+            placeholder="0.00"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
       </div>
 
-      <label class="new-product-field">
-        <span>Mô tả sản phẩm</span>
-        <textarea
+      <UFormField class="new-product-field" :label="$t('pages.productEditor.descriptionLabel')">
+        <UTextarea
           v-model="draft.fields.description"
+          class="w-full"
           rows="4"
-          placeholder="Mô tả sản phẩm"
+          autoresize
+          :placeholder="$t('pages.productEditor.descriptionPlaceholder')"
+          :ui="{ base: 'rounded-xl' }"
         />
-      </label>
+      </UFormField>
 
       <div class="new-product-row new-product-row--category">
-        <label class="new-product-field">
-          <span>Loại</span>
-          <select v-model="draft.fields.category" :disabled="categoryOptions.length === 0">
-            <option v-if="categoryOptions.length === 0" value="">
-              Không có danh mục
-            </option>
-            <option v-for="option in categoryOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.categoryLabel')">
+          <USelect
+            v-model="draft.fields.category"
+            class="w-full"
+            :items="categoryOptions"
+            value-key="value"
+            label-key="label"
+            size="lg"
+            :disabled="categoryOptions.length === 0"
+            :placeholder="$t('pages.productEditor.emptyCategory')"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
 
-        <label class="new-product-field">
-          <span>Loại hình</span>
-          <select v-model="draft.fields.condition">
-            <option v-for="option in conditionOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.conditionLabel')">
+          <USelect
+            v-model="draft.fields.condition"
+            class="w-full"
+            :items="conditionOptions"
+            value-key="value"
+            label-key="label"
+            size="lg"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
       </div>
 
       <div v-if="subCategoryOptions.length > 0" class="new-product-row new-product-row--stock">
-        <label class="new-product-field">
-          <span>Danh mục con</span>
-          <select v-model="selectedSubCategory">
-            <option v-for="option in subCategoryOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.subCategoryLabel')">
+          <USelect
+            v-model="selectedSubCategory"
+            class="w-full"
+            :items="subCategoryOptions"
+            value-key="value"
+            label-key="label"
+            size="lg"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
       </div>
 
       <div class="new-product-row new-product-row--location">
-        <label class="new-product-field">
-          <span>Địa điểm</span>
-          <input
-            v-model="draft.fields.location"
-            type="text"
-            autocomplete="off"
-            placeholder="Địa điểm"
-          >
-        </label>
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.locationLabel')">
+          <GooglePlaceField
+            v-model="locationModel"
+            :helper-text="$t('pages.productEditor.locationHelper')"
+            require-coordinates
+            :placeholder="$t('pages.productEditor.locationPlaceholder')"
+          />
+        </UFormField>
 
-        <label class="new-product-field">
-          <span>Tiền tệ</span>
-          <select v-model="draft.fields.currency">
-            <option v-for="option in currencyOptions" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </option>
-          </select>
-        </label>
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.currencyLabel')">
+          <USelect
+            v-model="draft.fields.currency"
+            class="w-full"
+            :items="currencyOptions"
+            value-key="value"
+            label-key="label"
+            size="lg"
+            :ui="{ base: 'h-11 rounded-xl' }"
+          />
+        </UFormField>
       </div>
 
       <div class="new-product-row new-product-row--stock">
-        <label class="new-product-field">
-          <span>Tổng số đơn vị mặt hàng</span>
-          <input
+        <UFormField class="new-product-field" :label="$t('pages.productEditor.stockLabel')">
+          <UInput
             v-model="stockInput"
-            type="text"
+            class="w-full"
+            size="lg"
             inputmode="numeric"
             pattern="[0-9]*"
             autocomplete="off"
+            :ui="{ base: 'h-11 rounded-xl' }"
             @input="hasTouchedStockInput = true"
-          >
-        </label>
+          />
+        </UFormField>
       </div>
 
       <div class="new-product-media">
-        <label>Hình ảnh</label>
+        <label>{{ $t("pages.productEditor.mediaLabel") }}</label>
         <div class="new-product-images">
-          <button
+          <UButton
             type="button"
+            color="neutral"
+            variant="soft"
             class="new-product-upload"
+            icon="i-ph-camera-fill"
+            :aria-label="$t('pages.newProductPage.addImage')"
             @click="fileInput?.click()"
-          >
-            <Icon name="i-ph-camera-fill" class="h-7 w-7" />
-          </button>
+          />
 
           <span
             v-for="preview in newFilePreviews"
             :key="preview.key"
             class="new-product-thumb"
           >
-            <button type="button" @click="removeNewFile(preview.index)">
-              <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
-            </button>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="solid"
+              size="xs"
+              icon="i-ph-x-bold"
+              class="new-product-thumb__remove"
+              @click="removeNewFile(preview.index)"
+            />
             <img :src="preview.src" :alt="preview.name">
           </span>
         </div>
@@ -135,13 +167,25 @@
       </div>
 
       <div class="new-product-actions">
-        <NuxtLink to="/my-products" class="new-product-back">
-          <Icon name="i-ph-arrow-left" class="h-4 w-4" />
-          Quay lại
-        </NuxtLink>
-        <button type="submit" class="new-product-submit" :disabled="isSubmitting">
-          {{ isSubmitting ? "Đang đăng..." : "Đăng" }}
-        </button>
+        <UButton
+          to="/my-products"
+          color="neutral"
+          variant="soft"
+          icon="i-ph-arrow-left"
+          class="new-product-back"
+        >
+          {{ $t("pages.productEditor.back") }}
+        </UButton>
+        <UButton
+          type="submit"
+          color="primary"
+          icon="i-ph-paper-plane-tilt-fill"
+          class="new-product-submit"
+          :loading="isSubmitting"
+          :disabled="isSubmitting"
+        >
+          {{ isSubmitting ? $t("pages.productEditor.submitting") : $t("pages.newProductPage.submitCta") }}
+        </UButton>
       </div>
     </form>
   </div>
@@ -151,7 +195,15 @@
 import type { ProductEditorDraft } from "../../domain/types/product-editor.types"
 import type { ProductCategoryOption, ProductSubCategoryOption } from "../../domain/types/product-marketplace.types"
 import { watchDebounced } from "@vueuse/core"
+import GooglePlaceField from "../../../location/presentation/components/GooglePlaceField.vue"
+import {
+  emptyLocationSelection,
+  hasLocationCoordinates,
+  normalizeLocationSelection,
+  type LocationSelection,
+} from "../../../location/domain/types/location.types"
 import { useProductEditorDraft } from "../../application/composables/useProductEditorDraft"
+import { useProductEditorMeta } from "../../application/composables/useProductEditorMeta"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 import { useNuxtApiClient } from "../../../shared-kernel/infrastructure/http/nuxt-api-client"
 
@@ -162,6 +214,7 @@ type FilePreview = {
   src: string
 }
 
+const { t } = useI18n()
 const toast = useToast()
 const productRepository = createApiProductRepository()
 const apiClient = useNuxtApiClient()
@@ -172,17 +225,12 @@ const selectedSubCategory = ref("")
 const isSubmitting = ref(false)
 const stockInput = ref("")
 const hasTouchedStockInput = ref(false)
+const productLocationSelection = ref<LocationSelection>(emptyLocationSelection())
 
-const conditionOptions = [
-  { label: "Mới", value: "new" },
-  { label: "Đã sử dụng", value: "used" },
-] as const
-
-const currencyOptions = [
-  { label: "VND (đ)", value: "VND" },
-  { label: "USD ($)", value: "USD" },
-  { label: "EUR (€)", value: "EUR" },
-] as const
+const {
+  conditionOptions,
+  currencyOptions,
+} = useProductEditorMeta()
 
 const createInitialDraft = (): ProductEditorDraft => ({
   mode: "create",
@@ -202,6 +250,27 @@ const createInitialDraft = (): ProductEditorDraft => ({
 
 const { draft, markSaved, resetDraft } = useProductEditorDraft("product-editor:create", createInitialDraft())
 stockInput.value = draft.value.fields.stock
+productLocationSelection.value = normalizeLocationSelection({ address: draft.value.fields.location })
+
+const locationModel = computed({
+  get: () => productLocationSelection.value,
+  set: (value: LocationSelection) => {
+    const normalized = normalizeLocationSelection(value)
+    productLocationSelection.value = normalized
+    draft.value.fields.location = normalized.address
+  },
+})
+
+watch(
+  () => draft.value.fields.location,
+  (value) => {
+    if (value === productLocationSelection.value.address) {
+      return
+    }
+
+    productLocationSelection.value = normalizeLocationSelection({ address: value })
+  },
+)
 
 const { data: marketplaceData } = useAsyncData(
   "product:create:categories",
@@ -354,8 +423,17 @@ const validateForm = () => {
 
   if (!fields.title.trim() || !fields.description.trim() || !fields.location.trim() || !fields.category) {
     toast.add({
-      title: "Thiếu thông tin sản phẩm",
-      description: "Vui lòng nhập tên, mô tả, danh mục và địa điểm.",
+      title: t("pages.productEditor.validationMissingTitle"),
+      description: t("pages.productEditor.validationMissingDescription"),
+      color: "error",
+    })
+    return false
+  }
+
+  if (!hasLocationCoordinates(productLocationSelection.value)) {
+    toast.add({
+      title: t("pages.productEditor.validationLocationTitle"),
+      description: t("pages.productEditor.validationLocationDescription"),
       color: "error",
     })
     return false
@@ -363,8 +441,8 @@ const validateForm = () => {
 
   if (!Number.isFinite(price) || price <= 0) {
     toast.add({
-      title: "Giá bán không hợp lệ",
-      description: "Giá bán phải là số lớn hơn 0.",
+      title: t("pages.productEditor.validationPriceTitle"),
+      description: t("pages.productEditor.validationPriceDescription"),
       color: "error",
     })
     return false
@@ -372,8 +450,8 @@ const validateForm = () => {
 
   if (newFiles.value.length === 0) {
     toast.add({
-      title: "Chưa có hình ảnh",
-      description: "Vui lòng chọn ít nhất một ảnh sản phẩm.",
+      title: t("pages.productEditor.validationImageTitle"),
+      description: t("pages.productEditor.validationImageDescription"),
       color: "error",
     })
     return false
@@ -418,13 +496,14 @@ const submitProduct = async () => {
     markSaved()
     resetDraft(createInitialDraft())
     stockInput.value = ""
+    productLocationSelection.value = emptyLocationSelection()
     newFiles.value = []
     revokePreviews()
     if (fileInput.value) {
       fileInput.value.value = ""
     }
     toast.add({
-      title: "Đã đăng sản phẩm",
+      title: t("pages.newProductPage.createSuccessTitle"),
       color: "success",
     })
 
@@ -432,7 +511,7 @@ const submitProduct = async () => {
   }
   catch (error) {
     toast.add({
-      title: "Không thể đăng sản phẩm",
+      title: t("pages.newProductPage.createErrorTitle"),
       description: error instanceof Error ? error.message : String(error),
       color: "error",
     })
@@ -450,10 +529,10 @@ onBeforeUnmount(() => {
 <style scoped>
 .new-product-heading,
 .new-product-form {
-  border: 1px solid #dbe3f2;
-  border-radius: 8px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 16px;
   background: #ffffff;
-  box-shadow: 0 2px 6px rgba(13, 38, 76, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .new-product-heading {
@@ -476,14 +555,14 @@ onBeforeUnmount(() => {
   height: 32px;
   border-radius: 999px;
   color: #ffffff;
-  background: #0000ff;
+  background: linear-gradient(180deg, #2233ff 0%, var(--color-brand, #0000ff) 100%);
 }
 
 .new-product-heading h1 {
   margin: 0;
-  color: #111827;
+  color: var(--text-primary, #0f172a);
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .new-product-form {
@@ -515,50 +594,10 @@ onBeforeUnmount(() => {
   margin-bottom: 14px;
 }
 
-.new-product-field span,
 .new-product-media > label {
-  color: #555555;
+  color: var(--text-secondary, #334155);
   font-size: 13px;
-  font-weight: 800;
-}
-
-.new-product-field input,
-.new-product-field textarea,
-.new-product-field select {
-  width: 100%;
-  border: 1px solid #dbe3f2;
-  border-radius: 4px;
-  outline: 0;
-  background: #ffffff;
-  color: #111827;
-  font-size: 15px;
-  font-weight: 500;
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
-}
-
-.new-product-field input,
-.new-product-field select {
-  height: 42px;
-  padding: 0 12px;
-}
-
-.new-product-field textarea {
-  min-height: 112px;
-  resize: vertical;
-  padding: 12px;
-  line-height: 1.6;
-}
-
-.new-product-field input:focus,
-.new-product-field textarea:focus,
-.new-product-field select:focus {
-  border-color: #0000ff;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.08);
-}
-
-.new-product-field select:disabled {
-  color: #8a9bb2;
-  background: #f4f7fb;
+  font-weight: 700;
 }
 
 .new-product-media {
@@ -582,8 +621,8 @@ onBeforeUnmount(() => {
   height: 92px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dbe3f2;
-  border-radius: 4px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 12px;
   background: #eef3fb;
 }
 
@@ -632,7 +671,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 7px;
   min-height: 40px;
-  border-radius: 4px;
+  border-radius: 12px;
   border: 0;
   cursor: pointer;
   padding: 0 16px;
@@ -649,7 +688,8 @@ onBeforeUnmount(() => {
 .new-product-submit {
   min-width: 124px;
   color: #ffffff;
-  background: #0000ff;
+  background: linear-gradient(180deg, #2233ff 0%, var(--color-brand, #0000ff) 100%);
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
 }
 
 .new-product-submit:disabled {
