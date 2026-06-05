@@ -35,7 +35,7 @@
           {{ $t("orders.card.items", { count: totalItems }) }}
         </UBadge>
         <UBadge color="white" variant="soft" size="lg" class="rounded-xl border border-secondary-100 bg-secondary-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-secondary-500 shadow-sm transition-all hover:border-primary-100 hover:bg-white hover:text-primary-600">
-          {{ $t(order.paymentMethod) }}
+          {{ displayOrderPaymentMethod(order.paymentMethod) }}
         </UBadge>
       </div>
     </div>
@@ -50,7 +50,7 @@
               {{ $t("orders.card.productsInOrder") }}
             </p>
             <p class="text-[11px] font-semibold text-slate-400 transition-colors group-hover/section:text-secondary-900">
-              {{ $t(order.deliveryWindow) }}
+              {{ displayOrderText(order.deliveryWindow) }}
             </p>
           </div>
 
@@ -156,6 +156,7 @@ import {
   getRepeatOrderActionLabel,
   useOrderPresentation,
 } from "../../application/composables/useOrderPresentation"
+import { useOrderDisplayText } from "../../application/composables/useOrderDisplayText"
 import type { BuyerOrder } from "../../domain/types/orders.types"
 import OrdersOrderItemCard from "./OrderItemCard.vue"
 import OrdersOrderPriceSummary from "./OrderPriceSummary.vue"
@@ -165,6 +166,7 @@ const props = defineProps<{
 }>()
 
 const { statusMeta, totalItems, activeProgressStep } = useOrderPresentation(computed(() => props.order))
+const { displayOrderPaymentMethod, displayOrderText } = useOrderDisplayText()
 
 const progressSteps = [
   {

@@ -19,7 +19,7 @@
           </p>
           <div class="flex flex-col gap-2">
             <p class="text-sm font-black text-secondary-900 group-hover/info:text-secondary-900 transition-colors">
-              {{ $t(order.paymentMethod) }}
+              {{ displayOrderPaymentMethod(order.paymentMethod) }}
             </p>
             <div class="flex flex-wrap items-center gap-3">
               <UBadge
@@ -56,7 +56,7 @@
             </div>
             <div class="space-y-1">
               <p class="text-[11px] font-semibold text-secondary-500 leading-relaxed italic">
-                {{ $t(order.payoutWindow) }}
+                {{ displayOrderText(order.payoutWindow) }}
               </p>
               <p class="text-[10px] font-bold text-secondary-400 uppercase tracking-widest">
                 ID: {{ order.payoutReference }}
@@ -77,7 +77,7 @@
             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary-50 border border-secondary-100">
               <Icon name="i-ph-package-duotone" class="h-3.5 w-3.5 text-secondary-400" />
               <p class="text-[10px] font-black text-secondary-600 uppercase tracking-widest">
-                {{ $t(order.trackingCode) }}
+                {{ displayOrderText(order.trackingCode) }}
               </p>
             </div>
           </div>
@@ -134,6 +134,7 @@
 <script setup lang="ts">
 import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+import { useOrderDisplayText } from "../../application/composables/useOrderDisplayText"
 import { useOrderPresentation } from "../../application/composables/useOrderPresentation"
 import {
   sellerOrderPayoutStatusMeta,
@@ -147,6 +148,7 @@ const props = defineProps<{
 
 const { paymentMeta } = useOrderPresentation(computed(() => props.order))
 const { locale } = useI18n()
+const { displayOrderPaymentMethod, displayOrderText } = useOrderDisplayText()
 
 const formatOrderCurrency = (value: number) =>
   formatCurrency(value, {

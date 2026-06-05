@@ -1,10 +1,9 @@
 <!-- English description: Wowonder-parity marketplace product listing page backed by PHP product APIs. -->
 
 <template>
-  <div class="mx-auto max-w-[1180px] px-3 pb-16 sm:px-4">
+  <div class="products-page mx-auto max-w-[1180px] px-3 pb-16 sm:px-4">
     <section
-      class="relative overflow-hidden rounded-b-[10px] text-white"
-      style="background: linear-gradient(180deg, #2437ff 0%, #0700f5 100%);"
+      class="products-hero relative overflow-hidden text-white"
     >
       <div class="absolute inset-x-0 bottom-0 h-16 bg-white/10" />
       <div class="relative mx-auto flex min-h-[190px] flex-col items-center justify-center px-4 py-8 text-center">
@@ -18,8 +17,7 @@
 
         <NuxtLink
           to="/my-products"
-          class="mt-5 inline-flex h-10 items-center justify-center rounded-[4px] bg-white px-4 text-[13px] font-semibold shadow-sm transition hover:bg-slate-50"
-          style="color: #0700f5;"
+          class="products-hero__link mt-5 inline-flex h-10 items-center justify-center bg-white px-4 text-[13px] font-semibold shadow-sm transition hover:bg-slate-50"
         >
           <Icon name="i-ph-shopping-bag-open-fill" class="mr-2 h-5 w-5" />
           {{ $t("pages.productsPage.myProducts") }}
@@ -27,14 +25,14 @@
       </div>
     </section>
 
-    <section class="-mt-5 rounded-[6px] border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+    <section class="products-filter -mt-5 border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
       <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_160px_180px_180px_210px_auto] lg:items-center">
         <UInput
           v-model="search"
           icon="i-ph-magnifying-glass"
           size="lg"
           :placeholder="$t('pages.productsPage.searchPlaceholder')"
-          :ui="{ base: 'h-11 rounded-[4px] bg-white text-[14px]' }"
+          :ui="{ base: 'h-11 rounded-xl bg-white text-[14px]' }"
         />
 
         <USelect
@@ -43,7 +41,7 @@
           value-key="value"
           label-key="label"
           size="lg"
-          :ui="{ base: 'h-11 rounded-[4px] text-[13px]' }"
+          :ui="{ base: 'h-11 rounded-xl text-[13px]' }"
         />
 
         <USelect
@@ -52,7 +50,7 @@
           value-key="value"
           label-key="label"
           size="lg"
-          :ui="{ base: 'h-11 rounded-[4px] text-[13px]' }"
+          :ui="{ base: 'h-11 rounded-xl text-[13px]' }"
         />
 
         <USelect
@@ -62,14 +60,14 @@
           value-key="value"
           label-key="label"
           size="lg"
-          :ui="{ base: 'h-11 rounded-[4px] text-[13px]' }"
+          :ui="{ base: 'h-11 rounded-xl text-[13px]' }"
         />
         <div
           v-else
           class="hidden lg:block"
         />
 
-        <div class="rounded-[4px] border border-slate-200 bg-slate-50 px-3 py-2">
+        <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
           <div class="flex items-center justify-between gap-3 text-[12px] font-semibold text-slate-600">
             <span>{{ $t("pages.productsPage.locationDistance") }}</span>
             <span>{{ distanceRange }} km</span>
@@ -79,7 +77,7 @@
             type="range"
             min="0"
             max="300"
-            class="mt-2 w-full accent-[#1f7aec]"
+            class="products-filter__range mt-2 w-full"
             @change="applyDistance"
           >
         </div>
@@ -88,7 +86,7 @@
           color="neutral"
           variant="soft"
           size="lg"
-          class="h-11 justify-center rounded-[4px] text-[13px] font-semibold"
+          class="h-11 justify-center rounded-xl text-[13px] font-semibold"
           icon="i-ph-arrow-counter-clockwise"
           @click="resetFilters"
         >
@@ -113,9 +111,9 @@
       <div
         v-for="index in 8"
         :key="index"
-        class="rounded-[5px] border border-slate-200 bg-white p-3"
+        class="rounded-2xl border border-slate-200 bg-white p-3"
       >
-        <USkeleton class="aspect-square rounded-[4px]" />
+        <USkeleton class="aspect-square rounded-xl" />
         <USkeleton class="mt-3 h-4 w-4/5 rounded-full" />
         <USkeleton class="mt-2 h-5 w-1/2 rounded-full" />
       </div>
@@ -197,8 +195,7 @@
             <button
               v-if="!product.mine"
               type="button"
-              class="market-product-action-btn inline-flex items-center justify-center text-white transition disabled:opacity-60"
-              style="background: linear-gradient(180deg, #2437ff 0%, #0700f5 100%);"
+              class="market-product-action-btn market-product-action-primary inline-flex items-center justify-center text-white transition disabled:opacity-60"
               :title="$t('pages.productsPage.addToCart')"
               :disabled="!product.canAddToCart || cartLoadingProductId === product.id"
               @click="addToCart(product.id)"
@@ -216,10 +213,7 @@
           >
             {{ product.title }}
           </NuxtLink>
-          <div
-            class="mt-2 text-[18px] font-bold"
-            style="color: #0700f5;"
-          >
+          <div class="market-product-price mt-2 text-[18px] font-bold">
             {{ formatProductCurrency(product) }}
           </div>
           <div class="mt-2 flex items-center justify-between gap-2 text-[12px] font-medium text-slate-500">
@@ -240,7 +234,7 @@
 
     <div
       v-else
-      class="mt-4 rounded-[5px] border border-slate-200 bg-white px-6 py-14 text-center text-slate-500"
+      class="mt-4 rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center text-slate-500"
     >
       <Icon name="i-ph-shopping-bag-open" class="mx-auto h-10 w-10" />
       <p class="mt-3 text-[15px] font-semibold">
@@ -256,7 +250,7 @@
         color="neutral"
         variant="outline"
         size="lg"
-        class="rounded-[4px] px-6 text-[13px] font-semibold"
+        class="rounded-xl px-6 text-[13px] font-semibold"
         icon="i-ph-arrow-down"
         :loading="isLoadingMore"
         @click="loadMore"
@@ -306,12 +300,39 @@ const {
 </script>
 
 <style scoped>
+.products-page {
+  --product-brand: var(--color-brand, #0000ff);
+  --product-brand-gradient: linear-gradient(180deg, #2233ff 0%, var(--product-brand) 100%);
+}
+
+.products-hero {
+  border-radius: 0 0 16px 16px;
+  background: var(--product-brand-gradient);
+}
+
+.products-hero__link {
+  border-radius: 12px;
+  color: var(--product-brand);
+}
+
+.products-filter {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.products-filter__range {
+  accent-color: var(--product-brand);
+}
+
 .market-product-card {
-  transition: box-shadow 0.2s linear;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .market-product-card:hover {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
 }
 
 .market-product-overlay {
@@ -336,6 +357,10 @@ const {
     background-color 0.2s ease,
     color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+.market-product-price {
+  color: var(--product-brand);
 }
 
 .market-product-more:hover {
@@ -367,5 +392,9 @@ const {
 
 .market-product-action-muted:hover {
   background-color: #d3dbe7;
+}
+
+.market-product-action-primary {
+  background: var(--product-brand-gradient);
 }
 </style>

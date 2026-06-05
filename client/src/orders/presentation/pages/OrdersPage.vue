@@ -2,21 +2,6 @@
 
 <template>
   <div class="market-orders-page mx-auto w-full max-w-[1520px] px-3 pb-12 pt-4 sm:px-4">
-    <section class="market-orders-heading">
-      <div class="market-orders-heading__inner">
-        <span class="market-orders-heading__icon">
-          <Icon name="i-ph-storefront-fill" class="h-5 w-5" />
-        </span>
-        <div>
-          <p class="market-orders-heading__eyebrow">
-            {{ $t("pages.myProductsPage.eyebrow") }}
-          </p>
-          <h1 class="market-orders-heading__title">
-            {{ pageTitle }}
-          </h1>
-        </div>
-      </div>
-    </section>
 
     <section class="market-orders-nav">
       <nav class="market-orders-tabs" aria-label="Marketplace sections">
@@ -34,27 +19,37 @@
     </section>
 
     <section class="market-orders-filter">
-      <label class="market-orders-search">
-        <Icon name="i-ph-magnifying-glass" class="h-5 w-5 text-[#8b9bb2]" />
-        <input
-          v-model="search"
-          type="search"
-          :placeholder="$t('orders.filter.placeholder')"
-        >
-      </label>
+      <UInput
+        v-model="search"
+        type="search"
+        icon="i-ph-magnifying-glass"
+        size="lg"
+        :placeholder="$t('orders.filter.placeholder')"
+        :ui="{ base: 'h-11 rounded-xl' }"
+      />
 
-      <div class="market-orders-filter__buttons">
-        <button
-          v-for="filter in filters"
-          :key="filter.key"
-          type="button"
-          class="market-orders-filter__button"
-          :class="{ 'market-orders-filter__button--active': activeFilter === filter.key }"
-          @click="activeFilter = filter.key"
+      <div class="market-orders-filter__status">
+        <UDropdownMenu
+          :items="filterMenuItems"
+          :content="{ align: 'start', sideOffset: 8, collisionPadding: 12 }"
+          :ui="{
+            content: 'w-[var(--reka-dropdown-menu-trigger-width)] min-w-[var(--reka-dropdown-menu-trigger-width)] max-h-[min(18rem,calc(100vh-11rem))] overflow-y-auto',
+            item: 'min-h-11',
+            itemLabel: 'text-sm font-semibold',
+          }"
         >
-          {{ $t(filter.label) }}
-          <span>{{ filter.count }}</span>
-        </button>
+          <UButton
+            color="neutral"
+            variant="outline"
+            size="lg"
+            class="market-orders-filter__trigger"
+            trailing-icon="i-ph-caret-down-bold"
+          >
+            <Icon name="i-ph-funnel-simple-duotone" class="h-5 w-5" />
+            <span>{{ selectedFilterLabel }}</span>
+            <span class="market-orders-filter__count">{{ selectedFilterCount }}</span>
+          </UButton>
+        </UDropdownMenu>
       </div>
     </section>
 
@@ -117,7 +112,7 @@
             <div class="market-order-card__meta">
               <span>{{ order.placedAt }}</span>
               <span>{{ $t("orders.card.items", { count: totalItems(order) }) }}</span>
-              <span>{{ $t(order.paymentMethod) }}</span>
+              <span>{{ displayOrderPaymentMethod(order.paymentMethod) }}</span>
             </div>
 
             <div class="market-order-card__items">
@@ -125,7 +120,7 @@
                 v-for="item in order.items.slice(0, 3)"
                 :key="item.id"
               >
-                {{ $t(item.name) }} x{{ item.quantity }}
+                {{ displayOrderText(item.name) }} x{{ item.quantity }}
               </span>
             </div>
           </div>
@@ -150,6 +145,7 @@
 <script setup lang="ts">
 import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+import { useOrderDisplayText } from "../../application/composables/useOrderDisplayText"
 import { orderItemFallbackBackground } from "../../application/composables/useOrderPresentation"
 import { useOrdersPageVM } from "../../application/view-models/useOrdersPageVM"
 import { buyerOrderStatusMeta, type BuyerOrder } from "../../domain/types/orders.types"
@@ -161,6 +157,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t, locale } = useI18n()
+const { displayOrderPaymentMethod, displayOrderText } = useOrderDisplayText()
 
 useSeoMeta({
   title: t("orders.page.title"),
@@ -180,6 +177,27 @@ const pageTitle = computed(() =>
   props.activeSection === "purchased"
     ? t("pages.myProductsPage.purchased")
     : t("pages.myProductsPage.orders"),
+)
+
+const selectedFilter = computed(() =>
+  filters.value.find(filter => filter.key === activeFilter.value) ?? filters.value[0],
+)
+
+const selectedFilterLabel = computed(() =>
+  selectedFilter.value ? t(selectedFilter.value.label) : t("orders.filter.all"),
+)
+
+const selectedFilterCount = computed(() => selectedFilter.value?.count ?? 0)
+
+const filterMenuItems = computed(() =>
+  filters.value.map(filter => ({
+    label: t(filter.label),
+    icon: filter.key === activeFilter.value ? "i-ph-check-circle-fill" : "i-ph-circle",
+    kbds: [String(filter.count)],
+    onSelect: () => {
+      activeFilter.value = filter.key
+    },
+  })),
 )
 
 const storeTabs = computed(() => [
@@ -203,7 +221,7 @@ const storeTabs = computed(() => [
   },
   {
     label: t("pages.myProductsPage.marketplace"),
-    to: appRoutes.products,
+    to: appRoutes.searchNearby,
     icon: "i-ph-planet",
     active: false,
   },
@@ -275,6 +293,7 @@ const formatOrderCurrency = (value: number) =>
 }
 
 .market-orders-nav {
+  position: relative;
   display: flex;
   min-height: 74px;
   align-items: center;
@@ -288,6 +307,25 @@ const formatOrderCurrency = (value: number) =>
   gap: 8px;
   min-width: 0;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 7px;
+  scrollbar-color: #9eb1cc transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.market-orders-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.market-orders-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.market-orders-tabs::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #9eb1cc;
 }
 
 .market-orders-tab {
@@ -304,6 +342,7 @@ const formatOrderCurrency = (value: number) =>
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
+  scroll-snap-align: start;
   transition: color 0.16s ease, background 0.16s ease;
 }
 
@@ -335,71 +374,34 @@ const formatOrderCurrency = (value: number) =>
 
 .market-orders-filter {
   display: grid;
-  grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+  grid-template-columns: minmax(260px, 1fr) auto;
   gap: 14px;
   margin-top: 18px;
   padding: 14px;
 }
 
-.market-orders-search {
+.market-orders-filter__status {
   display: flex;
-  height: 42px;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid var(--wowonder-border);
-  border-radius: 8px;
-  padding: 0 12px;
-}
-
-.market-orders-search input {
-  min-width: 0;
-  width: 100%;
-  border: 0;
-  outline: 0;
-  color: var(--wowonder-text);
-  background: transparent;
-  font-size: 15px;
-}
-
-.market-orders-filter__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   justify-content: flex-end;
 }
 
-.market-orders-filter__button {
-  display: inline-flex;
-  height: 42px;
-  align-items: center;
-  gap: 8px;
-  border: 1px solid var(--wowonder-border);
-  border-radius: 8px;
-  background: #ffffff;
-  padding: 0 13px;
-  color: #555555;
-  font-size: 14px;
-  font-weight: 700;
+.market-orders-filter__trigger {
+  min-width: 190px;
+  justify-content: space-between;
+  border-radius: 12px;
+  font-weight: 800;
 }
 
-.market-orders-filter__button span {
-  min-width: 22px;
+.market-orders-filter__count {
+  display: inline-flex;
+  min-width: 24px;
+  justify-content: center;
   border-radius: 999px;
   background: #eef3fb;
-  padding: 2px 6px;
+  padding: 2px 7px;
   color: #66758b;
   font-size: 12px;
-}
-
-.market-orders-filter__button--active {
-  border-color: var(--wowonder-blue);
-  color: #ffffff;
-  background: var(--wowonder-blue);
-}
-
-.market-orders-filter__button--active span {
-  background: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
+  line-height: 1.3;
 }
 
 .market-orders-content {
@@ -549,12 +551,36 @@ const formatOrderCurrency = (value: number) =>
     grid-template-columns: 1fr;
   }
 
-  .market-orders-filter__buttons {
+  .market-orders-filter__status {
     justify-content: flex-start;
+  }
+
+  .market-orders-filter__trigger {
+    width: 100%;
   }
 }
 
 @media (max-width: 700px) {
+  .market-orders-nav {
+    overflow: hidden;
+    padding-right: 0;
+  }
+
+  .market-orders-nav::after {
+    position: absolute;
+    top: 1px;
+    right: 0;
+    bottom: 10px;
+    width: 34px;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), var(--wowonder-card) 78%);
+    content: "";
+  }
+
+  .market-orders-tabs {
+    padding-right: 36px;
+  }
+
   .market-order-card {
     grid-template-columns: 64px minmax(0, 1fr);
   }

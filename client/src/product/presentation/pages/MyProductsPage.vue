@@ -2,24 +2,8 @@
 
 <template>
   <div class="my-products-page mx-auto w-full max-w-[1520px] px-3 pb-12 pt-4 sm:px-4">
-    <section class="my-products-heading">
-      <div class="my-products-heading__inner">
-        <span class="my-products-heading__icon">
-          <Icon name="i-ph-storefront-fill" class="h-5 w-5" />
-        </span>
-        <div>
-          <p class="my-products-heading__eyebrow">
-            {{ $t("pages.myProductsPage.eyebrow") }}
-          </p>
-          <h1 class="my-products-heading__title">
-            {{ $t("pages.myProductsPage.title") }}
-          </h1>
-        </div>
-      </div>
-    </section>
-
     <section class="my-products-nav">
-      <nav class="my-products-tabs" aria-label="Product sections">
+      <nav class="my-products-tabs" :aria-label="$t('pages.myProductsPage.title')">
         <NuxtLink
           v-for="item in storeTabs"
           :key="item.to"
@@ -32,21 +16,25 @@
         </NuxtLink>
       </nav>
 
-      <NuxtLink to="/new-product" class="my-products-create">
-        <Icon name="i-ph-plus-bold" class="h-4 w-4" />
+      <UButton
+        to="/new-product"
+        color="primary"
+        icon="i-ph-plus-bold"
+        class="my-products-create"
+      >
         {{ $t("pages.myProductsPage.create") }}
-      </NuxtLink>
+      </UButton>
     </section>
 
     <section class="my-products-filters">
-      <label class="my-products-search">
-        <Icon name="i-ph-magnifying-glass" class="h-5 w-5 text-[#8b9bb2]" />
-        <input
-          v-model="search"
-          type="search"
-          :placeholder="$t('pages.myProductsPage.searchPlaceholder')"
-        >
-      </label>
+      <UInput
+        v-model="search"
+        type="search"
+        icon="i-ph-magnifying-glass"
+        size="lg"
+        :placeholder="$t('pages.myProductsPage.searchPlaceholder')"
+        :ui="{ base: 'h-11 rounded-xl' }"
+      />
 
       <USelect
         v-model="sortBy"
@@ -116,19 +104,29 @@
           </div>
         </NuxtLink>
 
-        <button
-          type="button"
-          class="my-product-card__delete"
-          :disabled="deletingProductId === product.id"
-          :aria-label="$t('pages.myProductsPage.delete')"
-          @click="confirmDeleteProduct(product.id)"
-        >
-          <Icon
-            :name="deletingProductId === product.id ? 'i-ph-spinner-gap' : 'i-ph-trash-fill'"
-            class="h-5 w-5"
-            :class="{ 'animate-spin': deletingProductId === product.id }"
+        <div class="my-product-card__actions">
+          <UButton
+            class="my-product-card__action"
+            :to="appRoutes.editProduct(product.id)"
+            color="neutral"
+            variant="soft"
+            size="sm"
+            icon="i-ph-pencil-simple-fill"
+            :aria-label="$t('pages.myProductsPage.edit')"
           />
-        </button>
+          <UButton
+            type="button"
+            class="my-product-card__action my-product-card__action--danger"
+            color="neutral"
+            variant="soft"
+            size="sm"
+            :disabled="deletingProductId === product.id"
+            :loading="deletingProductId === product.id"
+            :icon="deletingProductId === product.id ? 'i-ph-spinner-gap' : 'i-ph-trash-fill'"
+            :aria-label="$t('pages.myProductsPage.delete')"
+            @click="confirmDeleteProduct(product.id)"
+          />
+        </div>
       </article>
     </section>
 
@@ -202,21 +200,21 @@ const confirmDeleteProduct = (productId: number) => {
 
 <style scoped>
 .my-products-page {
-  --wowonder-blue: #0000ff;
-  --wowonder-card: #ffffff;
-  --wowonder-border: #dbe3f2;
-  --wowonder-text: #111827;
-  --wowonder-muted: #66758b;
+  --product-brand: var(--color-brand, #0000ff);
+  --product-card: var(--surface-card, #ffffff);
+  --product-border: var(--border-light, #e2e8f0);
+  --product-text: var(--text-primary, #0f172a);
+  --product-muted: var(--text-tertiary, #64748b);
 }
 
 .my-products-heading,
 .my-products-nav,
 .my-products-filters,
 .my-products-empty {
-  border: 1px solid var(--wowonder-border);
-  border-radius: 12px;
-  background: var(--wowonder-card);
-  box-shadow: 0 2px 6px rgba(13, 38, 76, 0.08);
+  border: 1px solid var(--product-border);
+  border-radius: 16px;
+  background: var(--product-card);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .my-products-heading {
@@ -239,12 +237,12 @@ const confirmDeleteProduct = (productId: number) => {
   height: 40px;
   border-radius: 999px;
   color: #ffffff;
-  background: var(--wowonder-blue);
+  background: linear-gradient(180deg, #2233ff 0%, var(--product-brand) 100%);
 }
 
 .my-products-heading__eyebrow {
   margin: 0;
-  color: var(--wowonder-text);
+  color: var(--product-text);
   font-size: 11px;
   font-weight: 800;
   line-height: 1;
@@ -253,13 +251,14 @@ const confirmDeleteProduct = (productId: number) => {
 
 .my-products-heading__title {
   margin: 7px 0 0;
-  color: var(--wowonder-text);
+  color: var(--product-text);
   font-size: 28px;
   font-weight: 900;
   line-height: 1.1;
 }
 
 .my-products-nav {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -275,6 +274,25 @@ const confirmDeleteProduct = (productId: number) => {
   gap: 8px;
   min-width: 0;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 7px;
+  scrollbar-color: #9eb1cc transparent;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+
+.my-products-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+
+.my-products-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.my-products-tabs::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #9eb1cc;
 }
 
 .my-products-tab {
@@ -291,11 +309,12 @@ const confirmDeleteProduct = (productId: number) => {
   border-radius: 8px 8px 0 0;
   text-decoration: none;
   white-space: nowrap;
+  scroll-snap-align: start;
   transition: color 0.16s ease, background 0.16s ease;
 }
 
 .my-products-tab:hover {
-  color: var(--wowonder-blue);
+  color: var(--product-brand);
   background: rgba(0, 0, 255, 0.04);
 }
 
@@ -316,7 +335,7 @@ const confirmDeleteProduct = (productId: number) => {
   bottom: 0;
   left: 0;
   height: 4px;
-  background: var(--wowonder-blue);
+  background: var(--product-brand);
   content: "";
 }
 
@@ -330,7 +349,7 @@ const confirmDeleteProduct = (productId: number) => {
   padding: 0 18px;
   border-radius: 8px;
   color: #ffffff;
-  background: var(--wowonder-blue);
+  background: linear-gradient(180deg, #2233ff 0%, var(--product-brand) 100%);
   box-shadow: 0 3px 8px rgba(0, 0, 255, 0.28);
   font-size: 17px;
   font-weight: 700;
@@ -343,26 +362,6 @@ const confirmDeleteProduct = (productId: number) => {
   gap: 12px;
   margin-top: 18px;
   padding: 14px;
-}
-
-.my-products-search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 42px;
-  border: 1px solid var(--wowonder-border);
-  border-radius: 8px;
-  padding: 0 12px;
-}
-
-.my-products-search input {
-  min-width: 0;
-  width: 100%;
-  border: 0;
-  outline: 0;
-  color: var(--wowonder-text);
-  background: transparent;
-  font-size: 15px;
 }
 
 .my-products-select {
@@ -384,10 +383,10 @@ const confirmDeleteProduct = (productId: number) => {
 .my-product-card__link {
   display: block;
   overflow: hidden;
-  border: 1px solid var(--wowonder-border);
-  border-radius: 4px;
+  border: 1px solid var(--product-border);
+  border-radius: 16px;
   background: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
   text-decoration: none;
 }
 
@@ -419,15 +418,15 @@ const confirmDeleteProduct = (productId: number) => {
 }
 
 .my-product-card__info {
-  padding: 7px 10px 10px;
+  padding: 10px 12px 12px;
 }
 
 .my-product-card__title {
   display: block;
   overflow: hidden;
-  color: #555555;
-  font-size: 16px;
-  font-weight: 400;
+  color: var(--product-text);
+  font-size: 14px;
+  font-weight: 700;
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -437,19 +436,25 @@ const confirmDeleteProduct = (productId: number) => {
   display: block;
   overflow: hidden;
   margin-top: 7px;
-  color: #4caf50;
-  font-size: 14.5px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
+  color: var(--product-brand);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0;
   line-height: 1.3;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.my-product-card__delete {
+.my-product-card__actions {
   position: absolute;
   top: 7px;
   right: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.my-product-card__action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -457,17 +462,24 @@ const confirmDeleteProduct = (productId: number) => {
   height: 32px;
   border: 0;
   border-radius: 999px;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.3);
+  color: var(--product-text);
+  background: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  transition: background 0.2s ease;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+  transition: all 0.15s ease;
 }
 
-.my-product-card__delete:hover {
-  background: rgba(255, 255, 255, 0.42);
+.my-product-card__action:hover {
+  color: var(--product-brand);
+  transform: translateY(-1px);
 }
 
-.my-product-card__delete:disabled {
+.my-product-card__action--danger:hover {
+  color: #dc2626;
+}
+
+.my-product-card__action:disabled {
   cursor: not-allowed;
   opacity: 0.7;
 }
@@ -479,7 +491,7 @@ const confirmDeleteProduct = (productId: number) => {
   justify-content: center;
   gap: 10px;
   margin-top: 22px;
-  color: var(--wowonder-muted);
+  color: var(--product-muted);
   font-size: 18px;
   font-weight: 700;
 }
@@ -502,11 +514,24 @@ const confirmDeleteProduct = (productId: number) => {
   .my-products-nav {
     align-items: stretch;
     flex-direction: column;
+    overflow: hidden;
     padding: 0 12px 12px;
+  }
+
+  .my-products-nav::after {
+    position: absolute;
+    top: 1px;
+    right: 0;
+    height: 74px;
+    width: 34px;
+    pointer-events: none;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), var(--product-card) 78%);
+    content: "";
   }
 
   .my-products-tabs {
     width: 100%;
+    padding-right: 36px;
   }
 
   .my-products-create {

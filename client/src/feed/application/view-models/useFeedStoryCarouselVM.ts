@@ -36,6 +36,7 @@ export function useFeedStoryCarouselVM(
 
   const scrollRef = ref<HTMLElement | null>(null)
   const dialogRef = ref<HTMLElement | null>(null)
+  const activeVideoRef = ref<HTMLVideoElement | null>(null)
   const replyInputRef = ref<{ $el?: HTMLElement } | null>(null)
   const canScrollLeft = ref(false)
   const canScrollRight = ref(false)
@@ -46,6 +47,7 @@ export function useFeedStoryCarouselVM(
   const storyTouchStartY = ref<number | null>(null)
   const replyText = ref("")
   const reactionTrayOpen = ref(false)
+  const activeVideoPaused = ref(false)
   const reactionLongPressTriggered = ref(false)
   const storyActionState = ref<"idle" | "loading" | "success" | "error">("idle")
   const storyActionError = ref("")
@@ -241,6 +243,8 @@ export function useFeedStoryCarouselVM(
   function closeStory() {
     activeStoryGroupIndex.value = null
     activeStoryItemIndex.value = 0
+    activeVideoRef.value?.pause()
+    activeVideoPaused.value = false
     replyText.value = ""
     reactionTrayOpen.value = false
     storyActionError.value = ""
@@ -403,6 +407,27 @@ export function useFeedStoryCarouselVM(
     openStoryGroup(previousGroupIndex, Math.max((previousGroup?.stories.length ?? 1) - 1, 0))
   }
 
+  async function toggleActiveVideoPlayback() {
+    const video = activeVideoRef.value
+
+    if (!video) {
+      return
+    }
+
+    if (video.paused) {
+      await video.play().catch(() => undefined)
+      activeVideoPaused.value = video.paused
+      return
+    }
+
+    video.pause()
+    activeVideoPaused.value = true
+  }
+
+  function syncActiveVideoPlaybackState() {
+    activeVideoPaused.value = Boolean(activeVideoRef.value?.paused)
+  }
+
   function onStoryTouchStart(event: TouchEvent) {
     const touch = event.changedTouches[0]
     storyTouchStartX.value = touch?.clientX ?? null
@@ -506,6 +531,7 @@ export function useFeedStoryCarouselVM(
 
     replyText.value = ""
     reactionTrayOpen.value = false
+    activeVideoPaused.value = false
     storyActionError.value = ""
     storyActionState.value = "idle"
     await markStoryViewed(story)
@@ -516,12 +542,14 @@ export function useFeedStoryCarouselVM(
   return {
     scrollRef,
     dialogRef,
+    activeVideoRef,
     replyInputRef,
     canScrollLeft,
     canScrollRight,
     activeStoryItemIndex,
     replyText,
     reactionTrayOpen,
+    activeVideoPaused,
     storyActionState,
     storyActionError,
     storyReactionOptions,
@@ -552,6 +580,8 @@ export function useFeedStoryCarouselVM(
     sendReply,
     nextStory,
     prevStory,
+    toggleActiveVideoPlayback,
+    syncActiveVideoPlaybackState,
     onStoryTouchStart,
     onStoryTouchEnd,
   }

@@ -1,7 +1,7 @@
 // English description: My-products overview view model backed by the product API bridge.
 
-import { formatCurrency as formatSharedCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import type { ProductCategory, ProductListing, ProductOverviewCard, ProductSelectOption, ProductSortValue } from "../../domain/types/product-marketplace.types"
+import { formatProductPrice } from "../formatters/product-currency"
 import {
   filterProductListings,
   sortProductListings,
@@ -70,20 +70,7 @@ export const useMyProductsOverview = (
     },
   ])
 
-  const formatProductCurrency = (product: ProductListing) => {
-    if (product.priceFormat) {
-      const symbol = product.currencySymbol?.trim()
-
-      return symbol ? `${symbol}${product.priceFormat}` : product.priceFormat
-    }
-
-    return formatSharedCurrency(product.price, {
-      currency: product.currency || "VND",
-      currencySymbol: product.currencySymbol,
-      currencyRule: product.currencyRule,
-      locale: locale.value,
-    })
-  }
+  const formatProductCurrency = (product: ProductListing) => formatProductPrice(product, locale.value)
 
   const deleteProduct = async (productId: number) => {
     if (deletingProductId.value) return

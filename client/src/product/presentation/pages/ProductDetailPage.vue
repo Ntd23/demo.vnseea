@@ -4,7 +4,7 @@
   <div class="product-detail-page mx-auto w-full max-w-[1180px] px-3 pb-12 pt-4 sm:px-4">
     <button type="button" class="product-detail-back" @click="goBack">
       <Icon name="i-ph-arrow-left" class="h-5 w-5" />
-      Quay lại
+      {{ $t("pages.productDetailPage.back") }}
     </button>
 
     <div v-if="status === 'pending'" class="product-detail-card">
@@ -21,7 +21,7 @@
       color="error"
       variant="soft"
       icon="i-ph-warning-circle"
-      title="Không tải được sản phẩm"
+      :title="$t('pages.productDetailPage.loadErrorTitle')"
       :description="String(error)"
     />
 
@@ -30,8 +30,8 @@
       color="neutral"
       variant="soft"
       icon="i-ph-shopping-bag-open"
-      title="Không tìm thấy sản phẩm"
-      description="Sản phẩm này không tồn tại hoặc đã bị xóa."
+      :title="$t('pages.productDetailPage.notFoundTitle')"
+      :description="$t('pages.productDetailPage.notFoundDescription')"
     />
 
     <template v-else>
@@ -74,7 +74,7 @@
           <div class="product-detail-price">{{ formattedPrice }}</div>
 
           <div class="product-detail-rating">
-            <span class="product-detail-stars" :aria-label="`${ratingValue} sao`">
+            <span class="product-detail-stars" :aria-label="$t('pages.productDetailPage.ratingLabel', { count: ratingValue })">
               <Icon
                 v-for="star in 5"
                 :key="star"
@@ -83,7 +83,7 @@
                 :class="star <= ratingValue ? 'text-[#f6b600]' : 'text-[#d6deea]'"
               />
             </span>
-            <button type="button">0 đánh giá</button>
+            <button type="button">{{ $t("pages.productDetailPage.reviews", { count: 0 }) }}</button>
           </div>
 
           <div v-if="product.seller" class="product-detail-seller">
@@ -91,7 +91,7 @@
               {{ product.seller.slice(0, 1).toUpperCase() }}
             </span>
             <div>
-              <p>Đăng bởi</p>
+              <p>{{ $t("pages.productDetailPage.sellerBy") }}</p>
               <strong>{{ product.seller }}</strong>
             </div>
           </div>
@@ -105,7 +105,7 @@
               class="product-detail-action"
               @click="openSellerChat"
             >
-              Liên hệ người bán
+              {{ $t("pages.productDetailPage.contactSeller") }}
             </UButton>
             <UButton
               v-if="product.canAddToCart"
@@ -115,7 +115,7 @@
               :loading="cartLoading"
               @click="addProductToCart"
             >
-              Mua ngay
+              {{ $t("pages.productDetailPage.buyNow") }}
             </UButton>
             <NuxtLink
               v-if="product.mine"
@@ -123,25 +123,25 @@
               class="product-detail-edit"
             >
               <Icon name="i-ph-pencil-simple-fill" class="h-5 w-5" />
-              Sửa sản phẩm
+              {{ $t("pages.productDetailPage.editProduct") }}
             </NuxtLink>
           </div>
 
           <ul class="product-detail-info">
             <li v-if="product.location">
-              <span><Icon name="i-ph-map-pin-fill" class="text-[#8bc34a]" /> Vị trí</span>
+              <span><Icon name="i-ph-map-pin-fill" class="text-[#0ea5e9]" /> {{ $t("pages.productDetailPage.location") }}</span>
               <strong>{{ product.location }}</strong>
             </li>
             <li>
-              <span><Icon name="i-ph-package-fill" class="text-[#9c27b0]" /> Trạng thái</span>
+              <span><Icon name="i-ph-package-fill" class="text-[#0000ff]" /> {{ $t("pages.productDetailPage.stockStatus") }}</span>
               <strong>{{ stockLabel }}</strong>
             </li>
             <li>
-              <span><Icon name="i-ph-tag-fill" class="text-[#2196f3]" /> Loại</span>
+              <span><Icon name="i-ph-tag-fill" class="text-[#2563eb]" /> {{ $t("pages.productDetailPage.condition") }}</span>
               <strong>{{ conditionLabel }}</strong>
             </li>
             <li v-if="product.categoryLabel">
-              <span><Icon name="i-ph-storefront-fill" class="text-[#ff9800]" /> Danh mục</span>
+              <span><Icon name="i-ph-storefront-fill" class="text-[#f59e0b]" /> {{ $t("pages.productDetailPage.category") }}</span>
               <strong>{{ categoryLabel }}</strong>
             </li>
           </ul>
@@ -150,16 +150,16 @@
         <section class="product-detail-section">
           <h2>
             <Icon name="i-ph-info-fill" class="h-5 w-5" />
-            Chi tiết
+            {{ $t("pages.productDetailPage.details") }}
           </h2>
           <p v-if="product.description">{{ product.description }}</p>
-          <p v-else class="product-detail-muted">Sản phẩm chưa có mô tả.</p>
+          <p v-else class="product-detail-muted">{{ $t("pages.productDetailPage.emptyDescription") }}</p>
         </section>
 
         <section v-if="mapUrl" class="product-detail-section">
           <h2>
             <Icon name="i-ph-map-trifold-fill" class="h-5 w-5" />
-            Bản đồ
+            {{ $t("pages.productDetailPage.map") }}
           </h2>
           <a :href="mapUrl" target="_blank" rel="noopener noreferrer" class="product-detail-map">
             <Icon name="i-ph-map-pin-fill" class="h-7 w-7" />
@@ -171,7 +171,7 @@
       <section v-if="relatedProducts.length" class="product-detail-related">
         <h2>
           <Icon name="i-ph-storefront-fill" class="h-5 w-5" />
-          Sản phẩm liên quan
+          {{ $t("pages.productDetailPage.related") }}
         </h2>
         <div class="product-detail-related-grid">
           <NuxtLink
@@ -198,8 +198,8 @@
 </template>
 
 <script setup lang="ts">
-import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { formatProductPrice } from "../../application/formatters/product-currency"
 import type { ProductListing } from "../../domain/types/product-marketplace.types"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 
@@ -246,37 +246,26 @@ const ratingValue = computed(() => Math.max(0, Math.min(5, Math.round(product.va
 const formattedPrice = computed(() => {
   if (!product.value) return ""
 
-  if (product.value.priceFormat) {
-    const symbol = product.value.currencySymbol?.trim()
-
-    return symbol ? `${symbol}${product.value.priceFormat}` : product.value.priceFormat
-  }
-
-  return formatCurrency(product.value.price, {
-    currency: product.value.currency || "VND",
-    currencySymbol: product.value.currencySymbol,
-    currencyRule: product.value.currencyRule,
-    locale: locale.value,
-  })
+  return formatProductPrice(product.value, locale.value)
 })
 
 const conditionLabel = computed(() => {
   switch (product.value?.condition) {
     case "used":
-      return "Đã sử dụng"
+      return t("pages.productEditor.conditionUsed")
     case "like-new":
-      return "Như mới"
+      return t("pages.productEditor.conditionLikeNew")
     default:
-      return "Mới"
+      return t("pages.productEditor.conditionNew")
   }
 })
 
 const stockLabel = computed(() => {
   if (!product.value?.stock) {
-    return "Hiện không có sẵn"
+    return t("pages.productDetailPage.stockUnavailable")
   }
 
-  return "Còn hàng"
+  return t("pages.productDetailPage.stockAvailable")
 })
 
 const categoryLabel = computed(() => {
@@ -352,7 +341,7 @@ const addProductToCart = async () => {
   try {
     await repository.addToCart(Number(product.value.id))
     toast.add({
-      title: "Đã thêm vào giỏ hàng",
+      title: t("pages.productDetailPage.addedToCart"),
       color: "success",
       icon: "i-ph-check-circle",
     })
@@ -367,7 +356,7 @@ const addProductToCart = async () => {
     }
 
     toast.add({
-      title: "Không thêm được vào giỏ hàng",
+      title: t("pages.productDetailPage.addToCartError"),
       description: message || String(cartError),
       color: "error",
       icon: "i-ph-warning-circle",
@@ -379,18 +368,7 @@ const addProductToCart = async () => {
 }
 
 const formatRelatedPrice = (relatedProduct: ProductListing) => {
-  if (relatedProduct.priceFormat) {
-    const symbol = relatedProduct.currencySymbol?.trim()
-
-    return symbol ? `${symbol}${relatedProduct.priceFormat}` : relatedProduct.priceFormat
-  }
-
-  return formatCurrency(relatedProduct.price, {
-    currency: relatedProduct.currency || "VND",
-    currencySymbol: relatedProduct.currencySymbol,
-    currencyRule: relatedProduct.currencyRule,
-    locale: locale.value,
-  })
+  return formatProductPrice(relatedProduct, locale.value)
 }
 
 watch(product, (nextProduct) => {
@@ -412,7 +390,7 @@ useSeoMeta({
   margin-bottom: 16px;
   border: 0;
   background: transparent;
-  color: #344258;
+  color: var(--text-secondary, #334155);
   cursor: pointer;
   font-size: 16px;
   font-weight: 800;
@@ -420,10 +398,10 @@ useSeoMeta({
 
 .product-detail-card,
 .product-detail-related {
-  border: 1px solid #dbe3f2;
-  border-radius: 8px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 16px;
   background: #ffffff;
-  box-shadow: 0 2px 6px rgba(13, 38, 76, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .product-detail-card {
@@ -450,7 +428,7 @@ useSeoMeta({
   display: block;
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 6px;
+  border-radius: 14px;
   background: #eef3fb;
   object-fit: cover;
 }
@@ -481,14 +459,14 @@ useSeoMeta({
   height: 74px;
   flex: 0 0 auto;
   border: 2px solid transparent;
-  border-radius: 5px;
+  border-radius: 12px;
   background: #eef3fb;
   cursor: pointer;
   padding: 0;
 }
 
 .product-detail-thumb--active {
-  border-color: #0000ff;
+  border-color: var(--color-brand, #0000ff);
 }
 
 .product-detail-thumb img {
@@ -504,17 +482,17 @@ useSeoMeta({
 
 .product-detail-title {
   margin: 0;
-  color: #111827;
+  color: var(--text-primary, #0f172a);
   font-size: 31px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.16;
 }
 
 .product-detail-price {
   margin-top: 12px;
-  color: #0000ff;
+  color: var(--color-brand, #0000ff);
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .product-detail-rating {
@@ -532,7 +510,7 @@ useSeoMeta({
 .product-detail-rating button {
   border: 0;
   background: transparent;
-  color: #66758b;
+  color: var(--text-tertiary, #64748b);
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
@@ -554,19 +532,19 @@ useSeoMeta({
   height: 42px;
   border-radius: 999px;
   color: #ffffff;
-  background: #0000ff;
-  font-weight: 900;
+  background: linear-gradient(180deg, #2233ff 0%, var(--color-brand, #0000ff) 100%);
+  font-weight: 800;
 }
 
 .product-detail-seller p {
   margin: 0 0 2px;
-  color: #66758b;
+  color: var(--text-tertiary, #64748b);
   font-size: 12px;
   font-weight: 800;
 }
 
 .product-detail-seller strong {
-  color: #111827;
+  color: var(--text-primary, #0f172a);
   font-size: 14px;
 }
 
@@ -580,7 +558,7 @@ useSeoMeta({
 .product-detail-action,
 .product-detail-edit {
   min-height: 40px;
-  border-radius: 5px;
+  border-radius: 12px;
   font-weight: 800;
 }
 
@@ -590,7 +568,7 @@ useSeoMeta({
   justify-content: center;
   gap: 8px;
   padding: 0 14px;
-  color: #344258;
+  color: var(--text-secondary, #334155);
   background: #eef3fb;
   text-decoration: none;
 }
@@ -618,7 +596,7 @@ useSeoMeta({
   justify-content: flex-start;
   min-width: 0;
   gap: 6px;
-  color: #66758b;
+  color: var(--text-tertiary, #64748b);
   font-weight: 800;
   line-height: 1.25;
   text-align: left;
@@ -633,8 +611,8 @@ useSeoMeta({
 
 .product-detail-info strong {
   min-width: 0;
-  color: #111827;
-  font-weight: 900;
+  color: var(--text-primary, #0f172a);
+  font-weight: 800;
   justify-self: end;
   text-align: right;
   overflow-wrap: anywhere;
@@ -652,21 +630,21 @@ useSeoMeta({
   align-items: center;
   gap: 8px;
   margin: 0 0 12px;
-  color: #111827;
+  color: var(--text-primary, #0f172a);
   font-size: 19px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .product-detail-section p {
   margin: 0;
-  color: #1f2937;
+  color: var(--text-secondary, #334155);
   font-size: 15px;
   line-height: 1.7;
   white-space: pre-line;
 }
 
 .product-detail-muted {
-  color: #8b9bb2 !important;
+  color: var(--text-muted, #94a3b8) !important;
 }
 
 .product-detail-map {
@@ -677,7 +655,7 @@ useSeoMeta({
   flex-direction: column;
   gap: 10px;
   border: 1px solid #e5eaf1;
-  border-radius: 12px;
+  border-radius: 16px;
   color: #5f6368;
   background: linear-gradient(135deg, #f7f4ed 0%, #f2f0ea 100%);
   text-align: center;
@@ -708,7 +686,7 @@ useSeoMeta({
   aspect-ratio: 1 / 1;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
+  border-radius: 12px;
   background: #eef3fb;
   object-fit: cover;
   color: #8b9bb2;
@@ -718,9 +696,9 @@ useSeoMeta({
   display: block;
   overflow: hidden;
   margin-top: 8px;
-  color: #111827;
+  color: var(--text-primary, #0f172a);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -728,7 +706,7 @@ useSeoMeta({
 .product-detail-related-card span {
   display: block;
   margin-top: 4px;
-  color: #0000ff;
+  color: var(--color-brand, #0000ff);
   font-size: 13px;
   font-weight: 900;
 }

@@ -419,16 +419,6 @@ async function toggleRequests() {
   object-fit: contain;
 }
 
-.header-home-favicon--desktop {
-  width: 30px;
-  height: 30px;
-}
-
-.header-home-favicon--mobile {
-  width: 22px;
-  height: 22px;
-}
-
 /* ─── Desktop action buttons ───────────────────────────── */
 .header-action-btn {
   position: relative;
