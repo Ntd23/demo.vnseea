@@ -46,7 +46,6 @@
           :active-tab="activeTab"
           :contact="selectedContact"
           :empty-description="chatEmptyDescription"
-          :empty-thread-label="emptyThreadLabel"
           :empty-title="chatEmptyTitle"
           :group-details="groupDetails"
           :group-typing-avatar-url="activeGroupTypingAvatarUrl"
@@ -388,9 +387,7 @@ const infoEmptyDescription = computed(() =>
     : t("pages.messagesPage.infoPanelEmptyDescription"),
 )
 
-const emptyThreadLabel = computed(() =>
-  t("pages.messagesPage.emptyThread"),
-)
+
 
 const showDesktopUserDetailPane = computed(() =>
   activeTab.value === "user" && selectedContact.value?.type === "user",

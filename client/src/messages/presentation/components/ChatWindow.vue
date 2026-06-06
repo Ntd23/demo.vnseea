@@ -139,7 +139,6 @@
       <MessagesChatMessageList
         :contact-avatar="typingAvatarUrl"
         :contact-type="contact.type"
-        :empty-label="emptyThreadLabel"
         :is-pending="isPending"
         :is-typing="isTyping"
         :loading-label="loadingLabel"
@@ -207,7 +206,6 @@
 
       <MessagesChatMessageList
         contact-type="user"
-        :empty-label="emptyThreadLabel"
         :is-pending="true"
         :loading-label="loadingLabel"
         :messages="[]"
@@ -253,7 +251,6 @@ const props = defineProps<{
   groupDetails?: MessageGroupDetails | null
   groupTypingAvatarUrl?: string
   emptyDescription: string
-  emptyThreadLabel: string
   emptyTitle: string
   isPending?: boolean
   inboxPending?: boolean

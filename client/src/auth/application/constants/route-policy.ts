@@ -13,6 +13,7 @@ const guestOnlyPaths = new Set([
 const publicPaths = new Set([
   ...guestOnlyPaths,
   "/logout",
+  "/contact-us",
 ])
 
 const publicPrefixes = [
