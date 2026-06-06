@@ -1,13 +1,15 @@
 // English description: Login page view model that submits credentials through the backend API bridge.
 
-import type { FormError } from "@nuxt/ui"
 import type { LoginResult } from "../../domain/types/auth.types"
 import { createApiAuthRepository } from "../../infrastructure/repositories/ApiAuthRepository"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { submitBackendBrowserSession } from "../services/backend-browser-session"
 
 type LoginFieldName = "login" | "password"
-type LoginValidationError = FormError<LoginFieldName>
+type LoginValidationError = {
+  name: LoginFieldName
+  message: string
+}
 
 const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
@@ -27,7 +29,6 @@ export function useLoginPageVM(
   repository = createApiAuthRepository(),
 ) {
   const { t } = useI18n()
-  const toast = useToast()
 
   const state = reactive({
     login: "",
@@ -81,13 +82,8 @@ export function useLoginPageVM(
         })
         return
       }
-
-      toast.add({
-        color: "warning",
-        icon: "i-ph-warning-circle-fill",
-        title: t("pages.welcomePage.statusWarningTitle"),
-        description: result.message,
-      })
+      submitState.value = "error"
+      submitMessage.value = result.message || t("pages.welcomePage.statusWarningTitle")
     }
     catch (error) {
       submitState.value = "error"
@@ -96,12 +92,6 @@ export function useLoginPageVM(
         t("pages.welcomePage.statusErrorDescription"),
       )
 
-      toast.add({
-        color: "error",
-        icon: "i-ph-warning-circle-fill",
-        title: t("pages.welcomePage.statusErrorTitle"),
-        description: submitMessage.value,
-      })
     }
   }
 

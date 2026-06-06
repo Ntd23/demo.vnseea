@@ -1,6 +1,6 @@
 <!-- English description: Hosts the root Nuxt app shell, global route loading, error boundary, and toaster. -->
 <template>
-  <UApp>
+  <component :is="appShellComponent" class="min-h-screen">
     <NuxtLoadingIndicator color="#0000ff" :height="3" :duration="2500" :throttle="0" />
     <NuxtRouteAnnouncer />
     <NuxtLayout>
@@ -40,22 +40,20 @@
                 </div>
 
                 <div class="flex flex-col gap-3 sm:flex-row">
-                  <UButton
-                    size="xl"
-                    class="justify-center rounded-2xl bg-[#0000ff] px-6 font-black uppercase tracking-[0.16em] shadow-[0_14px_28px_rgba(0,0,255,0.2)] hover:bg-[#0000d8]"
+                  <button
+                    type="button"
+                    class="justify-center rounded-2xl bg-[#0000ff] px-6 py-4 font-black uppercase tracking-[0.16em] text-white shadow-[0_14px_28px_rgba(0,0,255,0.2)] hover:bg-[#0000d8]"
                     @click="retryCurrentPage(clearBoundaryError)"
                   >
                     Thu lai trang nay
-                  </UButton>
-                  <UButton
-                    size="xl"
-                    color="white"
-                    variant="soft"
-                    class="justify-center rounded-2xl px-6 font-black uppercase tracking-[0.16em] text-slate-700 ring-1 ring-[#dbe3f2] hover:ring-[#0000ff]"
+                  </button>
+                  <button
+                    type="button"
+                    class="justify-center rounded-2xl bg-white px-6 py-4 font-black uppercase tracking-[0.16em] text-slate-700 ring-1 ring-[#dbe3f2] hover:ring-[#0000ff]"
                     @click="goToSafePage(clearBoundaryError)"
                   >
                     Ve trang on dinh
-                  </UButton>
+                  </button>
                 </div>
               </div>
             </div>
@@ -63,14 +61,13 @@
         </template>
       </NuxtErrorBoundary>
     </NuxtLayout>
-    <UToaster />
     <ClientOnly>
       <MessagesMessageCallGlobalHost
         v-if="shouldMountMessageCallHost"
         :poll-incoming="true"
       />
     </ClientOnly>
-  </UApp>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -80,6 +77,9 @@ import { useSiteBrandingStore } from "../src/site-branding/application/stores/us
 
 const MessagesMessageCallGlobalHost = defineAsyncComponent(() =>
   import("../src/messages/presentation/components/MessageCallGlobalHost.vue"),
+)
+const NuxtUiProvider = defineAsyncComponent(() =>
+  import("../src/shared-kernel/presentation/components/NuxtUiProvider.vue"),
 )
 
 const route = useRoute()
@@ -94,6 +94,8 @@ const backendUserSession = useCookie<string | null>("user_id", {
 const lastSafeRoute = useState("last-safe-route", () => "/home")
 const runtimeBoundaryNonce = ref(0)
 const shouldMountMessageCallHost = computed(() => Boolean(backendUserSession.value))
+const shouldUseNuxtUiProvider = computed(() => route.path !== "/welcome")
+const appShellComponent = computed(() => shouldUseNuxtUiProvider.value ? NuxtUiProvider : "div")
 
 await callOnce("site-branding", () => siteBrandingStore.hydrate())
 useSiteBrandingHead()

@@ -143,13 +143,38 @@
       </button>
     </footer>
 
-    <UModal
-      v-model:open="languageModalOpen"
-      :title="t('auth.footer.languageTitle')"
-      :description="t('auth.footer.languageDescription')"
-      :ui="{ content: 'sm:max-w-[420px]' }"
-    >
-      <template #body>
+    <Teleport to="body">
+      <div
+        v-if="languageModalOpen"
+        class="auth-language-modal"
+        role="presentation"
+        @click.self="languageModalOpen = false"
+      >
+        <section
+          class="auth-language-modal__panel"
+          role="dialog"
+          aria-modal="true"
+          :aria-labelledby="languageModalTitleId"
+          :aria-describedby="languageModalDescriptionId"
+        >
+          <header class="auth-language-modal__header">
+            <div>
+              <h2 :id="languageModalTitleId" class="auth-language-modal__title">
+                {{ t('auth.footer.languageTitle') }}
+              </h2>
+              <p :id="languageModalDescriptionId" class="auth-language-modal__description">
+                {{ t('auth.footer.languageDescription') }}
+              </p>
+            </div>
+            <button
+              type="button"
+              class="auth-language-modal__close"
+              aria-label="Close language dialog"
+              @click="languageModalOpen = false"
+            >
+              <Icon name="i-ph-x-bold" class="h-5 w-5" />
+            </button>
+          </header>
         <div class="auth-hero__language-list">
           <button
             v-for="item in localeOptions"
@@ -170,8 +195,9 @@
             />
           </button>
         </div>
-      </template>
-    </UModal>
+        </section>
+      </div>
+    </Teleport>
   </aside>
 </template>
 
@@ -196,6 +222,8 @@ const siteBrandingStore = useSiteBrandingStore()
 const { branding } = storeToRefs(siteBrandingStore)
 const logoFailed = ref(false)
 const languageModalOpen = ref(false)
+const languageModalTitleId = "auth-language-modal-title"
+const languageModalDescriptionId = "auth-language-modal-description"
 const pendingLocale = ref("")
 const currentYear = new Date().getFullYear()
 
@@ -265,6 +293,18 @@ const changeLocale = async (code: string) => {
 
 watch(optimizedLogoUrl, () => {
   logoFailed.value = false
+})
+
+watch(languageModalOpen, (isOpen) => {
+  if (import.meta.client) {
+    document.documentElement.style.overflow = isOpen ? "hidden" : ""
+  }
+})
+
+onBeforeUnmount(() => {
+  if (import.meta.client) {
+    document.documentElement.style.overflow = ""
+  }
 })
 </script>
 
@@ -531,6 +571,71 @@ watch(optimizedLogoUrl, () => {
   background: transparent;
   cursor: pointer;
   font: inherit;
+}
+
+.auth-language-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.46);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.auth-language-modal__panel {
+  width: min(100%, 420px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  background: #ffffff;
+  box-shadow: var(--shadow-lg);
+  padding: 1.25rem;
+}
+
+.auth-language-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.auth-language-modal__title {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.auth-language-modal__description {
+  margin-top: 0.3rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.auth-language-modal__close {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.auth-language-modal__close:hover,
+.auth-language-modal__close:focus-visible {
+  color: #0000ff;
+  border-color: rgba(0, 0, 255, 0.24);
 }
 
 .auth-hero__language-list {
