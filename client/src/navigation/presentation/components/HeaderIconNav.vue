@@ -1,3 +1,4 @@
+<!-- English description: Renders the compact mobile feed navigation strip for authenticated content routes. -->
 <template>
   <nav class="icon-nav">
     <NuxtLink
@@ -38,7 +39,7 @@ const items = computed(() => [
     label: 'navigation.headerIconNav.home',
     to: '/home',
     icon: 'i-ph-house-fill',
-    active: route.path === '/home',
+    active: route.path === '/' || route.path === '/home',
   },
   {
     label: 'navigation.headerIconNav.photos',
