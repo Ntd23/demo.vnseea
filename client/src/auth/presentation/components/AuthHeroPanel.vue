@@ -14,13 +14,16 @@
       <header v-if="hasBrandIdentity" class="auth-hero__brand">
         <div class="auth-hero__brand-shell">
           <div class="auth-hero__brand-icon">
-            <img
-              v-if="displayLogoUrl && !logoFailed"
-              :src="displayLogoUrl"
+            <NuxtImg
+              v-if="optimizedLogoUrl && !logoFailed"
+              :src="optimizedLogoUrl"
               :alt="logoAlt"
+              width="124"
+              densities="1x 2x"
+              loading="eager"
               class="auth-hero__brand-logo"
               @error="logoFailed = true"
-            >
+            />
             <Icon v-else name="i-ph-sparkles-fill" class="h-10 w-10 text-white" />
           </div>
           <div class="auth-hero__brand-ring" />
@@ -188,6 +191,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t, locale, locales, setLocale } = useI18n()
+const runtimeConfig = useRuntimeConfig()
 const siteBrandingStore = useSiteBrandingStore()
 const { branding } = storeToRefs(siteBrandingStore)
 const logoFailed = ref(false)
@@ -198,8 +202,27 @@ const currentYear = new Date().getFullYear()
 const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
 const footerBrandName = computed(() => brandName.value || "VNSEEA")
 const displayLogoUrl = computed(() => branding.value.nightLogoUrl || branding.value.logoUrl)
+const optimizedLogoUrl = computed(() => {
+  const source = displayLogoUrl.value
+
+  if (!source) {
+    return ""
+  }
+
+  if (/^https?:\/\//i.test(source)) {
+    return source
+  }
+
+  const backendBase = String(runtimeConfig.public.backendWebBase || runtimeConfig.public.siteUrl || "").replace(/\/+$/, "")
+
+  if (backendBase && (source.startsWith("/themes/") || source.startsWith("/upload/"))) {
+    return `${backendBase}${source}`
+  }
+
+  return source
+})
 const logoAlt = computed(() => brandName.value ? `${brandName.value} Logo` : "Site logo")
-const hasBrandIdentity = computed(() => Boolean(displayLogoUrl.value && !logoFailed.value) || Boolean(brandName.value))
+const hasBrandIdentity = computed(() => Boolean(optimizedLogoUrl.value && !logoFailed.value) || Boolean(brandName.value))
 const activeLocale = computed(() => String(locale.value))
 const footerLinks = computed(() => [
   { label: t("auth.footer.terms"), to: appRoutes.termsOfUse },
@@ -240,7 +263,7 @@ const changeLocale = async (code: string) => {
   }
 }
 
-watch(displayLogoUrl, () => {
+watch(optimizedLogoUrl, () => {
   logoFailed.value = false
 })
 </script>
@@ -367,7 +390,8 @@ watch(displayLogoUrl, () => {
 
 .auth-hero__brand-logo {
   width: 3.85rem !important;
-  height: 3.85rem !important;
+  height: auto !important;
+  max-height: 3.85rem;
   object-fit: contain;
 }
 
