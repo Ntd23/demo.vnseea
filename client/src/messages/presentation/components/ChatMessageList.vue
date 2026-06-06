@@ -122,17 +122,19 @@ import {
 } from "../../application/utils/message-bubble-content"
 import MessagesChatBubble from "./ChatBubble.vue"
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   activeReactionPickerId?: number | null
   contactAvatar?: string
   contactType?: MessageThreadType
-  emptyLabel: string
+  emptyLabel?: string
   isPending?: boolean
   isTyping?: boolean
   loadingLabel: string
   messages: MessageItem[]
   threadKey?: string
-}>()
+}>(), {
+  emptyLabel: "",
+})
 
 const emit = defineEmits<{
   "load-more": []

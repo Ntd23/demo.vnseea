@@ -2612,7 +2612,6 @@
       "noConversationSelectedDescription": "Chọn người dùng hoặc nhóm ở danh sách bên trái để tải thread thật từ backend.",
       "infoPanelEmptyTitle": "Chi tiết hội thoại sẽ hiện ở đây",
       "infoPanelEmptyDescription": "Mở một cuộc trò chuyện thật để xem thành viên, media và các thao tác hỗ trợ trong cột này.",
-      "emptyThread": "Backend chưa trả về tin nhắn nào cho cuộc trò chuyện này.",
       "composeTitle": "Soạn tin nhắn",
       "sendTo": "Gửi tới",
       "recipientPlaceholder": "Nhập tên người nhận",
@@ -5547,7 +5546,30 @@
       "subtitle": "Chia sẻ những điều mới và những khoảnh khắc đáng nhớ cùng cộng đồng của bạn."
     }
   },
+  "contactPage": {
+    "eyebrow": "Liên hệ",
+    "title": "Liên hệ chúng tôi",
+    "description": "Gửi lời nhắn tới đội ngũ VNSEEA. Chúng tôi sẽ xem yêu cầu và phản hồi qua email bạn cung cấp.",
+    "firstName": "Tên",
+    "lastName": "Họ",
+    "email": "Email",
+    "message": "Lời nhắn",
+    "acceptTerms": "Tôi đồng ý với chính sách bảo mật trước khi gửi lời nhắn này.",
+    "send": "Gửi",
+    "sent": "Lời nhắn của bạn đã được gửi.",
+    "failed": "Hiện chưa thể gửi lời nhắn.",
+    "validationRequired": "Vui lòng điền đầy đủ thông tin bắt buộc."
+  },
   "auth": {
+    "footer": {
+      "terms": "Điều khoản sử dụng",
+      "privacy": "Chính sách bảo mật",
+      "contact": "Liên hệ chúng tôi",
+      "about": "Về",
+      "language": "Ngôn ngữ",
+      "languageTitle": "Chọn ngôn ngữ",
+      "languageDescription": "Đổi ngôn ngữ hiển thị cho các màn hình xác thực."
+    },
     "heroPanel": {
       "defaultTitle": "Kết nối với cộng đồng của bạn",
       "defaultSubtitle": "Theo dõi bảng tin, mở rộng mạng lưới và giữ mọi hoạt động của bạn ở cùng một nơi.",

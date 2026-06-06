@@ -14,6 +14,7 @@ export const appRoutes = {
   privacyPolicy: "/terms/privacy-policy",
   terms: (type: string) => `/terms/${encodeSegment(type)}`,
   customPage: (pageName: string) => `/site-pages/${encodeSegment(pageName)}`,
+  contactUs: "/contact-us",
   confirmLogin: "/confirm-login",
   resetPassword: "/reset-password",
   confirmAccount: "/confirm-account",

@@ -8,7 +8,7 @@ import CmsPresentationCmsPage from "../../../src/cms/presentation/pages/CmsPage.
 import { normalizeCmsPageName } from "../../../src/cms/domain/services/cms-route.service"
 
 definePageMeta({
-  layout: "default",
+  layout: "public",
 })
 
 const route = useRoute()

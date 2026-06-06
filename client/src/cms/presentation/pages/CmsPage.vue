@@ -3,7 +3,6 @@
   <div class="cms-page" :class="{ 'cms-page--plain': !hasHero }">
     <section v-if="hasHero" class="cms-page__hero">
       <div class="cms-page__hero-inner">
-        <p class="cms-page__eyebrow">CMS</p>
         <h1 class="cms-page__title">
           {{ page?.title }}
         </h1>

@@ -2,20 +2,23 @@
 <template>
   <div class="w-full">
     <ClientOnly>
-      <LazyUContentSearchButton
-        :label="$t('navigation.headerSearchInput.placeholder')"
-        icon="i-ph-magnifying-glass-duotone"
-        color="none"
-        variant="none"
-        :collapsed="false"
-        :kbds="['ctrl', 'k']"
+      <button
+        type="button"
         class="header-search-fallback header-search-trigger"
-        :ui="{
-          label: 'flex-1 text-left truncate text-sm font-normal text-[var(--text-tertiary)]',
-          leadingIcon: 'h-4 w-4 shrink-0 text-[var(--text-tertiary)]',
-          trailing: 'ms-auto flex items-center gap-1',
-        }"
-      />
+        :aria-label="$t('navigation.headerSearchInput.placeholder')"
+        @click="openSearch"
+      >
+        <span class="flex min-w-0 items-center gap-2">
+          <Icon name="i-ph-magnifying-glass-duotone" class="h-4 w-4 shrink-0 text-[var(--text-tertiary)]" />
+          <span class="truncate text-sm font-medium text-[var(--text-tertiary)]">
+            {{ $t('navigation.headerSearchInput.placeholder') }}
+          </span>
+        </span>
+        <span class="hidden items-center gap-1 sm:flex">
+          <kbd>Ctrl</kbd>
+          <kbd>K</kbd>
+        </span>
+      </button>
 
       <template #fallback>
         <button type="button" class="header-search-fallback" aria-hidden="true" tabindex="-1">
@@ -41,6 +44,12 @@ withDefaults(defineProps<{
 }>(), {
   autofocus: false
 })
+
+const { open } = useContentSearch()
+
+const openSearch = () => {
+  open.value = true
+}
 </script>
 
 <style scoped>

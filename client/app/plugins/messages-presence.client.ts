@@ -1,5 +1,7 @@
 // English description: Keeps chat presence alive for the whole browser app session, not only the messages route.
 
+import { isProtectedPath } from "../../src/auth/application/constants/route-policy"
+
 type PresenceAction = "online" | "offline"
 
 const API_PATH = "/_api/messages/presence"
@@ -7,6 +9,11 @@ const HEARTBEAT_INTERVAL_MS = 25_000
 const TAB_TTL_MS = 45_000
 const TAB_ID_KEY = "messages:presence-tab-id"
 const TABS_KEY = "messages:presence-tabs"
+
+const hasBackendSession = () =>
+  document.cookie
+    .split(";")
+    .some(cookie => cookie.trim().startsWith("user_id="))
 
 const createTabId = () =>
   globalThis.crypto?.randomUUID?.() || `${Date.now()}:${Math.random().toString(36).slice(2)}`
@@ -30,6 +37,10 @@ const writePresenceTabs = (tabs: Record<string, number>) => {
 }
 
 const postPresence = async (action: PresenceAction) => {
+  if (!hasBackendSession()) {
+    return
+  }
+
   await $fetch(API_PATH, {
     method: "POST",
     body: { action },
@@ -37,6 +48,10 @@ const postPresence = async (action: PresenceAction) => {
 }
 
 const beaconPresence = (action: PresenceAction) => {
+  if (!hasBackendSession()) {
+    return
+  }
+
   const body = JSON.stringify({ action })
   const blob = new Blob([body], { type: "application/json" })
 
@@ -54,6 +69,12 @@ const beaconPresence = (action: PresenceAction) => {
 }
 
 export default defineNuxtPlugin(() => {
+  const route = useRoute()
+
+  if (!isProtectedPath(route.path) || !hasBackendSession()) {
+    return
+  }
+
   const tabId = (() => {
     try {
       const existingTabId = sessionStorage.getItem(TAB_ID_KEY)

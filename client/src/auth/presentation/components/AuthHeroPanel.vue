@@ -116,22 +116,65 @@
       </main>
     </div>
 
-    <nav v-if="cmsLinks.length" class="auth-hero__cms-links" aria-label="Public site links">
-      <NuxtLink
-        v-for="link in cmsLinks"
-        :key="link.to"
-        class="auth-hero__cms-link"
-        :to="link.to"
+    <footer class="auth-hero__footer" aria-label="Public site links">
+      <span class="auth-hero__footer-copy">
+        © {{ currentYear }} {{ footerBrandName }}
+      </span>
+      <template v-for="link in footerLinks" :key="link.to">
+        <span class="auth-hero__footer-separator" aria-hidden="true">•</span>
+        <NuxtLink
+          class="auth-hero__footer-link"
+          :to="link.to"
+        >
+          {{ link.label }}
+        </NuxtLink>
+      </template>
+      <span class="auth-hero__footer-separator" aria-hidden="true">•</span>
+      <button
+        type="button"
+        class="auth-hero__footer-link auth-hero__footer-button"
+        @click="languageModalOpen = true"
       >
-        {{ link.label }}
-      </NuxtLink>
-    </nav>
+        <Icon name="i-ph-globe-hemisphere-east-duotone" class="h-3.5 w-3.5" />
+        <span>{{ t("auth.footer.language") }}</span>
+      </button>
+    </footer>
+
+    <UModal
+      v-model:open="languageModalOpen"
+      :title="t('auth.footer.languageTitle')"
+      :description="t('auth.footer.languageDescription')"
+      :ui="{ content: 'sm:max-w-[420px]' }"
+    >
+      <template #body>
+        <div class="auth-hero__language-list">
+          <button
+            v-for="item in localeOptions"
+            :key="item.code"
+            type="button"
+            class="auth-hero__language-option"
+            :class="{ 'auth-hero__language-option--active': item.code === activeLocale }"
+            @click="changeLocale(item.code)"
+          >
+            <span class="auth-hero__language-copy">
+              <span class="auth-hero__language-name">{{ item.name }}</span>
+              <span class="auth-hero__language-code">{{ item.short }}</span>
+            </span>
+            <Icon
+              v-if="item.code === activeLocale"
+              name="i-ph-check-circle-fill"
+              class="h-5 w-5 text-[#0000ff]"
+            />
+          </button>
+        </div>
+      </template>
+    </UModal>
   </aside>
 </template>
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { useCmsFooterLinksVM } from "../../../cms/application/view-models/useCmsFooterLinksVM"
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
 
 const props = withDefaults(defineProps<{
@@ -144,16 +187,58 @@ const props = withDefaults(defineProps<{
   imageAlt: '',
 })
 
-const { t } = useI18n()
+const { t, locale, locales, setLocale } = useI18n()
 const siteBrandingStore = useSiteBrandingStore()
 const { branding } = storeToRefs(siteBrandingStore)
-const { links: cmsLinks } = useCmsFooterLinksVM()
 const logoFailed = ref(false)
+const languageModalOpen = ref(false)
+const pendingLocale = ref("")
+const currentYear = new Date().getFullYear()
 
 const brandName = computed(() => branding.value.siteName || branding.value.siteTitle)
+const footerBrandName = computed(() => brandName.value || "VNSEEA")
 const displayLogoUrl = computed(() => branding.value.nightLogoUrl || branding.value.logoUrl)
 const logoAlt = computed(() => brandName.value ? `${brandName.value} Logo` : "Site logo")
 const hasBrandIdentity = computed(() => Boolean(displayLogoUrl.value && !logoFailed.value) || Boolean(brandName.value))
+const activeLocale = computed(() => String(locale.value))
+const footerLinks = computed(() => [
+  { label: t("auth.footer.terms"), to: appRoutes.termsOfUse },
+  { label: t("auth.footer.privacy"), to: appRoutes.privacyPolicy },
+  { label: t("auth.footer.contact"), to: appRoutes.contactUs },
+  { label: t("auth.footer.about"), to: appRoutes.terms("about-us") },
+])
+const localeOptions = computed(() => {
+  const entries = locales.value.length ? locales.value : [locale.value]
+
+  return entries.map((entry) => {
+    if (typeof entry === "string") {
+      return {
+        code: entry,
+        name: entry.toUpperCase(),
+        short: entry.toUpperCase(),
+      }
+    }
+
+    return {
+      code: entry.code,
+      name: entry.name ?? entry.code.toUpperCase(),
+      short: entry.code.toUpperCase(),
+    }
+  })
+})
+
+const changeLocale = async (code: string) => {
+  if (code === activeLocale.value || pendingLocale.value) return
+
+  try {
+    pendingLocale.value = code
+    await setLocale(code)
+    languageModalOpen.value = false
+  }
+  finally {
+    pendingLocale.value = ""
+  }
+}
 
 watch(displayLogoUrl, () => {
   logoFailed.value = false
@@ -377,37 +462,104 @@ watch(displayLogoUrl, () => {
   transform: translateY(-2px);
 }
 
-/* Public CMS footer links */
-.auth-hero__cms-links {
+/* Public auth footer links */
+.auth-hero__footer {
   position: relative;
   z-index: 15;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
   gap: 0.35rem 0.85rem;
   width: 100%;
   max-width: 72rem;
   margin: 1.25rem auto 0;
   padding: 0 1rem;
-}
-
-.auth-hero__cms-link {
   color: rgba(255, 255, 255, 0.76);
   font-size: 0.78rem;
   font-weight: 650;
   line-height: 1.4;
+}
+
+.auth-hero__footer-copy,
+.auth-hero__footer-separator {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.auth-hero__footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: rgba(255, 255, 255, 0.76);
   text-decoration: none;
   transition: color var(--duration-normal) var(--ease-default);
 }
 
-.auth-hero__cms-link:hover {
+.auth-hero__footer-link:hover {
   color: #ffffff;
   text-decoration: underline;
   text-underline-offset: 0.22em;
 }
 
+.auth-hero__footer-button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.auth-hero__language-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.auth-hero__language-option {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  padding: 0.9rem 1rem;
+  color: var(--text-primary);
+  text-align: left;
+  transition:
+    border-color var(--duration-normal) var(--ease-default),
+    box-shadow var(--duration-normal) var(--ease-default),
+    background var(--duration-normal) var(--ease-default);
+}
+
+.auth-hero__language-option:hover,
+.auth-hero__language-option--active {
+  border-color: rgba(0, 0, 255, 0.26);
+  background: rgba(0, 0, 255, 0.04);
+  box-shadow: var(--shadow-xs);
+}
+
+.auth-hero__language-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.auth-hero__language-name {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 750;
+}
+
+.auth-hero__language-code {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 @media (min-width: 1024px) {
-  .auth-hero__cms-links {
+  .auth-hero__footer {
     margin-top: 0.75rem;
   }
 }

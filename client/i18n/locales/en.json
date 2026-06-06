@@ -5590,7 +5590,30 @@
       "subtitle": "Share new things and memorable moments with your community."
     }
   },
+  "contactPage": {
+    "eyebrow": "Contact",
+    "title": "Contact Us",
+    "description": "Send a message to the VNSEEA team. We will review your request and reply through the email you provide.",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "Email",
+    "message": "Message",
+    "acceptTerms": "I agree to the privacy policy before sending this message.",
+    "send": "Send",
+    "sent": "Your message has been sent.",
+    "failed": "Unable to send message right now.",
+    "validationRequired": "Please fill in all required fields."
+  },
   "auth": {
+    "footer": {
+      "terms": "Terms of Use",
+      "privacy": "Privacy Policy",
+      "contact": "Contact Us",
+      "about": "About",
+      "language": "Language",
+      "languageTitle": "Choose language",
+      "languageDescription": "Switch the display language for the authentication screens."
+    },
     "heroPanel": {
       "defaultTitle": "Connect with your community",
       "defaultSubtitle": "Follow your feed, grow your network, and keep your activity in one place.",

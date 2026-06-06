@@ -1,4 +1,5 @@
-<?php 
+<?php
+// English description: Handles public contact-us form submissions and sends them to the configured site email.
 if ($f == 'contact_us') {
     if ($wo['config']['reCaptcha'] == 1) {
         if (empty($_POST['g-recaptcha-response'])) {
@@ -45,21 +46,29 @@ if ($f == 'contact_us') {
             'message_body' => $message,
             'is_html' => false
         );
+        if (!empty($_SERVER['HTTP_X_NUXT_BRIDGE'])) {
+            $send_message_data['return'] = 'error';
+        }
         $send              = Wo_SendMessage($send_message_data);
-        if ($send) {
+        if ($send === true) {
             $data = array(
                 'status' => 200,
                 'message' => $success_icon . $wo['lang']['email_sent']
             );
         } else {
             $errors[] = $error_icon . $wo['lang']['processing_error'];
+            if (!empty($_SERVER['HTTP_X_NUXT_BRIDGE']) && is_string($send) && !empty($send)) {
+                $mail_error = $send;
+            }
         }
     }
-    header("Content-type: application/json");
+    header("Content-type: application/json; charset=utf-8");
     if (!empty($errors)) {
-        echo json_encode(array(
-            'errors' => $errors
-        ));
+        $response = array('errors' => $errors);
+        if (!empty($mail_error)) {
+            $response['mail_error'] = $mail_error;
+        }
+        echo json_encode($response);
     } else {
         echo json_encode($data);
     }
