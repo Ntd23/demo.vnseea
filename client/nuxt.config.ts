@@ -99,6 +99,13 @@ export default defineNuxtConfig({
       ],
     },
   },
+  routeRules: {
+    "/welcome": {
+      headers: {
+        "X-Robots-Tag": "noindex, nofollow",
+      },
+    },
+  },
   alias: {
     "#shared-kernel": resolve(__dirname, "src/shared-kernel"),
   },
@@ -147,6 +154,25 @@ export default defineNuxtConfig({
   image: {
     domains: imageDomains,
   },
+  fonts: {
+    defaults: {
+      preload: true,
+      weights: [400, 500, 600, 700, 800],
+      styles: ["normal"],
+    },
+    families: [
+      {
+        name: "Inter",
+        provider: "google",
+        weights: [400, 500, 600, 700, 800],
+      },
+      {
+        name: "Be Vietnam Pro",
+        provider: "google",
+        weights: [400, 500, 600, 700, 800],
+      },
+    ],
+  },
   site: {
     name: "VNSEEA",
     url: publicSiteUrl,
@@ -188,6 +214,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "@nuxt/ui",
+    "@nuxt/fonts",
     "@nuxt/scripts",
     "@nuxtjs/seo",
     "@nuxt/icon",

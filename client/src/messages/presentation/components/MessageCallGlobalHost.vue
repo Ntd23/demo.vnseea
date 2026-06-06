@@ -263,8 +263,8 @@ const modalHint = computed(() => {
     : t("pages.messagesPage.callModalOutgoingHint")
 })
 
-const audioCallSoundUrl = useBackendWebUrl("/themes/sunshine/mp3/calling.mp3")
-const videoCallSoundUrl = useBackendWebUrl("/themes/sunshine/mp3/video_call.mp3")
+const audioCallSoundUrl = useBackendWebUrl("/themes/wowonder/mp3/calling.mp3")
+const videoCallSoundUrl = useBackendWebUrl("/themes/wowonder/mp3/video_call.mp3")
 let callSound: HTMLAudioElement | null = null
 let pendingSoundRetry: (() => void) | null = null
 

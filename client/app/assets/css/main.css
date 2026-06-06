@@ -1,6 +1,5 @@
 /* English description: Global frontend CSS entry that imports Nuxt UI, Tailwind, tokens, and app-wide light-theme base styles. */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 @import "@nuxt/ui";
 @import "./tokens.css";
