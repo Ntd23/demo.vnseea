@@ -1,3 +1,4 @@
+<!-- English description: Renders one authenticated sidebar navigation item with active state handling. -->
 <template>
   <NuxtLink
     :to="to"
@@ -34,8 +35,8 @@ const props = defineProps<{
 const isActive = computed(() => {
   if (props.active !== undefined) return props.active
   
-  if (props.to === "/home") {
-    return route.path === "/home"
+  if (props.to === "/") {
+    return route.path === "/" || route.path === "/home"
   }
 
   return route.path === props.to

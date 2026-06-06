@@ -3,7 +3,7 @@
   <div class="public-layout">
     <header class="public-layout__header">
       <div class="public-layout__header-inner">
-        <NavigationHeaderLogo :to="appRoutes.home" :inverted="false" />
+        <NavigationHeaderLogo :to="appRoutes.welcome" :inverted="false" />
         <nav class="public-layout__nav" aria-label="Public navigation">
           <NuxtLink class="public-layout__nav-link" :to="appRoutes.termsOfUse">
             {{ t("auth.footer.terms") }}
