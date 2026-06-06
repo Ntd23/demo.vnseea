@@ -34,8 +34,8 @@ const props = defineProps<{
 const isActive = computed(() => {
   if (props.active !== undefined) return props.active
   
-  if (props.to === "/") {
-    return route.path === "/" || route.path === "/home"
+  if (props.to === "/home") {
+    return route.path === "/home"
   }
 
   return route.path === props.to

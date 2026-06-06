@@ -38,7 +38,7 @@ const items = computed(() => [
     label: 'navigation.headerIconNav.home',
     to: '/home',
     icon: 'i-ph-house-fill',
-    active: route.path === '/' || route.path === '/home',
+    active: route.path === '/home',
   },
   {
     label: 'navigation.headerIconNav.photos',

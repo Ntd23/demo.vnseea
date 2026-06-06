@@ -73,7 +73,7 @@ const isFundingPage = computed(() =>
   || route.path.startsWith("/edit_fund/")
 )
 const isForumPage = computed(() => route.path === appRoutes.forum)
-const isHomeFeedPage = computed(() => route.path === appRoutes.home || route.path === appRoutes.feed)
+const isHomeFeedPage = computed(() => route.path === appRoutes.feed)
 const isCommunityComposerPage = computed(() =>
   route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
 )
@@ -93,7 +93,6 @@ const showRightSidebar = computed(() => !isReelsPage.value && !isLivePage.value 
 // HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.
 // Using a whitelist to avoid it leaking onto Groups, Events, Jobs, etc.
 const iconNavPages = new Set([
-  appRoutes.home,
   appRoutes.feed,
   appRoutes.photos,
   appRoutes.watch,
