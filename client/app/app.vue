@@ -65,15 +65,22 @@
     </NuxtLayout>
     <UToaster />
     <ClientOnly>
-  <MessagesMessageCallGlobalHost :poll-incoming="Boolean(backendUserSession)" />
-</ClientOnly>
+      <MessagesMessageCallGlobalHost
+        v-if="shouldMountMessageCallHost"
+        :poll-incoming="true"
+      />
+    </ClientOnly>
   </UApp>
 </template>
 
 <script setup lang="ts">
-import MessagesMessageCallGlobalHost from "../src/messages/presentation/components/MessageCallGlobalHost.vue"
+import { defineAsyncComponent } from "vue"
 import { useSiteBrandingHead } from "../src/site-branding/application/composables/useSiteBrandingHead"
 import { useSiteBrandingStore } from "../src/site-branding/application/stores/useSiteBrandingStore"
+
+const MessagesMessageCallGlobalHost = defineAsyncComponent(() =>
+  import("../src/messages/presentation/components/MessageCallGlobalHost.vue"),
+)
 
 const route = useRoute()
 const nuxtApp = useNuxtApp()
@@ -86,6 +93,7 @@ const backendUserSession = useCookie<string | null>("user_id", {
 })
 const lastSafeRoute = useState("last-safe-route", () => "/home")
 const runtimeBoundaryNonce = ref(0)
+const shouldMountMessageCallHost = computed(() => Boolean(backendUserSession.value))
 
 await callOnce("site-branding", () => siteBrandingStore.hydrate())
 useSiteBrandingHead()

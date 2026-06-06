@@ -157,7 +157,9 @@ const {
 .auth-form__field-link:hover { opacity: 0.72; }
 
 .auth-submit {
+  background: #0000ff !important;
   border-radius: 14px !important;
+  color: #ffffff !important;
   height: 3.5rem !important;
   font-size: 1rem !important;
   font-weight: 800 !important;
@@ -166,9 +168,16 @@ const {
   transition: all 0.2s ease !important;
 }
 
-.auth-submit:hover {
+.auth-submit:hover:not(:disabled) {
+  background: #0000d8 !important;
   box-shadow: 0 16px 36px rgba(0, 0, 255, 0.28) !important;
   transform: translateY(-1px);
+}
+
+.auth-submit:disabled {
+  background: #334155 !important;
+  color: #ffffff !important;
+  opacity: 0.78 !important;
 }
 
 .auth-form__footer-text {
