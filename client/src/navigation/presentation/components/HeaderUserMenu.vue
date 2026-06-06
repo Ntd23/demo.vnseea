@@ -94,12 +94,12 @@
           </template>
         </div>
 
-        <div class="user-menu__divider" />
+        <!-- <div class="user-menu__divider" />
 
         <button class="user-menu__switch" type="button">
           <span>{{ $t("navigation.mobileMenu.bottomActions.switchAccount") }}</span>
           <Icon name="i-ph-arrows-clockwise" class="h-4 w-4" />
-        </button>
+        </button> -->
       </div>
     </Transition>
   </div>
@@ -181,6 +181,7 @@ function closeAndNavigate(to: string) {
 const quickActions = computed(() => {
   const items = [
     { label: "navigation.mobileMenu.mainNav.advertising", icon: "i-ph-megaphone-fill", to: appRoutes.ads },
+    { label: "navigation.mobileMenu.mainNav.offers", icon: "i-ph-tag-chevron-fill", to: appRoutes.offers },
   ]
 
   if (currentUser.value?.isPro && currentUser.value?.canBoostPosts) {

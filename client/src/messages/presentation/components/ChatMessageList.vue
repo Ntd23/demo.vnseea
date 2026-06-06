@@ -131,6 +131,7 @@ const props = defineProps<{
   isTyping?: boolean
   loadingLabel: string
   messages: MessageItem[]
+  threadKey?: string
 }>()
 
 const emit = defineEmits<{
@@ -165,6 +166,11 @@ const bubbleReactionOptions = computed(() =>
     label: t(reaction.labelKey),
   })),
 )
+const lastMessageKey = computed(() => {
+  const lastMessage = props.messages[props.messages.length - 1]
+
+  return lastMessage ? `${props.threadKey || "thread"}:${lastMessage.id}` : `${props.threadKey || "thread"}:empty`
+})
 
 function getReplyMeta(message: MessageItem) {
   return getMessageReplyMeta(message)
@@ -231,16 +237,42 @@ function scrollToBottom(behavior: ScrollBehavior = "smooth") {
   })
 }
 
-watch(() => props.messages.length, () => {
-  nextTick(() => scrollToBottom())
+function scheduleScrollToBottom(behavior: ScrollBehavior = "smooth") {
+  nextTick(() => {
+    scrollToBottom(behavior)
+
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(() => scrollToBottom(behavior))
+    }
+  })
+}
+
+watch(lastMessageKey, () => {
+  scheduleScrollToBottom()
 })
 
+watch(
+  () => props.threadKey,
+  () => {
+    scheduleScrollToBottom("auto")
+  },
+)
+
+watch(
+  () => props.isPending,
+  (isPending) => {
+    if (!isPending) {
+      scheduleScrollToBottom("auto")
+    }
+  },
+)
+
 watch(() => props.isTyping, () => {
-  nextTick(() => scrollToBottom())
+  scheduleScrollToBottom()
 })
 
 onMounted(() => {
-  scrollToBottom("auto")
+  scheduleScrollToBottom("auto")
 })
 
 defineExpose({ scrollToBottom })

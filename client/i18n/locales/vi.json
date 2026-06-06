@@ -1394,6 +1394,7 @@
         "posts": "Tất cả",
         "reels": "Reel",
         "photos": "Ảnh",
+        "offers": "Ưu đãi",
         "followers": "Người theo dõi",
         "about": "Giới thiệu"
       },
@@ -1403,6 +1404,10 @@
       "photosTitle": "Bài viết ảnh",
       "photosEmptyTitle": "Chưa có bài viết ảnh",
       "photosEmptyDescription": "Các bài viết ảnh của fanpage sẽ hiển thị tại đây.",
+      "offersTitle": "Ưu đãi của fanpage",
+      "offersEmptyTitle": "Chưa có ưu đãi",
+      "offersEmptyDescription": "Ưu đãi từ fanpage này sẽ hiển thị tại đây.",
+      "createOffer": "Tạo ưu đãi",
       "followers": {
         "title": "Người theo dõi",
         "count": "{count} người theo dõi",
@@ -5145,9 +5150,11 @@
       "blogAttachment": "Bài viết blog",
       "fundingAttachment": "Chiến dịch gây quỹ",
       "productAttachment": "Sản phẩm",
+      "offerAttachment": "Ưu đãi",
       "openBlog": "Đọc bài viết",
       "openFunding": "Xem chiến dịch",
       "openProduct": "Xem sản phẩm",
+      "openOffer": "Xem ưu đãi",
       "fundingProgress": "Tiến độ",
       "pollOptionVotes": "{count} người chọn",
       "pollTotalVotes": "{count} lượt bình chọn",
@@ -5210,6 +5217,72 @@
     "lightboxViewer": {
       "title": "Xem media",
       "description": "Dùng mũi tên điều hướng để xem {count} media trong bài viết này."
+    }
+  },
+  "offers": {
+    "seoTitle": "Ưu đãi",
+    "seoDescription": "Xem các ưu đãi hiện tại từ các fanpage trên VNSEEA.",
+    "heroEyebrow": "Ưu đãi",
+    "title": "Ưu đãi",
+    "description": "Theo dõi ưu đãi, giảm giá và miễn phí vận chuyển từ dữ liệu backend.",
+    "loadMore": "Tải thêm ưu đãi",
+    "emptyTitle": "Chưa có ưu đãi",
+    "emptyDescription": "Khi fanpage đăng ưu đãi, nội dung sẽ xuất hiện tại đây.",
+    "createSuccess": "Đã tạo ưu đãi",
+    "editSuccess": "Đã cập nhật ưu đãi",
+    "deleteSuccess": "Đã xóa ưu đãi",
+    "actions": {
+      "edit": "Sửa",
+      "delete": "Xóa"
+    },
+    "card": {
+      "fallbackTitle": "Ưu đãi fanpage",
+      "endsAt": "Kết thúc {date}"
+    },
+    "discountTypes": {
+      "discount_percent": "Giảm theo phần trăm",
+      "discount_amount": "Giảm theo số tiền",
+      "buy_get_discount": "Mua / nhận giảm",
+      "spend_get_off": "Chi tiêu / giảm",
+      "free_shipping": "Miễn phí vận chuyển"
+    },
+    "form": {
+      "eyebrow": "Ưu đãi fanpage",
+      "createTitle": "Tạo ưu đãi",
+      "editTitle": "Sửa ưu đãi",
+      "errorTitle": "Cần kiểm tra thông tin ưu đãi",
+      "discountType": "Loại",
+      "discountPercent": "Phần trăm giảm",
+      "discountAmount": "Số tiền giảm",
+      "buy": "Mua",
+      "get": "Nhận",
+      "spend": "Chi tiêu",
+      "amountOff": "Số tiền giảm",
+      "discountedItems": "Sản phẩm/dịch vụ áp dụng",
+      "discountedItemsHint": "Tối đa 100 ký tự.",
+      "currency": "Mã tiền tệ",
+      "description": "Mô tả",
+      "expireDate": "Ngày kết thúc",
+      "expireTime": "Giờ kết thúc",
+      "thumbnail": "Ảnh đại diện",
+      "cancel": "Hủy",
+      "publish": "Đăng",
+      "save": "Lưu"
+    },
+    "errors": {
+      "load": "Không tải được ưu đãi",
+      "loadMore": "Không tải thêm được ưu đãi",
+      "save": "Không lưu được ưu đãi.",
+      "delete": "Không xóa được ưu đãi.",
+      "pageRequired": "Cần chọn fanpage.",
+      "description": "Mô tả phải dài hơn 32 ký tự.",
+      "discountedItems": "Sản phẩm/dịch vụ áp dụng phải dưới 100 ký tự.",
+      "expire": "Cần ngày và giờ kết thúc.",
+      "thumbnail": "Cần ảnh đại diện.",
+      "percent": "Phần trăm giảm phải từ 1 đến 99.",
+      "amount": "Số tiền giảm phải lớn hơn 0.",
+      "buyGet": "Cần số mua, số nhận và phần trăm giảm.",
+      "spend": "Cần số chi tiêu và số tiền giảm."
     }
   },
   "notifications": {
@@ -5291,6 +5364,7 @@
         "myArticles": "Bài viết của tôi",
         "movies": "Phim",
         "events": "Sự kiện",
+        "offers": "Ưu đãi",
         "createEvent": "Tạo sự kiện",
         "live": "Live",
         "myGroupsPlaceholder": "Nhóm của tôi",
@@ -5358,6 +5432,7 @@
         "marketplace": "Thị trường",
         "directory": "Danh mục",
         "events": "Sự kiện",
+        "offers": "Ưu đãi",
         "live": "Live",
         "forum": "Diễn đàn",
         "movies": "Phim",
@@ -5531,6 +5606,46 @@
       "savedState": "Đã lưu cài đặt.",
       "unblockAction": "Bỏ chặn",
       "saveError": "Không thể lưu cài đặt."
+    },
+    "verification": {
+      "heroTitle": "Xác minh hồ sơ!",
+      "userTitleSuffix": "Người dùng",
+      "shopTitleSuffix": "Tên cửa hàng của bạn",
+      "afterVerified": "Sau khi xác minh",
+      "pendingTitle": "Yêu cầu xác minh đã được gửi",
+      "pendingDescription": "Hồ sơ của bạn đang chờ quản trị viên duyệt.",
+      "verifiedTitle": "Xác minh hoàn tất",
+      "verifiedDescription": "Hồ sơ của bạn đã được xác minh.",
+      "deadlineTitle": "Cần xác thực trong 30 ngày",
+      "deadlineDescription": "Vui lòng gửi hồ sơ xác thực trong vòng 30 ngày để tài khoản hoặc cửa hàng của bạn tiếp tục sử dụng các tính năng yêu cầu xác thực.",
+      "fullName": "Họ và tên",
+      "dob": "Ngày sinh",
+      "cccd": "Số CMND/CCCD",
+      "cccdPlaceholder": "9-12 chữ số",
+      "shopName": "Tên cửa hàng của bạn",
+      "message": "Lời nhắn",
+      "uploadDocs": "Tải lên tài liệu",
+      "selectImages": "Vui lòng tải lên ảnh hộ chiếu / giấy tờ tùy thân và ảnh riêng biệt của bạn.",
+      "passportId": "Bản sao hộ chiếu hoặc thẻ căn cước của bạn",
+      "identityDocument": "CMND/CCCD/Hộ chiếu",
+      "personalPic": "Hình ảnh cá nhân của bạn",
+      "portrait": "Ảnh chân dung",
+      "shopImage": "Hình ảnh cửa hàng của bạn",
+      "license": "Giấy phép đăng ký kinh doanh",
+      "send": "Gửi",
+      "errors": {
+        "title": "Vui lòng kiểm tra thông tin",
+        "load": "Không thể tải trạng thái xác minh.",
+        "fullName": "Họ và tên phải từ 5 đến 50 ký tự.",
+        "dob": "Ngày sinh là bắt buộc.",
+        "cccd": "Số CMND/CCCD phải có 9-12 chữ số.",
+        "userFiles": "Vui lòng tải lên giấy tờ tùy thân và ảnh chân dung.",
+        "imageFormat": "Vui lòng dùng ảnh JPG, PNG, GIF, BMP hoặc WebP. Giấy phép kinh doanh có thể là PDF.",
+        "shopName": "Tên cửa hàng phải từ 5 đến 50 ký tự.",
+        "shopMessage": "Lời nhắn phải có ít nhất 5 ký tự.",
+        "shopFiles": "Vui lòng tải lên giấy tờ tùy thân, ảnh cá nhân, ảnh cửa hàng và giấy phép kinh doanh.",
+        "submit": "Không thể gửi yêu cầu xác minh."
+      }
     },
     "data": {
       "options": {
@@ -6579,7 +6694,23 @@
       "cancelled": {
         "label": "Đã hủy",
         "description": "Khoản đối soát đã bị hủy bỏ do đơn lỗi/hoàn."
+      },
+      "released": {
+        "label": "Phát hành",
+        "description": "Tiền đã được chuyển vào số dư hiện có của cửa hàng."
+      },
+      "reversed": {
+         "label": "Hủy bỏ",
+        "description": "Khoản thanh toán đã bị hủy bỏ vì đơn đặt hàng đã bị hủy hoặc được hoàn tiền."
       }
+    },
+    "tasks": {
+      "payment": "Xác minh thanh toán",
+      "paymentDescription": "Ví nội bộ đã ghi nhận thành công hoặc tiền đã đến hệ thống.",
+      "packing": "Đóng gói & in nhãn",
+      "packingDescription": "Chuẩn bị sản phẩm, bao bì và nhãn vận chuyển trước khi bàn giao.",
+      "handoff": "Bàn giao shipper",
+      "handoffDescription": "Bàn giao đơn cho đơn vị vận chuyển để tiếp tục giao hàng và đối soát."
     },
     "empty": {
       "noMatchedTitle": "Không tìm thấy đơn phù hợp",

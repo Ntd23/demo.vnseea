@@ -173,6 +173,7 @@ export function useMessagesInbox(
   const selectedContactId = ref("")
   const ignoredRequestedThreadKey = ref("")
   const selectedRecipientIds = ref<number[]>([])
+  const removedContactIds = ref<string[]>([])
   const activeTagFilter = ref("")
   const multiText = ref("")
   const multiFile = ref<File | null>(null)
@@ -241,7 +242,8 @@ export function useMessagesInbox(
   )
 
   const inboxContacts = computed<MessageContact[]>(() => {
-    const contacts = inbox.value ?? []
+    const removedIds = new Set(removedContactIds.value)
+    const contacts = (inbox.value ?? []).filter(contact => !removedIds.has(contact.id))
     const userId = requestedUserId.value
     const taggedByUserId = new Map(
       (messageTags.value?.contacts ?? [])
@@ -916,8 +918,19 @@ export function useMessagesInbox(
 
     try {
       await repository.deleteConversation(contact)
-      selectedContactId.value = ""
+      if (contact.type === "group") {
+        removedContactIds.value = [...new Set([
+          ...removedContactIds.value,
+          contact.id,
+        ])]
+      }
+      inbox.value = (inbox.value ?? []).filter(item => item.id !== contact.id)
+      selectedContactId.value = filteredContacts.value[0]?.id ?? ""
       thread.value = { messages: [], typing: false }
+      replyTarget.value = null
+      remoteTyping.value = false
+      activeReactionPickerId.value = null
+      clearRequestedThreadQuerySilently()
       await refreshInbox()
     }
     catch {

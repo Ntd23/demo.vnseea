@@ -554,7 +554,9 @@ const attachmentIcon = computed(() =>
     ? "i-ph-hand-heart-duotone"
     : props.post.attachmentCard?.type === "product"
       ? "i-ph-shopping-bag-open-duotone"
-      : "i-ph-newspaper-clipping-duotone",
+      : props.post.attachmentCard?.type === "offer"
+        ? "i-ph-tag-chevron-duotone"
+        : "i-ph-newspaper-clipping-duotone",
 )
 
 const attachmentLabel = computed(() =>
@@ -562,7 +564,9 @@ const attachmentLabel = computed(() =>
     ? t("feed.postCard.fundingAttachment")
     : props.post.attachmentCard?.type === "product"
       ? t("feed.postCard.productAttachment")
-      : t("feed.postCard.blogAttachment"),
+      : props.post.attachmentCard?.type === "offer"
+        ? t("feed.postCard.offerAttachment")
+        : t("feed.postCard.blogAttachment"),
 )
 
 const attachmentActionLabel = computed(() =>
@@ -570,7 +574,9 @@ const attachmentActionLabel = computed(() =>
     ? t("feed.postCard.openFunding")
     : props.post.attachmentCard?.type === "product"
       ? t("feed.postCard.openProduct")
-      : t("feed.postCard.openBlog"),
+      : props.post.attachmentCard?.type === "offer"
+        ? t("feed.postCard.openOffer")
+        : t("feed.postCard.openBlog"),
 )
 
 async function openCommentTagging() {

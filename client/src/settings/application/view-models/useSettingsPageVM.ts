@@ -458,22 +458,12 @@ const socialLinksPage = (t: SettingTranslate, user: SettingsUser | null): Settin
   }],
 })
 
-const verificationPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
+const verificationPage = (t: SettingTranslate, _user: SettingsUser | null): SettingPage => ({
   slug: "verification",
   label: pageText(t, "verification", "label"),
   icon: pageIcons.verification,
   description: pageText(t, "verification", "description"),
-  sections: [{
-    title: pageText(t, "verification", "sections.request.title"),
-    description: pageText(t, "verification", "sections.request.description"),
-    kind: "summary",
-    items: [
-      summaryItem(
-        user?.verified ? fieldText(t, "verified") : fieldText(t, "notVerified"),
-        messageText(t, "verificationSummary"),
-      ),
-    ],
-  }],
+  sections: [],
 })
 
 const deleteAccountPage = (t: SettingTranslate): SettingPage => ({

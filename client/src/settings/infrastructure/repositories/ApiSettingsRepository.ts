@@ -88,6 +88,12 @@ export function createApiSettingsRepository(): SettingsRepository {
     async getCurrentUser() {
       return await client.get<SettingsUser>(apiRoutes.settings.me)
     },
+    async getVerificationState() {
+      return await client.get(apiRoutes.settings.verification)
+    },
+    async submitVerification(input) {
+      return await client.post(apiRoutes.settings.verification, input)
+    },
     async update(input) {
       const payload = toApiUpdatePayload(input)
 

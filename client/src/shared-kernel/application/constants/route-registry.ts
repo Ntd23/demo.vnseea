@@ -32,6 +32,7 @@ export const appRoutes = {
   postDetail: (id: string | number) => `/post/${encodeSegment(id)}`,
   movies: "/movies",
   memories: "/memories",
+  offers: "/offers",
   search: "/search",
   searchNearby: "/search-nearby",
   statusCreate: "/status/create",
@@ -239,6 +240,10 @@ export const apiRoutes = {
     posts: "boosted/posts",
     pages: "boosted/pages",
   },
+  offers: {
+    list: "offers",
+    detail: (id: string | number) => `offers/${encodeSegment(id)}`,
+  },
   ads: {
     list: "ads",
     options: "ads/options",
@@ -258,6 +263,7 @@ export const apiRoutes = {
   settings: {
     me: "settings/me",
     update: "settings/update",
+    verification: "settings/verification",
     sessions: "settings/sessions",
     blocked: "settings/blocked",
     unblock: "settings/unblock",

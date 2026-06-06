@@ -69,6 +69,7 @@ const sidebarNavMore = [
   { label: 'navigation.leftSidebar.items.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
   { label: 'navigation.leftSidebar.items.directory', icon: 'i-ph-squares-four-fill', to: '/directory' },
   { label: 'navigation.leftSidebar.items.events', icon: 'i-ph-calendar-dots-fill', to: '/events' },
+  { label: 'navigation.leftSidebar.items.offers', icon: 'i-ph-tag-chevron-fill', to: appRoutes.offers },
   { label: 'navigation.leftSidebar.items.live', icon: 'i-ph-broadcast-fill', to: '/live' },
   { label: 'navigation.leftSidebar.items.forum', icon: 'i-ph-chats-circle-fill', to: '/forum' },
   { label: 'navigation.leftSidebar.items.movies', icon: 'i-ph-popcorn-fill', to: '/movies' },
@@ -94,6 +95,9 @@ const isEventsRoute = () =>
   route.path === '/events'
   || route.path.startsWith('/events/')
 
+const isOffersRoute = () =>
+  route.path === appRoutes.offers
+
 const isGroupsRoute = () =>
   route.path === '/groups'
   || route.path === '/suggested-groups'
@@ -116,6 +120,7 @@ const isItemActive = (to: string) => {
   if (normalized === '/') return route.path === '/' || route.path === '/home'
   if (normalized === '/products') return isMarketplaceRoute()
   if (normalized === '/events') return isEventsRoute()
+  if (normalized === appRoutes.offers) return isOffersRoute()
   if (normalized === '/groups') return isGroupsRoute()
   if (normalized === '/pages') return isPagesRoute()
 

@@ -36,7 +36,7 @@
               :aria-label="$t('navigation.headerBar.friendRequests')"
               @click="toggleRequests"
             >
-              <Icon name="i-ph-user-plus-duotone" class="h-[18px] w-[18px]" />
+              <Icon name="i-ph-user-plus-duotone" class="h-4.5 w-4.5" />
               <span v-if="isClientReady && requestCount > 0" class="header-action-badge">
                 {{ requestCount }}
               </span>

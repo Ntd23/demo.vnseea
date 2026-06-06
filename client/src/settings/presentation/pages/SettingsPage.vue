@@ -28,6 +28,9 @@
           :user="user"
           :on-exchange="exchangePoints"
         />
+        <SettingsVerificationPanel
+          v-else-if="isVerificationPage"
+        />
         <template v-else>
           <SettingsSection
             v-for="section in activePage.sections"
@@ -45,10 +48,10 @@
 
 <script setup lang="ts">
 import { useSettingsPageVM } from "../../application/view-models/useSettingsPageVM"
-import SettingsHero from "../components/SettingsHero.vue"
 import SettingsMyPointsPanel from "../components/SettingsMyPointsPanel.vue"
 import SettingsSection from "../components/SettingsSection.vue"
 import SettingsSidebar from "../components/SettingsSidebar.vue"
+import SettingsVerificationPanel from "../components/SettingsVerificationPanel.vue"
 import NavigationLocaleSwitcher from "../../../navigation/presentation/components/LocaleSwitcher.vue"
 
 const props = defineProps<{
@@ -65,6 +68,10 @@ const {
   handleItemAction,
   exchangePoints,
 } = useSettingsPageVM(() => props.pageSlug)
+
+const isVerificationPage = computed(() =>
+  props.pageSlug === "verification" || activePage.value.slug === "verification",
+)
 </script>
 
 <style scoped>

@@ -100,12 +100,12 @@
             </template>
           </div>
 
-          <div class="mm__divider" />
+          <!-- <div class="mm__divider" />
 
           <button class="mm__switch" type="button">
             <span>{{ $t("navigation.mobileMenu.bottomActions.switchAccount") }}</span>
             <Icon name="i-ph-arrows-clockwise" class="h-4 w-4" />
-          </button>
+          </button> -->
         </div>
       </aside>
     </Transition>
@@ -194,6 +194,7 @@ function isNavItemActive(to: string) {
   if (normalized === '/home') return route.path === '/' || route.path === '/home'
   if (normalized === '/products') return ['/products', '/my-products', '/new-product'].includes(route.path) || route.path.startsWith('/edit-product/')
   if (normalized === '/events') return route.path === '/events' || route.path.startsWith('/events/')
+  if (normalized === appRoutes.offers) return route.path === appRoutes.offers
   if (normalized === '/groups') return ['/groups', '/suggested-groups', '/joined_groups', '/create-group'].includes(route.path) || route.path.startsWith('/g/') || route.path.startsWith('/group-setting/')
   if (normalized === '/pages') return ['/pages', '/suggested-pages', '/liked-pages', '/create-page'].includes(route.path) || route.path.startsWith('/p/') || route.path.startsWith('/page-setting/')
   if (to.includes('mine=1')) return route.path === '/blogs' && route.query.mine === '1'
@@ -211,6 +212,7 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.myArticles', icon: 'i-ph-article-fill', to: '/blogs?mine=1' },
   { label: 'navigation.mobileMenu.mainNav.movies', icon: 'i-ph-film-strip-fill', to: '/movies' },
   { label: 'navigation.mobileMenu.mainNav.events', icon: 'i-ph-calendar-blank-fill', to: '/events' },
+  { label: 'navigation.mobileMenu.mainNav.offers', icon: 'i-ph-tag-chevron-fill', to: appRoutes.offers },
   { label: 'navigation.mobileMenu.mainNav.myGroups', icon: 'i-ph-users-three-fill', to: '/groups' },
   { label: 'navigation.mobileMenu.mainNav.forum', icon: 'i-ph-chats-circle-fill', to: '/forum' },
   { label: 'navigation.mobileMenu.mainNav.advertising', icon: 'i-ph-megaphone-fill', to: appRoutes.ads },
@@ -227,7 +229,6 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.withdrawal', icon: 'i-ph-money-wavy-fill', to: '/withdrawal' },
   { label: 'navigation.mobileMenu.mainNav.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' },
   { label: 'navigation.mobileMenu.mainNav.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
-  { label: 'navigation.mobileMenu.mainNav.deals', icon: 'i-ph-tag-fill', to: '/deals' },
 ]
 
 const adminCpUrl = useBackendWebUrl(appRoutes.adminCp)
