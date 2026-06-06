@@ -4,7 +4,7 @@ import { createApiCommunityRepository } from "../../infrastructure/repositories/
 import { useCommunityPageDetail } from "../composables/useCommunityPageDetail"
 
 type PageActionState = "idle" | "loading" | "success" | "error"
-type PageDetailTabKey = "posts" | "reels" | "photos" | "followers" | "about"
+type PageDetailTabKey = "posts" | "reels" | "photos" | "offers" | "followers" | "about"
 
 export function useCommunityPageDetailPageVM(
   repository = createApiCommunityRepository(),
@@ -76,6 +76,7 @@ export function useCommunityPageDetailPageVM(
     { key: "posts", label: t("pages.pageDetailPage.tabs.posts") },
     { key: "reels", label: t("pages.pageDetailPage.tabs.reels") },
     { key: "photos", label: t("pages.pageDetailPage.tabs.photos") },
+    { key: "offers", label: t("pages.pageDetailPage.tabs.offers") },
     { key: "followers", label: t("pages.pageDetailPage.tabs.followers") },
     { key: "about", label: t("pages.pageDetailPage.tabs.about") },
   ])

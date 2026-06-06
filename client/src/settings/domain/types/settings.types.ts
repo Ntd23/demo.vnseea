@@ -3,6 +3,37 @@
 import type { LocationSelection } from "../../../location/domain/types/location.types"
 
 export type SettingsFieldValue = string | number | boolean | File | LocationSelection
+export type VerificationProfileType = "user" | "shop"
+export type VerificationStatus = "none" | "pending" | "verified"
+
+export interface SettingsVerificationFeature {
+  key: string
+  label: string
+}
+
+export interface SettingsVerificationUser {
+  id: number
+  name: string
+  username: string
+  avatar: string
+  profileUrl: string
+}
+
+export interface SettingsVerificationState {
+  profileType: VerificationProfileType
+  status: VerificationStatus
+  isAdmin: boolean
+  adminRedirectUrl: string
+  user: SettingsVerificationUser
+  availableFeatures: SettingsVerificationFeature[]
+}
+
+export interface SettingsVerificationResult {
+  success: boolean
+  message: string
+  redirectUrl?: string
+}
+
 export type SettingsSectionSlug =
   | "general"
   | "profile"

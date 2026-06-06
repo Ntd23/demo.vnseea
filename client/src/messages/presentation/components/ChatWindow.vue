@@ -144,6 +144,7 @@
         :is-typing="isTyping"
         :loading-label="loadingLabel"
         :messages="messages"
+        :thread-key="threadKey"
         :active-reaction-picker-id="activeReactionPickerId"
         @load-more="$emit('load-more')"
         @retry-call="$emit('start-call', $event)"
@@ -266,6 +267,7 @@ const props = defineProps<{
   deletingConversation?: boolean
   callActionPending?: boolean
   userDetailDocked?: boolean
+  threadKey?: string
 }>()
 
 const { t } = useI18n()

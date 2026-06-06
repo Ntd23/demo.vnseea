@@ -686,6 +686,12 @@ const mapMessageContact = (
       return null
     }
 
+    const groupParts = getGroupParts(entity)
+
+    if (groupParts.length === 0) {
+      return null
+    }
+
     const members = buildContactMembers(entity)
     const name = firstString(entity, ["group_name", "name"])
 

@@ -1400,6 +1400,7 @@
         "posts": "All",
         "reels": "Reels",
         "photos": "Photos",
+        "offers": "Offers",
         "followers": "Followers",
         "about": "About"
       },
@@ -1409,6 +1410,10 @@
       "photosTitle": "Photo posts",
       "photosEmptyTitle": "No photo posts yet",
       "photosEmptyDescription": "Photo posts from this page will appear here.",
+      "offersTitle": "Page offers",
+      "offersEmptyTitle": "No offers yet",
+      "offersEmptyDescription": "Offers from this page will appear here.",
+      "createOffer": "Create offer",
       "followers": {
         "title": "Followers",
         "count": "{count} followers",
@@ -5188,9 +5193,11 @@
       "blogAttachment": "Blog article",
       "fundingAttachment": "Funding campaign",
       "productAttachment": "Product listing",
+      "offerAttachment": "Offer",
       "openBlog": "Read article",
       "openFunding": "View campaign",
       "openProduct": "View product",
+      "openOffer": "View offer",
       "fundingProgress": "Progress",
       "pollOptionVotes": "{count} votes",
       "pollTotalVotes": "{count} total votes",
@@ -5253,6 +5260,72 @@
     "lightboxViewer": {
       "title": "View media",
       "description": "Use the navigation arrows to browse the {count} media items in this post."
+    }
+  },
+  "offers": {
+    "seoTitle": "Offers",
+    "seoDescription": "Browse current offers from VNSEEA pages.",
+    "heroEyebrow": "Offers",
+    "title": "Offers",
+    "description": "Follow current page offers, discounts, and free shipping posts from the backend.",
+    "loadMore": "Load more offers",
+    "emptyTitle": "No offers available",
+    "emptyDescription": "When pages publish offers, they will appear here.",
+    "createSuccess": "Offer created",
+    "editSuccess": "Offer updated",
+    "deleteSuccess": "Offer deleted",
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "card": {
+      "fallbackTitle": "Page offer",
+      "endsAt": "Ends {date}"
+    },
+    "discountTypes": {
+      "discount_percent": "Discount percent",
+      "discount_amount": "Discount amount",
+      "buy_get_discount": "Buy/get discount",
+      "spend_get_off": "Spend/get off",
+      "free_shipping": "Free shipping"
+    },
+    "form": {
+      "eyebrow": "Page offer",
+      "createTitle": "Create offer",
+      "editTitle": "Edit offer",
+      "errorTitle": "Offer details need attention",
+      "discountType": "Type",
+      "discountPercent": "Discount percent",
+      "discountAmount": "Discount amount",
+      "buy": "Buy",
+      "get": "Get",
+      "spend": "Spend",
+      "amountOff": "Amount off",
+      "discountedItems": "Discounted items",
+      "discountedItemsHint": "Items or services, max 100 characters.",
+      "currency": "Currency key",
+      "description": "Description",
+      "expireDate": "End date",
+      "expireTime": "End time",
+      "thumbnail": "Thumbnail",
+      "cancel": "Cancel",
+      "publish": "Publish",
+      "save": "Save"
+    },
+    "errors": {
+      "load": "Unable to load offers",
+      "loadMore": "Unable to load more offers",
+      "save": "Unable to save offer.",
+      "delete": "Unable to delete offer.",
+      "pageRequired": "A page is required.",
+      "description": "Description must be more than 32 characters.",
+      "discountedItems": "Discounted items must be less than 100 characters.",
+      "expire": "End date and end time are required.",
+      "thumbnail": "Thumbnail is required.",
+      "percent": "Discount percent must be between 1 and 99.",
+      "amount": "Discount amount must be greater than 0.",
+      "buyGet": "Buy, get, and discount percent are required.",
+      "spend": "Spend and amount off are required."
     }
   },
   "notifications": {
@@ -5334,6 +5407,7 @@
         "myArticles": "My articles",
         "movies": "Movies",
         "events": "Events",
+        "offers": "Offers",
         "createEvent": "Create event",
         "live": "Live",
         "myGroupsPlaceholder": "My groups",
@@ -5401,6 +5475,7 @@
         "marketplace": "Marketplace",
         "directory": "Directory",
         "events": "Events",
+        "offers": "Offers",
         "live": "Live",
         "forum": "Forum",
         "movies": "Movies",
@@ -5574,6 +5649,46 @@
       "savedState": "Settings updated.",
       "unblockAction": "Unblock",
       "saveError": "Unable to update settings."
+    },
+    "verification": {
+      "heroTitle": "Profile verification!",
+      "userTitleSuffix": "User",
+      "shopTitleSuffix": "Your shop name",
+      "afterVerified": "After verification",
+      "pendingTitle": "Verification request sent",
+      "pendingDescription": "Your request is waiting for admin review.",
+      "verifiedTitle": "Verification complete",
+      "verifiedDescription": "Your profile is verified.",
+      "deadlineTitle": "Verification required within 30 days",
+      "deadlineDescription": "Please submit the required documents within 30 days so your account or shop can continue using verification-gated features.",
+      "fullName": "Full name",
+      "dob": "Date of birth",
+      "cccd": "ID card number",
+      "cccdPlaceholder": "9-12 digits",
+      "shopName": "Your shop name",
+      "message": "Message",
+      "uploadDocs": "Upload documents",
+      "selectImages": "Please upload your passport or identity document and a separate personal photo.",
+      "passportId": "Passport or identity card copy",
+      "identityDocument": "ID card / Passport",
+      "personalPic": "Your personal photo",
+      "portrait": "Portrait photo",
+      "shopImage": "Your shop image",
+      "license": "Business registration license",
+      "send": "Send",
+      "errors": {
+        "title": "Please check your details",
+        "load": "Unable to load verification state.",
+        "fullName": "Full name must be between 5 and 50 characters.",
+        "dob": "Date of birth is required.",
+        "cccd": "ID card number must be 9-12 digits.",
+        "userFiles": "Upload both identity document and portrait photo.",
+        "imageFormat": "Use JPG, PNG, GIF, BMP, or WebP images. The business license may also be a PDF.",
+        "shopName": "Shop name must be between 5 and 50 characters.",
+        "shopMessage": "Message must be at least 5 characters.",
+        "shopFiles": "Upload identity document, personal photo, shop image, and business license.",
+        "submit": "Unable to submit verification request."
+      }
     },
     "data": {
       "options": {
@@ -6607,10 +6722,26 @@
         "label": "Completed",
         "description": "Funds have been added to the shop's available balance."
       },
+      "released": {
+        "label": "Released",
+        "description": "Funds have been released to the shop's available balance."
+      },
       "cancelled": {
         "label": "Cancelled",
         "description": "The payout has been cancelled due to order error/return."
+      },
+      "reversed": {
+        "label": "Reversed",
+        "description": "The payout was reversed because the order was cancelled or refunded."
       }
+    },
+    "tasks": {
+      "payment": "Verify payment",
+      "paymentDescription": "Internal wallet has recorded success or funds have reached the system.",
+      "packing": "Pack & print label",
+      "packingDescription": "Prepare the product, packaging, and shipping label before handoff.",
+      "handoff": "Handover to shipper",
+      "handoffDescription": "Pass the order to the shipping unit so delivery and payout can continue."
     },
     "empty": {
       "noMatchedTitle": "No matching orders found",

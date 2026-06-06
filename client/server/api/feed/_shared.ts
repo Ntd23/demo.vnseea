@@ -721,6 +721,30 @@ const buildPostAttachmentCard = (
     }
   }
 
+  const offer = asRecord(entity.offer || entity.offer_data)
+  const offerId = firstNumber(entity, ["offer_id"])
+    || firstNumber(offer, ["id", "offer_id"])
+  const offerText = firstString(offer, ["offer_text", "title"])
+  const discountedItems = firstString(offer, ["discounted_items", "name"])
+
+  if (offerText || discountedItems || offerId > 0) {
+    const title = [offerText, discountedItems].filter(Boolean).join(" ") || "Offer"
+    const postId = firstNumber(entity, ["post_id", "id"])
+    const expireDate = firstString(offer, ["expire_date"])
+    const description = [
+      expireDate ? `Ends ${expireDate}` : "",
+      stripHtml(firstString(offer, ["description"])),
+    ].filter(Boolean).join(" - ")
+
+    return {
+      type: "offer",
+      title,
+      description,
+      imageUrl: resolveMediaUrl(firstString(offer, ["image", "thumbnail", "cover"])),
+      href: postId ? appRoutes.postDetail(postId) : appRoutes.offers,
+    }
+  }
+
   const product = asRecord(entity.product || entity.product_data)
   const productTitle = firstString(product, ["name", "title"])
   const productId = firstNumber(entity, ["product_id"])

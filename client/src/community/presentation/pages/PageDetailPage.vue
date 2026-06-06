@@ -120,6 +120,15 @@
                 Mời bạn bè
               </UButton>
               <UButton
+                color="primary"
+                variant="soft"
+                class="rounded-full"
+                @click="openCreateOffer"
+              >
+                <Icon name="i-ph-tag-chevron-duotone" class="mr-1.5 h-4 w-4" />
+                {{ t('pages.pageDetailPage.createOffer') }}
+              </UButton>
+              <UButton
                 color="neutral"
                 variant="soft"
                 class="rounded-full"
@@ -289,6 +298,70 @@
             </section>
           </template>
 
+          <template v-else-if="activeTab === 'offers'">
+            <section class="page-detail__tab-panel">
+              <div class="profile-card page-detail__offers-header">
+                <div class="profile-card__head">
+                  <h2 class="profile-card__title">{{ t('pages.pageDetailPage.offersTitle') }}</h2>
+                  <UButton
+                    v-if="page.canManage"
+                    color="primary"
+                    variant="soft"
+                    icon="i-ph-tag-chevron-duotone"
+                    class="rounded-full"
+                    @click="openCreateOffer"
+                  >
+                    {{ t('pages.pageDetailPage.createOffer') }}
+                  </UButton>
+                </div>
+              </div>
+
+              <div v-if="pageOffersPending" class="page-detail__post-stack">
+                <USkeleton v-for="item in 3" :key="`page-offer-skeleton-${item}`" class="h-[154px] rounded-[20px]" />
+              </div>
+              <div v-else-if="pageOffers.length" class="page-detail__post-stack">
+                <OfferCard
+                  v-for="offer in pageOffers"
+                  :key="offer.id"
+                  :offer="offer"
+                  :deleting="offerDeletingId === offer.id"
+                  @edit="openEditOffer"
+                  @delete="deletePageOffer"
+                />
+                <UAlert
+                  v-if="pageOffersLoadMoreError"
+                  color="warning"
+                  variant="soft"
+                  icon="i-ph-warning-circle-fill"
+                  :title="t('offers.errors.loadMore')"
+                  :description="pageOffersLoadMoreError"
+                  class="rounded-[20px]"
+                />
+                <div v-if="pageOffersHasMore" class="page-detail__load-more">
+                  <UButton
+                    color="neutral"
+                    variant="soft"
+                    icon="i-ph-caret-down-bold"
+                    class="rounded-full"
+                    :loading="pageOffersLoadingMore"
+                    @click="loadMorePageOffers"
+                  >
+                    {{ t('offers.loadMore') }}
+                  </UButton>
+                </div>
+              </div>
+              <UAlert
+                v-else
+                color="neutral"
+                variant="subtle"
+                icon="i-ph-tag-chevron-duotone"
+                :title="t('pages.pageDetailPage.offersEmptyTitle')"
+                :description="t('pages.pageDetailPage.offersEmptyDescription')"
+                class="rounded-[20px]"
+              />
+            </section>
+          </template>
+
           <template v-else-if="activeTab === 'followers'">
             <section class="page-detail__tab-panel">
               <div class="profile-card page-detail__followers-header">
@@ -438,6 +511,14 @@
     :post="{ author: pageName, text: pageSummary || '' }"
     @close="showShare = false"
   />
+  <OfferFormModal
+    v-if="page"
+    v-model:open="offerModalOpen"
+    :mode="offerFormMode"
+    :page-id="page.id"
+    :offer="editingOffer"
+    @saved="handleOfferSaved"
+  />
 </template>
 
 <script setup lang="ts">
@@ -445,9 +526,13 @@ import FoundationEmptyState from "../../../foundation/presentation/components/Em
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
 import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
 import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue"
+import OfferCard from "../../../offer/presentation/components/OfferCard.vue"
+import OfferFormModal from "../../../offer/presentation/components/OfferFormModal.vue"
 import PageInviteModal from "../components/PageInviteModal.vue"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { getCommunityPageSettingsPath } from "../../domain/services/community-helpers.service"
+import type { Offer } from "../../../offer/domain/types/offer.types"
+import { useOfferListVM } from "../../../offer/application/view-models/useOfferListVM"
 import { useCommunityPageDetailPageVM } from "../../application/view-models/useCommunityPageDetailPageVM"
 import { useCommunityPageInviteVM } from "../../application/view-models/useCommunityPageInviteVM"
 
@@ -489,11 +574,43 @@ const {
 
 const inviteVM = useCommunityPageInviteVM(() => page.value?.slug || '')
 const showShare = ref(false)
+const editingOffer = ref<Offer | null>(null)
+const offerModalOpen = ref(false)
+const offerFormMode = computed(() => editingOffer.value ? 'edit' : 'create')
+const pageId = computed(() => page.value?.id || 0)
+const {
+  offers: pageOffers,
+  pending: pageOffersPending,
+  hasMore: pageOffersHasMore,
+  loadingMore: pageOffersLoadingMore,
+  loadMoreError: pageOffersLoadMoreError,
+  deletingId: offerDeletingId,
+  loadMore: loadMorePageOffers,
+  deleteOffer: deletePageOffer,
+  refresh: refreshPageOffers,
+} = useOfferListVM({ pageId, limit: 10 })
 
 const pageSettingsTo = computed(() => page.value ? getCommunityPageSettingsPath(page.value.slug) : '')
 
 function handlePostCreated() {
   refreshPagePosts()
+}
+
+function openCreateOffer() {
+  editingOffer.value = null
+  offerModalOpen.value = true
+}
+
+function openEditOffer(offer: Offer) {
+  editingOffer.value = offer
+  offerModalOpen.value = true
+}
+
+async function handleOfferSaved() {
+  await Promise.all([
+    refreshPageOffers(),
+    refreshPagePosts(),
+  ])
 }
 </script>
 
@@ -790,6 +907,16 @@ function handlePostCreated() {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.page-detail__offers-header .profile-card__head {
+  margin-bottom: 0;
+}
+
+.page-detail__load-more {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0;
 }
 
 .page-detail__followers-count {

@@ -12,7 +12,7 @@ export type FeedMediaItem = {
 }
 
 export type FeedPostAttachmentCard = {
-  type: "blog" | "funding" | "product"
+  type: "blog" | "funding" | "product" | "offer"
   title: string
   description: string
   imageUrl: string
