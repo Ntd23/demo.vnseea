@@ -51,7 +51,7 @@ const route = useRoute()
 const expanded = ref(false)
 
 const sidebarNav = [
-  { label: 'navigation.leftSidebar.items.feed', icon: 'i-ph-house-simple-fill', to: '/' },
+  { label: 'navigation.leftSidebar.items.feed', icon: 'i-ph-house-simple-fill', to: appRoutes.feed },
   { label: 'navigation.leftSidebar.items.searchNearby', icon: 'i-ph-map-pin-fill', to: appRoutes.searchNearby },
   { label: 'navigation.leftSidebar.items.photos', icon: 'i-ph-images-fill', to: '/photos' },
   { label: 'navigation.leftSidebar.items.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
@@ -117,7 +117,7 @@ const isPagesRoute = () =>
 const isItemActive = (to: string) => {
   const normalized = to.split('#')[0]
 
-  if (normalized === '/') return route.path === '/' || route.path === '/home'
+  if (normalized === appRoutes.feed) return route.path === appRoutes.feed
   if (normalized === '/products') return isMarketplaceRoute()
   if (normalized === '/events') return isEventsRoute()
   if (normalized === appRoutes.offers) return isOffersRoute()

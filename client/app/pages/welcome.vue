@@ -21,7 +21,7 @@ useSeoMeta({
   ogTitle: () => t('pages.welcomePage.seoTitle'),
   ogDescription: () => t('pages.welcomePage.seoDescription'),
   ogUrl: () => canonicalUrl.value,
-  robots: 'noindex, nofollow',
+  robots: 'index, follow',
 })
 
 useHead({

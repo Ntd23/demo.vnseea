@@ -191,7 +191,7 @@ function close() {
 
 function isNavItemActive(to: string) {
   const normalized = to.split('?')[0].split('#')[0]
-  if (normalized === '/home') return route.path === '/' || route.path === '/home'
+  if (normalized === '/home') return route.path === '/home'
   if (normalized === '/products') return ['/products', '/my-products', '/new-product'].includes(route.path) || route.path.startsWith('/edit-product/')
   if (normalized === '/events') return route.path === '/events' || route.path.startsWith('/events/')
   if (normalized === appRoutes.offers) return route.path === appRoutes.offers

@@ -99,13 +99,6 @@ export default defineNuxtConfig({
       ],
     },
   },
-  routeRules: {
-    "/welcome": {
-      headers: {
-        "X-Robots-Tag": "noindex, nofollow",
-      },
-    },
-  },
   alias: {
     "#shared-kernel": resolve(__dirname, "src/shared-kernel"),
   },
