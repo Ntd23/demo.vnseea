@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<!-- English description: Points crawlers to production VNSEEA v2 sitemap files. -->
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
- <sitemap>
-  <loc>http://localhost/wowonder/xml/sitemap.xml</loc>
-  <lastmod>2023-10-13</lastmod>
- </sitemap>
+  <sitemap>
+    <loc>https://v2.vnseea.vn/sitemap.xml</loc>
+    <lastmod>2026-06-07</lastmod>
+  </sitemap>
 </sitemapindex>
