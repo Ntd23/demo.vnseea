@@ -170,7 +170,7 @@ function createPinIcon(color: string, selected = false): google.maps.Icon {
 function createOriginIcon(selected = false, heading: number | null = null): google.maps.Icon {
   const size = selected ? 50 : 46
   const arrowScale = selected ? 1 : 0.94
-  const rotation = heading ?? 45
+  const rotation = heading ?? 0
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 50 50">
       <circle cx="25" cy="25" r="22" fill="#2563eb" fill-opacity="0.18"/>
@@ -306,6 +306,26 @@ function fitMarkers() {
   }
 }
 
+function fitOriginRadius() {
+  const map = mapInstance.value
+
+  if (!map || !window.google?.maps || props.origin.lat === null || props.origin.lng === null) {
+    return false
+  }
+
+  const radiusBounds = originRadiusCircle.value?.getBounds()
+
+  if (radiusBounds) {
+    map.fitBounds(radiusBounds, isMobileViewport() ? 40 : 64)
+    return true
+  }
+
+  map.panTo({ lat: props.origin.lat, lng: props.origin.lng })
+  map.setZoom(Math.max(map.getZoom() ?? 14, 15))
+
+  return true
+}
+
 function focusSelectedItem() {
   const map = mapInstance.value
   const selected = props.items.find(item => item.id === props.selectedItemId)
@@ -319,21 +339,7 @@ function focusSelectedItem() {
 }
 
 function focusOrigin() {
-  const map = mapInstance.value
-
-  if (!map || props.origin.lat === null || props.origin.lng === null) {
-    return
-  }
-
-  const radiusBounds = originRadiusCircle.value?.getBounds()
-
-  if (radiusBounds) {
-    map.fitBounds(radiusBounds, isMobileViewport() ? 40 : 64)
-    return
-  }
-
-  map.panTo({ lat: props.origin.lat, lng: props.origin.lng })
-  map.setZoom(Math.max(map.getZoom() ?? 14, 15))
+  fitOriginRadius()
 }
 
 function zoomIn() {
@@ -593,7 +599,11 @@ watch(
 
 watch(
   () => props.originFocusKey,
-  () => focusOrigin(),
+  () => {
+    renderMarkers()
+    focusOrigin()
+  },
+  { flush: "post" },
 )
 
 watch(
