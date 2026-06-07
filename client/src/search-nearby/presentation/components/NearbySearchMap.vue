@@ -23,6 +23,7 @@ const props = defineProps<{
   originFocusKey: number
   originUpdateKey: number
   routeOriginUpdateKey: number
+  routeFitKey: number
   routeTargetItem: NearbySearchItem | null
   originHeading?: number | null
   searchRadiusKm?: number
@@ -39,6 +40,7 @@ const emit = defineEmits<{
 const mapElement = ref<HTMLDivElement | null>(null)
 const mapError = ref("")
 const markerInstances = shallowRef<google.maps.Marker[]>([])
+const originMarker = shallowRef<google.maps.Marker | null>(null)
 const originRadiusCircle = shallowRef<google.maps.Circle | null>(null)
 const mapInstance = shallowRef<google.maps.Map | null>(null)
 const markerConstructor = shallowRef<typeof google.maps.Marker | null>(null)
@@ -49,6 +51,7 @@ const placesService = shallowRef<google.maps.places.PlacesService | null>(null)
 let routeRequestSequence = 0
 let lastMarkersViewportKey = ""
 let lastRenderedRouteTargetId = ""
+let lastRouteFitKey = -1
 
 const { load } = useScriptGoogleMaps({
   libraries: ["places", "routes"],
@@ -134,6 +137,11 @@ function clearMarkers() {
   markerInstances.value = []
 }
 
+function clearOriginMarker() {
+  originMarker.value?.setMap(null)
+  originMarker.value = null
+}
+
 function clearOriginRadiusCircle() {
   originRadiusCircle.value?.setMap(null)
   originRadiusCircle.value = null
@@ -142,6 +150,7 @@ function clearOriginRadiusCircle() {
 function clearRoute() {
   routeRequestSequence += 1
   lastRenderedRouteTargetId = ""
+  lastRouteFitKey = -1
 
   if (directionsRenderer.value) {
     directionsRenderer.value.setMap(null)
@@ -362,6 +371,72 @@ function zoomOut() {
   map.setZoom(Math.max((map.getZoom() ?? 13) - 1, 3))
 }
 
+function renderOriginMarker() {
+  const map = mapInstance.value
+  const Marker = markerConstructor.value
+
+  if (!map || !Marker || !window.google?.maps) {
+    return
+  }
+
+  if (props.origin.lat === null || props.origin.lng === null) {
+    clearOriginMarker()
+    clearOriginRadiusCircle()
+    return
+  }
+
+  const center = { lat: props.origin.lat, lng: props.origin.lng }
+  const radiusMeters = Math.max((props.searchRadiusKm ?? 1) * 1000, 100)
+
+  if (originRadiusCircle.value) {
+    originRadiusCircle.value.setOptions({
+      map,
+      center,
+      radius: radiusMeters,
+      clickable: false,
+      fillColor: "#2563eb",
+      fillOpacity: 0.08,
+      strokeColor: "#2563eb",
+      strokeOpacity: 0.45,
+      strokeWeight: 2,
+      zIndex: 1,
+    })
+  }
+  else {
+    originRadiusCircle.value = new window.google.maps.Circle({
+      map,
+      center,
+      radius: radiusMeters,
+      clickable: false,
+      fillColor: "#2563eb",
+      fillOpacity: 0.08,
+      strokeColor: "#2563eb",
+      strokeOpacity: 0.45,
+      strokeWeight: 2,
+      zIndex: 1,
+    })
+  }
+
+  const icon = createOriginIcon(!props.selectedItemId, props.originHeading ?? null)
+
+  if (originMarker.value) {
+    originMarker.value.setMap(map)
+    originMarker.value.setPosition(center)
+    originMarker.value.setTitle("Vi tri cua toi")
+    originMarker.value.setIcon(icon)
+    originMarker.value.setZIndex(40)
+    return
+  }
+
+  originMarker.value = new Marker({
+    map,
+    position: center,
+    title: "Vi tri cua toi",
+    icon,
+    zIndex: 40,
+  })
+}
+
 function renderMarkers() {
   const map = mapInstance.value
   const Marker = markerConstructor.value
@@ -373,35 +448,10 @@ function renderMarkers() {
   const viewportKey = createMarkersViewportKey()
   const shouldUpdateViewport = viewportKey !== lastMarkersViewportKey
 
+  renderOriginMarker()
   clearMarkers()
-  clearOriginRadiusCircle()
 
   const markers: google.maps.Marker[] = []
-
-  if (props.origin.lat !== null && props.origin.lng !== null) {
-    const radiusMeters = Math.max((props.searchRadiusKm ?? 1) * 1000, 100)
-
-    originRadiusCircle.value = new window.google.maps.Circle({
-      map,
-      center: { lat: props.origin.lat, lng: props.origin.lng },
-      radius: radiusMeters,
-      clickable: false,
-      fillColor: "#2563eb",
-      fillOpacity: 0.08,
-      strokeColor: "#2563eb",
-      strokeOpacity: 0.45,
-      strokeWeight: 2,
-      zIndex: 1,
-    })
-
-    markers.push(new Marker({
-      map,
-      position: { lat: props.origin.lat, lng: props.origin.lng },
-      title: "Vị trí của tôi",
-      icon: createOriginIcon(!props.selectedItemId, props.originHeading ?? null),
-      zIndex: 40,
-    }))
-  }
 
   props.items.forEach((item) => {
     if (item.lat === null || item.lng === null) {
@@ -448,6 +498,32 @@ function renderMarkers() {
   fitMarkers()
 }
 
+function fitRouteResult(result: google.maps.DirectionsResult, target: NearbySearchItem) {
+  const map = mapInstance.value
+
+  if (!map || !window.google?.maps) {
+    return
+  }
+
+  const routeBounds = result.routes?.[0]?.bounds
+
+  if (routeBounds) {
+    map.fitBounds(routeBounds, isMobileViewport() ? 52 : 84)
+    return
+  }
+
+  const bounds = new window.google.maps.LatLngBounds()
+
+  if (props.origin.lat !== null && props.origin.lng !== null) {
+    bounds.extend({ lat: props.origin.lat, lng: props.origin.lng })
+  }
+  if (target.lat !== null && target.lng !== null) {
+    bounds.extend({ lat: target.lat, lng: target.lng })
+  }
+
+  map.fitBounds(bounds, isMobileViewport() ? 52 : 84)
+}
+
 function renderRoute() {
   const map = mapInstance.value
   const target = props.routeTargetItem
@@ -476,11 +552,13 @@ function renderRoute() {
 
   const requestId = ++routeRequestSequence
   const service = new DirectionsService()
-  const shouldFitRouteViewport = lastRenderedRouteTargetId !== target.id || !directionsRenderer.value
+  const shouldFitRouteViewport = props.routeFitKey !== lastRouteFitKey
+    || lastRenderedRouteTargetId !== target.id
+    || !directionsRenderer.value
   const renderer = new DirectionsRenderer({
     map,
     suppressMarkers: true,
-    preserveViewport: !shouldFitRouteViewport,
+    preserveViewport: true,
     polylineOptions: {
       strokeColor: "#2563eb",
       strokeOpacity: 0.95,
@@ -506,6 +584,10 @@ function renderRoute() {
       if (status === window.google.maps.DirectionsStatus.OK && result) {
         lastRenderedRouteTargetId = target.id
         renderer.setDirections(result)
+        if (shouldFitRouteViewport) {
+          lastRouteFitKey = props.routeFitKey
+          fitRouteResult(result, target)
+        }
         return
       }
 
@@ -592,15 +674,23 @@ onMounted(() => {
 })
 
 watch(
-  () => [props.origin.lat, props.origin.lng, props.originUpdateKey, props.originHeading, props.searchRadiusKm, props.items, props.selectedItemId],
+  () => [props.origin.lat, props.origin.lng, props.originUpdateKey, props.searchRadiusKm, props.items, props.selectedItemId],
   () => renderMarkers(),
   { deep: true },
+)
+
+watch(
+  () => props.originHeading,
+  () => renderOriginMarker(),
 )
 
 watch(
   () => props.originFocusKey,
   () => {
     renderMarkers()
+    if (props.routeTargetItem) {
+      return
+    }
     focusOrigin()
   },
   { flush: "post" },
@@ -622,12 +712,14 @@ watch(
     props.routeTargetItem?.lat,
     props.routeTargetItem?.lng,
     props.routeOriginUpdateKey,
+    props.routeFitKey,
     props.items.map(item => `${item.id}:${item.pinned ? 1 : 0}`).join(","),
   ],
   () => renderRoute(),
 )
 
 onBeforeUnmount(() => {
+  clearOriginMarker()
   clearMarkers()
   clearOriginRadiusCircle()
   clearRoute()

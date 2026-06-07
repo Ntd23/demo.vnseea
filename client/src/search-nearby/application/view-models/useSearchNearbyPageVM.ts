@@ -1,5 +1,4 @@
 // English description: View model for the nearby map search page.
-
 import { refDebounced } from "@vueuse/core"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { createApiNearbySearchRepository } from "../../infrastructure/repositories/ApiNearbySearchRepository"
@@ -51,6 +50,7 @@ export function useSearchNearbyPageVM() {
   const originFocusKey = ref(0)
   const originUpdateKey = ref(0)
   const routeOriginUpdateKey = ref(0)
+  const routeFitKey = ref(0)
   const loading = ref(true)
   const hasLoadedOnce = ref(false)
   const errorMessage = ref("")
@@ -247,7 +247,7 @@ export function useSearchNearbyPageVM() {
     selectedItemId.value = item.id
     routeTargetItem.value = item
     routeErrorMessage.value = ""
-    originFocusKey.value += 1
+    routeFitKey.value += 1
     routeOriginUpdateKey.value += 1
     suggestions.value = []
     suggestionsLoading.value = false
@@ -371,6 +371,7 @@ export function useSearchNearbyPageVM() {
     originFocusKey,
     originUpdateKey,
     routeOriginUpdateKey,
+    routeFitKey,
     selectedItem,
     selectedSuggestionItem,
     routeTargetItem,
