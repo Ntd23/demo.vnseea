@@ -11,6 +11,7 @@
         :origin-focus-key="originFocusKey"
         :origin-update-key="originUpdateKey"
         :route-origin-update-key="routeOriginUpdateKey"
+        :route-fit-key="routeFitKey"
         :route-target-item="routeTargetItem"
         :origin-heading="liveOriginHeading"
         :search-radius-km="distanceKm"
@@ -373,6 +374,7 @@ const {
   originFocusKey,
   originUpdateKey,
   routeOriginUpdateKey,
+  routeFitKey,
   distanceKm,
   origin,
   mapItems,
