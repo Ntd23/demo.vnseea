@@ -86,6 +86,29 @@
       <button type="button" class="nearby-map-page__map-control nearby-map-page__map-control--primary" aria-label="Vi tri cua toi" @click="handleMyLocationClick">
         <UIcon name="i-ph-crosshair-fill" />
       </button>
+      <button
+        type="button"
+        class="nearby-map-page__map-control"
+        :class="{ 'nearby-map-page__map-control--active': showMapGuide }"
+        aria-label="Huong dan dinh vi va la ban"
+        @click="showMapGuide = !showMapGuide"
+      >
+        <UIcon name="i-ph-info-bold" />
+      </button>
+    </div>
+
+    <div v-if="canUseNearbyMap && showMapGuide" class="nearby-map-page__map-guide">
+      <div class="nearby-map-page__map-guide-title">
+        <UIcon name="i-ph-navigation-arrow-fill" />
+        <span>Dinh vi va la ban realtime</span>
+      </div>
+      <ul>
+        <li>Mac dinh ban do tu zoom vao vong tron 1km quanh vi tri cua ban.</li>
+        <li>Bam nut dinh vi de cap nhat lai vi tri, zoom ve vong tron 1km va xin quyen la ban neu trinh duyet can.</li>
+        <li>iOS: neu Safari hoi Motion & Orientation, chon Allow. Neu khong thay hoi, vao Settings -> Safari -> Motion & Orientation Access, bat len, reload trang roi bam lai nut dinh vi.</li>
+        <li>Android: cho phep Location. Neu mui ten khong xoay, kiem tra Chrome -> Site settings -> Motion sensors va cho phep cam bien.</li>
+        <li>Dien thoai: keo 1 ngon de di chuyen map, zoom bang 2 ngon. Desktop: keo chuot trai de di chuyen, lan chuot de zoom.</li>
+      </ul>
     </div>
 
     <div v-if="canUseNearbyMap" class="nearby-map-page__bottom">
@@ -154,7 +177,7 @@
           <button
             type="button"
             class="nearby-map-page__permission-action"
-            @click="requestLocationPermission"
+            @click="handleMyLocationClick"
           >
             <UIcon name="i-ph-arrow-counter-clockwise-bold" />
             <span>Đã bật lại quyền, Thử lại</span>
@@ -269,11 +292,14 @@
           type="button"
           class="nearby-map-page__permission-action"
           :disabled="locationPermissionState === 'checking'"
-          @click="requestLocationPermission"
+          @click="handleMyLocationClick"
         >
           <UIcon name="i-ph-crosshair-fill" />
           <span>Bật quyền chia sẻ vị trí</span>
         </button>
+        <p v-if="locationPermissionState !== 'unsupported'" class="nearby-map-page__permission-note">
+          iOS co the hoi them quyen Motion & Orientation de mui ten xoay realtime. Hay chon Allow, sau do bam nut dinh vi de zoom ve vong tron 1km quanh ban.
+        </p>
       </div>
     </div>
   </section>
@@ -319,9 +345,15 @@ function compareDistance(
 
 type LocationPermissionState = "checking" | "granted" | "denied" | "unsupported"
 type LiveLocationSnapshot = { lat: number, lng: number, heading: number | null, updatedAt: number }
+type DeviceOrientationEventWithCompass = DeviceOrientationEvent & {
+  webkitCompassHeading?: number
+}
+type DeviceOrientationEventConstructorWithPermission = typeof DeviceOrientationEvent & {
+  requestPermission?: () => Promise<PermissionState>
+}
 
-const liveMarkerMinDistanceMeters = 0.5
-const liveHeadingMinDegrees = 5
+const liveMarkerMinDistanceMeters = 0.1
+const liveHeadingMinDegrees = 2
 const routeRefreshMinDistanceMeters = 2
 const routeRefreshMinIntervalMs = 2500
 const searchOriginRefreshMinDistanceMeters = 100
@@ -381,10 +413,13 @@ const mapZoomOutKey = ref(0)
 const locationPermissionState = ref<LocationPermissionState>("checking")
 const liveOriginHeading = ref<number | null>(null)
 const showGuide = ref(false)
+const showMapGuide = ref(false)
 const guideTab = ref<"ios" | "android" | "desktop">("ios")
 let searchBlurTimer: ReturnType<typeof setTimeout> | null = null
 let locationWatchId: number | null = null
 let locationPollTimer: ReturnType<typeof setInterval> | null = null
+let deviceOrientationListener: ((event: DeviceOrientationEvent) => void) | null = null
+let deviceOrientationPermissionRequested = false
 let shouldFocusNextLocationUpdate = false
 let lastLiveLocation: LiveLocationSnapshot | null = null
 let lastRouteLocation: LiveLocationSnapshot | null = null
@@ -498,7 +533,7 @@ function calculatePointDistanceMeters(from: { lat: number, lng: number }, to: { 
     + Math.cos(latFrom) * Math.cos(latTo) * Math.sin(lngDelta / 2) ** 2,
   ))
 
-  return Math.round(earthRadiusMeters * angle)
+  return earthRadiusMeters * angle
 }
 
 function normalizeHeading(heading: number | null) {
@@ -526,6 +561,30 @@ function calculateBearingDegrees(from: { lat: number, lng: number }, to: { lat: 
     - Math.sin(latFrom) * Math.cos(latTo) * Math.cos(lngDelta)
 
   return normalizeHeading(toDeg(Math.atan2(y, x)))
+}
+
+function getScreenOrientationAngle() {
+  if (!import.meta.client) {
+    return 0
+  }
+
+  const legacyWindow = window as Window & { orientation?: number }
+
+  return Number(screen.orientation?.angle ?? legacyWindow.orientation ?? 0)
+}
+
+function resolveDeviceOrientationHeading(event: DeviceOrientationEventWithCompass) {
+  const compassHeading = normalizeHeading(event.webkitCompassHeading ?? null)
+
+  if (compassHeading !== null) {
+    return compassHeading
+  }
+
+  if (typeof event.alpha === "number" && Number.isFinite(event.alpha)) {
+    return normalizeHeading(360 - event.alpha + getScreenOrientationAngle())
+  }
+
+  return null
 }
 
 function shouldRefreshFromLocation(
@@ -575,6 +634,60 @@ function shouldRefreshHeading(nextHeading: number | null) {
   }
 
   return calculateHeadingDelta(liveOriginHeading.value, nextHeading) >= liveHeadingMinDegrees
+}
+
+function updateLiveHeading(nextHeading: number | null) {
+  if (nextHeading !== null && shouldRefreshHeading(nextHeading)) {
+    liveOriginHeading.value = nextHeading
+  }
+}
+
+function handleDeviceOrientation(event: DeviceOrientationEvent) {
+  updateLiveHeading(resolveDeviceOrientationHeading(event))
+}
+
+async function startDeviceOrientationTracking(requestPermission = false) {
+  if (!import.meta.client || !("DeviceOrientationEvent" in window)) {
+    return
+  }
+
+  const OrientationEvent = window.DeviceOrientationEvent as DeviceOrientationEventConstructorWithPermission
+
+  if (typeof OrientationEvent.requestPermission === "function" && !deviceOrientationPermissionRequested) {
+    if (!requestPermission) {
+      return
+    }
+
+    try {
+      const permission = await OrientationEvent.requestPermission()
+      deviceOrientationPermissionRequested = true
+
+      if (permission !== "granted") {
+        return
+      }
+    }
+    catch {
+      return
+    }
+  }
+
+  if (deviceOrientationListener) {
+    return
+  }
+
+  deviceOrientationListener = handleDeviceOrientation
+  window.addEventListener("deviceorientationabsolute", deviceOrientationListener as EventListener, true)
+  window.addEventListener("deviceorientation", deviceOrientationListener, true)
+}
+
+function stopDeviceOrientationTracking() {
+  if (!import.meta.client || !deviceOrientationListener) {
+    return
+  }
+
+  window.removeEventListener("deviceorientationabsolute", deviceOrientationListener as EventListener, true)
+  window.removeEventListener("deviceorientation", deviceOrientationListener, true)
+  deviceOrientationListener = null
 }
 
 function rememberLocation(
@@ -635,8 +748,8 @@ function handleLocationPosition(position: GeolocationPosition) {
     shouldFocusNextLocationUpdate = false
   }
 
-  if (nextHeading !== null && (shouldFocus || shouldUpdateLiveMarker || shouldUpdateHeading)) {
-    liveOriginHeading.value = nextHeading
+  if (shouldFocus || shouldUpdateLiveMarker || shouldUpdateHeading) {
+    updateLiveHeading(nextHeading)
   }
 
   if (!shouldUpdatePosition) {
@@ -784,11 +897,13 @@ async function toggleMapFullscreen() {
   }
 }
 
-async function requestLocationPermission() {
+async function requestLocationPermission(options: { forceFocus?: boolean, requestDeviceHeadingPermission?: boolean } = {}) {
   if (!import.meta.client || !navigator.geolocation) {
     locationPermissionState.value = hasOrigin.value ? "granted" : "unsupported"
     return
   }
+
+  void startDeviceOrientationTracking(options.requestDeviceHeadingPermission === true)
 
   try {
     const permission = await navigator.permissions?.query?.({ name: "geolocation" as PermissionName })
@@ -807,11 +922,11 @@ async function requestLocationPermission() {
   if (locationPermissionState.value !== "granted") {
     locationPermissionState.value = "checking"
   }
-  shouldFocusNextLocationUpdate = shouldFocusNextLocationUpdate || !hasOrigin.value
+  shouldFocusNextLocationUpdate = shouldFocusNextLocationUpdate || options.forceFocus === true || !hasOrigin.value
 
   if (locationWatchId !== null) {
     locationPermissionState.value = "granted"
-    if (hasOrigin.value) {
+    if (hasOrigin.value && options.forceFocus === true) {
       focusOrigin()
     }
     startLocationPolling()
@@ -829,7 +944,10 @@ async function requestLocationPermission() {
 }
 
 function handleMyLocationClick() {
-  void requestLocationPermission()
+  void requestLocationPermission({
+    forceFocus: true,
+    requestDeviceHeadingPermission: true,
+  })
 }
 
 async function ensureGooglePlacesServices() {
@@ -993,6 +1111,7 @@ watch(
 )
 
 onMounted(() => {
+  void startDeviceOrientationTracking()
   void requestLocationPermission()
 })
 
@@ -1005,6 +1124,7 @@ onBeforeUnmount(() => {
     locationWatchId = null
   }
   stopLocationPolling()
+  stopDeviceOrientationTracking()
 })
 </script>
 
@@ -1085,6 +1205,17 @@ onBeforeUnmount(() => {
   font-size: var(--text-body);
   font-weight: var(--weight-semibold);
   line-height: 1.55;
+}
+
+.nearby-map-page__permission-note {
+  margin-top: 4px;
+  border-radius: 16px;
+  background: var(--bg-surface-active);
+  padding: 10px 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  line-height: 1.45;
 }
 
 .nearby-map-page__permission-action {
@@ -1338,6 +1469,59 @@ onBeforeUnmount(() => {
 
 .nearby-map-page__map-control--primary:hover {
   color: var(--text-inverse);
+}
+
+.nearby-map-page__map-control--active {
+  border-color: var(--border-strong);
+  background: var(--bg-surface-active);
+  color: var(--text-link);
+}
+
+.nearby-map-page__map-guide {
+  position: absolute;
+  top: 50%;
+  right: 76px;
+  z-index: 21;
+  width: min(360px, calc(100% - 104px));
+  max-height: min(70dvh, 520px);
+  overflow-y: auto;
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--shadow-xl);
+  color: var(--text-primary);
+  padding: 16px;
+  transform: translateY(-50%);
+}
+
+.nearby-map-page__map-guide-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: var(--weight-extrabold);
+}
+
+.nearby-map-page__map-guide-title svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-link);
+}
+
+.nearby-map-page__map-guide ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.nearby-map-page__map-guide li {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  line-height: 1.45;
 }
 
 .nearby-map-page__bottom {
@@ -1667,6 +1851,17 @@ onBeforeUnmount(() => {
     height: 42px;
   }
 
+  .nearby-map-page__map-guide {
+    top: auto;
+    right: 58px;
+    bottom: calc(min(34dvh, 300px) + 14px + env(safe-area-inset-bottom, 0px));
+    width: calc(100% - 74px);
+    max-height: min(34dvh, 300px);
+    border-radius: 18px;
+    padding: 14px;
+    transform: none;
+  }
+
   .nearby-map-page__bottom {
     bottom: 0;
     width: 100%;
@@ -1715,6 +1910,11 @@ onBeforeUnmount(() => {
   .nearby-map-page__map-control {
     width: 38px;
     height: 38px;
+  }
+
+  .nearby-map-page__map-guide {
+    right: 52px;
+    width: calc(100% - 64px);
   }
 
   .nearby-map-page__cards {
