@@ -14,7 +14,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const postId = computed(() => Number(route.params.id ?? 0) || 0)
+const postId = computed(() => Number.parseInt(String(route.params.id ?? ""), 10) || 0)
 const seoRepository = createApiPublicSeoRepository()
 const { data: seoMeta, error: seoError } = await useAsyncData(
   () => `seo:post:${postId.value}`,

@@ -749,6 +749,8 @@ const buildPostAttachmentCard = (
   const productTitle = firstString(product, ["name", "title"])
   const productId = firstNumber(entity, ["product_id"])
     || firstNumber(product, ["id", "product_id"])
+  const productSeoId = firstString(product, ["seo_id"])
+    || firstString(entity, ["product_seo_id", "seo_id"])
 
   if (productTitle || productId > 0) {
     const images = asUnknownArray(product.images)
@@ -766,9 +768,16 @@ const buildPostAttachmentCard = (
       stripHtml(firstString(product, ["description"])),
     ].filter(Boolean).join(" - ")
     const rawUrl = firstString(product, ["url"])
-    const href = rawUrl
-      ? rawUrl
-      : appRoutes.postDetail(firstNumber(entity, ["post_id", "id"]) || productId)
+    const fallbackPostId = firstNumber(entity, ["post_id", "id"])
+    const href = productSeoId
+      ? appRoutes.productDetail(productSeoId)
+      : productId > 0
+        ? appRoutes.productDetail(productId)
+        : rawUrl && /^\/?product\//i.test(rawUrl)
+          ? rawUrl
+          : fallbackPostId > 0
+            ? appRoutes.productDetail(fallbackPostId)
+            : appRoutes.products
 
     return {
       type: "product",
