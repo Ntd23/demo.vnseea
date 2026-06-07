@@ -9,6 +9,8 @@
         :items="mapItems"
         :selected-item-id="selectedItemId"
         :origin-focus-key="originFocusKey"
+        :origin-update-key="originUpdateKey"
+        :route-origin-update-key="routeOriginUpdateKey"
         :route-target-item="routeTargetItem"
         :zoom-in-key="mapZoomInKey"
         :zoom-out-key="mapZoomOutKey"
@@ -322,6 +324,8 @@ const {
   routeTargetItem,
   routeErrorMessage,
   originFocusKey,
+  originUpdateKey,
+  routeOriginUpdateKey,
   origin,
   mapItems,
   cardItems,
@@ -582,9 +586,11 @@ async function requestLocationPermission() {
         lng: position.coords.longitude,
       }
       const now = Date.now()
+      const distanceFromLast = lastLiveLocation
+        ? calculatePointDistanceMeters(lastLiveLocation, nextLocation)
+        : Number.POSITIVE_INFINITY
       const movedEnough = !lastLiveLocation
-        || calculatePointDistanceMeters(lastLiveLocation, nextLocation) >= 8
-        || now - lastLiveLocation.updatedAt >= 5000
+        || distanceFromLast >= (routeTargetItem.value ? 5 : 12)
 
       if (!movedEnough) {
         return

@@ -1,7 +1,7 @@
 // English description: Returns a single normalized blog article by list slug.
 
 import { createError, getRouterParam } from "h3"
-import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
@@ -113,7 +113,7 @@ const mapArticle = (
   currentUserId: number,
   resolveMediaUrl: (value: unknown) => string,
 ): BlogReadArticle | null => {
-  const id = asNumber(entity.id)
+  const id = asNumber(entity.id) || asNumber(entity.blog_id) || asNumber(entity.article_id)
   const title = asString(entity.title)
 
   if (!id || !title) return null
@@ -171,13 +171,15 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const currentUser = await getBackendCurrentUser(event)
-  const currentUserId = asNumber(currentUser.user_id)
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+  const currentUserId = asNumber(currentUser?.user_id)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const endpoint = currentUserId > 0 ? "get-blog-by-id" : backendRoutes.api.publicContent
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).post<BackendArticleResponse, Record<string, unknown>>(
-      "get-blog-by-id",
+      endpoint,
       {
+        action: currentUserId > 0 ? undefined : "blog",
         blog_id: blogId,
       },
     ),

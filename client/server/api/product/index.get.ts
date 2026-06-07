@@ -1,8 +1,9 @@
 // English description: Returns real marketplace products from the PHP get-products API.
 
-import { getQuery } from "h3"
+import { createError, getQuery } from "h3"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUserId, normalizeProductsResponse } from "./_shared"
+import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 export default defineEventHandler(async (event) => {
   const client = createBackendApiClient(event)
@@ -10,13 +11,22 @@ export default defineEventHandler(async (event) => {
   const limit = Math.min(50, Math.max(1, Number(query.limit || 35)))
   const category = String(query.category || "")
   const subCategory = String(query.subCategory || "")
-  const distance = String(query.distance || "")
-  const userId = query.mine ? await getBackendCurrentUserId(event) : ""
+  const userId = await getBackendCurrentUserId(event)
   const sort = String(query.sort || "")
+  const mineOnly = String(Array.isArray(query.mine) ? query.mine[0] : query.mine || "0") === "1"
 
-  const response = await client.post<Parameters<typeof normalizeProductsResponse>[1]>("get-products", {
+  if (mineOnly && !userId) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication is required.",
+    })
+  }
+
+  const endpoint = userId ? "get-products" : backendRoutes.api.publicContent
+  const response = await client.post<Parameters<typeof normalizeProductsResponse>[1]>(endpoint, {
+    action: userId ? undefined : "products",
     limit,
-    user_id: userId || undefined,
+    user_id: mineOnly ? userId : undefined,
     offset: query.offset,
     keyword: query.keyword || query.q,
     category_id: /^\d+$/.test(category) ? category : undefined,

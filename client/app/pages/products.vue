@@ -1,3 +1,4 @@
+<!-- Description: Thin Nuxt route wrapper for the public products marketplace page. -->
 <template>
   <ProductPresentationProductsPage />
 </template>
@@ -7,6 +8,7 @@ import ProductPresentationProductsPage from "../../src/product/presentation/page
 
 definePageMeta({
   layout: "default",
+  publicContent: true,
 })
 
 const { t } = useI18n()

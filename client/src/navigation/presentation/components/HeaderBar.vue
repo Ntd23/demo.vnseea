@@ -347,6 +347,11 @@ onBeforeUnmount(() => {
 })
 
 async function toggleNotifications() {
+  if (!backendSession.value) {
+    await navigateTo(appRoutes.welcome)
+    return
+  }
+
   notificationOpen.value = !notificationOpen.value
   requestsOpen.value = false
 
@@ -356,6 +361,11 @@ async function toggleNotifications() {
 }
 
 async function toggleRequests() {
+  if (!backendSession.value) {
+    await navigateTo(appRoutes.welcome)
+    return
+  }
+
   requestsOpen.value = !requestsOpen.value
   notificationOpen.value = false
 

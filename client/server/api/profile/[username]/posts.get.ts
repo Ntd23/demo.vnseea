@@ -4,7 +4,9 @@ import { createError, getQuery, getRouterParam } from "h3"
 import { assertBackendApiSuccess } from "../../../utils/backend-api-response"
 import { createBackendApiClient } from "../../../utils/backend-api-client"
 import { createBackendMediaUrlResolver } from "../../../utils/backend-media-url"
+import { getBackendCurrentUser } from "../../../utils/backend-current-user"
 import { mapPostRecord } from "../../feed/_shared"
+import { backendRoutes } from "../../../../src/shared-kernel/application/constants/route-registry"
 import type { ProfilePostsResponse } from "../../../../src/profile/domain/types/profile.types"
 
 type BackendEntity = Record<string, unknown>
@@ -45,6 +47,31 @@ export default defineEventHandler(async (event): Promise<ProfilePostsResponse> =
   const limit = 10
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+
+  if (!currentUser) {
+    const postsResponse = assertBackendApiSuccess(
+      await client.post<BackendPostsResponse, Record<string, unknown>>(
+        backendRoutes.api.publicContent,
+        {
+          action: "user_posts",
+          username,
+          limit,
+          after_post_id: afterPostId,
+        },
+      ),
+      "Unable to load profile posts.",
+    )
+
+    const posts = (postsResponse.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl))
+
+    return {
+      posts,
+      hasMore: posts.length >= limit,
+      nextOffset: posts.at(-1)?.id ?? null,
+    }
+  }
+
   const profileResponse = assertBackendApiSuccess(
     await client.post<BackendProfileResponse, Record<string, unknown>>(
       "get-user-data-username",

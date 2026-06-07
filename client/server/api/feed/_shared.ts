@@ -7,7 +7,7 @@ import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { mapCommunityPageRecord } from "../community/_shared"
-import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import {
   feedStoryReactionByBackendId,
   feedStoryReactionBackendIds,
@@ -1505,10 +1505,62 @@ export async function fetchFeedPosts(
     groupId?: number
   },
 ) {
-  const currentUser = await getBackendCurrentUser(event)
+  const publicReadableTypes = new Set([
+    "hashtag",
+    "get_random_videos",
+    "get_page_posts",
+    "get_event_posts",
+    "get_group_posts",
+  ])
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+  const currentUserId = asNumber(currentUser?.user_id)
+
+  if (!currentUserId && !publicReadableTypes.has(input.type)) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Authentication is required.",
+    })
+  }
+
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
   const limit = input.limit ?? 10
+
+  if (!currentUserId) {
+    const publicPayload = input.type === "get_page_posts" && input.pageId && input.pageId > 0
+      ? {
+          action: "page_posts",
+          page_id: input.pageId,
+          limit,
+          after_post_id: input.afterPostId ?? 0,
+        }
+      : input.type === "get_group_posts" && input.groupId && input.groupId > 0
+        ? {
+            action: "group_posts",
+            group_id: input.groupId,
+            limit,
+            after_post_id: input.afterPostId ?? 0,
+          }
+        : null
+
+    if (!publicPayload) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: "Authentication is required.",
+      })
+    }
+
+    const publicResponse = assertBackendApiSuccess(
+      await client.post<BackendPostsResponse, Record<string, unknown>>(
+        backendRoutes.api.publicContent,
+        publicPayload,
+      ),
+      "Unable to load public feed posts.",
+    )
+
+    return buildPostsResponse((publicResponse.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)), limit)
+  }
+
   const response = assertBackendApiSuccess(
     await client.post<BackendPostsResponse, Record<string, unknown>>(
       "posts",
@@ -1519,7 +1571,7 @@ export async function fetchFeedPosts(
         filter: input.followingOnly ? 1 : 0,
         post_type: input.postType,
         hash: input.tag,
-        user_id: currentUser.user_id,
+        user_id: currentUserId || undefined,
         page_id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
         id: input.pageId && input.pageId > 0 ? input.pageId : undefined,
         ...(input.eventId && input.eventId > 0
@@ -1532,13 +1584,6 @@ export async function fetchFeedPosts(
     ),
     "Unable to load feed posts.",
   )
-
-  if (input.pageId) {
-    console.log(`[fetchFeedPosts] Page ${input.pageId} response:`, {
-      type: input.type,
-      count: response.data?.length ?? 0,
-    })
-  }
 
   return buildPostsResponse((response.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)), limit)
 }
@@ -1595,10 +1640,13 @@ export async function fetchFeedPostById(event: H3Event, postId: number): Promise
 
   const client = createBackendApiClient(event)
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+  const endpoint = currentUser ? "get-post-data" : backendRoutes.api.publicContent
   const response = assertBackendApiSuccess(
     await client.post<BackendSinglePostResponse, Record<string, unknown>>(
-      "get-post-data",
+      endpoint,
       {
+        action: currentUser ? undefined : "post",
         post_id: postId,
         fetch: "post_data,post_comments",
       },

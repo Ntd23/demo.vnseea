@@ -4,7 +4,7 @@ import { createError, getQuery, getRequestURL, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
-import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import { cleanSeoKeywords, cleanSeoText } from "../../../src/seo/domain/services/seo-text.service"
 import type { PublicSeoMeta, PublicSeoRouteType } from "../../../src/seo/domain/types/public-seo.types"
 
@@ -39,11 +39,6 @@ const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number"
     ? String(value).trim()
     : ""
-
-const asNumber = (value: unknown) => {
-  const normalized = Number(value ?? 0)
-  return Number.isFinite(normalized) ? normalized : 0
-}
 
 const firstString = (entity: BackendEntity, keys: string[], maxLength?: number) => {
   for (const key of keys) {
@@ -132,10 +127,10 @@ const fetchProfileSeo = async (
   const username = normalizeUsername(identifier)
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).post<BackendResponse, Record<string, unknown>>(
-      "get-user-data-username",
+      backendRoutes.api.publicContent,
       {
+        action: "profile",
         username,
-        fetch: "user_data",
       },
     ),
     "Unable to load profile SEO.",
@@ -168,8 +163,9 @@ const fetchPageSeo = async (
 ): Promise<PublicSeoMeta> => {
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).post<BackendResponse, Record<string, unknown>>(
-      "get-page-data",
+      backendRoutes.api.publicContent,
       {
+        action: "page",
         page_name: identifier,
       },
     ),
@@ -196,35 +192,13 @@ const fetchGroupSeo = async (
   identifier: string,
   resolveMediaUrl: (value: unknown) => string,
 ): Promise<PublicSeoMeta> => {
-  const client = createBackendApiClient(event)
   const normalizedSlug = identifier.trim().toLowerCase()
-  const searchResponse = assertBackendApiSuccess(
-    await client.post<BackendResponse, Record<string, unknown>>(
-      "search",
-      {
-        search_key: normalizedSlug,
-        limit: 20,
-      },
-    ),
-    "Unable to resolve group SEO.",
-  )
-  const searchMatch = asArray(searchResponse.groups).find((entity) =>
-    firstString(entity, ["group_name", "slug", "name"]).toLowerCase() === normalizedSlug,
-  )
-  const groupId = asNumber(searchMatch?.group_id ?? searchMatch?.id)
-
-  if (!groupId) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Group not found.",
-    })
-  }
-
   const detailResponse = assertBackendApiSuccess(
-    await client.post<BackendResponse, Record<string, unknown>>(
-      "get-group-data",
+    await createBackendApiClient(event).post<BackendResponse, Record<string, unknown>>(
+      backendRoutes.api.publicContent,
       {
-        group_id: groupId,
+        action: "group",
+        group_name: normalizedSlug,
       },
     ),
     "Unable to load group SEO.",
@@ -287,10 +261,10 @@ const fetchPostSeo = async (
 
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).post<BackendResponse, Record<string, unknown>>(
-      "get-post-data",
+      backendRoutes.api.publicContent,
       {
+        action: "post",
         post_id: postId,
-        fetch: "post_data",
       },
     ),
     "Unable to load post SEO.",
@@ -356,14 +330,21 @@ const fetchBlogSeo = async (
 
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).post<BackendResponse, Record<string, unknown>>(
-      "get-blog-by-id",
+      backendRoutes.api.publicContent,
       {
+        action: "blog",
         blog_id: blogId,
       },
     ),
     "Unable to load blog SEO.",
   )
   const article = asRecord(response.data)
+  if (!asString(article.id) && !asString(article.blog_id) && !asString(article.article_id)) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Blog not found.",
+    })
+  }
   const title = requireTitle(firstString(article, ["title"], 90))
   const description = firstString(article, ["description", "content"], 160)
   const author = asRecord(article.author)

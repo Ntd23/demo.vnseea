@@ -57,6 +57,12 @@ import NavigationRightSidebar from "../../src/navigation/presentation/components
 import DirectoryLeftSidebar from "../../src/directory/presentation/components/LeftSidebar.vue"
 
 const route = useRoute()
+const backendUserSession = useCookie("user_id", {
+  default: () => null,
+  sameSite: "lax",
+  path: "/",
+})
+const isGuestPublicContentPage = computed(() => Boolean(route.meta.publicContent) && !backendUserSession.value)
 const isReelsPage = computed(() => route.path === appRoutes.reels)
 const isCheckoutPage = computed(() => route.path === appRoutes.checkout)
 const isSearchPage = computed(() => route.path === appRoutes.search)
@@ -78,7 +84,8 @@ const isCommunityComposerPage = computed(() =>
   route.path === appRoutes.createGroup || route.path === appRoutes.createPage,
 )
 const showLeftSidebar = computed(() =>
-  !route.path.startsWith('/@')
+  !isGuestPublicContentPage.value
+  && !route.path.startsWith('/@')
   && !isCheckoutPage.value
   && !isSearchPage.value
   && !isPageDetailPage.value
@@ -89,7 +96,12 @@ const showLeftSidebar = computed(() =>
   && !isCreateBlogPage.value
   && !isLivePage.value
 )
-const showRightSidebar = computed(() => !isReelsPage.value && !isLivePage.value && !isCmsPage.value)
+const showRightSidebar = computed(() =>
+  !isGuestPublicContentPage.value
+  && !isReelsPage.value
+  && !isLivePage.value
+  && !isCmsPage.value
+)
 // HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.
 // Using a whitelist to avoid it leaking onto Groups, Events, Jobs, etc.
 const iconNavPages = new Set([

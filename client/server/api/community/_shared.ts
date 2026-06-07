@@ -5,6 +5,7 @@ import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { getBackendWebBaseUrl } from "../../utils/backend-media-url"
+import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import type {
   CommunityGroupRecord,
   CommunityPageRecord,
@@ -455,16 +456,35 @@ export async function resolveGroupRecordBySlug(event: H3Event, slug: string) {
     })
   }
 
-  for (const mode of ["my_groups", "joined_groups", "groups"] as const) {
-    const groups = await fetchCommunityGroups(event, mode)
-    const match = groups.find(group => group.slug.toLowerCase() === normalizedSlug)
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+  const client = createBackendApiClient(event)
+  const baseUrl = getBackendWebBaseUrl(event)
 
-    if (match) {
-      return match
+  if (!currentUser) {
+    const publicResponse = assertBackendApiSuccess(
+      await client.post<BackendGroupDetailResponse, Record<string, unknown>>(
+        backendRoutes.api.publicContent,
+        {
+          action: "group",
+          group_name: normalizedSlug,
+        },
+      ),
+      "Unable to load group details.",
+    )
+
+    if (!publicResponse.group_data) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Group not found.",
+      })
     }
+
+    return mapCommunityGroupRecord(publicResponse.group_data, {
+      currentUserId: 0,
+      baseUrl,
+    })
   }
 
-  const client = createBackendApiClient(event)
   const searchResponse = assertBackendApiSuccess(
     await client.post<BackendSearchResponse, Record<string, unknown>>(
       "search",
@@ -488,7 +508,6 @@ export async function resolveGroupRecordBySlug(event: H3Event, slug: string) {
     })
   }
 
-  const currentUser = await getBackendCurrentUser(event)
   const groupId = firstNumber(searchMatch, ["group_id", "id"])
   const detailResponse = assertBackendApiSuccess(
     await client.post<BackendGroupDetailResponse, Record<string, unknown>>(
@@ -507,12 +526,12 @@ export async function resolveGroupRecordBySlug(event: H3Event, slug: string) {
     })
   }
 
-  const baseUrl = getBackendWebBaseUrl(event)
-
-  return mapCommunityGroupRecord(detailResponse.group_data, {
-    currentUserId: asNumber(currentUser.user_id),
+  const mappedGroup = mapCommunityGroupRecord(detailResponse.group_data, {
+    currentUserId: asNumber(currentUser?.user_id),
     baseUrl,
   })
+
+  return mappedGroup
 }
 
 export async function resolvePageRecordBySlug(event: H3Event, slug: string) {
@@ -525,40 +544,54 @@ export async function resolvePageRecordBySlug(event: H3Event, slug: string) {
     })
   }
 
-  const currentUser = await getBackendCurrentUser(event).catch((err) => {
-    console.warn("[resolvePageRecordBySlug] getBackendCurrentUser failed:", err?.statusMessage)
-    return null
-  })
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
   const client = createBackendApiClient(event)
   const baseUrl = getBackendWebBaseUrl(event)
 
-  console.log(`[resolvePageRecordBySlug] slug="${normalizedSlug}" userId=${currentUser?.user_id ?? "guest"}`)
+  if (!currentUser) {
+    const publicResponse = assertBackendApiSuccess(
+      await client.post<BackendPageDetailResponse, Record<string, unknown>>(
+        backendRoutes.api.publicContent,
+        {
+          action: "page",
+          page_name: normalizedSlug,
+        },
+      ),
+      "Unable to load page details.",
+    )
 
-  // Step 1: Direct lookup by page_name
+    if (!publicResponse.page_data) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Page not found.",
+      })
+    }
+
+    return mapCommunityPageRecord(publicResponse.page_data, {
+      currentUserId: 0,
+      baseUrl,
+    })
+  }
+
   try {
     const rawDirect = await client.post<BackendPageDetailResponse, Record<string, unknown>>(
       "get-page-data",
       { page_name: normalizedSlug },
     )
-    console.log("[resolvePageRecordBySlug] Direct lookup raw response:", JSON.stringify(rawDirect).slice(0, 300))
 
     const directResponse = assertBackendApiSuccess(rawDirect, "Unable to load page details.")
 
     if (directResponse.page_data) {
-      console.log("[resolvePageRecordBySlug] Direct lookup success, page_id:", directResponse.page_data.page_id)
       return mapCommunityPageRecord(directResponse.page_data, {
         currentUserId: asNumber(currentUser?.user_id),
         baseUrl,
       })
     }
   }
-  catch (err: unknown) {
-    const e = err as { statusMessage?: string; data?: unknown }
-    console.warn("[resolvePageRecordBySlug] Direct lookup failed:", e?.statusMessage, JSON.stringify(e?.data ?? "").slice(0, 200))
+  catch {
+    // Fall back to search when the legacy detail endpoint only accepts page id.
   }
 
-  // Step 2: Search fallback
-  console.log("[resolvePageRecordBySlug] Falling back to search for:", normalizedSlug)
   let searchResponse: BackendSearchResponse
   try {
     searchResponse = assertBackendApiSuccess(
@@ -568,11 +601,8 @@ export async function resolvePageRecordBySlug(event: H3Event, slug: string) {
       ),
       "Unable to resolve page.",
     )
-    console.log("[resolvePageRecordBySlug] Search returned pages:", (searchResponse.pages ?? []).length)
   }
-  catch (err: unknown) {
-    const e = err as { statusMessage?: string; data?: unknown }
-    console.error("[resolvePageRecordBySlug] Search also failed:", e?.statusMessage, JSON.stringify(e?.data ?? "").slice(0, 200))
+  catch {
     throw createError({
       statusCode: 404,
       statusMessage: "Page not found.",
@@ -581,12 +611,10 @@ export async function resolvePageRecordBySlug(event: H3Event, slug: string) {
 
   const searchMatch = (searchResponse.pages ?? []).find((entity) => {
     const entitySlug = firstString(entity, ["page_name", "slug", "name"]).toLowerCase()
-    console.log("[resolvePageRecordBySlug] Search candidate slug:", entitySlug)
     return entitySlug === normalizedSlug
   })
 
   if (!searchMatch) {
-    console.error("[resolvePageRecordBySlug] No search match for slug:", normalizedSlug)
     throw createError({
       statusCode: 404,
       statusMessage: "Page not found.",
@@ -594,7 +622,6 @@ export async function resolvePageRecordBySlug(event: H3Event, slug: string) {
   }
 
   const pageId = firstNumber(searchMatch, ["page_id", "id"])
-  console.log("[resolvePageRecordBySlug] Found via search, page_id:", pageId, "keys:", Object.keys(searchMatch).join(","))
 
   try {
     const rawDetail = await client.post<BackendPageDetailResponse, Record<string, unknown>>(
@@ -611,9 +638,8 @@ export async function resolvePageRecordBySlug(event: H3Event, slug: string) {
       })
     }
   }
-  catch (err: unknown) {
-    const e = err as { statusMessage?: string; data?: unknown }
-    console.warn("[resolvePageRecordBySlug] get-page-data failed, using search entity:", e?.statusMessage, JSON.stringify(e?.data ?? "").slice(0, 200))
+  catch {
+    // Search results contain enough public fields for the page shell.
   }
 
   return mapCommunityPageRecord(searchMatch, {

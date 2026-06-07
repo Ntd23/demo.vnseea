@@ -9,6 +9,7 @@ import OfferPresentationOffersPage from "../../src/offer/presentation/pages/Offe
 
 definePageMeta({
   layout: "default",
+  publicContent: true,
 })
 
 const { t } = useI18n()
@@ -21,7 +22,7 @@ useSeoMeta({
   ogTitle: () => t("offers.seoTitle"),
   ogDescription: () => t("offers.seoDescription"),
   ogUrl: () => canonicalUrl.value,
-  robots: "noindex, nofollow",
+  robots: "index, follow",
 })
 
 useHead({
