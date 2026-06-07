@@ -9,6 +9,7 @@ import { normalizeCmsPageName } from "../../../src/cms/domain/services/cms-route
 
 definePageMeta({
   layout: "public",
+  publicContent: true,
 })
 
 const route = useRoute()

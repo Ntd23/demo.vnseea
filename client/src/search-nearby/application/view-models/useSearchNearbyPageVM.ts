@@ -48,6 +48,8 @@ export function useSearchNearbyPageVM() {
   const deviceOrigin = ref<{ lat: number, lng: number } | null>(null)
   const selectedItemId = ref("")
   const originFocusKey = ref(0)
+  const originUpdateKey = ref(0)
+  const routeOriginUpdateKey = ref(0)
   const loading = ref(true)
   const hasLoadedOnce = ref(false)
   const errorMessage = ref("")
@@ -287,6 +289,12 @@ export function useSearchNearbyPageVM() {
       },
     }
 
+    originUpdateKey.value += 1
+
+    if (routeTargetItem.value) {
+      routeOriginUpdateKey.value += 1
+    }
+
     if (options.focus) {
       focusOrigin()
     }
@@ -346,6 +354,8 @@ export function useSearchNearbyPageVM() {
     distanceKm,
     selectedItemId,
     originFocusKey,
+    originUpdateKey,
+    routeOriginUpdateKey,
     selectedItem,
     selectedSuggestionItem,
     routeTargetItem,

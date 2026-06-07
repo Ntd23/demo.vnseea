@@ -8,7 +8,10 @@ import CommunityPresentationPageDetailPage from "../../../src/community/presenta
 import { usePublicSeoMeta } from "../../../src/seo/application/composables/usePublicSeoMeta"
 import { createApiPublicSeoRepository } from "../../../src/seo/infrastructure/repositories/ApiPublicSeoRepository"
 
-definePageMeta({ layout: "default" })
+definePageMeta({
+  layout: "default",
+  publicContent: true,
+})
 
 const route = useRoute()
 const pageSlug = computed(() => String(route.params.name || ""))

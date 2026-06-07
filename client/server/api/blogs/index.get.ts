@@ -1,7 +1,7 @@
 // English description: Returns normalized blog articles from the PHP backend.
 
 import { getQuery } from "h3"
-import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
@@ -103,7 +103,7 @@ const mapArticle = (
   index: number,
   resolveMediaUrl: (value: unknown) => string,
 ): BlogListArticle | null => {
-  const id = asNumber(entity.id)
+  const id = asNumber(entity.id) || asNumber(entity.blog_id) || asNumber(entity.article_id)
   const title = asString(entity.title)
 
   if (!id || !title) return null
@@ -158,18 +158,26 @@ export default defineEventHandler(async (event) => {
   const offset = Math.max(asNumber(query.offset) || 0, 0)
   const category = asString(query.category)
   const categoryId = category && category !== "all" ? categoryValueToId[category] : 0
-  const currentUser = await getBackendCurrentUser(event)
-  const currentUserId = asNumber(currentUser.user_id)
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+  const currentUserId = asNumber(currentUser?.user_id)
+  const mineOnly = asString(query.mine) === "1"
+
+  if (mineOnly && currentUserId <= 0) {
+    return []
+  }
+
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
 
+  const endpoint = currentUserId > 0 ? "get-articles" : backendRoutes.api.publicContent
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).post<BackendArticlesResponse, Record<string, unknown>>(
-      "get-articles",
+      endpoint,
       {
+        action: currentUserId > 0 ? undefined : "blogs",
         limit,
         offset,
         category: categoryId || undefined,
-        user_id: asString(query.mine) === "1" ? currentUserId : undefined,
+        user_id: mineOnly ? currentUserId : undefined,
       },
     ),
     "Unable to load blogs.",

@@ -7,6 +7,7 @@ import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { mapCommunityGroupRecord, mapCommunityPageRecord } from "../community/_shared"
 import { mapPostRecord } from "../feed/_shared"
+import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import type { FeedPostRecord } from "../../../src/feed/domain/types/feed.types"
 import type { ProfileAlbumRecord, ProfileApiResponse, ProfileConnection, ProfileProductRecord } from "../../../src/profile/domain/types/profile.types"
 
@@ -276,8 +277,89 @@ export default defineEventHandler(async (event): Promise<ProfileApiResponse | nu
     })
   }
 
-  const currentUser = await getBackendCurrentUser(event)
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
   const client = createBackendApiClient(event)
+
+  if (!currentUser) {
+    const publicResponse = assertBackendApiSuccess(
+      await client.post<BackendProfileResponse, Record<string, unknown>>(
+        backendRoutes.api.publicContent,
+        {
+          action: "profile",
+          username,
+        },
+      ),
+      "Unable to load profile.",
+    )
+    const user = publicResponse.user_data
+
+    if (!user) {
+      return null
+    }
+
+    const displayName = firstString(user, ["name", "username"]) || username
+    const resolvedUsername = firstString(user, ["username"]) || username
+    const profileUserId = asNumber(user.user_id ?? user.id)
+    const timelinePosts = assertBackendApiSuccess(
+      await client.post<BackendPostsResponse, Record<string, unknown>>(
+        backendRoutes.api.publicContent,
+        {
+          action: "user_posts",
+          username: resolvedUsername,
+          limit: 10,
+        },
+      ),
+      "Unable to load profile posts.",
+    )
+    const publicTimeline = buildPostsResponse(
+      (timelinePosts.data ?? []).map(post => mapPostRecord(post, resolveMediaUrl)),
+      10,
+    )
+
+    return {
+      id: profileUserId,
+      username: resolvedUsername,
+      displayName,
+      headline: firstString(user, ["working", "school"]),
+      bio: firstString(user, ["about"]),
+      coverImage: resolveMediaUrl(firstString(user, ["cover_full", "cover"])),
+      avatarUrl: resolveMediaUrl(firstString(user, ["avatar_full", "avatar"])) || undefined,
+      avatarText: createInitials(displayName),
+      verified: isTruthy(user.verified),
+      isOwner: false,
+      isFollowing: false,
+      isFollowRequested: false,
+      statusText: firstString(user, ["lastseen_time_text", "gender_text"]),
+      website: firstString(user, ["website"]),
+      working: firstString(user, ["working"]),
+      school: firstString(user, ["school"]),
+      address: firstString(user, ["address"]),
+      email: "",
+      phone: "",
+      gender: firstString(user, ["gender_text", "gender"]),
+      birthday: firstString(user, ["birthday"]),
+      relationship: firstString(user, ["relationship"]),
+      followersCount: readUserCount(user, ["followers_count"], ["followers_count", "followers"]),
+      followingCount: readUserCount(user, ["following_count"], ["following_count", "following"]),
+      postCount: asNumber(asRecord(user.details).post_count ?? user.post_count ?? user.posts),
+      albumCount: asNumber(asRecord(user.details).album_count ?? user.album_count),
+      likedPagesCount: 0,
+      joinedGroupsCount: 0,
+      followers: [],
+      following: [],
+      timelinePosts: publicTimeline.posts,
+      timelineHasMore: publicTimeline.hasMore,
+      timelineNextOffset: publicTimeline.nextOffset,
+      photos: [],
+      videos: [],
+      albums: [],
+      likedPages: [],
+      joinedGroups: [],
+      products: [],
+      productsCount: 0,
+    }
+  }
+
   const response = assertBackendApiSuccess(
     await client.post<BackendProfileResponse, Record<string, unknown>>(
       "get-user-data-username",
@@ -311,7 +393,7 @@ export default defineEventHandler(async (event): Promise<ProfileApiResponse | nu
     fetchUserAlbums(client, resolveMediaUrl, profileUserId),
     fetchUserProducts(client, resolveMediaUrl, profileUserId),
   ])
-  const currentUserId = asNumber(currentUser.user_id)
+  const currentUserId = asNumber(currentUser?.user_id)
   const currentUserInFollowers = Boolean((response.followers ?? []).some(entry =>
     asNumber(entry.user_id ?? entry.id) === currentUserId,
   ))
@@ -355,11 +437,11 @@ export default defineEventHandler(async (event): Promise<ProfileApiResponse | nu
     videos: videoPosts.posts,
     albums,
     likedPages: (response.liked_pages ?? []).map(page =>
-      mapCommunityPageRecord(page, { currentUserId: asNumber(currentUser.user_id) }),
+      mapCommunityPageRecord(page, { currentUserId }),
     ),
     joinedGroups: (response.joined_groups ?? []).map(group =>
       mapCommunityGroupRecord(group, {
-        currentUserId: asNumber(currentUser.user_id),
+        currentUserId,
         segment: "joined",
       }),
     ),

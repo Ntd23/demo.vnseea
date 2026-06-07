@@ -5,7 +5,7 @@ import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
-import { appRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 import type { Offer, OfferDiscountType, OfferListResponse, OfferMutationResult } from "../../../src/offer/domain/types/offer.types"
 
 type BackendEntity = Record<string, unknown>
@@ -59,8 +59,8 @@ const firstNumber = (entity: BackendEntity, keys: string[]) => {
 const stripHtml = (value: string) =>
   value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
 
-const isPrivilegedUser = (user: BackendEntity) => {
-  const adminLevel = Number(user.admin ?? 0)
+const isPrivilegedUser = (user: BackendEntity | null | undefined) => {
+  const adminLevel = Number(user?.admin ?? 0)
 
   return adminLevel === 1 || adminLevel === 2
 }
@@ -130,12 +130,14 @@ export async function fetchOffers(event: H3Event): Promise<OfferListResponse> {
   const limit = Math.min(Math.max(Number(query.limit ?? 10) || 10, 1), 50)
   const afterId = Number(query.afterId ?? 0) || 0
   const pageId = Number(query.pageId ?? 0) || 0
-  const currentUser = await getBackendCurrentUser(event)
-  const currentUserId = asNumber(currentUser.user_id)
+  const currentUser = await getBackendCurrentUser(event).catch(() => null)
+  const currentUserId = asNumber(currentUser?.user_id)
   const isPrivileged = isPrivilegedUser(currentUser)
+  const endpoint = currentUser ? "offer" : backendRoutes.api.publicContent
   const response = assertBackendApiSuccess(
-    await createBackendApiClient(event).post<BackendOfferResponse>("offer", {
-      type: "get",
+    await createBackendApiClient(event).post<BackendOfferResponse>(endpoint, {
+      action: currentUser ? undefined : "offers",
+      type: currentUser ? "get" : undefined,
       limit,
       offset: afterId,
       page_id: pageId || undefined,

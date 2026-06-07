@@ -206,6 +206,7 @@ import { useProductEditorDraft } from "../../application/composables/useProductE
 import { useProductEditorMeta } from "../../application/composables/useProductEditorMeta"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
 import { useNuxtApiClient } from "../../../shared-kernel/infrastructure/http/nuxt-api-client"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 
 type FilePreview = {
   index: number
@@ -507,7 +508,7 @@ const submitProduct = async () => {
       color: "success",
     })
 
-    await navigateTo(response.postId ? `/post/${encodeURIComponent(response.postId)}` : "/my-products")
+    await navigateTo(response.id ? appRoutes.productDetail(response.id) : appRoutes.myProducts)
   }
   catch (error) {
     toast.add({

@@ -10,6 +10,7 @@ import { createApiPublicSeoRepository } from "../../../src/seo/infrastructure/re
 
 definePageMeta({
   layout: "default",
+  publicContent: true,
 })
 
 const route = useRoute()

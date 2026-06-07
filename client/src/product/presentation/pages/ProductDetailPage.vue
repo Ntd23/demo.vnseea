@@ -140,11 +140,7 @@
               <span><Icon name="i-ph-tag-fill" class="text-[#2563eb]" /> {{ $t("pages.productDetailPage.condition") }}</span>
               <strong>{{ conditionLabel }}</strong>
             </li>
-            <li v-if="product.categoryLabel">
-              <span><Icon name="i-ph-storefront-fill" class="text-[#f59e0b]" /> {{ $t("pages.productDetailPage.category") }}</span>
-              <strong>{{ categoryLabel }}</strong>
-            </li>
-          </ul>
+                      </ul>
         </section>
 
         <section class="product-detail-section">
@@ -156,17 +152,7 @@
           <p v-else class="product-detail-muted">{{ $t("pages.productDetailPage.emptyDescription") }}</p>
         </section>
 
-        <section v-if="mapUrl" class="product-detail-section">
-          <h2>
-            <Icon name="i-ph-map-trifold-fill" class="h-5 w-5" />
-            {{ $t("pages.productDetailPage.map") }}
-          </h2>
-          <a :href="mapUrl" target="_blank" rel="noopener noreferrer" class="product-detail-map">
-            <Icon name="i-ph-map-pin-fill" class="h-7 w-7" />
-            <span>{{ product.location }}</span>
-          </a>
-        </section>
-      </article>
+            </article>
 
       <section v-if="relatedProducts.length" class="product-detail-related">
         <h2>
@@ -180,11 +166,11 @@
             :to="relatedProduct.href"
             class="product-detail-related-card"
           >
-            <img
+            <LazyNuxtImg
               v-if="relatedProduct.imageUrl"
               :src="relatedProduct.imageUrl"
               :alt="relatedProduct.title"
-            >
+            />
             <div v-else class="product-detail-related-empty">
               <Icon :name="relatedProduct.icon" class="h-8 w-8" />
             </div>

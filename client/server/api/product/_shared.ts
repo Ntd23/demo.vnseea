@@ -11,10 +11,11 @@ import type {
   ProductSubCategoryOption,
 } from "../../../src/product/domain/types/product-marketplace.types"
 import type { ProductRecord, ProductCategory, ProductCondition, ProductCurrency } from "../../../src/product/domain/types/product-editor.types"
-import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
+import { appRoutes, backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
 
 type BackendProduct = {
   id?: number | string
+  product_id?: number | string
   post_id?: number | string
   seo_id?: string
   url?: string
@@ -134,35 +135,35 @@ const getProductImage = (event: H3Event, product: BackendProduct) => {
   return resolveMediaUrl(image) || undefined
 }
 
-const getProductHref = (event: H3Event, product: BackendProduct) => {
+const getProductHref = (product: BackendProduct) => {
   const rawUrl = asString(product.url).trim()
-  const fallbackId = asString(product.seo_id) || asString(product.post_id) || asString(product.id)
+  const fallbackId = asString(product.id) || asString(product.product_id) || asString(product.seo_id) || asString(product.post_id)
 
-  const extractPrettyPostId = (href: string) => {
+  const extractPrettyProductId = (href: string) => {
     try {
       const parsedUrl = new URL(href, "http://localhost/")
-      const match = parsedUrl.pathname.match(/^\/post\/([^/]+)\/?$/i)
+      const match = parsedUrl.pathname.match(/^\/product\/([^/]+)\/?$/i)
 
       return match?.[1] ? decodeURIComponent(match[1]) : ""
     }
     catch {
-      const match = href.match(/^\/?post\/([^/]+)\/?$/i)
+      const match = href.match(/^\/?product\/([^/]+)\/?$/i)
 
       return match?.[1] ? decodeURIComponent(match[1]) : ""
     }
   }
 
-  const prettyPostId = rawUrl ? extractPrettyPostId(rawUrl) : ""
+  const prettyProductId = rawUrl ? extractPrettyProductId(rawUrl) : ""
 
-  if (prettyPostId) {
-    return `/post/${encodeURIComponent(prettyPostId)}`
+  if (prettyProductId) {
+    return appRoutes.productDetail(prettyProductId)
   }
 
   if (fallbackId) {
-    return `/post/${encodeURIComponent(fallbackId)}`
+    return appRoutes.productDetail(fallbackId)
   }
 
-  return "/products"
+  return appRoutes.products
 }
 
 export const normalizeProductsResponse = (
@@ -244,10 +245,10 @@ export const normalizeProductsResponse = (
     }
 
     return {
-      id: asNumber(product.id),
+      id: asNumber(product.id) || asNumber(product.product_id),
       postId: asNumber(product.post_id),
       seoId: asString(product.seo_id),
-      href: getProductHref(event, product),
+      href: getProductHref(product),
       title: asString(product.name),
       seller: asString(seller?.name) || asString(seller?.username),
       sellerId,
@@ -309,7 +310,7 @@ export const normalizeProductRecord = (event: H3Event, product: BackendProduct):
   }).filter(image => image.src)
 
   return {
-    id: asString(product.id),
+    id: asString(product.id) || asString(product.product_id),
     postId: asString(product.post_id),
     seoId: asString(product.seo_id),
     title: asString(product.name),

@@ -21,6 +21,8 @@ const props = defineProps<{
   items: NearbySearchItem[]
   selectedItemId: string
   originFocusKey: number
+  originUpdateKey: number
+  routeOriginUpdateKey: number
   routeTargetItem: NearbySearchItem | null
   zoomInKey?: number
   zoomOutKey?: number
@@ -506,7 +508,7 @@ onMounted(() => {
 })
 
 watch(
-  () => [props.origin.lat, props.origin.lng, props.items, props.selectedItemId],
+  () => [props.origin.lat, props.origin.lng, props.originUpdateKey, props.items, props.selectedItemId],
   () => renderMarkers(),
   { deep: true },
 )
@@ -533,6 +535,7 @@ watch(
     props.routeTargetItem?.lng,
     props.origin.lat,
     props.origin.lng,
+    props.routeOriginUpdateKey,
     props.items.map(item => `${item.id}:${item.pinned ? 1 : 0}`).join(","),
   ],
   () => renderRoute(),
