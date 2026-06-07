@@ -247,6 +247,7 @@ export function useSearchNearbyPageVM() {
     routeTargetItem.value = item
     routeErrorMessage.value = ""
     originFocusKey.value += 1
+    routeOriginUpdateKey.value += 1
     suggestions.value = []
     suggestionsLoading.value = false
 
@@ -273,7 +274,7 @@ export function useSearchNearbyPageVM() {
   function setCurrentDeviceLocation(
     lat: number,
     lng: number,
-    options: { focus?: boolean, updateSearchOrigin?: boolean } = {},
+    options: { focus?: boolean, updateSearchOrigin?: boolean, redrawRoute?: boolean } = {},
   ) {
     if (options.updateSearchOrigin || !deviceOrigin.value) {
       deviceOrigin.value = { lat, lng }
@@ -291,7 +292,7 @@ export function useSearchNearbyPageVM() {
 
     originUpdateKey.value += 1
 
-    if (routeTargetItem.value) {
+    if (routeTargetItem.value && options.redrawRoute !== false) {
       routeOriginUpdateKey.value += 1
     }
 
@@ -311,6 +312,19 @@ export function useSearchNearbyPageVM() {
     setCurrentDeviceLocation(lat, lng, {
       focus: false,
       updateSearchOrigin: false,
+      redrawRoute: true,
+    })
+  }
+
+  function updateLiveDeviceLocation(
+    lat: number,
+    lng: number,
+    options: { updateSearchOrigin?: boolean, redrawRoute?: boolean } = {},
+  ) {
+    setCurrentDeviceLocation(lat, lng, {
+      focus: false,
+      updateSearchOrigin: options.updateSearchOrigin ?? false,
+      redrawRoute: options.redrawRoute ?? false,
     })
   }
 
@@ -388,6 +402,7 @@ export function useSearchNearbyPageVM() {
     focusOrigin,
     focusDeviceLocation,
     updateDeviceLocation,
+    updateLiveDeviceLocation,
     clearSearch,
   }
 }

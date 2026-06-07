@@ -316,6 +316,17 @@ function compareDistance(
 }
 
 type LocationPermissionState = "checking" | "granted" | "denied" | "unsupported"
+type LiveLocationSnapshot = { lat: number, lng: number, updatedAt: number }
+
+const liveMarkerMinDistanceMeters = 3
+const routeRefreshMinDistanceMeters = 8
+const searchOriginRefreshMinDistanceMeters = 100
+const locationPollIntervalMs = 5000
+const geolocationOptions: PositionOptions = {
+  enableHighAccuracy: true,
+  maximumAge: 2000,
+  timeout: 15000,
+}
 
 const {
   appRoutes,
@@ -347,7 +358,7 @@ const {
   handleRouteError,
   focusOrigin,
   focusDeviceLocation,
-  updateDeviceLocation,
+  updateLiveDeviceLocation,
   clearSearch,
 } = useSearchNearbyPageVM()
 
@@ -367,11 +378,14 @@ const showGuide = ref(false)
 const guideTab = ref<"ios" | "android" | "desktop">("ios")
 let searchBlurTimer: ReturnType<typeof setTimeout> | null = null
 let locationWatchId: number | null = null
+let locationPollTimer: ReturnType<typeof setInterval> | null = null
 let shouldFocusNextLocationUpdate = false
-let lastLiveLocation: { lat: number, lng: number, updatedAt: number } | null = null
+let lastLiveLocation: LiveLocationSnapshot | null = null
+let lastRouteLocation: LiveLocationSnapshot | null = null
+let lastSearchOriginLocation: LiveLocationSnapshot | null = null
 
 const { load: loadGoogleMaps } = useScriptGoogleMaps({
-  libraries: ["places"],
+  libraries: ["places", "routes"],
   trigger: "manual",
 })
 
@@ -481,6 +495,124 @@ function calculatePointDistanceMeters(from: { lat: number, lng: number }, to: { 
   return Math.round(earthRadiusMeters * angle)
 }
 
+function shouldRefreshFromLocation(
+  lastLocation: LiveLocationSnapshot | null,
+  nextLocation: { lat: number, lng: number },
+  minDistanceMeters: number,
+  minIntervalMs = 0,
+) {
+  if (!lastLocation) {
+    return true
+  }
+
+  const now = Date.now()
+  const movedMeters = calculatePointDistanceMeters(lastLocation, nextLocation)
+
+  return movedMeters >= minDistanceMeters
+    && (!minIntervalMs || now - lastLocation.updatedAt >= minIntervalMs)
+}
+
+function rememberLocation(
+  nextLocation: { lat: number, lng: number },
+): LiveLocationSnapshot {
+  return {
+    ...nextLocation,
+    updatedAt: Date.now(),
+  }
+}
+
+function handleLocationPosition(position: GeolocationPosition) {
+  const nextLocation = {
+    lat: position.coords.latitude,
+    lng: position.coords.longitude,
+  }
+
+  if (!shouldRefreshFromLocation(lastLiveLocation, nextLocation, liveMarkerMinDistanceMeters)) {
+    return
+  }
+
+  const shouldFocus = shouldFocusNextLocationUpdate || !lastLiveLocation
+  const shouldRefreshSearchOrigin = shouldRefreshFromLocation(
+    lastSearchOriginLocation,
+    nextLocation,
+    searchOriginRefreshMinDistanceMeters,
+  )
+  const shouldRefreshRoute = Boolean(routeTargetItem.value)
+    && shouldRefreshFromLocation(lastRouteLocation, nextLocation, routeRefreshMinDistanceMeters)
+
+  lastLiveLocation = rememberLocation(nextLocation)
+  shouldFocusNextLocationUpdate = false
+  locationPermissionState.value = "granted"
+
+  if (shouldFocus) {
+    lastSearchOriginLocation = lastLiveLocation
+    lastRouteLocation = lastLiveLocation
+    if (routeTargetItem.value) {
+      updateLiveDeviceLocation(nextLocation.lat, nextLocation.lng, {
+        updateSearchOrigin: true,
+        redrawRoute: true,
+      })
+      return
+    }
+    focusDeviceLocation(nextLocation.lat, nextLocation.lng)
+    return
+  }
+
+  if (shouldRefreshSearchOrigin) {
+    lastSearchOriginLocation = lastLiveLocation
+  }
+
+  if (shouldRefreshRoute) {
+    lastRouteLocation = lastLiveLocation
+  }
+
+  updateLiveDeviceLocation(nextLocation.lat, nextLocation.lng, {
+    updateSearchOrigin: shouldRefreshSearchOrigin,
+    redrawRoute: shouldRefreshRoute,
+  })
+}
+
+function handleLocationError(error?: GeolocationPositionError) {
+  if (error?.code === 1) {
+    locationPermissionState.value = hasOrigin.value ? "granted" : "denied"
+    if (locationWatchId !== null && import.meta.client && navigator.geolocation) {
+      navigator.geolocation.clearWatch(locationWatchId)
+      locationWatchId = null
+    }
+    stopLocationPolling()
+    return
+  }
+
+  locationPermissionState.value = hasOrigin.value ? "granted" : "denied"
+}
+
+function stopLocationPolling() {
+  if (locationPollTimer) {
+    clearInterval(locationPollTimer)
+    locationPollTimer = null
+  }
+}
+
+function pollCurrentLocation() {
+  if (!import.meta.client || !navigator.geolocation) {
+    return
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    handleLocationPosition,
+    handleLocationError,
+    geolocationOptions,
+  )
+}
+
+function startLocationPolling() {
+  if (locationPollTimer || !import.meta.client || !navigator.geolocation) {
+    return
+  }
+
+  locationPollTimer = setInterval(pollCurrentLocation, locationPollIntervalMs)
+}
+
 function handleSuggestionSelect(option: NearbySuggestionOption | null) {
   if (!option) {
     return
@@ -560,6 +692,9 @@ async function requestLocationPermission() {
 
     if (permission?.state === "denied") {
       locationPermissionState.value = "denied"
+      if (!hasOrigin.value) {
+        return
+      }
     }
   }
   catch {
@@ -576,48 +711,18 @@ async function requestLocationPermission() {
     if (hasOrigin.value) {
       focusOrigin()
     }
+    startLocationPolling()
+    pollCurrentLocation()
     return
   }
 
   locationWatchId = navigator.geolocation.watchPosition(
-    (position) => {
-      const nextLocation = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude,
-      }
-      const now = Date.now()
-      const distanceFromLast = lastLiveLocation
-        ? calculatePointDistanceMeters(lastLiveLocation, nextLocation)
-        : Number.POSITIVE_INFINITY
-      const movedEnough = !lastLiveLocation
-        || distanceFromLast >= (routeTargetItem.value ? 5 : 12)
-
-      if (!movedEnough) {
-        return
-      }
-
-      const shouldFocus = shouldFocusNextLocationUpdate || !lastLiveLocation
-      lastLiveLocation = { ...nextLocation, updatedAt: now }
-      shouldFocusNextLocationUpdate = false
-      locationPermissionState.value = "granted"
-
-      if (shouldFocus) {
-        focusDeviceLocation(nextLocation.lat, nextLocation.lng)
-        return
-      }
-
-      updateDeviceLocation(nextLocation.lat, nextLocation.lng)
-    },
-    () => {
-      locationPermissionState.value = hasOrigin.value ? "granted" : "denied"
-      locationWatchId = null
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 5000,
-      timeout: 20000,
-    },
+    handleLocationPosition,
+    handleLocationError,
+    geolocationOptions,
   )
+  startLocationPolling()
+  pollCurrentLocation()
 }
 
 function handleMyLocationClick() {
@@ -796,6 +901,7 @@ onBeforeUnmount(() => {
     navigator.geolocation.clearWatch(locationWatchId)
     locationWatchId = null
   }
+  stopLocationPolling()
 })
 </script>
 

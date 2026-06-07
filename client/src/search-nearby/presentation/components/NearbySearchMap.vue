@@ -46,7 +46,7 @@ const placesService = shallowRef<google.maps.places.PlacesService | null>(null)
 let routeRequestSequence = 0
 
 const { load } = useScriptGoogleMaps({
-  libraries: ["places"],
+  libraries: ["places", "routes"],
   trigger: "manual",
 })
 
@@ -533,8 +533,6 @@ watch(
     props.routeTargetItem?.id,
     props.routeTargetItem?.lat,
     props.routeTargetItem?.lng,
-    props.origin.lat,
-    props.origin.lng,
     props.routeOriginUpdateKey,
     props.items.map(item => `${item.id}:${item.pinned ? 1 : 0}`).join(","),
   ],

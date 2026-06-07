@@ -5,7 +5,7 @@ import { fetchFeedPostById } from "../_shared"
 
 export default defineEventHandler(async (event) => {
   const rawId = event.context.params?.id
-  const postId = Number(rawId ?? 0)
+  const postId = Number.parseInt(String(rawId ?? ""), 10)
 
   if (!postId || !Number.isFinite(postId)) {
     throw createError({
