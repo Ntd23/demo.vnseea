@@ -12,6 +12,8 @@
         :origin-update-key="originUpdateKey"
         :route-origin-update-key="routeOriginUpdateKey"
         :route-target-item="routeTargetItem"
+        :origin-heading="liveOriginHeading"
+        :search-radius-km="distanceKm"
         :zoom-in-key="mapZoomInKey"
         :zoom-out-key="mapZoomOutKey"
         @select="selectItem"
@@ -316,16 +318,18 @@ function compareDistance(
 }
 
 type LocationPermissionState = "checking" | "granted" | "denied" | "unsupported"
-type LiveLocationSnapshot = { lat: number, lng: number, updatedAt: number }
+type LiveLocationSnapshot = { lat: number, lng: number, heading: number | null, updatedAt: number }
 
-const liveMarkerMinDistanceMeters = 3
-const routeRefreshMinDistanceMeters = 8
+const liveMarkerMinDistanceMeters = 0.5
+const liveHeadingMinDegrees = 5
+const routeRefreshMinDistanceMeters = 2
+const routeRefreshMinIntervalMs = 2500
 const searchOriginRefreshMinDistanceMeters = 100
-const locationPollIntervalMs = 5000
+const locationPollIntervalMs = 2000
 const geolocationOptions: PositionOptions = {
   enableHighAccuracy: true,
-  maximumAge: 2000,
-  timeout: 15000,
+  maximumAge: 0,
+  timeout: 10000,
 }
 
 const {
@@ -337,6 +341,7 @@ const {
   originFocusKey,
   originUpdateKey,
   routeOriginUpdateKey,
+  distanceKm,
   origin,
   mapItems,
   cardItems,
@@ -374,6 +379,7 @@ const pageRoot = ref<HTMLElement | null>(null)
 const mapZoomInKey = ref(0)
 const mapZoomOutKey = ref(0)
 const locationPermissionState = ref<LocationPermissionState>("checking")
+const liveOriginHeading = ref<number | null>(null)
 const showGuide = ref(false)
 const guideTab = ref<"ios" | "android" | "desktop">("ios")
 let searchBlurTimer: ReturnType<typeof setTimeout> | null = null
@@ -495,6 +501,33 @@ function calculatePointDistanceMeters(from: { lat: number, lng: number }, to: { 
   return Math.round(earthRadiusMeters * angle)
 }
 
+function normalizeHeading(heading: number | null) {
+  if (typeof heading !== "number" || !Number.isFinite(heading)) {
+    return null
+  }
+
+  return (heading % 360 + 360) % 360
+}
+
+function calculateHeadingDelta(left: number, right: number) {
+  const delta = Math.abs(left - right) % 360
+
+  return Math.min(delta, 360 - delta)
+}
+
+function calculateBearingDegrees(from: { lat: number, lng: number }, to: { lat: number, lng: number }) {
+  const toRad = (value: number) => value * Math.PI / 180
+  const toDeg = (value: number) => value * 180 / Math.PI
+  const latFrom = toRad(from.lat)
+  const latTo = toRad(to.lat)
+  const lngDelta = toRad(to.lng - from.lng)
+  const y = Math.sin(lngDelta) * Math.cos(latTo)
+  const x = Math.cos(latFrom) * Math.sin(latTo)
+    - Math.sin(latFrom) * Math.cos(latTo) * Math.cos(lngDelta)
+
+  return normalizeHeading(toDeg(Math.atan2(y, x)))
+}
+
 function shouldRefreshFromLocation(
   lastLocation: LiveLocationSnapshot | null,
   nextLocation: { lat: number, lng: number },
@@ -512,11 +545,45 @@ function shouldRefreshFromLocation(
     && (!minIntervalMs || now - lastLocation.updatedAt >= minIntervalMs)
 }
 
+function resolvePositionHeading(
+  position: GeolocationPosition,
+  nextLocation: { lat: number, lng: number },
+) {
+  const nativeHeading = normalizeHeading(position.coords.heading)
+
+  if (nativeHeading !== null) {
+    return nativeHeading
+  }
+
+  if (
+    lastLiveLocation
+    && calculatePointDistanceMeters(lastLiveLocation, nextLocation) >= liveMarkerMinDistanceMeters
+  ) {
+    return calculateBearingDegrees(lastLiveLocation, nextLocation)
+  }
+
+  return liveOriginHeading.value
+}
+
+function shouldRefreshHeading(nextHeading: number | null) {
+  if (nextHeading === null) {
+    return false
+  }
+
+  if (liveOriginHeading.value === null) {
+    return true
+  }
+
+  return calculateHeadingDelta(liveOriginHeading.value, nextHeading) >= liveHeadingMinDegrees
+}
+
 function rememberLocation(
   nextLocation: { lat: number, lng: number },
+  heading: number | null,
 ): LiveLocationSnapshot {
   return {
     ...nextLocation,
+    heading,
     updatedAt: Date.now(),
   }
 }
@@ -526,27 +593,59 @@ function handleLocationPosition(position: GeolocationPosition) {
     lat: position.coords.latitude,
     lng: position.coords.longitude,
   }
-
-  if (!shouldRefreshFromLocation(lastLiveLocation, nextLocation, liveMarkerMinDistanceMeters)) {
-    return
-  }
+  const nextHeading = resolvePositionHeading(position, nextLocation)
 
   const shouldFocus = shouldFocusNextLocationUpdate || !lastLiveLocation
+  const shouldUpdateLiveMarker = shouldRefreshFromLocation(
+    lastLiveLocation,
+    nextLocation,
+    liveMarkerMinDistanceMeters,
+  )
   const shouldRefreshSearchOrigin = shouldRefreshFromLocation(
     lastSearchOriginLocation,
     nextLocation,
     searchOriginRefreshMinDistanceMeters,
   )
   const shouldRefreshRoute = Boolean(routeTargetItem.value)
-    && shouldRefreshFromLocation(lastRouteLocation, nextLocation, routeRefreshMinDistanceMeters)
+    && shouldRefreshFromLocation(
+      lastRouteLocation,
+      nextLocation,
+      routeRefreshMinDistanceMeters,
+      routeRefreshMinIntervalMs,
+    )
+  const shouldUpdateHeading = shouldRefreshHeading(nextHeading)
 
-  lastLiveLocation = rememberLocation(nextLocation)
-  shouldFocusNextLocationUpdate = false
   locationPermissionState.value = "granted"
 
+  if (
+    !shouldFocus
+    && !shouldUpdateLiveMarker
+    && !shouldRefreshSearchOrigin
+    && !shouldRefreshRoute
+    && !shouldUpdateHeading
+  ) {
+    return
+  }
+
+  const nextSnapshot = rememberLocation(nextLocation, nextHeading)
+  const shouldUpdatePosition = shouldFocus || shouldUpdateLiveMarker || shouldRefreshSearchOrigin || shouldRefreshRoute
+
+  if (shouldUpdatePosition) {
+    lastLiveLocation = nextSnapshot
+    shouldFocusNextLocationUpdate = false
+  }
+
+  if (nextHeading !== null && (shouldFocus || shouldUpdateLiveMarker || shouldUpdateHeading)) {
+    liveOriginHeading.value = nextHeading
+  }
+
+  if (!shouldUpdatePosition) {
+    return
+  }
+
   if (shouldFocus) {
-    lastSearchOriginLocation = lastLiveLocation
-    lastRouteLocation = lastLiveLocation
+    lastSearchOriginLocation = nextSnapshot
+    lastRouteLocation = nextSnapshot
     if (routeTargetItem.value) {
       updateLiveDeviceLocation(nextLocation.lat, nextLocation.lng, {
         updateSearchOrigin: true,
@@ -559,11 +658,15 @@ function handleLocationPosition(position: GeolocationPosition) {
   }
 
   if (shouldRefreshSearchOrigin) {
-    lastSearchOriginLocation = lastLiveLocation
+    lastSearchOriginLocation = nextSnapshot
   }
 
   if (shouldRefreshRoute) {
-    lastRouteLocation = lastLiveLocation
+    lastRouteLocation = nextSnapshot
+  }
+
+  if (!shouldUpdateLiveMarker && !shouldRefreshSearchOrigin && !shouldRefreshRoute) {
+    return
   }
 
   updateLiveDeviceLocation(nextLocation.lat, nextLocation.lng, {
@@ -779,7 +882,7 @@ async function refreshGooglePlaceSuggestions() {
         origin: origin.value.lat !== null && origin.value.lng !== null
           ? new window.google.maps.LatLng(origin.value.lat, origin.value.lng)
           : undefined,
-        radius: origin.value.lat !== null && origin.value.lng !== null ? 25000 : undefined,
+        radius: origin.value.lat !== null && origin.value.lng !== null ? distanceKm.value * 1000 : undefined,
       },
       (predictions, status) => {
         if (requestId !== googlePlaceRequestId.value) {

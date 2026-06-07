@@ -15,6 +15,7 @@ const readString = (value: unknown) =>
 
 const suggestionDebounceMs = 300
 const minSearchKeywordLength = 3
+const defaultNearbyDistanceKm = 1
 
 const emptyResponse = (): NearbySearchResponse => ({
   status: "ready",
@@ -44,7 +45,7 @@ export function useSearchNearbyPageVM() {
 
   const searchText = ref(readString(route.query.q))
   const selectedType = ref<NearbySearchType>("all")
-  const distanceKm = ref(5)
+  const distanceKm = ref(defaultNearbyDistanceKm)
   const deviceOrigin = ref<{ lat: number, lng: number } | null>(null)
   const selectedItemId = ref("")
   const originFocusKey = ref(0)
@@ -331,7 +332,7 @@ export function useSearchNearbyPageVM() {
   function clearSearch() {
     searchText.value = ""
     selectedType.value = "all"
-    distanceKm.value = 5
+    distanceKm.value = defaultNearbyDistanceKm
     suggestions.value = []
     clearPinnedResult()
   }
