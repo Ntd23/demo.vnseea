@@ -355,8 +355,8 @@ type DeviceOrientationEventConstructorWithPermission = typeof DeviceOrientationE
 
 const liveMarkerMinDistanceMeters = 0.1
 const liveHeadingMinDegrees = 2
-const routeRefreshMinDistanceMeters = 2
-const routeRefreshMinIntervalMs = 2500
+const routeRefreshMinDistanceMeters = 15
+const routeRefreshMinIntervalMs = 10000
 const searchOriginRefreshMinDistanceMeters = 100
 const locationPollIntervalMs = 2000
 const geolocationOptions: PositionOptions = {
