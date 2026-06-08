@@ -52,6 +52,10 @@ let routeRequestSequence = 0
 let lastMarkersViewportKey = ""
 let lastRenderedRouteTargetId = ""
 let lastRouteFitKey = -1
+let lastOriginRadiusCenter: { lat: number, lng: number } | null = null
+let lastOriginRadiusMeters = 0
+
+const originRadiusMinMoveMeters = 25
 
 const { load } = useScriptGoogleMaps({
   libraries: ["places", "routes"],
@@ -176,24 +180,17 @@ function createPinIcon(color: string, selected = false): google.maps.Icon {
   }
 }
 
-function createOriginIcon(selected = false, heading: number | null = null): google.maps.Icon {
-  const size = selected ? 50 : 46
-  const arrowScale = selected ? 1 : 0.94
-  const rotation = heading ?? 0
-  const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 50 50">
-      <circle cx="25" cy="25" r="22" fill="#2563eb" fill-opacity="0.18"/>
-      <circle cx="25" cy="25" r="16" fill="#ffffff" stroke="#2563eb" stroke-width="4"/>
-      <g transform="translate(25 25) scale(${arrowScale}) rotate(${rotation}) translate(-25 -25)">
-        <path d="M25 12 36 36 25 31 14 36 25 12Z" fill="#2563eb"/>
-      </g>
-    </svg>
-  `.trim()
-
+function createOriginIcon(selected = false, heading: number | null = null): google.maps.Symbol {
   return {
-    url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`,
-    scaledSize: new window.google.maps.Size(size, size),
-    anchor: new window.google.maps.Point(size / 2, size / 2),
+    path: "M 0 -18 L 11 15 L 0 9 L -11 15 Z",
+    anchor: new window.google.maps.Point(0, 0),
+    fillColor: "#2563eb",
+    fillOpacity: 1,
+    rotation: heading ?? 0,
+    scale: selected ? 1.16 : 1,
+    strokeColor: "#ffffff",
+    strokeOpacity: 1,
+    strokeWeight: selected ? 3.2 : 2.8,
   }
 }
 
@@ -220,6 +217,23 @@ function calculateDistanceMeters(lat: number, lng: number) {
   ))
 
   return Math.round(earthRadiusMeters * angle)
+}
+
+function calculatePointDistanceMeters(from: { lat: number, lng: number }, to: { lat: number, lng: number }) {
+  const earthRadiusMeters = 6371000
+  const toRad = (value: number) => value * Math.PI / 180
+  const latFrom = toRad(from.lat)
+  const lngFrom = toRad(from.lng)
+  const latTo = toRad(to.lat)
+  const lngTo = toRad(to.lng)
+  const latDelta = latTo - latFrom
+  const lngDelta = lngTo - lngFrom
+  const angle = 2 * Math.asin(Math.sqrt(
+    Math.sin(latDelta / 2) ** 2
+    + Math.cos(latFrom) * Math.cos(latTo) * Math.sin(lngDelta / 2) ** 2,
+  ))
+
+  return earthRadiusMeters * angle
 }
 
 function handleGooglePoiClick(event: google.maps.MapMouseEvent & { placeId?: string, stop?: () => void }) {
@@ -371,22 +385,30 @@ function zoomOut() {
   map.setZoom(Math.max((map.getZoom() ?? 13) - 1, 3))
 }
 
-function renderOriginMarker() {
+function syncOriginRadiusCircle(force = false) {
   const map = mapInstance.value
-  const Marker = markerConstructor.value
 
-  if (!map || !Marker || !window.google?.maps) {
+  if (!map || !window.google?.maps) {
     return
   }
 
   if (props.origin.lat === null || props.origin.lng === null) {
-    clearOriginMarker()
     clearOriginRadiusCircle()
+    lastOriginRadiusCenter = null
+    lastOriginRadiusMeters = 0
     return
   }
 
   const center = { lat: props.origin.lat, lng: props.origin.lng }
   const radiusMeters = Math.max((props.searchRadiusKm ?? 1) * 1000, 100)
+  const movedMeters = lastOriginRadiusCenter
+    ? calculatePointDistanceMeters(lastOriginRadiusCenter, center)
+    : Number.POSITIVE_INFINITY
+  const radiusChanged = radiusMeters !== lastOriginRadiusMeters
+
+  if (!force && originRadiusCircle.value && !radiusChanged && movedMeters < originRadiusMinMoveMeters) {
+    return
+  }
 
   if (originRadiusCircle.value) {
     originRadiusCircle.value.setOptions({
@@ -416,6 +438,25 @@ function renderOriginMarker() {
       zIndex: 1,
     })
   }
+
+  lastOriginRadiusCenter = center
+  lastOriginRadiusMeters = radiusMeters
+}
+
+function renderOriginMarker() {
+  const map = mapInstance.value
+  const Marker = markerConstructor.value
+
+  if (!map || !Marker || !window.google?.maps) {
+    return
+  }
+
+  if (props.origin.lat === null || props.origin.lng === null) {
+    clearOriginMarker()
+    return
+  }
+
+  const center = { lat: props.origin.lat, lng: props.origin.lng }
 
   const icon = createOriginIcon(!props.selectedItemId, props.originHeading ?? null)
 
@@ -449,6 +490,7 @@ function renderMarkers() {
   const shouldUpdateViewport = viewportKey !== lastMarkersViewportKey
 
   renderOriginMarker()
+  syncOriginRadiusCircle()
   clearMarkers()
 
   const markers: google.maps.Marker[] = []
@@ -495,6 +537,11 @@ function renderMarkers() {
     return
   }
 
+  if (props.origin.lat !== null && props.origin.lng !== null) {
+    fitOriginRadius()
+    return
+  }
+
   fitMarkers()
 }
 
@@ -505,10 +552,13 @@ function fitRouteResult(result: google.maps.DirectionsResult, target: NearbySear
     return
   }
 
+  const padding = isMobileViewport()
+    ? { top: 96, right: 82, bottom: 230, left: 24 }
+    : { top: 96, right: 96, bottom: 96, left: 96 }
   const routeBounds = result.routes?.[0]?.bounds
 
   if (routeBounds) {
-    map.fitBounds(routeBounds, isMobileViewport() ? 52 : 84)
+    map.fitBounds(routeBounds, padding)
     return
   }
 
@@ -521,7 +571,48 @@ function fitRouteResult(result: google.maps.DirectionsResult, target: NearbySear
     bounds.extend({ lat: target.lat, lng: target.lng })
   }
 
-  map.fitBounds(bounds, isMobileViewport() ? 52 : 84)
+  map.fitBounds(bounds, padding)
+}
+
+function getRoutePreviewMinZoom(target: NearbySearchItem) {
+  if (props.origin.lat === null || props.origin.lng === null || target.lat === null || target.lng === null) {
+    return 0
+  }
+
+  const distanceMeters = calculatePointDistanceMeters(
+    { lat: props.origin.lat, lng: props.origin.lng },
+    { lat: target.lat, lng: target.lng },
+  )
+
+  if (distanceMeters <= 1500) {
+    return isMobileViewport() ? 16 : 17
+  }
+
+  if (distanceMeters <= 5000) {
+    return 15
+  }
+
+  return 0
+}
+
+function fitRoutePreview(result: google.maps.DirectionsResult, target: NearbySearchItem) {
+  const map = mapInstance.value
+
+  if (!map || !window.google?.maps) {
+    return
+  }
+
+  fitRouteResult(result, target)
+
+  const minZoom = getRoutePreviewMinZoom(target)
+
+  if (minZoom <= 0) {
+    return
+  }
+
+  window.google.maps.event.addListenerOnce(map, "idle", () => {
+    map.setZoom(Math.max(map.getZoom() ?? minZoom, minZoom))
+  })
 }
 
 function renderRoute() {
@@ -555,18 +646,18 @@ function renderRoute() {
   const shouldFitRouteViewport = props.routeFitKey !== lastRouteFitKey
     || lastRenderedRouteTargetId !== target.id
     || !directionsRenderer.value
-  const renderer = new DirectionsRenderer({
-    map,
-    suppressMarkers: true,
-    preserveViewport: true,
-    polylineOptions: {
-      strokeColor: "#2563eb",
-      strokeOpacity: 0.95,
-      strokeWeight: 5,
-    },
-  })
+  const renderer = directionsRenderer.value ?? new DirectionsRenderer({
+      map,
+      suppressMarkers: true,
+      preserveViewport: true,
+      polylineOptions: {
+        strokeColor: "#2563eb",
+        strokeOpacity: 0.95,
+        strokeWeight: 5,
+      },
+    })
 
-  directionsRenderer.value?.setMap(null)
+  renderer.setMap(map)
   directionsRenderer.value = renderer
 
   service.route(
@@ -577,7 +668,6 @@ function renderRoute() {
     },
     (result, status) => {
       if (requestId !== routeRequestSequence || props.routeTargetItem?.id !== target.id) {
-        renderer.setMap(null)
         return
       }
 
@@ -586,7 +676,7 @@ function renderRoute() {
         renderer.setDirections(result)
         if (shouldFitRouteViewport) {
           lastRouteFitKey = props.routeFitKey
-          fitRouteResult(result, target)
+          fitRoutePreview(result, target)
         }
         return
       }
@@ -674,9 +764,17 @@ onMounted(() => {
 })
 
 watch(
-  () => [props.origin.lat, props.origin.lng, props.originUpdateKey, props.searchRadiusKm, props.items, props.selectedItemId],
+  () => [props.items, props.selectedItemId],
   () => renderMarkers(),
   { deep: true },
+)
+
+watch(
+  () => [props.origin.lat, props.origin.lng, props.originUpdateKey],
+  () => {
+    renderOriginMarker()
+    syncOriginRadiusCircle()
+  },
 )
 
 watch(
@@ -685,9 +783,15 @@ watch(
 )
 
 watch(
+  () => props.searchRadiusKm,
+  () => syncOriginRadiusCircle(true),
+)
+
+watch(
   () => props.originFocusKey,
   () => {
-    renderMarkers()
+    renderOriginMarker()
+    syncOriginRadiusCircle(true)
     if (props.routeTargetItem) {
       return
     }
