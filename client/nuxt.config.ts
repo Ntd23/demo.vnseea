@@ -120,6 +120,7 @@ export default defineNuxtConfig({
       scripts: {
         googleMaps: {
           apiKey: process.env.NUXT_PUBLIC_SCRIPTS_GOOGLE_MAPS_API_KEY || "",
+          mapId: process.env.NUXT_PUBLIC_SCRIPTS_GOOGLE_MAPS_MAP_ID || "",
         },
       },
     },
