@@ -49,6 +49,7 @@ $required_config_defaults = array(
     'livekit_host' => '',
     'livekit_api_key' => '',
     'livekit_api_secret' => '',
+	'google_server_map_api' => '',
     'sepay' => '0',
     'sepay_mode' => 'live',
     'sepay_bank_acc' => '',
