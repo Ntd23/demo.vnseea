@@ -13,12 +13,13 @@
         :route-origin-update-key="routeOriginUpdateKey"
         :route-fit-key="routeFitKey"
         :route-target-item="routeTargetItem"
+        :route-navigation-active="routeNavigationActive"
         :origin-heading="liveOriginHeading"
         :search-radius-km="distanceKm"
         :zoom-in-key="mapZoomInKey"
         :zoom-out-key="mapZoomOutKey"
         @select="selectItem"
-        @directions="requestDirections"
+        @directions="handleDirectionsRequest"
         @route-error="handleRouteError"
       />
       <template #fallback>
@@ -154,7 +155,7 @@
             :active="selectedItemId === item.id || (!selectedItemId && item.id === cardItems[0]?.id)"
             @select="selectItem"
             @focus-origin="focusOrigin"
-            @directions="requestDirections"
+            @directions="handleDirectionsRequest"
           />
         </div>
       </div>
@@ -370,6 +371,7 @@ const {
   searchText,
   selectedItemId,
   routeTargetItem,
+  routeNavigationActive,
   routeErrorMessage,
   originFocusKey,
   originUpdateKey,
@@ -645,6 +647,10 @@ function updateLiveHeading(nextHeading: number | null) {
 }
 
 function handleDeviceOrientation(event: DeviceOrientationEvent) {
+  if (routeNavigationActive.value) {
+    return
+  }
+
   updateLiveHeading(resolveDeviceOrientationHeading(event))
 }
 
@@ -873,6 +879,19 @@ function handleSearchEnter() {
   }
 }
 
+function handleDirectionsRequest(item: NearbySearchItem) {
+  requestDirections(item)
+
+  if (!import.meta.client || !window.matchMedia("(max-width: 760px)").matches) {
+    return
+  }
+
+  shouldFocusNextLocationUpdate = true
+  if (navigator.geolocation) {
+    pollCurrentLocation()
+  }
+}
+
 function zoomMapIn() {
   mapZoomInKey.value += 1
 }
@@ -1094,7 +1113,6 @@ async function selectGooglePlace(option: NearbySuggestionOption) {
 
         googlePlaceSuggestions.value = []
         selectSuggestion(placeItem)
-        requestDirections(placeItem)
       },
     )
   }

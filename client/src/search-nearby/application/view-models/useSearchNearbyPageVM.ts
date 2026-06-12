@@ -45,6 +45,7 @@ export function useSearchNearbyPageVM() {
   const searchText = ref(readString(route.query.q))
   const selectedType = ref<NearbySearchType>("all")
   const distanceKm = ref(defaultNearbyDistanceKm)
+  const currentDeviceOrigin = ref<{ lat: number, lng: number } | null>(null)
   const deviceOrigin = ref<{ lat: number, lng: number } | null>(null)
   const selectedItemId = ref("")
   const originFocusKey = ref(0)
@@ -60,6 +61,7 @@ export function useSearchNearbyPageVM() {
   const suggestionsLoading = ref(false)
   const selectedSuggestionItem = shallowRef<NearbySearchItem | null>(null)
   const routeTargetItem = shallowRef<NearbySearchItem | null>(null)
+  const routeNavigationActive = ref(false)
   const routeErrorMessage = ref("")
   let requestSequence = 0
   let suggestionRequestSequence = 0
@@ -107,7 +109,17 @@ export function useSearchNearbyPageVM() {
     selectedSuggestionItem.value ? [selectedSuggestionItem.value] : sortByDistance(response.value.items),
   )
   const items = mapItems
-  const origin = computed(() => response.value.origin)
+  const origin = computed(() => {
+    if (currentDeviceOrigin.value) {
+      return {
+        address: "Vá»‹ trÃ­ hiá»‡n táº¡i",
+        lat: currentDeviceOrigin.value.lat,
+        lng: currentDeviceOrigin.value.lng,
+      }
+    }
+
+    return response.value.origin
+  })
   const needsLocation = computed(() => response.value.status === "needs_location")
   const hasOrigin = computed(() => origin.value.lat !== null && origin.value.lng !== null)
   const hasResults = computed(() => cardItems.value.length > 0)
@@ -145,7 +157,16 @@ export function useSearchNearbyPageVM() {
         return
       }
 
-      response.value = nextResponse
+      response.value = currentDeviceOrigin.value
+        ? {
+            ...nextResponse,
+            origin: {
+              address: "Vá»‹ trÃ­ hiá»‡n táº¡i",
+              lat: currentDeviceOrigin.value.lat,
+              lng: currentDeviceOrigin.value.lng,
+            },
+          }
+        : nextResponse
 
       if (selectedItemId.value && !response.value.items.some(item => item.id === selectedItemId.value)) {
         selectedItemId.value = ""
@@ -190,7 +211,7 @@ export function useSearchNearbyPageVM() {
         return
       }
 
-      if (nextResponse.origin.lat !== null && nextResponse.origin.lng !== null) {
+      if (!currentDeviceOrigin.value && nextResponse.origin.lat !== null && nextResponse.origin.lng !== null) {
         response.value = {
           ...response.value,
           origin: nextResponse.origin,
@@ -215,6 +236,7 @@ export function useSearchNearbyPageVM() {
   function clearPinnedResult() {
     selectedSuggestionItem.value = null
     routeTargetItem.value = null
+    routeNavigationActive.value = false
     routeErrorMessage.value = ""
   }
 
@@ -224,14 +246,20 @@ export function useSearchNearbyPageVM() {
 
   function selectItem(item: NearbySearchItem) {
     selectedItemId.value = item.id
+    routeTargetItem.value = item
+    routeNavigationActive.value = false
+    routeErrorMessage.value = ""
+    routeFitKey.value += 1
   }
 
   function selectSuggestion(item: NearbySearchItem) {
     isApplyingSuggestion = true
     selectedSuggestionItem.value = item
     selectedItemId.value = item.id
-    routeTargetItem.value = null
+    routeTargetItem.value = item
+    routeNavigationActive.value = false
     routeErrorMessage.value = ""
+    routeFitKey.value += 1
     searchText.value = item.title
     suggestions.value = []
     suggestionsLoading.value = false
@@ -246,6 +274,7 @@ export function useSearchNearbyPageVM() {
     selectedSuggestionItem.value = item
     selectedItemId.value = item.id
     routeTargetItem.value = item
+    routeNavigationActive.value = true
     routeErrorMessage.value = ""
     routeFitKey.value += 1
     routeOriginUpdateKey.value += 1
@@ -259,6 +288,7 @@ export function useSearchNearbyPageVM() {
 
   function clearRoute() {
     routeTargetItem.value = null
+    routeNavigationActive.value = false
     routeErrorMessage.value = ""
   }
 
@@ -277,6 +307,8 @@ export function useSearchNearbyPageVM() {
     lng: number,
     options: { focus?: boolean, updateSearchOrigin?: boolean, redrawRoute?: boolean } = {},
   ) {
+    currentDeviceOrigin.value = { lat, lng }
+
     if (options.updateSearchOrigin || !deviceOrigin.value) {
       deviceOrigin.value = { lat, lng }
     }
@@ -375,6 +407,7 @@ export function useSearchNearbyPageVM() {
     selectedItem,
     selectedSuggestionItem,
     routeTargetItem,
+    routeNavigationActive,
     routeErrorMessage,
     tabs,
     origin,
