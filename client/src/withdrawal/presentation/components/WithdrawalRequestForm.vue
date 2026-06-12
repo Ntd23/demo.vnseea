@@ -15,9 +15,9 @@
       </UBadge>
     </div>
 
-    <div v-if="methods.length" class="mt-5 grid gap-3 sm:grid-cols-2">
+    <div v-if="displayMethods.length" class="mt-5 grid gap-3 sm:grid-cols-2">
       <button
-        v-for="method in methods"
+        v-for="method in displayMethods"
         :key="method.value"
         type="button"
         class="withdrawal-request__method flex min-h-20 items-center gap-3 rounded-2xl border px-4 py-3 text-left transition disabled:cursor-not-allowed disabled:opacity-60"
@@ -29,7 +29,7 @@
           <Icon :name="methodIcon(method.value)" class="h-5 w-5" />
         </span>
         <span class="min-w-0">
-          <span class="block text-title-primary">{{ method.label }}</span>
+          <span class="block text-title-primary">{{ method.displayLabel }}</span>
           <span class="block text-caption-secondary">{{ methodDescription(method.value) }}</span>
         </span>
       </button>
@@ -39,8 +39,8 @@
       <UFormField :label="t('pages.withdrawalPage.withdrawMethod')">
         <USelect
           v-model="draft.method"
-          :items="methods"
-          label-key="label"
+          :items="displayMethods"
+          label-key="displayLabel"
           value-key="value"
           class="w-full"
           :disabled="disabled"
@@ -55,6 +55,13 @@
           :disabled="disabled"
         />
       </UFormField>
+      <p
+        v-if="draft.method === 'sepay'"
+        class="mt-2 flex items-start gap-2 text-xs font-semibold leading-5 text-[var(--text-secondary)]"
+      >
+        <Icon name="i-ph-info-duotone" class="mt-0.5 h-4 w-4 flex-shrink-0 text-[var(--text-brand)]" />
+        <span>{{ t("pages.withdrawalPage.bankTransferFormatHint") }}</span>
+      </p>
     </div>
 
     <div v-if="draft.method === 'paypal'" class="mt-4">
@@ -63,6 +70,39 @@
           v-model="draft.paypalEmail"
           type="email"
           class="w-full"
+          :disabled="disabled"
+        />
+      </UFormField>
+    </div>
+
+    <div v-else-if="draft.method === 'sepay'" class="mt-4 grid gap-4 md:grid-cols-2">
+      <UFormField :label="t('pages.withdrawalPage.bankSelectLabel')">
+        <USelect
+          v-model="draft.bankCode"
+          :items="bankOptions"
+          label-key="label"
+          value-key="value"
+          class="w-full"
+          :disabled="disabled"
+          @update:model-value="syncSelectedBank"
+        />
+      </UFormField>
+
+      <UFormField :label="t('pages.withdrawalPage.bankAccountNumberLabel')">
+        <UInput
+          v-model="draft.accountNumber"
+          inputmode="numeric"
+          class="w-full"
+          :placeholder="t('pages.withdrawalPage.accountNumberPlaceholder')"
+          :disabled="disabled"
+        />
+      </UFormField>
+
+      <UFormField :label="t('pages.withdrawalPage.beneficiaryNameLabel')" class="md:col-span-2">
+        <UInput
+          v-model="draft.beneficiaryName"
+          class="w-full"
+          :placeholder="t('pages.withdrawalPage.beneficiaryNamePlaceholder')"
           :disabled="disabled"
         />
       </UFormField>
@@ -129,7 +169,39 @@ const draft = reactive<WithdrawalRequestDraft>({
   amount: props.balance || props.minimumAmount,
   method: "",
   paypalEmail: props.paypalEmail,
+  bankCode: "",
+  bankName: "",
+  accountNumber: "",
+  beneficiaryName: "",
 })
+
+const bankOptions = [
+  { value: "VCB", label: "Vietcombank" },
+  { value: "BIDV", label: "BIDV" },
+  { value: "ICB", label: "VietinBank" },
+  { value: "TCB", label: "Techcombank" },
+  { value: "MB", label: "MB Bank" },
+  { value: "ACB", label: "ACB" },
+  { value: "VPB", label: "VPBank" },
+  { value: "TPB", label: "TPBank" },
+  { value: "VIB", label: "VIB" },
+  { value: "STB", label: "Sacombank" },
+  { value: "HDB", label: "HDBank" },
+  { value: "OCB", label: "OCB" },
+  { value: "MSB", label: "MSB" },
+  { value: "SHB", label: "SHB" },
+  { value: "EIB", label: "Eximbank" },
+  { value: "SEAB", label: "SeABank" },
+  { value: "BAB", label: "Bac A Bank" },
+  { value: "ABB", label: "ABBank" },
+  { value: "LPB", label: "LPBank" },
+  { value: "NAB", label: "Nam A Bank" },
+  { value: "VAB", label: "VietABank" },
+  { value: "PGB", label: "PGBank" },
+  { value: "PVCB", label: "PVcomBank" },
+  { value: "VIETBANK", label: "VietBank" },
+  { value: "BVB", label: "BaoViet Bank" },
+]
 
 const formatAmount = (amount: number) =>
   formatCurrency(amount, {
@@ -144,15 +216,34 @@ const availableLabel = computed(() =>
     amount: formatAmount(props.balance),
   }),
 )
+const displayMethods = computed(() =>
+  props.methods.map(method => ({
+    ...method,
+    displayLabel: method.value === "sepay"
+      ? t("pages.withdrawalPage.bankTransferMethod")
+      : method.label,
+  })),
+)
 
 function selectMethod(method: string) {
   draft.method = method
   localError.value = ""
+  if (method === "sepay" && !draft.bankCode && bankOptions[0]) {
+    draft.bankCode = bankOptions[0].value
+    draft.bankName = bankOptions[0].label
+  }
+}
+
+function syncSelectedBank(value: string | number | boolean | Record<string, unknown> | undefined) {
+  const bankCode = String(value ?? draft.bankCode ?? "")
+  const bank = bankOptions.find(option => option.value === bankCode)
+  draft.bankCode = bank?.value ?? bankCode
+  draft.bankName = bank?.label ?? ""
 }
 
 function methodIcon(method: string) {
   if (method === "paypal") return "i-ph-paypal-logo-duotone"
-  if (method === "sepay") return "i-ph-qr-code-duotone"
+  if (method === "sepay") return "i-ph-bank-duotone"
   return "i-ph-wallet-duotone"
 }
 
@@ -171,6 +262,11 @@ watch(
 
     if (draft.method && !methods.some(method => method.value === draft.method)) {
       draft.method = methods[0]?.value ?? ""
+    }
+
+    if (draft.method === "sepay" && !draft.bankCode && bankOptions[0]) {
+      draft.bankCode = bankOptions[0].value
+      draft.bankName = bankOptions[0].label
     }
   },
   { immediate: true },
@@ -204,6 +300,13 @@ function submit() {
     const email = draft.paypalEmail?.trim() ?? ""
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       localError.value = t("pages.withdrawalPage.errorPaypalEmail")
+      return
+    }
+  }
+  else if (draft.method === "sepay") {
+    syncSelectedBank(draft.bankCode)
+    if (!draft.bankCode?.trim() || !draft.accountNumber?.trim() || !draft.beneficiaryName?.trim()) {
+      localError.value = t("pages.withdrawalPage.errorBankTransferDetails")
       return
     }
   }

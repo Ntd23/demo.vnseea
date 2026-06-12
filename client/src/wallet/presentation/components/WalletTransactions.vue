@@ -261,6 +261,11 @@ const {
   color: #b45309;
 }
 
+.wallet-activity__icon--affiliate_reward {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+
 .wallet-activity__icon--sale {
   background: rgba(245, 158, 11, 0.12);
   color: #b45309;

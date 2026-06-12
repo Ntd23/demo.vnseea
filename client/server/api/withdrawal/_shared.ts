@@ -144,6 +144,12 @@ export async function submitWithdrawalRequest(
   if (input.method === "paypal") {
     body.paypal_email = input.paypalEmail ?? ""
   }
+  else if (input.method === "sepay") {
+    body.bank_code = input.bankCode ?? ""
+    body.bank_name = input.bankName ?? ""
+    body.account_number = input.accountNumber ?? ""
+    body.beneficiary_name = input.beneficiaryName ?? ""
+  }
   else if (input.method === "bank") {
     body.iban = input.iban ?? ""
     body.country = input.country ?? ""

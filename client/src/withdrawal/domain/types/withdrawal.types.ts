@@ -41,6 +41,10 @@ export interface WithdrawalRequestDraft {
   method: string
   amount: number
   paypalEmail?: string
+  bankCode?: string
+  bankName?: string
+  accountNumber?: string
+  beneficiaryName?: string
   iban?: string
   country?: string
   fullName?: string

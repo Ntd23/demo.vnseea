@@ -8,8 +8,10 @@ import {
 } from "../../../location/domain/types/location.types"
 import type {
   SettingSession,
+  SettingsAffiliatesOverview,
   SettingsBlockedUser,
   SettingsFieldValue,
+  SettingsMonetizationOverview,
   SettingsSectionSlug,
   SettingsUpdateInput,
   SettingsUser,
@@ -73,6 +75,7 @@ const pageIcons: Record<string, string> = {
   myInfo: "i-ph-info-fill",
   addresses: "i-ph-map-pin-fill",
   monetization: "i-ph-currency-circle-dollar-fill",
+  affiliates: "i-ph-gift-fill",
 }
 
 const supportedUpdateSections = new Set<SettingsSectionSlug>([
@@ -574,12 +577,15 @@ const monetizationPage = (t: SettingTranslate, user: SettingsUser | null): Setti
   label: pageText(t, "monetization", "label"),
   icon: pageIcons.monetization,
   description: pageText(t, "monetization", "description"),
-  sections: [{
-    title: pageText(t, "monetization", "sections.plans.title"),
-    description: pageText(t, "monetization", "sections.plans.description"),
-    kind: "list",
-    actions: [{ label: pageText(t, "monetization", "sections.plans.action"), icon: "i-ph-plus-duotone" }],
-  }],
+  sections: [],
+})
+
+const affiliatesPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({
+  slug: "affiliates",
+  label: pageText(t, "affiliates", "label"),
+  icon: pageIcons.affiliates,
+  description: pageText(t, "affiliates", "description"),
+  sections: [],
 })
 
 const createPages = (
@@ -604,6 +610,7 @@ const createPages = (
   myInfoPage(t),
   addressesPage(t, user),
   monetizationPage(t, user),
+  affiliatesPage(t, user),
   deleteAccountPage(t),
 ]
 
@@ -734,6 +741,8 @@ export const useSettingsPageVM = (
 
   const sessions = ref<SettingSession[]>([])
   const blockedUsers = ref<SettingsBlockedUser[]>([])
+  const monetization = ref<SettingsMonetizationOverview | null>(null)
+  const affiliates = ref<SettingsAffiliatesOverview | null>(null)
   const defaultSlug = "general"
   const pages = computed<SettingPage[]>(() =>
     createPages(t, user.value, sessions.value, blockedUsers.value),
@@ -789,6 +798,24 @@ export const useSettingsPageVM = (
     return response
   }
 
+  async function fetchMonetization() {
+    loading.value = true
+    try {
+      monetization.value = await settingsRepository.getMonetization()
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchAffiliates() {
+    loading.value = true
+    try {
+      affiliates.value = await settingsRepository.getAffiliates()
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function handleItemAction(item: SettingItem) {
     if (!item.id) return
 
@@ -805,6 +832,8 @@ export const useSettingsPageVM = (
   watch(() => activePage.value.slug, (slug) => {
     if (slug === "manage-sessions") fetchSessions()
     if (slug === "blocked-users") fetchBlockedUsers()
+    if (slug === "monetization") fetchMonetization()
+    if (slug === "affiliates") fetchAffiliates()
   }, { immediate: true })
 
   void hydrate()
@@ -815,6 +844,8 @@ export const useSettingsPageVM = (
     activePage,
     sessions,
     blockedUsers,
+    monetization,
+    affiliates,
     loading,
     errorMessage,
     defaultSlug,
@@ -828,6 +859,8 @@ export const useSettingsPageVM = (
     unblockUser,
     requestMyInfo,
     exchangePoints,
+    fetchMonetization,
+    fetchAffiliates,
     findPageBySlug,
   }
 }

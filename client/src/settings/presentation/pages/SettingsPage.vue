@@ -31,6 +31,15 @@
         <SettingsVerificationPanel
           v-else-if="isVerificationPage"
         />
+        <SettingsMonetizationPanel
+          v-else-if="activePage.slug === 'monetization'"
+          :overview="monetization"
+        />
+        <SettingsAffiliatesPanel
+          v-else-if="activePage.slug === 'affiliates'"
+          :overview="affiliates"
+          :user="user"
+        />
         <template v-else>
           <SettingsSection
             v-for="section in activePage.sections"
@@ -48,6 +57,8 @@
 
 <script setup lang="ts">
 import { useSettingsPageVM } from "../../application/view-models/useSettingsPageVM"
+import SettingsAffiliatesPanel from "../components/SettingsAffiliatesPanel.vue"
+import SettingsMonetizationPanel from "../components/SettingsMonetizationPanel.vue"
 import SettingsMyPointsPanel from "../components/SettingsMyPointsPanel.vue"
 import SettingsSection from "../components/SettingsSection.vue"
 import SettingsSidebar from "../components/SettingsSidebar.vue"
@@ -62,6 +73,8 @@ const {
   pages,
   user,
   activePage,
+  monetization,
+  affiliates,
   defaultSlug,
   userInitials,
   updateSettings,

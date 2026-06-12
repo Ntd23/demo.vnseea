@@ -5,8 +5,10 @@ import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-cl
 import type { SettingsRepository } from "../../domain/repositories/SettingsRepository"
 import type {
   SettingSession,
+  SettingsAffiliatesOverview,
   SettingsBlockedUser,
   SettingsFieldValue,
+  SettingsMonetizationOverview,
   SettingsPointsExchangeInput,
   SettingsPointsExchangeResult,
   SettingsUpdateInput,
@@ -125,6 +127,12 @@ export function createApiSettingsRepository(): SettingsRepository {
         apiRoutes.settings.pointsExchange,
         input,
       )
+    },
+    async getMonetization() {
+      return await client.get<SettingsMonetizationOverview>(apiRoutes.settings.monetization)
+    },
+    async getAffiliates() {
+      return await client.get<SettingsAffiliatesOverview>(apiRoutes.settings.affiliates)
     },
   }
 }

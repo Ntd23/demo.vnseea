@@ -38,6 +38,7 @@ export function useWalletSendFormVM(props: WalletSendFormProps, emit: WalletSend
   const transferNote = ref("")
   const confirmOpen = ref(false)
   const scanning = ref(false)
+  const lastAppliedQrPayload = ref("")
   const draft = reactive<WalletSendDraft>({
     recipientUserId: 0,
     amount: 0,
@@ -95,6 +96,10 @@ export function useWalletSendFormVM(props: WalletSendFormProps, emit: WalletSend
     emit("search", query)
   })
 
+  watch(qrPayload, (value) => {
+    void applyWalletQrPayload(value)
+  })
+
   watch(
     () => props.open,
     (open) => {
@@ -102,6 +107,7 @@ export function useWalletSendFormVM(props: WalletSendFormProps, emit: WalletSend
         recipientQuery.value = ""
         qrPayload.value = ""
         selectedRecipientLabel.value = ""
+        lastAppliedQrPayload.value = ""
         draft.recipientUserId = 0
         draft.amount = 0
         transferNote.value = ""
@@ -135,7 +141,44 @@ export function useWalletSendFormVM(props: WalletSendFormProps, emit: WalletSend
   function clearRecipient() {
     draft.recipientUserId = 0
     selectedRecipientLabel.value = ""
+    lastAppliedQrPayload.value = ""
     confirmOpen.value = false
+  }
+
+  async function applyWalletQrPayload(value: string, options: { stopAfterScan?: boolean } = {}) {
+    const raw = value.trim()
+    if (!raw) return false
+
+    const payload = parseWalletQrPayload(raw)
+    if (!payload?.to) {
+      localError.value = t("pages.walletPage.errorQrPayload")
+      return false
+    }
+
+    if (raw === lastAppliedQrPayload.value && draft.recipientUserId === payload.to) {
+      if (options.stopAfterScan) {
+        await stopQrScan()
+      }
+      return true
+    }
+
+    localError.value = ""
+    lastAppliedQrPayload.value = raw
+    draft.recipientUserId = payload.to
+    selectedRecipientLabel.value = `User #${payload.to}`
+
+    if (payload.amount !== null && Number.isFinite(payload.amount) && payload.amount > 0) {
+      draft.amount = payload.amount
+    }
+
+    recipientQuery.value = String(payload.to)
+    emit("search", String(payload.to))
+
+    if (options.stopAfterScan) {
+      await stopQrScan()
+    }
+
+    return true
   }
 
   function submit() {
@@ -191,6 +234,7 @@ export function useWalletSendFormVM(props: WalletSendFormProps, emit: WalletSend
         config,
         (decodedText: string) => {
           qrPayload.value = decodedText
+          void applyWalletQrPayload(decodedText, { stopAfterScan: true })
         },
         () => {},
       )
@@ -234,6 +278,8 @@ export function useWalletSendFormVM(props: WalletSendFormProps, emit: WalletSend
     try {
       const decodedText = await (window as any).Html5Qrcode.scanFile(file, true)
       qrPayload.value = decodedText
+      const applied = await applyWalletQrPayload(decodedText)
+      if (!applied) return
       toast.add({
         color: "success",
         icon: "i-ph-check-circle-fill",

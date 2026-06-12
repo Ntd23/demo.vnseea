@@ -89,6 +89,7 @@ export default defineEventHandler(async (event): Promise<RegisterAccountResult> 
       password: body.password,
       confirm_password: body.confirmPassword,
       gender: body.gender || "male",
+      ref: body.ref?.trim() || undefined,
     }),
     "Unable to create account.",
   )

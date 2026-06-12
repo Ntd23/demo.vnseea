@@ -271,6 +271,8 @@ export const apiRoutes = {
     unblock: "settings/unblock",
     myInfo: "settings/my-info",
     pointsExchange: "settings/points-exchange",
+    monetization: "settings/monetization",
+    affiliates: "settings/affiliates",
   },
 } as const
 

@@ -2,7 +2,9 @@
 
 import type {
   SettingSession,
+  SettingsAffiliatesOverview,
   SettingsBlockedUser,
+  SettingsMonetizationOverview,
   SettingsPointsExchangeInput,
   SettingsPointsExchangeResult,
   SettingsUpdateInput,
@@ -23,4 +25,6 @@ export interface SettingsRepository {
   unblockUser(userId: number): Promise<boolean>
   requestMyInfo(options: Record<string, boolean>): Promise<boolean>
   exchangePoints(input: SettingsPointsExchangeInput): Promise<SettingsPointsExchangeResult>
+  getMonetization(): Promise<SettingsMonetizationOverview>
+  getAffiliates(): Promise<SettingsAffiliatesOverview>
 }

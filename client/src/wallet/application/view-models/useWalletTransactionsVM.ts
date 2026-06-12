@@ -13,6 +13,7 @@ type WalletTransactionFilter =
   | "sent"
   | "wallet"
   | "points_exchange"
+  | "affiliate_reward"
   | "sale"
   | "donate"
   | "other"
@@ -36,6 +37,7 @@ const transactionGroup = (transaction: WalletTransaction): WalletTransactionFilt
   if (kind === "SENT") return "sent"
   if (kind === "WALLET") return "wallet"
   if (kind === "POINTS_EXCHANGE") return "points_exchange"
+  if (kind === "AFFILIATE_REWARD") return "affiliate_reward"
   if (kind === "SALE" || kind === "SALES") return "sale"
   if (kind === "DONATE") return "donate"
   return "other"
@@ -66,6 +68,7 @@ export function useWalletTransactionsVM(
     { value: "sent", label: t("pages.walletPage.filterSent"), icon: "i-ph-paper-plane-tilt-duotone", count: countByFilter("sent") },
     { value: "wallet", label: t("pages.walletPage.filterTopup"), icon: "i-ph-wallet-duotone", count: countByFilter("wallet") },
     { value: "points_exchange", label: t("pages.walletPage.filterPointsExchange"), icon: "i-ph-star-duotone", count: countByFilter("points_exchange") },
+    { value: "affiliate_reward", label: t("pages.walletPage.filterAffiliateReward"), icon: "i-ph-gift-duotone", count: countByFilter("affiliate_reward") },
     { value: "sale", label: t("pages.walletPage.filterSale"), icon: "i-ph-storefront-duotone", count: countByFilter("sale") },
     { value: "donate", label: t("pages.walletPage.filterDonate"), icon: "i-ph-heart-duotone", count: countByFilter("donate") },
   ])
@@ -109,7 +112,7 @@ export function useWalletTransactionsVM(
 
     if (["sent", "donate"].includes(group)) return "out"
     if (transactionKind(transaction) === "PURCHASE") return "out"
-    if (["received", "wallet", "points_exchange", "sale"].includes(group)) return "in"
+    if (["received", "wallet", "points_exchange", "affiliate_reward", "sale"].includes(group)) return "in"
     if (transaction.amount < 0) return "out"
     if (transaction.amount > 0) return "in"
     return "neutral"
@@ -142,6 +145,7 @@ export function useWalletTransactionsVM(
     if (kind === "DONATE") return t("pages.walletPage.transactionDonateTitle")
     if (kind === "WALLET") return t("pages.walletPage.transactionWalletTitle")
     if (kind === "POINTS_EXCHANGE") return t("pages.walletPage.transactionPointsExchangeTitle")
+    if (kind === "AFFILIATE_REWARD") return t("pages.walletPage.transactionAffiliateRewardTitle")
 
     return transaction.notes || transaction.kind || "-"
   }
@@ -161,6 +165,9 @@ export function useWalletTransactionsVM(
       return transaction.points
         ? t("pages.walletPage.transactionPointsExchangeDescription", { points: transaction.points })
         : t("pages.walletPage.transactionPointsExchangeFallback")
+    }
+    if (kind === "AFFILIATE_REWARD") {
+      return t("pages.walletPage.transactionAffiliateRewardAdminName")
     }
 
     return transaction.kind || "-"
@@ -183,6 +190,7 @@ export function useWalletTransactionsVM(
       ? "i-ph-qr-code-duotone"
       : "i-ph-wallet-duotone"
     if (kind === "POINTS_EXCHANGE") return "i-ph-star-duotone"
+    if (kind === "AFFILIATE_REWARD") return "i-ph-gift-duotone"
     if (kind === "SALE" || kind === "SALES") return "i-ph-storefront-duotone"
     if (kind === "DONATE") return "i-ph-heart-duotone"
     if (kind === "PRO") return "i-ph-crown-duotone"

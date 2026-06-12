@@ -5,9 +5,19 @@
       <div class="wallet-hero__icon">
         <Icon name="i-ph-wallet-duotone" class="h-7 w-7" />
       </div>
-      <div class="min-w-0">
+      <div class="wallet-hero__balance-block">
         <p class="wallet-hero__label">{{ t("pages.walletPage.balanceLabel") }}</p>
-        <p class="wallet-hero__balance">{{ formattedBalance }}</p>
+        <div class="wallet-hero__balance-row">
+          <p class="wallet-hero__balance">{{ formattedBalance }}</p>
+          <div class="wallet-hero__available">
+            <span>{{ t("pages.walletPage.availableBalanceLabel") }}</span>
+            <strong>{{ formattedWithdrawableBalance }}</strong>
+          </div>
+        </div>
+        <p class="wallet-hero__notice">
+          <Icon name="i-ph-warning-circle-duotone" class="h-4 w-4" />
+          <span>{{ t("pages.walletPage.withdrawableNotice") }}</span>
+        </p>
       </div>
     </div>
 
@@ -34,6 +44,7 @@ import type { WalletCurrencyRule } from "../../domain/types/wallet.types"
 
 const props = defineProps<{
   balance: number
+  withdrawableBalance: number
   transactionsCount: number
   topupMethodsCount: number
   currency: string
@@ -43,13 +54,20 @@ const props = defineProps<{
 
 const { t, locale } = useI18n()
 
-const formattedBalance = computed(() =>
-  formatCurrency(props.balance, {
+const formatWalletAmount = (amount: number) =>
+  formatCurrency(amount, {
     currency: props.currency,
     currencySymbol: props.currencySymbol,
     currencyRule: props.currencyRule,
     locale: locale.value,
-  }),
+  })
+
+const formattedBalance = computed(() =>
+  formatWalletAmount(props.balance),
+)
+
+const formattedWithdrawableBalance = computed(() =>
+  formatWalletAmount(props.withdrawableBalance),
 )
 </script>
 
@@ -89,6 +107,19 @@ const formattedBalance = computed(() =>
   color: #64748b;
 }
 
+.wallet-hero__balance-block {
+  min-width: 0;
+  flex: 1;
+}
+
+.wallet-hero__balance-row {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+}
+
 .wallet-hero__balance {
   margin-top: 4px;
   overflow-wrap: anywhere;
@@ -96,6 +127,48 @@ const formattedBalance = computed(() =>
   line-height: 1.05;
   font-weight: 800;
   color: #0f172a;
+}
+
+.wallet-hero__available {
+  display: inline-flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 8px 12px;
+}
+
+.wallet-hero__available span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.wallet-hero__available strong {
+  overflow-wrap: anywhere;
+  color: #16a34a;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.wallet-hero__notice {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 10px;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.wallet-hero__notice :deep(svg) {
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .wallet-hero__stats {
@@ -140,6 +213,16 @@ const formattedBalance = computed(() =>
   .wallet-hero__actions {
     grid-column: 1 / -1;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .wallet-hero__main {
+    align-items: flex-start;
+  }
+
+  .wallet-hero__available {
+    width: 100%;
   }
 }
 </style>
