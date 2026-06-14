@@ -63,6 +63,7 @@ export interface RegisterAccountInput {
   gender: string
   hasExistingStorefront: boolean
   acceptTerms: boolean
+  ref?: string
 }
 
 export interface RegisterAccountConfig {

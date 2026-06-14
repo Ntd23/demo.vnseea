@@ -195,8 +195,24 @@ function setFilter(value: string) {
   currentPage.value = 1
 }
 
-const itemTarget = (item: WithdrawalHistoryItem) =>
-  item.transferInfo || "-"
+const itemTarget = (item: WithdrawalHistoryItem) => {
+  if (!item.transferInfo) return "-"
+
+  try {
+    const parsed = JSON.parse(item.transferInfo) as Partial<{
+      account_number: string
+      bank_name: string
+      beneficiary_name: string
+    }>
+
+    if (parsed.account_number || parsed.bank_name || parsed.beneficiary_name) {
+      return [parsed.account_number, parsed.bank_name, parsed.beneficiary_name].filter(Boolean).join(" - ")
+    }
+  }
+  catch {}
+
+  return item.transferInfo
+}
 
 const itemTitle = (item: WithdrawalHistoryItem) => {
   const method = item.method.toLowerCase()

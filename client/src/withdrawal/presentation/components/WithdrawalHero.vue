@@ -9,7 +9,7 @@
         <div>
           <p class="text-label-secondary">{{ t("pages.withdrawalPage.balanceTitle") }}</p>
           <p class="mt-1 text-3xl font-black text-[var(--text-primary)]">
-            {{ totalBalance }}
+            {{ walletBalance }}
           </p>
         </div>
       </div>
@@ -19,6 +19,11 @@
         <p class="text-title-primary">{{ availableBalance }}</p>
       </div>
     </div>
+
+    <p class="mt-4 flex items-start gap-2 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-semibold leading-6 text-amber-800">
+      <Icon name="i-ph-warning-circle-duotone" class="mt-0.5 h-4 w-4 flex-shrink-0" />
+      <span>{{ t("pages.withdrawalPage.withdrawableNotice") }}</span>
+    </p>
   </section>
 </template>
 
@@ -44,8 +49,8 @@ const formatAmount = (amount: number) =>
     locale: locale.value,
   })
 
-const totalBalance = computed(() =>
-  formatAmount(props.balance + props.walletBalance),
+const walletBalance = computed(() =>
+  formatAmount(props.walletBalance),
 )
 const availableBalance = computed(() =>
   formatAmount(props.balance),

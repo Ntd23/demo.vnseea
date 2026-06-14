@@ -41,6 +41,7 @@
       <template v-else>
         <WalletHero
           :balance="overview.balance"
+          :withdrawable-balance="overview.withdrawableBalance"
           :transactions-count="walletActivityTransactions.length"
           :topup-methods-count="overview.topupMethods.length"
           :currency="overview.currency"

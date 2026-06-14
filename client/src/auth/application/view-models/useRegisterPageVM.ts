@@ -51,6 +51,7 @@ const createDefaultState = (): RegisterAccountInput => ({
   gender: "",
   hasExistingStorefront: false,
   acceptTerms: false,
+  ref: "",
 })
 
 const createDefaultRegisterConfig = (): RegisterAccountConfig => ({
@@ -75,6 +76,7 @@ export function useRegisterPageVM(
   repository = createApiAuthRepository(),
 ) {
   const { t } = useI18n()
+  const route = useRoute()
   const toast = useToast()
 
   const state = reactive<RegisterAccountInput>(createDefaultState())
@@ -85,6 +87,11 @@ export function useRegisterPageVM(
   const submitMessage = ref("")
   const lastResult = ref<RegisterAccountResult | null>(null)
   const autoUsername = computed(() => registerConfig.value.autoUsername)
+
+  const routeReferral = computed(() => {
+    const value = route.query.ref
+    return Array.isArray(value) ? value[0] ?? "" : value ?? ""
+  })
 
   async function hydrateRegisterConfig(force = false) {
     if (registerConfigLoading.value) {
@@ -181,6 +188,7 @@ export function useRegisterPageVM(
       const result = await repository.register({
         ...state,
         username: autoUsername.value ? "" : state.username,
+        ref: state.ref || routeReferral.value,
       })
 
       lastResult.value = result

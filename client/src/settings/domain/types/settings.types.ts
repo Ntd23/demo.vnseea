@@ -52,6 +52,61 @@ export type SettingsSectionSlug =
   | "my-info"
   | "addresses"
   | "monetization"
+  | "affiliates"
+
+export interface SettingsRequirement {
+  key: string
+  label: string
+  complete: boolean
+}
+
+export interface SettingsMonetizationPlan {
+  id: string | number
+  title: string
+  description: string
+  price: number
+  currency: string
+  status: "active" | "inactive"
+}
+
+export interface SettingsMonetizationOverview {
+  enabled: boolean
+  eligible: boolean
+  walletBalance: number
+  currency: string
+  currencySymbol: string
+  requirements: SettingsRequirement[]
+  plans: SettingsMonetizationPlan[]
+}
+
+export interface SettingsAffiliateReferral {
+  id: string | number
+  name: string
+  username?: string
+  avatar?: string
+  joined?: string
+  verified: boolean
+  profileComplete: boolean
+  rewardEligible: boolean
+  rewardAmount: number
+  progressPercent: number
+  status: "pending" | "qualified" | "paid"
+}
+
+export interface SettingsAffiliatesOverview {
+  referralLink: string
+  rewardAmount: number
+  currency: string
+  currencySymbol: string
+  requiredQualifiedReferrals: number
+  qualifiedReferrals: number
+  progressPercent: number
+  profileComplete: boolean
+  verified: boolean
+  eligibleForPayout: boolean
+  referrals: SettingsAffiliateReferral[]
+  requirements: SettingsRequirement[]
+}
 
 export interface SettingSession {
   id: number
