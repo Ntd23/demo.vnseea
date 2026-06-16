@@ -323,6 +323,7 @@ export const mapCommunityPageRecord = (
     accent: createAccent(id),
     followers: firstNumber(entity, ["followers", "followers_count", "likes_count", "likes"]),
     likes: firstNumber(entity, ["likes", "likes_count"]),
+    postCount: firstNumber(entity, ["post_count", "posts_count"]),
     ownerLabel: firstString(entity, ["category_name", "company"]),
     responseLabel: firstString(entity, ["call_action_type_url", "call_action_type_text", "phone", "website"]),
     website: normalizeUrl(firstString(entity, ["website"])),
