@@ -273,18 +273,18 @@ function Wo_SepayCheck(string $order_code_raw, int $userId, $sqlConnect)
         'server_time' => date('c'),
     ];
 }
-function Wo_SepayReturnWebhook($wo, $sqlConnect, $givenToken)
+function Wo_SepayReturnWebhook($wo, $sqlConnect, $givenToken, $rawBody = null)
 {
     if ($givenToken !== ($wo['config']['sepay_webhook_token'] ?? '')) {
         return ['http' => 403, 'body' => Wo_SepayWebhookBody(false, 'invalid token')];
     }
-    $raw = file_get_contents('php://input');
+    $raw = $rawBody !== null ? (string)$rawBody : file_get_contents('php://input');
     $is_json = stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
     $data = $is_json ? (json_decode($raw, true) ?: []) : ($_POST ?: []);
     $descPrefix = (string)($wo['config']['sepay_desc_prefix'] ?? 'SE');
-    $content = (string)($data['order_code'] ?? $data['description'] ?? $data['content'] ?? $data['note'] ?? $data['code'] ?? '');
+    $content = (string)($data['content'] ?? $data['description'] ?? $data['order_code'] ?? $data['note'] ?? $data['code'] ?? '');
     $order_code = '';
-    foreach (array($data['order_code'] ?? '', $data['content'] ?? '', $data['description'] ?? '', $data['note'] ?? '', $data['code'] ?? '') as $candidate) {
+    foreach (array($data['order_code'] ?? '', $data['code'] ?? '', $data['content'] ?? '', $data['description'] ?? '', $data['note'] ?? '') as $candidate) {
         $order_code = Wo_SepayExtractOrderCode($candidate, $descPrefix);
         if ($order_code !== '') {
             break;
