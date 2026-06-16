@@ -61,15 +61,24 @@ let lastMobileRouteHeading: number | null = null
 let lastMobileRouteCameraCenter: { lat: number, lng: number } | null = null
 let lastMobileRouteCameraAt = 0
 let lastMobileRoutePath: { lat: number, lng: number }[] = []
+let displayedOriginPosition: { lat: number, lng: number } | null = null
+let displayedOriginHeading: number | null = null
+let originMarkerAnimationFrame = 0
+let mobileRouteCameraAnimationFrame = 0
+let displayedMobileCameraCenter: { lat: number, lng: number } | null = null
+let displayedMobileCameraHeading: number | null = null
 
 const originRadiusMinMoveMeters = 25
 const mobileRouteFollowTilt = 75
-const mobileRouteFollowZoom = 20
-const mobileRouteHeadingLookAheadMeters = 90
-const mobileRouteCameraMinIntervalMs = 700
-const mobileRouteCameraMinMoveMeters = 4
-const mobileRouteHeadingMinDelta = 5
-const mobileRouteHeadingMaxStep = 12
+const mobileRouteFollowZoom = 19
+const mobileRouteHeadingLookAheadMeters = 110
+const mobileRouteSnapMaxDistanceMeters = 45
+const mobileRouteCameraMinIntervalMs = 450
+const mobileRouteCameraMinMoveMeters = 2.5
+const mobileRouteHeadingMinDelta = 3
+const mobileRouteHeadingMaxStep = 18
+const originMarkerAnimationMs = 520
+const mobileRouteCameraAnimationMs = 560
 
 const { load } = useScriptGoogleMaps({
   libraries: ["places", "routes"],
@@ -156,8 +165,14 @@ function clearMarkers() {
 }
 
 function clearOriginMarker() {
+  if (originMarkerAnimationFrame) {
+    cancelAnimationFrame(originMarkerAnimationFrame)
+    originMarkerAnimationFrame = 0
+  }
   originMarker.value?.setMap(null)
   originMarker.value = null
+  displayedOriginPosition = null
+  displayedOriginHeading = null
 }
 
 function clearOriginRadiusCircle() {
@@ -173,6 +188,12 @@ function clearRoute() {
   lastMobileRouteCameraCenter = null
   lastMobileRouteCameraAt = 0
   lastMobileRoutePath = []
+  displayedMobileCameraCenter = null
+  displayedMobileCameraHeading = null
+  if (mobileRouteCameraAnimationFrame) {
+    cancelAnimationFrame(mobileRouteCameraAnimationFrame)
+    mobileRouteCameraAnimationFrame = 0
+  }
   resetMobileRouteCamera()
 
   if (directionsRenderer.value) {
@@ -288,6 +309,108 @@ function moveHeadingToward(from: number, to: number, maxStep: number) {
   return normalizeHeading(start + clampedDelta)
 }
 
+function interpolatePoint(
+  from: { lat: number, lng: number },
+  to: { lat: number, lng: number },
+  ratio: number,
+) {
+  const clampedRatio = Math.max(0, Math.min(1, ratio))
+
+  return {
+    lat: from.lat + (to.lat - from.lat) * clampedRatio,
+    lng: from.lng + (to.lng - from.lng) * clampedRatio,
+  }
+}
+
+function easeOutCubic(value: number) {
+  return 1 - (1 - value) ** 3
+}
+
+function interpolateHeading(from: number, to: number, ratio: number) {
+  const start = normalizeHeading(from)
+  const end = normalizeHeading(to)
+  const clockwiseDelta = (end - start + 360) % 360
+  const signedDelta = clockwiseDelta > 180 ? clockwiseDelta - 360 : clockwiseDelta
+
+  return normalizeHeading(start + signedDelta * Math.max(0, Math.min(1, ratio)))
+}
+
+function projectPointOnSegment(
+  point: { lat: number, lng: number },
+  from: { lat: number, lng: number },
+  to: { lat: number, lng: number },
+) {
+  const latScale = 111320
+  const lngScale = Math.max(1, Math.cos(point.lat * Math.PI / 180) * 111320)
+  const ax = from.lng * lngScale
+  const ay = from.lat * latScale
+  const bx = to.lng * lngScale
+  const by = to.lat * latScale
+  const px = point.lng * lngScale
+  const py = point.lat * latScale
+  const dx = bx - ax
+  const dy = by - ay
+  const lengthSquared = dx * dx + dy * dy
+  const ratio = lengthSquared <= 0
+    ? 0
+    : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lengthSquared))
+
+  return interpolatePoint(from, to, ratio)
+}
+
+function findClosestRouteProjection(origin: { lat: number, lng: number }) {
+  if (lastMobileRoutePath.length === 0) {
+    return null
+  }
+
+  if (lastMobileRoutePath.length === 1) {
+    const point = lastMobileRoutePath[0]
+
+    return {
+      point,
+      index: 0,
+      distanceMeters: calculatePointDistanceMeters(origin, point),
+    }
+  }
+
+  let closest: { point: { lat: number, lng: number }, index: number, distanceMeters: number } | null = null
+
+  for (let index = 0; index < lastMobileRoutePath.length - 1; index += 1) {
+    const projectedPoint = projectPointOnSegment(origin, lastMobileRoutePath[index], lastMobileRoutePath[index + 1])
+    const distanceMeters = calculatePointDistanceMeters(origin, projectedPoint)
+
+    if (!closest || distanceMeters < closest.distanceMeters) {
+      closest = {
+        point: projectedPoint,
+        index,
+        distanceMeters,
+      }
+    }
+  }
+
+  return closest
+}
+
+function resolveDisplayOrigin(useRouteSnap = props.routeNavigationActive) {
+  if (props.origin.lat === null || props.origin.lng === null) {
+    return null
+  }
+
+  const rawOrigin = { lat: props.origin.lat, lng: props.origin.lng }
+
+  if (!useRouteSnap || lastMobileRoutePath.length < 2) {
+    return rawOrigin
+  }
+
+  const projection = findClosestRouteProjection(rawOrigin)
+
+  if (!projection || projection.distanceMeters > mobileRouteSnapMaxDistanceMeters) {
+    return rawOrigin
+  }
+
+  return projection.point
+}
+
 function getRouteForwardPoint(result: google.maps.DirectionsResult, target: NearbySearchItem) {
   const firstLeg = result.routes?.[0]?.legs?.[0]
   const firstStep = firstLeg?.steps?.find(step => step.end_location)
@@ -305,14 +428,6 @@ function getRouteForwardPoint(result: google.maps.DirectionsResult, target: Near
 }
 
 function getRoutePathPoints(result: google.maps.DirectionsResult, target: NearbySearchItem) {
-  const overviewPath = result.routes?.[0]?.overview_path
-    ?.map(point => ({ lat: point.lat(), lng: point.lng() }))
-    ?? []
-
-  if (overviewPath.length > 1) {
-    return overviewPath
-  }
-
   const firstLeg = result.routes?.[0]?.legs?.[0]
   const stepPath = firstLeg?.steps
     ?.flatMap(step => step.path?.map(point => ({ lat: point.lat(), lng: point.lng() })) ?? [])
@@ -322,46 +437,36 @@ function getRoutePathPoints(result: google.maps.DirectionsResult, target: Nearby
     return stepPath
   }
 
+  const overviewPath = result.routes?.[0]?.overview_path
+    ?.map(point => ({ lat: point.lat(), lng: point.lng() }))
+    ?? []
+
+  if (overviewPath.length > 1) {
+    return overviewPath
+  }
+
   const fallback = getRouteForwardPoint(result, target)
 
-  if (props.origin.lat !== null && props.origin.lng !== null && fallback) {
-    return [{ lat: props.origin.lat, lng: props.origin.lng }, fallback]
+  const displayOrigin = resolveDisplayOrigin(false)
+
+  if (displayOrigin && fallback) {
+    return [displayOrigin, fallback]
   }
 
   return []
 }
 
-function findClosestRoutePathIndex(origin: { lat: number, lng: number }) {
-  if (lastMobileRoutePath.length === 0) {
-    return -1
-  }
-
-  let closestIndex = 0
-  let closestDistance = Number.POSITIVE_INFINITY
-
-  lastMobileRoutePath.forEach((point, index) => {
-    const distance = calculatePointDistanceMeters(origin, point)
-
-    if (distance < closestDistance) {
-      closestDistance = distance
-      closestIndex = index
-    }
-  })
-
-  return closestIndex
-}
-
 function getRoutePathLookAheadPoint(origin: { lat: number, lng: number }) {
-  const closestIndex = findClosestRoutePathIndex(origin)
+  const projection = findClosestRouteProjection(origin)
 
-  if (closestIndex < 0) {
+  if (!projection) {
     return null
   }
 
-  let travelledMeters = calculatePointDistanceMeters(origin, lastMobileRoutePath[closestIndex])
+  let travelledMeters = 0
+  let from = projection.point
 
-  for (let index = closestIndex; index < lastMobileRoutePath.length - 1; index += 1) {
-    const from = lastMobileRoutePath[index]
+  for (let index = projection.index; index < lastMobileRoutePath.length - 1; index += 1) {
     const to = lastMobileRoutePath[index + 1]
     const segmentMeters = calculatePointDistanceMeters(from, to)
 
@@ -376,15 +481,14 @@ function getRoutePathLookAheadPoint(origin: { lat: number, lng: number }) {
     }
 
     travelledMeters += segmentMeters
+    from = to
   }
 
   return lastMobileRoutePath[lastMobileRoutePath.length - 1] ?? null
 }
 
 function resolveMobileRouteHeading(target: NearbySearchItem | null) {
-  const origin = props.origin.lat !== null && props.origin.lng !== null
-    ? { lat: props.origin.lat, lng: props.origin.lng }
-    : null
+  const origin = resolveDisplayOrigin(true)
   const pathLookAheadPoint = origin ? getRoutePathLookAheadPoint(origin) : null
   const routeHeading = origin && pathLookAheadPoint
     ? calculateBearingDegrees(origin, pathLookAheadPoint)
@@ -409,6 +513,67 @@ function resolveMobileRouteHeading(target: NearbySearchItem | null) {
   return mapInstance.value?.getHeading() ?? 0
 }
 
+function animateMobileRouteCamera(cameraOptions: google.maps.CameraOptions) {
+  const map = mapInstance.value
+
+  if (!map || !cameraOptions.center) {
+    return
+  }
+
+  const nextCenter = cameraOptions.center as { lat: number, lng: number }
+  const nextHeading = normalizeHeading(Number(cameraOptions.heading ?? 0))
+  const startCenter = displayedMobileCameraCenter
+    ?? map.getCenter()?.toJSON()
+    ?? nextCenter
+  const startHeading = displayedMobileCameraHeading
+    ?? normalizeHeading(map.getHeading() ?? nextHeading)
+  const startedAt = performance.now()
+
+  if (mobileRouteCameraAnimationFrame) {
+    cancelAnimationFrame(mobileRouteCameraAnimationFrame)
+  }
+
+  const applyCamera = (center: { lat: number, lng: number }, heading: number) => {
+    const nextCameraOptions: google.maps.CameraOptions = {
+      ...cameraOptions,
+      center,
+      heading,
+    }
+
+    if (typeof map.moveCamera === "function") {
+      map.moveCamera(nextCameraOptions)
+    }
+    else {
+      map.setCenter(center)
+      map.setZoom(Number(cameraOptions.zoom ?? mobileRouteFollowZoom))
+      map.setHeading(heading)
+      map.setTilt(Number(cameraOptions.tilt ?? mobileRouteFollowTilt))
+    }
+  }
+
+  const tick = (now: number) => {
+    const progress = Math.min(1, (now - startedAt) / mobileRouteCameraAnimationMs)
+    const easedProgress = easeOutCubic(progress)
+    const center = interpolatePoint(startCenter, nextCenter, easedProgress)
+    const heading = interpolateHeading(startHeading, nextHeading, easedProgress)
+
+    applyCamera(center, heading)
+    displayedMobileCameraCenter = center
+    displayedMobileCameraHeading = heading
+
+    if (progress < 1) {
+      mobileRouteCameraAnimationFrame = requestAnimationFrame(tick)
+      return
+    }
+
+    mobileRouteCameraAnimationFrame = 0
+    displayedMobileCameraCenter = nextCenter
+    displayedMobileCameraHeading = nextHeading
+  }
+
+  mobileRouteCameraAnimationFrame = requestAnimationFrame(tick)
+}
+
 function followMobileRouteCamera(target: NearbySearchItem | null) {
   const map = mapInstance.value
 
@@ -417,7 +582,7 @@ function followMobileRouteCamera(target: NearbySearchItem | null) {
   }
 
   const now = Date.now()
-  const origin = { lat: props.origin.lat, lng: props.origin.lng }
+  const origin = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
   const heading = resolveMobileRouteHeading(target)
   const movedMeters = lastMobileRouteCameraCenter
     ? calculatePointDistanceMeters(lastMobileRouteCameraCenter, origin)
@@ -442,15 +607,7 @@ function followMobileRouteCamera(target: NearbySearchItem | null) {
     zoom: mobileRouteFollowZoom,
   }
 
-  if (typeof map.moveCamera === "function") {
-    map.moveCamera(cameraOptions)
-  }
-  else {
-    map.setCenter(origin)
-    map.setZoom(mobileRouteFollowZoom)
-    map.setHeading(heading)
-    map.setTilt(mobileRouteFollowTilt)
-  }
+  animateMobileRouteCamera(cameraOptions)
 
   lastMobileRouteHeading = heading
   lastMobileRouteCameraCenter = origin
@@ -676,6 +833,64 @@ function syncOriginRadiusCircle(force = false) {
   lastOriginRadiusMeters = radiusMeters
 }
 
+function animateOriginMarkerTo(
+  marker: google.maps.Marker,
+  center: { lat: number, lng: number },
+  heading: number | null,
+  selected: boolean,
+) {
+  const nextHeading = heading ?? displayedOriginHeading ?? 0
+
+  if (!displayedOriginPosition) {
+    displayedOriginPosition = center
+    displayedOriginHeading = nextHeading
+    marker.setPosition(center)
+    marker.setIcon(createOriginIcon(selected, nextHeading))
+    return
+  }
+
+  const movedMeters = calculatePointDistanceMeters(displayedOriginPosition, center)
+
+  if (movedMeters > 120) {
+    displayedOriginPosition = center
+    displayedOriginHeading = nextHeading
+    marker.setPosition(center)
+    marker.setIcon(createOriginIcon(selected, nextHeading))
+    return
+  }
+
+  const startPosition = displayedOriginPosition
+  const startHeading = displayedOriginHeading ?? nextHeading
+  const startedAt = performance.now()
+
+  if (originMarkerAnimationFrame) {
+    cancelAnimationFrame(originMarkerAnimationFrame)
+  }
+
+  const tick = (now: number) => {
+    const progress = Math.min(1, (now - startedAt) / originMarkerAnimationMs)
+    const easedProgress = easeOutCubic(progress)
+    const position = interpolatePoint(startPosition, center, easedProgress)
+    const nextAnimatedHeading = interpolateHeading(startHeading, nextHeading, easedProgress)
+
+    marker.setPosition(position)
+    marker.setIcon(createOriginIcon(selected, nextAnimatedHeading))
+    displayedOriginPosition = position
+    displayedOriginHeading = nextAnimatedHeading
+
+    if (progress < 1) {
+      originMarkerAnimationFrame = requestAnimationFrame(tick)
+      return
+    }
+
+    originMarkerAnimationFrame = 0
+    displayedOriginPosition = center
+    displayedOriginHeading = nextHeading
+  }
+
+  originMarkerAnimationFrame = requestAnimationFrame(tick)
+}
+
 function renderOriginMarker() {
   const map = mapInstance.value
   const Marker = markerConstructor.value
@@ -686,19 +901,22 @@ function renderOriginMarker() {
 
   if (props.origin.lat === null || props.origin.lng === null) {
     clearOriginMarker()
+    displayedOriginPosition = null
+    displayedOriginHeading = null
     return
   }
 
-  const center = { lat: props.origin.lat, lng: props.origin.lng }
-
-  const icon = createOriginIcon(!props.selectedItemId, props.originHeading ?? null)
+  const center = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
+  const markerHeading = props.routeNavigationActive
+    ? resolveMobileRouteHeading(props.routeTargetItem)
+    : props.originHeading ?? null
+  const icon = createOriginIcon(!props.selectedItemId, markerHeading)
 
   if (originMarker.value) {
     originMarker.value.setMap(map)
-    originMarker.value.setPosition(center)
     originMarker.value.setTitle("Vi tri cua toi")
-    originMarker.value.setIcon(icon)
     originMarker.value.setZIndex(40)
+    animateOriginMarkerTo(originMarker.value, center, markerHeading, !props.selectedItemId)
     return
   }
 
@@ -709,6 +927,8 @@ function renderOriginMarker() {
     icon,
     zIndex: 40,
   })
+  displayedOriginPosition = center
+  displayedOriginHeading = markerHeading
 }
 
 function renderMarkers() {
@@ -845,7 +1065,7 @@ function fitRoutePreview(result: google.maps.DirectionsResult, target: NearbySea
     lastMobileRoutePath = getRoutePathPoints(result, target)
 
     if (props.origin.lat !== null && props.origin.lng !== null) {
-      const origin = { lat: props.origin.lat, lng: props.origin.lng }
+      const origin = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
       const routeForwardPoint = getRoutePathLookAheadPoint(origin) ?? getRouteForwardPoint(result, target)
       lastMobileRouteHeading = routeForwardPoint
         ? calculateBearingDegrees(origin, routeForwardPoint)

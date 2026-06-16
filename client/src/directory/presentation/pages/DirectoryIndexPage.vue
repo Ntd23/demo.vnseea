@@ -378,6 +378,7 @@ import JobCard from "../../../jobs/presentation/components/JobCard.vue"
 import GamesGameCard from "../../../games/presentation/components/GameCard.vue"
 import FundingCard from "../../../funding/presentation/components/FundingCard.vue"
 import MoviesCard from "../../../movies/presentation/components/Card.vue"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 
 const { t } = useI18n()
 
@@ -404,6 +405,7 @@ const categories = [
     icon: "i-ph-flag-fill", 
     headerTitle: "Theo dõi Fanpage", 
     longDescription: "Tìm hiểu và theo dõi những trang fanpage, thương hiệu, nghệ sĩ nổi tiếng và các hội nhóm sở thích lớn nhất trên mạng xã hội.",
+    redirectUrl: appRoutes.pages,
     accentClass: "pages" 
   },
   { 
@@ -412,6 +414,7 @@ const categories = [
     icon: "i-ph-users-three-fill", 
     headerTitle: "Tham gia hội nhóm", 
     longDescription: "Tham gia các cộng đồng thảo luận chuyên sâu, chia sẻ đam mê chung và cùng nhau giải đáp thắc mắc trong từng chủ đề.",
+    redirectUrl: appRoutes.groups,
     accentClass: "groups" 
   },
   { 
@@ -420,7 +423,7 @@ const categories = [
     icon: "i-ph-article-fill", 
     headerTitle: "Bài viết chuyên sâu", 
     longDescription: "Đọc những câu chuyện dài bổ ích, chia sẻ chuyên môn sâu sắc và tin tức được biên soạn cẩn thận từ các tác giả uy tín.",
-    redirectUrl: "/blogs", 
+    redirectUrl: appRoutes.blogs, 
     accentClass: "blogs" 
   },
   { 
@@ -429,7 +432,7 @@ const categories = [
     icon: "i-ph-shopping-cart-fill", 
     headerTitle: "Sản phẩm & Chợ thương mại", 
     longDescription: "Khám phá những mặt hàng độc đáo, trao đổi mua bán sản phẩm tiện lợi trực tiếp trong trung tâm mua sắm cộng đồng.",
-    redirectUrl: "/market", 
+    redirectUrl: appRoutes.products, 
     accentClass: "market" 
   },
   { 
@@ -438,7 +441,7 @@ const categories = [
     icon: "i-ph-calendar-fill", 
     headerTitle: "Sự kiện cộng đồng", 
     longDescription: "Đăng ký tham gia các hoạt động cộng đồng, sự kiện văn hóa, hội thảo trực tuyến và giao lưu kết nối thiết thực.",
-    redirectUrl: "/events", 
+    redirectUrl: appRoutes.events, 
     accentClass: "events" 
   },
   { 
@@ -447,7 +450,7 @@ const categories = [
     icon: "i-ph-game-controller-fill", 
     headerTitle: "Giải trí & Mini-Games", 
     longDescription: "Tận hưởng những giây phút giải trí sảng khoái với các tựa game mini thú vị được tích hợp sẵn trên hệ thống.",
-    redirectUrl: "/games", 
+    redirectUrl: appRoutes.games, 
     accentClass: "games" 
   },
   { 
@@ -456,7 +459,7 @@ const categories = [
     icon: "i-ph-chat-circle-dots-fill", 
     headerTitle: "Chuyên mục trao đổi", 
     longDescription: "Nơi trao đổi ý kiến, hỏi đáp kinh nghiệm, lưu giữ tri thức cộng đồng thông qua các chuyên mục phân cấp rõ ràng.",
-    redirectUrl: "/forum", 
+    redirectUrl: appRoutes.forum, 
     accentClass: "forums" 
   },
   { 
@@ -465,7 +468,7 @@ const categories = [
     icon: "i-ph-film-strip-fill", 
     headerTitle: "Điện ảnh & Video chất lượng cao", 
     longDescription: "Trải nghiệm thế giới điện ảnh phong phú, các thước phim giới thiệu độc quyền và thước phim ngắn sắc nét, chất lượng cao.",
-    redirectUrl: "/movies", 
+    redirectUrl: appRoutes.movies, 
     accentClass: "movies" 
   },
   { 
@@ -474,7 +477,7 @@ const categories = [
     icon: "i-ph-briefcase-fill", 
     headerTitle: "Tuyển dụng & Việc làm", 
     longDescription: "Tìm kiếm vị trí tuyển dụng lý tưởng hoặc đăng tin tìm kiếm nhân tài phù hợp một cách nhanh chóng, hiệu quả nhất.",
-    redirectUrl: "/jobs", 
+    redirectUrl: appRoutes.jobs, 
     accentClass: "jobs" 
   },
   { 
@@ -483,7 +486,7 @@ const categories = [
     icon: "i-ph-hand-heart-fill", 
     headerTitle: "Quỹ đóng góp xã hội", 
     longDescription: "Chung tay chia sẻ khó khăn, tài trợ cho các ý tưởng sáng tạo hoặc dự án nhân văn, mang lại giá trị tốt đẹp cho xã hội.",
-    redirectUrl: "/funding", 
+    redirectUrl: appRoutes.funding, 
     accentClass: "funding" 
   },
 ] as const
@@ -514,7 +517,9 @@ const activeCategory = computed(() => {
 
 function selectCategory(category: any) {
   if (category.value === "posts") {
-    router.push("/directory")
+    router.push(appRoutes.directory)
+  } else if (category.redirectUrl) {
+    router.push(category.redirectUrl)
   } else {
     router.push(`/directory/${category.value}`)
   }

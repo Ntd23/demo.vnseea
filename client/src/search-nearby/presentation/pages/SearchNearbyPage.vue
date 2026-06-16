@@ -354,12 +354,21 @@ type DeviceOrientationEventConstructorWithPermission = typeof DeviceOrientationE
   requestPermission?: () => Promise<PermissionState>
 }
 
-const liveMarkerMinDistanceMeters = 0.1
-const liveHeadingMinDegrees = 2
+const liveMarkerMinDistanceMeters = 1.5
+const liveHeadingMinDegrees = 3
 const routeRefreshMinDistanceMeters = 15
 const routeRefreshMinIntervalMs = 10000
 const searchOriginRefreshMinDistanceMeters = 100
 const locationPollIntervalMs = 2000
+const gpsMaxUsableAccuracyMeters = 120
+const gpsJitterMinDistanceMeters = 2.5
+const gpsJitterAccuracyRatio = 0.38
+const gpsJumpRejectMeters = 220
+const gpsSmoothAlphaWalking = 0.34
+const gpsSmoothAlphaDriving = 0.56
+const routeArrivalMinDistanceMeters = 25
+const routeArrivalMaxDistanceMeters = 60
+const routeArrivalAccuracyMultiplier = 1.2
 const geolocationOptions: PositionOptions = {
   enableHighAccuracy: true,
   maximumAge: 0,
@@ -428,6 +437,7 @@ let shouldFocusNextLocationUpdate = false
 let lastLiveLocation: LiveLocationSnapshot | null = null
 let lastRouteLocation: LiveLocationSnapshot | null = null
 let lastSearchOriginLocation: LiveLocationSnapshot | null = null
+let smoothedLiveLocation: { lat: number, lng: number } | null = null
 
 const { load: loadGoogleMaps } = useScriptGoogleMaps({
   libraries: ["places", "routes"],
@@ -565,6 +575,96 @@ function calculateBearingDegrees(from: { lat: number, lng: number }, to: { lat: 
     - Math.sin(latFrom) * Math.cos(latTo) * Math.cos(lngDelta)
 
   return normalizeHeading(toDeg(Math.atan2(y, x)))
+}
+
+function interpolateLocation(
+  from: { lat: number, lng: number },
+  to: { lat: number, lng: number },
+  alpha: number,
+) {
+  const clampedAlpha = Math.max(0, Math.min(1, alpha))
+
+  return {
+    lat: from.lat + (to.lat - from.lat) * clampedAlpha,
+    lng: from.lng + (to.lng - from.lng) * clampedAlpha,
+  }
+}
+
+function resolveStableLocation(position: GeolocationPosition, rawLocation: { lat: number, lng: number }) {
+  const accuracy = Number(position.coords.accuracy || 0)
+  const speed = typeof position.coords.speed === "number" && Number.isFinite(position.coords.speed)
+    ? Math.max(0, position.coords.speed)
+    : 0
+  const shouldForce = shouldFocusNextLocationUpdate || !lastLiveLocation
+
+  if (!shouldForce && accuracy > gpsMaxUsableAccuracyMeters) {
+    return null
+  }
+
+  if (!shouldForce && lastLiveLocation) {
+    const movedMeters = calculatePointDistanceMeters(lastLiveLocation, rawLocation)
+    const jitterThreshold = Math.max(gpsJitterMinDistanceMeters, accuracy * gpsJitterAccuracyRatio)
+
+    if (movedMeters < jitterThreshold) {
+      return null
+    }
+
+    if (movedMeters > gpsJumpRejectMeters && accuracy > 45) {
+      return null
+    }
+  }
+
+  if (shouldForce || !smoothedLiveLocation) {
+    smoothedLiveLocation = rawLocation
+    return rawLocation
+  }
+
+  const baseAlpha = routeNavigationActive.value || speed > 2
+    ? gpsSmoothAlphaDriving
+    : gpsSmoothAlphaWalking
+  const accuracyPenalty = accuracy > 35 ? 0.7 : 1
+  const nextLocation = interpolateLocation(
+    smoothedLiveLocation,
+    rawLocation,
+    baseAlpha * accuracyPenalty,
+  )
+
+  smoothedLiveLocation = nextLocation
+
+  return nextLocation
+}
+
+function getRouteArrivalThresholdMeters(position: GeolocationPosition) {
+  const accuracy = Number(position.coords.accuracy || 0)
+
+  if (!Number.isFinite(accuracy) || accuracy <= 0) {
+    return routeArrivalMinDistanceMeters
+  }
+
+  return Math.max(
+    routeArrivalMinDistanceMeters,
+    Math.min(routeArrivalMaxDistanceMeters, accuracy * routeArrivalAccuracyMultiplier),
+  )
+}
+
+function hasArrivedAtRouteTarget(position: GeolocationPosition, nextLocation: { lat: number, lng: number }) {
+  const target = routeTargetItem.value
+  const accuracy = Number(position.coords.accuracy || 0)
+
+  if (!routeNavigationActive.value || !target || target.lat === null || target.lng === null) {
+    return false
+  }
+
+  if (Number.isFinite(accuracy) && accuracy > gpsMaxUsableAccuracyMeters) {
+    return false
+  }
+
+  const distanceToTarget = calculatePointDistanceMeters(nextLocation, {
+    lat: target.lat,
+    lng: target.lng,
+  })
+
+  return distanceToTarget <= getRouteArrivalThresholdMeters(position)
 }
 
 function getScreenOrientationAngle() {
@@ -710,11 +810,24 @@ function rememberLocation(
 }
 
 function handleLocationPosition(position: GeolocationPosition) {
-  const nextLocation = {
+  const rawLocation = {
     lat: position.coords.latitude,
     lng: position.coords.longitude,
   }
+  const nextLocation = resolveStableLocation(position, rawLocation)
+
+  locationPermissionState.value = "granted"
+
+  if (!nextLocation) {
+    return
+  }
+
   const nextHeading = resolvePositionHeading(position, nextLocation)
+  const arrivedAtRouteTarget = hasArrivedAtRouteTarget(position, nextLocation)
+
+  if (arrivedAtRouteTarget) {
+    clearRoute()
+  }
 
   const shouldFocus = shouldFocusNextLocationUpdate || !lastLiveLocation
   const shouldUpdateLiveMarker = shouldRefreshFromLocation(
@@ -727,7 +840,8 @@ function handleLocationPosition(position: GeolocationPosition) {
     nextLocation,
     searchOriginRefreshMinDistanceMeters,
   )
-  const shouldRefreshRoute = Boolean(routeTargetItem.value)
+  const shouldRefreshRoute = !arrivedAtRouteTarget
+    && Boolean(routeTargetItem.value)
     && shouldRefreshFromLocation(
       lastRouteLocation,
       nextLocation,
@@ -736,20 +850,23 @@ function handleLocationPosition(position: GeolocationPosition) {
     )
   const shouldUpdateHeading = shouldRefreshHeading(nextHeading)
 
-  locationPermissionState.value = "granted"
-
   if (
     !shouldFocus
     && !shouldUpdateLiveMarker
     && !shouldRefreshSearchOrigin
     && !shouldRefreshRoute
     && !shouldUpdateHeading
+    && !arrivedAtRouteTarget
   ) {
     return
   }
 
   const nextSnapshot = rememberLocation(nextLocation, nextHeading)
-  const shouldUpdatePosition = shouldFocus || shouldUpdateLiveMarker || shouldRefreshSearchOrigin || shouldRefreshRoute
+  const shouldUpdatePosition = shouldFocus
+    || shouldUpdateLiveMarker
+    || shouldRefreshSearchOrigin
+    || shouldRefreshRoute
+    || arrivedAtRouteTarget
 
   if (shouldUpdatePosition) {
     lastLiveLocation = nextSnapshot
@@ -786,7 +903,11 @@ function handleLocationPosition(position: GeolocationPosition) {
     lastRouteLocation = nextSnapshot
   }
 
-  if (!shouldUpdateLiveMarker && !shouldRefreshSearchOrigin && !shouldRefreshRoute) {
+  if (arrivedAtRouteTarget) {
+    lastRouteLocation = nextSnapshot
+  }
+
+  if (!shouldUpdateLiveMarker && !shouldRefreshSearchOrigin && !shouldRefreshRoute && !arrivedAtRouteTarget) {
     return
   }
 
