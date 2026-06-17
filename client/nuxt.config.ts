@@ -58,7 +58,7 @@ const allowedHosts = requireEnv("NUXT_ALLOWED_HOSTS")
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
-  devtools: { enabled:  true },
+  devtools: { enabled: process.env.NUXT_DEVTOOLS === "true" },
   typescript: {
     tsConfig: {
       include: ["../src/**/*"]

@@ -1,58 +1,145 @@
 <!-- English description: Withdrawal balance block that follows the PHP withdrawal page order. -->
 <template>
-  <section class="surface-card p-5 sm:p-6">
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div class="flex items-center gap-4">
-        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
-          <Icon name="i-ph-bank-duotone" class="h-7 w-7" />
-        </div>
-        <div>
-          <p class="text-label-secondary">{{ t("pages.withdrawalPage.balanceTitle") }}</p>
-          <p class="mt-1 text-3xl font-black text-[var(--text-primary)]">
-            {{ walletBalance }}
-          </p>
-        </div>
+  <section class="withdrawal-hero">
+    <div class="withdrawal-hero__avatar-wrap">
+      <img
+        v-if="user.avatar"
+        :src="user.avatar"
+        :alt="displayName"
+        class="withdrawal-hero__avatar"
+      >
+      <div v-else class="withdrawal-hero__avatar withdrawal-hero__avatar--fallback">
+        <Icon name="i-ph-user-duotone" class="h-12 w-12" />
       </div>
-
-      <div class="rounded-2xl bg-[var(--bg-muted)] px-4 py-3">
-        <p class="text-caption-secondary">{{ t("pages.withdrawalPage.availableBalance") }}</p>
-        <p class="text-title-primary">{{ availableBalance }}</p>
-      </div>
+      <span class="withdrawal-hero__badge">
+        <Icon name="i-ph-money-duotone" class="h-6 w-6" />
+      </span>
     </div>
 
-    <p class="mt-4 flex items-start gap-2 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-semibold leading-6 text-amber-800">
-      <Icon name="i-ph-warning-circle-duotone" class="mt-0.5 h-4 w-4 flex-shrink-0" />
-      <span>{{ t("pages.withdrawalPage.withdrawableNotice") }}</span>
-    </p>
+    <div class="min-w-0">
+      <p class="withdrawal-hero__name">{{ displayName }}</p>
+      <h1 class="withdrawal-hero__title">
+        {{ t("pages.withdrawalPage.incomeTitle", { amount: availableBalance }) }}
+      </h1>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
-import type { WithdrawalCurrencyRule } from "../../domain/types/withdrawal.types"
+import type {
+  WithdrawalCurrencyRule,
+  WithdrawalUserSummary,
+} from "../../domain/types/withdrawal.types"
 
 const props = defineProps<{
   balance: number
-  walletBalance: number
   currency: string
   currencySymbol: string
   currencyRule: WithdrawalCurrencyRule
+  user: WithdrawalUserSummary
 }>()
 
 const { t, locale } = useI18n()
 
-const formatAmount = (amount: number) =>
-  formatCurrency(amount, {
+const availableBalance = computed(() =>
+  formatCurrency(props.balance, {
     currency: props.currency,
     currencySymbol: props.currencySymbol,
     currencyRule: props.currencyRule,
     locale: locale.value,
-  })
-
-const walletBalance = computed(() =>
-  formatAmount(props.walletBalance),
+  }),
 )
-const availableBalance = computed(() =>
-  formatAmount(props.balance),
+const displayName = computed(() =>
+  props.user.username || props.user.name || t("pages.withdrawalPage.defaultUserName"),
 )
 </script>
+
+<style scoped>
+.withdrawal-hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 154px;
+  border: 1px solid #d7ead7;
+  border-radius: 9px;
+  background: #fbfdf9;
+  padding: 26px;
+}
+
+.withdrawal-hero__avatar-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.withdrawal-hero__avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 999px;
+  background: #ffe0b8;
+  object-fit: cover;
+}
+
+.withdrawal-hero__avatar--fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #257618;
+}
+
+.withdrawal-hero__badge {
+  position: absolute;
+  right: -4px;
+  bottom: -2px;
+  display: flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #fbfdf9;
+  border-radius: 999px;
+  background: #2f7f21;
+  color: #fff;
+}
+
+.withdrawal-hero__name {
+  color: #14730f;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.withdrawal-hero__title {
+  margin-top: 4px;
+  color: #187311;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.16;
+}
+
+@media (max-width: 640px) {
+  .withdrawal-hero {
+    gap: 16px;
+    min-height: 128px;
+    padding: 18px;
+  }
+
+  .withdrawal-hero__avatar {
+    width: 72px;
+    height: 72px;
+  }
+
+  .withdrawal-hero__badge {
+    width: 32px;
+    height: 32px;
+  }
+
+  .withdrawal-hero__name {
+    font-size: 17px;
+  }
+
+  .withdrawal-hero__title {
+    font-size: 26px;
+  }
+}
+</style>

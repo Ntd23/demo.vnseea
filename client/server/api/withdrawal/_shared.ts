@@ -5,6 +5,7 @@ import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
+import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import type {
   WithdrawalHistoryItem,
   WithdrawalMethod,
@@ -24,6 +25,7 @@ type BackendWithdrawalOverviewResponse = {
   currency?: string
   currency_symbol?: string
   currency_rule?: BackendEntity
+  user?: BackendEntity
   methods?: BackendEntity[]
   history?: BackendEntity[]
   bank_enabled?: boolean
@@ -109,6 +111,7 @@ export async function fetchWithdrawalOverview(event: H3Event): Promise<Withdrawa
     await createBackendApiClient(event).get<BackendWithdrawalOverviewResponse>("withdrawal-overview"),
     "Unable to load withdrawal.",
   )
+  const resolveMediaUrl = createBackendMediaUrlResolver(event)
 
   return {
     balance: asNumber(response.balance),
@@ -117,6 +120,11 @@ export async function fetchWithdrawalOverview(event: H3Event): Promise<Withdrawa
     currency: asString(response.currency),
     currencySymbol: asString(response.currency_symbol),
     currencyRule: response.currency_rule ?? {},
+    user: {
+      name: asString(response.user?.name),
+      username: asString(response.user?.username),
+      avatar: resolveMediaUrl(response.user?.avatar),
+    },
     methods: (response.methods ?? [])
       .map(mapMethod)
       .filter(method => method.value && method.label),

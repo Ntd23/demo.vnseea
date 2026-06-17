@@ -1,6 +1,6 @@
-// English description: Resolves the current backend-authenticated user from browser cookies or app bearer tokens.
+// English description: Resolves the current backend-authenticated user from the PHP browser session.
 
-import { createError, getCookie, getHeader, getQuery, type H3Event } from "h3"
+import { createError, getCookie, type H3Event } from "h3"
 import { backendRoutes } from "../../src/shared-kernel/application/constants/route-registry"
 import { getBackendBaseCandidates } from "./backend-api-client"
 import { clearBackendSessionCookie } from "./backend-session-cookie"
@@ -19,10 +19,7 @@ type BackendCurrentUserResponse = {
 }
 
 export async function getBackendCurrentUser(event: H3Event) {
-  const query = getQuery(event)
-  const authorization = String(getHeader(event, "authorization") || "").trim()
-  const bearerToken = authorization.match(/^Bearer\s+(.+)$/i)?.[1]?.trim() || ""
-  const userSession = getCookie(event, "user_id") || bearerToken || String(query.access_token || "").trim()
+  const userSession = getCookie(event, "user_id")
 
   if (!userSession) {
     throw createError({
@@ -33,7 +30,6 @@ export async function getBackendCurrentUser(event: H3Event) {
 
   const runtimeConfig = useRuntimeConfig(event)
   const cookie = event.node.req.headers.cookie
-  const isCookieSession = Boolean(getCookie(event, "user_id"))
   let currentUserResponse: BackendCurrentUserResponse | null = null
 
   for (const baseURL of getBackendBaseCandidates(
@@ -45,7 +41,7 @@ export async function getBackendCurrentUser(event: H3Event) {
         {
           baseURL,
           credentials: "include",
-          headers: isCookieSession && cookie ? { cookie } : undefined,
+          headers: cookie ? { cookie } : undefined,
         },
       )
       break
@@ -60,9 +56,7 @@ export async function getBackendCurrentUser(event: H3Event) {
   const status = Number(currentUserResponse?.api_status ?? 0)
 
   if (status < 200 || status >= 300 || !currentUserId) {
-    if (isCookieSession) {
-      clearBackendSessionCookie(event)
-    }
+    clearBackendSessionCookie(event)
 
     throw createError({
       statusCode: 401,
