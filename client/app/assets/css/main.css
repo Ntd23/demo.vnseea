@@ -1,6 +1,7 @@
 /* English description: Global frontend CSS entry that imports Nuxt UI, Tailwind, tokens, and app-wide light-theme base styles. */
 
 @import "tailwindcss";
+@source "../../../src/**/*.{vue,ts}";
 @import "@nuxt/ui";
 @import "./tokens.css";
 

@@ -1,9 +1,12 @@
 <!-- English description: Responsive global header with search, counters, notifications, and account controls. -->
 
 <template>
-  <header class="sticky top-0 z-[100]">
+  <header
+    class="sticky top-0 z-[100] transition-transform duration-300"
+    :class="{ 'header-bar--hidden': isHeaderHidden }"
+  >
     <!-- ─── Desktop header ────────────────────────────────── -->
-    <div style="padding: 0 30px" class="hidden border-b border-[#dfe6ff] bg-white/95 shadow-[0_10px_26px_rgba(15,35,110,0.08)] backdrop-blur xl:block">
+    <div style="padding: 0 30px" class="hidden border-b border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)] xl:block">
       <div class="mx-auto flex h-16 w-full max-w-[1880px] items-center gap-4 px-5">
         <NuxtLink
           :to="appRoutes.feed"
@@ -320,6 +323,28 @@ const currentUserInitials = computed(() =>
   || "U",
 )
 
+const isHeaderHidden = ref(false)
+const lastScrollY = ref(0)
+
+const handleScroll = () => {
+  const currentScrollY = window.scrollY
+  if (window.innerWidth >= 1280) {
+    isHeaderHidden.value = false
+    return
+  }
+  if (currentScrollY <= 10) {
+    isHeaderHidden.value = false
+    lastScrollY.value = currentScrollY
+    return
+  }
+  if (currentScrollY > lastScrollY.value) {
+    isHeaderHidden.value = true
+  } else {
+    isHeaderHidden.value = false
+  }
+  lastScrollY.value = currentScrollY
+}
+
 watch(() => route.path, () => {
   mobileSearchOpen.value = false
   mobileMenuOpen.value = false
@@ -333,6 +358,7 @@ watch(faviconUrl, () => {
 
 onMounted(async () => {
   isClientReady.value = true
+  window.addEventListener("scroll", handleScroll, { passive: true })
 
   if (backendSession.value) {
     await currentAuthUserStore.hydrate(true)
@@ -343,6 +369,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener("scroll", handleScroll)
   headerNotificationSync.stopRealtime()
 })
 
@@ -599,5 +626,11 @@ async function toggleRequests() {
   background: rgba(0, 0, 255, 0.05);
   border-color: rgba(0, 0, 255, 0.15);
   color: #0000ff;
+}
+
+@media (max-width: 1279.98px) {
+  .header-bar--hidden {
+    transform: translateY(-100%);
+  }
 }
 </style>
