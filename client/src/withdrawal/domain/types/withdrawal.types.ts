@@ -23,6 +23,12 @@ export interface WithdrawalHistoryItem {
   transferInfo: string
 }
 
+export interface WithdrawalUserSummary {
+  name: string
+  username: string
+  avatar: string
+}
+
 export interface WithdrawalOverview {
   balance: number
   walletBalance: number
@@ -30,6 +36,7 @@ export interface WithdrawalOverview {
   currency: string
   currencySymbol: string
   currencyRule: WithdrawalCurrencyRule
+  user: WithdrawalUserSummary
   methods: WithdrawalMethod[]
   history: WithdrawalHistoryItem[]
   bankEnabled: boolean

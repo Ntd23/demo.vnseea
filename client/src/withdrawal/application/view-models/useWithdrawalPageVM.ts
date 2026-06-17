@@ -15,6 +15,11 @@ const EMPTY_WITHDRAWAL: WithdrawalOverview = {
   currency: "",
   currencySymbol: "",
   currencyRule: {},
+  user: {
+    name: "",
+    username: "",
+    avatar: "",
+  },
   methods: [],
   history: [],
   bankEnabled: false,

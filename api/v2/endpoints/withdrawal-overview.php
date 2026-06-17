@@ -92,6 +92,11 @@ else {
         'currency' => $currency,
         'currency_symbol' => Wo_GetCurrency($currency),
         'currency_rule' => Wo_GetCurrencyRule($currency),
+        'user' => array(
+            'name' => !empty($wo['user']['name']) ? (string) $wo['user']['name'] : '',
+            'username' => !empty($wo['user']['username']) ? (string) $wo['user']['username'] : '',
+            'avatar' => !empty($wo['user']['avatar']) ? (string) $wo['user']['avatar'] : '',
+        ),
         'methods' => $methods,
         'bank_enabled' => false,
         'paypal_email' => !empty($wo['user']['email']) ? $wo['user']['email'] : '',
