@@ -14,7 +14,12 @@ import {
   getCommunityPagePath,
   getCommunityPageSettingsPath,
 } from "../../domain/services/community-helpers.service"
-import type { CommunityPageRecord, CommunityPageSettingsDraft } from "../../domain/types/community.types"
+import type {
+  CommunityPageAnalyticsOverview,
+  CommunityPageAnalyticsPeriod,
+  CommunityPageRecord,
+  CommunityPageSettingsDraft,
+} from "../../domain/types/community.types"
 import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 type PageSettingsState = "idle" | "loading" | "success" | "error"
@@ -39,6 +44,10 @@ export function useCommunityPageSettingPageVM(
 
   const draft = ref<CommunityPageSettingsDraft>(createCommunityPageSettingsDraft())
   const saveState = ref<PageSettingsState>("idle")
+  const pageAnalytics = ref<CommunityPageAnalyticsOverview | null>(null)
+  const analyticsPeriod = ref<CommunityPageAnalyticsPeriod>("week")
+  const analyticsLoading = ref(false)
+  const analyticsError = ref("")
   const draftRestored = ref(false)
   const storageHydrated = ref(false)
   const isSyncingDraft = ref(false)
@@ -178,6 +187,16 @@ export function useCommunityPageSettingPageVM(
     
     syncDraftFromPage()
   }, { immediate: true })
+
+  watch(
+    () => [activeTab.value, page.value?.slug, analyticsPeriod.value] as const,
+    ([tab]) => {
+      if (tab === "analytics") {
+        void fetchPageAnalytics()
+      }
+    },
+    { immediate: true },
+  )
 
   watchDebounced(
     () => normalizeDraft(draft.value),
@@ -362,6 +381,28 @@ export function useCommunityPageSettingPageVM(
     }
   }
 
+  async function fetchPageAnalytics() {
+    if (!page.value?.slug || analyticsLoading.value) return
+
+    analyticsLoading.value = true
+    analyticsError.value = ""
+
+    try {
+      pageAnalytics.value = await repository.getPageAnalytics(page.value.slug, analyticsPeriod.value)
+    }
+    catch (err) {
+      analyticsError.value = err instanceof Error ? err.message : "Không thể tải dữ liệu phân tích trang."
+      pageAnalytics.value = null
+    }
+    finally {
+      analyticsLoading.value = false
+    }
+  }
+
+  function setAnalyticsPeriod(period: CommunityPageAnalyticsPeriod) {
+    analyticsPeriod.value = period
+  }
+
   function isSameDraft(first: CommunityPageSettingsDraft, second: CommunityPageSettingsDraft) {
     return JSON.stringify(normalizeDraft(first)) === JSON.stringify(normalizeDraft(second))
   }
@@ -414,6 +455,10 @@ export function useCommunityPageSettingPageVM(
     pagePath,
     settingsNavItems,
     statusAlert,
+    pageAnalytics,
+    analyticsPeriod,
+    analyticsLoading,
+    analyticsError,
     isBusy,
     isSaveDisabled,
     selectedCategoryLabel,
@@ -425,6 +470,8 @@ export function useCommunityPageSettingPageVM(
     initials,
     followerPreview,
     likePreview,
+    fetchPageAnalytics,
+    setAnalyticsPeriod,
     appRoutes,
   }
 }

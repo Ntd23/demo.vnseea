@@ -10,6 +10,8 @@ import type {
   CommunityGroupSettingsDraft,
   CommunityGroupTab,
   CommunityPageFollowerRecord,
+  CommunityPageAnalyticsOverview,
+  CommunityPageAnalyticsPeriod,
   CommunityPageRecord,
   CommunityPageSettingsDraft,
   CommunityPageTab,
@@ -33,6 +35,7 @@ export interface CommunityRepository {
   followPage(slug: string): Promise<CommunityPageRecord>
   likePage(slug: string): Promise<CommunityPageRecord>
   getPageFollowers(slug: string): Promise<CommunityPageFollowerRecord[]>
+  getPageAnalytics(slug: string, period?: CommunityPageAnalyticsPeriod): Promise<CommunityPageAnalyticsOverview>
   getPageInvites(slug: string): Promise<UserRecord[]>
   sendPageInvite(slug: string, userId: number): Promise<void>
   getPagePosts(slug: string, input?: { limit?: number; afterPostId?: number }): Promise<FeedPostsResponse>

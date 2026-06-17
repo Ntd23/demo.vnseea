@@ -36,6 +36,7 @@ export interface CommunityPageRecord {
   accent: string
   followers: number
   likes: number
+  postCount?: number
   ownerLabel: string
   responseLabel: string
   website?: string
@@ -61,6 +62,39 @@ export interface CommunityPageFollowerRecord {
   verified?: boolean
   isFriend: boolean
   isRequested: boolean
+}
+
+export type CommunityPageAnalyticsPeriod = "day" | "week" | "month" | "year"
+
+export interface CommunityPageAnalyticsStat {
+  key: string
+  label: string
+  value: string
+  rawValue: number
+  icon: string
+  color: string
+}
+
+export interface CommunityPageAnalyticsPoint {
+  label: string
+  likes: number
+  views: number
+  interactions: number
+}
+
+export interface CommunityPageAnalyticsOverview {
+  period: CommunityPageAnalyticsPeriod
+  likes: number
+  likesInPeriod: number
+  followers: number
+  posts: number
+  postsInPeriod: number
+  interactions: number
+  views: number
+  engagementRate: number
+  hasViewSource: boolean
+  stats: CommunityPageAnalyticsStat[]
+  chart: CommunityPageAnalyticsPoint[]
 }
 
 export interface CommunityGroupRecord {

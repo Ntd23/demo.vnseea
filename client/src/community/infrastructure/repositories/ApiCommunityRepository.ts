@@ -10,6 +10,8 @@ import type {
   CommunityGroupRecord,
   CommunityGroupSettingsDraft,
   CommunityGroupTab,
+  CommunityPageAnalyticsOverview,
+  CommunityPageAnalyticsPeriod,
   CommunityPageFollowerRecord,
   CommunityPageRecord,
   CommunityPageSettingsDraft,
@@ -146,6 +148,12 @@ export function createApiCommunityRepository(): CommunityRepository {
     },
     async getPageFollowers(slug: string) {
       return await client.get<CommunityPageFollowerRecord[]>(apiRoutes.community.pageFollowers(slug))
+    },
+    async getPageAnalytics(slug: string, period?: CommunityPageAnalyticsPeriod) {
+      return await client.get<CommunityPageAnalyticsOverview>(
+        apiRoutes.community.pageAnalytics(slug),
+        { period },
+      )
     },
     async getPageInvites(slug: string) {
       return await client.get<UserRecord[]>(apiRoutes.community.pageInvites(slug))

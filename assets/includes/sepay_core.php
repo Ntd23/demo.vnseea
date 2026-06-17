@@ -280,7 +280,8 @@ function Wo_SepayReturnWebhook($wo, $sqlConnect, $givenToken, $rawBody = null)
     }
     $raw = $rawBody !== null ? (string)$rawBody : file_get_contents('php://input');
     $is_json = stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
-    $data = $is_json ? (json_decode($raw, true) ?: []) : ($_POST ?: []);
+    $decodedRaw = $raw !== '' ? json_decode($raw, true) : null;
+    $data = is_array($decodedRaw) ? $decodedRaw : ($_POST ?: []);
     $descPrefix = (string)($wo['config']['sepay_desc_prefix'] ?? 'SE');
     $content = (string)($data['content'] ?? $data['description'] ?? $data['order_code'] ?? $data['note'] ?? $data['code'] ?? '');
     $order_code = '';
@@ -323,7 +324,7 @@ function Wo_SepayReturnWebhook($wo, $sqlConnect, $givenToken, $rawBody = null)
     $content_sql       = mysqli_real_escape_string($sqlConnect, $content);
     $reference_sql     = mysqli_real_escape_string($sqlConnect, $referenceCode);
     $txAt_sql          = $txAt ? ("'" . mysqli_real_escape_string($sqlConnect, $txAt) . "'") : "NULL";
-    $rawPayload = $is_json || $raw === '' ? json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $raw;
+    $rawPayload = $is_json || is_array($decodedRaw) || $raw === '' ? json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $raw;
     $raw_json_sql      = mysqli_real_escape_string($sqlConnect, $rawPayload);
 
     // UPSERT: lần đầu INSERT, nếu webhook gọi lại thì UPDATE các trường

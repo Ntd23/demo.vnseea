@@ -99,7 +99,13 @@
             </CommunityPageSettingsControlsCard>
           </section>
           <section v-if="activeTab === 'analytics'" id="analytics">
-            <CommunityPageSettingsAnalyticCard />
+            <CommunityPageSettingsAnalyticCard
+              :analytics="pageAnalytics"
+              :period="analyticsPeriod"
+              :loading="analyticsLoading"
+              :error-message="analyticsError"
+              @update:period="setAnalyticsPeriod"
+            />
           </section>
 
           <section v-if="activeTab === 'delete'" id="delete">
@@ -147,11 +153,16 @@ const {
   activeTab,
   settingsNavItems,
   statusAlert,
+  pageAnalytics,
+  analyticsPeriod,
+  analyticsLoading,
+  analyticsError,
   isBusy,
   isSaveDisabled,
   pagePath,
   handleSave,
   handleDeletePage,
+  setAnalyticsPeriod,
 } = useCommunityPageSettingPageVM()
 
 function onDeletePage(pageId: number, password: string) {

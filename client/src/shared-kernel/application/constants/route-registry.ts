@@ -165,6 +165,7 @@ export const apiRoutes = {
     pageBySlug: (slug: string) => `community/pages/${encodeSegment(slug)}`,
     pageById: (id: number | string) => `community/pages/id/${encodeSegment(id)}`,
     pagePosts: (slug: string) => `community/pages/${encodeSegment(slug)}/posts`,
+    pageAnalytics: (slug: string) => `community/pages/${encodeSegment(slug)}/analytics`,
     pageFollowers: (slug: string) => `community/pages/${encodeSegment(slug)}/followers`,
     pageFollow: (slug: string) => `community/pages/${encodeSegment(slug)}/follow`,
     pageLike: (slug: string) => `community/pages/${encodeSegment(slug)}/like`,
