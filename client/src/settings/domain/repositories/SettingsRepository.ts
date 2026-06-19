@@ -7,6 +7,9 @@ import type {
   SettingsMonetizationOverview,
   SettingsPointsExchangeInput,
   SettingsPointsExchangeResult,
+  SettingsPointsReceiveQr,
+  SettingsPointsTransferInput,
+  SettingsPointsTransferResult,
   SettingsUpdateInput,
   SettingsUpdateResult,
   SettingsVerificationResult,
@@ -25,6 +28,8 @@ export interface SettingsRepository {
   unblockUser(userId: number): Promise<boolean>
   requestMyInfo(options: Record<string, boolean>): Promise<boolean>
   exchangePoints(input: SettingsPointsExchangeInput): Promise<SettingsPointsExchangeResult>
+  transferPoints(input: SettingsPointsTransferInput): Promise<SettingsPointsTransferResult>
+  getPointsReceiveQr(points?: number | null): Promise<SettingsPointsReceiveQr>
   getMonetization(): Promise<SettingsMonetizationOverview>
   getAffiliates(): Promise<SettingsAffiliatesOverview>
 }

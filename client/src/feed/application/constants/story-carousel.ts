@@ -8,9 +8,13 @@ export const feedHomePath = appRoutes.feed
 
 export const feedStoryCreateRedirectDelay = 500
 
-export const feedStoryAcceptedMimeTypes = "image/*,video/*"
+export const feedStoryAcceptedVideoExtensions = [".mp4", ".mov", ".mkv", ".avi", ".wmv", ".webm"] as const
 
-export const feedStoryDropZoneDataTypes = ["image/*", "video/*", "Files"] as const
+export const feedStoryAcceptedMimeTypes = [
+  "image/*",
+  "video/*",
+  ...feedStoryAcceptedVideoExtensions,
+].join(",")
 
 export const feedStoryImageMimePrefix = "image/"
 
@@ -39,7 +43,7 @@ export const feedStoryReactionLongPressDelay = 420
 
 export const feedStoryVideoPathHint = "video"
 
-export const feedStoryVideoExtensions = ["mp4", "webm", "ogg", "mov", "m4v", "mpg", "mpeg", "avi", "mkv"] as const
+export const feedStoryVideoExtensions = ["mp4", "webm", "ogg", "mov", "m4v", "mpg", "mpeg", "avi", "mkv", "wmv"] as const
 
 export const feedStoryKeyboardKeys = {
   close: "Escape",

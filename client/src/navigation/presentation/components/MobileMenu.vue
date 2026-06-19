@@ -43,9 +43,9 @@
           </div>
 
           <div v-if="showStats" class="mm__stats">
-            <NuxtLink v-if="formattedWallet" :to="appRoutes.wallet" class="mm__stat" @click="close">
+            <NuxtLink v-if="formattedWalletPoints" :to="appRoutes.wallet" class="mm__stat" @click="close">
               <Icon name="i-ph-wallet-fill" class="mm__stat-icon" />
-              <span>{{ $t("navigation.mobileMenu.walletLabel") || "Ví" }}: {{ formattedWallet }}</span>
+              <span>{{ $t("navigation.mobileMenu.walletLabel") || "Ví" }}: {{ formattedWalletPoints }}</span>
             </NuxtLink>
             <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="mm__stat" @click="close">
               <Icon name="i-ph-circle-half-fill" class="mm__stat-icon" />
@@ -115,7 +115,6 @@
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useBackendWebUrl } from "#shared-kernel/application/utils/backend-web-url"
-import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 
 const { t, locale } = useI18n()
@@ -156,23 +155,6 @@ const identityLabel = computed(() => {
 })
 
 const numberFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US"))
-const formattedWallet = computed(() => {
-  const value = currentUser.value?.wallet
-
-  if (value === undefined || value === null || value === "") {
-    return ""
-  }
-
-  if (typeof value === "number") {
-    return formatCurrency(value, { currency: "VND", locale: locale.value })
-  }
-
-  const normalized = Number(String(value).replace(/,/g, ""))
-
-  return Number.isFinite(normalized)
-    ? formatCurrency(normalized, { currency: "VND", locale: locale.value })
-    : String(value)
-})
 const formattedPoints = computed(() => {
   const value = currentUser.value?.points
 
@@ -182,7 +164,10 @@ const formattedPoints = computed(() => {
 
   return numberFormatter.value.format(value)
 })
-const showStats = computed(() => Boolean(formattedWallet.value || formattedPoints.value))
+const formattedWalletPoints = computed(() =>
+  formattedPoints.value ? `${formattedPoints.value} điểm` : "",
+)
+const showStats = computed(() => Boolean(formattedWalletPoints.value || formattedPoints.value))
 
 function close() {
   modelValue.value = false

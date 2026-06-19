@@ -27,6 +27,8 @@
           v-if="activePage.slug === 'myPoints'"
           :user="user"
           :on-exchange="exchangePoints"
+          :on-transfer="transferPoints"
+          :on-load-receive-qr="getPointsReceiveQr"
         />
         <SettingsVerificationPanel
           v-else-if="isVerificationPage"
@@ -80,6 +82,8 @@ const {
   updateSettings,
   handleItemAction,
   exchangePoints,
+  transferPoints,
+  getPointsReceiveQr,
 } = useSettingsPageVM(() => props.pageSlug)
 
 const isVerificationPage = computed(() =>

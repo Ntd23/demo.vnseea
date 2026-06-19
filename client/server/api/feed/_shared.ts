@@ -141,7 +141,7 @@ const accentPalette = [
   "#e11d48",
 ] as const
 
-const videoExtensions = ["mp4", "mov", "webm", "m4v", "avi", "mpeg", "mpg", "mkv", "ogg"]
+const videoExtensions = ["mp4", "mov", "webm", "m4v", "avi", "mpeg", "mpg", "mkv", "ogg", "wmv"]
 
 const legacyGreetingCopy = {
   morning: {

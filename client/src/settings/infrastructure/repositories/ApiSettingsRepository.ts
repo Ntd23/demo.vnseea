@@ -11,6 +11,9 @@ import type {
   SettingsMonetizationOverview,
   SettingsPointsExchangeInput,
   SettingsPointsExchangeResult,
+  SettingsPointsReceiveQr,
+  SettingsPointsTransferInput,
+  SettingsPointsTransferResult,
   SettingsUpdateInput,
   SettingsUpdateResult,
   SettingsUser,
@@ -127,6 +130,17 @@ export function createApiSettingsRepository(): SettingsRepository {
         apiRoutes.settings.pointsExchange,
         input,
       )
+    },
+    async transferPoints(input: SettingsPointsTransferInput) {
+      return await client.post<SettingsPointsTransferResult, SettingsPointsTransferInput>(
+        apiRoutes.settings.pointsTransfer,
+        input,
+      )
+    },
+    async getPointsReceiveQr(points?: number | null) {
+      return await client.get<SettingsPointsReceiveQr>(apiRoutes.settings.pointsQr, {
+        points: points && points > 0 ? points : undefined,
+      })
     },
     async getMonetization() {
       return await client.get<SettingsMonetizationOverview>(apiRoutes.settings.monetization)

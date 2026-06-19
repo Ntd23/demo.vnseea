@@ -6,7 +6,7 @@
       <NearbySearchMap
         class="nearby-map-page__map"
         :origin="origin"
-        :items="mapItems"
+        :items="displayMapItems"
         :selected-item-id="selectedItemId"
         :origin-focus-key="originFocusKey"
         :origin-update-key="originUpdateKey"
@@ -15,7 +15,7 @@
         :route-target-item="routeTargetItem"
         :route-navigation-active="routeNavigationActive"
         :origin-heading="liveOriginHeading"
-        :search-radius-km="distanceKm"
+        :search-radius-km="displaySearchRadiusKm"
         :zoom-in-key="mapZoomInKey"
         :zoom-out-key="mapZoomOutKey"
         @select="selectItem"
@@ -42,7 +42,7 @@
             @keydown.enter.prevent="handleSearchEnter"
           >
           <UIcon
-            v-if="suggestionsLoading || googlePlacesLoading"
+            v-if="suggestionsLoading || googlePlacesLoading || googleNearbyLoading"
             name="i-ph-spinner-gap-duotone"
             class="nearby-map-page__search-loading nearby-map-page__spin"
           />
@@ -105,8 +105,8 @@
         <span>Dinh vi va la ban realtime</span>
       </div>
       <ul>
-        <li>Mac dinh ban do tu zoom vao vong tron 1km quanh vi tri cua ban.</li>
-        <li>Bam nut dinh vi de cap nhat lai vi tri, zoom ve vong tron 1km va xin quyen la ban neu trinh duyet can.</li>
+        <li>Mac dinh ban do tu zoom vao vong tron 3km quanh vi tri cua ban.</li>
+        <li>Bam nut dinh vi de cap nhat lai vi tri, zoom ve vong tron 3km va xin quyen la ban neu trinh duyet can.</li>
         <li>iOS: neu Safari hoi Motion & Orientation, chon Allow. Neu khong thay hoi, vao Settings -> Safari -> Motion & Orientation Access, bat len, reload trang roi bam lai nut dinh vi.</li>
         <li>Android: cho phep Location. Neu mui ten khong xoay, kiem tra Chrome -> Site settings -> Motion sensors va cho phep cam bien.</li>
         <li>Dien thoai: keo 1 ngon de di chuyen map, zoom bang 2 ngon. Desktop: keo chuot trai de di chuyen, lan chuot de zoom.</li>
@@ -121,7 +121,7 @@
           <button type="button" @click="clearRoute">Ẩn</button>
         </div>
 
-        <div v-if="displayLoading" class="nearby-map-page__state">
+        <div v-if="displayLoadingState" class="nearby-map-page__state">
           <Icon name="i-ph-spinner-gap-duotone" class="nearby-map-page__spin" />
           <span>Đang tải kết quả gần bạn...</span>
         </div>
@@ -132,7 +132,7 @@
           <button type="button" @click="refresh">Thử lại</button>
         </div>
 
-        <div v-else-if="!hasResults" class="nearby-map-page__empty">
+        <div v-else-if="!displayHasResults" class="nearby-map-page__empty">
           <Icon name="i-ph-map-pin-duotone" />
           <div>
             <h2>{{ emptyTitle }}</h2>
@@ -141,18 +141,19 @@
           <NuxtLink v-if="needsLocation" :to="appRoutes.settingsPage('profile')" class="nearby-map-page__empty-action">
             Cập nhật địa chỉ
           </NuxtLink>
-          <button v-else type="button" class="nearby-map-page__empty-action" @click="clearSearch">
+          <button v-else type="button" class="nearby-map-page__empty-action" @click="handleClearSearch">
             Xóa bộ lọc
           </button>
         </div>
 
-        <div v-else class="nearby-map-page__cards" aria-label="Nearby results">
+        <div ref="cardsContainer" v-else class="nearby-map-page__cards" aria-label="Nearby results">
           <NearbyResultCard
-            v-for="item in cardItems"
+            v-for="item in displayCardItems"
             :key="item.id"
             class="nearby-map-page__card"
+            :data-result-card-id="item.id"
             :item="item"
-            :active="selectedItemId === item.id || (!selectedItemId && item.id === cardItems[0]?.id)"
+            :active="selectedItemId === item.id || (!selectedItemId && item.id === displayCardItems[0]?.id)"
             @select="selectItem"
             @focus-origin="focusOrigin"
             @directions="handleDirectionsRequest"
@@ -331,6 +332,10 @@ type GooglePlaceSuggestion = {
   distanceMeters: number | null
 }
 
+type SearchNearbyConfigResponse = {
+  googlePlacesEnabled?: boolean
+}
+
 function compareDistance(
   left: { distanceMeters?: number | null, label: string },
   right: { distanceMeters?: number | null, label: string },
@@ -396,7 +401,6 @@ const {
   errorMessage,
   hasOrigin,
   needsLocation,
-  hasResults,
   emptyTitle,
   emptyDescription,
   refresh,
@@ -412,15 +416,27 @@ const {
   clearSearch,
 } = useSearchNearbyPageVM()
 
-const searchPlaceholder = "Tìm Page hoặc địa chỉ Google..."
+const searchPlaceholder = computed(() =>
+  googlePlacesEnabled.value
+    ? "Tim ca phe, quan cat toc, dia diem gan ban..."
+    : "Tim user hoac Page gan ban...",
+)
 
 const googlePlaceSuggestions = ref<GooglePlaceSuggestion[]>([])
 const googlePlacesLoading = ref(false)
+const googleNearbyResults = ref<NearbySearchItem[]>([])
+const googleNearbyLoading = ref(false)
+const googleNearbyQuery = ref("")
+const googlePlacesEnabled = ref(true)
+const googleNearbyRadiusMeters = 3000
+const googleNearbyLimit = 20
 const autocompleteService = shallowRef<google.maps.places.AutocompleteService | null>(null)
 const placesService = shallowRef<google.maps.places.PlacesService | null>(null)
 const googlePlaceRequestId = ref(0)
+const googleNearbyRequestId = ref(0)
 const isSuggestionPanelOpen = ref(false)
 const pageRoot = ref<HTMLElement | null>(null)
+const cardsContainer = ref<HTMLElement | null>(null)
 const mapZoomInKey = ref(0)
 const mapZoomOutKey = ref(0)
 const locationPermissionState = ref<LocationPermissionState>("checking")
@@ -454,7 +470,7 @@ const suggestionOptions = computed<NearbySuggestionOption[]>(() =>
       kind: "nearby" as const,
       distanceMeters: item.distanceMeters,
     })),
-    ...googlePlaceSuggestions.value.map(item => ({
+    ...(googlePlacesEnabled.value ? googlePlaceSuggestions.value : []).map(item => ({
       id: item.id,
       label: item.label,
       raw: null,
@@ -475,6 +491,20 @@ const showSuggestionPanel = computed(() =>
 )
 const canUseNearbyMap = computed(() =>
   locationPermissionState.value === "granted" || hasOrigin.value,
+)
+const shouldShowGoogleNearbyResults = computed(() =>
+  googleNearbyLoading.value || googleNearbyQuery.value.length > 0,
+)
+const displayMapItems = computed(() =>
+  shouldShowGoogleNearbyResults.value ? googleNearbyResults.value : mapItems.value,
+)
+const displayCardItems = computed(() =>
+  shouldShowGoogleNearbyResults.value ? googleNearbyResults.value : cardItems.value,
+)
+const displayHasResults = computed(() => displayCardItems.value.length > 0)
+const displayLoadingState = computed(() => displayLoading.value || googleNearbyLoading.value)
+const displaySearchRadiusKm = computed(() =>
+  shouldShowGoogleNearbyResults.value ? 3 : distanceKm.value,
 )
 const locationPermissionTitle = computed(() => {
   if (locationPermissionState.value === "checking") return "Đang xin quyền chia sẻ vị trí"
@@ -531,6 +561,54 @@ function calculateDistanceMeters(lat: number, lng: number) {
   ))
 
   return Math.round(earthRadiusMeters * angle)
+}
+
+function createGoogleMapsHref(placeId: string, address: string) {
+  return `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(placeId)}&query=${encodeURIComponent(address)}`
+}
+
+function googlePlaceToNearbyItem(place: google.maps.places.PlaceResult, index: number): NearbySearchItem | null {
+  const location = place.geometry?.location
+
+  if (!location) {
+    return null
+  }
+
+  const lat = location.lat()
+  const lng = location.lng()
+  const distanceMeters = calculateDistanceMeters(lat, lng)
+
+  if (distanceMeters !== null && distanceMeters > googleNearbyRadiusMeters) {
+    return null
+  }
+
+  const title = String(place.name || place.formatted_address || place.vicinity || "Google Maps").trim()
+  const address = String(place.vicinity || place.formatted_address || title).trim()
+  const placeId = String(place.place_id || `${lat},${lng}`)
+  const placeIconUrl = typeof place.icon === "string" ? place.icon : ""
+  const placeMaskIconUrl = typeof place.icon_mask_base_uri === "string"
+    ? `${place.icon_mask_base_uri}.svg`
+    : placeIconUrl
+  const placeIconBackgroundColor = typeof place.icon_background_color === "string"
+    ? place.icon_background_color
+    : ""
+
+  return {
+    id: `place-${placeId}-${index}`,
+    backendId: 0,
+    type: "place",
+    title,
+    subtitle: "Google Maps",
+    description: "",
+    locationLabel: address,
+    avatarUrl: placeIconUrl,
+    mapIconUrl: placeMaskIconUrl,
+    mapIconBackgroundColor: placeIconBackgroundColor,
+    href: createGoogleMapsHref(placeId, address),
+    lat,
+    lng,
+    distanceMeters,
+  }
 }
 
 function calculatePointDistanceMeters(from: { lat: number, lng: number }, to: { lat: number, lng: number }) {
@@ -965,12 +1043,13 @@ function handleSuggestionSelect(option: NearbySuggestionOption | null) {
 
   isSuggestionPanelOpen.value = false
 
-  if (option.kind === "place" && option.placeId) {
+  if (option.kind === "place" && option.placeId && googlePlacesEnabled.value) {
     void selectGooglePlace(option)
     return
   }
 
   if (option.raw) {
+    clearGoogleNearbyResults()
     selectSuggestion(option.raw)
   }
 }
@@ -983,7 +1062,9 @@ function handleSearchFocus() {
 
   isSuggestionPanelOpen.value = true
   void refreshSuggestions()
-  void refreshGooglePlaceSuggestions()
+  if (googlePlacesEnabled.value) {
+    void refreshGooglePlaceSuggestions()
+  }
 }
 
 function handleSearchBlur() {
@@ -993,11 +1074,51 @@ function handleSearchBlur() {
 }
 
 function handleSearchEnter() {
-  const firstOption = suggestionOptions.value[0]
-
-  if (firstOption) {
-    handleSuggestionSelect(firstOption)
+  if (!googlePlacesEnabled.value) {
+    const firstNearbyOption = suggestionOptions.value.find(option => option.kind === "nearby")
+    handleSuggestionSelect(firstNearbyOption ?? null)
+    return
   }
+
+  void searchGoogleNearbyPlaces(searchText.value)
+}
+
+function handleClearSearch() {
+  clearGoogleNearbyResults()
+  clearSearch()
+}
+
+async function loadSearchNearbyConfig() {
+  try {
+    const response = await $fetch<SearchNearbyConfigResponse>("/_api/search-nearby/config")
+    googlePlacesEnabled.value = response.googlePlacesEnabled !== false
+  }
+  catch {
+    googlePlacesEnabled.value = true
+  }
+
+  if (!googlePlacesEnabled.value) {
+    googlePlaceSuggestions.value = []
+    googlePlacesLoading.value = false
+    googleNearbyLoading.value = false
+    clearGoogleNearbyResults()
+  }
+}
+
+function scrollSelectedResultCardIntoView() {
+  if (!import.meta.client || !selectedItemId.value || !cardsContainer.value) {
+    return
+  }
+
+  const selectedCard = Array.from(
+    cardsContainer.value.querySelectorAll<HTMLElement>("[data-result-card-id]"),
+  ).find(card => card.dataset.resultCardId === selectedItemId.value)
+
+  selectedCard?.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest",
+    inline: "nearest",
+  })
 }
 
 function handleDirectionsRequest(item: NearbySearchItem) {
@@ -1119,6 +1240,12 @@ async function refreshGooglePlaceSuggestions() {
   const requestId = googlePlaceRequestId.value + 1
   googlePlaceRequestId.value = requestId
 
+  if (!googlePlacesEnabled.value) {
+    googlePlaceSuggestions.value = []
+    googlePlacesLoading.value = false
+    return
+  }
+
   if (!isSuggestionPanelOpen.value || query.length < 3) {
     googlePlaceSuggestions.value = []
     googlePlacesLoading.value = false
@@ -1187,71 +1314,187 @@ async function refreshGooglePlaceSuggestions() {
   }
 }
 
-async function selectGooglePlace(option: NearbySuggestionOption) {
-  if (!option.placeId) {
+function clearGoogleNearbyResults() {
+  googleNearbyResults.value = []
+  googleNearbyQuery.value = ""
+}
+
+function runGoogleNearbySearch(query: string) {
+  return new Promise<google.maps.places.PlaceResult[]>((resolve) => {
+    if (!placesService.value || origin.value.lat === null || origin.value.lng === null) {
+      resolve([])
+      return
+    }
+
+    placesService.value.nearbySearch(
+      {
+        location: new window.google.maps.LatLng(origin.value.lat, origin.value.lng),
+        radius: googleNearbyRadiusMeters,
+        keyword: query,
+      },
+      (results, status) => {
+        const okStatus = window.google?.maps?.places?.PlacesServiceStatus?.OK
+        const zeroStatus = window.google?.maps?.places?.PlacesServiceStatus?.ZERO_RESULTS
+
+        if (status === okStatus || status === zeroStatus) {
+          resolve(results ?? [])
+          return
+        }
+
+        resolve([])
+      },
+    )
+  })
+}
+
+function runGoogleTextSearch(query: string) {
+  return new Promise<google.maps.places.PlaceResult[]>((resolve) => {
+    if (!placesService.value || origin.value.lat === null || origin.value.lng === null) {
+      resolve([])
+      return
+    }
+
+    placesService.value.textSearch(
+      {
+        query,
+        location: new window.google.maps.LatLng(origin.value.lat, origin.value.lng),
+        radius: googleNearbyRadiusMeters,
+      },
+      (results, status) => {
+        const okStatus = window.google?.maps?.places?.PlacesServiceStatus?.OK
+        const zeroStatus = window.google?.maps?.places?.PlacesServiceStatus?.ZERO_RESULTS
+
+        if (status === okStatus || status === zeroStatus) {
+          resolve(results ?? [])
+          return
+        }
+
+        resolve([])
+      },
+    )
+  })
+}
+
+async function searchGoogleNearbyPlaces(rawQuery: string) {
+  const query = rawQuery.trim()
+  const requestId = googleNearbyRequestId.value + 1
+  googleNearbyRequestId.value = requestId
+
+  if (!googlePlacesEnabled.value) {
+    googleNearbyLoading.value = false
+    clearGoogleNearbyResults()
+    return
+  }
+
+  if (query.length < 2) {
+    clearGoogleNearbyResults()
     return
   }
 
   try {
-    googlePlacesLoading.value = true
+    googleNearbyLoading.value = true
     const ready = await ensureGooglePlacesServices()
     if (!ready || !placesService.value) {
-      googlePlacesLoading.value = false
       return
     }
 
-    placesService.value.getDetails(
-      {
-        placeId: option.placeId,
-        fields: ["formatted_address", "geometry", "place_id", "name"],
-      },
-      (place, status) => {
-        const okStatus = window.google?.maps?.places?.PlacesServiceStatus?.OK
-        googlePlacesLoading.value = false
+    clearRoute()
+    selectedItemId.value = ""
+    googlePlaceSuggestions.value = []
+    isSuggestionPanelOpen.value = false
 
-        if (status !== okStatus || !place?.geometry?.location) {
-          return
+    const nearbyResults = await runGoogleNearbySearch(query)
+    const rawResults = nearbyResults.length > 0 ? nearbyResults : await runGoogleTextSearch(query)
+
+    if (requestId !== googleNearbyRequestId.value) {
+      return
+    }
+
+    const deduped = new Map<string, NearbySearchItem>()
+    rawResults.forEach((place, index) => {
+      const item = googlePlaceToNearbyItem(place, index)
+
+      if (!item) {
+        return
+      }
+
+      const key = String(place.place_id || `${item.lat},${item.lng}`)
+      if (!deduped.has(key)) {
+        deduped.set(key, item)
+      }
+    })
+
+    googleNearbyQuery.value = query
+    googleNearbyResults.value = Array.from(deduped.values())
+      .sort((left, right) => {
+        const leftDistance = left.distanceMeters ?? Number.POSITIVE_INFINITY
+        const rightDistance = right.distanceMeters ?? Number.POSITIVE_INFINITY
+
+        if (leftDistance !== rightDistance) {
+          return leftDistance - rightDistance
         }
 
-        const title = String(place.name || option.label || place.formatted_address || "").trim()
-        const address = String(place.formatted_address || option.distanceLabel || title).trim()
-        const lat = place.geometry.location.lat()
-        const lng = place.geometry.location.lng()
-        const placeItem: NearbySearchItem = {
-          id: `place-${place.place_id || option.placeId}`,
-          backendId: 0,
-          type: "place",
-          title,
-          subtitle: "Địa chỉ",
-          description: "",
-          locationLabel: address,
-          avatarUrl: "",
-          href: `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(String(place.place_id || option.placeId))}&query=${encodeURIComponent(address)}`,
-          lat,
-          lng,
-          distanceMeters: calculateDistanceMeters(lat, lng),
-        }
-
-        googlePlaceSuggestions.value = []
-        selectSuggestion(placeItem)
-      },
-    )
+        return left.title.localeCompare(right.title)
+      })
+      .slice(0, googleNearbyLimit)
   }
   catch {
-    googlePlacesLoading.value = false
+    if (requestId === googleNearbyRequestId.value) {
+      clearGoogleNearbyResults()
+    }
+  }
+  finally {
+    if (requestId === googleNearbyRequestId.value) {
+      googleNearbyLoading.value = false
+    }
   }
 }
 
+async function selectGooglePlace(option: NearbySuggestionOption) {
+  if (!googlePlacesEnabled.value) {
+    return
+  }
+
+  await searchGoogleNearbyPlaces(option.label || searchText.value)
+}
+
+watch(
+  [
+    selectedItemId,
+    () => displayCardItems.value.map(item => item.id).join("|"),
+  ],
+  () => {
+    void nextTick(scrollSelectedResultCardIntoView)
+  },
+  { flush: "post" },
+)
+
 watch(
   () => searchText.value.trim(),
-  () => {
-    if (isSuggestionPanelOpen.value) {
+  (query) => {
+    if (googleNearbyQuery.value && query !== googleNearbyQuery.value) {
+      clearGoogleNearbyResults()
+    }
+
+    if (isSuggestionPanelOpen.value && googlePlacesEnabled.value) {
       void refreshGooglePlaceSuggestions()
     }
   },
 )
 
+watch(googlePlacesEnabled, (enabled) => {
+  if (enabled) {
+    return
+  }
+
+  googlePlaceSuggestions.value = []
+  googlePlacesLoading.value = false
+  googleNearbyLoading.value = false
+  clearGoogleNearbyResults()
+})
+
 onMounted(() => {
+  void loadSearchNearbyConfig()
   void startDeviceOrientationTracking()
   void requestLocationPermission()
 })
