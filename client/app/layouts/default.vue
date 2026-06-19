@@ -16,7 +16,7 @@
     <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden bg-black xl:h-[calc(100dvh-73px)]' : ''">
       <div class="mx-auto grid w-full grid-cols-1 gap-4 xl:items-start" :class="shellClass">
         <aside v-if="showLeftSidebar && !isReelsPage"
-          class="hidden bg-white rounded-[16px] min-w-0 xl:sticky xl:top-[68px] xl:z-10 xl:block xl:h-[calc(100dvh-98px)] xl:overflow-hidden">
+          class="hidden mt-2 bg-white rounded-[16px] min-w-0 xl:sticky xl:top-17 xl:z-10 xl:block xl:h-[calc(100dvh-98px)] xl:overflow-hidden">
           <ClientOnly>
             <NavigationLeftSidebar v-if="!isDirectoryPage" />
             <DirectoryLeftSidebar v-else />
@@ -27,7 +27,7 @@
           <ClientOnly>
             <div
               v-if="showHeaderIconNav"
-              class="sticky z-[50] mb-4 mt-2 rounded-[1.4rem] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)] transition-[top] duration-300"
+              class="sticky z-[50] mb-4 mt-2 rounded-b-3xl border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(13,38,76,0.05)] transition-[top] duration-100"
               :class="isHeaderHidden ? 'top-0' : 'top-[56px] xl:top-[64px]'">
               <NavigationHeaderIconNav />
             </div>
@@ -67,7 +67,7 @@ const handleScroll = () => {
     isHeaderHidden.value = false
     return
   }
-  if (currentScrollY <= 10) {
+  if (currentScrollY <= 5) {
     isHeaderHidden.value = false
     lastScrollY.value = currentScrollY
     return

@@ -55,10 +55,10 @@ const items = computed(() => [
     logoBadge: videoBadge.value,
   },
   {
-    label: 'navigation.headerIconNav.video',
-    to: '/watch',
+    label: 'navigation.headerIconNav.movies',
+    to: '/movies',
     icon: 'i-ph-video-camera-fill',
-    active: route.path === '/watch',
+    active: route.path === '/movies',
   },
 ])
 </script>
@@ -69,7 +69,7 @@ const items = computed(() => [
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 6px 8px;
+  padding: 6px;
   overflow-x: auto;
   scrollbar-width: none;
 }

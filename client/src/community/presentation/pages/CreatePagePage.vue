@@ -1,30 +1,6 @@
 <!-- Description: Renders the create-page route with a heading-first shell and the existing ordered form fields, aligned to the legacy PHP page creation flow. -->
 <template>
   <div class="mx-auto max-w-[1280px] space-y-5 px-4 pb-24 sm:px-6">
-    <section class="rounded-[26px] border border-[#dbe3f2] bg-white px-5 py-5 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-6">
-      <div class="space-y-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
-          {{ $t('community.creation.page.eyebrow') }}
-        </p>
-        <h1 class="text-[1.7rem] font-black tracking-[-0.04em] text-[#243b63] sm:text-[2rem]">
-          {{ $t('community.creation.page.title') }}
-        </h1>
-        <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
-          {{ $t('community.creation.page.description') }}
-        </p>
-      </div>
-
-      <div class="mt-4 flex flex-wrap gap-2">
-        <span
-          v-for="item in highlights"
-          :key="item"
-          class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]"
-        >
-          {{ item }}
-        </span>
-      </div>
-    </section>
-
     <CommunityCreationForm
       v-model="draft"
       entity-label="community.creation.common.entityLabelPage"

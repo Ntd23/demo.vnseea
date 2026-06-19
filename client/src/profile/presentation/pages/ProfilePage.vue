@@ -134,7 +134,7 @@
             class="profile-page__tab"
             :class="{ 'profile-page__tab--active': activeTab === tab.key }"
             type="button"
-            @click="activeTab = tab.key"
+            @click="selectProfileTab(tab.key)"
           >
             {{ tab.label }}
           </button>
@@ -231,7 +231,7 @@
       <!-- ── TIMELINE TAB ───────────────────────────────── -->
       <template v-if="activeTab === 'timeline'">
         <div class="profile-page__body">
-          <!-- LEFT: feed -->
+          <!-- RIGHT: feed -->
           <main class="profile-page__feed">
             <!-- Publisher -->
             <FeedPublisherBox v-if="profile.isOwner" />
@@ -244,19 +244,32 @@
                 :post="post"
                 class="profile-page__post-card"
               />
-              <UButton
-                v-if="timelineHasMore && !postSearchQuery"
-                variant="soft"
-                block
-                class="btn-primary profile-page__load-more-button rounded-2xl"
-                :loading="timelineLoadingMore"
-                @click="loadMoreTimelinePosts"
-              >
-                {{ $t("navigation.leftSidebar.showMore") }}
-              </UButton>
+            </div>
+            <div
+              v-if="displayedTimelinePosts.length && timelineHasMore && !postSearchQuery"
+              ref="profileLoadMoreSentinel"
+              class="profile-page__load-more"
+              aria-live="polite"
+            >
+              <div class="profile-page__load-more-skeleton" :aria-label="$t('pages.homeFeedPage.loadingMore')">
+                <article v-for="index in 2" :key="index" class="profile-page__post-skeleton surface-card">
+                  <div class="profile-page__post-skeleton-header">
+                    <USkeleton class="profile-page__post-skeleton-avatar" />
+                    <div class="profile-page__post-skeleton-copy">
+                      <USkeleton class="profile-page__post-skeleton-line profile-page__post-skeleton-line--title" />
+                      <USkeleton class="profile-page__post-skeleton-line profile-page__post-skeleton-line--meta" />
+                    </div>
+                  </div>
+                  <USkeleton class="profile-page__post-skeleton-line profile-page__post-skeleton-line--body" />
+                  <USkeleton class="profile-page__post-skeleton-media" />
+                </article>
+              </div>
+              <span class="sr-only">
+                {{ timelineLoadingMore ? $t("pages.homeFeedPage.loadingMore") : $t("pages.homeFeedPage.loadMore") }}
+              </span>
             </div>
             <UAlert
-              v-else
+              v-if="!displayedTimelinePosts.length"
               color="neutral"
               variant="subtle"
               icon="i-ph-newspaper-clipping-duotone"
@@ -266,7 +279,7 @@
             />
           </main>
 
-          <!-- RIGHT: sidebar (intro / friends / photos) -->
+          <!-- LEFT: sidebar (intro / friends / photos) -->
           <aside class="profile-page__sidebar">
             <!-- Intro -->
             <section v-if="profile.intro.length" class="profile-card">
@@ -750,6 +763,7 @@ const {
   profile,
   products,
   productsExpanded,
+  selectProfileTab,
   tabs,
   timelineHasMore,
   timelineLoadingMore,
@@ -763,8 +777,29 @@ const {
 const moreOpen = ref(false)
 const moreTriggerRef = ref<HTMLElement | null>(null)
 const moreDropdownStyle = ref<Record<string, string>>({})
+const profileLoadMoreSentinel = ref<HTMLElement | null>(null)
 const toast = useToast()
 const { t } = useI18n()
+
+useIntersectionObserver(
+  profileLoadMoreSentinel,
+  ([entry]) => {
+    if (
+      !entry?.isIntersecting ||
+      activeTab.value !== "timeline" ||
+      !timelineHasMore.value ||
+      timelineLoadingMore.value ||
+      Boolean(postSearchQuery.value)
+    ) {
+      return
+    }
+
+    void loadMoreTimelinePosts()
+  },
+  {
+    rootMargin: "520px 0px",
+  },
+)
 
 function toggleMore() {
   if (!moreOpen.value && moreTriggerRef.value) {
@@ -872,6 +907,7 @@ function handleMoreAction(action: string) {
 .profile-page {
   min-height: 100vh;
   background: #f0f2f5;
+  margin-top: 8px;
 }
 
 /* ── Hero ─────────────────────────────────────────────── */
@@ -1160,7 +1196,7 @@ function handleMoreAction(action: string) {
 
 @media (min-width: 1024px) {
   .profile-page__body {
-    grid-template-columns: minmax(0, 1fr) 360px;
+    grid-template-columns: 360px minmax(0, 1fr);
     align-items: start;
     max-width: 1200px;
     margin: 0 auto;
@@ -1169,7 +1205,7 @@ function handleMoreAction(action: string) {
 
 @media (min-width: 1280px) {
   .profile-page__body {
-    grid-template-columns: minmax(0, 1fr) 380px;
+    grid-template-columns: 380px minmax(0, 1fr);
   }
 }
 
@@ -1182,7 +1218,7 @@ function handleMoreAction(action: string) {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    order: 2;
+    order: 1;
     position: sticky;
     top: 68px;
   }
@@ -1198,7 +1234,7 @@ function handleMoreAction(action: string) {
 
 @media (min-width: 1024px) {
   .profile-page__feed {
-    order: 1;
+    order: 2;
   }
 }
 
@@ -1216,18 +1252,6 @@ function handleMoreAction(action: string) {
   width: 100%;
   min-width: 0;
   max-width: 100%;
-}
-
-.profile-page__load-more-button {
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
-  color: #334155;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
-}
-
-.profile-page__load-more-button:hover {
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
 }
 
 .profile-page__post-search :deep(input) {
@@ -1259,38 +1283,67 @@ function handleMoreAction(action: string) {
   min-width: 0;
 }
 
-.profile-page__post-stack :deep(.media-grid__item) {
-  max-height: 300px;
-  background: #f8fafc;
+.profile-page__load-more {
+  padding: 0 0 24px;
 }
 
-.profile-page__post-stack :deep(.media-grid__img) {
-  min-height: 0;
-  height: min(300px, 46vw);
-  max-height: 300px;
-  object-fit: cover;
-  background: #f8fafc;
+.profile-page__load-more-skeleton {
+  display: grid;
+  width: 100%;
+  gap: 16px;
 }
 
-.profile-page__post-stack :deep(.media-grid--multi .media-grid__img) {
-  height: min(210px, 32vw);
-  max-height: 210px;
+.profile-page__post-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  background: var(--bg-surface);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
 }
 
-@media (max-width: 639px) {
-  .profile-page__post-stack :deep(.media-grid__item) {
-    max-height: 280px;
-  }
+.profile-page__post-skeleton-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-  .profile-page__post-stack :deep(.media-grid__img) {
-    height: min(280px, 76vw);
-    max-height: 280px;
-  }
+.profile-page__post-skeleton-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+}
 
-  .profile-page__post-stack :deep(.media-grid--multi .media-grid__img) {
-    height: min(190px, 44vw);
-    max-height: 190px;
-  }
+.profile-page__post-skeleton-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profile-page__post-skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+.profile-page__post-skeleton-line--title {
+  width: min(220px, 62%);
+}
+
+.profile-page__post-skeleton-line--meta {
+  width: min(150px, 44%);
+}
+
+.profile-page__post-skeleton-line--body {
+  width: 84%;
+}
+
+.profile-page__post-skeleton-media {
+  height: clamp(180px, 32vw, 280px);
+  border-radius: var(--radius-lg);
 }
 
 /* ── Tab panel (non-timeline) ────────────────────────── */

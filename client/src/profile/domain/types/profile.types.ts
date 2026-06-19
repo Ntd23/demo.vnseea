@@ -3,7 +3,7 @@
 import type { CommunityGroupRecord, CommunityPageRecord } from "../../../community/domain/types/community.types"
 import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 
-export type ProfileTabKey = "timeline" | "about" | "friends" | "photos" | "videos" | "albums"
+export type ProfileTabKey = "timeline" | "cart" | "about" | "friends" | "photos" | "videos" | "albums"
 
 export interface ProfileConnection {
   id: number

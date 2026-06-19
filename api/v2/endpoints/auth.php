@@ -29,14 +29,13 @@ if (empty($error_code)) {
     if (empty($recipient_data)) {
         $error_code    = 4;
         $error_message = 'Username not found';
-    }elseif ($wo['config']['prevent_system'] == 1 && !WoCanLogin()) {
+    } elseif ($wo['config']['prevent_system'] == 1 && !WoCanLogin()) {
         $error_code    = 6;
         $error_message = 'Too many login attempts please try again later';
-    }
-    elseif (Wo_IsBanned($username)) {
+    } elseif (Wo_IsBanned($username)) {
         $error_code    = 7;
         $error_message = 'this user is banned';
-     } else {
+    } else {
         $login = Wo_Login($username, $password);
         if (!$login) {
             $error_code    = 5;
@@ -51,14 +50,22 @@ if (empty($error_code)) {
                 $access_token   = sha1(rand(111111111, 999999999)) . md5(microtime()) . rand(11111111, 99999999) . md5(rand(5555, 9999));
                 $timezone       = 'UTC';
                 $device_type = 'phone';
-                if (!empty($_POST['device_type']) && in_array($_POST['device_type'], array('phone','windows'))) {
+                if (!empty($_POST['device_type']) && in_array($_POST['device_type'], array('phone', 'windows'))) {
                     $device_type = Wo_Secure($_POST['device_type']);
                 }
                 $create_session = mysqli_query($sqlConnect, "INSERT INTO " . T_APP_SESSIONS . " (`user_id`, `session_id`, `platform`, `time`) VALUES ('{$user_id}', '{$access_token}', '{$device_type}', '{$time}')");
                 if (!empty($_POST['timezone'])) {
                     $timezone = Wo_Secure($_POST['timezone']);
                 }
-                $add_timezone = mysqli_query($sqlConnect, "UPDATE " . T_USERS . " SET `timezone` = '{$timezone}' WHERE `user_id` = {$user_id}");
+
+                if ($timezone === 'Asia/Saigon') {
+                    $timezone = 'Asia/Ho_Chi_Minh';
+                }
+
+                $add_timezone = mysqli_query(
+                    $sqlConnect,
+                    "UPDATE " . T_USERS . " SET `timezone` = '{$timezone}' WHERE `user_id` = {$user_id}"
+                );
                 // if (!empty($_POST['device_id'])) {
                 //     $device_id = Wo_Secure($_POST['device_id']);
                 //     $update    = mysqli_query($sqlConnect, "UPDATE " . T_USERS . " SET `device_id` = '{$device_id}' WHERE `user_id` = '{$user_id}'");
@@ -89,13 +96,12 @@ if (empty($error_code)) {
                         'user_platform' => $device_type,
                     );
                 }
-            }
-            else{
+            } else {
                 $response_data = array(
-                                    'api_status' => 200,
-                                    'message' => 'Please enter your confirmation code',
-                                    'user_id' => $user_id
-                                );
+                    'api_status' => 200,
+                    'message' => 'Please enter your confirmation code',
+                    'user_id' => $user_id
+                );
             }
 
             if (!empty($response_data)) {

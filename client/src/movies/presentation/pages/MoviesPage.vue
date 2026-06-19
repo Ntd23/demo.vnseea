@@ -1,16 +1,5 @@
 <template>
-  <div class="movies-page pb-10">
-    <div class="movies-page__head">
-      <div class="container mx-auto px-4 sm:px-6">
-        <h1 class="movies-page__title">
-          <Icon name="i-ph-film-strip-bold" class="h-5 w-5" />
-          {{ $t("pages.moviesPage.heroEyebrow") }}
-        </h1>
-      </div>
-    </div>
-
-    <div class="movies-page__backdrop" />
-
+  <div class="movies-page py-4">
     <div class="container mx-auto px-4 sm:px-6">
       <section class="movies-page__filters">
         <div class="movies-page__search">

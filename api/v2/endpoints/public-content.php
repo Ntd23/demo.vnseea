@@ -380,7 +380,8 @@ function Wo_PublicContent_Products()
         'keyword' => Wo_Secure(Wo_PublicContent_Read('keyword', Wo_PublicContent_Read('q', ''))),
         'c_id' => Wo_PublicContent_Read('category_id', 0),
         'sub_id' => Wo_PublicContent_Read('sub_id', 0),
-        'order_by' => Wo_PublicContent_Read('order_by', '')
+        'order_by' => Wo_PublicContent_Read('order_by', ''),
+        'user_id' => Wo_PublicContent_Read('user_id', 0)
     );
 
     if (empty($filter['after_id'])) {
@@ -397,6 +398,9 @@ function Wo_PublicContent_Products()
     }
     if (!in_array($filter['order_by'], array('price_low', 'price_high'))) {
         unset($filter['order_by']);
+    }
+    if (empty($filter['user_id']) || !is_numeric($filter['user_id'])) {
+        unset($filter['user_id']);
     }
 
     return array_map('Wo_PublicContent_ProductPublicData', Wo_GetProducts($filter));

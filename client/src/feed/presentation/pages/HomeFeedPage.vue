@@ -388,7 +388,7 @@ await initialize()
 .home-feed__posts {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .home-feed__load-more {

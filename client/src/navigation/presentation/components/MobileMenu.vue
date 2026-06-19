@@ -34,7 +34,16 @@
                 />
                 <span v-else>{{ userInitials }}</span>
               </div>
-              <div>
+              <NuxtLink
+                v-if="currentProfileHref"
+                :to="currentProfileHref"
+                class="mm__admin-link"
+                @click="close"
+              >
+                <p id="mobile-menu-title" class="mm__admin-role">{{ currentUser?.name || "User" }}</p>
+                <p v-if="identityLabel" class="mm__admin-subtitle">{{ identityLabel }}</p>
+              </NuxtLink>
+              <div v-else class="mm__admin-link mm__admin-link--static">
                 <p id="mobile-menu-title" class="mm__admin-role">{{ currentUser?.name || "User" }}</p>
                 <p v-if="identityLabel" class="mm__admin-subtitle">{{ identityLabel }}</p>
               </div>
@@ -134,6 +143,9 @@ const isOpen = computed({
   },
 })
 const currentUser = computed(() => currentAuthUserStore.user)
+const currentProfileHref = computed(() =>
+  currentUser.value?.username ? appRoutes.profile(currentUser.value.username) : "",
+)
 const avatarUrl = computed(() =>
   typeof currentUser.value?.avatarUrl === "string" && currentUser.value.avatarUrl.length > 0
     ? currentUser.value.avatarUrl
@@ -205,9 +217,8 @@ watch(() => route.path, () => { isOpen.value = false })
 
 const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.search', icon: 'i-ph-map-pin-fill', to: appRoutes.searchNearby },
-  { label: 'navigation.mobileMenu.mainNav.pages', icon: 'i-ph-flag-fill', to: '/pages' },
-  { label: 'navigation.mobileMenu.mainNav.myProducts', icon: 'i-ph-package-fill', to: '/my-products' },
   { label: 'navigation.mobileMenu.mainNav.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
+  { label: 'navigation.mobileMenu.mainNav.pages', icon: 'i-ph-flag-fill', to: '/pages' },
   { label: 'navigation.mobileMenu.mainNav.blog', icon: 'i-ph-newspaper-fill', to: '/blogs' },
   { label: 'navigation.mobileMenu.mainNav.myArticles', icon: 'i-ph-article-fill', to: '/blogs?mine=1' },
   { label: 'navigation.mobileMenu.mainNav.movies', icon: 'i-ph-film-strip-fill', to: '/movies' },
@@ -337,6 +348,22 @@ const settingsNav = computed(() => {
   font-size: 14px;
   font-weight: 800;
   color: #ffffff;
+}
+
+.mm__admin-link {
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.mm__admin-link:not(.mm__admin-link--static) {
+  cursor: pointer;
+}
+
+.mm__admin-link:not(.mm__admin-link--static):hover .mm__admin-role,
+.mm__admin-link:not(.mm__admin-link--static):focus-visible .mm__admin-role {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .mm__admin-role {

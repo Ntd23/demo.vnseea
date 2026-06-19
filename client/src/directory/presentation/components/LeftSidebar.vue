@@ -31,11 +31,11 @@ const router = useRouter()
 const categories = [
   { value: "posts", label: "Nguồn cấp tin tức", icon: "i-ph-newspaper-clipping-fill", accentClass: "posts", to: appRoutes.directory },
   { value: "nearby-search", label: "Tìm kiếm gần đây", icon: "i-ph-map-pin-fill", accentClass: "nearby-search", to: appRoutes.searchNearby },
+  { value: "market", label: "Thị trường", icon: "i-ph-shopping-cart-fill", accentClass: "market", to: appRoutes.products },
   { value: "users", label: "Người dùng", icon: "i-ph-user-circle-fill", accentClass: "users" },
   { value: "pages", label: "Các trang", icon: "i-ph-flag-fill", accentClass: "pages", to: appRoutes.pages },
   { value: "groups", label: "Tập đoàn", icon: "i-ph-users-three-fill", accentClass: "groups", to: appRoutes.groups },
   { value: "blogs", label: "Blog", icon: "i-ph-article-fill", accentClass: "blogs", to: appRoutes.blogs },
-  { value: "market", label: "Thị trường", icon: "i-ph-shopping-cart-fill", accentClass: "market", to: appRoutes.products },
   { value: "events", label: "Sự kiện", icon: "i-ph-calendar-fill", accentClass: "events", to: appRoutes.events },
   { value: "games", label: "Trò chơi", icon: "i-ph-game-controller-fill", accentClass: "games", to: appRoutes.games },
   { value: "forums", label: "Diễn đàn", icon: "i-ph-chat-circle-dots-fill", accentClass: "forums", to: appRoutes.forum },

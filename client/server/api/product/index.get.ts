@@ -11,22 +11,25 @@ export default defineEventHandler(async (event) => {
   const limit = Math.min(50, Math.max(1, Number(query.limit || 35)))
   const category = String(query.category || "")
   const subCategory = String(query.subCategory || "")
-  const userId = await getBackendCurrentUserId(event)
+  const currentUserId = await getBackendCurrentUserId(event)
+  const sellerUserIdValue = Array.isArray(query.sellerUserId) ? query.sellerUserId[0] : query.sellerUserId
+  const sellerUserId = String(sellerUserIdValue || "")
   const sort = String(query.sort || "")
   const mineOnly = String(Array.isArray(query.mine) ? query.mine[0] : query.mine || "0") === "1"
+  const normalizedSellerUserId = /^\d+$/.test(sellerUserId) ? sellerUserId : ""
 
-  if (mineOnly && !userId) {
+  if (mineOnly && !currentUserId) {
     throw createError({
       statusCode: 401,
       statusMessage: "Authentication is required.",
     })
   }
 
-  const endpoint = userId ? "get-products" : backendRoutes.api.publicContent
+  const endpoint = currentUserId ? "get-products" : backendRoutes.api.publicContent
   const response = await client.post<Parameters<typeof normalizeProductsResponse>[1]>(endpoint, {
-    action: userId ? undefined : "products",
+    action: currentUserId ? undefined : "products",
     limit,
-    user_id: mineOnly ? userId : undefined,
+    user_id: mineOnly ? currentUserId : normalizedSellerUserId || undefined,
     offset: query.offset,
     keyword: query.keyword || query.q,
     category_id: /^\d+$/.test(category) ? category : undefined,
