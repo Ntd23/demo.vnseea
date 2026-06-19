@@ -2,7 +2,7 @@
 
 import { createError, type H3Event } from "h3"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
-import { createBackendApiClient, getBackendBaseCandidates } from "../../utils/backend-api-client"
+import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendMediaUrlResolver, getBackendWebBaseUrl } from "../../utils/backend-media-url"
@@ -233,7 +233,7 @@ export async function searchWalletRecipients(event: H3Event, query: string): Pro
 
 export async function getWalletReceiveQr(event: H3Event, amount: number | null): Promise<WalletReceiveQr> {
   const currentUser = await getBackendCurrentUser(event)
-  const baseUrl = getBackendBaseCandidates(getBackendWebBase(event))[0] ?? getBackendWebBase(event)
+  const baseUrl = getBackendWebBase(event)
   const params = new URLSearchParams({
     f: "qrcode",
     s: "wallet-qr-code",

@@ -45,13 +45,7 @@ error_reporting(E_ALL);
 
     if ($f === 'qrcode'  ) {
         if($s === 'wallet-qr-code'){
-        // yêu cầu đăng nhập qua cookie phiên
-        if (empty($wo['loggedin'])) {
-            http_response_code(401);
-            exit;
-        }
-
-        $to = isset($_GET['to']) ? (int)$_GET['to'] : (int)$wo['user']['user_id'];
+        $to = isset($_GET['to']) ? (int)$_GET['to'] : (!empty($wo['loggedin']) ? (int)$wo['user']['user_id'] : 0);
         $ud = Wo_UserData($to);
         if (empty($ud['user_id']) || $ud['banned'] == 1 || $ud['active'] == 0) {
             http_response_code(404);
@@ -99,12 +93,7 @@ error_reporting(E_ALL);
         exit;
     }
     if($s === 'points-qr-code'){
-        if (empty($wo['loggedin'])) {
-            http_response_code(401);
-            exit;
-        }
-
-        $to = isset($_GET['to']) ? (int)$_GET['to'] : (int)$wo['user']['user_id'];
+        $to = isset($_GET['to']) ? (int)$_GET['to'] : (!empty($wo['loggedin']) ? (int)$wo['user']['user_id'] : 0);
         $ud = Wo_UserData($to);
         if (empty($ud['user_id']) || $ud['banned'] == 1 || $ud['active'] == 0) {
             http_response_code(404);
