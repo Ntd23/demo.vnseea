@@ -2,6 +2,7 @@
 
 import type { ProfileApiResponse, ProfileTabKey } from "../../domain/types/profile.types"
 import { createApiProfileRepository } from "../../infrastructure/repositories/ApiProfileRepository"
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 
 type ProfileInfoItem = {
   icon: string
@@ -57,6 +58,7 @@ export function useProfileVM(
   const copy = computed(() => ({
     tabs: {
       timeline: t("pages.profilePage.tabs.timeline"),
+      cart: t("pages.profilePage.tabs.cart"),
       about: t("pages.profilePage.tabs.about"),
       friends: t("pages.profilePage.tabs.friends"),
       photos: t("pages.profilePage.tabs.photos"),
@@ -76,6 +78,7 @@ export function useProfileVM(
 
   const tabs = computed(() => [
     { key: "timeline" as const, label: copy.value.tabs.timeline },
+    { key: "cart" as const, label: copy.value.tabs.cart },
     { key: "about" as const, label: copy.value.tabs.about },
     { key: "friends" as const, label: copy.value.tabs.friends },
     { key: "photos" as const, label: copy.value.tabs.photos },
@@ -338,6 +341,16 @@ export function useProfileVM(
   const visibleProducts = computed(() => productsExpanded.value ? products.value : products.value.slice(0, 4))
   const hasHiddenProducts = computed(() => products.value.length > visibleProducts.value.length)
 
+  const selectProfileTab = async (tabKey: ProfileTabKey) => {
+    if (tabKey === "cart") {
+      const profileData = data.value
+      await router.push(profileData?.id ? appRoutes.productsBySeller(profileData.id) : appRoutes.products)
+      return
+    }
+
+    activeTab.value = tabKey
+  }
+
   watch(resolvedUsername, () => {
     activeTab.value = "timeline"
     productsExpanded.value = false
@@ -494,6 +507,7 @@ export function useProfileVM(
     products,
     productsExpanded,
     refresh,
+    selectProfileTab,
     status,
     tabs,
     timelineHasMore,

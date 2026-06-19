@@ -56,6 +56,7 @@ export type ProductMarketplaceQuery = {
   limit?: number
   offset?: number | string
   mine?: boolean
+  sellerUserId?: number | string
 }
 
 export type ProductCategoryOption = {

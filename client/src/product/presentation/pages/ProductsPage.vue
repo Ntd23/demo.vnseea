@@ -34,45 +34,33 @@
             :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[14px] font-medium' }" />
         </div>
 
-        <button type="button" class="products-filter__toggle" :class="{ 'products-filter__toggle--active': showFilters }"
-          :aria-expanded="showFilters" aria-label="Filters"
-          @click="showFilters = !showFilters">
-          <Icon name="i-ph-funnel-simple-duotone" class="h-5 w-5" />
+        <button type="button" class="products-filter__reset-icon" :aria-label="$t('pages.productsPage.resetFilters')"
+          @click="resetFilters">
+          <Icon name="i-ph-arrow-counter-clockwise" class="h-5 w-5" />
         </button>
       </div>
 
-      <div v-if="showFilters" class="products-filter__panel">
-        <div class="products-filter__row products-filter__row--selects"
-          :class="{ 'products-filter__row--selects-two': !hasSubCategories }">
-          <USelect v-model="sortBy" class="w-full" :items="sortOptions" value-key="value" label-key="label" size="lg"
-            :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
+      <div class="products-filter__panel" :class="{ 'products-filter__panel--with-subcategory': hasSubCategories }">
+        <USelect v-model="sortBy" class="w-full" :items="sortOptions" value-key="value" label-key="label" size="lg"
+          :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
 
-          <USelect v-model="selectedCategory" class="w-full" :items="categoryOptions" value-key="value" label-key="label" size="lg"
-            :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
+        <USelect v-model="selectedCategory" class="w-full" :items="categoryOptions" value-key="value" label-key="label" size="lg"
+          :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
 
-          <USelect v-if="hasSubCategories" v-model="selectedSubCategory" class="w-full" :items="subCategoryOptions" value-key="value"
-            label-key="label" size="lg"
-            :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
-        </div>
+        <USelect v-if="hasSubCategories" v-model="selectedSubCategory" class="w-full" :items="subCategoryOptions" value-key="value"
+          label-key="label" size="lg"
+          :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[13px] font-semibold' }" />
 
-        <div class="products-filter__row products-filter__row--actions">
-          <div class="products-filter__distance">
-            <div class="flex items-center justify-between gap-3 text-[12px] font-semibold text-slate-600">
-              <span class="inline-flex min-w-0 items-center gap-1.5">
-                <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 shrink-0 text-primary-600" />
-                <span class="truncate">{{ $t("pages.productsPage.locationDistance") }}</span>
-              </span>
-              <span class="shrink-0 text-slate-900">{{ distanceRange }} km</span>
-            </div>
-            <input v-model.number="distanceRange" type="range" min="0" max="300"
-              class="products-filter__range mt-2 w-full" @change="applyDistance">
+        <div class="products-filter__distance">
+          <div class="flex items-center justify-between gap-3 text-[12px] font-semibold text-slate-600">
+            <span class="inline-flex min-w-0 items-center gap-1.5">
+              <Icon name="i-ph-map-pin-duotone" class="h-4 w-4 shrink-0 text-primary-600" />
+              <span class="truncate">{{ $t("pages.productsPage.locationDistance") }}</span>
+            </span>
+            <span class="shrink-0 text-slate-900">{{ distanceRange }} km</span>
           </div>
-
-          <UButton color="neutral" variant="soft" size="lg"
-            class="h-12 shrink-0 justify-center rounded-xl px-4 text-[13px] font-semibold"
-            icon="i-ph-arrow-counter-clockwise" @click="resetFilters">
-            {{ $t("pages.productsPage.resetFilters") }}
-          </UButton>
+          <input v-model.number="distanceRange" type="range" min="0" max="300"
+            class="products-filter__range mt-2 w-full" @change="applyDistance">
         </div>
       </div>
     </section>
@@ -193,7 +181,6 @@
 import { useProductMarketplace } from "../../application/composables/useProductMarketplace"
 
 const { t } = useI18n()
-const showFilters = ref(false)
 
 useSeoMeta({
   title: () => t("pages.productsPage.seoTitle"),
@@ -346,7 +333,7 @@ const {
   min-width: 0;
 }
 
-.products-filter__toggle {
+.products-filter__reset-icon {
   display: inline-flex;
   width: 48px;
   min-width: 48px;
@@ -360,8 +347,8 @@ const {
   transition: all 0.15s ease;
 }
 
-.products-filter__toggle:hover,
-.products-filter__toggle--active {
+.products-filter__reset-icon:hover,
+.products-filter__reset-icon:focus-visible {
   border-color: var(--product-brand);
   background: var(--product-brand);
   color: #fff;
@@ -369,29 +356,16 @@ const {
 
 .products-filter__panel {
   display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) minmax(280px, 2fr);
+  align-items: center;
   gap: 12px;
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid #f1f5f9;
 }
 
-.products-filter__row {
-  display: grid;
-  gap: 12px;
-}
-
-.products-filter__row--selects {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.products-filter__row--selects-two {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  max-width: 696px;
-}
-
-.products-filter__row--actions {
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
+.products-filter__panel--with-subcategory {
+  grid-template-columns: minmax(130px, 0.8fr) minmax(130px, 0.8fr) minmax(130px, 0.8fr) minmax(240px, 1.4fr);
 }
 
 .products-filter__distance {
@@ -404,6 +378,17 @@ const {
 
 .products-filter__range {
   accent-color: var(--product-brand);
+}
+
+@media (max-width: 1023px) {
+  .products-filter__panel,
+  .products-filter__panel--with-subcategory {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .products-filter__distance {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 767px) {
@@ -419,9 +404,13 @@ const {
     width: 100%;
   }
 
-  .products-filter__row--selects,
-  .products-filter__row--actions {
+  .products-filter__panel,
+  .products-filter__panel--with-subcategory {
     grid-template-columns: 1fr;
+  }
+
+  .products-filter__distance {
+    grid-column: auto;
   }
 }
 

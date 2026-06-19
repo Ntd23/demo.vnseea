@@ -137,7 +137,6 @@
               draggable="false"
             >
             <Icon v-else name="i-ph-thumbs-up" class="h-3.5 w-3.5" />
-            <span>{{ localSelectedReaction ? activeReactionLabel : t("feed.postCard.like") }}</span>
             <span v-if="localReactionsCount > 0" class="comment-item__footer-count">{{ localReactionsCount }}</span>
           </button>
         </div>

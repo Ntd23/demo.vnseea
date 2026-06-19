@@ -38,6 +38,7 @@ export const appRoutes = {
   searchNearby: "/search-nearby",
   statusCreate: "/status/create",
   products: "/products",
+  productsBySeller: (userId: string | number) => `/products?sellerUserId=${encodeQueryValue(userId)}`,
   productDetail: (id: string | number) => `/product/${encodeSegment(id)}`,
   newProduct: "/new-product",
   editProduct: (id: string | number) => `/edit-product/${encodeSegment(id)}`,

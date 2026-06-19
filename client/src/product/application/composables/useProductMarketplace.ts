@@ -34,6 +34,10 @@ export const useProductMarketplace = (
   const cartLoadingProductId = ref<number | null>(null)
   const isLoadingMore = ref(false)
   const hasShownDistanceUnavailableToast = ref(false)
+  const sellerUserId = computed(() => {
+    const raw = route.query.sellerUserId ?? route.query.userId
+    return (Array.isArray(raw) ? String(raw[0] ?? "") : String(raw ?? "")).trim()
+  })
 
   const { data: productData, status, error, refresh } = useAsyncData(
     "product:marketplace",
@@ -43,6 +47,7 @@ export const useProductMarketplace = (
       subCategory: selectedSubCategory.value,
       distance: selectedDistance.value,
       sort: sortBy.value,
+      sellerUserId: sellerUserId.value || undefined,
       limit: 35,
     }),
     {
@@ -215,6 +220,7 @@ export const useProductMarketplace = (
         subCategory: selectedSubCategory.value,
         distance: selectedDistance.value,
         sort: sortBy.value,
+        sellerUserId: sellerUserId.value || undefined,
         limit: 35,
         offset: productData.value.nextOffset,
       })
@@ -250,7 +256,7 @@ export const useProductMarketplace = (
   })
 
   watchDebounced(
-    [search, selectedCategory, selectedSubCategory, selectedDistance, sortBy],
+    [search, selectedCategory, selectedSubCategory, selectedDistance, sortBy, sellerUserId],
     () => {
       refresh()
     },

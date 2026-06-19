@@ -5,7 +5,7 @@
     class="post-card"
     :class="{ 'post-card--colored': Boolean(postColorStyles) }"
   >
-    <div class="post-card__body">
+    <div class="post-card__body px-3 py-2">
       <FeedPostHeader
         :author="post.author"
         :author-avatar-url="post.authorAvatarUrl"
@@ -606,16 +606,6 @@ function handleMediaOpen(index: number) {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05), 0 10px 28px rgba(0, 0, 255, 0.05);
 }
 
-.post-card__body {
-  padding: 16px;
-}
-
-@media (min-width: 640px) {
-  .post-card__body {
-    padding: 20px;
-  }
-}
-
 .post-card__content {
   margin-top: 14px;
 }
@@ -897,8 +887,6 @@ function handleMediaOpen(index: number) {
   justify-content: space-between;
   gap: 8px;
   margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(0, 0, 255, 0.06);
   font-size: 13px;
   color: #64748b;
 }
@@ -1168,8 +1156,6 @@ function handleMediaOpen(index: number) {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
-  margin-top: 10px;
-  padding-top: 10px;
   border-top: 1px solid rgba(0, 0, 255, 0.06);
 }
 
@@ -1229,7 +1215,6 @@ function handleMediaOpen(index: number) {
 }
 
 .post-card__action-btn--active {
-  background: rgba(0, 0, 255, 0.06);
   color: #0000ff;
 }
 
@@ -1419,7 +1404,6 @@ function handleMediaOpen(index: number) {
 .post-card__comment-peek {
   position: relative;
   z-index: 2;
-  margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid rgba(0, 0, 255, 0.05);
 }
@@ -1504,8 +1488,6 @@ function handleMediaOpen(index: number) {
 }
 
 .post-card__comments-full {
-  margin-top: 12px;
-  padding-top: 12px;
   border-top: 1px solid rgba(0, 0, 255, 0.05);
   display: flex;
   flex-direction: column;

@@ -1,6 +1,6 @@
 <!-- English description: Renders the authenticated left navigation sidebar for feed and discovery routes. -->
 <template>
-  <div class="left-sidebar pt-2">
+  <div class="left-sidebar">
     <nav class="left-sidebar__nav scrollbar-hide">
       <div class="left-sidebar__items">
         <NavigationSidebarMenuItem
@@ -54,6 +54,8 @@ const expanded = ref(false)
 const sidebarNav = [
   { label: 'navigation.leftSidebar.items.feed', icon: 'i-ph-house-simple-fill', to: '/' },
   { label: 'navigation.leftSidebar.items.searchNearby', icon: 'i-ph-map-pin-fill', to: appRoutes.searchNearby },
+  { label: 'navigation.leftSidebar.items.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
+  { label: 'navigation.leftSidebar.items.wallet', icon: 'i-ph-wallet-fill', to: '/wallet' },
   { label: 'navigation.leftSidebar.items.photos', icon: 'i-ph-images-fill', to: '/photos' },
   { label: 'navigation.leftSidebar.items.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
   { label: 'navigation.leftSidebar.items.reels', icon: 'i-ph-film-strip-fill', to: '/reels' },
@@ -67,7 +69,6 @@ const sidebarNav = [
 
 const sidebarNavMore = [
   { label: 'navigation.leftSidebar.items.blog', icon: 'i-ph-newspaper-fill', to: '/blogs' },
-  { label: 'navigation.leftSidebar.items.marketplace', icon: 'i-ph-storefront-fill', to: '/products' },
   { label: 'navigation.leftSidebar.items.directory', icon: 'i-ph-squares-four-fill', to: '/directory' },
   { label: 'navigation.leftSidebar.items.events', icon: 'i-ph-calendar-dots-fill', to: '/events' },
   { label: 'navigation.leftSidebar.items.offers', icon: 'i-ph-tag-chevron-fill', to: appRoutes.offers },
@@ -77,7 +78,6 @@ const sidebarNavMore = [
   { label: 'navigation.leftSidebar.items.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   { label: 'navigation.leftSidebar.items.games', icon: 'i-ph-game-controller-fill', to: '/games' },
   { label: 'navigation.leftSidebar.items.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
-  { label: 'navigation.leftSidebar.items.wallet', icon: 'i-ph-wallet-fill', to: '/wallet' },
   { label: 'navigation.leftSidebar.items.withdrawal', icon: 'i-ph-money-wavy-fill', to: '/withdrawal' },
   { label: 'navigation.leftSidebar.items.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' }
 ]
@@ -154,7 +154,6 @@ const isItemActive = (to: string) => {
     flex: 1;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 4px;
   }
 }
 
