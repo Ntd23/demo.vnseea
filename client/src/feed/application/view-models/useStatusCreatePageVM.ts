@@ -1,14 +1,12 @@
 // English description: Manages the upload-first story creation flow, preview state, and backend submission for the status create page.
 
-import { useDropZone, useTextareaAutosize } from "@vueuse/core"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import {
   feedStoryAcceptedMimeTypes,
+  feedStoryAcceptedVideoExtensions,
   feedStoryCaptionMaxLength,
-  feedStoryCaptionWarningLength,
   feedStoryCreateRedirectDelay,
-  feedStoryDropZoneDataTypes,
   feedStoryImageMimePrefix,
   feedStoryPreviewProgressWidths,
   feedStoryVideoMimePrefix,
@@ -27,26 +25,23 @@ export function useStatusCreatePageVM(
   const pendingCreatedStory = useState<FeedStoryRecord | null>("feed-pending-created-story", () => null)
 
   const fileInputRef = ref<HTMLInputElement | null>(null)
-  const dropZoneRef = ref<HTMLDivElement | null>(null)
   const selectedFile = ref<File | null>(null)
   const previewUrl = ref("")
   const mediaType = ref<MediaType>(null)
   const caption = ref("")
 
-  const { isOverDropZone } = useDropZone(dropZoneRef, {
-    dataTypes: [...feedStoryDropZoneDataTypes],
-    onDrop(files) {
-      const file = files?.[0]
-
-      if (file && (file.type.startsWith(feedStoryImageMimePrefix) || file.type.startsWith(feedStoryVideoMimePrefix))) {
-        applyFile(file)
-      }
-    },
+  const captionRef = ref<HTMLInputElement | null>(null)
+  const phoneScreenRef = ref<HTMLElement | null>(null)
+  const showCaptionEditor = ref(false)
+  const isDraggingCaption = ref(false)
+  const captionPosition = reactive({
+    x: 50,
+    y: 78,
   })
-
-  const dropZoneAttrs = { ref: dropZoneRef }
-  const captionRef = ref<HTMLTextAreaElement | null>(null)
-  useTextareaAutosize({ element: captionRef, input: caption })
+  const captionDragOffset = reactive({
+    x: 0,
+    y: 0,
+  })
 
   const submitting = ref(false)
   const submitStatus = ref<"idle" | "submitting" | "success" | "error">("idle")
@@ -76,17 +71,50 @@ export function useStatusCreatePageVM(
     }
   }
 
-  const applyFile = (file: File | null) => {
-    revokePreview()
-    selectedFile.value = file
+  const getFileExtension = (file: File) => {
+    const extension = file.name.match(/\.[^.]+$/)?.[0]?.toLowerCase() ?? ""
+    return extension
+  }
 
-    if (!file) {
-      mediaType.value = null
+  const isImageFile = (file: File) =>
+    file.type.startsWith(feedStoryImageMimePrefix)
+
+  const isVideoFile = (file: File) =>
+    file.type.startsWith(feedStoryVideoMimePrefix)
+    || feedStoryAcceptedVideoExtensions.includes(getFileExtension(file) as typeof feedStoryAcceptedVideoExtensions[number])
+
+  const clampCaptionPosition = (value: number, min: number, max: number) =>
+    Math.min(Math.max(value, min), max)
+
+  const updateCaptionPosition = (event: PointerEvent) => {
+    const bounds = phoneScreenRef.value?.getBoundingClientRect()
+
+    if (!bounds) {
       return
     }
 
-    mediaType.value = file.type.startsWith(feedStoryVideoMimePrefix) ? "video" : "image"
+    captionPosition.x = clampCaptionPosition(((event.clientX - captionDragOffset.x - bounds.left) / bounds.width) * 100, 10, 90)
+    captionPosition.y = clampCaptionPosition(((event.clientY - captionDragOffset.y - bounds.top) / bounds.height) * 100, 14, 88)
+  }
+
+  const applyFile = (file: File | null) => {
+    if (!file) {
+      revokePreview()
+      selectedFile.value = null
+      mediaType.value = null
+      showCaptionEditor.value = false
+      return
+    }
+
+    if (!isImageFile(file) && !isVideoFile(file)) {
+      return
+    }
+
+    revokePreview()
+    selectedFile.value = file
+    mediaType.value = isVideoFile(file) ? "video" : "image"
     previewUrl.value = URL.createObjectURL(file)
+    showCaptionEditor.value = false
   }
 
   const openPicker = () => fileInputRef.value?.click()
@@ -97,9 +125,57 @@ export function useStatusCreatePageVM(
   const removeFile = () => {
     applyFile(null)
     caption.value = ""
+    captionPosition.x = 50
+    captionPosition.y = 78
 
     if (fileInputRef.value) {
       fileInputRef.value.value = ""
+    }
+  }
+
+  const openCaptionEditor = async () => {
+    if (!selectedFile.value) {
+      return
+    }
+
+    showCaptionEditor.value = true
+    await nextTick()
+    captionRef.value?.focus()
+  }
+
+  const startCaptionDrag = (event: PointerEvent) => {
+    if (!selectedFile.value) {
+      return
+    }
+
+    const target = event.currentTarget as HTMLElement
+    const bounds = target.getBoundingClientRect()
+
+    captionDragOffset.x = event.clientX - (bounds.left + bounds.width / 2)
+    captionDragOffset.y = event.clientY - (bounds.top + bounds.height / 2)
+    isDraggingCaption.value = true
+    target.setPointerCapture(event.pointerId)
+  }
+
+  const dragCaption = (event: PointerEvent) => {
+    if (!isDraggingCaption.value) {
+      return
+    }
+
+    updateCaptionPosition(event)
+  }
+
+  const stopCaptionDrag = (event?: PointerEvent) => {
+    isDraggingCaption.value = false
+
+    if (event?.currentTarget instanceof HTMLElement && event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  const closeCaptionEditor = () => {
+    if (!caption.value.trim()) {
+      showCaptionEditor.value = false
     }
   }
 
@@ -149,13 +225,14 @@ export function useStatusCreatePageVM(
 
   return {
     fileInputRef,
-    dropZoneAttrs,
-    isOverDropZone,
     selectedFile,
     previewUrl,
     mediaType,
     caption,
     captionRef,
+    phoneScreenRef,
+    showCaptionEditor,
+    captionPosition,
     submitting,
     submitStatus,
     statusDescription,
@@ -166,10 +243,14 @@ export function useStatusCreatePageVM(
     openPicker,
     handleFileSelection,
     removeFile,
+    openCaptionEditor,
+    startCaptionDrag,
+    dragCaption,
+    stopCaptionDrag,
+    closeCaptionEditor,
     submitStory,
     appRoutes,
     feedStoryAcceptedMimeTypes,
     feedStoryCaptionMaxLength,
-    feedStoryCaptionWarningLength,
   }
 }

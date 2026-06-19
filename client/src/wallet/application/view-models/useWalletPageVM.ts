@@ -33,7 +33,7 @@ const EMPTY_WALLET: WalletOverview = {
 const toErrorMessage = (error: unknown, defaultMessage: string) =>
   error instanceof Error && error.message ? error.message : defaultMessage
 
-const walletActivityKindsToHide = new Set(["POINTS_EARNED", "POINTS_DEDUCT"])
+const walletActivityKindsToHide = new Set(["POINTS_EARNED", "POINTS_DEDUCT", "POINTS_SENT", "POINTS_RECEIVED"])
 
 export function useWalletPageVM(
   repository: WalletRepository = createApiWalletRepository(),

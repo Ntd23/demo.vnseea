@@ -42,7 +42,9 @@ const runtimeConfig = useRuntimeConfig()
 const googleMapsMapId = computed(() => String(runtimeConfig.public.scripts?.googleMaps?.mapId || "").trim())
 const mapElement = ref<HTMLDivElement | null>(null)
 const mapError = ref("")
-const markerInstances = shallowRef<google.maps.Marker[]>([])
+type NearbyMarkerInstance = google.maps.Marker | google.maps.OverlayView
+
+const markerInstances = shallowRef<NearbyMarkerInstance[]>([])
 const originMarker = shallowRef<google.maps.Marker | null>(null)
 const originRadiusCircle = shallowRef<google.maps.Circle | null>(null)
 const mapInstance = shallowRef<google.maps.Map | null>(null)
@@ -218,6 +220,108 @@ function createPinIcon(color: string, selected = false): google.maps.Icon {
     anchor: new window.google.maps.Point(width / 2, height),
     labelOrigin: new window.google.maps.Point(width + 34, 17),
   }
+}
+
+function createItemMarkerIcon(item: NearbySearchItem): google.maps.Icon {
+  const selected = item.id === props.selectedItemId
+
+  return createPinIcon(item.type === "page" ? "#16a34a" : item.type === "place" ? "#2563eb" : "#ef4444", selected)
+}
+
+function createPlaceOverlayMarker(
+  map: google.maps.Map,
+  item: NearbySearchItem,
+  selected: boolean,
+  onSelect: () => void,
+) {
+  const iconUrl = item.mapIconUrl || item.avatarUrl
+  const safeColor = /^#[\da-f]{6}$/i.test(item.mapIconBackgroundColor || "")
+    ? item.mapIconBackgroundColor as string
+    : "#ff9e67"
+  const size = selected ? 40 : 34
+  const innerSize = selected ? 30 : 25
+  const glyphSize = selected ? 22 : 18
+  const position = new window.google.maps.LatLng(item.lat as number, item.lng as number)
+  const overlay = new window.google.maps.OverlayView()
+  let element: HTMLButtonElement | null = null
+
+  overlay.onAdd = () => {
+    const button = document.createElement("button")
+    const inner = document.createElement("span")
+    const glyph = document.createElement("span")
+
+    button.type = "button"
+    button.title = item.title
+    button.setAttribute("aria-label", item.title)
+    Object.assign(button.style, {
+      alignItems: "center",
+      background: "#ffffff",
+      border: "1px solid #d5dbe3",
+      borderRadius: "999px",
+      boxShadow: selected
+        ? "0 4px 10px rgba(15, 23, 42, 0.26)"
+        : "0 2px 6px rgba(15, 23, 42, 0.2)",
+      cursor: "pointer",
+      display: "flex",
+      height: `${size}px`,
+      justifyContent: "center",
+      padding: "0",
+      position: "absolute",
+      transform: "translate(-50%, -50%)",
+      width: `${size}px`,
+    })
+    Object.assign(inner.style, {
+      alignItems: "center",
+      background: safeColor,
+      borderRadius: "999px",
+      display: "flex",
+      height: `${innerSize}px`,
+      justifyContent: "center",
+      width: `${innerSize}px`,
+    })
+    Object.assign(glyph.style, {
+      background: "#ffffff",
+      display: "block",
+      height: `${glyphSize}px`,
+      mask: `url("${iconUrl}") center / contain no-repeat`,
+      webkitMask: `url("${iconUrl}") center / contain no-repeat`,
+      width: `${glyphSize}px`,
+    })
+
+    button.addEventListener("click", (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      onSelect()
+    })
+    inner.appendChild(glyph)
+    button.appendChild(inner)
+    overlay.getPanes()?.overlayMouseTarget.appendChild(button)
+    element = button
+  }
+
+  overlay.draw = () => {
+    if (!element) {
+      return
+    }
+
+    const point = overlay.getProjection()?.fromLatLngToDivPixel(position)
+    if (!point) {
+      return
+    }
+
+    element.style.left = `${point.x}px`
+    element.style.top = `${point.y}px`
+    element.style.zIndex = selected ? "30" : "10"
+  }
+
+  overlay.onRemove = () => {
+    element?.remove()
+    element = null
+  }
+
+  overlay.setMap(map)
+
+  return overlay
 }
 
 function createOriginIcon(selected = false, heading: number | null = null): google.maps.Symbol {
@@ -946,7 +1050,7 @@ function renderMarkers() {
   syncOriginRadiusCircle()
   clearMarkers()
 
-  const markers: google.maps.Marker[] = []
+  const markers: NearbyMarkerInstance[] = []
 
   props.items.forEach((item) => {
     if (item.lat === null || item.lng === null) {
@@ -954,11 +1058,20 @@ function renderMarkers() {
     }
 
     const pinnedPage = item.type === "page" && item.pinned === true
+    const selected = item.id === props.selectedItemId
+
+    if (item.type === "place" && (item.mapIconUrl || item.avatarUrl)) {
+      markers.push(createPlaceOverlayMarker(map, item, selected, () => {
+        emit("select", item)
+      }))
+      return
+    }
+
     const marker = new Marker({
       map,
       position: { lat: item.lat, lng: item.lng },
       title: item.title,
-      icon: createPinIcon(item.type === "page" ? "#16a34a" : item.type === "place" ? "#2563eb" : "#ef4444", item.id === props.selectedItemId),
+      icon: createItemMarkerIcon(item),
       label: pinnedPage
         ? {
             text: item.title.slice(0, 22),
@@ -968,7 +1081,7 @@ function renderMarkers() {
             className: "nearby-map__pin-label",
           }
         : undefined,
-      zIndex: item.id === props.selectedItemId ? 30 : 10,
+      zIndex: selected ? 30 : 10,
     })
 
     marker.addListener("click", () => {
@@ -993,6 +1106,11 @@ function renderMarkers() {
 
   if (props.selectedItemId) {
     focusSelectedItem()
+    return
+  }
+
+  if (props.items.some(item => item.lat !== null && item.lng !== null)) {
+    fitMarkers()
     return
   }
 

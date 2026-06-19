@@ -265,3 +265,24 @@ export interface SettingsPointsExchangeResult {
   points: number
   wallet: number
 }
+
+export interface SettingsPointsTransferInput {
+  recipientUserId: number
+  points: number
+  note?: string
+}
+
+export interface SettingsPointsTransferResult {
+  success: boolean
+  message: string
+  recipientId: number
+  recipientName: string
+  senderPoints: number
+  recipientPoints: number
+  points: number
+}
+
+export interface SettingsPointsReceiveQr {
+  imageUrl: string
+  points: number | null
+}

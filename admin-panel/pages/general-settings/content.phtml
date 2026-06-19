@@ -58,6 +58,17 @@
                         <div class="clearfix"></div>
                         <hr>
                         <div class="float-left">
+                            <label for="search_nearby_google_places" class="main-label">Tìm địa điểm Google Maps trong tìm quanh đây</label>
+                            <br><small class="admin-info">Cho phép người dùng tìm quán cà phê, tiệm cắt tóc và các địa điểm Google Maps trong /search-nearby. Tắt đi thì chỉ tìm người dùng và Page có trong website.</small>
+                        </div>
+                        <div class="form-group float-right switcher">
+                            <input type="hidden" name="search_nearby_google_places" value="0" />
+                            <input type="checkbox" name="search_nearby_google_places" id="chck-search_nearby_google_places" value="1" <?php echo (!isset($wo['config']['search_nearby_google_places']) || $wo['config']['search_nearby_google_places'] == 1) ? 'checked': '';?>>
+                            <label for="chck-search_nearby_google_places" class="check-trail"><span class="check-handler"></span></label>
+                        </div>
+                        <div class="clearfix"></div>
+                        <hr>
+                        <div class="float-left">
                             <label for="useSeoFrindly" class="main-label">URL thân thiện với SEO</label>
                             <br><small class="admin-info">Cho phép tải mượt mà để tiết kiệm băng thông.</small>
                         </div>

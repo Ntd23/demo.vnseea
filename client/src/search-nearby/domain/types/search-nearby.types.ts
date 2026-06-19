@@ -32,6 +32,8 @@ export interface NearbySearchItem {
   lat: number | null
   lng: number | null
   distanceMeters: number | null
+  mapIconUrl?: string
+  mapIconBackgroundColor?: string
   pinned?: boolean
 }
 

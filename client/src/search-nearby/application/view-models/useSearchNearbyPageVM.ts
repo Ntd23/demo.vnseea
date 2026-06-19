@@ -14,7 +14,7 @@ const readString = (value: unknown) =>
 
 const suggestionDebounceMs = 300
 const minSearchKeywordLength = 3
-const defaultNearbyDistanceKm = 1
+const defaultNearbyDistanceKm = 3
 
 const emptyResponse = (): NearbySearchResponse => ({
   status: "ready",
@@ -246,10 +246,9 @@ export function useSearchNearbyPageVM() {
 
   function selectItem(item: NearbySearchItem) {
     selectedItemId.value = item.id
-    routeTargetItem.value = item
+    routeTargetItem.value = null
     routeNavigationActive.value = false
     routeErrorMessage.value = ""
-    routeFitKey.value += 1
   }
 
   function selectSuggestion(item: NearbySearchItem) {

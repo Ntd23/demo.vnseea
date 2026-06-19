@@ -798,6 +798,16 @@ export const useSettingsPageVM = (
     return response
   }
 
+  async function transferPoints(recipientUserId: number, points: number, note?: string) {
+    const response = await settingsRepository.transferPoints({ recipientUserId, points, note })
+    await hydrate()
+    return response
+  }
+
+  async function getPointsReceiveQr(points?: number | null) {
+    return await settingsRepository.getPointsReceiveQr(points)
+  }
+
   async function fetchMonetization() {
     loading.value = true
     try {
@@ -859,6 +869,8 @@ export const useSettingsPageVM = (
     unblockUser,
     requestMyInfo,
     exchangePoints,
+    transferPoints,
+    getPointsReceiveQr,
     fetchMonetization,
     fetchAffiliates,
     findPageBySlug,

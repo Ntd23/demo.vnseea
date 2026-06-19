@@ -3238,6 +3238,15 @@ if ($f == 'admin_setting' AND (Wo_IsAdmin() || Wo_IsModerator())) {
             }
         }
         foreach ($_POST as $key => $value) {
+            if ($key == 'search_nearby_google_places' && !isset($wo['config']['search_nearby_google_places'])) {
+                $value = in_array($value, array(0, 1, '0', '1'), true) ? $value : 1;
+                mysqli_query($sqlConnect, "INSERT INTO " . T_CONFIG . " (`name`, `value`) VALUES ('search_nearby_google_places', '" . Wo_Secure($value) . "')");
+                $wo['config']['search_nearby_google_places'] = $value;
+                $config['search_nearby_google_places'] = $value;
+                $saveSetting = true;
+                resetCache();
+                continue;
+            }
             if (!empty($value) && in_array($key, $wo['encryptedKeys'])) {
                 $value = '$Ap1_'.openssl_encrypt($value, "AES-128-ECB", $siteEncryptKey);
             }

@@ -1,32 +1,19 @@
-﻿<!-- English description: Wallet page that mirrors the PHP wallet order using backend-backed data. -->
+<!-- English description: Temporary points wallet page that reuses the my-points transfer and receive-QR logic. -->
 <template>
-  <div class="mx-auto max-w-5xl space-y-5 pb-10">
-    <section class="surface-card p-5 sm:p-6">
-      <div class="wallet-page-header">
-        <div class="wallet-page-header__title">
-          <div class="wallet-page-header__icon">
-            <Icon name="i-ph-wallet-duotone" class="h-6 w-6" />
-          </div>
-          <div>
-            <p class="text-label-secondary">{{ t("pages.walletPage.title") }}</p>
-            <h1 class="text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.myWallet") }}</h1>
-          </div>
-        </div>
-
-        <NuxtLink
-          v-if="overview.canWithdraw"
-          :to="overview.withdrawalUrl"
-          class="wallet-header-link btn-secondary w-fit"
-        >
-          <Icon name="i-ph-bank-duotone" class="h-4 w-4" />
-          <span>{{ t("pages.walletPage.withdrawal") }}</span>
-        </NuxtLink>
+  <div class="wallet-points-page">
+    <section class="wallet-points-header">
+      <div class="wallet-points-header__icon">
+        <Icon name="i-ph-wallet-duotone" class="h-6 w-6" />
+      </div>
+      <div>
+        <p class="wallet-points-header__eyebrow">Ví điểm</p>
+        <h1 class="wallet-points-header__title">Điểm của tôi</h1>
       </div>
     </section>
 
-    <div v-if="loading" class="space-y-5">
-      <USkeleton class="h-32 rounded-3xl" />
-      <USkeleton class="h-64 rounded-3xl" />
+    <div v-if="loading" class="wallet-points-loading">
+      <USkeleton class="h-32 rounded-2xl" />
+      <USkeleton class="h-64 rounded-2xl" />
     </div>
 
     <template v-else>
@@ -39,674 +26,1043 @@
       />
 
       <template v-else>
-        <WalletHero
-          :balance="overview.balance"
-          :withdrawable-balance="overview.withdrawableBalance"
-          :transactions-count="walletActivityTransactions.length"
-          :topup-methods-count="overview.topupMethods.length"
-          :currency="overview.currency"
-          :currency-symbol="overview.currencySymbol"
-          :currency-rule="overview.currencyRule"
-        >
-          <button
-            type="button"
-            class="wallet-action wallet-action--primary"
-            :class="{ 'wallet-action--active': topupFormOpen }"
-            @click="openTopupForm"
-          >
-            <span class="wallet-action__icon">
+        <section class="wallet-points-hero">
+          <div class="wallet-points-hero__main">
+            <span class="wallet-points-hero__icon" aria-hidden="true">
+              <Icon name="i-ph-star-fill" class="h-7 w-7" />
+            </span>
+            <div>
+              <p class="wallet-points-hero__label">Số điểm hiện tại</p>
+              <strong class="wallet-points-hero__balance">{{ formatNumber(pointsBalance) }} điểm</strong>
+              <p class="wallet-points-hero__description">Dùng điểm để chuyển cho người khác hoặc tạo QR nhận điểm.</p>
+            </div>
+          </div>
+
+          <div class="wallet-points-tabs" aria-label="Thao tác ví điểm">
+            <!-- Tạm comment nạp tiền/rút tiền trong ví điểm.
+            <button type="button" class="wallet-points-tab">
               <Icon name="i-ph-plus-circle-duotone" class="h-5 w-5" />
-            </span>
-            <span>{{ t("pages.walletPage.addFunds") }}</span>
-          </button>
-          <button
-            type="button"
-            class="wallet-action"
-            :class="{ 'wallet-action--active': sendModalOpen }"
-            @click="openSendModal"
-          >
-            <span class="wallet-action__icon">
-              <Icon name="i-ph-paper-plane-tilt-duotone" class="h-5 w-5" />
-            </span>
-            <span>{{ t("pages.walletPage.sendMoney") }}</span>
-          </button>
-          <button
-            type="button"
-            class="wallet-action"
-            :class="{ 'wallet-action--active': receiveQrOpen }"
-            @click="openReceiveQr()"
-          >
-            <span class="wallet-action__icon">
-              <Icon name="i-ph-qr-code-duotone" class="h-5 w-5" />
-            </span>
-            <span>{{ t("pages.walletPage.receiveQr") }}</span>
-          </button>
-        </WalletHero>
-
-        <UAlert
-          v-if="mutationError"
-          color="error"
-          variant="subtle"
-          class="rounded-2xl"
-          :description="mutationError"
-        />
-        <UAlert
-          v-if="mutationMessage"
-          color="primary"
-          variant="subtle"
-          class="rounded-2xl"
-          :description="mutationMessage"
-        />
-
-        <section v-if="topupFormOpen" class="wallet-inline-panel">
-          <div class="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p class="text-label-secondary">{{ t("pages.walletPage.addFunds") }}</p>
-              <h2 class="text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.topupTitle") }}</h2>
-            </div>
-            <button type="button" class="wallet-panel-close" @click="closeTopupForm">
-              <Icon name="i-ph-x-duotone" class="h-5 w-5" />
+              <span>Nạp tiền</span>
             </button>
-          </div>
-          <WalletTopupForm
-            :methods="overview.topupMethods"
-            :submitting="toppingUp"
-            @topup="createTopup"
-          />
-
-          <div v-if="sepayTopup?.qrUrl" class="wallet-sepay-result">
-            <div class="wallet-sepay-result__header">
-              <Icon name="i-ph-credit-card-duotone" class="h-5 w-5" />
-              <h3>{{ t("pages.walletPage.sepayPaymentInfoTitle") }}</h3>
-            </div>
-
-            <div class="wallet-sepay-result__body">
-              <div class="wallet-sepay-result__qr-panel">
-                <p class="wallet-sepay-result__scan-text">{{ t("pages.walletPage.sepayScanInstruction") }}</p>
-                <img
-                  :src="sepayTopup.qrUrl"
-                  :alt="t('pages.walletPage.sepayTitle')"
-                  class="wallet-sepay-result__qr"
-                >
-                <a
-                  :href="sepayTopup.qrUrl"
-                  class="wallet-sepay-result__download"
-                  download
-                >
-                  <Icon name="i-ph-download-simple-duotone" class="h-4 w-4" />
-                  <span>{{ t("pages.walletPage.sepayDownloadQr") }}</span>
-                </a>
-              </div>
-
-            <div class="wallet-sepay-result__details">
-                <div class="wallet-sepay-result__bank-logo">
-                  <img :src="mbBankLogoUrl" alt="">
-                </div>
-              <dl class="wallet-sepay-result__list">
-                <div>
-                  <dt>{{ t("pages.walletPage.sepayBank") }}</dt>
-                    <dd>{{ sepayBankName }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t("pages.walletPage.sepayAccountName") }}</dt>
-                    <dd>{{ sepayTopup.accountName || "-" }}</dd>
-                </div>
-                <div>
-                  <dt>{{ t("pages.walletPage.sepayAccountNumber") }}</dt>
-                    <dd>
-                      <span>{{ sepayTopup.accountNumber || "-" }}</span>
-                      <button type="button" class="wallet-sepay-result__copy" @click="copySepayValue(sepayTopup.accountNumber)">
-                        <Icon name="i-ph-copy-duotone" class="h-4 w-4" />
-                      </button>
-                    </dd>
-                </div>
-                <div>
-                    <dt>{{ t("pages.walletPage.sepayOrderCode") }}</dt>
-                    <dd>
-                      <span>{{ sepayTopup.orderCode || "-" }}</span>
-                      <button type="button" class="wallet-sepay-result__copy" @click="copySepayValue(sepayTopup.orderCode)">
-                        <Icon name="i-ph-copy-duotone" class="h-4 w-4" />
-                      </button>
-                    </dd>
-                </div>
-                <div>
-                  <dt>{{ t("pages.walletPage.sepayAmount") }}</dt>
-                    <dd>
-                      <span>{{ formattedSepayAmount }}</span>
-                      <button type="button" class="wallet-sepay-result__copy" @click="copySepayValue(String(sepayTopup.amount ?? ''))">
-                        <Icon name="i-ph-copy-duotone" class="h-4 w-4" />
-                      </button>
-                    </dd>
-                </div>
-              </dl>
-                <p class="wallet-sepay-result__notice">
-                  {{ t("pages.walletPage.sepayTransferNoticePrefix") }}
-                  <strong>{{ sepayTopup.orderCode || "-" }}</strong>
-                  {{ t("pages.walletPage.sepayTransferNoticeMiddle") }}
-                  <strong>{{ formattedSepayAmount }}</strong>
-                  {{ t("pages.walletPage.sepayTransferNoticeSuffix") }}
-                </p>
-              </div>
-            </div>
-
-            <div class="wallet-sepay-result__status">
-              <p>{{ t("pages.walletPage.sepayWaitingTitle") }}</p>
-              <span>{{ t("pages.walletPage.sepayWaitingSubtitle") }}</span>
-              <UButton
-                color="primary"
-                variant="ghost"
-                class="wallet-sepay-result__check"
-                :loading="toppingUp"
-                icon="i-ph-arrows-clockwise-duotone"
-                @click="checkSepayTopup"
-              >
-                {{ t("pages.walletPage.sepayCheck") }}
-              </UButton>
-            </div>
-          </div>
-        </section>
-
-        <section v-if="sendModalOpen" class="wallet-inline-panel">
-          <div class="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p class="text-label-secondary">{{ t("pages.walletPage.sendEyebrow") }}</p>
-              <h2 class="text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.sendMoneyTitle") }}</h2>
-            </div>
-            <button type="button" class="wallet-panel-close" @click="closeSendModal">
-              <Icon name="i-ph-x-duotone" class="h-5 w-5" />
+            <button type="button" class="wallet-points-tab">
+              <Icon name="i-ph-bank-duotone" class="h-5 w-5" />
+              <span>Rút tiền</span>
             </button>
-          </div>
-          <WalletSendForm
-            :open="sendModalOpen"
-            :recipients="recipientResults"
-            :searching="recipientSearching"
-            :submitting="sending"
-            :balance="overview.balance"
-            :currency="overview.currency"
-            :currency-symbol="overview.currencySymbol"
-            :currency-rule="overview.currencyRule"
-            @update:open="value => value ? openSendModal() : closeSendModal()"
-            @search="searchRecipients"
-            @send="sendMoney"
-          />
-        </section>
-
-        <section v-if="receiveQrOpen" class="wallet-inline-panel">
-          <div class="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <p class="text-label-secondary">{{ t("pages.walletPage.receiveQr") }}</p>
-              <h2 class="text-heading text-[var(--text-primary)]">{{ t("pages.walletPage.receiveQrTitle") }}</h2>
-            </div>
-            <button type="button" class="wallet-panel-close" @click="closeReceiveQr">
-              <Icon name="i-ph-x-duotone" class="h-5 w-5" />
-            </button>
-          </div>
-          <div class="space-y-4 text-center">
-            <div class="grid gap-2 text-left sm:grid-cols-[1fr_auto]">
-              <UFormField :label="t('pages.walletPage.receiveAmount')">
-                <UInputNumber
-                  v-model="receiveAmount"
-                  :min="0"
-                  class="w-full"
-                />
-              </UFormField>
-              <UButton
-                color="neutral"
-                variant="soft"
-                class="self-end rounded-full font-semibold"
-                icon="i-ph-arrows-clockwise-duotone"
-                @click="openReceiveQr(receiveAmount)"
-              >
-                {{ t("pages.walletPage.updateQr") }}
-              </UButton>
-            </div>
-            <img
-              v-if="receiveQr?.imageUrl"
-              :src="receiveQr.imageUrl"
-              :alt="t('pages.walletPage.receiveQrTitle')"
-              class="mx-auto h-64 w-64 rounded-2xl bg-white p-4 shadow-md"
+            -->
+            <button
+              type="button"
+              class="wallet-points-tab"
+              :class="{ 'wallet-points-tab--active': transferPanelOpen }"
+              @click="openTransferPanel"
             >
-            <p class="text-body-secondary">{{ t("pages.walletPage.receiveQrDescription") }}</p>
+              <Icon name="i-ph-paper-plane-tilt-duotone" class="h-5 w-5" />
+              <span>Chuyển điểm</span>
+            </button>
+            <button
+              type="button"
+              class="wallet-points-tab"
+              :class="{ 'wallet-points-tab--active': receiveQrPanelOpen }"
+              @click="openReceiveQrPanel(receiveQrPoints)"
+            >
+              <Icon name="i-ph-qr-code-duotone" class="h-5 w-5" />
+              <span>Mã QR nhận điểm</span>
+            </button>
           </div>
         </section>
 
-        <WalletTransactions
-          :transactions="walletActivityTransactions"
-          :currency="overview.currency"
-          :currency-symbol="overview.currencySymbol"
-          :currency-rule="overview.currencyRule"
-        />
+        <section class="wallet-points-panel">
+          <div class="wallet-points-panel__heading">
+            <div>
+              <h2>Lịch sử điểm</h2>
+              <p>Các lần nhận, gửi và thay đổi điểm gần đây.</p>
+            </div>
+            <button class="wallet-points-icon-button" type="button" @click="loadWalletHistory">
+              <Icon name="i-ph-arrow-clockwise-duotone" class="h-4 w-4" />
+            </button>
+          </div>
+
+          <div v-if="historyItems.length" class="wallet-points-history" role="list">
+            <button
+              v-for="item in historyItems"
+              :key="item.id"
+              type="button"
+              class="wallet-points-history__item"
+              :class="{ 'wallet-points-history__item--expanded': expandedHistoryItemId === item.id }"
+              role="listitem"
+              @click="toggleHistoryItem(item.id)"
+            >
+              <span class="wallet-points-history__icon" aria-hidden="true">
+                <Icon name="i-ph-coins-duotone" class="h-4 w-4" />
+              </span>
+              <div class="wallet-points-history__copy">
+                <p>{{ item.title }}</p>
+                <small>{{ item.meta }}</small>
+              </div>
+              <strong :class="{ 'wallet-points-history__amount--negative': item.points < 0 }">
+                {{ formatSignedPoints(item.points) }}
+              </strong>
+            </button>
+          </div>
+
+          <div v-else class="wallet-points-empty">
+            <Icon name="i-ph-clock-counter-clockwise-duotone" class="h-6 w-6" />
+            <p>Chưa có lịch sử điểm.</p>
+          </div>
+        </section>
       </template>
     </template>
 
+    <Teleport to="body">
+      <div v-if="transferPanelOpen" class="wallet-points-modal" role="dialog" aria-modal="true">
+        <button class="wallet-points-modal__backdrop" type="button" aria-label="Đóng" @click="closeTransferPanel" />
+        <div class="wallet-points-modal__panel wallet-points-modal__panel--wide">
+          <div class="wallet-points-modal__header">
+            <div>
+              <p class="wallet-points-header__eyebrow">Chuyển điểm</p>
+              <h2>Gửi điểm cho người khác</h2>
+            </div>
+            <button class="wallet-points-icon-button" type="button" @click="closeTransferPanel">
+              <Icon name="i-ph-x" class="h-4 w-4" />
+            </button>
+          </div>
+
+          <label class="wallet-points-field">
+            <span>Chọn số điểm muốn chuyển</span>
+            <input
+              v-model.number="transferDraft.points"
+              class="wallet-points-input"
+              type="number"
+              min="1"
+              :max="pointsBalance"
+              placeholder="Nhập số điểm"
+            >
+          </label>
+
+          <div class="wallet-points-transfer-question">
+            <div>
+              <span>Bạn muốn gửi cho ai?</span>
+              <p>Quét mã QR nhận điểm để tự điền người nhận và số điểm gợi ý.</p>
+            </div>
+            <button class="wallet-points-secondary" type="button" @click="startTransferQrScan">
+              <Icon name="i-ph-camera-duotone" class="h-4 w-4" />
+              <span>Quét mã QR</span>
+            </button>
+          </div>
+
+          <div class="wallet-points-upload">
+            <span>Chọn ảnh QR từ máy</span>
+            <input type="file" accept="image/*" @change="scanTransferQrFile">
+          </div>
+
+          <label class="wallet-points-field wallet-points-field--recipient">
+            <span>Nhập người nhận</span>
+            <input
+              v-model="transferRecipientQuery"
+              class="wallet-points-input"
+              type="search"
+              placeholder="Tìm theo tên, username hoặc ID"
+            >
+            <div
+              v-if="transferRecipientQuery.length >= 2 && (transferRecipients.length > 0 || (!transferSearching && !transferDraft.recipientUserId))"
+              class="wallet-points-recipient-dropdown"
+            >
+              <button
+                v-for="recipient in transferRecipients"
+                :key="recipient.id"
+                type="button"
+                class="wallet-points-recipient"
+                :class="{ 'wallet-points-recipient--active': recipient.id === transferDraft.recipientUserId }"
+                @click="selectTransferRecipient(recipient)"
+              >
+                <img v-if="recipient.avatarUrl" :src="recipient.avatarUrl" :alt="recipient.name">
+                <span v-else>{{ recipient.name.slice(0, 1).toUpperCase() }}</span>
+                <div>
+                  <strong>{{ recipient.name }}</strong>
+                  <small>@{{ recipient.username }}</small>
+                </div>
+              </button>
+              <p v-if="!transferSearching && transferRecipients.length === 0" class="wallet-points-empty-line">
+                Không tìm thấy người nhận phù hợp.
+              </p>
+            </div>
+          </label>
+
+          <div v-if="transferDraft.recipientUserId" class="wallet-points-selected">
+            <img
+              v-if="selectedTransferRecipient?.avatarUrl"
+              :src="selectedTransferRecipient.avatarUrl"
+              :alt="selectedTransferRecipient.name"
+            >
+            <span v-else>{{ selectedTransferRecipientName.slice(0, 1).toUpperCase() }}</span>
+            <p>{{ selectedTransferRecipientName }}</p>
+            <button type="button" @click="clearTransferRecipient">
+              <Icon name="i-ph-x-duotone" class="h-4 w-4" />
+            </button>
+          </div>
+
+          <label class="wallet-points-field">
+            <span>Nội dung</span>
+            <textarea
+              v-model="transferNote"
+              class="wallet-points-input wallet-points-input--textarea"
+              rows="3"
+              placeholder="Ghi chú cho giao dịch"
+            />
+          </label>
+
+          <p v-if="transferError" class="wallet-points-error">{{ transferError }}</p>
+
+          <button
+            class="wallet-points-primary wallet-points-submit"
+            type="button"
+            :disabled="!canSubmitTransfer || transferSubmitting"
+            @click="openTransferConfirm"
+          >
+            <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
+            <span>{{ transferSubmitting ? "Đang gửi..." : "Chuyển điểm" }}</span>
+          </button>
+        </div>
+      </div>
+    </Teleport>
+
+    <Teleport to="body">
+      <div v-if="transferScanning" class="wallet-points-modal" role="dialog" aria-modal="true">
+        <button class="wallet-points-modal__backdrop" type="button" aria-label="Đóng" @click="stopTransferQrScan" />
+        <div class="wallet-points-modal__panel wallet-points-modal__panel--scanner">
+          <div class="wallet-points-modal__header">
+            <div>
+              <p class="wallet-points-header__eyebrow">Quét mã QR</p>
+              <h2>Đưa mã QR vào khung quét</h2>
+            </div>
+            <button class="wallet-points-icon-button" type="button" @click="stopTransferQrScan">
+              <Icon name="i-ph-x" class="h-4 w-4" />
+            </button>
+          </div>
+
+          <div class="wallet-points-scan wallet-points-scan--modal">
+            <div id="points-qr-reader" class="wallet-points-scan__reader" />
+          </div>
+          <p class="wallet-points-modal__hint">Sau khi quét thành công, hệ thống sẽ tự điền người nhận và số điểm nếu QR có gợi ý.</p>
+        </div>
+      </div>
+    </Teleport>
+
+    <Teleport to="body">
+      <div v-if="receiveQrPanelOpen" class="wallet-points-modal" role="dialog" aria-modal="true">
+        <button class="wallet-points-modal__backdrop" type="button" aria-label="Đóng" @click="closeReceiveQrPanel" />
+        <div class="wallet-points-modal__panel">
+          <div class="wallet-points-modal__header">
+            <div>
+              <p class="wallet-points-header__eyebrow">Mã QR nhận điểm</p>
+              <h2>Tạo mã QR nhận điểm</h2>
+            </div>
+            <button class="wallet-points-icon-button" type="button" @click="closeReceiveQrPanel">
+              <Icon name="i-ph-x" class="h-4 w-4" />
+            </button>
+          </div>
+
+          <div class="wallet-points-qr-form">
+            <label class="wallet-points-field">
+              <span>Số điểm gợi ý</span>
+              <input
+                v-model.number="receiveQrPoints"
+                class="wallet-points-input"
+                type="number"
+                min="0"
+              >
+            </label>
+            <button class="wallet-points-secondary" type="button" @click="openReceiveQrPanel(receiveQrPoints)">
+              <Icon name="i-ph-arrows-clockwise-duotone" class="h-4 w-4" />
+              <span>Cập nhật QR</span>
+            </button>
+          </div>
+
+          <img
+            v-if="receiveQr?.imageUrl"
+            :src="receiveQr.imageUrl"
+            alt="Mã QR nhận điểm"
+            class="wallet-points-qr"
+          >
+          <p class="wallet-points-modal__hint">Người gửi quét QR này sẽ tự điền người nhận và số điểm gợi ý.</p>
+        </div>
+      </div>
+    </Teleport>
+
+    <Teleport to="body">
+      <div v-if="transferConfirmOpen" class="wallet-points-modal" role="dialog" aria-modal="true">
+        <button class="wallet-points-modal__backdrop" type="button" aria-label="Đóng" @click="transferConfirmOpen = false" />
+        <div class="wallet-points-modal__panel">
+          <div class="wallet-points-modal__header">
+            <div>
+              <p class="wallet-points-header__eyebrow">Xác nhận</p>
+              <h2>Xác nhận chuyển điểm</h2>
+            </div>
+            <button class="wallet-points-icon-button" type="button" @click="transferConfirmOpen = false">
+              <Icon name="i-ph-x" class="h-4 w-4" />
+            </button>
+          </div>
+          <div class="wallet-points-summary">
+            <div>
+              <span>Người nhận</span>
+              <strong>{{ selectedTransferRecipientName }}</strong>
+            </div>
+            <div>
+              <span>Số điểm</span>
+              <strong>{{ formatNumber(transferDraft.points) }}</strong>
+            </div>
+            <div>
+              <span>Nội dung</span>
+              <strong>{{ normalizedTransferNote || "-" }}</strong>
+            </div>
+          </div>
+          <div class="wallet-points-modal__actions">
+            <button class="wallet-points-secondary" type="button" @click="transferConfirmOpen = false">
+              Hủy
+            </button>
+            <button class="wallet-points-primary" type="button" :disabled="transferSubmitting" @click="confirmTransferPoints">
+              <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
+              <span>{{ transferSubmitting ? "Đang gửi..." : "Xác nhận chuyển" }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useWalletPageVM } from "../../application/view-models/useWalletPageVM"
-import WalletHero from "../components/WalletHero.vue"
-import WalletSendForm from "../components/WalletSendForm.vue"
-import WalletTopupForm from "../components/WalletTopupForm.vue"
-import WalletTransactions from "../components/WalletTransactions.vue"
-
-const { t } = useI18n()
+import type {
+  SettingsPointsExchangeResult,
+} from "../../../settings/domain/types/settings.types"
+import { useSettingsMyPointsPanelVM } from "../../../settings/application/view-models/useSettingsMyPointsPanelVM"
+import { useSettingsPageVM } from "../../../settings/application/view-models/useSettingsPageVM"
 
 const {
-  overview,
-  walletActivityTransactions,
+  user,
   loading,
   errorMessage,
-  sendModalOpen,
-  topupFormOpen,
-  receiveQrOpen,
-  receiveAmount,
-  recipientResults,
-  recipientSearching,
-  receiveQr,
-  sepayTopup,
-  formattedSepayAmount,
-  mbBankLogoUrl,
-  sepayBankName,
-  mutationError,
-  mutationMessage,
-  sending,
-  toppingUp,
-  openTopupForm,
-  closeTopupForm,
-  openSendModal,
-  closeSendModal,
-  openReceiveQr,
-  closeReceiveQr,
-  searchRecipients,
-  sendMoney,
-  createTopup,
-  checkSepayTopup,
-  copySepayValue,
-} = useWalletPageVM()
+  transferPoints,
+  getPointsReceiveQr,
+} = useSettingsPageVM(() => "myPoints")
 
+const disabledExchange = async (): Promise<SettingsPointsExchangeResult> => {
+  throw new Error("Tính năng đổi điểm sang tiền đang tạm ẩn.")
+}
+
+const {
+  pointsBalance,
+  historyItems,
+  transferPanelOpen,
+  receiveQrPanelOpen,
+  transferRecipientQuery,
+  transferRecipients,
+  transferSearching,
+  transferSubmitting,
+  transferError,
+  transferNote,
+  transferScanning,
+  transferConfirmOpen,
+  transferDraft,
+  receiveQrPoints,
+  receiveQr,
+  selectedTransferRecipient,
+  selectedTransferRecipientName,
+  normalizedTransferNote,
+  canSubmitTransfer,
+  formatNumber,
+  formatSignedPoints,
+  loadWalletHistory,
+  openTransferPanel,
+  closeTransferPanel,
+  openTransferConfirm,
+  confirmTransferPoints,
+  selectTransferRecipient,
+  clearTransferRecipient,
+  startTransferQrScan,
+  stopTransferQrScan,
+  scanTransferQrFile,
+  openReceiveQrPanel,
+  closeReceiveQrPanel,
+} = useSettingsMyPointsPanelVM(() => user.value, disabledExchange, transferPoints, getPointsReceiveQr)
+
+const expandedHistoryItemId = ref<string | null>(null)
+
+const toggleHistoryItem = (itemId: string) => {
+  expandedHistoryItemId.value = expandedHistoryItemId.value === itemId ? null : itemId
+}
 </script>
 
 <style scoped>
-.wallet-page-header {
+.wallet-points-page {
   display: flex;
+  width: min(100%, 980px);
   flex-direction: column;
-  gap: 12px;
-  align-items: stretch;
-  justify-content: space-between;
+  gap: 14px;
+  margin: 0 auto;
+  padding-bottom: 40px;
 }
 
-.wallet-page-header__title {
+.wallet-points-header,
+.wallet-points-hero,
+.wallet-points-panel {
+  border: 1px solid rgba(0, 0, 255, 0.05);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.wallet-points-header {
   display: flex;
-  min-width: 0;
   align-items: center;
   gap: 12px;
+  padding: 16px;
 }
 
-.wallet-page-header__icon {
+.wallet-points-header__icon,
+.wallet-points-hero__icon,
+.wallet-points-history__icon {
   display: flex;
-  width: 44px;
-  height: 44px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  border-radius: 16px;
-  background: var(--bg-surface-active);
-  color: var(--text-brand);
 }
 
-.wallet-action {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  min-height: 54px;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  border: 1px solid #e2e8f0;
+.wallet-points-header__icon {
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
-  background: #ffffff;
-  padding: 12px 14px;
-  color: #334155;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  pointer-events: auto;
-  user-select: none;
-  transition: all 0.15s ease;
-}
-
-.wallet-header-link,
-.wallet-sepay-result__download {
-  position: relative;
-  z-index: 2;
-  pointer-events: auto;
-  user-select: none;
-}
-
-.wallet-action > *,
-.wallet-header-link > *,
-.wallet-panel-close > *,
-.wallet-sepay-result__download > *,
-.wallet-sepay-result__copy > * {
-  pointer-events: none;
-}
-
-.wallet-action:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.03);
+  background: rgba(0, 0, 255, 0.06);
   color: #0000ff;
 }
 
-.wallet-action--active {
-  border-color: rgba(0, 0, 255, 0.22);
-  background: rgba(0, 0, 255, 0.05);
-  color: #0000ff;
+.wallet-points-header__eyebrow,
+.wallet-points-hero__label {
+  margin: 0;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-.wallet-action--primary {
-  border-color: #0000ff;
+.wallet-points-header__title,
+.wallet-points-panel__heading h2,
+.wallet-points-modal__header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.wallet-points-loading {
+  display: grid;
+  gap: 14px;
+}
+
+.wallet-points-hero {
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+}
+
+.wallet-points-hero__main {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+.wallet-points-hero__icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 15px;
   background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
   color: #ffffff;
   box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
 }
 
-.wallet-action--primary:hover {
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
-  color: #ffffff;
-  box-shadow: 0 6px 20px rgba(0, 0, 255, 0.28);
-}
-
-.wallet-action--primary.wallet-action--active {
-  color: #ffffff;
-}
-
-.wallet-action__icon {
-  display: flex;
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: #f1f5f9;
-  color: #0000ff;
-}
-
-.wallet-action--primary .wallet-action__icon {
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-}
-
-.wallet-action--active:not(.wallet-action--primary) .wallet-action__icon {
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
-}
-
-.wallet-inline-panel {
-  border: 1px solid rgba(0, 0, 255, 0.06);
-  border-radius: 16px;
-  background: #ffffff;
-  padding: 18px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
-}
-
-.wallet-panel-close {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  width: 38px;
-  height: 38px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #64748b;
-  cursor: pointer;
-  pointer-events: auto;
-  user-select: none;
-  transition: all 0.15s ease;
-}
-
-.wallet-panel-close:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  background: rgba(0, 0, 255, 0.03);
-  color: #0000ff;
-}
-
-.wallet-sepay-result {
-  display: grid;
-  gap: 18px;
-  margin-top: 18px;
-  border: 1px solid #dbeafe;
-  border-radius: 18px;
-  background: #ffffff;
-  padding: 18px;
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
-}
-
-.wallet-sepay-result__header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #7f1d1d;
-}
-
-.wallet-sepay-result__header h3 {
-  margin: 0;
-  color: #1f2937;
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.wallet-sepay-result__body {
-  display: grid;
-  gap: 22px;
-}
-
-.wallet-sepay-result__qr-panel {
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-}
-
-.wallet-sepay-result__scan-text {
-  max-width: 220px;
-  margin: 0;
-  text-align: center;
-  color: #374151;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.wallet-sepay-result__qr {
-  width: min(100%, 240px);
-  justify-self: center;
-  border-radius: 8px;
-  background: #ffffff;
-  padding: 0;
-  box-shadow: none;
+.wallet-points-hero__balance {
   display: block;
-}
-
-.wallet-sepay-result__download {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  border: 1px solid #e5e7eb;
-  border-radius: 7px;
-  background: #ffffff;
-  padding: 7px 12px;
-  color: #4b5563;
-  font-size: 12px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.15s ease;
-}
-
-.wallet-sepay-result__download:hover {
-  border-color: #bfdbfe;
-  color: #1d4ed8;
-}
-
-.wallet-sepay-result__details {
-  min-width: 0;
-}
-
-.wallet-sepay-result__bank-logo {
-  margin-bottom: 18px;
-}
-
-.wallet-sepay-result__bank-logo img {
-  display: block;
-  height: 24px;
-  width: auto;
-}
-
-.wallet-sepay-result__list {
-  display: grid;
-  gap: 14px;
-  margin: 0;
-}
-
-.wallet-sepay-result__list div {
-  display: grid;
-  grid-template-columns: minmax(110px, 0.8fr) minmax(0, 1fr);
-  align-items: center;
-  gap: 14px;
-}
-
-.wallet-sepay-result__list dt {
-  color: #6b7280;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.wallet-sepay-result__list dd {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  margin: 0;
+  margin-top: 4px;
   overflow-wrap: anywhere;
-  text-align: right;
-  color: #111827;
+  color: #0f172a;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 900;
+  line-height: 1.08;
+}
+
+.wallet-points-hero__description,
+.wallet-points-panel__heading p,
+.wallet-points-modal__hint {
+  margin: 5px 0 0;
+  color: #64748b;
   font-size: 13px;
-  font-weight: 800;
-}
-
-.wallet-sepay-result__copy {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  width: 26px;
-  height: 26px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #e5e7eb;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #6b7280;
-  cursor: pointer;
-  pointer-events: auto;
-  user-select: none;
-  transition: all 0.15s ease;
-}
-
-.wallet-sepay-result__copy:hover {
-  border-color: #bfdbfe;
-  color: #1d4ed8;
-}
-
-.wallet-sepay-result__notice {
-  margin: 18px 0 0;
-  border-left: 4px solid #facc15;
-  border-radius: 8px;
-  background: #fff8db;
-  padding: 14px 16px;
-  color: #6b4f0d;
-  font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.5;
 }
 
-.wallet-sepay-result__notice strong {
-  color: #dc2626;
-}
-
-.wallet-sepay-result__status {
+.wallet-points-tabs {
   display: grid;
-  justify-items: center;
-  gap: 6px;
-  border-radius: 12px;
-  background: #fbfaff;
-  padding: 20px 16px 14px;
-  text-align: center;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
-.wallet-sepay-result__status p {
-  margin: 0;
-  color: #111827;
-  font-size: 15px;
+.wallet-points-tab,
+.wallet-points-secondary,
+.wallet-points-primary,
+.wallet-points-icon-button {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 800;
+  pointer-events: auto;
+  transition: all 0.15s ease;
+}
+
+.wallet-points-tab {
+  min-height: 50px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+}
+
+.wallet-points-tab:hover,
+.wallet-points-tab--active,
+.wallet-points-secondary:hover,
+.wallet-points-icon-button:hover {
+  border-color: rgba(0, 0, 255, 0.16);
+  background: rgba(0, 0, 255, 0.04);
+  color: #0000ff;
+}
+
+.wallet-points-panel {
+  padding: 16px;
+}
+
+.wallet-points-panel__heading,
+.wallet-points-modal__header,
+.wallet-points-modal__actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wallet-points-icon-button {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+}
+
+.wallet-points-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.wallet-points-field span,
+.wallet-points-summary span {
+  color: #64748b;
+  font-size: 12px;
   font-weight: 800;
 }
 
-.wallet-sepay-result__status span {
-  color: #6b7280;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.wallet-sepay-result__check {
+.wallet-points-field--recipient {
   position: relative;
-  z-index: 2;
-  margin-top: 8px;
-  border-top: 3px solid #991b1b;
-  border-radius: 0;
-  padding-top: 10px;
-  pointer-events: auto;
 }
 
-@media (min-width: 768px) {
-  .wallet-sepay-result__body {
-    grid-template-columns: 260px minmax(0, 1fr);
-    align-items: start;
-  }
+.wallet-points-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  background: #fafbfe;
+  color: #0f172a;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
 }
 
-@media (max-width: 520px) {
-  .wallet-sepay-result {
-    padding: 14px;
+.wallet-points-input:focus {
+  border-color: rgba(0, 0, 255, 0.28);
+}
+
+.wallet-points-input--textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.wallet-points-recipient-dropdown {
+  position: absolute;
+  right: 0;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 12;
+  display: grid;
+  max-height: 268px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 6px;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
+}
+
+.wallet-points-recipient,
+.wallet-points-selected {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+}
+
+.wallet-points-recipient {
+  grid-template-columns: 38px minmax(0, 1fr);
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  padding: 9px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.wallet-points-recipient:hover,
+.wallet-points-recipient--active {
+  background: rgba(0, 0, 255, 0.04);
+}
+
+.wallet-points-recipient img,
+.wallet-points-selected img {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.wallet-points-recipient img,
+.wallet-points-recipient > span {
+  width: 38px;
+  height: 38px;
+}
+
+.wallet-points-recipient > span,
+.wallet-points-selected > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wallet-points-recipient strong,
+.wallet-points-recipient small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wallet-points-recipient strong {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wallet-points-recipient small {
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.wallet-points-transfer-grid,
+.wallet-points-qr-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.wallet-points-secondary {
+  min-height: 42px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  padding: 0 16px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.wallet-points-primary {
+  min-height: 42px;
+  border: 0;
+  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  padding: 0 18px;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.wallet-points-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.wallet-points-submit {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.wallet-points-scan {
+  overflow: hidden;
+  margin-top: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #0f172a;
+}
+
+.wallet-points-scan--modal {
+  margin-top: 16px;
+}
+
+.wallet-points-scan__reader :deep(video) {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 10;
+  object-fit: cover !important;
+}
+
+.wallet-points-scan__reader :deep(#points-qr-reader__dashboard),
+.wallet-points-scan__reader :deep(#points-qr-reader__status_span) {
+  display: none !important;
+}
+
+.wallet-points-upload,
+.wallet-points-empty-line,
+.wallet-points-empty {
+  border-radius: 14px;
+  background: #fafbfe;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wallet-points-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  border: 1px solid #f1f5f9;
+  padding: 12px;
+}
+
+.wallet-points-empty-line {
+  margin: 0;
+  padding: 12px;
+}
+
+.wallet-points-selected {
+  grid-template-columns: 40px minmax(0, 1fr) 34px;
+  margin-top: 12px;
+  border: 1px solid rgba(0, 0, 255, 0.14);
+  border-radius: 14px;
+  background: rgba(0, 0, 255, 0.04);
+  padding: 10px;
+}
+
+.wallet-points-selected img,
+.wallet-points-selected > span {
+  width: 40px;
+  height: 40px;
+}
+
+.wallet-points-selected p {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wallet-points-selected button {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.wallet-points-error {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wallet-points-history {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.wallet-points-history__item {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  background: #fafbfe;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.wallet-points-history__item:hover {
+  border-color: rgba(0, 0, 255, 0.12);
+  background: rgba(0, 0, 255, 0.035);
+}
+
+.wallet-points-history__item--expanded {
+  align-items: flex-start;
+}
+
+.wallet-points-history__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+}
+
+.wallet-points-history__copy {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.wallet-points-history__copy p,
+.wallet-points-history__copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wallet-points-history__item--expanded .wallet-points-history__copy p,
+.wallet-points-history__item--expanded .wallet-points-history__copy small {
+  overflow: visible;
+  text-overflow: initial;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.wallet-points-history__copy p {
+  margin: 0;
+  color: #1e293b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wallet-points-history__copy small {
+  margin-top: 2px;
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.wallet-points-history__item strong {
+  flex: 0 0 auto;
+  color: #16a34a;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.wallet-points-history__amount--negative {
+  color: #dc2626 !important;
+}
+
+.wallet-points-empty {
+  display: flex;
+  min-height: 132px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  border: 1px dashed #cbd5e1;
+}
+
+.wallet-points-empty p {
+  margin: 0;
+}
+
+.wallet-points-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.wallet-points-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(15, 23, 42, 0.48);
+  cursor: pointer;
+}
+
+.wallet-points-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 480px);
+  padding: 18px;
+  border: 1px solid rgba(0, 0, 255, 0.06);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.18);
+}
+
+.wallet-points-modal__panel--wide {
+  width: min(100%, 560px);
+}
+
+.wallet-points-modal__panel--scanner {
+  width: min(100%, 520px);
+}
+
+.wallet-points-modal__header {
+  align-items: center;
+}
+
+.wallet-points-modal__actions {
+  align-items: center;
+  margin-top: 18px;
+}
+
+.wallet-points-qr {
+  display: block;
+  width: min(100%, 270px);
+  margin: 16px auto 0;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 10px;
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.12);
+}
+
+.wallet-points-modal__hint {
+  text-align: center;
+}
+
+.wallet-points-transfer-question {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  background: #fafbfe;
+  padding: 12px;
+}
+
+.wallet-points-transfer-question span {
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wallet-points-transfer-question p {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.wallet-points-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.wallet-points-summary div {
+  min-width: 0;
+  padding: 11px;
+  border-radius: 12px;
+  background: #fafbfe;
+}
+
+.wallet-points-summary strong {
+  display: block;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.wallet-points-tab > *,
+.wallet-points-secondary > *,
+.wallet-points-primary > *,
+.wallet-points-icon-button > * {
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .wallet-points-hero__main,
+  .wallet-points-panel__heading {
+    align-items: flex-start;
   }
 
-  .wallet-sepay-result__list div {
+  .wallet-points-hero__main {
+    flex-direction: column;
+  }
+
+  .wallet-points-tabs,
+  .wallet-points-transfer-grid,
+  .wallet-points-transfer-question,
+  .wallet-points-qr-form,
+  .wallet-points-summary {
     grid-template-columns: 1fr;
-    gap: 5px;
   }
 
-  .wallet-sepay-result__list dd {
-    justify-content: flex-start;
-    text-align: left;
-  }
-}
-
-@media (min-width: 640px) {
-  .wallet-page-header {
-    flex-direction: row;
-    align-items: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .wallet-page-header :deep(.btn-secondary) {
+  .wallet-points-secondary,
+  .wallet-points-primary {
     width: 100%;
-    justify-content: center;
+  }
+
+  .wallet-points-modal__actions {
+    flex-direction: column-reverse;
   }
 }
 </style>
-
