@@ -37,7 +37,7 @@ const categories = [
   { value: "groups", label: "Tập đoàn", icon: "i-ph-users-three-fill", accentClass: "groups", to: appRoutes.groups },
   { value: "blogs", label: "Blog", icon: "i-ph-article-fill", accentClass: "blogs", to: appRoutes.blogs },
   { value: "events", label: "Sự kiện", icon: "i-ph-calendar-fill", accentClass: "events", to: appRoutes.events },
-  { value: "games", label: "Trò chơi", icon: "i-ph-game-controller-fill", accentClass: "games", to: appRoutes.games },
+  // { value: "games", label: "Trò chơi", icon: "i-ph-game-controller-fill", accentClass: "games", to: appRoutes.games },
   { value: "forums", label: "Diễn đàn", icon: "i-ph-chat-circle-dots-fill", accentClass: "forums", to: appRoutes.forum },
   { value: "movies", label: "Phim", icon: "i-ph-film-strip-fill", accentClass: "movies", to: appRoutes.movies },
   { value: "jobs", label: "Việc làm", icon: "i-ph-briefcase-fill", accentClass: "jobs", to: appRoutes.jobs },

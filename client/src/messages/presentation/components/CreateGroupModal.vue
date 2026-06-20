@@ -3,10 +3,6 @@
   <UModal v-model:open="openModel" :title="$t('pages.messagesPage.groupCreateTitle')" :ui="{ content: 'sm:max-w-[720px]' }">
     <template #body>
       <div class="space-y-5">
-        <p class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 text-sm text-[var(--text-secondary)]">
-          {{ $t("pages.messagesPage.groupCreateDescription") }}
-        </p>
-
         <UAlert
           v-if="errorMessage"
           color="error"

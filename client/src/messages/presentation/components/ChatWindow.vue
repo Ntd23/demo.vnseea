@@ -226,12 +226,6 @@
             <span class="absolute left-4 top-8 h-1.5 w-[73px] rounded-full bg-[#88b7bd]" />
           </div>
         </div>
-        <h3 class="mt-12 whitespace-pre-line text-[24px] font-medium leading-9 text-[#555]">
-          {{ emptyTitle }}
-        </h3>
-        <p class="mt-3 text-sm text-[var(--text-secondary)]">
-          {{ emptyDescription }}
-        </p>
       </div>
     </div>
   </div>
