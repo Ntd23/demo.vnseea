@@ -55,21 +55,55 @@
       <!-- HERO ─────────────────────────────────────────── -->
       <div class="profile-page__hero">
         <!-- Cover -->
-        <div class="profile-page__cover">
+        <div
+          class="profile-page__cover"
+          :class="{ 'profile-page__cover--viewable': profile.coverImage }"
+          :role="profile.coverImage ? 'button' : undefined"
+          :tabindex="profile.coverImage ? 0 : undefined"
+          @click="openProfileMediaViewer('cover')"
+          @keydown.enter="openProfileMediaViewer('cover')"
+          @keydown.space.prevent="openProfileMediaViewer('cover')"
+        >
           <img
             v-if="profile.coverImage"
             :src="profile.coverImage"
             :alt="profile.displayName"
             class="profile-page__cover-img"
-          >
+          />
           <div v-else class="profile-page__cover-placeholder" />
           <div class="profile-page__cover-shade" />
+          <div v-if="profile.isOwner" class="profile-page__cover-actions">
+            <button
+              class="profile-page__cover-btn"
+              type="button"
+              :disabled="profileMediaUploading === 'cover'"
+              @click.stop="openProfileMediaSelector('cover')"
+            >
+              <Icon
+                :name="
+                  profileMediaUploading === 'cover'
+                    ? 'i-ph-spinner-gap-bold'
+                    : 'i-ph-camera-plus-duotone'
+                "
+                class="h-4 w-4"
+              />
+              <span>Cover</span>
+            </button>
+          </div>
         </div>
 
         <!-- Identity bar (avatar + name + actions) -->
         <div class="profile-page__identity-bar">
           <!-- Avatar -->
-          <div class="profile-page__avatar-wrap">
+          <div
+            class="profile-page__avatar-wrap"
+            :class="{ 'profile-page__avatar-wrap--viewable': profile.avatarUrl }"
+            :role="profile.avatarUrl ? 'button' : undefined"
+            :tabindex="profile.avatarUrl ? 0 : undefined"
+            @click="openProfileMediaViewer('avatar')"
+            @keydown.enter="openProfileMediaViewer('avatar')"
+            @keydown.space.prevent="openProfileMediaViewer('avatar')"
+          >
             <UAvatar
               :src="profile.avatarUrl"
               :text="profile.avatarText"
@@ -79,8 +113,21 @@
                 fallback: 'text-white font-black text-3xl',
               }"
             />
-            <button v-if="profile.isOwner" class="profile-page__avatar-btn" type="button">
-              <Icon name="i-ph-camera-plus-duotone" class="h-4 w-4" />
+            <button
+              v-if="profile.isOwner"
+              class="profile-page__avatar-btn"
+              type="button"
+              :disabled="profileMediaUploading === 'avatar'"
+              @click.stop="openProfileMediaSelector('avatar')"
+            >
+              <Icon
+                :name="
+                  profileMediaUploading === 'avatar'
+                    ? 'i-ph-spinner-gap-bold'
+                    : 'i-ph-camera-plus-duotone'
+                "
+                class="h-4 w-4"
+              />
             </button>
           </div>
 
@@ -88,7 +135,12 @@
           <div class="profile-page__identity-meta">
             <div class="profile-page__name-row">
               <h1 class="text-label-primary">{{ profile.displayName }}</h1>
-              <UBadge v-if="profile.verified" color="primary" variant="soft" class="rounded-full px-2.5 py-0.5 text-xs font-bold">
+              <UBadge
+                v-if="profile.verified"
+                color="primary"
+                variant="soft"
+                class="rounded-full px-2.5 py-0.5 text-xs font-bold"
+              >
                 <Icon name="i-ph-seal-check-fill" class="mr-1 h-3.5 w-3.5" />
                 {{ $t("settings.data.fields.verified") }}
               </UBadge>
@@ -108,18 +160,31 @@
 
           <!-- Hero actions (right) -->
           <div class="profile-page__hero-actions">
-            <UButton
+            <template
               v-for="action in heroActions"
               :key="action.id"
-              :variant="action.variant === 'solid' ? 'solid' : 'soft'"
-              :color="'primary'"
-              :icon="action.icon"
-              :loading="actionPending && action.id === 'follow-profile'"
-              class="rounded-full btn-primary"
-              @click="runHeroAction(action.id)"
             >
-              {{ action.label }}
-            </UButton>
+              <button
+                v-if="action.variant === 'cart'"
+                class="profile-page__cart-cta"
+                type="button"
+                @click="runHeroAction(action.id)"
+              >
+                <Icon :name="action.icon" class="h-4.5 w-4.5" />
+                <span>{{ action.label }}</span>
+              </button>
+              <UButton
+                v-else
+                :variant="action.variant === 'solid' ? 'solid' : 'soft'"
+                :color="'primary'"
+                :icon="action.icon"
+                :loading="actionPending && action.id === 'follow-profile'"
+                class="rounded-full btn-primary"
+                @click="runHeroAction(action.id)"
+              >
+                {{ action.label }}
+              </UButton>
+            </template>
           </div>
         </div>
 
@@ -165,62 +230,134 @@
           leave-from-class="opacity-100 scale-100"
           leave-to-class="opacity-0 scale-95"
         >
-          <div v-if="moreOpen" class="profile-more-dropdown" :style="moreDropdownStyle">
+          <div
+            v-if="moreOpen"
+            class="profile-more-dropdown"
+            :style="moreDropdownStyle"
+          >
             <div class="py-1">
-              <button class="profile-more-item" type="button" @click="handleMoreAction('poke')">
-                <span class="profile-more-icon" style="background:rgba(249,115,22,0.1)">
-                  <Icon name="i-ph-hand-pointing-fill" class="h-4 w-4 text-orange-500" />
+              <button
+                class="profile-more-item"
+                type="button"
+                @click="handleMoreAction('poke')"
+              >
+                <span
+                  class="profile-more-icon"
+                  style="background: rgba(249, 115, 22, 0.1)"
+                >
+                  <Icon
+                    name="i-ph-hand-pointing-fill"
+                    class="h-4 w-4 text-orange-500"
+                  />
                 </span>
                 <div class="min-w-0">
-                  <p class="profile-more-label">{{ $t('pages.profilePage.tabs.poke') }}</p>
-                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.pokeDesc') }}</p>
+                  <p class="profile-more-label">
+                    {{ $t("pages.profilePage.tabs.poke") }}
+                  </p>
+                  <p class="profile-more-desc">
+                    {{ $t("pages.profilePage.tabs.pokeDesc") }}
+                  </p>
                 </div>
               </button>
-              
-              <button v-if="profile.isOwner" class="profile-more-item" type="button" @click="handleMoreAction('copy')">
+
+              <button
+                v-if="profile.isOwner"
+                class="profile-more-item"
+                type="button"
+                @click="handleMoreAction('copy')"
+              >
                 <span class="profile-more-icon">
                   <Icon name="i-ph-link-bold" class="h-4 w-4" />
                 </span>
                 <div class="min-w-0">
-                  <p class="profile-more-label">{{ $t('pages.profilePage.tabs.copyLink') }}</p>
-                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.copyLinkDesc') }}</p>
+                  <p class="profile-more-label">
+                    {{ $t("pages.profilePage.tabs.copyLink") }}
+                  </p>
+                  <p class="profile-more-desc">
+                    {{ $t("pages.profilePage.tabs.copyLinkDesc") }}
+                  </p>
                 </div>
               </button>
             </div>
 
             <div class="profile-more-divider" />
-            
+
             <div class="py-1">
               <!-- Others' profile: Report -->
-              <button v-if="!profile.isOwner" class="profile-more-item" type="button" @click="handleMoreAction('report')">
-                <span class="profile-more-icon" style="background:rgba(245,158,11,0.1)">
-                  <Icon name="i-ph-warning-circle-bold" class="h-4 w-4 text-amber-500" />
+              <button
+                v-if="!profile.isOwner"
+                class="profile-more-item"
+                type="button"
+                @click="handleMoreAction('report')"
+              >
+                <span
+                  class="profile-more-icon"
+                  style="background: rgba(245, 158, 11, 0.1)"
+                >
+                  <Icon
+                    name="i-ph-warning-circle-bold"
+                    class="h-4 w-4 text-amber-500"
+                  />
                 </span>
                 <div class="min-w-0">
-                  <p class="profile-more-label">{{ $t('pages.profilePage.tabs.report') }}</p>
-                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.reportDesc') }}</p>
+                  <p class="profile-more-label">
+                    {{ $t("pages.profilePage.tabs.report") }}
+                  </p>
+                  <p class="profile-more-desc">
+                    {{ $t("pages.profilePage.tabs.reportDesc") }}
+                  </p>
                 </div>
               </button>
 
               <!-- Self profile: Block List -->
-              <button v-if="profile.isOwner" class="profile-more-item" type="button" @click="handleMoreAction('blockList')">
-                <span class="profile-more-icon" style="background:rgba(220,38,38,0.08)">
-                  <Icon name="i-ph-prohibit-bold" class="h-4 w-4 text-red-500" />
+              <button
+                v-if="profile.isOwner"
+                class="profile-more-item"
+                type="button"
+                @click="handleMoreAction('blockList')"
+              >
+                <span
+                  class="profile-more-icon"
+                  style="background: rgba(220, 38, 38, 0.08)"
+                >
+                  <Icon
+                    name="i-ph-prohibit-bold"
+                    class="h-4 w-4 text-red-500"
+                  />
                 </span>
                 <div class="min-w-0">
-                  <p class="profile-more-label" style="color:#dc2626">{{ $t('pages.profilePage.tabs.blockList') }}</p>
-                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.blockListDesc') }}</p>
+                  <p class="profile-more-label" style="color: #dc2626">
+                    {{ $t("pages.profilePage.tabs.blockList") }}
+                  </p>
+                  <p class="profile-more-desc">
+                    {{ $t("pages.profilePage.tabs.blockListDesc") }}
+                  </p>
                 </div>
               </button>
 
               <!-- Others' profile: Block -->
-              <button v-else class="profile-more-item" type="button" @click="handleMoreAction('block')">
-                <span class="profile-more-icon" style="background:rgba(220,38,38,0.08)">
-                  <Icon name="i-ph-prohibit-bold" class="h-4 w-4 text-red-500" />
+              <button
+                v-else
+                class="profile-more-item"
+                type="button"
+                @click="handleMoreAction('block')"
+              >
+                <span
+                  class="profile-more-icon"
+                  style="background: rgba(220, 38, 38, 0.08)"
+                >
+                  <Icon
+                    name="i-ph-prohibit-bold"
+                    class="h-4 w-4 text-red-500"
+                  />
                 </span>
                 <div class="min-w-0">
-                  <p class="profile-more-label" style="color:#dc2626">{{ $t('pages.profilePage.tabs.block') }}</p>
-                  <p class="profile-more-desc">{{ $t('pages.profilePage.tabs.blockDesc') }}</p>
+                  <p class="profile-more-label" style="color: #dc2626">
+                    {{ $t("pages.profilePage.tabs.block") }}
+                  </p>
+                  <p class="profile-more-desc">
+                    {{ $t("pages.profilePage.tabs.blockDesc") }}
+                  </p>
                 </div>
               </button>
             </div>
@@ -237,7 +374,10 @@
             <FeedPublisherBox v-if="profile.isOwner" />
 
             <!-- Posts -->
-            <div v-if="displayedTimelinePosts.length" class="profile-page__post-stack">
+            <div
+              v-if="displayedTimelinePosts.length"
+              class="profile-page__post-stack"
+            >
               <FeedPostCard
                 v-for="post in displayedTimelinePosts"
                 :key="`profile-post-${post.id}`"
@@ -246,26 +386,47 @@
               />
             </div>
             <div
-              v-if="displayedTimelinePosts.length && timelineHasMore && !postSearchQuery"
+              v-if="
+                displayedTimelinePosts.length &&
+                timelineHasMore &&
+                !postSearchQuery
+              "
               ref="profileLoadMoreSentinel"
               class="profile-page__load-more"
               aria-live="polite"
             >
-              <div class="profile-page__load-more-skeleton" :aria-label="$t('pages.homeFeedPage.loadingMore')">
-                <article v-for="index in 2" :key="index" class="profile-page__post-skeleton surface-card">
+              <div
+                class="profile-page__load-more-skeleton"
+                :aria-label="$t('pages.homeFeedPage.loadingMore')"
+              >
+                <article
+                  v-for="index in 2"
+                  :key="index"
+                  class="profile-page__post-skeleton surface-card"
+                >
                   <div class="profile-page__post-skeleton-header">
                     <USkeleton class="profile-page__post-skeleton-avatar" />
                     <div class="profile-page__post-skeleton-copy">
-                      <USkeleton class="profile-page__post-skeleton-line profile-page__post-skeleton-line--title" />
-                      <USkeleton class="profile-page__post-skeleton-line profile-page__post-skeleton-line--meta" />
+                      <USkeleton
+                        class="profile-page__post-skeleton-line profile-page__post-skeleton-line--title"
+                      />
+                      <USkeleton
+                        class="profile-page__post-skeleton-line profile-page__post-skeleton-line--meta"
+                      />
                     </div>
                   </div>
-                  <USkeleton class="profile-page__post-skeleton-line profile-page__post-skeleton-line--body" />
+                  <USkeleton
+                    class="profile-page__post-skeleton-line profile-page__post-skeleton-line--body"
+                  />
                   <USkeleton class="profile-page__post-skeleton-media" />
                 </article>
               </div>
               <span class="sr-only">
-                {{ timelineLoadingMore ? $t("pages.homeFeedPage.loadingMore") : $t("pages.homeFeedPage.loadMore") }}
+                {{
+                  timelineLoadingMore
+                    ? $t("pages.homeFeedPage.loadingMore")
+                    : $t("pages.homeFeedPage.loadMore")
+                }}
               </span>
             </div>
             <UAlert
@@ -315,7 +476,9 @@
 
             <section class="profile-card">
               <div class="profile-card__head">
-                <h2 class="profile-card__title">{{ $t("pages.profilePage.sidebarSearchPosts") }}</h2>
+                <h2 class="profile-card__title">
+                  {{ $t("pages.profilePage.sidebarSearchPosts") }}
+                </h2>
               </div>
               <UInput
                 v-model="postSearchQuery"
@@ -329,7 +492,14 @@
             <section v-if="following.length" class="profile-card">
               <div class="profile-card__head">
                 <div>
-                  <h2 class="profile-card__title">{{ $t("pages.profilePage.stats.following") + ' (' + profile.counts.following + ')' }}</h2>
+                  <h2 class="profile-card__title">
+                    {{
+                      $t("pages.profilePage.stats.following") +
+                      " (" +
+                      profile.counts.following +
+                      ")"
+                    }}
+                  </h2>
                 </div>
                 <UButton
                   variant="ghost"
@@ -353,8 +523,10 @@
                       :src="friend.avatarUrl"
                       :alt="friend.name"
                       class="profile-card__friend-img"
-                    >
-                    <span v-else class="profile-card__friend-initials">{{ friend.initials }}</span>
+                    />
+                    <span v-else class="profile-card__friend-initials">{{
+                      friend.initials
+                    }}</span>
                   </div>
                   <p class="profile-card__friend-name">{{ friend.name }}</p>
                 </NuxtLink>
@@ -365,7 +537,14 @@
             <section v-if="followers.length" class="profile-card">
               <div class="profile-card__head">
                 <div>
-                  <h2 class="profile-card__title">{{ $t("pages.pageDetailPage.followStat") + ' (' + profile.counts.followers + ')' }}</h2>
+                  <h2 class="profile-card__title">
+                    {{
+                      $t("pages.pageDetailPage.followStat") +
+                      " (" +
+                      profile.counts.followers +
+                      ")"
+                    }}
+                  </h2>
                 </div>
                 <UButton
                   variant="ghost"
@@ -390,8 +569,10 @@
                       :src="friend.avatarUrl"
                       :alt="friend.name"
                       class="profile-card__friend-img"
-                    >
-                    <span v-else class="profile-card__friend-initials">{{ friend.initials }}</span>
+                    />
+                    <span v-else class="profile-card__friend-initials">{{
+                      friend.initials
+                    }}</span>
                   </div>
                   <p class="profile-card__friend-name">{{ friend.name }}</p>
                 </NuxtLink>
@@ -423,7 +604,7 @@
                     :src="post.mediaItems[0].thumb || post.mediaItems[0].src"
                     :alt="post.mediaItems[0].alt || post.author"
                     class="profile-card__media-img"
-                  >
+                  />
                 </div>
               </div>
               <UAlert
@@ -461,7 +642,7 @@
                     :src="album.coverUrl"
                     :alt="album.title"
                     class="profile-card__media-img"
-                  >
+                  />
                   <p class="profile-card__media-title">{{ album.title }}</p>
                 </div>
               </div>
@@ -470,8 +651,13 @@
             <section v-if="likedPages.length" class="profile-card">
               <div class="profile-card__head">
                 <div>
-                  <h2 class="profile-card__title">{{ $t("pages.profilePage.stats.likes") }}</h2>
-                  <p class="profile-card__sub">{{ profile.counts.likes }} {{ $t("pages.profilePage.stats.likes") }}</p>
+                  <h2 class="profile-card__title">
+                    {{ $t("pages.profilePage.stats.likes") }}
+                  </h2>
+                  <p class="profile-card__sub">
+                    {{ profile.counts.likes }}
+                    {{ $t("pages.profilePage.stats.likes") }}
+                  </p>
                 </div>
                 <UButton
                   to="/liked-pages"
@@ -490,7 +676,10 @@
                   :to="`/p/${page.slug}`"
                   class="profile-card__link-row"
                 >
-                  <span class="profile-card__link-dot" :style="{ background: page.accent }" />
+                  <span
+                    class="profile-card__link-dot"
+                    :style="{ background: page.accent }"
+                  />
                   <span>{{ page.name }}</span>
                 </NuxtLink>
               </div>
@@ -499,8 +688,13 @@
             <section v-if="joinedGroups.length" class="profile-card">
               <div class="profile-card__head">
                 <div>
-                  <h2 class="profile-card__title">{{ $t("pages.profilePage.stats.groups") }}</h2>
-                  <p class="profile-card__sub">{{ profile.counts.groups }} {{ $t("pages.profilePage.stats.groups") }}</p>
+                  <h2 class="profile-card__title">
+                    {{ $t("pages.profilePage.stats.groups") }}
+                  </h2>
+                  <p class="profile-card__sub">
+                    {{ profile.counts.groups }}
+                    {{ $t("pages.profilePage.stats.groups") }}
+                  </p>
                 </div>
                 <UButton
                   to="/joined_groups"
@@ -519,7 +713,10 @@
                   :to="`/g/${group.slug}`"
                   class="profile-card__link-row"
                 >
-                  <span class="profile-card__link-dot" :style="{ background: group.accent }" />
+                  <span
+                    class="profile-card__link-dot"
+                    :style="{ background: group.accent }"
+                  />
                   <span>{{ group.name }}</span>
                 </NuxtLink>
               </div>
@@ -528,7 +725,14 @@
             <section v-if="products.length" class="profile-card">
               <div class="profile-card__head">
                 <div>
-                  <h2 class="profile-card__title">{{ $t("pages.profilePage.stats.products") + ' (' + profile.counts.products + ')' }}</h2>
+                  <h2 class="profile-card__title">
+                    {{
+                      $t("pages.profilePage.stats.products") +
+                      " (" +
+                      profile.counts.products +
+                      ")"
+                    }}
+                  </h2>
                 </div>
                 <UButton
                   v-if="hasHiddenProducts"
@@ -553,9 +757,13 @@
                     :src="product.imageUrl"
                     :alt="product.name"
                     class="profile-card__product-img"
-                  >
-                  <span class="profile-card__product-name">{{ product.name }}</span>
-                  <strong class="profile-card__product-price">{{ product.priceLabel }}</strong>
+                  />
+                  <span class="profile-card__product-name">{{
+                    product.name
+                  }}</span>
+                  <strong class="profile-card__product-price">{{
+                    product.priceLabel
+                  }}</strong>
                 </NuxtLink>
               </div>
             </section>
@@ -564,8 +772,14 @@
       </template>
 
       <!-- ── ABOUT TAB ─────────────────────────────────── -->
-      <section v-else-if="activeTab === 'about'" class="profile-page__tab-panel">
-        <div v-if="profile.aboutSections.length" class="grid gap-4 lg:grid-cols-2">
+      <section
+        v-else-if="activeTab === 'about'"
+        class="profile-page__tab-panel"
+      >
+        <div
+          v-if="profile.aboutSections.length"
+          class="grid gap-4 lg:grid-cols-2"
+        >
           <section
             v-for="section in profile.aboutSections"
             :key="section.title"
@@ -601,12 +815,17 @@
       </section>
 
       <!-- ── FRIENDS TAB ───────────────────────────────── -->
-      <section v-else-if="activeTab === 'friends'" class="profile-page__tab-panel">
+      <section
+        v-else-if="activeTab === 'friends'"
+        class="profile-page__tab-panel"
+      >
         <div class="profile-card profile-page__friends-header">
           <div class="profile-card__head">
             <div>
               <p class="profile-card__eyebrow">{{ copy.friendsTitle }}</p>
-              <h2 class="profile-card__title">{{ profile.counts.followers }} {{ copy.friendsTitle }}</h2>
+              <h2 class="profile-card__title">
+                {{ profile.counts.followers }} {{ copy.friendsTitle }}
+              </h2>
             </div>
             <UButton variant="soft" class="text-link">
               {{ copy.friendsAction }}
@@ -626,14 +845,21 @@
                 :src="friend.avatarUrl"
                 :alt="friend.name"
                 class="profile-page__friend-img"
-              >
-              <span v-else class="profile-page__friend-initials">{{ friend.initials }}</span>
+              />
+              <span v-else class="profile-page__friend-initials">{{
+                friend.initials
+              }}</span>
             </div>
             <div class="profile-page__friend-info">
               <p class="profile-page__friend-name">{{ friend.name }}</p>
-              <p class="profile-page__friend-username">@{{ friend.username }}</p>
+              <p class="profile-page__friend-username">
+                @{{ friend.username }}
+              </p>
             </div>
-            <Icon name="i-ph-caret-right-bold" class="profile-page__friend-open" />
+            <Icon
+              name="i-ph-caret-right-bold"
+              class="profile-page__friend-open"
+            />
           </NuxtLink>
         </div>
         <UAlert
@@ -648,7 +874,10 @@
       </section>
 
       <!-- ── PHOTOS / VIDEOS / OTHER ───────────────────── -->
-      <section v-else-if="activeTab === 'photos'" class="profile-page__tab-panel">
+      <section
+        v-else-if="activeTab === 'photos'"
+        class="profile-page__tab-panel"
+      >
         <div class="profile-card">
           <p class="profile-card__eyebrow">{{ copy.photosTitle }}</p>
           <h2 class="profile-card__title">{{ copy.photosTitle }}</h2>
@@ -667,7 +896,10 @@
         />
       </section>
 
-      <section v-else-if="activeTab === 'videos'" class="profile-page__tab-panel">
+      <section
+        v-else-if="activeTab === 'videos'"
+        class="profile-page__tab-panel"
+      >
         <div class="profile-card">
           <p class="profile-card__eyebrow">{{ copy.videosTitle }}</p>
           <h2 class="profile-card__title">{{ copy.videosTitle }}</h2>
@@ -702,9 +934,11 @@
               :src="album.coverUrl"
               :alt="album.title"
               class="profile-page__album-cover"
-            >
+            />
             <h3 class="profile-card__title">{{ album.title }}</h3>
-            <p class="profile-card__sub">{{ album.mediaCount }} {{ copy.photosTitle }}</p>
+            <p class="profile-card__sub">
+              {{ album.mediaCount }} {{ copy.photosTitle }}
+            </p>
           </article>
         </div>
         <UAlert
@@ -718,30 +952,70 @@
         />
       </section>
     </template>
+    <input
+      ref="profileAvatarInput"
+      type="file"
+      class="hidden"
+      accept="image/*"
+      @change="event => handleProfileMediaChange('avatar', event)"
+    />
+    <input
+      ref="profileCoverInput"
+      type="file"
+      class="hidden"
+      accept="image/*"
+      @change="event => handleProfileMediaChange('cover', event)"
+    />
+    <Teleport to="body">
+      <div
+        v-if="profileMediaViewer"
+        class="profile-media-viewer"
+        role="dialog"
+        aria-modal="true"
+        @click="closeProfileMediaViewer"
+      >
+        <button
+          class="profile-media-viewer__close"
+          type="button"
+          aria-label="Close preview"
+          @click.stop="closeProfileMediaViewer"
+        >
+          <Icon name="i-ph-x-bold" class="h-5 w-5" />
+        </button>
+        <img
+          :src="profileMediaViewer.src"
+          :alt="profileMediaViewer.alt"
+          class="profile-media-viewer__image"
+          @click.stop
+        />
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import FeedPostCard from "../../../feed/presentation/components/PostCard.vue"
-import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue"
-import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import { useProfileVM } from "../../application/composables/useProfileVM"
+import FeedPostCard from "../../../feed/presentation/components/PostCard.vue";
+import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue";
+import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue";
+import { useProfileVM } from "../../application/composables/useProfileVM";
 
-const route = useRoute()
+const route = useRoute();
 
 const normalizeProfileUsername = (value: unknown) => {
-  const raw = Array.isArray(value) ? String(value[0] ?? "") : String(value ?? "")
+  const raw = Array.isArray(value)
+    ? String(value[0] ?? "")
+    : String(value ?? "");
 
   try {
-    return decodeURIComponent(raw).trim().replace(/^@+/, "")
+    return decodeURIComponent(raw).trim().replace(/^@+/, "");
   } catch {
-    return raw.trim().replace(/^@+/, "")
+    return raw.trim().replace(/^@+/, "");
   }
-}
+};
 
 const username = computed(() => {
-  return normalizeProfileUsername(route.params.username)
-})
+  return normalizeProfileUsername(route.params.username);
+});
 
 const {
   activeTab,
@@ -763,6 +1037,7 @@ const {
   profile,
   products,
   productsExpanded,
+  refresh,
   selectProfileTab,
   tabs,
   timelineHasMore,
@@ -771,15 +1046,19 @@ const {
   runHeroAction,
   visibleProducts,
   videos,
-} = useProfileVM(username)
+} = useProfileVM(username);
 
 // ── More dropdown ──────────────────────────────────────
-const moreOpen = ref(false)
-const moreTriggerRef = ref<HTMLElement | null>(null)
-const moreDropdownStyle = ref<Record<string, string>>({})
-const profileLoadMoreSentinel = ref<HTMLElement | null>(null)
-const toast = useToast()
-const { t } = useI18n()
+const moreOpen = ref(false);
+const moreTriggerRef = ref<HTMLElement | null>(null);
+const moreDropdownStyle = ref<Record<string, string>>({});
+const profileLoadMoreSentinel = ref<HTMLElement | null>(null);
+const profileAvatarInput = ref<HTMLInputElement | null>(null);
+const profileCoverInput = ref<HTMLInputElement | null>(null);
+const profileMediaUploading = ref<"avatar" | "cover" | null>(null);
+const profileMediaViewer = ref<{ src: string; alt: string } | null>(null);
+const toast = useToast();
+const { t } = useI18n();
 
 useIntersectionObserver(
   profileLoadMoreSentinel,
@@ -791,114 +1070,233 @@ useIntersectionObserver(
       timelineLoadingMore.value ||
       Boolean(postSearchQuery.value)
     ) {
-      return
+      return;
     }
 
-    void loadMoreTimelinePosts()
+    void loadMoreTimelinePosts();
   },
   {
     rootMargin: "520px 0px",
   },
-)
+);
 
 function toggleMore() {
   if (!moreOpen.value && moreTriggerRef.value) {
-    const rect = moreTriggerRef.value.getBoundingClientRect()
+    const rect = moreTriggerRef.value.getBoundingClientRect();
     moreDropdownStyle.value = {
-      position: 'fixed',
+      position: "fixed",
       top: `${rect.bottom + 6}px`,
       right: `${window.innerWidth - rect.right}px`,
-      'transform-origin': 'top right',
-    }
+      "transform-origin": "top right",
+    };
   }
-  moreOpen.value = !moreOpen.value
+  moreOpen.value = !moreOpen.value;
 }
 
 function closeMore(e: MouseEvent) {
   if (!moreTriggerRef.value?.contains(e.target as Node)) {
-    moreOpen.value = false
+    moreOpen.value = false;
   }
 }
 
 onMounted(() => {
-  document.addEventListener('click', closeMore, true)
-  window.addEventListener('scroll', () => { moreOpen.value = false }, { passive: true })
-})
+  document.addEventListener("click", closeMore, true);
+  window.addEventListener(
+    "scroll",
+    () => {
+      moreOpen.value = false;
+    },
+    { passive: true },
+  );
+});
 onBeforeUnmount(() => {
-  document.removeEventListener('click', closeMore, true)
-  window.removeEventListener('scroll', () => { moreOpen.value = false })
-})
+  document.removeEventListener("click", closeMore, true);
+  window.removeEventListener("scroll", () => {
+    moreOpen.value = false;
+  });
+});
 
-function handleMoreAction(action: string) {
-  moreOpen.value = false
-
-  if (action === 'copy') {
-    if (import.meta.client) {
-      navigator.clipboard.writeText(window.location.href)
-        .then(() => toast.add({ title: t('feed.shareModal.copied'), color: 'success', icon: 'i-ph-check-circle-fill' }))
-        .catch(() => toast.add({ title: t('pages.profilePage.tabs.copyLink'), description: window.location.href, color: 'warning', icon: 'i-ph-warning-circle-fill' }))
-    }
-    return
+function openProfileMediaSelector(kind: "avatar" | "cover") {
+  if (!profile.value?.isOwner || profileMediaUploading.value) {
+    return;
   }
 
-  if (['poke', 'block', 'report', 'blockList'].includes(action)) {
+  if (kind === "avatar") {
+    profileAvatarInput.value?.click();
+    return;
+  }
+
+  profileCoverInput.value?.click();
+}
+
+function openProfileMediaViewer(kind: "avatar" | "cover") {
+  const currentProfile = profile.value;
+  const src = kind === "avatar" ? currentProfile?.avatarUrl : currentProfile?.coverImage;
+
+  if (!src) {
+    return;
+  }
+
+  profileMediaViewer.value = {
+    src,
+    alt: currentProfile?.displayName || currentProfile?.username || "Profile image",
+  };
+}
+
+function closeProfileMediaViewer() {
+  profileMediaViewer.value = null;
+}
+
+async function handleProfileMediaChange(kind: "avatar" | "cover", event: Event) {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (!file) {
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("section", "avatar");
+  formData.append(kind, file);
+  profileMediaUploading.value = kind;
+
+  try {
+    await $fetch("/_api/settings/update", {
+      method: "POST",
+      body: formData,
+    });
+    await refresh();
+    toast.add({
+      title: "Profile image updated.",
+      color: "success",
+      icon: "i-ph-check-circle-fill",
+    });
+  } catch (error: any) {
+    toast.add({
+      title: "Could not update image.",
+      description:
+        error?.data?.statusMessage || error?.message || "Please try again.",
+      color: "error",
+      icon: "i-ph-warning-circle-fill",
+    });
+  } finally {
+    profileMediaUploading.value = null;
+    target.value = "";
+  }
+}
+
+function handleMoreAction(action: string) {
+  moreOpen.value = false;
+
+  if (action === "copy") {
+    if (import.meta.client) {
+      navigator.clipboard
+        .writeText(window.location.href)
+        .then(() =>
+          toast.add({
+            title: t("feed.shareModal.copied"),
+            color: "success",
+            icon: "i-ph-check-circle-fill",
+          }),
+        )
+        .catch(() =>
+          toast.add({
+            title: t("pages.profilePage.tabs.copyLink"),
+            description: window.location.href,
+            color: "warning",
+            icon: "i-ph-warning-circle-fill",
+          }),
+        );
+    }
+    return;
+  }
+
+  if (["poke", "block", "report", "blockList"].includes(action)) {
     // On own profile and poke → navigate to poke list
-    if (action === 'poke' && profile.value?.isOwner) {
-      navigateTo('/poke')
-      return
+    if (action === "poke" && profile.value?.isOwner) {
+      navigateTo("/poke");
+      return;
     }
 
     // On own profile and blockList → navigate to settings/blocked-users
-    if (action === 'blockList' && profile.value?.isOwner) {
-      navigateTo('/setting/blocked-users')
-      return
+    if (action === "blockList" && profile.value?.isOwner) {
+      navigateTo("/setting/blocked-users");
+      return;
     }
 
-    if (actionPending.value) return
+    if (actionPending.value) return;
 
-    const targetUserId = profile.value?.id
-    const targetName = profile.value?.displayName || profile.value?.username || ''
+    const targetUserId = profile.value?.id;
+    const targetName =
+      profile.value?.displayName || profile.value?.username || "";
     if (!targetUserId) {
-      toast.add({ title: 'Lỗi', description: 'Không tìm thấy người dùng.', color: 'error', icon: 'i-ph-warning-circle-fill' })
-      return
+      toast.add({
+        title: "Lỗi",
+        description: "Không tìm thấy người dùng.",
+        color: "error",
+        icon: "i-ph-warning-circle-fill",
+      });
+      return;
     }
 
-    actionPending.value = true
+    actionPending.value = true;
 
-    $fetch('/_api/profile/action', {
-      method: 'POST',
+    $fetch("/_api/profile/action", {
+      method: "POST",
       body: { action, userId: targetUserId },
     })
       .then(() => {
-        const titleKey = action === 'blockList' ? 'blockList' : action
-        const title = t('pages.profilePage.tabs.' + titleKey)
-        const descKey = action === 'blockList' ? 'blockSuccess' : action + 'Success'
-        const desc = t('pages.profilePage.tabs.' + descKey, { name: targetName })
-        const icon = action === 'poke' ? 'i-ph-hand-pointing-fill' : (action === 'block' || action === 'blockList' ? 'i-ph-prohibit-duotone' : 'i-ph-warning-octagon-duotone')
+        const titleKey = action === "blockList" ? "blockList" : action;
+        const title = t("pages.profilePage.tabs." + titleKey);
+        const descKey =
+          action === "blockList" ? "blockSuccess" : action + "Success";
+        const desc = t("pages.profilePage.tabs." + descKey, {
+          name: targetName,
+        });
+        const icon =
+          action === "poke"
+            ? "i-ph-hand-pointing-fill"
+            : action === "block" || action === "blockList"
+              ? "i-ph-prohibit-duotone"
+              : "i-ph-warning-octagon-duotone";
 
         toast.add({
           title: `✅ ${title}`,
           description: desc,
-          color: 'success',
+          color: "success",
           icon,
-        })
+        });
       })
       .catch((err: any) => {
-        const status: string = err?.data?.statusMessage || ''
-        if (status === 'already_poked') {
-          toast.add({ title: t('pages.profilePage.tabs.poke'), description: t('pages.profilePage.tabs.pokeAlready'), color: 'warning', icon: 'i-ph-hand-pointing-fill' })
-        }
-        else {
-          toast.add({ title: 'Lỗi', description: 'Không thể thực hiện yêu cầu. Thử lại sau.', color: 'error', icon: 'i-ph-warning-circle-fill' })
+        const status: string = err?.data?.statusMessage || "";
+        if (status === "already_poked") {
+          toast.add({
+            title: t("pages.profilePage.tabs.poke"),
+            description: t("pages.profilePage.tabs.pokeAlready"),
+            color: "warning",
+            icon: "i-ph-hand-pointing-fill",
+          });
+        } else {
+          toast.add({
+            title: "Lỗi",
+            description: "Không thể thực hiện yêu cầu. Thử lại sau.",
+            color: "error",
+            icon: "i-ph-warning-circle-fill",
+          });
         }
       })
       .finally(() => {
-        actionPending.value = false
-      })
-    return
+        actionPending.value = false;
+      });
+    return;
   }
 
-  toast.add({ title: t('pages.profilePage.tabs.' + action), description: 'Tính năng đang phát triển', color: 'primary', icon: 'i-ph-info-bold' })
+  toast.add({
+    title: t("pages.profilePage.tabs." + action),
+    description: "Tính năng đang phát triển",
+    color: "primary",
+    icon: "i-ph-info-bold",
+  });
 }
 </script>
 
@@ -934,12 +1332,20 @@ function handleMoreAction(action: string) {
   background: linear-gradient(135deg, #0f172a 0%, #1d4ed8 56%, #bfdbfe 100%);
 }
 
+.profile-page__cover--viewable {
+  cursor: zoom-in;
+}
+
 @media (min-width: 640px) {
-  .profile-page__cover { height: 350px; }
+  .profile-page__cover {
+    height: 350px;
+  }
 }
 
 @media (min-width: 1024px) {
-  .profile-page__cover { height: 400px; }
+  .profile-page__cover {
+    height: 400px;
+  }
 }
 
 .profile-page__cover-img {
@@ -969,6 +1375,38 @@ function handleMoreAction(action: string) {
   gap: 8px;
 }
 
+.profile-page__cover-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-full);
+  background: rgba(15, 23, 42, 0.72);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: var(--weight-bold);
+  padding: 8px 14px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.2);
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default);
+}
+
+.profile-page__cover-btn:hover {
+  border-color: #ffffff;
+  background: rgba(15, 23, 42, 0.86);
+  transform: translateY(-1px);
+}
+
+.profile-page__cover-btn:disabled {
+  cursor: wait;
+  opacity: 0.78;
+  transform: none;
+}
+
 /* Identity bar */
 .profile-page__identity-bar {
   display: flex;
@@ -996,6 +1434,10 @@ function handleMoreAction(action: string) {
   flex-shrink: 0;
   width: 168px;
   height: 168px;
+}
+
+.profile-page__avatar-wrap--viewable {
+  cursor: zoom-in;
 }
 
 @media (max-width: 767px) {
@@ -1032,6 +1474,11 @@ function handleMoreAction(action: string) {
 
 .profile-page__avatar-btn:hover {
   background: #e2e8f0;
+}
+
+.profile-page__avatar-btn:disabled {
+  cursor: wait;
+  opacity: 0.78;
 }
 
 /* Name + meta */
@@ -1102,7 +1549,69 @@ function handleMoreAction(action: string) {
 }
 
 @media (min-width: 768px) {
-  .profile-page__hero-actions { margin-top: 0; }
+  .profile-page__hero-actions {
+    margin-top: 0;
+  }
+}
+
+.profile-page__hero-actions :deep(.btn-primary),
+.profile-page__cart-cta {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+  .profile-page__hero-actions {
+    width: 100%;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .profile-page__hero-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .profile-page__hero-actions :deep(.btn-primary),
+  .profile-page__cart-cta {
+    min-height: 34px;
+  }
+}
+
+.profile-page__cart-cta {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-accent-700);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface);
+  color: var(--color-secondary-900);
+  box-shadow: 0 6px 18px rgba(180, 83, 9, 0.12);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: var(--weight-extrabold);
+  line-height: 1;
+  transition:
+    transform var(--duration-fast) var(--ease-default),
+    background var(--duration-fast) var(--ease-default),
+    border-color var(--duration-fast) var(--ease-default),
+    box-shadow var(--duration-fast) var(--ease-default),
+    color var(--duration-fast) var(--ease-default);
+}
+
+.profile-page__cart-cta:hover {
+  border-color: var(--color-accent-600);
+  background: var(--color-accent-50);
+  color: var(--color-secondary-900);
+  box-shadow: 0 8px 22px rgba(180, 83, 9, 0.18);
+}
+
+.profile-page__cart-cta:active {
+  transform: translateY(0) scale(0.98);
 }
 
 /* Divider */
@@ -1123,10 +1632,14 @@ function handleMoreAction(action: string) {
   scroll-snap-type: x proximity;
 }
 
-.profile-page__tab-nav::-webkit-scrollbar { display: none; }
+.profile-page__tab-nav::-webkit-scrollbar {
+  display: none;
+}
 
 @media (min-width: 640px) {
-  .profile-page__tab-nav { padding: 0 24px; }
+  .profile-page__tab-nav {
+    padding: 0 24px;
+  }
 }
 
 .profile-page__tab {
@@ -1144,7 +1657,9 @@ function handleMoreAction(action: string) {
   cursor: pointer;
   white-space: nowrap;
   scroll-snap-align: start;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .profile-page__tab:hover {
@@ -1178,7 +1693,12 @@ function handleMoreAction(action: string) {
   align-items: center;
   justify-content: flex-end;
   color: #0000ff;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0), #ffffff 48%, #ffffff 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    #ffffff 48%,
+    #ffffff 100%
+  );
   pointer-events: none;
 }
 
@@ -1354,7 +1874,6 @@ function handleMoreAction(action: string) {
   flex-direction: column;
   gap: 12px;
 }
-
 
 /* ── Profile card (reusable) ─────────────────────────── */
 .profile-card {
@@ -1631,7 +2150,10 @@ function handleMoreAction(action: string) {
   padding: 12px;
   color: #0f172a;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
 
 .profile-page__friend-card:hover {
@@ -1843,9 +2365,56 @@ function handleMoreAction(action: string) {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
+
 </style>
 
 <style>
+/* Non-scoped: teleported to body */
+.profile-media-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.86);
+  padding: 24px;
+  cursor: zoom-out;
+}
+
+.profile-media-viewer__image {
+  max-width: min(100%, 1120px);
+  max-height: min(86vh, 820px);
+  border-radius: var(--radius-xl);
+  object-fit: contain;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+  cursor: default;
+}
+
+.profile-media-viewer__close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  display: inline-flex;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-full);
+  background: rgba(15, 23, 42, 0.72);
+  color: #ffffff;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-default),
+    transform var(--duration-fast) var(--ease-default);
+}
+
+.profile-media-viewer__close:hover {
+  background: rgba(15, 23, 42, 0.9);
+  transform: scale(1.04);
+}
+
 /* Non-scoped: dropdown is Teleported to body */
 .profile-more-dropdown {
   z-index: 9999;
@@ -1906,4 +2475,3 @@ function handleMoreAction(action: string) {
   line-height: 1.3;
 }
 </style>
-

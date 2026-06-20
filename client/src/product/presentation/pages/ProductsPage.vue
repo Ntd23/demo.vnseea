@@ -18,6 +18,11 @@
           </div>
         </div>
 
+        <NuxtLink to="/products" class="products-hero__link">
+          <Icon name="i-ph-shopping-bag-open-fill" class="h-5 w-5" />
+          <span>{{ $t("pages.productsPage.marketTitle") }}</span>
+          <Icon name="i-ph-arrow-left" class="h-4 w-4" />
+        </NuxtLink>
         <NuxtLink to="/my-products" class="products-hero__link">
           <Icon name="i-ph-shopping-bag-open-fill" class="h-5 w-5" />
           <span>{{ $t("pages.productsPage.myProducts") }}</span>

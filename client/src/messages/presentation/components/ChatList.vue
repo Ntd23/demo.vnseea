@@ -56,22 +56,9 @@
 
     <!-- ── Multi-send composer panel ────────────────── -->
     <div v-if="activeTab === 'multi'" class="cl-multi-panel">
-      <div class="cl-multi-header">
-        <div class="cl-multi-title">
-          <span class="cl-multi-title-icon">
-            <Icon name="i-ph-paper-plane-tilt-duotone" class="h-4 w-4" />
-          </span>
-          <span>{{ $t("pages.messagesPage.composeTitle") }}</span>
-        </div>
-        <span class="cl-selected-count">{{ selectedCountLabel }}</span>
-      </div>
 
       <div class="cl-multi-stack">
         <section class="cl-filter-card">
-          <div class="cl-field-heading">
-            <Icon name="i-ph-tag-duotone" class="h-3.5 w-3.5" />
-            <span>{{ tagFilterLabel }}</span>
-          </div>
           <select
             class="cl-select"
             :value="activeTagFilter"
@@ -208,7 +195,7 @@
     </div>
 
     <!-- ── Contact list ──────────────────────────── -->
-    <div class="cl-scroll-list min-h-0 flex-1 px-3 pb-3">
+    <!-- <div class="cl-scroll-list min-h-0 flex-1 px-3 pb-3">
       <div class="space-y-0.5">
         <MessagesChatListItem
           v-for="contact in contacts"
@@ -267,7 +254,7 @@
           <span class="text-sm text-[var(--text-secondary)]">{{ emptyLabel }}</span>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
