@@ -136,7 +136,7 @@ export function useFeedPostCardVM(
     localPollOptions.value.reduce((total, option) => total + option.votes, 0),
   )
   const hasReactions = computed(() => likesCount.value > 0)
-  const commentsCount = computed(() => Math.max(localComments.value.length, post.value?.stats.comments ?? 0))
+  const commentsCount = computed(() => Math.max(countCommentThreads(localComments.value), post.value?.stats.comments ?? 0))
   const hasPostContent = computed(() =>
     Boolean(post.value?.text.trim() || post.value?.tags.length),
   )
@@ -166,6 +166,15 @@ export function useFeedPostCardVM(
   }
 
   let lastPostId: number | null = null
+
+  function countCommentThreads(comments: FeedCommentRecord[]) {
+    return comments.reduce((total, comment) => {
+      const loadedRepliesCount = countCommentThreads(comment.replies ?? [])
+      const repliesCount = Math.max(comment.repliesCount ?? 0, loadedRepliesCount)
+
+      return total + 1 + repliesCount
+    }, 0)
+  }
 
   watch(
     post,
@@ -236,7 +245,7 @@ export function useFeedPostCardVM(
   } = useTimeoutFn(() => {
     postReactionLongPressTriggered.value = true
     postReactionTrayOpen.value = true
-  }, 420, { immediate: false })
+  }, 200, { immediate: false })
 
   function openPostReactionTray() {
     postReactionTrayOpen.value = true
@@ -382,7 +391,7 @@ export function useFeedPostCardVM(
       localComments.value = [...localComments.value, comment]
       if (post.value) {
         post.value.comments = [...localComments.value]
-        post.value.stats.comments = localComments.value.length
+        post.value.stats.comments = countCommentThreads(localComments.value)
       }
       showComments.value = true
       void refreshComments()
@@ -481,7 +490,7 @@ export function useFeedPostCardVM(
         localComments.value = comments
         if (post.value) {
           post.value.comments = [...comments]
-          post.value.stats.comments = comments.length
+          post.value.stats.comments = countCommentThreads(comments)
         }
       }
     }

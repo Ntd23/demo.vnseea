@@ -195,7 +195,7 @@
     </div>
 
     <!-- ── Contact list ──────────────────────────── -->
-    <!-- <div class="cl-scroll-list min-h-0 flex-1 px-3 pb-3">
+    <div class="cl-scroll-list min-h-0 flex-1 px-3 pb-3">
       <div class="space-y-0.5">
         <MessagesChatListItem
           v-for="contact in contacts"
@@ -254,7 +254,7 @@
           <span class="text-sm text-[var(--text-secondary)]">{{ emptyLabel }}</span>
         </div>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 

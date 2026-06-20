@@ -187,7 +187,10 @@
                 :style="{ '--reaction-index': String(reactionIndex) }"
                 type="button"
                 :aria-label="reaction.label"
-                @click="reactToPost(reaction.value)"
+                @pointerdown.prevent.stop="reactToPost(reaction.value)"
+                @click.prevent.stop
+                @keydown.enter.prevent="reactToPost(reaction.value)"
+                @keydown.space.prevent="reactToPost(reaction.value)"
               >
                 <img
                   :src="reaction.src"
@@ -264,7 +267,7 @@
             <span v-else>{{ previewCommentInitials }}</span>
           </div>
           <div class="post-card__comment-bubble">
-            <p class="post-card__comment-author">{{ previewComment?.author }}</p>
+            <NuxtLink :to="`/@${previewComment?.author}`" class="post-card__comment-author">{{ previewComment?.author }}</NuxtLink>
             <p class="post-card__comment-text">{{ previewComment?.text }}</p>
           </div>
         </div>

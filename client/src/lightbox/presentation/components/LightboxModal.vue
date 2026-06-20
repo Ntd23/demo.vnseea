@@ -133,62 +133,86 @@
 
           <div
             class="lightbox-modal__primary-action"
-            @mouseenter="openReactionTray"
-            @mouseleave="closeReactionTray"
-            @focusin="openReactionTray"
-            @focusout="closeReactionTray"
           >
-            <Transition
-              enter-active-class="transition duration-150 ease-out"
-              enter-from-class="opacity-0 translate-y-2 scale-95"
-              enter-to-class="opacity-100 translate-y-0 scale-100"
-              leave-active-class="transition duration-100 ease-in"
-              leave-to-class="opacity-0 translate-y-2 scale-95"
+            <div
+              class="lightbox-modal__reaction-action"
+              @mouseenter="openReactionTray"
+              @mouseleave="closeReactionTray"
+              @focusin="openReactionTray"
+              @focusout="closeReactionTray"
+              @contextmenu.prevent
+              @selectstart.prevent
             >
-              <div
-                v-if="reactionTrayOpen"
-                class="lightbox-modal__reaction-tray"
-                @click.stop
-                @pointerdown.stop
+              <Transition
+                enter-active-class="transition duration-150 ease-out"
+                enter-from-class="opacity-0 translate-y-2 scale-95"
+                enter-to-class="opacity-100 translate-y-0 scale-100"
+                leave-active-class="transition duration-100 ease-in"
+                leave-to-class="opacity-0 translate-y-2 scale-95"
               >
-                <button
-                  v-for="reaction in reactionOptions"
-                  :key="reaction.value"
-                  type="button"
-                  class="lightbox-modal__reaction-option"
-                  :class="{ 'lightbox-modal__reaction-option--active': selectedReaction === reaction.value }"
-                  :aria-label="reaction.label"
-                  @click="emitReaction(reaction.value)"
+                <div
+                  v-if="reactionTrayOpen"
+                  class="lightbox-modal__reaction-tray"
+                  @click.stop
+                  @pointerdown.stop
+                  @contextmenu.prevent
                 >
-                  <img
-                    :src="reaction.src"
-                    :alt="reaction.label"
-                    class="lightbox-modal__reaction-option-image"
-                    draggable="false"
+                  <button
+                    v-for="reaction in reactionOptions"
+                    :key="reaction.value"
+                    type="button"
+                    class="lightbox-modal__reaction-option"
+                    :class="{ 'lightbox-modal__reaction-option--active': selectedReaction === reaction.value }"
+                    :aria-label="reaction.label"
+                    @pointerdown.prevent.stop="emitReaction(reaction.value)"
+                    @click.prevent.stop
+                    @keydown.enter.prevent="emitReaction(reaction.value)"
+                    @keydown.space.prevent="emitReaction(reaction.value)"
+                    @contextmenu.prevent
                   >
-                </button>
-              </div>
-            </Transition>
+                    <img
+                      :src="reaction.src"
+                      :alt="reaction.label"
+                      class="lightbox-modal__reaction-option-image"
+                      draggable="false"
+                    >
+                  </button>
+                </div>
+              </Transition>
+
+              <button
+                type="button"
+                class="lightbox-modal__like-btn"
+                :aria-label="activeReactionLabel"
+                @pointerdown.prevent.stop="startReactionPress"
+                @pointerup.prevent.stop="finishReactionPress"
+                @pointerleave="cancelReactionPress"
+                @pointercancel="cancelReactionPress"
+                @contextmenu.prevent
+                @click.prevent.stop
+                @keydown.enter.prevent="handleReactionClick"
+                @keydown.space.prevent="handleReactionClick"
+              >
+                <img
+                  v-if="selectedReaction"
+                  :src="activeReactionAsset.src"
+                  :alt="activeReactionLabel"
+                  class="lightbox-modal__like-image"
+                  draggable="false"
+                >
+                <Icon v-else name="i-ph-thumbs-up" class="h-6 w-6" />
+                <span>{{ activeReactionLabel }}</span>
+              </button>
+            </div>
 
             <button
               type="button"
-              class="lightbox-modal__like-btn"
-              :aria-label="activeReactionLabel"
-              @pointerdown="startReactionPress"
-              @pointerup="finishReactionPress"
-              @pointerleave="cancelReactionPress"
-              @pointercancel="cancelReactionPress"
-              @click="handleReactionClick"
+              class="lightbox-modal__comment-btn"
+              :aria-label="t('feed.postCard.comment')"
+              @click="openCommentComposer"
             >
-              <img
-                v-if="selectedReaction"
-                :src="activeReactionAsset.src"
-                :alt="activeReactionLabel"
-                class="lightbox-modal__like-image"
-                draggable="false"
-              >
-              <Icon v-else name="i-ph-thumbs-up" class="h-6 w-6" />
-              <span>{{ activeReactionLabel }}</span>
+              <Icon name="i-ph-chat-circle-fill" class="h-6 w-6" />
+              <span>{{ t("feed.postCard.comment") }}</span>
             </button>
           </div>
 
@@ -207,12 +231,17 @@
             </div>
           </div>
 
-          <footer v-if="showComposer" class="lightbox-modal__composer">
+          <footer
+            v-if="showComposer"
+            ref="composerShellRef"
+            class="lightbox-modal__composer"
+            :class="{ 'lightbox-modal__composer--mobile-open': mobileComposerOpen }"
+          >
             <FeedCommentComposer
               :current-user-name="currentUserName"
               :current-user-avatar-url="currentUserAvatarUrl"
               :submitting="submittingComment"
-              @submit="emit('submit-comment', $event)"
+              @submit="submitComment"
             />
           </footer>
         </aside>
@@ -288,6 +317,8 @@ const emit = defineEmits<{
 
 const reactionTrayOpen = ref(false)
 const reactionLongPressTriggered = ref(false)
+const mobileComposerOpen = ref(false)
+const composerShellRef = ref<HTMLElement | null>(null)
 const reactionOptions = computed(() =>
   feedReactionAssets.map(reaction => ({
     value: reaction.value,
@@ -396,6 +427,10 @@ function startReactionPress() {
 
 function finishReactionPress() {
   stopReactionLongPressTimer()
+
+  if (!reactionLongPressTriggered.value) {
+    emitReaction(defaultFeedStoryReaction.value)
+  }
 }
 
 function cancelReactionPress() {
@@ -414,6 +449,34 @@ function emitReaction(reaction: FeedStoryReactionType) {
   reactionTrayOpen.value = false
   emit("react", reaction)
 }
+
+function openCommentComposer() {
+  mobileComposerOpen.value = true
+  emit("comment")
+
+  void nextTick(() => {
+    const focusable = composerShellRef.value?.querySelector<HTMLElement>(
+      "textarea, input, [contenteditable='true']",
+    )
+    focusable?.focus()
+  })
+}
+
+function submitComment(payload: FeedCommentSubmitPayload) {
+  mobileComposerOpen.value = true
+  emit("submit-comment", payload)
+}
+
+watch(
+  () => props.open,
+  (value) => {
+    if (!value) {
+      mobileComposerOpen.value = false
+      reactionTrayOpen.value = false
+      reactionLongPressTriggered.value = false
+    }
+  },
+)
 
 onMounted(() => {
   window.addEventListener("keydown", handleKeydown)
@@ -660,11 +723,21 @@ onBeforeUnmount(() => {
 }
 
 .lightbox-modal__primary-action {
-  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
-.lightbox-modal__like-btn {
+.lightbox-modal__reaction-action {
+  position: relative;
+  border-right: 1px solid rgba(15, 23, 42, 0.08);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.lightbox-modal__like-btn,
+.lightbox-modal__comment-btn {
   display: flex;
   width: 100%;
   align-items: center;
@@ -677,9 +750,14 @@ onBeforeUnmount(() => {
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  user-select: none;
 }
 
-.lightbox-modal__like-btn:hover {
+.lightbox-modal__like-btn:hover,
+.lightbox-modal__comment-btn:hover {
   background: var(--bg-surface-hover);
   color: var(--text-brand);
 }
@@ -704,6 +782,9 @@ onBeforeUnmount(() => {
   background: transparent;
   box-shadow: none;
   filter: drop-shadow(0 10px 18px rgba(15, 23, 42, 0.22));
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .lightbox-modal__reaction-option {
@@ -716,6 +797,10 @@ onBeforeUnmount(() => {
   border-radius: 9999px;
   background: transparent;
   cursor: pointer;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
   transition: transform 0.15s ease;
 }
 
@@ -728,6 +813,10 @@ onBeforeUnmount(() => {
   width: 30px;
   height: 30px;
   object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .lightbox-modal__meta {
@@ -768,5 +857,15 @@ onBeforeUnmount(() => {
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   padding: 14px 20px 18px;
   background: var(--bg-surface);
+}
+
+@media (max-width: 767px) {
+  .lightbox-modal__composer {
+    display: none;
+  }
+
+  .lightbox-modal__composer--mobile-open {
+    display: block;
+  }
 }
 </style>
