@@ -106,7 +106,10 @@
                 :class="{ 'comment-item__reaction-option--active': localSelectedReaction === reaction.value }"
                 :style="{ '--reaction-index': String(reactionIndex) }"
                 :aria-label="reaction.label"
-                @click="reactToComment(reaction.value)"
+                @pointerdown.prevent.stop="reactToComment(reaction.value)"
+                @click.prevent.stop
+                @keydown.enter.prevent="reactToComment(reaction.value)"
+                @keydown.space.prevent="reactToComment(reaction.value)"
               >
                 <img
                   :src="reaction.src"
@@ -600,9 +603,13 @@ onBeforeUnmount(() => {
 
 @media (max-width: 520px) {
   .comment-item__reaction-tray {
+    left: auto;
+    right: -18px;
+    max-width: calc(100vw - 32px);
     gap: 3px;
     padding: 7px 8px;
     box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14);
+    transform-origin: calc(100% - 28px) 100%;
   }
 
   .comment-item__reaction-option {

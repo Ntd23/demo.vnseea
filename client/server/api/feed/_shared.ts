@@ -501,8 +501,7 @@ const formatPostTime = (entity: BackendEntity) =>
   formatBackendTimestamp(firstString(entity, ["posted", "time", "created_at"]))
 
 const normalizeFeedReactionType = (value: unknown): FeedStoryReactionType | null => {
-  const reaction = asString(value)
-  return isFeedStoryReaction(reaction) ? reaction : null
+  return normalizeReactionType(value)
 }
 
 const createInitials = (value: string, fallback = "VN") => {
@@ -919,6 +918,14 @@ const mapCommentRecord = (
 ): FeedCommentRecord => {
   const publisher = asRecord(entity.publisher)
   const reaction = asRecord(entity.reaction)
+  const selectedReaction = normalizeFeedReactionType(
+    firstString(reaction, [
+      "type",
+      "reaction",
+      "reaction_type",
+      "value",
+    ]) || firstString(entity, ["reaction_type", "reaction", "comment_reaction", "reply_reaction"]),
+  )
   const author = firstString(publisher, ["name", "username"]) || "User"
   const username = firstString(publisher, ["username"])
   const imageUrl = resolveMediaUrl(firstString(entity, ["c_file", "comment_image", "image"]))
@@ -939,7 +946,7 @@ const mapCommentRecord = (
     time: firstString(entity, ["time_text", "posted"]) || formatBackendTimestamp(entity.time),
     attachment,
     reactionsCount: firstNumber(reaction, ["count", "reactions_count", "total"]),
-    selectedReaction: normalizeFeedReactionType(reaction.type),
+    selectedReaction,
     repliesCount: firstNumber(entity, ["replies", "replies_num", "reply_count", "replies_count"]),
     replies: asArray(entity.replies).map(reply => mapCommentRecord(reply, resolveMediaUrl)),
   }

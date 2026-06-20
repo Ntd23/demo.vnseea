@@ -115,7 +115,7 @@ export function useFeedCommentItemVM(
   } = useTimeoutFn(() => {
     reactionLongPressTriggered.value = true
     reactionTrayOpen.value = true
-  }, 420, { immediate: false })
+  }, 200, { immediate: false })
 
   function openReactionTray() {
     reactionTrayOpen.value = true
