@@ -490,16 +490,44 @@ const showSuggestionPanel = computed(() =>
   && (searchText.value.trim().length > 0 || suggestionOptions.value.length > 0),
 )
 const canUseNearbyMap = computed(() =>
-  locationPermissionState.value === "granted" || hasOrigin.value,
+  hasOrigin.value
+  || (locationPermissionState.value !== "denied" && locationPermissionState.value !== "unsupported"),
 )
 const shouldShowGoogleNearbyResults = computed(() =>
   googleNearbyLoading.value || googleNearbyQuery.value.length > 0,
 )
+
+function mergeNearbyDisplayItems(primaryItems: NearbySearchItem[], googleItems: NearbySearchItem[]) {
+  const merged = new Map<string, NearbySearchItem>()
+
+  primaryItems.forEach((item) => {
+    merged.set(item.id, item)
+  })
+  googleItems.forEach((item) => {
+    merged.set(item.id, item)
+  })
+
+  return Array.from(merged.values()).sort((left, right) => {
+    const leftDistance = left.distanceMeters ?? Number.POSITIVE_INFINITY
+    const rightDistance = right.distanceMeters ?? Number.POSITIVE_INFINITY
+
+    if (leftDistance !== rightDistance) {
+      return leftDistance - rightDistance
+    }
+
+    return left.title.localeCompare(right.title)
+  })
+}
+
 const displayMapItems = computed(() =>
-  shouldShowGoogleNearbyResults.value ? googleNearbyResults.value : mapItems.value,
+  shouldShowGoogleNearbyResults.value
+    ? mergeNearbyDisplayItems(mapItems.value, googleNearbyResults.value)
+    : mapItems.value,
 )
 const displayCardItems = computed(() =>
-  shouldShowGoogleNearbyResults.value ? googleNearbyResults.value : cardItems.value,
+  shouldShowGoogleNearbyResults.value
+    ? mergeNearbyDisplayItems(cardItems.value, googleNearbyResults.value)
+    : cardItems.value,
 )
 const displayHasResults = computed(() => displayCardItems.value.length > 0)
 const displayLoadingState = computed(() => displayLoading.value || googleNearbyLoading.value)
@@ -1006,7 +1034,7 @@ function handleLocationError(error?: GeolocationPositionError) {
     return
   }
 
-  locationPermissionState.value = hasOrigin.value ? "granted" : "denied"
+  locationPermissionState.value = hasOrigin.value ? "granted" : "checking"
 }
 
 function stopLocationPolling() {

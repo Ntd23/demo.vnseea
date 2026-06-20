@@ -5904,6 +5904,7 @@
           "createpost": "tạo bài viết",
           "createblog": "tạo blog",
           "admob": "quảng cáo",
+          "email_activation": "đăng ký và xác minh email",
           "blog_comment": "bình luận blog"
         }
       },

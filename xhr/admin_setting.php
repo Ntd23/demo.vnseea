@@ -3566,6 +3566,9 @@ if ($f == 'admin_setting' AND (Wo_IsAdmin() || Wo_IsModerator())) {
                 if ($key == 'pro_day_limit' && (!is_numeric($value) || $value < 1)) {
                     $value = 10000;
                 }
+                if ($key == 'email_activation_point' && (!is_numeric($value) || $value < 0)) {
+                    $value = 0;
+                }
                 if ($key == 'smtp_password') {
                     $value = openssl_encrypt($value, "AES-128-ECB", 'mysecretkey1234');
                 }

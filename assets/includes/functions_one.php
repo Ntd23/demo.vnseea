@@ -1028,16 +1028,107 @@ function Wo_ActivateUser($email, $code)
     global $sqlConnect;
     $email = Wo_Secure($email);
     $code = Wo_Secure($code);
-    $query = mysqli_query($sqlConnect, " SELECT COUNT(`user_id`)  FROM " . T_USERS . "  WHERE `email` = '{$email}' AND `email_code` = '{$code}' AND `active` = '0'");
-    $result = Wo_Sql_Result($query, 0);
-    if ($result == 1) {
-        $query_two = mysqli_query($sqlConnect, " UPDATE " . T_USERS . "  SET `active` = '1' WHERE `email` = '{$email}' ");
+    $query = mysqli_query($sqlConnect, " SELECT `user_id` FROM " . T_USERS . "  WHERE `email` = '{$email}' AND `email_code` = '{$code}' AND `active` = '0' LIMIT 1");
+    if (mysqli_num_rows($query) == 1) {
+        $user = mysqli_fetch_assoc($query);
+        $user_id = (int) $user['user_id'];
+        $query_two = mysqli_query($sqlConnect, " UPDATE " . T_USERS . "  SET `active` = '1' WHERE `user_id` = {$user_id} AND `active` = '0' ");
         if ($query_two) {
+            Wo_AddEmailActivationRewardPoints($user_id);
             return true;
         }
     } else {
         return false;
     }
+}
+
+function Wo_AddEmailActivationRewardPoints($user_id)
+{
+    global $wo, $sqlConnect;
+    if (empty($user_id) || !is_numeric($user_id) || $user_id < 1) {
+        return false;
+    }
+    if (empty($wo['config']['point_level_system']) || (int) $wo['config']['point_level_system'] !== 1) {
+        return false;
+    }
+    $points = !empty($wo['config']['email_activation_point']) ? (int) $wo['config']['email_activation_point'] : 0;
+    if ($points < 1) {
+        return false;
+    }
+    $dollar_to_point_cost = !empty($wo['config']['dollar_to_point_cost']) ? (float) $wo['config']['dollar_to_point_cost'] : 0;
+    if ($dollar_to_point_cost <= 0) {
+        return false;
+    }
+    $user_id = (int) Wo_Secure($user_id);
+    $user_data = Wo_UserData($user_id);
+    if (empty($user_data) || empty($user_data['user_id'])) {
+        return false;
+    }
+
+    $wallet = $points / $dollar_to_point_cost;
+    $today_end = strtotime(date('M') . " " . date('d') . ", " . date('Y') . " 11:59pm");
+    $point_day_expire = !empty($user_data['point_day_expire']) ? (int) $user_data['point_day_expire'] : 0;
+    $daily_points = ($point_day_expire <= time()) ? 0 : (int) $user_data['daily_points'];
+    $daily_points += $points;
+    $converted_points = (int) $user_data['converted_points'] + $points;
+    $points_amount = (int) $user_data['points'] + $points;
+    $wallet_amount = max(((float) $user_data['wallet'] + $wallet), 0);
+    $balance_amount = max(((float) $user_data['balance'] + $wallet), 0);
+
+    if (!empty($wo['config']['point_allow_withdrawal']) && (int) $wo['config']['point_allow_withdrawal'] === 1) {
+        $query_one = "UPDATE " . T_USERS . " SET `points` = '{$points_amount}', `daily_points` = '{$daily_points}', `point_day_expire` = '{$today_end}', `balance` = '{$balance_amount}', `converted_points` = '{$converted_points}' WHERE `user_id` = {$user_id}";
+    } else {
+        $query_one = "UPDATE " . T_USERS . " SET `points` = '{$points_amount}', `daily_points` = '{$daily_points}', `point_day_expire` = '{$today_end}', `wallet` = '{$wallet_amount}', `converted_points` = '{$converted_points}' WHERE `user_id` = {$user_id}";
+    }
+
+    mysqli_begin_transaction($sqlConnect);
+    $query = mysqli_query($sqlConnect, $query_one);
+    if ($query) {
+        $point_log_amount = (float) $wallet;
+        $point_log_extra = mysqli_real_escape_string($sqlConnect, json_encode(array(
+            'points' => (int) $points,
+            'action' => '+',
+            'type' => 'email_activation',
+            'description' => 'register_email_verified',
+            'rate_points' => (float) $dollar_to_point_cost,
+            'base_currency' => 'USD',
+            'base_amount' => (float) $wallet
+        ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        $point_log_query = mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`, `extra`) VALUES ({$user_id}, 'POINTS_EARNED', {$point_log_amount}, 'register_email_verified', '{$point_log_extra}')");
+        if (!$point_log_query) {
+            mysqli_rollback($sqlConnect);
+            return false;
+        }
+        mysqli_commit($sqlConnect);
+        Wo_RegisterEmailActivationRewardNotification($user_id, $points);
+        cache($user_id, 'users', 'delete');
+        return true;
+    }
+    mysqli_rollback($sqlConnect);
+    return false;
+}
+
+function Wo_RegisterEmailActivationRewardNotification($user_id, $points)
+{
+    global $sqlConnect;
+    if (empty($user_id) || !is_numeric($user_id) || $user_id < 1 || empty($points) || !is_numeric($points) || $points < 1) {
+        return false;
+    }
+    $user_id = (int) Wo_Secure($user_id);
+    $points = (int) $points;
+    $text = mysqli_real_escape_string($sqlConnect, 'Bạn đã nhận được ' . $points . ' điểm thưởng sau khi đăng ký và xác minh email thành công.');
+    $url = 'index.php?link1=setting&page=myPoints';
+    $time = time();
+    $type2 = mysqli_real_escape_string($sqlConnect, 'no_name');
+    $query = mysqli_query($sqlConnect, "INSERT INTO " . T_NOTIFICATION . " (`recipient_id`, `type`, `type2`, `text`, `url`, `time`) VALUES ({$user_id}, 'admin_notification', '{$type2}', '{$text}', '{$url}', {$time})");
+    if ($query) {
+        $notification_id = mysqli_insert_id($sqlConnect);
+        if (!empty($notification_id)) {
+            Wo_PublishRealtimeNotification($user_id, $notification_id, 'notification');
+        }
+        return true;
+    }
+    return false;
 }
 
 function Wo_ResetPassword($user_id, $password)
