@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
   if (points < 1) {
     throw createError({
       statusCode: 422,
-      statusMessage: "Points must be greater than zero.",
+      statusMessage: "VNSEEA must be greater than zero.",
     })
   }
 
@@ -41,12 +41,12 @@ export default defineEventHandler(async (event) => {
       "points-exchange",
       { points },
     ),
-    "Unable to exchange points.",
+    "Unable to exchange VNSEEA.",
   )
 
   return {
     success: true,
-    message: response.message || "Points exchanged successfully.",
+    message: response.message || "VNSEEA exchanged successfully.",
     exchangedPoints: asNumber(response.exchanged_points),
     amount: asNumber(response.amount),
     points: asNumber(response.points),

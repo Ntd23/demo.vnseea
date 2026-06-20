@@ -62,9 +62,7 @@
               </span>
               <span class="nearby-map-page__suggestion-copy">
                 <span class="nearby-map-page__suggestion-title">{{ item.label }}</span>
-                <span class="nearby-map-page__suggestion-meta">
-                  {{ item.kind === "place" ? item.distanceLabel : `${item.raw?.type === "page" ? "Trang" : "Người dùng"} · ${item.distanceLabel}` }}
-                </span>
+                <span class="nearby-map-page__suggestion-meta">{{ getSuggestionMeta(item) }}</span>
               </span>
           </button>
           <div v-if="suggestionOptions.length === 0" class="nearby-map-page__suggestion-empty-wrap">
@@ -75,24 +73,24 @@
 
     </div>
 
-    <div v-if="canUseNearbyMap" class="nearby-map-page__map-controls" aria-label="Map controls">
-      <button type="button" class="nearby-map-page__map-control" aria-label="Toan man hinh" @click="toggleMapFullscreen">
+    <div v-if="canUseNearbyMap" class="nearby-map-page__map-controls" :aria-label="t('pages.searchNearby.mapControlsLabel')">
+      <button type="button" class="nearby-map-page__map-control" :aria-label="t('pages.searchNearby.fullscreen')" @click="toggleMapFullscreen">
         <UIcon name="i-ph-corners-out-bold" />
       </button>
-      <button type="button" class="nearby-map-page__map-control" aria-label="Phong to" @click="zoomMapIn">
+      <button type="button" class="nearby-map-page__map-control" :aria-label="t('pages.searchNearby.zoomIn')" @click="zoomMapIn">
         <UIcon name="i-ph-plus-bold" />
       </button>
-      <button type="button" class="nearby-map-page__map-control" aria-label="Thu nho" @click="zoomMapOut">
+      <button type="button" class="nearby-map-page__map-control" :aria-label="t('pages.searchNearby.zoomOut')" @click="zoomMapOut">
         <UIcon name="i-ph-minus-bold" />
       </button>
-      <button type="button" class="nearby-map-page__map-control nearby-map-page__map-control--primary" aria-label="Vi tri cua toi" @click="handleMyLocationClick">
+      <button type="button" class="nearby-map-page__map-control nearby-map-page__map-control--primary" :aria-label="t('pages.searchNearby.myLocation')" @click="handleMyLocationClick">
         <UIcon name="i-ph-crosshair-fill" />
       </button>
       <button
         type="button"
         class="nearby-map-page__map-control"
         :class="{ 'nearby-map-page__map-control--active': showMapGuide }"
-        aria-label="Huong dan dinh vi va la ban"
+        :aria-label="t('pages.searchNearby.mapGuideToggle')"
         @click="showMapGuide = !showMapGuide"
       >
         <UIcon name="i-ph-info-bold" />
@@ -102,14 +100,14 @@
     <div v-if="canUseNearbyMap && showMapGuide" class="nearby-map-page__map-guide">
       <div class="nearby-map-page__map-guide-title">
         <UIcon name="i-ph-navigation-arrow-fill" />
-        <span>Dinh vi va la ban realtime</span>
+        <span>{{ t("pages.searchNearby.mapGuideTitle") }}</span>
       </div>
       <ul>
-        <li>Mac dinh ban do tu zoom vao vong tron 3km quanh vi tri cua ban.</li>
-        <li>Bam nut dinh vi de cap nhat lai vi tri, zoom ve vong tron 3km va xin quyen la ban neu trinh duyet can.</li>
-        <li>iOS: neu Safari hoi Motion & Orientation, chon Allow. Neu khong thay hoi, vao Settings -> Safari -> Motion & Orientation Access, bat len, reload trang roi bam lai nut dinh vi.</li>
-        <li>Android: cho phep Location. Neu mui ten khong xoay, kiem tra Chrome -> Site settings -> Motion sensors va cho phep cam bien.</li>
-        <li>Dien thoai: keo 1 ngon de di chuyen map, zoom bang 2 ngon. Desktop: keo chuot trai de di chuyen, lan chuot de zoom.</li>
+        <li>{{ t("pages.searchNearby.mapGuideDefaultZoom") }}</li>
+        <li>{{ t("pages.searchNearby.mapGuideLocateButton") }}</li>
+        <li>{{ t("pages.searchNearby.mapGuideIos") }}</li>
+        <li>{{ t("pages.searchNearby.mapGuideAndroid") }}</li>
+        <li>{{ t("pages.searchNearby.mapGuideGestures") }}</li>
       </ul>
     </div>
 
@@ -118,18 +116,26 @@
         <div v-if="routeErrorMessage" class="nearby-map-page__route-error">
           <Icon name="i-ph-warning-circle-duotone" />
           <span>{{ routeErrorMessage }}</span>
-          <button type="button" @click="clearRoute">Ẩn</button>
+          <button type="button" @click="clearRoute">{{ t("pages.searchNearby.hide") }}</button>
         </div>
 
-        <div v-if="displayLoadingState" class="nearby-map-page__state">
-          <Icon name="i-ph-spinner-gap-duotone" class="nearby-map-page__spin" />
-          <span>Đang tải kết quả gần bạn...</span>
+        <div v-if="showNearbySkeleton" class="nearby-map-page__skeleton" aria-hidden="true">
+          <div class="nearby-map-page__skeleton-card">
+            <span class="nearby-map-page__skeleton-avatar" />
+            <span class="nearby-map-page__skeleton-line nearby-map-page__skeleton-line--wide" />
+            <span class="nearby-map-page__skeleton-line nearby-map-page__skeleton-line--short" />
+          </div>
+          <div class="nearby-map-page__skeleton-card">
+            <span class="nearby-map-page__skeleton-avatar" />
+            <span class="nearby-map-page__skeleton-line nearby-map-page__skeleton-line--medium" />
+            <span class="nearby-map-page__skeleton-line nearby-map-page__skeleton-line--short" />
+          </div>
         </div>
 
         <div v-else-if="errorMessage" class="nearby-map-page__state nearby-map-page__state--error">
           <Icon name="i-ph-warning-circle-duotone" />
           <span>{{ errorMessage }}</span>
-          <button type="button" @click="refresh">Thử lại</button>
+          <button type="button" @click="refresh">{{ t("pages.searchNearby.retry") }}</button>
         </div>
 
         <div v-else-if="!displayHasResults" class="nearby-map-page__empty">
@@ -139,14 +145,14 @@
             <p>{{ emptyDescription }}</p>
           </div>
           <NuxtLink v-if="needsLocation" :to="appRoutes.settingsPage('profile')" class="nearby-map-page__empty-action">
-            Cập nhật địa chỉ
+            {{ t("pages.searchNearby.updateAddress") }}
           </NuxtLink>
           <button v-else type="button" class="nearby-map-page__empty-action" @click="handleClearSearch">
-            Xóa bộ lọc
+            {{ t("pages.searchNearby.clearFilter") }}
           </button>
         </div>
 
-        <div ref="cardsContainer" v-else class="nearby-map-page__cards" aria-label="Nearby results">
+        <div ref="cardsContainer" v-else class="nearby-map-page__cards" :aria-label="t('pages.searchNearby.resultsAriaLabel')">
           <NearbyResultCard
             v-for="item in displayCardItems"
             :key="item.id"
@@ -183,7 +189,7 @@
             @click="handleMyLocationClick"
           >
             <UIcon name="i-ph-arrow-counter-clockwise-bold" />
-            <span>Đã bật lại quyền, Thử lại</span>
+            <span>{{ t("pages.searchNearby.permissionRetry") }}</span>
           </button>
 
           <button
@@ -193,7 +199,7 @@
             @click="showGuide = !showGuide"
           >
             <UIcon :name="showGuide ? 'i-ph-eye-slash-bold' : 'i-ph-info-bold'" />
-            <span>{{ showGuide ? 'Ẩn hướng dẫn bật vị trí' : 'Hướng dẫn cách bật vị trí' }}</span>
+            <span>{{ showGuide ? t("pages.searchNearby.hideLocationGuide") : t("pages.searchNearby.showLocationGuide") }}</span>
           </button>
         </div>
 
@@ -208,7 +214,7 @@
               @click="guideTab = 'ios'"
             >
               <UIcon name="i-ph-apple-logo-fill" />
-              <span>iOS / Safari</span>
+              <span>{{ t("pages.searchNearby.iosTab") }}</span>
             </button>
             <button
               type="button"
@@ -217,7 +223,7 @@
               @click="guideTab = 'android'"
             >
               <UIcon name="i-ph-android-logo-fill" />
-              <span>Android / Chrome</span>
+              <span>{{ t("pages.searchNearby.androidTab") }}</span>
             </button>
             <button
               type="button"
@@ -226,7 +232,7 @@
               @click="guideTab = 'desktop'"
             >
               <UIcon name="i-ph-desktop-fill" />
-              <span>Máy tính</span>
+              <span>{{ t("pages.searchNearby.desktopTab") }}</span>
             </button>
           </div>
 
@@ -236,15 +242,15 @@
             <div v-if="guideTab === 'ios'" class="nearby-map-page__guide-steps">
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--ios">1</div>
-                <div class="nearby-map-page__step-text">Mở ứng dụng <strong>Cài đặt (Settings)</strong> trên màn hình chính iPhone/iPad.</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.ios.step1") }}</div>
               </div>
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--ios">2</div>
-                <div class="nearby-map-page__step-text">Cuộn xuống dưới tìm và nhấp chọn <strong>Safari</strong> hoặc <strong>Chrome</strong> (trình duyệt bạn đang dùng).</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.ios.step2") }}</div>
               </div>
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--ios">3</div>
-                <div class="nearby-map-page__step-text">Tìm đến mục <strong>Vị trí (Location)</strong> -> Chuyển sang chọn <strong>Hỏi</strong> hoặc <strong>Cho phép (Allow)</strong>.</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.ios.step3") }}</div>
               </div>
             </div>
 
@@ -252,15 +258,15 @@
             <div v-if="guideTab === 'android'" class="nearby-map-page__guide-steps">
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--android">1</div>
-                <div class="nearby-map-page__step-text">Vào <strong>Cài đặt (Settings)</strong> trên điện thoại -> Chọn mục <strong>Ứng dụng / Quản lý ứng dụng (Apps)</strong>.</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.android.step1") }}</div>
               </div>
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--android">2</div>
-                <div class="nearby-map-page__step-text">Tìm kiếm và chọn ứng dụng <strong>Google</strong> hoặc trình duyệt bạn đang dùng (ví dụ: <strong>Chrome, Cốc Cốc</strong>).</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.android.step2") }}</div>
               </div>
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--android">3</div>
-                <div class="nearby-map-page__step-text">Nhấp vào <strong>Quyền ứng dụng (Permissions)</strong> -> Chọn <strong>Vị trí (Location)</strong> -> Chọn <strong>Cho phép khi dùng ứng dụng (Allow)</strong>.</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.android.step3") }}</div>
               </div>
             </div>
 
@@ -268,15 +274,15 @@
             <div v-if="guideTab === 'desktop'" class="nearby-map-page__guide-steps">
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--desktop">1</div>
-                <div class="nearby-map-page__step-text">Nhấp chuột vào biểu tượng <strong>🔒 (ổ khóa)</strong> hoặc biểu tượng <strong>Cài đặt trang web</strong> ở bên trái thanh địa chỉ URL.</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.desktop.step1") }}</div>
               </div>
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--desktop">2</div>
-                <div class="nearby-map-page__step-text">Tìm mục <strong>Vị trí (Location)</strong> -> Chuyển thanh gạt sang <strong>Bật</strong> hoặc chọn <strong>Cho phép (Allow)</strong>.</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.desktop.step2") }}</div>
               </div>
               <div class="nearby-map-page__step">
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--desktop">3</div>
-                <div class="nearby-map-page__step-text">Sau khi thiết lập xong, nhấp nút <strong>Thử lại</strong> ở phía trên để tải lại bản đồ.</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.desktop.step3") }}</div>
               </div>
             </div>
           </div>
@@ -288,7 +294,7 @@
           disabled
         >
           <UIcon name="i-ph-x-circle-bold" />
-          <span>Không hỗ trợ</span>
+          <span>{{ t("pages.searchNearby.unsupported") }}</span>
         </button>
         <button
           v-else
@@ -298,10 +304,10 @@
           @click="handleMyLocationClick"
         >
           <UIcon name="i-ph-crosshair-fill" />
-          <span>Bật quyền chia sẻ vị trí</span>
+          <span>{{ t("pages.searchNearby.enableLocation") }}</span>
         </button>
         <p v-if="locationPermissionState !== 'unsupported'" class="nearby-map-page__permission-note">
-          iOS co the hoi them quyen Motion & Orientation de mui ten xoay realtime. Hay chon Allow, sau do bam nut dinh vi de zoom ve vong tron 1km quanh ban.
+          {{ t("pages.searchNearby.permissionNote") }}
         </p>
       </div>
     </div>
@@ -416,10 +422,12 @@ const {
   clearSearch,
 } = useSearchNearbyPageVM()
 
+const { t } = useI18n()
+
 const searchPlaceholder = computed(() =>
   googlePlacesEnabled.value
-    ? "Tim ca phe, quan cat toc, dia diem gan ban..."
-    : "Tim user hoac Page gan ban...",
+    ? t("pages.searchNearby.searchPlacesPlaceholder")
+    : t("pages.searchNearby.searchPeoplePagesPlaceholder"),
 )
 
 const googlePlaceSuggestions = ref<GooglePlaceSuggestion[]>([])
@@ -531,37 +539,57 @@ const displayCardItems = computed(() =>
 )
 const displayHasResults = computed(() => displayCardItems.value.length > 0)
 const displayLoadingState = computed(() => displayLoading.value || googleNearbyLoading.value)
+const showNearbySkeleton = computed(() =>
+  displayLoadingState.value
+  || (
+    needsLocation.value
+    && !hasOrigin.value
+    && locationPermissionState.value === "checking"
+  ),
+)
 const displaySearchRadiusKm = computed(() =>
   shouldShowGoogleNearbyResults.value ? 3 : distanceKm.value,
 )
 const locationPermissionTitle = computed(() => {
-  if (locationPermissionState.value === "checking") return "Đang xin quyền chia sẻ vị trí"
-  if (locationPermissionState.value === "denied") return "Quyền vị trí đang bị chặn"
-  if (locationPermissionState.value === "unsupported") return "Trình duyệt không hỗ trợ"
-  return "Vui lòng bật quyền chia sẻ vị trí"
+  if (locationPermissionState.value === "checking") return t("pages.searchNearby.permissionTitleChecking")
+  if (locationPermissionState.value === "denied") return t("pages.searchNearby.permissionTitleDenied")
+  if (locationPermissionState.value === "unsupported") return t("pages.searchNearby.permissionTitleUnsupported")
+  return t("pages.searchNearby.permissionTitleDefault")
 })
 const locationPermissionDescription = computed(() => {
   if (locationPermissionState.value === "unsupported") {
-    return "Trình duyệt này không hỗ trợ lấy vị trí hiện tại, nên chưa thể dùng chức năng tìm kiếm quanh bạn."
+    return t("pages.searchNearby.permissionDescriptionUnsupported")
   }
 
   if (locationPermissionState.value === "checking") {
-    return "VNSEEA cần vị trí hiện tại để hiển thị bản đồ và những người, trang ở gần bạn."
+    return t("pages.searchNearby.permissionDescriptionChecking")
   }
 
   if (locationPermissionState.value === "denied") {
-    return "Bạn đã chặn quyền vị trí của trang web này. Vui lòng cấp lại quyền để có thể tiếp tục trải nghiệm tính năng tìm kiếm xung quanh."
+    return t("pages.searchNearby.permissionDescriptionDenied")
   }
 
-  return "VNSEEA cần vị trí hiện tại để hiển thị bản đồ và những người, trang ở gần bạn. Nhấn nút bên dưới để cấp quyền."
+  return t("pages.searchNearby.permissionDescriptionDefault")
 })
 
 const suggestionEmptyText = computed(() => {
-  if (suggestionsLoading.value) return "Đang tìm gợi ý..."
-  if (searchText.value.trim().length < 3) return "Nhập tối thiểu 3 ký tự."
+  if (suggestionsLoading.value) return t("pages.searchNearby.suggestionLoading")
+  if (searchText.value.trim().length < 3) return t("pages.searchNearby.suggestionMinChars")
 
-  return "Không có user/page gần bạn."
+  return t("pages.searchNearby.suggestionEmpty")
 })
+
+function getSuggestionMeta(item: NearbySuggestionOption) {
+  if (item.kind === "place") {
+    return item.distanceLabel
+  }
+
+  const typeLabel = item.raw?.type === "page"
+    ? t("pages.searchNearby.suggestionPage")
+    : t("pages.searchNearby.suggestionUser")
+
+  return `${typeLabel} · ${item.distanceLabel}`
+}
 
 function formatDistance(meters: number | null) {
   if (meters === null) return "-- km"
@@ -1184,7 +1212,7 @@ async function toggleMapFullscreen() {
     await pageRoot.value.requestFullscreen()
   }
   catch {
-    handleRouteError("Khong the bat che do toan man hinh cho ban do.")
+    handleRouteError(t("pages.searchNearby.fullscreenError"))
   }
 }
 
@@ -2054,6 +2082,72 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
+.nearby-map-page__skeleton {
+  display: grid;
+  gap: 10px;
+  min-height: 130px;
+  border: 1px solid color-mix(in srgb, var(--border-default) 74%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
+  padding: 12px;
+}
+
+.nearby-map-page__skeleton-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px 12px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
+  padding: 12px;
+}
+
+.nearby-map-page__skeleton-avatar,
+.nearby-map-page__skeleton-line {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-secondary-200) 52%, var(--bg-surface));
+}
+
+.nearby-map-page__skeleton-avatar::after,
+.nearby-map-page__skeleton-line::after {
+  position: absolute;
+  inset: 0;
+  animation: nearby-skeleton-shimmer 1.25s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--bg-surface) 72%, transparent),
+    transparent
+  );
+  content: "";
+  transform: translateX(-100%);
+}
+
+.nearby-map-page__skeleton-avatar {
+  grid-row: span 2;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+}
+
+.nearby-map-page__skeleton-line {
+  height: 12px;
+  border-radius: 999px;
+}
+
+.nearby-map-page__skeleton-line--wide {
+  width: min(100%, 280px);
+}
+
+.nearby-map-page__skeleton-line--medium {
+  width: min(76%, 220px);
+}
+
+.nearby-map-page__skeleton-line--short {
+  width: min(48%, 150px);
+}
+
 .nearby-map-page__route-error {
   display: flex;
   align-items: center;
@@ -2166,6 +2260,12 @@ onBeforeUnmount(() => {
 @keyframes nearby-spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes nearby-skeleton-shimmer {
+  to {
+    transform: translateX(100%);
   }
 }
 
@@ -2302,11 +2402,22 @@ onBeforeUnmount(() => {
   }
 
   .nearby-map-page__state,
-  .nearby-map-page__empty {
+  .nearby-map-page__empty,
+  .nearby-map-page__skeleton {
     min-height: 96px;
     border-radius: 18px;
     padding: 14px;
     font-size: 13px;
+  }
+
+  .nearby-map-page__skeleton-card {
+    grid-template-columns: 42px minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .nearby-map-page__skeleton-avatar {
+    width: 42px;
+    height: 42px;
   }
 }
 

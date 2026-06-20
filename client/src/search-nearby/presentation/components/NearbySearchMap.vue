@@ -39,6 +39,7 @@ const emit = defineEmits<{
 }>()
 
 const runtimeConfig = useRuntimeConfig()
+const { t } = useI18n()
 const googleMapsMapId = computed(() => String(runtimeConfig.public.scripts?.googleMaps?.mapId || "").trim())
 const mapElement = ref<HTMLDivElement | null>(null)
 const mapError = ref("")
@@ -748,7 +749,7 @@ function handleGooglePoiClick(event: google.maps.MapMouseEvent & { placeId?: str
       const okStatus = window.google?.maps?.places?.PlacesServiceStatus?.OK
 
       if (status !== okStatus || !place?.geometry?.location) {
-        emit("routeError", "Không đọc được địa điểm Google Maps này.")
+        emit("routeError", t("pages.searchNearby.mapPlaceReadError"))
         return
       }
 
@@ -1230,7 +1231,7 @@ function renderRoute() {
     || target.lng === null
   ) {
     clearRoute()
-    emit("routeError", "Khong the ve chi duong cho ket qua nay.")
+    emit("routeError", t("pages.searchNearby.routeUnavailable"))
     return
   }
 
@@ -1275,7 +1276,7 @@ function renderRoute() {
       }
 
       clearRoute()
-      emit("routeError", `Google Directions returned ${status}.`)
+      emit("routeError", t("pages.searchNearby.googleDirectionsError", { status }))
     },
   )
 }
@@ -1289,7 +1290,7 @@ async function initializeMap() {
     await load()
   }
   catch {
-    mapError.value = "Khong tai duoc Google Maps cho ten mien hien tai."
+    mapError.value = t("pages.searchNearby.googleMapsLoadError")
     return
   }
 
@@ -1301,7 +1302,7 @@ async function initializeMap() {
   }
 
   if (!window.google?.maps) {
-    mapError.value = "Google Maps chua san sang."
+    mapError.value = t("pages.searchNearby.googleMapsNotReady")
     return
   }
 
@@ -1324,7 +1325,7 @@ async function initializeMap() {
   }
 
   if (!constructors) {
-    mapError.value = "Google Maps chua san sang."
+    mapError.value = t("pages.searchNearby.googleMapsNotReady")
     return
   }
 

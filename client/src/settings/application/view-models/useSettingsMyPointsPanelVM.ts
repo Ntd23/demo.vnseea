@@ -223,6 +223,13 @@ export function useSettingsMyPointsPanelVM(
     return `${sign}${formatNumber(Math.abs(value))}`
   }
 
+  function formatVnseeaMessage(value: string) {
+    return value
+      .replace(/\bpoints\b/gi, "VNSEEA")
+      .replace(/\bpoint\b/gi, "VNSEEA")
+      .replace(/điểm/gi, "VNSEEA")
+  }
+
   function formatMoney(value: number, sourceCurrency: string) {
     const displayCurrency = locale.value === "vi" ? localizedCurrency.value : "USD"
     let displayValue = value
@@ -348,7 +355,9 @@ export function useSettingsMyPointsPanelVM(
     try {
       const result = await onExchange(normalizedExchangePoints.value)
 
-      statusMessage.value = result.message || t("settings.data.pointsPanel.exchangeSuccess")
+      statusMessage.value = result.message
+        ? formatVnseeaMessage(result.message)
+        : t("settings.data.pointsPanel.exchangeSuccess")
       closeExchangeModal()
       toast.add({
         title: t("settings.data.pointsPanel.exchangeSuccess"),
@@ -412,7 +421,9 @@ export function useSettingsMyPointsPanelVM(
       const result = await onTransfer(transferDraft.recipientUserId, transferDraft.points, normalizedTransferNote.value)
       toast.add({
         title: t("settings.data.pointsPanel.transferSuccess"),
-        description: result.message,
+        description: result.message
+          ? formatVnseeaMessage(result.message)
+          : t("settings.data.pointsPanel.transferSuccess"),
         color: "success",
         icon: "i-ph-check-circle-fill",
       })
