@@ -78,7 +78,6 @@ const sidebarNavMore = [
   { label: 'navigation.leftSidebar.items.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   // { label: 'navigation.leftSidebar.items.games', icon: 'i-ph-game-controller-fill', to: '/games' },
   { label: 'navigation.leftSidebar.items.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
-  { label: 'navigation.leftSidebar.items.withdrawal', icon: 'i-ph-money-wavy-fill', to: '/withdrawal' },
   { label: 'navigation.leftSidebar.items.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' }
 ]
 

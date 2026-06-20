@@ -98,6 +98,15 @@ export function useReelsPageVM(
     activeIndex.value = (activeIndex.value + 1) % reels.value.length
   }
 
+  function handleVideoEnded() {
+    if (reels.value.length > 1) {
+      nextReel()
+      return
+    }
+
+    isPlaying.value = false
+  }
+
   function prevReel() {
     if (reels.value.length < 2) {
       return
@@ -246,6 +255,7 @@ export function useReelsPageVM(
     onMetadataLoaded,
     togglePlayPause,
     seek,
+    handleVideoEnded,
     nextReel,
     prevReel,
     exitFullscreen,

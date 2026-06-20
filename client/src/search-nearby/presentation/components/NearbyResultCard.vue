@@ -40,17 +40,17 @@
           type="button"
           @click.stop="$emit('focusOrigin')"
         >
-          Vị trí của tôi
+          {{ t("pages.searchNearby.myLocation") }}
         </button>
         <button
           class="nearby-result-card__action nearby-result-card__action--primary"
           type="button"
           @click.stop="$emit('directions', item)"
         >
-          Chỉ đường
+          {{ t("pages.searchNearby.directions") }}
         </button>
         <button class="nearby-result-card__action" type="button" @click.stop="shareResult">
-          Chia sẻ
+          {{ t("pages.searchNearby.share") }}
         </button>
       </div>
     </div>
@@ -70,6 +70,8 @@ defineEmits<{
   focusOrigin: []
   directions: [item: NearbySearchItem]
 }>()
+
+const { t } = useI18n()
 
 const initials = computed(() =>
   props.item.title

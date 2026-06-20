@@ -44,11 +44,11 @@
             <div v-if="showStats" class="user-menu__stats">
               <NuxtLink v-if="formattedWalletPoints" :to="appRoutes.wallet" class="user-menu__stat" @click="open = false">
                 <Icon name="i-ph-wallet-fill" class="user-menu__stat-icon" />
-                <span>{{ $t("navigation.mobileMenu.walletLabel") || "Ví" }}: {{ formattedWalletPoints }}</span>
+                <span>{{ $t("navigation.mobileMenu.walletLabel") || "Wallet" }}: {{ formattedWalletPoints }}</span>
               </NuxtLink>
               <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="user-menu__stat" @click="open = false">
                 <Icon name="i-ph-circle-half-fill" class="user-menu__stat-icon" />
-                <span>{{ $t("navigation.mobileMenu.pointsLabel") || "Points" }}: {{ formattedPoints }}</span>
+                <span>{{ $t("navigation.mobileMenu.pointsLabel") || "VNSEEA" }}: {{ formattedPoints }}</span>
               </NuxtLink>
             </div>
           </div>
@@ -154,7 +154,7 @@ const formattedPoints = computed(() => {
   return numberFormatter.value.format(value)
 })
 const formattedWalletPoints = computed(() =>
-  formattedPoints.value ? `${formattedPoints.value} điểm` : "",
+  formattedPoints.value ? `${formattedPoints.value} VNSEEA` : "",
 )
 const showStats = computed(() => Boolean(formattedPoints.value))
 

@@ -1,6 +1,7 @@
 // English description: Bridges settings point transfer requests to the PHP wallet points transfer handler.
 
 import { createError } from "h3"
+import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 
 type BackendPointsTransferResponse = {
@@ -25,18 +26,20 @@ const asString = (value: unknown) =>
 const errorMessage = (response: BackendPointsTransferResponse | null | undefined) => {
   if (Array.isArray(response?.errors)) return response.errors.join("\n")
   if (response?.errors && typeof response.errors === "object") return asString(response.errors.error_text)
-  return asString(response?.message) || "Unable to transfer points."
+  return asString(response?.message) || "Unable to transfer VNSEEA."
 }
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ recipientUserId?: number | string; points?: number | string; note?: string }>(event)
+  const currentUser = await getBackendCurrentUser(event)
   const recipientUserId = Math.trunc(asNumber(body?.recipientUserId))
   const points = Math.trunc(asNumber(body?.points))
+  const sessionHash = asString(currentUser.session_hash)
 
   if (recipientUserId < 1 || points < 1) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Invalid point transfer details.",
+      statusMessage: "Invalid VNSEEA transfer details.",
     })
   }
 
@@ -46,8 +49,12 @@ export default defineEventHandler(async (event) => {
       user_id: recipientUserId,
       points,
       note: body?.note,
+      hash_id: sessionHash,
     },
-    { s: "send-points" },
+    {
+      s: "send-points",
+      hash_id: sessionHash,
+    },
   )
   const status = Number(response?.status ?? 0)
 

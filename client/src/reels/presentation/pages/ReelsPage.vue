@@ -10,195 +10,153 @@
     </div>
 
     <!-- Active Reel Content -->
-    <div
-      v-else-if="activeReel"
-      class="reels-page__container"
-      @wheel="handleWheel"
-      @pointerdown.passive="onPointerDown"
-      @pointerup.passive="onPointerUp"
-      @pointercancel.passive="onPointerUp"
-    >
+    <div v-else-if="activeReel" class="reels-page__container" @wheel="handleWheel" @pointerdown.passive="onPointerDown"
+      @pointerup.passive="onPointerUp" @pointercancel.passive="onPointerUp">
       <!-- Main Content Area -->
       <main class="reels-page__main">
-         <!-- Reel Player Stage -->
-         <div class="reels-page__stage">
-            <div
-              class="reels-page__player-box"
-            >
-              <template v-if="activeMedia?.type === 'video'">
-                <video
-                  ref="videoRef"
-                  :key="activeReel.id"
-                  :src="activeMedia.src"
-                  class="reels-page__video"
-                  autoplay
-                  loop
-                  playsinline
-                  @timeupdate="updateProgress"
-                  @loadedmetadata="onMetadataLoaded"
-                  @click="togglePlayPause"
-                />
+        <!-- Reel Player Stage -->
+        <div class="reels-page__stage">
+          <div class="reels-page__player-box">
+            <template v-if="activeMedia?.type === 'video'">
+              <video ref="videoRef" :key="activeReel.id" :src="activeMedia.src" class="reels-page__video" autoplay
+                controls playsinline @play="isPlaying = true" @pause="isPlaying = false" @timeupdate="updateProgress"
+                @loadedmetadata="onMetadataLoaded" @ended="handleVideoEnded" />
 
-                <!-- Play Overlay -->
-                <div v-if="!isPlaying" class="reels-page__play-overlay" @click="togglePlayPause">
-                  <Icon name="i-ph-play-fill" class="h-16 w-16 text-white/50" />
+              <!-- Play Overlay -->
+              <div v-if="!isPlaying" class="reels-page__play-overlay" @click="togglePlayPause">
+                <Icon name="i-ph-play-fill" class="h-16 w-16 text-white/50" />
+              </div>
+
+              <!-- Custom Progress Bar -->
+              <!-- <div class="reels-page__progress-container"
+                :class="{ 'reels-page__progress-container--visible': !isPlaying }" @click="seek">
+                <div class="reels-page__progress-bar">
+                  <div class="reels-page__progress-fill" :style="{ width: `${progress}%` }"></div>
                 </div>
+              </div> -->
+            </template>
+            <img v-else :src="activeMedia?.thumb || activeMedia?.src || activeReel.authorAvatarUrl"
+              class="reels-page__video">
 
-                <!-- Custom Progress Bar -->
-                <div class="reels-page__progress-container" :class="{ 'reels-page__progress-container--visible': !isPlaying }" @click="seek">
-                  <div class="reels-page__progress-bar">
-                    <div 
-                      class="reels-page__progress-fill" 
-                      :style="{ width: `${progress}%` }"
-                    ></div>
+            <!-- Dark Overlay for better text readability -->
+            <div class="reels-page__video-overlay" />
+
+            <!-- Author Info & Caption (Bottom Left of player) -->
+            <div class="reels-page__info">
+              <div class="reels-page__author">
+                <img :src="activeReel.authorAvatarUrl" :alt="activeReel.author" class="reels-page__avatar">
+                <div class="reels-page__author-meta">
+                  <p class="reels-page__author-name">{{ activeReel.author }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interaction Icons (Floating on the right) -->
+          <div class="reels-page__actions">
+            <div class="reels-page__action-item">
+              <div class="reels-page__action-wrapper" @mouseenter="openPostReactionTray"
+                @mouseleave="closePostReactionTray"
+                @focusin="openPostReactionTray"
+                @focusout="closePostReactionTray"
+                @contextmenu.prevent>
+                <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
+                  :class="{ 'reels-page__action-btn--active': liked }" :aria-label="t('pages.reelsPage.like')"
+                  @pointerdown="startPostReactionPress"
+                  @pointerup="finishPostReactionPress"
+                  @pointerleave="cancelPostReactionPress"
+                  @pointercancel="cancelPostReactionPress"
+                  @contextmenu.prevent
+                  @click="handlePostReactionButtonClick">
+                  <img
+                    v-if="selectedPostReaction"
+                    :src="activePostReactionAsset.src"
+                    :alt="activePostReactionLabel"
+                    class="h-8 w-8 reels-page__reaction-image"
+                    draggable="false"
+                    @contextmenu.prevent
+                    @dragstart.prevent
+                  >
+                  <Icon v-else name="i-ph-thumbs-up-bold" class="h-8 w-8" />
+                </UButton>
+                <span class="reels-page__action-label">{{ formatCompact(likesCount) }}</span>
+
+                <!-- Reaction Tray -->
+                <Transition enter-active-class="transition duration-150 ease-out"
+                  enter-from-class="opacity-0 translate-y-2 scale-95"
+                  enter-to-class="opacity-100 translate-y-0 scale-100"
+                  leave-active-class="transition duration-100 ease-in"
+                  leave-to-class="opacity-0 translate-y-2 scale-95">
+                  <div
+                    v-if="postReactionTrayOpen"
+                    class="reels-page__reaction-tray"
+                    @click.stop
+                    @pointerdown.stop
+                    @contextmenu.prevent
+                  >
+                    <button v-for="reaction in postReactionOptions" :key="reaction.value"
+                      class="reels-page__reaction-option" type="button" @contextmenu.prevent @click="reactToPost(reaction.value)">
+                      <img
+                        :src="reaction.src"
+                        :alt="reaction.label"
+                        class="h-8 w-8 block object-contain reels-page__reaction-image"
+                        draggable="false"
+                        @contextmenu.prevent
+                        @dragstart.prevent
+                      >
+                    </button>
                   </div>
-                </div>
-              </template>
-              <img
-                v-else
-                :src="activeMedia?.thumb || activeMedia?.src || activeReel.authorAvatarUrl"
-                class="reels-page__video"
-              >
-
-              <!-- Dark Overlay for better text readability -->
-              <div class="reels-page__video-overlay" />
-
-              <!-- Author Info & Caption (Bottom Left of player) -->
-              <div class="reels-page__info">
-                 <div class="reels-page__author">
-                    <img :src="activeReel.authorAvatarUrl" :alt="activeReel.author" class="reels-page__avatar">
-                    <div class="reels-page__author-meta">
-                       <p class="reels-page__author-name">{{ activeReel.author }}</p>
-                    </div>
-                 </div>
+                </Transition>
               </div>
             </div>
 
-            <!-- Interaction Icons (Floating on the right) -->
-            <div class="reels-page__actions">
-               <div class="reels-page__action-item">
-                  <div
-                    class="reels-page__action-wrapper"
-                    @mouseenter="openPostReactionTray"
-                    @mouseleave="closePostReactionTray"
-                  >
-                    <UButton
-                      type="button"
-                      color="info"
-                      variant="link"
-                      class="reels-page__action-btn"
-                      :class="{ 'reels-page__action-btn--active': liked }"
-                      :aria-label="t('pages.reelsPage.like')"
-                      @click="handlePostReactionButtonClick"
-                    >
-                       <img v-if="selectedPostReaction" :src="activePostReactionAsset.src" class="h-8 w-8">
-                       <Icon v-else name="i-ph-thumbs-up-bold" class="h-8 w-8" />
-                    </UButton>
-
-                    <!-- Reaction Tray -->
-                    <Transition
-                      enter-active-class="transition duration-150 ease-out"
-                      enter-from-class="opacity-0 translate-y-2 scale-95"
-                      enter-to-class="opacity-100 translate-y-0 scale-100"
-                      leave-active-class="transition duration-100 ease-in"
-                      leave-to-class="opacity-0 translate-y-2 scale-95"
-                    >
-                      <div v-if="postReactionTrayOpen" class="reels-page__reaction-tray">
-                        <button
-                          v-for="reaction in postReactionOptions"
-                          :key="reaction.value"
-                          class="reels-page__reaction-option"
-                          type="button"
-                          @click="reactToPost(reaction.value)"
-                        >
-                          <img :src="reaction.src" :alt="reaction.label" class="h-8 w-8 block object-contain">
-                        </button>
-                      </div>
-                    </Transition>
-                  </div>
-               </div>
-
-               <div class="reels-page__action-item">
-                  <UButton
-                    type="button"
-                    color="info"
-                    variant="link"
-                    class="reels-page__action-btn"
-                    :aria-label="t('pages.reelsPage.comment')"
-                    @click="toggleComments"
-                  >
-                     <Icon name="i-ph-chat-circle-bold" class="h-8 w-8" />
-                  </UButton>
-               </div>
-
-               <div class="reels-page__action-item">
-                  <UButton
-                    type="button"
-                    color="info"
-                    variant="link"
-                    class="reels-page__action-btn"
-                    :aria-label="t('pages.reelsPage.share')"
-                    @click="showShare = true"
-                  >
-                     <Icon name="i-ph-share-fat-bold" class="h-8 w-8" />
-                  </UButton>
-               </div>
-
-               <div class="reels-page__action-item">
-                  <UButton
-                    type="button"
-                    color="info"
-                    variant="link"
-                    class="reels-page__action-btn"
-                    :aria-label="t('pages.reelsPage.save')"
-                    @click="handleMenuAction('save')"
-                  >
-                     <Icon name="i-ph-bookmark-simple-bold" class="h-8 w-8" />
-                  </UButton>
-               </div>
-
-               <div class="reels-page__action-item">
-                  <UButton
-                    type="button"
-                    color="info"
-                    variant="link"
-                    class="reels-page__action-btn"
-                    :aria-label="t('pages.reelsPage.more')"
-                    @click="showOptions = true"
-                  >
-                     <Icon name="i-ph-dots-three-bold" class="h-8 w-8" />
-                  </UButton>
-               </div>
+            <div class="reels-page__action-item">
+              <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
+                :aria-label="t('pages.reelsPage.comment')" @click="toggleComments">
+                <Icon name="i-ph-chat-circle-bold" class="h-8 w-8" />
+              </UButton>
+              <span class="reels-page__action-label">{{ formatCompact(commentsCount) }}</span>
             </div>
-         </div>
+
+            <div class="reels-page__action-item">
+              <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
+                :aria-label="t('pages.reelsPage.share')" @click="showShare = true">
+                <Icon name="i-ph-share-fat-bold" class="h-8 w-8" />
+              </UButton>
+              <span class="reels-page__action-label">{{ formatCompact(sharesCount) }}</span>
+            </div>
+
+            <div class="reels-page__action-item">
+              <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
+                :class="{ 'reels-page__action-btn--active': activeReel.isSaved }"
+                :aria-label="activeReel.isSaved ? t('pages.reelsPage.saved') : t('pages.reelsPage.save')"
+                @click="handleMenuAction(activeReel.isSaved ? 'unsave' : 'save')">
+                <Icon :name="activeReel.isSaved ? 'i-ph-bookmark-simple-fill' : 'i-ph-bookmark-simple-bold'" class="h-8 w-8" />
+              </UButton>
+              <span class="reels-page__action-label">{{ activeReel.isSaved ? t("pages.reelsPage.saved") : t("pages.reelsPage.save") }}</span>
+            </div>
+
+            <div class="reels-page__action-item">
+              <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
+                :aria-label="t('pages.reelsPage.more')" @click="showOptions = true">
+                <Icon name="i-ph-dots-three-bold" class="h-8 w-8" />
+              </UButton>
+            </div>
+          </div>
+        </div>
       </main>
 
       <!-- Share Modal Integration -->
-      <FeedShareModal
-        :open="showShare"
-        :share-url="shareUrl"
+      <FeedShareModal :open="showShare" :share-url="shareUrl"
         :post="{ id: activeReel.id, author: activeReel.author, text: activeReel.text, authorAvatar: activeReel.authorAvatarUrl, authorVerified: activeReel.authorVerified }"
-        @close="showShare = false"
-        @shared="handleShared"
-      />
+        @close="showShare = false" @shared="handleShared" />
 
-      <UModal
-        v-model:open="showOptions"
-        :title="t('pages.reelsPage.optionsTitle')"
-        :ui="{ content: 'sm:max-w-[420px]' }"
-      >
+      <UModal v-model:open="showOptions" :title="t('pages.reelsPage.optionsTitle')"
+        :ui="{ content: 'sm:max-w-[420px]' }">
         <template #body>
           <div class="reels-page__options">
-            <UButton
-              type="button"
-              color="error"
-              variant="soft"
-              size="lg"
-              block
-              icon="i-ph-flag-duotone"
-              class="justify-start rounded-xl"
-              @click="reportActiveReel"
-            >
+            <UButton type="button" color="error" variant="soft" size="lg" block icon="i-ph-flag-duotone"
+              class="justify-start rounded-xl" @click="reportActiveReel">
               <span class="reels-page__option-text">
                 <strong>{{ t("pages.reelsPage.report") }}</strong>
               </span>
@@ -208,13 +166,7 @@
 
         <template #footer>
           <div class="flex w-full justify-end">
-            <UButton
-              type="button"
-              color="neutral"
-              variant="outline"
-              class="rounded-xl"
-              @click="showOptions = false"
-            >
+            <UButton type="button" color="neutral" variant="outline" class="rounded-xl" @click="showOptions = false">
               {{ t("pages.reelsPage.cancel") }}
             </UButton>
           </div>
@@ -222,67 +174,43 @@
       </UModal>
 
       <!-- Comment Bottom Sheet -->
-      <Transition
-        enter-active-class="transition duration-300 ease-out"
-        enter-from-class="opacity-0"
-        enter-to-class="opacity-100"
-        leave-active-class="transition duration-200 ease-in"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
+      <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0"
+        enter-to-class="opacity-100" leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100"
+        leave-to-class="opacity-0">
         <div v-if="showComments" class="reels-page__overlay" @click="showComments = false"></div>
       </Transition>
-      <Transition
-        enter-active-class="transition duration-400 cubic-bezier(0.33, 1, 0.68, 1)"
-        enter-from-class="translate-y-full"
-        enter-to-class="translate-y-0"
-        leave-active-class="transition duration-300 ease-in"
-        leave-from-class="translate-y-0"
-        leave-to-class="translate-y-full"
-      >
+      <Transition enter-active-class="transition duration-400 cubic-bezier(0.33, 1, 0.68, 1)"
+        enter-from-class="translate-y-full" enter-to-class="translate-y-0"
+        leave-active-class="transition duration-300 ease-in" leave-from-class="translate-y-0"
+        leave-to-class="translate-y-full">
         <div v-if="showComments" class="reels-page__bottom-sheet">
-           <div class="reels-page__sheet-handle"></div>
-           <header class="reels-page__sheet-header">
-              <div class="reels-page__sheet-title">
-                 {{ t('pages.watchPage.commentsTitle') }} ({{ activeReel.stats.comments }})
-              </div>
-              <UButton
-                type="button"
-                color="neutral"
-                variant="soft"
-                icon="i-ph-x-bold"
-                class="reels-page__sheet-close"
-                :aria-label="t('pages.reelsPage.close')"
-                @click="showComments = false"
-              />
-           </header>
+          <div class="reels-page__sheet-handle"></div>
+          <header class="reels-page__sheet-header">
+            <div class="reels-page__sheet-title">
+              {{ t('pages.watchPage.commentsTitle') }} ({{ activeReel.stats.comments }})
+            </div>
+            <UButton type="button" color="neutral" variant="soft" icon="i-ph-x-bold" class="reels-page__sheet-close"
+              :aria-label="t('pages.reelsPage.close')" @click="showComments = false" />
+          </header>
 
-           <div class="reels-page__sheet-content scrollbar-hide">
-              <div class="reels-page__comments">
-                 <FeedCommentList
-                    v-if="localComments.length > 0"
-                    :comments="localComments"
-                    enable-reply
-                    enable-reaction
-                    :current-user-name="currentAuthUserStore.user?.name"
-                    :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
-                    :comment-action-repository="commentActionRepository"
-                 />
-                 <div v-else class="reels-page__comments-empty">
-                    <Icon name="i-ph-chat-circle-text" class="h-10 w-10 opacity-20" />
-                    <p>{{ t('feed.commentList.emptyDescription') }}</p>
-                 </div>
+          <div class="reels-page__sheet-content scrollbar-hide">
+            <div class="reels-page__comments">
+              <FeedCommentList v-if="localComments.length > 0" :comments="localComments" enable-reply enable-reaction
+                :current-user-name="currentAuthUserStore.user?.name"
+                :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
+                :comment-action-repository="commentActionRepository" />
+              <div v-else class="reels-page__comments-empty">
+                <Icon name="i-ph-chat-circle-text" class="h-10 w-10 opacity-20" />
+                <p>{{ t('feed.commentList.emptyDescription') }}</p>
               </div>
-           </div>
+            </div>
+          </div>
 
-           <footer class="reels-page__sheet-composer">
-              <FeedCommentComposer
-                 :current-user-name="currentAuthUserStore.user?.name"
-                 :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
-                 :submitting="commenting"
-                 @submit="submitComment"
-              />
-           </footer>
+          <footer class="reels-page__sheet-composer">
+            <FeedCommentComposer :current-user-name="currentAuthUserStore.user?.name"
+              :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl" :submitting="commenting"
+              @submit="submitComment" />
+          </footer>
         </div>
       </Transition>
     </div>
@@ -292,7 +220,8 @@
       <div class="reels-page__loader">
         <Icon name="i-ph-film-strip-duotone" class="mx-auto h-8 w-8 text-white/70" />
         <p class="text-base font-black text-white">{{ t("pages.reelsPage.heroTitle") }}</p>
-        <p class="max-w-md text-sm leading-6 text-white/70">{{ errorMessage || t("pages.watchPage.emptyDescription") }}</p>
+        <p class="max-w-md text-sm leading-6 text-white/70">{{ errorMessage || t("pages.watchPage.emptyDescription") }}
+        </p>
       </div>
     </div>
   </div>
@@ -305,6 +234,7 @@ import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue
 import { useReelsPageVM } from "../../application/view-models/useReelsPageVM"
 
 const { t } = useI18n()
+const { locale } = useI18n()
 const showOptions = ref(false)
 const {
   loading,
@@ -319,6 +249,7 @@ const {
   handleWheel,
   updateProgress,
   onMetadataLoaded,
+  handleVideoEnded,
   togglePlayPause,
   seek,
   currentAuthUserStore,
@@ -329,14 +260,19 @@ const {
   postReactionTrayOpen,
   localComments,
   likesCount,
+  commentsCount,
   sharesCount,
   commenting,
   postReactionOptions,
   activePostReactionAsset,
+  activePostReactionLabel,
   shareUrl,
   commentActionRepository,
   openPostReactionTray,
   closePostReactionTray,
+  startPostReactionPress,
+  finishPostReactionPress,
+  cancelPostReactionPress,
   handlePostReactionButtonClick,
   reactToPost,
   submitComment,
@@ -344,6 +280,15 @@ const {
   handleMenuAction,
   toggleComments,
 } = useReelsPageVM()
+
+const compactFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+}))
+
+function formatCompact(value: number) {
+  return compactFormatter.value.format(value)
+}
 
 async function reportActiveReel() {
   await handleMenuAction("report")
@@ -426,14 +371,21 @@ useSeoMeta({
 }
 
 .reels-page__video {
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
+  object-fit: contain;
 }
 
 .reels-page__video-overlay {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 50%, rgba(0, 0, 0, 0.8) 100%);
+  top: 0;
+  right: 0;
+  bottom: 56px;
+  left: 0;
+  z-index: 2;
+  /* background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 50%, rgba(0, 0, 0, 0.8) 100%); */
   pointer-events: none;
 }
 
@@ -459,6 +411,9 @@ useSeoMeta({
   display: flex;
   flex-direction: column;
   align-items: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .reels-page__action-btn {
@@ -474,6 +429,16 @@ useSeoMeta({
   justify-content: center;
   /* backdrop-filter: blur(10px); */
   transition: all 0.2s ease;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.reels-page__reaction-image {
+  pointer-events: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
 }
 
 .reels-page__action-btn:hover {
@@ -486,9 +451,17 @@ useSeoMeta({
 }
 
 .reels-page__action-label {
+  display: block;
+  max-width: 72px;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75);
   font-size: 12px;
   font-weight: 700;
   color: #ffffff;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 /* Nav Arrows (Floating far right) */
@@ -505,7 +478,7 @@ useSeoMeta({
 
 @media (max-width: 1000px) {
   .reels-page__nav-arrows {
-     display: none;
+    display: none;
   }
 }
 
@@ -527,7 +500,7 @@ useSeoMeta({
 .reels-page__info {
   position: absolute;
   left: 20px;
-  bottom: 20px;
+  bottom: 80px;
   right: 80px;
   z-index: 10;
 }
@@ -636,7 +609,7 @@ useSeoMeta({
 .reels-page__reaction-tray {
   position: absolute;
   bottom: calc(100% + 12px);
-  left:-100px;
+  left: -100px;
   transform: translateX(-50%);
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
@@ -648,6 +621,9 @@ useSeoMeta({
   z-index: 100;
   pointer-events: auto;
   white-space: nowrap;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .reels-page__options {
@@ -686,6 +662,9 @@ useSeoMeta({
   padding: 0;
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .reels-page__reaction-option:hover {
@@ -696,7 +675,8 @@ useSeoMeta({
 .reels-page__progress-container {
   position: absolute;
   bottom: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0px); /* Fix for mobile safe areas */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Fix for mobile safe areas */
   left: 0;
   right: 0;
   height: calc(4px + env(safe-area-inset-bottom, 0px));
@@ -728,7 +708,10 @@ useSeoMeta({
 
 .reels-page__play-overlay {
   position: absolute;
-  inset: 0;
+  top: 0;
+  right: 0;
+  bottom: 56px;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;

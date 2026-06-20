@@ -1,7 +1,6 @@
 // English description: Returns a backend generated receive-points QR image URL for the current user.
 
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
-import { getBackendWebBaseUrl } from "../../utils/backend-media-url"
 
 const asNumber = (value: unknown) => {
   const number = Number(value)
@@ -10,21 +9,18 @@ const asNumber = (value: unknown) => {
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
-  const currentUser = await getBackendCurrentUser(event)
-  const baseUrl = getBackendWebBaseUrl(event)
+  await getBackendCurrentUser(event)
   const points = Math.trunc(asNumber(query.points))
-  const params = new URLSearchParams({
-    f: "qrcode",
-    s: "points-qr-code",
-    to: String(currentUser.user_id ?? ""),
-  })
+  const params = new URLSearchParams()
 
   if (points > 0) {
     params.set("points", String(points))
   }
 
+  const queryString = params.toString()
+
   return {
-    imageUrl: `${baseUrl.replace(/\/+$/, "")}/requests.php?${params.toString()}`,
+    imageUrl: `/_api/settings/points-qr-image${queryString ? `?${queryString}` : ""}`,
     points: points > 0 ? points : null,
   }
 })

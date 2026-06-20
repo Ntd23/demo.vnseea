@@ -48,17 +48,17 @@
                 <p v-if="identityLabel" class="mm__admin-subtitle">{{ identityLabel }}</p>
               </div>
             </div>
-            <div class="mm__admin-icon">🤝</div>
+            <div class="mm__admin-icon">VN</div>
           </div>
 
           <div v-if="showStats" class="mm__stats">
             <NuxtLink v-if="formattedWalletPoints" :to="appRoutes.wallet" class="mm__stat" @click="close">
               <Icon name="i-ph-wallet-fill" class="mm__stat-icon" />
-              <span>{{ $t("navigation.mobileMenu.walletLabel") || "Ví" }}: {{ formattedWalletPoints }}</span>
+              <span>{{ $t("navigation.mobileMenu.walletLabel") || "Wallet" }}: {{ formattedWalletPoints }}</span>
             </NuxtLink>
             <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="mm__stat" @click="close">
               <Icon name="i-ph-circle-half-fill" class="mm__stat-icon" />
-              <span>{{ $t("navigation.mobileMenu.pointsLabel") || "Điểm" }}: {{ formattedPoints }}</span>
+              <span>{{ $t("navigation.mobileMenu.pointsLabel") || "VNSEEA" }}: {{ formattedPoints }}</span>
             </NuxtLink>
           </div>
 
@@ -177,7 +177,7 @@ const formattedPoints = computed(() => {
   return numberFormatter.value.format(value)
 })
 const formattedWalletPoints = computed(() =>
-  formattedPoints.value ? `${formattedPoints.value} điểm` : "",
+  formattedPoints.value ? `${formattedPoints.value} VNSEEA` : "",
 )
 const showStats = computed(() => Boolean(formattedWalletPoints.value || formattedPoints.value))
 
@@ -222,7 +222,6 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   { label: 'navigation.mobileMenu.mainNav.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
   { label: 'navigation.mobileMenu.mainNav.wallet', icon: 'i-ph-wallet-fill', to: appRoutes.wallet },
-  { label: 'navigation.mobileMenu.mainNav.withdrawal', icon: 'i-ph-money-wavy-fill', to: '/withdrawal' },
   { label: 'navigation.mobileMenu.mainNav.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' },
   { label: 'navigation.mobileMenu.mainNav.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
 ]

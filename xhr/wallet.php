@@ -258,14 +258,14 @@ if ($f == 'wallet') {
                 'type' => 'sent_u_money',
                 'notifier_id' => $sender_id,
                 'user_id' => $sender_id,
-                'text' => $sender_name . ' đã gửi cho bạn ' . $points . ' điểm',
+                'text' => $sender_name . ' đã gửi cho bạn ' . $points . ' VNSEEA',
                 'url' => 'index.php?link1=setting&page=myPoints'
             );
             Wo_RegisterNotification($notification_data_array);
 
             $data = array(
                 'status' => 200,
-                'message' => 'Đã gửi ' . $points . ' điểm cho ' . $recipient_name,
+                'message' => 'Đã gửi ' . $points . ' VNSEEA cho ' . $recipient_name,
                 'recipient_id' => (int)$userdata['user_id'],
                 'recipient_name' => (string)$recipient_name,
                 'sender_points' => $sender_points - $points,

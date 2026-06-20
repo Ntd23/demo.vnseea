@@ -6,8 +6,8 @@
         <Icon name="i-ph-wallet-duotone" class="h-6 w-6" />
       </div>
       <div>
-        <p class="wallet-points-header__eyebrow">Ví điểm</p>
-        <h1 class="wallet-points-header__title">Điểm của tôi</h1>
+        <p class="wallet-points-header__eyebrow">Ví VNSEEA</p>
+        <h1 class="wallet-points-header__title">VNSEEA của tôi</h1>
       </div>
     </section>
 
@@ -32,13 +32,13 @@
               <Icon name="i-ph-star-fill" class="h-7 w-7" />
             </span>
             <div>
-              <p class="wallet-points-hero__label">Số điểm hiện tại</p>
-              <strong class="wallet-points-hero__balance">{{ formatNumber(pointsBalance) }} điểm</strong>
-              <p class="wallet-points-hero__description">Dùng điểm để chuyển cho người khác hoặc tạo QR nhận điểm.</p>
+              <p class="wallet-points-hero__label">Số VNSEEA hiện tại</p>
+              <strong class="wallet-points-hero__balance">{{ formatNumber(pointsBalance) }} VNSEEA</strong>
+              <p class="wallet-points-hero__description">Dùng VNSEEA để chuyển cho người khác hoặc tạo QR nhận VNSEEA.</p>
             </div>
           </div>
 
-          <div class="wallet-points-tabs" aria-label="Thao tác ví điểm">
+          <div class="wallet-points-tabs" aria-label="Thao tác ví VNSEEA">
             <!-- Tạm comment nạp tiền/rút tiền trong ví điểm.
             <button type="button" class="wallet-points-tab">
               <Icon name="i-ph-plus-circle-duotone" class="h-5 w-5" />
@@ -56,7 +56,7 @@
               @click="openTransferPanel"
             >
               <Icon name="i-ph-paper-plane-tilt-duotone" class="h-5 w-5" />
-              <span>Chuyển điểm</span>
+              <span>Chuyển VNSEEA</span>
             </button>
             <button
               type="button"
@@ -65,7 +65,7 @@
               @click="openReceiveQrPanel(receiveQrPoints)"
             >
               <Icon name="i-ph-qr-code-duotone" class="h-5 w-5" />
-              <span>Mã QR nhận điểm</span>
+              <span>Mã QR nhận VNSEEA</span>
             </button>
           </div>
         </section>
@@ -73,8 +73,8 @@
         <section class="wallet-points-panel">
           <div class="wallet-points-panel__heading">
             <div>
-              <h2>Lịch sử điểm</h2>
-              <p>Các lần nhận, gửi và thay đổi điểm gần đây.</p>
+              <h2>Lịch sử VNSEEA</h2>
+              <p>Các lần nhận, gửi và thay đổi VNSEEA gần đây.</p>
             </div>
             <button class="wallet-points-icon-button" type="button" @click="loadWalletHistory">
               <Icon name="i-ph-arrow-clockwise-duotone" class="h-4 w-4" />
@@ -106,7 +106,7 @@
 
           <div v-else class="wallet-points-empty">
             <Icon name="i-ph-clock-counter-clockwise-duotone" class="h-6 w-6" />
-            <p>Chưa có lịch sử điểm.</p>
+            <p>Chưa có lịch sử VNSEEA.</p>
           </div>
         </section>
       </template>
@@ -118,8 +118,8 @@
         <div class="wallet-points-modal__panel wallet-points-modal__panel--wide">
           <div class="wallet-points-modal__header">
             <div>
-              <p class="wallet-points-header__eyebrow">Chuyển điểm</p>
-              <h2>Gửi điểm cho người khác</h2>
+              <p class="wallet-points-header__eyebrow">Chuyển VNSEEA</p>
+              <h2>Gửi VNSEEA cho người khác</h2>
             </div>
             <button class="wallet-points-icon-button" type="button" @click="closeTransferPanel">
               <Icon name="i-ph-x" class="h-4 w-4" />
@@ -127,21 +127,21 @@
           </div>
 
           <label class="wallet-points-field">
-            <span>Chọn số điểm muốn chuyển</span>
+            <span>Chọn số VNSEEA muốn chuyển</span>
             <input
               v-model.number="transferDraft.points"
               class="wallet-points-input"
               type="number"
               min="1"
               :max="pointsBalance"
-              placeholder="Nhập số điểm"
+              placeholder="Nhập số VNSEEA"
             >
           </label>
 
           <div class="wallet-points-transfer-question">
             <div>
               <span>Bạn muốn gửi cho ai?</span>
-              <p>Quét mã QR nhận điểm để tự điền người nhận và số điểm gợi ý.</p>
+              <p>Quét mã QR nhận VNSEEA để tự điền người nhận và số VNSEEA gợi ý.</p>
             </div>
             <button class="wallet-points-secondary" type="button" @click="startTransferQrScan">
               <Icon name="i-ph-camera-duotone" class="h-4 w-4" />
@@ -219,7 +219,7 @@
             @click="openTransferConfirm"
           >
             <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
-            <span>{{ transferSubmitting ? "Đang gửi..." : "Chuyển điểm" }}</span>
+            <span>{{ transferSubmitting ? "Đang gửi..." : "Chuyển VNSEEA" }}</span>
           </button>
         </div>
       </div>
@@ -242,7 +242,7 @@
           <div class="wallet-points-scan wallet-points-scan--modal">
             <div id="points-qr-reader" class="wallet-points-scan__reader" />
           </div>
-          <p class="wallet-points-modal__hint">Sau khi quét thành công, hệ thống sẽ tự điền người nhận và số điểm nếu QR có gợi ý.</p>
+          <p class="wallet-points-modal__hint">Sau khi quét thành công, hệ thống sẽ tự điền người nhận và số VNSEEA nếu QR có gợi ý.</p>
         </div>
       </div>
     </Teleport>
@@ -253,8 +253,8 @@
         <div class="wallet-points-modal__panel">
           <div class="wallet-points-modal__header">
             <div>
-              <p class="wallet-points-header__eyebrow">Mã QR nhận điểm</p>
-              <h2>Tạo mã QR nhận điểm</h2>
+              <p class="wallet-points-header__eyebrow">Mã QR nhận VNSEEA</p>
+              <h2>Tạo mã QR nhận VNSEEA</h2>
             </div>
             <button class="wallet-points-icon-button" type="button" @click="closeReceiveQrPanel">
               <Icon name="i-ph-x" class="h-4 w-4" />
@@ -263,7 +263,7 @@
 
           <div class="wallet-points-qr-form">
             <label class="wallet-points-field">
-              <span>Số điểm gợi ý</span>
+              <span>Số VNSEEA gợi ý</span>
               <input
                 v-model.number="receiveQrPoints"
                 class="wallet-points-input"
@@ -280,10 +280,10 @@
           <img
             v-if="receiveQr?.imageUrl"
             :src="receiveQr.imageUrl"
-            alt="Mã QR nhận điểm"
+            alt="Mã QR nhận VNSEEA"
             class="wallet-points-qr"
           >
-          <p class="wallet-points-modal__hint">Người gửi quét QR này sẽ tự điền người nhận và số điểm gợi ý.</p>
+          <p class="wallet-points-modal__hint">Người gửi quét QR này sẽ tự điền người nhận và số VNSEEA gợi ý.</p>
         </div>
       </div>
     </Teleport>
@@ -295,7 +295,7 @@
           <div class="wallet-points-modal__header">
             <div>
               <p class="wallet-points-header__eyebrow">Xác nhận</p>
-              <h2>Xác nhận chuyển điểm</h2>
+              <h2>Xác nhận chuyển VNSEEA</h2>
             </div>
             <button class="wallet-points-icon-button" type="button" @click="transferConfirmOpen = false">
               <Icon name="i-ph-x" class="h-4 w-4" />
@@ -307,7 +307,7 @@
               <strong>{{ selectedTransferRecipientName }}</strong>
             </div>
             <div>
-              <span>Số điểm</span>
+              <span>Số VNSEEA</span>
               <strong>{{ formatNumber(transferDraft.points) }}</strong>
             </div>
             <div>
@@ -346,7 +346,7 @@ const {
 } = useSettingsPageVM(() => "myPoints")
 
 const disabledExchange = async (): Promise<SettingsPointsExchangeResult> => {
-  throw new Error("Tính năng đổi điểm sang tiền đang tạm ẩn.")
+  throw new Error("Tính năng đổi VNSEEA sang tiền đang tạm ẩn.")
 }
 
 const {
