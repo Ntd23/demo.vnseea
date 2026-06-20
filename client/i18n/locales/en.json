@@ -5924,6 +5924,7 @@
           "createpost": "post creation",
           "createblog": "blog creation",
           "admob": "ads",
+          "email_activation": "registration and email verification",
           "blog_comment": "blog commenting"
         }
       },
