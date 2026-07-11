@@ -151,7 +151,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
             if (!empty($_POST['group_type'])) {
                 $type    = Wo_Secure($_POST['group_type']);
             }
-            $id      = Wo_CreateGChat($name, $users,$type);
+            $id      = Wo_CreateGChat($name, $users, $type, true);
             
             if (isset($_FILES["avatar"]["tmp_name"])) {
                 $fileInfo      = array(
@@ -367,12 +367,20 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
             if (!empty($group_tab)) {
                 if ($group_tab['user_id'] == $wo['user']['id']) {
                     foreach ($users as $key => $user) {
-                        if (!Wo_IsGChatMemeberExists($id, $user)) {
-                            $active = 0;
-                            if ($group_tab['type'] == 'channel' || $group_tab['type'] == 'secret') {
-                                $active = 1;
+                        $user = Wo_Secure($user);
+                        if (empty($user) || !is_numeric($user) || $user < 1) {
+                            continue;
+                        }
+
+                        $member_query = mysqli_query($sqlConnect, "SELECT `id`,`active` FROM " . T_GROUP_CHAT_USERS . " WHERE `group_id` = $id AND `user_id` = $user LIMIT 1");
+                        if ($member_query && mysqli_num_rows($member_query) > 0) {
+                            $member_row = mysqli_fetch_assoc($member_query);
+                            if ((int) $member_row['active'] !== 1) {
+                                @mysqli_query($sqlConnect, "UPDATE " . T_GROUP_CHAT_USERS . " SET `active` = '1', `last_seen` = '0' WHERE `group_id` = $id AND `user_id` = $user");
                             }
-                            @mysqli_query($sqlConnect, "INSERT INTO " . T_GROUP_CHAT_USERS . " (`id`,`user_id`,`group_id`,`active`) VALUES (null,$user,$id,'".$active."')");
+                        }
+                        else if (!Wo_IsGChatMemeberExists($id, $user)) {
+                            @mysqli_query($sqlConnect, "INSERT INTO " . T_GROUP_CHAT_USERS . " (`id`,`user_id`,`group_id`,`active`,`last_seen`) VALUES (null,$user,$id,'1','0')");
                         }
                     }
                     $response_data = array(
@@ -432,7 +440,7 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
             }
 
             $existing_ids = array();
-            $existing_query = mysqli_query($sqlConnect, "SELECT `user_id` FROM " . T_GROUP_CHAT_USERS . " WHERE `group_id` = {$group_id}");
+            $existing_query = mysqli_query($sqlConnect, "SELECT `user_id` FROM " . T_GROUP_CHAT_USERS . " WHERE `group_id` = {$group_id} AND `active` = '1'");
             if ($existing_query && mysqli_num_rows($existing_query) > 0) {
                 while ($existing_row = mysqli_fetch_assoc($existing_query)) {
                     $existing_ids[(int) $existing_row['user_id']] = true;

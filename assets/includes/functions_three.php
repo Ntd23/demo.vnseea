@@ -6271,7 +6271,7 @@ function Wo_GetPageAdminInfo($user_id, $page_id)
 	}
 	return false;
 }
-function Wo_CreateGChat($name = false, $parts = array(), $type = 'group')
+function Wo_CreateGChat($name = false, $parts = array(), $type = 'group', $auto_active = false)
 {
 	global $sqlConnect, $wo;
 	if ($wo['loggedin'] == false || !is_array($parts) || !$name || count($parts) < 1) {
@@ -6287,8 +6287,8 @@ function Wo_CreateGChat($name = false, $parts = array(), $type = 'group')
 		if ($id && is_numeric($id)) {
 			foreach ($parts as $part_id) {
 				if ($part_id != $user) {
-					$active = 0;
-					if ($type == 'channel' || $type == 'secret') {
+					$active = $auto_active ? 1 : 0;
+					if (!$auto_active && ($type == 'channel' || $type == 'secret')) {
 						$active = 1;
 					}
 					$sub_sql = "INSERT INTO " . T_GROUP_CHAT_USERS . " (`id`,`user_id`,`group_id`,`active`,`last_seen`) VALUES (null,'$part_id','$id','$active','0')";

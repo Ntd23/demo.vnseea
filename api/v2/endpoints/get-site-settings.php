@@ -22,7 +22,6 @@ $public_config = array(
     'siteTitle' => !empty($get_config['siteTitle']) ? $get_config['siteTitle'] : (!empty($get_config['siteName']) ? $get_config['siteName'] : 'VNSEEA'),
     'siteDesc' => !empty($get_config['siteDesc']) ? $get_config['siteDesc'] : '',
     'auto_username' => !empty($get_config['auto_username']) ? $get_config['auto_username'] : '0',
-    'search_nearby_google_places' => isset($get_config['search_nearby_google_places']) ? $get_config['search_nearby_google_places'] : '1',
     'theme' => !empty($get_config['theme']) ? $get_config['theme'] : (!empty($config['theme']) ? $config['theme'] : ''),
     'theme_url' => $theme_url,
     'logo_url' => $theme_url . '/img/logo.' . $logo_extension,
@@ -68,5 +67,7 @@ $get_config = openssl_encrypt($get_config, "AES-128-ECB", $siteEncryptKey);
 $response_data      = array(
     'api_status' => 200,
     'config' => $get_config,
+    'group_categories' => $wo['group_categories'],
+    'group_sub_categories' => $wo['group_sub_categories'],
     'public_config' => $public_config
 );
