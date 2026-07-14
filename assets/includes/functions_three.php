@@ -6591,6 +6591,50 @@ function Wo_AddGChatPart($group_id = false, $user_id = false)
 	}
 	return $code;
 }
+function Wo_EnsureReportUser($user = false, $text = '', $reason = '')
+{
+	global $sqlConnect, $wo, $db;
+	if ($wo['loggedin'] == false || !$user || $user == $wo['user']['id']) {
+		return false;
+	}
+	$user = Wo_Secure($user);
+	$user_id = Wo_Secure($wo['user']['id']);
+	$text = Wo_Secure($text);
+	$reason = Wo_Secure($reason);
+	$lock_name = Wo_Secure('vnseea_report_' . $user_id . '_' . $user);
+	$lock_query = mysqli_query($sqlConnect, "SELECT GET_LOCK('$lock_name', 5) AS `acquired`");
+	$lock_data = $lock_query ? mysqli_fetch_assoc($lock_query) : false;
+	if (empty($lock_data) || (int)$lock_data['acquired'] !== 1) {
+		return false;
+	}
+	$existing_query = mysqli_query($sqlConnect, "SELECT 1 FROM " . T_REPORTS . " WHERE `user_id` = '$user_id' AND `profile_id` = '$user' LIMIT 1");
+	if (!$existing_query) {
+		mysqli_query($sqlConnect, "SELECT RELEASE_LOCK('$lock_name')");
+		return false;
+	}
+	if (mysqli_num_rows($existing_query) > 0) {
+		mysqli_query($sqlConnect, "SELECT RELEASE_LOCK('$lock_name')");
+		return 2;
+	}
+	$time = time();
+	$sql = "INSERT INTO " . T_REPORTS . " (`profile_id`,`user_id`,`text`,`time`,`reason`) VALUES ('$user','$user_id','$text','$time','$reason')";
+	$query = mysqli_query($sqlConnect, $sql);
+	if (!$query) {
+		mysqli_query($sqlConnect, "SELECT RELEASE_LOCK('$lock_name')");
+		return false;
+	}
+	$db->insert(T_NOTIFICATION, array(
+		'recipient_id' => 0,
+		'type' => 'user_reports',
+		'time' => time(),
+		'admin' => 1
+	));
+	cache($user, 'users', 'delete');
+	cache($user_id, 'users', 'delete');
+	mysqli_query($sqlConnect, "SELECT RELEASE_LOCK('$lock_name')");
+	return 1;
+}
+
 function Wo_ReportUser($user = false, $text = '', $reason = '')
 {
 	global $sqlConnect, $wo, $db;
