@@ -798,8 +798,8 @@ export const useSettingsPageVM = (
     return response
   }
 
-  async function transferPoints(recipientUserId: number, points: number, note?: string) {
-    const response = await settingsRepository.transferPoints({ recipientUserId, points, note })
+  async function transferPoints(recipientUserId: number, points: number, requestId: string, note?: string) {
+    const response = await settingsRepository.transferPoints({ recipientUserId, points, requestId, note })
     await hydrate()
     return response
   }

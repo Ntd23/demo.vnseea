@@ -56,12 +56,6 @@ export type WalletOverview = {
   currentUser: WalletCurrentUser
 }
 
-export type WalletSendDraft = {
-  recipientUserId: number
-  amount: number
-  note?: string
-}
-
 export type WalletTopupDraft = {
   amount: number
   method: string
@@ -82,9 +76,4 @@ export type WalletMutationResult = {
   accountName?: string
   paid?: boolean
   status?: string
-}
-
-export type WalletReceiveQr = {
-  imageUrl: string
-  amount: number | null
 }

@@ -29,7 +29,7 @@ const toNumber = (value: unknown) => {
 export function useSettingsMyPointsPanelVM(
   userSource: MaybeRefOrGetter<SettingsUser | null>,
   onExchange: (points: number) => Promise<SettingsPointsExchangeResult>,
-  onTransfer: (recipientUserId: number, points: number, note?: string) => Promise<SettingsPointsTransferResult>,
+  onTransfer: (recipientUserId: number, points: number, requestId: string, note?: string) => Promise<SettingsPointsTransferResult>,
   onLoadReceiveQr: (points?: number | null) => Promise<SettingsPointsReceiveQr>,
   walletRepository = createApiWalletRepository(),
 ) {
@@ -62,6 +62,8 @@ export function useSettingsMyPointsPanelVM(
   })
   let directScanner: any = null
   let receiveQrRefreshTimer: ReturnType<typeof setTimeout> | null = null
+
+  const pendingTransferStorageKey = "points-transfer:pending"
 
   const user = computed(() => toValue(userSource))
   const pointsBalance = computed(() => Math.max(Math.trunc(toNumber(user.value?.points)), 0))
@@ -132,10 +134,59 @@ export function useSettingsMyPointsPanelVM(
   )
   const normalizedTransferNote = computed(() => transferNote.value.trim())
   const canSubmitTransfer = computed(() =>
-    transferDraft.recipientUserId > 0
+    Number.isSafeInteger(transferDraft.recipientUserId)
+    && transferDraft.recipientUserId > 0
+    && Number.isSafeInteger(transferDraft.points)
     && transferDraft.points > 0
     && transferDraft.points <= pointsBalance.value,
   )
+
+  function createTransferRequestId() {
+    const random = `${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`
+    return `pt_${Date.now().toString(36)}_${random}`.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 80).padEnd(20, "0")
+  }
+
+  function getOrCreateTransferRequestId() {
+    const payload = {
+      recipientUserId: transferDraft.recipientUserId,
+      points: transferDraft.points,
+      note: normalizedTransferNote.value,
+    }
+    if (typeof sessionStorage !== "undefined") {
+      try {
+        const existing = JSON.parse(sessionStorage.getItem(pendingTransferStorageKey) || "null")
+        if (
+          existing?.requestId
+          && existing.recipientUserId === payload.recipientUserId
+          && existing.points === payload.points
+          && existing.note === payload.note
+        ) {
+          return String(existing.requestId)
+        }
+      }
+      catch {
+        sessionStorage.removeItem(pendingTransferStorageKey)
+      }
+    }
+    const requestId = createTransferRequestId()
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.setItem(pendingTransferStorageKey, JSON.stringify({...payload, requestId}))
+    }
+    return requestId
+  }
+
+  function clearTransferRequestId(requestId: string) {
+    if (typeof sessionStorage === "undefined") return
+    try {
+      const existing = JSON.parse(sessionStorage.getItem(pendingTransferStorageKey) || "null")
+      if (!existing || existing.requestId === requestId) {
+        sessionStorage.removeItem(pendingTransferStorageKey)
+      }
+    }
+    catch {
+      sessionStorage.removeItem(pendingTransferStorageKey)
+    }
+  }
 
   watch(maxExchangePoints, (value) => {
     if (value < exchangeStepPoints.value) {
@@ -416,9 +467,11 @@ export function useSettingsMyPointsPanelVM(
     if (!canSubmitTransfer.value) return
     transferSubmitting.value = true
     transferError.value = ""
+    const requestId = getOrCreateTransferRequestId()
 
     try {
-      const result = await onTransfer(transferDraft.recipientUserId, transferDraft.points, normalizedTransferNote.value)
+      const result = await onTransfer(transferDraft.recipientUserId, transferDraft.points, requestId, normalizedTransferNote.value)
+      clearTransferRequestId(result.requestId || requestId)
       toast.add({
         title: t("settings.data.pointsPanel.transferSuccess"),
         description: result.message
@@ -431,6 +484,16 @@ export function useSettingsMyPointsPanelVM(
       void loadWalletHistory()
     }
     catch (error) {
+      const status = Number((error as any)?.statusCode || (error as any)?.response?.status || 0)
+      const errorCode = String(
+        (error as any)?.data?.error_code
+        || (error as any)?.data?.data?.error_code
+        || (error as any)?.response?._data?.data?.error_code
+        || "",
+      )
+      if ([400, 422].includes(status) || (status === 409 && errorCode === "idempotency_conflict")) {
+        clearTransferRequestId(requestId)
+      }
       transferError.value = error instanceof Error ? error.message : t("settings.data.pointsPanel.transferError")
     }
     finally {
@@ -461,12 +524,21 @@ export function useSettingsMyPointsPanelVM(
         const parsed = JSON.parse(raw) as Record<string, unknown>
         const type = String(parsed.type ?? "")
 
-        if (type === "points") {
+        if (["points", "wallet", "send"].includes(type.toLowerCase())) {
+          if (
+            type.toLowerCase() === "points"
+            && parsed.amount !== undefined
+            && (parsed.points === undefined || parsed.points === null || parsed.points === "")
+          ) return null
           const parsedPoints = parsed.points ?? parsed.amount
+          const points = parsedPoints === undefined || parsedPoints === null ? null : parseStrictPositiveInteger(parsedPoints)
+          const amount = parsed.amount === undefined || parsed.amount === null ? points : parseStrictPositiveInteger(parsed.amount)
+
+          if (points === null ? amount !== null : points !== amount) return null
 
           return {
-            to: Math.trunc(toNumber(parsed.to)),
-            points: parsedPoints === undefined || parsedPoints === null ? null : Math.trunc(toNumber(parsedPoints)),
+            to: parseStrictPositiveInteger(parsed.to) || 0,
+            points,
           }
         }
       }
@@ -480,7 +552,7 @@ export function useSettingsMyPointsPanelVM(
     const parts = raw.split("|")
     const prefix = parts.shift()?.toUpperCase()
 
-    if (prefix !== "POINTS") return null
+    if (prefix !== "POINTS" && prefix !== "WALLET") return null
 
     const values = new Map<string, string>()
     for (const part of parts) {
@@ -490,12 +562,12 @@ export function useSettingsMyPointsPanelVM(
       }
     }
 
-    return {
-      to: Math.trunc(toNumber(values.get("to"))),
-      points: values.has("points") || values.has("amount")
-        ? Math.trunc(toNumber(values.get("points") ?? values.get("amount")))
-        : null,
-    }
+    const points = values.has("points") ? parseStrictPositiveInteger(values.get("points")) : null
+    const amount = values.has("amount") ? parseStrictPositiveInteger(values.get("amount")) : points
+    if (prefix === "POINTS" && values.has("amount") && !values.has("points")) return null
+    if (points === null ? amount !== null : points !== amount) return null
+
+    return {to: parseStrictPositiveInteger(values.get("to")) || 0, points}
   }
 
   async function applyPointsQrPayload(value: string, options: { stopAfterScan?: boolean } = {}) {
@@ -702,4 +774,13 @@ export function useSettingsMyPointsPanelVM(
     openReceiveQrPanel,
     closeReceiveQrPanel,
   }
+}
+
+const parseStrictPositiveInteger = (value: unknown) => {
+  if (typeof value === "number") {
+    return Number.isSafeInteger(value) && value > 0 && value <= 2147483647 ? value : null
+  }
+  if (typeof value !== "string" || !/^[1-9][0-9]*$/.test(value)) return null
+  const parsed = Number(value)
+  return Number.isSafeInteger(parsed) && parsed <= 2147483647 ? parsed : null
 }

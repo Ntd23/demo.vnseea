@@ -6,9 +6,7 @@ import type { WalletRepository } from "../../domain/repositories/WalletRepositor
 import type {
   WalletMutationResult,
   WalletOverview,
-  WalletReceiveQr,
   WalletRecipient,
-  WalletSendDraft,
   WalletTopupDraft,
 } from "../../domain/types/wallet.types"
 
@@ -21,14 +19,6 @@ export function createApiWalletRepository(): WalletRepository {
     },
     async searchRecipients(query: string) {
       return await client.get<WalletRecipient[]>(walletApiRoutes.recipientSearch, { q: query })
-    },
-    async getReceiveQr(amount?: number | null) {
-      return await client.get<WalletReceiveQr>(walletApiRoutes.receiveQr, {
-        amount: amount && amount > 0 ? amount : undefined,
-      })
-    },
-    async sendMoney(input: WalletSendDraft) {
-      return await client.post<WalletMutationResult, WalletSendDraft>(walletApiRoutes.send, input)
     },
     async createTopup(input: WalletTopupDraft) {
       if (input.method === "sepay") {

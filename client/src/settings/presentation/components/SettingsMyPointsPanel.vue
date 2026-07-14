@@ -131,6 +131,7 @@
             class="settings-points-modal__input"
             type="number"
             min="1"
+            step="1"
             :max="pointsBalance"
           >
         </label>
@@ -206,7 +207,8 @@
             v-model.number="receiveQrPoints"
             class="settings-points-modal__input"
             type="number"
-            min="0"
+            min="1"
+            step="1"
           >
         </label>
         <button

@@ -4,9 +4,12 @@ import { createError, getQuery, setHeader } from "h3"
 import { getBackendBaseCandidates } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 
-const asNumber = (value: unknown) => {
-  const number = Number(value)
-  return Number.isFinite(number) ? number : 0
+const parseOptionalPoints = (value: unknown) => {
+  if (value === undefined || value === null || value === "") return null
+  const normalized = Array.isArray(value) ? value[0] : value
+  if (typeof normalized !== "string" || !/^[1-9][0-9]*$/.test(normalized)) return undefined
+  const number = Number(normalized)
+  return Number.isSafeInteger(number) && number <= 2147483647 ? number : undefined
 }
 
 const asString = (value: unknown) =>
@@ -31,12 +34,16 @@ export default defineEventHandler(async (event) => {
   const currentUser = await getBackendCurrentUser(event)
   const runtimeConfig = useRuntimeConfig(event)
   const userId = asString(currentUser.user_id)
-  const points = Math.trunc(asNumber(query.points))
+  const points = parseOptionalPoints(query.points)
   const cookie = event.node.req.headers.cookie
   const candidates = getBackendBaseCandidates(
     String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase),
   )
   let lastError: unknown
+
+  if (points === undefined) {
+    throw createError({statusCode: 400, statusMessage: "VNSEEA must be a positive integer."})
+  }
 
   if (!userId) {
     throw createError({
@@ -47,7 +54,7 @@ export default defineEventHandler(async (event) => {
 
   for (const baseUrl of candidates) {
     try {
-      const response = await $fetch.raw<ArrayBuffer>(buildBackendQrUrl(baseUrl, userId, points), {
+      const response = await $fetch.raw<ArrayBuffer>(buildBackendQrUrl(baseUrl, userId, points || 0), {
         responseType: "arrayBuffer",
         headers: {
           accept: "image/png",
