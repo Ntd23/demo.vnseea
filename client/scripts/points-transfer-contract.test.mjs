@@ -44,6 +44,18 @@ test("Nuxt points transfer BFF uses the canonical API and strict request fields"
   assert.doesNotMatch(source, /Math\.trunc\(asNumber/)
 })
 
+test("Nuxt receive QR keeps the canonical backend PNG proxy", async () => {
+  const source = await readClient("server/api/settings/points-qr-image.get.ts")
+  const packageJson = await readClient("package.json")
+
+  assert.match(source, /points-qr-code/)
+  assert.match(source, /image\/png/)
+  assert.match(source, /\^\[1-9\]\[0-9\]\*\$/)
+  assert.match(source, /getBackendBaseCandidates/)
+  assert.doesNotMatch(source, /renderSVG|from ["']uqr["']/)
+  assert.doesNotMatch(packageJson, /"uqr"\s*:/)
+})
+
 test("Nuxt points UI persists the idempotency key for ambiguous retries", async () => {
   const source = await readClient("src/settings/application/view-models/useSettingsMyPointsPanelVM.ts")
 

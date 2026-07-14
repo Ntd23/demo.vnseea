@@ -62,6 +62,8 @@ export function useSettingsMyPointsPanelVM(
   })
   let directScanner: any = null
   let receiveQrRefreshTimer: ReturnType<typeof setTimeout> | null = null
+  let skipNextTransferRecipientSearch = false
+  let transferRecipientSearchVersion = 0
 
   const pendingTransferStorageKey = "points-transfer:pending"
 
@@ -215,6 +217,14 @@ export function useSettingsMyPointsPanelVM(
   watch(transferRecipientQuery, async (query) => {
     const normalized = query.trim()
 
+    if (skipNextTransferRecipientSearch) {
+      skipNextTransferRecipientSearch = false
+      transferRecipientSearchVersion += 1
+      transferRecipients.value = []
+      transferSearching.value = false
+      return
+    }
+
     if (
       transferDraft.recipientUserId > 0
       && transferSelectedRecipientLabel.value
@@ -225,20 +235,29 @@ export function useSettingsMyPointsPanelVM(
     }
 
     if (normalized.length < 2 && !/^\d+$/.test(normalized)) {
+      transferRecipientSearchVersion += 1
       transferRecipients.value = []
       return
     }
 
+    const searchVersion = ++transferRecipientSearchVersion
     transferSearching.value = true
 
     try {
-      transferRecipients.value = await walletRepository.searchRecipients(normalized)
+      const recipients = await walletRepository.searchRecipients(normalized)
+      if (searchVersion === transferRecipientSearchVersion) {
+        transferRecipients.value = recipients
+      }
     }
     catch {
-      transferRecipients.value = []
+      if (searchVersion === transferRecipientSearchVersion) {
+        transferRecipients.value = []
+      }
     }
     finally {
-      transferSearching.value = false
+      if (searchVersion === transferRecipientSearchVersion) {
+        transferSearching.value = false
+      }
     }
   })
 
@@ -595,11 +614,15 @@ export function useSettingsMyPointsPanelVM(
     transferLastAppliedQrPayload.value = raw
     transferDraft.recipientUserId = payload.to
     transferSelectedRecipientLabel.value = `User #${payload.to}`
+    transferRecipientSearchVersion += 1
+    transferRecipients.value = []
+    transferSearching.value = false
 
     if (payload.points !== null && Number.isFinite(payload.points) && payload.points > 0) {
       transferDraft.points = payload.points
     }
 
+    skipNextTransferRecipientSearch = true
     transferRecipientQuery.value = String(payload.to)
     await hydrateQrRecipient(payload.to)
 
@@ -613,18 +636,29 @@ export function useSettingsMyPointsPanelVM(
   async function hydrateQrRecipient(userId: number) {
     try {
       const recipients = await walletRepository.searchRecipients(String(userId))
-      transferRecipients.value = recipients
-      const recipient = recipients.find(item => item.id === userId) ?? recipients[0]
+      const recipient = recipients.find(item => item.id === userId)
 
       if (recipient) {
         transferDraft.recipientUserId = recipient.id
         transferSelectedRecipientLabel.value = `${recipient.name} (@${recipient.username})`
+        skipNextTransferRecipientSearch = true
         transferRecipientQuery.value = transferSelectedRecipientLabel.value
         transferRecipients.value = []
+        return
       }
+
+      transferRecipients.value = []
+      transferDraft.recipientUserId = userId
+      transferSelectedRecipientLabel.value = `User #${userId}`
+      skipNextTransferRecipientSearch = true
+      transferRecipientQuery.value = String(userId)
     }
     catch {
       transferRecipients.value = []
+      transferDraft.recipientUserId = userId
+      transferSelectedRecipientLabel.value = `User #${userId}`
+      skipNextTransferRecipientSearch = true
+      transferRecipientQuery.value = String(userId)
     }
   }
 

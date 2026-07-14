@@ -215,6 +215,7 @@ export async function fetchWalletOverview(event: H3Event): Promise<WalletOvervie
 }
 
 export async function searchWalletRecipients(event: H3Event, query: string): Promise<WalletRecipient[]> {
+  const exactUserId = /^\d+$/.test(query.trim()) ? asNumber(query) : 0
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).get<BackendRecipientSearchResponse>(
       "wallet-recipient-search",
@@ -223,8 +224,13 @@ export async function searchWalletRecipients(event: H3Event, query: string): Pro
     "Unable to search recipients.",
   )
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const recipients = (response.items ?? []).map(item => mapRecipient(item, resolveMediaUrl))
 
-  return (response.items ?? []).map(item => mapRecipient(item, resolveMediaUrl))
+  if (exactUserId > 0) {
+    return recipients.filter(recipient => recipient.id === exactUserId)
+  }
+
+  return recipients
 }
 
 export async function createWalletTopupLink(

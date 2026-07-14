@@ -42,7 +42,7 @@ export default defineEventHandler(async (event) => {
   let lastError: unknown
 
   if (points === undefined) {
-    throw createError({statusCode: 400, statusMessage: "VNSEEA must be a positive integer."})
+    throw createError({ statusCode: 400, statusMessage: "VNSEEA must be a positive integer." })
   }
 
   if (!userId) {
