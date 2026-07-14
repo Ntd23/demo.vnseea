@@ -54,6 +54,40 @@
         </div>
         <div class="publisher__meta">
           <p class="publisher__name">{{ currentUserName || t("feed.publisherBox.expandedOpen") }}</p>
+          <div class="publisher__audience-dropdown">
+            <button 
+              type="button" 
+              class="publisher__audience-btn"
+              @click.stop="toggleAudienceMenu"
+            >
+              <Icon :name="selectedAudienceInfo.icon" class="h-3.5 w-3.5 text-slate-500 mr-1" />
+              <span>{{ selectedAudienceInfo.label }}</span>
+              <Icon name="i-ph-caret-down-bold" class="h-2.5 w-2.5 text-slate-400 ml-1.5" />
+            </button>
+            
+            <div 
+              v-if="showAudienceMenu" 
+              class="publisher__audience-menu"
+              @click.stop
+            >
+              <button
+                v-for="opt in audiences"
+                :key="opt.value"
+                type="button"
+                class="publisher__audience-item"
+                :class="{ 'publisher__audience-item--active': opt.value === selectedAudience }"
+                @click="selectAudienceOption(opt.value)"
+              >
+                <Icon :name="opt.icon" class="h-4 w-4 mr-2" />
+                <span>{{ opt.label }}</span>
+                <Icon 
+                  v-if="opt.value === selectedAudience" 
+                  name="i-ph-check-bold" 
+                  class="h-3.5 w-3.5 ml-auto text-primary-500" 
+                />
+              </button>
+            </div>
+          </div>
         </div>
         <button class="publisher__close" type="button" @click="expanded = false">
           <Icon name="i-ph-x-bold" class="h-4 w-4" />
@@ -87,8 +121,38 @@
         />
       </div>
 
+      <!-- Media Preview Grid -->
+      <div v-if="mediaPreviews.length > 0" class="publisher__media-previews">
+        <div 
+          v-for="(preview, idx) in mediaPreviews" 
+          :key="preview.url"
+          class="publisher__preview-box"
+        >
+          <img 
+            v-if="preview.type === 'image'" 
+            :src="preview.url" 
+            :alt="preview.name"
+            class="publisher__preview-content"
+            draggable="false"
+          >
+          <video 
+            v-else 
+            :src="preview.url" 
+            class="publisher__preview-content"
+            controls
+          />
+          <button 
+            type="button" 
+            class="publisher__preview-remove-btn"
+            @click="removeMediaItem(idx)"
+          >
+            <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+
       <!-- Sell Product Form -->
-      <div v-else class="publisher__product-form">
+      <div v-else-if="showProductForm" class="publisher__product-form">
         <p class="publisher__product-title">
           <Icon name="i-ph-shopping-cart-bold" class="h-5 w-5 mr-1 text-orange-500" />
           {{ locale === "vi" ? "Đăng bán sản phẩm" : "List a Product for Sale" }}
@@ -229,7 +293,7 @@
 
 
       <div v-if="selectedMediaLabel || activeFeeling" class="publisher__selection-row">
-        <div v-if="selectedMediaLabel" class="publisher__selection-pill">
+        <div v-if="selectedMediaLabel && mediaPreviews.length === 0" class="publisher__selection-pill">
           <Icon :name="selectedMediaType === 'video' ? 'i-ph-video-camera-bold' : 'i-ph-image-bold'" class="h-4 w-4" />
           <span>{{ selectedMediaLabel }}</span>
           <button type="button" class="publisher__selection-remove" @click="clearSelectedMedia">
@@ -397,6 +461,7 @@ const {
   currentUserInitials,
   compactActions,
   actions,
+  audiences,
   feelingOptions,
   activeFeeling,
   selectedMediaLabel,
@@ -419,7 +484,57 @@ const {
   postColorOptions,
   showProductForm,
   productForm,
+  imageFiles,
+  videoFile,
 } = useFeedPublisherBoxVM((event, post) => emit(event, post), props.pageId, props.eventId, props.groupId)
+
+const mediaPreviews = ref<{ url: string; type: "image" | "video"; name: string }[]>([])
+
+watch([imageFiles, videoFile], () => {
+  mediaPreviews.value.forEach(p => {
+    if (p.url.startsWith("blob:")) {
+      URL.revokeObjectURL(p.url)
+    }
+  })
+  mediaPreviews.value = []
+
+  if (selectedMediaType.value === "image") {
+    imageFiles.value.forEach(file => {
+      mediaPreviews.value.push({
+        url: URL.createObjectURL(file),
+        type: "image",
+        name: file.name,
+      })
+    })
+  } else if (selectedMediaType.value === "video" && videoFile.value) {
+    mediaPreviews.value.push({
+      url: URL.createObjectURL(videoFile.value),
+      type: "video",
+      name: videoFile.value.name,
+    })
+  }
+}, { deep: true })
+
+onBeforeUnmount(() => {
+  mediaPreviews.value.forEach(p => {
+    if (p.url.startsWith("blob:")) {
+      URL.revokeObjectURL(p.url)
+    }
+  })
+})
+
+function removeMediaItem(index: number) {
+  if (selectedMediaType.value === "image") {
+    const updated = [...imageFiles.value]
+    updated.splice(index, 1)
+    imageFiles.value = updated
+    if (updated.length === 0) {
+      clearSelectedMedia()
+    }
+  } else {
+    clearSelectedMedia()
+  }
+}
 
 const activeColorOption = computed(() => {
   if (selectedColorId.value === null) return null
@@ -433,6 +548,49 @@ const draftText = computed({
       draft.value.text = value
     }
   },
+})
+
+const selectedAudience = computed({
+  get: () => draft.value?.audience || "0",
+  set: (value: any) => {
+    if (draft.value) {
+      draft.value.audience = value
+    }
+  },
+})
+
+const selectedAudienceInfo = computed(() => {
+  const currentVal = selectedAudience.value
+  const opt = audiences.value.find(o => o.value === currentVal)
+  if (opt) return opt
+  return { value: "0", label: locale.value === "vi" ? "Công khai" : "Public", icon: "i-ph-globe-bold" }
+})
+
+const showAudienceMenu = ref(false)
+
+function toggleAudienceMenu() {
+  showAudienceMenu.value = !showAudienceMenu.value
+}
+
+function selectAudienceOption(val: any) {
+  selectedAudience.value = val
+  showAudienceMenu.value = false
+}
+
+function closeAudienceMenu() {
+  showAudienceMenu.value = false
+}
+
+onMounted(() => {
+  if (typeof window !== "undefined") {
+    window.addEventListener("click", closeAudienceMenu)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (typeof window !== "undefined") {
+    window.removeEventListener("click", closeAudienceMenu)
+  }
 })
 
 const {
@@ -537,6 +695,11 @@ function handleCompactActionOverride(value: any) {
 }
 
 async function openComposer() {
+  console.log("[FeedPublisherBox] openComposer triggered! Resetting forms. showProductForm was:", showProductForm.value)
+  showProductForm.value = false
+  showFeelingPicker.value = false
+  showPollForm.value = false
+  showColorsPicker.value = false
   expanded.value = true
   await nextTick()
   resizeTextarea()
@@ -1494,5 +1657,140 @@ function goToLive() {
 .publisher__product-image-remove:hover {
   background: #fee2e2;
   color: #dc2626;
+}
+
+.publisher__media-previews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 0 4px;
+}
+
+.publisher__preview-box {
+  position: relative;
+  width: 100%;
+  max-height: 380px;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  background: #0f172a;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.publisher__preview-content {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.publisher__preview-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+}
+
+.publisher__preview-remove-btn:hover {
+  background: rgba(15, 23, 42, 0.85);
+  transform: scale(1.05);
+}
+
+.publisher__audience-dropdown {
+  position: relative;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.publisher__audience-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 3px 8px 3px 6px;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.publisher__audience-btn:hover {
+  background: #e2e8f0;
+  border-color: #cbd5e1;
+}
+
+.publisher__audience-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 150;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+  padding: 6px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  animation: publisher-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.publisher__audience-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.1s ease;
+}
+
+.publisher__audience-item:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.publisher__audience-item--active {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.publisher__audience-caret {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  color: #64748b;
+  pointer-events: none;
 }
 </style>

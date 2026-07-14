@@ -71,6 +71,14 @@ if (empty($error_code)) {
         if (isset($_POST['currency'])) {
             if (in_array($_POST['currency'], array_keys($wo['currencies']))) {
                 $currency = Wo_Secure($_POST['currency']);
+            } else {
+                $input_curr = trim($_POST['currency']);
+                foreach ($wo['currencies'] as $key => $currency_data) {
+                    if (strcasecmp($currency_data['text'], $input_curr) === 0 || $currency_data['symbol'] === $input_curr) {
+                        $currency = $key;
+                        break;
+                    }
+                }
             }
         }
 
