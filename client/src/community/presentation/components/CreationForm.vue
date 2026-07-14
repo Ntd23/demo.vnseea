@@ -1,12 +1,12 @@
 <!-- English description: Renders the shared community create form with optional page location and map pin request controls. -->
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6" :class="{ 'creation-form--page': isPage }">
     <div class="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
       <div class="mb-10">
         <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">
-          {{ $t("community.creation.common.fillInfo", { entity: entityText }) }}
+          {{ title || $t("community.creation.common.fillInfo", { entity: entityText }) }}
         </h1>
-        <p class="mt-2 text-[15px] text-slate-500">
+        <p v-if="!hideDescription" class="mt-2 text-[15px] text-slate-500">
           {{ $t("community.creation.common.fillDesc", { entity: entityText }) }}
         </p>
       </div>
@@ -39,7 +39,24 @@
           name="slug"
           required
         >
+          <div v-if="isPage" class="w-full">
+            <div class="flex w-full items-center rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20">
+              <div class="flex items-center justify-center bg-slate-50 border-r border-slate-200 px-4 h-12 text-slate-500 text-[14px] font-medium whitespace-nowrap select-none">
+                {{ urlPrefix }}
+              </div>
+              <input
+                v-model="model.slug"
+                type="text"
+                :placeholder="slugPlaceholder"
+                class="flex-1 h-12 px-4 text-[15px] text-slate-900 placeholder-slate-400 focus:outline-none border-none bg-transparent"
+              />
+            </div>
+            <span class="text-[13px] text-slate-500 mt-2 block">
+              Link trang: {{ urlPrefix }}{{ model.slug || '' }}
+            </span>
+          </div>
           <UInput
+            v-else
             v-model="model.slug"
             :placeholder="slugPlaceholder"
             icon="i-ph-link-bold"
@@ -48,7 +65,7 @@
             :ui="{ base: 'h-12 rounded-xl' }"
           />
           <template #hint>
-            <span class="text-[11px] font-medium text-slate-400">
+            <span v-if="!isPage" class="text-[11px] font-medium text-slate-400">
               {{ urlPrefix }}{{ model.slug || '...' }}
             </span>
           </template>
@@ -101,7 +118,7 @@
               :items="categoryItems"
               value-key="value"
               label-key="label"
-              icon="i-ph-tag-bold"
+              :icon="isPage ? undefined : 'i-ph-tag-bold'"
               size="xl"
               class="w-full"
               :ui="{ base: 'h-12 rounded-xl' }"
@@ -212,6 +229,9 @@ const props = withDefaults(defineProps<{
   urlPrefix?: string
   submitState?: CreationSubmitState
   submitDisabled?: boolean
+  title?: string
+  hideDescription?: boolean
+  isPage?: boolean
 }>(), {
   privacyOptions: () => [],
   showPrivacy: true,
@@ -232,6 +252,9 @@ const props = withDefaults(defineProps<{
   urlPrefix: communityUrlPrefix,
   submitState: "idle",
   submitDisabled: false,
+  title: "",
+  hideDescription: false,
+  isPage: false,
 })
 
 const entityText = computed(() => t(props.entityLabel))
@@ -301,3 +324,30 @@ const validateForm = (state: CommunityDraft): CreationFormError[] => {
   return errors
 }
 </script>
+
+<style scoped>
+.creation-form--page :deep(select),
+.creation-form--page :deep(button[role="combobox"]),
+.creation-form--page :deep(.u-select-button) {
+  border: 1px solid #bfdbfe !important;
+  border-radius: 12px !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  outline: none !important;
+}
+
+.creation-form--page :deep(select:focus),
+.creation-form--page :deep(button[role="combobox"]:focus-within),
+.creation-form--page :deep(.u-select-button:focus-within) {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Make sure UFormField labels are bold, matching the mockup */
+.creation-form--page :deep(label) {
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  font-size: 15px !important;
+}
+</style>

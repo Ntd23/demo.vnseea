@@ -40,7 +40,7 @@
     <div class="page-settings__content-container">
 
 
-      <div class="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_340px] 2xl:items-start">
+      
       <div class="min-w-0 space-y-4">
           <div v-if="statusAlert" class="page-settings__alert mb-5"
             :class="`page-settings__alert--${statusAlert.color}`" aria-live="polite">
@@ -119,7 +119,6 @@
         </div>
       </div>
     </div>
-  </div>
 
   <div v-else class="mx-auto max-w-[960px] px-3 pb-10 pt-4 sm:px-5">
     <section

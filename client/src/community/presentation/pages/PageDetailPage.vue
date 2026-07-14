@@ -749,16 +749,14 @@ async function handleOfferSaved() {
 .page-detail__name-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
+  align-items: center;}
 
 .page-detail__display-name {
   display: inline-flex;
   max-width: 100%;
   align-items: center;
   border-radius: 999px;
-  padding: 6px 2px;
+  padding: 6px 2px 0 2px;
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 900;
   letter-spacing: -0.03em;

@@ -150,7 +150,7 @@ async function handleSubmit() {
 <style scoped>
 .offer-form {
   display: flex;
-  width: min(92vw, 680px);
+  width: min(92vw, 800px);
   max-height: min(92vh, 820px);
   flex-direction: column;
   gap: 18px;
