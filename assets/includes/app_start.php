@@ -442,8 +442,8 @@ if (!empty($wo["config"]["exchange"])) {
 $wo["currencies"] = array();
 foreach ($wo["config"]["currency_symbol_array"] as $key => $value) {
     $wo["currencies"][] = array(
-        "text" => $key,
-        "symbol" => $value
+        "text" => html_entity_decode((string) $key, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+        "symbol" => html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8')
     );
 }
 if (!empty($_GET["theme"])) {

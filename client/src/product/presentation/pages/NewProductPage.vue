@@ -230,8 +230,15 @@ const productLocationSelection = ref<LocationSelection>(emptyLocationSelection()
 
 const {
   conditionOptions,
-  currencyOptions,
 } = useProductEditorMeta()
+
+const { data: currenciesData } = useAsyncData(
+  "product:currencies",
+  () => $fetch<{ value: string; label: string; symbol: string; code: string }[]>("/_api/product/currencies"),
+  { default: () => [] as { value: string; label: string; symbol: string; code: string }[] },
+)
+
+const currencyOptions = computed(() => currenciesData.value ?? [])
 
 const createInitialDraft = (): ProductEditorDraft => ({
   mode: "create",
@@ -242,7 +249,7 @@ const createInitialDraft = (): ProductEditorDraft => ({
     category: "",
     condition: "new",
     location: "",
-    currency: "VND",
+    currency: "",
     stock: "",
   },
   removedImageIds: [],
@@ -294,6 +301,23 @@ const subCategoryOptions = computed(() =>
   (marketplaceData.value?.subCategories ?? []).filter(
     option => option.parentId === draft.value.fields.category,
   ),
+)
+
+watch(
+  () => currencyOptions.value.map(o => o.value).join("|"),
+  () => {
+    const options = currencyOptions.value
+    if (!options.length) return
+
+    if (draft.value.fields.currency && options.some(o => o.value === draft.value.fields.currency)) {
+      return
+    }
+
+    // Prefer VND as default, fall back to first option
+    const vndOption = options.find(o => o.code === "VND")
+    draft.value.fields.currency = vndOption?.value ?? options[0]?.value ?? ""
+  },
+  { immediate: true },
 )
 
 watch(

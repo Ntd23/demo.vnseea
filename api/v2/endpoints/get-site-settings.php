@@ -61,6 +61,14 @@ $get_config['product_custom_fields'] = Wo_GetCustomFields('product');
 $get_config['post_reactions_types'] = $wo['reactions_types'];
 $get_config['pro_packages'] = $wo['pro_packages'];
 // $get_config['pro_packages_types'] = $wo['pro_packages_types'];
+$currencies_plain = array();
+foreach ($wo['currencies'] as $idx => $currency_data) {
+    $currencies_plain[] = array(
+        'index' => $idx,
+        'text'   => isset($currency_data['text'])   ? $currency_data['text']   : '',
+        'symbol' => isset($currency_data['symbol']) ? $currency_data['symbol'] : '',
+    );
+}
 $get_config = json_encode($get_config, JSON_PRETTY_PRINT);
 $get_config = openssl_encrypt($get_config, "AES-128-ECB", $siteEncryptKey);
 
@@ -70,5 +78,7 @@ $response_data      = array(
     'page_categories' => $wo['page_categories'],
     'group_categories' => $wo['group_categories'],
     'group_sub_categories' => $wo['group_sub_categories'],
-    'public_config' => $public_config
+    'public_config' => $public_config,
+    'currencies' => $currencies_plain,
 );
+

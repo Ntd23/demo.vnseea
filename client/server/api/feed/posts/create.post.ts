@@ -60,9 +60,10 @@ const asString = (value: unknown) =>
     : ""
 
 const mapAudienceToPrivacy = (value: string) => {
-  if (value === "friends" || value === "connections") return "1"
-  if (value === "group") return "2"
-  if (value === "private" || value === "only-me") return "3"
+  if (value === "friends" || value === "connections" || value === "1") return "1"
+  if (value === "followers" || value === "2") return "2"
+  if (value === "private" || value === "only-me" || value === "3") return "3"
+  if (value === "anonymous" || value === "4") return "4"
   return "0"
 }
 

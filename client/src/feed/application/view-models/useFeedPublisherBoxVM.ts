@@ -7,7 +7,7 @@ import type { FeedPostRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
 type PublisherAction = "image" | "video" | "poll" | "feeling" | "story" | "colors" | "product"
-type PublisherAudience = "public" | "connections" | "group"
+type PublisherAudience = "public" | "connections" | "group" | "0" | "1" | "2" | "4"
 type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | "funny" | "cool" | "tired" | "confused" | ""
 
 export function useFeedPublisherBoxVM(
@@ -58,7 +58,7 @@ export function useFeedPublisherBoxVM(
     feeling: PublisherFeeling
   }>({
     text: "",
-    audience: "public",
+    audience: "0",
     feeling: "",
   })
 
@@ -95,9 +95,10 @@ export function useFeedPublisherBoxVM(
   ])
 
   const audiences = computed(() => [
-    { value: "public" as const, label: t("feed.publisherBox.audiencePublic") },
-    { value: "connections" as const, label: t("feed.publisherBox.audienceConnections") },
-    { value: "group" as const, label: t("feed.publisherBox.audienceGroup") },
+    { value: "0" as const, label: locale.value === "vi" ? "Công khai" : "Public", icon: "i-ph-globe-bold" },
+    { value: "4" as const, label: locale.value === "vi" ? "Ẩn danh" : "Anonymous", icon: "i-ph-ghost-bold" },
+    { value: "1" as const, label: locale.value === "vi" ? "Những người tôi theo dõi" : "People I follow", icon: "i-ph-users-bold" },
+    { value: "2" as const, label: locale.value === "vi" ? "Mọi người theo dõi tôi" : "People following me", icon: "i-ph-users-three-bold" },
   ])
 
   const feelingOptions = computed(() => [
@@ -167,8 +168,14 @@ export function useFeedPublisherBoxVM(
           const parsed = JSON.parse(stored)
           if (parsed && typeof parsed === "object") {
             draft.value.text = parsed.text || ""
-            draft.value.audience = parsed.audience || "public"
             draft.value.feeling = parsed.feeling || ""
+            
+            // Map legacy string keys to new privacy numeric codes
+            let aud = parsed.audience || "0"
+            if (aud === "public") aud = "0"
+            else if (aud === "connections") aud = "1"
+            else if (aud === "group") aud = "2"
+            draft.value.audience = aud as any
           }
         }
       }
@@ -192,7 +199,12 @@ export function useFeedPublisherBoxVM(
   )
 
   watch(expanded, async (value) => {
+    console.log("[useFeedPublisherBoxVM] watch(expanded) triggered! New value is:", value)
     if (!value) {
+      showFeelingPicker.value = false
+      showPollForm.value = false
+      showColorsPicker.value = false
+      showProductForm.value = false
       return
     }
 
@@ -495,5 +507,7 @@ export function useFeedPublisherBoxVM(
     postColorOptions,
     showProductForm,
     productForm,
+    imageFiles,
+    videoFile,
   }
 }

@@ -2,7 +2,7 @@
 
 <template>
   <header
-    class="sticky top-0 z-[100] transition-transform duration-100 px-4 md:px-7.5"
+    class="sticky top-0 z-[100] transition-transform duration-100"
     :class="{ 'header-bar--hidden': isHeaderHidden }"
   >
     <!-- ─── Desktop header ────────────────────────────────── -->

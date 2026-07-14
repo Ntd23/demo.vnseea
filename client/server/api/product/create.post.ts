@@ -20,6 +20,7 @@ type PersonalProductPayload = {
   description: string
   location: string
   type: string
+  currency: string
   imageFile: {
     filename?: string
     type?: string
@@ -64,6 +65,7 @@ const parsePersonalProductPayload = (parts: MultipartPart[]): PersonalProductPay
     description: "",
     location: "",
     type: "0",
+    currency: "0",
     imageFile: null,
   }
 
@@ -92,6 +94,7 @@ const parsePersonalProductPayload = (parts: MultipartPart[]): PersonalProductPay
     if (part.name === "description") payload.description = value
     if (part.name === "location") payload.location = value
     if (part.name === "type") payload.type = value || "0"
+    if (part.name === "currency") payload.currency = value || "0"
   }
 
   return payload
@@ -136,7 +139,7 @@ const createPersonalFeedProduct = async (event: H3Event, parts: MultipartPart[])
   requestBody.append("hash_id", currentUserHash)
   requestBody.append("name", payload.name)
   requestBody.append("price", payload.price)
-  requestBody.append("currency", "0")
+  requestBody.append("currency", payload.currency || "0")
   requestBody.append("category", payload.category)
   requestBody.append("description", payload.description)
   requestBody.append("location", payload.location)
