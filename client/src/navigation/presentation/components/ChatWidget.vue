@@ -365,7 +365,7 @@
               </div>
 
               <div class="chat-widget__avatar-menu-section">
-                <button type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('audio')">
+                <button v-if="avatarMenuContact.type === 'user'" type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('audio')">
                   <Icon name="i-ph-phone-duotone" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
                 </button>
@@ -454,9 +454,10 @@
 
           <div class="chat-widget__mini-header-actions">
             <button
+              v-if="miniSession.contact.type === 'user'"
               class="chat-widget__header-btn"
               type="button"
-              :title="miniSession.contact.type === 'group' ? $t('pages.messagesPage.groupAudioCall') : $t('pages.messagesPage.callLogAudio')"
+              :title="$t('pages.messagesPage.callLogAudio')"
               :disabled="isCallActionPending"
               @click="startMiniCall(miniSession, 'audio')"
             >
@@ -724,7 +725,7 @@
             <UIcon name="i-ph-user-circle-duotone" class="h-5 w-5" />
             <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
           </button>
-          <button type="button" class="chat-widget__message-avatar-menu-item" @click="callMessageAvatarContact('audio')">
+          <button v-if="messageAvatarMenuContact.type === 'user'" type="button" class="chat-widget__message-avatar-menu-item" @click="callMessageAvatarContact('audio')">
             <UIcon name="i-ph-phone-duotone" class="h-5 w-5" />
             <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
           </button>
@@ -1041,7 +1042,7 @@ async function callAvatarContact(type: 'audio' | 'video') {
   closeAvatarMenu()
   if (!contact) return
   if (contact.type === 'group') {
-    await startGroupCall(contact, type)
+    await startGroupCall(contact)
   }
   else if (contact.type === 'user') {
     await startCall(contact, type)
@@ -1139,7 +1140,7 @@ async function callMessageAvatarContact(type: "audio" | "video") {
   }
 
   if (contact.type === "group") {
-    await startGroupCall(contact, type)
+    await startGroupCall(contact)
     return
   }
 
@@ -1176,7 +1177,7 @@ async function startMiniCall(session: MiniChatSessionView, type: MessageCallType
   }
 
   if (contact.type === "group") {
-    await startGroupCall(contact, type)
+    await startGroupCall(contact)
     return
   }
 

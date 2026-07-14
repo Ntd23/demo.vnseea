@@ -21,7 +21,7 @@ type RingingCall = {
 
 type RingingGroupCall = {
   id: number
-  type: MessageCallType
+  type: "video"
   direction: "incoming" | "outgoing"
   groupId: number
   groupName: string
@@ -31,7 +31,7 @@ type RingingGroupCall = {
 
 type ActiveGroupCall = {
   id: number
-  type: MessageCallType
+  type: "video"
 }
 
 type MessageCallOptions = {
@@ -168,7 +168,7 @@ export function useMessageCalls(
     }
   }
 
-  const startGroupCall = async (contact: MessageContact, type: MessageCallType) => {
+  const startGroupCall = async (contact: MessageContact) => {
     if (!contact.groupId || contact.type !== "group" || isCallActionPending.value || activeGroupCall.value) {
       return
     }
@@ -179,7 +179,6 @@ export function useMessageCalls(
     try {
       const result = await repository.createGroupCall({
         groupId: contact.groupId,
-        type,
       })
 
       if (result.status !== 200 || result.id <= 0) {

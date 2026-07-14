@@ -1,6 +1,6 @@
 // English description: Accepts a pending backend group call invitation and returns its join URL.
 
-import { callBackend, normalizeCallType } from "../_shared"
+import { callBackend } from "../_shared"
 import { buildGroupCallRoute } from "./_shared"
 
 const asNumber = (value: unknown) => {
@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     status: asNumber(response.status),
     id: asNumber(response.id) || asNumber(response.call_id),
     groupId: asNumber(response.group_id),
-    type: normalizeCallType(response.call_type),
+    type: "video" as const,
     url: buildGroupCallRoute(asNumber(response.id) || asNumber(response.call_id), response.call_type),
     groupName: asString(response.group_name),
     participantCount: asNumber(response.participant_count),

@@ -82,7 +82,7 @@
             class="message-call-modal__avatar"
           />
           <span class="message-call-modal__type">
-            <UIcon :name="ringingGroupCall.type === 'video' ? 'i-ph-video-camera-bold' : 'i-ph-phone-bold'" />
+            <UIcon name="i-ph-video-camera-bold" />
           </span>
         </div>
 
@@ -107,7 +107,7 @@
           />
           <UButton
             v-if="ringingGroupCall.direction === 'incoming'"
-            :icon="ringingGroupCall.type === 'video' ? 'i-ph-video-camera-bold' : 'i-ph-phone-bold'"
+            icon="i-ph-video-camera-bold"
             color="success"
             square
             class="message-call-modal__button"

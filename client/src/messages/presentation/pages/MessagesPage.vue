@@ -478,7 +478,7 @@ async function startSelectedContactCall(input: MessageCallType | MessageCallLogA
   }
 
   if (contact.type === "group") {
-    await startGroupCall(contact, type)
+    await startGroupCall(contact)
     return
   }
 

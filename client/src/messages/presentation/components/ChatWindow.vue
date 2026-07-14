@@ -82,19 +82,6 @@
               </UTooltip>
             </template>
             <template v-else-if="contact.type === 'group'">
-              <UTooltip :text="$t('pages.messagesPage.groupAudioCall')">
-                <UButton
-                  type="button"
-                  color="neutral"
-                  variant="ghost"
-                  icon="i-ph-phone-bold"
-                  class="h-10 w-10 justify-center rounded-full"
-                  :loading="callActionPending"
-                  :disabled="callActionPending"
-                  @click="handleStartCall('audio')"
-                />
-              </UTooltip>
-
               <UTooltip :text="$t('pages.messagesPage.groupVideoCall')">
                 <UButton
                   type="button"
