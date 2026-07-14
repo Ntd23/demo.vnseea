@@ -193,88 +193,45 @@ if ($f == 'wallet') {
     }
     if ($s == 'send-points' && $wo['loggedin'] === true) {
         header("Content-type: application/json");
-        $data = array(
-            'status' => 400
+        require_once 'assets/includes/vnseea_points_transfer.php';
+        $legacy_result = Wo_TransferPoints(
+            !empty($wo['user']['user_id']) ? (int) $wo['user']['user_id'] : 0,
+            $_POST['user_id'] ?? null,
+            $_POST['points'] ?? null,
+            $_POST['request_id'] ?? null,
+            $_POST['note'] ?? '',
+            array('allow_generated_request_id' => true)
         );
-        $user_id = (!empty($_POST['user_id']) && is_numeric($_POST['user_id'])) ? (int) $_POST['user_id'] : 0;
-        $points = (!empty($_POST['points']) && is_numeric($_POST['points'])) ? (int) $_POST['points'] : 0;
-        $sender_id = (int) $wo['user']['user_id'];
-        $userdata = Wo_UserData($user_id);
-        $sender = Wo_UserData($sender_id);
-        $sender_points = isset($sender['points']) ? (int) $sender['points'] : 0;
-
-        if (empty($user_id) || empty($points) || empty($userdata) || empty($sender) || $points <= 0) {
-            $data['message'] = $wo['lang']['please_check_details'];
-        } else if ($user_id === $sender_id) {
-            $data['message'] = $wo['lang']['please_check_details'];
-        } else if (!empty($userdata['banned']) || empty($userdata['active'])) {
-            $data['message'] = $wo['lang']['please_check_details'];
-        } else if ($sender_points < $points) {
-            $data['message'] = $wo['lang']['amount_exceded'];
-        } else {
-            $recipient_full_name = trim((string)($userdata['first_name'] ?? '') . ' ' . (string)($userdata['last_name'] ?? ''));
-            $sender_full_name = trim((string)($sender['first_name'] ?? '') . ' ' . (string)($sender['last_name'] ?? ''));
-            $recipient_name = $recipient_full_name !== ''
-                ? $recipient_full_name
-                : (!empty($userdata['name']) ? $userdata['name'] : $userdata['username']);
-            $sender_name = $sender_full_name !== ''
-                ? $sender_full_name
-                : (!empty($sender['name']) ? $sender['name'] : $sender['username']);
-            $transfer_note = !empty($_POST['note']) ? trim((string)$_POST['note']) : '';
-            $transfer_note_sql = mysqli_real_escape_string($sqlConnect, $transfer_note);
-            $extra = mysqli_real_escape_string($sqlConnect, json_encode(array(
-                'note' => $transfer_note,
-                'sender_id' => $sender_id,
-                'recipient_id' => $user_id,
-                'sender_name' => $sender_name,
-                'recipient_name' => $recipient_name,
-                'points' => $points,
-                'type' => 'points_transfer'
-            ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-
-            mysqli_begin_transaction($sqlConnect);
-            $update_sender = mysqli_query($sqlConnect, "UPDATE " . T_USERS . " SET `points` = `points` - {$points} WHERE `user_id` = {$sender_id} AND `points` >= {$points}");
-            if (!$update_sender || mysqli_affected_rows($sqlConnect) !== 1) {
-                mysqli_rollback($sqlConnect);
-                $data['message'] = $wo['lang']['amount_exceded'];
-                echo json_encode($data);
-                exit();
-            }
-            $update_recipient = mysqli_query($sqlConnect, "UPDATE " . T_USERS . " SET `points` = `points` + {$points} WHERE `user_id` = {$user_id}");
-            if (!$update_recipient) {
-                mysqli_rollback($sqlConnect);
-                $data['message'] = $wo['lang']['please_check_details'];
-                echo json_encode($data);
-                exit();
-            }
-            mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`, `extra`) VALUES ({$user_id}, 'POINTS_RECEIVED', 0, '{$transfer_note_sql}', '{$extra}')");
-            mysqli_query($sqlConnect, "INSERT INTO " . T_PAYMENT_TRANSACTIONS . " (`userid`, `kind`, `amount`, `notes`, `extra`) VALUES ({$sender_id}, 'POINTS_SENT', 0, '{$transfer_note_sql}', '{$extra}')");
-            mysqli_commit($sqlConnect);
-            cache($user_id, 'users', 'delete');
-            cache($sender_id, 'users', 'delete');
-
-            $notification_data_array = array(
-                'recipient_id' => $user_id,
-                'type' => 'sent_u_money',
-                'notifier_id' => $sender_id,
-                'user_id' => $sender_id,
-                'text' => $sender_name . ' đã gửi cho bạn ' . $points . ' VNSEEA',
-                'url' => 'index.php?link1=setting&page=myPoints'
-            );
-            Wo_RegisterNotification($notification_data_array);
-
-            $data = array(
+        http_response_code((int) $legacy_result['http_status']);
+        if (!empty($legacy_result['ok'])) {
+            echo json_encode(array(
                 'status' => 200,
-                'message' => 'Đã gửi ' . $points . ' VNSEEA cho ' . $recipient_name,
-                'recipient_id' => (int)$userdata['user_id'],
-                'recipient_name' => (string)$recipient_name,
-                'sender_points' => $sender_points - $points,
-                'recipient_points' => ((int)$userdata['points']) + $points,
-                'points' => $points
-            );
+                'api_status' => 200,
+                'success' => true,
+                'message' => $legacy_result['message'],
+                'request_id' => $legacy_result['request_id'],
+                'idempotent_replay' => $legacy_result['idempotent_replay'],
+                'recipient_id' => $legacy_result['recipient_id'],
+                'recipient_name' => $legacy_result['recipient_name'],
+                'points' => $legacy_result['points'],
+                'sender_points' => $legacy_result['sender_points'],
+                'recipient_points' => $legacy_result['recipient_points'],
+                'sender_transaction_id' => $legacy_result['sender_transaction_id'],
+                'recipient_transaction_id' => $legacy_result['recipient_transaction_id'],
+            ));
         }
-        echo json_encode($data);
+        else {
+            echo json_encode(array(
+                'status' => (int) $legacy_result['http_status'],
+                'api_status' => (int) $legacy_result['http_status'],
+                'success' => false,
+                'request_id' => $legacy_result['request_id'],
+                'error_code' => $legacy_result['error_code'],
+                'message' => $legacy_result['message'],
+            ));
+        }
         exit();
+
     }
     if ($s == 'pay' && $wo['loggedin'] === true) {
         $data = array(
