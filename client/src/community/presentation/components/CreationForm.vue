@@ -1,6 +1,6 @@
 <!-- English description: Renders the shared community create form with optional page location and map pin request controls. -->
 <template>
-  <div class="space-y-6" :class="{ 'creation-form--page': isPage }">
+  <div class="space-y-6" :class="{ 'creation-form--page': isPage || isGroup }">
     <div class="rounded-[24px] border border-slate-200 bg-white p-6 shadow-sm sm:p-10">
       <div class="mb-10">
         <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl">
@@ -39,7 +39,7 @@
           name="slug"
           required
         >
-          <div v-if="isPage" class="w-full">
+          <div v-if="isPage || isGroup" class="w-full">
             <div class="flex w-full items-center rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20">
               <div class="flex items-center justify-center bg-slate-50 border-r border-slate-200 px-4 h-12 text-slate-500 text-[14px] font-medium whitespace-nowrap select-none">
                 {{ urlPrefix }}
@@ -52,7 +52,7 @@
               />
             </div>
             <span class="text-[13px] text-slate-500 mt-2 block">
-              Link trang: {{ urlPrefix }}{{ model.slug || '' }}
+              {{ isPage ? 'Link trang' : 'Link nhóm' }}: {{ urlPrefix }}{{ model.slug || '' }}
             </span>
           </div>
           <UInput
@@ -65,7 +65,7 @@
             :ui="{ base: 'h-12 rounded-xl' }"
           />
           <template #hint>
-            <span v-if="!isPage" class="text-[11px] font-medium text-slate-400">
+            <span v-if="!(isPage || isGroup)" class="text-[11px] font-medium text-slate-400">
               {{ urlPrefix }}{{ model.slug || '...' }}
             </span>
           </template>
@@ -118,7 +118,7 @@
               :items="categoryItems"
               value-key="value"
               label-key="label"
-              :icon="isPage ? undefined : 'i-ph-tag-bold'"
+              :icon="(isPage || isGroup) ? undefined : 'i-ph-tag-bold'"
               size="xl"
               class="w-full"
               :ui="{ base: 'h-12 rounded-xl' }"
@@ -232,6 +232,7 @@ const props = withDefaults(defineProps<{
   title?: string
   hideDescription?: boolean
   isPage?: boolean
+  isGroup?: boolean
 }>(), {
   privacyOptions: () => [],
   showPrivacy: true,
@@ -255,6 +256,7 @@ const props = withDefaults(defineProps<{
   title: "",
   hideDescription: false,
   isPage: false,
+  isGroup: false,
 })
 
 const entityText = computed(() => t(props.entityLabel))
