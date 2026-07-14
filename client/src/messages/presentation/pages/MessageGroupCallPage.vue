@@ -1,7 +1,7 @@
 <!-- English description: Nuxt-rendered LiveKit group call room with responsive gallery and Nuxt UI controls. -->
 <template>
   <Teleport to="body">
-  <div class="group-call-page" :class="{ 'group-call-page--audio': payload?.type === 'audio' }">
+  <div class="group-call-page">
     <header class="group-call-page__header">
       <div class="group-call-page__title">
         <UAvatar :src="payload?.groupAvatar" :alt="payload?.groupName || 'Group call'" size="sm" />
@@ -34,10 +34,10 @@
         <div
           :ref="(node) => setVideoNode(participant.key, node)"
           class="group-call-page__media"
-          :class="{ 'group-call-page__media--hidden': !participant.videoTrack || participant.cameraOff || payload?.type === 'audio' }"
+          :class="{ 'group-call-page__media--hidden': !participant.videoTrack || participant.cameraOff }"
         />
 
-        <div v-if="!participant.videoTrack || participant.cameraOff || payload?.type === 'audio'" class="group-call-page__avatar-wrap">
+        <div v-if="!participant.videoTrack || participant.cameraOff" class="group-call-page__avatar-wrap">
           <UAvatar :src="participant.avatar" :alt="participant.name" size="3xl" class="group-call-page__avatar" />
         </div>
 
@@ -45,7 +45,7 @@
           <span v-if="participant.micMuted" class="group-call-page__badge group-call-page__badge--danger">
             <UIcon name="i-ph-microphone-slash-bold" />
           </span>
-          <span v-if="payload?.type === 'video' && participant.cameraOff" class="group-call-page__badge">
+          <span v-if="participant.cameraOff" class="group-call-page__badge">
             <UIcon name="i-ph-video-camera-slash-bold" />
           </span>
         </div>
@@ -79,7 +79,6 @@
         @click="toggleMic"
       />
       <UButton
-        v-if="payload?.type === 'video'"
         :icon="cameraEnabled ? 'i-ph-video-camera-bold' : 'i-ph-video-camera-slash-bold'"
         color="neutral"
         variant="solid"
@@ -90,7 +89,6 @@
         @click="toggleCamera"
       />
       <UButton
-        v-if="payload?.type === 'video'"
         icon="i-ph-camera-rotate-bold"
         color="neutral"
         variant="solid"
@@ -324,14 +322,6 @@ const {
   to {
     transform: rotate(360deg);
   }
-}
-
-.group-call-page--audio .group-call-page__grid {
-  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-}
-
-.group-call-page--audio .group-call-page__grid--single {
-  grid-template-columns: minmax(280px, min(100%, 620px));
 }
 
 .group-call-page__tile {

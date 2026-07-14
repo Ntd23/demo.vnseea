@@ -150,7 +150,7 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
     }
 
     let micMuted = isLocal ? !micEnabled.value : false
-    let cameraOff = payload.value?.type === "audio" || (isLocal && payload.value?.type === "video" && !cameraEnabled.value)
+    let cameraOff = isLocal && !cameraEnabled.value
     let videoTrack: ParticipantState["videoTrack"] = null
 
     participant.trackPublications.forEach((publication: TrackPublication) => {
@@ -186,7 +186,7 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
         name: participant.name,
         avatar: participant.avatar,
         isLocal: participant.userId === payload.value?.currentUser.id,
-        cameraOff: payload.value?.type === "audio",
+        cameraOff: true,
         micMuted: false,
       })
     }
@@ -207,7 +207,7 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
       const node = videoNodes.get(participant.key)
       if (!node) continue
 
-      if (!participant.videoTrack || participant.cameraOff || payload.value?.type === "audio") {
+      if (!participant.videoTrack || participant.cameraOff) {
         node.innerHTML = ""
         continue
       }
@@ -272,11 +272,9 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
         micEnabled.value = false
       })
 
-      if (payload.value.type === "video") {
-        await room.localParticipant.setCameraEnabled(true).catch(() => {
-          cameraEnabled.value = false
-        })
-      }
+      await room.localParticipant.setCameraEnabled(true).catch(() => {
+        cameraEnabled.value = false
+      })
     }
 
     updateParticipantFromPublications(room.localParticipant, true)
@@ -302,7 +300,7 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
   }
 
   async function toggleCamera() {
-    if (!room || payload.value?.type === "audio" || !mediaSupported.value) return
+    if (!room || !mediaSupported.value) return
     const next = !cameraEnabled.value
     try {
       await room.localParticipant.setCameraEnabled(next)
@@ -397,7 +395,7 @@ export function useGroupCallRoomSession(callId: Ref<number>, options: GroupCallR
 
     try {
       const loaded = await vm.loadPayload()
-      cameraEnabled.value = loaded.type === "video"
+      cameraEnabled.value = true
       seedParticipants(loaded.participants)
       elapsedSeconds.value = Math.max(
         0,

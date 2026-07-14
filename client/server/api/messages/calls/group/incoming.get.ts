@@ -1,6 +1,6 @@
 // English description: Polls the backend for pending group call invitations.
 
-import { callBackend, normalizeCallType } from "../_shared"
+import { callBackend } from "../_shared"
 import { createBackendMediaUrlResolver } from "../../../../utils/backend-media-url"
 import { buildGroupCallRoute } from "./_shared"
 
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
   return {
     id: asNumber(response.call_id),
     groupId: asNumber(response.group_id),
-    type: normalizeCallType(response.call_type),
+    type: "video" as const,
     url: buildGroupCallRoute(asNumber(response.call_id), response.call_type),
     groupName: asString(response.group_name) || peer.name,
     avatar: resolveBackendUrl(response.group_avatar) || resolveBackendUrl(peer.avatar),

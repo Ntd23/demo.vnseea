@@ -3,7 +3,7 @@
 import { getQuery, readBody, type H3Event } from "h3"
 import { createBackendWebClient } from "../../../../utils/backend-web-client"
 import { createBackendMediaUrlResolver } from "../../../../utils/backend-media-url"
-import { callBackend, getSessionHash, normalizeCallType } from "../_shared"
+import { callBackend, getSessionHash } from "../_shared"
 
 type BackendEntity = Record<string, unknown>
 
@@ -69,13 +69,12 @@ export async function fetchGroupCallPayload(event: H3Event, id: number) {
   const livekit = asRecord(response.livekit)
   const currentUser = asRecord(response.current_user)
   const callId = asNumber(call.id)
-  const type = normalizeCallType(call.call_type)
 
   return {
     status: asNumber(response.status),
     id: callId,
     groupId: asNumber(call.group_id),
-    type,
+    type: "video" as const,
     roomName: asString(call.room_name),
     wsUrl: asString(livekit.ws_url),
     token: asString(livekit.token),
@@ -108,7 +107,7 @@ export async function syncGroupCall(event: H3Event, id: number) {
     status: asNumber(response.status),
     id: asNumber(response.call_id),
     groupId: asNumber(response.group_id),
-    type: normalizeCallType(response.call_type),
+    type: "video" as const,
     callStatus: asString(response.call_status),
     participantCount: asNumber(response.participant_count),
     groupName: asString(response.group_name),
