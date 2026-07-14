@@ -1,7 +1,7 @@
-// English description: Streams the backend receive-points QR PNG through the Nuxt API boundary.
+// English description: Generates the current user's receive-VNSEEA QR image inside the Nuxt API boundary.
 
 import { createError, getQuery, setHeader } from "h3"
-import { getBackendBaseCandidates } from "../../utils/backend-api-client"
+import { renderSVG } from "uqr"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 
 const asNumber = (value: unknown) => {
@@ -12,31 +12,14 @@ const asNumber = (value: unknown) => {
 const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number" ? String(value).trim() : ""
 
-const buildBackendQrUrl = (baseUrl: string, userId: string, points: number) => {
-  const params = new URLSearchParams({
-    f: "qrcode",
-    s: "points-qr-code",
-    to: userId,
-  })
-
-  if (points > 0) {
-    params.set("points", String(points))
-  }
-
-  return `${baseUrl.replace(/\/+$/, "")}/requests.php?${params.toString()}`
-}
+const buildPointsQrPayload = (userId: string, points: number) =>
+  `POINTS|to=${userId}${points > 0 ? `|points=${points}|amount=${points}` : ""}`
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const currentUser = await getBackendCurrentUser(event)
-  const runtimeConfig = useRuntimeConfig(event)
   const userId = asString(currentUser.user_id)
   const points = Math.trunc(asNumber(query.points))
-  const cookie = event.node.req.headers.cookie
-  const candidates = getBackendBaseCandidates(
-    String(runtimeConfig.public.backendWebBase || runtimeConfig.backendApiBase),
-  )
-  let lastError: unknown
 
   if (!userId) {
     throw createError({
@@ -45,45 +28,17 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  for (const baseUrl of candidates) {
-    try {
-      const response = await $fetch.raw<ArrayBuffer>(buildBackendQrUrl(baseUrl, userId, points), {
-        responseType: "arrayBuffer",
-        headers: {
-          accept: "image/png",
-          ...(cookie ? { cookie } : {}),
-        },
-      })
-      const contentType = response.headers.get("content-type") || ""
-
-      if (!contentType.toLowerCase().includes("image/png")) {
-        lastError = new Error(`Unexpected QR response content type: ${contentType || "unknown"}`)
-        continue
-      }
-
-      const image = response._data
-
-      if (!image || image.byteLength < 1) {
-        lastError = new Error("Empty QR image response.")
-        continue
-      }
-
-      setHeader(event, "Content-Type", "image/png")
-      setHeader(event, "Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
-      setHeader(event, "Pragma", "no-cache")
-
-      return Buffer.from(image)
-    }
-    catch (error) {
-      lastError = error
-    }
-  }
-
-  throw createError({
-    statusCode: 502,
-    statusMessage: "Unable to generate VNSEEA QR image.",
-    data: {
-      cause: lastError instanceof Error ? lastError.message : String(lastError || ""),
-    },
+  const svg = renderSVG(buildPointsQrPayload(userId, points), {
+    border: 2,
+    ecc: "Q",
+    pixelSize: 8,
+    whiteColor: "#ffffff",
+    blackColor: "#111827",
   })
+
+  setHeader(event, "Content-Type", "image/svg+xml; charset=utf-8")
+  setHeader(event, "Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+  setHeader(event, "Pragma", "no-cache")
+
+  return svg
 })
