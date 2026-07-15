@@ -18,7 +18,17 @@
     >
 
     <div v-if="!expanded" class="publisher__compact" @click="openComposer">
-      <div class="publisher__compact-avatar">
+      <NuxtLink
+        v-if="currentUserProfilePath"
+        :to="currentUserProfilePath"
+        class="publisher__compact-avatar publisher__avatar-link"
+        :aria-label="currentUserName"
+        @click.stop
+      >
+        <img v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="publisher__avatar-image">
+        <span v-else>{{ currentUserInitials }}</span>
+      </NuxtLink>
+      <div v-else class="publisher__compact-avatar">
         <img v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="publisher__avatar-image">
         <span v-else>{{ currentUserInitials }}</span>
       </div>
@@ -48,7 +58,16 @@
 
     <div v-else class="publisher__expanded">
       <div class="publisher__head">
-        <div class="publisher__avatar">
+        <NuxtLink
+          v-if="currentUserProfilePath"
+          :to="currentUserProfilePath"
+          class="publisher__avatar publisher__avatar-link"
+          :aria-label="currentUserName"
+        >
+          <img v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="publisher__avatar-image">
+          <span v-else>{{ currentUserInitials }}</span>
+        </NuxtLink>
+        <div v-else class="publisher__avatar">
           <img v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="publisher__avatar-image">
           <span v-else>{{ currentUserInitials }}</span>
         </div>
@@ -458,6 +477,7 @@ const {
   statusTone,
   currentUserName,
   currentUserAvatar,
+  currentUserProfilePath,
   currentUserInitials,
   compactActions,
   actions,
@@ -758,6 +778,21 @@ function goToLive() {
   font-size: 12px;
   font-weight: 800;
   box-shadow: 0 4px 12px rgba(0, 0, 255, 0.18);
+}
+
+.publisher__avatar-link {
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.publisher__avatar-link:hover {
+  transform: translateY(-1px);
+}
+
+.publisher__avatar-link:focus-visible {
+  outline: 2px solid var(--color-primary-500, #0000ff);
+  outline-offset: 2px;
 }
 
 .publisher__avatar {

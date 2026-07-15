@@ -28,6 +28,7 @@ export interface CommunityRepository {
   respondToGroupRequest(slug: string, userId: number, action: "accept" | "decline"): Promise<void>
   getGroupMembers(slug: string): Promise<UserRecord[]>
   kickGroupMember(slug: string, userId: number): Promise<void>
+  getGroupAnalytics(slug: string, period?: CommunityPageAnalyticsPeriod): Promise<CommunityPageAnalyticsOverview>
   getPages(mode: CommunityPageTab): Promise<CommunityPageRecord[]>
   getPageBySlug(slug: string): Promise<CommunityPageRecord | null>
   createPage(input: CommunityDraft): Promise<CommunityPageRecord>

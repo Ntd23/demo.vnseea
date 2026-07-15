@@ -1,3 +1,4 @@
+<!-- Description: Renders the shared advanced options panel for the feed post composer. -->
 <template>
   <Teleport to="body">
     <Transition
@@ -140,10 +141,8 @@ const actions = computed(() => [
   { value: "video" as const, label: t("feed.publisherBox.actionVideo"), icon: "i-ph-video-camera-bold" },
   { value: "poll" as const, label: t("feed.publisherBox.actionPoll"), icon: "i-ph-list-checks-bold" },
   { value: "gif" as const, label: t("feed.publisherBox.actionGif"), icon: "i-ph-film-strip-bold" },
-  { value: "feeling" as const, label: t("feed.publisherBox.actionFeeling"), icon: "i-ph-smiley-bold" },
   { value: "audio" as const, label: t("feed.publisherBox.actionAudio"), icon: "i-ph-music-notes-bold" },
   { value: "file" as const, label: t("feed.publisherBox.actionFile"), icon: "i-ph-file-text-bold" },
-  { value: "story" as const, label: t("feed.publisherBox.actionStory"), icon: "i-ph-sparkle-bold" },
   { value: "product" as const, label: t("feed.publisherBox.actionProduct"), icon: "i-ph-shopping-bag-open-bold" },
 ])
 
@@ -151,7 +150,6 @@ const chips = computed(() => [
   { value: "onlyMe" as const, label: t("feed.publisherBox.chipOnlyMe"), icon: "i-ph-lock-key-bold" },
   { value: "location" as const, label: t("feed.publisherBox.chipAddLocation"), icon: "i-ph-map-pin-bold" },
   { value: "tagFriends" as const, label: t("feed.publisherBox.chipTagFriends"), icon: "i-ph-user-plus-bold" },
-  { value: "colors" as const, label: t("feed.publisherBox.chipColors"), icon: "i-ph-palette-bold" },
 ])
 
 const selectedActionLabel = computed(() =>

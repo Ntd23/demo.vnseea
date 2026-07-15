@@ -68,6 +68,10 @@ export function useFeedPublisherBoxVM(
 
   const currentUserName = computed(() => currentAuthUserStore.user?.name || "")
   const currentUserAvatar = computed(() => currentAuthUserStore.user?.avatarUrl || "")
+  const currentUserProfilePath = computed(() => {
+    const username = currentAuthUserStore.user?.username?.trim().replace(/^@+/, "") || ""
+    return username ? appRoutes.profile(username) : ""
+  })
   const currentUserInitials = computed(() =>
     currentUserName.value
       .split(/\s+/)
@@ -80,18 +84,15 @@ export function useFeedPublisherBoxVM(
   const compactActions = computed(() => [
     { value: "image" as const, icon: "i-ph-image-bold", label: t("feed.publisherBox.actionImage") },
     { value: "video" as const, icon: "i-ph-video-camera-bold", label: t("feed.publisherBox.actionVideo") },
+    { value: "product" as const, icon: "i-ph-shopping-cart-bold", label: locale.value === "vi" ? "Bán sản phẩm" : "Sell Product", },
     { value: "poll" as const, icon: "i-ph-list-checks-bold", label: t("feed.publisherBox.actionPoll") },
-    { value: "story" as const, icon: "i-ph-sparkle-bold", label: t("feed.publisherBox.actionStory") },
   ])
 
   const actions = computed(() => [
     { value: "image" as const, label: t("feed.publisherBox.actionImage"), icon: "i-ph-image-bold" },
     { value: "video" as const, label: t("feed.publisherBox.actionVideo"), icon: "i-ph-video-camera-bold" },
-    { value: "poll" as const, label: t("feed.publisherBox.actionPoll"), icon: "i-ph-list-checks-bold" },
-    { value: "feeling" as const, label: t("feed.publisherBox.actionFeeling"), icon: "i-ph-smiley-bold" },
     { value: "product" as const, label: locale.value === "vi" ? "Bán sản phẩm" : "Sell Product", icon: "i-ph-shopping-cart-bold" },
-    { value: "colors" as const, label: t("feed.publisherBox.chipColors"), icon: "i-ph-palette-bold" },
-    { value: "story" as const, label: t("feed.publisherBox.actionStory"), icon: "i-ph-sparkle-bold" },
+    { value: "poll" as const, label: t("feed.publisherBox.actionPoll"), icon: "i-ph-list-checks-bold" },
   ])
 
   const audiences = computed(() => [
@@ -481,6 +482,7 @@ export function useFeedPublisherBoxVM(
     statusTone,
     currentUserName,
     currentUserAvatar,
+    currentUserProfilePath,
     currentUserInitials,
     compactActions,
     actions,

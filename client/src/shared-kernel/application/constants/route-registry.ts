@@ -161,6 +161,7 @@ export const apiRoutes = {
     groupRequestsAction: (slug: string) => `community/groups/${encodeSegment(slug)}/requests/action`,
     groupMembers: (slug: string) => `community/groups/${encodeSegment(slug)}/members`,
     groupMemberKick: (slug: string) => `community/groups/${encodeSegment(slug)}/members/kick`,
+    groupAnalytics: (slug: string) => `community/groups/${encodeSegment(slug)}/analytics`,
     groupPosts: (slug: string) => `community/groups/${encodeSegment(slug)}/posts`,
     pages: "community/pages",
     pageBySlug: (slug: string) => `community/pages/${encodeSegment(slug)}`,

@@ -1,9 +1,11 @@
+<!-- Description: Renders page avatar and banner upload controls for page settings. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.sidebar.media.eyebrow')"
     :title="$t('community.pageSettings.sidebar.media.title')"
     :description="$t('community.pageSettings.sidebar.media.desc')"
     icon="i-ph-image-square-bold"
+    :translate-text="false"
   >
     <template #trailing>
       <slot name="trailing" />

@@ -1,50 +1,40 @@
-<!-- Description: Renders the backend-backed community group detail route with a tabbed feed and sidebar layout. -->
+<!-- Description: Renders the backend-backed community group detail route with a composer-first feed and profile-style sidebar cards. -->
 <template>
-  <div class="mx-auto max-w-[1280px] pb-10">
+  <div class="profile-page pb-10">
     <!-- ── Loading skeleton ──────────────────────────────── -->
     <template v-if="status === 'pending' && !group">
       <div class="space-y-5">
         <!-- Hero Skeleton -->
-        <div class="overflow-hidden rounded-[26px] border border-[#dbe3f2] bg-white shadow-[0_12px_28px_rgba(15,35,110,0.06)]">
-          <USkeleton class="h-[280px] w-full sm:h-[350px]" />
-          <div class="px-6 py-8 sm:px-10">
-            <div class="flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
-              <div class="space-y-4">
-                <USkeleton class="h-10 w-64 rounded-full" />
-                <div class="flex gap-3">
-                  <USkeleton class="h-5 w-24 rounded-full" />
-                  <USkeleton class="h-5 w-24 rounded-full" />
-                </div>
-              </div>
+        <div class="profile-page__hero">
+          <USkeleton class="profile-page__cover" style="height: 350px;" />
+          <div class="profile-page__identity-bar">
+            <USkeleton class="profile-page__avatar rounded-full" style="width: 160px; height: 160px;" />
+            <div class="profile-page__identity-meta space-y-4 pt-10">
+              <USkeleton class="h-10 w-64 rounded-full" />
               <div class="flex gap-3">
-                <USkeleton class="h-12 w-32 rounded-[16px]" />
-                <USkeleton class="h-12 w-12 rounded-[16px]" />
+                <USkeleton class="h-5 w-24 rounded-full" />
+                <USkeleton class="h-5 w-24 rounded-full" />
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Tabs Skeleton -->
-        <div class="flex gap-6 border-b border-[#dbe3f2] px-6">
-          <USkeleton v-for="i in 2" :key="i" class="h-10 w-20 rounded-t-lg" />
-        </div>
-
         <!-- Body Skeleton -->
-        <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.24fr)_320px]">
-          <div class="space-y-4">
-            <USkeleton class="h-[120px] w-full rounded-[24px]" />
-            <USkeleton class="h-[400px] w-full rounded-[24px]" />
-          </div>
-          <div class="space-y-4">
+        <div class="profile-page__body">
+          <aside class="profile-page__sidebar space-y-4">
             <USkeleton class="h-[200px] w-full rounded-[24px]" />
             <USkeleton class="h-[260px] w-full rounded-[24px]" />
-          </div>
+          </aside>
+          <main class="profile-page__feed space-y-4">
+            <USkeleton class="h-[120px] w-full rounded-[24px]" />
+            <USkeleton class="h-[400px] w-full rounded-[24px]" />
+          </main>
         </div>
       </div>
     </template>
 
     <!-- ── Main Content ──────────────────────────────────── -->
-    <div v-else-if="group" class="space-y-5" :class="{ 'opacity-50 pointer-events-none': status === 'pending' }">
+    <div v-else-if="group" class="space-y-4" :class="{ 'opacity-50 pointer-events-none': status === 'pending' }">
       <CommunityGroupHeroBanner
         :group="group"
         :member-count-label="memberCountLabel"
@@ -56,71 +46,89 @@
         :joined="joined"
         :requested="requested"
         @join="handleJoinGroup"
-        @delete="handleDeleteGroup"
         @invite="handleInviteMembers"
       />
 
-      <CommunityGroupTabsBar
-        v-model="activeTab"
-        :aria-label="t('pages.groupDetailPage.tabsAriaLabel')"
-      />
-
-      <div class="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.24fr)_320px]">
-        <section class="min-w-0 space-y-4">
-          <!-- Tab: Posts (Instant) -->
-          <div v-show="activeTab === 'posts'">
-            <CommunityGroupFeedSection
-              v-if="group"
-              :group="group"
-              :posts="groupPosts"
-              @created="handlePostCreated"
+      <!-- Grid Body (Sidebar on left, Feed on right) -->
+      <div class="profile-page__body">
+        <!-- LEFT: Sidebar (stickied) -->
+        <aside class="profile-page__sidebar">
+          <section class="profile-card profile-card--search">
+            <div class="profile-card__head">
+              <h2 class="profile-card__title">Tìm kiếm các bài viết</h2>
+            </div>
+            <UInput
+              v-model="postSearchQuery"
+              icon="i-ph-magnifying-glass-duotone"
+              placeholder="Tìm bài viết trong nhóm..."
+              size="xl"
+              class="mt-3 w-full"
+              :ui="{ base: 'h-12 rounded-[14px] bg-white' }"
             />
-          </div>
+          </section>
 
-          <!-- Tab: About (Instant) -->
-          <div v-show="activeTab === 'about'" class="flex flex-col gap-4">
-            <CommunityGroupAboutCard
-              v-if="group"
-              :group="group"
-              :privacy-label="privacyLabel"
-              :privacy-description="privacyDescription"
-              :category-label="categoryLabel"
-              :member-count-label="memberCountLabel"
-            />
+          <section class="profile-card">
+            <div class="profile-card__head profile-card__head--bordered">
+              <span class="profile-card__icon profile-card__icon--blue">
+                <Icon name="i-ph-info-fill" class="h-4.5 w-4.5" />
+              </span>
+              <h2 class="profile-card__title">Thông tin</h2>
+            </div>
 
-            <CommunityGroupTopicsCard
-              v-if="group"
-              :group="group"
-              :category-label="categoryLabel"
-              :privacy-description="privacyDescription"
-            />
-          </div>
-        </section>
+            <div class="profile-card__rows">
+              <div class="profile-card__intro-row">
+                <Icon name="i-ph-users-three-fill" class="profile-card__row-icon" />
+                <span class="profile-card__intro-value">{{ memberCountLabel }}</span>
+                <span class="profile-card__weekly">+0 Tuần này</span>
+              </div>
+              <div class="profile-card__intro-row">
+                <Icon name="i-ph-globe-hemisphere-west-fill" class="profile-card__row-icon" />
+                <span class="profile-card__intro-value">{{ privacyLabel }}</span>
+              </div>
+              <div class="profile-card__intro-row">
+                <Icon name="i-ph-tag-fill" class="profile-card__row-icon" />
+                <span class="profile-card__intro-value">{{ categoryLabel }}</span>
+              </div>
+              <div class="profile-card__intro-row">
+                <Icon name="i-ph-newspaper-clipping-fill" class="profile-card__row-icon" />
+                <span class="profile-card__intro-value">{{ groupPostCountLabel }}</span>
+              </div>
+              <button
+                type="button"
+                class="profile-card__invite-row"
+                :disabled="inviteState === 'loading'"
+                @click="handleInviteMembers"
+              >
+                <Icon name="i-ph-user-plus-fill" class="profile-card__row-icon" />
+                <span>Thêm bạn bè của bạn vào nhóm này</span>
+              </button>
+            </div>
+          </section>
 
-        <aside class="flex flex-col gap-4">
-          <CommunityGroupAboutCard
-            v-if="group && activeTab !== 'posts'"
-            :group="group"
-            :privacy-label="privacyLabel"
-            :privacy-description="privacyDescription"
-            :category-label="categoryLabel"
-            :member-count-label="memberCountLabel"
-            compact
-          />
-
-          <CommunityGroupMembersCard
-            v-if="activeTab !== 'posts'"
-            :members="members"
-            :member-count-label="memberCountLabel"
-            :invite-state="inviteState"
-            @invite="handleInviteMembers"
-          />
-
-          <CommunityGroupAdminCard
-            v-if="group && group.canManage && activeTab !== 'posts'"
-            :slug="group.slug"
-          />
+          <section class="profile-card">
+            <div class="profile-card__head profile-card__head--bordered">
+              <span class="profile-card__icon profile-card__icon--blue">
+                <Icon name="i-ph-text-align-left-bold" class="h-4.5 w-4.5" />
+              </span>
+              <h2 class="profile-card__title">Về</h2>
+            </div>
+            <p class="profile-card__about-text">
+              {{ groupSummary || "Chưa có mô tả." }}
+            </p>
+          </section>
         </aside>
+
+        <!-- RIGHT: Feed/Content area -->
+        <main class="profile-page__feed">
+          <CommunityGroupFeedSection
+            v-if="group"
+            :group="group"
+            :posts="filteredGroupPosts"
+            :empty-title="postSearchQuery.trim() ? 'Không tìm thấy bài viết phù hợp' : undefined"
+            :empty-description="postSearchQuery.trim() ? 'Thử tìm bằng từ khóa khác.' : undefined"
+            @created="handlePostCreated"
+          />
+        </main>
       </div>
     </div>
 
@@ -151,39 +159,227 @@
 
 <script setup lang="ts">
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
-import CommunityGroupAboutCard from "../components/GroupAboutCard.vue"
-import CommunityGroupAdminCard from "../components/GroupAdminCard.vue"
 import CommunityGroupFeedSection from "../components/GroupFeedSection.vue"
 import CommunityGroupHeroBanner from "../components/GroupHeroBanner.vue"
-import CommunityGroupMembersCard from "../components/GroupMembersCard.vue"
-import CommunityGroupTabsBar from "../components/GroupTabsBar.vue"
-import CommunityGroupTopicsCard from "../components/GroupTopicsCard.vue"
 import { useCommunityGroupDetailPageVM } from "../../application/view-models/useCommunityGroupDetailPageVM"
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
+const postSearchQuery = ref("")
 const {
-  activeTab,
   joinState,
   inviteState,
   joined,
   requested,
   group,
-  members,
   privacyLabel,
-  privacyDescription,
   categoryLabel,
   memberCountLabel,
   onlineCountLabel,
   groupPosts,
   refreshGroupPosts,
   handleJoinGroup,
-  handleDeleteGroup,
   handleInviteMembers,
   emptyBackPath,
   status,
 } = useCommunityGroupDetailPageVM()
 
+const groupSummary = computed(() =>
+  group.value ? translateText(group.value.summary) : "",
+)
+
+const groupPostCount = computed(() => {
+  const activityCount = Number(group.value?.activityLabel || 0)
+  if (Number.isFinite(activityCount) && activityCount > 0) return activityCount
+  return groupPosts.value.length
+})
+
+const groupPostCountLabel = computed(() =>
+  `${groupPostCount.value} bài viết`,
+)
+
+const filteredGroupPosts = computed(() => {
+  const query = postSearchQuery.value.trim().toLowerCase()
+  if (!query) return groupPosts.value
+
+  return groupPosts.value.filter((post) => {
+    const searchable = [
+      post.text,
+      post.author,
+      post.role,
+      post.category,
+      post.sourceLabel,
+      ...(post.tags || []),
+    ].join(" ").toLowerCase()
+
+    return searchable.includes(query)
+  })
+})
+
 function handlePostCreated() {
   refreshGroupPosts()
 }
 </script>
+
+<style scoped>
+/* ── Page shell ───────────────────────────────────────── */
+.profile-page {
+  min-height: 100vh;
+  background: #f0f2f5;
+  margin-top: 8px;
+  overflow-x: hidden;
+}
+
+/* ── Body ─────────────────────────────────── */
+.profile-page__body {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .profile-page__body {
+    grid-template-columns: 360px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 1280px) {
+  .profile-page__body {
+    grid-template-columns: 380px minmax(0, 1fr);
+  }
+}
+
+.profile-page__sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .profile-page__sidebar {
+    order: 1;
+    position: sticky;
+    top: 68px;
+  }
+}
+
+.profile-page__feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .profile-page__feed {
+    order: 2;
+  }
+}
+
+.profile-card {
+  overflow: hidden;
+  border: 1px solid #dbe3f2;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 35, 110, 0.06);
+}
+
+.profile-card--search {
+  padding: 16px;
+}
+
+.profile-card__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-card__head--bordered {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-card__title {
+  margin: 0;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.profile-card__icon {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+}
+
+.profile-card__icon--blue {
+  background: #0000ff;
+  color: #ffffff;
+}
+
+.profile-card__rows {
+  padding: 10px 16px 12px;
+}
+
+.profile-card__intro-row,
+.profile-card__invite-row {
+  display: flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.profile-card__invite-row {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-card__invite-row:hover {
+  color: #0000ff;
+}
+
+.profile-card__invite-row:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.profile-card__row-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  color: #7b8190;
+}
+
+.profile-card__intro-value {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-card__weekly {
+  margin-left: auto;
+  color: #31a24c;
+  white-space: nowrap;
+}
+
+.profile-card__about-text {
+  margin: 0;
+  padding: 18px 16px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+</style>

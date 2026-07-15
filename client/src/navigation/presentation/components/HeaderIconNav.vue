@@ -10,6 +10,12 @@
       :aria-label="$t(item.label)"
     >
       <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="icon-nav__icon" />
+      <span
+        v-if="item.logoBadge"
+        class="icon-nav__logo-badge"
+      >
+       
+      </span>
       <div v-if="item.active" class="icon-nav__indicator" />
     </NuxtLink>
   </nav>
@@ -115,6 +121,24 @@ const items = computed(() => [
 
 .icon-nav__item--active .icon-nav__label {
   font-weight: 700;
+}
+
+.icon-nav__logo-badge {
+  position: absolute;
+  right: 26px;
+  top: 6px;
+  display: inline-flex;
+  height: 8px;
+  width: 8px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #0000ff;
+  padding: 0 3px;
+  font-size: 9px;
+  font-weight: 800;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 255, 0.25);
 }
 
 .icon-nav__indicator {

@@ -1,6 +1,6 @@
 <!-- English description: Default authenticated layout with header, sidebars, and a fixed mobile chat shortcut. -->
 <template>
-  <div class="phone-safe min-h-screen bg-[#f1f4fb]" :class="isReelsPage ? 'overflow-hidden' : ''">
+  <div class="phone-safe min-h-screen bg-[#f1f4fb] overflow-x-clip" :class="isReelsPage ? 'overflow-hidden' : ''">
     <ClientOnly>
       <HeaderSearchContent />
     </ClientOnly>
@@ -16,7 +16,7 @@
     <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden bg-black xl:h-[calc(100dvh-73px)]' : ''">
       <div class="mx-auto grid w-full grid-cols-1 gap-4 xl:items-start" :class="shellClass">
         <aside v-if="showLeftSidebar && !isReelsPage"
-          class="hidden mt-2 bg-white rounded-[16px] min-w-0 xl:sticky xl:top-17 xl:z-10 xl:block xl:h-[calc(100dvh-98px)] xl:overflow-hidden">
+          class="hidden mt-2 bg-white rounded-[16px] min-w-0 xl:sticky xl:top-17 xl:z-10 xl:block xl:h-[calc(100dvh)] xl:overflow-hidden">
           <ClientOnly>
             <NavigationLeftSidebar v-if="!isDirectoryPage" />
             <DirectoryLeftSidebar v-else />
@@ -36,7 +36,7 @@
         </main>
 
         <aside v-if="showRightSidebar"
-          class="hidden min-w-0 xl:sticky xl:top-[70px] xl:z-50 xl:block xl:h-[calc(100dvh-90px)] xl:overflow-visible">
+          class="hidden min-w-0 xl:sticky xl:top-[70px] xl:z-50 xl:block xl:h-[calc(100dvh-70px)] xl:overflow-visible">
           <ClientOnly>
             <NavigationRightSidebar />
           </ClientOnly>
@@ -93,6 +93,7 @@ const backendUserSession = useCookie("user_id", {
   path: "/",
 })
 const isGuestPublicContentPage = computed(() => Boolean(route.meta.publicContent) && !backendUserSession.value)
+const shouldHideLeftSidebar = computed(() => Boolean(route.meta.hideLeftSidebar))
 const isReelsPage = computed(() => route.path === appRoutes.reels)
 const isCheckoutPage = computed(() => route.path === appRoutes.checkout)
 const isSearchPage = computed(() => route.path === appRoutes.search)
@@ -115,16 +116,9 @@ const isCommunityComposerPage = computed(() =>
 )
 const showLeftSidebar = computed(() =>
   !isGuestPublicContentPage.value
+  && !shouldHideLeftSidebar.value
   && !route.path.startsWith('/@')
-  && !isCheckoutPage.value
-  && !isSearchPage.value
-  && !isPageDetailPage.value
-  && !isBlogDetailPage.value
-  && !isCmsPage.value
-  && !isFundingPage.value
-  && !isForumPage.value
-  && !isCreateBlogPage.value
-  && !isLivePage.value
+  && !route.path.startsWith('/g/')
 )
 const showRightSidebar = computed(() =>
   !isGuestPublicContentPage.value

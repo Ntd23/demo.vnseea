@@ -14,7 +14,12 @@ import {
   getCommunityOptionDescription,
   getCommunityOptionLabel,
 } from "../../domain/services/community-helpers.service"
-import type { CommunityGroupRecord, CommunityGroupSettingsDraft } from "../../domain/types/community.types"
+import type {
+  CommunityGroupRecord,
+  CommunityGroupSettingsDraft,
+  CommunityPageAnalyticsOverview,
+  CommunityPageAnalyticsPeriod,
+} from "../../domain/types/community.types"
 import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 type GroupSettingsState = "idle" | "loading" | "success" | "error"
@@ -25,6 +30,7 @@ export function useCommunityGroupSettingPageVM(
 ) {
   const { t } = useI18n()
   const route = useRoute()
+  const router = useRouter()
   const toast = useToast()
   const translateText = useMaybeTranslatedText()
 
@@ -35,10 +41,14 @@ export function useCommunityGroupSettingPageVM(
   const draftRestored = ref(false)
   const storageHydrated = ref(false)
   const isSyncingDraft = ref(false)
-  const requests = ref<any[]>([])
-  const loadingRequests = ref(false)
   const groupMembers = ref<any[]>([])
   const loadingMembers = ref(false)
+  const activeTab = ref("basics")
+  const groupAnalytics = ref<CommunityPageAnalyticsOverview | null>(null)
+  const analyticsPeriod = ref<CommunityPageAnalyticsPeriod>("day")
+  const analyticsLoading = ref(false)
+  const analyticsError = ref("")
+  const analyticsRequestId = ref(0)
 
   const draftStorage = useStorage<CommunityGroupSettingsDraft | null>(
     `community:group-settings:${String(route.params.group || "")}`,
@@ -90,9 +100,12 @@ export function useCommunityGroupSettingPageVM(
     group.value ? getCommunityGroupPath(group.value.slug) : appRoutes.groups,
   )
   const settingsNavItems = computed(() => [
-    { id: "basics", label: t("community.settings.basics.title") },
-    { id: "controls", label: t("community.settings.controls.title") },
-    { id: "finish", label: t("community.settings.finish.title") },
+    { id: "basics", label: "Cài đặt chung", icon: "i-ph-wrench-duotone" },
+    { id: "controls", label: "Cài đặt riêng tư", icon: "i-ph-wrench-duotone" },
+    { id: "media", label: "Hình đại diện & Ảnh bìa", icon: "i-ph-image-duotone" },
+    { id: "members", label: "Các thành viên", icon: "i-ph-users-three-duotone" },
+    { id: "analytics", label: "Phân tích trang", icon: "i-ph-trend-up-duotone" },
+    { id: "delete", label: "Xóa nhóm", icon: "i-ph-trash-duotone" },
   ])
 
   const isBusy = computed(() => saveState.value === "loading")
@@ -100,7 +113,7 @@ export function useCommunityGroupSettingPageVM(
     isBusy.value
     || !(draft.value.name || "").trim()
     || !(draft.value.slug || "").trim()
-    || (draft.value.summary || "").trim().length < 24
+    || !(draft.value.summary || "").trim()
     || !draft.value.category,
   )
 
@@ -147,10 +160,19 @@ export function useCommunityGroupSettingPageVM(
   watch(group, (newGroup) => {
     syncDraftFromGroup()
     if (newGroup) {
-      fetchRequests()
       fetchGroupMembers()
     }
   }, { immediate: true })
+
+  watch(
+    () => [activeTab.value, group.value?.slug, analyticsPeriod.value] as const,
+    ([tab]) => {
+      if (tab === "analytics") {
+        void fetchGroupAnalytics()
+      }
+    },
+    { immediate: true },
+  )
 
   async function fetchGroupMembers() {
     if (!group.value) return
@@ -188,77 +210,6 @@ export function useCommunityGroupSettingPageVM(
         description: err?.data?.message || err?.message || t("community.settings.members.kickErrorDesc", "Không thể xóa thành viên này."),
         color: "error",
       })
-    }
-  }
-
-  async function fetchRequests() {
-    if (!group.value) return
-    loadingRequests.value = true
-    try {
-      requests.value = await repository.getGroupRequests(group.value.slug)
-    } catch (err) {
-      console.error("Failed to load group requests:", err)
-    } finally {
-      loadingRequests.value = false
-    }
-  }
-
-  async function handleRequestAction(userId: number, action: "accept" | "decline") {
-    if (!group.value) return
-    try {
-      await repository.respondToGroupRequest(group.value.slug, userId, action)
-
-      // Instantly remove from local requests list
-      requests.value = requests.value.filter(req => req.id !== userId)
-
-      // Show elegant feedback toast
-      toast.add({
-        title: action === "accept"
-          ? t("community.settings.requests.acceptSuccessTitle")
-          : t("community.settings.requests.declineSuccessTitle"),
-        description: action === "accept"
-          ? t("community.settings.requests.acceptSuccessDesc")
-          : t("community.settings.requests.declineSuccessDesc"),
-        color: "success",
-      })
-    }
-    catch (err: any) {
-      toast.add({
-        title: t("community.settings.requests.actionErrorTitle"),
-        description: err?.data?.message || err?.message || t("community.settings.requests.actionErrorDesc"),
-        color: "error",
-      })
-    }
-  }
-
-  async function handleApproveAll() {
-    if (!group.value || requests.value.length === 0) return
-    const originalRequests = [...requests.value]
-    loadingRequests.value = true
-    try {
-      await Promise.all(
-        originalRequests.map(req => repository.respondToGroupRequest(group.value!.slug, req.id, "accept")),
-      )
-
-      requests.value = []
-
-      toast.add({
-        title: t("community.settings.requests.acceptAllSuccessTitle"),
-        description: t("community.settings.requests.acceptAllSuccessDesc"),
-        color: "success",
-      })
-    }
-    catch (err: any) {
-      await fetchRequests()
-
-      toast.add({
-        title: t("community.settings.requests.actionErrorTitle"),
-        description: err?.data?.message || err?.message || t("community.settings.requests.actionErrorDesc"),
-        color: "error",
-      })
-    }
-    finally {
-      loadingRequests.value = false
     }
   }
 
@@ -319,6 +270,64 @@ export function useCommunityGroupSettingPageVM(
       toast.add({
         title: t("community.settings.finish.statusErrorTitle"),
         description: errorMessage,
+        color: "error",
+      })
+    }
+  }
+
+  async function fetchGroupAnalytics() {
+    if (!group.value?.slug) {
+      return
+    }
+
+    const requestId = analyticsRequestId.value + 1
+    analyticsRequestId.value = requestId
+    analyticsLoading.value = true
+    analyticsError.value = ""
+
+    try {
+      const analytics = await repository.getGroupAnalytics(group.value.slug, analyticsPeriod.value)
+
+      if (requestId === analyticsRequestId.value) {
+        groupAnalytics.value = analytics
+      }
+    }
+    catch (err) {
+      if (requestId === analyticsRequestId.value) {
+        analyticsError.value = err instanceof Error ? err.message : "Không thể tải dữ liệu phân tích nhóm."
+        groupAnalytics.value = null
+      }
+    }
+    finally {
+      if (requestId === analyticsRequestId.value) {
+        analyticsLoading.value = false
+      }
+    }
+  }
+
+  function setAnalyticsPeriod(period: CommunityPageAnalyticsPeriod) {
+    analyticsPeriod.value = period
+  }
+
+  async function handleDeleteGroup(password: string) {
+    if (!group.value) {
+      return
+    }
+
+    try {
+      await repository.deleteGroup(group.value.slug, password)
+
+      toast.add({
+        title: "Đã xóa nhóm",
+        description: "Nhóm đã được xóa thành công.",
+        color: "success",
+      })
+      await router.push(appRoutes.groups)
+    }
+    catch (err: any) {
+      toast.add({
+        title: "Xóa nhóm thất bại",
+        description: err?.data?.message || err?.message || "Đã xảy ra lỗi khi xóa nhóm. Vui lòng thử lại.",
         color: "error",
       })
     }
@@ -393,7 +402,7 @@ export function useCommunityGroupSettingPageVM(
       errors.push({ name: "slug", message: t("community.creation.common.validationSlugInvalid") })
     }
 
-    if ((state.summary || "").trim().length < 24) {
+    if (!(state.summary || "").trim()) {
       errors.push({ name: "summary", message: t("community.creation.common.validationDescriptionRequired") })
     }
 
@@ -414,22 +423,25 @@ export function useCommunityGroupSettingPageVM(
     selectedPrivacyDescription,
     selectedCategoryLabel,
     settingsNavItems,
+    activeTab,
     draft,
     validateDraft,
     handleSave,
     handleSaveError,
+    handleDeleteGroup,
     groupPath,
     statusAlert,
+    groupAnalytics,
+    analyticsPeriod,
+    analyticsLoading,
+    analyticsError,
+    fetchGroupAnalytics,
+    setAnalyticsPeriod,
     isBusy,
     isSaveDisabled,
     enabledPolicies,
     totalPolicies,
     visibleMembers,
-    requests,
-    loadingRequests,
-    handleRequestAction,
-    handleApproveAll,
-    fetchRequests,
     groupMembers,
     loadingMembers,
     handleKickMember,

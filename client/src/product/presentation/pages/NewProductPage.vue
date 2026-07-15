@@ -491,6 +491,15 @@ const validateForm = () => {
     return false
   }
 
+  if (!hasLocationCoordinates(productLocationSelection.value)) {
+    toast.add({
+      title: t("pages.productEditor.validationLocationTitle"),
+      description: t("pages.productEditor.validationLocationDescription"),
+      color: "error",
+    })
+    return false
+  }
+
   if (!Number.isFinite(price) || price <= 0) {
     toast.add({
       title: t("pages.productEditor.validationPriceTitle"),

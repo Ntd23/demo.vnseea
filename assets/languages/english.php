@@ -3,6 +3,7 @@ $wo['lang'] = array(
     // welcome page
     'login' => 'Login',
     'register' => 'Register',
+    'find_nearby' => 'Find Nearby',
     'guest' => 'Guest',
     'username' => 'Username',
     'email' => 'E-mail',

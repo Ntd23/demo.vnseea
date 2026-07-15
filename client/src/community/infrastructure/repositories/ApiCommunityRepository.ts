@@ -73,6 +73,12 @@ export function createApiCommunityRepository(): CommunityRepository {
     async kickGroupMember(slug: string, userId: number) {
       await client.post<void>(apiRoutes.community.groupMemberKick(slug), { userId })
     },
+    async getGroupAnalytics(slug: string, period?: CommunityPageAnalyticsPeriod) {
+      return await client.get<CommunityPageAnalyticsOverview>(
+        apiRoutes.community.groupAnalytics(slug),
+        { period },
+      )
+    },
     async getGroupPosts(slug, input) {
       return await client.get<FeedPostsResponse>(apiRoutes.community.groupPosts(slug), {
         limit: input?.limit,

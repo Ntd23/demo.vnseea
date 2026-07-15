@@ -236,6 +236,7 @@ const props = defineProps<{
   questionTypes: JobsSelectOption[]
   imageTypes: JobsSelectOption[]
   ownedPages: JobOwnerPageOption[]
+  preferredPageId?: number
   defaults: JobUserDefaults
   canCreate: boolean
   createDisabledReason: string
@@ -294,6 +295,14 @@ const ownerOptions = computed(() => [
     value: String(page.id),
   })),
 ])
+const preferredOwnerPageId = computed(() => {
+  const pageId = Number(props.preferredPageId || 0)
+  if (!Number.isFinite(pageId) || pageId <= 0) return 0
+
+  return normalizedOwnedPages.value.some(page => Number(page.id) === pageId)
+    ? pageId
+    : 0
+})
 
 const createQuestion = (): LocalQuestionDraft => ({
   enabled: false,
@@ -378,6 +387,7 @@ const maximumModel = computed({
 watch(
   () => [
     props.open,
+    props.preferredPageId,
     props.defaults.location,
     props.defaults.lat,
     props.defaults.lng,
@@ -388,7 +398,7 @@ watch(
     normalizedCategories.value.length,
   ],
   () => {
-    form.pageId = 0
+    form.pageId = preferredOwnerPageId.value
     form.title = ""
     form.location = props.defaults.location || ""
     form.lat = props.defaults.lat

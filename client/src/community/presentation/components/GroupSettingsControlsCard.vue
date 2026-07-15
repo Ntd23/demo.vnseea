@@ -1,65 +1,38 @@
+<!-- Description: Renders group privacy and join approval controls in the legacy two-row settings layout. -->
 <template>
   <CommunitySettingsSectionCard
-    eyebrow="community.settings.controls.eyebrow"
-    title="community.settings.controls.title"
-    description="community.settings.controls.desc"
-    icon="i-ph-shield-check-bold"
+    eyebrow=""
+    title="Cài đặt cá nhân"
+    icon="i-ph-wrench-bold"
+    :translate-text="false"
   >
     <template #trailing>
-      <UBadge color="neutral" variant="soft" class="rounded-full px-4 py-2 text-[12px] font-semibold text-[#243b63]">
-        {{ $t(selectedPrivacyLabel) }}
-      </UBadge>
+      <slot name="trailing" />
     </template>
 
-    <div class="space-y-5">
-      <div class="grid gap-3 lg:grid-cols-3" role="radiogroup" :aria-label="$t('community.settings.controls.privacyFallback')">
-        <button
-          v-for="option in communityPrivacyOptions"
-          :key="option.value"
-          class="rounded-[22px] border px-4 py-4 text-left transition"
-          :class="model.privacy === option.value
-            ? 'border-[#0000ff]/22 bg-[#eef0ff] shadow-[0_12px_24px_rgba(0,0,255,0.08)]'
-            : 'border-[#dbe3f2] bg-white hover:border-[#c5caff] hover:bg-[#f8fbff]'"
-          type="button"
-          :aria-pressed="model.privacy === option.value"
-          @click="model.privacy = option.value as CommunityPrivacy"
-        >
-          <div class="flex h-11 w-11 items-center justify-center rounded-[16px] bg-white text-[#0000ff] shadow-[0_8px_18px_rgba(15,35,110,0.05)]">
-            <Icon :name="option.icon || 'i-ph-circle-fill'" class="h-5 w-5" />
-          </div>
-          <p class="mt-4 text-[14px] font-black text-[#243b63]">
-            {{ $t(option.label) }}
-          </p>
-          <p class="mt-2 text-[12px] leading-5 text-slate-500">
-            {{ $t(option.description) }}
-          </p>
-        </button>
+    <div class="group-settings-controls">
+      <div class="group-settings-controls__row">
+        <label for="group-privacy">Loại nhóm</label>
+        <USelect
+          id="group-privacy"
+          v-model="model.privacy"
+          :items="privacyItems"
+          size="xl"
+          class="w-full"
+          :ui="selectUi"
+        />
       </div>
 
-      <UAlert
-        color="neutral"
-        variant="subtle"
-        icon="i-ph-info-fill"
-        :title="$t('community.settings.controls.logic')"
-        :description="$t(selectedPrivacyDescription)"
-        class="rounded-[20px]"
-      />
-
-      <div class="grid gap-3 lg:grid-cols-2">
-        <div
-          v-for="toggle in toggleItems"
-          :key="toggle.key"
-          class="rounded-[20px] border border-[#edf2fb] bg-[#fbfcff] px-4 py-4"
-        >
-          <USwitch
-            v-model="model[toggle.key]"
-            color="primary"
-            size="lg"
-            :label="toggle.label"
-            :description="toggle.description"
-            class="items-start"
-          />
-        </div>
+      <div class="group-settings-controls__row">
+        <label for="group-join-approval">Xác nhận yêu cầu khi ai đó tham gia nhóm này?</label>
+        <USelect
+          id="group-join-approval"
+          v-model="joinApprovalValue"
+          :items="joinApprovalItems"
+          size="xl"
+          class="w-full"
+          :ui="selectUi"
+        />
       </div>
     </div>
   </CommunitySettingsSectionCard>
@@ -67,32 +40,69 @@
 
 <script setup lang="ts">
 import CommunitySettingsSectionCard from "./SettingsSectionCard.vue"
-import {
-  getCommunityOptionDescription,
-  getCommunityOptionLabel,
-} from "../../domain/services/community-helpers.service"
 import type {
   CommunityGroupSettingsDraft,
   CommunityPrivacy,
 } from "../../domain/types/community.types"
-import { communityPrivacyOptions } from "../../domain/constants/community-options"
+
+type GroupSettingsPrivacy = Exclude<CommunityPrivacy, "secret">
 
 const model = defineModel<CommunityGroupSettingsDraft>({ required: true })
-const { t } = useI18n()
 
-const selectedPrivacyLabel = computed(() =>
-  getCommunityOptionLabel(communityPrivacyOptions, model.value.privacy, "community.settings.controls.privacyFallback"),
-)
+const selectUi = {
+  base: "h-14 rounded-[10px] px-4 text-[15px]",
+}
 
-const selectedPrivacyDescription = computed(() =>
-  getCommunityOptionDescription(communityPrivacyOptions, model.value.privacy, "community.settings.controls.noPrivacy"),
-)
+const privacyItems: Array<{ value: GroupSettingsPrivacy; label: string }> = [
+  { value: "public", label: "Công cộng" },
+  { value: "private", label: "Riêng tư" },
+]
 
-const toggleItems = computed(() => [
-  {
-    key: "joinApproval" as const,
-    label: t("community.settings.controls.toggles.join.label"),
-    description: t("community.settings.controls.toggles.join.desc"),
+const joinApprovalItems = [
+  { value: "no", label: "Không" },
+  { value: "yes", label: "Có" },
+]
+
+const joinApprovalValue = computed({
+  get: () => model.value.joinApproval ? "yes" : "no",
+  set: (value: string) => {
+    model.value.joinApproval = value === "yes"
   },
-])
+})
+
+watch(
+  () => model.value.privacy,
+  (value) => {
+    if (value === "secret") {
+      model.value.privacy = "private"
+    }
+  },
+  { immediate: true },
+)
 </script>
+
+<style scoped>
+.group-settings-controls {
+  display: grid;
+  gap: 26px;
+}
+
+.group-settings-controls__row {
+  display: grid;
+  gap: 12px;
+}
+
+.group-settings-controls__row label {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+@media (min-width: 768px) {
+  .group-settings-controls__row {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.82fr);
+    align-items: center;
+  }
+}
+</style>

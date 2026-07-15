@@ -1,9 +1,11 @@
+<!-- Description: Renders page call-to-action and website control fields in page settings. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.controls.eyebrow')"
     :title="$t('community.pageSettings.controls.title')"
     :description="$t('community.pageSettings.controls.desc')"
     icon="i-ph-cursor-click-bold"
+    :translate-text="false"
   >
     <template #trailing>
       <div class="flex items-center gap-3">

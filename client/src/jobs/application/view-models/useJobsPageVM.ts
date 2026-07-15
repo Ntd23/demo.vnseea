@@ -177,6 +177,11 @@ export function useJobsPageVM(
   const questionTypes = computed(() => data.value.questionTypes)
   const imageTypes = computed(() => data.value.imageTypes)
   const ownedPages = computed(() => data.value.ownedPages)
+  const preferredCreatePageId = computed(() => {
+    const value = Array.isArray(route.query.pageId) ? route.query.pageId[0] : route.query.pageId
+    const pageId = Number(value || 0)
+    return Number.isFinite(pageId) && pageId > 0 ? pageId : 0
+  })
   const currentUser = computed(() => data.value.currentUser)
   const canCreate = computed(() => data.value.canCreate)
   const createDisabledReason = computed(() => data.value.createDisabledReason)
@@ -241,6 +246,16 @@ export function useJobsPageVM(
     createModalOpen.value = false
   }
 
+  watch(
+    () => route.query.create,
+    (value) => {
+      if (value === "1" || value === "true") {
+        openCreate()
+      }
+    },
+    { immediate: true },
+  )
+
   async function submitApplication(input: JobApplicationDraft) {
     applySubmitting.value = true
     applyErrorMessage.value = ""
@@ -303,6 +318,7 @@ export function useJobsPageVM(
     questionTypes,
     imageTypes,
     ownedPages,
+    preferredCreatePageId,
     currentUser,
     canCreate,
     createDisabledReason,

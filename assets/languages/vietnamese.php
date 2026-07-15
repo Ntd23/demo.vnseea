@@ -2,6 +2,7 @@
 $wo['lang'] = array(
     'login' => 'Đăng nhập',
     'register' => 'Đăng ký',
+    'find_nearby' => 'Gần đây',
     'guest' => 'Khách',
     'username' => 'Tên người dùng',
     'email' => 'E-mail',
