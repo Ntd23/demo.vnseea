@@ -79,6 +79,12 @@ export type MessageProductCard = {
   href: string
 }
 
+export type MessageProductLaunchContext = {
+  sellerId: number
+  product: MessageProductCard
+  suggestions: string[]
+}
+
 export type MessageGroupUpdateDraft = {
   groupId: number
   name?: string

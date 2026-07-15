@@ -17,6 +17,11 @@ export function createApiProfileRepository(): ProfileRepository {
         afterPostId: input.afterPostId ?? undefined,
       })
     },
+    async getProfileMediaPost(input) {
+      return await client.get(apiRoutes.profile.mediaPost(input.username), {
+        kind: input.kind,
+      })
+    },
     async runProfileAction(input) {
       return await client.post<ProfileActionResult>("profile/action", input)
     },

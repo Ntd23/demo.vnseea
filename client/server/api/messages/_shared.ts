@@ -90,6 +90,7 @@ type MessageThreadQuery = {
   pageId?: number
   recipientId?: number
   beforeId?: number
+  includeReactions?: boolean
 }
 
 type MultipartMessageInput = MessageThreadQuery & {
@@ -1016,6 +1017,11 @@ async function decorateThreadMessagesWithReactions(
   messages: MessageItem[],
 ) {
   const decoratedMessages = decorateThreadMessages(messages)
+
+  if (input.includeReactions === false) {
+    return decoratedMessages
+  }
+
   const reactions = await fetchThreadMessageReactions(event, input)
 
   if (reactions.size === 0) {
@@ -1074,6 +1080,7 @@ export function readThreadQuery(event: H3Event): MessageThreadQuery {
     pageId: asNumber(query.pageId),
     recipientId: asNumber(query.recipientId),
     beforeId: asNumber(query.beforeId),
+    includeReactions: asString(query.includeReactions) !== "0",
   }
 }
 

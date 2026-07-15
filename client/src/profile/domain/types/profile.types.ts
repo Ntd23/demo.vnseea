@@ -4,6 +4,11 @@ import type { CommunityGroupRecord, CommunityPageRecord } from "../../../communi
 import type { FeedPostRecord } from "../../../feed/domain/types/feed.types"
 
 export type ProfileTabKey = "timeline" | "cart" | "about" | "friends" | "photos" | "videos" | "albums"
+export type ProfileMediaKind = "avatar" | "cover"
+
+export interface ProfileMediaPostResponse {
+  postId: number
+}
 
 export interface ProfileConnection {
   id: number

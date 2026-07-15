@@ -105,6 +105,7 @@ export const apiRoutes = {
   },
   profile: {
     byUsername: (username: string) => `profile/${encodeSegment(username)}`,
+    mediaPost: (username: string) => `profile/${encodeSegment(username)}/media-post`,
   },
   feed: {
     home: "feed/home",

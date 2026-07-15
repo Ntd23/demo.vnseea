@@ -237,6 +237,62 @@ export function useChatWidgetVM(
   const refreshTimer = shallowRef<number | null>(null)
   const unreadSnapshot = shallowRef<Map<string, { unreadCount: number, preview: string }>>(new Map())
   const hasUnreadSnapshot = ref(false)
+  const pendingMiniThreadRequests = new Map<string, Promise<MessageThread>>()
+
+  function miniThreadRequestKey(contactId: string, includeReactions: boolean) {
+    return `${contactId}:${includeReactions ? "with-reactions" : "fast"}`
+  }
+
+  function fetchMiniThread(contact: MessageContact, includeReactions = false) {
+    const requestKey = miniThreadRequestKey(contact.id, includeReactions)
+    const pending = pendingMiniThreadRequests.get(requestKey)
+
+    if (pending) {
+      return pending
+    }
+
+    const request = repository
+      .getThread(contact, { includeReactions })
+      .finally(() => pendingMiniThreadRequests.delete(requestKey))
+
+    pendingMiniThreadRequests.set(requestKey, request)
+    return request
+  }
+
+  function cacheMiniThread(contactId: string, thread: MessageThread) {
+    cachedThreads.set(contactId, thread)
+
+    if (!import.meta.client) {
+      return
+    }
+
+    try {
+      sessionStorage.setItem(`cache:chat-widget:thread:${contactId}`, JSON.stringify(thread))
+    }
+    catch {}
+  }
+
+  async function prefetchMiniThread(contact: MessageContact) {
+    if (
+      cachedThreads.has(contact.id)
+      || pendingMiniThreadRequests.has(miniThreadRequestKey(contact.id, false))
+    ) {
+      return
+    }
+
+    try {
+      cacheMiniThread(contact.id, await fetchMiniThread(contact))
+    }
+    catch {
+      // Prefetch is best-effort; opening the chat will retry normally.
+    }
+  }
+
+  function prefetchRecentMiniThreads() {
+    for (const contact of allContacts.value.slice(0, 2)) {
+      void prefetchMiniThread(contact)
+    }
+  }
 
   const {
     data: inbox,
@@ -661,7 +717,10 @@ export function useChatWidgetVM(
     }
 
     try {
-      const incomingThread = await repository.getThread(contact)
+      const incomingThread = await fetchMiniThread(
+        contact,
+        session.thread.messages.length > 0,
+      )
       if (session.thread.messages.length === 0) {
         session.thread = incomingThread
       }
@@ -696,11 +755,7 @@ export function useChatWidgetVM(
       }
 
       if (import.meta.client) {
-        cachedThreads.set(contact.id, session.thread)
-        try {
-          sessionStorage.setItem(`cache:chat-widget:thread:${contact.id}`, JSON.stringify(session.thread))
-        }
-        catch {}
+        cacheMiniThread(contact.id, session.thread)
       }
     }
     catch {
@@ -735,7 +790,10 @@ export function useChatWidgetVM(
     session.isLoadingMore = true
 
     try {
-      const olderThread = await repository.getThread(contact, { beforeId: firstMessageId })
+      const olderThread = await repository.getThread(contact, {
+        beforeId: firstMessageId,
+        includeReactions: false,
+      })
 
       if (olderThread.messages.length > 0) {
         const merged = [...olderThread.messages, ...session.thread.messages]
@@ -854,17 +912,13 @@ export function useChatWidgetVM(
   const {
     request: chatLaunchRequest,
     consumeRequest: consumeChatLaunchRequest,
+    openMessagesConversation: openRequestedMessagesConversation,
+    setWidgetReady: setChatWidgetReady,
   } = useChatWidgetLauncher()
 
   async function openRequestedProductChat(request: ProductChatLaunchRequest) {
     const contact = ensureProductSellerContact(request)
-
-    await nextTick()
-    await openMiniChat(contact)
-
-    if (chatLaunchRequest.value?.requestId !== request.requestId) {
-      return
-    }
+    const openingChat = openMiniChat(contact)
 
     const session = findMiniSession(contact.id)
     if (session) {
@@ -878,12 +932,21 @@ export function useChatWidgetVM(
     }
 
     miniChatAutoOpenVersion.value += 1
+    await openingChat
+
+    if (chatLaunchRequest.value?.requestId !== request.requestId) {
+      return
+    }
+
     consumeChatLaunchRequest(request.requestId)
   }
 
   watch(chatLaunchRequest, (request) => {
     if (request) {
-      void openRequestedProductChat(request)
+      void openRequestedProductChat(request).catch(() => {
+        consumeChatLaunchRequest(request.requestId)
+        openRequestedMessagesConversation(request)
+      })
     }
   }, { immediate: true, flush: "post" })
 
@@ -1339,11 +1402,13 @@ export function useChatWidgetVM(
   }, { flush: "post" })
 
   onMounted(() => {
+    setChatWidgetReady(true)
     startRefreshTimer()
     void refreshInboxSafely().then(() => {
       if (!hasUnreadSnapshot.value && allContacts.value.length > 0) {
         updateUnreadSnapshot(allContacts.value)
       }
+      prefetchRecentMiniThreads()
     })
     void connectRealtime()
 
@@ -1359,6 +1424,7 @@ export function useChatWidgetVM(
   })
 
   onBeforeUnmount(() => {
+    setChatWidgetReady(false)
     stopRefreshTimer()
 
     if (socket.value) {
@@ -1411,6 +1477,7 @@ export function useChatWidgetVM(
     toggleAllVisibleSendRecipients,
     toggleSendRecipient,
     openMiniChat,
+    prefetchMiniThread,
     closeMiniChat,
     minimizeMiniChat,
     restoreMiniChat,
