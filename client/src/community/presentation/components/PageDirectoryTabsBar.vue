@@ -1,5 +1,5 @@
 <template>
-  <section class="page-tabs-bar">
+  <section class="page-tabs-bar mt-2">
     <div class="page-tabs-bar__top">
       <div class="page-tabs-bar__tabs" role="tablist" :aria-label="$t('community.pagesDirectory.title')">
         <NuxtLink
@@ -56,14 +56,22 @@ const search = defineModel<string>("search", { default: "" })
 
 .page-tabs-bar__top {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  overflow-x: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #64748b #f1f5f9;
+  padding-bottom: 8px; /* Room for scrollbar */
 }
 
 .page-tabs-bar__tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
+  flex-wrap: nowrap;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .page-tabs-bar__tab {
@@ -115,7 +123,7 @@ const search = defineModel<string>("search", { default: "" })
   justify-content: center;
   gap: 8px;
   min-height: 38px;
-  align-self: flex-start;
+  flex-shrink: 0;
   border-radius: 12px;
   background: var(--bg-brand);
   padding: 0 14px;
@@ -207,6 +215,12 @@ const search = defineModel<string>("search", { default: "" })
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .page-tabs-bar__tabs {
+    flex-wrap: wrap;
   }
 
   .page-tabs-bar__create {
@@ -218,5 +232,28 @@ const search = defineModel<string>("search", { default: "" })
     align-items: center;
     justify-content: space-between;
   }
+}
+</style>
+
+<style>
+/* Global CSS block to style the webkit scrollbar for Page Directory Tabs Bar */
+.page-tabs-bar__top::-webkit-scrollbar {
+  height: 6px !important;
+  background-color: #e2e8f0 !important;
+  display: block !important;
+}
+
+.page-tabs-bar__top::-webkit-scrollbar-track {
+  background-color: #e2e8f0 !important;
+  border-radius: 999px !important;
+}
+
+.page-tabs-bar__top::-webkit-scrollbar-thumb {
+  background-color: #475569 !important; /* Higher contrast slate-600 */
+  border-radius: 999px !important;
+}
+
+.page-tabs-bar__top::-webkit-scrollbar-thumb:hover {
+  background-color: #1e293b !important;
 }
 </style>
