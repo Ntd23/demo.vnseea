@@ -49,6 +49,14 @@ $required_config_defaults = array(
     'livekit_host' => '',
     'livekit_api_key' => '',
     'livekit_api_secret' => '',
+    'livekit_webhook_api_key' => '',
+    'livekit_webhook_api_secret' => '',
+    'ios_voip_team_id' => '',
+    'ios_voip_key_id' => '',
+    'ios_voip_bundle_id' => '',
+    'ios_voip_private_key_path' => '',
+    'ios_voip_apns_environment' => 'production',
+    'ios_voip_enabled' => '0',
 	'google_server_map_api' => '',
     'sepay' => '0',
     'sepay_mode' => 'live',
@@ -434,8 +442,8 @@ if (!empty($wo["config"]["exchange"])) {
 $wo["currencies"] = array();
 foreach ($wo["config"]["currency_symbol_array"] as $key => $value) {
     $wo["currencies"][] = array(
-        "text" => $key,
-        "symbol" => $value
+        "text" => html_entity_decode((string) $key, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+        "symbol" => html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8')
     );
 }
 if (!empty($_GET["theme"])) {

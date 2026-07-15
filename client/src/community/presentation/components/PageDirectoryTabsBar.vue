@@ -26,29 +26,6 @@
       </NuxtLink>
     </div>
 
-    <div class="page-tabs-bar__filters">
-      <div class="page-tabs-bar__search">
-        <Icon name="i-ph-magnifying-glass" class="page-tabs-bar__search-icon" />
-        <input
-          v-model="search"
-          type="text"
-          :placeholder="$t('community.pagesDirectory.search')"
-          class="page-tabs-bar__search-input"
-        >
-        <button
-          v-if="search"
-          type="button"
-          class="page-tabs-bar__search-clear"
-          @click="search = ''"
-        >
-          <Icon name="i-ph-x" class="h-4 w-4" />
-        </button>
-      </div>
-
-      <div v-if="statusLabel" class="page-tabs-bar__status">
-        {{ statusLabel }}
-      </div>
-    </div>
   </section>
 </template>
 

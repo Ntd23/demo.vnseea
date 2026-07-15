@@ -40,7 +40,7 @@ export type MessageGroupCallResult = {
   status: number
   id: number
   groupId: number
-  type: MessageCallType
+  type: "video"
   url: string
   groupName: string
   participantCount: number
@@ -50,7 +50,7 @@ export type MessageGroupCallResult = {
 export type MessageIncomingGroupCall = {
   id: number
   groupId: number
-  type: MessageCallType
+  type: "video"
   url: string
   groupName: string
   avatar?: string
@@ -82,7 +82,7 @@ export type MessageGroupCallPayload = {
   status: number
   id: number
   groupId: number
-  type: MessageCallType
+  type: "video"
   roomName: string
   wsUrl: string
   token: string
@@ -100,7 +100,7 @@ export type MessageGroupCallSync = {
   status: number
   id: number
   groupId: number
-  type: MessageCallType
+  type: "video"
   callStatus: string
   participantCount: number
   groupName: string

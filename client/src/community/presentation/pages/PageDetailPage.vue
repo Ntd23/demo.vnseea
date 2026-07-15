@@ -61,16 +61,36 @@
       <!-- HERO -->
       <div class="page-detail__hero" :class="{ 'opacity-60 pointer-events-none': status === 'pending' }">
         <!-- Cover -->
-        <div class="page-detail__cover">
+        <div class="page-detail__cover relative group">
           <div class="page-detail__cover-backdrop" :style="{ background: page.banner }" />
           <div class="page-detail__cover-shade" />
+          <div v-if="bannerUploading" class="absolute inset-0 flex items-center justify-center bg-black/40 z-[4]">
+            <Icon name="i-ph-spinner-gap-bold" class="h-10 w-10 text-white animate-spin" />
+          </div>
+          <!-- Camera Button Overlay for Cover -->
+          <button
+            v-if="page.canManage"
+            type="button"
+            class="absolute bottom-4 right-4 flex items-center gap-1.5 rounded-xl bg-slate-900/60 hover:bg-slate-900/80 text-white px-3 py-1.5 text-xs font-bold transition-all shadow-sm border border-white/20 backdrop-blur-sm cursor-pointer z-[5]"
+            @click="triggerBannerUpload"
+          >
+            <Icon name="i-ph-camera-bold" class="h-4 w-4" />
+            <span>Thay đổi ảnh bìa</span>
+          </button>
+          <input
+            ref="bannerInput"
+            type="file"
+            accept="image/*"
+            class="hidden"
+            @change="onBannerFileChange"
+          />
         </div>
 
         <!-- Identity bar -->
         <div class="page-detail__identity-bar">
           <!-- Avatar -->
-          <div class="page-detail__avatar-wrap">
-            <div class="page-detail__avatar" :style="{ background: page.accent }">
+          <div class="page-detail__avatar-wrap relative group">
+            <div class="page-detail__avatar relative" :style="{ background: page.accent }">
               <img
                 v-if="page.avatarUrl"
                 :src="page.avatarUrl"
@@ -78,7 +98,26 @@
                 class="page-detail__avatar-img"
               >
               <span v-else class="page-detail__avatar-initials">{{ avatarLabel }}</span>
+              <div v-if="avatarUploading" class="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 z-20">
+                <Icon name="i-ph-spinner-gap-bold" class="h-8 w-8 text-white animate-spin" />
+              </div>
             </div>
+            <!-- Camera Button Overlay -->
+            <button
+              v-if="page.canManage"
+              type="button"
+              class="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-white hover:bg-slate-100 text-slate-700 transition-all shadow-md border border-slate-200 cursor-pointer z-10"
+              @click="triggerAvatarUpload"
+            >
+              <Icon name="i-ph-camera-bold" class="h-4 w-4" />
+            </button>
+            <input
+              ref="avatarInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="onAvatarFileChange"
+            />
           </div>
 
           <!-- Name + stats -->
@@ -227,12 +266,19 @@
             />
             <FeedPublisherBox v-else :page-id="page.id" @created="handlePostCreated" />
             <div v-if="!inviteVM.isOpen.value">
-              <div v-if="pagePosts.length" class="page-detail__post-stack">
-                <FeedPostCard
-                  v-for="post in pagePosts"
-                  :key="post.id"
-                  :post="post"
-                />
+              <div v-if="pagePosts.length">
+                <div v-if="filteredPosts.length" class="page-detail__post-stack">
+                  <FeedPostCard
+                    v-for="post in filteredPosts"
+                    :key="post.id"
+                    :post="post"
+                  />
+                </div>
+                <div v-else class="rounded-[20px] bg-white p-8 text-center text-slate-500 shadow-sm border border-slate-200">
+                  <Icon name="i-ph-magnifying-glass-duotone" class="mx-auto h-12 w-12 text-slate-400 mb-2" />
+                  <p class="font-semibold text-slate-700">Không tìm thấy bài viết nào phù hợp</p>
+                  <p class="text-sm text-slate-400 mt-1">Thử lại với từ khóa khác</p>
+                </div>
               </div>
               <UAlert
                 v-else
@@ -486,6 +532,24 @@
             </div>
           </section>
 
+          <!-- Search Card -->
+          <section class="profile-card">
+            <div class="profile-card__head">
+              <h2 class="profile-card__title">Tìm kiếm bài viết</h2>
+            </div>
+            <div class="mt-3">
+              <UInput
+                v-model="postSearchQuery"
+                icon="i-ph-magnifying-glass-bold"
+                placeholder="Tìm bài viết trên trang..."
+                size="xl"
+                class="w-full"
+                :ui="{ base: 'h-10 rounded-xl' }"
+                clearable
+              />
+            </div>
+          </section>
+
           <section class="profile-card">
             <div class="profile-card__head">
               <h2 class="profile-card__title">{{ t('pages.pageDetailPage.interactionTitle') }}</h2>
@@ -535,6 +599,7 @@ import type { Offer } from "../../../offer/domain/types/offer.types"
 import { useOfferListVM } from "../../../offer/application/view-models/useOfferListVM"
 import { useCommunityPageDetailPageVM } from "../../application/view-models/useCommunityPageDetailPageVM"
 import { useCommunityPageInviteVM } from "../../application/view-models/useCommunityPageInviteVM"
+import { createApiCommunityRepository } from "../../infrastructure/repositories/ApiCommunityRepository"
 
 const { t } = useI18n()
 const {
@@ -591,6 +656,84 @@ const {
 } = useOfferListVM({ pageId, limit: 10 })
 
 const pageSettingsTo = computed(() => page.value ? getCommunityPageSettingsPath(page.value.slug) : '')
+
+const avatarInput = ref<HTMLInputElement | null>(null)
+const bannerInput = ref<HTMLInputElement | null>(null)
+const avatarUploading = ref(false)
+const bannerUploading = ref(false)
+const postSearchQuery = ref("")
+
+const repository = createApiCommunityRepository()
+const toast = useToast()
+
+function triggerAvatarUpload() {
+  avatarInput.value?.click()
+}
+
+function triggerBannerUpload() {
+  bannerInput.value?.click()
+}
+
+async function onAvatarFileChange(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file || !page.value) return
+
+  avatarUploading.value = true
+  try {
+    const updatedPage = await repository.updatePage(page.value.slug, {
+      avatarFile: file
+    } as any)
+    page.value.avatarUrl = updatedPage.avatarUrl
+    toast.add({
+      title: "Thành công",
+      description: "Cập nhật ảnh đại diện thành công",
+      color: "success"
+    })
+  } catch (err) {
+    toast.add({
+      title: "Lỗi",
+      description: err instanceof Error ? err.message : "Không thể cập nhật ảnh đại diện",
+      color: "error"
+    })
+  } finally {
+    avatarUploading.value = false
+  }
+}
+
+async function onBannerFileChange(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file || !page.value) return
+
+  bannerUploading.value = true
+  try {
+    const updatedPage = await repository.updatePage(page.value.slug, {
+      bannerFile: file
+    } as any)
+    page.value.banner = updatedPage.banner
+    toast.add({
+      title: "Thành công",
+      description: "Cập nhật ảnh bìa thành công",
+      color: "success"
+    })
+  } catch (err) {
+    toast.add({
+      title: "Lỗi",
+      description: err instanceof Error ? err.message : "Không thể cập nhật ảnh bìa",
+      color: "error"
+    })
+  } finally {
+    bannerUploading.value = false
+  }
+}
+
+const filteredPosts = computed(() => {
+  const query = postSearchQuery.value.trim().toLowerCase()
+  if (!query) return pagePosts.value
+  return pagePosts.value.filter(post =>
+    (post.text || "").toLowerCase().includes(query) ||
+    (post.authorName || "").toLowerCase().includes(query)
+  )
+})
 
 function handlePostCreated() {
   refreshPagePosts()
@@ -749,16 +892,14 @@ async function handleOfferSaved() {
 .page-detail__name-row {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
+  align-items: center;}
 
 .page-detail__display-name {
   display: inline-flex;
   max-width: 100%;
   align-items: center;
   border-radius: 999px;
-  padding: 6px 2px;
+  padding: 6px 2px 0 2px;
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 900;
   letter-spacing: -0.03em;

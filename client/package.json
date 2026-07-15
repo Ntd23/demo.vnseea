@@ -3,12 +3,15 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "NODE_OPTIONS=--max-old-space-size=4096 nuxt build",
+    "build": "NODE_OPTIONS=--max-old-space-size=8192 nuxt build",
     "dev": "node scripts/dev-with-php-upstreams.mjs",
     "dev:nuxt": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "start": "node .output/server/index.mjs",
+    "test:group-call:contract": "node --test scripts/group-call-video-only-contract.test.mjs",
+    "test:points-transfer:contract": "node --test scripts/points-transfer-contract.test.mjs",
+    "test:points-transfer:integration": "node scripts/points-transfer-integration.mjs",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
@@ -43,6 +46,8 @@
   },
   "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
   "devDependencies": {
-    "@types/google.maps": "^3.64.1"
+    "@types/google.maps": "^3.64.1",
+    "jsqr": "^1.4.0",
+    "pngjs": "^7.0.0"
   }
 }

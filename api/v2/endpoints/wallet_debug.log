@@ -1,0 +1,15 @@
+[wallet.php] Starting send: sender=1, recipient=5, amount=12, sender_wallet=20533.97, recipient_wallet=95345205.10
+Update recipient: result=SUCCESS, error=
+Update sender: result=SUCCESS, error=
+Insert sender history: result=SUCCESS, error=
+Insert recipient history: result=SUCCESS, error=
+[wallet.php] Starting send: sender=1, recipient=5, amount=12, sender_wallet=20521.97, recipient_wallet=95345217.10
+Update recipient: result=SUCCESS, error=
+Update sender: result=SUCCESS, error=
+Insert sender history: result=SUCCESS, error=
+Insert recipient history: result=SUCCESS, error=
+[wallet.php] Starting send: sender=1, recipient=5, amount=12, sender_wallet=20509.97, recipient_wallet=95345229.10
+Update recipient: result=SUCCESS, error=
+Update sender: result=SUCCESS, error=
+Insert sender history: result=SUCCESS, error=
+Insert recipient history: result=SUCCESS, error=

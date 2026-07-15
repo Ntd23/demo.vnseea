@@ -133,6 +133,7 @@
               class="wallet-points-input"
               type="number"
               min="1"
+              step="1"
               :max="pointsBalance"
               placeholder="Nhập số VNSEEA"
             >
@@ -268,7 +269,8 @@
                 v-model.number="receiveQrPoints"
                 class="wallet-points-input"
                 type="number"
-                min="0"
+                min="1"
+                step="1"
               >
             </label>
             <button class="wallet-points-secondary" type="button" @click="openReceiveQrPanel(receiveQrPoints)">

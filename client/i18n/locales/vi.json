@@ -5625,7 +5625,7 @@
       "messageSentAt": "Gửi lúc {time}",
       "messageDeletedAt": "Xóa lúc {time}",
       "endToEndEncrypted": "Được mã hóa đầu cuối",
-      "openInMessenger": "Mở trong Messenger",
+      "openInMessenger": "Mở trong Tin Nhắn",
       "viewProfile": "Xem trang cá nhân",
       "audioCall": "Gọi thoại",
       "videoCall": "Chat video",
@@ -5879,7 +5879,7 @@
         "instagram": "Instagram",
         "youtube": "YouTube",
         "vk": "VK",
-        "passwordConfirm": "Xác nhận mật khẩu"
+        "passwordConfirm": "Xác nhận mật khẩu!"
       },
       "messages": {
         "loadError": "Không thể tải cài đặt.",

@@ -22,7 +22,6 @@ $public_config = array(
     'siteTitle' => !empty($get_config['siteTitle']) ? $get_config['siteTitle'] : (!empty($get_config['siteName']) ? $get_config['siteName'] : 'VNSEEA'),
     'siteDesc' => !empty($get_config['siteDesc']) ? $get_config['siteDesc'] : '',
     'auto_username' => !empty($get_config['auto_username']) ? $get_config['auto_username'] : '0',
-    'search_nearby_google_places' => isset($get_config['search_nearby_google_places']) ? $get_config['search_nearby_google_places'] : '1',
     'theme' => !empty($get_config['theme']) ? $get_config['theme'] : (!empty($config['theme']) ? $config['theme'] : ''),
     'theme_url' => $theme_url,
     'logo_url' => $theme_url . '/img/logo.' . $logo_extension,
@@ -62,11 +61,24 @@ $get_config['product_custom_fields'] = Wo_GetCustomFields('product');
 $get_config['post_reactions_types'] = $wo['reactions_types'];
 $get_config['pro_packages'] = $wo['pro_packages'];
 // $get_config['pro_packages_types'] = $wo['pro_packages_types'];
+$currencies_plain = array();
+foreach ($wo['currencies'] as $idx => $currency_data) {
+    $currencies_plain[] = array(
+        'index' => $idx,
+        'text'   => isset($currency_data['text'])   ? $currency_data['text']   : '',
+        'symbol' => isset($currency_data['symbol']) ? $currency_data['symbol'] : '',
+    );
+}
 $get_config = json_encode($get_config, JSON_PRETTY_PRINT);
 $get_config = openssl_encrypt($get_config, "AES-128-ECB", $siteEncryptKey);
 
 $response_data      = array(
     'api_status' => 200,
     'config' => $get_config,
-    'public_config' => $public_config
+    'page_categories' => $wo['page_categories'],
+    'group_categories' => $wo['group_categories'],
+    'group_sub_categories' => $wo['group_sub_categories'],
+    'public_config' => $public_config,
+    'currencies' => $currencies_plain,
 );
+

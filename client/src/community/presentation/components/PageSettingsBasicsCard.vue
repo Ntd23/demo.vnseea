@@ -11,7 +11,6 @@
     </template>
 
     <div class="page-settings-basics space-y-5">
-      <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,0.82fr)]">
         <UFormField
           name="name"
           :label="$t('community.pageSettings.basics.fields.name')"
@@ -28,29 +27,29 @@
             :ui="inputUi"
           />
         </UFormField>
-
-        <UFormField
+              <UFormField 
           name="slug"
           :label="$t('community.pageSettings.basics.fields.url')"
           required
           size="xl"
           class="space-y-2"
         >
-          <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-[13px] font-semibold text-slate-500">
+          <div class="flex w-full items-center rounded-[18px] border border-slate-200 bg-white overflow-hidden shadow-sm focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-500/20">
+            <div class="flex items-center justify-center bg-slate-50 border-r border-slate-200 px-4 h-14 text-slate-500 text-[14px] font-semibold whitespace-nowrap select-none">
               {{ urlPrefix }}
             </div>
-            <UInput
+            <input
               v-model="model.slug"
+              type="text"
               :placeholder="$t('community.pageSettings.basics.fields.slugPlaceholder')"
-              color="primary"
-              size="xl"
-              class="w-full"
-              :ui="slugInputUi"
+              class="flex-1 h-14 px-4 text-[15px] text-slate-900 placeholder-slate-400 focus:outline-none border-none bg-transparent"
             />
           </div>
 
           <div class="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
+            <span class="text-[13px] text-slate-500 block w-full">
+              Link trang: {{ urlPrefix }}{{ model.slug || '' }}
+            </span>
             <span class="page-settings-basics__hint">
               {{ $t("community.pageSettings.basics.fields.urlSuggested", { slug: suggestedSlug || $t("community.pageSettings.basics.fields.slugPlaceholder") }) }}
             </span>
@@ -64,8 +63,6 @@
             </button>
           </div>
         </UFormField>
-      </div>
-
       <UFormField
         name="summary"
         :label="$t('community.pageSettings.basics.fields.summary')"
@@ -231,6 +228,7 @@ import {
   communityPageCategoryOptions,
   communityPageUrlPrefix,
 } from "../../domain/constants/community-options"
+import { useBackendWebBase } from "#shared-kernel/application/utils/backend-web-url"
 import type { CommunityPageSettingsDraft } from "../../domain/types/community.types"
 
 const model = defineModel<CommunityPageSettingsDraft>({ required: true })
@@ -256,7 +254,10 @@ const selectUi = {
   base: "h-14 rounded-[18px] px-4 text-[15px]",
 }
 
-const urlPrefix = communityPageUrlPrefix.replace("https://", "")
+const backendWebBase = useBackendWebBase()
+const urlPrefix = computed(() => {
+  return `${backendWebBase.replace(/^https?:\/\//, "")}/p/` 
+})
 
 const categoryItems = computed(() =>
   communityPageCategoryOptions.map(option => ({

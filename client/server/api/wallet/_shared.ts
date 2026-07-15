@@ -5,14 +5,12 @@ import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
-import { createBackendMediaUrlResolver, getBackendWebBaseUrl } from "../../utils/backend-media-url"
+import { createBackendMediaUrlResolver } from "../../utils/backend-media-url"
 import type {
   WalletCurrentUser,
   WalletMutationResult,
   WalletOverview,
-  WalletReceiveQr,
   WalletRecipient,
-  WalletSendDraft,
   WalletTopupDraft,
   WalletTopupMethod,
   WalletTransaction,
@@ -193,8 +191,6 @@ const mapRecipient = (
   avatarUrl: resolveMediaUrl(asString(item.avatar)),
 })
 
-const getBackendWebBase = (event: H3Event) => getBackendWebBaseUrl(event)
-
 export async function fetchWalletOverview(event: H3Event): Promise<WalletOverview> {
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).get<BackendWalletOverviewResponse>("wallet-overview"),
@@ -219,6 +215,7 @@ export async function fetchWalletOverview(event: H3Event): Promise<WalletOvervie
 }
 
 export async function searchWalletRecipients(event: H3Event, query: string): Promise<WalletRecipient[]> {
+  const exactUserId = /^\d+$/.test(query.trim()) ? asNumber(query) : 0
   const response = assertBackendApiSuccess(
     await createBackendApiClient(event).get<BackendRecipientSearchResponse>(
       "wallet-recipient-search",
@@ -227,50 +224,13 @@ export async function searchWalletRecipients(event: H3Event, query: string): Pro
     "Unable to search recipients.",
   )
   const resolveMediaUrl = createBackendMediaUrlResolver(event)
+  const recipients = (response.items ?? []).map(item => mapRecipient(item, resolveMediaUrl))
 
-  return (response.items ?? []).map(item => mapRecipient(item, resolveMediaUrl))
-}
-
-export async function getWalletReceiveQr(event: H3Event, amount: number | null): Promise<WalletReceiveQr> {
-  const currentUser = await getBackendCurrentUser(event)
-  const baseUrl = getBackendWebBase(event)
-  const params = new URLSearchParams({
-    f: "qrcode",
-    s: "wallet-qr-code",
-    to: String(currentUser.user_id ?? ""),
-  })
-
-  if (amount && amount > 0) {
-    params.set("amount", String(amount))
+  if (exactUserId > 0) {
+    return recipients.filter(recipient => recipient.id === exactUserId)
   }
 
-  return {
-    imageUrl: `${baseUrl.replace(/\/+$/, "")}/requests.php?${params.toString()}`,
-    amount,
-  }
-}
-
-export async function sendWalletMoney(
-  event: H3Event,
-  input: WalletSendDraft,
-): Promise<WalletMutationResult> {
-  const response = assertWebSuccess(
-    await createBackendWebClient(event).postForm<BackendWebMutationResponse>(
-      "wallet",
-      {
-        user_id: input.recipientUserId,
-        amount: input.amount,
-        note: input.note,
-      },
-      { s: "send" },
-    ),
-    "Unable to send money.",
-  )
-
-  return {
-    success: true,
-    message: asString(response.message),
-  }
+  return recipients
 }
 
 export async function createWalletTopupLink(

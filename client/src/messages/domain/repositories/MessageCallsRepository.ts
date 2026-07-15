@@ -43,7 +43,6 @@ export interface MessageCallsRepository {
   getIncomingCall(type: MessageCallType): Promise<MessageIncomingCall | null>
   createGroupCall(input: {
     groupId: number
-    type: MessageCallType
   }): Promise<MessageGroupCallResult>
   getIncomingGroupCall(): Promise<MessageIncomingGroupCall | null>
   joinGroupCall(input: {

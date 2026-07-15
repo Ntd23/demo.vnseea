@@ -148,7 +148,7 @@ const shellClass = computed(() => {
   }
 
   if (isCheckoutPage.value) {
-    return 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_275px]'
+    return 'max-w-[1880px] xl:grid-cols-[minmax(0,1fr)_275px]'
   }
 
   if (isLivePage.value) {
@@ -156,13 +156,13 @@ const shellClass = computed(() => {
   }
 
   if (isCmsPage.value) {
-    return 'max-w-[1200px] px-4 md:px-6 xl:px-8 xl:grid-cols-1'
+    return 'max-w-[1200px] xl:grid-cols-1'
   }
 
   // All content pages share same sidebar widths → no layout shift on navigation
   return showLeftSidebar.value
-    ? 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[220px_minmax(0,1fr)_260px] 2xl:grid-cols-[256px_minmax(0,1fr)_280px]'
-    : 'max-w-[1880px] px-4 md:px-6 xl:px-8 xl:grid-cols-[minmax(0,1fr)_260px]'
+    ? 'max-w-[1880px] xl:grid-cols-[220px_minmax(0,1fr)_260px] 2xl:grid-cols-[256px_minmax(0,1fr)_280px]'
+    : 'max-w-[1880px] xl:grid-cols-[minmax(0,1fr)_260px]'
 })
 
 const mainClass = computed(() => {

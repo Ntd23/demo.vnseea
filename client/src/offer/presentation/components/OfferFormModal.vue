@@ -1,6 +1,6 @@
 <!-- English description: Renders the phtml-compatible create and edit form for page offers. -->
 <template>
-  <UModal v-model:open="isOpen">
+  <UModal v-model:open="isOpen" :ui="{ content: 'sm:max-w-[800px]' }">
     <template #content>
       <form class="offer-form" @submit.prevent="handleSubmit">
         <header class="offer-form__header">
@@ -21,58 +21,58 @@
           class="rounded-[16px]"
         />
 
-        <div class="offer-form__grid">
-          <UFormField :label="t('offers.form.discountType')" class="offer-form__field">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <UFormField :label="t('offers.form.discountType')" class="w-full">
             <USelect v-model="draft.discountType" :items="discountTypeOptions" value-key="value" label-key="label" class="w-full" />
           </UFormField>
 
-          <UFormField v-if="showDiscountPercent" :label="t('offers.form.discountPercent')" class="offer-form__field">
+          <UFormField v-if="showDiscountPercent" :label="t('offers.form.discountPercent')" class="w-full">
             <USelect v-model="draft.discountPercent" :items="percentOptions" value-key="value" label-key="label" class="w-full" />
           </UFormField>
 
-          <UFormField v-if="showDiscountAmount" :label="t('offers.form.discountAmount')" class="offer-form__field offer-form__field--full">
-            <UInput v-model="draft.discountAmount" inputmode="decimal" />
+          <UFormField v-if="showDiscountAmount" :label="t('offers.form.discountAmount')" class="col-span-1 sm:col-span-2">
+            <UInput v-model="draft.discountAmount" inputmode="decimal" class="w-full" />
           </UFormField>
 
           <template v-if="showBuyGet">
-            <UFormField :label="t('offers.form.buy')" class="offer-form__field">
-              <UInput v-model="draft.buy" inputmode="numeric" />
+            <UFormField :label="t('offers.form.buy')" class="w-full">
+              <UInput v-model="draft.buy" inputmode="numeric" class="w-full" />
             </UFormField>
-            <UFormField :label="t('offers.form.get')" class="offer-form__field">
-              <UInput v-model="draft.get" inputmode="numeric" />
+            <UFormField :label="t('offers.form.get')" class="w-full">
+              <UInput v-model="draft.get" inputmode="numeric" class="w-full" />
             </UFormField>
           </template>
 
           <template v-if="showSpendGetOff">
-            <UFormField :label="t('offers.form.spend')" class="offer-form__field">
-              <UInput v-model="draft.spend" inputmode="decimal" />
+            <UFormField :label="t('offers.form.spend')" class="w-full">
+              <UInput v-model="draft.spend" inputmode="decimal" class="w-full" />
             </UFormField>
-            <UFormField :label="t('offers.form.amountOff')" class="offer-form__field">
-              <UInput v-model="draft.amountOff" inputmode="decimal" />
+            <UFormField :label="t('offers.form.amountOff')" class="w-full">
+              <UInput v-model="draft.amountOff" inputmode="decimal" class="w-full" />
             </UFormField>
           </template>
 
-          <UFormField :label="t('offers.form.discountedItems')" :hint="t('offers.form.discountedItemsHint')" class="offer-form__field">
-            <UInput v-model="draft.discountedItems" maxlength="100" />
+          <UFormField :label="t('offers.form.discountedItems')" :hint="t('offers.form.discountedItemsHint')" class="w-full">
+            <UInput v-model="draft.discountedItems" maxlength="100" class="w-full" />
           </UFormField>
 
-          <UFormField v-if="mode === 'create'" :label="t('offers.form.currency')" class="offer-form__field">
-            <UInput v-model="draft.currency" />
+          <UFormField v-if="mode === 'create'" :label="t('offers.form.currency')" class="w-full">
+            <UInput v-model="draft.currency" class="w-full" />
           </UFormField>
 
-          <UFormField :label="t('offers.form.description')" class="offer-form__field offer-form__field--full">
-            <UTextarea v-model="draft.description" :rows="4" />
+          <UFormField :label="t('offers.form.description')" class="col-span-1 sm:col-span-2">
+            <UTextarea v-model="draft.description" :rows="4" class="w-full" />
           </UFormField>
 
           <template v-if="mode === 'create'">
-            <UFormField :label="t('offers.form.expireDate')" class="offer-form__field">
-              <UInput v-model="draft.expireDate" type="date" />
+            <UFormField :label="t('offers.form.expireDate')" class="w-full">
+              <UInput v-model="draft.expireDate" type="date" class="w-full" />
             </UFormField>
-            <UFormField :label="t('offers.form.expireTime')" class="offer-form__field">
-              <UInput v-model="draft.expireTime" type="time" />
+            <UFormField :label="t('offers.form.expireTime')" class="w-full">
+              <UInput v-model="draft.expireTime" type="time" class="w-full" />
             </UFormField>
-            <UFormField :label="t('offers.form.thumbnail')" class="offer-form__field offer-form__field--full">
-              <input class="offer-form__file" type="file" accept="image/*" @change="handleFileChange">
+            <UFormField :label="t('offers.form.thumbnail')" class="col-span-1 sm:col-span-2">
+              <input class="offer-form__file w-full" type="file" accept="image/*" @change="handleFileChange">
             </UFormField>
           </template>
         </div>
@@ -150,7 +150,7 @@ async function handleSubmit() {
 <style scoped>
 .offer-form {
   display: flex;
-  width: min(92vw, 680px);
+  width: min(92vw, 800px);
   max-height: min(92vh, 820px);
   flex-direction: column;
   gap: 18px;

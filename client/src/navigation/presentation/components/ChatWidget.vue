@@ -365,7 +365,7 @@
               </div>
 
               <div class="chat-widget__avatar-menu-section">
-                <button type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('audio')">
+                <button v-if="avatarMenuContact.type === 'user'" type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('audio')">
                   <Icon name="i-ph-phone-duotone" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
                 </button>
@@ -454,9 +454,10 @@
 
           <div class="chat-widget__mini-header-actions">
             <button
+              v-if="miniSession.contact.type === 'user'"
               class="chat-widget__header-btn"
               type="button"
-              :title="miniSession.contact.type === 'group' ? $t('pages.messagesPage.groupAudioCall') : $t('pages.messagesPage.callLogAudio')"
+              :title="$t('pages.messagesPage.callLogAudio')"
               :disabled="isCallActionPending"
               @click="startMiniCall(miniSession, 'audio')"
             >
@@ -495,10 +496,6 @@
 
         <div v-if="showMiniHeaderMenuFor(miniSession)" ref="miniHeaderMenuRef" class="chat-widget__mini-menu">
           <div class="chat-widget__mini-menu-section">
-            <div class="chat-widget__mini-menu-item chat-widget__mini-menu-item--muted">
-              <UIcon name="i-ph-lock-key-duotone" class="h-5 w-5" />
-              <span>{{ $t("navigation.chatWidget.endToEndEncrypted") }}</span>
-            </div>
             <button
               type="button"
               class="chat-widget__mini-menu-item"
@@ -519,32 +516,9 @@
           </div>
 
           <div class="chat-widget__mini-menu-section">
-            <button type="button" class="chat-widget__mini-menu-item" @click="closeMiniHeaderMenu">
-              <UIcon name="i-ph-circle-fill" class="h-5 w-5 text-[#5b5cff]" />
-              <span>{{ $t("navigation.chatWidget.changeTheme") }}</span>
-            </button>
-            <button type="button" class="chat-widget__mini-menu-item" @click="closeMiniHeaderMenu">
-              <UIcon name="i-ph-thumbs-up-fill" class="h-5 w-5 text-[#5b5cff]" />
-              <span>{{ $t("navigation.chatWidget.changeReaction") }}</span>
-            </button>
-            <button type="button" class="chat-widget__mini-menu-item" @click="closeMiniHeaderMenu">
-              <UIcon name="i-ph-pencil-simple-duotone" class="h-5 w-5" />
-              <span>{{ $t("navigation.chatWidget.nickname") }}</span>
-            </button>
-          </div>
-
-          <div class="chat-widget__mini-menu-section">
             <button type="button" class="chat-widget__mini-menu-item" @click="openMessagesTabFromMiniMenu('multi')">
               <UIcon name="i-ph-users-three-duotone" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.createGroup") }}</span>
-            </button>
-            <button type="button" class="chat-widget__mini-menu-item" @click="closeMiniHeaderMenu">
-              <UIcon name="i-ph-bell-slash-duotone" class="h-5 w-5" />
-              <span>{{ $t("navigation.chatWidget.muteNotifications") }}</span>
-            </button>
-            <button type="button" class="chat-widget__mini-menu-item chat-widget__mini-menu-item--danger" @click="closeMiniHeaderMenu">
-              <UIcon name="i-ph-user-minus-duotone" class="h-5 w-5" />
-              <span>{{ $t("navigation.chatWidget.blockUser") }}</span>
             </button>
           </div>
         </div>
@@ -751,11 +725,7 @@
             <UIcon name="i-ph-user-circle-duotone" class="h-5 w-5" />
             <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
           </button>
-          <button type="button" class="chat-widget__message-avatar-menu-item chat-widget__message-avatar-menu-item--danger" @click="closeMessageAvatarMenu">
-            <UIcon name="i-ph-user-minus-duotone" class="h-5 w-5" />
-            <span>{{ $t("navigation.chatWidget.blockUser") }}</span>
-          </button>
-          <button type="button" class="chat-widget__message-avatar-menu-item" @click="callMessageAvatarContact('audio')">
+          <button v-if="messageAvatarMenuContact.type === 'user'" type="button" class="chat-widget__message-avatar-menu-item" @click="callMessageAvatarContact('audio')">
             <UIcon name="i-ph-phone-duotone" class="h-5 w-5" />
             <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
           </button>
@@ -1072,7 +1042,7 @@ async function callAvatarContact(type: 'audio' | 'video') {
   closeAvatarMenu()
   if (!contact) return
   if (contact.type === 'group') {
-    await startGroupCall(contact, type)
+    await startGroupCall(contact)
   }
   else if (contact.type === 'user') {
     await startCall(contact, type)
@@ -1170,7 +1140,7 @@ async function callMessageAvatarContact(type: "audio" | "video") {
   }
 
   if (contact.type === "group") {
-    await startGroupCall(contact, type)
+    await startGroupCall(contact)
     return
   }
 
@@ -1207,7 +1177,7 @@ async function startMiniCall(session: MiniChatSessionView, type: MessageCallType
   }
 
   if (contact.type === "group") {
-    await startGroupCall(contact, type)
+    await startGroupCall(contact)
     return
   }
 

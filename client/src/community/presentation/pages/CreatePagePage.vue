@@ -3,19 +3,22 @@
   <div class="mx-auto max-w-[1280px] space-y-5 px-4 pb-24 sm:px-6">
     <CommunityCreationForm
       v-model="draft"
+      is-page
+      title="Tạo mới trang"
+      hide-description
       entity-label="community.creation.common.entityLabelPage"
-      :category-options="communityPageCategoryOptions"
+      :category-options="categoryOptions"
       :show-privacy="false"
       show-location
       show-map-pin-request
-      :url-prefix="communityPageUrlPrefix"
+      :url-prefix="urlPrefix"
       :name-label="$t('community.creation.page.nameLabel')"
       :name-placeholder="$t('community.creation.page.namePlaceholder')"
-      :url-label="$t('community.creation.common.urlLabel')"
+      url-label="Trang URL"
       :slug-placeholder="$t('community.creation.page.slugPlaceholder')"
       :description-label="$t('community.creation.common.descriptionLabel')"
       :description-placeholder="$t('community.creation.common.introHint', { entity: $t('community.creation.common.entityLabelPage') })"
-      :category-label="$t('community.creation.page.categoryLabel')"
+      category-label="Danh mục trang"
       :location-label="$t('community.creation.page.locationLabel')"
       :location-placeholder="$t('community.creation.page.locationPlaceholder')"
       :location-hint="$t('community.creation.page.locationHint')"
@@ -49,6 +52,7 @@ import {
   communityPageCategoryOptions,
   communityPageUrlPrefix,
 } from "../../domain/constants/community-options"
+import { useBackendWebBase } from "#shared-kernel/application/utils/backend-web-url"
 
 const {
   draft,
@@ -60,4 +64,30 @@ const {
   handleCreatePage,
   appRoutes,
 } = useCommunityCreatePagePageVM()
+
+const backendWebBase = useBackendWebBase()
+const urlPrefix = computed(() => {
+  return `${backendWebBase}/p/`
+})
+
+const { t } = useI18n()
+const categoryOptions = ref<Array<{ label: string; value: string }>>([])
+
+onMounted(async () => {
+  try {
+    const data = await $fetch<Array<{ label: string; value: string }>>("/_api/community/page-categories")
+    if (Array.isArray(data) && data.length > 0) {
+      categoryOptions.value = data
+      if (!draft.value.category || !data.some(opt => opt.value === draft.value.category)) {
+        draft.value.category = data[0].value
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load page categories from DB", error)
+    categoryOptions.value = communityPageCategoryOptions.map(option => ({
+      value: option.value,
+      label: t(option.label),
+    }))
+  }
+})
 </script>

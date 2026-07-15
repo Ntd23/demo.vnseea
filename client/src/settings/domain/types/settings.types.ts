@@ -269,6 +269,7 @@ export interface SettingsPointsExchangeResult {
 export interface SettingsPointsTransferInput {
   recipientUserId: number
   points: number
+  requestId: string
   note?: string
 }
 
@@ -280,6 +281,10 @@ export interface SettingsPointsTransferResult {
   senderPoints: number
   recipientPoints: number
   points: number
+  requestId: string
+  idempotentReplay: boolean
+  senderTransactionId: number
+  recipientTransactionId: number
 }
 
 export interface SettingsPointsReceiveQr {
