@@ -60,6 +60,8 @@ let lastRenderedRouteTargetId = ""
 let lastRouteFitKey = -1
 let lastOriginRadiusCenter: { lat: number, lng: number } | null = null
 let lastOriginRadiusMeters = 0
+let hasFittedOriginRadiusViewport = false
+let lastFittedOriginRadiusKm = 0
 let lastMobileRouteHeading: number | null = null
 let lastMobileRouteCameraCenter: { lat: number, lng: number } | null = null
 let lastMobileRouteCameraAt = 0
@@ -72,6 +74,7 @@ let displayedMobileCameraCenter: { lat: number, lng: number } | null = null
 let displayedMobileCameraHeading: number | null = null
 
 const originRadiusMinMoveMeters = 25
+const defaultSearchRadiusKm = 3
 const mobileRouteFollowTilt = 75
 const mobileRouteFollowZoom = 19
 const mobileRouteHeadingLookAheadMeters = 110
@@ -116,6 +119,20 @@ function createMarkersViewportKey() {
     props.searchRadiusKm ?? "",
     itemsKey,
   ].join("|")
+}
+
+function getEffectiveSearchRadiusKm() {
+  const radiusKm = Number(props.searchRadiusKm ?? defaultSearchRadiusKm)
+
+  return Number.isFinite(radiusKm) && radiusKm > 0 ? radiusKm : defaultSearchRadiusKm
+}
+
+function hasOriginCoordinates() {
+  return props.origin.lat !== null && props.origin.lng !== null
+}
+
+function shouldUseOriginRadiusViewport() {
+  return hasOriginCoordinates() && !props.selectedItemId && !props.routeTargetItem
 }
 
 async function resolveMapConstructors() {
@@ -827,8 +844,12 @@ function fitMarkers() {
 function fitOriginRadius() {
   const map = mapInstance.value
 
-  if (!map || !window.google?.maps || props.origin.lat === null || props.origin.lng === null) {
+  if (!map || !window.google?.maps || !hasOriginCoordinates()) {
     return false
+  }
+
+  if (!originRadiusCircle.value) {
+    syncOriginRadiusCircle(true)
   }
 
   const radiusBounds = originRadiusCircle.value?.getBounds()
@@ -840,6 +861,29 @@ function fitOriginRadius() {
 
   map.panTo({ lat: props.origin.lat, lng: props.origin.lng })
   map.setZoom(Math.max(map.getZoom() ?? 14, 15))
+
+  return true
+}
+
+function fitOriginRadiusViewport(force = false) {
+  if (!shouldUseOriginRadiusViewport()) {
+    return false
+  }
+
+  const radiusKm = getEffectiveSearchRadiusKm()
+
+  if (!force && hasFittedOriginRadiusViewport && lastFittedOriginRadiusKm === radiusKm) {
+    return true
+  }
+
+  syncOriginRadiusCircle(true)
+
+  if (!fitOriginRadius()) {
+    return false
+  }
+
+  hasFittedOriginRadiusViewport = true
+  lastFittedOriginRadiusKm = radiusKm
 
   return true
 }
@@ -857,7 +901,10 @@ function focusSelectedItem() {
 }
 
 function focusOrigin() {
-  fitOriginRadius()
+  if (fitOriginRadius()) {
+    hasFittedOriginRadiusViewport = true
+    lastFittedOriginRadiusKm = getEffectiveSearchRadiusKm()
+  }
 }
 
 function zoomIn() {
@@ -895,7 +942,7 @@ function syncOriginRadiusCircle(force = false) {
   }
 
   const center = { lat: props.origin.lat, lng: props.origin.lng }
-  const radiusMeters = Math.max((props.searchRadiusKm ?? 1) * 1000, 100)
+  const radiusMeters = Math.max(getEffectiveSearchRadiusKm() * 1000, 100)
   const movedMeters = lastOriginRadiusCenter
     ? calculatePointDistanceMeters(lastOriginRadiusCenter, center)
     : Number.POSITIVE_INFINITY
@@ -1110,12 +1157,16 @@ function renderMarkers() {
     return
   }
 
+  if (fitOriginRadiusViewport()) {
+    return
+  }
+
   if (props.items.some(item => item.lat !== null && item.lng !== null)) {
     fitMarkers()
     return
   }
 
-  if (props.origin.lat !== null && props.origin.lng !== null) {
+  if (hasOriginCoordinates()) {
     fitOriginRadius()
     return
   }
@@ -1376,6 +1427,9 @@ watch(
   () => {
     renderOriginMarker()
     syncOriginRadiusCircle()
+    if (!hasFittedOriginRadiusViewport) {
+      fitOriginRadiusViewport(true)
+    }
     if (props.routeNavigationActive && props.routeTargetItem && isMobileViewport()) {
       followMobileRouteCamera(props.routeTargetItem)
     }
@@ -1389,7 +1443,10 @@ watch(
 
 watch(
   () => props.searchRadiusKm,
-  () => syncOriginRadiusCircle(true),
+  () => {
+    syncOriginRadiusCircle(true)
+    fitOriginRadiusViewport(true)
+  },
 )
 
 watch(
