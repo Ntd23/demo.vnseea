@@ -1,9 +1,11 @@
+<!-- Description: Renders page admin search and management controls in page settings. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.sidebar.admin.eyebrow')"
     :title="$t('community.pageSettings.sidebar.admin.title')"
     :description="$t('community.pageSettings.sidebar.admin.desc')"
     icon="i-ph-shield-checkered-bold"
+    :translate-text="false"
   >
     <div class="space-y-6 py-4">
       <!-- Add Admin Section -->

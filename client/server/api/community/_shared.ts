@@ -447,6 +447,81 @@ export async function fetchSuggestedCommunityPages(event: H3Event) {
   )
 }
 
+async function resolveCurrentUserGroupRecordByList(
+  event: H3Event,
+  normalizedSlug: string,
+  currentUserId: number,
+  baseUrl: string,
+) {
+  const client = createBackendApiClient(event)
+  const fetches: Array<Extract<CommunityListFetch, "my_groups" | "joined_groups" | "groups">> = [
+    "my_groups",
+    "joined_groups",
+    "groups",
+  ]
+
+  for (const fetch of fetches) {
+    try {
+      const response = assertBackendApiSuccess(
+        await client.post<BackendCommunityResponse, Record<string, unknown>>(
+          "get-community",
+          {
+            user_id: currentUserId,
+            fetch,
+            [`${fetch}_limit`]: 100,
+          },
+        ),
+        "Unable to resolve group.",
+      )
+
+      const match = extractGroupsFromResponse(response, fetch).find((entity) => {
+        const entitySlug = firstString(entity, ["group_name", "slug", "name"]).toLowerCase()
+        return entitySlug === normalizedSlug
+      })
+
+      if (!match) {
+        continue
+      }
+
+      const groupId = firstNumber(match, ["group_id", "id"])
+
+      if (groupId > 0) {
+        try {
+          const detailResponse = assertBackendApiSuccess(
+            await client.post<BackendGroupDetailResponse, Record<string, unknown>>(
+              "get-group-data",
+              {
+                group_id: groupId,
+              },
+            ),
+            "Unable to load group details.",
+          )
+
+          if (detailResponse.group_data) {
+            return mapCommunityGroupRecord(detailResponse.group_data, {
+              currentUserId,
+              baseUrl,
+            })
+          }
+        }
+        catch {
+          // The list response is enough to render an existing group card/detail shell.
+        }
+      }
+
+      return mapCommunityGroupRecord(match, {
+        currentUserId,
+        baseUrl,
+      })
+    }
+    catch {
+      // Keep resolving through the remaining group sources and legacy search fallback.
+    }
+  }
+
+  return null
+}
+
 export async function resolveGroupRecordBySlug(event: H3Event, slug: string) {
   const normalizedSlug = slug.trim().toLowerCase()
 
@@ -484,6 +559,18 @@ export async function resolveGroupRecordBySlug(event: H3Event, slug: string) {
       currentUserId: 0,
       baseUrl,
     })
+  }
+
+  const currentUserId = asNumber(currentUser.user_id)
+  const groupFromUserLists = await resolveCurrentUserGroupRecordByList(
+    event,
+    normalizedSlug,
+    currentUserId,
+    baseUrl,
+  )
+
+  if (groupFromUserLists) {
+    return groupFromUserLists
   }
 
   const searchResponse = assertBackendApiSuccess(
@@ -528,7 +615,7 @@ export async function resolveGroupRecordBySlug(event: H3Event, slug: string) {
   }
 
   const mappedGroup = mapCommunityGroupRecord(detailResponse.group_data, {
-    currentUserId: asNumber(currentUser?.user_id),
+    currentUserId,
     baseUrl,
   })
 

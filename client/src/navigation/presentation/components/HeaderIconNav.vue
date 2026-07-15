@@ -14,7 +14,7 @@
         v-if="item.logoBadge"
         class="icon-nav__logo-badge"
       >
-        {{ item.logoBadge }}
+       
       </span>
       <div v-if="item.active" class="icon-nav__indicator" />
     </NuxtLink>
@@ -128,11 +128,11 @@ const items = computed(() => [
 
 .icon-nav__logo-badge {
   position: absolute;
-  right: 12px;
-  top: 2px;
+  right: 26px;
+  top: 6px;
   display: inline-flex;
-  min-width: 16px;
-  height: 16px;
+  height: 8px;
+  width: 8px;
   align-items: center;
   justify-content: center;
   border-radius: 6px;

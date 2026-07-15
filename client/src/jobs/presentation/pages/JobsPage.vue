@@ -102,6 +102,7 @@
       :question-types="vm.questionTypes.value"
       :image-types="vm.imageTypes.value"
       :owned-pages="vm.ownedPages.value"
+      :preferred-page-id="vm.preferredCreatePageId.value"
       :defaults="vm.currentUser.value"
       :can-create="vm.canCreate.value"
       :create-disabled-reason="vm.createDisabledReason.value"

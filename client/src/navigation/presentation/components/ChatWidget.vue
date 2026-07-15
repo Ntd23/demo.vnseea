@@ -1,6 +1,6 @@
 <!-- English description: Renders the right-sidebar chat widget with real inbox contacts, quick send actions, mini threads, and online presence indicators. -->
 <template>
-  <div class="chat-widget">
+  <div class="chat-widget" :class="{ 'chat-widget--collapsed': collapsed }">
     <div class="chat-widget__header">
       <div>
         <span class="chat-widget__title">{{ $t("navigation.chatWidget.title") }}</span>
@@ -27,9 +27,18 @@
         >
           <Icon name="i-ph-chat-teardrop-dots-duotone" class="h-4 w-4" />
         </button>
+        <button
+          class="chat-widget__header-btn chat-widget__toggle-btn"
+          type="button"
+          :title="collapsed ? $t('navigation.chatWidget.expand') : $t('navigation.chatWidget.collapse')"
+          @click="collapsed = !collapsed"
+        >
+          <Icon :name="collapsed ? 'i-ph-caret-down-bold' : 'i-ph-caret-up-bold'" class="h-3.5 w-3.5" />
+        </button>
       </div>
     </div>
 
+    <div v-show="!collapsed" class="chat-widget__body">
     <div class="chat-widget__tabs">
       <UButton
         v-for="tab in tabs"
@@ -737,10 +746,13 @@
       </Transition>
     </Teleport>
   </div>
+</div>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
+
+const collapsed = ref(false)
 import { defaultFeedReactionAsset, feedReactionAssetByValue, feedReactionAssets, type FeedReactionAsset } from "../../../feed/application/constants/reaction-assets"
 import { useMessageCalls } from "../../../messages/application/composables/useMessageCalls"
 import { useMessageRecorder } from "../../../messages/application/composables/useMessageRecorder"
@@ -1537,6 +1549,26 @@ watch(miniChatAutoOpenVersion, (version) => {
   width: 100%;
   flex-direction: column;
   overflow: visible;
+}
+
+.chat-widget--collapsed {
+  height: auto;
+  max-height: none;
+  flex: 0 0 auto;
+}
+
+.chat-widget__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+}
+
+.chat-widget__toggle-btn {
+  border-left: 1px solid #f1f5f9;
+  margin-left: 2px;
+  padding-left: 8px;
 }
 
 .chat-widget__header {
@@ -2734,6 +2766,10 @@ watch(miniChatAutoOpenVersion, (version) => {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+.chat-widget__mini-launcher--2 {
+  bottom: 128px;
+}
+
 .chat-widget__mini-launcher:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.22);
@@ -2859,208 +2895,6 @@ watch(miniChatAutoOpenVersion, (version) => {
   background: #f1f5f9;
   color: inherit;
   transition: background 0.12s ease;
-}
-  /* height: 42px;
-  border: 1px solid #dbe3f2 !important;
-  border-radius: 999px !important;
-  background: #f8fafc !important;
-  padding: 0 16px !important;
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: none !important;
-  outline: none;
-} */
-
-:deep(.chat-widget__mini-input-control:focus) {
-  border-color: rgba(0, 0, 255, 0.28) !important;
-  background: #ffffff !important;
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06) !important;
-}
-
-:deep(.chat-widget__mini-input-control::placeholder) {
-  color: #94a3b8;
-  font-weight: 600;
-}
-
-.chat-widget__mini-send-btn {
-  position: absolute !important;
-  top: 50% !important;
-  right: 4px !important;
-  display: inline-flex;
-  width: 34px !important;
-  height: 34px !important;
-  min-width: 34px !important;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 999px !important;
-  background: transparent !important;
-  color: var(--ui-primary) !important;
-  cursor: pointer;
-  box-shadow: none !important;
-  transform: translateY(-50%);
-}
-
-.chat-widget__mini-send-icon {
-  width: 19px;
-  height: 19px;
-}
-
-.chat-widget__mini-send-btn:disabled {
-  color: color-mix(in srgb, var(--ui-primary) 42%, transparent) !important;
-  cursor: default;
-  opacity: 1;
-}
-
-.chat-widget__mini-launcher {
-  position: absolute;
-  right: 14px;
-  bottom: 72px;
-  z-index: 60;
-  display: inline-flex;
-  width: 48px;
-  height: 48px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: #ffffff;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.chat-widget__mini-launcher--2 {
-  bottom: 128px;
-}
-
-.chat-widget__mini-launcher:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.22);
-}
-
-.chat-widget__mini-launcher-group {
-  display: flex;
-  width: 40px;
-  height: 40px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(0, 0, 255, 0.08);
-  color: #0000ff;
-}
-
-/* ── Avatar contact button ── */
-.chat-widget__contact-wrapper {
-  position: relative;
-}
-
-.chat-widget__contact-avatar-btn {
-  position: relative;
-  display: inline-flex;
-  flex-shrink: 0;
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
-  border-radius: 999px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.chat-widget__contact-avatar-btn:hover {
-  transform: scale(1.07);
-  box-shadow: 0 0 0 2.5px rgba(0, 0, 255, 0.22);
-}
-
-/* ── Avatar context menu ── */
-.chat-widget__avatar-menu {
-  min-width: 224px;
-  border-radius: 16px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  background: #ffffff;
-  padding: 6px 0;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18), 0 4px 14px rgba(15, 23, 42, 0.08);
-  transform-origin: top left;
-}
-
-.chat-widget__avatar-menu-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px 12px;
-}
-
-.chat-widget__avatar-menu-info {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  gap: 3px;
-}
-
-.chat-widget__avatar-menu-name {
-  font-size: 13px;
-  font-weight: 800;
-  color: #0f172a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chat-widget__avatar-menu-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 600;
-}
-
-.chat-widget__avatar-menu-status--online {
-  color: #16a34a;
-}
-
-.chat-widget__avatar-menu-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: currentColor;
-  flex-shrink: 0;
-}
-
-.chat-widget__avatar-menu-divider {
-  height: 1px;
-  background: #f1f5f9;
-  margin: 4px 0;
-}
-
-.chat-widget__avatar-menu-item {
-  display: flex;
-  width: 100%;
-  min-height: 42px;
-  align-items: center;
-  gap: 11px;
-  border: none;
-  background: transparent;
-  padding: 8px 14px;
-  color: #111827;
-  font-size: 13.5px;
-  font-weight: 700;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
-}
-
-.chat-widget__avatar-menu-item:hover {
-  background: #f1f5f9;
-  color: #0000ff;
-}
-
-.chat-widget__avatar-menu-item--danger {
-  color: #dc2626;
-}
-
-.chat-widget__avatar-menu-item--danger:hover {
-  background: #fee2e2;
-  color: #b91c1c;
 }
 
 .chat-widget__message-avatar-menu {
@@ -3203,4 +3037,13 @@ watch(miniChatAutoOpenVersion, (version) => {
   color: #dc2626;
 }
 
+</style>
+
+<style>
+/* Global: shrink and push collapsed chat widget container to bottom of sidebar */
+div:has(> .chat-widget--collapsed) {
+  flex: 0 0 auto !important;
+  height: auto !important;
+  margin-top: auto !important;
+}
 </style>

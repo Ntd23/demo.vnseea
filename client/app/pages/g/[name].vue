@@ -11,12 +11,13 @@ import { createApiPublicSeoRepository } from "../../../src/seo/infrastructure/re
 definePageMeta({
   layout: "default",
   publicContent: true,
+  hideLeftSidebar: true,
 })
 
 const route = useRoute()
 const slug = computed(() => String(route.params.name || ""))
 const seoRepository = createApiPublicSeoRepository()
-const { data: seoMeta, error: seoError } = await useAsyncData(
+const { data: seoMeta } = await useAsyncData(
   () => `seo:group:${slug.value}`,
   () => slug.value
     ? seoRepository.getPublicSeo({ routeType: "group", identifier: slug.value })
@@ -26,13 +27,6 @@ const { data: seoMeta, error: seoError } = await useAsyncData(
     default: () => null,
   },
 )
-
-if (seoError.value) {
-  throw createError({
-    statusCode: seoError.value.statusCode || 404,
-    statusMessage: seoError.value.statusMessage || "Group not found.",
-  })
-}
 
 usePublicSeoMeta(seoMeta)
 </script>

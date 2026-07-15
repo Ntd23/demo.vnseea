@@ -1,9 +1,11 @@
+<!-- Description: Displays page analytics charts and summary cards in page settings. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.sidebar.analytics.eyebrow')"
     :title="$t('community.pageSettings.sidebar.analytics.title')"
     :description="$t('community.pageSettings.sidebar.analytics.desc')"
     icon="i-ph-chart-line-up-bold"
+    :translate-text="false"
   >
     <div v-if="loading" class="analytics-state mt-6">
       <Icon name="i-ph-spinner-gap-bold" class="h-5 w-5 animate-spin" />

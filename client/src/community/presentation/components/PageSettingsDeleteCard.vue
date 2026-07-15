@@ -1,9 +1,11 @@
+<!-- Description: Renders the password confirmation form for deleting a community page. -->
 <template>
   <CommunitySettingsSectionCard
     :eyebrow="$t('community.pageSettings.sidebar.delete.eyebrow')"
     :title="$t('community.pageSettings.sidebar.delete.title')"
     :description="$t('community.pageSettings.sidebar.delete.desc')"
     icon="i-ph-warning-octagon-bold"
+    :translate-text="false"
   >
     <div class="flex flex-col gap-6 py-4">
       <div class="rounded-xl border border-red-100 bg-red-50 p-4">

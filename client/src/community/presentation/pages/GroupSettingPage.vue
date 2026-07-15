@@ -1,124 +1,164 @@
-<!-- Description: Renders the group settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP group settings structure. -->
+<!-- Description: Renders the group settings route with a settings-nav-first layout and ordered panes that match page-setting layout. -->
 <template>
-  <div v-if="(group && previewGroup) || status === 'pending'" class="mx-auto max-w-[1280px] space-y-5 pb-10 pt-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
-    <section class="border border-[#dbe3f2] bg-white px-8 py-8 shadow-[0_12px_28px_rgba(15,35,110,0.06)] sm:px-8" style="border-radius: 32px !important;">
-      <div class="space-y-3">
-        <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
-          {{ $t('community.settings.eyebrow') }}
-        </p>
-        <h1 class="text-[1.7rem] font-black tracking-[-0.04em] text-[#243b63] sm:text-[2rem]">
-          {{ $t('community.settings.title', { name: translatedGroupName }) }}
-        </h1>
-        <p class="max-w-3xl text-[14px] leading-7 text-slate-500">
-          {{ $t('community.settings.desc') }}
-        </p>
+  <div v-if="(group && previewGroup) || status === 'pending'" class="group-settings mx-auto max-w-[1120px] space-y-4 pb-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
+    <section class="group-settings__hero border-b border-slate-100 pb-8 pt-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="group-settings__title text-2xl font-black text-slate-900">
+            {{ $t('community.settings.title', { name: translatedGroupName }) }}
+          </h1>
+        </div>
+
+        <NuxtLink :to="groupPath" class="group-settings__button group-settings__button--secondary">
+          <Icon name="i-ph-arrow-square-out-bold" class="mr-2 h-4 w-4" />
+          {{ $t("community.settings.basics.viewGroup") }}
+        </NuxtLink>
       </div>
 
-      <div class="mt-4 flex flex-wrap gap-2">
-        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
-          {{ memberCountLabel }}
-        </span>
-        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
-          {{ selectedPrivacyLabel }}
-        </span>
-        <span class="inline-flex items-center rounded-full bg-[#f6f8ff] px-3 py-1.5 text-[12px] font-semibold text-[#243b63]">
-          {{ selectedCategoryLabel }}
-        </span>
+      <div class="group-settings__stepper-container mb-8 mt-5">
+        <nav class="group-settings__nav-horizontal">
+          <button v-for="item in settingsNavItems" :key="item.id" type="button"
+            class="group-settings__nav-step-item"
+            :class="{ 'group-settings__nav-step-item--active': activeTab === item.id }" @click="onTabClick(item.id)">
+            <div class="group-settings__nav-step-circle"
+              :class="{ 'group-settings__nav-step-circle--active': activeTab === item.id }">
+              <Icon :name="item.icon" class="h-5 w-5" />
+            </div>
+            <div class="group-settings__nav-step-label-container">
+              <span class="group-settings__nav-step-label">{{ item.label }}</span>
+            </div>
+          </button>
+        </nav>
       </div>
     </section>
 
-    <div class="mx-auto max-w-[800px] space-y-5">
-      <!-- Join Requests Management Card (Visible for group owners/admins) -->
-      <CommunityGroupSettingsRequestsCard
-        :requests="requests"
-        :loading="loadingRequests"
-        @action="handleRequestAction"
-        @approve-all="handleApproveAll"
-      />
+    <div class="group-settings__content-container">
+      <div class="min-w-0 space-y-4">
+        <!-- Status alert -->
+        <div v-if="statusAlert" class="group-settings__alert mb-5"
+          :class="`group-settings__alert--${statusAlert.color}`" aria-live="polite">
+          <Icon :name="statusAlert.icon" class="h-5 w-5 mt-0.5" />
+          <div>
+            <p class="font-bold">{{ statusAlert.title }}</p>
+            <span>{{ statusAlert.description }}</span>
+          </div>
+        </div>
 
-      <!-- Group Members Management Card (Visible for group owners/admins) -->
-      <CommunityGroupSettingsMembersCard
-        :members="groupMembers"
-        :loading="loadingMembers"
-        @kick="handleKickMember"
-      />
-
-      <UForm
+        <UForm
+          v-if="activeTab === 'basics'"
           :state="draft"
           :validate="validateDraft"
           class="space-y-4"
           @submit="handleSave"
           @error="handleSaveError"
         >
-          <section id="basics" class="scroll-mt-24">
-            <CommunityGroupSettingsBasicsCard
-              v-model="draft"
-              :group-path="groupPath"
-            />
+          <section id="basics">
+            <CommunityGroupSettingsBasicsCard v-model="draft" />
+            <!-- Save Button at the bottom -->
+            <div class="flex justify-end pt-2">
+              <UButton
+                type="submit"
+                color="primary"
+                variant="soft"
+                size="lg"
+                :loading="isBusy"
+                :disabled="isSaveDisabled"
+                class="btn-primary rounded-full px-8 text-[14px] font-extrabold"
+              >
+                <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+                {{ $t("community.settings.finish.save") }}
+              </UButton>
+            </div>
           </section>
 
-          <section id="controls" class="scroll-mt-24">
+        </UForm>
+
+        <UForm
+          v-else-if="activeTab === 'controls'"
+          :state="draft"
+          :validate="validateDraft"
+          class="space-y-4"
+          @submit="handleSave"
+          @error="handleSaveError"
+        >
+          <section id="controls">
             <CommunityGroupSettingsControlsCard v-model="draft" />
           </section>
 
-          <section id="finish" class="scroll-mt-24">
-            <CommunitySettingsSectionCard
-              eyebrow="community.settings.finish.eyebrow"
-              title="community.settings.finish.title"
-              description="community.settings.finish.desc"
-              icon="i-ph-floppy-disk-back-bold"
+          <!-- Save Button at the bottom -->
+          <div class="flex justify-end pt-2">
+            <UButton
+              type="submit"
+              color="primary"
+              variant="soft"
+              size="lg"
+              :loading="isBusy"
+              :disabled="isSaveDisabled"
+              class="btn-primary rounded-full px-8 text-[14px] font-extrabold"
             >
-              <div class="flex flex-col gap-4">
-                <div class="rounded-[18px] bg-[#f8fbff] px-4 py-3 text-[13px] leading-6 text-slate-500">
-                  {{ $t('community.settings.finish.status', { enabled: enabledPolicies, total: totalPolicies, privacy: selectedPrivacyLabel.toLowerCase() }) }}
-                </div>
-
-                <UAlert
-                  v-if="statusAlert"
-                  :color="statusAlert.color"
-                  variant="subtle"
-                  :icon="statusAlert.icon"
-                  :title="statusAlert.title"
-                  :description="statusAlert.description"
-                  class="rounded-[20px]"
-                  aria-live="polite"
-                />
-
-                <div class="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <UButton
-                    :to="groupPath"
-                    color="neutral"
-                    variant="outline"
-                    size="xl"
-                    :disabled="isBusy"
-                    class="justify-center rounded-full"
-                  >
-                    <Icon name="i-ph-arrow-left-bold" class="mr-2 h-4 w-4" />
-                    {{ $t("community.settings.finish.back") }}
-                  </UButton>
-
-                  <UButton
-                    type="submit"
-                    color="primary"
-                    variant="solid"
-                    size="xl"
-                    :loading="isBusy"
-                    :disabled="isSaveDisabled"
-                    class="justify-center rounded-full px-8 text-[14px] font-extrabold shadow-[0_12px_24px_rgba(0,0,255,0.24)]"
-                  >
-                    <Icon name="i-ph-floppy-disk-bold" class="mr-2 h-4 w-4" />
-                    {{ $t("community.settings.finish.save") }}
-                  </UButton>
-                </div>
-              </div>
-            </CommunitySettingsSectionCard>
-          </section>
+              <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+              {{ $t("community.settings.finish.save") }}
+            </UButton>
+          </div>
         </UForm>
+
+        <UForm
+          v-else-if="activeTab === 'media'"
+          :state="draft"
+          :validate="validateDraft"
+          class="space-y-4"
+          @submit="handleSave"
+          @error="handleSaveError"
+        >
+          <section id="media">
+            <CommunityGroupSettingsMediaCard v-model="draft" :preview-group="previewGroup" />
+          </section>
+
+          <!-- Save Button at the bottom -->
+          <div class="flex justify-end pt-2">
+            <UButton
+              type="submit"
+              color="primary"
+              variant="soft"
+              size="lg"
+              :loading="isBusy"
+              :disabled="isSaveDisabled"
+              class="btn-primary rounded-full px-8 text-[14px] font-extrabold"
+            >
+              <Icon :name="isBusy ? 'i-ph-spinner-gap-bold' : 'i-ph-floppy-disk-bold'" class="mr-2 h-4 w-4" />
+              {{ $t("community.settings.finish.save") }}
+            </UButton>
+          </div>
+        </UForm>
+
+        <!-- Group Members Management Card -->
+        <section v-else-if="activeTab === 'members'" id="members">
+          <CommunityGroupSettingsMembersCard
+            :members="groupMembers"
+            :loading="loadingMembers"
+            @kick="handleKickMember"
+          />
+        </section>
+
+        <section v-else-if="activeTab === 'analytics'" id="analytics">
+          <CommunityGroupSettingsAnalyticCard
+            :analytics="groupAnalytics"
+            :period="analyticsPeriod"
+            :loading="analyticsLoading"
+            :error-message="analyticsError"
+            @update:period="setAnalyticsPeriod"
+          />
+        </section>
+
+        <section v-else-if="activeTab === 'delete'" id="delete">
+          <CommunityGroupSettingsDeleteCard @delete="handleDeleteGroup" />
+        </section>
+      </div>
     </div>
   </div>
 
-  <div v-else-if="status === 'error' || (status === 'success' && !group)" class="mx-auto max-w-[960px] pb-10 pt-4">
-    <section class="rounded-[30px] border border-[#dbe3f2] bg-white px-6 py-10 text-center shadow-[0_14px_34px_rgba(15,35,110,0.06)] sm:px-8 sm:py-16">
+  <div v-else-if="status === 'error' || (status === 'success' && !group)" class="mx-auto max-w-[960px] px-3 pb-10 pt-4 sm:px-5">
+    <section class="rounded-[18px] border border-[#e2e8f0] bg-white px-6 py-10 text-center shadow-[0_2px_12px_rgba(0,0,0,0.04)] sm:px-8 sm:py-16">
       <FoundationEmptyState
         icon="i-ph-gear-six-fill"
         :title="$t('community.settings.empty.title')"
@@ -141,36 +181,315 @@
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue"
 import CommunityGroupSettingsBasicsCard from "../components/GroupSettingsBasicsCard.vue"
 import CommunityGroupSettingsControlsCard from "../components/GroupSettingsControlsCard.vue"
-import CommunityGroupSettingsRequestsCard from "../components/GroupSettingsRequestsCard.vue"
+import CommunityGroupSettingsMediaCard from "../components/GroupSettingsMediaCard.vue"
 import CommunityGroupSettingsMembersCard from "../components/GroupSettingsMembersCard.vue"
-import CommunitySettingsSectionCard from "../components/SettingsSectionCard.vue"
+import CommunityGroupSettingsAnalyticCard from "../components/GroupSettingsAnalyticCard.vue"
+import CommunityGroupSettingsDeleteCard from "../components/GroupSettingsDeleteCard.vue"
 import { useCommunityGroupSettingPageVM } from "../../application/view-models/useCommunityGroupSettingPageVM"
 
-const { t } = useI18n()
 const {
   group,
   previewGroup,
   translatedGroupName,
-  memberCountLabel,
-  selectedPrivacyLabel,
-  selectedCategoryLabel,
   draft,
+  activeTab,
+  settingsNavItems,
   validateDraft,
   handleSave,
   handleSaveError,
+  handleDeleteGroup,
   groupPath,
   statusAlert,
   isBusy,
   isSaveDisabled,
-  enabledPolicies,
-  totalPolicies,
-  requests,
-  loadingRequests,
-  handleRequestAction,
-  handleApproveAll,
   groupMembers,
   loadingMembers,
   handleKickMember,
+  groupAnalytics,
+  analyticsPeriod,
+  analyticsLoading,
+  analyticsError,
+  setAnalyticsPeriod,
   appRoutes,
+  status,
 } = useCommunityGroupSettingPageVM()
+
+function onTabClick(tabId: string) {
+  activeTab.value = tabId
+  if (import.meta.client && window.innerWidth < 768) {
+    nextTick(() => {
+      const contentEl = document.querySelector(".group-settings__content-container")
+      if (contentEl) {
+        const yOffset = -70 // Sticky header height offset
+        const y = contentEl.getBoundingClientRect().top + window.scrollY + yOffset
+        window.scrollTo({ top: y, behavior: "smooth" })
+      }
+    })
+  }
+}
 </script>
+
+<style scoped>
+.group-settings__hero,
+.group-settings__nav-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.group-settings__hero {
+  padding: 20px;
+}
+
+.group-settings__title {
+  margin: 0;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.group-settings__desc {
+  margin: 0;
+  max-width: 760px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.group-settings__stepper-container {
+  position: relative;
+  z-index: 10;
+}
+
+.group-settings__nav-horizontal {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 10px;
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.group-settings__nav-step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  cursor: pointer;
+  padding: 10px 12px;
+  text-align: left;
+  transition: all 0.15s ease;
+  width: 100%;
+}
+
+.group-settings__nav-step-circle {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 800;
+  border: 2px solid #f1f5f9;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.group-settings__nav-step-circle--active {
+  background: #0000ff;
+  color: #ffffff;
+  border-color: #0000ff;
+  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+}
+
+.group-settings__nav-step-label-container {
+  min-width: 0;
+  text-align: left;
+}
+
+.group-settings__nav-step-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  transition: color 0.2s ease;
+}
+
+.group-settings__nav-step-item--active {
+  border-color: rgba(0, 0, 255, 0.16);
+  background: rgba(0, 0, 255, 0.05);
+}
+
+.group-settings__nav-step-item--active .group-settings__nav-step-label {
+  color: #0000ff;
+  font-weight: 800;
+}
+
+.group-settings__nav-step-item:hover {
+  border-color: rgba(0, 0, 255, 0.12);
+  background: rgba(0, 0, 255, 0.03);
+}
+
+.group-settings__nav-step-item:hover .group-settings__nav-step-circle:not(.group-settings__nav-step-circle--active) {
+  border-color: rgba(0, 0, 255, 0.12);
+  color: #0000ff;
+}
+
+@media (min-width: 768px) {
+  .group-settings__nav-horizontal {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+  }
+
+  .group-settings__nav-step-item {
+    flex: 0 1 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: auto;
+    min-width: 100px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+    text-align: center;
+  }
+
+  .group-settings__nav-step-item--active {
+    background: transparent;
+  }
+
+  .group-settings__nav-step-circle {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+    border-radius: 50%;
+    background: #ffffff;
+  }
+
+  .group-settings__nav-step-circle--active {
+    background: #ffffff;
+    color: #0000ff;
+    border-color: rgba(0, 0, 255, 0.18);
+    box-shadow: 0 4px 12px rgba(0, 0, 255, 0.14);
+  }
+
+  .group-settings__nav-step-label-container {
+    text-align: center;
+  }
+
+  .group-settings__nav-step-item--active .group-settings__nav-step-label {
+    color: #0f172a;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
+    text-decoration-color: #2563eb;
+  }
+
+  .group-settings__nav-step-item:hover {
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .group-settings__nav-step-item:hover .group-settings__nav-step-circle:not(.group-settings__nav-step-circle--active) {
+    border-color: rgba(0, 0, 255, 0.18);
+    color: #0000ff;
+    background: rgba(0, 0, 255, 0.04);
+  }
+}
+
+.group-settings__alert {
+  display: flex;
+  gap: 12px;
+  border: 1px solid #bfdbfe;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 14px 16px;
+}
+
+.group-settings__alert p {
+  margin: 0;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.group-settings__alert span {
+  display: block;
+  margin-top: 3px;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.group-settings__alert--success {
+  border-color: #bae6fd;
+  background: #f0f9ff;
+  color: #0284c7;
+}
+
+.group-settings__alert--error {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.group-settings__button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+
+.group-settings__button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.group-settings__button--secondary {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.group-settings__button--secondary:hover {
+  border-color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.group-settings__button--primary {
+  border: 1px solid #2563eb;
+  background: #0000ff;
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(0, 0, 255, 0.18);
+}
+
+.group-settings__button--primary:hover {
+  background: #0000d8;
+}
+
+.group-settings__button:disabled,
+.group-settings__button[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+</style>

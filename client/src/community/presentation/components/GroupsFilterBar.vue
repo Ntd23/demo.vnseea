@@ -37,19 +37,26 @@ defineProps<{
 <style scoped>
 .groups-filter-bar {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
-  padding: 16px 18px;
+  padding: 12px 14px 16px; /* Increased bottom padding to host the scrollbar */
   box-shadow: var(--shadow-sm);
+  overflow-x: scroll; /* Force scrollbar state to be active */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #94a3b8 #f1f5f9; /* Firefox */
 }
 
 .groups-filter-bar__tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px 10px;
+  flex-wrap: nowrap;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .groups-filter-bar__tab {
@@ -62,6 +69,7 @@ defineProps<{
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
+  white-space: nowrap;
   transition: color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
 }
 
@@ -80,8 +88,7 @@ defineProps<{
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 38px;
-  align-self: flex-start;
+  min-height: 36px;
   border-radius: 12px;
   background: var(--bg-brand);
   padding: 0 14px;
@@ -90,6 +97,8 @@ defineProps<{
   font-weight: 700;
   text-decoration: none;
   box-shadow: var(--shadow-brand);
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: transform var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
 }
 
@@ -100,13 +109,32 @@ defineProps<{
 
 @media (min-width: 768px) {
   .groups-filter-bar {
-    flex-direction: row;
-    align-items: center;
     justify-content: space-between;
+    overflow-x: visible;
+    padding: 16px 18px;
   }
+}
+</style>
 
-  .groups-filter-bar__create {
-    align-self: auto;
-  }
+<style>
+/* Global CSS block to style the webkit scrollbar without Vue scoped attribute restriction */
+.groups-filter-bar::-webkit-scrollbar {
+  height: 5px !important;
+  background-color: #f1f5f9 !important;
+  display: block !important;
+}
+
+.groups-filter-bar::-webkit-scrollbar-track {
+  background-color: #f1f5f9 !important;
+  border-radius: 999px !important;
+}
+
+.groups-filter-bar::-webkit-scrollbar-thumb {
+  background-color: #94a3b8 !important; /* Darker thumb color for guaranteed visibility */
+  border-radius: 999px !important;
+}
+
+.groups-filter-bar::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b !important;
 }
 </style>

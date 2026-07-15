@@ -92,7 +92,6 @@
         <UFormField class="new-product-field" :label="$t('pages.productEditor.locationLabel')">
           <GooglePlaceField
             v-model="locationModel"
-            :helper-text="$t('pages.productEditor.locationHelper')"
             require-coordinates
             :placeholder="$t('pages.productEditor.locationPlaceholder')"
           />

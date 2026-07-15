@@ -2,17 +2,6 @@
   <section class="rounded-[24px] border border-[#dbe3f2] bg-white p-6 shadow-[0_12px_30px_rgba(15,35,110,0.06)] transition-all hover:shadow-[0_16px_40px_rgba(15,35,110,0.09)]">
     <!-- Header with count and search input -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-      <div class="flex-1 min-w-0">
-        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0000ff]/70">
-          {{ t("community.settings.defaultEyebrow") }}
-        </p>
-        <h3 class="mt-2 text-[1.2rem] font-black tracking-[-0.03em] text-[#243b63]">
-          {{ t("community.settings.members.title") }}
-        </h3>
-        <p class="mt-1 text-[13px] text-slate-400">
-          {{ t("community.settings.members.desc") }}
-        </p>
-      </div>
 
       <div class="flex items-center gap-3 self-start sm:self-center">
         <!-- Search bar -->

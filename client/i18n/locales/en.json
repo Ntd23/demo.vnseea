@@ -5584,6 +5584,8 @@
       "actionCreateGroup": "Create group chat",
       "actionSettings": "Chat settings",
       "actionOpenMessages": "Open messages page",
+      "collapse": "Collapse",
+      "expand": "Expand",
       "content": "Content",
       "sendToLabel": "Send to:",
       "recipientPlaceholder": "Search recipients...",

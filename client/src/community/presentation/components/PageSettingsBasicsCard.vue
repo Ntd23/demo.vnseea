@@ -5,6 +5,7 @@
     :title="$t('community.pageSettings.basics.title')"
     :description="$t('community.pageSettings.basics.desc')"
     icon="i-ph-identification-card-bold"
+    :translate-text="false"
   >
     <template #trailing>
       <slot name="trailing" />

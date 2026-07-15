@@ -12,13 +12,13 @@
             {{ eyebrow ? $t(eyebrow) : '' }}
           </p>
           <h2 class="settings-section-card__title">
-            {{ $t(title) }}
+            {{ translateText ? $t(title) : title }}
           </h2>
           <p
             v-if="description"
             class="settings-section-card__desc"
           >
-            {{ $t(description) }}
+            {{ translateText ? $t(description) : description }}
           </p>
         </div>
       </div>
@@ -40,10 +40,12 @@ withDefaults(defineProps<{
   title: string
   description?: string
   icon?: string
+  translateText?: boolean
 }>(), {
   eyebrow: "community.settings.defaultEyebrow",
   description: "",
   icon: "i-ph-gear-six-bold",
+  translateText: true,
 })
 </script>
 

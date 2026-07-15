@@ -5564,6 +5564,8 @@
       "actionCreateGroup": "Tạo nhóm chat",
       "actionSettings": "Cài đặt",
       "actionOpenMessages": "Mở trang tin nhắn",
+      "collapse": "Thu gọn",
+      "expand": "Mở rộng",
       "content": "Nội dung",
       "sendToLabel": "Gửi đến:",
       "recipientPlaceholder": "Tìm người nhận...",
