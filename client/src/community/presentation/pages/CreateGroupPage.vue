@@ -1,6 +1,6 @@
 <!-- Description: Renders the create-group route with a heading-first shell and the existing ordered form fields, aligned to the legacy PHP group creation flow. -->
 <template>
-  <div class="mx-auto max-w-[1280px] space-y-5 px-4 pb-20 sm:px-6">
+  <div class="mx-auto max-w-[1280px] space-y-5 pb-20">
     <CommunityCreationForm
       v-model="draft"
       is-group

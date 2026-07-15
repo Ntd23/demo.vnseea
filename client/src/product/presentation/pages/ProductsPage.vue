@@ -1,7 +1,7 @@
 <!-- English description: Wowonder-parity marketplace product listing page backed by PHP product APIs. -->
 
 <template>
-  <div class="products-page mx-auto max-w-[1180px] px-3 pb-16 sm:px-4">
+  <div class="products-page mx-auto max-w-[1180px] pb-16">
     <section class="products-hero relative overflow-hidden">
       <div class="relative flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex min-w-0 items-center gap-3">
@@ -18,11 +18,6 @@
           </div>
         </div>
 
-        <NuxtLink to="/products" class="products-hero__link">
-          <Icon name="i-ph-shopping-bag-open-fill" class="h-5 w-5" />
-          <span>{{ $t("pages.productsPage.marketTitle") }}</span>
-          <Icon name="i-ph-arrow-left" class="h-4 w-4" />
-        </NuxtLink>
         <NuxtLink to="/my-products" class="products-hero__link">
           <Icon name="i-ph-shopping-bag-open-fill" class="h-5 w-5" />
           <span>{{ $t("pages.productsPage.myProducts") }}</span>
@@ -32,17 +27,17 @@
     </section>
 
     <section class="products-filter relative mt-3 border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
-      <div class="flex items-center gap-3">
+      <div class="products-filter__top">
         <div class="products-filter__search">
           <UInput v-model="search" class="w-full" icon="i-ph-magnifying-glass" size="lg"
             :placeholder="$t('pages.productsPage.searchPlaceholder')"
             :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[14px] font-medium' }" />
         </div>
 
-        <button type="button" class="products-filter__reset-icon" :aria-label="$t('pages.productsPage.resetFilters')"
-          @click="resetFilters">
-          <Icon name="i-ph-arrow-counter-clockwise" class="h-5 w-5" />
-        </button>
+        <NuxtLink :to="appRoutes.searchNearby" class="products-filter__nearby">
+          <Icon name="i-ph-map-pin-area-fill" class="h-5 w-5 shrink-0" />
+          <span>{{ $t("pages.productsPage.nearbyStoresButton") }}</span>
+        </NuxtLink>
       </div>
 
       <div class="products-filter__panel" :class="{ 'products-filter__panel--with-subcategory': hasSubCategories }">
@@ -104,12 +99,6 @@
               <Icon :name="product.icon" class="h-16 w-16 opacity-80" />
             </div>
           </NuxtLink>
-
-          <div
-            class="absolute left-2 top-2 max-w-[calc(100%-1rem)] rounded-[3px] bg-black/65 px-2 py-1 text-[11px] font-semibold text-white">
-            <a :href="`/products?c_id=${product.categoryId}`">{{ product.categoryLabel }}</a>
-            <span v-if="product.subCategoryLabel"> / {{ product.subCategoryLabel }}</span>
-          </div>
 
           <div v-if="!product.mine"
             class="market-product-overlay pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-t-[10px] px-10">
@@ -183,6 +172,7 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useProductMarketplace } from "../../application/composables/useProductMarketplace"
 
 const { t } = useI18n()
@@ -338,6 +328,39 @@ const {
   min-width: 0;
 }
 
+.products-filter__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.products-filter__nearby {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 0, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(0, 0, 255, 0.05);
+  color: var(--product-brand);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.products-filter__nearby:hover,
+.products-filter__nearby:focus-visible {
+  border-color: var(--product-brand);
+  background: var(--product-brand);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.18);
+}
+
 .products-filter__reset-icon {
   display: inline-flex;
   width: 48px;
@@ -412,6 +435,18 @@ const {
   .products-filter__panel,
   .products-filter__panel--with-subcategory {
     grid-template-columns: 1fr;
+  }
+
+  .products-filter__top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .products-filter__search {
+    grid-column: 1 / -1;
+  }
+
+  .products-filter__nearby {
+    width: 100%;
   }
 
   .products-filter__distance {

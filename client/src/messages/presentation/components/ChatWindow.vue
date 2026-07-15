@@ -140,6 +140,72 @@
         @delete-message="$emit('delete-message', $event)"
       />
 
+      <div v-if="productContextPending" class="chat-window-product-context" aria-live="polite">
+        <div class="chat-window-product-skeleton">
+          <USkeleton class="chat-window-product-skeleton__image" />
+          <div class="chat-window-product-skeleton__copy">
+            <USkeleton class="chat-window-product-skeleton__title" />
+            <USkeleton class="chat-window-product-skeleton__price" />
+          </div>
+        </div>
+      </div>
+
+      <div v-else-if="productCard" class="chat-window-product-context">
+        <div class="chat-window-product-card">
+          <NuxtLink
+            :to="productCard.href"
+            class="chat-window-product-card__link"
+          >
+            <div class="chat-window-product-card__media">
+              <NuxtImg
+                v-if="productCard.imageUrl && !productImageFailed"
+                :src="productCard.imageUrl"
+                :alt="productCard.title"
+                class="chat-window-product-card__image"
+                @error="productImageFailed = true"
+              />
+              <Icon v-else name="i-ph-package-bold" class="chat-window-product-card__fallback" />
+            </div>
+
+            <div class="chat-window-product-card__copy">
+              <p class="chat-window-product-card__title">{{ productCard.title }}</p>
+              <p class="chat-window-product-card__price">{{ productCard.price }}</p>
+            </div>
+
+            <Icon name="i-ph-arrow-square-out-bold" class="chat-window-product-card__external" />
+          </NuxtLink>
+
+          <UTooltip :text="$t('pages.productsPage.removeProductFromMessage')">
+            <UButton
+              type="button"
+              color="neutral"
+              variant="ghost"
+              icon="i-ph-x-bold"
+              class="chat-window-product-card__close"
+              :aria-label="$t('pages.productsPage.removeProductFromMessage')"
+              @click="$emit('dismiss-product-context')"
+            />
+          </UTooltip>
+        </div>
+
+        <div v-if="productSuggestions?.length" class="chat-window-product-suggestions">
+          <p class="chat-window-product-suggestions__label">
+            {{ $t("pages.productsPage.productQuickQuestions") }}
+          </p>
+          <div class="chat-window-product-suggestions__scroller">
+            <button
+              v-for="suggestion in productSuggestions"
+              :key="suggestion"
+              type="button"
+              class="chat-window-product-suggestions__item"
+              @click="$emit('send-product-suggestion', suggestion)"
+            >
+              {{ suggestion }}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div v-if="replyTarget" class="chat-window-reply">
         <div class="chat-window-reply__bar" />
         <div class="chat-window-reply__copy">
@@ -219,9 +285,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
-import type { MessageComposerDraft, MessageContact, MessageGroupDetails, MessageItem, MessageTabKey } from "../../domain/types/messages.types"
+import type { MessageComposerDraft, MessageContact, MessageGroupDetails, MessageItem, MessageProductCard, MessageTabKey } from "../../domain/types/messages.types"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import MessagesChatInput from "./ChatInput.vue"
 import MessagesChatMessageList from "./ChatMessageList.vue"
@@ -246,6 +312,9 @@ const props = defineProps<{
   callActionPending?: boolean
   userDetailDocked?: boolean
   threadKey?: string
+  productCard?: MessageProductCard | null
+  productContextPending?: boolean
+  productSuggestions?: string[]
 }>()
 
 const { t } = useI18n()
@@ -264,9 +333,16 @@ const emit = defineEmits<{
   "reply-message": [message: MessageItem]
   "delete-message": [message: MessageItem]
   "clear-reply": []
+  "send-product-suggestion": [text: string]
+  "dismiss-product-context": []
 }>()
 
 const inputModel = ref("")
+const productImageFailed = ref(false)
+
+watch(() => props.productCard?.imageUrl, () => {
+  productImageFailed.value = false
+})
 
 const headerAvatarUrl = computed(() =>
   props.groupDetails?.avatarUrl || props.contact?.avatarUrl || "",
@@ -431,5 +507,186 @@ function handleStartCall(type: MessageCallType) {
   height: 34px !important;
   justify-content: center;
   border-radius: 999px !important;
+}
+
+.chat-window-product-context {
+  flex-shrink: 0;
+  border-top: 1px solid #e7ecf3;
+  background: #f8faff;
+  padding: 10px 12px;
+}
+
+.chat-window-product-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #dfe6f1;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgb(15 23 42 / 5%);
+}
+
+.chat-window-product-card__link {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  grid-template-columns: 52px minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 44px 8px 8px;
+  text-decoration: none;
+}
+
+.chat-window-product-card__media {
+  display: flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #eef2ff;
+  color: var(--color-primary-600, #4f46e5);
+}
+
+.chat-window-product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-window-product-card__fallback {
+  width: 24px;
+  height: 24px;
+}
+
+.chat-window-product-card__copy {
+  min-width: 0;
+}
+
+.chat-window-product-card__title {
+  overflow: hidden;
+  color: #172033;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-window-product-card__price {
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--color-primary-600, #4f46e5);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-window-product-card__external {
+  width: 18px;
+  height: 18px;
+  color: #64748b;
+}
+
+.chat-window-product-card__close {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 32px !important;
+  height: 32px !important;
+  transform: translateY(-50%);
+  justify-content: center;
+  border-radius: 999px !important;
+}
+
+.chat-window-product-suggestions {
+  min-width: 0;
+  margin-top: 9px;
+}
+
+.chat-window-product-suggestions__label {
+  margin-bottom: 6px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.chat-window-product-suggestions__scroller {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.chat-window-product-suggestions__item {
+  flex: 0 0 auto;
+  max-width: min(78vw, 300px);
+  border: 1px solid #dbe4f2;
+  border-radius: 999px;
+  background: #fff;
+  padding: 7px 11px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.25;
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+  white-space: nowrap;
+}
+
+.chat-window-product-suggestions__item:hover {
+  border-color: var(--color-primary-300, #a5b4fc);
+  background: var(--color-primary-50, #eef2ff);
+  color: var(--color-primary-700, #4338ca);
+}
+
+.chat-window-product-skeleton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #fff;
+  padding: 8px;
+}
+
+.chat-window-product-skeleton__image {
+  width: 52px !important;
+  height: 52px !important;
+  flex: 0 0 52px;
+  border-radius: 10px !important;
+}
+
+.chat-window-product-skeleton__copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.chat-window-product-skeleton__title {
+  width: min(220px, 70%) !important;
+  height: 15px !important;
+}
+
+.chat-window-product-skeleton__price {
+  width: 92px !important;
+  height: 13px !important;
+  margin-top: 8px;
+}
+
+@media (min-width: 768px) {
+  .chat-window-product-context {
+    padding-inline: 16px;
+  }
+
+  .chat-window-product-suggestions__scroller {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
 }
 </style>

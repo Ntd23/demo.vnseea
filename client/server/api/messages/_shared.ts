@@ -416,6 +416,7 @@ const buildDisplayName = (entity: BackendEntity) => {
 }
 
 const MESSAGE_REPLY_PREFIX = "__VNSEEA_MINI_REPLY__:"
+const MESSAGE_PRODUCT_PREFIX = "__VNSEEA_PRODUCT__:"
 
 const normalizeInlineMessageText = (value = "") =>
   value
@@ -459,6 +460,29 @@ const parseReplyMessagePreview = (value: string) => {
     author: normalizeInlineMessageText(author),
     quote: normalizeInlineMessageText(quote),
     body: normalizeInlineMessageText(bodyLines.join("\n")),
+  }
+}
+
+const parseProductMessagePreview = (value: string) => {
+  const normalized = normalizeInlineMessageText(value)
+  const [productLine, ...bodyLines] = normalized.split("\n")
+
+  if (!productLine?.startsWith(MESSAGE_PRODUCT_PREFIX)) {
+    return null
+  }
+
+  try {
+    const payload = JSON.parse(decodeURIComponent(productLine.slice(MESSAGE_PRODUCT_PREFIX.length))) as {
+      title?: string
+    }
+
+    return {
+      title: normalizeInlineMessageText(payload.title || ""),
+      body: normalizeInlineMessageText(bodyLines.join("\n")),
+    }
+  }
+  catch {
+    return null
   }
 }
 
@@ -514,6 +538,11 @@ const buildContactPreview = (
   const senderName = buildContactPreviewSender(message, currentUserId, fallbackName)
   const mediaPreview = buildMediaPreviewLabel(senderName, inferMediaType(message))
   const replyMeta = parseReplyMessagePreview(normalizedText)
+  const productMeta = parseProductMessagePreview(normalizedText)
+
+  if (productMeta) {
+    return productMeta.body || productMeta.title
+  }
 
   if (replyMeta) {
     const replyAuthor = replyMeta.author || ""

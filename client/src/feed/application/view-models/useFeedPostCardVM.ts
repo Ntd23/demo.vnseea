@@ -356,6 +356,7 @@ export function useFeedPostCardVM(
   function onOpenMedia(index: number) {
     currentMediaIndex.value = index
     lightboxOpen.value = true
+    void refreshComments()
   }
 
   async function submitComment(payload: FeedCommentSubmitPayload) {

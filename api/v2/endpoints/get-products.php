@@ -18,13 +18,20 @@ $options['sub_id'] = (!empty($_POST['sub_id'])) ? (int) $_POST['sub_id'] : 0;
 $search_keyword = (!empty($_POST['keyword'])) ? trim($_POST['keyword']) : '';
 $options['keyword'] = $search_keyword;
 $requested_distance = (!empty($_POST['distance']) && is_numeric($_POST['distance'])) ? (float) $_POST['distance'] : 0;
-$can_filter_distance = (
-    $requested_distance > 0
-    && !empty($wo['loggedin'])
-    && !empty($wo['user']['lat'])
-    && !empty($wo['user']['lng'])
+$has_user_coordinates = (
+    !empty($wo['loggedin'])
+    && isset($wo['user']['lat'], $wo['user']['lng'])
     && is_numeric($wo['user']['lat'])
     && is_numeric($wo['user']['lng'])
+    && (float) $wo['user']['lat'] >= -90
+    && (float) $wo['user']['lat'] <= 90
+    && (float) $wo['user']['lng'] >= -180
+    && (float) $wo['user']['lng'] <= 180
+    && ((float) $wo['user']['lat'] != 0 || (float) $wo['user']['lng'] != 0)
+);
+$can_filter_distance = (
+    $requested_distance > 0
+    && $has_user_coordinates
 );
 $options['length'] = $can_filter_distance ? $requested_distance : '';
 $options['order_by'] = (!empty($_POST['order_by']) && in_array($_POST['order_by'], array('price_low', 'price_high'))) ? $_POST['order_by'] : '';
@@ -136,5 +143,5 @@ $response_data = array(
     'products' => $products,
     'products_categories' => $wo['products_categories'],
     'products_sub_categories' => $wo['products_sub_categories'],
-    'distance_filter_available' => $can_filter_distance ? 1 : 0
+    'distance_filter_available' => $has_user_coordinates ? 1 : 0
 );

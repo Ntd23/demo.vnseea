@@ -114,7 +114,7 @@ async function handleOfferSaved() {
   flex-direction: column;
   gap: 18px;
   margin: 0 auto;
-  padding: 18px 12px 40px;
+  /* padding: 18px 12px 40px; */
 }
 
 .offers-page__hero {

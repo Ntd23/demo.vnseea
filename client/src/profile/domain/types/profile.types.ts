@@ -48,7 +48,9 @@ export interface ProfileApiResponse {
   headline: string
   bio: string
   coverImage: string
+  coverPostId: number
   avatarUrl?: string
+  avatarPostId: number
   avatarText: string
   verified: boolean
   isOwner: boolean

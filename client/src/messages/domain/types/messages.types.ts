@@ -71,6 +71,14 @@ export type MessageGroupCreateDraft = {
   avatar?: File | null
 }
 
+export type MessageProductCard = {
+  id: string
+  title: string
+  imageUrl?: string
+  price: string
+  href: string
+}
+
 export type MessageGroupUpdateDraft = {
   groupId: number
   name?: string

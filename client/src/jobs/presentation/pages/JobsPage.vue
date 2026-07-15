@@ -1,6 +1,6 @@
 <!-- English description: Renders the backend-backed jobs directory in a compact list-first layout aligned with the legacy PHP jobs page. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1120px] space-y-4 pb-10">
     <JobsFilters
       v-model:search="vm.searchQuery.value"
       v-model:selected-type="vm.selectedType.value"

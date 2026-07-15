@@ -679,6 +679,36 @@ function Wo_UserData($user_id, $password = true)
                 $fetched_data = mysqli_fetch_assoc($sql);
             }
         } else {
+            // Older cached user records may not contain the post IDs introduced for
+            // profile media. Enrich those records before returning so clients can
+            // open the avatar/cover post detail instead of always falling back to
+            // the standalone image viewer.
+            $profile_media_cache_updated = false;
+            if (!array_key_exists('avatar_post_id', $fetched_data)) {
+                $profile_media_cache_updated = true;
+                $fetched_data['avatar_post_id'] = 0;
+                $query_avatar = mysqli_query($sqlConnect, " SELECT `id` FROM " . T_POSTS . " WHERE `postType` = 'profile_picture' AND `user_id` = '{$user_id}' ORDER BY `id` DESC LIMIT 1");
+                if (mysqli_num_rows($query_avatar)) {
+                    $query_avatar_data = mysqli_fetch_assoc($query_avatar);
+                    if (!empty($query_avatar_data['id'])) {
+                        $fetched_data['avatar_post_id'] = $query_avatar_data['id'];
+                    }
+                }
+            }
+            if (!array_key_exists('cover_post_id', $fetched_data)) {
+                $profile_media_cache_updated = true;
+                $fetched_data['cover_post_id'] = 0;
+                $query_cover = mysqli_query($sqlConnect, " SELECT `id` FROM " . T_POSTS . " WHERE `postType` = 'profile_cover_picture' AND `user_id` = '{$user_id}' ORDER BY `id` DESC LIMIT 1");
+                if (mysqli_num_rows($query_cover)) {
+                    $query_cover_data = mysqli_fetch_assoc($query_cover);
+                    if (!empty($query_cover_data['id'])) {
+                        $fetched_data['cover_post_id'] = $query_cover_data['id'];
+                    }
+                }
+            }
+            if ($profile_media_cache_updated) {
+                cache($user_id, 'users', 'write', $fetched_data);
+            }
             return $fetched_data;
         }
     } else {

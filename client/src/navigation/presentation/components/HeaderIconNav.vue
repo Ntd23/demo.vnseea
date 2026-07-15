@@ -10,55 +10,46 @@
       :aria-label="$t(item.label)"
     >
       <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="icon-nav__icon" />
-      <span
-        v-if="item.logoBadge"
-        class="icon-nav__logo-badge"
-      >
-        {{ item.logoBadge }}
-      </span>
       <div v-if="item.active" class="icon-nav__indicator" />
     </NuxtLink>
   </nav>
 </template>
 
 <script setup lang="ts">
-import { useNavigationGeneralStore } from "../../application/stores/useNavigationGeneralStore"
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 
 const route = useRoute()
-const navigationGeneralStore = useNavigationGeneralStore()
-
-const videoBadge = computed(() => {
-  const count = navigationGeneralStore.summary.videoCount ?? 0
-  if (count <= 0) return ""
-  if (count > 100) return "99+"
-  return String(count)
-})
 
 const items = computed(() => [
   {
-    label: 'navigation.headerIconNav.home',
-    to: '/home',
-    icon: 'i-ph-house-fill',
-    active: route.path === '/' || route.path === '/home',
+    label: "navigation.headerIconNav.home",
+    to: appRoutes.feed,
+    icon: "i-ph-newspaper-clipping-fill",
+    active: route.path === appRoutes.home || route.path === appRoutes.feed,
   },
   {
-    label: 'navigation.headerIconNav.photos',
-    to: '/photos',
-    icon: 'i-ph-image-fill',
-    active: route.path === '/photos',
+    label: "navigation.headerIconNav.nearby",
+    to: appRoutes.searchNearby,
+    icon: "i-ph-map-pin-fill",
+    active: route.path === appRoutes.searchNearby,
   },
   {
-    label: 'navigation.headerIconNav.reels',
-    to: '/reels',
-    icon: 'i-ph-film-strip-fill',
-    active: route.path === '/reels',
-    logoBadge: videoBadge.value,
+    label: "navigation.headerIconNav.photos",
+    to: appRoutes.photos,
+    icon: "i-ph-image-fill",
+    active: route.path === appRoutes.photos,
   },
   {
-    label: 'navigation.headerIconNav.movies',
-    to: '/movies',
-    icon: 'i-ph-video-camera-fill',
-    active: route.path === '/movies',
+    label: "navigation.headerIconNav.reels",
+    to: appRoutes.reels,
+    icon: "i-ph-video-camera-fill",
+    active: route.path === appRoutes.reels,
+  },
+  {
+    label: "navigation.headerIconNav.products",
+    to: appRoutes.products,
+    icon: "i-ph-storefront-fill",
+    active: route.path === appRoutes.products,
   },
 ])
 </script>
@@ -124,24 +115,6 @@ const items = computed(() => [
 
 .icon-nav__item--active .icon-nav__label {
   font-weight: 700;
-}
-
-.icon-nav__logo-badge {
-  position: absolute;
-  right: 12px;
-  top: 2px;
-  display: inline-flex;
-  min-width: 16px;
-  height: 16px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  background: #0000ff;
-  padding: 0 3px;
-  font-size: 9px;
-  font-weight: 800;
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(0, 0, 255, 0.25);
 }
 
 .icon-nav__indicator {

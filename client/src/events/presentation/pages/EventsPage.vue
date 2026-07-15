@@ -1,6 +1,6 @@
 <!-- Description: Renders the backend-backed events directory using the legacy PHP tab order and list-first layout. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1120px] space-y-4 pb-10">
     <section class="wow-content">
       <div class="wo-page-heading wo-page-heading--big">
         <span class="wo-page-heading__icon">

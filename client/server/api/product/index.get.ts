@@ -15,6 +15,11 @@ export default defineEventHandler(async (event) => {
   const sellerUserIdValue = Array.isArray(query.sellerUserId) ? query.sellerUserId[0] : query.sellerUserId
   const sellerUserId = String(sellerUserIdValue || "")
   const sort = String(query.sort || "")
+  const distanceValue = Array.isArray(query.distance) ? query.distance[0] : query.distance
+  const parsedDistance = Number(distanceValue)
+  const requestedDistance = Number.isFinite(parsedDistance) && parsedDistance > 0
+    ? Math.min(300, parsedDistance)
+    : undefined
   const mineOnly = String(Array.isArray(query.mine) ? query.mine[0] : query.mine || "0") === "1"
   const normalizedSellerUserId = /^\d+$/.test(sellerUserId) ? sellerUserId : ""
 
@@ -34,10 +39,8 @@ export default defineEventHandler(async (event) => {
     keyword: query.keyword || query.q,
     category_id: /^\d+$/.test(category) ? category : undefined,
     sub_id: /^\d+$/.test(subCategory) ? subCategory : undefined,
-    // The PHP distance query requires a logged-in user with valid lat/lng.
-    // The endpoint returns whether distance is available, while the client applies
-    // local filtering only for products that include a computed distance.
-    distance: undefined,
+    // PHP uses the authenticated account coordinates saved from Google Maps.
+    distance: requestedDistance,
     order_by: ["price_low", "price_high"].includes(sort) ? sort : undefined,
   })
 

@@ -1,6 +1,6 @@
 <!-- Description: Renders the backend-backed event creation flow with the same field order as the PHP create-event screen. -->
 <template>
-  <div class="mx-auto max-w-[1120px] px-3 pb-10 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1120px] pb-10">
     <EventsCreateEventComposer />
   </div>
 </template>

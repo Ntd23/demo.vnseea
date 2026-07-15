@@ -1,6 +1,6 @@
 <!-- Description: Renders the page settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP page settings structure. -->
 <template>
-  <div v-if="page && previewPage" class="page-settings mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+  <div v-if="page && previewPage" class="page-settings mx-auto max-w-[1120px] space-y-4 pb-10">
     <section class="page-settings__hero border-b border-slate-100 pb-8 pt-4">
       <div class="flex items-center justify-between">
         <div>
