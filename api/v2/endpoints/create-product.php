@@ -39,11 +39,11 @@ if (empty($error_code)) {
     $product_description = Wo_Secure($_POST['product_description']);
     $product_location    = Wo_Secure($_POST['product_location']);
     $product_price       = Wo_Secure($_POST['product_price']);
-    $lat       = (!empty($_POST['lat'])) ? Wo_Secure($_POST['lat']) : 0;
-    $lng       = (!empty($_POST['lng'])) ? Wo_Secure($_POST['lng']) : 0;
+    $lat       = (isset($_POST['lat']) && is_numeric($_POST['lat'])) ? Wo_Secure($_POST['lat']) : 0;
+    $lng       = (isset($_POST['lng']) && is_numeric($_POST['lng'])) ? Wo_Secure($_POST['lng']) : 0;
     $product_type        = (!empty($_POST['product_type'])) ? 1 : 0;
-    
-    if ($product_price == '0.00') {
+
+    if (is_numeric($product_price) && (float) $product_price <= 0) {
         $error_code    = 4;
         $error_message = 'Please choose a price for your product';
     } else if (!is_numeric($product_price)) {
@@ -66,22 +66,34 @@ if (empty($error_code)) {
             }
         }
     }
-    
+
+    $currency = null;
     if (empty($error_code)) {
-        $currency = 0;
-        if (isset($_POST['currency'])) {
-            if (in_array($_POST['currency'], array_keys($wo['currencies']))) {
-                $currency = Wo_Secure($_POST['currency']);
-            } else {
-                $input_curr = trim($_POST['currency']);
-                foreach ($wo['currencies'] as $key => $currency_data) {
-                    if (strcasecmp($currency_data['text'], $input_curr) === 0 || $currency_data['symbol'] === $input_curr) {
-                        $currency = $key;
-                        break;
-                    }
+        $input_currency = isset($_POST['currency']) ? trim((string) $_POST['currency']) : '';
+
+        if ($input_currency !== '') {
+            foreach ($wo['currencies'] as $key => $currency_data) {
+                $currency_code = isset($currency_data['text']) ? trim((string) $currency_data['text']) : '';
+                $currency_symbol = isset($currency_data['symbol']) ? trim((string) $currency_data['symbol']) : '';
+
+                if (
+                    (string) $key === $input_currency
+                    || ($currency_code !== '' && strcasecmp($currency_code, $input_currency) === 0)
+                    || ($currency_symbol !== '' && $currency_symbol === $input_currency)
+                ) {
+                    $currency = $key;
+                    break;
                 }
             }
         }
+
+        if ($currency === null) {
+            $error_code    = 7;
+            $error_message = 'Please choose a valid currency for your product';
+        }
+    }
+
+    if (empty($error_code)) {
         $sub_category = '';
         if (!empty($_POST['product_sub_category']) && !empty($wo['products_sub_categories'][$_POST['product_category']])) {
             foreach ($wo['products_sub_categories'][$_POST['product_category']] as $key => $value) {
@@ -105,7 +117,7 @@ if (empty($error_code)) {
             'type' => $product_type,
             'location' => $product_location,
             'active' => 1,
-            'currency' => $currency,
+            'currency' => Wo_Secure($currency),
             'lat' => $lat ,
             'lng' => $lng,
             'units' => $units,

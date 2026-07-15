@@ -60,9 +60,9 @@
           :class="{ 'profile-page__cover--viewable': profile.coverImage }"
           :role="profile.coverImage ? 'button' : undefined"
           :tabindex="profile.coverImage ? 0 : undefined"
-          @click="openProfileMediaViewer('cover')"
-          @keydown.enter="openProfileMediaViewer('cover')"
-          @keydown.space.prevent="openProfileMediaViewer('cover')"
+          @click="openProfileCoverDetail"
+          @keydown.enter="openProfileCoverDetail"
+          @keydown.space.prevent="openProfileCoverDetail"
         >
           <img
             v-if="profile.coverImage"
@@ -73,22 +73,29 @@
           <div v-else class="profile-page__cover-placeholder" />
           <div class="profile-page__cover-shade" />
           <div v-if="profile.isOwner" class="profile-page__cover-actions">
-            <button
+            <label
               class="profile-page__cover-btn"
-              type="button"
-              :disabled="profileMediaUploading === 'cover'"
-              @click.stop="openProfileMediaSelector('cover')"
+              :class="{ 'profile-page__cover-btn--disabled': Boolean(profileMediaUploading) }"
+              @click.stop
             >
               <Icon
                 :name="
                   profileMediaUploading === 'cover'
                     ? 'i-ph-spinner-gap-bold'
-                    : 'i-ph-camera-plus-duotone'
+                    : 'i-ph-images-square-duotone'
                 "
                 class="h-4 w-4"
               />
-              <span>Cover</span>
-            </button>
+              <span>{{ $t("pages.profilePage.editCover") }}</span>
+              <input
+                type="file"
+                class="profile-page__cover-file"
+                accept="image/*"
+                :disabled="Boolean(profileMediaUploading)"
+                @click.stop
+                @change="event => handleProfileMediaChange('cover', event)"
+              />
+            </label>
           </div>
         </div>
 
@@ -96,13 +103,14 @@
         <div class="profile-page__identity-bar">
           <!-- Avatar -->
           <div
+            ref="avatarTriggerRef"
             class="profile-page__avatar-wrap"
-            :class="{ 'profile-page__avatar-wrap--viewable': profile.avatarUrl }"
-            :role="profile.avatarUrl ? 'button' : undefined"
-            :tabindex="profile.avatarUrl ? 0 : undefined"
-            @click="openProfileMediaViewer('avatar')"
-            @keydown.enter="openProfileMediaViewer('avatar')"
-            @keydown.space.prevent="openProfileMediaViewer('avatar')"
+            :class="{ 'profile-page__avatar-wrap--viewable': profile.avatarUrl || profile.isOwner }"
+            :role="profile.avatarUrl || profile.isOwner ? 'button' : undefined"
+            :tabindex="profile.avatarUrl || profile.isOwner ? 0 : undefined"
+            @click="handleAvatarClick"
+            @keydown.enter="handleAvatarClick"
+            @keydown.space.prevent="handleAvatarClick"
           >
             <UAvatar
               :src="profile.avatarUrl"
@@ -113,28 +121,14 @@
                 fallback: 'text-white font-black text-3xl',
               }"
             />
-            <button
-              v-if="profile.isOwner"
-              class="profile-page__avatar-btn"
-              type="button"
-              :disabled="profileMediaUploading === 'avatar'"
-              @click.stop="openProfileMediaSelector('avatar')"
-            >
-              <Icon
-                :name="
-                  profileMediaUploading === 'avatar'
-                    ? 'i-ph-spinner-gap-bold'
-                    : 'i-ph-camera-plus-duotone'
-                "
-                class="h-4 w-4"
-              />
-            </button>
           </div>
 
           <!-- Name + meta -->
           <div class="profile-page__identity-meta">
             <div class="profile-page__name-row">
-              <h1 class="text-label-primary">{{ profile.displayName }}</h1>
+              <h2 class="text-label-primary" style="font-size: 1.5rem; font-weight: 700;">
+                {{ profile.displayName }}
+              </h2>
               <UBadge
                 v-if="profile.verified"
                 color="primary"
@@ -361,6 +355,52 @@
                 </div>
               </button>
             </div>
+          </div>
+        </Transition>
+      </Teleport>
+
+      <Teleport to="body">
+        <Transition
+          enter-active-class="transition duration-150 ease-out"
+          enter-from-class="opacity-0 scale-95"
+          enter-to-class="opacity-100 scale-100"
+          leave-active-class="transition duration-100 ease-in"
+          leave-from-class="opacity-100 scale-100"
+          leave-to-class="opacity-0 scale-95"
+        >
+          <div
+            v-if="avatarMenuOpen"
+            ref="avatarMenuRef"
+            class="profile-avatar-menu"
+            :style="avatarMenuStyle"
+            role="menu"
+          >
+            <span class="profile-avatar-menu__arrow" aria-hidden="true" />
+            <button
+              v-if="profile.avatarUrl"
+              type="button"
+              class="profile-avatar-menu__item"
+              role="menuitem"
+              @click="handleAvatarMenuAction('view')"
+            >
+              <Icon name="i-ph-identification-card-duotone" class="h-6 w-6" />
+              <span>{{ $t("pages.profilePage.viewAvatar") }}</span>
+            </button>
+            <button
+              v-if="profile.isOwner"
+              type="button"
+              class="profile-avatar-menu__item"
+              role="menuitem"
+              :disabled="profileMediaUploading === 'avatar'"
+              @click="handleAvatarMenuAction('choose')"
+            >
+              <Icon
+                :name="profileMediaUploading === 'avatar' ? 'i-ph-spinner-gap-bold' : 'i-ph-image-square-duotone'"
+                class="h-6 w-6"
+                :class="{ 'animate-spin': profileMediaUploading === 'avatar' }"
+              />
+              <span>{{ $t("pages.profilePage.chooseAvatar") }}</span>
+            </button>
           </div>
         </Transition>
       </Teleport>
@@ -959,13 +999,60 @@
       accept="image/*"
       @change="event => handleProfileMediaChange('avatar', event)"
     />
-    <input
-      ref="profileCoverInput"
-      type="file"
-      class="hidden"
-      accept="image/*"
-      @change="event => handleProfileMediaChange('cover', event)"
+    <ProfileImageCropModal
+      v-if="profileCropDraft"
+      :open="true"
+      :file="profileCropDraft.file"
+      :kind="profileCropDraft.kind"
+      @cancel="closeProfileCropper"
+      @confirm="uploadCroppedProfileMedia"
     />
+    <ClientOnly>
+      <FeedShareModal
+        v-if="profileLightboxPost"
+        :open="profileLightboxShareOpen"
+        :share-url="profileLightboxShareUrl"
+        :post="{
+          id: profileLightboxPost.id,
+          author: profileLightboxPost.author,
+          text: profileLightboxPost.text,
+          authorAvatar: profileLightboxPost.authorAvatarUrl,
+          authorVerified: profileLightboxPost.authorVerified,
+        }"
+        @close="profileLightboxShareOpen = false"
+        @shared="handleProfileLightboxShared"
+      />
+      <FeedLightboxViewer
+        v-if="profileLightboxPost"
+        :open="profileLightboxOpen"
+        :items="profileLightboxMediaItems"
+        :current-index="profileLightboxMediaIndex"
+        :title="profileLightboxPost.text || $t('feed.postCard.lightboxTitle')"
+        :author="profileLightboxPost.author"
+        :author-avatar-url="profileLightboxPost.authorAvatarUrl"
+        :author-path="profileLightboxPost.authorPath"
+        :caption="profileLightboxPost.text"
+        :time-label="profileLightboxPost.time"
+        :like-count="profileLightboxLikesCount"
+        :comment-count="profileLightboxCommentsCount"
+        :share-count="profileLightboxSharesCount"
+        :comments="profileLightboxComments"
+        :comments-pending="profileLightboxCommentsPending"
+        :comment-action-repository="profileLightboxCommentRepository"
+        :current-user-name="profileLightboxAuthStore.user?.name"
+        :current-user-avatar-url="profileLightboxAuthStore.user?.avatarUrl"
+        :submitting-comment="profileLightboxCommenting"
+        :selected-reaction="profileLightboxReaction"
+        @close="profileLightboxOpen = false"
+        @change="profileLightboxMediaIndex = $event"
+        @share="profileLightboxShareOpen = true"
+        @download="downloadProfileLightboxMedia"
+        @like="toggleProfileLightboxLike"
+        @react="reactToProfileLightboxPost"
+        @comment="openProfileLightboxComments"
+        @submit-comment="submitProfileLightboxComment"
+      />
+    </ClientOnly>
     <Teleport to="body">
       <div
         v-if="profileMediaViewer"
@@ -996,8 +1083,14 @@
 <script setup lang="ts">
 import FeedPostCard from "../../../feed/presentation/components/PostCard.vue";
 import FeedPublisherBox from "../../../feed/presentation/components/FeedPublisherBox.vue";
+import FeedLightboxViewer from "../../../feed/presentation/components/LightboxViewer.vue";
+import FeedShareModal from "../../../feed/presentation/components/ShareModal.vue";
+import { useFeedPostCardVM } from "../../../feed/application/view-models/useFeedPostCardVM";
+import { createApiFeedRepository } from "../../../feed/infrastructure/repositories/ApiFeedRepository";
+import type { FeedPostRecord } from "../../../feed/domain/types/feed.types";
 import FoundationEmptyState from "../../../foundation/presentation/components/EmptyState.vue";
 import { useProfileVM } from "../../application/composables/useProfileVM";
+import ProfileImageCropModal from "../components/ProfileImageCropModal.vue";
 
 const route = useRoute();
 
@@ -1052,13 +1145,42 @@ const {
 const moreOpen = ref(false);
 const moreTriggerRef = ref<HTMLElement | null>(null);
 const moreDropdownStyle = ref<Record<string, string>>({});
+const avatarMenuOpen = ref(false);
+const avatarTriggerRef = ref<HTMLElement | null>(null);
+const avatarMenuRef = ref<HTMLElement | null>(null);
+const avatarMenuStyle = ref<Record<string, string>>({});
 const profileLoadMoreSentinel = ref<HTMLElement | null>(null);
 const profileAvatarInput = ref<HTMLInputElement | null>(null);
-const profileCoverInput = ref<HTMLInputElement | null>(null);
 const profileMediaUploading = ref<"avatar" | "cover" | null>(null);
 const profileMediaViewer = ref<{ src: string; alt: string } | null>(null);
+const profileCropDraft = ref<{ kind: "avatar" | "cover"; file: File } | null>(null);
+const profileLightboxPost = ref<FeedPostRecord | null>(null);
 const toast = useToast();
 const { t } = useI18n();
+const feedRepository = createApiFeedRepository();
+const {
+  currentAuthUserStore: profileLightboxAuthStore,
+  showShare: profileLightboxShareOpen,
+  selectedPostReaction: profileLightboxReaction,
+  lightboxOpen: profileLightboxOpen,
+  currentMediaIndex: profileLightboxMediaIndex,
+  localComments: profileLightboxComments,
+  likesCount: profileLightboxLikesCount,
+  sharesCount: profileLightboxSharesCount,
+  commentsCount: profileLightboxCommentsCount,
+  commenting: profileLightboxCommenting,
+  loadingComments: profileLightboxCommentsPending,
+  mediaItems: profileLightboxMediaItems,
+  shareUrl: profileLightboxShareUrl,
+  commentActionRepository: profileLightboxCommentRepository,
+  toggleLike: toggleProfileLightboxLike,
+  reactToPost: reactToProfileLightboxPost,
+  onOpenMedia: openProfileLightboxMedia,
+  submitComment: submitProfileLightboxComment,
+  handleShared: handleProfileLightboxShared,
+  downloadMedia: downloadProfileLightboxMedia,
+  openComments: openProfileLightboxComments,
+} = useFeedPostCardVM(profileLightboxPost, feedRepository);
 
 useIntersectionObserver(
   profileLoadMoreSentinel,
@@ -1097,24 +1219,80 @@ function closeMore(e: MouseEvent) {
   if (!moreTriggerRef.value?.contains(e.target as Node)) {
     moreOpen.value = false;
   }
+
+  if (
+    !avatarTriggerRef.value?.contains(e.target as Node) &&
+    !avatarMenuRef.value?.contains(e.target as Node)
+  ) {
+    avatarMenuOpen.value = false;
+  }
+}
+
+function closeFloatingMenus() {
+  moreOpen.value = false;
+  avatarMenuOpen.value = false;
 }
 
 onMounted(() => {
   document.addEventListener("click", closeMore, true);
-  window.addEventListener(
-    "scroll",
-    () => {
-      moreOpen.value = false;
-    },
-    { passive: true },
-  );
+  window.addEventListener("scroll", closeFloatingMenus, { passive: true });
+  window.addEventListener("resize", closeFloatingMenus, { passive: true });
 });
 onBeforeUnmount(() => {
   document.removeEventListener("click", closeMore, true);
-  window.removeEventListener("scroll", () => {
-    moreOpen.value = false;
-  });
+  window.removeEventListener("scroll", closeFloatingMenus);
+  window.removeEventListener("resize", closeFloatingMenus);
 });
+
+function openAvatarMenu() {
+  const currentProfile = profile.value;
+  const trigger = avatarTriggerRef.value;
+
+  if ((!currentProfile?.avatarUrl && !currentProfile?.isOwner) || !trigger) {
+    return;
+  }
+
+  if (avatarMenuOpen.value) {
+    avatarMenuOpen.value = false;
+    return;
+  }
+
+  const rect = trigger.getBoundingClientRect();
+  const menuWidth = Math.min(430, Math.max(260, window.innerWidth - 32));
+  const centeredLeft = rect.left + rect.width / 2 - menuWidth / 2;
+  const left = Math.min(window.innerWidth - menuWidth - 16, Math.max(16, centeredLeft));
+  const arrowLeft = Math.min(menuWidth - 24, Math.max(24, rect.left + rect.width / 2 - left));
+
+  avatarMenuStyle.value = {
+    position: "fixed",
+    top: `${rect.bottom + 12}px`,
+    left: `${left}px`,
+    width: `${menuWidth}px`,
+    "--profile-avatar-arrow-left": `${arrowLeft}px`,
+    "transform-origin": `${arrowLeft}px top`,
+  };
+  avatarMenuOpen.value = true;
+}
+
+function handleAvatarClick() {
+  if (profile.value?.isOwner) {
+    openAvatarMenu();
+    return;
+  }
+
+  void openProfileImagePostDetail("avatar");
+}
+
+function handleAvatarMenuAction(action: "view" | "choose") {
+  avatarMenuOpen.value = false;
+
+  if (action === "choose") {
+    openProfileMediaSelector("avatar");
+    return;
+  }
+
+  void openProfileImagePostDetail("avatar");
+}
 
 function openProfileMediaSelector(kind: "avatar" | "cover") {
   if (!profile.value?.isOwner || profileMediaUploading.value) {
@@ -1123,10 +1301,7 @@ function openProfileMediaSelector(kind: "avatar" | "cover") {
 
   if (kind === "avatar") {
     profileAvatarInput.value?.click();
-    return;
   }
-
-  profileCoverInput.value?.click();
 }
 
 function openProfileMediaViewer(kind: "avatar" | "cover") {
@@ -1143,17 +1318,91 @@ function openProfileMediaViewer(kind: "avatar" | "cover") {
   };
 }
 
+async function openProfileImagePostDetail(kind: "avatar" | "cover") {
+  const currentProfile = profile.value;
+  const postId = kind === "avatar"
+    ? currentProfile?.avatarPostId ?? 0
+    : currentProfile?.coverPostId ?? 0;
+  const imageUrl = kind === "avatar"
+    ? currentProfile?.avatarUrl
+    : currentProfile?.coverImage;
+
+  if (!imageUrl) {
+    return;
+  }
+
+  if (postId > 0) {
+    const loadedPost = timelinePosts.value.find(post => Number(post.id) === Number(postId));
+
+    if (loadedPost?.mediaItems.length) {
+      openProfilePostLightbox(loadedPost);
+      return;
+    }
+
+    try {
+      const post = await feedRepository.getPostById(postId);
+
+      if (post?.mediaItems.length) {
+        openProfilePostLightbox(post);
+        return;
+      }
+    } catch {
+      // A deleted or inaccessible profile-image post falls back to the current image.
+    }
+  }
+
+  openProfileMediaViewer(kind);
+}
+
+function openProfilePostLightbox(post: FeedPostRecord) {
+  profileMediaViewer.value = null;
+  profileLightboxPost.value = post;
+  void nextTick(() => openProfileLightboxMedia(0));
+}
+
+async function openProfileCoverDetail() {
+  await openProfileImagePostDetail("cover");
+}
+
 function closeProfileMediaViewer() {
   profileMediaViewer.value = null;
 }
 
-async function handleProfileMediaChange(kind: "avatar" | "cover", event: Event) {
+function handleProfileMediaChange(kind: "avatar" | "cover", event: Event) {
   const target = event.target as HTMLInputElement;
   const file = target.files?.[0];
+  target.value = "";
 
   if (!file) {
     return;
   }
+
+  if (!file.type.startsWith("image/")) {
+    toast.add({
+      title: t("pages.profilePage.imageInvalidTitle"),
+      description: t("pages.profilePage.imageInvalidDescription"),
+      color: "error",
+      icon: "i-ph-warning-circle-fill",
+    });
+    return;
+  }
+
+  profileCropDraft.value = { kind, file };
+}
+
+function closeProfileCropper() {
+  profileCropDraft.value = null;
+}
+
+async function uploadCroppedProfileMedia(file: File) {
+  const draft = profileCropDraft.value;
+
+  if (!draft) {
+    return;
+  }
+
+  const kind = draft.kind;
+  profileCropDraft.value = null;
 
   const formData = new FormData();
   formData.append("section", "avatar");
@@ -1167,21 +1416,20 @@ async function handleProfileMediaChange(kind: "avatar" | "cover", event: Event) 
     });
     await refresh();
     toast.add({
-      title: "Profile image updated.",
+      title: t("pages.profilePage.imageUpdated"),
       color: "success",
       icon: "i-ph-check-circle-fill",
     });
   } catch (error: any) {
     toast.add({
-      title: "Could not update image.",
+      title: t("pages.profilePage.imageUpdateError"),
       description:
-        error?.data?.statusMessage || error?.message || "Please try again.",
+        error?.data?.statusMessage || error?.message || t("pages.profilePage.imageUpdateRetry"),
       color: "error",
       icon: "i-ph-warning-circle-fill",
     });
   } finally {
     profileMediaUploading.value = null;
-    target.value = "";
   }
 }
 
@@ -1333,7 +1581,7 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__cover--viewable {
-  cursor: zoom-in;
+  cursor: pointer;
 }
 
 @media (min-width: 640px) {
@@ -1365,17 +1613,20 @@ function handleMoreAction(action: string) {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.15) 0%, transparent 40%);
+  pointer-events: none;
 }
 
 .profile-page__cover-actions {
   position: absolute;
   bottom: 14px;
   right: 14px;
+  z-index: 2;
   display: flex;
   gap: 8px;
 }
 
 .profile-page__cover-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1401,10 +1652,23 @@ function handleMoreAction(action: string) {
   transform: translateY(-1px);
 }
 
-.profile-page__cover-btn:disabled {
+.profile-page__cover-btn--disabled {
   cursor: wait;
   opacity: 0.78;
   transform: none;
+}
+
+.profile-page__cover-file {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.profile-page__cover-file:disabled {
+  cursor: wait;
 }
 
 /* Identity bar */
@@ -1422,7 +1686,7 @@ function handleMoreAction(action: string) {
   .profile-page__identity-bar {
     flex-direction: row;
     align-items: flex-end;
-    margin-top: -28px;
+    margin-top: -65px;
     padding: 0 24px;
     gap: 16px;
   }
@@ -1437,7 +1701,7 @@ function handleMoreAction(action: string) {
 }
 
 .profile-page__avatar-wrap--viewable {
-  cursor: zoom-in;
+  cursor: pointer;
 }
 
 @media (max-width: 767px) {
@@ -1453,32 +1717,6 @@ function handleMoreAction(action: string) {
   border: 4px solid #ffffff;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
   display: block;
-}
-
-.profile-page__avatar-btn {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  border: 1px solid #e2e8f0;
-  background: #f0f2f5;
-  color: #0f172a;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.profile-page__avatar-btn:hover {
-  background: #e2e8f0;
-}
-
-.profile-page__avatar-btn:disabled {
-  cursor: wait;
-  opacity: 0.78;
 }
 
 /* Name + meta */
@@ -1718,8 +1956,8 @@ function handleMoreAction(action: string) {
   .profile-page__body {
     grid-template-columns: 360px minmax(0, 1fr);
     align-items: start;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1245px;
+    /* margin: 0 auto; */
   }
 }
 
@@ -2370,6 +2608,56 @@ function handleMoreAction(action: string) {
 
 <style>
 /* Non-scoped: teleported to body */
+.profile-avatar-menu {
+  z-index: 10020;
+  overflow: visible;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 8px;
+  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.22);
+}
+
+.profile-avatar-menu__arrow {
+  position: absolute;
+  top: -8px;
+  left: var(--profile-avatar-arrow-left, 50%);
+  width: 16px;
+  height: 16px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  border-left: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.profile-avatar-menu__item {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  gap: 14px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  padding: 10px 13px;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.profile-avatar-menu__item:hover {
+  background: #f1f5f9;
+}
+
+.profile-avatar-menu__item:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 .profile-media-viewer {
   position: fixed;
   inset: 0;

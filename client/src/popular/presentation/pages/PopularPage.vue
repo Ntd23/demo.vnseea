@@ -1,6 +1,6 @@
 <!-- Description: Renders popular posts as a simple legacy-style ranked feed list without extra dashboard sections or sidebar widgets. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-16 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1120px] space-y-4 pb-16">
     <UAlert
       v-if="errorMessage"
       color="warning"

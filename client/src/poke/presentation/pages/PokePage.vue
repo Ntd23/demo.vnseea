@@ -105,7 +105,7 @@ await fetchPokes()
   width: min(100%, 980px);
   gap: 18px;
   margin: 0 auto;
-  padding: 24px 14px 48px;
+  /* padding: 24px 14px 48px; */
 }
 
 .poke-page__header {
@@ -253,9 +253,9 @@ await fetchPokes()
 }
 
 @media (min-width: 640px) {
-  .poke-page {
+  /* .poke-page {
     padding: 32px 20px 56px;
-  }
+  } */
 
   .poke-page__header {
     flex-direction: row;

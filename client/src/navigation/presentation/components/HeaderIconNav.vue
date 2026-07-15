@@ -22,43 +22,40 @@
 </template>
 
 <script setup lang="ts">
-import { useNavigationGeneralStore } from "../../application/stores/useNavigationGeneralStore"
+import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 
 const route = useRoute()
-const navigationGeneralStore = useNavigationGeneralStore()
-
-const videoBadge = computed(() => {
-  const count = navigationGeneralStore.summary.videoCount ?? 0
-  if (count <= 0) return ""
-  if (count > 100) return "99+"
-  return String(count)
-})
 
 const items = computed(() => [
   {
-    label: 'navigation.headerIconNav.home',
-    to: '/home',
-    icon: 'i-ph-house-fill',
-    active: route.path === '/' || route.path === '/home',
+    label: "navigation.headerIconNav.home",
+    to: appRoutes.feed,
+    icon: "i-ph-newspaper-clipping-fill",
+    active: route.path === appRoutes.home || route.path === appRoutes.feed,
   },
   {
-    label: 'navigation.headerIconNav.photos',
-    to: '/photos',
-    icon: 'i-ph-image-fill',
-    active: route.path === '/photos',
+    label: "navigation.headerIconNav.nearby",
+    to: appRoutes.searchNearby,
+    icon: "i-ph-map-pin-fill",
+    active: route.path === appRoutes.searchNearby,
   },
   {
-    label: 'navigation.headerIconNav.reels',
-    to: '/reels',
-    icon: 'i-ph-film-strip-fill',
-    active: route.path === '/reels',
-    logoBadge: videoBadge.value,
+    label: "navigation.headerIconNav.photos",
+    to: appRoutes.photos,
+    icon: "i-ph-image-fill",
+    active: route.path === appRoutes.photos,
   },
   {
-    label: 'navigation.headerIconNav.movies',
-    to: '/movies',
-    icon: 'i-ph-video-camera-fill',
-    active: route.path === '/movies',
+    label: "navigation.headerIconNav.reels",
+    to: appRoutes.reels,
+    icon: "i-ph-video-camera-fill",
+    active: route.path === appRoutes.reels,
+  },
+  {
+    label: "navigation.headerIconNav.products",
+    to: appRoutes.products,
+    icon: "i-ph-storefront-fill",
+    active: route.path === appRoutes.products,
   },
 ])
 </script>

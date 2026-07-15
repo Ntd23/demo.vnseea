@@ -4,7 +4,7 @@ export type ProductCategory = string
 
 export type ProductCondition = "new" | "like-new" | "used"
 
-export type ProductCurrency = "USD" | "VND" | "EUR"
+export type ProductCurrency = string
 
 export type CategoryValue = ProductCategory
 

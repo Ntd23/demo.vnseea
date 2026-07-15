@@ -37,6 +37,7 @@
 
       <div
         class="group relative w-fit max-w-[84%] sm:max-w-[74%] lg:max-w-[42rem] chat-bubble__wrapper"
+        :class="{ 'chat-bubble__wrapper--product': productCard }"
         :title="timelineTitle"
       >
         <div
@@ -106,7 +107,29 @@
           ]"
         >
           <p v-if="showAuthor && authorName" class="chat-bubble__author">{{ authorName }}</p>
-          <p v-if="text" class="whitespace-pre-wrap">{{ text }}</p>
+          <NuxtLink
+            v-if="productCard"
+            :to="productCard.href"
+            class="chat-bubble__product-card"
+            @click.stop
+          >
+            <span class="chat-bubble__product-media">
+              <img
+                v-if="productCard.imageUrl && !productImageFailed"
+                :src="productCard.imageUrl"
+                :alt="productCard.title"
+                loading="lazy"
+                @error="productImageFailed = true"
+              >
+              <Icon v-else name="i-ph-package-duotone" class="h-7 w-7" />
+            </span>
+            <span class="chat-bubble__product-copy">
+              <strong>{{ productCard.title }}</strong>
+              <span v-if="productCard.price">{{ productCard.price }}</span>
+            </span>
+            <Icon name="i-ph-arrow-square-out" class="h-4 w-4 shrink-0" />
+          </NuxtLink>
+          <p v-if="text" class="chat-bubble__text whitespace-pre-wrap" :class="{ 'mt-2.5': productCard }">{{ text }}</p>
 
           <div v-if="mediaUrl" :class="text || callLog ? 'mt-2.5' : ''">
             <NuxtImg
@@ -202,6 +225,7 @@
 
 <script setup lang="ts">
 import type { MessageCallLogAction } from "../../domain/types/calls.types"
+import type { MessageProductCard } from "../../domain/types/messages.types"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 
 type ChatBubbleReactionOption = {
@@ -237,6 +261,7 @@ const props = defineProps<{
   mediaUrl?: string
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
+  productCard?: MessageProductCard
   callLog?: {
     type: "audio" | "video"
     status: string
@@ -259,6 +284,11 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const productImageFailed = ref(false)
+
+watch(() => props.productCard?.imageUrl, () => {
+  productImageFailed.value = false
+})
 
 const isMissedCallLog = computed(() => {
   if (!props.callLog) {
@@ -389,6 +419,74 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   font-weight: 700;
   letter-spacing: 0.01em;
   color: #64748b;
+}
+
+.chat-bubble__product-card {
+  display: grid;
+  width: 100%;
+  max-width: 100%;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 7px;
+  color: #0f172a;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chat-bubble__product-card:hover {
+  border-color: var(--bg-brand, #0000ff);
+  box-shadow: 0 5px 16px rgba(15, 23, 42, 0.12);
+}
+
+.chat-bubble__product-media {
+  display: flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.chat-bubble__wrapper--product {
+  width: min(310px, 100%);
+}
+
+.chat-bubble__product-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-bubble__product-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.chat-bubble__product-copy strong {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.chat-bubble__product-copy span {
+  color: var(--bg-brand, #0000ff);
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .chat-bubble--mine {

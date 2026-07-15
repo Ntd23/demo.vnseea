@@ -126,13 +126,14 @@ const showRightSidebar = computed(() =>
   && !isLivePage.value
   && !isCmsPage.value
 )
-// HeaderIconNav (Home/Photos/Reels/Video/Music) only makes sense on content-feed pages.
+// HeaderIconNav only appears on the five destinations represented by its icons.
 // Using a whitelist to avoid it leaking onto Groups, Events, Jobs, etc.
 const iconNavPages = new Set([
   appRoutes.home,
   appRoutes.feed,
+  appRoutes.searchNearby,
   appRoutes.photos,
-  appRoutes.watch,
+  appRoutes.products,
 ])
 const showHeaderIconNav = computed(() => iconNavPages.has(route.path))
 

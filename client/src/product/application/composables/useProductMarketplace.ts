@@ -2,6 +2,7 @@
 
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { watchDebounced } from "@vueuse/core"
+import { useChatWidgetLauncher } from "../../../navigation/application/composables/useChatWidgetLauncher"
 import { formatProductPrice } from "../formatters/product-currency"
 import type {
   ProductCategory,
@@ -24,6 +25,7 @@ export const useProductMarketplace = (
   const { t, locale } = useI18n()
   const route = useRoute()
   const toast = useToast()
+  const { openProductChat } = useChatWidgetLauncher()
 
   const search = ref("")
   const sortBy = ref<ProductSortValue>("latest")
@@ -161,20 +163,6 @@ export const useProductMarketplace = (
 
   const applyDistance = () => {
     selectedDistance.value = String(distanceRange.value)
-
-    if (
-      distanceRange.value > 0
-      && productData.value?.distanceFilterAvailable === false
-      && !hasShownDistanceUnavailableToast.value
-    ) {
-      hasShownDistanceUnavailableToast.value = true
-      toast.add({
-        title: t("pages.productsPage.distanceUnavailableTitle"),
-        description: t("pages.productsPage.distanceUnavailableDescription"),
-        color: "warning",
-        icon: "i-ph-map-pin-line",
-      })
-    }
   }
 
   const addToCart = async (productId: number) => {
@@ -241,12 +229,20 @@ export const useProductMarketplace = (
   const openSellerChat = (product: ProductListing) => {
     if (!product.sellerId) return
 
-    void navigateTo({
-      path: appRoutes.messages,
-      query: {
-        userId: String(product.sellerId),
-        name: product.seller,
-        productId: String(product.id),
+    openProductChat({
+      sellerId: product.sellerId,
+      sellerName: product.seller,
+      suggestions: [
+        t("pages.productsPage.productInquiryMessage"),
+        t("pages.productsPage.productAvailabilityMessage"),
+        t("pages.productsPage.productNegotiationMessage"),
+      ],
+      product: {
+        id: String(product.id),
+        title: product.title,
+        imageUrl: product.imageUrl,
+        price: formatProductCurrency(product),
+        href: product.href,
       },
     })
   }
@@ -257,8 +253,25 @@ export const useProductMarketplace = (
 
   watchDebounced(
     [search, selectedCategory, selectedSubCategory, selectedDistance, sortBy, sellerUserId],
-    () => {
-      refresh()
+    async () => {
+      const requestedDistance = selectedDistance.value
+
+      await refresh()
+
+      if (
+        requestedDistance === selectedDistance.value
+        && requestedDistance !== "0"
+        && productData.value?.distanceFilterAvailable === false
+        && !hasShownDistanceUnavailableToast.value
+      ) {
+        hasShownDistanceUnavailableToast.value = true
+        toast.add({
+          title: t("pages.productsPage.distanceUnavailableTitle"),
+          description: t("pages.productsPage.distanceUnavailableDescription"),
+          color: "warning",
+          icon: "i-ph-map-pin-line",
+        })
+      }
     },
     { debounce: 350, maxWait: 1000 },
   )

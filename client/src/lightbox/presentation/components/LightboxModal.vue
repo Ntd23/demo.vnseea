@@ -130,6 +130,35 @@
             </button>
           </header>
 
+          <div v-if="contentCaption || contentDescription" class="lightbox-modal__meta">
+            <p v-if="contentCaption" class="lightbox-modal__caption">
+              {{ contentCaption }}
+            </p>
+            <p v-if="contentDescription" class="lightbox-modal__description">
+              {{ contentDescription }}
+            </p>
+          </div>
+
+          <div class="lightbox-modal__stats">
+            <div v-if="likeCount > 0" class="lightbox-modal__stats-left">
+              <span class="lightbox-modal__stats-like-icon">
+                <img
+                  :src="activeReactionAsset.src"
+                  :alt="activeReactionLabel"
+                  class="lightbox-modal__stats-reaction-image"
+                >
+              </span>
+              <strong>{{ likeCount }}</strong>
+            </div>
+            <div class="lightbox-modal__stats-right">
+              <button type="button" @click="openCommentComposer">
+                {{ t("feed.postCard.commentsCount", { count: displayedCommentCount }) }}
+              </button>
+              <button type="button" @click="emit('share')">
+                {{ t("feed.postCard.sharesCount", { count: shareCount }) }}
+              </button>
+            </div>
+          </div>
 
           <div
             class="lightbox-modal__primary-action"
@@ -200,7 +229,7 @@
                   class="lightbox-modal__like-image"
                   draggable="false"
                 >
-                <Icon v-else name="i-ph-thumbs-up" class="h-6 w-6" />
+                <Icon v-else name="i-ph-thumbs-up" class="h-5 w-5" />
                 <span>{{ activeReactionLabel }}</span>
               </button>
             </div>
@@ -211,19 +240,40 @@
               :aria-label="t('feed.postCard.comment')"
               @click="openCommentComposer"
             >
-              <Icon name="i-ph-chat-circle-fill" class="h-6 w-6" />
+              <Icon name="i-ph-chat-circle-fill" class="h-5 w-5" />
               <span>{{ t("feed.postCard.comment") }}</span>
+            </button>
+
+            <button
+              type="button"
+              class="lightbox-modal__share-btn"
+              :aria-label="t('feed.postCard.share')"
+              @click="emit('share')"
+            >
+              <Icon name="i-ph-share-fat-fill" class="h-5 w-5" />
+              <span>{{ t("feed.postCard.share") }}</span>
             </button>
           </div>
 
 
           <div class="lightbox-modal__comments">
+            <div v-if="commentsPending && normalizedComments.length === 0" class="lightbox-modal__comments-loading">
+              <div v-for="index in 3" :key="index" class="lightbox-modal__comment-skeleton">
+                <USkeleton class="lightbox-modal__comment-skeleton-avatar" />
+                <div class="lightbox-modal__comment-skeleton-copy">
+                  <USkeleton class="lightbox-modal__comment-skeleton-title" />
+                  <USkeleton class="lightbox-modal__comment-skeleton-text" />
+                </div>
+              </div>
+            </div>
             <FeedCommentList
-              v-if="normalizedComments.length > 0"
+              v-else-if="normalizedComments.length > 0"
               :comments="normalizedComments"
               enable-reply
+              enable-reaction
               :current-user-name="currentUserName"
               :current-user-avatar-url="currentUserAvatarUrl"
+              :comment-action-repository="commentActionRepository"
             />
             <div v-else class="lightbox-modal__comments-empty">
               <Icon name="i-ph-chat-centered-dots-duotone" class="h-14 w-14" />
@@ -238,6 +288,7 @@
             :class="{ 'lightbox-modal__composer--mobile-open': mobileComposerOpen }"
           >
             <FeedCommentComposer
+              variant="lightbox"
               :current-user-name="currentUserName"
               :current-user-avatar-url="currentUserAvatarUrl"
               :submitting="submittingComment"
@@ -255,6 +306,7 @@ import { useTimeoutFn } from "@vueuse/core"
 import { defaultFeedReactionAsset, feedReactionAssetByValue, feedReactionAssets } from "../../../feed/application/constants/reaction-assets"
 import { defaultFeedStoryReaction, type FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { FeedCommentRecord, FeedCommentSubmitPayload } from "../../../feed/domain/types/feed.types"
+import type { FeedCommentActionRepository } from "../../../feed/application/view-models/useFeedCommentItemVM"
 import FeedCommentComposer from "../../../feed/presentation/components/CommentComposer.vue"
 import FeedCommentList from "../../../feed/presentation/components/CommentList.vue"
 
@@ -277,7 +329,11 @@ const props = withDefaults(defineProps<{
   caption?: string
   timeLabel?: string
   likeCount?: number
+  commentCount?: number
+  shareCount?: number
   comments?: ReadonlyArray<FeedCommentRecord>
+  commentsPending?: boolean
+  commentActionRepository?: FeedCommentActionRepository
   currentUserName?: string
   currentUserAvatarUrl?: string
   submittingComment?: boolean
@@ -295,7 +351,10 @@ const props = withDefaults(defineProps<{
   caption: "",
   timeLabel: "",
   likeCount: 0,
+  commentCount: 0,
+  shareCount: 0,
   comments: () => [],
+  commentsPending: false,
   currentUserName: "",
   currentUserAvatarUrl: "",
   submittingComment: false,
@@ -352,6 +411,15 @@ const resolvedTitle = computed(() => props.title || t("feed.lightboxModal.defaul
 const resolvedAuthor = computed(() => props.author || "VNSEEA")
 const timeLabelText = computed(() => props.timeLabel || t("feed.postCard.justNow"))
 const normalizedComments = computed(() => [...props.comments])
+const contentCaption = computed(() => props.caption.trim() || props.title.trim())
+const contentDescription = computed(() => {
+  const description = props.description.trim()
+
+  return description && description !== contentCaption.value ? description : ""
+})
+const displayedCommentCount = computed(() =>
+  Math.max(props.commentCount, countCommentThreads(normalizedComments.value)),
+)
 const openOriginalLabel = computed(() =>
   te("feed.lightboxModal.actionOpenOriginal")
     ? t("feed.lightboxModal.actionOpenOriginal")
@@ -372,6 +440,14 @@ const authorInitials = computed(() => {
 
   return initials || "VN"
 })
+
+function countCommentThreads(comments: ReadonlyArray<FeedCommentRecord>): number {
+  return comments.reduce((total, comment) =>
+    total + 1 + Math.max(
+      comment.repliesCount ?? 0,
+      countCommentThreads(comment.replies ?? []),
+    ), 0)
+}
 
 const {
   start: startReactionLongPressTimer,
@@ -494,12 +570,16 @@ onBeforeUnmount(() => {
   z-index: 1200;
   display: grid;
   min-height: 100vh;
+  overflow-y: auto;
   background: #000000;
 }
 
 @media (min-width: 1024px) {
   .lightbox-modal {
+    height: 100dvh;
+    min-height: 0;
     grid-template-columns: minmax(0, 1fr) 420px;
+    overflow: hidden;
   }
 }
 
@@ -509,6 +589,7 @@ onBeforeUnmount(() => {
   min-height: 56vh;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
   padding: 24px 16px 72px;
   background: #000000;
 }
@@ -524,6 +605,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   min-height: 320px;
+  min-width: 0;
   align-items: center;
   justify-content: center;
 }
@@ -531,9 +613,28 @@ onBeforeUnmount(() => {
 .lightbox-modal__image,
 .lightbox-modal__video {
   display: block;
+  width: 100%;
   max-width: 100%;
   max-height: calc(100vh - 120px);
   object-fit: contain;
+}
+
+@media (min-width: 1024px) {
+  .lightbox-modal__stage {
+    height: 100dvh;
+    min-height: 0;
+  }
+
+  .lightbox-modal__media-shell {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .lightbox-modal__image,
+  .lightbox-modal__video {
+    height: 100%;
+    max-height: none;
+  }
 }
 
 .lightbox-modal__video {
@@ -610,8 +711,8 @@ onBeforeUnmount(() => {
   display: flex;
   min-height: 44vh;
   flex-direction: column;
-  background: var(--bg-surface);
-  color: var(--text-primary);
+  background: var(--bg-surface, #ffffff);
+  color: var(--text-primary, #0f172a);
   overflow: hidden;
 }
 
@@ -628,6 +729,7 @@ onBeforeUnmount(() => {
   gap: 16px;
   padding: 24px 20px 16px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
 }
 
 .lightbox-modal__author {
@@ -702,7 +804,8 @@ onBeforeUnmount(() => {
   padding: 14px 20px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 12px;
+  flex-shrink: 0;
 }
 
 .lightbox-modal__stats-left {
@@ -718,14 +821,40 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  background: transparent;
+}
+
+.lightbox-modal__stats-reaction-image {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.lightbox-modal__stats-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.lightbox-modal__stats-right button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.lightbox-modal__stats-right button:hover {
+  color: var(--text-brand, #1420ff);
+  text-decoration: underline;
 }
 
 .lightbox-modal__primary-action {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  flex-shrink: 0;
 }
 
 .lightbox-modal__reaction-action {
@@ -736,8 +865,13 @@ onBeforeUnmount(() => {
   user-select: none;
 }
 
-.lightbox-modal__like-btn,
 .lightbox-modal__comment-btn {
+  border-right: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+.lightbox-modal__like-btn,
+.lightbox-modal__comment-btn,
+.lightbox-modal__share-btn {
   display: flex;
   width: 100%;
   align-items: center;
@@ -745,9 +879,9 @@ onBeforeUnmount(() => {
   gap: 8px;
   border: 0;
   background: transparent;
-  padding: 14px 18px;
+  padding: 12px 8px;
   color: var(--text-secondary);
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   -webkit-touch-callout: none;
@@ -757,7 +891,8 @@ onBeforeUnmount(() => {
 }
 
 .lightbox-modal__like-btn:hover,
-.lightbox-modal__comment-btn:hover {
+.lightbox-modal__comment-btn:hover,
+.lightbox-modal__share-btn:hover {
   background: var(--bg-surface-hover);
   color: var(--text-brand);
 }
@@ -771,17 +906,17 @@ onBeforeUnmount(() => {
 
 .lightbox-modal__reaction-tray {
   position: absolute;
-  left: 50%;
-  bottom: calc(100% - 8px);
-  z-index: 5;
+  left: 8px;
+  bottom: calc(100% + 8px);
+  z-index: 20;
   display: flex;
-  gap: 10px;
-  transform: translateX(-50%);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  filter: drop-shadow(0 10px 18px rgba(15, 23, 42, 0.22));
+  gap: 4px;
+  max-width: calc(100vw - 32px);
+  padding: 6px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 9999px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
@@ -820,7 +955,11 @@ onBeforeUnmount(() => {
 }
 
 .lightbox-modal__meta {
-  padding: 16px 20px 0;
+  max-height: 180px;
+  flex-shrink: 0;
+  overflow-y: auto;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 .lightbox-modal__caption,
@@ -853,10 +992,58 @@ onBeforeUnmount(() => {
   text-align: center;
 }
 
+.lightbox-modal__comments-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lightbox-modal__comment-skeleton {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.lightbox-modal__comment-skeleton-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  flex: 0 0 36px;
+  border-radius: 9999px !important;
+}
+
+.lightbox-modal__comment-skeleton-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.lightbox-modal__comment-skeleton-title {
+  width: 38% !important;
+  height: 13px !important;
+}
+
+.lightbox-modal__comment-skeleton-text {
+  width: 82% !important;
+  height: 30px !important;
+  margin-top: 7px;
+}
+
 .lightbox-modal__composer {
+  flex-shrink: 0;
   border-top: 1px solid rgba(15, 23, 42, 0.08);
   padding: 14px 20px 18px;
-  background: var(--bg-surface);
+  background: var(--bg-surface, #ffffff);
+}
+
+@media (max-width: 1180px) and (min-width: 1024px) {
+  .lightbox-modal {
+    grid-template-columns: minmax(0, 1fr) 380px;
+  }
+
+  .lightbox-modal__like-btn,
+  .lightbox-modal__comment-btn,
+  .lightbox-modal__share-btn {
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 767px) {

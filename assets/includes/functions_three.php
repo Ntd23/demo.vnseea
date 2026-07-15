@@ -903,7 +903,7 @@ function Wo_GetProducts($filter_data = array())
 {
 	global $wo, $sqlConnect;
 	$data      = array();
-	$query_one = " SELECT `id`, `user_id` FROM " . T_PRODUCTS . " WHERE status <> '1'";
+	$query_one = " SELECT `id`, `user_id` FROM " . T_PRODUCTS . " WHERE status <> '1' AND `active` = '1'";
 	if (!empty($filter_data['c_id'])) {
 		$category = $filter_data['c_id'];
 		$query_one .= " AND `category` = '{$category}'";
@@ -937,11 +937,15 @@ function Wo_GetProducts($filter_data = array())
 		$user_lat  = $wo['user']['lat'];
 		$user_lng  = $wo['user']['lng'];
 		$unit      = 6371;
-		$query_one = " AND status <> '1'";
+		$query_one = " AND status <> '1' AND `active` = '1'";
 		$distance  = Wo_Secure($filter_data['length']);
 		if (!empty($filter_data['c_id'])) {
 			$category = $filter_data['c_id'];
 			$query_one .= " AND `category` = '{$category}'";
+		}
+		if (!empty($filter_data['sub_id'])) {
+			$sub_category = $filter_data['sub_id'];
+			$query_one .= " AND `sub_category` = '{$sub_category}'";
 		}
 		if (!empty($filter_data['after_id'])) {
 			if (is_numeric($filter_data['after_id'])) {
@@ -963,7 +967,6 @@ function Wo_GetProducts($filter_data = array())
         FROM " . T_PRODUCTS . " WHERE `lat` <> 0 AND `lng` <> 0 $query_one
         HAVING distance < '$distance'";
 	}
-	$query_one .= " AND `active` = '1' ";
 	if (!empty($filter_data['order_by']) && $filter_data['order_by'] == 'price_low') {
 		$query_one .= " ORDER BY `price` ASC";
 	} else if (!empty($filter_data['order_by']) && $filter_data['order_by'] == 'price_high') {
@@ -978,10 +981,13 @@ function Wo_GetProducts($filter_data = array())
 		}
 	}
 	$sql = mysqli_query($sqlConnect, $query_one);
-	if (mysqli_num_rows($sql)) {
+	if ($sql && mysqli_num_rows($sql)) {
 		while ($fetched_data = mysqli_fetch_assoc($sql)) {
 			$products           = Wo_GetProduct($fetched_data['id']);
 			$products['seller'] = Wo_UserData($fetched_data['user_id']);
+			if (isset($fetched_data['distance']) && is_numeric($fetched_data['distance'])) {
+				$products['distance'] = (float) $fetched_data['distance'];
+			}
 			$data[]             = $products;
 		}
 	}

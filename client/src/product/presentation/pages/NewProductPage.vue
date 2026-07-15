@@ -5,7 +5,7 @@
     <section class="new-product-heading">
       <div class="new-product-heading__inner">
         <span>
-          <Icon name="i-ph-storefront-fill" class="h-5 w-5" />
+          <Icon name="i-ph-package-fill" class="h-5 w-5" />
         </span>
         <h1>{{ $t("pages.newProductPage.badge") }}</h1>
       </div>
@@ -92,6 +92,7 @@
         <UFormField class="new-product-field" :label="$t('pages.productEditor.locationLabel')">
           <GooglePlaceField
             v-model="locationModel"
+            :helper-text="$t('pages.productEditor.locationHelper')"
             require-coordinates
             :placeholder="$t('pages.productEditor.locationPlaceholder')"
           />
@@ -105,6 +106,8 @@
             value-key="value"
             label-key="label"
             size="lg"
+            :disabled="currencyOptions.length === 0"
+            :placeholder="$t('pages.productEditor.emptyCurrency')"
             :ui="{ base: 'h-11 rounded-xl' }"
           />
         </UFormField>
@@ -128,38 +131,40 @@
       <div class="new-product-media">
         <label>{{ $t("pages.productEditor.mediaLabel") }}</label>
         <div class="new-product-images">
-          <UButton
+          <button
             type="button"
-            color="neutral"
-            variant="soft"
             class="new-product-upload"
-            icon="i-ph-camera-fill"
             :aria-label="$t('pages.newProductPage.addImage')"
             @click="fileInput?.click()"
-          />
+          >
+            <Icon name="i-ph-camera-fill" class="new-product-upload__icon" />
+          </button>
 
           <span
             v-for="preview in newFilePreviews"
             :key="preview.key"
             class="new-product-thumb"
           >
-            <UButton
+            <button
               type="button"
-              color="neutral"
-              variant="solid"
-              size="xs"
-              icon="i-ph-x-bold"
               class="new-product-thumb__remove"
-              @click="removeNewFile(preview.index)"
-            />
+              :aria-label="$t('pages.newProductPage.removeImage', { name: preview.name })"
+              @click="removeNewFile(preview.key)"
+            >
+              <Icon name="i-ph-x-bold" class="new-product-thumb__remove-icon" />
+            </button>
             <img :src="preview.src" :alt="preview.name">
+            <span class="new-product-thumb__name">{{ preview.name }}</span>
           </span>
         </div>
+        <p class="new-product-media__helper">
+          {{ $t("pages.newProductPage.imageHelper") }}
+        </p>
         <input
           ref="fileInput"
           class="hidden"
           type="file"
-          accept="image/*"
+          accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
           multiple
           @change="handleFileInput"
         >
@@ -208,10 +213,10 @@ import { useNuxtApiClient } from "../../../shared-kernel/infrastructure/http/nux
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 
 type FilePreview = {
-  index: number
   key: string
   name: string
   src: string
+  file: File
 }
 
 const { t } = useI18n()
@@ -219,7 +224,6 @@ const toast = useToast()
 const productRepository = createApiProductRepository()
 const apiClient = useNuxtApiClient()
 const fileInput = ref<HTMLInputElement | null>(null)
-const newFiles = shallowRef<File[]>([])
 const newFilePreviews = shallowRef<FilePreview[]>([])
 const selectedSubCategory = ref("")
 const isSubmitting = ref(false)
@@ -238,6 +242,8 @@ const { data: currenciesData } = useAsyncData(
 )
 
 const currencyOptions = computed(() => currenciesData.value ?? [])
+const supportedImageTypes = new Set(["image/jpeg", "image/png", "image/gif"])
+const supportedImageExtension = /\.(?:jpe?g|png|gif)$/i
 
 const createInitialDraft = (): ProductEditorDraft => ({
   mode: "create",
@@ -397,34 +403,56 @@ const revokePreviews = () => {
   newFilePreviews.value = []
 }
 
-const refreshFilePreviews = () => {
-  if (!import.meta.client) return
-
-  revokePreviews()
-  newFilePreviews.value = newFiles.value.map((file, index) => ({
-    index,
-    key: `${file.name}-${file.lastModified}-${index}`,
-    name: file.name,
-    src: URL.createObjectURL(file),
-  }))
-}
-
 const handleFileInput = (event: Event) => {
   const input = event.target as HTMLInputElement
-  newFiles.value = Array.from(input.files ?? [])
-  refreshFilePreviews()
+  const selectedFiles = Array.from(input.files ?? [])
+  const supportedFiles = selectedFiles.filter(file =>
+    supportedImageTypes.has(file.type) || supportedImageExtension.test(file.name),
+  )
+  const unsupportedCount = selectedFiles.length - supportedFiles.length
+  const existingKeys = new Set(newFilePreviews.value.map(preview => preview.key))
+  const addedPreviews = supportedFiles
+    .map((file) => {
+      const key = `${file.name}-${file.size}-${file.lastModified}`
+
+      if (existingKeys.has(key)) {
+        return null
+      }
+
+      existingKeys.add(key)
+      return {
+        key,
+        name: file.name,
+        src: URL.createObjectURL(file),
+        file,
+      }
+    })
+    .filter((preview): preview is FilePreview => preview !== null)
+
+  newFilePreviews.value = [...newFilePreviews.value, ...addedPreviews]
+  input.value = ""
+
+  if (unsupportedCount > 0) {
+    toast.add({
+      title: t("pages.newProductPage.unsupportedImageTitle"),
+      description: t("pages.newProductPage.unsupportedImageDescription", { count: unsupportedCount }),
+      color: "warning",
+    })
+  }
 }
 
-const removeNewFile = (index: number) => {
-  newFiles.value = newFiles.value.filter((_, fileIndex) => fileIndex !== index)
-  if (fileInput.value) {
-    fileInput.value.value = ""
+const removeNewFile = (key: string) => {
+  const removedPreview = newFilePreviews.value.find(preview => preview.key === key)
+
+  if (removedPreview) {
+    URL.revokeObjectURL(removedPreview.src)
   }
-  refreshFilePreviews()
+
+  newFilePreviews.value = newFilePreviews.value.filter(preview => preview.key !== key)
 }
 
 watchDebounced(
-  [() => draft.value.fields, () => newFiles.value.length],
+  [() => draft.value.fields, () => newFilePreviews.value.length],
   () => {
     markSaved()
   },
@@ -463,6 +491,15 @@ const validateForm = () => {
     return false
   }
 
+  if (!hasLocationCoordinates(productLocationSelection.value)) {
+    toast.add({
+      title: t("pages.productEditor.validationLocationTitle"),
+      description: t("pages.productEditor.validationLocationDescription"),
+      color: "error",
+    })
+    return false
+  }
+
   if (!Number.isFinite(price) || price <= 0) {
     toast.add({
       title: t("pages.productEditor.validationPriceTitle"),
@@ -472,7 +509,16 @@ const validateForm = () => {
     return false
   }
 
-  if (newFiles.value.length === 0) {
+  if (!fields.currency || !currencyOptions.value.some(option => option.value === fields.currency)) {
+    toast.add({
+      title: t("pages.productEditor.validationCurrencyTitle"),
+      description: t("pages.productEditor.validationCurrencyDescription"),
+      color: "error",
+    })
+    return false
+  }
+
+  if (newFilePreviews.value.length === 0) {
     toast.add({
       title: t("pages.productEditor.validationImageTitle"),
       description: t("pages.productEditor.validationImageDescription"),
@@ -500,6 +546,8 @@ const submitProduct = async () => {
   form.append("product_location", fields.location.trim())
   form.append("product_type", fields.condition === "used" ? "1" : "0")
   form.append("currency", fields.currency)
+  form.append("lat", String(productLocationSelection.value.lat))
+  form.append("lng", String(productLocationSelection.value.lng))
 
   if (selectedSubCategory.value) {
     form.append("product_sub_category", selectedSubCategory.value)
@@ -509,8 +557,8 @@ const submitProduct = async () => {
     form.append("units", fields.stock.trim())
   }
 
-  for (const file of newFiles.value) {
-    form.append("images[]", file, file.name)
+  for (const preview of newFilePreviews.value) {
+    form.append("images[]", preview.file, preview.name)
   }
 
   isSubmitting.value = true
@@ -521,7 +569,6 @@ const submitProduct = async () => {
     resetDraft(createInitialDraft())
     stockInput.value = ""
     productLocationSelection.value = emptyLocationSelection()
-    newFiles.value = []
     revokePreviews()
     if (fileInput.value) {
       fileInput.value.value = ""
@@ -614,8 +661,15 @@ onBeforeUnmount(() => {
 
 .new-product-field {
   display: grid;
+  align-self: start;
+  align-content: start;
   gap: 7px;
+  width: 100%;
   margin-bottom: 14px;
+}
+
+.new-product-page {
+  --google-place-field-control-height: 44px;
 }
 
 .new-product-media > label {
@@ -643,6 +697,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   width: 92px;
   height: 92px;
+  flex: 0 0 92px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-light, #e2e8f0);
@@ -651,8 +706,14 @@ onBeforeUnmount(() => {
 }
 
 .new-product-upload {
+  padding: 0;
   color: #344258;
   cursor: pointer;
+}
+
+.new-product-upload__icon {
+  width: 22px;
+  height: 22px;
 }
 
 .new-product-thumb img {
@@ -662,11 +723,27 @@ onBeforeUnmount(() => {
   object-fit: cover;
 }
 
-.new-product-thumb button {
+.new-product-thumb__name {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  padding: 16px 7px 6px;
+  color: #ffffff;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.82) 100%);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.new-product-thumb__remove {
   position: absolute;
   top: 5px;
   right: 5px;
-  z-index: 1;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -677,6 +754,20 @@ onBeforeUnmount(() => {
   color: #ffffff;
   background: rgba(0, 0, 0, 0.68);
   cursor: pointer;
+  padding: 0;
+}
+
+.new-product-thumb__remove-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.new-product-media__helper {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
 }
 
 .new-product-actions {

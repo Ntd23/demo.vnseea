@@ -441,3 +441,5 @@
 2026-07-10T10:44:36+00:00 [vnseea_call_debug] type=check user_id=1680 call_id=239 call_type=video status=calling active=0 started_at=0 started_at_ms=0 elapsed=0 elapsed_ms=0
 2026-07-10T10:44:37+00:00 [vnseea_call_debug] type=check user_id=1680 call_id=239 call_type=video status=calling active=0 started_at=0 started_at_ms=0 elapsed=0 elapsed_ms=0
 2026-07-10T10:44:37+00:00 [vnseea_call_debug] type=close_voip_push call_id=239 call_type=video status=cancelled actor_id=1680 recipient_id=1679 sent=0
+2026-07-15T07:34:52+00:00 [vnseea_call_debug] type=live_bootstrap user_id=1 role=host status=200 blocked_reason= enabled=1 can_use_live=1 livekit_ready=1 active_live=0 stream_name=live_1_e9e12286022dd69a room_name=wowonder_live_live_1_e9e12286022dd69a ws_url=wss://livekit.vnseea.vn
+2026-07-15T07:34:52+00:00 [vnseea_call_debug] type=live_bootstrap user_id=1 role=host status=200 blocked_reason= enabled=1 can_use_live=1 livekit_ready=1 active_live=0 stream_name=live_1_d86c0096f49c8eba room_name=wowonder_live_live_1_d86c0096f49c8eba ws_url=wss://livekit.vnseea.vn

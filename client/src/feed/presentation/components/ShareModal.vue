@@ -602,7 +602,7 @@ watch(() => props.open, (val) => {
 .share-modal {
   position: fixed;
   inset: 0;
-  z-index: 1200;
+  z-index: 1300;
   display: flex;
   align-items: center;
   justify-content: center;

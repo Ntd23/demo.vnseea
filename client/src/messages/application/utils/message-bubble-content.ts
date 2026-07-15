@@ -1,8 +1,9 @@
 // Description: Normalizes message text, inline reply metadata, and display snippets for shared chat bubble surfaces.
 
-import type { MessageItem } from "../../domain/types/messages.types"
+import type { MessageItem, MessageProductCard } from "../../domain/types/messages.types"
 
 export const MESSAGE_REPLY_PREFIX = "__VNSEEA_MINI_REPLY__:"
+export const MESSAGE_PRODUCT_PREFIX = "__VNSEEA_PRODUCT__:"
 
 export type MessageReplyMeta = {
   author: string
@@ -10,6 +11,22 @@ export type MessageReplyMeta = {
   mediaUrl: string
   mediaType: MessageItem["mediaType"] | ""
   body: string
+}
+
+export type MessageProductMeta = {
+  card: MessageProductCard
+  body: string
+}
+
+function normalizeSafeUrl(value: unknown) {
+  const url = typeof value === "string" ? value.trim() : ""
+
+  return url.startsWith("/") || /^https?:\/\//i.test(url) ? url : ""
+}
+
+function normalizeProductPrice(value: unknown) {
+  return normalizeMessageText(typeof value === "string" ? value : "")
+    .replace(/\s*(?:vnd|vnđ|₫)$/iu, "VND")
 }
 
 export function normalizeMessageText(value = "") {
@@ -64,6 +81,39 @@ export function getMessageReplyMeta(message: Pick<MessageItem, "text">): Message
   }
 }
 
+export function getMessageProductMeta(message: Pick<MessageItem, "text">): MessageProductMeta | null {
+  const normalizedText = normalizeMessageText(message.text)
+  const [productLine, ...bodyLines] = normalizedText.split("\n")
+
+  if (!productLine?.startsWith(MESSAGE_PRODUCT_PREFIX)) {
+    return null
+  }
+
+  try {
+    const payload = JSON.parse(decodeURIComponent(productLine.slice(MESSAGE_PRODUCT_PREFIX.length))) as Partial<MessageProductCard>
+    const title = normalizeMessageText(payload.title || "")
+    const href = normalizeSafeUrl(payload.href)
+
+    if (!title || !href) {
+      return null
+    }
+
+    return {
+      card: {
+        id: String(payload.id || ""),
+        title,
+        imageUrl: normalizeSafeUrl(payload.imageUrl) || undefined,
+        price: normalizeProductPrice(payload.price),
+        href,
+      },
+      body: normalizeMessageText(bodyLines.join("\n")),
+    }
+  }
+  catch {
+    return null
+  }
+}
+
 export function getMessageDisplayText(
   message: MessageItem,
   options?: {
@@ -78,12 +128,32 @@ export function getMessageDisplayText(
   }
 
   const replyMeta = getMessageReplyMeta(message)
-
   if (replyMeta) {
     return replyMeta.body
   }
 
+  const productMeta = getMessageProductMeta(message)
+
+  if (productMeta) {
+    return productMeta.body
+  }
+
   return normalizeMessageText(message.text)
+}
+
+export function buildProductMessageText(input: {
+  text: string
+  product: MessageProductCard
+}) {
+  const payload = encodeURIComponent(JSON.stringify({
+    id: String(input.product.id || ""),
+    title: normalizeMessageText(input.product.title),
+    imageUrl: normalizeSafeUrl(input.product.imageUrl),
+    price: normalizeProductPrice(input.product.price),
+    href: normalizeSafeUrl(input.product.href),
+  }))
+
+  return `${MESSAGE_PRODUCT_PREFIX}${payload}\n${normalizeMessageText(input.text)}`
 }
 
 export function buildReplyMessageText(input: {

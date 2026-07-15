@@ -4,9 +4,10 @@ import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vu
 import type { Socket } from "socket.io-client"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
-import type { MessageContact, MessageItem, MessageRecordDraft, MessageSendDraft, MessageTagsPayload, MessageThread, MessageUserTag } from "../../../messages/domain/types/messages.types"
+import type { MessageContact, MessageItem, MessageProductCard, MessageRecordDraft, MessageSendDraft, MessageTagsPayload, MessageThread, MessageUserTag } from "../../../messages/domain/types/messages.types"
 import type { MessagesRepository } from "../../../messages/domain/repositories/MessagesRepository"
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
+import { useChatWidgetLauncher, type ProductChatLaunchRequest } from "../composables/useChatWidgetLauncher"
 
 type ChatWidgetTab = "send" | "contacts" | "groups"
 type MiniChatDraft = {
@@ -26,6 +27,8 @@ type MiniChatSession = {
   isSending: boolean
   minimized: boolean
   openedAt: number
+  productDraft?: MessageProductCard | null
+  productSuggestions?: string[]
   sendQueue?: MiniChatDraft[]
 }
 type MiniChatSessionView = MiniChatSession & {
@@ -228,6 +231,7 @@ export function useChatWidgetVM(
 
   const miniChatAutoOpenVersion = ref(0)
   const miniChatSessions = ref<MiniChatSession[]>([])
+  const launchedContacts = ref<MessageContact[]>([])
   const isSendingQuick = ref(false)
   const socket = shallowRef<Socket | null>(null)
   const refreshTimer = shallowRef<number | null>(null)
@@ -321,11 +325,21 @@ export function useChatWidgetVM(
     },
   )
 
-  const allContacts = computed(() =>
-    (inbox.value ?? []).filter(contact =>
-      contact.type === "user" || contact.type === "group",
-    ),
-  )
+  const allContacts = computed(() => {
+    const contacts = new Map<string, MessageContact>()
+
+    for (const contact of launchedContacts.value) {
+      contacts.set(contact.id, contact)
+    }
+
+    for (const contact of inbox.value ?? []) {
+      if (contact.type === "user" || contact.type === "group") {
+        contacts.set(contact.id, contact)
+      }
+    }
+
+    return [...contacts.values()]
+  })
 
   const userContacts = computed(() => {
     const taggedByUserId = new Map(
@@ -806,6 +820,73 @@ export function useChatWidgetVM(
     await refreshMiniThread(nextSession)
   }
 
+  function ensureProductSellerContact(request: ProductChatLaunchRequest) {
+    const existingContact = allContacts.value.find(contact =>
+      contact.type === "user" && contact.userId === request.sellerId,
+    )
+
+    if (existingContact) {
+      return existingContact
+    }
+
+    const contact: MessageContact = {
+      id: `user:${request.sellerId}`,
+      name: request.sellerName,
+      status: "",
+      isOnline: false,
+      avatarUrl: "",
+      tab: "user",
+      type: "user",
+      preview: "",
+      time: "",
+      unreadCount: 0,
+      userId: request.sellerId,
+    }
+
+    launchedContacts.value = [
+      contact,
+      ...launchedContacts.value.filter(item => item.id !== contact.id),
+    ]
+
+    return contact
+  }
+
+  const {
+    request: chatLaunchRequest,
+    consumeRequest: consumeChatLaunchRequest,
+  } = useChatWidgetLauncher()
+
+  async function openRequestedProductChat(request: ProductChatLaunchRequest) {
+    const contact = ensureProductSellerContact(request)
+
+    await nextTick()
+    await openMiniChat(contact)
+
+    if (chatLaunchRequest.value?.requestId !== request.requestId) {
+      return
+    }
+
+    const session = findMiniSession(contact.id)
+    if (session) {
+      session.productDraft = request.product
+      session.productSuggestions = request.suggestions
+        .map(suggestion => suggestion.trim())
+        .filter(Boolean)
+      session.message = ""
+      session.minimized = false
+      session.openedAt = Date.now()
+    }
+
+    miniChatAutoOpenVersion.value += 1
+    consumeChatLaunchRequest(request.requestId)
+  }
+
+  watch(chatLaunchRequest, (request) => {
+    if (request) {
+      void openRequestedProductChat(request)
+    }
+  }, { immediate: true, flush: "post" })
+
   function closeMiniChat(contactId = activeMiniSession.value?.contactId ?? "") {
     miniChatSessions.value = miniChatSessions.value.filter(session => session.contactId !== contactId)
   }
@@ -1128,6 +1209,15 @@ export function useChatWidgetVM(
     }
   }
 
+  function clearMiniProductDraft(contactId = activeMiniSession.value?.contactId ?? "") {
+    const session = contactId ? findMiniSession(contactId) : activeMiniSession.value
+
+    if (session) {
+      session.productDraft = null
+      session.productSuggestions = []
+    }
+  }
+
   function onFile(event: Event) {
     const input = event.target as HTMLInputElement
     const nextFile = input.files?.[0] ?? null
@@ -1330,6 +1420,7 @@ export function useChatWidgetVM(
     deleteMiniMessage,
     onMiniFile,
     clearMiniFile,
+    clearMiniProductDraft,
     onFile,
     clearFile,
     openFullMessages,
