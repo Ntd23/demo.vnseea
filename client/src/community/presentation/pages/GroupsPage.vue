@@ -1,6 +1,6 @@
 <!-- Description: Renders the legacy-style groups directory with a simple heading, tabs, and backend-backed list content. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1120px] space-y-4 pb-10">
     <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
       <div class="space-y-1.5">
         <p class="text-label-secondary">

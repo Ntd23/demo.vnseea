@@ -185,6 +185,7 @@
 
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { useChatWidgetLauncher } from "../../../navigation/application/composables/useChatWidgetLauncher"
 import { formatProductPrice } from "../../application/formatters/product-currency"
 import type { ProductListing } from "../../domain/types/product-marketplace.types"
 import { createApiProductRepository } from "../../infrastructure/repositories/ApiProductRepository"
@@ -196,6 +197,7 @@ const props = defineProps<{
 const { t, locale } = useI18n()
 const router = useRouter()
 const toast = useToast()
+const { openProductChat } = useChatWidgetLauncher()
 const repository = createApiProductRepository()
 const mainImageId = ref("")
 const mainImageFailed = ref(false)
@@ -295,12 +297,20 @@ const openImage = () => {
 const openSellerChat = () => {
   if (!product.value?.sellerId) return
 
-  void navigateTo({
-    path: appRoutes.messages,
-    query: {
-      userId: String(product.value.sellerId),
-      name: product.value.seller || "",
-      productId: product.value.id,
+  openProductChat({
+    sellerId: product.value.sellerId,
+    sellerName: product.value.seller || "",
+    suggestions: [
+      t("pages.productsPage.productInquiryMessage"),
+      t("pages.productsPage.productAvailabilityMessage"),
+      t("pages.productsPage.productNegotiationMessage"),
+    ],
+    product: {
+      id: product.value.id,
+      title: product.value.title,
+      imageUrl: mainImage.value?.src,
+      price: formattedPrice.value,
+      href: `/product/${encodeURIComponent(product.value.id)}`,
     },
   })
 }

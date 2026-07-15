@@ -1,6 +1,10 @@
 <!-- Description: Provides the PHP-parity feed comment composer with real text, image, GIF-file, and voice submit payloads. -->
 <template>
-  <form class="comment-composer" @submit.prevent="submitComment">
+  <form
+    class="comment-composer"
+    :class="{ 'comment-composer--lightbox': variant === 'lightbox' }"
+    @submit.prevent="submitComment"
+  >
     <div class="comment-composer__avatar" aria-hidden="true">
       <img
         v-if="currentUserAvatarUrl"
@@ -56,7 +60,8 @@
                 :disabled="submitting"
                 @click="insertMentionTrigger"
               >
-                @
+                <Icon v-if="variant === 'lightbox'" name="i-ph-user-focus-duotone" class="h-5 w-5" />
+                <span v-else>@</span>
               </button>
 
               <button
@@ -115,7 +120,7 @@
                 :disabled="submitting"
                 @click="openImagePicker"
               >
-                <Icon name="i-ph-images-square-duotone" class="h-5 w-5" />
+                <Icon :name="variant === 'lightbox' ? 'i-ph-camera-duotone' : 'i-ph-images-square-duotone'" class="h-5 w-5" />
               </button>
 
               <button
@@ -284,11 +289,13 @@ const props = withDefaults(defineProps<{
   currentUserAvatarUrl?: string
   submitting?: boolean
   enableAttachments?: boolean
+  variant?: "default" | "lightbox"
 }>(), {
   currentUserName: "",
   currentUserAvatarUrl: "",
   submitting: false,
   enableAttachments: true,
+  variant: "default",
 })
 
 const emit = defineEmits<{
@@ -1253,6 +1260,92 @@ defineExpose({
 
 .comment-composer__file {
   display: none;
+}
+
+.comment-composer--lightbox .comment-composer__input-wrap {
+  flex-direction: column;
+  align-items: stretch;
+  border: 0;
+  border-radius: 20px;
+  background: #f0f2f5;
+  box-shadow: none;
+}
+
+.comment-composer--lightbox .comment-composer__input-wrap:focus-within {
+  border: 0;
+  background: #eef1f5;
+  box-shadow: 0 0 0 2px rgba(20, 32, 255, 0.1);
+}
+
+.comment-composer--lightbox .comment-composer__textarea,
+.comment-composer--lightbox .comment-composer__highlight {
+  min-height: 46px;
+  padding: 12px 14px 6px;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.comment-composer--lightbox .comment-composer__inline-actions {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 2px;
+  padding: 2px 8px 8px;
+}
+
+.comment-composer--lightbox .comment-composer__inline-tool {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+  color: #667085;
+}
+
+.comment-composer--lightbox .comment-composer__inline-actions > :nth-child(1) {
+  order: 1;
+}
+
+.comment-composer--lightbox .comment-composer__emoji-wrap {
+  order: 2;
+}
+
+.comment-composer--lightbox .comment-composer__emoji-tray {
+  right: auto;
+  left: -38px;
+  max-width: min(224px, calc(100vw - 48px));
+}
+
+.comment-composer--lightbox .comment-composer__inline-actions > :nth-child(5) {
+  order: 3;
+}
+
+.comment-composer--lightbox .comment-composer__inline-actions > :nth-child(2) {
+  order: 4;
+}
+
+.comment-composer--lightbox .comment-composer__inline-actions > :nth-child(3) {
+  order: 5;
+}
+
+.comment-composer--lightbox .comment-composer__send {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+  margin-left: auto;
+  order: 6;
+  background: transparent;
+  color: #1420ff;
+  box-shadow: none;
+}
+
+.comment-composer--lightbox .comment-composer__send:hover:not(:disabled) {
+  background: rgba(20, 32, 255, 0.08);
+  box-shadow: none;
+  transform: none;
+}
+
+.comment-composer--lightbox .comment-composer__send:disabled {
+  background: transparent;
+  color: #98a2b3;
+  filter: none;
 }
 
 @media (max-width: 640px) {

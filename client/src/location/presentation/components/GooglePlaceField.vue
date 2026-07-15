@@ -34,7 +34,7 @@
           v-if="hasSelectedLocation && !isLoading && !disabled"
           type="button"
           class="google-place-field__clear"
-          aria-label="Clear selected address"
+          :aria-label="t('pages.googlePlaceField.clearAddress')"
           @mousedown.prevent
           @click="clearSelection"
         >
@@ -107,6 +107,8 @@ const emit = defineEmits<{
   "update:modelValue": [value: LocationSelection]
 }>()
 
+const { t } = useI18n()
+
 const searchText = ref("")
 const suggestions = ref<PlaceSuggestionItem[]>([])
 const dropdownOpen = ref(false)
@@ -140,10 +142,12 @@ const hasSelectedLocation = computed(() =>
 )
 
 const emptyText = computed(() => {
-  if (isLoading.value) return "Searching addresses..."
-  if ((searchText.value || "").trim().length < 3) return "Type at least 3 characters."
+  if (isLoading.value) return t("pages.googlePlaceField.searching")
+  if ((searchText.value || "").trim().length < 3) {
+    return t("pages.googlePlaceField.minimumCharacters", { count: 3 })
+  }
 
-  return "No address suggestions found."
+  return t("pages.googlePlaceField.noSuggestions")
 })
 
 watch(
@@ -183,14 +187,14 @@ async function ensurePlacesServices() {
     await load()
   }
   catch {
-    errorText.value = "Google Maps rejected this domain. Add this site URL to the API key referrer restrictions."
+    errorText.value = t("pages.googlePlaceField.domainRejected")
     return false
   }
 
   const maps = window.google?.maps
 
   if (!maps?.places?.AutocompleteService || !maps.places.PlacesService) {
-    errorText.value = "Google Places is not available for this API key and domain."
+    errorText.value = t("pages.googlePlaceField.unavailable")
     return false
   }
 
@@ -230,7 +234,7 @@ async function fetchSuggestions(input: string) {
 
       isLoading.value = false
       suggestions.value = []
-      errorText.value = "Google Places did not respond. Try again."
+      errorText.value = t("pages.googlePlaceField.timeout")
     }, predictionTimeoutMs)
 
     autocompleteService.value.getPlacePredictions(
@@ -254,7 +258,7 @@ async function fetchSuggestions(input: string) {
         activeSuggestionIndex.value = suggestions.value.length > 0 ? 0 : -1
         dropdownOpen.value = true
         errorText.value = status && status !== okStatus && status !== zeroResultsStatus
-          ? `Google Places returned ${status}.`
+          ? t("pages.googlePlaceField.statusError", { status })
           : ""
         isLoading.value = false
       },
@@ -264,7 +268,7 @@ async function fetchSuggestions(input: string) {
     isLoading.value = false
     suggestions.value = []
     activeSuggestionIndex.value = -1
-    errorText.value = "Unable to load Google address suggestions."
+    errorText.value = t("pages.googlePlaceField.loadError")
   }
 }
 
@@ -296,7 +300,7 @@ async function selectSuggestion(item: PlaceSuggestionItem) {
         isSelectingSuggestion.value = false
 
         if (status !== okStatus) {
-          errorText.value = "Unable to read the selected address."
+          errorText.value = t("pages.googlePlaceField.detailsError")
           return
         }
 
@@ -326,7 +330,7 @@ async function selectSuggestion(item: PlaceSuggestionItem) {
   catch {
     isLoading.value = false
     isSelectingSuggestion.value = false
-    errorText.value = "Unable to read the selected address."
+    errorText.value = t("pages.googlePlaceField.detailsError")
   }
 }
 
@@ -413,7 +417,7 @@ function syncManualAddress() {
 
   const latest = normalizeLocationSelection(address === current.address ? current : { address })
   errorText.value = props.requireCoordinates && (latest.lat === null || latest.lng === null)
-    ? "Select an address suggestion so nearby search can store coordinates."
+    ? t("pages.googlePlaceField.selectSuggestion")
     : ""
 }
 </script>
@@ -437,7 +441,7 @@ function syncManualAddress() {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 48px;
+  height: var(--google-place-field-control-height, 48px);
   width: 100%;
   min-width: 0;
   border: 1px solid #e2e8f0;

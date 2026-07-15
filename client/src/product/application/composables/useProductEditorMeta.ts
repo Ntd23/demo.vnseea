@@ -16,7 +16,7 @@ const currencyOptions = [
   { label: "EUR (€)", value: "EUR" },
 ] satisfies ProductOption<CurrencyValue>[]
 
-const currencyMeta: Record<CurrencyValue, ProductCurrencyMeta> = {
+const currencyMeta: Record<string, ProductCurrencyMeta> = {
   USD: { label: "USD ($)", locale: "en-US" },
   VND: { label: "VND (₫)", locale: "vi-VN" },
   EUR: { label: "EUR (€)", locale: "de-DE" },
@@ -85,7 +85,7 @@ export const useProductEditorMeta = () => {
 
     return formatCurrency(parsed, {
       currency,
-      locale: currencyMeta[currency].locale,
+      locale: currencyMeta[currency]?.locale,
     })
   }
 

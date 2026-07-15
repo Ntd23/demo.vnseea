@@ -100,7 +100,7 @@ const isVerificationPage = computed(() =>
   gap: 16px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 12px;
+  /* padding: 0 12px; */
 }
 
 /* ─── Two-column layout ───────────────── */

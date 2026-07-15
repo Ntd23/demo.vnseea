@@ -12,7 +12,11 @@
     :caption="caption"
     :time-label="timeLabel"
     :like-count="likeCount"
+    :comment-count="commentCount"
+    :share-count="shareCount"
     :comments="comments"
+    :comments-pending="commentsPending"
+    :comment-action-repository="commentActionRepository"
     :current-user-name="currentUserName"
     :current-user-avatar-url="currentUserAvatarUrl"
     :submitting-comment="submittingComment"
@@ -33,6 +37,7 @@
 import LightboxModal from "../../../lightbox/presentation/components/LightboxModal.vue"
 import type { FeedCommentRecord, FeedCommentSubmitPayload } from "../../domain/types/feed.types"
 import type { FeedStoryReactionType } from "../../domain/constants/story-reactions"
+import type { FeedCommentActionRepository } from "../../application/view-models/useFeedCommentItemVM"
 
 const { t } = useI18n()
 
@@ -46,7 +51,11 @@ const props = withDefaults(defineProps<{
   caption?: string
   timeLabel?: string
   likeCount?: number
+  commentCount?: number
+  shareCount?: number
   comments?: FeedCommentRecord[]
+  commentsPending?: boolean
+  commentActionRepository?: FeedCommentActionRepository
   currentUserName?: string
   currentUserAvatarUrl?: string
   submittingComment?: boolean
@@ -64,7 +73,10 @@ const props = withDefaults(defineProps<{
   caption: "",
   timeLabel: "",
   likeCount: 0,
+  commentCount: 0,
+  shareCount: 0,
   comments: () => [],
+  commentsPending: false,
   currentUserName: "",
   currentUserAvatarUrl: "",
   submittingComment: false,
@@ -88,7 +100,5 @@ const resolvedTitle = computed(() =>
   props.title || t("feed.lightboxViewer.title"),
 )
 
-const resolvedDescription = computed(() =>
-  props.description || t("feed.lightboxViewer.description", { count: props.items.length }),
-)
+const resolvedDescription = computed(() => props.description)
 </script>

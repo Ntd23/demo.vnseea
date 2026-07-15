@@ -1,6 +1,6 @@
 <!-- Description: Renders the backend-backed event detail page with real RSVP counts, attendee lists, and event posts. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1120px] space-y-4 pb-10">
     <section
       v-if="!pending && !event"
       class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-6 py-12 text-center shadow-[var(--shadow-sm)]"

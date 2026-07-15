@@ -22,8 +22,8 @@ export type CurrencyOption = {
 }
 
 const FALLBACK_CURRENCIES: CurrencyOption[] = [
-  { value: "0", label: "VND (₫)", symbol: "₫", code: "VND" },
-  { value: "1", label: "USD ($)", symbol: "$", code: "USD" },
+  { value: "VND", label: "VND (₫)", symbol: "₫", code: "VND" },
+  { value: "USD", label: "USD ($)", symbol: "$", code: "USD" },
 ]
 
 /**
@@ -56,16 +56,15 @@ export default defineEventHandler(async (event): Promise<CurrencyOption[]> => {
     }
 
     const mapped = rawCurrencies.map((item) => {
-      const code = decodeHtmlEntities(String(item.text || "").trim())
+      const code = decodeHtmlEntities(String(item.text || "").trim()).toUpperCase()
       const symbol = decodeHtmlEntities(String(item.symbol || "").trim())
-      const value = String(item.index ?? 0)
       return {
-        value,
-        label: code && symbol ? `${code} (${symbol})` : code || symbol || value,
+        value: code,
+        label: code && symbol ? `${code} (${symbol})` : code || symbol,
         symbol,
         code,
       }
-    }).filter(c => c.code || c.symbol)
+    }).filter(c => /^[A-Z]{3}$/.test(c.code))
 
     return mapped.length > 0 ? mapped : FALLBACK_CURRENCIES
   }
@@ -73,4 +72,3 @@ export default defineEventHandler(async (event): Promise<CurrencyOption[]> => {
     return FALLBACK_CURRENCIES
   }
 })
-

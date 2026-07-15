@@ -62,11 +62,16 @@
           :call-action-pending="isCallActionPending"
           :deleting-conversation="isDeletingConversation"
           :user-detail-docked="showDesktopUserDetailPane"
+          :product-card="productCard"
+          :product-context-pending="productContextPending"
+          :product-suggestions="productSuggestions"
           @typing-start="startComposerTyping"
           @typing-stop="stopComposerTyping"
           @toggle-info="infoPanelOpen = !infoPanelOpen"
           @load-more="loadOlderMessages"
-          @send="sendMessage"
+          @send="handleSendMessage"
+          @send-product-suggestion="handleSendProductSuggestion"
+          @dismiss-product-context="dismissProductContext"
           @toggle-reaction-picker="toggleReactionPicker"
           @select-reaction="reactToThreadMessage"
           @reply-message="replyToThreadMessage"
@@ -266,6 +271,7 @@ import MessagesMessageSidePanel from "../components/MessageSidePanel.vue"
 import MessagesUserDetailPanel from "../components/UserDetailPanel.vue"
 import { useMessageCalls } from "../../application/composables/useMessageCalls"
 import { useMessagesPageVM } from "../../application/view-models/useMessagesPageVM"
+import { useMessagesProductContext } from "../../application/composables/useMessagesProductContext"
 import type { MessageCallLogAction, MessageCallType } from "../../domain/types/calls.types"
 import type { MessageContact } from "../../domain/types/messages.types"
 
@@ -363,6 +369,16 @@ const {
   toggleReactionPicker,
 } = useMessagesPageVM()
 
+const {
+  decorateProductMessage,
+  dismissProductContext,
+  productCard,
+  productContextPending,
+  productSuggestions,
+  requestedProductId,
+  requestedSellerId,
+} = useMessagesProductContext(selectedContact)
+
 const chatEmptyTitle = computed(() =>
   activeTab.value === "multi"
     ? t("pages.messagesPage.multiTabTitle")
@@ -435,6 +451,28 @@ watch(selectedThreadKey, () => {
   infoPanelOpen.value = false
 })
 
+const openedRequestedConversationKey = ref("")
+const requestedConversationKey = computed(() =>
+  requestedSellerId.value > 0
+    ? `${requestedSellerId.value}:${requestedProductId.value}`
+    : "",
+)
+
+watch(
+  [requestedConversationKey, () => selectedContact.value?.userId],
+  ([requestKey, selectedUserId]) => {
+    if (
+      requestKey
+      && selectedUserId === requestedSellerId.value
+      && openedRequestedConversationKey.value !== requestKey
+    ) {
+      mobileListOpen.value = false
+      openedRequestedConversationKey.value = requestKey
+    }
+  },
+  { immediate: true, flush: "post" },
+)
+
 watch(showDesktopUserDetailPane, (value) => {
   if (value) {
     infoPanelOpen.value = false
@@ -462,6 +500,22 @@ function handleOpenChatFromMulti(contact: MessageContact) {
 function handleBackToList() {
   mobileListOpen.value = true
   infoPanelOpen.value = false
+}
+
+function handleSendMessage(input: Parameters<typeof sendMessage>[0]) {
+  if (productCard.value) {
+    clearReplyTarget()
+  }
+
+  sendMessage(decorateProductMessage(input))
+
+  if (productCard.value) {
+    dismissProductContext()
+  }
+}
+
+function handleSendProductSuggestion(text: string) {
+  handleSendMessage({ text })
 }
 
 async function startSelectedContactCall(input: MessageCallType | MessageCallLogAction) {

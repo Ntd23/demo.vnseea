@@ -1,6 +1,6 @@
 <!-- Description: Renders the legacy-style pages directory with a simple heading, tabs, and backend-backed list content. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 px-3 pb-10 sm:px-5 lg:px-6">
+  <div class="mx-auto max-w-[1120px] space-y-4 pb-10">
     <CommunityPageDirectoryTabsBar
       v-model:search="search"
       :tabs="tabItems"

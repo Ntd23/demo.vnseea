@@ -20,16 +20,15 @@ export const formatProductPrice = (
   product: ProductPriceLike,
   locale: string,
 ) => {
-  if (product.priceFormat) {
-    const symbol = product.currencySymbol?.trim()
-
-    return symbol ? `${symbol}${product.priceFormat}` : product.priceFormat
-  }
-
-  return formatCurrency(product.price, {
-    currency: product.currency || "VND",
-    currencySymbol: product.currencySymbol,
+  const currencyCode = product.currency?.trim().toUpperCase() || "VND"
+  const currencySymbol = product.currencySymbol?.trim()
+  const currencyUnit = currencyCode === "VND"
+    ? "VND"
+    : currencySymbol || currencyCode
+  const formattedAmount = product.priceFormat || formatCurrency(product.price, {
     currencyRule: product.currencyRule,
     locale,
   })
+
+  return `${formattedAmount}${currencyUnit}`
 }

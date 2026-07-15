@@ -1,5 +1,5 @@
 <template>
-  <div class="blogs-page mx-auto max-w-[1440px] space-y-5 px-3 pb-10 sm:px-5 lg:px-6">
+  <div class="blogs-page mx-auto max-w-[1440px] space-y-5 pb-10">
     <BlogsHero
       :article-count="articles.length"
       :mine-only="mineOnly"

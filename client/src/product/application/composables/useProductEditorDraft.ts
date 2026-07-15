@@ -2,7 +2,6 @@ import { computed, ref, watch, type ComputedRef, type Ref } from "vue"
 import { useStorage } from "@vueuse/core"
 import type {
   ConditionValue,
-  CurrencyValue,
   ProductEditorDraft,
 } from "../../domain/types/product-editor.types"
 
@@ -12,7 +11,6 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null
 
 const conditionValues = ["new", "like-new", "used"] as const satisfies readonly ConditionValue[]
-const currencyValues = ["USD", "VND", "EUR"] as const satisfies readonly CurrencyValue[]
 
 const extractStringValue = (value: unknown): string | null => {
   if (typeof value === "string") return value
@@ -49,7 +47,7 @@ const normalizeDraft = (value: unknown, fallback: ProductEditorDraft): ProductEd
       category: extractStringValue(fieldsSource.category) ?? fallbackFields.category,
       condition: normalizeEnumField(fieldsSource.condition, conditionValues, fallbackFields.condition),
       location: typeof fieldsSource.location === "string" ? fieldsSource.location : fallbackFields.location,
-      currency: normalizeEnumField(fieldsSource.currency, currencyValues, fallbackFields.currency),
+      currency: extractStringValue(fieldsSource.currency)?.toUpperCase() ?? fallbackFields.currency,
       stock: typeof fieldsSource.stock === "string" ? fieldsSource.stock : fallbackFields.stock,
     },
     removedImageIds: Array.isArray(value.removedImageIds)

@@ -1001,8 +1001,8 @@ async function handleOfferSaved() {
   .page-detail__body {
     grid-template-columns: minmax(0, 1fr) 360px;
     align-items: start;
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 1245px;
+    /* margin: 0 auto; */
   }
 }
 

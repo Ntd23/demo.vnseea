@@ -545,7 +545,10 @@
               v-for="message in miniSession.messages"
               :key="message.id"
               class="chat-widget__mini-message"
-              :class="{ 'chat-widget__mini-message--mine': message.isMine }"
+              :class="{
+                'chat-widget__mini-message--mine': message.isMine,
+                'chat-widget__mini-message--product': Boolean(getMiniProductMeta(message)),
+              }"
             >
               <ChatBubble
                 :text="getMiniBubbleText(message)"
@@ -570,6 +573,7 @@
                 :media-url="message.isDeleted ? undefined : message.mediaUrl"
                 :media-name="message.isDeleted ? undefined : message.mediaName"
                 :media-type="message.isDeleted ? undefined : message.mediaType"
+                :product-card="message.isDeleted ? undefined : getMiniProductMeta(message)?.card"
                 :call-log="message.isDeleted ? undefined : message.callLog"
                 class="chat-widget__mini-chat-bubble"
                 :class="{ 'chat-widget__mini-chat-bubble--deleted': message.isDeleted }"
@@ -584,7 +588,45 @@
           </div>
         </div>
 
-        <div v-if="miniReplyTarget || miniSession.attachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
+        <div v-if="miniSession.productDraft || miniReplyTarget || miniSession.attachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
+          <div v-if="miniSession.productDraft" class="chat-widget__mini-product-draft">
+            <span class="chat-widget__mini-product-image">
+              <img
+                v-if="miniSession.productDraft.imageUrl"
+                :src="miniSession.productDraft.imageUrl"
+                :alt="miniSession.productDraft.title"
+              >
+              <Icon v-else name="i-ph-package-duotone" class="h-6 w-6" />
+            </span>
+            <span class="chat-widget__mini-product-copy">
+              <strong>{{ miniSession.productDraft.title }}</strong>
+              <span>{{ miniSession.productDraft.price }}</span>
+            </span>
+            <button
+              type="button"
+              class="chat-widget__mini-preview-clear"
+              :title="$t('pages.productsPage.removeProductFromMessage')"
+              @click="clearMiniProductDraft(miniSession.contact.id)"
+            >
+              <Icon name="i-ph-x-bold" class="h-3 w-3" />
+            </button>
+          </div>
+          <div
+            v-if="miniSession.productDraft && miniSession.productSuggestions?.length"
+            class="chat-widget__product-suggestions"
+          >
+            <button
+              v-for="suggestion in miniSession.productSuggestions"
+              :key="suggestion"
+              type="button"
+              class="chat-widget__product-suggestion"
+              :disabled="miniSession.isSending || miniSubmittingMap[miniSession.contactId]"
+              @click="sendProductSuggestion(miniSession, suggestion)"
+            >
+              <span>{{ suggestion }}</span>
+              <Icon name="i-ph-paper-plane-tilt-fill" class="h-3.5 w-3.5 shrink-0" />
+            </button>
+          </div>
           <div v-if="miniReplyTarget" class="chat-widget__mini-reply-preview">
             <div class="chat-widget__mini-reply-copy">
               <strong>{{ miniReplyTitle }}</strong>
@@ -747,6 +789,7 @@ import { useMessageRecorder } from "../../../messages/application/composables/us
 import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
 import type { MessageCallType } from "../../../messages/domain/types/calls.types"
 import type { MessageContact, MessageItem } from "../../../messages/domain/types/messages.types"
+import { buildProductMessageText, getMessageProductMeta } from "../../../messages/application/utils/message-bubble-content"
 import { useChatWidgetVM } from "../../application/view-models/useChatWidgetVM"
 
 const tabs = [
@@ -840,6 +883,7 @@ const {
   deleteMiniMessage,
   onMiniFile,
   clearMiniFile,
+  clearMiniProductDraft,
   onFile,
   clearFile,
   openFullMessages,
@@ -1360,7 +1404,17 @@ function getMiniBubbleText(message: MessageItem) {
     return replyMeta.body
   }
 
+  const productMeta = getMiniProductMeta(message)
+
+  if (productMeta) {
+    return productMeta.body
+  }
+
   return normalizeMiniMessageText(message.text)
+}
+
+function getMiniProductMeta(message: MessageItem) {
+  return getMessageProductMeta(message)
 }
 
 function getMiniMessageTimelineTitle(message: MessageItem) {
@@ -1433,7 +1487,12 @@ async function submitMiniMessage(session: MiniChatSessionView) {
 
   miniSubmittingMap.value[contactId] = true
 
-  const text = buildMiniReplyText(trimmed)
+  const text = session.productDraft
+    ? buildProductMessageText({
+        text: trimmed,
+        product: session.productDraft,
+      })
+    : buildMiniReplyText(trimmed)
   session.message = ""
 
   await sendMiniMessage({
@@ -1441,8 +1500,39 @@ async function submitMiniMessage(session: MiniChatSessionView) {
     textOverride: text,
     record: activeMiniRecordDraft.value,
   })
+  clearMiniProductDraft(contactId)
   miniReplyTarget.value = null
   clearMiniRecording()
+
+  setTimeout(() => {
+    miniSubmittingMap.value[contactId] = false
+  }, 300)
+}
+
+async function sendProductSuggestion(session: MiniChatSessionView, suggestion: string) {
+  const contactId = session.contactId
+
+  if (
+    miniSubmittingMap.value[contactId]
+    || session.isSending
+    || !session.productDraft
+    || !suggestion.trim()
+  ) {
+    return
+  }
+
+  miniSubmittingMap.value[contactId] = true
+  session.message = ""
+
+  await sendMiniMessage({
+    contactId,
+    textOverride: buildProductMessageText({
+      text: suggestion,
+      product: session.productDraft,
+    }),
+  })
+
+  clearMiniProductDraft(contactId)
 
   setTimeout(() => {
     miniSubmittingMap.value[contactId] = false
@@ -1522,6 +1612,10 @@ watch(
 watch(miniChatAutoOpenVersion, (version) => {
   if (version > 0) {
     activeMiniHeaderContactId.value = null
+    miniReplyTarget.value = null
+    activeMiniReactionPickerId.value = null
+    clearMiniRecording()
+    nextTick(() => scrollMiniMessagesToBottom())
   }
 })
 </script>
@@ -2378,6 +2472,14 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding-inline: 38px 0;
 }
 
+.chat-widget__mini-message--product {
+  padding-inline-end: 20px;
+}
+
+.chat-widget__mini-message--mine.chat-widget__mini-message--product {
+  padding-inline: 20px 0;
+}
+
 .chat-widget__mini-chat-bubble--deleted :deep(.chat-bubble) {
   background: #f1f5f9 !important;
   color: #64748b !important;
@@ -2390,6 +2492,10 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper) {
   max-width: 100%;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--product) {
+  width: min(272px, 100%);
 }
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble) {
@@ -2537,6 +2643,143 @@ watch(miniChatAutoOpenVersion, (version) => {
   border-top: 1px solid #f1f5f9;
   background: #ffffff;
   padding: 8px 12px 0;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-card) {
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 6px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-media) {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-copy) {
+  gap: 3px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-copy strong) {
+  font-size: 12px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-copy span) {
+  font-size: 13px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-card + .chat-bubble__text) {
+  margin-top: 8px;
+  padding-inline: 2px;
+}
+
+.chat-widget__mini-product-draft {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 52px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 7px;
+}
+
+.chat-widget__mini-product-image {
+  display: flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.chat-widget__mini-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-widget__mini-product-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-widget__mini-product-copy strong {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-widget__mini-product-copy span {
+  color: var(--color-primary-600, #0000ff);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.chat-widget__product-suggestions {
+  display: grid;
+  gap: 6px;
+  padding: 2px 0 4px;
+}
+
+.chat-widget__product-suggestions-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 2px 1px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.chat-widget__product-suggestions-title .iconify {
+  color: #6366f1;
+}
+
+.chat-widget__product-suggestion {
+  display: flex;
+  width: 100%;
+  min-height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 7px 9px;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.chat-widget__product-suggestion:hover:not(:disabled),
+.chat-widget__product-suggestion:focus-visible:not(:disabled) {
+  border-color: rgba(0, 0, 255, 0.3);
+  background: #f4f5ff;
+  color: #0000ff;
+  transform: translateY(-1px);
+}
+
+.chat-widget__product-suggestion:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .chat-widget__mini-reply-preview,

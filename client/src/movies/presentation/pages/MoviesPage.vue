@@ -1,6 +1,6 @@
 <template>
   <div class="movies-page py-4">
-    <div class="container mx-auto px-4 sm:px-6">
+    <div class="container mx-auto">
       <section class="movies-page__filters">
         <div class="movies-page__search">
           <Icon name="i-ph-magnifying-glass-bold" class="movies-page__search-icon" />
