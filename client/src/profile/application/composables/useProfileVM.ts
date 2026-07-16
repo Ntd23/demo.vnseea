@@ -63,6 +63,19 @@ export function useProfileVM(
       value,
     );
 
+  const resolveProfileMediaPostId = async (kind: "avatar" | "cover") => {
+    if (!resolvedUsername.value) {
+      return 0;
+    }
+
+    const result = await repository.getProfileMediaPost({
+      username: resolvedUsername.value,
+      kind,
+    });
+
+    return Number(result.postId ?? 0) || 0;
+  };
+
   const copy = computed(() => ({
     tabs: {
       timeline: t("pages.profilePage.tabs.timeline"),
@@ -297,7 +310,9 @@ export function useProfileVM(
       headline: apiProfile.headline,
       bio: apiProfile.bio,
       coverImage: apiProfile.coverImage,
+      coverPostId: apiProfile.coverPostId,
       avatarUrl: apiProfile.avatarUrl,
+      avatarPostId: apiProfile.avatarPostId,
       avatarText: apiProfile.avatarText,
       verified: apiProfile.verified,
       isOwner: apiProfile.isOwner,
@@ -574,6 +589,7 @@ export function useProfileVM(
     products,
     productsExpanded,
     refresh,
+    resolveProfileMediaPostId,
     selectProfileTab,
     status,
     tabs,

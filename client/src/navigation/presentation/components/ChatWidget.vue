@@ -284,6 +284,8 @@
           <button
             class="chat-widget__contact"
             type="button"
+            @pointerenter="prefetchMiniThread(contact)"
+            @focus="prefetchMiniThread(contact)"
             @click="openMiniChat(contact)"
           >
             <div class="chat-widget__contact-avatar-wrap">
@@ -554,7 +556,10 @@
               v-for="message in miniSession.messages"
               :key="message.id"
               class="chat-widget__mini-message"
-              :class="{ 'chat-widget__mini-message--mine': message.isMine }"
+              :class="{
+                'chat-widget__mini-message--mine': message.isMine,
+                'chat-widget__mini-message--product': Boolean(getMiniProductMeta(message)),
+              }"
             >
               <ChatBubble
                 :text="getMiniBubbleText(message)"
@@ -579,6 +584,7 @@
                 :media-url="message.isDeleted ? undefined : message.mediaUrl"
                 :media-name="message.isDeleted ? undefined : message.mediaName"
                 :media-type="message.isDeleted ? undefined : message.mediaType"
+                :product-card="message.isDeleted ? undefined : getMiniProductMeta(message)?.card"
                 :call-log="message.isDeleted ? undefined : message.callLog"
                 class="chat-widget__mini-chat-bubble"
                 :class="{ 'chat-widget__mini-chat-bubble--deleted': message.isDeleted }"
@@ -593,7 +599,45 @@
           </div>
         </div>
 
-        <div v-if="miniReplyTarget || miniSession.attachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
+        <div v-if="miniSession.productDraft || miniReplyTarget || miniSession.attachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
+          <div v-if="miniSession.productDraft" class="chat-widget__mini-product-draft">
+            <span class="chat-widget__mini-product-image">
+              <img
+                v-if="miniSession.productDraft.imageUrl"
+                :src="miniSession.productDraft.imageUrl"
+                :alt="miniSession.productDraft.title"
+              >
+              <Icon v-else name="i-ph-package-duotone" class="h-6 w-6" />
+            </span>
+            <span class="chat-widget__mini-product-copy">
+              <strong>{{ miniSession.productDraft.title }}</strong>
+              <span>{{ miniSession.productDraft.price }}</span>
+            </span>
+            <button
+              type="button"
+              class="chat-widget__mini-preview-clear"
+              :title="$t('pages.productsPage.removeProductFromMessage')"
+              @click="clearMiniProductDraft(miniSession.contact.id)"
+            >
+              <Icon name="i-ph-x-bold" class="h-3 w-3" />
+            </button>
+          </div>
+          <div
+            v-if="miniSession.productDraft && miniSession.productSuggestions?.length"
+            class="chat-widget__product-suggestions"
+          >
+            <button
+              v-for="suggestion in miniSession.productSuggestions"
+              :key="suggestion"
+              type="button"
+              class="chat-widget__product-suggestion"
+              :disabled="miniSession.isSending || miniSubmittingMap[miniSession.contactId]"
+              @click="sendProductSuggestion(miniSession, suggestion)"
+            >
+              <span>{{ suggestion }}</span>
+              <Icon name="i-ph-paper-plane-tilt-fill" class="h-3.5 w-3.5 shrink-0" />
+            </button>
+          </div>
           <div v-if="miniReplyTarget" class="chat-widget__mini-reply-preview">
             <div class="chat-widget__mini-reply-copy">
               <strong>{{ miniReplyTitle }}</strong>
@@ -745,21 +789,22 @@
         </div>
       </Transition>
     </Teleport>
+    </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
-
-const collapsed = ref(false)
 import { defaultFeedReactionAsset, feedReactionAssetByValue, feedReactionAssets, type FeedReactionAsset } from "../../../feed/application/constants/reaction-assets"
 import { useMessageCalls } from "../../../messages/application/composables/useMessageCalls"
 import { useMessageRecorder } from "../../../messages/application/composables/useMessageRecorder"
 import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
 import type { MessageCallType } from "../../../messages/domain/types/calls.types"
 import type { MessageContact, MessageItem } from "../../../messages/domain/types/messages.types"
+import { buildProductMessageText, getMessageProductMeta } from "../../../messages/application/utils/message-bubble-content"
 import { useChatWidgetVM } from "../../application/view-models/useChatWidgetVM"
+
+const collapsed = ref(false)
 
 const tabs = [
   {
@@ -843,6 +888,7 @@ const {
   toggleAllVisibleSendRecipients,
   toggleSendRecipient,
   openMiniChat: openMiniChatVm,
+  prefetchMiniThread,
   closeMiniChat: closeMiniChatVm,
   minimizeMiniChat,
   restoreMiniChat,
@@ -852,6 +898,7 @@ const {
   deleteMiniMessage,
   onMiniFile,
   clearMiniFile,
+  clearMiniProductDraft,
   onFile,
   clearFile,
   openFullMessages,
@@ -1372,7 +1419,17 @@ function getMiniBubbleText(message: MessageItem) {
     return replyMeta.body
   }
 
+  const productMeta = getMiniProductMeta(message)
+
+  if (productMeta) {
+    return productMeta.body
+  }
+
   return normalizeMiniMessageText(message.text)
+}
+
+function getMiniProductMeta(message: MessageItem) {
+  return getMessageProductMeta(message)
 }
 
 function getMiniMessageTimelineTitle(message: MessageItem) {
@@ -1445,7 +1502,12 @@ async function submitMiniMessage(session: MiniChatSessionView) {
 
   miniSubmittingMap.value[contactId] = true
 
-  const text = buildMiniReplyText(trimmed)
+  const text = session.productDraft
+    ? buildProductMessageText({
+        text: trimmed,
+        product: session.productDraft,
+      })
+    : buildMiniReplyText(trimmed)
   session.message = ""
 
   await sendMiniMessage({
@@ -1453,8 +1515,39 @@ async function submitMiniMessage(session: MiniChatSessionView) {
     textOverride: text,
     record: activeMiniRecordDraft.value,
   })
+  clearMiniProductDraft(contactId)
   miniReplyTarget.value = null
   clearMiniRecording()
+
+  setTimeout(() => {
+    miniSubmittingMap.value[contactId] = false
+  }, 300)
+}
+
+async function sendProductSuggestion(session: MiniChatSessionView, suggestion: string) {
+  const contactId = session.contactId
+
+  if (
+    miniSubmittingMap.value[contactId]
+    || session.isSending
+    || !session.productDraft
+    || !suggestion.trim()
+  ) {
+    return
+  }
+
+  miniSubmittingMap.value[contactId] = true
+  session.message = ""
+
+  await sendMiniMessage({
+    contactId,
+    textOverride: buildProductMessageText({
+      text: suggestion,
+      product: session.productDraft,
+    }),
+  })
+
+  clearMiniProductDraft(contactId)
 
   setTimeout(() => {
     miniSubmittingMap.value[contactId] = false
@@ -1534,6 +1627,10 @@ watch(
 watch(miniChatAutoOpenVersion, (version) => {
   if (version > 0) {
     activeMiniHeaderContactId.value = null
+    miniReplyTarget.value = null
+    activeMiniReactionPickerId.value = null
+    clearMiniRecording()
+    nextTick(() => scrollMiniMessagesToBottom())
   }
 })
 </script>
@@ -1559,16 +1656,16 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__body {
   display: flex;
-  flex-direction: column;
   flex: 1;
   min-height: 0;
+  flex-direction: column;
   overflow: visible;
 }
 
 .chat-widget__toggle-btn {
-  border-left: 1px solid #f1f5f9;
   margin-left: 2px;
   padding-left: 8px;
+  border-left: 1px solid #f1f5f9;
 }
 
 .chat-widget__header {
@@ -2410,6 +2507,14 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding-inline: 38px 0;
 }
 
+.chat-widget__mini-message--product {
+  padding-inline-end: 20px;
+}
+
+.chat-widget__mini-message--mine.chat-widget__mini-message--product {
+  padding-inline: 20px 0;
+}
+
 .chat-widget__mini-chat-bubble--deleted :deep(.chat-bubble) {
   background: #f1f5f9 !important;
   color: #64748b !important;
@@ -2422,6 +2527,10 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper) {
   max-width: 100%;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--product) {
+  width: min(272px, 100%);
 }
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble) {
@@ -2569,6 +2678,143 @@ watch(miniChatAutoOpenVersion, (version) => {
   border-top: 1px solid #f1f5f9;
   background: #ffffff;
   padding: 8px 12px 0;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-card) {
+  grid-template-columns: 46px minmax(0, 1fr) auto;
+  gap: 8px;
+  border-radius: 10px;
+  padding: 6px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-media) {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-copy) {
+  gap: 3px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-copy strong) {
+  font-size: 12px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-copy span) {
+  font-size: 13px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__product-card + .chat-bubble__text) {
+  margin-top: 8px;
+  padding-inline: 2px;
+}
+
+.chat-widget__mini-product-draft {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 52px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #dbe3ef;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 7px;
+}
+
+.chat-widget__mini-product-image {
+  display: flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 9px;
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.chat-widget__mini-product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chat-widget__mini-product-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-widget__mini-product-copy strong {
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-widget__mini-product-copy span {
+  color: var(--color-primary-600, #0000ff);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.chat-widget__product-suggestions {
+  display: grid;
+  gap: 6px;
+  padding: 2px 0 4px;
+}
+
+.chat-widget__product-suggestions-title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 2px 1px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.chat-widget__product-suggestions-title .iconify {
+  color: #6366f1;
+}
+
+.chat-widget__product-suggestion {
+  display: flex;
+  width: 100%;
+  min-height: 34px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 7px 9px;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.chat-widget__product-suggestion:hover:not(:disabled),
+.chat-widget__product-suggestion:focus-visible:not(:disabled) {
+  border-color: rgba(0, 0, 255, 0.3);
+  background: #f4f5ff;
+  color: #0000ff;
+  transform: translateY(-1px);
+}
+
+.chat-widget__product-suggestion:disabled {
+  cursor: wait;
+  opacity: 0.55;
 }
 
 .chat-widget__mini-reply-preview,
@@ -2766,10 +3012,6 @@ watch(miniChatAutoOpenVersion, (version) => {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.chat-widget__mini-launcher--2 {
-  bottom: 128px;
-}
-
 .chat-widget__mini-launcher:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.22);
@@ -2895,6 +3137,208 @@ watch(miniChatAutoOpenVersion, (version) => {
   background: #f1f5f9;
   color: inherit;
   transition: background 0.12s ease;
+}
+  /* height: 42px;
+  border: 1px solid #dbe3f2 !important;
+  border-radius: 999px !important;
+  background: #f8fafc !important;
+  padding: 0 16px !important;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: none !important;
+  outline: none;
+} */
+
+:deep(.chat-widget__mini-input-control:focus) {
+  border-color: rgba(0, 0, 255, 0.28) !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06) !important;
+}
+
+:deep(.chat-widget__mini-input-control::placeholder) {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.chat-widget__mini-send-btn {
+  position: absolute !important;
+  top: 50% !important;
+  right: 4px !important;
+  display: inline-flex;
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px !important;
+  background: transparent !important;
+  color: var(--ui-primary) !important;
+  cursor: pointer;
+  box-shadow: none !important;
+  transform: translateY(-50%);
+}
+
+.chat-widget__mini-send-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.chat-widget__mini-send-btn:disabled {
+  color: color-mix(in srgb, var(--ui-primary) 42%, transparent) !important;
+  cursor: default;
+  opacity: 1;
+}
+
+.chat-widget__mini-launcher {
+  position: absolute;
+  right: 14px;
+  bottom: 72px;
+  z-index: 60;
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chat-widget__mini-launcher--2 {
+  bottom: 128px;
+}
+
+.chat-widget__mini-launcher:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.22);
+}
+
+.chat-widget__mini-launcher-group {
+  display: flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(0, 0, 255, 0.08);
+  color: #0000ff;
+}
+
+/* ── Avatar contact button ── */
+.chat-widget__contact-wrapper {
+  position: relative;
+}
+
+.chat-widget__contact-avatar-btn {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chat-widget__contact-avatar-btn:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 0 2.5px rgba(0, 0, 255, 0.22);
+}
+
+/* ── Avatar context menu ── */
+.chat-widget__avatar-menu {
+  min-width: 224px;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: #ffffff;
+  padding: 6px 0;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18), 0 4px 14px rgba(15, 23, 42, 0.08);
+  transform-origin: top left;
+}
+
+.chat-widget__avatar-menu-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 12px;
+}
+
+.chat-widget__avatar-menu-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 3px;
+}
+
+.chat-widget__avatar-menu-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-widget__avatar-menu-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.chat-widget__avatar-menu-status--online {
+  color: #16a34a;
+}
+
+.chat-widget__avatar-menu-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.chat-widget__avatar-menu-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 4px 0;
+}
+
+.chat-widget__avatar-menu-item {
+  display: flex;
+  width: 100%;
+  min-height: 42px;
+  align-items: center;
+  gap: 11px;
+  border: none;
+  background: transparent;
+  padding: 8px 14px;
+  color: #111827;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.chat-widget__avatar-menu-item:hover {
+  background: #f1f5f9;
+  color: #0000ff;
+}
+
+.chat-widget__avatar-menu-item--danger {
+  color: #dc2626;
+}
+
+.chat-widget__avatar-menu-item--danger:hover {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .chat-widget__message-avatar-menu {
@@ -3040,7 +3484,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 </style>
 
 <style>
-/* Global: shrink and push collapsed chat widget container to bottom of sidebar */
+/* Keep the collapsed widget docked at the bottom of the right sidebar. */
 div:has(> .chat-widget--collapsed) {
   flex: 0 0 auto !important;
   height: auto !important;

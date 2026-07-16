@@ -1131,6 +1131,7 @@ const {
   products,
   productsExpanded,
   refresh,
+  resolveProfileMediaPostId,
   selectProfileTab,
   tabs,
   timelineHasMore,
@@ -1155,6 +1156,7 @@ const profileMediaUploading = ref<"avatar" | "cover" | null>(null);
 const profileMediaViewer = ref<{ src: string; alt: string } | null>(null);
 const profileCropDraft = ref<{ kind: "avatar" | "cover"; file: File } | null>(null);
 const profileLightboxPost = ref<FeedPostRecord | null>(null);
+let profileImageDetailRequestId = 0;
 const toast = useToast();
 const { t } = useI18n();
 const feedRepository = createApiFeedRepository();
@@ -1318,11 +1320,85 @@ function openProfileMediaViewer(kind: "avatar" | "cover") {
   };
 }
 
+function normalizeProfileMediaUrl(value: string | undefined) {
+  if (!value) {
+    return "";
+  }
+
+  try {
+    const pathname = decodeURIComponent(new URL(value, "https://profile-media.local").pathname);
+    return pathname
+      .replace(/\\/g, "/")
+      .replace(/_full(?=\.[^./]+$)/i, "")
+      .replace(/\/{2,}/g, "/")
+      .toLowerCase();
+  } catch {
+    return value
+      .split(/[?#]/, 1)[0]
+      ?.replace(/\\/g, "/")
+      .replace(/_full(?=\.[^./]+$)/i, "")
+      .toLowerCase() ?? "";
+  }
+}
+
+function findProfileImageMediaIndex(post: FeedPostRecord, imageUrl: string) {
+  const target = normalizeProfileMediaUrl(imageUrl);
+  const targetFileName = target.split("/").at(-1) ?? "";
+
+  if (!target) {
+    return -1;
+  }
+
+  return post.mediaItems.findIndex((item) => {
+    const candidate = normalizeProfileMediaUrl(item.src);
+    const candidateFileName = candidate.split("/").at(-1) ?? "";
+
+    return candidate === target
+      || Boolean(targetFileName && candidateFileName === targetFileName);
+  });
+}
+
+function prepareProfileImagePost(post: FeedPostRecord, imageUrl: string) {
+  // A post resolved by its backend ID is authoritative. Media hosts can differ
+  // between profile data and post data (origin/CDN), so a URL mismatch must not
+  // downgrade a valid post to the standalone image viewer.
+  if (post.mediaItems.length > 0) {
+    return post;
+  }
+
+  return {
+    ...post,
+    mediaItems: [
+      {
+        type: "image" as const,
+        src: imageUrl,
+        alt: profile.value?.displayName || profile.value?.username || "Profile image",
+      },
+    ],
+    primaryMediaType: "image" as const,
+  };
+}
+
+function findLoadedProfileImagePost(postId: number, imageUrl: string) {
+  const candidates = [...timelinePosts.value, ...photos.value];
+  const postById = postId > 0
+    ? candidates.find(post => Number(post.id) === postId)
+    : undefined;
+  const preparedPostById = postById ? prepareProfileImagePost(postById, imageUrl) : null;
+
+  if (preparedPostById) {
+    return preparedPostById;
+  }
+
+  return candidates.find(post => findProfileImageMediaIndex(post, imageUrl) >= 0) ?? null;
+}
+
 async function openProfileImagePostDetail(kind: "avatar" | "cover") {
+  const requestId = ++profileImageDetailRequestId;
   const currentProfile = profile.value;
-  const postId = kind === "avatar"
+  let postId = Number(kind === "avatar"
     ? currentProfile?.avatarPostId ?? 0
-    : currentProfile?.coverPostId ?? 0;
+    : currentProfile?.coverPostId ?? 0);
   const imageUrl = kind === "avatar"
     ? currentProfile?.avatarUrl
     : currentProfile?.coverImage;
@@ -1331,19 +1407,44 @@ async function openProfileImagePostDetail(kind: "avatar" | "cover") {
     return;
   }
 
-  if (postId > 0) {
-    const loadedPost = timelinePosts.value.find(post => Number(post.id) === Number(postId));
+  const loadedPost = findLoadedProfileImagePost(postId, imageUrl);
 
-    if (loadedPost?.mediaItems.length) {
-      openProfilePostLightbox(loadedPost);
+  if (loadedPost) {
+    openProfilePostLightbox(loadedPost, imageUrl);
+    return;
+  }
+
+  if (postId <= 0) {
+    try {
+      postId = await resolveProfileMediaPostId(kind);
+    } catch {
+      postId = 0;
+    }
+
+    if (requestId !== profileImageDetailRequestId) {
       return;
     }
 
+    const resolvedLoadedPost = findLoadedProfileImagePost(postId, imageUrl);
+
+    if (resolvedLoadedPost) {
+      openProfilePostLightbox(resolvedLoadedPost, imageUrl);
+      return;
+    }
+  }
+
+  if (postId > 0) {
     try {
       const post = await feedRepository.getPostById(postId);
 
-      if (post?.mediaItems.length) {
-        openProfilePostLightbox(post);
+      if (requestId !== profileImageDetailRequestId) {
+        return;
+      }
+
+      const preparedPost = post ? prepareProfileImagePost(post, imageUrl) : null;
+
+      if (preparedPost) {
+        openProfilePostLightbox(preparedPost, imageUrl);
         return;
       }
     } catch {
@@ -1351,13 +1452,16 @@ async function openProfileImagePostDetail(kind: "avatar" | "cover") {
     }
   }
 
-  openProfileMediaViewer(kind);
+  if (requestId === profileImageDetailRequestId) {
+    openProfileMediaViewer(kind);
+  }
 }
 
-function openProfilePostLightbox(post: FeedPostRecord) {
+function openProfilePostLightbox(post: FeedPostRecord, imageUrl: string) {
   profileMediaViewer.value = null;
   profileLightboxPost.value = post;
-  void nextTick(() => openProfileLightboxMedia(0));
+  const mediaIndex = Math.max(0, findProfileImageMediaIndex(post, imageUrl));
+  void nextTick(() => openProfileLightboxMedia(mediaIndex));
 }
 
 async function openProfileCoverDetail() {

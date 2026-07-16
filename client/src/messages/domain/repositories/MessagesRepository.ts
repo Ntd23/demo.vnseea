@@ -23,7 +23,10 @@ import type { FeedStoryReactionType } from "../../../feed/domain/constants/story
 export interface MessagesRepository {
   getInbox(): Promise<MessageContact[]>
   getTags(): Promise<MessageTagsPayload>
-  getThread(contact: MessageContact, options?: { beforeId?: number }): Promise<MessageThread>
+  getThread(contact: MessageContact, options?: {
+    beforeId?: number
+    includeReactions?: boolean
+  }): Promise<MessageThread>
   sendMessage(contact: MessageContact, input: MessageSendDraft): Promise<MessageItem[]>
   reactToMessage(input: { messageId: number, reaction: FeedStoryReactionType }): Promise<MessageActionResult & {
     messageId: number

@@ -8,6 +8,7 @@ import type {
   MessageComposerDraft,
   MessageContact,
   MessageProductCard,
+  MessageProductLaunchContext,
 } from "../../domain/types/messages.types"
 import { buildProductMessageText } from "../utils/message-bubble-content"
 
@@ -26,12 +27,25 @@ export function useMessagesProductContext(
   const { locale, t } = useI18n()
   const repository = createApiProductRepository()
   const dismissedProductId = ref("")
+  const launchContext = useState<MessageProductLaunchContext | null>(
+    "messages:product-launch-context",
+    () => null,
+  )
 
   const requestedProductId = computed(() => normalizeQueryValue(route.query.productId))
   const requestedSellerId = computed(() => {
     const value = Number(normalizeQueryValue(route.query.userId))
 
     return Number.isInteger(value) && value > 0 ? value : 0
+  })
+  const matchingLaunchContext = computed(() => {
+    const context = launchContext.value
+
+    return context
+      && context.sellerId === requestedSellerId.value
+      && context.product.id === requestedProductId.value
+      ? context
+      : null
   })
 
   const {
@@ -41,11 +55,11 @@ export function useMessagesProductContext(
     () => requestedProductId.value
       ? `messages:product-context:${requestedProductId.value}`
       : "messages:product-context:none",
-    () => requestedProductId.value
+    () => requestedProductId.value && !matchingLaunchContext.value
       ? repository.getById(requestedProductId.value)
       : Promise.resolve(null),
     {
-      watch: [requestedProductId],
+      watch: [requestedProductId, matchingLaunchContext],
       default: () => null,
     },
   )
@@ -61,13 +75,23 @@ export function useMessagesProductContext(
   )
 
   const productCard = computed<MessageProductCard | null>(() => {
+    const contextProduct = matchingLaunchContext.value?.product
     const product = requestedProduct.value
+
+    if (
+      !belongsToSelectedConversation.value
+      || dismissedProductId.value === requestedProductId.value
+    ) {
+      return null
+    }
+
+    if (contextProduct) {
+      return contextProduct
+    }
 
     if (
       !product
       || String(product.id) !== requestedProductId.value
-      || !belongsToSelectedConversation.value
-      || dismissedProductId.value === requestedProductId.value
       || (product.sellerId && product.sellerId !== requestedSellerId.value)
     ) {
       return null
@@ -82,17 +106,24 @@ export function useMessagesProductContext(
     }
   })
 
-  const productSuggestions = computed(() => [
-    t("pages.productsPage.productInquiryMessage"),
-    t("pages.productsPage.productAvailabilityMessage"),
-    t("pages.productsPage.productNegotiationMessage"),
-  ])
+  const productSuggestions = computed(() => {
+    const suggestions = matchingLaunchContext.value?.suggestions
+
+    return suggestions?.length
+      ? suggestions
+      : [
+          t("pages.productsPage.productInquiryMessage"),
+          t("pages.productsPage.productAvailabilityMessage"),
+          t("pages.productsPage.productNegotiationMessage"),
+        ]
+  })
 
   const productContextPending = computed(() =>
     Boolean(
       requestedProductId.value
       && belongsToSelectedConversation.value
       && dismissedProductId.value !== requestedProductId.value
+      && !matchingLaunchContext.value
       && productStatus.value === "pending",
     ),
   )
@@ -113,6 +144,9 @@ export function useMessagesProductContext(
 
   function dismissProductContext() {
     dismissedProductId.value = requestedProductId.value
+    if (matchingLaunchContext.value) {
+      launchContext.value = null
+    }
   }
 
   return {

@@ -30,13 +30,17 @@ const MESSAGES_API = {
   tags: "messages/tags",
 } as const
 
-const createThreadQuery = (contact: MessageContact, beforeId?: number) => ({
+const createThreadQuery = (contact: MessageContact, options?: {
+  beforeId?: number
+  includeReactions?: boolean
+}) => ({
   type: contact.type,
   userId: contact.userId,
   groupId: contact.groupId,
   pageId: contact.pageId,
   recipientId: contact.recipientId,
-  beforeId,
+  beforeId: options?.beforeId,
+  includeReactions: options?.includeReactions === false ? 0 : undefined,
 })
 
 const normalizeRecipientIds = (recipientIds: number[]) =>
@@ -124,10 +128,13 @@ export function createApiMessagesRepository(): MessagesRepository {
     async getTags() {
       return await client.get<MessageTagsPayload>(apiRoutes.messages.tags)
     },
-    async getThread(contact: MessageContact, options?: { beforeId?: number }) {
+    async getThread(contact: MessageContact, options?: {
+      beforeId?: number
+      includeReactions?: boolean
+    }) {
       return await client.get<MessageThread>(
         apiRoutes.messages.thread,
-        createThreadQuery(contact, options?.beforeId),
+        createThreadQuery(contact, options),
       )
     },
     async sendMessage(contact: MessageContact, input: MessageSendDraft) {
