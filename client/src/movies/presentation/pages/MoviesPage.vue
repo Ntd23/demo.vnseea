@@ -1,3 +1,4 @@
+<!-- English description: Displays the real backend movie catalog with search, filters, sorting tabs, and cursor pagination. -->
 <template>
   <div class="movies-page py-4">
     <div class="container mx-auto">
@@ -57,7 +58,7 @@
               </button>
             </div>
 
-            <button class="movies-page__reset" type="button" @click="resetFilters">
+            <button class="movies-page__reset" type="button" @click="resetPageFilters">
               <Icon name="i-ph-arrow-counter-clockwise-bold" class="h-4 w-4" />
               {{ $t("pages.moviesPage.resetFilters") }}
             </button>
@@ -70,9 +71,23 @@
       </section>
 
       <section class="movies-page__content">
-        <div v-if="visibleMovies.length > 0" class="movies-page__grid">
+        <div v-if="loading && items.length === 0" class="movies-page__grid" aria-busy="true">
+          <div v-for="index in 12" :key="index" class="movies-page__skeleton" aria-hidden="true">
+            <div class="movies-page__skeleton-poster" />
+            <div class="movies-page__skeleton-line movies-page__skeleton-line--title" />
+            <div class="movies-page__skeleton-line" />
+          </div>
+        </div>
+
+        <div v-else-if="errorMessage" class="movies-page__empty" role="alert">
+          <Icon name="i-ph-warning-circle-bold" class="h-9 w-9" />
+          <span>{{ errorMessage }}</span>
+          <button type="button" @click="refresh">Thử lại</button>
+        </div>
+
+        <div v-else-if="items.length > 0" class="movies-page__grid">
           <MoviesCard
-            v-for="movie in visibleMovies"
+            v-for="movie in items"
             :key="movie.id"
             :genre-label="genreLabelMap[movie.genre] || movie.genre"
             :movie="movie"
@@ -82,15 +97,24 @@
         <div v-else class="movies-page__empty">
           <Icon name="i-ph-film-strip-bold" class="h-9 w-9" />
           <span>{{ $t("pages.moviesPage.emptyTitle") }}</span>
-          <button type="button" @click="resetFilters">
+          <button type="button" @click="resetPageFilters">
             {{ $t("pages.moviesPage.resetFilters") }}
           </button>
         </div>
 
-        <div v-if="hasMoreMovies" class="movies-page__load-more">
-          <button class="movies-page__load-more-button" type="button" @click="visibleCount += pageSize">
-            <Icon name="i-ph-arrow-down-bold" class="h-4 w-4" />
-            Tải thêm
+        <div v-if="hasMore && !errorMessage" class="movies-page__load-more">
+          <button
+            class="movies-page__load-more-button"
+            type="button"
+            :disabled="loadingMore"
+            @click="loadMore"
+          >
+            <Icon
+              :name="loadingMore ? 'i-ph-spinner-gap-bold' : 'i-ph-arrow-down-bold'"
+              class="h-4 w-4"
+              :class="{ 'movies-page__spinner': loadingMore }"
+            />
+            {{ loadingMore ? "Đang tải" : "Tải thêm" }}
           </button>
         </div>
       </section>
@@ -101,92 +125,43 @@
 <script setup lang="ts">
 import MoviesCard from "../components/Card.vue"
 import MoviesTabs from "../components/Tabs.vue"
-import type { MovieTabId } from "../components/Tabs.vue"
-import { useMockMoviesData } from "../../application/composables/useMockMoviesData"
+import type { MovieTabId } from "../../domain/types/movies.types"
+import { useMoviesPageVM } from "../../application/view-models/useMoviesPageVM"
 
-const { movies } = useMockMoviesData()
 const { t: translate } = useI18n()
+const {
+  search,
+  activeTab,
+  selectedGenre,
+  selectedCountry,
+  items,
+  genres,
+  countries,
+  genreLabelMap,
+  loading,
+  loadingMore,
+  errorMessage,
+  hasMore,
+  loadMore,
+  resetFilters,
+  refresh,
+} = useMoviesPageVM()
 
 useSeoMeta({
   title: () => translate("pages.moviesPage.seoTitle"),
   description: () => translate("pages.moviesPage.seoDescription"),
 })
 
-const pageSize = 26
-const search = ref("")
-const activeTab = ref<MovieTabId>("new")
-const selectedGenre = ref("all")
-const selectedCountry = ref("all")
-const visibleCount = ref(pageSize)
 const isFilterOpen = ref(false)
 const genreOpen = ref(false)
 const countryOpen = ref(false)
 const filterMenuRef = ref<HTMLElement | null>(null)
-
-const genres = [
-  { label: "Tất cả", value: "all" },
-  { label: "Tài liệu", value: "documentary" },
-  { label: "Chính kịch", value: "drama" },
-  { label: "Hành động", value: "action" },
-  { label: "Hài hước", value: "comedy" },
-  { label: "Tình cảm", value: "romance" },
-  { label: "Kinh dị", value: "horror" },
-  { label: "Viễn tưởng", value: "sci-fi" },
-]
-
-const countries = [
-  { label: "Tất cả", value: "all" },
-  { label: "Việt Nam", value: "vietnam" },
-  { label: "Âu Mỹ", value: "usa" },
-  { label: "Hàn Quốc", value: "korea" },
-  { label: "Nhật Bản", value: "japan" },
-  { label: "Trung Quốc", value: "china" },
-]
-
-const genreLabelMap = computed(() =>
-  Object.fromEntries(genres.map(genre => [genre.value, genre.label])) as Record<string, string>,
-)
 
 const navigationTabs = computed(() => [
   { id: "new" as MovieTabId, label: translate("pages.moviesPage.tabNew"), icon: "i-ph-film-strip-bold" },
   { id: "recommended" as MovieTabId, label: translate("pages.moviesPage.tabRecommended"), icon: "i-ph-star-bold" },
   { id: "watched" as MovieTabId, label: translate("pages.moviesPage.tabWatched"), icon: "i-ph-trend-up-bold" },
 ])
-
-const filteredMovies = computed(() => {
-  const keyword = search.value.trim().toLowerCase()
-
-  return movies.value.filter((movie) => {
-    const matchesGenre = selectedGenre.value === "all" || movie.genre === selectedGenre.value
-    const matchesCountry = selectedCountry.value === "all" || movie.country === selectedCountry.value
-    const matchesKeyword = !keyword || [
-      movie.title,
-      movie.director,
-      movie.summary,
-      movie.genre,
-      ...movie.tags,
-    ].some(field => field.toLowerCase().includes(keyword))
-
-    return matchesGenre && matchesCountry && matchesKeyword
-  })
-})
-
-const displayMovies = computed(() => {
-  const items = [...filteredMovies.value]
-
-  if (activeTab.value === "recommended") {
-    return items.filter(movie => movie.isEditorsPick)
-  }
-
-  if (activeTab.value === "watched") {
-    return items.sort((left, right) => right.rating - left.rating)
-  }
-
-  return items
-})
-
-const visibleMovies = computed(() => displayMovies.value.slice(0, visibleCount.value))
-const hasMoreMovies = computed(() => visibleMovies.value.length < displayMovies.value.length)
 
 const selectGenre = (value: string) => {
   selectedGenre.value = value
@@ -196,12 +171,8 @@ const selectCountry = (value: string) => {
   selectedCountry.value = value
 }
 
-const resetFilters = () => {
-  search.value = ""
-  activeTab.value = "new"
-  selectedGenre.value = "all"
-  selectedCountry.value = "all"
-  visibleCount.value = pageSize
+const resetPageFilters = () => {
+  resetFilters()
   isFilterOpen.value = false
   genreOpen.value = false
   countryOpen.value = false
@@ -214,10 +185,6 @@ const closeFilterOnOutsideClick = (event: MouseEvent) => {
     isFilterOpen.value = false
   }
 }
-
-watch([search, activeTab, selectedGenre, selectedCountry], () => {
-  visibleCount.value = pageSize
-})
 
 onMounted(() => window.addEventListener("click", closeFilterOnOutsideClick))
 onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick))
@@ -322,6 +289,9 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   right: 0;
   top: calc(100% + 8px);
   width: min(320px, calc(100vw - 32px));
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: #ffffff;
   padding: 8px 0;
@@ -383,6 +353,32 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   gap: 18px;
 }
 
+.movies-page__skeleton-poster,
+.movies-page__skeleton-line {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f8fafc 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: movies-skeleton 1.2s ease-in-out infinite;
+}
+
+.movies-page__skeleton-poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 3px;
+}
+
+.movies-page__skeleton-line {
+  width: 58%;
+  height: 12px;
+  margin-top: 8px;
+  border-radius: 2px;
+}
+
+.movies-page__skeleton-line--title {
+  width: 82%;
+  height: 15px;
+  margin-top: 11px;
+}
+
 .movies-page__empty {
   display: flex;
   min-height: 190px;
@@ -422,6 +418,31 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
+}
+
+.movies-page__load-more-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.movies-page__spinner {
+  animation: movies-spin 0.8s linear infinite;
+}
+
+@keyframes movies-skeleton {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes movies-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .rotate-180 {

@@ -5,8 +5,10 @@ import { jobsApiRoutes } from "../../application/constants/jobs-api-routes"
 import type { JobsRepository } from "../../domain/repositories/JobsRepository"
 import type {
   JobApplicationDraft,
+  JobApplicantRecord,
   JobCatalogQuery,
   JobCreateDraft,
+  JobDetailRecord,
   JobMutationResult,
   JobsCatalogRecord,
 } from "../../domain/types/jobs.types"
@@ -29,6 +31,12 @@ export function createApiJobsRepository(): JobsRepository {
         afterId: normalizeNumber(input?.afterId),
         limit: normalizeNumber(input?.limit),
       })
+    },
+    async getDetailByPostId(postId: number) {
+      return await client.get<JobDetailRecord | null>(jobsApiRoutes.detailByPostId(postId))
+    },
+    async getApplicantsByPostId(postId: number) {
+      return await client.get<JobApplicantRecord[]>(jobsApiRoutes.applicantsByPostId(postId))
     },
     async applyToJob(input: JobApplicationDraft) {
       return await client.post<JobMutationResult, JobApplicationDraft>(
@@ -99,6 +107,9 @@ export function createApiJobsRepository(): JobsRepository {
         jobsApiRoutes.create,
         formData,
       )
+    },
+    async deleteJob(jobId: number) {
+      return await client.delete<JobMutationResult>(jobsApiRoutes.delete(jobId))
     },
   }
 }

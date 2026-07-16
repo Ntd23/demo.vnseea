@@ -1,3 +1,4 @@
+<!-- English description: Renders a backend-backed movie poster card with rating, title, and genre. -->
 <template>
   <article class="movie-card">
     <figure class="movie-card__figure">
@@ -22,11 +23,11 @@
 </template>
 
 <script setup lang="ts">
-import type { MockMovie } from "../../application/composables/useMockMoviesData"
+import type { MovieRecord } from "../../domain/types/movies.types"
 
 defineProps<{
   genreLabel: string
-  movie: MockMovie
+  movie: MovieRecord
 }>()
 </script>
 

@@ -1,4 +1,4 @@
-<!-- English description: Renders a pages-directory-style jobs filter bar with backend-backed type, category, distance, and search controls. -->
+<!-- English description: Renders a jobs filter bar with search, select controls, and a stepped Nuxt UI distance slider. -->
 <template>
   <section class="jobs-tabs-bar">
     <div class="jobs-tabs-bar__search">
@@ -40,16 +40,26 @@
         :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-primary)] font-bold' }"
       />
 
-      <USelect
-        v-model="distanceModel"
-        :items="distanceSelectOptions"
-        value-key="value"
-        label-key="label"
-        size="lg"
-        class="jobs-tabs-bar__select"
-        :disabled="!distanceEnabled"
-        :ui="{ base: 'h-12 rounded-[10px] bg-[var(--bg-surface)] border-[var(--border-default)] text-[var(--text-primary)] font-bold' }"
-      />
+      <div
+        class="jobs-tabs-bar__distance"
+        :class="{ 'jobs-tabs-bar__distance--disabled': !distanceEnabled }"
+      >
+        <div class="jobs-tabs-bar__distance-header">
+          <span>{{ $t("pages.jobsPage.distance") }}</span>
+          <strong>{{ distanceSliderLabel }}</strong>
+        </div>
+        <USlider
+          v-model="distanceSliderModel"
+          :min="0"
+          :max="distanceSliderMax"
+          :step="1"
+          size="md"
+          color="primary"
+          :disabled="!distanceEnabled || distanceSliderMax === 0"
+          :aria-label="$t('pages.jobsPage.distance')"
+          class="jobs-tabs-bar__distance-slider"
+        />
+      </div>
 
       <button
         type="button"
@@ -113,7 +123,16 @@ const localSearch = ref(props.search)
 
 const typeOptions = computed(() => Array.isArray(props.types) ? props.types : [])
 const categoryOptions = computed(() => Array.isArray(props.categories) ? props.categories : [])
-const distanceSelectOptions = computed(() => Array.isArray(props.distanceOptions) ? props.distanceOptions : [])
+const distanceSliderOptions = computed(() => {
+  const options = Array.isArray(props.distanceOptions) ? props.distanceOptions : []
+  const allOption = options.find(option => option.value === ALL_DISTANCE_VALUE) ?? {
+    value: ALL_DISTANCE_VALUE,
+    label: t("pages.jobsPage.allDistances"),
+  }
+
+  return [allOption, ...options.filter(option => option.value !== ALL_DISTANCE_VALUE)]
+})
+const distanceSliderMax = computed(() => Math.max(distanceSliderOptions.value.length - 1, 0))
 
 const typeModel = computed({
   get: () => props.selectedType || ALL_TYPE_VALUE,
@@ -125,10 +144,20 @@ const categoryModel = computed({
   set: value => emit("update:selectedCategory", String(value) === ALL_CATEGORY_VALUE ? "" : String(value)),
 })
 
-const distanceModel = computed({
-  get: () => props.selectedDistance || ALL_DISTANCE_VALUE,
-  set: value => emit("update:selectedDistance", String(value) === ALL_DISTANCE_VALUE ? "" : String(value)),
+const distanceSliderModel = computed<number>({
+  get: () => {
+    const selectedValue = props.selectedDistance || ALL_DISTANCE_VALUE
+    const selectedIndex = distanceSliderOptions.value.findIndex(option => option.value === selectedValue)
+    return selectedIndex >= 0 ? selectedIndex : 0
+  },
+  set: (value) => {
+    const selectedIndex = Math.min(Math.max(Math.round(Number(value)), 0), distanceSliderMax.value)
+    const selectedOption = distanceSliderOptions.value[selectedIndex]
+    emit("update:selectedDistance", !selectedOption || selectedOption.value === ALL_DISTANCE_VALUE ? "" : selectedOption.value)
+  },
 })
+
+const distanceSliderLabel = computed(() => distanceSliderOptions.value[distanceSliderModel.value]?.label ?? t("pages.jobsPage.allDistances"))
 
 const statusLabel = computed(() => {
   if (!props.distanceEnabled) {
@@ -265,6 +294,46 @@ watchDebounced(
 }
 
 .jobs-tabs-bar__select {
+  width: 100%;
+}
+
+.jobs-tabs-bar__distance {
+  display: flex;
+  min-height: 48px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-surface);
+  padding: 7px 12px 9px;
+}
+
+.jobs-tabs-bar__distance--disabled {
+  opacity: 0.55;
+}
+
+.jobs-tabs-bar__distance-header {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.jobs-tabs-bar__distance-header strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jobs-tabs-bar__distance-slider {
   width: 100%;
 }
 

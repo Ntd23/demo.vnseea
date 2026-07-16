@@ -98,6 +98,34 @@ export interface JobsCatalogRecord {
   nextAfterId: number | null
 }
 
+export interface JobDetailRecord {
+  job: JobRecord
+  currentUser: JobUserDefaults
+}
+
+export interface JobApplicantAnswerRecord {
+  question: string
+  answer: string
+}
+
+export interface JobApplicantRecord {
+  id: number
+  userId: number
+  userName: string
+  username: string
+  avatarUrl: string
+  location: string
+  phoneNumber: string
+  email: string
+  appliedAt: number
+  position: string
+  workplace: string
+  experienceDescription: string
+  experienceStartYear: string
+  experienceEndYear: string
+  answers: JobApplicantAnswerRecord[]
+}
+
 export interface JobCatalogQuery {
   q?: string
   category?: string

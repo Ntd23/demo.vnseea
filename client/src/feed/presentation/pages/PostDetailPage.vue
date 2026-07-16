@@ -1,6 +1,6 @@
 <!-- English description: Renders a single feed post detail view for notification and deep-link routes using the normalized feed post API. -->
 <template>
-  <section class="post-detail-page">
+  <section class="post-detail-page mt-1.5">
     <USkeleton v-if="pending" class="post-detail-page__skeleton" />
 
     <UAlert
@@ -13,12 +13,19 @@
       :description="t('feed.postDetail.notFoundDescription')"
     />
 
+    <JobsJobPostDetail
+      v-else-if="post.jobId"
+      :post-id="post.id"
+      :post-time="post.time"
+    />
+
     <FeedPostCard v-else :post="post" />
   </section>
 </template>
 
 <script setup lang="ts">
 import { useFeedPostDetailPageVM } from "../../application/view-models/useFeedPostDetailPageVM"
+import JobsJobPostDetail from "../../../jobs/presentation/components/JobPostDetail.vue"
 import FeedPostCard from "../components/PostCard.vue"
 
 const { t } = useI18n()
@@ -35,9 +42,6 @@ const { post, pending, error } = useFeedPostDetailPageVM(toRef(props, "postId"))
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: min(100%, 760px);
-  margin: 0 auto;
-  padding: 16px 0 32px;
 }
 
 .post-detail-page__skeleton {

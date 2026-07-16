@@ -1,3 +1,4 @@
+<!-- English description: Renders movie catalog sorting tabs backed by the shared movie tab domain type. -->
 <template>
   <div class="movie-tabs">
     <button
@@ -14,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-export type MovieTabId = "new" | "recommended" | "watched"
+import type { MovieTabId } from "../../domain/types/movies.types"
 
 interface Tab {
   id: MovieTabId

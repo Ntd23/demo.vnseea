@@ -1,4 +1,4 @@
-// English description: Owns jobs route query sync, real catalog loading, pagination, and apply/create mutations for the jobs page.
+// English description: Owns jobs route query sync, real catalog loading, pagination, and apply, create, and delete mutations for the jobs page.
 
 import { watchDebounced } from "@vueuse/core"
 import { createApiJobsRepository } from "../../infrastructure/repositories/ApiJobsRepository"
@@ -59,11 +59,14 @@ export function useJobsPageVM(
   const selectedDistance = ref("")
 
   const applyModalJob = ref<JobRecord | null>(null)
+  const deleteModalJob = ref<JobRecord | null>(null)
   const createModalOpen = ref(false)
   const applySubmitting = ref(false)
   const createSubmitting = ref(false)
+  const deleteSubmitting = ref(false)
   const applyErrorMessage = ref("")
   const createErrorMessage = ref("")
+  const deleteErrorMessage = ref("")
 
   const buildRouteQuery = () => {
     const query: Record<string, string> = {}
@@ -236,6 +239,24 @@ export function useJobsPageVM(
     applyModalJob.value = null
   }
 
+  function openDelete(job: JobRecord) {
+    if (!job.isOwner) {
+      return
+    }
+
+    deleteErrorMessage.value = ""
+    deleteModalJob.value = job
+  }
+
+  function closeDelete() {
+    if (deleteSubmitting.value) {
+      return
+    }
+
+    deleteErrorMessage.value = ""
+    deleteModalJob.value = null
+  }
+
   function openCreate() {
     createErrorMessage.value = ""
     createModalOpen.value = true
@@ -305,6 +326,32 @@ export function useJobsPageVM(
     }
   }
 
+  async function submitDelete() {
+    const job = deleteModalJob.value
+
+    if (!job || !job.isOwner || deleteSubmitting.value) {
+      return
+    }
+
+    deleteSubmitting.value = true
+    deleteErrorMessage.value = ""
+
+    try {
+      await repository.deleteJob(job.id)
+      items.value = items.value.filter(item => item.id !== job.id)
+      deleteModalJob.value = null
+    }
+    catch (submitError) {
+      deleteErrorMessage.value = toErrorMessage(
+        submitError,
+        t("pages.jobsPage.deleteErrorDescription"),
+      )
+    }
+    finally {
+      deleteSubmitting.value = false
+    }
+  }
+
   return {
     loading,
     loadingMore,
@@ -330,19 +377,25 @@ export function useJobsPageVM(
     selectedType,
     selectedDistance,
     applyModalJob,
+    deleteModalJob,
     createModalOpen,
     applySubmitting,
     createSubmitting,
+    deleteSubmitting,
     applyErrorMessage,
     createErrorMessage,
+    deleteErrorMessage,
     resetFilters,
     loadMore,
     openApply,
     closeApply,
+    openDelete,
+    closeDelete,
     openCreate,
     closeCreate,
     submitApplication,
     submitCreate,
+    submitDelete,
     refresh,
   }
 }

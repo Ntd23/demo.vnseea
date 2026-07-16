@@ -76,25 +76,29 @@
 
           <div class="grid gap-4 sm:grid-cols-2">
             <UFormField :label="$t('pages.jobsPage.experienceStartDate')">
-              <UInput
+              <USelect
                 v-model="form.experience.experienceStartDate"
-                type="number"
-                min="1900"
-                max="2100"
+                :items="yearOptions"
+                value-key="value"
+                label-key="label"
+                :placeholder="$t('pages.jobsPage.yearPlaceholder')"
                 class="w-full"
                 size="xl"
                 :ui="{ base: 'h-12 rounded-[18px]' }"
               />
             </UFormField>
-            <UFormField :label="$t('pages.jobsPage.experienceEndDate')">
-              <UInput
+            <UFormField
+              v-if="!form.experience.currentlyWorkHere"
+              :label="$t('pages.jobsPage.experienceEndDate')"
+            >
+              <USelect
                 v-model="form.experience.experienceEndDate"
-                type="number"
-                min="1900"
-                max="2100"
+                :items="endYearOptions"
+                value-key="value"
+                label-key="label"
+                :placeholder="$t('pages.jobsPage.yearPlaceholder')"
                 class="w-full"
                 size="xl"
-                :disabled="form.experience.currentlyWorkHere"
                 :ui="{ base: 'h-12 rounded-[18px]' }"
               />
             </UFormField>
@@ -215,6 +219,21 @@ const yesNoOptions = computed(() => [
   { label: t("pages.jobsPage.answerYes"), value: "yes" },
   { label: t("pages.jobsPage.answerNo"), value: "no" },
 ])
+const currentYear = new Date().getFullYear()
+const yearOptions = Array.from(
+  { length: currentYear - 1900 + 1 },
+  (_, index) => {
+    const year = String(currentYear - index)
+    return { label: year, value: year }
+  },
+)
+const endYearOptions = computed(() => {
+  const startYear = Number(form.experience.experienceStartDate || 0)
+
+  return startYear > 0
+    ? yearOptions.filter(option => Number(option.value) >= startYear)
+    : yearOptions
+})
 
 watch(
   () => [props.open, props.job?.id, props.defaults.name, props.defaults.email, props.defaults.phoneNumber, props.defaults.location],
@@ -238,6 +257,26 @@ watch(
     clearErrors()
   },
   { immediate: true },
+)
+
+watch(
+  () => form.experience.currentlyWorkHere,
+  (currentlyWorkHere) => {
+    if (currentlyWorkHere) {
+      form.experience.experienceEndDate = ""
+    }
+  },
+)
+
+watch(
+  () => form.experience.experienceStartDate,
+  (startYear) => {
+    const endYear = Number(form.experience.experienceEndDate || 0)
+
+    if (endYear > 0 && Number(startYear || 0) > endYear) {
+      form.experience.experienceEndDate = ""
+    }
+  },
 )
 
 function clearErrors() {

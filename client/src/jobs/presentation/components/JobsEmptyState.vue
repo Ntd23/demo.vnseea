@@ -12,9 +12,6 @@
         <h3 class="text-xl font-[800] text-[var(--text-primary)]">
           {{ $t("pages.jobsPage.emptyTitle") }}
         </h3>
-        <p class="max-w-[560px] text-sm leading-6 text-[var(--text-secondary)]">
-          {{ $t("pages.jobsPage.emptyDescription") }}
-        </p>
       </div>
       <UButton color="neutral" variant="outline" class="rounded-full" @click="emit('reset')">
         {{ $t("pages.jobsPage.viewAll") }}
