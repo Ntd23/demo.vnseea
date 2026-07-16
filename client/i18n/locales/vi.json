@@ -1510,6 +1510,8 @@
       "cropCoverTitle": "Cắt ảnh bìa",
       "cropHint": "Kéo ảnh để chọn vị trí và dùng thanh trượt để phóng to hoặc thu nhỏ.",
       "cropZoom": "Thu phóng ảnh",
+      "cropPostTextLabel": "Nội dung bài đăng",
+      "cropPostTextPlaceholder": "Bạn muốn chia sẻ điều gì về ảnh này?",
       "cropCancel": "Hủy",
       "cropApply": "Lưu ảnh đã cắt",
       "imageUpdated": "Đã cập nhật ảnh hồ sơ.",
@@ -4786,6 +4788,9 @@
       "edit": "Chỉnh sửa",
       "delete": "Xóa",
       "deleteConfirm": "Bạn có chắc muốn xóa sản phẩm này?",
+      "deleteConfirmTitle": "Xóa sản phẩm",
+      "deleteConfirmDescription": "Xóa \"{title}\"? Thao tác này không thể hoàn tác.",
+      "cancel": "Hủy",
       "deleteSuccessTitle": "Đã xóa sản phẩm",
       "deleteErrorTitle": "Không thể xóa sản phẩm",
       "loadErrorTitle": "Không thể tải sản phẩm của tôi"

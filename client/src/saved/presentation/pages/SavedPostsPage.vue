@@ -1,17 +1,6 @@
 <!-- Description: Renders saved posts as the legacy-style heading followed by the real saved feed list and empty state. -->
 <template>
-  <div class="mx-auto max-w-[1120px] space-y-4 pb-16">
-    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
-      <div class="space-y-1.5">
-        <p class="text-label-secondary">
-          {{ t("pages.savedPostsPage.listEyebrow") }}
-        </p>
-        <h1 class="text-heading text-[var(--text-primary)]">
-          {{ t("pages.savedPostsPage.listTitle", { count: posts.length }) }}
-        </h1>
-      </div>
-    </section>
-
+  <div class="mx-auto max-w-[1120px] space-y-4 pb-16 mt-2">
     <UAlert
       v-if="errorMessage"
       color="warning"

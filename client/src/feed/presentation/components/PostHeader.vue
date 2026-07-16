@@ -14,6 +14,9 @@
       <div class="post-header__info">
         <div class="post-header__name-row">
           <NuxtLink :to="authorPath || '#'" class="post-header__name">{{ author }}</NuxtLink>
+          <span v-if="profileMediaUpdate" class="post-header__profile-update">
+            đã cập nhật {{ profileMediaUpdate === "avatar" ? "ảnh đại diện" : "ảnh bìa" }} của {{ possessivePronoun }}
+          </span>
           <template v-if="feeling">
             <span class="post-header__feeling-text">đang cảm thấy</span>
             <span class="post-header__feeling-emoji">{{ feeling.emoji }}</span>
@@ -84,7 +87,9 @@ const route = useRoute()
 const props = defineProps<{
   author: string
   authorAvatarUrl?: string
+  authorGender?: string
   authorPath?: string
+  profileMediaUpdate?: "avatar" | "cover"
   eventContext?: {
     id: number
     name: string
@@ -120,6 +125,15 @@ const initials = computed(() =>
     .map(part => part[0])
     .join(""),
 )
+
+const possessivePronoun = computed(() => {
+  const gender = props.authorGender?.trim().toLocaleLowerCase("vi") || ""
+
+  if (gender === "female" || gender === "nữ") return "cô ấy"
+  if (gender === "male" || gender === "nam") return "anh ấy"
+
+  return "họ"
+})
 
 const displayTime = computed(() => {
   const normalized = props.time.trim()
@@ -311,7 +325,7 @@ function handleMenuAction(item: { key: string }) {
 .post-header__name-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   min-width: 0;
   flex-wrap: wrap;
 }
@@ -339,7 +353,8 @@ function handleMenuAction(item: { key: string }) {
 }
 
 .post-header__feeling-text,
-.post-header__feeling-label {
+.post-header__feeling-label,
+.post-header__profile-update {
   color: #64748b;
   font-size: 14px;
   font-weight: 600;
@@ -457,5 +472,36 @@ function handleMenuAction(item: { key: string }) {
   color: #94a3b8;
   margin-top: 2px;
   line-height: 1.3;
+}
+
+@media (max-width: 640px) {
+  .post-header__name-row {
+    display: block;
+    line-height: 1.4;
+  }
+
+  .post-header__name,
+  .post-header__profile-update,
+  .post-header__feeling-text,
+  .post-header__feeling-emoji,
+  .post-header__feeling-label,
+  .post-header__context-icon,
+  .post-header__event-link {
+    display: inline;
+  }
+
+  .post-header__name,
+  .post-header__profile-update,
+  .post-header__feeling-text,
+  .post-header__feeling-emoji,
+  .post-header__feeling-label,
+  .post-header__context-icon,
+  .post-header__event-link {
+    margin-right: 4px;
+  }
+
+  .post-header__event-link {
+    white-space: normal;
+  }
 }
 </style>

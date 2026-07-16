@@ -1,15 +1,15 @@
-// English description: Deletes a marketplace product through the same PHP requests.php handler as Wowonder.
+// English description: Deletes a marketplace product through its authenticated feed post.
 
 import { createError, getRouterParam } from "h3"
-import { createBackendWebClient } from "../../utils/backend-web-client"
+import { createBackendApiClient } from "../../utils/backend-api-client"
+import { assertBackendOk } from "./_shared"
 
 type BackendDeleteProductResponse = {
-  status?: number | string
+  api_status?: number | string
+  action?: string
   message?: string
+  errors?: { error_text?: string }
 }
-
-const stripHtml = (value: string) =>
-  value.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim()
 
 export default defineEventHandler(async (event) => {
   const id = String(getRouterParam(event, "id") ?? "")
@@ -21,18 +21,17 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const client = createBackendWebClient(event)
-  const response = await client.postForm<BackendDeleteProductResponse>(
-    "products",
-    { id },
-    { s: "delete" },
-  )
-  const status = Number(response.status ?? 0)
+  const client = createBackendApiClient(event)
+  const response = await client.post<BackendDeleteProductResponse>("post-actions", {
+    post_id: id,
+    action: "delete",
+  })
+  assertBackendOk(response)
 
-  if (status !== 200) {
+  if (response.action !== "deleted") {
     throw createError({
-      statusCode: status >= 400 ? status : 400,
-      statusMessage: stripHtml(response.message || "Unable to delete product."),
+      statusCode: 400,
+      statusMessage: response.errors?.error_text || response.message || "Unable to delete product.",
       data: response,
     })
   }

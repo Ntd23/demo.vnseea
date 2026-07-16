@@ -1802,7 +1802,7 @@ function Wo_GetMedia($media)
     return $wo['config']['site_url'] . '/' . $media;
 }
 
-function Wo_UploadImage($file, $name, $type, $type_file, $user_id = 0, $placement = '', $ai_post = 0)
+function Wo_UploadImage($file, $name, $type, $type_file, $user_id = 0, $placement = '', $ai_post = 0, $post_text = '')
 {
     global $wo, $sqlConnect;
     if ($wo['loggedin'] == false) {
@@ -1902,6 +1902,7 @@ function Wo_UploadImage($file, $name, $type, $type_file, $user_id = 0, $placemen
                             $regsiter_cover_image = Wo_RegisterPost(array(
                                 'user_id' => Wo_Secure($image_data['user_id']),
                                 'postFile' => Wo_Secure($last_file, 0),
+                                'postText' => Wo_Secure($post_text, 0),
                                 'time' => time(),
                                 'postType' => Wo_Secure('profile_cover_picture'),
                                 'postPrivacy' => '0',
@@ -1980,6 +1981,7 @@ function Wo_UploadImage($file, $name, $type, $type_file, $user_id = 0, $placemen
                                 $regsiter_image = Wo_RegisterPost(array(
                                     'user_id' => Wo_Secure($image_data['user_id']),
                                     'postFile' => Wo_Secure($last_file, 0),
+                                    'postText' => Wo_Secure($post_text, 0),
                                     'time' => time(),
                                     'postType' => Wo_Secure('profile_picture'),
                                     'postPrivacy' => '0',

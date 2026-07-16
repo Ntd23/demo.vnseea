@@ -74,10 +74,21 @@ const visibleLimit = computed(() => validItems.value.length >= 5 ? 5 : 4)
 const visibleItems = computed(() => validItems.value.slice(0, visibleLimit.value))
 const visibleCount = computed(() => visibleItems.value.length)
 const hiddenCount = computed(() => Math.max(validItems.value.length - visibleItems.value.length, 0))
+const singleItem = computed(() => visibleCount.value === 1 ? visibleItems.value[0] : undefined)
+const singleVideoIsPortrait = ref(false)
 const gridClass = computed(() => [
   `media-grid--count-${Math.min(Math.max(visibleCount.value, 1), 5)}`,
+  singleItem.value?.type === "video" ? "media-grid--single-video" : "",
+  singleVideoIsPortrait.value ? "media-grid--portrait" : "",
   hiddenCount.value > 0 ? "media-grid--has-more" : "",
 ])
+
+watch(
+  () => singleItem.value?.src,
+  () => {
+    singleVideoIsPortrait.value = false
+  },
+)
 
 function isMoreSlot(index: number) {
   return hiddenCount.value > 0 && index === visibleItems.value.length - 1
@@ -87,6 +98,10 @@ function playVideoWithSound(event: Event) {
   const video = event.currentTarget as HTMLVideoElement | null
 
   if (!video) return
+
+  if (visibleCount.value === 1) {
+    singleVideoIsPortrait.value = video.videoHeight > video.videoWidth
+  }
 
   playVisibleVideo(video)
 }
@@ -131,6 +146,23 @@ onMounted(() => {
 }
 
 .media-grid--count-1 {
+  background: var(--bg-muted);
+}
+
+.media-grid--count-1.media-grid--single-video {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: 0;
+}
+
+.media-grid--count-1.media-grid--single-video .media-grid__item {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  border-radius: 0;
   background: var(--bg-muted);
 }
 
@@ -222,17 +254,27 @@ onMounted(() => {
 .media-grid--count-1 .media-grid__item--video {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 560px;
+  height: 100%;
   background: #000000;
 }
 
-.media-grid--count-1 .media-grid__video {
+.media-grid--count-1.media-grid--single-video .media-grid__video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  min-width: 0;
+  min-height: 0;
   width: 100%;
   max-width: none;
   height: 100%;
   max-height: none;
+  background: var(--bg-muted);
   object-fit: cover;
+  object-position: center;
+}
+
+.media-grid--count-1.media-grid--single-video.media-grid--portrait .media-grid__video {
+  object-fit: contain;
 }
 
 .media-grid__item:hover .media-grid__img {
@@ -270,6 +312,10 @@ onMounted(() => {
 }
 
 @media (max-width: 520px) {
+  .media-grid--count-1.media-grid--single-video.media-grid--portrait {
+    aspect-ratio: 4 / 5;
+  }
+
   .media-grid--count-2,
   .media-grid--count-3,
   .media-grid--count-4 {

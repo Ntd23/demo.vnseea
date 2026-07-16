@@ -122,7 +122,7 @@
               </div>
 
               <!-- Reaction Summary (Facebook-style: Icons + Count) -->
-              <div class="watch-modal__stats-summary" v-if="likesCount > 0 || sharesCount > 0">
+              <div class="watch-modal__stats-summary" v-if="likesCount > 0 || commentsCount > 0 || sharesCount > 0">
                  <div class="watch-modal__reaction-stats" v-if="likesCount > 0">
                     <div class="watch-modal__stat-icons">
                        <span
@@ -139,8 +139,13 @@
                     </div>
                     <span class="watch-modal__stat-number">{{ likesCount }}</span>
                  </div>
-                 <div class="watch-modal__share-stats" v-if="sharesCount > 0">
-                    <span>{{ sharesCount }} {{ t('pages.readBlogPage.share') }}</span>
+                 <div class="watch-modal__stats-right">
+                   <button v-if="commentsCount > 0" class="watch-modal__comment-stats" type="button" @click="focusComment">
+                     {{ t('feed.postCard.commentsCount', { count: commentsCount }) }}
+                   </button>
+                   <div class="watch-modal__share-stats" v-if="sharesCount > 0">
+                      <span>{{ sharesCount }} {{ t('pages.readBlogPage.share') }}</span>
+                   </div>
                  </div>
               </div>
 
@@ -220,6 +225,7 @@
             <footer class="watch-modal__composer">
                <FeedCommentComposer
                  ref="commentComposerRef"
+                 variant="lightbox"
                  :current-user-name="currentAuthUserStore.user?.name"
                  :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
                  :submitting="commenting"
@@ -267,6 +273,7 @@ const {
   postReactionTrayOpen,
   localComments,
   likesCount,
+  commentsCount,
   sharesCount,
   commenting,
   postReactionOptions,
@@ -832,6 +839,27 @@ onBeforeUnmount(() => {
   font-weight: 500;
 }
 
+.watch-modal__stats-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.watch-modal__comment-stats {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.watch-modal__comment-stats:hover {
+  color: #0000ff;
+  text-decoration: underline;
+}
+
 .watch-modal__comments-empty {
   text-align: center;
   padding: 40px 0;
@@ -839,9 +867,10 @@ onBeforeUnmount(() => {
 }
 
 .watch-modal__composer {
-  padding: 16px 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
-  background: white;
+  flex-shrink: 0;
+  padding: 14px 20px 18px;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  background: var(--bg-surface, #ffffff);
 }
 
 .scrollbar-hide {
