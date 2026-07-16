@@ -53,6 +53,7 @@ This file governs all work inside `client/`.
 - Preserve the existing visual system unless the user explicitly asks for redesign.
 - Avoid one-off page styling.
 - Reuse established page shells, card styles, form styles, and navigation patterns.
+- Take the UI of the Group and Page directories as the canonical visual and structural standard for tabs, buttons, forms, and general layout across all other contexts (e.g. Funding Page, etc.).
 
 ## UX Rules
 

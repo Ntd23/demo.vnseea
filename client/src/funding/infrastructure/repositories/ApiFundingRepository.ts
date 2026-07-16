@@ -1,5 +1,6 @@
 // English description: Nuxt API implementation of the funding repository contract.
 
+import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { FundingRepository } from "../../domain/repositories/FundingRepository"
 import type {
   FundingCatalog,
@@ -10,12 +11,14 @@ import type {
 } from "../../domain/types/funding.types"
 
 export class ApiFundingRepository implements FundingRepository {
+  private readonly api = useNuxtApiClient()
+
   async getCatalog(query: FundingCatalogQuery): Promise<FundingCatalog> {
-    return await $fetch<FundingCatalog>("/_api/funding", { query })
+    return await this.api.get<FundingCatalog>("/funding", query)
   }
 
   async getCampaign(id: string): Promise<FundingDetail> {
-    return await $fetch<FundingDetail>(`/_api/funding/${id}`)
+    return await this.api.get<FundingDetail>(`/funding/${id}`)
   }
 
   async createCampaign(input: FundingCreateInput) {
@@ -25,30 +28,19 @@ export class ApiFundingRepository implements FundingRepository {
     form.append("description", input.description)
     form.append("image", input.image)
 
-    await $fetch("/_api/funding/create", {
-      method: "POST",
-      body: form,
-    })
+    await this.api.post("/funding/create", form)
   }
 
   async updateCampaign(id: number, input: FundingUpdateInput) {
-    await $fetch(`/_api/funding/${id}`, {
-      method: "PATCH",
-      body: input,
-    })
+    await this.api.patch(`/funding/${id}`, input)
   }
 
   async donate(payload: { id: number; amount: number }) {
-    await $fetch("/_api/funding/donate", {
-      method: "POST",
-      body: payload,
-    })
+    await this.api.post("/funding/donate", payload)
   }
 
   async deleteCampaign(id: number) {
-    await $fetch(`/_api/funding/${id}`, {
-      method: "DELETE",
-    })
+    await this.api.delete(`/funding/${id}`)
   }
 }
 

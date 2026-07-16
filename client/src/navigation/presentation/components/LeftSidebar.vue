@@ -131,13 +131,16 @@ const isItemActive = (to: string) => {
 <style scoped>
 .left-sidebar {
   min-width: 0;
+  height: 100%;
 }
 
 @media (min-width: 1280px) {
   .left-sidebar {
     display: flex;
     height: 100%;
+    max-height: 100%;
     flex-direction: column;
+    padding: 16px 12px;
   }
 }
 
@@ -153,6 +156,7 @@ const isItemActive = (to: string) => {
     flex: 1;
     overflow-y: auto;
     overscroll-behavior: contain;
+    padding-bottom: 32px; /* Add extra spacing at the bottom to easily scroll past the toggle button */
   }
 }
 

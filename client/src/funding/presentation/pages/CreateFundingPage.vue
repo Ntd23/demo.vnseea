@@ -1,117 +1,134 @@
-<!-- English description: Backend-backed funding creation page with a structured campaign form and cover preview. -->
+<!-- English description: Backend-backed funding creation and editing form with reliable Nuxt UI submission and cover preview. -->
 <template>
   <main class="create-funding">
-    <section class="create-funding__header">
-      <div>
-        <p>{{ t("pages.createFundingPage.heroEyebrow") }}</p>
-        <h1>{{ isEditMode ? t("pages.createFundingPage.editHeroTitle") : t("pages.createFundingPage.heroTitle") }}</h1>
-        <span>{{ isEditMode ? t("pages.createFundingPage.editHeroDescription") : t("pages.createFundingPage.heroDescription") }}</span>
-      </div>
-    </section>
+    <div class="create-funding__card mt-1.5">
+      <USkeleton v-if="loadingCampaign" class="create-funding__skeleton" />
 
-    <USkeleton v-if="loadingCampaign" class="create-funding__skeleton" />
+      <form v-else class="create-funding__form" @submit.prevent="submit">
+        <!-- Tiêu đề -->
+        <UFormField
+          :label="t('pages.createFundingPage.formTitleLabel')"
+          name="title"
+          required
+        >
+          <UInput
+            v-model="draft.title"
+            class="w-full"
+            :placeholder="t('pages.createFundingPage.formTitlePlaceholder')"
+            :disabled="submitting"
+            size="xl"
+            :ui="{ base: 'h-12 rounded-xl shadow-none' }"
+          />
+        </UFormField>
 
-    <form v-else class="create-funding__layout" @submit.prevent="submit">
-      <section class="create-funding__panel">
-        <div class="create-funding__section-title">
-          <Icon name="i-ph-list-checks-duotone" class="h-5 w-5" />
-          <div>
-            <p>{{ t("pages.createFundingPage.formEyebrow") }}</p>
-            <h2>{{ t("pages.createFundingPage.formTitle") }}</h2>
+        <!-- Bạn muốn nhận được bao nhiêu tiền? -->
+        <UFormField
+          :label="t('pages.createFundingPage.goalLabel')"
+          name="amount"
+          required
+        >
+          <UInput
+            v-model.number="draft.amount"
+            type="number"
+            min="1"
+            class="w-full"
+            :placeholder="t('pages.createFundingPage.goalPlaceholder')"
+            :disabled="submitting"
+            size="xl"
+            :ui="{ base: 'h-12 rounded-xl shadow-none' }"
+          />
+        </UFormField>
+
+        <!-- Sự mô tả -->
+        <UFormField
+          :label="t('pages.createFundingPage.descriptionLabel')"
+          name="description"
+          required
+        >
+          <UTextarea
+            v-model="draft.description"
+            :placeholder="t('pages.createFundingPage.descriptionPlaceholder')"
+            :disabled="submitting"
+            size="xl"
+            autoresize
+            :rows="6"
+            class="w-full"
+            :ui="{ base: 'rounded-xl px-4 py-3 shadow-none' }"
+          />
+        </UFormField>
+
+        <!-- Hình ảnh -->
+        <UFormField
+          :label="t('pages.createFundingPage.imageLabel')"
+          name="image"
+          :required="!isEditMode"
+        >
+          <div v-if="previewUrl" class="create-funding__preview">
+            <img
+              :src="previewUrl"
+              :alt="draft.title || t('pages.createFundingPage.imageLabel')"
+            />
           </div>
-        </div>
 
-        <div class="create-funding__fields">
-          <UFormField :label="t('pages.createFundingPage.formTitleLabel')" name="title" required>
-            <UInput
-              v-model="draft.title"
-              class="w-full"
-              :placeholder="t('pages.createFundingPage.formTitlePlaceholder')"
-              :disabled="submitting"
-            />
-          </UFormField>
+          <UFileUpload
+            v-model="imageFile"
+            accept="image/jpeg,image/png,image/bmp"
+            layout="list"
+            highlight
+            :required="!isEditMode"
+            :disabled="submitting"
+            :label="t('pages.createFundingPage.selectCover')"
+            class="create-funding__file-upload w-full"
+          />
+        </UFormField>
 
-          <UFormField :label="t('pages.createFundingPage.goalLabel')" name="amount" required>
-            <UInput
-              v-model.number="draft.amount"
-              type="number"
-              min="1"
-              class="w-full"
-              :placeholder="t('pages.createFundingPage.goalPlaceholder')"
-              :disabled="submitting"
-            />
-          </UFormField>
-
-          <UFormField :label="t('pages.createFundingPage.descriptionLabel')" name="description" required>
-            <UTextarea
-              v-model="draft.description"
-              :rows="9"
-              class="w-full"
-              :placeholder="t('pages.createFundingPage.descriptionPlaceholder')"
-              :disabled="submitting"
-            />
-          </UFormField>
-        </div>
-      </section>
-
-      <aside class="create-funding__side">
-        <section class="create-funding__panel">
-          <div class="create-funding__section-title">
-            <Icon name="i-ph-image-square-duotone" class="h-5 w-5" />
-            <div>
-              <p>{{ t("pages.createFundingPage.coverEyebrow") }}</p>
-              <h2>{{ t("pages.createFundingPage.coverTitle") }}</h2>
-            </div>
-          </div>
-
-          <label class="create-funding__upload">
-            <input type="file" accept="image/*" :disabled="submitting" @change="onFileChange">
-            <span v-if="previewUrl" class="create-funding__preview">
-              <img :src="previewUrl" :alt="draft.title || t('pages.createFundingPage.imageLabel')">
-            </span>
-            <span v-else class="create-funding__empty-preview">
-              <Icon name="i-ph-upload-simple-duotone" class="h-8 w-8" />
-              <strong>{{ t("pages.createFundingPage.selectCover") }}</strong>
-              <small>{{ t("pages.createFundingPage.imageHelper") }}</small>
-            </span>
-          </label>
-
-          <p v-if="imageFile" class="create-funding__file-name">{{ imageFile.name }}</p>
-        </section>
-
-        <section class="create-funding__tips">
-          <h2>{{ t("pages.createFundingPage.prepTitle") }}</h2>
-          <ul>
-            <li>{{ t("pages.createFundingPage.prepItem1") }}</li>
-            <li>{{ t("pages.createFundingPage.prepItem2") }}</li>
-            <li>{{ t("pages.createFundingPage.prepItem3") }}</li>
-          </ul>
-        </section>
-
+        <!-- Buttons -->
         <div class="create-funding__actions">
-          <NuxtLink to="/funding" class="create-funding__button">
+          <UButton
+            to="/funding"
+            variant="ghost"
+            color="neutral"
+            size="lg"
+            class="text-link rounded-xl px-6"
+          >
             {{ t("pages.createFundingPage.backButton") }}
-          </NuxtLink>
-          <button type="submit" class="create-funding__button create-funding__button--primary" :disabled="submitting">
-            <Icon name="i-ph-paper-plane-tilt-duotone" class="h-4 w-4" />
-            {{ isEditMode ? t("pages.createFundingPage.saveEditButton") : t("pages.createFundingPage.submitButton") }}
-          </button>
+          </UButton>
+
+          <UButton
+            type="button"
+            color="primary"
+            size="xl"
+            :loading="submitting"
+            :disabled="submitting"
+            class="btn-primary rounded-xl px-12 font-bold shadow-md shadow-primary-500/20"
+            @click="submit"
+          >
+            <Icon name="i-ph-paper-plane-tilt-duotone" class="mr-1.5 h-4 w-4" />
+            {{
+              isEditMode
+                ? t("pages.createFundingPage.saveEditButton")
+                : t("pages.createFundingPage.submitButton")
+            }}
+          </UButton>
         </div>
-      </aside>
-    </form>
+      </form>
+    </div>
   </main>
 </template>
 
 <script setup lang="ts">
 import { useCreateFundingPageVM } from "../../application/view-models/useCreateFundingPageVM"
 
-const props = withDefaults(defineProps<{
-  mode?: "create" | "edit"
-  campaignId?: string
-}>(), {
-  mode: "create",
-  campaignId: "",
-})
+const props = withDefaults(
+  defineProps<{
+    mode?: "create" | "edit"
+    campaignId?: string
+  }>(),
+  {
+    mode: "create",
+    campaignId: "",
+  },
+)
 
 const { t } = useI18n()
 const {
@@ -121,7 +138,6 @@ const {
   submitting,
   loadingCampaign,
   isEditMode,
-  onFileChange,
   submit,
 } = useCreateFundingPageVM({
   mode: computed(() => props.mode),
@@ -131,208 +147,120 @@ const {
 
 <style scoped>
 .create-funding {
-  width: min(100%, 1120px);
-  margin: 0 auto;
-  padding: 18px 12px 42px;
+  width: 100%;
 }
 
-.create-funding__header,
-.create-funding__panel,
-.create-funding__tips {
-  border: 1px solid rgba(0, 0, 255, 0.06);
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+.create-funding__card {
+  border-radius: 24px;
+  border: 1px solid #e2e8f0; /* slate-200 */
+  background-color: #ffffff;
+  padding: 24px;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-sm */
+}
+
+@media (min-width: 640px) {
+  .create-funding__card {
+    padding: 40px;
+  }
 }
 
 .create-funding__header {
-  display: grid;
-  gap: 14px;
-  padding: 18px;
-}
-
-.create-funding__skeleton {
-  height: 520px;
-  margin-top: 14px;
-  border-radius: 16px;
-}
-
-.create-funding__header p,
-.create-funding__section-title p {
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 800;
+  margin-bottom: 32px;
 }
 
 .create-funding__header h1 {
-  max-width: 820px;
-  margin-top: 5px;
   color: #0f172a;
-  font-size: 25px;
-  font-weight: 900;
-  line-height: 1.16;
-}
-
-.create-funding__header span {
-  display: block;
-  max-width: 760px;
-  margin-top: 8px;
-  color: #475569;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.55;
-}
-
-.create-funding__back,
-.create-funding__button {
-  display: inline-flex;
-  width: fit-content;
-  min-height: 40px;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1px solid #e2e8f0;
-  border-radius: 999px;
-  background: #ffffff;
-  padding: 9px 14px;
-  color: #334155;
-  font-size: 13px;
+  font-size: 24px;
   font-weight: 800;
-  text-decoration: none;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
-.create-funding__layout {
+@media (min-width: 640px) {
+  .create-funding__header h1 {
+    font-size: 30px;
+  }
+}
+
+.create-funding__description-meta {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.create-funding__skeleton {
+  height: 480px;
+  border-radius: 24px;
+}
+
+.create-funding__form {
   display: grid;
-  gap: 14px;
-  margin-top: 14px;
+  gap: 24px;
 }
 
-.create-funding__panel {
-  padding: 16px;
+/* Sync deep styles with CreationForm.vue for Nuxt UI */
+.create-funding__card :deep(label) {
+  font-weight: 700 !important;
+  color: #0f172a !important;
+  font-size: 15px !important;
+  margin-bottom: 8px !important;
 }
 
-.create-funding__section-title {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  color: #0000ff;
+.create-funding__card :deep(input:not([type="file"])),
+.create-funding__card :deep(textarea) {
+  border: 1px solid #e2e8f0 !important; /* slate-200 */
+  border-radius: 12px !important;
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  outline: none !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease !important;
 }
 
-.create-funding__section-title h2,
-.create-funding__tips h2 {
-  color: #0f172a;
-  font-size: 17px;
-  font-weight: 900;
+.create-funding__card :deep(input:not([type="file"]):focus),
+.create-funding__card :deep(textarea:focus) {
+  border-color: #3b82f6 !important; /* primary-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
 }
 
-.create-funding__fields {
-  display: grid;
-  gap: 14px;
-  margin-top: 16px;
-}
-
-.create-funding__side {
-  display: grid;
-  gap: 14px;
-  align-content: start;
-}
-
-.create-funding__upload {
-  display: block;
-  margin-top: 16px;
-  cursor: pointer;
-}
-
-.create-funding__upload input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.create-funding__preview,
-.create-funding__empty-preview {
-  display: flex;
-  min-height: 230px;
+.create-funding__preview {
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed #cbd5e1;
-  border-radius: 14px;
+  margin-bottom: 12px;
+  border: 1px solid #dbe3f2;
+  border-radius: 16px;
   background: #f8fafc;
 }
 
 .create-funding__preview img {
   width: 100%;
   height: 100%;
-  min-height: 230px;
   object-fit: cover;
 }
 
-.create-funding__empty-preview {
-  flex-direction: column;
-  gap: 8px;
-  padding: 18px;
-  color: #64748b;
-  text-align: center;
-}
-
-.create-funding__empty-preview strong {
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 900;
-}
-
-.create-funding__empty-preview small,
-.create-funding__file-name,
-.create-funding__tips li {
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.create-funding__file-name {
-  margin-top: 10px;
-}
-
-.create-funding__tips {
-  padding: 16px;
-}
-
-.create-funding__tips ul {
-  display: grid;
-  gap: 10px;
-  margin-top: 12px;
-  padding-left: 18px;
+.create-funding__file-upload {
+  margin-top: 8px;
 }
 
 .create-funding__actions {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #f1f5f9;
 }
 
-.create-funding__button--primary {
-  border-color: #0000ff;
-  background: #0000ff;
-  color: #ffffff;
-}
-
-.create-funding__button:disabled {
-  cursor: not-allowed;
-  opacity: 0.58;
-}
-
-@media (min-width: 860px) {
-  .create-funding {
-    padding: 22px 20px 48px;
-  }
-
-  .create-funding__layout {
-    grid-template-columns: minmax(0, 1fr) 360px;
+@media (max-width: 520px) {
+  .create-funding__actions {
+    gap: 12px;
   }
 }
 </style>

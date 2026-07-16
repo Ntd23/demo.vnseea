@@ -32,6 +32,7 @@ export const appRoutes = {
   photos: "/photos",
   postDetail: (id: string | number) => `/post/${encodeSegment(id)}`,
   movies: "/movies",
+  movieDetail: (id: string | number) => `/movies/watch/${encodeSegment(id)}`,
   memories: "/memories",
   offers: "/offers",
   search: "/search",
@@ -249,6 +250,13 @@ export const apiRoutes = {
   offers: {
     list: "offers",
     detail: (id: string | number) => `offers/${encodeSegment(id)}`,
+  },
+  movies: {
+    catalog: "movies",
+    detail: (id: string | number) => `movies/${encodeSegment(id)}`,
+    comments: (id: string | number) => `movies/${encodeSegment(id)}/comments`,
+    commentReplies: (id: string | number) => `movies/${encodeSegment(id)}/comments/replies`,
+    commentAction: (id: string | number) => `movies/${encodeSegment(id)}/comments/action`,
   },
   ads: {
     list: "ads",

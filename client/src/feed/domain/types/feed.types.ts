@@ -98,6 +98,7 @@ export type FeedPollOptionRecord = {
 
 export type FeedPostRecord = {
   id: number
+  jobId?: number
   sharedPostId?: number
   sharedPost?: FeedPostRecord | null
   authorId?: number

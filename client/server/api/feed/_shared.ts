@@ -1031,6 +1031,7 @@ export const mapPostRecord = (
 
   return {
     id: firstNumber(entity, ["post_id", "id"]),
+    jobId: firstNumber(entity, ["job_id"]) || undefined,
     sharedPostId: sharedPostId || undefined,
     sharedPost,
     authorId: authorId || undefined,

@@ -16,7 +16,7 @@
     <div class="w-full" :class="isReelsPage ? 'h-[calc(100dvh-65px)] overflow-hidden bg-black xl:h-[calc(100dvh-73px)]' : ''">
       <div class="mx-auto grid w-full grid-cols-1 gap-4 xl:items-start" :class="shellClass">
         <aside v-if="showLeftSidebar && !isReelsPage"
-          class="hidden mt-2 bg-white rounded-[16px] min-w-0 xl:sticky xl:top-17 xl:z-10 xl:block xl:h-[calc(100dvh)] xl:overflow-hidden">
+          class="hidden mt-2 bg-white rounded-[16px] min-w-0 xl:sticky xl:top-17 xl:z-10 xl:block xl:h-[calc(92dvh)] xl:overflow-hidden">
           <ClientOnly>
             <NavigationLeftSidebar v-if="!isDirectoryPage" />
             <DirectoryLeftSidebar v-else />

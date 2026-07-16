@@ -13,6 +13,7 @@ type FundingEditorOptions = {
 
 export function useCreateFundingPageVM(options: FundingEditorOptions) {
   const toast = useToast()
+  const { t } = useI18n()
   const repository = createApiFundingRepository()
   const submitting = ref(false)
   const imageFile = ref<File | null>(null)
@@ -50,10 +51,6 @@ export function useCreateFundingPageVM(options: FundingEditorOptions) {
     { immediate: true },
   )
 
-  onBeforeUnmount(() => {
-    revokePreview()
-  })
-
   const revokePreview = () => {
     if (!previewUrl.value || !previewIsObjectUrl.value || !import.meta.client) return
     URL.revokeObjectURL(previewUrl.value)
@@ -61,30 +58,59 @@ export function useCreateFundingPageVM(options: FundingEditorOptions) {
     previewIsObjectUrl.value = false
   }
 
-  const onFileChange = (event: Event) => {
-    const input = event.target as HTMLInputElement
-    imageFile.value = input.files?.[0] ?? null
+  watch(imageFile, (file) => {
     revokePreview()
 
-    if (imageFile.value && import.meta.client) {
-      previewUrl.value = URL.createObjectURL(imageFile.value)
+    if (file && import.meta.client) {
+      previewUrl.value = URL.createObjectURL(file)
       previewIsObjectUrl.value = true
+      return
     }
-  }
 
+    previewUrl.value = isEditMode.value ? campaign.value?.imageUrl || "" : ""
+  })
+
+  onBeforeUnmount(() => {
+    revokePreview()
+  })
   const submit = async () => {
-    if (!draft.title || !draft.description || !draft.amount || (!isEditMode.value && !imageFile.value)) return
+    const title = draft.title.trim()
+    const description = draft.description.trim()
+    const amount = Number(draft.amount)
+
+    if (!title || !description || !Number.isFinite(amount) || amount <= 0) {
+      toast.add({
+        color: "error",
+        title: t("pages.createFundingPage.statusErrorDescription"),
+      })
+      return
+    }
+
+    if (!isEditMode.value && !imageFile.value) {
+      toast.add({
+        color: "error",
+        title: t("pages.createFundingPage.imageHelper"),
+      })
+      return
+    }
+
+    const currentCampaign = campaign.value
+    if (isEditMode.value && !currentCampaign) {
+      toast.add({
+        color: "error",
+        title: t("pages.createFundingPage.statusErrorDescription"),
+      })
+      return
+    }
+
     submitting.value = true
 
     try {
-      if (isEditMode.value) {
-        const currentCampaign = campaign.value
-        if (!currentCampaign) return
-
+      if (isEditMode.value && currentCampaign) {
         await repository.updateCampaign(currentCampaign.id, {
-          title: draft.title,
-          amount: draft.amount,
-          description: draft.description,
+          title,
+          amount,
+          description,
         })
         await navigateTo(currentCampaign.detailUrl)
         return
@@ -93,9 +119,9 @@ export function useCreateFundingPageVM(options: FundingEditorOptions) {
       if (!imageFile.value) return
 
       await repository.createCampaign({
-        title: draft.title,
-        amount: draft.amount,
-        description: draft.description,
+        title,
+        amount,
+        description,
         image: imageFile.value,
       })
       await navigateTo("/funding?tab=mine")
@@ -119,7 +145,6 @@ export function useCreateFundingPageVM(options: FundingEditorOptions) {
     submitting,
     loadingCampaign,
     isEditMode,
-    onFileChange,
     submit,
   }
 }

@@ -8,8 +8,11 @@ import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { getBackendWebBaseUrl } from "../../utils/backend-media-url"
 import type {
   JobApplicationDraft,
+  JobApplicantAnswerRecord,
+  JobApplicantRecord,
   JobCatalogQuery,
   JobCreateDraft,
+  JobDetailRecord,
   JobMutationResult,
   JobOwnerPageOption,
   JobQuestionRecord,
@@ -47,6 +50,22 @@ type BackendJobsSearchResponse = {
   }
 }
 
+type BackendJobPostResponse = {
+  api_status?: number | string
+  post_data?: BackendEntity
+  errors?: {
+    error_text?: string
+  }
+}
+
+type BackendJobApplicantsResponse = {
+  api_status?: number | string
+  data?: BackendEntity[]
+  errors?: {
+    error_text?: string
+  }
+}
+
 type BackendJobMutationResponse = {
   api_status?: number | string
   message_data?: string
@@ -74,6 +93,11 @@ const asString = (value: unknown) =>
   typeof value === "string" || typeof value === "number"
     ? String(value).trim()
     : ""
+
+const asRecord = (value: unknown): BackendEntity =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? value as BackendEntity
+    : {}
 
 const asNumber = (value: unknown) => {
   const normalized = Number(value)
@@ -364,6 +388,155 @@ export async function fetchJobsCatalog(
   }
 }
 
+export async function fetchJobDetailByPostId(
+  event: H3Event,
+  postId: number,
+): Promise<JobDetailRecord | null> {
+  if (!Number.isInteger(postId) || postId < 1) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Invalid post id.",
+    })
+  }
+
+  const currentUser = await getBackendCurrentUser(event)
+  const client = createBackendApiClient(event)
+  const baseUrl = getBackendWebBaseUrl(event)
+  const [metaResponse, postResponse] = await Promise.all([
+    client.get<BackendJobsMetaResponse>("jobs-meta"),
+    client.post<BackendJobPostResponse, Record<string, unknown>>(
+      "get-post-data",
+      {
+        post_id: postId,
+        fetch: "post_data",
+      },
+    ),
+  ])
+
+  const meta = assertBackendApiSuccess(metaResponse, "Unable to load jobs metadata.")
+  const post = assertBackendApiSuccess(postResponse, "Unable to load job detail.")
+  const jobEntity = asRecord(asRecord(post.post_data).job)
+
+  if (!asNumber(jobEntity.id)) {
+    return null
+  }
+
+  const categories = normalizeOptions(meta.categories)
+  const types = normalizeOptions(meta.types)
+  const salaryDates = normalizeOptions(meta.salary_dates)
+  const currencies = (meta.currencies ?? [])
+    .map(item => ({
+      value: asString(item.value),
+      symbol: asString(item.symbol) || asString(item.value),
+    }))
+    .filter(item => item.value)
+  const job = mapJobRecord(
+    {
+      ...jobEntity,
+      post_id: postId,
+    },
+    {
+      currentUserId: asNumber(currentUser.user_id),
+      categoryLabels: Object.fromEntries(categories.map(item => [item.value, item.label])),
+      typeLabels: Object.fromEntries(types.map(item => [item.value, item.label])),
+      salaryDateLabels: Object.fromEntries(salaryDates.map(item => [item.value, item.label])),
+      currencySymbols: Object.fromEntries(currencies.map(item => [item.value, item.symbol])),
+      baseUrl,
+    },
+  )
+
+  return {
+    job,
+    currentUser: {
+      name: asString(meta.current_user?.name),
+      email: asString(meta.current_user?.email),
+      phoneNumber: asString(meta.current_user?.phone_number),
+      location: asString(meta.current_user?.address),
+      lat: asNullableNumber(meta.current_user?.lat),
+      lng: asNullableNumber(meta.current_user?.lng),
+    },
+  }
+}
+
+const mapApplicantAnswer = (
+  applicant: BackendEntity,
+  jobInfo: BackendEntity,
+  slot: "one" | "two" | "three",
+): JobApplicantAnswerRecord | null => {
+  const question = asString(jobInfo[`question_${slot}`])
+  const answerKey = asString(applicant[`question_${slot}_answer`])
+
+  if (!question || !answerKey) {
+    return null
+  }
+
+  const answerOptions = jobInfo[`question_${slot}_answers`]
+  const answer = Array.isArray(answerOptions)
+    ? asString(answerOptions[Number(answerKey)]) || answerKey
+    : asString(asRecord(answerOptions)[answerKey]) || answerKey
+
+  return { question, answer }
+}
+
+export async function fetchJobApplicantsByPostId(
+  event: H3Event,
+  postId: number,
+): Promise<JobApplicantRecord[]> {
+  const detail = await fetchJobDetailByPostId(event, postId)
+
+  if (!detail?.job) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Job not found.",
+    })
+  }
+
+  if (!detail.job.isOwner) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Only the job owner can view applicants.",
+    })
+  }
+
+  const response = assertBackendApiSuccess(
+    await createBackendApiClient(event).post<BackendJobApplicantsResponse, Record<string, unknown>>(
+      "job",
+      {
+        type: "get_apply",
+        job_id: detail.job.id,
+        limit: 50,
+      },
+    ),
+    "Unable to load job applicants.",
+  )
+  const baseUrl = getBackendWebBaseUrl(event)
+
+  return (response.data ?? []).map((applicant) => {
+    const userData = asRecord(applicant.user_data)
+    const jobInfo = asRecord(applicant.job_info)
+
+    return {
+      id: asNumber(applicant.id),
+      userId: asNumber(applicant.user_id),
+      userName: asString(applicant.user_name) || asString(userData.name) || asString(userData.username),
+      username: asString(userData.username),
+      avatarUrl: normalizeImageUrl(asString(userData.avatar), baseUrl),
+      location: asString(applicant.location),
+      phoneNumber: asString(applicant.phone_number),
+      email: asString(applicant.email),
+      appliedAt: asNumber(applicant.time),
+      position: asString(applicant.position),
+      workplace: asString(applicant.where_did_you_work),
+      experienceDescription: asString(applicant.experience_description),
+      experienceStartYear: asString(applicant.experience_start_date),
+      experienceEndYear: asString(applicant.experience_end_date),
+      answers: (["one", "two", "three"] as const)
+        .map(slot => mapApplicantAnswer(applicant, jobInfo, slot))
+        .filter((answer): answer is JobApplicantAnswerRecord => Boolean(answer)),
+    }
+  })
+}
+
 export async function applyToJob(
   event: H3Event,
   input: JobApplicationDraft,
@@ -502,6 +675,35 @@ export async function createJob(
       { s: "create_job" },
     ),
     "Unable to create job.",
+  )
+
+  return {
+    success: true,
+    message: asString(response.message),
+  }
+}
+
+export async function deleteJob(
+  event: H3Event,
+  jobId: number,
+): Promise<JobMutationResult> {
+  if (!Number.isInteger(jobId) || jobId < 1) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Invalid job id.",
+    })
+  }
+
+  const response = assertBackendWebSuccess(
+    await createBackendWebClient(event).postForm<BackendJobWebMutationResponse>(
+      "job",
+      undefined,
+      {
+        s: "delete_job",
+        job_id: jobId,
+      },
+    ),
+    "Unable to delete job.",
   )
 
   return {
