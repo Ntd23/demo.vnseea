@@ -9,7 +9,12 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="open && file" class="profile-crop" @click.self="emit('cancel')">
+      <div
+        v-if="open && file"
+        class="profile-crop"
+        :class="{ 'profile-crop--input-focused': postTextFocused }"
+        @click.self="emit('cancel')"
+      >
         <section class="profile-crop__panel" role="dialog" aria-modal="true" :aria-label="title">
           <header class="profile-crop__header">
             <div>
@@ -23,29 +28,42 @@
 
           <div class="profile-crop__body">
             <div
-              ref="viewportRef"
-              class="profile-crop__viewport"
-              :class="`profile-crop__viewport--${kind}`"
-              @pointerdown="startDrag"
-              @pointermove="moveDrag"
-              @pointerup="finishDrag"
-              @pointercancel="finishDrag"
-              @wheel.prevent="handleWheel"
+              class="profile-crop__viewport-shell"
+              :class="`profile-crop__viewport-shell--${kind}`"
             >
               <img
-                v-if="imageUrl"
-                ref="imageRef"
+                v-if="kind === 'avatar' && imageUrl"
+                class="profile-crop__avatar-backdrop"
                 :src="imageUrl"
-                :alt="title"
-                :style="imageStyle"
-                draggable="false"
-                @load="handleImageLoad"
+                alt=""
+                :style="avatarBackdropStyle"
+                aria-hidden="true"
               >
-              <div class="profile-crop__guide" aria-hidden="true" />
+              <div
+                ref="viewportRef"
+                class="profile-crop__viewport"
+                :class="`profile-crop__viewport--${kind}`"
+                @pointerdown="startDrag"
+                @pointermove="moveDrag"
+                @pointerup="finishDrag"
+                @pointercancel="finishDrag"
+                @wheel.prevent="handleWheel"
+              >
+                <img
+                  v-if="imageUrl"
+                  ref="imageRef"
+                  :src="imageUrl"
+                  :alt="title"
+                  :style="imageStyle"
+                  draggable="false"
+                  @load="handleImageLoad"
+                >
+                <div class="profile-crop__guide" aria-hidden="true" />
+              </div>
             </div>
 
             <label class="profile-crop__zoom">
-              <Icon name="i-ph-image-duotone" class="h-4 w-4" />
+              <Icon name="i-ph-minus-bold" class="h-4 w-4" />
               <input
                 v-model.number="zoom"
                 type="range"
@@ -55,7 +73,21 @@
                 :aria-label="$t('pages.profilePage.cropZoom')"
                 @input="clampOffset"
               >
-              <Icon name="i-ph-image-fill" class="h-5 w-5" />
+              <Icon name="i-ph-plus-bold" class="h-4 w-4" />
+            </label>
+
+            <label class="profile-crop__post-text">
+              <span>{{ $t("pages.profilePage.cropPostTextLabel") }}</span>
+              <UTextarea
+                v-model="postText"
+                :placeholder="$t('pages.profilePage.cropPostTextPlaceholder')"
+                :aria-label="$t('pages.profilePage.cropPostTextLabel')"
+                :rows="2"
+                autoresize
+                :ui="{ base: 'rounded-xl' }"
+                @focus="postTextFocused = true"
+                @blur="postTextFocused = false"
+              />
             </label>
           </div>
 
@@ -93,7 +125,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   cancel: []
-  confirm: [file: File]
+  confirm: [file: File, postText: string]
 }>()
 
 const { t } = useI18n()
@@ -103,6 +135,8 @@ const imageUrl = ref("")
 const imageReady = ref(false)
 const processing = ref(false)
 const zoom = ref(1)
+const postText = ref("")
+const postTextFocused = ref(false)
 const naturalSize = reactive({ width: 0, height: 0 })
 const offset = reactive({ x: 0, y: 0 })
 const drag = reactive({ active: false, pointerId: -1, x: 0, y: 0 })
@@ -132,6 +166,11 @@ const imageStyle = computed(() => ({
   height: `${naturalSize.height}px`,
   transform: `translate(-50%, -50%) translate(${offset.x}px, ${offset.y}px) scale(${renderedScale.value})`,
 }))
+const avatarBackdropStyle = computed(() => ({
+  width: `${naturalSize.width}px`,
+  height: `${naturalSize.height}px`,
+  transform: `translate(-50%, -50%) translate(${offset.x}px, ${offset.y}px) scale(${renderedScale.value * 1.08})`,
+}))
 
 function revokeImageUrl() {
   if (imageUrl.value.startsWith("blob:")) {
@@ -143,6 +182,8 @@ function revokeImageUrl() {
 
 function resetCrop() {
   zoom.value = 1
+  postText.value = ""
+  postTextFocused.value = false
   offset.x = 0
   offset.y = 0
   naturalSize.width = 0
@@ -286,7 +327,7 @@ async function confirmCrop() {
     }
 
     const baseName = sourceFile.name.replace(/\.[^.]+$/, "") || props.kind
-    emit("confirm", new File([blob], `${baseName}-cropped.jpg`, { type: "image/jpeg" }))
+    emit("confirm", new File([blob], `${baseName}-cropped.jpg`, { type: "image/jpeg" }), postText.value.trim())
   }
   finally {
     processing.value = false
@@ -377,13 +418,49 @@ onBeforeUnmount(revokeImageUrl)
   user-select: none;
 }
 
+.profile-crop__viewport-shell--avatar {
+  position: relative;
+  width: min(350px, 100%);
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.42);
+  /* border-radius: 20px; */
+  /* background: #1e293b; */
+  /* padding: 10px; */
+  /* box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.72); */
+}
+
+.profile-crop__avatar-backdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 0;
+  max-width: none;
+  transform-origin: center;
+  filter: blur(10px);
+  opacity: 0.9;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.profile-crop__viewport-shell--avatar::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.12);
+  content: "";
+  pointer-events: none;
+}
+
 .profile-crop__viewport:active {
   cursor: grabbing;
 }
 
 .profile-crop__viewport--avatar {
-  width: min(460px, 100%);
-  margin-inline: auto;
+  z-index: 2;
+  width: 100%;
   border-radius: 9999px;
   aspect-ratio: 1;
 }
@@ -414,16 +491,29 @@ onBeforeUnmount(revokeImageUrl)
 
 .profile-crop__zoom {
   display: grid;
+  width: min(350px, 100%);
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  margin-top: 18px;
+  margin: 18px auto 0;
   color: #64748b;
 }
 
 .profile-crop__zoom input {
   width: 100%;
   accent-color: #1420ff;
+}
+
+.profile-crop__post-text {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.profile-crop__post-text > span {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
 }
 
 .profile-crop__footer {
@@ -463,6 +553,21 @@ onBeforeUnmount(revokeImageUrl)
 }
 
 @media (max-width: 640px) {
+  .profile-crop--input-focused {
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 8px;
+  }
+
+  .profile-crop--input-focused .profile-crop__panel {
+    max-height: calc(100dvh - 16px);
+    margin: 0 auto;
+  }
+
+  .profile-crop--input-focused .profile-crop__body {
+    scroll-padding-bottom: 16px;
+  }
+
   .profile-crop__body {
     padding: 14px;
   }

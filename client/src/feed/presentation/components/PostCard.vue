@@ -9,6 +9,7 @@
       <FeedPostHeader
         :author="post.author"
         :author-avatar-url="post.authorAvatarUrl"
+        :author-gender="post.authorGender"
         :author-path="post.authorPath"
         :event-context="post.eventContext"
         :group-context="post.groupContext"
@@ -19,6 +20,7 @@
         :is-saved="post.isSaved"
         :is-owner="isOwner"
         :is-admin="isAdmin"
+        :profile-media-update="post.profileMediaUpdate"
         @menu-action="onMenuAction"
       />
 

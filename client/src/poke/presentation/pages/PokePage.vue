@@ -1,39 +1,6 @@
 <!-- Description: Renders the backend-backed incoming poke route with MVVM-driven state. -->
 <template>
-  <main class="poke-page">
-    <section class="poke-page__header">
-      <div class="poke-page__title">
-        <span class="poke-page__icon">
-          <Icon name="i-ph-hand-pointing-duotone" class="h-6 w-6" />
-        </span>
-        <div class="min-w-0">
-          <p class="poke-page__eyebrow">{{ t("pages.pokePage.listEyebrow") }}</p>
-          <h1>{{ t("pages.pokePage.heroTitle") }}</h1>
-        </div>
-      </div>
-
-      <UButton
-        class="poke-page__refresh"
-        color="neutral"
-        variant="soft"
-        icon="i-ph-arrows-clockwise-duotone"
-        aria-label="Refresh pokes"
-        :loading="loading"
-        @click="fetchPokes"
-      />
-    </section>
-
-    <section class="poke-page__stats" aria-label="Poke summary">
-      <div>
-        <span>{{ t("pages.pokePage.statNewPokes") }}</span>
-        <strong>{{ pokeRecords.length }}</strong>
-      </div>
-      <div>
-        <span>{{ t("pages.pokePage.statPokedBack") }}</span>
-        <strong>{{ respondedCount }}</strong>
-      </div>
-    </section>
-
+  <main class="poke-page mt-2">
     <UAlert
       v-if="errorMessage"
       color="error"
@@ -43,14 +10,7 @@
       :description="errorMessage"
     />
 
-    <section class="poke-page__content">
-      <div class="poke-page__content-head">
-        <div>
-          <p>{{ t("pages.pokePage.pendingLabel") }}</p>
-          <h2>{{ t("pages.pokePage.listTitle", { count: pokeRecords.length }) }}</h2>
-        </div>
-      </div>
-
+    <section class="poke-page__content mt-2">
       <div v-if="loading" class="poke-page__loading">
         <USkeleton v-for="i in 4" :key="i" class="h-[86px] rounded-2xl" />
       </div>

@@ -72,13 +72,26 @@ export const useMyProductsOverview = (
 
   const formatProductCurrency = (product: ProductListing) => formatProductPrice(product, locale.value)
 
-  const deleteProduct = async (productId: number) => {
-    if (deletingProductId.value) return
+  const deleteProduct = async (product: Pick<ProductListing, "id" | "postId">): Promise<boolean> => {
+    const productId = product.id
+    const postId = product.postId
+
+    if (deletingProductId.value) return false
+
+    if (!postId) {
+      toast.add({
+        title: t("pages.myProductsPage.deleteErrorTitle"),
+        description: "Product post information is missing.",
+        color: "error",
+        icon: "i-ph-warning-circle",
+      })
+      return false
+    }
 
     deletingProductId.value = productId
 
     try {
-      await repository.delete(productId)
+      await repository.delete(postId)
 
       if (data.value) {
         data.value = {
@@ -92,6 +105,8 @@ export const useMyProductsOverview = (
         color: "success",
         icon: "i-ph-check-circle",
       })
+
+      return true
     }
     catch (deleteError) {
       toast.add({
@@ -100,6 +115,8 @@ export const useMyProductsOverview = (
         color: "error",
         icon: "i-ph-warning-circle",
       })
+
+      return false
     }
     finally {
       deletingProductId.value = null

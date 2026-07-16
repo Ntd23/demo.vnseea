@@ -104,6 +104,7 @@ export type FeedPostRecord = {
   colorId?: number
   author: string
   authorAvatarUrl: string
+  authorGender?: string
   authorVerified?: boolean
   authorPath: string
   eventContext: {
@@ -147,6 +148,7 @@ export type FeedPostRecord = {
   primaryMediaType: "text" | "image" | "video" | "link" | "music" | "file"
   sourceLabel: string
   sourcePath: string
+  profileMediaUpdate?: "avatar" | "cover"
   isSaved: boolean
   isLiked: boolean
   reaction: FeedStoryReactionType | null

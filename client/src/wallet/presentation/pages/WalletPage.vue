@@ -1,4 +1,4 @@
-<!-- English description: Temporary points wallet page that reuses the my-points transfer and receive-QR logic. -->
+﻿<!-- English description: Temporary points wallet page that reuses the my-points transfer and receive-QR logic. -->
 <template>
   <div class="wallet-points-page mt-2">
     <div v-if="loading" class="wallet-points-loading">
@@ -17,6 +17,15 @@
 
       <template v-else>
         <section class="wallet-points-hero">
+          <div class="wallet-points-hero__main">
+            <span class="wallet-points-hero__icon" aria-hidden="true">
+              <Icon name="i-ph-wallet-duotone" class="h-7 w-7" />
+            </span>
+            <div>
+              <h1 class="wallet-points-hero__title">Ví VNSEEA</h1>
+              <strong class="wallet-points-hero__balance">{{ formatNumber(pointsBalance) }} VNSEEA</strong>
+            </div>
+          </div>
 
           <div class="wallet-points-tabs" aria-label="Thao tác ví VNSEEA">
             <!-- Tạm comment nạp tiền/rút tiền trong ví điểm.
@@ -419,6 +428,7 @@ const toggleHistoryItem = (itemId: string) => {
 }
 
 .wallet-points-header__title,
+.wallet-points-hero__title,
 .wallet-points-panel__heading h2,
 .wallet-points-modal__header h2 {
   margin: 0;

@@ -170,7 +170,7 @@ const supportedSections: Record<string, SectionConfig> = {
   },
   avatar: {
     action: "update_images_setting",
-    fields: ["avatar", "cover"],
+    fields: ["avatar", "cover", "postText"],
   },
   password: {
     action: "update_user_password",

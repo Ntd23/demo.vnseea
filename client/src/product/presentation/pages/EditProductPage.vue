@@ -113,30 +113,28 @@
       <div class="edit-product-media">
         <label>{{ $t("pages.productEditor.mediaLabel") }}</label>
         <div class="edit-product-images">
-          <UButton
+          <button
             type="button"
-            color="neutral"
-            variant="soft"
             class="edit-product-upload"
-            icon="i-ph-camera-fill"
             :aria-label="$t('pages.newProductPage.addImage')"
             @click="fileInput?.click()"
-          />
+          >
+            <Icon name="i-ph-camera-fill" class="edit-product-upload__icon" />
+          </button>
 
           <span
             v-for="image in currentImages"
             :key="image.id"
             class="edit-product-thumb"
           >
-            <UButton
+            <button
               type="button"
-              color="neutral"
-              variant="solid"
-              size="xs"
-              icon="i-ph-x-bold"
               class="edit-product-thumb__remove"
+              :aria-label="$t('pages.newProductPage.removeImage', { name: image.alt })"
               @click="removeCurrentImage(image.id)"
-            />
+            >
+              <Icon name="i-ph-x-bold" class="edit-product-thumb__remove-icon" />
+            </button>
             <img :src="image.src" :alt="image.alt">
           </span>
 
@@ -145,23 +143,26 @@
             :key="preview.key"
             class="edit-product-thumb"
           >
-            <UButton
+            <button
               type="button"
-              color="neutral"
-              variant="solid"
-              size="xs"
-              icon="i-ph-x-bold"
               class="edit-product-thumb__remove"
+              :aria-label="$t('pages.newProductPage.removeImage', { name: preview.name })"
               @click="removeNewFile(preview.index)"
-            />
+            >
+              <Icon name="i-ph-x-bold" class="edit-product-thumb__remove-icon" />
+            </button>
             <img :src="preview.src" :alt="preview.name">
+            <span class="edit-product-thumb__name">{{ preview.name }}</span>
           </span>
         </div>
+        <p class="edit-product-media__helper">
+          {{ $t("pages.newProductPage.imageHelper") }}
+        </p>
         <input
           ref="fileInput"
           class="hidden"
           type="file"
-          accept="image/*"
+          accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
           multiple
           @change="handleFileInput"
         >
@@ -550,6 +551,7 @@ onBeforeUnmount(() => {
   overflow: hidden;
   width: 92px;
   height: 92px;
+  flex: 0 0 92px;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--border-light, #e2e8f0);
@@ -558,8 +560,14 @@ onBeforeUnmount(() => {
 }
 
 .edit-product-upload {
+  padding: 0;
   color: #344258;
   cursor: pointer;
+}
+
+.edit-product-upload__icon {
+  width: 22px;
+  height: 22px;
 }
 
 .edit-product-thumb img {
@@ -569,7 +577,23 @@ onBeforeUnmount(() => {
   object-fit: cover;
 }
 
-.edit-product-thumb button {
+.edit-product-thumb__name {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  padding: 16px 7px 6px;
+  color: #ffffff;
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 42, 0.82) 100%);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.edit-product-thumb__remove {
   position: absolute;
   top: 5px;
   right: 5px;
@@ -584,6 +608,20 @@ onBeforeUnmount(() => {
   color: #ffffff;
   background: rgba(0, 0, 0, 0.68);
   cursor: pointer;
+  padding: 0;
+}
+
+.edit-product-thumb__remove-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.edit-product-media__helper {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
 }
 
 .edit-product-actions {

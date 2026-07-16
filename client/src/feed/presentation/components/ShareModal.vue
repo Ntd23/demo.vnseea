@@ -78,7 +78,7 @@
                     @click="platform.action"
                   >
                     <span class="share-modal__platform-icon" :style="{ color: platform.color }">
-                      <Icon :name="platform.icon" />
+                      <Icon :name="platform.icon" class="w-7 h-7"/>
                     </span>
                     <span>{{ platform.label }}</span>
                   </button>
@@ -91,7 +91,7 @@
                   leave-to-class="opacity-0"
                 >
                   <p v-if="copied" class="share-modal__inline-success">
-                    <Icon name="i-ph-check-circle-fill" />
+                    <Icon name="i-ph-check-circle-fill" class="w-7 h-7"/>
                     <span>{{ t("feed.shareModal.copied") }}</span>
                   </p>
                 </Transition>
@@ -128,7 +128,7 @@
                     type="button"
                     @click="handleDestinationChange(dest.value)"
                   >
-                    <Icon :name="dest.icon" />
+                    <Icon :name="dest.icon" class="w-7 h-7" />
                     <span>{{ dest.label }}</span>
                   </button>
                 </div>
@@ -139,7 +139,7 @@
                       <p>{{ destinationPanelTitle }}</p>
                       <small>{{ destinationPanelDescription }}</small>
                     </div>
-                    <Icon :name="destinationPanelIcon" />
+                    <Icon :name="destinationPanelIcon" class="w-7 h-7"/>
                   </div>
 
                   <div v-if="selectedDestination === 'timeline'" class="share-modal__target-card share-modal__target-card--selected">
@@ -157,6 +157,7 @@
                       v-model="pageSearch"
                       size="lg"
                       icon="i-ph-magnifying-glass-bold"
+                      class="w-7 h-7"
                       :placeholder="t('feed.shareModal.pageSearchPlaceholder')"
                       :ui="{ base: 'rounded-[14px] bg-[var(--bg-surface)] text-sm font-semibold' }"
                       @update:model-value="clearErrorState"
@@ -166,6 +167,7 @@
                       v-model="groupSearch"
                       size="lg"
                       icon="i-ph-magnifying-glass-bold"
+                      class="w-7 h-7"
                       :placeholder="t('feed.shareModal.groupSearchPlaceholder')"
                       :ui="{ base: 'rounded-[14px] bg-[var(--bg-surface)] text-sm font-semibold' }"
                       @update:model-value="clearErrorState"
@@ -175,13 +177,14 @@
                       v-model="messageSearch"
                       size="lg"
                       icon="i-ph-magnifying-glass-bold"
+                      class="w-7 h-7"
                       :placeholder="t('feed.shareModal.messageSearchPlaceholder')"
                       :ui="{ base: 'rounded-[14px] bg-[var(--bg-surface)] text-sm font-semibold' }"
                       @update:model-value="clearErrorState"
                     />
 
                     <div v-if="destinationPending" class="share-modal__target-state">
-                      <Icon name="i-ph-spinner-gap-bold" class="animate-spin" />
+                      <Icon name="i-ph-spinner-gap-bold" class="animate-spin w-7 h-7" />
                       <span>{{ t("feed.shareModal.searchLoading") }}</span>
                     </div>
 
@@ -202,7 +205,7 @@
                         <Icon
                           v-if="selectedTargetId === target.id"
                           name="i-ph-check-circle-fill"
-                          class="share-modal__target-check"
+                          class="share-modal__target-check w-7 h-7"
                         />
                       </button>
                     </div>

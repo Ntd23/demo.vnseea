@@ -1749,8 +1749,8 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__tabs {
   display: flex;
-  gap: 4px;
-  padding: 8px 12px;
+  gap: 2px;
+  padding: 8px 10px;
   border-bottom: 1px solid #f1f5f9;
   flex-shrink: 0;
   background: #ffffff;

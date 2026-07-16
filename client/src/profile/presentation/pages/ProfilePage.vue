@@ -1498,7 +1498,7 @@ function closeProfileCropper() {
   profileCropDraft.value = null;
 }
 
-async function uploadCroppedProfileMedia(file: File) {
+async function uploadCroppedProfileMedia(file: File, postText: string) {
   const draft = profileCropDraft.value;
 
   if (!draft) {
@@ -1511,6 +1511,7 @@ async function uploadCroppedProfileMedia(file: File) {
   const formData = new FormData();
   formData.append("section", "avatar");
   formData.append(kind, file);
+  formData.append("postText", postText);
   profileMediaUploading.value = kind;
 
   try {
