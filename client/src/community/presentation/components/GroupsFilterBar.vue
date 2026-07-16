@@ -119,22 +119,24 @@ defineProps<{
 <style>
 /* Global CSS block to style the webkit scrollbar without Vue scoped attribute restriction */
 .groups-filter-bar::-webkit-scrollbar {
-  height: 5px !important;
-  background-color: #f1f5f9 !important;
+  height: 6px !important;
+  background-color: #e2e8f0 !important;
   display: block !important;
 }
 
 .groups-filter-bar::-webkit-scrollbar-track {
-  background-color: #f1f5f9 !important;
+  background-color: #e2e8f0 !important;
   border-radius: 999px !important;
 }
 
+.page-tabs-bar__top::-webkit-scrollbar-thumb,
 .groups-filter-bar::-webkit-scrollbar-thumb {
-  background-color: #94a3b8 !important; /* Darker thumb color for guaranteed visibility */
+  background-color: #475569 !important; /* Higher contrast slate-600 */
   border-radius: 999px !important;
 }
 
+.page-tabs-bar__top::-webkit-scrollbar-thumb:hover,
 .groups-filter-bar::-webkit-scrollbar-thumb:hover {
-  background-color: #64748b !important;
+  background-color: #1e293b !important;
 }
 </style>
