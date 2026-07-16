@@ -1,7 +1,7 @@
 <!-- English description: Wowonder-aligned my-products page backed by the product API bridge. -->
 
 <template>
-  <div class="my-products-page mx-auto w-full max-w-[1520px] px-3 pb-12 pt-4 sm:px-4">
+  <div class="my-products-page mx-auto w-full max-w-[1520px] pb-12 mt-2">
     <section class="my-products-nav">
       <nav class="my-products-tabs" :aria-label="$t('pages.myProductsPage.title')">
         <NuxtLink
@@ -124,7 +124,7 @@
             :loading="deletingProductId === product.id"
             :icon="deletingProductId === product.id ? 'i-ph-spinner-gap' : 'i-ph-trash-fill'"
             :aria-label="$t('pages.myProductsPage.delete')"
-            @click="confirmDeleteProduct(product.id)"
+            @click="openDeleteConfirmation(product)"
           />
         </div>
       </article>
@@ -134,12 +134,38 @@
       <Icon name="i-ph-shopping-cart-simple" class="h-7 w-7" />
       <span>{{ $t("pages.myProductsPage.emptyTitle") }}</span>
     </section>
+
+    <UModal
+      v-model:open="deleteConfirmationOpen"
+      :title="$t('pages.myProductsPage.deleteConfirmTitle')"
+    >
+      <template #body>
+        <p class="my-products-delete-copy">
+          {{ $t("pages.myProductsPage.deleteConfirmDescription", { title: deleteTarget?.title || "-" }) }}
+        </p>
+      </template>
+      <template #footer>
+        <div class="my-products-delete-actions">
+          <UButton color="neutral" variant="soft" @click="deleteTarget = null">
+            {{ $t("pages.myProductsPage.cancel") }}
+          </UButton>
+          <UButton
+            color="error"
+            :loading="deletingProductId === deleteTarget?.id"
+            @click="submitDeleteProduct"
+          >
+            {{ $t("pages.myProductsPage.delete") }}
+          </UButton>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useMyProductsOverview } from "../../application/composables/useMyProductsOverview"
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+import type { ProductListing } from "../../domain/types/product-marketplace.types"
 
 const { t } = useI18n()
 
@@ -189,12 +215,24 @@ const storeTabs = computed(() => [
   },
 ])
 
-const confirmDeleteProduct = (productId: number) => {
-  if (import.meta.client && !window.confirm(t("pages.myProductsPage.deleteConfirm"))) {
-    return
-  }
+const deleteTarget = ref<ProductListing | null>(null)
+const deleteConfirmationOpen = computed({
+  get: () => Boolean(deleteTarget.value),
+  set: (isOpen: boolean) => {
+    if (!isOpen) deleteTarget.value = null
+  },
+})
 
-  deleteProduct(productId)
+const openDeleteConfirmation = (product: ProductListing) => {
+  deleteTarget.value = product
+}
+
+const submitDeleteProduct = async () => {
+  if (!deleteTarget.value) return
+
+  const wasDeleted = await deleteProduct(deleteTarget.value)
+
+  if (wasDeleted) deleteTarget.value = null
 }
 </script>
 
@@ -215,6 +253,20 @@ const confirmDeleteProduct = (productId: number) => {
   border-radius: 16px;
   background: var(--product-card);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.my-products-delete-copy {
+  color: var(--product-muted);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.my-products-delete-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .my-products-heading {
@@ -264,7 +316,6 @@ const confirmDeleteProduct = (productId: number) => {
   justify-content: space-between;
   gap: 16px;
   min-height: 74px;
-  margin-top: 22px;
   padding: 0 12px;
 }
 

@@ -60,8 +60,8 @@
                 :disabled="submitting"
                 @click="insertMentionTrigger"
               >
-                <Icon v-if="variant === 'lightbox'" name="i-ph-user-focus-duotone" class="h-5 w-5" />
-                <span v-else>@</span>
+                <!-- <Icon v-if="variant === 'lightbox'" name="i-ph-user-focus-duotone" class="h-5 w-5" /> -->
+                <span>@</span>
               </button>
 
               <button

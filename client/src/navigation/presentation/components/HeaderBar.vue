@@ -32,7 +32,7 @@
         <div class="ml-auto flex shrink-0 items-center gap-2">
 
           <div class="notification-popover-root">
-            <button
+            <!-- <button
               class="header-action-btn"
               :class="createMenuOpen ? 'header-action-btn--active' : ''"
               type="button"
@@ -41,7 +41,7 @@
               @click="toggleCreateMenu"
             >
               <Icon name="i-ph-plus-circle-duotone" class="h-4.5 w-4.5" />
-            </button>
+            </button> -->
 
             <Transition
               enter-active-class="transition duration-150 ease-out"
@@ -69,7 +69,7 @@
           </div>
 
           <div class="notification-popover-root">
-            <button
+            <!-- <button
               class="header-action-btn"
               type="button"
               :aria-label="$t('navigation.headerBar.friendRequests')"
@@ -79,7 +79,7 @@
               <span v-if="isClientReady && requestCount > 0" class="header-action-badge">
                 {{ requestCount }}
               </span>
-            </button>
+            </button> -->
 
             <Transition
               enter-active-class="transition duration-150 ease-out"

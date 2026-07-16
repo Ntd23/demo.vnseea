@@ -962,6 +962,12 @@ export const mapPostRecord = (
   const pageData = asRecord(entity.page_data)
   const groupData = asRecord(entity.group_data)
   const sourceEntity = Object.keys(publisher).length > 0 ? publisher : userData
+  const postType = firstString(entity, ["postType", "post_type"]).toLowerCase()
+  const profileMediaUpdate = postType === "profile_picture"
+    ? "avatar" as const
+    : postType === "profile_cover_picture"
+      ? "cover" as const
+      : undefined
   const authorId = firstNumber(sourceEntity, ["user_id", "id"])
     || firstNumber(entity, ["user_id", "owner_id"])
   const author = firstString(sourceEntity, ["name", "username"])
@@ -1032,6 +1038,7 @@ export const mapPostRecord = (
     colorId: firstNumber(entity, ["color_id"]) || undefined,
     author,
     authorAvatarUrl: resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"])),
+    authorGender: firstString(sourceEntity, ["gender"]) || undefined,
     authorVerified: isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
     authorPath: pageSlug || groupSlug
       ? sourcePath
@@ -1069,6 +1076,7 @@ export const mapPostRecord = (
     primaryMediaType,
     sourceLabel: pageSlug ? "page" : groupSlug ? "group" : "feed",
     sourcePath,
+    profileMediaUpdate,
     isSaved: isTruthy(entity.is_post_saved) || isTruthy(entity.is_saved),
     isLiked: postReaction.isLiked,
     reaction: postReaction.reaction,

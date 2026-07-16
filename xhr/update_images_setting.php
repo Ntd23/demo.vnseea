@@ -3,13 +3,14 @@ if ($f == "update_images_setting") {
     if (isset($_POST['user_id']) && is_numeric($_POST['user_id']) && $_POST['user_id'] > 0 && Wo_CheckSession($hash_id) === true) {
         $Userdata = Wo_UserData($_POST['user_id']);
         if (!empty($Userdata['user_id'])) {
+            $post_text = !empty($_POST['postText']) ? $_POST['postText'] : '';
             if (isset($_FILES['avatar']['name'])) {
-                if (Wo_UploadImage($_FILES["avatar"]["tmp_name"], $_FILES['avatar']['name'], 'avatar', $_FILES['avatar']['type'], $_POST['user_id']) === true) {
+                if (Wo_UploadImage($_FILES["avatar"]["tmp_name"], $_FILES['avatar']['name'], 'avatar', $_FILES['avatar']['type'], $_POST['user_id'], '', 0, $post_text) === true) {
                     $Userdata = Wo_UserData($_POST['user_id']);
                 }
             }
             if (isset($_FILES['cover']['name'])) {
-                if (Wo_UploadImage($_FILES["cover"]["tmp_name"], $_FILES['cover']['name'], 'cover', $_FILES['cover']['type'], $_POST['user_id']) === true) {
+                if (Wo_UploadImage($_FILES["cover"]["tmp_name"], $_FILES['cover']['name'], 'cover', $_FILES['cover']['type'], $_POST['user_id'], '', 0, $post_text) === true) {
                     $Userdata = Wo_UserData($_POST['user_id']);
                 }
             }
