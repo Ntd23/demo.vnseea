@@ -214,7 +214,28 @@
             <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagManageListTitle") }}</h3>
             <div class="messages-tag-modal__create">
               <UInput v-model="newTagName" :placeholder="$t('pages.messagesPage.tagCreatePlaceholder')" size="lg" />
-              <input v-model="newTagColor" type="color" class="messages-tag-modal__color">
+              <UPopover>
+                <UButton
+                  color="neutral"
+                  variant="outline"
+                  size="lg"
+                  class="messages-tag-modal__color-trigger"
+                  :aria-label="$t('pages.messagesPage.tagColorLabel')"
+                  :title="$t('pages.messagesPage.tagColorLabel')"
+                >
+                  <span
+                    class="messages-tag-modal__color-swatch"
+                    :style="{ backgroundColor: newTagColor || defaultTagColor }"
+                  />
+                </UButton>
+
+                <template #content>
+                  <div class="messages-tag-modal__color-picker">
+                    <UColorPicker v-model="newTagColor" format="hex" size="sm" />
+                    <output class="messages-tag-modal__color-value">{{ newTagColor || defaultTagColor }}</output>
+                  </div>
+                </template>
+              </UPopover>
               <UButton
                 size="lg"
                 :loading="isUpdatingTags"
@@ -281,7 +302,8 @@ const tagModalOpen = ref(false)
 const tagModalTab = ref<"assign" | "manage">("assign")
 const tagModalContact = ref<MessageContact | null>(null)
 const newTagName = ref("")
-const newTagColor = ref("#3b82f6")
+const defaultTagColor = "#3b82f6"
+const newTagColor = ref<string | undefined>(defaultTagColor)
 const mobileListOpen = ref(true)
 const {
   isCallActionPending,
@@ -579,7 +601,7 @@ async function submitCreateTag() {
 
   const created = await createTagLabel({
     name,
-    color: newTagColor.value,
+    color: newTagColor.value || defaultTagColor,
   })
 
   if (created) {
@@ -723,12 +745,35 @@ async function submitCreateTag() {
   align-items: center;
 }
 
-.messages-tag-modal__color {
+.messages-tag-modal__color-trigger {
   width: 46px;
-  height: 36px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  background: #ffffff;
+  height: 40px;
+  justify-content: center;
+  padding: 6px;
+}
+
+.messages-tag-modal__color-swatch {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 6px;
+}
+
+.messages-tag-modal__color-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+.messages-tag-modal__color-value {
+  width: 100%;
+  color: var(--text-secondary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: var(--text-caption);
+  text-align: center;
 }
 
 .messages-tag-modal__footer {

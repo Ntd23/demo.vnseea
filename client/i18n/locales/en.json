@@ -2898,6 +2898,7 @@
       "tagEmpty": "No labels yet.",
       "tagApplyHint": "Tip: use Attach/Remove to apply labels to the current contact.",
       "tagCreatePlaceholder": "New label name",
+      "tagColorLabel": "Label color",
       "attach": "Attach",
       "remove": "Remove",
       "create": "Create",
@@ -5745,6 +5746,7 @@
         "editProfile": "Edit profile",
         "generalSettings": "General settings",
         "adminArea": "Admin area",
+        "language": "Language",
         "logout": "Log out"
       },
       "walletLabel": "Wallet",

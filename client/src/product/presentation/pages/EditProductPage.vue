@@ -1,16 +1,7 @@
 <!-- English description: Wowonder-aligned product edit form that saves fields through the backend API bridge. -->
 
 <template>
-  <div class="edit-product-page mx-auto w-full max-w-[980px] px-3 pb-12 pt-4 sm:px-4">
-    <section class="edit-product-heading">
-      <div class="edit-product-heading__inner">
-        <span>
-          <Icon name="i-ph-shopping-bag-open-fill" class="h-5 w-5" />
-        </span>
-        <h1>{{ $t("pages.editProductPage.badge") }}</h1>
-      </div>
-    </section>
-
+  <div class="edit-product-page w-full mt-1.5">
     <form class="edit-product-form" @submit.prevent="submitProduct">
       <div class="edit-product-row edit-product-row--name-price">
         <UFormField class="edit-product-field" :label="$t('pages.productEditor.titleLabel')">
