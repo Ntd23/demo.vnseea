@@ -7,14 +7,7 @@
     </div>
 
     <UForm :state="state" :validate="validate" class="auth-form__body" @submit="handleSubmit">
-      <div v-if="autoUsername">
-        <UFormField name="firstName" :label="$t('pages.registerPage.username')" required>
-          <UInput v-model="state.firstName" size="xl" :placeholder="$t('pages.registerPage.usernamePlaceholder')"
-            class="w-full" />
-        </UFormField>
-      </div>
-
-      <UFormField v-else name="username" :label="$t('pages.registerPage.username')" required>
+      <UFormField name="username" :label="$t('pages.registerPage.username')" required>
         <UInput v-model="state.username" type="text" autocomplete="username" size="xl" class="w-full"
           :placeholder="$t('pages.registerPage.usernamePlaceholder')" />
       </UFormField>
@@ -147,8 +140,7 @@ import { useRegisterPageVM } from '../../application/view-models/useRegisterPage
 const { t } = useI18n()
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
-const { state, autoUsername, isSubmitting, validate, hydrateRegisterConfig, handleSubmit } = useRegisterPageVM()
-await hydrateRegisterConfig()
+const { state, isSubmitting, validate, handleSubmit } = useRegisterPageVM()
 const termsHref = appRoutes.termsOfUse
 const privacyHref = appRoutes.privacyPolicy
 

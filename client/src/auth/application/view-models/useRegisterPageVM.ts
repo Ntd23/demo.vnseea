@@ -2,7 +2,6 @@
 
 import type { FormError } from "@nuxt/ui"
 import type {
-  RegisterAccountConfig,
   RegisterAccountInput,
   RegisterAccountResult,
 } from "../../domain/types/auth.types"
@@ -54,10 +53,6 @@ const createDefaultState = (): RegisterAccountInput => ({
   ref: "",
 })
 
-const createDefaultRegisterConfig = (): RegisterAccountConfig => ({
-  autoUsername: true,
-})
-
 const extractErrorMessage = (error: unknown, defaultMessage: string) => {
   const maybeError = error as {
     data?: { statusMessage?: string; message?: string }
@@ -80,61 +75,27 @@ export function useRegisterPageVM(
   const toast = useToast()
 
   const state = reactive<RegisterAccountInput>(createDefaultState())
-  const registerConfig = ref<RegisterAccountConfig>(createDefaultRegisterConfig())
-  const registerConfigLoading = ref(false)
-  const registerConfigLoaded = ref(false)
   const submitState = ref<"idle" | "loading" | "success" | "error">("idle")
   const submitMessage = ref("")
   const lastResult = ref<RegisterAccountResult | null>(null)
-  const autoUsername = computed(() => registerConfig.value.autoUsername)
 
   const routeReferral = computed(() => {
     const value = route.query.ref
     return Array.isArray(value) ? value[0] ?? "" : value ?? ""
   })
 
-  async function hydrateRegisterConfig(force = false) {
-    if (registerConfigLoading.value) {
-      return registerConfig.value
-    }
-
-    if (registerConfigLoaded.value && !force) {
-      return registerConfig.value
-    }
-
-    registerConfigLoading.value = true
-
-    try {
-      registerConfig.value = await repository.getRegisterConfig()
-      registerConfigLoaded.value = true
-      return registerConfig.value
-    }
-    catch {
-      registerConfig.value = createDefaultRegisterConfig()
-      registerConfigLoaded.value = true
-      return registerConfig.value
-    }
-    finally {
-      registerConfigLoading.value = false
-    }
-  }
-
   const validate = (currentState: RegisterAccountInput): RegisterValidationError[] => {
     const errors: RegisterValidationError[] = []
 
-    if (autoUsername.value && !currentState.firstName.trim()) {
-      errors.push({ name: "firstName", message: t("pages.registerPage.validationFirstNameRequired") })
-    }
-
     const username = currentState.username?.trim() ?? ""
 
-    if (!autoUsername.value && !username) {
+    if (!username) {
       errors.push({ name: "username", message: t("pages.registerPage.validationUsernameRequired") })
     }
-    else if (!autoUsername.value && !USERNAME_REGEX.test(username)) {
+    else if (!USERNAME_REGEX.test(username)) {
       errors.push({ name: "username", message: t("pages.registerPage.validationUsernamePattern") })
     }
-    else if (!autoUsername.value && (username.length < 5 || username.length > 32)) {
+    else if (username.length < 5 || username.length > 32) {
       errors.push({ name: "username", message: t("pages.registerPage.validationUsernameLength") })
     }
 
@@ -159,14 +120,6 @@ export function useRegisterPageVM(
       errors.push({ name: "confirmPassword", message: t("pages.registerPage.validationConfirmPasswordMismatch") })
     }
 
-    if (
-      currentState.birthDay === null
-      || currentState.birthMonth === null
-      || currentState.birthYear === null
-    ) {
-      errors.push({ name: "birthDay", message: t("pages.registerPage.validationBirthdayRequired") })
-    }
-
     if (!currentState.gender) {
       errors.push({ name: "gender", message: t("pages.registerPage.validationGenderRequired") })
     }
@@ -187,7 +140,7 @@ export function useRegisterPageVM(
     try {
       const result = await repository.register({
         ...state,
-        username: autoUsername.value ? "" : state.username,
+        username: state.username,
         ref: state.ref || routeReferral.value,
       })
 
@@ -262,16 +215,11 @@ export function useRegisterPageVM(
 
   return {
     state,
-    registerConfig,
-    registerConfigLoading,
-    registerConfigLoaded,
-    autoUsername,
     submitState,
     submitMessage,
     lastResult,
     isSubmitting,
     validate,
-    hydrateRegisterConfig,
     handleSubmit,
   }
 }
