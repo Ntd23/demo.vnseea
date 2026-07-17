@@ -1,6 +1,6 @@
 // English description: Issues a short-lived realtime auth token for the current backend session user.
 
-import { getCookie } from "h3"
+import { getCookie, getHeader } from "h3"
 import { getBackendBaseCandidates } from "../../utils/backend-api-client"
 import { createRealtimeToken } from "../../utils/realtime-token"
 import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"
@@ -57,7 +57,10 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const backendUserSession = getCookie(event, "user_id")
+  const authorization = String(getHeader(event, "authorization") || "").trim()
+  const bearerMatch = /^Bearer\s+(.+)$/i.exec(authorization)
+  const bearerAccessToken = String(bearerMatch?.[1] || "").trim()
+  const backendUserSession = getCookie(event, "user_id") || bearerAccessToken
 
   if (!backendUserSession) {
     throw createError({

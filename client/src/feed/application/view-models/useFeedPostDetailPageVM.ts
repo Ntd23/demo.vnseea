@@ -29,10 +29,15 @@ export function useFeedPostDetailPageVM(postId: MaybeRefOrGetter<number>) {
     },
   )
 
+  function markDeleted() {
+    post.value = null
+  }
+
   return {
     post,
     pending,
     error,
     refresh,
+    markDeleted,
   }
 }

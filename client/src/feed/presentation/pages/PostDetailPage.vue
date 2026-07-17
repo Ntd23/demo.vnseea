@@ -4,7 +4,7 @@
     <USkeleton v-if="pending" class="post-detail-page__skeleton" />
 
     <UAlert
-      v-else-if="error || !post"
+      v-else-if="error || postDeleted || !post"
       color="warning"
       variant="subtle"
       icon="i-ph-warning-circle-fill"
@@ -19,12 +19,13 @@
       :post-time="post.time"
     />
 
-    <FeedPostCard v-else :post="post" />
+    <FeedPostCard v-else :post="post" @deleted="markDeleted" />
   </section>
 </template>
 
 <script setup lang="ts">
 import { useFeedPostDetailPageVM } from "../../application/view-models/useFeedPostDetailPageVM"
+import { usePostRealtimeStore } from "../../application/stores/usePostRealtimeStore"
 import JobsJobPostDetail from "../../../jobs/presentation/components/JobPostDetail.vue"
 import FeedPostCard from "../components/PostCard.vue"
 
@@ -34,7 +35,30 @@ const props = defineProps<{
   postId: number
 }>()
 
-const { post, pending, error } = useFeedPostDetailPageVM(toRef(props, "postId"))
+const postRealtimeStore = usePostRealtimeStore()
+const {
+  post: loadedPost,
+  pending,
+  error,
+  markDeleted,
+} = useFeedPostDetailPageVM(toRef(props, "postId"))
+const post = computed(() => postRealtimeStore.snapshotFor(props.postId) ?? loadedPost.value)
+const postDeleted = computed(() => postRealtimeStore.isDeleted(props.postId))
+let stopPostWatch: (() => void) | null = null
+
+function releasePostWatch() {
+  stopPostWatch?.()
+  stopPostWatch = null
+}
+
+function syncPostWatch() {
+  releasePostWatch()
+  stopPostWatch = postRealtimeStore.watchPost(props.postId)
+}
+
+onMounted(syncPostWatch)
+watch(() => props.postId, syncPostWatch)
+onBeforeUnmount(releasePostWatch)
 </script>
 
 <style scoped>

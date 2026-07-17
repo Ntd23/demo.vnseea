@@ -1,7 +1,9 @@
 <!-- Description: Renders a normalized feed post with real backend media, like, report, and comment actions instead of mock-local content. -->
 <template>
-  <article 
-    :id="postAnchorId" 
+  <article
+    v-if="!postRealtimeStore.isDeleted(props.post.id)"
+    ref="postCardRef"
+    :id="postAnchorId"
     class="post-card"
     :class="{ 'post-card--colored': Boolean(postColorStyles) }"
   >
@@ -19,7 +21,7 @@
         :audience="post.audience"
         :is-saved="post.isSaved"
         :is-owner="isOwner"
-        :is-admin="isAdmin"
+        :can-delete="post.permissions.canDelete"
         :profile-media-update="post.profileMediaUpdate"
         @menu-action="onMenuAction"
       />
@@ -311,7 +313,7 @@
         :open="lightboxOpen"
         :items="post.sharedPost ? [] : mediaItems"
         :current-index="currentMediaIndex"
-        :title="props.post.text || t('feed.postCard.lightboxTitle')"
+        :title="post.text || t('feed.postCard.lightboxTitle')"
         :description="''"
         :author="post.author"
         :author-avatar-url="post.authorAvatarUrl"
@@ -440,6 +442,7 @@ import { feedReactionAssetByValue as postReactionAssetByValue } from "../../appl
 import { useFeedPostColors } from "../../application/composables/useFeedPostColors"
 import { createPostTextMentionSegments } from "../../application/utils/feed-mentions"
 import { useFeedPostCardVM } from "../../application/view-models/useFeedPostCardVM"
+import { usePostRealtimeStore } from "../../application/stores/usePostRealtimeStore"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 import FeedCommentComposer from "./CommentComposer.vue"
 import FeedCommentList from "./CommentList.vue"
@@ -464,13 +467,45 @@ const emit = defineEmits<{
   hidden: [postId: number]
 }>()
 
+const postRealtimeStore = usePostRealtimeStore()
+const postCardRef = ref<HTMLElement | null>(null)
+const post = computed(() => postRealtimeStore.snapshotFor(props.post.id) ?? props.post)
+let releaseRealtimeWatch: (() => void) | null = null
+let postIsVisible = false
+
+function syncRealtimeWatch() {
+  releaseRealtimeWatch?.()
+  releaseRealtimeWatch = postIsVisible ? postRealtimeStore.watchPost(post.value.id) : null
+}
+
+useIntersectionObserver(
+  postCardRef,
+  ([entry]) => {
+    const nextVisible = entry?.isIntersecting === true
+    if (postIsVisible === nextVisible) return
+    postIsVisible = nextVisible
+    syncRealtimeWatch()
+  },
+  { threshold: 0.1 },
+)
+
+watch(() => props.post.id, syncRealtimeWatch)
+watch(
+  () => postRealtimeStore.isDeleted(props.post.id),
+  (deleted) => {
+    if (deleted) emit("deleted", props.post.id)
+  },
+)
+
+onBeforeUnmount(() => releaseRealtimeWatch?.())
+
 async function onMenuAction(action: string) {
   await handleMenuAction(action)
   if (actionState.value === "success") {
     if (action === "delete") {
-      emit("deleted", props.post.id)
+      emit("deleted", post.value.id)
     } else if (action === "hide") {
-      emit("hidden", props.post.id)
+      emit("hidden", post.value.id)
     }
   }
 }
@@ -528,21 +563,28 @@ const {
   handleMenuAction,
   downloadMedia,
   isOwner,
-  isAdmin,
   openComments,
   toggleComments,
   openReactionModal,
   closeReactionModal,
-} = useFeedPostCardVM(toRef(props, "post"))
+  refreshComments,
+} = useFeedPostCardVM(post)
+
+watch(
+  () => postRealtimeStore.commentVersionFor(props.post.id),
+  (version, previousVersion) => {
+    if (version > previousVersion && showComments.value) void refreshComments()
+  },
+)
 
 const postTextSegments = computed(() =>
-  createPostTextMentionSegments(props.post.text, props.post.mentions ?? []),
+  createPostTextMentionSegments(post.value.text, post.value.mentions ?? []),
 )
 
 const postColorStyles = computed(() => {
-  if (!props.post.colorId) return null
+  if (!post.value.colorId) return null
 
-  return postColorById.value[props.post.colorId] || defaultPostColor.value
+  return postColorById.value[post.value.colorId] || defaultPostColor.value
 })
 
 const previewComment = computed(() => localComments.value[0] ?? null)
@@ -559,31 +601,31 @@ const previewCommentInitials = computed(() => {
 })
 
 const attachmentIcon = computed(() =>
-  props.post.attachmentCard?.type === "funding"
+  post.value.attachmentCard?.type === "funding"
     ? "i-ph-hand-heart-bold"
-    : props.post.attachmentCard?.type === "product"
+    : post.value.attachmentCard?.type === "product"
       ? "i-ph-shopping-bag-open-bold"
-      : props.post.attachmentCard?.type === "offer"
+      : post.value.attachmentCard?.type === "offer"
         ? "i-ph-tag-chevron-bold"
         : "i-ph-newspaper-clipping-bold",
 )
 
 const attachmentLabel = computed(() =>
-  props.post.attachmentCard?.type === "funding"
+  post.value.attachmentCard?.type === "funding"
     ? t("feed.postCard.fundingAttachment")
-    : props.post.attachmentCard?.type === "product"
+    : post.value.attachmentCard?.type === "product"
       ? t("feed.postCard.productAttachment")
-      : props.post.attachmentCard?.type === "offer"
+      : post.value.attachmentCard?.type === "offer"
         ? t("feed.postCard.offerAttachment")
         : t("feed.postCard.blogAttachment"),
 )
 
 const attachmentActionLabel = computed(() =>
-  props.post.attachmentCard?.type === "funding"
+  post.value.attachmentCard?.type === "funding"
     ? t("feed.postCard.openFunding")
-    : props.post.attachmentCard?.type === "product"
+    : post.value.attachmentCard?.type === "product"
       ? t("feed.postCard.openProduct")
-      : props.post.attachmentCard?.type === "offer"
+      : post.value.attachmentCard?.type === "offer"
         ? t("feed.postCard.openOffer")
         : t("feed.postCard.openBlog"),
 )
