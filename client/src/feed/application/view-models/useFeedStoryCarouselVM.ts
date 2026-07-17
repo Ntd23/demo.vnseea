@@ -17,6 +17,10 @@ import {
   feedReactionAssets,
 } from "../constants/reaction-assets"
 import { defaultFeedStoryReaction } from "../../domain/constants/story-reactions"
+import {
+  getFeedStoryExpiration,
+  isFeedStoryExpired,
+} from "../../domain/services/story-lifecycle.service"
 import type { FeedStoryReactionType, FeedStoryRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
@@ -55,6 +59,8 @@ export function useFeedStoryCarouselVM(
   const viewedStoryIds = ref(new Set<number>())
   const sentStoryViewIds = ref(new Set<number>())
   const failedMediaStoryIds = ref(new Set<number>())
+  const storyClock = ref(Date.now())
+  let storyExpirationTimer: ReturnType<typeof setTimeout> | undefined
 
   const storyReactionOptions = computed<Array<{
     value: FeedStoryReactionType
@@ -75,10 +81,14 @@ export function useFeedStoryCarouselVM(
       || (story.author ? `author:${story.author.toLowerCase()}` : "")
       || `story:${index}`
 
+  const visibleStories = computed(() =>
+    stories.value.filter(story => !isFeedStoryExpired(story, storyClock.value)),
+  )
+
   const storyGroups = computed<StoryGroup[]>(() => {
     const groups = new Map<string, StoryGroup>()
 
-    stories.value.forEach((story, index) => {
+    visibleStories.value.forEach((story, index) => {
       const key = resolveStoryOwnerKey(story, index)
       const existingGroup = groups.get(key)
 
@@ -407,6 +417,33 @@ export function useFeedStoryCarouselVM(
     openStoryGroup(previousGroupIndex, Math.max((previousGroup?.stories.length ?? 1) - 1, 0))
   }
 
+  function scheduleNextStoryExpiration() {
+    if (!import.meta.client) {
+      return
+    }
+
+    if (storyExpirationTimer) {
+      clearTimeout(storyExpirationTimer)
+    }
+
+    const now = Date.now()
+    storyClock.value = now
+    const nextExpiration = stories.value
+      .map(getFeedStoryExpiration)
+      .filter((expiresAt): expiresAt is number => expiresAt !== null && expiresAt > now)
+      .sort((left, right) => left - right)[0]
+
+    if (!nextExpiration) {
+      storyExpirationTimer = undefined
+      return
+    }
+
+    storyExpirationTimer = setTimeout(
+      scheduleNextStoryExpiration,
+      Math.min(Math.max(nextExpiration - now + 50, 50), 2_147_483_647),
+    )
+  }
+
   async function toggleActiveVideoPlayback() {
     const video = activeVideoRef.value
 
@@ -480,6 +517,14 @@ export function useFeedStoryCarouselVM(
   }
 
   useEventListener(scrollRef, "scroll", updateScroll, { passive: true })
+
+  watch(stories, scheduleNextStoryExpiration, { deep: true, immediate: true })
+
+  onBeforeUnmount(() => {
+    if (storyExpirationTimer) {
+      clearTimeout(storyExpirationTimer)
+    }
+  })
 
   if (import.meta.client) {
     useEventListener(window, "keydown", (event) => {

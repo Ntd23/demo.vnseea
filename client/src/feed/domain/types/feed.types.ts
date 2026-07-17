@@ -183,6 +183,7 @@ export type FeedStoryActionResult = {
 
 export type FeedStoryRecord = {
   id: number
+  createdAt: number
   ownerId: number
   ownerKey: string
   ownerUsername: string

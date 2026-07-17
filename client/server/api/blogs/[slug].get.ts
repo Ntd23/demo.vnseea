@@ -153,7 +153,7 @@ const mapArticle = (
       .map(tag => tag.trim().replace(/^#/, ""))
       .filter(Boolean)
       .slice(0, 8),
-    image: asString(entity.thumbnail),
+    image: resolveMediaUrl(asString(entity.thumbnail)),
     imageFallback: fallbackGradients[id % fallbackGradients.length],
     href: appRoutes.readBlog(slug),
     mine: currentUserId > 0 && asNumber(entity.user) === currentUserId,

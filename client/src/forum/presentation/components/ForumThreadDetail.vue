@@ -31,7 +31,7 @@
         </span>
         <span>
           <Icon name="i-ph-clock-duotone" />
-          {{ thread.createdAt }}
+          {{ formatUnixDateTime(thread.createdAt, locale) }}
         </span>
       </div>
     </section>
@@ -91,7 +91,7 @@
               </UBadge>
             </div>
             <p>{{ reply.message }}</p>
-            <time>{{ reply.time }}</time>
+            <time>{{ formatUnixDateTime(reply.time, locale) }}</time>
           </div>
         </article>
       </div>
@@ -135,6 +135,7 @@
 
 <script setup lang="ts">
 import type { ForumReply, ForumThread } from "../../domain/types/forum.types"
+import { formatUnixDateTime } from "../../../shared-kernel/application/utils/format-unix-date-time"
 
 type ReplySubmitStatus = "idle" | "loading" | "success" | "error"
 
@@ -145,7 +146,7 @@ const props = defineProps<{
   submitting?: boolean
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const emit = defineEmits<{
   reply: [message: string]

@@ -43,11 +43,14 @@ export function useCreateBlogPageVM(
   const toast = useToast()
 
   const title = ref("")
+  const descriptionInput = ref("")
   const content = ref("")
   const category = ref<BlogCategoryValue>("business")
   const tagsInput = ref("")
   const thumbnailName = ref("")
   const thumbnailFile = ref<File | null>(null)
+  const thumbnailPreviewUrl = ref("")
+  const thumbnailObjectUrl = ref("")
   const thumbnailIndex = ref(0)
   const submitMessage = ref("")
   const submitState = ref<CreateBlogSubmitState>("idle")
@@ -99,7 +102,9 @@ export function useCreateBlogPageVM(
     return Math.max(1, Math.ceil(words / 180))
   })
 
-  const hasUploadableThumbnail = computed(() => Boolean(thumbnailFile.value))
+  const hasUploadableThumbnail = computed(() =>
+    Boolean(thumbnailFile.value || (isEditing.value && thumbnailName.value)),
+  )
 
   const completionCount = computed(() =>
     [
@@ -137,7 +142,9 @@ export function useCreateBlogPageVM(
     return clean.length > 180 ? `${clean.slice(0, 180)}...` : clean
   })
 
-  const description = computed(() => previewExcerpt.value.slice(0, 290))
+  const description = computed(() =>
+    descriptionInput.value.trim() || previewExcerpt.value.slice(0, 290),
+  )
 
   const isSubmitting = computed(() =>
     submitState.value === "saving" || submitState.value === "publishing",
@@ -180,10 +187,21 @@ export function useCreateBlogPageVM(
     thumbnailIndex.value += 1
   }
 
+  const clearThumbnailObjectUrl = () => {
+    if (!thumbnailObjectUrl.value) return
+
+    URL.revokeObjectURL(thumbnailObjectUrl.value)
+    thumbnailObjectUrl.value = ""
+  }
+
   const onThumbnailChange = (event: Event) => {
     const input = event.target as HTMLInputElement
     const file = input.files?.[0]
     if (!file) return
+
+    clearThumbnailObjectUrl()
+    thumbnailObjectUrl.value = URL.createObjectURL(file)
+    thumbnailPreviewUrl.value = thumbnailObjectUrl.value
     thumbnailName.value = file.name
     thumbnailFile.value = file
     cycleThumbnail()
@@ -207,10 +225,12 @@ export function useCreateBlogPageVM(
       if (!article.mine) throw new Error("Bạn không có quyền chỉnh sửa bài viết này.")
 
       title.value = article.title
+      descriptionInput.value = article.excerpt
       content.value = article.body.join("\n\n")
       category.value = article.category as BlogCategoryValue
       tagsInput.value = article.tags.join(", ")
       thumbnailName.value = article.image ? "Ảnh bìa hiện tại" : ""
+      thumbnailPreviewUrl.value = article.image
     }
     catch (error) {
       submitMessage.value = error instanceof Error ? error.message : "Không thể tải bài viết."
@@ -260,7 +280,9 @@ export function useCreateBlogPageVM(
     if (isSubmitting.value) return
 
     if (completionCount.value >= 5) {
-      submitMessage.value = t("pages.createBlogPage.publishing")
+      submitMessage.value = isEditing.value
+        ? t("pages.createBlogPage.updating")
+        : t("pages.createBlogPage.publishing")
       submitState.value = "publishing"
 
       try {
@@ -274,14 +296,18 @@ export function useCreateBlogPageVM(
           submitState.value = "pending"
         }
         else {
-          submitMessage.value = t("pages.createBlogPage.publishComplete")
+          submitMessage.value = isEditing.value
+            ? t("pages.createBlogPage.updateComplete")
+            : t("pages.createBlogPage.publishComplete")
           submitState.value = "published"
         }
 
         toast.add({
           title: result.status === "pending"
             ? t("pages.createBlogPage.publishPendingTitle")
-            : t("pages.createBlogPage.publishCompleteTitle"),
+            : isEditing.value
+              ? t("pages.createBlogPage.updateCompleteTitle")
+              : t("pages.createBlogPage.publishCompleteTitle"),
           description: submitMessage.value,
           color: "success",
         })
@@ -312,23 +338,30 @@ export function useCreateBlogPageVM(
 
   const quickFillDemo = () => {
     title.value = t("pages.createBlogPage.demoTitle")
+    descriptionInput.value = ""
     content.value = t("pages.createBlogPage.demoContent")
     category.value = "people"
     tagsInput.value = "community, green, local"
     thumbnailName.value = ""
     thumbnailFile.value = null
+    clearThumbnailObjectUrl()
+    thumbnailPreviewUrl.value = ""
     thumbnailIndex.value = 2
     submitMessage.value = ""
     submitState.value = "idle"
   }
 
+  onBeforeUnmount(clearThumbnailObjectUrl)
+
   return {
     title,
+    descriptionInput,
     content,
     category,
     tagsInput,
     thumbnailName,
     thumbnailFile,
+    thumbnailPreviewUrl,
     submitMessage,
     submitState,
     isSubmitting,

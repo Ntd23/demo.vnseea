@@ -7,31 +7,30 @@
     :placeholder="$t('navigation.headerSearchInput.placeholder')"
     :autofocus="true"
     :color-mode="false"
+    size="lg"
     shortcut="ctrl_k"
     :fuse="{ fuseOptions: { includeMatches: true, threshold: 0.35 } }"
     :ui="{
-      class:'rounded-[var(--radius-xl)]',
-      modal: 'sm:max-w-xl overflow-hidden rounded-[var(--radius-xl)] search-glass-modal shadow-[0_20px_60px_rgba(0,0,255,0.25),0_4px_16px_rgba(0,0,0,0.12)]',
-      input: [
-        'border-0 search-glass-input bg-transparent',
-        'text-white placeholder:text-white/55',
-        'rounded-none focus:ring-0 h-12 px-4 text-sm font-medium',
-      ],
-      group: 'p-1.5',
-      groupLabel: 'px-2 py-1 text-[10px] font-bold uppercase tracking-[0.07em] text-white/45',
-      item: {
-        base: 'rounded-[var(--radius-md)] px-2 py-1.5 gap-2.5 transition-all duration-150 cursor-pointer',
-        active: 'bg-white/15 text-white',
-        inactive: 'text-white/80',
-      },
-      itemLabel: 'text-sm font-semibold text-white',
-      itemDescription: 'text-xs text-white truncate',
-      itemTrailing: 'text-[10px] font-bold uppercase tracking-[0.07em] text-white/45',
-      itemIcon: 'h-4 w-4 text-white',
-      itemAvatar: 'rounded-[6px]',
-      itemAvatarSize: 'xs',
-      empty: 'py-6 text-sm text-white/60',
-      footer: 'search-glass-footer bg-transparent px-3 py-2 text-white/55',
+      modal: 'search-content-modal sm:max-w-[680px] h-auto max-h-[min(680px,calc(100dvh-32px))] overflow-hidden rounded-2xl border border-indigo-100 bg-[#f4f6ff] shadow-[0_22px_70px_rgba(30,41,100,0.20)]',
+      root: 'search-content-root min-h-0 bg-transparent divide-y divide-indigo-100/80',
+      input: 'search-content-input border-0 bg-white/65 px-2 text-slate-900 backdrop-blur-xl',
+      close: 'search-content-close me-3 rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900',
+      content: 'min-h-0 bg-transparent',
+      viewport: 'search-content-viewport max-h-[min(560px,calc(100dvh-150px))] scroll-py-2 overflow-y-auto px-2 py-2',
+      group: 'search-content-group px-1 py-2',
+      label: 'px-3 pb-2 pt-1 text-[11px] font-bold uppercase tracking-[0.05em] text-slate-400',
+      item: 'search-content-item min-h-14 cursor-pointer gap-3 rounded-xl px-3 py-2.5 text-slate-700 before:rounded-xl data-highlighted:before:bg-[#f2f4ff]',
+      itemLeadingIcon: 'size-9 rounded-xl bg-slate-100 p-2 text-slate-500 group-data-highlighted:text-[#0000ff]',
+      itemLeadingAvatar: 'size-10 rounded-full ring-1 ring-slate-200',
+      itemLeadingAvatarSize: 'sm',
+      itemWrapper: 'min-w-0 gap-0.5',
+      itemLabel: 'text-[13px] font-bold text-slate-800',
+      itemLabelBase: 'text-slate-800 [&>mark]:rounded-sm [&>mark]:bg-[#e8eaff] [&>mark]:text-[#0000ff]',
+      itemLabelSuffix: 'ms-2 inline-flex rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-500',
+      itemDescription: 'truncate text-[12px] font-medium text-slate-500',
+      itemTrailing: 'text-[11px] font-semibold text-slate-400',
+      empty: 'py-10 text-sm font-medium text-slate-500',
+      footer: 'border-t border-indigo-100 bg-white/45 px-4 py-2.5 text-xs text-slate-500',
     }"
   />
 </template>
@@ -78,7 +77,7 @@ function kindLabel(kind: (typeof suggestionItems.value)[number]['kind']) {
   if (kind === 'user') return t('community.search.tabs.users.label')
   if (kind === 'page') return t('community.search.tabs.pages.label')
   if (kind === 'group') return t('community.search.tabs.groups.label')
-  return 'Hashtag'
+  return t('navigation.headerSearchInput.hashtagLabel')
 }
 
 function kindIcon(kind: (typeof suggestionItems.value)[number]['kind']) {
@@ -101,31 +100,12 @@ function toContentSearchItem(item: (typeof suggestionItems.value)[number]): Head
   }
 }
 
-const searchActionGroup = computed(() => {
-  const keyword = search.value.trim()
-  if (!keyword) return null
-
-  return {
-    id: 'search-action',
-    label: t('navigation.headerSearchInput.placeholder'),
-    ignoreFilter: true,
-    items: [{
-      id: `search:${keyword}`,
-      label: keyword,
-      suffix: '/search',
-      icon: 'i-ph-magnifying-glass-duotone',
-      onSelect: () => submitSearch(keyword)
-    }]
-  }
-})
-
 const contentSearchGroups = computed(() => {
   return [
-    searchActionGroup.value,
     buildGroup('users', t('community.search.tabs.users.label'), 'user'),
     buildGroup('pages', t('community.search.tabs.pages.label'), 'page'),
     buildGroup('groups', t('community.search.tabs.groups.label'), 'group'),
-    buildGroup('hashtags', 'Hashtags', 'hashtag')
+    buildGroup('hashtags', t('navigation.headerSearchInput.hashtagsLabel'), 'hashtag')
   ].filter(Boolean)
 })
 
@@ -180,90 +160,71 @@ function selectSuggestion(href: string) {
   void router.push(href)
 }
 
-function submitSearch(value = search.value) {
-  closeSearch()
-  const keyword = value.trim()
-  void router.push({ path: '/search', query: keyword ? { q: keyword } : {} })
-}
 </script>
 
 <style>
 /* Glass morphism search palette — brand blue tint + blur */
-.search-glass-modal {
-  background: linear-gradient(
-    270deg,
-    #0000ff 0%,
-    #0000ffc4 100%
-  ) !important;
-  backdrop-filter: blur(28px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-  /* outline bypasses global .border { border-width: 0 } override */
-  outline: 1.5px solid rgba(255, 255, 255, 0.25) !important;
-  outline-offset: 0;
+.search-content-modal {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.96) 0, rgba(255, 255, 255, 0) 38%),
+    linear-gradient(145deg, #f8faff 0%, #f0f2ff 58%, #f5f3ff 100%) !important;
   box-shadow:
-    0 0 0 0.5px rgba(255, 255, 255, 0.12) inset,
-    0 20px 60px rgba(0, 0, 255, 0.28),
-    0 4px 16px rgba(0, 0, 0, 0.12) !important;
-    border: 1px solid white;
-    border-radius: 20px;
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 22px 70px rgba(30, 41, 100, 0.2) !important;
 }
 
-/* Force all child texts inside the modal to white tones */
-.search-glass-modal,
-.search-glass-modal * {
-  color: #ffffff !important;
+.search-content-input {
+  border-bottom: 1px solid rgba(199, 210, 254, 0.7) !important;
+  background: rgba(255, 255, 255, 0.62) !important;
+  backdrop-filter: blur(18px);
 }
 
-/* Text hierarchy: Group labels / section headers */
-.search-glass-modal [class*="groupLabel"],
-.search-glass-modal [class*="group-label"],
-.search-glass-modal [role="group"] > div:first-child,
-.search-glass-modal [role="group"] > span:first-child,
-.search-glass-modal [role="presentation"] {
-  color: rgba(255, 255, 255, 0.55) !important;
-  font-weight: 700 !important;
+.search-content-input input {
+  height: 58px !important;
+  color: #0f172a !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
 }
 
-/* Text hierarchy: Descriptions, Suffixes, and Trailing metadata */
-.search-glass-modal [class*="itemDescription"],
-.search-glass-modal [class*="itemTrailing"],
-.search-glass-modal [class*="item-description"],
-.search-glass-modal [class*="item-trailing"],
-.search-glass-modal [class*="empty"],
-.search-glass-modal [class*="footer"] {
-  color: rgba(255, 255, 255, 0.60) !important;
+.search-content-input input::placeholder {
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
 }
 
-/* Placeholder inside input */
-.search-glass-modal input::placeholder {
-  color: rgba(255, 255, 255, 0.55) !important;
+.search-content-input svg {
+  color: #64748b !important;
 }
 
-/* Icons and Close/Search Buttons */
-.search-glass-modal button,
-.search-glass-modal svg,
-.search-glass-modal [class*="icon"],
-.search-glass-modal [class*="button"] {
-  color: rgba(255, 255, 255, 0.80) !important;
+.search-content-group + .search-content-group {
+  border-top: 1px solid rgba(224, 231, 255, 0.9);
 }
 
-/* Active item highlight */
-.search-glass-modal [class*="item"][class*="active"],
-.search-glass-modal [class*="item"]:hover {
-  background-color: rgba(255, 255, 255, 0.15) !important;
+.search-content-item {
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* Separator below the input */
-.search-glass-input {
-  border-bottom-width: 1.5px !important;
-  border-bottom-style: solid !important;
-  border-bottom-color: rgba(255, 255, 255, 0.18) !important;
+.search-content-item[data-highlighted],
+.search-content-item:hover {
+  background: rgba(255, 255, 255, 0.58) !important;
+  color: #0000ff !important;
+  box-shadow: 0 4px 18px rgba(79, 70, 229, 0.07);
 }
 
-/* Separator above the footer */
-.search-glass-footer {
-  border-top-width: 1.5px !important;
-  border-top-style: solid !important;
-  border-top-color: rgba(255, 255, 255, 0.12) !important;
+.search-content-viewport {
+  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 639px) {
+  .search-content-modal {
+    width: calc(100vw - 20px) !important;
+    max-height: calc(100dvh - 20px) !important;
+    border-radius: 16px !important;
+  }
+
+  .search-content-input input {
+    height: 54px !important;
+    font-size: 14px !important;
+  }
 }
 </style>

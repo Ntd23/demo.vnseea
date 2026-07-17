@@ -13,11 +13,11 @@ export function useCommunityPageCardVM(
   const toast = useToast()
 
   const likePending = ref(false)
-  const localIsLiked = ref(pageProps().following)
+  const localIsLiked = ref(pageProps().liked)
   const localLikes = ref(pageProps().likes)
   const localFollowers = ref(pageProps().followers)
 
-  watch(() => pageProps().following, (newVal) => localIsLiked.value = newVal)
+  watch(() => pageProps().liked, (newVal) => localIsLiked.value = newVal)
   watch(() => pageProps().likes, (newVal) => localLikes.value = newVal)
   watch(() => pageProps().followers, (newVal) => localFollowers.value = newVal)
 
@@ -30,7 +30,7 @@ export function useCommunityPageCardVM(
     try {
       const updatedPage = await repository.likePage(pageProps().slug)
       if (updatedPage) {
-        localIsLiked.value = updatedPage.following
+        localIsLiked.value = updatedPage.liked
         localLikes.value = updatedPage.likes
         localFollowers.value = updatedPage.followers
       }

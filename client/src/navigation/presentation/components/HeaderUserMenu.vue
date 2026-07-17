@@ -35,7 +35,18 @@
                 class="user-menu__summary-name"
                 @click="open = false"
               >
-                {{ currentUser.name }}
+                <span class="user-menu__summary-avatar">
+                  <NuxtImg
+                    v-if="avatarUrl"
+                    :src="avatarUrl"
+                    :alt="currentUser.name"
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                  />
+                  <span v-else>{{ userInitials }}</span>
+                </span>
+                <span class="user-menu__summary-name-text">{{ currentUser.name }}</span>
               </NuxtLink>
               <p v-else class="user-menu__summary-name">User</p>
               <Icon name="i-ph-hand-heart-fill" class="user-menu__summary-icon" />
@@ -293,12 +304,16 @@ const systemActions = computed(() => {
 
 .user-menu__summary-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
 }
 
 .user-menu__summary-name {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
   font-size: 17px;
   font-weight: 800;
   line-height: 1.25;
@@ -307,8 +322,41 @@ const systemActions = computed(() => {
   transition: color 0.15s ease;
 }
 
+.user-menu__summary-avatar {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.1);
+}
+
+.user-menu__summary-avatar :deep(img) {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-menu__summary-name-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .user-menu__summary-name:hover {
   color: #0000ff;
+}
+
+.user-menu__summary-name:hover .user-menu__summary-name-text {
   text-decoration: underline;
 }
 

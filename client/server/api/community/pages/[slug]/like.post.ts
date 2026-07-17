@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
   const slug = String(getRouterParam(event, "slug") || "")
   const page = await resolvePageRecordBySlug(event, slug)
 
-  assertBackendApiSuccess(
+  const response = assertBackendApiSuccess(
     await createBackendApiClient(event).post<BackendLikePageResponse, Record<string, unknown>>(
       "like-page",
       {
@@ -27,5 +27,12 @@ export default defineEventHandler(async (event) => {
     "Unable to update page like state.",
   )
 
-  return await resolvePageRecordBySlug(event, slug)
+  const updatedPage = await resolvePageRecordBySlug(event, slug)
+  const likeStatus = String(response.like_status || "").toLowerCase()
+
+  if (likeStatus === "liked" || likeStatus === "unliked") {
+    updatedPage.liked = likeStatus === "liked"
+  }
+
+  return updatedPage
 })

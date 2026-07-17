@@ -226,13 +226,18 @@ defineEmits<{
 }
 
 .read-blog-main__article {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   padding: 20px;
 }
 
 .read-blog-main__body {
   display: grid;
+  min-width: 0;
+  width: 100%;
+  max-width: min(100%, 760px);
   gap: 20px;
-  max-width: 760px;
   margin: 0 auto;
 }
 
@@ -242,6 +247,9 @@ defineEmits<{
   font-size: 16px;
   font-weight: 500;
   line-height: 1.9;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
 }
 
 .read-blog-main__paragraph--lead {
@@ -350,6 +358,13 @@ defineEmits<{
 .read-blog-main__comment-list :deep(.comment-item__footer) {
   gap: 12px;
   margin-left: 10px;
+  color: #64748b;
+}
+
+.read-blog-main__comment-list :deep(.comment-item__footer > span),
+.read-blog-main__comment-list :deep(.comment-item__role),
+.read-blog-main__comment-list :deep(.comment-item__footer-count) {
+  color: #64748b;
 }
 
 .read-blog-main__comment-list :deep(.comment-item__footer-action) {
@@ -369,6 +384,30 @@ defineEmits<{
   border-left-color: rgba(0, 0, 255, 0.14);
 }
 
+.read-blog-main__comment-list :deep(.comment-item__replies .comment-composer) {
+  margin-top: 12px;
+}
+
+.read-blog-main__comment-list :deep(.comment-item__replies .comment-composer__input-wrap) {
+  border-color: #dbe3ef;
+  background: #f8fafc;
+}
+
+.read-blog-main__comment-list :deep(.comment-item__replies .comment-composer__input-wrap:focus-within) {
+  border-color: rgba(0, 0, 255, 0.28);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.07);
+}
+
+.read-blog-main__comment-list :deep(.comment-item__replies .comment-composer__textarea) {
+  color: #0f172a;
+}
+
+.read-blog-main__comment-list :deep(.comment-item__replies .comment-composer__textarea)::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+
 .read-blog-main__composer :deep(.comment-composer) {
   width: 100%;
 }
@@ -379,6 +418,11 @@ defineEmits<{
 
 .read-blog-main__composer :deep(.comment-composer__toolbar) {
   justify-content: flex-start;
+}
+
+.read-blog-main__composer :deep(.comment-composer__textarea)::placeholder {
+  color: #64748b;
+  opacity: 1;
 }
 
 @keyframes read-blog-comment-spin {

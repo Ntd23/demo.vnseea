@@ -15,6 +15,7 @@ import {
   isFeedStoryReaction,
   type FeedStoryReactionType,
 } from "../../../src/feed/domain/constants/story-reactions"
+import { isFeedStoryExpired } from "../../../src/feed/domain/services/story-lifecycle.service"
 import type {
   FeedAnnouncement,
   FeedCommentRecord,
@@ -1092,6 +1093,7 @@ const mapStoryRecord = (
 ): FeedStoryRecord => {
   const user = asRecord(entity.user_data)
   const id = firstNumber(entity, ["id", "story_id"])
+  const postedAt = firstNumber(entity, ["posted", "created_at", "createdAt", "time"])
   const ownerId = firstNumber(entity, ["user_id", "owner_id"])
     || firstNumber(user, ["user_id", "id"])
   const ownerUsername = firstString(user, ["username"])
@@ -1137,6 +1139,7 @@ const mapStoryRecord = (
 
   return {
     id,
+    createdAt: postedAt > 1_000_000_000_000 ? postedAt : postedAt * 1000,
     ownerId,
     ownerKey,
     ownerUsername,
@@ -1208,7 +1211,7 @@ const extractUserStorySequences = (
       return sortStoriesByLatest(
         nestedStories.map(story =>
           mapStoryRecord(withStoryOwnerData(story, ownerEntry), currentUserId, resolveMediaUrl),
-        ),
+        ).filter(story => !isFeedStoryExpired(story)),
       )
     })
     .filter(stories => stories.length > 0)
