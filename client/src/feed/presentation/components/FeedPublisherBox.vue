@@ -356,15 +356,26 @@
           <span class="publisher__count" :class="{ 'publisher__count--warn': draft.text.length > 240 }">
             {{ draft.text.length }}/280
           </span>
-          <button class="publisher__live-btn" type="button" @click="goToLive">
-            <Icon name="i-ph-video-camera-bold" class="h-4.5 w-4.5 text-slate-600" />
-            <span>{{ locale === 'vi' ? 'Trực tiếp' : 'Go Live' }}</span>
-          </button>
-          <button class="publisher__submit-btn" type="button" :disabled="submitting || !canPublish" @click="publish">
-            <Icon v-if="submitting" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
-            <Icon v-else name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
+          <UButton
+            type="button"
+            variant="outline"
+            icon="i-ph-video-camera-bold"
+            class="rounded-xl px-4 py-2 font-semibold !border-[var(--border-default)] !bg-[var(--bg-surface)] hover:!bg-[var(--bg-surface-hover)] !text-[var(--text-primary)] transition-all"
+            @click="goToLive"
+          >
+            {{ locale === 'vi' ? 'Trực tiếp' : 'Go Live' }}
+          </UButton>
+          <UButton
+            type="button"
+            variant="solid"
+            :loading="submitting"
+            :disabled="!canPublish"
+            icon="i-ph-paper-plane-tilt-bold"
+            class="rounded-xl px-5 py-2 font-semibold !bg-[var(--bg-brand)] hover:!bg-[var(--bg-brand-hover)] !text-[var(--text-inverse)] shadow-[var(--shadow-brand)] transition-all"
+            @click="publish"
+          >
             {{ submitting ? t("feed.publisherBox.submitLoading") : t("feed.publisherBox.share") }}
-          </button>
+          </UButton>
         </div>
       </div>
 
@@ -844,7 +855,7 @@ function goToLive() {
   border-radius: 50%;
   border: 2px solid rgba(0, 0, 255, 0.08);
   background: rgba(0, 0, 255, 0.03);
-  color: #64748b;
+  color: #000000;
   cursor: pointer;
   pointer-events: auto;
   user-select: none;
@@ -967,7 +978,7 @@ function goToLive() {
   border-radius: 50%;
   border: none;
   background: transparent;
-  color: #94a3b8;
+  color: #000000;
   cursor: pointer;
   transition: all 0.12s ease;
 }
@@ -1207,7 +1218,7 @@ function goToLive() {
   background: transparent;
   font-size: 12.5px;
   font-weight: 600;
-  color: #64748b;
+  color: #000000;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -1304,64 +1315,7 @@ function goToLive() {
   color: #dc2626;
 }
 
-.publisher__submit-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
-  padding: 8px 18px;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0, 0, 255, 0.2);
-  transition: all 0.15s ease;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.publisher__submit-btn:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 255, 0.28);
-  transform: translateY(-1px);
-}
-
-.publisher__submit-btn:active {
-  transform: scale(0.97);
-}
-
-.publisher__live-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: none;
-  border-radius: 999px;
-  background: #f1f5f9;
-  padding: 8px 18px;
-  color: #475569;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.publisher__live-btn:hover {
-  background: #e2e8f0;
-  color: #0f172a;
-  transform: translateY(-1px);
-}
-
-.publisher__live-btn:active {
-  transform: scale(0.97);
-}
-
-.publisher__submit-btn:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
+/* Submit button and live button styling removed, handled via UButton */
 
 /* Poll form */
 .publisher__poll-form {

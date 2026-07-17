@@ -1,16 +1,7 @@
 <!-- English description: Wowonder-aligned product creation form that submits multipart data through the Nuxt API bridge. -->
 
 <template>
-  <div class="new-product-page mx-auto w-full max-w-[980px] px-3 pb-12 pt-4 sm:px-4">
-    <section class="new-product-heading">
-      <div class="new-product-heading__inner">
-        <span>
-          <Icon name="i-ph-package-fill" class="h-5 w-5" />
-        </span>
-        <h1>{{ $t("pages.newProductPage.badge") }}</h1>
-      </div>
-    </section>
-
+  <div class="new-product-page w-full mt-1.5">
     <form class="new-product-form" @submit.prevent="submitProduct">
       <div class="new-product-row new-product-row--name-price">
         <UFormField class="new-product-field" :label="$t('pages.productEditor.titleLabel')">
