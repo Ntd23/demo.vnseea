@@ -1,6 +1,6 @@
 // English description: Repository contract for blog authoring and article workflows.
 
-import type { BlogCreateDraft, BlogCreateResult, BlogListArticle, BlogListQuery, BlogReadArticle } from "../types/blog.types"
+import type { BlogCreateDraft, BlogCreateResult, BlogListArticle, BlogListQuery, BlogReadArticle, BlogUpdateDraft } from "../types/blog.types"
 import type { FeedCommentRecord, FeedCommentSubmitPayload, FeedPostActionResult } from "../../../feed/domain/types/feed.types"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 
@@ -21,4 +21,5 @@ export interface BlogRepository {
     reaction: FeedStoryReactionType
   }): Promise<FeedPostActionResult>
   createBlog(input: BlogCreateDraft): Promise<BlogCreateResult>
+  updateBlog(input: BlogUpdateDraft): Promise<BlogCreateResult>
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="read-blog-page">
+  <div class="read-blog-page mt-2">
     <div
       class="read-blog-page__progress"
       :style="{ width: `${readingProgress}%` }"
@@ -54,7 +54,7 @@
         <BlogsReadBlogSidebar
           class="read-blog-page__sidebar"
           :article="article"
-          :related-articles="relatedArticles"
+          :popular-articles="popularArticles"
         />
       </div>
     </template>
@@ -76,7 +76,7 @@ const {
   commentsLoading,
   commenting,
   displayedLikes,
-  relatedArticles,
+  popularArticles,
   shareUrl,
   formatCompact,
   addComment,

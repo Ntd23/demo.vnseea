@@ -134,7 +134,6 @@ export function useBlogsPageVM(
     { label: t("pages.blogsPage.sortLatest"), value: "latest" },
     { label: t("pages.blogsPage.sortPopular"), value: "popular" },
     { label: t("pages.blogsPage.sortViews"), value: "views" },
-    { label: t("pages.blogsPage.sortReading"), value: "reading" },
   ] satisfies { label: string; value: BlogSortValue }[])
 
   const articles = computed<BlogListArticle[]>(() =>

@@ -3,7 +3,7 @@
 import { apiRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useNuxtApiClient } from "#shared-kernel/infrastructure/http/nuxt-api-client"
 import type { BlogRepository } from "../../domain/repositories/BlogRepository"
-import type { BlogCreateDraft, BlogCreateResult, BlogListArticle, BlogReadArticle } from "../../domain/types/blog.types"
+import type { BlogCreateDraft, BlogCreateResult, BlogListArticle, BlogReadArticle, BlogUpdateDraft } from "../../domain/types/blog.types"
 import type { FeedCommentRecord, FeedCommentSubmitPayload, FeedPostActionResult } from "../../../feed/domain/types/feed.types"
 
 export function createApiBlogRepository(): BlogRepository {
@@ -58,6 +58,17 @@ export function createApiBlogRepository(): BlogRepository {
       }
 
       return await client.post<BlogCreateResult, FormData>(apiRoutes.blogs.create, formData)
+    },
+    async updateBlog(input: BlogUpdateDraft) {
+      const formData = new FormData()
+      formData.append("title", input.title)
+      formData.append("content", input.content)
+      formData.append("description", input.description)
+      formData.append("category", input.category)
+      formData.append("tags", input.tags.join(","))
+      if (input.thumbnailFile) formData.append("thumbnail", input.thumbnailFile)
+
+      return await client.put<BlogCreateResult, FormData>(apiRoutes.blogs.update(input.id), formData)
     },
   }
 }

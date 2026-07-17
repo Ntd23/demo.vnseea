@@ -24,6 +24,7 @@ export const appRoutes = {
   hashtag: (tag: string) => `/hashtag/${encodeSegment(tag)}`,
   blogs: "/blogs",
   createBlog: "/create-blog",
+  editBlog: (id: string | number) => `/edit-blog/${encodeSegment(id)}`,
   readBlog: (slug: string) => `/read-blog/${encodeSegment(slug)}`,
   popular: "/popular",
   savedPosts: "/saved-posts",
@@ -154,6 +155,7 @@ export const apiRoutes = {
     commentReplies: (slug: string) => `blogs/${encodeSegment(slug)}/comments/replies`,
     commentAction: (slug: string) => `blogs/${encodeSegment(slug)}/comments/action`,
     create: "blogs/create",
+    update: (id: string | number) => `blogs/${encodeSegment(id)}`,
   },
   community: {
     groups: "community/groups",

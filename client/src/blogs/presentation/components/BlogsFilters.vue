@@ -7,49 +7,39 @@
           {{ $t("pages.blogsPage.filtersTitle") }}
         </h2>
       </div>
-
-      <UButton
-        to="/create-blog"
-        color="primary"
-        variant="solid"
-        size="md"
-        class="blogs-filters__create"
-      >
-        <Icon name="i-ph-note-pencil-fill" class="h-4 w-4" />
-        {{ $t("pages.blogsPage.createArticle") }}
-      </UButton>
+      <div class="blogs-filters__actions">
+        <button
+          type="button"
+          class="blogs-filters__my-articles"
+          :class="{ 'blogs-filters__my-articles--active': mineOnly }"
+          :aria-pressed="mineOnly"
+          @click="$emit('update:mineOnly', !mineOnly)"
+        >
+          <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-article-fill'" class="h-4 w-4 shrink-0" />
+          <span>{{ $t("pages.blogsPage.myArticles") }}</span>
+        </button>
+        <UButton to="/create-blog" color="primary" variant="solid" size="md" class="blogs-filters__create">
+          <Icon name="i-ph-note-pencil-fill" class="h-4 w-4" />
+          {{ $t("pages.blogsPage.createArticle") }}
+        </UButton>
+      </div>
     </div>
 
     <div class="blogs-filters__search-wrap">
-      <Icon
-        name="i-ph-magnifying-glass"
-        class="pointer-events-none absolute left-8 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-[#94a3b8]"
-      />
-      <input
-        id="blogs-search-input"
-        :value="search"
-        type="search"
-        autocomplete="off"
-        :placeholder="$t('pages.blogsPage.searchPlaceholder')"
-        class="blogs-search-input"
-        @input="$emit('update:search', ($event.target as HTMLInputElement).value)"
-      />
+      <Icon name="i-ph-magnifying-glass"
+        class="pointer-events-none absolute left-8 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-[#94a3b8]" />
+      <input id="blogs-search-input" :value="search" type="search" autocomplete="off"
+        :placeholder="$t('pages.blogsPage.searchPlaceholder')" class="blogs-search-input"
+        @input="$emit('update:search', ($event.target as HTMLInputElement).value)" />
     </div>
 
     <div class="blogs-filters__group" role="group" :aria-label="$t('pages.blogsPage.categoryFilterLabel')">
       <p class="blogs-filters__label">{{ $t("pages.blogsPage.topic") }}</p>
       <div class="flex flex-wrap gap-2">
-        <button
-          v-for="category in categories"
-          :key="category.value"
-          class="blogs-filters__chip"
-          :class="selectedCategory === category.value
-            ? 'blogs-filters__chip--active'
-            : 'blogs-filters__chip--idle'"
-          type="button"
-          :aria-pressed="selectedCategory === category.value"
-          @click="$emit('update:selectedCategory', category.value)"
-        >
+        <button v-for="category in categories" :key="category.value" class="blogs-filters__chip" :class="selectedCategory === category.value
+          ? 'blogs-filters__chip--active'
+          : 'blogs-filters__chip--idle'" type="button" :aria-pressed="selectedCategory === category.value"
+          @click="$emit('update:selectedCategory', category.value)">
           <Icon :name="category.icon" class="h-3.5 w-3.5" />
           <span>{{ category.label }}</span>
         </button>
@@ -58,34 +48,14 @@
 
     <div class="blogs-filters__sort-row">
       <div class="flex flex-wrap gap-1.5" role="group" :aria-label="$t('pages.blogsPage.sortFilterLabel')">
-        <button
-          v-for="option in sortOptions"
-          :key="option.value"
-          class="blogs-filters__sort"
-          :class="sortBy === option.value
-            ? 'blogs-filters__sort--active'
-            : 'blogs-filters__sort--idle'"
-          type="button"
-          :aria-pressed="sortBy === option.value"
-          @click="$emit('update:sortBy', option.value)"
-        >
+        <button v-for="option in sortOptions" :key="option.value" class="blogs-filters__sort" :class="sortBy === option.value
+          ? 'blogs-filters__sort--active'
+          : 'blogs-filters__sort--idle'" type="button" :aria-pressed="sortBy === option.value"
+          @click="$emit('update:sortBy', option.value)">
           <Icon :name="sortIcon(option.value)" class="h-3.5 w-3.5" />
           <span>{{ option.label }}</span>
         </button>
       </div>
-
-      <div class="flex-1" />
-
-      <button
-        class="blogs-filters__mine"
-        :class="mineOnly ? 'blogs-filters__mine--active' : 'blogs-filters__mine--idle'"
-        type="button"
-        :aria-pressed="mineOnly"
-        @click="$emit('update:mineOnly', !mineOnly)"
-      >
-        <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-toggle-left'" class="h-4 w-4" />
-        <span>{{ $t("pages.blogsPage.myArticles") }}</span>
-      </button>
     </div>
 
     <div class="blogs-filters__summary" role="status" aria-live="polite">
@@ -165,6 +135,41 @@ const sortIcon = (value: string) => {
   padding: 16px;
 }
 
+.blogs-filters__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.blogs-filters__my-articles {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #334155;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.blogs-filters__my-articles > * {
+  pointer-events: none;
+}
+
+.blogs-filters__my-articles:hover,
+.blogs-filters__my-articles--active {
+  border-color: rgba(0, 0, 255, 0.16);
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+}
+
 .blogs-filters__eyebrow,
 .blogs-filters__label {
   margin: 0;
@@ -197,7 +202,7 @@ const sortIcon = (value: string) => {
   transition: all 0.15s ease;
 }
 
-.blogs-filters__create > * {
+.blogs-filters__create>* {
   pointer-events: none;
 }
 
@@ -257,9 +262,9 @@ const sortIcon = (value: string) => {
   transition: all 0.15s ease;
 }
 
-.blogs-filters__chip > *,
-.blogs-filters__sort > *,
-.blogs-filters__mine > * {
+.blogs-filters__chip>*,
+.blogs-filters__sort>*,
+.blogs-filters__mine>* {
   pointer-events: none;
 }
 

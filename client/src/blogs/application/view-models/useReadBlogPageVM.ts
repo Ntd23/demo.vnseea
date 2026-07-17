@@ -29,7 +29,7 @@ export function useReadBlogPageVM(
   )
   const { data: relatedResponse } = useAsyncData(
     "blogs:read:related",
-    () => repository.getBlogs({ limit: 6 }),
+    () => repository.getBlogs({ limit: 50 }),
     {
       default: () => [],
       watch: [currentSlug],
@@ -71,18 +71,16 @@ export function useReadBlogPageVM(
 
   const displayedLikes = computed(() => (article.value?.likes ?? 0) + (liked.value ? 1 : 0))
 
-  const relatedArticles = computed(() => {
+  const popularArticles = computed(() => {
     const currentArticle = article.value
     const articles = relatedResponse.value
 
     if (!currentArticle) return []
 
-    const sameCategory = articles.filter(
-      item => item.slug !== currentArticle.slug && item.category === currentArticle.category,
-    )
-    const fallback = articles.filter(item => item.slug !== currentArticle.slug)
-
-    return (sameCategory.length > 0 ? sameCategory : fallback).slice(0, 4)
+    return articles
+      .filter(item => item.slug !== currentArticle.slug)
+      .sort((left, right) => (right.views + right.likes + right.commentsCount) - (left.views + left.likes + left.commentsCount))
+      .slice(0, 3)
   })
 
   const shareUrl = computed(() =>
@@ -149,7 +147,7 @@ export function useReadBlogPageVM(
     commentsLoading,
     commenting,
     displayedLikes,
-    relatedArticles,
+    popularArticles,
     shareUrl,
     formatCompact,
     addComment,

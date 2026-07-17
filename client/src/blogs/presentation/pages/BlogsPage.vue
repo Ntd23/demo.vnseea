@@ -1,12 +1,5 @@
 <template>
-  <div class="blogs-page mx-auto max-w-[1440px] space-y-5 pb-10">
-    <BlogsHero
-      :article-count="articles.length"
-      :mine-only="mineOnly"
-      :stats="heroStats"
-      @toggle-mine="mineOnly = !mineOnly"
-    />
-
+  <div class="blogs-page mx-auto max-w-[1440px] space-y-5 pb-10 mt-2">
     <BlogsFilters
       v-model:search="search"
       v-model:selected-category="selectedCategory"
@@ -17,15 +10,8 @@
       :article-count="filteredArticles.length"
     />
 
-    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_310px]">
+    <div class="grid gap-5 xl:grid-cols-[minmax(0,1fr)]">
       <section class="space-y-4">
-        <BlogsResultsHeader
-          :heading="resultHeading"
-          :count="filteredArticles.length"
-          :sort-label="currentSortLabel"
-          @reset="resetFilters"
-        />
-
         <BlogsFeaturedArticle
           v-if="featuredArticle && currentPage === 1"
           :article="featuredArticle"

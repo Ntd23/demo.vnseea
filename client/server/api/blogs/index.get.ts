@@ -138,6 +138,7 @@ const mapArticle = (
     publishedAt: postedRaw || "",
     publishedHoursAgo,
     views: asNumber(entity.view) || asNumber(entity.views),
+    commentsCount: asNumber(entity.comments_count) || asNumber(entity.comment_count) || asNumber(entity.comments),
     readMinutes: readMinutesOf(content || excerpt),
     likes: asNumber(entity.likes) || asNumber(entity.reaction?.count),
     tags: asString(entity.tags)

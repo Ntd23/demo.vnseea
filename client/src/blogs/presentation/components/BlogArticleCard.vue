@@ -26,6 +26,15 @@
         </span>
       </div>
     </NuxtLink>
+    <a
+      v-if="article.mine"
+      :href="appRoutes.editBlog(article.id)"
+      class="blog-card__edit"
+      title="Chỉnh sửa bài viết"
+      aria-label="Chỉnh sửa bài viết"
+    >
+      <Icon name="i-ph-pencil-simple-fill" class="h-3.5 w-3.5" />
+    </a>
 
     <div class="blog-card__body">
       <NuxtLink :to="article.href" class="blog-card__title-link">
@@ -61,8 +70,8 @@
             {{ formatCompact(article.views) }}
           </span>
           <span class="blog-card__read">
-            <Icon name="i-ph-clock-fill" class="h-3.5 w-3.5" />
-            {{ article.readMinutes }}m
+            <Icon name="i-ph-chat-circle-dots-fill" class="h-3.5 w-3.5" />
+            {{ formatCompact(article.commentsCount) }}
           </span>
         </div>
       </div>
@@ -71,8 +80,11 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+
 const props = defineProps<{
   article: {
+    id: number
     href: string
     image: string
     imageFallback: string
@@ -83,7 +95,7 @@ const props = defineProps<{
     authorAvatarUrl: string
     publishedAt: string
     views: number
-    readMinutes: number
+    commentsCount: number
     excerpt: string
     tags: string[]
     mine?: boolean
@@ -126,6 +138,7 @@ const categoryAccentColor = computed(() =>
 
 <style scoped>
 .blog-card {
+  position: relative;
   overflow: hidden;
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 16px;
@@ -184,6 +197,30 @@ const categoryAccentColor = computed(() =>
   border-radius: 999px;
   font-size: 11px;
   font-weight: 800;
+}
+
+.blog-card__edit {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 2;
+  display: inline-flex;
+  height: 28px;
+  width: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #0000ff;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.blog-card__edit:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
 }
 
 .blog-card__category,
