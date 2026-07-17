@@ -27,6 +27,7 @@ export const appRoutes = {
   editBlog: (id: string | number) => `/edit-blog/${encodeSegment(id)}`,
   readBlog: (slug: string) => `/read-blog/${encodeSegment(slug)}`,
   popular: "/popular",
+  activity: "/activity",
   savedPosts: "/saved-posts",
   reels: "/reels",
   watch: "/watch",
@@ -94,6 +95,9 @@ export const appRoutes = {
 } as const
 
 export const apiRoutes = {
+  activity: {
+    posts: "activity/posts",
+  },
   auth: {
     me: "auth/me",
     login: "auth/login",

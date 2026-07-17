@@ -3200,6 +3200,48 @@
       "memoryTwoLabel": "Featured memory",
       "memoryTwoReflection": "An older milestone worth keeping around because it shows how an early idea evolved into the flows the product uses today."
     },
+    "activityCenter": {
+      "seoTitle": "Activity & Saved | VNSEEA",
+      "eyebrow": "Private activity",
+      "title": "Your activity",
+      "description": "Review posts you saved, reacted to, commented on, or shared.",
+      "refresh": "Refresh",
+      "loading": "Loading your activity...",
+      "retry": "Try again",
+      "loadMore": "Load more",
+      "postFallback": "VNSEEA post",
+      "tabs": {
+        "saved": "Saved",
+        "reaction": "Reactions",
+        "comment": "Comments",
+        "share": "Shares"
+      },
+      "empty": {
+        "saved": "You have not saved any posts.",
+        "reaction": "You have not reacted to any posts.",
+        "comment": "You have not commented on any posts.",
+        "share": "You have not shared any posts on VNSEEA."
+      },
+      "metadata": {
+        "saved": "Saved post",
+        "comments": "{count} comments and replies",
+        "shared": "Shared on VNSEEA"
+      },
+      "destinations": {
+        "timeline": "Timeline",
+        "page": "Page",
+        "group": "Group"
+      },
+      "reactions": {
+        "default": "Reacted",
+        "1": "Liked",
+        "2": "Loved",
+        "3": "Haha",
+        "4": "Wow",
+        "5": "Sad",
+        "6": "Angry"
+      }
+    },
     "savedPostsPage": {
       "seoTitle": "Saved Posts | VNSEEA",
       "seoDescription": "Review the posts you saved on VNSEEA with a clearer summary, a cleaner list, and quick ways to revisit more content when needed.",
@@ -5721,7 +5763,7 @@
         "photos": "Photos",
         "watch": "Watch",
         "reelsShortcut": "Reels",
-        "savedPosts": "Saved posts",
+        "savedPosts": "Activity & saved",
         "poke": "Poke",
         "explore": "Explore",
         "popularPosts": "Popular posts",
@@ -5767,7 +5809,7 @@
         "photos": "Photos",
         "watch": "Watch",
         "reels": "Reels",
-        "savedPosts": "Saved posts",
+        "savedPosts": "Activity & saved",
         "popularPosts": "Popular posts",
         "memories": "Memories",
         "poke": "Poke",

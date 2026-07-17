@@ -59,7 +59,7 @@ const sidebarNav = [
   { label: 'navigation.leftSidebar.items.photos', icon: 'i-ph-images-fill', to: '/photos' },
   { label: 'navigation.leftSidebar.items.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
   { label: 'navigation.leftSidebar.items.reels', icon: 'i-ph-film-strip-fill', to: '/reels' },
-  { label: 'navigation.leftSidebar.items.savedPosts', icon: 'i-ph-bookmark-simple-fill', to: '/saved-posts' },
+  { label: 'navigation.leftSidebar.items.savedPosts', icon: 'i-ph-clock-counter-clockwise-fill', to: appRoutes.activity },
   { label: 'navigation.leftSidebar.items.popularPosts', icon: 'i-ph-fire-fill', to: '/popular' },
   { label: 'navigation.leftSidebar.items.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
   { label: 'navigation.leftSidebar.items.poke', icon: 'i-ph-hand-waving-fill', to: '/poke' },
