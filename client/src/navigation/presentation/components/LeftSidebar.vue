@@ -77,7 +77,7 @@ const sidebarNavMore = [
   { label: 'navigation.leftSidebar.items.movies', icon: 'i-ph-popcorn-fill', to: '/movies' },
   { label: 'navigation.leftSidebar.items.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
   // { label: 'navigation.leftSidebar.items.games', icon: 'i-ph-game-controller-fill', to: '/games' },
-  { label: 'navigation.leftSidebar.items.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
+  // { label: 'navigation.leftSidebar.items.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
   { label: 'navigation.leftSidebar.items.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' }
 ]
 
@@ -205,7 +205,7 @@ const isItemActive = (to: string) => {
 .left-sidebar__toggle-label {
   font-size: 16px;
   font-weight: 600;
-  color: #334155;
+  color: #000000;
   transition: color 0.15s ease;
 }
 

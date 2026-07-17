@@ -473,7 +473,7 @@ function syncManualAddress() {
   border: 0;
   outline: 0;
   background: transparent;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 600;
   overflow: hidden;
@@ -544,7 +544,7 @@ function syncManualAddress() {
   gap: 10px;
   border-radius: 10px;
   padding: 8px 10px;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 600;
   text-align: left;

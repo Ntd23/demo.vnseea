@@ -192,7 +192,7 @@ const barWidth = (value: number) => Math.max(4, Math.round((value / maxValue.val
 }
 
 .ads-bars__date {
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 800;
 }

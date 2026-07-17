@@ -250,7 +250,7 @@ const viewsLabel = computed(() =>
 }
 
 .movie-overview__description {
-  color: #334155;
+  color: #000000;
   font-size: 14px;
   line-height: 1.7;
 }
@@ -302,7 +302,7 @@ const viewsLabel = computed(() =>
 .movie-overview__facts dd {
   min-width: 0;
   margin: 0;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 600;
   overflow-wrap: anywhere;
@@ -326,7 +326,7 @@ const viewsLabel = computed(() =>
   border: 1px solid #dbe3ef;
   border-radius: 10px;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
   font-size: 18px;
   transition: 0.15s ease;
 }

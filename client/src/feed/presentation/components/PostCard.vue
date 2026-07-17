@@ -223,7 +223,7 @@
               class="post-card__action-reaction-image"
               draggable="false"
             >
-            <Icon v-else name="i-ph-thumbs-up-fill" class="post-card__action-icon" />
+            <Icon v-else name="i-ph-thumbs-up-bold" class="post-card__action-icon" />
             <span>{{ selectedPostReaction ? activePostReactionLabel : liked ? t("feed.postCard.likeActive") : t("feed.postCard.like") }}</span>
           </button>
         </div>
@@ -234,7 +234,7 @@
           :aria-pressed="showComments"
           @click="toggleComments"
         >
-          <Icon name="i-ph-chat-circle-fill" class="post-card__action-icon" />
+          <Icon name="i-ph-chat-circle-bold" class="post-card__action-icon" />
           <span>{{ t("feed.postCard.comment") }}</span>
         </button>
        
@@ -243,7 +243,7 @@
           type="button"
           @click="showShare = true"
         >
-          <Icon name="i-ph-share-fat-fill" class="post-card__action-icon" />
+          <Icon name="i-ph-share-fat-bold" class="post-card__action-icon" />
           <span>{{ t("feed.postCard.share") }}</span>
         </button>
       </div>
@@ -253,7 +253,7 @@
         class="mt-3 rounded-2xl"
         color="warning"
         variant="subtle"
-        icon="i-ph-warning-circle-fill"
+        icon="i-ph-warning-circle-bold"
         :description="actionMessage"
       />
 
@@ -416,7 +416,7 @@
                       type="button"
                       class="post-card__reaction-add-friend"
                     >
-                      <Icon name="i-ph-user-plus-fill" />
+                      <Icon name="i-ph-user-plus-bold" />
                       <span>{{ t("feed.postCard.reactionAddFriend") }}</span>
                     </button>
                   </div>
@@ -560,12 +560,12 @@ const previewCommentInitials = computed(() => {
 
 const attachmentIcon = computed(() =>
   props.post.attachmentCard?.type === "funding"
-    ? "i-ph-hand-heart-duotone"
+    ? "i-ph-hand-heart-bold"
     : props.post.attachmentCard?.type === "product"
-      ? "i-ph-shopping-bag-open-duotone"
+      ? "i-ph-shopping-bag-open-bold"
       : props.post.attachmentCard?.type === "offer"
-        ? "i-ph-tag-chevron-duotone"
-        : "i-ph-newspaper-clipping-duotone",
+        ? "i-ph-tag-chevron-bold"
+        : "i-ph-newspaper-clipping-bold",
 )
 
 const attachmentLabel = computed(() =>
@@ -622,7 +622,7 @@ function handleMediaOpen(index: number) {
 .post-card__text {
   font-size: 14.5px;
   line-height: 1.75;
-  color: #334155;
+  color: #000000;
 }
 
 .post-card__mention {
@@ -708,7 +708,7 @@ function handleMediaOpen(index: number) {
 .post-card__poll-meta {
   font-size: 13px;
   font-weight: 700;
-  color: #334155;
+  color: #000000;
 }
 
 .post-card__poll-meta {
@@ -1200,7 +1200,7 @@ function handleMediaOpen(index: number) {
   font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
-  color: #64748b;
+  color: #000000;
   cursor: pointer;
   pointer-events: auto;
   user-select: none;

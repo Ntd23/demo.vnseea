@@ -18,7 +18,7 @@ $(document).ready(function () {
 
     $('.sample-selector-5').colorpicker({
         colorSelectors: {
-            'black': '#000000',
+            'black': '#000000;',
             'white': '#ffffff',
             'red': '#FF0000',
             'default': '#777777',

@@ -129,7 +129,7 @@ const submit = () => {
   background: #fafbfe;
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: #000000;
   font-family: inherit;
   outline: none;
   transition: border-color 0.15s ease;

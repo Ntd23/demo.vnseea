@@ -48,6 +48,24 @@ let incomingPollPending = false
 let incomingPollingConsumers = 0
 let nextIncomingPollType: MessageCallType = "video"
 
+import.meta.hot?.dispose(() => {
+  if (outgoingPoll) {
+    clearInterval(outgoingPoll)
+    outgoingPoll = null
+  }
+  if (incomingPoll) {
+    clearInterval(incomingPoll)
+    incomingPoll = null
+  }
+  if (noAnswerTimer) {
+    clearTimeout(noAnswerTimer)
+    noAnswerTimer = null
+  }
+
+  incomingPollPending = false
+  incomingPollingConsumers = 0
+})
+
 export function useMessageCalls(
   repository = createApiMessageCallsRepository(),
   options: MessageCallOptions = {},

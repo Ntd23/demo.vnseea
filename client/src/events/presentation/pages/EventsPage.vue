@@ -10,26 +10,46 @@
       </div>
     </section>
 
-    <section class="wow-content">
-      <div class="wo-page-menu">
-        <div class="wo-page-menu__scroll">
-          <div class="wo-page-menu__items">
+    <section class="events-tabs-card">
+      <div class="events-tabs-card__top">
+        <div class="events-tabs-card__scroll">
+          <div class="events-tabs-card__items">
             <NuxtLink
               v-for="tab in tabItems"
               :key="tab.key"
               :to="tabLink(tab.key)"
-              class="wo-page-menu__link"
-              :class="{ 'wo-page-menu__link--active': activeTab === tab.key }"
+              class="events-tabs-card__link"
+              :class="{ 'events-tabs-card__link--active': activeTab === tab.key }"
             >
               {{ tab.label }}
             </NuxtLink>
           </div>
         </div>
 
-        <NuxtLink :to="appRoutes.createEvent" class="btn-main btn-mat-raised">
-          <Icon name="i-ph-plus-bold" class="h-5 w-5" />
-          {{ $t("pages.eventsPage.createEvent") }}
+        <NuxtLink :to="appRoutes.createEvent" class="events-tabs-card__create">
+          <Icon name="i-ph-plus-bold" class="h-4 w-4" />
+          <span>{{ $t("pages.eventsPage.createEvent") }}</span>
         </NuxtLink>
+      </div>
+
+      <div class="events-tabs-card__filters">
+        <div class="events-tabs-card__search">
+          <Icon name="i-ph-magnifying-glass" class="events-tabs-card__search-icon" />
+          <input
+            v-model="searchQuery"
+            type="text"
+            class="events-tabs-card__search-input"
+            :placeholder="$t('pages.forumPage.searchPlaceholder')"
+          />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="events-tabs-card__search-clear"
+            @click="searchQuery = ''"
+          >
+            <Icon name="i-ph-x-bold" />
+          </button>
+        </div>
       </div>
     </section>
 
@@ -56,9 +76,17 @@
       />
     </section>
 
+    <section v-else-if="filteredEvents.length === 0" class="wow-content empty-state-wrap">
+      <FoundationEmptyState
+        icon="i-ph-magnifying-glass-duotone"
+        :title="$t('pages.forumPage.searchEmptyTitle')"
+        :description="$t('pages.forumPage.searchEmptyDescription')"
+      />
+    </section>
+
     <div v-else class="events-grid">
       <EventsEventCard
-        v-for="event in events"
+        v-for="event in filteredEvents"
         :key="event.id"
         :event="event"
         :busy-state="busyEventId === event.id ? busyAction : null"
@@ -84,6 +112,18 @@ const repository = createApiEventsRepository()
 const activeTabRef = computed<EventTabKey>(() => normalizeEventTab(String(route.query.tab || "browse")))
 const { activeTab, pending, events, tabItems, refresh } = useEventsPageVM(activeTabRef, repository)
 const toast = useToast()
+
+const searchQuery = ref("")
+
+const filteredEvents = computed(() => {
+  const query = searchQuery.value.trim().toLowerCase()
+  if (!query) return events.value
+  return events.value.filter(event =>
+    (event.title || "").toLowerCase().includes(query) ||
+    (event.location || "").toLowerCase().includes(query) ||
+    (event.description || "").toLowerCase().includes(query)
+  )
+})
 
 const busyEventId = ref<number | null>(null)
 const busyAction = ref<"going" | "interested" | null>(null)
@@ -161,9 +201,10 @@ const setInterested = (eventId: number) => runRsvp(eventId, "interested")
 
 <style scoped>
 .wow-content {
-  border-radius: 3px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-default);
 }
 
 .wo-page-heading {
@@ -171,7 +212,7 @@ const setInterested = (eventId: number) => runRsvp(eventId, "interested")
   align-items: center;
   gap: 11px;
   padding: 18px 20px;
-  color: #111827;
+  color: var(--text-primary);
   font-weight: 700;
 }
 
@@ -183,66 +224,153 @@ const setInterested = (eventId: number) => runRsvp(eventId, "interested")
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #111827;
+  color: var(--text-brand);
 }
 
-.wo-page-menu {
+.events-tabs-card {
   display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.events-tabs-card__top {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 14px 0 18px;
 }
 
-.wo-page-menu__scroll {
+.events-tabs-card__scroll {
   min-width: 0;
-  overflow-x: auto;
+  overflow-x: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+  padding-bottom: 8px; /* Room for scrollbar on mobile */
+  flex: 1;
 }
 
-.wo-page-menu__items {
+.events-tabs-card__items {
   display: flex;
-  min-width: max-content;
-  align-items: center;
-  gap: 2px;
+  flex-wrap: nowrap;
+  gap: 8px;
 }
 
-.wo-page-menu__link {
+.events-tabs-card__link {
   display: inline-flex;
   align-items: center;
-  min-height: 58px;
-  border-bottom: 3px solid transparent;
-  padding: 0 12px;
-  color: #334155;
-  font-size: 14px;
+  justify-content: center;
+  min-height: 36px;
+  border-radius: var(--radius-full);
+  padding: 8px 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
   font-weight: 700;
   text-decoration: none;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
 }
 
-.wo-page-menu__link:hover,
-.wo-page-menu__link--active {
-  border-bottom-color: #2563eb;
-  color: #2563eb;
+.events-tabs-card__link:hover {
+  color: var(--text-brand);
+  background: var(--bg-surface-hover);
 }
 
-.btn-main {
+.events-tabs-card__link--active {
+  color: var(--text-brand) !important;
+  background: var(--bg-surface-active) !important;
+}
+
+.events-tabs-card__create {
   display: inline-flex;
-  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   gap: 8px;
   min-height: 38px;
-  border-radius: 3px;
-  background: #2563eb;
-  padding: 8px 15px;
-  color: #fff;
-  font-size: 14px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--bg-brand);
+  padding: 0 14px;
+  color: var(--text-inverse);
+  font-size: 13px;
   font-weight: 700;
   text-decoration: none;
+  box-shadow: var(--shadow-brand);
+  white-space: nowrap;
+  transition: transform var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
 }
 
-.btn-mat-raised {
-  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.28);
+.events-tabs-card__create:hover {
+  transform: translateY(-1px);
+  background: var(--bg-brand-hover);
+}
+
+.events-tabs-card__filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.events-tabs-card__search {
+  position: relative;
+  flex: 1;
+}
+
+.events-tabs-card__search-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  background: var(--bg-surface-hover);
+  padding: 0 40px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+.events-tabs-card__search-input:focus {
+  outline: none;
+  border-color: var(--border-brand);
+  background: var(--bg-surface);
+}
+
+.events-tabs-card__search-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--text-tertiary);
+  font-size: 18px;
+}
+
+.events-tabs-card__search-clear {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+.events-tabs-card__search-clear:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
 }
 
 .events-grid {
@@ -257,18 +385,38 @@ const setInterested = (eventId: number) => runRsvp(eventId, "interested")
 }
 
 @media (max-width: 760px) {
-  .wo-page-menu {
-    align-items: stretch;
+  .events-tabs-card__top {
     flex-direction: column;
-    padding: 0 14px 14px;
+    align-items: stretch;
   }
 
-  .btn-main {
+  .events-tabs-card__create {
     width: 100%;
   }
 
   .events-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Webkit scrollbar for horizontal tabs scroll */
+.events-tabs-card__scroll::-webkit-scrollbar {
+  height: 6px !important;
+  background-color: #e2e8f0 !important;
+  display: block !important;
+}
+
+.events-tabs-card__scroll::-webkit-scrollbar-track {
+  background-color: #e2e8f0 !important;
+  border-radius: 999px !important;
+}
+
+.events-tabs-card__scroll::-webkit-scrollbar-thumb {
+  background-color: #475569 !important;
+  border-radius: 999px !important;
+}
+
+.events-tabs-card__scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #1e293b !important;
 }
 </style>

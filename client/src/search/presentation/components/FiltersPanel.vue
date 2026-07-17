@@ -335,7 +335,7 @@ function resetFilters() {
   width: 100%;
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
   font-size: 14px;
   font-weight: 700;
 }
@@ -415,7 +415,7 @@ function resetFilters() {
   border: 1px solid transparent;
   border-radius: 999px;
   background: #f1f5f9;
-  color: #334155;
+  color: #000000;
   padding: 0 14px;
   font-size: 13px;
   font-weight: 700;
@@ -451,7 +451,7 @@ function resetFilters() {
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   padding: 0 12px;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 600;
   outline: none;

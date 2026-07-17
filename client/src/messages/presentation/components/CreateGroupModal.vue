@@ -7,7 +7,7 @@
           v-if="errorMessage"
           color="error"
           variant="subtle"
-          icon="i-ph-warning-circle-duotone"
+          icon="i-ph-warning-circle-bold"
           :description="errorMessage"
           class="rounded-[18px]"
         />
@@ -20,6 +20,7 @@
             v-model="nameModel"
             :placeholder="$t('pages.messagesPage.groupNamePlaceholder')"
             size="lg"
+            class="w-full"
           />
         </div>
 
@@ -36,8 +37,9 @@
 
             <UInput
               v-model="queryModel"
-              icon="i-ph-magnifying-glass-duotone"
+              icon="i-ph-magnifying-glass-bold"
               size="lg"
+              class="w-full"
               :placeholder="$t('pages.messagesPage.groupCreateParticipantsPlaceholder')"
             />
 
@@ -127,34 +129,45 @@
             </div>
           </section>
 
-          <section class="space-y-3">
-            <label class="text-sm font-semibold text-[var(--text-primary)]">
+          <section class="flex flex-col items-center justify-center space-y-3 bg-[var(--bg-muted)]/30 rounded-[24px] p-5 border border-[var(--border-light)]">
+            <label class="text-sm font-bold text-[var(--text-primary)]">
               {{ $t("pages.messagesPage.groupCreateAvatarLabel") }}
             </label>
 
-            <div class="messages-group-create__avatar-preview">
-              <img
-                v-if="avatarPreviewUrl"
-                :src="avatarPreviewUrl"
-                :alt="$t('pages.messagesPage.groupCreateAvatarLabel')"
-                class="h-full w-full object-cover"
+            <div class="messages-group-create__avatar-container">
+              <div
+                class="messages-group-create__avatar-preview-circle group"
+                @click="triggerFileInput"
               >
-              <div v-else class="flex h-full w-full flex-col items-center justify-center gap-2 text-center text-[var(--text-secondary)]">
-                <Icon name="i-ph-image-duotone" class="h-7 w-7 text-[var(--text-tertiary)]" />
-                <span class="text-sm">{{ $t("pages.messagesPage.groupCreateAvatarEmpty") }}</span>
+                <img
+                  v-if="avatarPreviewUrl"
+                  :src="avatarPreviewUrl"
+                  :alt="$t('pages.messagesPage.groupCreateAvatarLabel')"
+                  class="h-full w-full object-cover"
+                >
+                <div v-else class="flex h-full w-full flex-col items-center justify-center gap-1.5 text-center text-[var(--text-secondary)]">
+                  <Icon name="i-ph-camera-bold" class="h-6 w-6 text-[var(--text-tertiary)] group-hover:text-primary-500 transition-colors" />
+                  <span class="text-[11px] font-bold uppercase tracking-[0.05em] select-none">{{ $t("pages.messagesPage.groupCreateAvatarUploadLabel") }}</span>
+                </div>
+                <!-- Hover overlay -->
+                <div class="messages-group-create__avatar-overlay">
+                  <Icon name="i-ph-pencil-simple-bold" class="h-6 w-6" />
+                </div>
               </div>
-            </div>
 
-            <UFileUpload
-              v-model="avatarModel"
-              :multiple="false"
-              accept="image/jpeg,image/png,image/gif,image/bmp"
-              layout="list"
-              highlight
-              :label="$t('pages.messagesPage.groupCreateAvatarUploadLabel')"
-              :description="$t('pages.messagesPage.groupCreateAvatarDescription')"
-              class="w-full"
-            />
+              <!-- Hidden input file -->
+              <input
+                ref="fileInput"
+                type="file"
+                class="hidden"
+                accept="image/jpeg,image/png,image/gif,image/bmp"
+                @change="onFileChange"
+              >
+
+              <p class="mt-4 text-center text-xs text-[var(--text-secondary)] leading-relaxed max-w-[200px]">
+                {{ $t("pages.messagesPage.groupCreateAvatarDescription") }}
+              </p>
+            </div>
           </section>
         </div>
       </div>
@@ -220,6 +233,20 @@ const emit = defineEmits<{
   "select-candidate": [candidate: MessageGroupCreateCandidate]
   submit: []
 }>()
+
+const fileInput = ref<HTMLInputElement | null>(null)
+
+const triggerFileInput = () => {
+  fileInput.value?.click()
+}
+
+const onFileChange = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0] || null
+  if (file) {
+    avatarModel.value = file
+  }
+}
 </script>
 
 <style scoped>
@@ -258,13 +285,48 @@ const emit = defineEmits<{
   border-bottom: 0;
 }
 
-.messages-group-create__avatar-preview {
+.messages-group-create__avatar-container {
   display: flex;
-  height: 220px;
-  width: 100%;
-  overflow: hidden;
-  border: 1px dashed var(--border-default);
-  border-radius: 24px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.messages-group-create__avatar-preview-circle {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px dashed var(--border-default);
   background: var(--bg-muted);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.messages-group-create__avatar-preview-circle:hover {
+  border-color: var(--color-primary-500);
+  background: var(--bg-surface-hover);
+}
+
+.messages-group-create__avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  border-radius: 50%;
+  transition: opacity 0.2s ease;
+}
+
+.messages-group-create__avatar-preview-circle:hover .messages-group-create__avatar-overlay {
+  opacity: 1;
 }
 </style>

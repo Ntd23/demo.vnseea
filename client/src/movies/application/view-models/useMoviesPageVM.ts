@@ -39,8 +39,9 @@ export function useMoviesPageVM(
       : Array.isArray(value) && typeof value[0] === "string"
         ? value[0].trim()
         : "";
-  const search = ref(readRouteQuery(route.query.search));
-  const debouncedSearch = ref("");
+  const initialSearch = readRouteQuery(route.query.search);
+  const search = ref(initialSearch);
+  const debouncedSearch = ref(initialSearch);
   const activeTab = ref<MovieTabId>("new");
   const selectedGenre = ref(readRouteQuery(route.query.genre));
   const selectedCountry = ref(readRouteQuery(route.query.country));
@@ -87,25 +88,32 @@ export function useMoviesPageVM(
     },
   );
 
-  const items = ref<MovieRecord[]>([]);
-  const hasMore = ref(false);
-  const nextOffset = ref(0);
+  const appendedItems = ref<MovieRecord[]>([]);
+  const pagination = ref<{
+    hasMore: boolean;
+    nextOffset: number;
+  } | null>(null);
   const loadingMore = ref(false);
 
   watch(filtersKey, () => {
-    items.value = [];
-    hasMore.value = false;
-    nextOffset.value = 0;
+    appendedItems.value = [];
+    pagination.value = null;
   });
 
-  watch(
-    data,
-    (catalog) => {
-      items.value = catalog.items;
-      hasMore.value = catalog.hasMore;
-      nextOffset.value = catalog.nextOffset;
-    },
-    { immediate: true },
+  const items = computed<MovieRecord[]>(() => {
+    const baseItems = data.value.items;
+    const baseIds = new Set(baseItems.map((movie) => movie.id));
+
+    return [
+      ...baseItems,
+      ...appendedItems.value.filter((movie) => !baseIds.has(movie.id)),
+    ];
+  });
+  const hasMore = computed(
+    () => pagination.value?.hasMore ?? data.value.hasMore,
+  );
+  const nextOffset = computed(
+    () => pagination.value?.nextOffset ?? data.value.nextOffset,
   );
 
   const loading = computed(() => status.value === "pending");
@@ -154,9 +162,11 @@ export function useMoviesPageVM(
       const newItems = response.items.filter(
         (movie) => !existingIds.has(movie.id),
       );
-      items.value = [...items.value, ...newItems];
-      hasMore.value = response.hasMore;
-      nextOffset.value = response.nextOffset;
+      appendedItems.value = [...appendedItems.value, ...newItems];
+      pagination.value = {
+        hasMore: response.hasMore,
+        nextOffset: response.nextOffset,
+      };
     } finally {
       loadingMore.value = false;
     }

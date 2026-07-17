@@ -104,7 +104,7 @@ const authorInitials = computed(() => {
 
 .shared-post-card__text {
   padding: 10px 12px 0;
-  color: #334155;
+  color: #000000;;
   font-size: 13.5px;
   line-height: 1.65;
   white-space: pre-line;

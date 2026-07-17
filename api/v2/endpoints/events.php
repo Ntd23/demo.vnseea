@@ -1,4 +1,5 @@
 <?php
+// English description: Handles event editing, deletion, attendee lists, and structured event invitation operations.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -16,7 +17,9 @@ $required_fields =  array(
                         'edit',
                         'delete',
                         'interested',
-                        'going'
+                        'going',
+                        'search_invitees',
+                        'invite'
                     );
 
 $offset = (!empty($_POST['offset']) && is_numeric($_POST['offset']) && $_POST['offset'] > 0 ? Wo_Secure($_POST['offset']) : 0);
@@ -100,6 +103,59 @@ if (!empty($_POST['type']) && in_array($_POST['type'], $required_fields)) {
                 $error_code    = 5;
                 $error_message = 'You are not the event owner';
             }
+        }
+    }
+    if ($_POST['type'] == 'search_invitees') {
+        $event_id = (!empty($_POST['event_id']) && is_numeric($_POST['event_id']) && $_POST['event_id'] > 0) ? Wo_Secure($_POST['event_id']) : 0;
+        $filter = (!empty($_POST['filter'])) ? Wo_Secure($_POST['filter']) : '';
+        $invitees = array();
+
+        if (empty($event_id)) {
+            $error_code = 3;
+            $error_message = 'event_id (POST) is missing';
+        }
+        else if (strlen($filter) < 2) {
+            $response_data = array(
+                'api_status' => 200,
+                'data' => $invitees
+            );
+        }
+        else {
+            $users = Wo_SearchFollowers($wo['user']['user_id'], $filter, $limit, $event_id);
+            if (!empty($users)) {
+                foreach ($users as $user) {
+                    $invitees[] = array(
+                        'user_id' => (int) $user['user_id'],
+                        'name' => !empty($user['name']) ? $user['name'] : $user['username'],
+                        'username' => $user['username'],
+                        'avatar' => $user['avatar'],
+                        'verified' => !empty($user['verified']) ? 1 : 0
+                    );
+                }
+            }
+            $response_data = array(
+                'api_status' => 200,
+                'data' => $invitees
+            );
+        }
+    }
+    if ($_POST['type'] == 'invite') {
+        $event_id = (!empty($_POST['event_id']) && is_numeric($_POST['event_id']) && $_POST['event_id'] > 0) ? Wo_Secure($_POST['event_id']) : 0;
+        $user_id = (!empty($_POST['user_id']) && is_numeric($_POST['user_id']) && $_POST['user_id'] > 0) ? Wo_Secure($_POST['user_id']) : 0;
+
+        if (empty($event_id) || empty($user_id)) {
+            $error_code = 3;
+            $error_message = 'event_id and user_id (POST) are required';
+        }
+        else if (Wo_RegsiterEventInvite($user_id, $event_id)) {
+            $response_data = array(
+                'api_status' => 200,
+                'message_data' => 'Event invitation sent'
+            );
+        }
+        else {
+            $error_code = 5;
+            $error_message = 'Unable to invite this user';
         }
     }
     if ($_POST['type'] == 'interested') {

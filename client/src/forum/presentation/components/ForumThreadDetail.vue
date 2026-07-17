@@ -1,7 +1,12 @@
+<!-- English description: Displays a forum thread, linked authors, replies, and the reply composer. -->
 <template>
   <aside id="forum-thread-detail" class="forum-thread-detail">
     <section v-if="thread" class="forum-thread-detail__card">
       <div class="forum-thread-detail__header">
+        <NuxtLink :to="{ path: '/forum', query: { tab: 'browse', fid: String(thread.forumId) } }" class="forum-thread-detail__back">
+          <Icon name="i-ph-arrow-left-bold" class="h-4 w-4" />
+          <span>{{ t("pages.forumPage.backToThreads") }}</span>
+        </NuxtLink>
         <p>{{ t("pages.forumPage.threadDetailEyebrow") }}</p>
         <h2>{{ thread.title }}</h2>
         <span>{{ statusLabel }}</span>
@@ -12,6 +17,10 @@
       </p>
 
       <div class="forum-thread-detail__meta">
+        <NuxtLink :to="thread.authorUrl">
+          <Icon name="i-ph-user-circle-duotone" />
+          {{ thread.author }}
+        </NuxtLink>
         <span>
           <Icon name="i-ph-chat-centered-text-duotone" />
           {{ thread.sectionLabel }}
@@ -75,7 +84,7 @@
           </div>
           <div class="forum-thread-detail__reply-content">
             <div class="forum-thread-detail__reply-meta">
-              <strong>{{ reply.author }}</strong>
+              <NuxtLink :to="reply.authorUrl">{{ reply.author }}</NuxtLink>
               <span>{{ reply.role }}</span>
               <UBadge v-if="reply.accepted" color="success" variant="soft" class="forum-thread-detail__accepted">
                 {{ t("pages.forumPage.acceptedLabel") }}
@@ -221,11 +230,11 @@ async function submit() {
 
 .forum-thread-detail__card {
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 255, 0.04);
-  border-radius: 16px;
-  background: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
   padding: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
 }
 
 .forum-thread-detail__header p,
@@ -256,7 +265,7 @@ async function submit() {
 
 .forum-thread-detail__body {
   margin-top: 12px;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.6;
@@ -271,7 +280,8 @@ async function submit() {
   padding-top: 12px;
 }
 
-.forum-thread-detail__meta span {
+.forum-thread-detail__meta span,
+.forum-thread-detail__meta a {
   display: flex;
   min-width: 0;
   align-items: center;
@@ -279,13 +289,18 @@ async function submit() {
   color: #64748b;
   font-size: 12px;
   font-weight: 600;
+  text-decoration: none;
+}
+
+.forum-thread-detail__meta a:hover {
+  color: var(--text-brand);
 }
 
 .forum-thread-detail__meta :deep(svg) {
   width: 15px;
   height: 15px;
   flex-shrink: 0;
-  color: #0000ff;
+  color: var(--text-brand);
 }
 
 .forum-thread-detail__reply-head {
@@ -304,9 +319,9 @@ async function submit() {
 
 .forum-thread-detail__reply-head > span {
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.06);
+  background: var(--bg-surface-active);
   padding: 4px 9px;
-  color: #0000ff;
+  color: var(--text-brand);
   font-size: 12px;
   font-weight: 700;
 }
@@ -325,9 +340,9 @@ async function submit() {
 .forum-thread-detail__reply {
   display: flex;
   gap: 10px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-default);
   border-radius: 12px;
-  background: #fafbfe;
+  background: var(--bg-surface-hover);
   padding: 12px;
 }
 
@@ -340,8 +355,8 @@ async function submit() {
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
-  color: #ffffff;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
   font-size: 11px;
   font-weight: 800;
 }
@@ -363,10 +378,15 @@ async function submit() {
   gap: 6px;
 }
 
-.forum-thread-detail__reply-meta strong {
+.forum-thread-detail__reply-meta a {
   color: #1e293b;
   font-size: 13px;
   font-weight: 700;
+  text-decoration: none;
+}
+
+.forum-thread-detail__reply-meta a:hover {
+  color: var(--text-brand);
 }
 
 .forum-thread-detail__reply-meta span,
@@ -385,7 +405,7 @@ async function submit() {
 .forum-thread-detail__reply-content p {
   margin-top: 5px;
   overflow-wrap: anywhere;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.55;
@@ -433,6 +453,28 @@ async function submit() {
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+  }
+}
+
+.forum-thread-detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-brand);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 12px;
+  transition: transform var(--duration-fast) var(--ease-default);
+}
+
+.forum-thread-detail__back:hover {
+  transform: translateX(-2px);
+}
+
+@media (min-width: 1120px) {
+  .forum-thread-detail__back {
+    display: none !important;
   }
 }
 </style>

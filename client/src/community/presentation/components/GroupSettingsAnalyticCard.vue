@@ -256,7 +256,7 @@ const chartOption = computed<EChartsOption>(() => {
 
 .group-analytics__legend {
   align-items: center;
-  color: #334155;
+  color: #000000;
   display: flex;
   font-size: 11px;
   font-weight: 700;

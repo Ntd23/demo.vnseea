@@ -1,20 +1,6 @@
-<!-- Description: Renders the backend-backed create-event form in the same field order and rhythm as the PHP event composer. -->
+<!-- English description: Renders the shared backend-backed create and edit event form. -->
 <template>
-  <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)]">
-    <div class="border-b border-[var(--border-default)] px-5 py-4">
-      <div class="flex items-center gap-3">
-        <span class="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--bg-surface-active)] text-[var(--text-brand)]">
-          <Icon name="i-ph-calendar-plus-fill" class="h-5 w-5" />
-        </span>
-        <div>
-          <p class="text-label-secondary">{{ $t("pages.eventsPage.createEvent") }}</p>
-          <h1 class="text-heading text-[var(--text-primary)]">
-            {{ $t("pages.eventsPage.createEvent") }}
-          </h1>
-        </div>
-      </div>
-    </div>
-
+  <section class="mt-1.5 rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)]">
     <UForm :state="form" :validate="validate" class="space-y-5 p-5" @submit="submit">
       <UAlert
         v-if="submitError"
@@ -91,23 +77,14 @@
         </label>
       </div>
 
-      <div class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface-hover)] p-4">
-        <p class="text-label-secondary">{{ $t("pages.createEventPage.previewLabel") }}</p>
-        <h2 class="mt-2 text-heading text-[var(--text-primary)]">
-          {{ form.name || $t("pages.createEventPage.eventTitleFallback") }}
-        </h2>
-        <p class="mt-2 text-body-secondary">{{ dateRangeLabel || $t("pages.createEventPage.dateSummaryFallback") }}</p>
-        <p class="mt-2 text-body-secondary">{{ form.location || $t("pages.createEventPage.locationFallback") }}</p>
-      </div>
-
       <div class="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
-        <UButton :to="appRoutes.events" color="neutral" variant="ghost" size="lg" class="justify-center rounded-full">
+        <UButton :to="cancelRoute" color="neutral" variant="ghost" size="lg" class="justify-center rounded-full">
           <Icon name="i-ph-arrow-left" class="mr-2 h-4 w-4" />
           {{ $t("pages.createEventPage.backToEvents") }}
         </UButton>
 
         <UButton type="submit" color="primary" size="lg" class="justify-center rounded-full px-7" :loading="submitting">
-          {{ $t("pages.createEventPage.publish") }}
+          {{ isEditing ? $t("pages.createEventPage.saveChanges") : $t("pages.createEventPage.publish") }}
         </UButton>
       </div>
     </UForm>
@@ -117,9 +94,15 @@
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useCreateEventPageVM } from "../../application/view-models/useCreateEventPageVM"
+import type { EventRecord } from "../../domain/types/events.types"
+
+const props = defineProps<{
+  event?: EventRecord | null
+}>()
 
 const {
   form,
+  isEditing,
   coverPreviewUrl,
   dateRangeLabel,
   submitting,
@@ -127,5 +110,17 @@ const {
   validate,
   onCoverChange,
   submit,
-} = useCreateEventPageVM()
+} = useCreateEventPageVM(toRef(props, "event"))
+
+const { t } = useI18n()
+const formTitle = computed(() =>
+  isEditing.value
+    ? t("pages.eventDetailPage.editEvent")
+    : t("pages.eventsPage.createEvent"),
+)
+const cancelRoute = computed(() =>
+  props.event?.id
+    ? appRoutes.eventDetail(props.event.id)
+    : appRoutes.events,
+)
 </script>

@@ -26,6 +26,25 @@
       </NuxtLink>
     </div>
 
+    <div class="page-tabs-bar__filters">
+      <div class="page-tabs-bar__search">
+        <Icon name="i-ph-magnifying-glass" class="page-tabs-bar__search-icon" />
+        <input
+          v-model="search"
+          type="text"
+          class="page-tabs-bar__search-input"
+          :placeholder="$t('pages.forumPage.searchPlaceholder')"
+        />
+        <button
+          v-if="search"
+          type="button"
+          class="page-tabs-bar__search-clear"
+          @click="search = ''"
+        >
+          <Icon name="i-ph-x-bold" />
+        </button>
+      </div>
+    </div>
   </section>
 </template>
 

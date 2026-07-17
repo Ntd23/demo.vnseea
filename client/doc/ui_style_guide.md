@@ -32,11 +32,11 @@
 /* SAI — quá harsh */
 border: 1px solid #111111;
 border: 1px solid black;
-color: #000000;
+color: #000000;;
 
 /* ĐÚNG — mềm hơn */
 border: 1px solid #e2e8f0;
-color: #334155;
+color: #000000;
 ```
 
 ---
@@ -89,7 +89,7 @@ font-weight: 700;
 .menu-item {
   font-size: 13px;
   font-weight: 600;
-  color: #334155;
+  color: #000000;
   /* Normal case, no uppercase */
 }
 ```
@@ -219,7 +219,7 @@ shadow-[-12px_0_40px_rgba(0,0,0,0.5)];
 .nav-item__label {
   font-size: 13px;
   font-weight: 600;
-  color: #334155;
+  color: #000000;
 }
 
 .nav-item--active .nav-item__label {
@@ -335,7 +335,7 @@ text-transform: uppercase;
   border: 1px solid #e2e8f0;
   background: #fafbfe;
   font-size: 13px;
-  color: #334155;
+  color: #000000;
   outline: none;
   font-family: inherit;
   transition: border-color 0.15s ease;

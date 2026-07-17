@@ -313,7 +313,7 @@ const tagCount = computed(() =>
   border: 1px solid #cbd5e1;
   border-radius: 999px;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
@@ -343,7 +343,7 @@ const tagCount = computed(() =>
   align-items: center;
   border-radius: 999px;
   background: #f1f5f9;
-  color: #334155;
+  color: #000000;
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 700;
@@ -400,7 +400,7 @@ const tagCount = computed(() =>
 }
 
 .page-settings-basics :deep(label) {
-  color: #334155;
+  color: #000000;
   font-weight: 800;
 }
 </style>

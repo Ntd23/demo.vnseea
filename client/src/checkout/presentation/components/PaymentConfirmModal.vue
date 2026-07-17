@@ -173,7 +173,7 @@ const onConfirm = () => {
 .pm-confirm-value {
   font-size: 14px;
   font-weight: 700;
-  color: #334155;
+  color: #000000;
 }
 
 .pm-confirm-value.wallet-balance {

@@ -124,7 +124,7 @@ defineEmits<{
 .blogs-hero__button {
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
 }
 
 .blogs-hero__button:hover,
@@ -173,7 +173,7 @@ defineEmits<{
 
 .blogs-hero__stat span {
   margin-top: 6px;
-  color: #334155;
+  color: #000000;
   font-size: 12px;
   font-weight: 800;
 }

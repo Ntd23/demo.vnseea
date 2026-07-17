@@ -5455,7 +5455,7 @@ table.dataTable thead .sorting_desc:after {
 
 .toast-close-button:hover,
 .toast-close-button:focus {
-  color: #000000;
+  color: #000000;;
   text-decoration: none;
   cursor: pointer;
   opacity: 0.4;
@@ -5604,7 +5604,7 @@ button.toast-close-button {
   left: 0;
   bottom: 0;
   height: 2px;
-  background-color: #000000;
+  background-color: #000000;;
   opacity: 0.2;
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);
   filter: alpha(opacity=20);

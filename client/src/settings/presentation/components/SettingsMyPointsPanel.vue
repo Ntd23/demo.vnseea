@@ -586,7 +586,7 @@ const {
   border-radius: 12px;
   background: #ffffff;
   padding: 0 16px;
-  color: #334155;
+  color: #000000;
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
@@ -756,7 +756,7 @@ const {
   justify-content: center;
   border-radius: 50%;
   background: #e2e8f0;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 800;
 }
@@ -809,7 +809,7 @@ const {
   border-radius: 12px;
   background: #ffffff;
   padding: 0 12px;
-  color: #334155;
+  color: #000000;
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
@@ -897,7 +897,7 @@ const {
   justify-content: center;
   border-radius: 50%;
   background: #e2e8f0;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 800;
 }
@@ -1242,7 +1242,7 @@ const {
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;

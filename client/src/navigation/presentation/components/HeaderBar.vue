@@ -20,7 +20,7 @@
             class="header-home-favicon header-home-favicon--desktop"
             @error="faviconFailed = true"
           >
-          <Icon v-else name="i-ph-house-fill" class="h-5 w-5" />
+          <Icon v-else name="i-ph-house-bold" class="h-5 w-5" />
         </NuxtLink>
 
         <!-- Search -->
@@ -104,7 +104,7 @@
             :aria-label="$t('navigation.headerBar.messages')"
           >
             <Icon
-              :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-fill' : 'i-ph-chat-circle-dots-duotone'"
+              :name="route.path === appRoutes.messages ? 'i-ph-chat-circle-dots-bold' : 'i-ph-chat-circle-dots-bold'"
               class="h-[18px] w-[18px]"
             />
             <span v-if="isClientReady && navigationSummary.messageCount > 0" class="header-action-badge">
@@ -119,7 +119,7 @@
               :aria-label="$t('navigation.headerBar.notifications')"
               @click="toggleNotifications"
             >
-              <Icon name="i-ph-bell-duotone" class="h-[18px] w-[18px]" />
+              <Icon name="i-ph-bell-bold" class="h-[18px] w-[18px]" />
               <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
                 {{ notificationCount }}
               </span>
@@ -170,7 +170,7 @@
               class="header-home-favicon header-home-favicon--mobile"
               @error="faviconFailed = true"
             >
-            <Icon v-else name="i-ph-house-fill" class="h-[22px] w-[22px]" />
+            <Icon v-else name="i-ph-house-bold" class="h-[22px] w-[22px]" />
           </NuxtLink>
 
           <button
@@ -183,7 +183,7 @@
             <Icon name="i-ph-magnifying-glass-bold" class="h-[20px] w-[20px]" />
           </button>
 
-          <button
+          <!-- <button
             class="mobile-icon-btn"
             :class="createMenuOpen ? 'mobile-icon-btn--active' : ''"
             type="button"
@@ -192,13 +192,13 @@
             @click="toggleCreateMenu"
           >
             <Icon name="i-ph-plus-bold" class="h-[20px] w-[20px]" />
-          </button>
+          </button> -->
         </div>
 
         <!-- RIGHT GROUP: Locale + Avatar -->
         <div class="mobile-bar__group">
 
-          <button
+          <!-- <button
             class="mobile-icon-btn"
             :class="requestsOpen ? 'mobile-icon-btn--active' : ''"
             type="button"
@@ -209,14 +209,14 @@
             <span v-if="isClientReady && requestCount > 0" class="header-action-badge">
               {{ requestCount }}
             </span>
-          </button>
+          </button> -->
           <NuxtLink
             :to="appRoutes.messages"
             class="mobile-icon-btn"
             :class="route.path === appRoutes.messages ? 'mobile-icon-btn--active' : ''"
             :aria-label="$t('navigation.headerBar.messages')"
           >
-            <Icon name="i-ph-chat-circle-dots-duotone" class="h-[20px] w-[20px]" />
+             <Icon name="i-ph-chat-circle-dots-bold" class="h-[20px] w-[20px]" />
             <span v-if="isClientReady && navigationSummary.messageCount > 0" class="header-action-badge">
               {{ navigationSummary.messageCount }}
             </span>
@@ -228,7 +228,7 @@
             :aria-label="$t('navigation.headerBar.notifications')"
             @click="toggleNotifications"
           >
-            <Icon name="i-ph-bell-duotone" class="h-[20px] w-[20px]" />
+             <Icon name="i-ph-bell-bold" class="h-[20px] w-[20px]" />
             <span v-if="isClientReady && notificationCount > 0" class="header-action-badge">
               {{ notificationCount }}
             </span>
@@ -400,35 +400,35 @@ const createActions = [
     id: "ads",
     label: "Tạo quảng cáo",
     to: appRoutes.adsCreate,
-    icon: "i-ph-currency-circle-dollar-duotone",
+    icon: "i-ph-currency-circle-dollar-bold",
     color: "#c065d9",
   },
   {
     id: "blog",
     label: "Tạo bài viết",
     to: appRoutes.createBlog,
-    icon: "i-ph-article-duotone",
+    icon: "i-ph-article-bold",
     color: "#28b8c9",
   },
   {
     id: "event",
     label: "Tạo sự kiện",
     to: appRoutes.createEvent,
-    icon: "i-ph-calendar-plus-duotone",
+    icon: "i-ph-calendar-plus-bold",
     color: "#ff3f7f",
   },
   {
     id: "group",
     label: "Tạo nhóm",
     to: appRoutes.createGroup,
-    icon: "i-ph-users-three-duotone",
+    icon: "i-ph-users-three-bold",
     color: "#2aa7e8",
   },
   {
     id: "page",
     label: "Tạo trang",
     to: appRoutes.createPage,
-    icon: "i-ph-flag-duotone",
+    icon: "i-ph-flag-bold",
     color: "#ffb15a",
   },
 ] as const
@@ -582,7 +582,7 @@ async function toggleCreateMenu() {
   box-shadow: 0 8px 18px rgba(0, 0, 255, 0.22);
 }
 
-.desktop-pill--inactive { color: #334155; }
+.desktop-pill--inactive { color: #000000; }
 
 .desktop-pill--inactive:hover {
   color: #0000ff;
@@ -628,7 +628,7 @@ async function toggleCreateMenu() {
   border-radius: 12px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  color: #475569;
+  color: #000000;
   cursor: pointer;
   text-decoration: none;
   transition: all 0.15s ease;
@@ -801,7 +801,7 @@ async function toggleCreateMenu() {
   border-radius: 12px;
   border: 1px solid #e8edf5;
   background: #f8fafc;
-  color: #475569;
+  color: #000000;
   cursor: pointer;
   text-decoration: none;
   transition: all 0.15s ease;
@@ -856,7 +856,7 @@ async function toggleCreateMenu() {
   border-radius: 10px;
   border: 1px solid #e2e8f0;
   background: #f8fafc;
-  color: #64748b;
+  color: #000000;
   cursor: pointer;
   transition: all 0.12s ease;
 }

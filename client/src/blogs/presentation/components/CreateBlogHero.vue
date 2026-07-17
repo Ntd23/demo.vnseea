@@ -147,7 +147,7 @@ defineEmits<{
 .create-blog-hero__button--secondary {
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
 }
 
 .create-blog-hero__button--secondary:hover {

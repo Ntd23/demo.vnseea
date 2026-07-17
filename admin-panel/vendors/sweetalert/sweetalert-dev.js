@@ -1210,7 +1210,7 @@ var extend = function extend(a, b) {
 };
 
 /*
- * Convert HEX codes to RGB values (#000000 -> rgb(0,0,0))
+ * Convert HEX codes to RGB values (#000000; -> rgb(0,0,0))
  */
 var hexToRgb = function hexToRgb(hex) {
   var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);

@@ -456,7 +456,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp)(\?|#|$)/i.t
   border: 1px solid #dbe4f0;
   border-radius: 999px;
   background: #fff;
-  color: #334155;
+  color: #000000;
 }
 
 .ads-page__load-more {

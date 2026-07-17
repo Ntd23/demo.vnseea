@@ -433,7 +433,7 @@ svg {vertical-align: middle;}
 
 /*OAuth*/
 .sun_oauth {border-radius: 10px;margin-top: 60px;}
-.sun_oauth .avatar img {width: 100px;border-radius: 10px;height: 100px;box-shadow: 0 1px 2px #0000001f;pointer-events: none;user-select: none;}
+.sun_oauth .avatar img {width: 100px;border-radius: 10px;height: 100px;box-shadow: 0 1px 2px #000000;1f;pointer-events: none;user-select: none;}
 .sun_oauth .app-website {font-size: 14px;}
 .sun_oauth .form-inline {text-align: end;padding: 10px 0 0;}
 .sun_oauth .form-inline .btn {padding: 0 12px;line-height: 36px;height: 37px;min-width: 110px;border-radius: 5px;box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);transition: all 0.2s;}
@@ -460,9 +460,9 @@ svg {vertical-align: middle;}
 .sun_setting_header .ss_innr > .sun_set_avatr a {display: inline-block;font-weight: bold;font-size: 17px;color: white;text-decoration: none;}
 .sun_setting_header .ss_innr > .sun_set_avatr img {width: 35px;height: 35px;border-radius: 50%;object-fit: cover;}
 .sun_setting_body {margin: -60px 0 0;position: relative;z-index: 1;}
-.sun_sett_circle-1 {width: 290px;height: 290px;background-image: radial-gradient(circle 800px at 75% -25%,#000000 0,rgba(255, 255, 255, 0) 100%);left: -28px;top: -28px;opacity: .05;position: absolute;border-radius: 50%;pointer-events: none;}
-.sun_sett_circle-2 {opacity: .03;position: absolute;border-radius: 50%;pointer-events: none;width: 500px;height: 500px;background-image: radial-gradient(circle 800px at 10% -25%,#000000 0,rgba(255, 255, 255, 0) 100%);right: -242px;top: 17px;}
-.sun_sett_circle-3 {opacity: .04;position: absolute;border-radius: 50%;pointer-events: none;width: 200px;height: 200px;background-image: radial-gradient(circle 800px at 10% -25%,#000000 0,rgba(255, 255, 255, 0) 100%);right: 78px;top: -73px;}
+.sun_sett_circle-1 {width: 290px;height: 290px;background-image: radial-gradient(circle 800px at 75% -25%,#000000; 0,rgba(255, 255, 255, 0) 100%);left: -28px;top: -28px;opacity: .05;position: absolute;border-radius: 50%;pointer-events: none;}
+.sun_sett_circle-2 {opacity: .03;position: absolute;border-radius: 50%;pointer-events: none;width: 500px;height: 500px;background-image: radial-gradient(circle 800px at 10% -25%,#000000; 0,rgba(255, 255, 255, 0) 100%);right: -242px;top: 17px;}
+.sun_sett_circle-3 {opacity: .04;position: absolute;border-radius: 50%;pointer-events: none;width: 200px;height: 200px;background-image: radial-gradient(circle 800px at 10% -25%,#000000; 0,rgba(255, 255, 255, 0) 100%);right: 78px;top: -73px;}
 .sun_sett_page {box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);border-radius: 5px;margin: 0;}
 .sun_sett_page h3 {margin: 0;padding: 3px 0 15px;background: #fff;font-size: 20px;color: #1d1d1d;}
 .sun_sett_page .setting-panel {padding: 10px 0px;}
@@ -1083,8 +1083,8 @@ svg {vertical-align: middle;}
 
 .dt_bank_trans_modal .bank_info {width: 100%;margin-top: 24px;margin-bottom: 30px;}
 .dt_bank_trans_modal .bank_info .dt_settings_header {width: 100%;margin-left: auto;margin-right: auto;border-radius: 7px;height: auto;background-color: #2196f3;background: linear-gradient(90deg, #03A9F4 0%, #2196f3 35%, #3F51B5 100%);padding: 16px;overflow: hidden;position: relative;}
-.dt_bank_trans_modal .dt_settings_circle-1 {width: 290px;height: 290px;background-image: radial-gradient(circle 800px at 75% -25%,#000000 0,rgba(255, 255, 255, 0) 100%);left: -28px;top: -28px;opacity: .05;position: absolute;border-radius: 50%;pointer-events: none;}
-.dt_bank_trans_modal .dt_settings_circle-2 {opacity: .03;position: absolute;border-radius: 50%;pointer-events: none;width: 500px;height: 500px;background-image: radial-gradient(circle 800px at 10% -25%,#000000 0,rgba(255, 255, 255, 0) 100%);right: -242px;top: 17px;}
+.dt_bank_trans_modal .dt_settings_circle-1 {width: 290px;height: 290px;background-image: radial-gradient(circle 800px at 75% -25%,#000000; 0,rgba(255, 255, 255, 0) 100%);left: -28px;top: -28px;opacity: .05;position: absolute;border-radius: 50%;pointer-events: none;}
+.dt_bank_trans_modal .dt_settings_circle-2 {opacity: .03;position: absolute;border-radius: 50%;pointer-events: none;width: 500px;height: 500px;background-image: radial-gradient(circle 800px at 10% -25%,#000000; 0,rgba(255, 255, 255, 0) 100%);right: -242px;top: 17px;}
 .dt_bank_trans_modal .bank_info .bank_info_innr {position: relative;width: 100%;color: #fff;z-index: 1;border: 6px solid rgba(255, 255, 255, 0.3);padding: 20px;border-radius: 5px;}
 .dt_bank_trans_modal .bank_info .bank_info_innr > svg {position: absolute;opacity: 0.3;left: 16px;top: 16px;width: 45px;z-index: -1;}
 .dt_bank_trans_modal .bank_info .bank_info_innr .row p {margin: 0;font-size: 18px;word-break: break-word;}

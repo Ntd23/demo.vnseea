@@ -149,7 +149,7 @@ defineEmits<{
   border: 0;
   border-radius: 12px;
   background: transparent;
-  color: #334155;
+  color: #000000;
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;

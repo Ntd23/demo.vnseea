@@ -8,7 +8,7 @@
             <UButton
               variant="ghost"
               color="neutral"
-              class="-ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-slate-500 md:hidden"
+              class="-ml-2 h-10 w-10 shrink-0 justify-center rounded-full p-0 text-black md:hidden"
               @click="$emit('back')"
             >
               <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />
@@ -32,7 +32,7 @@
                   v-if="contact.type === 'group' && !headerAvatarUrl"
                   class="flex h-11 w-11 items-center justify-center rounded-full bg-primary-50 text-primary-600"
                 >
-                  <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
+                  <Icon name="i-ph-users-three-bold" class="h-5 w-5" />
                 </div>
                 <UAvatar
                   v-else
@@ -61,7 +61,7 @@
                   color="neutral"
                   variant="ghost"
                   icon="i-ph-phone-bold"
-                  class="h-10 w-10 justify-center rounded-full"
+                  class="h-10 w-10 justify-center rounded-full text-black"
                   :loading="callActionPending"
                   :disabled="callActionPending"
                   @click="handleStartCall('audio')"
@@ -74,7 +74,7 @@
                   color="neutral"
                   variant="ghost"
                   icon="i-ph-video-camera-bold"
-                  class="h-10 w-10 justify-center rounded-full"
+                  class="h-10 w-10 justify-center rounded-full text-black"
                   :loading="callActionPending"
                   :disabled="callActionPending"
                   @click="handleStartCall('video')"
@@ -88,7 +88,7 @@
                   color="neutral"
                   variant="ghost"
                   icon="i-ph-video-camera-bold"
-                  class="h-10 w-10 justify-center rounded-full"
+                  class="h-10 w-10 justify-center rounded-full text-black"
                   :loading="callActionPending"
                   :disabled="callActionPending"
                   @click="handleStartCall('video')"
@@ -102,7 +102,7 @@
                 color="neutral"
                 variant="ghost"
                 icon="i-ph-info-bold"
-                class="h-10 w-10 justify-center rounded-full"
+                class="h-10 w-10 justify-center rounded-full text-black"
                 :class="userDetailDocked && contact.type === 'user' ? 'xl:hidden' : ''"
                 @click="handleToggleInfo"
               />
@@ -632,7 +632,7 @@ function handleStartCall(type: MessageCallType) {
   border-radius: 999px;
   background: #fff;
   padding: 7px 11px;
-  color: #334155;
+  color: #000000;
   font-size: 12px;
   font-weight: 650;
   line-height: 1.25;

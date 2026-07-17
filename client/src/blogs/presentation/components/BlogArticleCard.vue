@@ -226,7 +226,7 @@ const categoryAccentColor = computed(() =>
 .blog-card__category,
 .blog-card__mine {
   background: rgba(255, 255, 255, 0.92);
-  color: #334155;
+  color: #000000;
   padding: 6px 9px;
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
 }

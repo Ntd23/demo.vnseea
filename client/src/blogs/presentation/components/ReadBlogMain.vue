@@ -166,7 +166,7 @@ defineEmits<{
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
   cursor: pointer;
   font-size: 13px;
   font-weight: 700;
@@ -238,7 +238,7 @@ defineEmits<{
 
 .read-blog-main__paragraph {
   margin: 0;
-  color: #334155;
+  color: #000000;
   font-size: 16px;
   font-weight: 500;
   line-height: 1.9;

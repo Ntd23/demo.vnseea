@@ -1,11 +1,13 @@
-// English description: Owns the backend-backed create-event form state, validation, preview, and submit flow.
+// English description: Owns shared backend-backed create and edit event form state, validation, preview, and submission.
 
 import type { FormError, FormSubmitEvent } from "@nuxt/ui"
+import type { Ref } from "vue"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { createApiEventsRepository } from "../../infrastructure/repositories/ApiEventsRepository"
-import type { EventCreateDraft } from "../../domain/types/events.types"
+import type { EventCreateDraft, EventRecord } from "../../domain/types/events.types"
 
 export function useCreateEventPageVM(
+  initialEvent: Readonly<Ref<EventRecord | null | undefined>> = ref(null),
   repository = createApiEventsRepository(),
 ) {
   const { t } = useI18n()
@@ -23,8 +25,30 @@ export function useCreateEventPageVM(
   })
 
   const coverPreviewUrl = ref("")
+  const coverObjectUrl = ref("")
   const submitting = ref(false)
   const submitError = ref("")
+  const isEditing = computed(() => Boolean(initialEvent.value?.id))
+
+  watch(
+    initialEvent,
+    (event) => {
+      if (!event) return
+
+      Object.assign(form, {
+        name: event.name,
+        location: event.location,
+        description: event.description,
+        startDate: event.startDateValue,
+        startTime: event.startTime,
+        endDate: event.endDateValue,
+        endTime: event.endTime,
+        coverFile: null,
+      })
+      coverPreviewUrl.value = event.coverUrl
+    },
+    { immediate: true },
+  )
 
   const dateRangeLabel = computed(() => {
     const start = [form.startDate, form.startTime].filter(Boolean).join(" • ")
@@ -85,13 +109,17 @@ export function useCreateEventPageVM(
     form.coverFile = file
     submitError.value = ""
 
-    if (coverPreviewUrl.value) {
-      URL.revokeObjectURL(coverPreviewUrl.value)
-      coverPreviewUrl.value = ""
+    if (coverObjectUrl.value) {
+      URL.revokeObjectURL(coverObjectUrl.value)
+      coverObjectUrl.value = ""
     }
 
     if (file) {
-      coverPreviewUrl.value = URL.createObjectURL(file)
+      coverObjectUrl.value = URL.createObjectURL(file)
+      coverPreviewUrl.value = coverObjectUrl.value
+    }
+    else {
+      coverPreviewUrl.value = initialEvent.value?.coverUrl || ""
     }
   }
 
@@ -99,7 +127,7 @@ export function useCreateEventPageVM(
     const errors = validate(form)
 
     if (errors.length > 0) {
-      submitError.value = errors[0].message
+      submitError.value = errors[0]?.message || t("pages.createEventPage.statusErrorDescription")
       return
     }
 
@@ -107,16 +135,21 @@ export function useCreateEventPageVM(
     submitError.value = ""
 
     try {
-      const createdEvent = await repository.createEvent(form)
+      const currentEvent = initialEvent.value
+      const savedEvent = currentEvent?.id
+        ? await repository.updateEvent(currentEvent.id, form)
+        : await repository.createEvent(form)
 
       toast.add({
         color: "success",
         icon: "i-ph-check-circle-fill",
-        title: createdEvent.name,
-        description: t("pages.createEventPage.publishComplete"),
+        title: savedEvent.name,
+        description: currentEvent?.id
+          ? t("pages.createEventPage.updateComplete")
+          : t("pages.createEventPage.publishComplete"),
       })
 
-      await navigateTo(appRoutes.eventDetail(createdEvent.id))
+      await navigateTo(appRoutes.eventDetail(savedEvent.id))
     }
     catch (error) {
       submitError.value = error instanceof Error
@@ -129,13 +162,14 @@ export function useCreateEventPageVM(
   }
 
   onUnmounted(() => {
-    if (coverPreviewUrl.value) {
-      URL.revokeObjectURL(coverPreviewUrl.value)
+    if (coverObjectUrl.value) {
+      URL.revokeObjectURL(coverObjectUrl.value)
     }
   })
 
   return {
     form,
+    isEditing,
     coverPreviewUrl,
     dateRangeLabel,
     submitting,

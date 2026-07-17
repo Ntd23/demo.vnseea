@@ -511,7 +511,7 @@ const toggleHistoryItem = (itemId: string) => {
   min-height: 50px;
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
 }
 
@@ -644,7 +644,7 @@ const toggleHistoryItem = (itemId: string) => {
   justify-content: center;
   border-radius: 50%;
   background: #e2e8f0;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 800;
 }
@@ -682,7 +682,7 @@ const toggleHistoryItem = (itemId: string) => {
   border: 1px solid #e2e8f0;
   background: #ffffff;
   padding: 0 16px;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
 }
 

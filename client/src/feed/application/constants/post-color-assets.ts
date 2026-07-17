@@ -37,13 +37,13 @@ export const feedPostColorAssets = [
     id: 5,
     labelKey: "feed.publisherBox.colorSkyBlue",
     bg: "linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)",
-    text: "#000000",
+    text: "#000000;",
   },
   {
     id: 6,
     labelKey: "feed.publisherBox.colorMintGreen",
     bg: "linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%)",
-    text: "#000000",
+    text: "#000000;",
   },
 ] satisfies FeedPostColorAsset[]
 

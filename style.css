@@ -6381,7 +6381,7 @@ span.product-list:hover {
 }
 
 .cool-style-album .album_parent .avatar:before {
-    background-color: #000000;
+    background-color: #000000;;
     left: 10px;
     right: 10px;
     opacity: 0.7;
@@ -6391,7 +6391,7 @@ span.product-list:hover {
 .cool-style-album .album_parent .avatar:after {
     left: 20px;
     right: 20px;
-    background-color: #000000;
+    background-color: #000000;;
     margin-top: 8px;
     opacity: 0.3;
     background-blend-mode: hard-light;
@@ -15746,7 +15746,7 @@ div._2ix0 {
     -webkit-transform: rotate(20deg);
     transform: rotate(20deg);
     background: transparent;
-    box-shadow: -25px 5px 0 0 #000000, 25px -5px 0 0 #000000;
+    box-shadow: -25px 5px 0 0 #000000;, 25px -5px 0 0 #000000;;
 }
 
 .emoji--haha .emoji__eyes:after {
@@ -15758,7 +15758,7 @@ div._2ix0 {
     -webkit-transform: rotate(-40deg);
     transform: rotate(-40deg);
     background: transparent;
-    box-shadow: -25px -5px 0 0 #000000, 25px 5px 0 0 #000000;
+    box-shadow: -25px -5px 0 0 #000000;, 25px 5px 0 0 #000000;;
 }
 
 .emoji--haha .emoji__mouth {
@@ -15766,7 +15766,7 @@ div._2ix0 {
     height: 40px;
     left: calc(50% - 40px);
     top: 50%;
-    background: #000000;
+    background: #000000;;
     border-radius: 0 0 40px 40px;
     overflow: hidden;
     z-index: 1;
@@ -15794,7 +15794,7 @@ div._2ix0 {
     width: 6px;
     border-radius: 50%;
     background: transparent;
-    box-shadow: -18px 0 0 0 #000000, -33px 0 0 0 #000000, 18px 0 0 0 #000000, 33px 0 0 0 #000000;
+    box-shadow: -18px 0 0 0 #000000;, -33px 0 0 0 #000000;, 18px 0 0 0 #000000;, 33px 0 0 0 #000000;;
     -webkit-animation: wow-brow 3s linear infinite;
     animation: wow-brow 3s linear infinite;
 }
@@ -15803,7 +15803,7 @@ div._2ix0 {
 .emoji--wow .emoji__eyebrows:after {
     width: 24px;
     height: 20px;
-    border: 6px solid #000000;
+    border: 6px solid #000000;;
     box-sizing: border-box;
     border-radius: 50%;
     border-bottom-color: transparent;
@@ -15828,7 +15828,7 @@ div._2ix0 {
     top: 35px;
     border-radius: 50%;
     background: transparent;
-    box-shadow: 25px 0 0 0 #000000, -25px 0 0 0 #000000;
+    box-shadow: 25px 0 0 0 #000000;, -25px 0 0 0 #000000;;
 }
 
 .emoji--wow .emoji__mouth {
@@ -15837,7 +15837,7 @@ div._2ix0 {
     left: calc(50% - 15px);
     top: 50%;
     border-radius: 50%;
-    background: #000000;
+    background: #000000;;
     -webkit-animation: wow-mouth 3s linear infinite;
     animation: wow-mouth 3s linear infinite;
 }
@@ -15854,14 +15854,14 @@ div._2ix0 {
     width: 6px;
     border-radius: 50%;
     background: transparent;
-    box-shadow: -40px 9px 0 0 #000000, -25px 0 0 0 #000000, 25px 0 0 0 #000000, 40px 9px 0 0 #000000;
+    box-shadow: -40px 9px 0 0 #000000;, -25px 0 0 0 #000000;, 25px 0 0 0 #000000;, 40px 9px 0 0 #000000;;
 }
 
 .emoji--sad .emoji__eyebrows:before,
 .emoji--sad .emoji__eyebrows:after {
     width: 30px;
     height: 20px;
-    border: 6px solid #000000;
+    border: 6px solid #000000;;
     box-sizing: border-box;
     border-radius: 50%;
     border-bottom-color: transparent;
@@ -15890,7 +15890,7 @@ div._2ix0 {
     top: 50px;
     border-radius: 50%;
     background: transparent;
-    box-shadow: 25px 0 0 0 #000000, -25px 0 0 0 #000000;
+    box-shadow: 25px 0 0 0 #000000;, -25px 0 0 0 #000000;;
 }
 
 .emoji--sad .emoji__eyes:after {
@@ -15911,7 +15911,7 @@ div._2ix0 {
     left: calc(50% - 30px);
     top: 80px;
     box-sizing: border-box;
-    border: 6px solid #000000;
+    border: 6px solid #000000;;
     border-radius: 50%;
     border-bottom-color: transparent;
     border-left-color: transparent;
@@ -15928,7 +15928,7 @@ div._2ix0 {
     border-radius: 50%;
     top: 4px;
     left: calc(50% - 3px);
-    box-shadow: -18px 0 0 0 #000000, 18px 0 0 0 #000000;
+    box-shadow: -18px 0 0 0 #000000;, 18px 0 0 0 #000000;;
 }
 
 .emoji--angry {
@@ -15950,14 +15950,14 @@ div._2ix0 {
     width: 6px;
     border-radius: 50%;
     background: transparent;
-    box-shadow: -44px 5px 0 0 #000000, -7px 16px 0 0 #000000, 7px 16px 0 0 #000000, 44px 5px 0 0 #000000;
+    box-shadow: -44px 5px 0 0 #000000;, -7px 16px 0 0 #000000;, 7px 16px 0 0 #000000;, 44px 5px 0 0 #000000;;
 }
 
 .emoji--angry .emoji__eyebrows:before,
 .emoji--angry .emoji__eyebrows:after {
     width: 50px;
     height: 20px;
-    border: 6px solid #000000;
+    border: 6px solid #000000;;
     box-sizing: border-box;
     border-radius: 50%;
     border-top-color: transparent;
@@ -15986,7 +15986,7 @@ div._2ix0 {
     top: 70px;
     border-radius: 50%;
     background: transparent;
-    box-shadow: 25px 0 0 0 #000000, -25px 0 0 0 #000000;
+    box-shadow: 25px 0 0 0 #000000;, -25px 0 0 0 #000000;;
 }
 
 .emoji--angry .emoji__mouth {
@@ -15994,7 +15994,7 @@ div._2ix0 {
     height: 18px;
     left: calc(50% - 18px);
     bottom: 15px;
-    background: #000000;
+    background: #000000;;
     border-radius: 50%;
     -webkit-animation: angry-mouth 2s ease-in infinite;
     animation: angry-mouth 2s ease-in infinite;
@@ -17174,7 +17174,7 @@ div._2ix0 {
 }
 
 .earn_points .counter svg {
-    color: #000000;
+    color: #000000;;
     position: absolute;
     right: -20px;
     top: -20px;
@@ -18428,7 +18428,7 @@ svg {
 .dt_bank_trans_modal .dt_settings_circle-1 {
     width: 290px;
     height: 290px;
-    background-image: radial-gradient(circle 800px at 75% -25%, #000000 0, rgba(255, 255, 255, 0) 100%);
+    background-image: radial-gradient(circle 800px at 75% -25%, #000000; 0, rgba(255, 255, 255, 0) 100%);
     left: -28px;
     top: -28px;
     opacity: .05;
@@ -18444,7 +18444,7 @@ svg {
     pointer-events: none;
     width: 500px;
     height: 500px;
-    background-image: radial-gradient(circle 800px at 10% -25%, #000000 0, rgba(255, 255, 255, 0) 100%);
+    background-image: radial-gradient(circle 800px at 10% -25%, #000000; 0, rgba(255, 255, 255, 0) 100%);
     right: -242px;
     top: 17px;
 }
@@ -20796,7 +20796,7 @@ svg {
 .fund_raise_btns .dropdown>.btn {
     /*background-color: rgb(255 255 255 / 40%);color: #ffffff;*/
     background-color: rgb(0 0 0 / 15%);
-    color: #000000;
+    color: #000000;;
 }
 
 .fund_raise_btns .dropdown>.dropdown-menu {
@@ -27509,7 +27509,7 @@ body .navbar-default .dropdown-switch-account>.dropdown-menu .user-avatar>svg {
     .wo_market .market_search_header>span .btn {
         box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.23);
         background-color: #fff;
-        color: #000000;
+        color: #000000;;
     }
 
     .user_media_list_section .photo-data,

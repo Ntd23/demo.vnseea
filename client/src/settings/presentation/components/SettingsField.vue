@@ -297,7 +297,7 @@ onBeforeUnmount(revokeObjectPreview)
 .settings-field__pill-label {
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: #000000;
   pointer-events: none;
   white-space: nowrap;
 }
@@ -332,7 +332,7 @@ onBeforeUnmount(revokeObjectPreview)
 .settings-field__verify-btn:hover {
   border-color: rgba(0, 0, 255, 0.2);
   background: rgba(0, 0, 255, 0.02);
-  color: #334155;
+  color: #000000;
 }
 
 .settings-field__verify-btn:disabled {
@@ -401,7 +401,7 @@ onBeforeUnmount(revokeObjectPreview)
   padding: 10px 12px;
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: #000000;
 }
 
 .settings-field__file-input:disabled {

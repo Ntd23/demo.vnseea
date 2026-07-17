@@ -228,10 +228,11 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   align-items: center;
   gap: 12px;
   margin-top: -8px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #ffffff;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .movies-page__search {
@@ -247,24 +248,26 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   width: 20px;
   height: 20px;
   transform: translateY(-50%);
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .movies-page__search-input {
   width: 100%;
   height: 42px;
-  border: 1px solid #e5e7eb;
-  background: #f8fafc;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-surface-hover);
   padding: 0 14px 0 46px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 600;
   outline: none;
+  transition: border-color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
 }
 
 .movies-page__search-input:focus {
-  border-color: #0a58ca;
-  background: #ffffff;
+  border-color: var(--border-brand);
+  background: var(--bg-surface);
 }
 
 .movies-page__filter {
@@ -278,10 +281,17 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   height: 42px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #dbe1ea;
-  background: #ffffff;
-  color: #111827;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
+}
+
+.movies-page__filter-button:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-brand);
 }
 
 .movies-page__filter-menu {
@@ -292,10 +302,11 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   max-height: min(70vh, 560px);
   overflow-y: auto;
   overscroll-behavior: contain;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
   padding: 8px 0;
-  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.16);
+  box-shadow: var(--shadow-lg);
 }
 
 .movies-page__filter-section,
@@ -309,11 +320,19 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   border: 0;
   background: transparent;
   padding: 11px 16px;
-  color: #334155;
+  color: var(--text-secondary);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 700;
   text-align: left;
   cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
+}
+
+.movies-page__filter-section:hover,
+.movies-page__filter-item:hover,
+.movies-page__reset:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-brand);
 }
 
 .movies-page__filter-list {
@@ -323,24 +342,29 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
 .movies-page__filter-item {
   justify-content: flex-start;
   padding: 8px 16px;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
 }
 
-.movies-page__filter-item:hover,
 .movies-page__filter-item--active {
-  color: #0a58ca;
+  color: var(--text-brand) !important;
+  font-weight: 800;
 }
 
 .movies-page__reset {
-  border-top: 1px solid #eef2f7;
+  border-top: 1px solid var(--border-default);
   justify-content: flex-start;
-  color: #0a58ca;
+  color: var(--text-brand);
 }
 
 .movies-page__tabs {
   margin-top: 18px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  padding: 12px 14px 4px; /* Reduced bottom padding since scrollbar has its own padding */
+  box-shadow: var(--shadow-sm);
 }
 
 .movies-page__content {
@@ -414,7 +438,7 @@ onUnmounted(() => window.removeEventListener("click", closeFilterOnOutsideClick)
   border: 1px solid #dbe1ea;
   background: #ffffff;
   padding: 10px 22px;
-  color: #334155;
+  color: #000000;
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;

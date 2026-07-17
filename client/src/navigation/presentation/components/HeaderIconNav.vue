@@ -9,7 +9,7 @@
       :class="{ 'icon-nav__item--active': item.active }"
       :aria-label="$t(item.label)"
     >
-      <Icon :name="item.active ? item.icon : item.icon.replace('-fill', '-duotone')" class="icon-nav__icon" />
+      <Icon :name="item.icon.replace('-fill', '-bold')" class="icon-nav__icon" />
       <span
         v-if="item.logoBadge"
         class="icon-nav__logo-badge"
@@ -86,7 +86,7 @@ const items = computed(() => [
   padding: 8px 4px 10px;
   border-radius: 12px;
   text-decoration: none;
-  color: #64748b;
+  color: #000000;
   transition: all 0.15s ease;
 }
 

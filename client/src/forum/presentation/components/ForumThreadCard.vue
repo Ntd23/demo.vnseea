@@ -81,22 +81,22 @@ const statusLabel = computed(() => {
 <style scoped>
 .forum-thread-card {
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 255, 0.04);
-  border-radius: 16px;
-  background: #ffffff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default), transform var(--duration-fast) var(--ease-default);
 }
 
 .forum-thread-card:hover {
-  border-color: rgba(0, 0, 255, 0.16);
-  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.08);
+  border-color: var(--border-brand);
+  box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
 
 .forum-thread-card--selected {
-  border-color: rgba(0, 0, 255, 0.24);
-  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
+  border-color: var(--border-brand);
+  box-shadow: 0 0 0 3px var(--bg-surface-active);
 }
 
 .forum-thread-card__button {
@@ -125,8 +125,8 @@ const statusLabel = computed(() => {
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3333ff 0%, #0000ff 100%);
-  color: #ffffff;
+  background: var(--bg-brand);
+  color: var(--text-inverse);
   font-size: 12px;
   font-weight: 800;
 }
@@ -161,8 +161,8 @@ const statusLabel = computed(() => {
 }
 
 .forum-thread-card__forum {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: var(--bg-surface-active);
+  color: var(--text-brand);
 }
 
 .forum-thread-card__status {
@@ -172,7 +172,7 @@ const statusLabel = computed(() => {
 
 .forum-thread-card__selected {
   background: #eef2ff;
-  color: #334155;
+  color: #000000;
 }
 
 .forum-thread-card h3 {
@@ -187,7 +187,7 @@ const statusLabel = computed(() => {
   display: -webkit-box;
   overflow: hidden;
   margin-top: 6px;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 500;
   line-height: 1.55;
@@ -233,7 +233,7 @@ const statusLabel = computed(() => {
 
 .forum-thread-card__arrow {
   margin-left: auto;
-  color: #0000ff;
+  color: var(--text-brand);
 }
 
 @media (min-width: 720px) {

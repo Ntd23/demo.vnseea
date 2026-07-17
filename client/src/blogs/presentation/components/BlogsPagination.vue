@@ -129,7 +129,7 @@ const changePage = (page: number) => {
   z-index: 2;
   border: 1px solid #e2e8f0;
   background: #fafbfe;
-  color: #334155;
+  color: #000000;
   cursor: pointer;
   pointer-events: auto;
   user-select: none;

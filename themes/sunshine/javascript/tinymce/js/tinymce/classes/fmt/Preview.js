@@ -301,7 +301,7 @@ define("tinymce/fmt/Preview", [
 			if (name == 'color') {
 				// Ignore black since it's the default color, not the nicest fix
 				// TODO: Fix this by detecting runtime style
-				if (dom.toHex(value).toLowerCase() == '#000000') {
+				if (dom.toHex(value).toLowerCase() == '#000000;') {
 					return;
 				}
 			}

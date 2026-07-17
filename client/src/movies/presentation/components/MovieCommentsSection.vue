@@ -186,7 +186,7 @@ const submitComment = () => {
   border-radius: 12px;
   background: #ffffff;
   padding: 0 14px;
-  color: #334155;
+  color: #000000;
   font: inherit;
   font-size: 13px;
   outline: none;

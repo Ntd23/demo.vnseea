@@ -95,7 +95,7 @@ const {
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #334155;
+  color: #000000;
   padding: 8px 10px;
   font-size: 13px;
   font-weight: 700;

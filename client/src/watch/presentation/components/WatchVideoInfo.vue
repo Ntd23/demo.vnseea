@@ -160,7 +160,7 @@ defineEmits<{ like: []; share: [] }>()
   background: #ffffff;
   font-size: 13px;
   font-weight: 700;
-  color: #334155;
+  color: #000000;
   cursor: pointer;
   transition: all 0.15s ease;
 }
