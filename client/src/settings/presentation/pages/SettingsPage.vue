@@ -1,3 +1,4 @@
+<!-- English description: Renders account settings sections without duplicating the global navigation locale control. -->
 <template>
   <div class="settings-page pb-10">
     <!-- Two-column layout -->
@@ -50,7 +51,6 @@
             :on-save="fields => updateSettings(activePage.slug, fields)"
             :on-action="handleItemAction"
           />
-          <NavigationLocaleSwitcher v-if="activePage.slug === 'general'" />
         </template>
       </main>
     </div>
@@ -65,7 +65,6 @@ import SettingsMyPointsPanel from "../components/SettingsMyPointsPanel.vue"
 import SettingsSection from "../components/SettingsSection.vue"
 import SettingsSidebar from "../components/SettingsSidebar.vue"
 import SettingsVerificationPanel from "../components/SettingsVerificationPanel.vue"
-import NavigationLocaleSwitcher from "../../../navigation/presentation/components/LocaleSwitcher.vue"
 
 const props = defineProps<{
   pageSlug?: string

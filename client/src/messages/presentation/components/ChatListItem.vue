@@ -86,7 +86,7 @@
           :title="$t('pages.messagesPage.tagActionLabel')"
           @click.stop="$emit('manage-tags')"
         >
-          <Icon name="i-ph-tag-duotone" class="h-3 w-3" />
+          <Icon name="i-ph-tag-bold" class="h-3 w-3" />
         </button>
       </div>
     </div>

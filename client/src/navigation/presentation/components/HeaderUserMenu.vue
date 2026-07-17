@@ -67,7 +67,7 @@
           </button>
         </div>
 
-        <div v-if="systemActions.length > 0" class="user-menu__divider" />
+        <div class="user-menu__divider" />
 
         <div class="user-menu__section">
           <template v-for="item in systemActions" :key="item.label">
@@ -92,6 +92,17 @@
               <span class="user-menu__item-label">{{ $t(item.label) }}</span>
             </NuxtLink>
           </template>
+
+          <NavigationLocaleSwitcher />
+
+          <NuxtLink
+            :to="logoutAction.to"
+            class="user-menu__item user-menu__item--danger"
+            @click="open = false"
+          >
+            <Icon :name="logoutAction.icon" class="user-menu__item-icon" />
+            <span class="user-menu__item-label">{{ $t(logoutAction.label) }}</span>
+          </NuxtLink>
         </div>
 
         <!-- <div class="user-menu__divider" />
@@ -110,6 +121,7 @@ import { onClickOutside } from "@vueuse/core"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { useBackendWebUrl } from "#shared-kernel/application/utils/backend-web-url"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
+import NavigationLocaleSwitcher from "./LocaleSwitcher.vue"
 
 const { t, locale } = useI18n()
 const currentAuthUserStore = useCurrentAuthUserStore()
@@ -207,15 +219,14 @@ const systemActions = computed(() => {
     })
   }
 
-  items.push({
-    label: "navigation.mobileMenu.settingsNav.logout",
-    icon: "i-ph-sign-out-fill",
-    to: appRoutes.logout,
-    danger: true,
-  })
-
   return items
 })
+
+const logoutAction = {
+  label: "navigation.mobileMenu.settingsNav.logout",
+  icon: "i-ph-sign-out-fill",
+  to: appRoutes.logout,
+}
 </script>
 
 <style scoped>
