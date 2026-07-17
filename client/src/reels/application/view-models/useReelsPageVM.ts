@@ -9,6 +9,7 @@ export function useReelsPageVM(
   repository: FeedRepository = createApiFeedRepository(),
 ) {
   const { t } = useI18n()
+  const route = useRoute()
 
   const loading = ref(true)
   const errorMessage = ref("")
@@ -41,6 +42,23 @@ export function useReelsPageVM(
       reels.value = response.posts.filter(post =>
         post.primaryMediaType === "video" || post.mediaItems.some(item => item.type === "video"),
       )
+      const requestedPostId = Number(route.query.postId ?? 0)
+      if (requestedPostId > 0) {
+        const existingIndex = reels.value.findIndex(post => post.id === requestedPostId)
+        if (existingIndex >= 0) {
+          activeIndex.value = existingIndex
+        }
+        else {
+          const requestedPost = await repository.getPostById(requestedPostId)
+          if (requestedPost && (
+            requestedPost.primaryMediaType === "video"
+            || requestedPost.mediaItems.some(item => item.type === "video")
+          )) {
+            reels.value.unshift(requestedPost)
+            activeIndex.value = 0
+          }
+        }
+      }
     }
     catch (error) {
       errorMessage.value = error instanceof Error ? error.message : t("pages.watchPage.emptyDescription")

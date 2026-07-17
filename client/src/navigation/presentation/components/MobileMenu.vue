@@ -227,7 +227,7 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.photos', icon: 'i-ph-images-fill', to: '/photos' },
   { label: 'navigation.mobileMenu.mainNav.watch', icon: 'i-ph-play-circle-fill', to: '/watch' },
   { label: 'navigation.mobileMenu.mainNav.reels', icon: 'i-ph-film-strip-fill', to: '/reels' },
-  { label: 'navigation.mobileMenu.mainNav.savedPosts', icon: 'i-ph-bookmark-simple-fill', to: '/saved-posts' },
+  { label: 'navigation.mobileMenu.mainNav.savedPosts', icon: 'i-ph-clock-counter-clockwise-fill', to: appRoutes.activity },
   { label: 'navigation.mobileMenu.mainNav.poke', icon: 'i-ph-hand-waving-fill', to: '/poke' },
   { label: 'navigation.mobileMenu.mainNav.explore', icon: 'i-ph-compass-fill', to: '/explore' },
   { label: 'navigation.mobileMenu.mainNav.popularPosts', icon: 'i-ph-fire-fill', to: '/popular' },

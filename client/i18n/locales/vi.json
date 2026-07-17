@@ -3222,6 +3222,48 @@
       "memoryTwoLabel": "Ký ức nổi bật",
       "memoryTwoReflection": "Một mốc cũ đáng giữ lại để nhìn rõ hơn cách ý tưởng ban đầu phát triển thành các flow đang dùng ở hiện tại."
     },
+    "activityCenter": {
+      "seoTitle": "Hoạt động & đã lưu | VNSEEA",
+      "eyebrow": "Hoạt động riêng tư",
+      "title": "Hoạt động của bạn",
+      "description": "Xem lại bài viết bạn đã lưu, bày tỏ cảm xúc, bình luận hoặc chia sẻ.",
+      "refresh": "Làm mới",
+      "loading": "Đang tải hoạt động của bạn...",
+      "retry": "Thử lại",
+      "loadMore": "Tải thêm",
+      "postFallback": "Bài viết VNSEEA",
+      "tabs": {
+        "saved": "Đã lưu",
+        "reaction": "Cảm xúc",
+        "comment": "Bình luận",
+        "share": "Chia sẻ"
+      },
+      "empty": {
+        "saved": "Bạn chưa lưu bài viết nào.",
+        "reaction": "Bạn chưa bày tỏ cảm xúc với bài viết nào.",
+        "comment": "Bạn chưa bình luận trong bài viết nào.",
+        "share": "Bạn chưa chia sẻ bài viết nào trên VNSEEA."
+      },
+      "metadata": {
+        "saved": "Đã lưu bài viết",
+        "comments": "{count} bình luận và phản hồi",
+        "shared": "Đã chia sẻ trên VNSEEA"
+      },
+      "destinations": {
+        "timeline": "Dòng thời gian",
+        "page": "Trang",
+        "group": "Nhóm"
+      },
+      "reactions": {
+        "default": "Đã bày tỏ cảm xúc",
+        "1": "Thích",
+        "2": "Yêu thích",
+        "3": "Haha",
+        "4": "Wow",
+        "5": "Buồn",
+        "6": "Phẫn nộ"
+      }
+    },
     "savedPostsPage": {
       "seoTitle": "Bài viết đã lưu | VNSEEA",
       "seoDescription": "Xem lại các bài viết bạn đã lưu trên VNSEEA với khu tổng quan rõ ràng, danh sách gọn và lối quay lại nội dung liên quan nhanh hơn.",
@@ -5724,7 +5766,7 @@
         "photos": "Tập ảnh",
         "watch": "Xem",
         "reelsShortcut": "Cuộn phim",
-        "savedPosts": "Bài đã lưu",
+        "savedPosts": "Hoạt động & đã lưu",
         "poke": "Chọc",
         "explore": "Khám phá",
         "popularPosts": "Bài viết phổ biến",
@@ -5770,7 +5812,7 @@
         "photos": "Tập ảnh",
         "watch": "Xem",
         "reels": "Cuộn phim",
-        "savedPosts": "Bài đã lưu",
+        "savedPosts": "Hoạt động & đã lưu",
         "popularPosts": "Bài viết phổ biến",
         "memories": "Ký ức",
         "poke": "Chọc",
