@@ -21,7 +21,7 @@ import type { FeedCommentActionRepository } from "./useFeedCommentItemVM"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
 
 export function useFeedPostCardVM(
-  post: Ref<FeedPostRecord | null>,
+  post: Readonly<Ref<FeedPostRecord | null>>,
   repository = createApiFeedRepository(),
 ) {
   const { t } = useI18n()
@@ -150,8 +150,6 @@ export function useFeedPostCardVM(
     const postUsername = post.value.authorPath.replace("/@", "")
     return currentUsername === postUsername
   })
-  const isAdmin = computed(() => currentAuthUserStore.user?.isAdmin || currentAuthUserStore.user?.isModerator || false)
-
   const shareUrl = computed(() =>
     post.value ? new URL(`${route.path || "/"}#${postAnchorId.value}`, requestURL.origin).toString() : ""
   )
@@ -781,6 +779,5 @@ export function useFeedPostCardVM(
     handleMenuAction,
     downloadMedia,
     isOwner,
-    isAdmin,
   }
 }

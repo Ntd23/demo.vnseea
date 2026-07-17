@@ -120,7 +120,7 @@ const props = defineProps<{
   audience: string
   isSaved?: boolean
   isOwner?: boolean
-  isAdmin?: boolean
+  canDelete?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -208,8 +208,8 @@ const menuRef = ref<HTMLElement | null>(null)
 const menuItems = computed(() => {
   const items = []
 
-  // 1. Delete Action (Owner or Admin)
-  if (props.isOwner || props.isAdmin) {
+  // The backend is authoritative; the delete endpoint still rechecks this permission.
+  if (props.canDelete === true) {
     items.push({
       key: "delete",
       label: t("feed.postHeader.menuDeleteLabel"),

@@ -98,6 +98,9 @@ export type FeedPollOptionRecord = {
 
 export type FeedPostRecord = {
   id: number
+  permissions: {
+    canDelete: boolean
+  }
   jobId?: number
   sharedPostId?: number
   sharedPost?: FeedPostRecord | null
