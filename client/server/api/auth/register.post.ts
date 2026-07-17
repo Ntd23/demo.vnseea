@@ -18,31 +18,48 @@ type BackendRegisterResponse = {
   }
 }
 
-type BackendSiteSettingsResponse = {
-  api_status?: number | string
-  public_config?: Record<string, unknown>
-  errors?: {
-    error_text?: string
+const USERNAME_PATTERN = /^[A-Za-z0-9_]+$/
+
+function buildOptionalBirthday(body: RegisterAccountInput) {
+  const parts = [body.birthYear, body.birthMonth, body.birthDay]
+  if (parts.every(value => value === null || value === undefined)) {
+    return undefined
   }
-}
 
-const isEnabled = (value: unknown) =>
-  value === true
-  || value === 1
-  || value === "1"
-  || value === "true"
+  if (parts.some(value => value === null || value === undefined)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Birthday is incomplete.",
+    })
+  }
 
-async function resolveAutoUsername(event: Parameters<typeof createBackendApiClient>[0]) {
-  const client = createBackendApiClient(event)
-  const response = assertBackendApiSuccess(
-    await client.post<BackendSiteSettingsResponse, Record<string, unknown>>(
-      backendRoutes.api.siteSettings,
-      {},
-    ),
-    "Unable to load registration settings.",
-  )
+  const year = Number(body.birthYear)
+  const month = Number(body.birthMonth)
+  const day = Number(body.birthDay)
+  const date = new Date(Date.UTC(year, month - 1, day))
+  const isValid = Number.isInteger(year)
+    && Number.isInteger(month)
+    && Number.isInteger(day)
+    && date.getUTCFullYear() === year
+    && date.getUTCMonth() === month - 1
+    && date.getUTCDate() === day
 
-  return isEnabled(response.public_config?.auto_username)
+  if (!isValid) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Birthday is invalid.",
+    })
+  }
+
+  const birthday = `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+  if (birthday > new Date().toISOString().slice(0, 10)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Birthday cannot be in the future.",
+    })
+  }
+
+  return birthday
 }
 
 export default defineEventHandler(async (event): Promise<RegisterAccountResult> => {
@@ -52,7 +69,6 @@ export default defineEventHandler(async (event): Promise<RegisterAccountResult> 
   const username = body.username?.trim() ?? ""
   const firstName = body.firstName?.trim() ?? ""
   const lastName = body.lastName?.trim() ?? ""
-  const autoUsername = await resolveAutoUsername(event)
   const digitsOnly = identity.replace(/\D/g, "")
   const isEmailIdentity = identity.includes("@")
   const email = isEmailIdentity ? identity : (digitsOnly ? `phone_${digitsOnly}@vnseea.invalid` : "")
@@ -65,30 +81,31 @@ export default defineEventHandler(async (event): Promise<RegisterAccountResult> 
     })
   }
 
-  if (!autoUsername && !username) {
+  if (!username) {
     throw createError({
       statusCode: 422,
       statusMessage: "Username is required.",
     })
   }
 
-  if (autoUsername && !firstName) {
+  if (!USERNAME_PATTERN.test(username) || username.length < 5 || username.length > 32) {
     throw createError({
       statusCode: 422,
-      statusMessage: "First name is required.",
+      statusMessage: "Username must be 5-32 characters and contain only letters, numbers, or underscores.",
     })
   }
 
   const response = assertBackendApiSuccess(
     await client.post<BackendRegisterResponse, Record<string, unknown>>(backendRoutes.api.createAccount, {
-      username: autoUsername ? undefined : username,
-      first_name: autoUsername ? firstName : undefined,
-      last_name: autoUsername && lastName ? lastName : undefined,
+      username,
+      first_name: firstName || undefined,
+      last_name: lastName || undefined,
       email,
       phone_num: phoneNum || undefined,
       password: body.password,
       confirm_password: body.confirmPassword,
       gender: body.gender || "male",
+      birthday: buildOptionalBirthday(body),
       ref: body.ref?.trim() || undefined,
     }),
     "Unable to create account.",
