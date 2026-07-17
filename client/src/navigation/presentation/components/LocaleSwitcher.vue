@@ -96,7 +96,7 @@ async function changeLocale(code: string) {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  color: var(--text-secondary, #64748b);
+  color: #000000;
 }
 
 .locale-switcher__label {

@@ -358,7 +358,7 @@ a.user-menu__stat:hover {
 .user-menu__stat-icon {
   width: 18px;
   height: 18px;
-  color: #656d7b;
+  color: #000000;
 }
 
 .user-menu__divider {
@@ -403,7 +403,7 @@ a.user-menu__stat:hover {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  color: #64748b;
+  color: #000000;
 }
 
 .user-menu__item--danger .user-menu__item-icon {
