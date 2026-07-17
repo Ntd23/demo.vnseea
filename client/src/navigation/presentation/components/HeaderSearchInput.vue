@@ -68,7 +68,7 @@ const openSearch = () => {
   border-radius: 5px;
   border: 1px solid var(--border-default);
   background: rgba(255, 255, 255, 0.9);
-  color: var(--text-tertiary);
+  color: black;
   font-size: 10px;
   font-weight: 600;
   font-family: var(--font-primary);
