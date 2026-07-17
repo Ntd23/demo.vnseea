@@ -1,7 +1,7 @@
 <!-- Description: Renders the group settings route with a settings-nav-first layout and ordered panes that match page-setting layout. -->
 <template>
-  <div v-if="(group && previewGroup) || status === 'pending'" class="group-settings mx-auto max-w-[1120px] space-y-4 pb-10" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
-    <section class="group-settings__hero border-b border-slate-100 pb-8 pt-4">
+  <div v-if="(group && previewGroup) || status === 'pending'" class="group-settings mt-1.5 max-w-[1120px] space-y-4" :class="{ 'opacity-50 pointer-events-none': status === 'pending' && !group }">
+    <section class="group-settings__hero border-b border-slate-100">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="group-settings__title text-2xl font-black text-slate-900">

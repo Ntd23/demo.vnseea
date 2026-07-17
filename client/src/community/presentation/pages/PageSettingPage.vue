@@ -1,7 +1,7 @@
 <!-- Description: Renders the page settings route with a settings-nav-first layout and ordered panes that mirror the legacy PHP page settings structure. -->
 <template>
-  <div v-if="page && previewPage" class="page-settings mx-auto max-w-[1120px] space-y-4 pb-10">
-    <section class="page-settings__hero border-b border-slate-100 pb-8 pt-4">
+  <div v-if="page && previewPage" class="page-settings mt-1.5 max-w-[1120px] space-y-4">
+    <section class="page-settings__hero border-b border-slate-100">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="page-settings__title text-2xl font-black text-slate-900">

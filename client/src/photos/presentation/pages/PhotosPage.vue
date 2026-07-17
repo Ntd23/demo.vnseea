@@ -1,14 +1,6 @@
-<!-- Description: Renders the photos route as a simple media-first gallery with real feed-backed images and a shared lightbox viewer. -->
+<!-- English description: Renders a feed-backed photo gallery inside a Nuxt UI scroll area with a shared lightbox viewer. -->
 <template>
   <div class="mx-auto max-w-[1120px] space-y-4 pb-10">
-    <section class="rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] px-5 py-4 shadow-[var(--shadow-sm)]">
-      <div class="space-y-1.5">
-        <h1 class="text-heading text-[var(--text-primary)]">
-          {{ t("pages.photosPage.heroTitle") }}
-        </h1>
-      </div>
-    </section>
-
     <UAlert
       v-if="errorMessage"
       color="warning"
@@ -39,38 +31,55 @@
       />
     </section>
 
-    <div v-else class="grid grid-cols-2 gap-3 md:grid-cols-3">
-      <button
-        v-for="photo in photos"
-        :key="photo.id"
-        type="button"
-        class="overflow-hidden rounded-[18px] border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]"
-        @click="openPhoto(photo.id)"
-      >
-        <img
-          :src="photo.image"
-          :alt="photo.title || photo.photographer"
-          class="aspect-square h-full w-full object-cover"
-          loading="lazy"
+    <UScrollArea
+      v-else
+      orientation="vertical"
+      class="max-h-[calc(100dvh-9rem)] w-full sm:max-h-[calc(100dvh-8rem)]"
+      :aria-label="t('pages.photosPage.heroTitle')"
+      :ui="{ viewport: 'gap-4 pr-2 pb-2' }"
+    >
+      <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
+        <UButton
+          v-for="photo in photos"
+          :key="photo.id"
+          type="button"
+          color="neutral"
+          variant="ghost"
+          :aria-label="photo.title || photo.photographer || t('pages.photosPage.heroTitle')"
+          :ui="{ base: 'h-auto w-full justify-stretch overflow-hidden rounded-[18px] p-0' }"
+          class="border border-[var(--border-default)] bg-[var(--bg-surface)] shadow-[var(--shadow-sm)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]"
+          @click="openPhoto(photo.id)"
         >
-      </button>
-    </div>
+          <NuxtPicture
+            :src="photo.image"
+            format="avif,webp,png,jpg,jpeg,gif"
+            sizes="50vw md:33vw lg:360px"
+            loading="lazy"
+            class="block aspect-square h-full w-full"
+            :img-attrs="{
+              alt: photo.title || photo.photographer || t('pages.photosPage.heroTitle'),
+              class: 'aspect-square h-full w-full object-cover',
+            }"
+          />
+        </UButton>
+      </div>
 
-    <div v-if="photos.length > 0" class="flex justify-center pt-2">
-      <UButton
-        v-if="hasMore"
-        color="primary"
-        variant="soft"
-        class="rounded-full"
-        :loading="loadingMore"
-        @click="loadMore"
-      >
-        {{ t("pages.homeFeedPage.loadMore") }}
-      </UButton>
-      <p v-else class="text-caption-secondary">
-        {{ t("pages.homeFeedPage.allCaughtUp") }}
-      </p>
-    </div>
+      <div class="flex justify-center pt-2">
+        <UButton
+          v-if="hasMore"
+          color="primary"
+          variant="soft"
+          class="rounded-full"
+          :loading="loadingMore"
+          @click="loadMore"
+        >
+          {{ t("pages.homeFeedPage.loadMore") }}
+        </UButton>
+        <p v-else class="text-caption-secondary">
+          {{ t("pages.homeFeedPage.allCaughtUp") }}
+        </p>
+      </div>
+    </UScrollArea>
 
     <LightboxModal
       :open="lightboxOpen"

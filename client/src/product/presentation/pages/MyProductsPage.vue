@@ -1,5 +1,3 @@
-<!-- English description: Wowonder-aligned my-products page backed by the product API bridge. -->
-
 <template>
   <div class="my-products-page mx-auto w-full max-w-[1520px] pb-12 mt-2">
     <section class="my-products-nav">
@@ -18,9 +16,9 @@
 
       <UButton
         to="/new-product"
-        color="primary"
+        variant="solid"
         icon="i-ph-plus-bold"
-        class="my-products-create"
+        class="my-products-create rounded-xl px-5 py-2 font-semibold !bg-[var(--bg-brand)] hover:!bg-[var(--bg-brand-hover)] !text-[var(--text-inverse)] shadow-[var(--shadow-brand)] transition-all"
       >
         {{ $t("pages.myProductsPage.create") }}
       </UButton>
@@ -111,7 +109,7 @@
             color="neutral"
             variant="soft"
             size="sm"
-            icon="i-ph-pencil-simple-fill"
+            icon="i-ph-pencil-simple-bold"
             :aria-label="$t('pages.myProductsPage.edit')"
           />
           <UButton
@@ -122,7 +120,7 @@
             size="sm"
             :disabled="deletingProductId === product.id"
             :loading="deletingProductId === product.id"
-            :icon="deletingProductId === product.id ? 'i-ph-spinner-gap' : 'i-ph-trash-fill'"
+            :icon="deletingProductId === product.id ? 'i-ph-spinner-gap-bold' : 'i-ph-trash-bold'"
             :aria-label="$t('pages.myProductsPage.delete')"
             @click="openDeleteConfirmation(product)"
           />
@@ -146,11 +144,12 @@
       </template>
       <template #footer>
         <div class="my-products-delete-actions">
-          <UButton color="neutral" variant="soft" @click="deleteTarget = null">
+          <UButton color="neutral" variant="soft" class="rounded-xl font-semibold px-4 py-2" @click="deleteTarget = null">
             {{ $t("pages.myProductsPage.cancel") }}
           </UButton>
           <UButton
             color="error"
+            class="rounded-xl font-semibold px-5 py-2"
             :loading="deletingProductId === deleteTarget?.id"
             @click="submitDeleteProduct"
           >
@@ -269,142 +268,63 @@ const submitDeleteProduct = async () => {
   gap: 8px;
 }
 
-.my-products-heading {
-  min-height: 80px;
-}
-
-.my-products-heading__inner {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-height: 80px;
-  padding: 18px 24px;
-}
-
-.my-products-heading__icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  color: #ffffff;
-  background: linear-gradient(180deg, #2233ff 0%, var(--product-brand) 100%);
-}
-
-.my-products-heading__eyebrow {
-  margin: 0;
-  color: var(--product-text);
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.my-products-heading__title {
-  margin: 7px 0 0;
-  color: var(--product-text);
-  font-size: 28px;
-  font-weight: 900;
-  line-height: 1.1;
-}
-
 .my-products-nav {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 74px;
-  padding: 0 12px;
+  min-height: 64px;
+  padding: 12px 14px;
 }
 
 .my-products-tabs {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 8px;
   min-width: 0;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  padding-bottom: 7px;
-  scrollbar-color: #9eb1cc transparent;
-  scrollbar-gutter: stable;
-  scrollbar-width: thin;
-  scroll-snap-type: x proximity;
+  scrollbar-width: none;
 }
 
 .my-products-tabs::-webkit-scrollbar {
-  height: 6px;
-}
-
-.my-products-tabs::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.my-products-tabs::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: #9eb1cc;
+  display: none;
 }
 
 .my-products-tab {
   position: relative;
   display: inline-flex;
   align-items: center;
-  min-height: 74px;
+  justify-content: center;
+  min-height: 36px;
   flex: 0 0 auto;
   gap: 8px;
-  padding: 0 13px;
-  color: #555555;
-  font-size: 18px;
-  font-weight: 500;
-  border-radius: 8px 8px 0 0;
+  padding: 8px 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
   text-decoration: none;
   white-space: nowrap;
-  scroll-snap-align: start;
-  transition: color 0.16s ease, background 0.16s ease;
+  transition: color var(--duration-fast) var(--ease-default), background var(--duration-fast) var(--ease-default);
 }
 
 .my-products-tab:hover {
-  color: var(--product-brand);
-  background: rgba(0, 0, 255, 0.04);
+  color: var(--text-brand);
+  background: var(--bg-surface-hover);
 }
 
 .my-products-tab__icon {
-  width: 19px;
-  height: 19px;
+  width: 16px;
+  height: 16px;
   flex: 0 0 auto;
 }
 
 .my-products-tab--active {
-  color: #555555;
-  font-weight: 800;
-}
-
-.my-products-tab--active::after {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 4px;
-  background: var(--product-brand);
-  content: "";
-}
-
-.my-products-create {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  min-width: 128px;
-  height: 42px;
-  padding: 0 18px;
-  border-radius: 8px;
-  color: #ffffff;
-  background: linear-gradient(180deg, #2233ff 0%, var(--product-brand) 100%);
-  box-shadow: 0 3px 8px rgba(0, 0, 255, 0.28);
-  font-size: 17px;
+  color: var(--text-brand) !important;
+  background: var(--bg-surface-active) !important;
   font-weight: 700;
-  text-decoration: none;
 }
 
 .my-products-filters {
@@ -418,7 +338,6 @@ const submitDeleteProduct = async () => {
 .my-products-select {
   min-width: 0;
 }
-
 .my-products-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
