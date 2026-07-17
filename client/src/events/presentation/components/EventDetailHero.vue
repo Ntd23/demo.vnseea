@@ -1,64 +1,110 @@
-<!-- Description: Renders the WoWonder-style event profile cover header. -->
+<!-- English description: Renders the event cover, start countdown, RSVP controls, and owner management actions. -->
 <template>
-  <section class="wo-event-profile">
-    <div class="profile-container">
-      <div class="card hovercard">
-        <div class="cardheader user-cover">
-          <div class="cover-fallback" :style="{ background: event.coverFallback }" />
-          <img
-            v-if="event.coverUrl && !imageFailed"
-            id="cover-image"
-            :src="event.coverUrl"
-            :alt="`${event.name} Cover Image`"
-            @error="imageFailed = true"
-          >
-          <div class="event-info-cont-small">
-            <div class="info">
-              <span class="short-start-dt">
-                <b>{{ startDay }}</b>
-                <p>{{ startMonth }}</p>
-              </span>
-              <h3>{{ event.name }}</h3>
-            </div>
-          </div>
-        </div>
+  <section class="event-hero">
+    <div class="event-hero__cover">
+      <div class="event-hero__fallback" :style="{ background: event.coverFallback }" />
+      <img
+        v-if="event.coverUrl && !imageFailed"
+        class="event-hero__image"
+        :src="event.coverUrl"
+        :alt="$t('pages.eventDetailPage.coverAlt', { name: event.name })"
+        @error="imageFailed = true"
+      />
 
-        <div class="event-info-cont">
-          <ul class="event-cdown">
-            <li><span>{{ countdown.days }}</span>days</li>
-            <li><span>{{ countdown.hours }}</span>Hours</li>
-            <li><span>{{ countdown.minutes }}</span>Minutes</li>
-            <li><span>{{ countdown.seconds }}</span>Seconds</li>
-          </ul>
+      <label
+        v-if="event.isOwner"
+        class="event-hero__cover-action"
+        :class="{ 'event-hero__cover-action--busy': coverUpdating }"
+        :aria-label="$t('pages.eventDetailPage.changeCover')"
+      >
+        <Icon
+          :name="coverUpdating ? 'i-lucide-loader-2' : 'i-ph-camera-fill'"
+          class="h-4 w-4"
+          :class="{ 'animate-spin': coverUpdating }"
+        />
+        <span class="event-hero__cover-action-label">{{ $t("pages.eventDetailPage.changeCover") }}</span>
+        <input
+          ref="coverInput"
+          class="sr-only"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          :disabled="coverUpdating"
+          @change="handleCoverChange"
+        />
+      </label>
 
-          <div class="wow-event-page-btns">
-            <button
-              class="btn btn-default btn-mat"
-              :class="{ 'btn-main': event.isGoing || event.rsvpState === 'going' }"
-              type="button"
-              :disabled="rsvpBusy === 'going'"
-              @click="$emit('setGoing')"
-            >
-              <Icon v-if="rsvpBusy === 'going'" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
-              <Icon v-else name="i-ph-users-three-fill" class="h-4 w-4" />
-              {{ $t("pages.eventsPage.rsvpGoing") }}
-            </button>
-            <button
-              class="btn btn-default btn-mat"
-              :class="{ 'btn-main': event.isInterested || event.rsvpState === 'interested' }"
-              type="button"
-              :disabled="rsvpBusy === 'interested'"
-              @click="$emit('setInterested')"
-            >
-              <Icon v-if="rsvpBusy === 'interested'" name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
-              <Icon v-else name="i-ph-heart-fill" class="h-4 w-4" />
-              {{ $t("pages.eventsPage.rsvpInterested") }}
-            </button>
-            <NuxtLink :to="appRoutes.events" class="btn btn-default btn-mat">
-              {{ $t("pages.createEventPage.backToEvents") }}
-            </NuxtLink>
-          </div>
-        </div>
+      <div class="event-hero__identity">
+        <span class="event-hero__date">
+          <b>{{ startDay }}</b>
+          <span>{{ startMonth }}</span>
+        </span>
+        <h1>{{ event.name }}</h1>
+      </div>
+    </div>
+
+    <div class="event-hero__actions">
+      <ul v-if="countdownActive" class="event-hero__countdown" :aria-label="$t('pages.eventDetailPage.countdownLabel')">
+        <li>
+          <strong>{{ countdown.days }}</strong>
+          <span>{{ $t("pages.eventDetailPage.countdownDays") }}</span>
+        </li>
+        <li>
+          <strong>{{ countdown.hours }}</strong>
+          <span>{{ $t("pages.eventDetailPage.countdownHours") }}</span>
+        </li>
+        <li>
+          <strong>{{ countdown.minutes }}</strong>
+          <span>{{ $t("pages.eventDetailPage.countdownMinutes") }}</span>
+        </li>
+        <li>
+          <strong>{{ countdown.seconds }}</strong>
+          <span>{{ $t("pages.eventDetailPage.countdownSeconds") }}</span>
+        </li>
+      </ul>
+      <p v-else class="event-hero__started">
+        <Icon name="i-ph-calendar-check-fill" class="h-5 w-5" />
+        {{ $t("pages.eventDetailPage.eventStarted") }}
+      </p>
+
+      <div class="event-hero__buttons">
+        <UButton
+          :color="event.isGoing || event.rsvpState === 'going' ? 'primary' : 'neutral'"
+          :variant="event.isGoing || event.rsvpState === 'going' ? 'solid' : 'soft'"
+          icon="i-ph-users-three-fill"
+          :loading="rsvpBusy === 'going'"
+          :disabled="Boolean(rsvpBusy)"
+          @click="$emit('setGoing')"
+        >
+          {{ $t("pages.eventsPage.rsvpGoing") }}
+        </UButton>
+        <UButton
+          :color="event.isInterested || event.rsvpState === 'interested' ? 'primary' : 'neutral'"
+          :variant="event.isInterested || event.rsvpState === 'interested' ? 'solid' : 'soft'"
+          icon="i-ph-heart-fill"
+          :loading="rsvpBusy === 'interested'"
+          :disabled="Boolean(rsvpBusy)"
+          @click="$emit('setInterested')"
+        >
+          {{ $t("pages.eventsPage.rsvpInterested") }}
+        </UButton>
+        <UButton
+          v-if="event.isOwner"
+          :to="appRoutes.editEvent(event.id)"
+          color="neutral"
+          variant="soft"
+          icon="i-ph-pencil-simple-bold"
+        >
+          {{ $t("pages.eventDetailPage.editEvent") }}
+        </UButton>
+        <UButton
+          v-if="event.isOwner"
+          color="error"
+          variant="soft"
+          icon="i-ph-trash-fill"
+          @click="$emit('requestDelete')"
+        >
+          {{ $t("pages.eventDetailPage.deleteEvent") }}
+        </UButton>
       </div>
     </div>
   </section>
@@ -71,15 +117,20 @@ import type { EventRecord } from "../../domain/types/events.types"
 const props = defineProps<{
   event: EventRecord
   rsvpBusy?: "going" | "interested" | null
+  coverUpdating?: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   setGoing: []
   setInterested: []
+  requestDelete: []
+  changeCover: [file: File]
 }>()
 
+const { locale } = useI18n()
+const coverInput = ref<HTMLInputElement | null>(null)
 const imageFailed = ref(false)
-const now = ref(Date.now())
+const now = ref<number | null>(null)
 let timer: ReturnType<typeof setInterval> | null = null
 
 const parseTimeParts = (value: string) => {
@@ -93,9 +144,7 @@ const parseTimeParts = (value: string) => {
 }
 
 const normalizeYear = (value: string) => {
-  if (value.length === 4) {
-    return Number(value)
-  }
+  if (value.length === 4) return Number(value)
 
   const year = Number(value)
   return year >= 70 ? 1900 + year : 2000 + year
@@ -103,71 +152,53 @@ const normalizeYear = (value: string) => {
 
 const parseEventDate = (dateValue: string, timeValue: string) => {
   const date = dateValue.trim()
-  const time = timeValue.trim() || "00:00:00"
-  const timeParts = parseTimeParts(time)
-  const parts = date.split(/[-/]/).map(part => part.trim()).filter(Boolean)
+  const timeParts = parseTimeParts(timeValue.trim() || "00:00:00")
+  const parts = date
+    .split(/[-/]/)
+    .map((part) => part.trim())
+    .filter(Boolean)
 
   if (parts.length === 3) {
-    const [first, second, third] = parts
-    let parsedDate: Date
-
-    if (first.length === 4) {
-      parsedDate = new Date(
-        Number(first),
-        Number(second) - 1,
-        Number(third),
-        timeParts.hours,
-        timeParts.minutes,
-        timeParts.seconds,
-      )
-    }
-    else if (third.length === 4 || Number(first) > 12) {
-      parsedDate = new Date(
-        normalizeYear(third),
-        Number(second) - 1,
-        Number(first),
-        timeParts.hours,
-        timeParts.minutes,
-        timeParts.seconds,
-      )
-    }
-    else {
-      parsedDate = new Date(
-        normalizeYear(first),
-        Number(second) - 1,
-        Number(third),
-        timeParts.hours,
-        timeParts.minutes,
-        timeParts.seconds,
-      )
-    }
+    const [first = "", second = "", third = ""] = parts
+    const yearFirst = first.length === 4
+    const dayFirst = !yearFirst && (third.length === 4 || Number(first) > 12)
+    const parsedDate = yearFirst
+      ? new Date(
+          Number(first),
+          Number(second) - 1,
+          Number(third),
+          timeParts.hours,
+          timeParts.minutes,
+          timeParts.seconds,
+        )
+      : dayFirst
+        ? new Date(
+            normalizeYear(third),
+            Number(second) - 1,
+            Number(first),
+            timeParts.hours,
+            timeParts.minutes,
+            timeParts.seconds,
+          )
+        : new Date(
+            normalizeYear(first),
+            Number(second) - 1,
+            Number(third),
+            timeParts.hours,
+            timeParts.minutes,
+            timeParts.seconds,
+          )
 
     return Number.isNaN(parsedDate.getTime()) ? null : parsedDate
   }
 
-  const parsed = new Date(`${date} ${time}`)
+  const parsed = new Date(`${date} ${timeValue}`)
   return Number.isNaN(parsed.getTime()) ? null : parsed
 }
 
 const startDate = computed(() =>
   parseEventDate(props.event.startDateValue || props.event.startDateLabel, props.event.startTime),
 )
-
-const endDate = computed(() =>
-  parseEventDate(props.event.endDateValue || props.event.endDateLabel, props.event.endTime),
-)
-
-const countdownTarget = computed(() => {
-  if (startDate.value && startDate.value.getTime() > now.value) {
-    return startDate.value
-  }
-
-  if (endDate.value && endDate.value.getTime() > now.value) {
-    return endDate.value
-  }
-
-  return null
-})
 
 const startDay = computed(() => {
   const date = startDate.value
@@ -176,24 +207,43 @@ const startDay = computed(() => {
 
 const startMonth = computed(() => {
   const date = startDate.value
-  return date
-    ? date.toLocaleString("en", { month: "short" })
-    : props.event.dateBadge.slice(3, 5)
+  if (!date) return props.event.dateBadge.slice(3, 5)
+
+  return new Intl.DateTimeFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
+    month: "short",
+  })
+    .format(date)
+    .replace(".", "")
 })
+
+const countdownActive = computed(
+  () => now.value !== null && Boolean(startDate.value) && (startDate.value?.getTime() ?? 0) > now.value,
+)
 
 const countdown = computed(() => {
-  const date = countdownTarget.value
-  const distance = date ? Math.max(0, date.getTime() - now.value) : 0
-  const days = Math.floor(distance / 86400000)
-  const hours = Math.floor((distance % 86400000) / 3600000)
-  const minutes = Math.floor((distance % 3600000) / 60000)
-  const seconds = Math.floor((distance % 60000) / 1000)
+  const distance =
+    countdownActive.value && startDate.value && now.value !== null
+      ? Math.max(0, startDate.value.getTime() - now.value)
+      : 0
 
-  return { days, hours, minutes, seconds }
+  return {
+    days: Math.floor(distance / 86400000),
+    hours: Math.floor((distance % 86400000) / 3600000),
+    minutes: Math.floor((distance % 3600000) / 60000),
+    seconds: Math.floor((distance % 60000) / 1000),
+  }
 })
 
+const handleCoverChange = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+
+  if (file) emit("changeCover", file)
+  input.value = ""
+}
+
 watch(
-  () => props.event.id,
+  () => [props.event.id, props.event.coverUrl],
   () => {
     imageFailed.value = false
   },
@@ -201,119 +251,129 @@ watch(
 )
 
 onMounted(() => {
+  now.value = Date.now()
   timer = setInterval(() => {
     now.value = Date.now()
   }, 1000)
 })
 
 onBeforeUnmount(() => {
-  if (timer) {
-    clearInterval(timer)
-  }
+  if (timer) clearInterval(timer)
 })
 </script>
 
 <style scoped>
-.wo-event-profile {
-  margin-top: 0;
-}
-
-.profile-container,
-.card,
-.hovercard {
-  min-width: 0;
-}
-
-.hovercard {
+.event-hero {
   overflow: hidden;
-  border-radius: 3px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
 }
 
-.cardheader {
+.event-hero__cover {
   position: relative;
-  height: 360px;
+  height: clamp(260px, 38vw, 430px);
   overflow: hidden;
-  background: #eef2f7;
+  background: var(--bg-muted);
 }
 
-.cover-fallback,
-#cover-image {
+.event-hero__fallback,
+.event-hero__image {
   position: absolute;
   inset: 0;
   height: 100%;
   width: 100%;
 }
 
-#cover-image {
+.event-hero__image {
   object-fit: cover;
 }
 
-.event-info-cont-small {
+.event-hero__cover-action {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  right: 14px;
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  border-radius: 7px;
+  background: rgba(15, 23, 42, 0.78);
+  padding: 8px 11px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.event-hero__cover-action--busy {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.event-hero__identity {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  padding: 60px 28px 22px;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0), rgba(15, 23, 42, 0.76));
-  color: #fff;
-}
-
-.info {
   display: flex;
   align-items: center;
   gap: 14px;
+  padding: 70px 24px 20px;
+  background: linear-gradient(180deg, transparent, rgba(15, 23, 42, 0.82));
+  color: #fff;
 }
 
-.short-start-dt {
+.event-hero__date {
   display: flex;
   width: 58px;
   min-width: 58px;
   flex-direction: column;
-  align-items: center;
   overflow: hidden;
-  border-radius: 3px;
+  border-radius: 6px;
   background: #fff;
   color: #111827;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  box-shadow: var(--shadow-md);
 }
 
-.short-start-dt b {
-  padding-top: 8px;
+.event-hero__date b {
+  padding: 8px 4px 5px;
   font-size: 24px;
   line-height: 1;
 }
 
-.short-start-dt p {
-  width: 100%;
-  margin: 7px 0 0;
-  background: #2563eb;
-  padding: 4px 0 5px;
-  color: #fff;
-  font-size: 12px;
+.event-hero__date span {
+  background: var(--bg-brand);
+  padding: 4px;
+  color: var(--text-inverse);
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.info h3 {
+.event-hero__identity h1 {
+  min-width: 0;
   margin: 0;
-  font-size: 28px;
+  overflow-wrap: anywhere;
+  font-size: clamp(22px, 3vw, 32px);
   font-weight: 800;
-  line-height: 1.25;
-  text-shadow: 0 1px 2px rgba(15, 23, 42, 0.3);
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(15, 23, 42, 0.4);
 }
 
-.event-info-cont {
+.event-hero__actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  border-top: 1px solid #e5e7eb;
   padding: 14px 18px;
 }
 
-.event-cdown {
+.event-hero__countdown {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -322,66 +382,79 @@ onBeforeUnmount(() => {
   list-style: none;
 }
 
-.event-cdown li {
-  min-width: 72px;
-  border-radius: 3px;
-  background: #f8fafc;
-  padding: 7px 10px;
-  color: #64748b;
-  font-size: 12px;
+.event-hero__countdown li {
+  display: flex;
+  min-width: 66px;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 7px;
+  background: var(--bg-muted);
+  padding: 7px 9px;
+  color: var(--text-secondary);
+  font-size: 11px;
   font-weight: 700;
-  text-align: center;
 }
 
-.event-cdown span {
-  display: block;
-  color: #111827;
+.event-hero__countdown strong {
+  color: var(--text-primary);
   font-size: 18px;
   line-height: 1.1;
 }
 
-.wow-event-page-btns {
+.event-hero__started {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.event-hero__buttons {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
 }
 
-.btn-mat {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  min-height: 36px;
-  border: 1px solid #d7dee8;
-  border-radius: 3px;
-  background: #fff;
-  padding: 8px 13px;
-  color: #334155;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.btn-main {
-  border-color: #2563eb;
-  background: #2563eb;
-  color: #fff;
-}
-
 @media (max-width: 760px) {
-  .cardheader {
+  .event-hero__cover {
     height: 280px;
   }
 
-  .event-info-cont {
+  .event-hero__actions {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .wow-event-page-btns {
-    justify-content: flex-start;
+  .event-hero__buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .event-hero__buttons :deep(.ui-button) {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-hero__cover-action-label {
+    display: none;
+  }
+
+  .event-hero__identity {
+    padding-inline: 16px;
+  }
+
+  .event-hero__countdown {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .event-hero__countdown li {
+    min-width: 0;
+    padding-inline: 4px;
   }
 }
 </style>

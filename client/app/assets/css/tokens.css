@@ -45,10 +45,10 @@
   --color-secondary-100: #f1f5f9;
   --color-secondary-200: #e2e8f0;
   --color-secondary-300: #cbd5e1;
-  --color-secondary-400: #94a3b8;
+  --color-secondary-400: #ffffff;
   --color-secondary-500: #64748b;
   --color-secondary-600: #475569;
-  --color-secondary-700: #334155;
+  --color-secondary-700: #000000;
   --color-secondary-800: #1e293b;
   --color-secondary-900: #0f172a;
 
@@ -100,7 +100,7 @@
   --leading-relaxed: 1.75;
 
   /* Text colors: primary = chính, secondary = phụ */
-  --text-primary: #000000;
+  --text-primary: #000000;;
   --text-secondary: var(--color-secondary-500);    /* #64748b */
   --text-tertiary: var(--color-secondary-400);     /* #94a3b8 */
   --text-inverse: #ffffff;

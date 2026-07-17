@@ -571,7 +571,7 @@ onBeforeUnmount(() => {
   display: grid;
   min-height: 100vh;
   overflow-y: auto;
-  background: #000000;
+  background: #000000;;
 }
 
 @media (min-width: 1024px) {
@@ -591,7 +591,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   box-sizing: border-box;
   padding: 24px 16px 72px;
-  background: #000000;
+  background: #000000;;
 }
 
 @media (min-width: 768px) {
@@ -638,7 +638,7 @@ onBeforeUnmount(() => {
 }
 
 .lightbox-modal__video {
-  background: #000000;
+  background: #000000;;
 }
 
 .lightbox-modal__empty {

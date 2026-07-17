@@ -6,7 +6,7 @@
     :class="{ 'sidebar-item--active': isActive }"
   >
     <span class="sidebar-item__icon" :class="{ 'sidebar-item__icon--active': isActive }">
-      <Icon :name="isActive ? icon : icon.replace('-fill', '-duotone')" class="h-4.5 w-4.5" />
+      <Icon :name="icon.replace('-fill', '-bold')" class="h-4.5 w-4.5" />
     </span>
     
     <span class="sidebar-item__label">{{ label }}</span>
@@ -83,8 +83,8 @@ const isActive = computed(() => {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #f1f5f9;
-  color: #475569;
+  background: transparent;
+  color: #000000;
   transition: all 0.15s ease;
 }
 
@@ -102,7 +102,7 @@ const isActive = computed(() => {
 .sidebar-item__label {
   font-size: 16px;
   font-weight: 600;
-  color: #334155;
+  color: #000000;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

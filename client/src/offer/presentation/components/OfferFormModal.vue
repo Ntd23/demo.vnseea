@@ -197,7 +197,7 @@ async function handleSubmit() {
   border: 1px solid #cbd5e1;
   border-radius: 14px;
   padding: 10px 12px;
-  color: #334155;
+  color: #000000;
 }
 
 @media (max-width: 640px) {

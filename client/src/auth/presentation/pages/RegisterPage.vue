@@ -339,7 +339,7 @@ const strength = computed(() => {
 .auth-gender__label {
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: #000000;
 }
 
 .auth-gender__radio {

@@ -310,7 +310,7 @@ const isImageMedia = (value: string) => /\.(avif|gif|jpe?g|png|webp|blob:)(\?|#|
   gap: 10px;
   border-radius: 12px;
   padding: 11px 12px;
-  color: #334155;
+  color: #000000;
   font-weight: 700;
   text-decoration: none;
 }

@@ -528,7 +528,7 @@ var QRCode;
 	 * @param {String} vOption.text QRCode link data
 	 * @param {Number} [vOption.width=256]
 	 * @param {Number} [vOption.height=256]
-	 * @param {String} [vOption.colorDark="#000000"]
+	 * @param {String} [vOption.colorDark="#000000;"]
 	 * @param {String} [vOption.colorLight="#ffffff"]
 	 * @param {QRCode.CorrectLevel} [vOption.correctLevel=QRCode.CorrectLevel.H] [L|M|Q|H] 
 	 */
@@ -537,7 +537,7 @@ var QRCode;
 			width : 256, 
 			height : 256,
 			typeNumber : 4,
-			colorDark : "#000000",
+			colorDark : "#000000;",
 			colorLight : "#ffffff",
 			correctLevel : QRErrorCorrectLevel.H
 		};

@@ -221,7 +221,7 @@ onMounted(() => {
 
 .media-grid__item--video {
   cursor: default;
-  background: #000000;
+  background: #000000;;
 }
 
 .media-grid__img {
@@ -255,7 +255,7 @@ onMounted(() => {
   display: block;
   width: 100%;
   height: 100%;
-  background: #000000;
+  background: #000000;;
 }
 
 .media-grid--count-1.media-grid--single-video .media-grid__video {

@@ -5,7 +5,7 @@
       <div class="user-detail-panel__top border-b border-[var(--border-light)] px-5 py-5">
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+            <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
               {{ $t("pages.messagesPage.info") }}
             </p>
             <h3 class="mt-2 text-base font-semibold text-[var(--text-primary)]">
@@ -37,7 +37,7 @@
 
           <div class="mt-5 grid gap-3">
             <div class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 text-left">
-              <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+              <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
                 {{ $t("pages.messagesPage.status") }}
               </p>
               <p class="mt-1 text-sm font-semibold text-[var(--text-primary)]">
@@ -46,7 +46,7 @@
             </div>
 
             <div class="rounded-[18px] border border-[var(--border-light)] bg-[var(--bg-muted)] px-4 py-3 text-left">
-              <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
+              <p class="text-[11px] font-bold uppercase tracking-[0.08em] text-[var(--text-secondary)]">
                 {{ $t("pages.messagesPage.conversation") }}
               </p>
               <p class="mt-1 text-sm leading-6 text-[var(--text-secondary)]">

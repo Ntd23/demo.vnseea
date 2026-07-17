@@ -351,7 +351,7 @@ function onDeletePage(pageId: number, password: string) {
 }
 
 .page-settings__nav-step-item--active .page-settings__nav-step-desc {
-  color: #334155;
+  color: #000000;
 }
 
 .page-settings__nav-step-item:hover {
@@ -514,7 +514,7 @@ function onDeletePage(pageId: number, password: string) {
 .page-settings__button--secondary {
   border: 1px solid #cbd5e1;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
 }
 
 .page-settings__button--secondary:hover {

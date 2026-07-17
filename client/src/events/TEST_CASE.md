@@ -32,7 +32,11 @@ English description: Test cases for the events bounded context, covering the bac
   - `/_api/events/[id]`
   - `/_api/events/[id]/posts`
   - `/_api/events/[id]/attendees?kind=going|interested`
+  - `/_api/events/[id]/invite-candidates?query=...`
+  - `/_api/events/[id]/invite`
   - `/_api/events/create`
+  - `PUT /_api/events/[id]`
+  - `DELETE /_api/events/[id]`
   - `/_api/events/[id]/going`
   - `/_api/events/[id]/interested`
 
@@ -67,6 +71,10 @@ English description: Test cases for the events bounded context, covering the bac
 | `EVENT-API-007` | `[ ]` | Tạo RSVP interested | `/_api/events/[id]/interested` | Backend đổi trạng thái thật, count cập nhật lại sau refresh attendee list. |
 | `EVENT-API-008` | `[ ]` | Tạo sự kiện mới | `/_api/events/create` | Event mới được tạo thật ở backend, trả về event detail thật sau khi submit thành công. |
 | `EVENT-API-009` | `[ ]` | Empty state post event | Event chưa có bài viết | `/_api/events/[id]/posts` trả mảng rỗng và UI hiện trạng thái rỗng đúng chỗ, không chèn fallback. |
+| `EVENT-API-010` | `[ ]` | Tìm người có thể mời | `/_api/events/[id]/invite-candidates?query=test` | Chỉ trả follower hợp lệ, loại người đã được mời/đã tham gia và không lộ field nhạy cảm. |
+| `EVENT-API-011` | `[ ]` | Gửi lời mời thật | `POST /_api/events/[id]/invite` | Backend tạo lời mời và notification; người vừa mời biến mất khỏi kết quả hiện tại. |
+| `EVENT-API-012` | `[ ]` | Đổi ảnh bìa | `PUT /_api/events/[id]` multipart | Chỉ owner thực hiện được; ảnh mới hiển thị ngay sau response thành công. |
+| `EVENT-API-013` | `[ ]` | Xóa sự kiện | `DELETE /_api/events/[id]` | Chỉ owner thực hiện được; xác nhận xong thì xóa backend và chuyển về `/events`. |
 
 ## UI và UX
 
@@ -78,6 +86,10 @@ English description: Test cases for the events bounded context, covering the bac
 | `EVENT-UI-004` | `[ ]` | Feed post trong detail | `>= 1024px` | Post render bằng `FeedPostCard`, click media/comment/reaction vẫn hoạt động như feed chung. |
 | `EVENT-UI-005` | `[ ]` | Form tạo sự kiện | `>= 1024px` | Thứ tự field là tên -> địa điểm -> bắt đầu -> kết thúc -> mô tả -> ảnh bìa -> preview -> nút hành động. |
 | `EVENT-UI-006` | `[ ]` | Mobile stacking | `390x844` | Tabs cuộn ngang được, card không vỡ, detail stack dọc đúng và form tạo sự kiện không overflow. |
+| `EVENT-UI-007` | `[ ]` | Danh sách người tham gia | `/events/[id]?type=going` và `?type=interested` | Main column hiển thị đúng danh sách backend, link profile hoạt động và nút quay lại loại query. |
+| `EVENT-UI-008` | `[ ]` | Quản trị sự kiện | Event thuộc current user | Hero có đổi ảnh bìa, chỉnh sửa và xóa; user khác không thấy các nút owner. |
+| `EVENT-UI-009` | `[ ]` | Sidebar theo PHTML | Desktop và mobile | Hiện ngày bắt đầu/kết thúc, tìm người để mời, count có link, địa điểm, Google Maps và mô tả. |
+| `EVENT-UI-010` | `[ ]` | Infinite event feed | Event có hơn 10 bài | Cuộn gần cuối tự tải thêm, hiện skeleton và không lặp post đã có. |
 | `EVENT-UX-001` | `[ ]` | Loading state | Slow API | Danh sách, detail và create route có skeleton/loading hợp lý, không lộ dữ liệu cũ sai context. |
 
 ## Lệnh kiểm tra

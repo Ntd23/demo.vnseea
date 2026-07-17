@@ -308,7 +308,7 @@ watch(
   border-radius: 13px;
   background: #ffffff;
   padding: 0 12px;
-  color: #334155;
+  color: #000000;
   font-family: inherit;
   font-size: 13px;
   font-weight: 500;

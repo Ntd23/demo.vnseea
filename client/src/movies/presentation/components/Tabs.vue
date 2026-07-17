@@ -36,38 +36,81 @@ defineEmits<{
 <style scoped>
 .movie-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  overflow-x: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+  padding-bottom: 12px; /* Bottom padding for scrollbar on mobile */
+}
+
+@media (min-width: 640px) {
+  .movie-tabs {
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
 }
 
 .movie-tabs__button {
   display: inline-flex;
-  min-height: 44px;
-  min-width: 142px;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 2px;
-  background: #ffffff;
-  padding: 10px 18px;
-  color: #334155;
-  font-size: 14px;
-  font-weight: 800;
+  gap: 8px;
+  min-height: 36px;
+  border-radius: var(--radius-full);
+  padding: 8px 14px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  flex-shrink: 0;
+  transition: color var(--duration-fast) var(--ease-default), background-color var(--duration-fast) var(--ease-default);
+}
+
+.movie-tabs__button:hover {
+  color: var(--text-brand);
+  background: var(--bg-surface-hover);
+}
+
+.movie-tabs__button--active {
+  color: var(--text-brand) !important;
+  background: var(--bg-surface-active) !important;
+  font-weight: 700 !important;
 }
 
 .movie-tabs__icon {
-  width: 20px;
-  height: 20px;
-  flex: 0 0 20px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+</style>
+
+<style>
+/* Global CSS block to style the webkit scrollbar for Movie Tabs */
+.movie-tabs::-webkit-scrollbar {
+  height: 6px !important;
+  background-color: #e2e8f0 !important;
+  display: block !important;
 }
 
-.movie-tabs__button:hover,
-.movie-tabs__button--active {
-  border-color: #0a58ca;
-  background: #0a58ca;
-  color: #ffffff;
+.movie-tabs::-webkit-scrollbar-track {
+  background-color: #e2e8f0 !important;
+  border-radius: 999px !important;
+}
+
+.movie-tabs::-webkit-scrollbar-thumb {
+  background-color: #475569 !important; /* Higher contrast slate-600 */
+  border-radius: 999px !important;
+}
+
+.movie-tabs::-webkit-scrollbar-thumb:hover {
+  background-color: #1e293b !important;
 }
 </style>

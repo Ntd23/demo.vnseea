@@ -86,7 +86,7 @@ function selectCategory(category: any) {
 
 .sidebar-nav-item:hover {
   background: #f8fafc;
-  color: #334155;
+  color: #000000;
   transform: translateX(2px);
 }
 

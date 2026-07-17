@@ -6,11 +6,11 @@
     <div class="shrink-0 px-4 pt-5 pb-3">
       <div class="flex items-center gap-2">
         <div class="relative flex-1">
-          <Icon name="i-ph-magnifying-glass" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
+          <Icon name="i-ph-magnifying-glass" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
           <input
             :value="query"
             type="search"
-            class="cl-search"
+            class="cl-search text-black"
             :placeholder="$t('pages.messagesPage.searchPlaceholder')"
             @input="emit('update:query', ($event.target as HTMLInputElement).value)"
           >
@@ -419,7 +419,7 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   background: var(--bg-surface);
   box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.06);
 }
-.cl-search::placeholder { color: var(--text-tertiary); }
+.cl-search::placeholder { color: var(--text-secondary); }
 
 /* Icon buttons */
 .cl-icon-btn {

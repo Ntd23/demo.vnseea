@@ -17,7 +17,7 @@
           :title="$t('navigation.chatWidget.actionCreateGroup')"
           @click="openMessagesTab('multi')"
         >
-          <Icon name="i-ph-user-plus-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-user-plus-bold" class="h-4 w-4" />
         </button>
         <button
           class="chat-widget__header-btn"
@@ -25,7 +25,7 @@
           :title="$t('navigation.chatWidget.actionOpenMessages')"
           @click="openMessagesTab()"
         >
-          <Icon name="i-ph-chat-teardrop-dots-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-chat-teardrop-dots-bold" class="h-4 w-4" />
         </button>
         <button
           class="chat-widget__header-btn chat-widget__toggle-btn"
@@ -61,7 +61,7 @@
           <div class="chat-widget__field">
             <label class="chat-widget__field-label">
               <span class="inline-flex items-center gap-1.5">
-                <Icon name="i-ph-tag-duotone" class="h-3.5 w-3.5" />
+                <Icon name="i-ph-tag-bold" class="h-3.5 w-3.5" />
                 <span>{{ $t("pages.messagesPage.label") }}</span>
               </span>
             </label>
@@ -80,7 +80,7 @@
 
           <div class="chat-widget__recipient-heading">
             <div class="chat-widget__field-label chat-widget__field-label--inline">
-              <Icon name="i-ph-users-three-duotone" class="h-3.5 w-3.5" />
+              <Icon name="i-ph-users-three-bold" class="h-3.5 w-3.5" />
               <span>{{ $t("navigation.chatWidget.sendToLabel") }}</span>
             </div>
             <label class="chat-widget__select-all">
@@ -99,7 +99,7 @@
             <UInput
               v-model="sendTo"
               :placeholder="$t('navigation.chatWidget.recipientPlaceholder')"
-              icon="i-ph-magnifying-glass-duotone"
+              icon="i-ph-magnifying-glass-bold"
               :ui="{
                 base: 'rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 text-sm shadow-none',
               }"
@@ -150,7 +150,7 @@
                 class="rounded-full"
               />
               <div v-else class="chat-widget__group-icon">
-                <Icon name="i-ph-users-three-fill" class="h-4 w-4" />
+                <Icon name="i-ph-users-three-bold" class="h-4 w-4" />
               </div>
               <div class="min-w-0 flex-1 text-left">
                 <p class="chat-widget__suggestion-name">{{ candidate.name }}</p>
@@ -190,7 +190,7 @@
               class="chat-widget__attach-btn"
               @click="fileInput?.click()"
             >
-              <Icon name="i-ph-paperclip-duotone" class="h-4 w-4" />
+              <Icon name="i-ph-paperclip-bold" class="h-4 w-4" />
               <span>{{ $t("navigation.chatWidget.chooseFile") }}</span>
             </button>
             <template v-if="attachFile">
@@ -225,7 +225,7 @@
         <UButton
           type="button"
           variant="solid"
-          icon="i-ph-paper-plane-right-fill"
+          icon="i-ph-paper-plane-right-bold"
           class="chat-widget__send-btn btn-primary"
           :loading="isSendingQuick"
           :disabled="!canSendQuickMessage"
@@ -251,7 +251,7 @@
         v-else-if="activeTab === 'contacts' && filteredContacts.length === 0"
         class="chat-widget__empty"
       >
-        <Icon name="i-ph-chat-circle-dots-duotone" class="chat-widget__empty-icon" />
+        <Icon name="i-ph-chat-circle-dots-bold" class="chat-widget__empty-icon" />
         <p>{{ $t("navigation.chatWidget.emptyContacts") }}</p>
       </div>
 
@@ -259,7 +259,7 @@
         v-else-if="activeTab === 'groups' && filteredGroups.length === 0"
         class="chat-widget__empty"
       >
-        <Icon name="i-ph-users-three-duotone" class="chat-widget__empty-icon" />
+        <Icon name="i-ph-users-three-bold" class="chat-widget__empty-icon" />
         <p>{{ $t("navigation.chatWidget.emptyGroups") }}</p>
       </div>
       
@@ -268,7 +268,7 @@
           <UInput
             v-model="search"
             :placeholder="$t('navigation.chatWidget.searchPlaceholder')"
-            icon="i-ph-magnifying-glass-duotone"
+            icon="i-ph-magnifying-glass-bold"
             class="chat-widget__footer-input"
             :ui="{
               base: 'chat-widget__footer-input-control',
@@ -307,7 +307,7 @@
                 />
               </button>
               <div v-else class="chat-widget__group-icon chat-widget__group-icon--large">
-                <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
+                <Icon name="i-ph-users-three-bold" class="h-5 w-5" />
               </div>
             </div>
 
@@ -353,7 +353,7 @@
             >
               <div class="chat-widget__avatar-menu-section">
                 <div class="chat-widget__avatar-menu-item chat-widget__avatar-menu-item--muted">
-                  <Icon name="i-ph-lock-key-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-lock-key-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.endToEndEncrypted") }}</span>
                 </div>
                 <button
@@ -361,7 +361,7 @@
                   class="chat-widget__avatar-menu-item"
                   @click="openFullMessagesFromAvatarMenu"
                 >
-                  <Icon name="i-ph-chat-circle-dots-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-chat-circle-dots-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.openInMessenger") }}</span>
                 </button>
                 <button
@@ -370,48 +370,48 @@
                   class="chat-widget__avatar-menu-item"
                   @click="goToAvatarProfile"
                 >
-                  <Icon name="i-ph-user-circle-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-user-circle-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
                 </button>
               </div>
 
               <div class="chat-widget__avatar-menu-section">
                 <button v-if="avatarMenuContact.type === 'user'" type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('audio')">
-                  <Icon name="i-ph-phone-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-phone-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
                 </button>
                 <button type="button" class="chat-widget__avatar-menu-item" @click="callAvatarContact('video')">
-                  <Icon name="i-ph-video-camera-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-video-camera-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.videoCall") }}</span>
                 </button>
               </div>
 
               <div class="chat-widget__avatar-menu-section">
                 <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
-                  <Icon name="i-ph-palette-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-palette-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.changeTheme") }}</span>
                 </button>
                 <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
-                  <Icon name="i-ph-thumbs-up-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-thumbs-up-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.changeReaction") }}</span>
                 </button>
                 <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
-                  <Icon name="i-ph-pencil-simple-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-pencil-simple-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.nickname") }}</span>
                 </button>
               </div>
 
               <div class="chat-widget__avatar-menu-section">
                 <button type="button" class="chat-widget__avatar-menu-item" @click="openMessagesTabFromAvatarMenu('multi')">
-                  <Icon name="i-ph-users-three-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-users-three-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.createGroup") }}</span>
                 </button>
                 <button type="button" class="chat-widget__avatar-menu-item" @click="closeAvatarMenu">
-                  <Icon name="i-ph-bell-slash-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-bell-slash-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.muteNotifications") }}</span>
                 </button>
                 <button type="button" class="chat-widget__avatar-menu-item chat-widget__avatar-menu-item--danger" @click="closeAvatarMenu">
-                  <Icon name="i-ph-user-minus-duotone" class="h-5 w-5" />
+                  <Icon name="i-ph-user-minus-bold" class="h-5 w-5" />
                   <span>{{ $t("navigation.chatWidget.blockUser") }}</span>
                 </button>
               </div>
@@ -451,7 +451,7 @@
               </UChip>
             </NuxtLink>
             <div v-else class="chat-widget__group-icon chat-widget__group-icon--selected">
-              <Icon name="i-ph-users-three-fill" class="h-4 w-4" />
+              <Icon name="i-ph-users-three-bold" class="h-4 w-4" />
             </div>
             <button
               type="button"
@@ -472,7 +472,7 @@
               :disabled="isCallActionPending"
               @click="startMiniCall(miniSession, 'audio')"
             >
-              <Icon name="i-ph-phone-duotone" class="h-3.5 w-3.5" />
+              <Icon name="i-ph-phone-bold" class="h-3.5 w-3.5" />
             </button>
             <button
               class="chat-widget__header-btn"
@@ -481,7 +481,7 @@
               :disabled="isCallActionPending"
               @click="startMiniCall(miniSession, 'video')"
             >
-              <Icon name="i-ph-video-camera-duotone" class="h-3.5 w-3.5" />
+              <Icon name="i-ph-video-camera-bold" class="h-3.5 w-3.5" />
             </button>
             <button
               class="chat-widget__header-btn"
@@ -497,7 +497,7 @@
               :title="$t('navigation.chatWidget.actionOpenMessages')"
               @click="openFullMessages(miniSession.contact)"
             >
-              <Icon name="i-ph-arrows-out-simple-duotone" class="h-3.5 w-3.5" />
+              <Icon name="i-ph-arrows-out-simple-bold" class="h-3.5 w-3.5" />
             </button>
             <button class="chat-widget__header-btn" type="button" @click="closeMiniSession(miniSession)">
               <Icon name="i-ph-x-bold" class="h-3.5 w-3.5" />
@@ -512,7 +512,7 @@
               class="chat-widget__mini-menu-item"
               @click="openFullMessagesFromMiniMenu(miniSession)"
             >
-              <UIcon name="i-ph-chat-circle-dots-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-chat-circle-dots-bold" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.openInMessenger") }}</span>
             </button>
             <button
@@ -521,14 +521,14 @@
               class="chat-widget__mini-menu-item"
               @click="openMiniProfile(miniSession)"
             >
-              <UIcon name="i-ph-user-circle-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-user-circle-bold" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
             </button>
           </div>
 
           <div class="chat-widget__mini-menu-section">
             <button type="button" class="chat-widget__mini-menu-item" @click="openMessagesTabFromMiniMenu('multi')">
-              <UIcon name="i-ph-users-three-duotone" class="h-5 w-5" />
+              <UIcon name="i-ph-users-three-bold" class="h-5 w-5" />
               <span>{{ $t("navigation.chatWidget.createGroup") }}</span>
             </button>
           </div>
@@ -544,7 +544,7 @@
           </div>
 
           <div v-else-if="miniSession.messages.length === 0" class="chat-widget__empty chat-widget__empty--mini">
-            <Icon name="i-ph-chat-teardrop-text-duotone" class="chat-widget__empty-icon" />
+            <Icon name="i-ph-chat-teardrop-text-bold" class="chat-widget__empty-icon" />
             <p>{{ $t("navigation.chatWidget.emptyMessages") }}</p>
           </div>
 
@@ -607,7 +607,7 @@
                 :src="miniSession.productDraft.imageUrl"
                 :alt="miniSession.productDraft.title"
               >
-              <Icon v-else name="i-ph-package-duotone" class="h-6 w-6" />
+              <Icon v-else name="i-ph-package-bold" class="h-6 w-6" />
             </span>
             <span class="chat-widget__mini-product-copy">
               <strong>{{ miniSession.productDraft.title }}</strong>
@@ -635,7 +635,7 @@
               @click="sendProductSuggestion(miniSession, suggestion)"
             >
               <span>{{ suggestion }}</span>
-              <Icon name="i-ph-paper-plane-tilt-fill" class="h-3.5 w-3.5 shrink-0" />
+              <Icon name="i-ph-paper-plane-tilt-bold" class="h-3.5 w-3.5 shrink-0" />
             </button>
           </div>
           <div v-if="miniReplyTarget" class="chat-widget__mini-reply-preview">
@@ -661,7 +661,7 @@
               </button>
             </div>
             <div v-else class="chat-widget__mini-file-preview">
-              <Icon name="i-ph-paperclip-duotone" class="h-3.5 w-3.5" />
+              <Icon name="i-ph-paperclip-bold" class="h-3.5 w-3.5" />
               <span>{{ miniSession.attachFile.name }}</span>
               <button type="button" @click="clearMiniFile(miniSession.contact.id)">
                 <Icon name="i-ph-x-bold" class="h-3 w-3" />
@@ -669,7 +669,7 @@
             </div>
           </div>
           <div v-if="activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-file-preview">
-            <Icon name="i-ph-microphone-duotone" class="h-3.5 w-3.5" />
+            <Icon name="i-ph-microphone-bold" class="h-3.5 w-3.5" />
             <span>{{ isMiniRecording ? $t("pages.messagesPage.recordingInProgress") : $t("pages.messagesPage.recordReady") }}</span>
             <button type="button" @click="discardMiniRecording">
               <Icon name="i-ph-x-bold" class="h-3 w-3" />
@@ -696,7 +696,7 @@
               @click="submitMiniMessage(miniSession)"
             >
               <UIcon
-                :name="miniSession.isSending ? 'i-ph-circle-notch-bold' : 'i-ph-paper-plane-right-fill'"
+                :name="miniSession.isSending ? 'i-ph-circle-notch-bold' : 'i-ph-paper-plane-right-bold'"
                 class="chat-widget__mini-send-icon btn-primary"
                 :class="{ 'animate-spin': miniSession.isSending }"
               />
@@ -712,13 +712,13 @@
             :disabled="!isMiniRecordSupported"
             @click="handleMiniRecordButton(miniSession)"
           >
-            <Icon :name="isMiniRecording ? 'i-ph-stop-circle-duotone' : 'i-ph-microphone-duotone'" class="h-4 w-4" />
+            <Icon :name="isMiniRecording ? 'i-ph-stop-circle-bold' : 'i-ph-microphone-bold'" class="h-4 w-4" />
           </button>
           <button type="button" class="chat-widget__mini-tool-btn" :title="$t('pages.messagesPage.attachmentLabel')" @click="triggerMiniFileInput('image', miniSession.contact.id)">
-            <Icon name="i-ph-image-duotone" class="h-4 w-4" />
+            <Icon name="i-ph-image-bold" class="h-4 w-4" />
           </button>
           <button type="button" class="chat-widget__mini-tool-btn" :title="$t('navigation.chatWidget.chooseFile')" @click="triggerMiniFileInput('file', miniSession.contact.id)">
-            <Icon name="i-ph-paperclip-duotone" class="h-4 w-4" />
+            <Icon name="i-ph-paperclip-bold" class="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -749,7 +749,7 @@
           class="rounded-full"
         />
         <div v-else class="chat-widget__mini-launcher-group">
-          <Icon name="i-ph-users-three-fill" class="h-5 w-5" />
+          <Icon name="i-ph-users-three-bold" class="h-5 w-5" />
         </div>
       </UChip>
     </button>
@@ -775,15 +775,15 @@
             class="chat-widget__message-avatar-menu-item"
             @click="goToMessageAvatarProfile"
           >
-            <UIcon name="i-ph-user-circle-duotone" class="h-5 w-5" />
+            <UIcon name="i-ph-user-circle-bold" class="h-5 w-5" />
             <span>{{ $t("navigation.chatWidget.viewProfile") }}</span>
           </button>
           <button v-if="messageAvatarMenuContact.type === 'user'" type="button" class="chat-widget__message-avatar-menu-item" @click="callMessageAvatarContact('audio')">
-            <UIcon name="i-ph-phone-duotone" class="h-5 w-5" />
+            <UIcon name="i-ph-phone-bold" class="h-5 w-5" />
             <span>{{ $t("navigation.chatWidget.audioCall") }}</span>
           </button>
           <button type="button" class="chat-widget__message-avatar-menu-item" @click="callMessageAvatarContact('video')">
-            <UIcon name="i-ph-video-camera-duotone" class="h-5 w-5" />
+            <UIcon name="i-ph-video-camera-bold" class="h-5 w-5" />
             <span>{{ $t("navigation.chatWidget.videoCall") }}</span>
           </button>
         </div>
@@ -809,20 +809,20 @@ const collapsed = ref(false)
 const tabs = [
   {
     value: "send",
-    icon: "i-ph-paper-plane-right-duotone",
-    activeIcon: "i-ph-paper-plane-tilt-fill",
+    icon: "i-ph-paper-plane-right-bold",
+    activeIcon: "i-ph-paper-plane-tilt-bold",
     label: "navigation.chatWidget.tabSend",
   },
   {
     value: "contacts",
-    icon: "i-ph-users-duotone",
-    activeIcon: "i-ph-users-fill",
+    icon: "i-ph-users-bold",
+    activeIcon: "i-ph-users-bold",
     label: "navigation.chatWidget.tabContacts",
   },
   {
     value: "groups",
-    icon: "i-ph-users-three-duotone",
-    activeIcon: "i-ph-users-three-fill",
+    icon: "i-ph-users-three-bold",
+    activeIcon: "i-ph-users-three-bold",
     label: "navigation.chatWidget.tabGroups",
   },
 ] as const
@@ -1726,7 +1726,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   border-radius: 10px;
   border: none;
   background: #f1f5f9;
-  color: #475569;
+  color: #000000;
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -1763,7 +1763,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   justify-content: center;
   gap: 6px;
   border-radius: 10px;
-  color: #64748b;
+  color: #000000;
   font-size: 12px;
   font-weight: 700;
 }
@@ -1859,7 +1859,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   cursor: pointer;
   align-items: center;
   gap: 6px;
-  color: #334155;
+  color: #000000;
   font-size: 11px;
   font-weight: 650;
 }
@@ -1901,7 +1901,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   border-radius: 999px;
   background: rgba(0, 0, 255, 0.04);
   padding: 3px 4px 3px 3px;
-  color: #334155;
+  color: #000000;
   font-size: 12px;
   font-weight: 700;
 }
@@ -2037,7 +2037,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   border-radius: 999px;
   background: #f8fafc;
   padding: 7px 12px;
-  color: #334155;
+  color: #000000;
   font-size: 12px;
   font-weight: 700;
   transition: all 0.15s ease;
@@ -2796,7 +2796,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   border-radius: 10px;
   background: #ffffff;
   padding: 7px 9px;
-  color: #334155;
+  color: #000000;
   font-size: 11px;
   font-weight: 600;
   line-height: 1.35;
@@ -2904,7 +2904,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   justify-content: center;
   border-radius: 999px !important;
   background: #f1f5f9;
-  color: #64748b;
+  color: #000000;
   transition: all 0.15s ease;
 }
 

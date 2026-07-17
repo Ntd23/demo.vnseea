@@ -286,7 +286,7 @@ const formatDonationDate = (value: string) => {
   border-radius: 999px;
   background: #ffffff;
   padding: 9px 14px;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
@@ -368,7 +368,7 @@ const formatDonationDate = (value: string) => {
 .fund-detail__story p {
   margin-top: 14px;
   white-space: pre-line;
-  color: #334155;
+  color: #000000;
   font-size: 14px;
   font-weight: 600;
   line-height: 1.75;

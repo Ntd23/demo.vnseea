@@ -236,7 +236,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
-  color: #334155;
+  color: #000000;
   font-size: 13.5px;
   line-height: 1.55;
 }
@@ -347,7 +347,7 @@ const pageSettingsTo = computed(() => getCommunityPageSettingsPath(props.page.sl
 
 .page-card__action--secondary {
   background: rgba(255, 255, 255, 0.9);
-  color: #334155;
+  color: #000000;
   backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   transition: all 0.2s ease;

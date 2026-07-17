@@ -194,7 +194,7 @@ const handleImageError = () => {
 
 .blogs-featured__mine {
   background: #f1f5f9;
-  color: #334155;
+  color: #000000;
   padding: 7px 11px;
 }
 

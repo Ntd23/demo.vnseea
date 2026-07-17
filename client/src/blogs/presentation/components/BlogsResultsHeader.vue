@@ -102,7 +102,7 @@ defineEmits<{
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #f8fafc;
-  color: #334155;
+  color: #000000;
   padding: 9px 12px;
   font-size: 12.5px;
   font-weight: 800;

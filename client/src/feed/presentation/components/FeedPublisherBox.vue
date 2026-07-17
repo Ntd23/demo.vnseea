@@ -1039,8 +1039,8 @@ function goToLive() {
   border-radius: 14px;
   border: 1px solid #e2e8f0;
   background: transparent;
-  color: #334155;
-  caret-color: #334155;
+  color: #000000;
+  caret-color: #000000;
   outline: none;
   text-decoration: none;
   transition: border-color 0.15s ease, height 0.1s ease;
@@ -1248,7 +1248,7 @@ function goToLive() {
   border-radius: 12px;
   background: #ffffff;
   padding: 8px 10px;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 700;
   text-align: left;
@@ -1403,7 +1403,7 @@ function goToLive() {
   border-radius: 10px;
   background: #fafbfe;
   font-size: 13.5px;
-  color: #334155;
+  color: #000000;
   outline: none;
   font-family: inherit;
   transition: border-color 0.15s ease;
@@ -1799,7 +1799,7 @@ function goToLive() {
   padding: 8px 10px;
   font-size: 12px;
   font-weight: 600;
-  color: #334155;
+  color: #000000;
   background: transparent;
   border: none;
   border-radius: 6px;

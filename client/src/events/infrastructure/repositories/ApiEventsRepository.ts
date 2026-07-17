@@ -7,6 +7,8 @@ import type {
   EventAttendeeKind,
   EventAttendeeRecord,
   EventCreateDraft,
+  EventInviteCandidate,
+  EventInviteResult,
   EventPostsRecord,
   EventRecord,
   EventsCatalogRecord,
@@ -32,6 +34,12 @@ export function createApiEventsRepository(): EventsRepository {
     async getAttendees(id, kind) {
       return await client.get<EventAttendeeRecord[]>(apiRoutes.events.attendees(id), { kind })
     },
+    async searchInviteCandidates(id, query) {
+      return await client.get<EventInviteCandidate[]>(apiRoutes.events.inviteCandidates(id), { query })
+    },
+    async inviteUser(id, userId) {
+      return await client.post<EventInviteResult, { userId: string | number }>(apiRoutes.events.invite(id), { userId })
+    },
     async createEvent(input: EventCreateDraft) {
       if (input.coverFile) {
         const formData = new FormData()
@@ -48,6 +56,26 @@ export function createApiEventsRepository(): EventsRepository {
       }
 
       return await client.post<EventRecord, EventCreateDraft>(apiRoutes.events.create, input)
+    },
+    async updateEvent(id, input) {
+      if (input.coverFile) {
+        const formData = new FormData()
+        formData.append("name", input.name)
+        formData.append("location", input.location)
+        formData.append("description", input.description)
+        formData.append("startDate", input.startDate)
+        formData.append("startTime", input.startTime)
+        formData.append("endDate", input.endDate)
+        formData.append("endTime", input.endTime)
+        formData.append("coverFile", input.coverFile, input.coverFile.name)
+
+        return await client.put<EventRecord, FormData>(apiRoutes.events.update(id), formData)
+      }
+
+      return await client.put<EventRecord, EventCreateDraft>(apiRoutes.events.update(id), input)
+    },
+    async deleteEvent(id) {
+      await client.delete<{ success: boolean }>(apiRoutes.events.detail(id))
     },
     async setGoing(id) {
       return await client.post<EventRsvpResult>(apiRoutes.events.going(id))

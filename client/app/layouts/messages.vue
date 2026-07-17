@@ -6,7 +6,7 @@
     </ClientOnly>
     <NavigationHeaderBar />
     <div class="flex min-h-0 flex-1 overflow-hidden">
-      <main class="min-h-0 min-w-0 flex-1 overflow-hidden bg-(--bg-surface)">
+      <main class="min-h-0 min-w-0 flex-1 overflow-hidden bg-(--bg-surface) rounded-3xl mt-1.5">
         <slot />
       </main>
     </div>

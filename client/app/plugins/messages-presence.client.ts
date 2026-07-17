@@ -4,6 +4,12 @@ import { isProtectedPath } from "../../src/auth/application/constants/route-poli
 
 type PresenceAction = "online" | "offline"
 
+declare global {
+  interface Window {
+    __vnseeaMessagesPresenceCleanup?: () => void
+  }
+}
+
 const API_PATH = "/_api/messages/presence"
 const HEARTBEAT_INTERVAL_MS = 25_000
 const TAB_TTL_MS = 45_000
@@ -69,6 +75,8 @@ const beaconPresence = (action: PresenceAction) => {
 }
 
 export default defineNuxtPlugin(() => {
+  window.__vnseeaMessagesPresenceCleanup?.()
+
   const route = useRoute()
 
   if (!isProtectedPath(route.path) || !hasBackendSession()) {
@@ -87,6 +95,7 @@ export default defineNuxtPlugin(() => {
     }
   })()
   let isClosing = false
+  let heartbeat: number | null = null
 
   const touchCurrentTab = () => {
     const now = Date.now()
@@ -135,21 +144,59 @@ export default defineNuxtPlugin(() => {
     }
   }
 
-  void markOnline()
+  const startHeartbeat = () => {
+    if (heartbeat !== null) {
+      return
+    }
 
-  const heartbeat = window.setInterval(() => {
+    heartbeat = window.setInterval(() => {
+      void markOnline()
+    }, HEARTBEAT_INTERVAL_MS)
+  }
+
+  const stopHeartbeat = () => {
+    if (heartbeat === null) {
+      return
+    }
+
+    window.clearInterval(heartbeat)
+    heartbeat = null
+  }
+
+  const handlePageHide = () => {
+    stopHeartbeat()
+    closeCurrentTab()
+  }
+
+  const handlePageShow = () => {
+    isClosing = false
     void markOnline()
-  }, HEARTBEAT_INTERVAL_MS)
+    startHeartbeat()
+  }
 
-  window.addEventListener("pagehide", closeCurrentTab)
-  window.addEventListener("beforeunload", closeCurrentTab)
-  document.addEventListener("visibilitychange", () => {
+  const handleVisibilityChange = () => {
     if (document.visibilityState === "visible") {
       void markOnline()
     }
-  })
+  }
 
-  window.addEventListener("unload", () => {
-    window.clearInterval(heartbeat)
-  })
+  const cleanup = () => {
+    stopHeartbeat()
+    window.removeEventListener("pagehide", handlePageHide)
+    window.removeEventListener("pageshow", handlePageShow)
+    document.removeEventListener("visibilitychange", handleVisibilityChange)
+
+    if (window.__vnseeaMessagesPresenceCleanup === cleanup) {
+      delete window.__vnseeaMessagesPresenceCleanup
+    }
+  }
+
+  void markOnline()
+  startHeartbeat()
+
+  window.addEventListener("pagehide", handlePageHide)
+  window.addEventListener("pageshow", handlePageShow)
+  document.addEventListener("visibilitychange", handleVisibilityChange)
+  window.__vnseeaMessagesPresenceCleanup = cleanup
+  import.meta.hot?.dispose(cleanup)
 })

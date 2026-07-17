@@ -20,6 +20,18 @@ export type EventAttendeeRecord = {
   avatarUrl: string
 }
 
+export type EventInviteCandidate = {
+  id: number
+  name: string
+  username: string
+  avatarUrl: string
+  verified: boolean
+}
+
+export type EventInviteResult = {
+  userId: number
+}
+
 export type EventRecord = {
   id: number
   name: string

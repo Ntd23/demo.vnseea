@@ -9,8 +9,8 @@
         @click="openSearch"
       >
         <span class="flex min-w-0 items-center gap-2">
-          <Icon name="i-ph-magnifying-glass-duotone" class="h-4 w-4 shrink-0 text-[var(--text-tertiary)]" />
-          <span class="truncate text-sm font-medium text-[var(--text-tertiary)]">
+          <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4 shrink-0 text-black" />
+          <span class="truncate text-sm font-medium text-black">
             {{ $t('navigation.headerSearchInput.placeholder') }}
           </span>
         </span>
@@ -23,7 +23,7 @@
       <template #fallback>
         <button type="button" class="header-search-fallback" aria-hidden="true" tabindex="-1">
           <span class="flex min-w-0 items-center gap-2">
-            <Icon name="i-ph-magnifying-glass-duotone" class="h-4 w-4 shrink-0 text-[var(--text-tertiary)]" />
+            <Icon name="i-ph-magnifying-glass-bold" class="h-4 w-4 shrink-0 text-black" />
             <span class="truncate text-sm font-medium text-[var(--text-tertiary)]">
               {{ $t('navigation.headerSearchInput.placeholder') }}
             </span>

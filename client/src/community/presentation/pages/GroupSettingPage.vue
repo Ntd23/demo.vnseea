@@ -467,7 +467,7 @@ function onTabClick(tabId: string) {
 .group-settings__button--secondary {
   border: 1px solid #cbd5e1;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
 }
 
 .group-settings__button--secondary:hover {

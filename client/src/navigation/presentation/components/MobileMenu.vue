@@ -53,11 +53,11 @@
 
           <div v-if="showStats" class="mm__stats">
             <NuxtLink v-if="formattedWalletPoints" :to="appRoutes.wallet" class="mm__stat" @click="close">
-              <Icon name="i-ph-wallet-fill" class="mm__stat-icon" />
+              <Icon name="i-ph-wallet-bold" class="mm__stat-icon" />
               <span>{{ $t("navigation.mobileMenu.walletLabel") || "Wallet" }}: {{ formattedWalletPoints }}</span>
             </NuxtLink>
             <NuxtLink v-if="formattedPoints" :to="appRoutes.settingsPage('myPoints')" class="mm__stat" @click="close">
-              <Icon name="i-ph-circle-half-fill" class="mm__stat-icon" />
+              <Icon name="i-ph-circle-half-bold" class="mm__stat-icon" />
               <span>{{ $t("navigation.mobileMenu.pointsLabel") || "VNSEEA" }}: {{ formattedPoints }}</span>
             </NuxtLink>
           </div>
@@ -77,7 +77,7 @@
               :class="isNavItemActive(item.to) ? 'mm__item--active' : ''"
               @click="close"
             >
-              <Icon :name="item.icon" class="mm__item-icon" :class="isNavItemActive(item.to) ? 'mm__item-icon--active' : ''" />
+              <Icon :name="item.icon.replace('-fill', '-bold')" class="mm__item-icon" :class="isNavItemActive(item.to) ? 'mm__item-icon--active' : ''" />
               <span class="mm__item-label" :class="isNavItemActive(item.to) ? 'mm__item-label--active' : ''">{{ $t(item.label) }}</span>
             </NuxtLink>
           </div>
@@ -93,7 +93,7 @@
                 :class="item.danger ? 'mm__item--danger' : ''"
                 @click="close"
               >
-                <Icon :name="item.icon" class="mm__item-icon" :class="item.danger ? 'mm__item-icon--danger' : ''" />
+                <Icon :name="item.icon.replace('-fill', '-bold')" class="mm__item-icon" :class="item.danger ? 'mm__item-icon--danger' : ''" />
                 <span class="mm__item-label" :class="item.danger ? 'mm__item-label--danger' : ''">{{ $t(item.label) }}</span>
               </a>
               <NuxtLink
@@ -103,7 +103,7 @@
                 :class="[isNavItemActive(item.to) ? 'mm__item--active' : '', item.danger ? 'mm__item--danger' : '']"
                 @click="close"
               >
-                <Icon :name="item.icon" class="mm__item-icon" :class="item.danger ? 'mm__item-icon--danger' : ''" />
+                <Icon :name="item.icon.replace('-fill', '-bold')" class="mm__item-icon" :class="item.danger ? 'mm__item-icon--danger' : ''" />
                 <span class="mm__item-label" :class="item.danger ? 'mm__item-label--danger' : ''">{{ $t(item.label) }}</span>
               </NuxtLink>
             </template>
@@ -220,7 +220,7 @@ const mainNav = [
   { label: 'navigation.mobileMenu.mainNav.explore', icon: 'i-ph-compass-fill', to: '/explore' },
   { label: 'navigation.mobileMenu.mainNav.popularPosts', icon: 'i-ph-fire-fill', to: '/popular' },
   { label: 'navigation.mobileMenu.mainNav.jobs', icon: 'i-ph-briefcase-fill', to: '/jobs' },
-  { label: 'navigation.mobileMenu.mainNav.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
+  // { label: 'navigation.mobileMenu.mainNav.goPro', icon: 'i-ph-crown-simple-fill', to: '/go-pro' },
   { label: 'navigation.mobileMenu.mainNav.wallet', icon: 'i-ph-wallet-fill', to: appRoutes.wallet },
   { label: 'navigation.mobileMenu.mainNav.funding', icon: 'i-ph-hand-heart-fill', to: '/funding' },
   { label: 'navigation.mobileMenu.mainNav.memories', icon: 'i-ph-clock-counter-clockwise-fill', to: '/memories' },
@@ -446,7 +446,7 @@ const settingsNav = computed(() => {
   padding: 11px 14px;
   border-radius: 12px;
   text-decoration: none;
-  color: #334155;
+  color: #000000;
   transition: background 0.12s ease, color 0.12s ease;
 }
 
@@ -454,7 +454,7 @@ const settingsNav = computed(() => {
 .mm__item--active { background: rgba(0, 0, 255, 0.06); color: #0000ff; }
 .mm__item--danger:hover { background: rgba(220, 38, 38, 0.05); }
 
-.mm__item-icon { width: 18px; height: 18px; flex-shrink: 0; color: #64748b; }
+.mm__item-icon { width: 18px; height: 18px; flex-shrink: 0; color: #000000; }
 .mm__item-icon--active { color: #0000ff; }
 .mm__item-icon--danger { color: #dc2626; }
 

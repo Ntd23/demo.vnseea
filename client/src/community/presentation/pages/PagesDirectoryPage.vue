@@ -89,7 +89,7 @@ const {
 }
 
 .skeleton {
-  background: #334155;
+  background: #000000;
   background: linear-gradient(
     90deg,
     #334155 25%,

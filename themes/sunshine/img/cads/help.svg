@@ -23,11 +23,11 @@
 
           .main-fill--darken {fill: #007ccc;}
           .main-stroke--darken {stroke: #007ccc;}
-          .secondary-fill--darken {fill: #000000;}
-          .secondary-stroke--darken {stroke: #000000;}
+          .secondary-fill--darken {fill: #000000;;}
+          .secondary-stroke--darken {stroke: #000000;;}
 
           .main-fill--darkener {fill: #005d99;}
           .main-stroke--darkener {stroke: #005d99;}
-          .secondary-fill--darkener {fill: #000000;}
-          .secondary-stroke--darkener {stroke: #000000;}
+          .secondary-fill--darkener {fill: #000000;;}
+          .secondary-stroke--darkener {stroke: #000000;;}
         </style></svg>

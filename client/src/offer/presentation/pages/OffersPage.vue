@@ -1,13 +1,6 @@
 <!-- English description: Renders the backend-backed offer directory using the offer bounded context. -->
 <template>
-  <main class="offers-page">
-    <section class="offers-page__hero">
-      <div>
-        <p class="offers-page__eyebrow">{{ t("offers.heroEyebrow") }}</p>
-        <h1>{{ t("offers.title") }}</h1>
-      </div>
-    </section>
-
+  <main class="offers-page mt-1.5">
     <UAlert
       v-if="error"
       color="warning"
@@ -113,8 +106,6 @@ async function handleOfferSaved() {
   width: min(100%, 960px);
   flex-direction: column;
   gap: 18px;
-  margin: 0 auto;
-  /* padding: 18px 12px 40px; */
 }
 
 .offers-page__hero {

@@ -549,7 +549,7 @@ const {
 
 .create-blog-page__submit-status p {
   margin: 0;
-  color: #334155;
+  color: #000000;
   font-size: 14px;
   font-weight: 700;
   line-height: 1.55;
@@ -564,7 +564,7 @@ const {
 .create-blog-page__secondary {
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
   padding: 11px 15px;
 }
 

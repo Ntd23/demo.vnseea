@@ -4,7 +4,7 @@
 	var Color = tinymce.util.Color;
 	
 	test("Constructor", function() {
-		equal(new Color().toHex(), '#000000');
+		equal(new Color().toHex(), '#000000;');
 		equal(new Color('#faebcd').toHex(), '#faebcd');
 	});
 
@@ -19,7 +19,7 @@
 		equal(color.parse({r: 255, g: 254, b: 253}).toHex(), '#fffefd');
 		equal(color.parse({h: 359, s: 50, v: 50}).toHex(), '#804041');
 		equal(color.parse({r: 700, g: 700, b: 700}).toHex(), '#ffffff');
-		equal(color.parse({r: -1, g: -10, b: -20}).toHex(), '#000000');
+		equal(color.parse({r: -1, g: -10, b: -20}).toHex(), '#000000;');
 	});
 
 	test("toRgb method", function() {

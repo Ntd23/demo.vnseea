@@ -400,7 +400,7 @@ onBeforeUnmount(() => {
   position: fixed;
   inset: 0;
   z-index: 2000;
-  background: #000000;
+  background: #000000;;
   display: flex;
   flex-direction: column;
   user-select: none;
@@ -424,7 +424,7 @@ onBeforeUnmount(() => {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: #000000;
+  background: #000000;;
   height: 100%;
   min-height: 0;
 }

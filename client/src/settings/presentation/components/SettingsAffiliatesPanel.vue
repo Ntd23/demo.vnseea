@@ -578,7 +578,7 @@ const closeProgressHelp = () => {
   padding: 10px;
   border-radius: 12px;
   background: #fafbfe;
-  color: #334155;
+  color: #000000;
   font-size: 12px;
   font-weight: 800;
 }

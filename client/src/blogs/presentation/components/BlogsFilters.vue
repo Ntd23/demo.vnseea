@@ -283,7 +283,7 @@ const sortIcon = (value: string) => {
 .blogs-filters__chip--idle,
 .blogs-filters__sort--idle {
   background: #f8fafc;
-  color: #334155;
+  color: #000000;
 }
 
 .blogs-filters__chip--idle:hover,
@@ -312,7 +312,7 @@ const sortIcon = (value: string) => {
 .blogs-filters__mine--idle {
   border-color: #e2e8f0;
   background: #f8fafc;
-  color: #334155;
+  color: #000000;
 }
 
 .blogs-filters__summary {
@@ -324,7 +324,7 @@ const sortIcon = (value: string) => {
 
 .blogs-filters__summary p {
   margin: 0;
-  color: #334155;
+  color: #000000;
   font-size: 12px;
   font-weight: 600;
 }

@@ -61,7 +61,7 @@ const pillClass = (active: boolean) => [
   border: 1px solid transparent;
   border-radius: 999px;
   background: #f1f5f9;
-  color: #334155;
+  color: #000000;
   padding: 0 14px;
   font-size: 13px;
   font-weight: 700;

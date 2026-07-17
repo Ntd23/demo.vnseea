@@ -187,7 +187,7 @@ const offerTitle = computed(() =>
   min-width: 0;
   align-items: center;
   gap: 8px;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;

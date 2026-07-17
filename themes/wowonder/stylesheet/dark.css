@@ -83,7 +83,7 @@ hr, .lightbox-content .comment-section .stats {border-color: #424242 !important;
 .input-group-addon {color: #c2c2c2;background-color: #171717;border-color: #171717;}
 .wo_create_chat_group .input-group-addon {border-color: #171717;}
 .group_chat_mbr_part {border-color: #383838;}
-.chat-messages-wrapper {background-color: #212121;border-color: #000000;}
+.chat-messages-wrapper {background-color: #212121;border-color: #000000;;}
 .chat-textarea {border-color: #494949;}
 .chat-textarea .chat-btns-w .chat_optns svg.feather {color: #b3b3b3;}
 .chat-user-desc {background-color: #2b2b2b;}
@@ -980,7 +980,7 @@ body .flatpickr-calendar.hasTime .flatpickr-time {
 }
 
 .movies-com-wrapper .movies-comlist-container .movies-comment-item .movies-comment-item-body div.comment-heading {
-    background: #000000;
+    background: #000000;;
 }
 
 .wow_creads_minstp.start_up {

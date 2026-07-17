@@ -128,7 +128,7 @@ function handleFileChange(event: Event, type: "avatar" | "banner") {
   justify-content: center;
   border: 0;
   background: rgba(241, 245, 249, 0.56);
-  color: #334155;
+  color: #000000;
   transition: background-color 0.15s ease;
 }
 
@@ -169,7 +169,7 @@ function handleFileChange(event: Event, type: "avatar" | "banner") {
   justify-content: center;
   border-radius: 999px;
   background: rgba(241, 245, 249, 0.72);
-  color: #334155;
+  color: #000000;
   opacity: 0.95;
   transition: background-color 0.15s ease, transform 0.15s ease;
 }

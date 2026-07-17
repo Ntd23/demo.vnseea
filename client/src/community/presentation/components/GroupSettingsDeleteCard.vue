@@ -81,7 +81,7 @@ async function handleDelete() {
 .group-delete__input {
   border: 1px solid #cbd5e1;
   border-radius: 10px;
-  color: #334155;
+  color: #000000;
   height: 56px;
   outline: none;
   padding: 0 16px;

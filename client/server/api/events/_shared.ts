@@ -8,6 +8,7 @@ import { getBackendWebBaseUrl } from "../../utils/backend-media-url"
 import type {
   EventAttendeeKind,
   EventAttendeeRecord,
+  EventInviteCandidate,
   EventRecord,
   EventsCatalogRecord,
   EventRsvpState,
@@ -41,18 +42,10 @@ type BackendEventAttendeesResponse = {
   }
 }
 
-const accentPalette = [
-  "#2563eb",
-  "#0ea5e9",
-  "#0891b2",
-  "#1d4ed8",
-  "#7c3aed",
-] as const
+const accentPalette = ["#2563eb", "#0ea5e9", "#0891b2", "#1d4ed8", "#7c3aed"] as const
 
 const asString = (value: unknown) =>
-  typeof value === "string" || typeof value === "number"
-    ? String(value).trim()
-    : ""
+  typeof value === "string" || typeof value === "number" ? String(value).trim() : ""
 
 const asNumber = (value: unknown) => {
   const normalized = Number(value ?? 0)
@@ -60,11 +53,7 @@ const asNumber = (value: unknown) => {
 }
 
 const isTruthy = (value: unknown) =>
-  value === true
-  || value === 1
-  || value === "1"
-  || value === "yes"
-  || value === "true"
+  value === true || value === 1 || value === "1" || value === "yes" || value === "true"
 
 const normalizeImagePath = (path: string, baseUrl: string) => {
   if (!path) return ""
@@ -73,11 +62,14 @@ const normalizeImagePath = (path: string, baseUrl: string) => {
       const imageUrl = new URL(path)
       const requestBase = new URL(baseUrl)
 
-      if (requestBase.protocol === "https:" && imageUrl.protocol === "http:" && imageUrl.hostname === requestBase.hostname) {
+      if (
+        requestBase.protocol === "https:" &&
+        imageUrl.protocol === "http:" &&
+        imageUrl.hostname === requestBase.hostname
+      ) {
         return `${requestBase.origin}${imageUrl.pathname}${imageUrl.search}${imageUrl.hash}`
       }
-    }
-    catch {
+    } catch {
       // Keep the raw backend value when URL parsing fails.
     }
 
@@ -96,14 +88,14 @@ const createFallback = (id: number) => {
 const resolveEventCover = (entity: BackendEntity, baseUrl: string) =>
   normalizeImagePath(
     asString(
-      entity.cover
-      || entity.cover_url
-      || entity.cover_full
-      || entity.cover_org
-      || entity.event_cover
-      || entity.eventCover
-      || entity.image
-      || entity.thumbnail,
+      entity.cover ||
+        entity.cover_url ||
+        entity.cover_full ||
+        entity.cover_org ||
+        entity.event_cover ||
+        entity.eventCover ||
+        entity.image ||
+        entity.thumbnail,
     ),
     baseUrl,
   )
@@ -122,12 +114,7 @@ const toDateBadge = (startDateValue: string, startDateLabel: string) => {
   return `${day}-${month}-${year.slice(-2)}`
 }
 
-const toDateRangeLabel = (
-  startDateLabel: string,
-  endDateLabel: string,
-  startTime: string,
-  endTime: string,
-) => {
+const toDateRangeLabel = (startDateLabel: string, endDateLabel: string, startTime: string, endTime: string) => {
   const start = [startDateLabel, startTime].filter(Boolean).join(" • ")
   const end = [endDateLabel, endTime].filter(Boolean).join(" • ")
 
@@ -188,21 +175,23 @@ export const mapEventRecord = (
     interestedCount,
     hostName: asString(userData.name) || asString(userData.username) || "VNSEEA",
     hostUsername: asString(userData.username),
-    hostAvatarUrl: normalizeImagePath(
-      asString(userData.avatar || userData.avatar_full),
-      options.baseUrl,
-    ),
+    hostAvatarUrl: normalizeImagePath(asString(userData.avatar || userData.avatar_full), options.baseUrl),
   }
 }
 
-export const mapEventAttendeeRecord = (
-  entity: BackendEntity,
-  baseUrl: string,
-): EventAttendeeRecord => ({
+export const mapEventAttendeeRecord = (entity: BackendEntity, baseUrl: string): EventAttendeeRecord => ({
   id: asNumber(entity.user_id || entity.id),
   name: asString(entity.name) || asString(entity.username) || "VNSEEA",
   username: asString(entity.username),
   avatarUrl: normalizeImagePath(asString(entity.avatar || entity.avatar_full), baseUrl),
+})
+
+export const mapEventInviteCandidate = (entity: BackendEntity, baseUrl: string): EventInviteCandidate => ({
+  id: asNumber(entity.user_id || entity.id),
+  name: asString(entity.name) || asString(entity.username) || "VNSEEA",
+  username: asString(entity.username),
+  avatarUrl: normalizeImagePath(asString(entity.avatar || entity.avatar_full), baseUrl),
+  verified: isTruthy(entity.verified),
 })
 
 export async function fetchEventsCatalog(event: H3Event): Promise<EventsCatalogRecord> {
@@ -210,27 +199,22 @@ export async function fetchEventsCatalog(event: H3Event): Promise<EventsCatalogR
   const client = createBackendApiClient(event)
   const baseUrl = getBackendWebBaseUrl(event)
   const response = assertBackendApiSuccess(
-    await client.post<BackendEventsCatalogResponse, Record<string, unknown>>(
-      "get-events",
-      {
-        fetch: "events,my_events,going,interested,invited,past",
-        limit: 40,
-        my_limit: 40,
-        going_limit: 40,
-        interested_limit: 40,
-        invited_limit: 40,
-        past_limit: 40,
-      },
-    ),
+    await client.post<BackendEventsCatalogResponse, Record<string, unknown>>("get-events", {
+      fetch: "events,my_events,going,interested,invited,past",
+      limit: 40,
+      my_limit: 40,
+      going_limit: 40,
+      interested_limit: 40,
+      invited_limit: 40,
+      past_limit: 40,
+    }),
     "Unable to load events.",
   )
 
   const currentUserId = asNumber(currentUser.user_id)
-  const goingIds = new Set((response.going ?? []).map(item => asNumber(item.id)))
-  const interestedIds = new Set((response.interested ?? []).map(item => asNumber(item.id)))
-  const browseById = new Map(
-    (response.events ?? []).map(item => [asNumber(item.id), item]),
-  )
+  const goingIds = new Set((response.going ?? []).map((item) => asNumber(item.id)))
+  const interestedIds = new Set((response.interested ?? []).map((item) => asNumber(item.id)))
+  const browseById = new Map((response.events ?? []).map((item) => [asNumber(item.id), item]))
   const mapList = (
     items: BackendEntity[] | undefined,
     options?: {
@@ -266,12 +250,9 @@ export async function fetchEventDetail(event: H3Event, id: string | number) {
   const currentUser = await getBackendCurrentUser(event)
   const client = createBackendApiClient(event)
   const baseUrl = getBackendWebBaseUrl(event)
-  const response = await client.post<BackendEventDetailResponse, Record<string, unknown>>(
-    "get_event_by_id",
-    {
-      id: Number(id),
-    },
-  )
+  const response = await client.post<BackendEventDetailResponse, Record<string, unknown>>("get_event_by_id", {
+    id: Number(id),
+  })
 
   if (Number(response.status ?? 0) !== 200 || !response.event_data) {
     throw createError({
@@ -287,25 +268,17 @@ export async function fetchEventDetail(event: H3Event, id: string | number) {
   })
 }
 
-export async function fetchEventAttendees(
-  event: H3Event,
-  id: string | number,
-  kind: EventAttendeeKind,
-  limit = 24,
-) {
+export async function fetchEventAttendees(event: H3Event, id: string | number, kind: EventAttendeeKind, limit = 24) {
   const client = createBackendApiClient(event)
   const baseUrl = getBackendWebBaseUrl(event)
   const response = assertBackendApiSuccess(
-    await client.post<BackendEventAttendeesResponse, Record<string, unknown>>(
-      "events",
-      {
-        type: kind,
-        event_id: Number(id),
-        limit,
-      },
-    ),
+    await client.post<BackendEventAttendeesResponse, Record<string, unknown>>("events", {
+      type: kind,
+      event_id: Number(id),
+      limit,
+    }),
     `Unable to load ${kind} attendees.`,
   )
 
-  return (response.data ?? []).map(item => mapEventAttendeeRecord(item, baseUrl))
+  return (response.data ?? []).map((item) => mapEventAttendeeRecord(item, baseUrl))
 }

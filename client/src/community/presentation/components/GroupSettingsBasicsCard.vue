@@ -160,7 +160,7 @@ const suggestedSlug = computed(() =>
   border: 1px solid #cbd5e1;
   border-radius: 10px;
   background: #ffffff;
-  color: #334155;
+  color: #000000;
   font-size: 15px;
   line-height: 1.65;
   outline: none;

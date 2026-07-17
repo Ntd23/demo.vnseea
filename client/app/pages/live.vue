@@ -1,3 +1,4 @@
+<!-- English description: Routes authenticated users to the full-width backend-backed live studio. -->
 <template>
   <PagesLivePage />
 </template>
@@ -6,6 +7,7 @@
 import PagesLivePage from "../../src/live/presentation/pages/LivePage.vue"
 definePageMeta({
   layout: "default",
+  hideLeftSidebar: true,
 })
 
 const { t } = useI18n()

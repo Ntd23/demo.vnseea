@@ -958,7 +958,7 @@ async function handleOfferSaved() {
 .suggested-page__name {
   margin: 0;
   overflow: hidden;
-  color: #334155;
+  color: #000000;
   font-size: 15px;
   font-weight: 800;
   text-overflow: ellipsis;

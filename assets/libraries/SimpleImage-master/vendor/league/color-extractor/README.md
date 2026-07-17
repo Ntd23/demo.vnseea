@@ -37,7 +37,7 @@ $topFive = $palette->getMostUsedColors(5);
 
 $colorCount = count($palette);
 
-$blackCount = $palette->getColorCount(Color::fromHexToInt('#000000'));
+$blackCount = $palette->getColorCount(Color::fromHexToInt('#000000;'));
 
 
 // an extractor is built from a palette

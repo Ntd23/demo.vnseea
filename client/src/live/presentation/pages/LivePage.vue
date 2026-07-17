@@ -257,15 +257,18 @@ const {
   connect, disconnect, setPreviewHost,
 } = useLiveKitStudio()
 
+const livePageMounted = ref(false)
+
 watch(previewStageHost, (el) => setPreviewHost(el), { flush: "post", immediate: true })
+
+const ensureAutomaticPreview = async () => {
+  if (!livePageMounted.value || !bootstrap.value.canUseLive || session.value) return
+  if (!previewReady.value && !previewLoading.value) await ensurePreview()
+}
 
 watch(
   () => bootstrap.value.canUseLive,
-  async (canUseLive) => {
-    if (!canUseLive || session.value) return
-    if (!previewReady.value && !previewLoading.value) await ensurePreview()
-  },
-  { immediate: true },
+  () => { void ensureAutomaticPreview() },
 )
 
 watch(
@@ -349,7 +352,7 @@ function toggleFullscreen() {
 }
 
 const isFullscreen = ref(false)
-const liveClockNow = ref(Date.now())
+const liveClockNow = ref(0)
 const chatSending = ref(false)
 const chatErrorMessage = ref("")
 const fullscreenChatDraft = ref("")
@@ -501,6 +504,9 @@ function handleFullscreenChange() {
 }
 
 onMounted(() => {
+  livePageMounted.value = true
+  liveClockNow.value = Date.now()
+  void ensureAutomaticPreview()
   document.addEventListener("fullscreenchange", handleFullscreenChange)
   liveClockTimer = window.setInterval(() => {
     liveClockNow.value = Date.now()
@@ -637,7 +643,7 @@ onBeforeUnmount(() => {
   border-radius: 12px;
   border: 1px solid #e2e8f0;
   background: #fafbfe;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 500;
   appearance: none;

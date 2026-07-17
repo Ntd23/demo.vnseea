@@ -151,6 +151,18 @@ const previewClass = computed(() => ({
   border-color: var(--border-light);
 }
 
+.cli-item--active .cli-time {
+  color: var(--text-primary);
+}
+
+.cli-item--active .cli-status {
+  color: var(--text-primary);
+}
+
+.cli-item--active .cli-preview {
+  color: var(--text-primary);
+}
+
 /* Avatar */
 .cli-avatar {
   position: relative;
@@ -212,7 +224,7 @@ const previewClass = computed(() => ({
 
 .cli-status {
   font-size: var(--text-caption);
-  color: var(--text-tertiary);
+  color: black;
   margin: 1px 0 0;
   font-family: var(--font-primary);
 }

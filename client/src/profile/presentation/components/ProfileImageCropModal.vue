@@ -511,7 +511,7 @@ onBeforeUnmount(revokeImageUrl)
 }
 
 .profile-crop__post-text > span {
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 700;
 }

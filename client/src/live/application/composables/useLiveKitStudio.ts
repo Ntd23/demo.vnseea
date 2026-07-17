@@ -29,17 +29,16 @@ export function useLiveKitStudio() {
   const roomConnected = ref(false)
   const audioMuted = ref(false)
   const videoMuted = ref(false)
+  const mediaSupported = ref(false)
 
   let liveKitModule: LiveKitModule | null = null
   let room: Room | null = null
   let localTracks: LocalTrack[] = []
 
-  const mediaSupported = computed(() =>
-    import.meta.client
-    && typeof navigator !== "undefined"
+  const detectMediaSupport = () =>
+    typeof navigator !== "undefined"
     && Boolean(navigator.mediaDevices?.getUserMedia)
-    && Boolean(navigator.mediaDevices?.enumerateDevices),
-  )
+    && Boolean(navigator.mediaDevices?.enumerateDevices)
 
   const getVideoTrack = () =>
     localTracks.find(track => track.kind === "video") as LocalVideoTrack | undefined
@@ -109,7 +108,7 @@ export function useLiveKitStudio() {
       return
     }
 
-    const element = videoTrack.attach()
+    const element = videoTrack.attach() as HTMLVideoElement
 
     element.autoplay = true
     element.muted = true
@@ -309,6 +308,7 @@ export function useLiveKitStudio() {
   }
 
   onMounted(async () => {
+    mediaSupported.value = detectMediaSupport()
     await refreshDevices()
   })
 

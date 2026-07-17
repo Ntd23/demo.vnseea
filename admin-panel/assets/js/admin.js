@@ -24,7 +24,7 @@ $.AdminBSB.options = {
         brown: '#795548',
         grey: '#9E9E9E',
         blueGrey: '#607D8B',
-        black: '#000000',
+        black: '#000000;',
         white: '#ffffff'
     },
     leftSideBar: {

@@ -217,7 +217,7 @@ onClickOutside(dropdownRef, () => {
   padding: 9px 10px;
   border-radius: 12px;
   text-decoration: none;
-  color: #334155;
+  color: #000000;
   transition: all 0.15s ease;
   white-space: nowrap;
   cursor: pointer;
@@ -315,7 +315,7 @@ onClickOutside(dropdownRef, () => {
   padding: 10px 12px;
   border-radius: 8px;
   text-decoration: none;
-  color: #334155;
+  color: #000000;
   font-size: 13px;
   font-weight: 600;
   transition: all 0.15s ease;

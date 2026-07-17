@@ -49,6 +49,14 @@
             <Icon v-else name="i-ph-heart-fill" class="h-4 w-4" />
             {{ $t("pages.eventsPage.rsvpInterested") }}
           </button>
+          <NuxtLink
+            v-if="event.isOwner"
+            :to="appRoutes.editEvent(event.id)"
+            class="btn-mat"
+          >
+            <Icon name="i-ph-pencil-simple-bold" class="h-4 w-4" />
+            {{ $t("pages.eventDetailPage.editEvent") }}
+          </NuxtLink>
         </div>
       </div>
     </div>
@@ -87,9 +95,16 @@ watch(
 
 .events-list-cover {
   overflow: hidden;
-  border-radius: 3px;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.08);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-fast) var(--ease-default), box-shadow var(--duration-fast) var(--ease-default);
+}
+
+.events-list-cover:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .event-cover {
@@ -116,13 +131,13 @@ watch(
   position: absolute;
   right: 14px;
   top: 14px;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.94);
   padding: 7px 11px;
-  color: #111827;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow-sm);
 }
 
 .event-cover__location {
@@ -158,12 +173,13 @@ watch(
 }
 
 .events-list-name a {
-  color: #111827;
+  color: var(--text-primary);
   text-decoration: none;
+  transition: color var(--duration-fast) var(--ease-default);
 }
 
 .events-list-name a:hover {
-  color: #2563eb;
+  color: var(--text-brand);
 }
 
 .event-l-btns {
@@ -178,20 +194,21 @@ watch(
   align-items: center;
   gap: 7px;
   min-height: 34px;
-  border: 1px solid #d7dee8;
-  border-radius: 3px;
-  background: #fff;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-surface);
   padding: 7px 12px;
-  color: #334155;
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background var(--duration-fast) var(--ease-default), border-color var(--duration-fast) var(--ease-default), color var(--duration-fast) var(--ease-default);
 }
 
 .btn-mat:hover {
-  border-color: #c5d1df;
-  background: #f8fafc;
+  border-color: var(--border-brand);
+  background: var(--bg-surface-hover);
+  color: var(--text-brand);
 }
 
 .btn-mat:disabled {
@@ -200,9 +217,15 @@ watch(
 }
 
 .btn-main {
-  border-color: #2563eb;
-  background: #2563eb;
-  color: #fff;
+  border-color: var(--border-brand) !important;
+  background: var(--bg-brand) !important;
+  color: var(--text-inverse) !important;
+  box-shadow: var(--shadow-brand);
+}
+
+.btn-main:hover {
+  background: var(--bg-brand-hover) !important;
+  color: var(--text-inverse) !important;
 }
 
 @media (max-width: 640px) {
