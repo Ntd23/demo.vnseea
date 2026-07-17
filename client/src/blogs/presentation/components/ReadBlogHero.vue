@@ -21,10 +21,6 @@
           <Icon name="i-ph-book-open-text-fill" class="read-blog-hero__chip-icon" />
           {{ article.categoryLabel }}
         </span>
-        <span class="read-blog-hero__chip read-blog-hero__chip--muted">
-          <Icon name="i-ph-clock-fill" class="read-blog-hero__chip-icon" />
-          {{ $t("pages.blogsPage.readMinutes", { count: article.readMinutes }) }}
-        </span>
       </div>
 
       <h1 id="read-blog-title" class="read-blog-hero__title">

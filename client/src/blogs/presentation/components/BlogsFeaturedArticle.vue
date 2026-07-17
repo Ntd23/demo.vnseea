@@ -29,6 +29,15 @@
           <Icon name="i-ph-user-fill" class="h-3.5 w-3.5" />
           {{ $t("pages.blogsPage.mineBadge") }}
         </span>
+        <a
+          v-if="article.mine"
+          :href="appRoutes.editBlog(article.id)"
+          class="blogs-featured__edit"
+          title="Chỉnh sửa bài viết"
+          aria-label="Chỉnh sửa bài viết"
+        >
+          <Icon name="i-ph-pencil-simple-fill" class="h-3.5 w-3.5" />
+        </a>
       </div>
 
       <NuxtLink :to="article.href" class="blogs-featured__title-link">
@@ -41,7 +50,7 @@
         <div class="blogs-featured__author">
           <span class="blogs-featured__avatar">
             <NuxtImg
-              v-if="article.authorAvatarUrl"
+              v-if="showAuthorAvatar"
               :src="article.authorAvatarUrl"
               :alt="article.author"
               class="blogs-featured__avatar-image"
@@ -49,6 +58,7 @@
               height="76"
               sizes="38px"
               loading="lazy"
+              @error="handleAvatarError"
             />
             <Icon v-else name="i-ph-user-circle-fill" class="h-6 w-6" />
           </span>
@@ -64,8 +74,8 @@
             {{ formatCompact(article.views) }}
           </span>
           <span>
-            <Icon name="i-ph-clock-fill" class="h-3.5 w-3.5" />
-            {{ article.readMinutes }}m
+            <Icon name="i-ph-chat-circle-dots-fill" class="h-3.5 w-3.5" />
+            {{ formatCompact(article.commentsCount) }}
           </span>
         </div>
       </div>
@@ -74,8 +84,11 @@
 </template>
 
 <script setup lang="ts">
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
+
 const props = defineProps<{
   article: {
+    id: number
     href: string
     image: string
     imageFallback: string
@@ -85,6 +98,7 @@ const props = defineProps<{
     authorAvatarUrl: string
     publishedAt: string
     views: number
+    commentsCount: number
     readMinutes: number
     excerpt: string
     mine?: boolean
@@ -93,16 +107,26 @@ const props = defineProps<{
 }>()
 
 const hasImageError = ref(false)
+const hasAvatarError = ref(false)
 
 watch(() => props.article.image, (value) => {
   hasImageError.value = !value.trim()
 }, { immediate: true })
 
 const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !hasImageError.value)
+const showAuthorAvatar = computed(() => Boolean(props.article.authorAvatarUrl.trim()) && !hasAvatarError.value)
 
 const handleImageError = () => {
   hasImageError.value = true
 }
+
+const handleAvatarError = () => {
+  hasAvatarError.value = true
+}
+
+watch(() => props.article.authorAvatarUrl, () => {
+  hasAvatarError.value = false
+}, { immediate: true })
 </script>
 
 <style scoped>
@@ -142,6 +166,7 @@ const handleImageError = () => {
 
 .blogs-featured__read {
   position: absolute;
+  z-index: 2;
   right: 14px;
   top: 14px;
   display: flex;
@@ -177,13 +202,32 @@ const handleImageError = () => {
 
 .blogs-featured__category,
 .blogs-featured__mine,
-.blogs-featured__stats span {
+.blogs-featured__stats > span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
+}
+
+.blogs-featured__edit {
+  display: inline-flex;
+  height: 30px;
+  width: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.blogs-featured__edit:hover {
+  background: rgba(0, 0, 255, 0.12);
+  transform: translateY(-1px);
 }
 
 .blogs-featured__category {
@@ -281,7 +325,7 @@ const handleImageError = () => {
   gap: 8px;
 }
 
-.blogs-featured__stats span {
+.blogs-featured__stats > span {
   background: #f8fafc;
   color: #475569;
   padding: 7px 9px;

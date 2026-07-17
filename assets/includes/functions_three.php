@@ -1506,9 +1506,8 @@ function Wo_RegisterBlogCommentReply($registration_data = array())
 }
 function Wo_GetBlogCommentsCount($id)
 {
-	global $sqlConnect, $wo;
-	$is_owner = false;
-	if ($wo['loggedin'] == false || !$id || !is_numeric($id) || $id < 1) {
+	global $sqlConnect;
+	if (!$id || !is_numeric($id) || $id < 1) {
 		return false;
 	}
 	$count = 0;
@@ -2134,6 +2133,7 @@ function    Wo_GetArticle($id = 0)
 				$fetched_data['url'] = Wo_SeoLink('index.php?link1=read-blog&id=' . $fetched_data['id']);
 			}
 			$fetched_data['author']        = Wo_UserData($fetched_data['user']);
+			$fetched_data['comments_count'] = Wo_GetBlogCommentsCount($fetched_data['id']);
 			$fetched_data['category_link'] = Wo_SeoLink('index.php?link1=blog-category&id=' . $fetched_data['category']);
 			$fetched_data['category_name'] = '';
 			$fetched_data['is_post_admin'] = false;

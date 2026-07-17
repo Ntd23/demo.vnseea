@@ -1,45 +1,33 @@
 <template>
   <aside class="read-blog-sidebar">
-    <section class="read-blog-sidebar__card read-blog-sidebar__author-card">
-      <div class="read-blog-sidebar__author-band" aria-hidden="true" />
-      <div class="read-blog-sidebar__author-body">
-        <span class="read-blog-sidebar__avatar">
-          <NuxtImg
-            v-if="article.authorAvatarUrl"
-            :src="article.authorAvatarUrl"
-            :alt="article.author"
-            class="read-blog-sidebar__avatar-image"
-            width="116"
-            height="116"
-            sizes="58px"
-            loading="lazy"
-          />
-          <Icon v-else name="i-ph-user-circle-fill" class="h-7 w-7" />
-        </span>
-
-        <p class="read-blog-sidebar__eyebrow">{{ $t("pages.readBlogPage.author") }}</p>
-        <h2 class="read-blog-sidebar__author-name">{{ article.author }}</h2>
-        <span class="read-blog-sidebar__category">{{ article.categoryLabel }}</span>
-
-        <p class="read-blog-sidebar__description">
-          {{ $t("pages.readBlogPage.authorDescription") }}
-        </p>
+    <section class="read-blog-sidebar__card read-blog-sidebar__search-card" aria-labelledby="read-blog-search-title">
+      <div class="read-blog-sidebar__search-heading">
+        <div>
+          <h2 id="read-blog-search-title">Tìm kiếm bài viết</h2>
+        </div>
       </div>
+      <label class="read-blog-sidebar__search">
+        <Icon name="i-ph-magnifying-glass" class="read-blog-sidebar__search-icon" />
+        <input v-model="search" type="search" placeholder="Nhập từ khóa" aria-label="Tìm kiếm bài viết">
+        <button v-if="search" type="button" aria-label="Xóa từ khóa" @click.prevent="search = ''">
+          <Icon name="i-ph-x-bold" class="h-3 w-3" />
+        </button>
+      </label>
     </section>
 
-    <section class="read-blog-sidebar__card" aria-labelledby="read-blog-related-title">
+    <section class="read-blog-sidebar__card" aria-labelledby="read-blog-popular-title">
       <div class="read-blog-sidebar__header">
         <span class="read-blog-sidebar__header-icon">
-          <Icon name="i-ph-books-fill" />
+          <Icon name="i-ph-fire-fill" />
         </span>
-        <h2 id="read-blog-related-title" class="read-blog-sidebar__title">
-          {{ $t("pages.readBlogPage.relatedArticles") }}
+        <h2 id="read-blog-popular-title" class="read-blog-sidebar__title">
+          Bài viết phổ biến
         </h2>
       </div>
 
-      <div v-if="relatedArticles.length > 0" class="read-blog-sidebar__related-list" role="list">
+      <div v-if="filteredArticles.length > 0" class="read-blog-sidebar__related-list" role="list">
         <NuxtLink
-          v-for="item in relatedArticles"
+          v-for="item in filteredArticles"
           :key="item.slug"
           :to="appRoutes.readBlog(item.slug)"
           class="read-blog-sidebar__related"
@@ -63,11 +51,34 @@
             <span class="read-blog-sidebar__related-category">{{ item.categoryLabel }}</span>
             <span class="read-blog-sidebar__related-title">{{ item.title }}</span>
             <span class="read-blog-sidebar__related-meta">
-              <Icon name="i-ph-clock-fill" />
-              {{ $t("pages.blogsPage.readMinutes", { count: item.readMinutes }) }}
+              <Icon name="i-ph-eye-fill" />
+              {{ formatCompact(item.views) }}
+              <span class="read-blog-sidebar__related-author">{{ item.author }}</span>
             </span>
           </span>
         </NuxtLink>
+      </div>
+      <p v-else class="read-blog-sidebar__empty">Không tìm thấy bài viết phù hợp.</p>
+    </section>
+
+    <section class="read-blog-sidebar__card" aria-labelledby="read-blog-categories-title">
+      <div class="read-blog-sidebar__header">
+        <span class="read-blog-sidebar__header-icon"><Icon name="i-ph-squares-four-fill" /></span>
+        <h2 id="read-blog-categories-title" class="read-blog-sidebar__title">Thể loại</h2>
+      </div>
+      <div class="read-blog-sidebar__categories">
+        <button
+          v-for="category in categories"
+          :key="category.value"
+          class="read-blog-sidebar__category-filter"
+          :class="{ 'read-blog-sidebar__category-filter--active': selectedCategory === category.value }"
+          type="button"
+          :aria-pressed="selectedCategory === category.value"
+          @click="selectedCategory = category.value"
+        >
+          <Icon :name="category.icon" class="read-blog-sidebar__category-icon" />
+          <span>{{ category.label }}</span>
+        </button>
       </div>
     </section>
   </aside>
@@ -76,21 +87,60 @@
 <script setup lang="ts">
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 
-defineProps<{
+const props = defineProps<{
   article: {
     author: string
     authorAvatarUrl: string
     categoryLabel: string
   }
-  relatedArticles: ReadonlyArray<{
+  popularArticles: ReadonlyArray<{
     slug: string
+    category: string
     categoryLabel: string
     title: string
-    readMinutes: number
+    views: number
+    author: string
     image?: string
     imageFallback?: string
   }>
 }>()
+
+const search = ref("")
+const selectedCategory = ref("all")
+const { t, locale } = useI18n()
+const numberFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
+  notation: "compact",
+  maximumFractionDigits: 1,
+}))
+
+const formatCompact = (value: number) => numberFormatter.value.format(value)
+
+const categories = computed(() => {
+  const values = [
+    ["all", t("pages.blogsPage.categoryAll"), "i-ph-squares-four-fill"], ["vehicles", t("pages.blogsPage.categoryVehicles"), "i-ph-car-profile"],
+    ["business", t("pages.blogsPage.categoryBusiness"), "i-ph-trend-up"], ["education", t("pages.blogsPage.categoryEducation"), "i-ph-graduation-cap"],
+    ["movies", t("pages.blogsPage.categoryMovies"), "i-ph-film-slate"], ["gaming", t("pages.blogsPage.categoryGaming"), "i-ph-game-controller"],
+    ["history", t("pages.blogsPage.categoryHistory"), "i-ph-landmark"], ["lifestyle", t("pages.blogsPage.categoryLifestyle"), "i-ph-house-line"],
+    ["pets", t("pages.blogsPage.categoryPets"), "i-ph-paw-print"], ["science", t("pages.blogsPage.categoryScience"), "i-ph-microscope"],
+    ["sports", t("pages.blogsPage.categorySports"), "i-ph-soccer-ball"], ["travel", t("pages.blogsPage.categoryTravel"), "i-ph-airplane-tilt"],
+    ["people", t("pages.blogsPage.categoryPeople"), "i-ph-globe-hemisphere-east"], ["other", t("pages.blogsPage.categoryOther"), "i-ph-dots-three-circle"],
+  ] as const
+
+  return values.map(([value, label, icon]) => ({
+    value,
+    label,
+    icon,
+  }))
+})
+
+const filteredArticles = computed(() => {
+  const keyword = search.value.trim().toLocaleLowerCase()
+  return props.popularArticles.filter((item) => {
+    const matchesCategory = selectedCategory.value === "all" || item.category === selectedCategory.value
+    const matchesSearch = !keyword || `${item.title} ${item.categoryLabel}`.toLocaleLowerCase().includes(keyword)
+    return matchesCategory && matchesSearch
+  })
+})
 </script>
 
 <style scoped>
@@ -199,8 +249,169 @@ defineProps<{
   letter-spacing: 0;
 }
 
+.read-blog-sidebar__search {
+  position: relative;
+  margin-top: 14px;
+}
+
+.read-blog-sidebar__search-card {
+  padding: 16px;
+  background:
+    radial-gradient(circle at 100% 0, rgba(14, 165, 233, 0.12), transparent 42%),
+    linear-gradient(145deg, rgba(0, 0, 255, 0.06), #ffffff 58%);
+}
+
+.read-blog-sidebar__search-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.read-blog-sidebar__search-heading p {
+  margin: 0;
+  color: #0000ff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.read-blog-sidebar__search-heading h2 {
+  margin: 3px 0 0;
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+
+.read-blog-sidebar__search-badge {
+  display: flex;
+  height: 38px;
+  width: 38px;
+  flex: 0 0 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #0000ff;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.read-blog-sidebar__search-icon {
+  position: absolute;
+  z-index: 1;
+  left: 14px;
+  top: 50%;
+  height: 17px;
+  width: 17px;
+  color: #64748b;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.read-blog-sidebar__search input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #0f172a;
+  outline: none;
+  padding: 11px 42px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.read-blog-sidebar__search input::placeholder {
+  color: #94a3b8;
+}
+
+.read-blog-sidebar__search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.read-blog-sidebar__search input:focus {
+  border-color: rgba(0, 0, 255, 0.28);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.07), 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.read-blog-sidebar__search button {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  display: flex;
+  height: 27px;
+  width: 27px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.read-blog-sidebar__search button:hover {
+  background: rgba(0, 0, 255, 0.07);
+  color: #0000ff;
+}
+
 .read-blog-sidebar__related-list {
   display: grid;
+}
+
+.read-blog-sidebar__empty {
+  margin: 0;
+  padding: 16px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.read-blog-sidebar__categories {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 12px;
+}
+
+.read-blog-sidebar__category-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #334155;
+  gap: 5px;
+  min-height: 66px;
+  padding: 8px 5px;
+  font-size: 10px;
+  font-weight: 750;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.read-blog-sidebar__category-icon {
+  height: 17px;
+  width: 17px;
+}
+
+.read-blog-sidebar__category-filter:hover,
+.read-blog-sidebar__category-filter--active {
+  border-color: rgba(0, 0, 255, 0.18);
+  background: rgba(0, 0, 255, 0.06);
+  color: #0000ff;
 }
 
 .read-blog-sidebar__related {
@@ -286,6 +497,22 @@ defineProps<{
 .read-blog-sidebar__related-meta :deep(svg) {
   height: 13px;
   width: 13px;
+}
+
+.read-blog-sidebar__related-author {
+  display: inline-block;
+  max-width: 110px;
+  overflow: hidden;
+  margin-left: 3px;
+  color: #64748b;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.read-blog-sidebar__related-author::before {
+  content: "•";
+  margin-right: 6px;
+  color: #cbd5e1;
 }
 
 </style>

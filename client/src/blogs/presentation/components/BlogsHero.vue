@@ -16,26 +16,7 @@
         {{ $t("pages.blogsPage.heroTitle") }}
       </h1>
 
-      <div class="blogs-hero__actions">
-        <button
-          type="button"
-          class="blogs-hero__button"
-          :class="{ 'blogs-hero__button--active': mineOnly }"
-          :aria-pressed="mineOnly"
-          @click="$emit('toggleMine')"
-        >
-          <Icon :name="mineOnly ? 'i-ph-toggle-right-fill' : 'i-ph-article-fill'" class="h-4 w-4 shrink-0" />
-          <span>{{ $t("pages.blogsPage.myArticles") }}</span>
-        </button>
 
-        <NuxtLink
-          to="/create-blog"
-          class="blogs-hero__primary"
-        >
-          <Icon name="i-ph-pencil-simple-line-fill" class="h-4 w-4 shrink-0" />
-          <span>{{ $t("pages.blogsPage.writeBlog") }}</span>
-        </NuxtLink>
-      </div>
     </div>
 
     <div class="blogs-hero__stats" aria-label="Blog statistics">

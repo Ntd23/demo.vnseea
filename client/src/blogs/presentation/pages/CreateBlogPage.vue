@@ -165,6 +165,8 @@ import BlogsCreateBlogSidebar from "../components/CreateBlogSidebar.vue"
 import BlogsCreateBlogContentEditor from "../components/CreateBlogContentEditor.vue"
 import { useCreateBlogPageVM } from "../../application/view-models/useCreateBlogPageVM"
 
+const props = defineProps<{ editBlogId?: number }>()
+
 const {
   title,
   content,
@@ -189,7 +191,10 @@ const {
   saveDraft,
   publishBlog,
   quickFillDemo,
-} = useCreateBlogPageVM()
+  loadArticleForEditing,
+} = useCreateBlogPageVM(undefined, props.editBlogId)
+
+onMounted(loadArticleForEditing)
 </script>
 
 <style scoped>

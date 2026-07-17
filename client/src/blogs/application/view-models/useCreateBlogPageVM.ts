@@ -37,6 +37,7 @@ const toPlainText = (value: string) =>
 
 export function useCreateBlogPageVM(
   repository = createApiBlogRepository(),
+  editBlogId?: number,
 ) {
   const { t } = useI18n()
   const toast = useToast()
@@ -50,6 +51,8 @@ export function useCreateBlogPageVM(
   const thumbnailIndex = ref(0)
   const submitMessage = ref("")
   const submitState = ref<CreateBlogSubmitState>("idle")
+  const isLoadingArticle = ref(Boolean(editBlogId))
+  const isEditing = computed(() => Boolean(editBlogId && editBlogId > 0))
 
   const categoryOptions = computed(() => [
     { label: t("pages.blogsPage.categoryBusiness"), value: "business" },
@@ -196,6 +199,28 @@ export function useCreateBlogPageVM(
     thumbnailFile: thumbnailFile.value,
   })
 
+  const loadArticleForEditing = async () => {
+    if (!editBlogId) return
+
+    try {
+      const article = await repository.getBlogBySlug(String(editBlogId))
+      if (!article.mine) throw new Error("Bạn không có quyền chỉnh sửa bài viết này.")
+
+      title.value = article.title
+      content.value = article.body.join("\n\n")
+      category.value = article.category as BlogCategoryValue
+      tagsInput.value = article.tags.join(", ")
+      thumbnailName.value = article.image ? "Ảnh bìa hiện tại" : ""
+    }
+    catch (error) {
+      submitMessage.value = error instanceof Error ? error.message : "Không thể tải bài viết."
+      submitState.value = "error"
+    }
+    finally {
+      isLoadingArticle.value = false
+    }
+  }
+
   const saveDraft = async () => {
     if (isSubmitting.value) return
 
@@ -203,7 +228,10 @@ export function useCreateBlogPageVM(
     submitState.value = "saving"
 
     try {
-      await repository.createBlog(createPayload("draft"))
+      const payload = createPayload("draft")
+      await (isEditing.value
+        ? repository.updateBlog({ ...payload, id: editBlogId! })
+        : repository.createBlog(payload))
 
       submitMessage.value = t("pages.createBlogPage.draftSaved")
       submitState.value = "draft"
@@ -236,7 +264,10 @@ export function useCreateBlogPageVM(
       submitState.value = "publishing"
 
       try {
-        const result = await repository.createBlog(createPayload("publish"))
+        const payload = createPayload("publish")
+        const result = await (isEditing.value
+          ? repository.updateBlog({ ...payload, id: editBlogId! })
+          : repository.createBlog(payload))
 
         if (result.status === "pending") {
           submitMessage.value = t("pages.createBlogPage.publishPending")
@@ -302,6 +333,8 @@ export function useCreateBlogPageVM(
     submitState,
     isSubmitting,
     submitStatusIcon,
+    isEditing,
+    isLoadingArticle,
     categoryOptions,
     tagList,
     selectedCategoryLabel,
@@ -316,5 +349,6 @@ export function useCreateBlogPageVM(
     saveDraft,
     publishBlog,
     quickFillDemo,
+    loadArticleForEditing,
   }
 }

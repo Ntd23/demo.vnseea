@@ -31,6 +31,7 @@ export type BlogListArticle = {
   publishedAt: string
   publishedHoursAgo: number
   views: number
+  commentsCount: number
   readMinutes: number
   likes: number
   tags: string[]
@@ -56,6 +57,8 @@ export type BlogCreateDraft = {
   status: BlogSubmitStatus
   thumbnailFile?: File | null
 }
+
+export type BlogUpdateDraft = BlogCreateDraft & { id: number }
 
 export type BlogCreateResult = {
   id: number
