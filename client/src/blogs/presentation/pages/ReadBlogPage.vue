@@ -90,6 +90,8 @@ const {
 
 <style scoped>
 .read-blog-page {
+  min-width: 0;
+  overflow-x: clip;
   padding-bottom: 44px;
 }
 
@@ -130,11 +132,16 @@ const {
 
 .read-blog-page__layout {
   display: grid;
+  min-width: 0;
   gap: 18px;
   margin-top: 18px;
 }
 
 .read-blog-page__main {
+  min-width: 0;
+}
+
+.read-blog-page__sidebar {
   min-width: 0;
 }
 

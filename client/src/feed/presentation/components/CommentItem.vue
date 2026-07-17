@@ -74,8 +74,8 @@
         </div>
       </div>
 
-      <div v-if="time || (enableReaction && id) || enableReply" class="comment-item__footer">
-        <span v-if="time">{{ time }}</span>
+      <div v-if="displayTime || (enableReaction && id) || enableReply" class="comment-item__footer">
+        <span v-if="displayTime">{{ displayTime }}</span>
 
         <div
           v-if="enableReaction"
@@ -202,9 +202,10 @@ import type { FeedCommentActionRepository } from "../../application/view-models/
 import { createMentionSegments } from "../../application/utils/feed-mentions"
 import type { FeedStoryReactionType } from "../../domain/constants/story-reactions"
 import type { FeedCommentAttachment, FeedCommentRecord, FeedCommentSubmitPayload } from "../../domain/types/feed.types"
+import { formatUnixDateTime } from "../../../shared-kernel/application/utils/format-unix-date-time"
 import FeedCommentComposer from "./CommentComposer.vue"
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const audioRef = ref<HTMLAudioElement | null>(null)
 const audioPlaying = ref(false)
 const audioCurrentTime = ref(0)
@@ -261,6 +262,7 @@ const {
 const visibleRole = computed(() =>
   props.role && props.role !== props.author ? props.role : "",
 )
+const displayTime = computed(() => formatUnixDateTime(props.time, locale.value))
 const textSegments = computed(() =>
   createMentionSegments(props.text),
 )
@@ -405,7 +407,7 @@ onBeforeUnmount(() => {
 
 .comment-item__role {
   overflow: hidden;
-  color: var(--text-secondary);
+  color: #64748b;
   font-size: 11px;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -533,7 +535,7 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 10px;
   margin: 4px 0 0 12px;
-  color: var(--text-tertiary);
+  color: #64748b;
   font-size: 11.5px;
   font-weight: 600;
 }
@@ -645,7 +647,7 @@ onBeforeUnmount(() => {
   border: 0;
   border-radius: 999px;
   background: transparent;
-  color: var(--text-secondary);
+  color: #64748b;
   padding: 5px 8px;
   font-size: 11.5px;
   font-weight: 700;
@@ -677,7 +679,7 @@ onBeforeUnmount(() => {
 }
 
 .comment-item__footer-count {
-  color: var(--text-tertiary);
+  color: #64748b;
 }
 
 .comment-item__replies {

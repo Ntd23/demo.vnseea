@@ -157,7 +157,7 @@ const shellClass = computed(() => {
   // All content pages share same sidebar widths → no layout shift on navigation
   return showLeftSidebar.value
     ? 'max-w-[1880px] xl:grid-cols-[220px_minmax(0,1fr)_260px] 2xl:grid-cols-[256px_minmax(0,1fr)_280px]'
-    : 'max-w-[1880px] xl:grid-cols-[minmax(0,1fr)_260px]'
+    : 'max-w-[1880px] xl:grid-cols-[minmax(0,1fr)_280px]'
 })
 
 const mainClass = computed(() => {

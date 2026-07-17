@@ -822,8 +822,8 @@ defineExpose({
   justify-content: center;
   overflow: hidden;
   border-radius: var(--radius-full);
-  background: var(--bg-surface-active);
-  color: var(--text-secondary);
+  background: #f1f5f9;
+  color: #475569;
   font-size: 11px;
   font-weight: 800;
 }
@@ -859,16 +859,16 @@ defineExpose({
   min-width: 0;
   display: flex;
   align-items: flex-end;
-  background: var(--bg-surface-hover);
-  border: 1px solid var(--border-default);
+  background: #f8fafc;
+  border: 1px solid #dbe3ef;
   border-radius: 24px;
   transition: all 0.2s ease;
 }
 
 .comment-composer__input-wrap:focus-within {
-  background: var(--bg-surface);
-  border-color: var(--color-primary-300);
-  box-shadow: 0 0 0 4px var(--color-primary-50);
+  background: #ffffff;
+  border-color: rgba(0, 0, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.07);
 }
 
 .comment-composer__inline-actions {
@@ -889,14 +889,14 @@ defineExpose({
   border: 0;
   border-radius: var(--radius-full);
   background: transparent;
-  color: var(--text-tertiary);
+  color: #64748b;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .comment-composer__inline-tool:hover {
-  background: var(--bg-surface-active);
-  color: var(--color-primary-500);
+  background: #eef2ff;
+  color: #0000ff;
 }
 
 .comment-composer__editor {
@@ -947,13 +947,14 @@ defineExpose({
   font-family: inherit;
   font-size: var(--text-body);
   line-height: 20px;
-  color: var(--text-primary);
+  color: #0f172a;
   outline: none;
   box-shadow: none;
 }
 
 .comment-composer__textarea::placeholder {
-  color: var(--text-tertiary);
+  color: #64748b;
+  opacity: 1;
 }
 
 .comment-composer__mention-popover {
@@ -1234,16 +1235,16 @@ defineExpose({
   justify-content: center;
   border: 0;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
-  color: var(--icon-inverse);
+  background: #0000ff;
+  color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 4px 12px var(--color-primary-100);
+  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.18);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .comment-composer__send:hover:not(:disabled) {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 20px var(--color-primary-200);
+  box-shadow: 0 6px 20px rgba(0, 0, 255, 0.24);
 }
 
 .comment-composer__send:active:not(:disabled) {

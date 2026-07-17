@@ -2,6 +2,7 @@
 
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { communityCategoryOptions, communityPageCategoryOptions } from "../constants/community-options"
+import { communitySlugMaxLength } from "./community-validation.service"
 import type {
   CommunityDraft,
   CommunityOption,
@@ -110,7 +111,7 @@ export function createCommunitySlug(value: string) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
-    .slice(0, 50)
+    .slice(0, communitySlugMaxLength)
 }
 
 export function getDefaultCommunityCategory() {

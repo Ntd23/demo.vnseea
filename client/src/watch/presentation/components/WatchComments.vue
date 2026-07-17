@@ -35,7 +35,7 @@
           <div class="watch-comment__meta">
             <p class="watch-comment__author">{{ comment.author }}</p>
             <span class="watch-comment__role">{{ comment.role }}</span>
-            <span class="watch-comment__time">· {{ comment.time }}</span>
+            <span class="watch-comment__time">· {{ formatUnixDateTime(comment.time, locale) }}</span>
           </div>
           <p class="watch-comment__text">{{ comment.message }}</p>
         </div>
@@ -46,11 +46,13 @@
 
 <script setup lang="ts">
 import type { WatchComment } from "../../application/composables/useWatchData"
+import { formatUnixDateTime } from "../../../shared-kernel/application/utils/format-unix-date-time"
 
 defineProps<{
   comments: ReadonlyArray<WatchComment>
 }>()
 
+const { locale } = useI18n()
 const emit = defineEmits<{ send: [message: string] }>()
 
 const message = ref('')

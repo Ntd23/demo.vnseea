@@ -6,6 +6,16 @@ import { createBackendApiClient } from "../../utils/backend-api-client"
 import { getBackendCurrentUser } from "../../utils/backend-current-user"
 import { createBackendWebClient } from "../../utils/backend-web-client"
 import { mapCommunityPageRecord } from "./_shared"
+import {
+  communityDescriptionMinLength,
+  communityNameMinLength,
+  communitySlugMaxLength,
+  communitySlugMinLength,
+  isCommunityDescriptionValid,
+  isCommunityNameValid,
+  isCommunitySlugFormatValid,
+  isCommunitySlugLengthValid,
+} from "../../../src/community/domain/services/community-validation.service"
 
 type CreatePageBody = {
   name?: string
@@ -76,10 +86,39 @@ const mapPageCategoryToBackendId = (value: unknown) => {
 export default defineEventHandler(async (event) => {
   const body = await readBody<CreatePageBody>(event)
   const currentUser = await getBackendCurrentUser(event)
+  const name = text(body.name)
   const slug = text(body.slug)
   const address = text(body.location?.address)
   const lat = numberText(body.location?.lat)
   const lng = numberText(body.location?.lng)
+
+  if (!isCommunityNameValid(name)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: `Page name must contain at least ${communityNameMinLength} characters.`,
+    })
+  }
+
+  if (!isCommunitySlugLengthValid(slug)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: `Page URL must contain between ${communitySlugMinLength} and ${communitySlugMaxLength} characters.`,
+    })
+  }
+
+  if (!isCommunitySlugFormatValid(slug)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: "Page URL may only contain lowercase letters, numbers, and hyphens.",
+    })
+  }
+
+  if (!isCommunityDescriptionValid(body.description)) {
+    throw createError({
+      statusCode: 422,
+      statusMessage: `Page description must contain at least ${communityDescriptionMinLength} characters.`,
+    })
+  }
 
   if (!address || !lat || !lng) {
     throw createError({
@@ -93,7 +132,7 @@ export default defineEventHandler(async (event) => {
     "pages",
     {
       page_name: slug,
-      page_title: text(body.name),
+      page_title: name,
       page_category: mapPageCategoryToBackendId(body.category),
       page_description: text(body.description),
       address,

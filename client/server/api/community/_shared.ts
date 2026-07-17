@@ -314,6 +314,7 @@ export const mapCommunityPageRecord = (
 
   const record: CommunityPageRecord = {
     id,
+    ownerId: ownerId || undefined,
     name,
     slug,
     summary: firstString(entity, ["page_description", "about", "description"]),
@@ -339,7 +340,8 @@ export const mapCommunityPageRecord = (
       firstString(entity, ["category_name"]),
       normalizePageCategory(entity.page_category || entity.category),
     ]),
-    following: isTruthy(entity.is_liked),
+    following: isTruthy(entity.is_following) || isTruthy(entity.is_followed),
+    liked: isTruthy(entity.is_liked),
   }
 
   return record

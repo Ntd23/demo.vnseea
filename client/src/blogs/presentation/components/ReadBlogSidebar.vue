@@ -3,16 +3,25 @@
     <section class="read-blog-sidebar__card read-blog-sidebar__search-card" aria-labelledby="read-blog-search-title">
       <div class="read-blog-sidebar__search-heading">
         <div>
-          <h2 id="read-blog-search-title">Tìm kiếm bài viết</h2>
+          <h2 id="read-blog-search-title">{{ $t("pages.readBlogPage.searchArticles") }}</h2>
         </div>
       </div>
-      <label class="read-blog-sidebar__search">
+      <form class="read-blog-sidebar__search" role="search" @submit.prevent="openBlogsSearch">
         <Icon name="i-ph-magnifying-glass" class="read-blog-sidebar__search-icon" />
-        <input v-model="search" type="search" placeholder="Nhập từ khóa" aria-label="Tìm kiếm bài viết">
-        <button v-if="search" type="button" aria-label="Xóa từ khóa" @click.prevent="search = ''">
-          <Icon name="i-ph-x-bold" class="h-3 w-3" />
+        <input
+          v-model="search"
+          type="search"
+          :placeholder="$t('pages.readBlogPage.searchPlaceholder')"
+          :aria-label="$t('pages.readBlogPage.searchArticles')"
+        >
+        <button
+          type="submit"
+          :disabled="!search.trim()"
+          :aria-label="$t('pages.readBlogPage.viewSearchResults')"
+        >
+          <Icon name="i-ph-arrow-right-bold" class="h-3.5 w-3.5" />
         </button>
-      </label>
+      </form>
     </section>
 
     <section class="read-blog-sidebar__card" aria-labelledby="read-blog-popular-title">
@@ -21,13 +30,13 @@
           <Icon name="i-ph-fire-fill" />
         </span>
         <h2 id="read-blog-popular-title" class="read-blog-sidebar__title">
-          Bài viết phổ biến
+          {{ $t("pages.readBlogPage.popularArticles") }}
         </h2>
       </div>
 
-      <div v-if="filteredArticles.length > 0" class="read-blog-sidebar__related-list" role="list">
+      <div v-if="popularArticles.length > 0" class="read-blog-sidebar__related-list" role="list">
         <NuxtLink
-          v-for="item in filteredArticles"
+          v-for="item in popularArticles"
           :key="item.slug"
           :to="appRoutes.readBlog(item.slug)"
           class="read-blog-sidebar__related"
@@ -58,23 +67,25 @@
           </span>
         </NuxtLink>
       </div>
-      <p v-else class="read-blog-sidebar__empty">Không tìm thấy bài viết phù hợp.</p>
+      <p v-else class="read-blog-sidebar__empty">
+        {{ $t("pages.readBlogPage.noPopularArticles") }}
+      </p>
     </section>
 
     <section class="read-blog-sidebar__card" aria-labelledby="read-blog-categories-title">
       <div class="read-blog-sidebar__header">
         <span class="read-blog-sidebar__header-icon"><Icon name="i-ph-squares-four-fill" /></span>
-        <h2 id="read-blog-categories-title" class="read-blog-sidebar__title">Thể loại</h2>
+        <h2 id="read-blog-categories-title" class="read-blog-sidebar__title">
+          {{ $t("pages.readBlogPage.categories") }}
+        </h2>
       </div>
       <div class="read-blog-sidebar__categories">
         <button
           v-for="category in categories"
           :key="category.value"
           class="read-blog-sidebar__category-filter"
-          :class="{ 'read-blog-sidebar__category-filter--active': selectedCategory === category.value }"
           type="button"
-          :aria-pressed="selectedCategory === category.value"
-          @click="selectedCategory = category.value"
+          @click="openBlogCategory(category.value)"
         >
           <Icon :name="category.icon" class="read-blog-sidebar__category-icon" />
           <span>{{ category.label }}</span>
@@ -106,7 +117,6 @@ const props = defineProps<{
 }>()
 
 const search = ref("")
-const selectedCategory = ref("all")
 const { t, locale } = useI18n()
 const numberFormatter = computed(() => new Intl.NumberFormat(locale.value === "vi" ? "vi-VN" : "en-US", {
   notation: "compact",
@@ -133,19 +143,26 @@ const categories = computed(() => {
   }))
 })
 
-const filteredArticles = computed(() => {
-  const keyword = search.value.trim().toLocaleLowerCase()
-  return props.popularArticles.filter((item) => {
-    const matchesCategory = selectedCategory.value === "all" || item.category === selectedCategory.value
-    const matchesSearch = !keyword || `${item.title} ${item.categoryLabel}`.toLocaleLowerCase().includes(keyword)
-    return matchesCategory && matchesSearch
-  })
+const blogsQuery = (category?: string) => ({
+  ...(search.value.trim() ? { search: search.value.trim() } : {}),
+  ...(category && category !== "all" ? { category } : {}),
+})
+
+const openBlogsSearch = () => navigateTo({
+  path: appRoutes.blogs,
+  query: blogsQuery(),
+})
+
+const openBlogCategory = (category: string) => navigateTo({
+  path: appRoutes.blogs,
+  query: blogsQuery(category),
 })
 </script>
 
 <style scoped>
 .read-blog-sidebar {
   display: grid;
+  min-width: 0;
   gap: 16px;
 }
 
@@ -256,9 +273,7 @@ const filteredArticles = computed(() => {
 
 .read-blog-sidebar__search-card {
   padding: 16px;
-  background:
-    radial-gradient(circle at 100% 0, rgba(14, 165, 233, 0.12), transparent 42%),
-    linear-gradient(145deg, rgba(0, 0, 255, 0.06), #ffffff 58%);
+  background: #ffffff;
 }
 
 .read-blog-sidebar__search-heading {
@@ -268,35 +283,12 @@ const filteredArticles = computed(() => {
   gap: 12px;
 }
 
-.read-blog-sidebar__search-heading p {
-  margin: 0;
-  color: #0000ff;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .read-blog-sidebar__search-heading h2 {
-  margin: 3px 0 0;
+  margin: 0;
   color: #0f172a;
   font-size: 16px;
   font-weight: 850;
   letter-spacing: -0.01em;
-}
-
-.read-blog-sidebar__search-badge {
-  display: flex;
-  height: 38px;
-  width: 38px;
-  flex: 0 0 38px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid rgba(0, 0, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.82);
-  color: #0000ff;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
 }
 
 .read-blog-sidebar__search-icon {
@@ -363,6 +355,16 @@ const filteredArticles = computed(() => {
   color: #0000ff;
 }
 
+.read-blog-sidebar__search button:not(:disabled) {
+  background: #0000ff;
+  color: #ffffff;
+}
+
+.read-blog-sidebar__search button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
 .read-blog-sidebar__related-list {
   display: grid;
 }
@@ -407,8 +409,7 @@ const filteredArticles = computed(() => {
   width: 17px;
 }
 
-.read-blog-sidebar__category-filter:hover,
-.read-blog-sidebar__category-filter--active {
+.read-blog-sidebar__category-filter:hover {
   border-color: rgba(0, 0, 255, 0.18);
   background: rgba(0, 0, 255, 0.06);
   color: #0000ff;
@@ -510,7 +511,7 @@ const filteredArticles = computed(() => {
 }
 
 .read-blog-sidebar__related-author::before {
-  content: "•";
+  content: "\2022";
   margin-right: 6px;
   color: #cbd5e1;
 }

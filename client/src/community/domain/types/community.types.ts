@@ -27,6 +27,7 @@ export type CommunityPageTab = "mine" | "suggested" | "favorite"
 
 export interface CommunityPageRecord {
   id: number
+  ownerId?: number
   name: string
   slug: string
   summary: string

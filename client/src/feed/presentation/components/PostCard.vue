@@ -8,6 +8,7 @@
     <div class="post-card__body px-3 py-2">
       <FeedPostHeader
         :author="post.author"
+        :author-id="post.authorId"
         :author-avatar-url="post.authorAvatarUrl"
         :author-gender="post.authorGender"
         :author-path="post.authorPath"

@@ -57,6 +57,10 @@
             <Icon name="i-ph-eye-fill" class="read-blog-hero__stat-icon" />
             {{ $t("pages.readBlogPage.views", { count: formatCompact(article.views) }) }}
           </span>
+          <span>
+            <Icon name="i-ph-chat-circle-dots-fill" class="read-blog-hero__stat-icon" />
+            {{ $t("pages.readBlogPage.responses", { count: formatCompact(article.commentsCount) }) }}
+          </span>
         </div>
       </div>
     </div>
@@ -73,6 +77,7 @@ const props = defineProps<{
     authorAvatarUrl: string
     publishedAt: string
     views: number
+    commentsCount: number
     readMinutes: number
     image: string
     imageFallback: string
@@ -118,6 +123,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 }
 
 .read-blog-hero__content {
+  min-width: 0;
   padding: 18px;
 }
 
@@ -126,7 +132,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 .read-blog-hero__author,
 .read-blog-hero__stats,
 .read-blog-hero__chip,
-.read-blog-hero__stats span {
+.read-blog-hero__stats > span {
   display: flex;
   align-items: center;
 }
@@ -137,7 +143,7 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 }
 
 .read-blog-hero__chip,
-.read-blog-hero__stats span {
+.read-blog-hero__stats > span {
   gap: 6px;
   border-radius: 999px;
   font-size: 12px;
@@ -157,6 +163,8 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 
 .read-blog-hero__chip-icon,
 .read-blog-hero__stat-icon {
+  display: block;
+  flex: 0 0 auto;
   height: 14px;
   width: 14px;
 }
@@ -168,6 +176,8 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1.15;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .read-blog-hero__excerpt {
@@ -177,9 +187,11 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
   font-size: 15px;
   font-weight: 500;
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .read-blog-hero__footer {
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 14px;
   margin-top: 18px;
@@ -231,17 +243,18 @@ const showCoverImage = computed(() => Boolean(props.article.image.trim()) && !im
 
 .read-blog-hero__date {
   margin-top: 2px;
-  color: #94a3b8;
+  color: #64748b;
   font-size: 12px;
   font-weight: 600;
 }
 
 .read-blog-hero__stats {
   flex: 0 0 auto;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
-.read-blog-hero__stats span {
+.read-blog-hero__stats > span {
   background: #f8fafc;
   color: #475569;
   padding: 8px 10px;

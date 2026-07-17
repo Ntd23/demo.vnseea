@@ -1,7 +1,14 @@
 <!-- Description: Renders the post header with backend-backed author metadata and a reduced action menu without mock follow behavior. -->
 <template>
   <div class="post-header">
-    <div class="post-header__left">
+    <IdentityHoverCard
+      class="post-header__left"
+      :author="author"
+      :author-avatar-url="authorAvatarUrl"
+      :author-path="authorPath"
+      :author-id="authorId"
+      :role="role"
+    >
       <NuxtLink :to="authorPath || '#'" class="post-header__avatar">
         <img
           v-if="authorAvatarUrl"
@@ -43,7 +50,7 @@
           <Icon :name="audienceIcon" class="post-header__audience-icon" :title="audience" />
         </div>
       </div>
-    </div>
+    </IdentityHoverCard>
 
     <div ref="menuRef" class="relative" :style="{ zIndex: open ? 50 : undefined }">
       <button class="post-header__menu-btn" :class="{ 'post-header__menu-btn--open': open }" type="button"
@@ -80,12 +87,14 @@
 
 <script setup lang="ts">
 import { onClickOutside } from "@vueuse/core"
+import IdentityHoverCard from "./IdentityHoverCard.vue"
 
 const { t } = useI18n()
 const route = useRoute()
 
 const props = defineProps<{
   author: string
+  authorId?: number
   authorAvatarUrl?: string
   authorGender?: string
   authorPath?: string

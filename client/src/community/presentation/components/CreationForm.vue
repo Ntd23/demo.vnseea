@@ -186,6 +186,12 @@ import {
 import {
   createCommunitySlug,
 } from "../../domain/services/community-helpers.service"
+import {
+  isCommunityDescriptionValid,
+  isCommunityNameValid,
+  isCommunitySlugFormatValid,
+  isCommunitySlugLengthValid,
+} from "../../domain/services/community-validation.service"
 import type {
   CommunityDraft,
   CommunityOption,
@@ -313,11 +319,23 @@ watch(
 
 const validateForm = (state: CommunityDraft): CreationFormError[] => {
   const errors: CreationFormError[] = []
+  const name = (state.name || "").trim()
   const slug = (state.slug || "").trim()
-  if (!(state.name || "").trim()) errors.push({ name: "name", message: t("community.creation.common.validationNameRequired") })
-  if (!slug) errors.push({ name: "slug", message: t("community.creation.common.validationSlugRequired") })
-  else if (slug.length < 5 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) errors.push({ name: "slug", message: t("community.creation.common.validationSlugInvalid") })
-  if ((state.description || "").trim().length < 24) errors.push({ name: "description", message: t("community.creation.common.validationDescriptionRequired") })
+  const nameIsValid = isCommunityNameValid(name)
+  const slugWasGeneratedFromName = slug === createCommunitySlug(name)
+
+  if (!name) errors.push({ name: "name", message: t("community.creation.common.validationNameRequired") })
+  else if (!nameIsValid) errors.push({ name: "name", message: t("community.creation.common.validationNameLength") })
+
+  // When the invalid slug was generated from a short name, report the actionable
+  // error on the name field. The watcher will regenerate the slug after it is fixed.
+  if (nameIsValid || !slugWasGeneratedFromName) {
+    if (!slug) errors.push({ name: "slug", message: t("community.creation.common.validationSlugRequired") })
+    else if (!isCommunitySlugLengthValid(slug)) errors.push({ name: "slug", message: t("community.creation.common.validationSlugLength") })
+    else if (!isCommunitySlugFormatValid(slug)) errors.push({ name: "slug", message: t("community.creation.common.validationSlugInvalid") })
+  }
+
+  if (!isCommunityDescriptionValid(state.description)) errors.push({ name: "description", message: t("community.creation.common.validationDescriptionRequired") })
   if (props.showPrivacy && !state.privacy) errors.push({ name: "privacy", message: t("community.creation.common.validationPrivacyRequired") })
   if (!state.category) errors.push({ name: "category", message: t("community.creation.common.validationCategoryRequired") })
   if (props.showLocation && (!(state.location?.address || "").trim() || !hasLocationCoordinates(state.location))) {
