@@ -54,6 +54,7 @@ const directionsServiceConstructor = shallowRef<typeof google.maps.DirectionsSer
 const directionsRendererConstructor = shallowRef<typeof google.maps.DirectionsRenderer | null>(null)
 const directionsRenderer = shallowRef<google.maps.DirectionsRenderer | null>(null)
 const placesService = shallowRef<google.maps.places.PlacesService | null>(null)
+let isMapComponentMounted = false
 let routeRequestSequence = 0
 let lastMarkersViewportKey = ""
 let lastRenderedRouteTargetId = ""
@@ -1333,7 +1334,7 @@ function renderRoute() {
 }
 
 async function initializeMap() {
-  if (!import.meta.client || !mapElement.value) {
+  if (!import.meta.client || !isMapComponentMounted || !mapElement.value) {
     return
   }
 
@@ -1341,13 +1342,20 @@ async function initializeMap() {
     await load()
   }
   catch {
+    if (!isMapComponentMounted) {
+      return
+    }
     mapError.value = t("pages.searchNearby.googleMapsLoadError")
+    return
+  }
+
+  if (!isMapComponentMounted) {
     return
   }
 
   // Đợi window.google.maps sẵn sàng (tối đa 5 giây)
   let retries = 25
-  while (!window.google?.maps && retries > 0) {
+  while (isMapComponentMounted && !window.google?.maps && retries > 0) {
     await new Promise((resolve) => setTimeout(resolve, 200))
     retries--
   }
@@ -1361,7 +1369,7 @@ async function initializeMap() {
   retries = 15
 
   // Đợi thêm để resolveMapConstructors có thể lấy đủ các libraries như maps, marker, routes
-  while (retries > 0) {
+  while (isMapComponentMounted && retries > 0) {
     try {
       constructors = await resolveMapConstructors()
       if (constructors) {
@@ -1375,8 +1383,16 @@ async function initializeMap() {
     retries--
   }
 
+  if (!isMapComponentMounted) {
+    return
+  }
   if (!constructors) {
     mapError.value = t("pages.searchNearby.googleMapsNotReady")
+    return
+  }
+
+  const targetElement = mapElement.value
+  if (!isMapComponentMounted || !(targetElement instanceof HTMLElement)) {
     return
   }
 
@@ -1390,7 +1406,7 @@ async function initializeMap() {
         tilt: 0,
       }
     : {}
-  mapInstance.value = new constructors.Map(mapElement.value, {
+  mapInstance.value = new constructors.Map(targetElement, {
     center: currentCenter.value,
     zoom: isMobileViewport() ? 15 : 13,
     clickableIcons: true,
@@ -1413,6 +1429,7 @@ async function initializeMap() {
 }
 
 onMounted(() => {
+  isMapComponentMounted = true
   void initializeMap()
 })
 
@@ -1486,10 +1503,13 @@ watch(
 )
 
 onBeforeUnmount(() => {
+  isMapComponentMounted = false
   clearOriginMarker()
   clearMarkers()
   clearOriginRadiusCircle()
   clearRoute()
+  placesService.value = null
+  mapInstance.value = null
 })
 </script>
 
