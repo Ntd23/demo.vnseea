@@ -16,12 +16,12 @@ UPDATE `Wo_Posts` SET `is_anonymous` = 0 WHERE `is_anonymous` IS NULL;
 ALTER TABLE `Wo_Posts` MODIFY COLUMN `is_anonymous` TINYINT(1) NOT NULL DEFAULT 0;
 
 UPDATE `Wo_Posts`
-SET `postPrivacy` = 0, `is_anonymous` = 1
-WHERE `postPrivacy` = 4;
+SET `postPrivacy` = '0', `is_anonymous` = 1
+WHERE `postPrivacy` = '4';
 
 UPDATE `Wo_Posts`
-SET `postPrivacy` = 3
-WHERE `is_reel` = 1 AND `postPrivacy` = 2;
+SET `postPrivacy` = '3'
+WHERE `is_reel` = 1 AND `postPrivacy` = '2';
 
 SET @vnseea_sql = IF(
     EXISTS(

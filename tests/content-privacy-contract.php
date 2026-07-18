@@ -275,6 +275,13 @@ privacy_assert(
     privacy_source_contains($root, 'database/migrations/20260718_content_privacy_audience_v2.sql', 'MODIFY COLUMN `privacy` TINYINT(1) NOT NULL DEFAULT 2'),
     'migration must enforce defaults when privacy columns already exist'
 );
+privacy_assert(
+    privacy_source_contains($root, 'database/migrations/20260718_content_privacy_audience_v2.sql', "SET `postPrivacy` = '0', `is_anonymous` = 1") &&
+    privacy_source_contains($root, 'database/migrations/20260718_content_privacy_audience_v2.sql', "WHERE `postPrivacy` = '4'") &&
+    privacy_source_contains($root, 'database/migrations/20260718_content_privacy_audience_v2.sql', "SET `postPrivacy` = '3'") &&
+    privacy_source_contains($root, 'database/migrations/20260718_content_privacy_audience_v2.sql', "WHERE `is_reel` = 1 AND `postPrivacy` = '2'"),
+    'migration must write quoted privacy values so ENUM and numeric schemas are both supported'
+);
 
 if (!empty($failures)) {
     fwrite(STDERR, "Content privacy contract failed:\n- " . implode("\n- ", $failures) . "\n");
