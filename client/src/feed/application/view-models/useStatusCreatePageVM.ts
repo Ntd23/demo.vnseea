@@ -13,6 +13,7 @@ import {
 } from "../constants/story-carousel"
 import type { FeedStoryRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
+import { type ContentAudience } from "../../../shared-kernel/domain/content-audience"
 
 type MediaType = "image" | "video" | null
 
@@ -29,6 +30,7 @@ export function useStatusCreatePageVM(
   const previewUrl = ref("")
   const mediaType = ref<MediaType>(null)
   const caption = ref("")
+  const privacy = ref<ContentAudience>("followers")
 
   const captionRef = ref<HTMLInputElement | null>(null)
   const phoneScreenRef = ref<HTMLElement | null>(null)
@@ -202,6 +204,7 @@ export function useStatusCreatePageVM(
         file: selectedFile.value,
         fileType: mediaType.value,
         description: normalizedCaption || undefined,
+        privacy: privacy.value,
       })
 
       pendingCreatedStory.value = response.story
@@ -229,6 +232,7 @@ export function useStatusCreatePageVM(
     previewUrl,
     mediaType,
     caption,
+    privacy,
     captionRef,
     phoneScreenRef,
     showCaptionEditor,

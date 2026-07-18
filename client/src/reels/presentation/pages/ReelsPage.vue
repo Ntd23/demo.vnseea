@@ -118,9 +118,9 @@
               <span class="reels-page__action-label">{{ formatCompact(commentsCount) }}</span>
             </div>
 
-            <div class="reels-page__action-item">
+            <div v-if="activeReel.permissions.canShare" class="reels-page__action-item">
               <UButton type="button" color="info" variant="link" class="reels-page__action-btn"
-                :aria-label="t('pages.reelsPage.share')" @click="showShare = true">
+                :aria-label="t('pages.reelsPage.share')" @click="activeReel.permissions.canShare && (showShare = true)">
                 <Icon name="i-ph-share-fat-bold" class="h-8 w-8" />
               </UButton>
               <span class="reels-page__action-label">{{ formatCompact(sharesCount) }}</span>
@@ -147,7 +147,8 @@
       </main>
 
       <!-- Share Modal Integration -->
-      <FeedShareModal :open="showShare" :share-url="shareUrl"
+      <FeedShareModal v-if="activeReel.permissions.canShare" :open="showShare"
+        :can-share="activeReel.permissions.canShare" :share-url="shareUrl"
         :post="{ id: activeReel.id, author: activeReel.author, text: activeReel.text, authorAvatar: activeReel.authorAvatarUrl, authorVerified: activeReel.authorVerified }"
         @close="showShare = false" @shared="handleShared" />
 

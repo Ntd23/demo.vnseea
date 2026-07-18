@@ -100,6 +100,7 @@ export type FeedPostRecord = {
   id: number
   permissions: {
     canDelete: boolean
+    canShare: boolean
   }
   jobId?: number
   sharedPostId?: number
@@ -124,6 +125,7 @@ export type FeedPostRecord = {
   } | null
   role: string
   audience: string
+  isAnonymous: boolean
   time: string
   text: string
   mentions?: FeedPostMention[]

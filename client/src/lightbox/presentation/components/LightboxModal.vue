@@ -154,7 +154,7 @@
               <button type="button" @click="openCommentComposer">
                 {{ t("feed.postCard.commentsCount", { count: displayedCommentCount }) }}
               </button>
-              <button type="button" @click="emit('share')">
+              <button v-if="canShare" type="button" @click="emit('share')">
                 {{ t("feed.postCard.sharesCount", { count: shareCount }) }}
               </button>
             </div>
@@ -245,6 +245,7 @@
             </button>
 
             <button
+              v-if="canShare"
               type="button"
               class="lightbox-modal__share-btn"
               :aria-label="t('feed.postCard.share')"
@@ -331,6 +332,7 @@ const props = withDefaults(defineProps<{
   likeCount?: number
   commentCount?: number
   shareCount?: number
+  canShare?: boolean
   comments?: ReadonlyArray<FeedCommentRecord>
   commentsPending?: boolean
   commentActionRepository?: FeedCommentActionRepository
@@ -353,6 +355,7 @@ const props = withDefaults(defineProps<{
   likeCount: 0,
   commentCount: 0,
   shareCount: 0,
+  canShare: false,
   comments: () => [],
   commentsPending: false,
   currentUserName: "",

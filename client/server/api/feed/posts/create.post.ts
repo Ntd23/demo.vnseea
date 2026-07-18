@@ -9,6 +9,10 @@ import { createBackendWebClient } from "../../../utils/backend-web-client"
 import { createBackendMediaUrlResolver } from "../../../utils/backend-media-url"
 import { postBackendApiUpload } from "../../../utils/backend-api-upload"
 import type { FeedPostRecord } from "../../../../src/feed/domain/types/feed.types"
+import {
+  validateContentPostAudience,
+  type ContentPostContext,
+} from "../../../../src/shared-kernel/domain/content-audience"
 
 type BackendCreatePostResponse = {
   api_status?: number | string
@@ -34,7 +38,9 @@ type BackendGetPostResponse = {
 
 type CreatePostPayload = {
   text: string
-  audience: string
+  audience?: string
+  audienceProvided: boolean
+  isAnonymous: boolean
   feeling: string
   imageFiles: {
     filename?: string
@@ -59,13 +65,11 @@ const asString = (value: unknown) =>
     ? String(value).trim()
     : ""
 
-const mapAudienceToPrivacy = (value: string) => {
-  if (value === "friends" || value === "connections" || value === "1") return "1"
-  if (value === "followers" || value === "2") return "2"
-  if (value === "private" || value === "only-me" || value === "3") return "3"
-  if (value === "anonymous" || value === "4") return "4"
-  return "0"
-}
+const hasOwn = (entity: Record<string, unknown>, key: string) =>
+  Object.prototype.hasOwnProperty.call(entity, key)
+
+const parseBooleanFlag = (value: unknown) =>
+  value === true || value === 1 || value === "1" || value === "true"
 
 const allowedFeelings = new Set([
   "happy",
@@ -93,7 +97,9 @@ const parseJsonPayload = async (event: Parameters<typeof defineEventHandler>[0])
 
   return {
     text: typeof body.text === "string" ? body.text.trim() : "",
-    audience: typeof body.audience === "string" ? body.audience.trim() : "public",
+    audience: hasOwn(body, "audience") ? asString(body.audience) : undefined,
+    audienceProvided: hasOwn(body, "audience"),
+    isAnonymous: parseBooleanFlag(body.isAnonymous),
     feeling: typeof body.feeling === "string" ? body.feeling.trim() : "",
     imageFiles: [],
     videoFile: null,
@@ -112,7 +118,9 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
   const parts = await readMultipartFormData(event) ?? []
   const payload: CreatePostPayload = {
     text: "",
-    audience: "public",
+    audience: undefined,
+    audienceProvided: false,
+    isAnonymous: false,
     feeling: "",
     imageFiles: [],
     videoFile: null,
@@ -148,7 +156,11 @@ const parseMultipartPayload = async (event: Parameters<typeof defineEventHandler
     const value = part.data.toString().trim()
 
     if (part.name === "text") payload.text = value
-    if (part.name === "audience") payload.audience = value || "public"
+    if (part.name === "audience") {
+      payload.audience = value
+      payload.audienceProvided = true
+    }
+    if (part.name === "is_anonymous") payload.isAnonymous = parseBooleanFlag(value)
     if (part.name === "feeling") payload.feeling = value
     if (part.name === "pageId") payload.pageId = Number(value)
     if (part.name === "eventId") payload.eventId = Number(value)
@@ -172,6 +184,37 @@ export default defineEventHandler(async (event) => {
   const payload = contentType.includes("multipart/form-data")
     ? await parseMultipartPayload(event)
     : await parseJsonPayload(event)
+
+  const selectedContexts = [
+    payload.pageId ? "page" as const : null,
+    payload.groupId ? "group" as const : null,
+    payload.eventId ? "event" as const : null,
+  ].filter((context): context is Exclude<ContentPostContext, "personal"> => context !== null)
+
+  if (selectedContexts.length > 1) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Post context is invalid.",
+    })
+  }
+
+  const context: ContentPostContext = selectedContexts[0] ?? "personal"
+  let audienceSelection
+
+  try {
+    audienceSelection = validateContentPostAudience({
+      context,
+      audience: payload.audience,
+      audienceProvided: payload.audienceProvided,
+      isAnonymous: payload.isAnonymous,
+    })
+  }
+  catch (error) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: error instanceof Error ? error.message : "Post audience is invalid.",
+    })
+  }
 
   if (!payload.text && !payload.imageFiles.length && !payload.videoFile && !payload.feeling && !payload.sharedPostId && !payload.pollAnswers.length) {
     throw createError({
@@ -268,7 +311,11 @@ export default defineEventHandler(async (event) => {
     : new URLSearchParams()
 
   requestBody.append("postText", payload.text)
-  requestBody.append("postPrivacy", mapAudienceToPrivacy(payload.audience))
+  requestBody.append("privacy_contract", "audience_v2")
+  if (context === "personal" || context === "page") {
+    requestBody.append("postPrivacy", audienceSelection.privacy!)
+  }
+  if (audienceSelection.isAnonymous) requestBody.append("is_anonymous", "1")
   requestBody.append("user_id", currentUserId)
   requestBody.append("s", appSessionToken)
 
@@ -337,7 +384,8 @@ export default defineEventHandler(async (event) => {
         backendResponse,
         payload: {
           textLength: payload.text.length,
-          audience: payload.audience,
+          audience: audienceSelection.audience,
+          privacy_contract: "audience_v2",
           pageId: payload.pageId,
           eventId: payload.eventId,
           groupId: payload.groupId,

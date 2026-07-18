@@ -124,9 +124,10 @@
           :author-user-id="post.authorId"
           :author="post.author"
           :author-avatar-url="post.authorAvatarUrl"
+          :can-share="post.permissions.canShare"
           @react="reactToPost"
           @comment="openComments"
-          @share="showShare = true"
+          @share="post.permissions.canShare && (showShare = true)"
         />
       </ClientOnly>
 
@@ -242,9 +243,10 @@
         </button>
        
         <button
+          v-if="post.permissions.canShare"
           class="post-card__action-btn"
           type="button"
-          @click="showShare = true"
+          @click="post.permissions.canShare && (showShare = true)"
         >
           <Icon name="i-ph-share-fat-bold" class="post-card__action-icon" />
           <span>{{ t("feed.postCard.share") }}</span>
@@ -304,7 +306,9 @@
 
     <ClientOnly>
       <FeedShareModal
+        v-if="post.permissions.canShare"
         :open="showShare"
+        :can-share="post.permissions.canShare"
         :share-url="shareUrl"
         :post="{ id: post.id, author: post.author, text: post.text, authorAvatar: post.authorAvatarUrl, authorVerified: post.authorVerified }"
         @close="showShare = false"
@@ -324,6 +328,7 @@
         :like-count="likesCount"
         :comment-count="commentsCount"
         :share-count="sharesCount"
+        :can-share="post.permissions.canShare"
         :comments="localComments"
         :comments-pending="loadingComments"
         :comment-action-repository="commentActionRepository"
@@ -333,7 +338,7 @@
         :selected-reaction="selectedPostReaction"
         @close="lightboxOpen = false"
         @change="currentMediaIndex = $event"
-        @share="showShare = true"
+        @share="post.permissions.canShare && (showShare = true)"
         @download="downloadMedia"
         @like="toggleLike"
         @react="reactToPost"

@@ -1009,8 +1009,9 @@
     />
     <ClientOnly>
       <FeedShareModal
-        v-if="profileLightboxPost"
+        v-if="profileLightboxPost?.permissions.canShare"
         :open="profileLightboxShareOpen"
+        :can-share="profileLightboxPost.permissions.canShare"
         :share-url="profileLightboxShareUrl"
         :post="{
           id: profileLightboxPost.id,
@@ -1036,6 +1037,7 @@
         :like-count="profileLightboxLikesCount"
         :comment-count="profileLightboxCommentsCount"
         :share-count="profileLightboxSharesCount"
+        :can-share="profileLightboxPost.permissions.canShare"
         :comments="profileLightboxComments"
         :comments-pending="profileLightboxCommentsPending"
         :comment-action-repository="profileLightboxCommentRepository"
@@ -1045,7 +1047,7 @@
         :selected-reaction="profileLightboxReaction"
         @close="profileLightboxOpen = false"
         @change="profileLightboxMediaIndex = $event"
-        @share="profileLightboxShareOpen = true"
+        @share="profileLightboxPost.permissions.canShare && (profileLightboxShareOpen = true)"
         @download="downloadProfileLightboxMedia"
         @like="toggleProfileLightboxLike"
         @react="reactToProfileLightboxPost"

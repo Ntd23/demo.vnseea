@@ -14,6 +14,7 @@
     :like-count="likeCount"
     :comment-count="commentCount"
     :share-count="shareCount"
+    :can-share="canShare"
     :comments="comments"
     :comments-pending="commentsPending"
     :comment-action-repository="commentActionRepository"
@@ -53,6 +54,7 @@ const props = withDefaults(defineProps<{
   likeCount?: number
   commentCount?: number
   shareCount?: number
+  canShare?: boolean
   comments?: FeedCommentRecord[]
   commentsPending?: boolean
   commentActionRepository?: FeedCommentActionRepository
@@ -75,6 +77,7 @@ const props = withDefaults(defineProps<{
   likeCount: 0,
   commentCount: 0,
   shareCount: 0,
+  canShare: false,
   comments: () => [],
   commentsPending: false,
   currentUserName: "",

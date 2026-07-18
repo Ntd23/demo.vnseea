@@ -38,6 +38,11 @@ import type {
   FeedPostsResponse,
   FeedStoryRecord,
 } from "../../../src/feed/domain/types/feed.types"
+import {
+  contentAudienceLabel,
+  isCanonicalPublicContentAudience,
+  normalizeContentAudienceSelection,
+} from "../../../src/shared-kernel/domain/content-audience"
 
 type BackendEntity = Record<string, unknown>
 type BackendMultipartFile = {
@@ -188,6 +193,9 @@ const isExplicitlyFalse = (value: unknown) =>
   || value === "0"
   || value === "no"
   || value === "false"
+
+const hasOwn = (entity: BackendEntity, key: string) =>
+  Object.prototype.hasOwnProperty.call(entity, key)
 
 const asRecord = (value: unknown): BackendEntity =>
   value && typeof value === "object" && !Array.isArray(value)
@@ -534,15 +542,6 @@ const createAccent = (id: number) =>
 
 const createGradient = (id: number) =>
   `linear-gradient(135deg,#0f172a 0%,${createAccent(id)} 58%,#bfdbfe 100%)`
-
-const inferAudience = (entity: BackendEntity) => {
-  const privacy = asString(entity.postPrivacy || entity.privacy || entity.post_privacy)
-
-  if (privacy === "3") return "Only me"
-  if (privacy === "2") return "Group"
-  if (privacy === "1") return "Friends"
-  return "Public"
-}
 
 const inferCategory = (source: string) => {
   const normalized = source.toLowerCase()
@@ -958,6 +957,10 @@ export const mapPostRecord = (
   resolveMediaUrl: (value: unknown) => string = value => asString(value),
   depth = 0,
 ): FeedPostRecord => {
+  const rawAudience = firstString(entity, ["postPrivacy", "privacy", "post_privacy"])
+  const audienceSelection = normalizeContentAudienceSelection(
+    isTruthy(entity.is_anonymous) ? "postPrivacy4" : rawAudience,
+  )
   const publisher = asRecord(entity.publisher)
   const userData = asRecord(entity.user_data)
   const pageData = asRecord(entity.page_data)
@@ -969,13 +972,22 @@ export const mapPostRecord = (
     : postType === "profile_cover_picture"
       ? "cover" as const
       : undefined
-  const authorId = firstNumber(sourceEntity, ["user_id", "id"])
-    || firstNumber(entity, ["user_id", "owner_id"])
-  const author = firstString(sourceEntity, ["name", "username"])
-    || firstString(pageData, ["page_title", "page_name"])
-    || firstString(groupData, ["group_title", "group_name"])
-    || "User"
-  const authorUsername = firstString(sourceEntity, ["username"])
+  const authorId = audienceSelection.isAnonymous
+    ? 0
+    : firstNumber(sourceEntity, ["user_id", "id"])
+      || firstNumber(entity, ["user_id", "owner_id"])
+  const author = audienceSelection.isAnonymous
+    ? "Anonymous"
+    : firstString(sourceEntity, ["name", "username"])
+      || firstString(pageData, ["page_title", "page_name"])
+      || firstString(groupData, ["group_title", "group_name"])
+      || "User"
+  const authorUsername = audienceSelection.isAnonymous
+    ? ""
+    : firstString(sourceEntity, ["username"])
+  const authorAvatarUrl = audienceSelection.isAnonymous
+    ? ""
+    : resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"]))
   const pageId = firstNumber(entity, ["page_id"])
     || firstNumber(pageData, ["page_id", "id"])
     || firstNumber(sourceEntity, ["page_id"])
@@ -1024,6 +1036,11 @@ export const mapPostRecord = (
   const liveEnded = isTruthy(entity.live_ended)
   const liveHeartbeatAge = liveTime > 0 ? Math.max(0, Math.floor(Date.now() / 1000) - liveTime) : 0
   const isLive = firstString(entity, ["postType", "post_type", "type"]) === "live" || Boolean(liveStreamName)
+  const canShare = !audienceSelection.isAnonymous && (
+    hasOwn(entity, "can_share")
+      ? isTruthy(entity.can_share)
+      : isCanonicalPublicContentAudience(rawAudience)
+  )
   const liveState = !isLive
     ? null
     : liveEnded || !liveTime || liveHeartbeatAge > 45
@@ -1034,6 +1051,7 @@ export const mapPostRecord = (
     id: firstNumber(entity, ["post_id", "id"]),
     permissions: {
       canDelete: isTruthy(entity.can_delete),
+      canShare,
     },
     jobId: firstNumber(entity, ["job_id"]) || undefined,
     sharedPostId: sharedPostId || undefined,
@@ -1041,21 +1059,30 @@ export const mapPostRecord = (
     authorId: authorId || undefined,
     colorId: firstNumber(entity, ["color_id"]) || undefined,
     author,
-    authorAvatarUrl: resolveMediaUrl(firstString(sourceEntity, ["avatar", "avatar_full"])),
-    authorGender: firstString(sourceEntity, ["gender"]) || undefined,
-    authorVerified: isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
-    authorPath: pageSlug || groupSlug
-      ? sourcePath
-      : authorUsername
-        ? appRoutes.profile(authorUsername)
-        : sourcePath,
-    eventContext,
-    groupContext,
-    role: firstString(sourceEntity, ["working", "school", "address"])
-      || firstString(pageData, ["category_name", "phone"])
-      || firstString(groupData, ["category_name", "group_title"])
-      || author,
-    audience: inferAudience(entity),
+    authorAvatarUrl,
+    authorGender: audienceSelection.isAnonymous
+      ? undefined
+      : firstString(sourceEntity, ["gender"]) || undefined,
+    authorVerified: audienceSelection.isAnonymous
+      ? false
+      : isTruthy(sourceEntity.verified) || isTruthy(pageData.verified),
+    authorPath: audienceSelection.isAnonymous
+      ? undefined
+      : pageSlug || groupSlug
+        ? sourcePath
+        : authorUsername
+          ? appRoutes.profile(authorUsername)
+          : sourcePath,
+    eventContext: audienceSelection.isAnonymous ? null : eventContext,
+    groupContext: audienceSelection.isAnonymous ? null : groupContext,
+    role: audienceSelection.isAnonymous
+      ? "Anonymous"
+      : firstString(sourceEntity, ["working", "school", "address"])
+        || firstString(pageData, ["category_name", "phone"])
+        || firstString(groupData, ["category_name", "group_title"])
+        || author,
+    audience: contentAudienceLabel(audienceSelection.audience),
+    isAnonymous: audienceSelection.isAnonymous,
     time: formatPostTime(entity),
     text,
     mentions,
@@ -1078,8 +1105,10 @@ export const mapPostRecord = (
     attachmentCard,
     category: inferCategory(categoryHint),
     primaryMediaType,
-    sourceLabel: pageSlug ? "page" : groupSlug ? "group" : "feed",
-    sourcePath,
+    sourceLabel: audienceSelection.isAnonymous
+      ? "feed"
+      : pageSlug ? "page" : groupSlug ? "group" : "feed",
+    sourcePath: audienceSelection.isAnonymous ? appRoutes.feed : sourcePath,
     profileMediaUpdate,
     isSaved: isTruthy(entity.is_post_saved) || isTruthy(entity.is_saved),
     isLiked: postReaction.isLiked,

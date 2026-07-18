@@ -59,6 +59,7 @@ export interface FeedRepository {
   createPost(input: {
     text: string
     audience?: string
+    isAnonymous?: boolean
     imageFile?: File
     imageFiles?: File[]
     videoFile?: File
@@ -82,6 +83,7 @@ export interface FeedRepository {
   createStory(input: {
     file: File
     fileType: "image" | "video"
+    privacy?: string
     title?: string
     description?: string
   }): Promise<FeedCreateStoryResponse>

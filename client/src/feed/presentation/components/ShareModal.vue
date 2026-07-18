@@ -75,6 +75,7 @@
                     :key="platform.label"
                     class="share-modal__platform"
                     type="button"
+                    :disabled="!canShare"
                     @click="platform.action"
                   >
                     <span class="share-modal__platform-icon" :style="{ color: platform.color }">
@@ -282,6 +283,7 @@ const toast = useToast()
 
 const props = withDefaults(defineProps<{
   open?: boolean
+  canShare?: boolean
   shareUrl?: string
   post?: {
     id?: number
@@ -292,6 +294,7 @@ const props = withDefaults(defineProps<{
   } | null
 }>(), {
   open: false,
+  canShare: false,
   shareUrl: "",
   post: null,
 })
@@ -320,7 +323,7 @@ const {
   selectTarget,
   submitShare,
   reset: resetShareDestination,
-} = useFeedShareModalVM(toRef(props, "open"))
+} = useFeedShareModalVM(toRef(props, "open"), toRef(props, "canShare"))
 
 const TargetAvatar = defineComponent({
   name: "TargetAvatar",
@@ -440,6 +443,11 @@ const postAuthorInitials = computed(() => {
 async function copyShareLink() {
   clearErrorState()
 
+  if (!props.canShare) {
+    rejectUnauthorizedShare()
+    return
+  }
+
   if (!import.meta.client || typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
     toast.add({
       color: "warning",
@@ -473,9 +481,26 @@ async function copyShareLink() {
 
 function openPlatform(url: string) {
   clearErrorState()
+
+  if (!props.canShare) {
+    rejectUnauthorizedShare()
+    return
+  }
+
   if (!import.meta.client) return
 
   window.open(url, "_blank", "noopener,noreferrer")
+}
+
+function rejectUnauthorizedShare() {
+  status.value = "error"
+  errorMessage.value = t("feed.shareModal.shareFailed")
+  toast.add({
+    color: "warning",
+    icon: "i-ph-warning-circle-fill",
+    title: t("feed.shareModal.title"),
+    description: errorMessage.value,
+  })
 }
 
 function handleDestinationChange(destination: FeedShareDestination) {

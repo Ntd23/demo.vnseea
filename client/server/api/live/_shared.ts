@@ -17,6 +17,7 @@ import type {
   LiveStudioSession,
   LiveViewerSession,
 } from "../../../src/live/domain/types/live.types"
+import { contentAudiencePrivacy, normalizeContentAudience } from "../../../src/shared-kernel/domain/content-audience"
 
 type BackendEntity = Record<string, unknown>
 
@@ -299,7 +300,8 @@ export async function createLiveSession(
       stream_name: input.streamName,
       title: input.title,
       description: input.description,
-      post_privacy: input.privacy,
+      post_privacy: contentAudiencePrivacy[normalizeContentAudience(input.privacy)],
+      privacy_contract: "audience_v2",
     },
     { s: "create" },
   )

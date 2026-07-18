@@ -61,7 +61,10 @@ const filterTargets = (targets: FeedShareTarget[], keyword: string) => {
   return targets.filter(target => target.searchableText.includes(normalizedKeyword))
 }
 
-export function useFeedShareModalVM(open: Ref<boolean>) {
+export function useFeedShareModalVM(
+  open: Ref<boolean>,
+  shareAllowed: Readonly<Ref<boolean>>,
+) {
   const feedRepository = createApiFeedRepository()
   const feedShareRepository = createApiFeedShareRepository()
   const authStore = useCurrentAuthUserStore()
@@ -165,7 +168,8 @@ export function useFeedShareModalVM(open: Ref<boolean>) {
   })
 
   const canShare = computed(() =>
-    selectedDestination.value === "timeline" || Boolean(selectedTarget.value),
+    shareAllowed.value
+    && (selectedDestination.value === "timeline" || Boolean(selectedTarget.value)),
   )
 
   function selectDestination(destination: FeedShareDestination) {
@@ -255,7 +259,7 @@ export function useFeedShareModalVM(open: Ref<boolean>) {
 
     const response = await feedRepository.createPost({
       text,
-      audience: selectedDestination.value === "group" ? "group" : "public",
+      audience: selectedDestination.value === "group" ? undefined : "public",
       pageId,
       groupId,
       sharedPostId: input.postId,

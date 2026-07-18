@@ -9,6 +9,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "start": "node .output/server/index.mjs",
+    "test:content-audience": "node --experimental-strip-types --test scripts/content-audience-contract.test.mjs",
     "test:group-call:contract": "node --test scripts/group-call-video-only-contract.test.mjs",
     "test:points-transfer:contract": "node --test scripts/points-transfer-contract.test.mjs",
     "test:points-transfer:integration": "node scripts/points-transfer-integration.mjs",
