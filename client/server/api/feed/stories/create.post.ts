@@ -4,6 +4,7 @@ import { createError, getHeader, readMultipartFormData } from "h3"
 import { assertBackendApiSuccess } from "../../../utils/backend-api-response"
 import { postBackendApiUpload } from "../../../utils/backend-api-upload"
 import { fetchLatestOwnStory } from "../_shared"
+import { contentAudiencePrivacy, normalizeContentAudience } from "../../../../src/shared-kernel/domain/content-audience"
 
 type BackendCreateStoryResponse = {
   api_status?: number | string
@@ -26,6 +27,7 @@ export default defineEventHandler(async (event) => {
   const parts = await readMultipartFormData(event) ?? []
   const payload = new FormData()
   let fileAttached = false
+  let privacy = "followers"
 
   for (const part of parts) {
     if (!part.name) {
@@ -61,6 +63,8 @@ export default defineEventHandler(async (event) => {
     if (part.name === "description") {
       payload.append("story_description", value)
     }
+
+    if (part.name === "privacy") privacy = normalizeContentAudience(value)
   }
 
   if (!fileAttached) {
@@ -69,6 +73,9 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Story file is required.",
     })
   }
+
+  payload.append("privacy_contract", "audience_v2")
+  payload.append("privacy", contentAudiencePrivacy[normalizeContentAudience(privacy)])
 
   const response = assertBackendApiSuccess(
     await postBackendApiUpload<BackendCreateStoryResponse>(

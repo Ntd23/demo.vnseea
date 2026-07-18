@@ -165,14 +165,14 @@
           </div>
 
           <!-- Share -->
-          <div class="feed-live-player__action-item">
+          <div v-if="canShare" class="feed-live-player__action-item">
             <UButton
               icon="i-ph-share-fat"
               :aria-label="t('pages.livePage.viewer.share')"
               :ui="{
                 base: 'w-12 h-12 rounded-full bg-black/45 backdrop-blur-md border border-white/18 text-white hover:bg-white/20 hover:border-white/35 active:scale-90 transition-all duration-150 flex items-center justify-center shadow-md',
               }"
-              @click="emitAfterFullscreenExit('share')"
+              @click="canShare && emitAfterFullscreenExit('share')"
             />
             <span class="feed-live-player__action-label">{{ t("pages.livePage.viewer.share") }}</span>
           </div>
@@ -267,6 +267,7 @@ const props = defineProps<{
   authorUserId?: number
   author?: string
   authorAvatarUrl?: string
+  canShare?: boolean
 }>()
 
 const emit = defineEmits<{

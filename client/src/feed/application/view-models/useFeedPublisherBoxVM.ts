@@ -5,9 +5,10 @@ import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCur
 import { useFeedPostColors } from "../composables/useFeedPostColors"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
+import { normalizeContentAudienceSelection, type ContentAudience } from "../../../shared-kernel/domain/content-audience"
 
 type PublisherAction = "image" | "video" | "poll" | "feeling" | "story" | "colors" | "product"
-type PublisherAudience = "public" | "connections" | "group" | "0" | "1" | "2" | "4"
+type PublisherAudience = ContentAudience
 type PublisherFeeling = "happy" | "loved" | "sad" | "angry" | "funny" | "cool" | "tired" | "confused" | ""
 
 export function useFeedPublisherBoxVM(
@@ -55,10 +56,12 @@ export function useFeedPublisherBoxVM(
   const draft = ref<{
     text: string
     audience: PublisherAudience
+    isAnonymous: boolean
     feeling: PublisherFeeling
   }>({
     text: "",
-    audience: "0",
+    audience: "public",
+    isAnonymous: false,
     feeling: "",
   })
 
@@ -95,12 +98,17 @@ export function useFeedPublisherBoxVM(
     { value: "poll" as const, label: t("feed.publisherBox.actionPoll"), icon: "i-ph-list-checks-bold" },
   ])
 
-  const audiences = computed(() => [
-    { value: "0" as const, label: locale.value === "vi" ? "Công khai" : "Public", icon: "i-ph-globe-bold" },
-    { value: "4" as const, label: locale.value === "vi" ? "Ẩn danh" : "Anonymous", icon: "i-ph-ghost-bold" },
-    { value: "1" as const, label: locale.value === "vi" ? "Những người tôi theo dõi" : "People I follow", icon: "i-ph-users-bold" },
-    { value: "2" as const, label: locale.value === "vi" ? "Mọi người theo dõi tôi" : "People following me", icon: "i-ph-users-three-bold" },
-  ])
+  const audiences = computed(() => {
+    if (groupId || eventId) return []
+    const options = [
+      { value: "public" as const, label: locale.value === "vi" ? "Công khai" : "Public", icon: "i-ph-globe-bold" },
+      { value: "friends" as const, label: locale.value === "vi" ? "Bạn bè" : "Friends", icon: "i-ph-users-bold" },
+      { value: "followers" as const, label: locale.value === "vi" ? "Người theo dõi" : "Followers", icon: "i-ph-users-three-bold" },
+      { value: "only_me" as const, label: locale.value === "vi" ? "Chỉ mình tôi" : "Only me", icon: "i-ph-lock-simple-bold" },
+    ]
+    return pageId ? options.filter(option => option.value === "public" || option.value === "followers") : options
+  })
+  const isPersonalComposer = computed(() => !pageId && !eventId && !groupId)
 
   const feelingOptions = computed(() => [
     { value: "happy" as const, emoji: "😊", label: locale.value === "vi" ? "Vui mừng" : "Happy" },
@@ -171,12 +179,9 @@ export function useFeedPublisherBoxVM(
             draft.value.text = parsed.text || ""
             draft.value.feeling = parsed.feeling || ""
             
-            // Map legacy string keys to new privacy numeric codes
-            let aud = parsed.audience || "0"
-            if (aud === "public") aud = "0"
-            else if (aud === "connections") aud = "1"
-            else if (aud === "group") aud = "2"
-            draft.value.audience = aud as any
+            const selection = normalizeContentAudienceSelection(parsed.audience)
+            draft.value.audience = selection.audience
+            draft.value.isAnonymous = Boolean(parsed.isAnonymous) || selection.isAnonymous
           }
         }
       }
@@ -197,6 +202,15 @@ export function useFeedPublisherBoxVM(
       }
     },
     { deep: true }
+  )
+
+  watch(
+    () => draft.value.isAnonymous,
+    (isAnonymous) => {
+      if (isAnonymous) {
+        draft.value.audience = "public"
+      }
+    },
   )
 
   watch(expanded, async (value) => {
@@ -424,7 +438,8 @@ export function useFeedPublisherBoxVM(
       } else {
         const response = await repository.createPost({
           text: draft.value?.text || "",
-          audience: draft.value?.audience || "public",
+          audience: groupId ? undefined : draft.value?.audience || "public",
+          isAnonymous: isPersonalComposer.value && draft.value?.isAnonymous,
           feeling: draft.value?.feeling || undefined,
           imageFiles: imageFiles.value.length ? imageFiles.value : undefined,
           videoFile: videoFile.value || undefined,
@@ -442,6 +457,7 @@ export function useFeedPublisherBoxVM(
         if (draft.value) {
           draft.value.text = ""
           draft.value.feeling = ""
+          draft.value.isAnonymous = false
         }
         selectedColorId.value = null
         showColorsPicker.value = false
@@ -487,6 +503,7 @@ export function useFeedPublisherBoxVM(
     compactActions,
     actions,
     audiences,
+    isPersonalComposer,
     feelingOptions,
     activeFeeling,
     selectedMediaLabel,

@@ -157,6 +157,7 @@ export function createApiFeedRepository(): FeedRepository {
     async createPost(input) {
       const formData = new FormData()
       formData.append("text", input.text)
+      formData.append("privacy_contract", "audience_v2")
 
       if (input.pageId) {
         formData.append("pageId", String(input.pageId))
@@ -187,10 +188,15 @@ export function createApiFeedRepository(): FeedRepository {
         ...(input.imageFile ? [input.imageFile] : []),
       ]
 
+      if (input.audience) {
+        formData.append("audience", input.audience)
+      }
+
+      if (input.isAnonymous) {
+        formData.append("is_anonymous", "1")
+      }
+
       if (imageFiles.length || input.videoFile || input.feeling || input.colorId || input.pollAnswers?.length) {
-        if (input.audience) {
-          formData.append("audience", input.audience)
-        }
 
         if (input.feeling) {
           formData.append("feeling", input.feeling)
@@ -212,7 +218,10 @@ export function createApiFeedRepository(): FeedRepository {
 
       return await client.post<FeedCreatePostResponse, Record<string, unknown>>(
         apiRoutes.feed.posts.create,
-        input as unknown as Record<string, unknown>,
+        {
+          ...input,
+          privacy_contract: "audience_v2",
+        },
       )
     },
     async createProduct(input) {
@@ -234,6 +243,8 @@ export function createApiFeedRepository(): FeedRepository {
       const formData = new FormData()
       formData.append("file", input.file, input.file.name)
       formData.append("fileType", input.fileType)
+      formData.append("privacy_contract", "audience_v2")
+      formData.append("privacy", input.privacy || "followers")
 
       if (input.title) {
         formData.append("title", input.title)

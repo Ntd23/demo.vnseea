@@ -148,6 +148,10 @@
           {{ statusDescription }}
         </div>
       </aside>
+      <div class="status-create__privacy">
+        <label for="story-privacy">{{ t("feed.publisherBox.audienceTitle") }}</label>
+        <USelect id="story-privacy" v-model="privacy" :items="privacyOptions" value-key="value" label-key="label" />
+      </div>
     </div>
   </div>
 </template>
@@ -160,7 +164,7 @@ import {
   feedStoryCaptionMaxLength,
 } from "../../application/constants/story-carousel"
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 useSeoMeta({
   title: () => t("pages.statusCreatePage.seoTitle"),
@@ -173,6 +177,7 @@ const {
   previewUrl,
   mediaType,
   caption,
+  privacy,
   captionRef,
   phoneScreenRef,
   showCaptionEditor,
@@ -194,6 +199,20 @@ const {
   closeCaptionEditor,
   submitStory,
 } = useStatusCreatePageVM()
+
+const privacyOptions = computed(() => locale.value === "vi"
+  ? [
+      { value: "public", label: "Công khai" },
+      { value: "friends", label: "Bạn bè" },
+      { value: "followers", label: "Người theo dõi" },
+      { value: "only_me", label: "Chỉ mình tôi" },
+    ]
+  : [
+      { value: "public", label: "Public" },
+      { value: "friends", label: "Friends" },
+      { value: "followers", label: "Followers" },
+      { value: "only_me", label: "Only me" },
+    ])
 </script>
 
 <style scoped>

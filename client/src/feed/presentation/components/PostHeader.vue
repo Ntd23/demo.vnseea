@@ -196,7 +196,7 @@ const audienceIcon = computed(() => {
   const map: Record<string, string> = {
     Public: "i-ph-globe-simple",
     Friends: "i-ph-users",
-    Group: "i-ph-users-three",
+    Followers: "i-ph-users-three",
     "Only me": "i-ph-lock-simple",
   }
   return map[props.audience] || "i-ph-globe-simple"

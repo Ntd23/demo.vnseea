@@ -73,10 +73,11 @@
         </div>
         <div class="publisher__meta">
           <p class="publisher__name">{{ currentUserName || t("feed.publisherBox.expandedOpen") }}</p>
-          <div class="publisher__audience-dropdown">
+          <div v-if="audiences.length" class="publisher__audience-dropdown">
             <button 
               type="button" 
               class="publisher__audience-btn"
+              :disabled="draft.isAnonymous"
               @click.stop="toggleAudienceMenu"
             >
               <Icon :name="selectedAudienceInfo.icon" class="h-3.5 w-3.5 text-slate-500 mr-1" />
@@ -85,7 +86,7 @@
             </button>
             
             <div 
-              v-if="showAudienceMenu" 
+              v-if="showAudienceMenu && !draft.isAnonymous"
               class="publisher__audience-menu"
               @click.stop
             >
@@ -107,6 +108,10 @@
               </button>
             </div>
           </div>
+          <label v-if="isPersonalComposer" class="publisher__anonymous-toggle">
+            <UCheckbox v-model="draft.isAnonymous" />
+            <span>{{ locale === "vi" ? "Đăng ẩn danh" : "Post anonymously" }}</span>
+          </label>
         </div>
         <button class="publisher__close" type="button" @click="expanded = false">
           <Icon name="i-ph-x-bold" class="h-4 w-4" />
@@ -493,6 +498,7 @@ const {
   compactActions,
   actions,
   audiences,
+  isPersonalComposer,
   feelingOptions,
   activeFeeling,
   selectedMediaLabel,
@@ -600,10 +606,12 @@ const selectedAudienceInfo = computed(() => {
 const showAudienceMenu = ref(false)
 
 function toggleAudienceMenu() {
+  if (draft.value?.isAnonymous) return
   showAudienceMenu.value = !showAudienceMenu.value
 }
 
 function selectAudienceOption(val: any) {
+  if (draft.value?.isAnonymous) return
   selectedAudience.value = val
   showAudienceMenu.value = false
 }
@@ -1708,6 +1716,11 @@ function goToLive() {
 .publisher__audience-btn:hover {
   background: #e2e8f0;
   border-color: #cbd5e1;
+}
+
+.publisher__audience-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .publisher__audience-menu {
