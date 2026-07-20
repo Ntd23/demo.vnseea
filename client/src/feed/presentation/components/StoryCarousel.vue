@@ -7,12 +7,16 @@
       @pointerdown="rememberStoryPointer"
       @pointerup="openStoryFromPointer"
     >
-      <NuxtLink :to="feedStoryCreatePath" class="story-card story-card--create">
+      <button
+        type="button"
+        class="story-card story-card--create"
+        @click.stop="handleCreateStory"
+      >
         <div class="story-card__create-icon">
           <Icon name="i-ph-plus-bold" class="h-5 w-5" />
         </div>
         <span class="story-card__create-label">{{ t("feed.storyCarousel.createStory") }}</span>
-      </NuxtLink>
+      </button>
 
       <button
         v-for="(group, groupIndex) in storyGroups"
@@ -298,6 +302,8 @@
         </div>
       </Transition>
     </Teleport>
+
+    <StoryAppInterstitial v-model="appPromptOpen" />
   </div>
 </template>
 
@@ -307,8 +313,12 @@ import {
 } from "../../application/constants/story-carousel"
 import { useFeedStoryCarouselVM } from "../../application/view-models/useFeedStoryCarouselVM"
 import type { FeedStoryRecord } from "../../domain/types/feed.types"
+import StoryAppInterstitial from "./StoryAppInterstitial.vue"
 
 const { t } = useI18n()
+const router = useRouter()
+const isMobileViewport = useMediaQuery("(max-width: 767px)")
+const appPromptOpen = ref(false)
 
 const props = defineProps<{
   stories: FeedStoryRecord[]
@@ -359,6 +369,15 @@ const {
   onStoryTouchStart,
   onStoryTouchEnd,
 } = useFeedStoryCarouselVM(toRef(props, "stories"))
+
+async function handleCreateStory() {
+  if (isMobileViewport.value) {
+    appPromptOpen.value = true
+    return
+  }
+
+  await router.push(feedStoryCreatePath)
+}
 </script>
 
 <style scoped>

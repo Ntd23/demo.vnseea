@@ -1,4 +1,5 @@
 <?php
+// English description: Provides canonical privacy and audience checks for posts, stories, comments, and notifications.
 
 function VNSEEA_PrivacyArray($value)
 {
@@ -399,8 +400,22 @@ function VNSEEA_RedactAnonymousPost($post, $viewer_id = 0, $anonymous_label = 'A
 
 function VNSEEA_CanMutatePost($post_id)
 {
-    if (!function_exists('Wo_PostData')) {
+    global $sqlConnect;
+    $post_id = (int) $post_id;
+    if ($post_id < 1 || empty($sqlConnect)) {
         return false;
     }
-    return !empty(Wo_PostData((int) $post_id));
+
+    $query = mysqli_query(
+        $sqlConnect,
+        'SELECT `id`, `user_id`, `recipient_id`, `page_id`, `group_id`, `event_id`, `page_event_id`, `parent_id`, `postPrivacy`, `is_anonymous` FROM ' . T_POSTS . " WHERE `id` = {$post_id} LIMIT 1"
+    );
+    $post = ($query && mysqli_num_rows($query)) ? mysqli_fetch_assoc($query) : array();
+    $viewer_id = VNSEEA_CurrentViewerId();
+
+    if (empty($post) || !VNSEEA_CanViewPost($post, $viewer_id)) {
+        return false;
+    }
+
+    return empty($post['parent_id']) || VNSEEA_CanSharePostTree($post, $viewer_id);
 }

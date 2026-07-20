@@ -1,167 +1,197 @@
-<!-- Description: Story/status creation screen with media selection inside the preview surface. -->
+<!-- Description: Responsive story creator aligned with the native-app selection and editing flow. -->
 <template>
-  <div class="status-create">
-    <div class="status-create__topbar">
-      <div class="status-create__heading">
-        <p class="status-create__eyebrow">{{ t("pages.statusCreatePage.eyebrow") }}</p>
-        <h1 class="status-create__title">{{ t("pages.statusCreatePage.title") }}</h1>
-      </div>
-    </div>
+  <div class="story-create">
+    <header class="story-create__appbar">
+      <NuxtLink
+        :to="appRoutes.feed"
+        class="story-create__close"
+        :aria-label="t('pages.statusCreatePage.backToFeed')"
+      >
+        <Icon name="i-ph-x-bold" class="h-5 w-5" />
+      </NuxtLink>
+
+      <h1 class="story-create__appbar-title">{{ t("pages.statusCreatePage.title") }}</h1>
+
+      <button
+        class="story-create__publish"
+        type="button"
+        :disabled="!selectedFile || submitting"
+        @click="submitStory"
+      >
+        <Icon
+          v-if="submitting"
+          name="i-ph-circle-notch-bold"
+          class="story-create__spin h-4 w-4"
+        />
+        <span>{{ t("pages.statusCreatePage.submitCta") }}</span>
+      </button>
+    </header>
 
     <input
       ref="fileInputRef"
-      :accept="feedStoryAcceptedMimeTypes"
-      class="hidden"
+      class="story-create__file-input"
       type="file"
+      :accept="pickerAccept"
       @change="handleFileSelection"
     >
 
-    <div class="status-create__grid">
-      <aside class="status-create__preview-pane">
-        <p class="status-create__preview-eyebrow">{{ t("pages.statusCreatePage.previewEyebrow") }}</p>
-
-        <div class="status-create__phone">
-          <div
-            ref="phoneScreenRef"
-            class="status-create__phone-screen"
-            @pointermove="dragCaption"
-            @pointerup="stopCaptionDrag"
-            @pointercancel="stopCaptionDrag"
-            @pointerleave="stopCaptionDrag"
-          >
-            <template v-if="mediaType === 'image' && previewUrl">
-              <NuxtImg :src="previewUrl" :alt="t('pages.statusCreatePage.previewAlt')" class="status-create__phone-media" />
-            </template>
-            <template v-else-if="mediaType === 'video' && previewUrl">
-              <video :src="previewUrl" class="status-create__phone-media" controls muted playsinline />
-            </template>
-            <template v-else>
-              <button
-                class="status-create__preview-upload"
-                type="button"
-                :aria-label="t('pages.statusCreatePage.changeFile')"
-                :title="t('pages.statusCreatePage.changeFile')"
-                @click="openPicker"
-              >
-                <Icon name="i-ph-upload-simple-duotone" class="h-9 w-9" />
-              </button>
-            </template>
-
-            <div class="status-create__phone-overlay" />
-
-            <div v-if="selectedFile" class="status-create__preview-actions">
-              <button
-                class="status-create__preview-action"
-                type="button"
-                :aria-label="t('pages.statusCreatePage.changeFile')"
-                :title="t('pages.statusCreatePage.changeFile')"
-                @click="openPicker"
-              >
-                <Icon name="i-ph-arrows-clockwise-bold" class="h-4 w-4" />
-              </button>
-              <button
-                class="status-create__preview-action"
-                type="button"
-                :aria-label="t('pages.statusCreatePage.captionPlaceholder')"
-                :title="t('pages.statusCreatePage.captionPlaceholder')"
-                @click="openCaptionEditor"
-              >
-                <Icon name="i-ph-text-aa-bold" class="h-4 w-4" />
-              </button>
-              <button
-                class="status-create__preview-action status-create__preview-action--danger"
-                type="button"
-                :aria-label="t('pages.statusCreatePage.removeFile')"
-                :title="t('pages.statusCreatePage.removeFile')"
-                @click="removeFile"
-              >
-                <Icon name="i-ph-trash-simple-bold" class="h-4 w-4" />
-              </button>
-            </div>
-
-            <button
-              v-if="selectedFile"
-              class="status-create__preview-submit"
-              type="button"
-              :disabled="submitting"
-              :aria-label="t('pages.statusCreatePage.submitCta')"
-              :title="t('pages.statusCreatePage.submitCta')"
-              @click="submitStory"
-            >
-              <Icon
-                :name="submitting ? 'i-ph-circle-notch-bold' : 'i-ph-paper-plane-tilt-fill'"
-                class="h-4 w-4"
-                :class="{ 'status-create__spin': submitting }"
-              />
-              <span>Đăng tin</span>
-            </button>
-
-            <div class="status-create__phone-bars">
-              <div class="status-create__phone-bar">
-                <div class="status-create__phone-bar-fill" :style="{ width: previewBarWidth }" />
-              </div>
-              <div class="status-create__phone-bar status-create__phone-bar--dim" />
-              <div class="status-create__phone-bar status-create__phone-bar--dim" />
-            </div>
-
-            <div class="status-create__phone-author">
-              <div class="status-create__phone-avatar">
-                <NuxtImg v-if="currentUserAvatar" :src="currentUserAvatar" :alt="currentUserName" class="status-create__phone-avatar-img" />
-                <span v-else>{{ currentUserInitials }}</span>
-              </div>
-              <div>
-                <p class="status-create__phone-name">{{ currentUserName || t("pages.statusCreatePage.previewFallbackName") }}</p>
-                <p class="status-create__phone-time">{{ t("pages.statusCreatePage.previewTimestamp") }}</p>
-              </div>
-            </div>
-
-            <div
-              v-if="showCaptionEditor || caption"
-              class="status-create__phone-caption"
-              :style="{ left: `${captionPosition.x}%`, top: `${captionPosition.y}%` }"
-              @pointerdown="startCaptionDrag"
-              @pointermove="dragCaption"
-              @pointerup="stopCaptionDrag"
-              @pointercancel="stopCaptionDrag"
-              @click="openCaptionEditor"
-            >
-              <input
-                v-if="showCaptionEditor"
-                ref="captionRef"
-                v-model="caption"
-                class="status-create__phone-caption-input"
-                type="text"
-                :placeholder="t('pages.statusCreatePage.captionPlaceholder')"
-                :maxlength="feedStoryCaptionMaxLength"
-                @blur="closeCaptionEditor"
-              >
-              <span v-else>{{ caption }}</span>
-            </div>
+    <main class="story-create__content">
+      <section v-if="!selectedFile" class="story-create__empty">
+        <div class="story-create__illustration" aria-hidden="true">
+          <span class="story-create__spark story-create__spark--one">✦</span>
+          <span class="story-create__spark story-create__spark--two">✦</span>
+          <div class="story-create__illustration-card story-create__illustration-card--back">
+            <Icon name="i-ph-video-camera-duotone" class="h-10 w-10" />
+          </div>
+          <div class="story-create__illustration-card story-create__illustration-card--front">
+            <Icon name="i-ph-image-square-duotone" class="h-11 w-11" />
           </div>
         </div>
 
-        <div
-          v-if="statusDescription"
-          class="status-create__submit-status"
-          :class="{ 'status-create__submit-status--error': submitStatus === 'error' }"
-        >
-          {{ statusDescription }}
+        <div class="story-create__intro">
+          <h2>{{ t("pages.statusCreatePage.emptyTitle") }}</h2>
+          <p>{{ t("pages.statusCreatePage.emptyDescription") }}</p>
         </div>
-      </aside>
-      <div class="status-create__privacy">
-        <label for="story-privacy">{{ t("feed.publisherBox.audienceTitle") }}</label>
-        <USelect id="story-privacy" v-model="privacy" :items="privacyOptions" value-key="value" label-key="label" />
-      </div>
-    </div>
+
+        <div class="story-create__picker-grid">
+          <button class="story-create__picker-card" type="button" @click="openPicker('image')">
+            <span class="story-create__picker-icon story-create__picker-icon--image">
+              <Icon name="i-ph-image-square-duotone" class="h-8 w-8" />
+            </span>
+            <span class="story-create__picker-copy">
+              <strong>{{ t("pages.statusCreatePage.chooseImage") }}</strong>
+              <small>{{ t("pages.statusCreatePage.chooseImageHint") }}</small>
+            </span>
+            <span class="story-create__picker-arrow story-create__picker-arrow--image">
+              <Icon name="i-ph-arrow-right-bold" class="h-4 w-4" />
+            </span>
+          </button>
+
+          <button class="story-create__picker-card" type="button" @click="openPicker('video')">
+            <span class="story-create__picker-icon story-create__picker-icon--video">
+              <Icon name="i-ph-video-camera-duotone" class="h-8 w-8" />
+            </span>
+            <span class="story-create__picker-copy">
+              <strong>{{ t("pages.statusCreatePage.chooseVideo") }}</strong>
+              <small>{{ t("pages.statusCreatePage.chooseVideoHint") }}</small>
+            </span>
+            <span class="story-create__picker-arrow story-create__picker-arrow--video">
+              <Icon name="i-ph-arrow-right-bold" class="h-4 w-4" />
+            </span>
+          </button>
+        </div>
+
+        <div class="story-create__notice">
+          <span class="story-create__notice-icon">
+            <Icon name="i-ph-shield-check-duotone" class="h-6 w-6" />
+          </span>
+          <p>{{ t("pages.statusCreatePage.privacyNotice") }}</p>
+          <Icon name="i-ph-caret-right-bold" class="story-create__notice-arrow h-4 w-4" />
+        </div>
+      </section>
+
+      <section v-else class="story-create__editor">
+        <div class="story-create__preview-column">
+          <div
+            class="story-create__preview"
+            :class="[
+              mediaType && `story-create__preview--${mediaType}`,
+              mediaOrientation && `story-create__preview--${mediaOrientation}`,
+            ]"
+          >
+            <img
+              v-if="mediaType === 'image' && previewUrl"
+              :src="previewUrl"
+              :alt="t('pages.statusCreatePage.previewAlt')"
+              class="story-create__media"
+              @load="handleImageLoad"
+            >
+            <video
+              v-else-if="mediaType === 'video' && previewUrl"
+              :src="previewUrl"
+              class="story-create__media"
+              controls
+              muted
+              playsinline
+              preload="metadata"
+              @loadedmetadata="handleVideoMetadata"
+            />
+
+            <button
+              class="story-create__remove"
+              type="button"
+              :aria-label="t('pages.statusCreatePage.removeFile')"
+              @click="removeFile"
+            >
+              <Icon name="i-ph-trash-simple-bold" class="h-5 w-5" />
+            </button>
+          </div>
+
+          <button class="story-create__change-media" type="button" @click="openPicker()">
+            <Icon name="i-ph-arrows-clockwise-bold" class="h-4 w-4" />
+            <span>{{ t("pages.statusCreatePage.changeMedia") }}</span>
+          </button>
+        </div>
+
+        <aside class="story-create__settings">
+          <fieldset class="story-create__audience">
+            <legend>{{ t("pages.statusCreatePage.audienceLabel") }}</legend>
+            <div class="story-create__audience-options">
+              <button
+                v-for="option in privacyOptions"
+                :key="option.value"
+                class="story-create__audience-option"
+                :class="{ 'story-create__audience-option--active': privacy === option.value }"
+                type="button"
+                @click="privacy = option.value"
+              >
+                <Icon :name="option.icon" class="h-4 w-4" />
+                <span>{{ option.label }}</span>
+              </button>
+            </div>
+          </fieldset>
+
+          <label class="story-create__field">
+            <span>{{ t("pages.statusCreatePage.titleLabel") }}</span>
+            <input
+              v-model="title"
+              type="text"
+              :maxlength="feedStoryTitleMaxLength"
+              :placeholder="t('pages.statusCreatePage.titlePlaceholder')"
+            >
+            <small>{{ title.length }}/{{ feedStoryTitleMaxLength }}</small>
+          </label>
+
+          <label class="story-create__field">
+            <span>{{ t("pages.statusCreatePage.captionLabel") }}</span>
+            <textarea
+              v-model="caption"
+              rows="5"
+              :maxlength="feedStoryCaptionMaxLength"
+              :placeholder="t('pages.statusCreatePage.descriptionPlaceholder')"
+            />
+            <small>{{ caption.length }}/{{ feedStoryCaptionMaxLength }}</small>
+          </label>
+
+          <p
+            v-if="statusDescription"
+            class="story-create__status"
+            :class="{ 'story-create__status--error': submitStatus === 'error' }"
+          >
+            {{ statusDescription }}
+          </p>
+        </aside>
+      </section>
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { ContentAudience } from "../../../shared-kernel/domain/content-audience"
 import { useStatusCreatePageVM } from "../../application/view-models/useStatusCreatePageVM"
 import {
-  feedHomePath,
-  feedStoryAcceptedMimeTypes,
   feedStoryCaptionMaxLength,
+  feedStoryTitleMaxLength,
 } from "../../application/constants/story-carousel"
 
 const { t, locale } = useI18n()
@@ -176,403 +206,673 @@ const {
   selectedFile,
   previewUrl,
   mediaType,
+  mediaOrientation,
+  pickerAccept,
+  title,
   caption,
   privacy,
-  captionRef,
-  phoneScreenRef,
-  showCaptionEditor,
-  captionPosition,
   submitting,
   submitStatus,
   statusDescription,
-  currentUserName,
-  currentUserAvatar,
-  currentUserInitials,
-  previewBarWidth,
   openPicker,
   handleFileSelection,
+  handleImageLoad,
+  handleVideoMetadata,
   removeFile,
-  openCaptionEditor,
-  startCaptionDrag,
-  dragCaption,
-  stopCaptionDrag,
-  closeCaptionEditor,
   submitStory,
+  appRoutes,
 } = useStatusCreatePageVM()
 
-const privacyOptions = computed(() => locale.value === "vi"
+type PrivacyOption = {
+  value: ContentAudience
+  label: string
+  icon: string
+}
+
+const privacyOptions = computed<PrivacyOption[]>(() => locale.value === "vi"
   ? [
-      { value: "public", label: "Công khai" },
-      { value: "friends", label: "Bạn bè" },
-      { value: "followers", label: "Người theo dõi" },
-      { value: "only_me", label: "Chỉ mình tôi" },
+      { value: "public", label: "Công khai", icon: "i-ph-globe-hemisphere-west-duotone" },
+      { value: "friends", label: "Bạn bè", icon: "i-ph-users-duotone" },
+      { value: "followers", label: "Người theo dõi", icon: "i-ph-user-focus-duotone" },
+      { value: "only_me", label: "Chỉ mình tôi", icon: "i-ph-lock-key-duotone" },
     ]
   : [
-      { value: "public", label: "Public" },
-      { value: "friends", label: "Friends" },
-      { value: "followers", label: "Followers" },
-      { value: "only_me", label: "Only me" },
+      { value: "public", label: "Public", icon: "i-ph-globe-hemisphere-west-duotone" },
+      { value: "friends", label: "Friends", icon: "i-ph-users-duotone" },
+      { value: "followers", label: "Followers", icon: "i-ph-user-focus-duotone" },
+      { value: "only_me", label: "Only me", icon: "i-ph-lock-key-duotone" },
     ])
 </script>
 
 <style scoped>
-.status-create {
-  max-width: 1100px;
+.story-create {
+  width: min(100%, 1120px);
+  min-height: calc(100dvh - 72px);
   margin: 0 auto;
-  padding: 10px 12px 18px;
-  display: flex;
-  flex-direction: column;
+  padding: 12px;
+  color: #0f172a;
+}
+
+.story-create__appbar {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  min-height: 60px;
+  align-items: center;
   gap: 10px;
+  padding: 8px;
+  border: 1px solid rgba(0, 0, 255, 0.05);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
 }
 
-@media (min-width: 640px) {
-  .status-create {
-    padding: 28px 24px 64px;
-  }
+.story-create__close,
+.story-create__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.status-create__topbar {
+.story-create__close {
+  width: 42px;
+  height: 42px;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.story-create__close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.story-create__appbar-title {
+  margin: 0;
+  overflow: hidden;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.story-create__publish {
+  display: inline-flex;
+  min-width: 82px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #2233ff 0%, #0000ff 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 255, 0.2);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.story-create__publish:disabled {
+  background: #eef2ff;
+  color: #a5b4fc;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.story-create__file-input {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.story-create__content {
+  padding-top: 18px;
+}
+
+.story-create__empty {
   display: flex;
+  width: min(100%, 820px);
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 18px 0 32px;
+}
+
+.story-create__illustration {
+  position: relative;
+  width: 180px;
+  height: 150px;
+}
+
+.story-create__illustration-card {
+  position: absolute;
+  display: flex;
+  width: 106px;
+  height: 132px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+  border-radius: 18px;
+  box-shadow: 0 14px 30px rgba(30, 64, 175, 0.1);
+}
+
+.story-create__illustration-card--back {
+  top: 5px;
+  right: 18px;
+  transform: rotate(13deg);
+  border-color: #d8b4fe;
+  background: #faf5ff;
+  color: #9333ea;
+}
+
+.story-create__illustration-card--front {
+  bottom: 0;
+  left: 20px;
+  transform: rotate(-8deg);
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.story-create__spark {
+  position: absolute;
+  z-index: 2;
+  color: #93c5fd;
+  font-size: 24px;
+}
+
+.story-create__spark--one {
+  top: 22px;
+  left: 4px;
+}
+
+.story-create__spark--two {
+  right: 0;
+  bottom: 24px;
+}
+
+.story-create__intro {
+  max-width: 560px;
+  text-align: center;
+}
+
+.story-create__intro h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(1.35rem, 4vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.story-create__intro p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.story-create__picker-grid {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.story-create__picker-card {
+  display: grid;
+  min-width: 0;
+  min-height: 172px;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  gap: 12px;
+  padding: 20px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+  color: #0f172a;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.story-create__picker-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 0, 255, 0.14);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+.story-create__picker-icon,
+.story-create__picker-arrow,
+.story-create__notice-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.story-create__picker-icon {
+  width: 62px;
+  height: 62px;
+}
+
+.story-create__picker-icon--image,
+.story-create__picker-arrow--image {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.story-create__picker-icon--video,
+.story-create__picker-arrow--video {
+  background: #faf5ff;
+  color: #9333ea;
+}
+
+.story-create__picker-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.story-create__picker-copy strong {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.story-create__picker-copy small {
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.story-create__picker-arrow {
+  width: 34px;
+  height: 34px;
+}
+
+.story-create__notice {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
+  padding: 14px 16px;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  background: #fafbfe;
 }
 
-.status-create__heading,
-.status-create__back-label,
-.status-create__preview-eyebrow {
-  display: none;
+.story-create__notice-icon {
+  width: 44px;
+  height: 44px;
+  background: #eff6ff;
+  color: #2563eb;
 }
 
-@media (min-width: 640px) {
-  .status-create__heading,
-  .status-create__back-label,
-  .status-create__preview-eyebrow {
-    display: revert;
-  }
-}
-
-.status-create__eyebrow {
-  font-family: var(--font-primary);
-  font-size: var(--text-label);
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
+.story-create__notice p {
   margin: 0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
 }
 
-.status-create__title {
-  font-family: var(--font-secondary);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: var(--weight-extrabold);
-  color: var(--text-primary);
-  margin: 0;
+.story-create__notice-arrow {
+  color: #94a3b8;
 }
 
-.status-create__grid {
+.story-create__editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.story-create__preview-column,
+.story-create__settings {
+  min-width: 0;
+  border: 1px solid rgba(0, 0, 255, 0.05);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+.story-create__preview-column {
   display: flex;
-  justify-content: center;
-  gap: 10px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+}
+
+.story-create__preview {
+  position: relative;
+  width: min(100%, 430px);
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 38%, #172036 0%, #0f172a 48%, #020617 100%);
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.16);
+}
+
+.story-create__media {
+  display: block;
   width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #020617;
 }
 
-@media (min-width: 900px) {
-  .status-create__grid {
-    align-items: start;
-    gap: 24px;
-  }
+.story-create__preview--image.story-create__preview--portrait .story-create__media {
+  object-fit: cover;
 }
 
-.status-create__submit-status {
-  font-family: var(--font-primary);
-  font-size: 11.5px;
-  color: var(--text-tertiary);
+.story-create__remove {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  right: 14px;
+  width: 42px;
+  height: 42px;
+  background: rgba(2, 6, 23, 0.78);
+  color: #fff;
+  backdrop-filter: blur(10px);
+}
+
+.story-create__remove:hover {
+  background: #dc2626;
+}
+
+.story-create__change-media {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fafbfe;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.story-create__change-media:hover {
+  border-color: rgba(0, 0, 255, 0.15);
+  background: rgba(0, 0, 255, 0.04);
+  color: #0000ff;
+}
+
+.story-create__settings {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 16px;
+}
+
+.story-create__audience {
+  min-width: 0;
   margin: 0;
+  padding: 0;
+  border: 0;
 }
 
-.status-create__submit-status--error {
+.story-create__audience legend,
+.story-create__field > span {
+  margin-bottom: 9px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.story-create__audience-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.story-create__audience-option {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 11px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.story-create__audience-option:hover {
+  background: rgba(0, 0, 255, 0.03);
+  color: #0000ff;
+}
+
+.story-create__audience-option--active {
+  border-color: rgba(0, 0, 255, 0.5);
+  background: rgba(0, 0, 255, 0.05);
+  color: #0000ff;
+  box-shadow: 0 3px 10px rgba(0, 0, 255, 0.08);
+}
+
+.story-create__field {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.story-create__field input,
+.story-create__field textarea {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  background: #fafbfe;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.55;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.story-create__field input {
+  min-height: 46px;
+  padding: 11px 54px 11px 12px;
+}
+
+.story-create__field textarea {
+  min-height: 132px;
+  resize: vertical;
+  padding: 11px 54px 11px 12px;
+}
+
+.story-create__field input:focus,
+.story-create__field textarea:focus {
+  border-color: rgba(0, 0, 255, 0.28);
+  box-shadow: 0 0 0 3px rgba(0, 0, 255, 0.05);
+}
+
+.story-create__field input::placeholder,
+.story-create__field textarea::placeholder {
+  color: #94a3b8;
+}
+
+.story-create__field small {
+  position: absolute;
+  right: 10px;
+  bottom: 9px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.story-create__status {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.story-create__status--error {
+  background: #fef2f2;
   color: #dc2626;
 }
 
-.status-create__spin {
-  animation: status-create-spin 0.85s linear infinite;
+.story-create__spin {
+  animation: story-create-spin 0.85s linear infinite;
 }
 
-@keyframes status-create-spin {
+@keyframes story-create-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-.status-create__preview-pane {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-}
+@media (min-width: 640px) {
+  .story-create {
+    padding: 22px 24px 52px;
+  }
 
-.status-create__preview-eyebrow {
-  font-family: var(--font-primary);
-  font-size: var(--text-label);
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
-  margin: 0;
-  align-self: flex-start;
-}
+  .story-create__appbar {
+    min-height: 68px;
+    padding: 10px 12px;
+  }
 
-.status-create__phone {
-  width: min(330px, 85vw);
-  border-radius: 30px;
-  border: 5px solid #d7def0;
-  background: #edf2ff;
-  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(0, 0, 255, 0.08);
-  overflow: hidden;
+  .story-create__empty {
+    padding-top: 34px;
+  }
+
+  .story-create__picker-card {
+    min-height: 190px;
+  }
+
+  .story-create__preview-column,
+  .story-create__settings {
+    padding: 20px;
+  }
 }
 
 @media (min-width: 900px) {
-  .status-create__phone {
-    width: 260px;
-    border-radius: 36px;
-    border-width: 6px;
+  .story-create__editor {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.72fr);
+    gap: 20px;
+  }
+
+  .story-create__settings {
+    position: sticky;
+    top: 20px;
+  }
+
+  .story-create__preview {
+    width: min(100%, 405px);
   }
 }
 
-@media (max-height: 700px) and (max-width: 639.98px) {
-  .status-create__phone {
-    width: min(330px, 85vw);
+@media (max-width: 479px) {
+  .story-create {
+    padding: 0 8px 32px;
+  }
+
+  .story-create__appbar {
+    margin-inline: -8px;
+    border-width: 0 0 1px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .story-create__publish {
+    min-width: 70px;
+    padding-inline: 12px;
+  }
+
+  .story-create__content {
+    padding-top: 14px;
+  }
+
+  .story-create__empty {
+    gap: 18px;
+    padding-inline: 4px;
+  }
+
+  .story-create__illustration {
+    transform: scale(0.88);
+    margin-block: -8px;
+  }
+
+  .story-create__picker-grid {
+    gap: 10px;
+  }
+
+  .story-create__picker-card {
+    min-height: 160px;
+    padding: 16px 10px;
+  }
+
+  .story-create__picker-icon {
+    width: 54px;
+    height: 54px;
+  }
+
+  .story-create__notice {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    padding: 12px;
+  }
+
+  .story-create__notice-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .story-create__preview-column,
+  .story-create__settings {
+    padding: 10px;
+  }
+
+  .story-create__preview {
+    width: 100%;
+  }
+
+  .story-create__settings {
+    gap: 16px;
   }
 }
 
-.status-create__phone-screen {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 9 / 16;
-  overflow: hidden;
-  border-radius: 25px;
-  background: linear-gradient(180deg, #f8fbff 0%, #dfe8ff 100%);
-}
-
-@media (min-width: 900px) {
-  .status-create__phone-screen {
-    border-radius: 30px;
+@media (max-width: 350px) {
+  .story-create__appbar-title {
+    font-size: 16px;
   }
-}
 
-.status-create__phone-media {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
+  .story-create__picker-copy small {
+    display: none;
+  }
 
-.status-create__preview-upload {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  transform: translate(-50%, -50%);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 86px;
-  height: 86px;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--icon-brand);
-  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.14);
-  cursor: pointer;
-  z-index: 3;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.status-create__preview-upload:hover {
-  transform: translate(-50%, -52%);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
-}
-
-.status-create__preview-actions {
-  position: absolute;
-  top: 58px;
-  right: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 5;
-}
-
-.status-create__preview-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.86);
-  color: var(--text-primary);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-}
-
-.status-create__preview-action--danger {
-  color: #dc2626;
-}
-
-.status-create__preview-submit {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-width: 98px;
-  height: 38px;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 14px;
-  background: var(--bg-brand);
-  color: #fff;
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.18);
-  cursor: pointer;
-  font-family: var(--font-primary);
-  font-size: 12px;
-  font-weight: 800;
-  z-index: 5;
-}
-
-.status-create__preview-action:disabled,
-.status-create__preview-submit:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.status-create__phone-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, transparent 28%, rgba(15, 23, 42, 0.16) 100%);
-}
-
-.status-create__phone-bars {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  display: flex;
-  gap: 4px;
-  z-index: 4;
-}
-
-.status-create__phone-bar {
-  flex: 1;
-  height: 3px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.62);
-  overflow: hidden;
-}
-
-.status-create__phone-bar-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: var(--bg-brand);
-  transition: width 0.3s ease;
-}
-
-.status-create__phone-bar--dim {
-  background: rgba(255, 255, 255, 0.34);
-}
-
-.status-create__phone-author {
-  position: absolute;
-  top: 24px;
-  left: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.74);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  z-index: 4;
-}
-
-.status-create__phone-avatar {
-  display: flex;
-  width: 36px;
-  height: 36px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  overflow: hidden;
-  background: var(--bg-brand);
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  font-size: 11px;
-  font-weight: 700;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.status-create__phone-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.status-create__phone-name {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-}
-
-.status-create__phone-time {
-  font-size: 10px;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-.status-create__phone-caption {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: max-content;
-  max-width: min(76%, 210px);
-  border-radius: 14px;
-  background: rgba(15, 23, 42, 0.64);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
-  padding: 9px 11px;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #fff;
-  z-index: 5;
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-  overflow-wrap: anywhere;
-}
-
-.status-create__phone-caption:active {
-  cursor: grabbing;
-}
-
-.status-create__phone-caption-input {
-  width: min(190px, 62vw);
-  border: 0;
-  background: transparent;
-  color: #fff;
-  font: inherit;
-  outline: none;
-}
-
-.status-create__phone-caption-input::placeholder {
-  color: rgba(255, 255, 255, 0.72);
+  .story-create__picker-card {
+    min-height: 140px;
+  }
 }
 </style>
