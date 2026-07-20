@@ -76,9 +76,12 @@ let displayedMobileCameraHeading: number | null = null
 
 const originRadiusMinMoveMeters = 25
 const defaultSearchRadiusKm = 3
-const mobileRouteFollowTilt = 75
+const routeStartViewportRadiusMeters = 100
+const mobileRouteFollowTilt = 60
 const mobileRouteFollowZoom = 19
 const mobileRouteHeadingLookAheadMeters = 110
+const mobileRouteCameraLookAheadMeters = 55
+const mobileRouteCameraHeadingOffsetDegrees = 180
 const mobileRouteSnapMaxDistanceMeters = 45
 const mobileRouteCameraMinIntervalMs = 450
 const mobileRouteCameraMinMoveMeters = 2.5
@@ -636,6 +639,26 @@ function resolveMobileRouteHeading(target: NearbySearchItem | null) {
   return mapInstance.value?.getHeading() ?? 0
 }
 
+function resolveMobileRouteCameraCenter(origin: { lat: number, lng: number }) {
+  const forwardPoint = getRoutePathLookAheadPoint(origin)
+
+  if (!forwardPoint) {
+    return origin
+  }
+
+  const distanceMeters = calculatePointDistanceMeters(origin, forwardPoint)
+
+  if (distanceMeters <= 0) {
+    return origin
+  }
+
+  return interpolatePoint(
+    origin,
+    forwardPoint,
+    Math.min(1, mobileRouteCameraLookAheadMeters / distanceMeters),
+  )
+}
+
 function animateMobileRouteCamera(cameraOptions: google.maps.CameraOptions) {
   const map = mapInstance.value
 
@@ -697,7 +720,7 @@ function animateMobileRouteCamera(cameraOptions: google.maps.CameraOptions) {
   mobileRouteCameraAnimationFrame = requestAnimationFrame(tick)
 }
 
-function followMobileRouteCamera(target: NearbySearchItem | null) {
+function followMobileRouteCamera(target: NearbySearchItem | null, preserveCurrentZoom = false) {
   const map = mapInstance.value
 
   if (!map || props.origin.lat === null || props.origin.lng === null) {
@@ -706,13 +729,15 @@ function followMobileRouteCamera(target: NearbySearchItem | null) {
 
   const now = Date.now()
   const origin = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
-  const heading = resolveMobileRouteHeading(target)
+  const cameraCenter = resolveMobileRouteCameraCenter(origin)
+  const routeHeading = resolveMobileRouteHeading(target)
+  const cameraHeading = normalizeHeading(routeHeading + mobileRouteCameraHeadingOffsetDegrees)
   const movedMeters = lastMobileRouteCameraCenter
-    ? calculatePointDistanceMeters(lastMobileRouteCameraCenter, origin)
+    ? calculatePointDistanceMeters(lastMobileRouteCameraCenter, cameraCenter)
     : Number.POSITIVE_INFINITY
   const headingDelta = lastMobileRouteHeading === null
     ? Number.POSITIVE_INFINITY
-    : calculateHeadingDelta(lastMobileRouteHeading, heading)
+    : calculateHeadingDelta(lastMobileRouteHeading, routeHeading)
 
   if (
     lastMobileRouteCameraCenter
@@ -724,16 +749,18 @@ function followMobileRouteCamera(target: NearbySearchItem | null) {
   }
 
   const cameraOptions: google.maps.CameraOptions = {
-    center: origin,
-    heading,
+    center: cameraCenter,
+    heading: cameraHeading,
     tilt: mobileRouteFollowTilt,
-    zoom: mobileRouteFollowZoom,
+    zoom: preserveCurrentZoom
+      ? map.getZoom() ?? mobileRouteFollowZoom
+      : mobileRouteFollowZoom,
   }
 
   animateMobileRouteCamera(cameraOptions)
 
-  lastMobileRouteHeading = heading
-  lastMobileRouteCameraCenter = origin
+  lastMobileRouteHeading = routeHeading
+  lastMobileRouteCameraCenter = cameraCenter
   lastMobileRouteCameraAt = now
 
   return true
@@ -1061,7 +1088,7 @@ function renderOriginMarker() {
 
   const center = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
   const markerHeading = props.routeNavigationActive
-    ? resolveMobileRouteHeading(props.routeTargetItem)
+    ? 0
     : props.originHeading ?? null
   const icon = createOriginIcon(!props.selectedItemId, markerHeading)
 
@@ -1147,7 +1174,7 @@ function renderMarkers() {
   }
 
   if (props.routeTargetItem) {
-    if (props.routeNavigationActive && isMobileViewport()) {
+    if (props.routeNavigationActive) {
       followMobileRouteCamera(props.routeTargetItem)
     }
     return
@@ -1204,6 +1231,46 @@ function fitRouteResult(result: google.maps.DirectionsResult, target: NearbySear
   map.fitBounds(bounds, padding)
 }
 
+function fitRouteStartViewport() {
+  const map = mapInstance.value
+  const origin = resolveDisplayOrigin(false)
+
+  if (!map || !window.google?.maps || !origin) {
+    return false
+  }
+
+  if (mobileRouteCameraAnimationFrame) {
+    cancelAnimationFrame(mobileRouteCameraAnimationFrame)
+    mobileRouteCameraAnimationFrame = 0
+  }
+
+  const latitudeDelta = routeStartViewportRadiusMeters / 111320
+  const longitudeScale = Math.max(Math.cos(origin.lat * Math.PI / 180), 0.2)
+  const longitudeDelta = routeStartViewportRadiusMeters / (111320 * longitudeScale)
+  const bounds = new window.google.maps.LatLngBounds(
+    {
+      lat: origin.lat - latitudeDelta,
+      lng: origin.lng - longitudeDelta,
+    },
+    {
+      lat: origin.lat + latitudeDelta,
+      lng: origin.lng + longitudeDelta,
+    },
+  )
+  const padding = isMobileViewport()
+    ? { top: 96, right: 48, bottom: 230, left: 48 }
+    : { top: 72, right: 72, bottom: 72, left: 72 }
+
+  resetMobileRouteCamera()
+  map.fitBounds(bounds, padding)
+  displayedMobileCameraCenter = origin
+  displayedMobileCameraHeading = 0
+  lastMobileRouteCameraCenter = null
+  lastMobileRouteCameraAt = 0
+
+  return true
+}
+
 function getRoutePreviewMinZoom(target: NearbySearchItem) {
   if (props.origin.lat === null || props.origin.lng === null || target.lat === null || target.lng === null) {
     return 0
@@ -1232,7 +1299,7 @@ function fitRoutePreview(result: google.maps.DirectionsResult, target: NearbySea
     return
   }
 
-  if (props.routeNavigationActive && isMobileViewport()) {
+  if (props.routeNavigationActive) {
     lastMobileRoutePath = getRoutePathPoints(result, target)
 
     if (props.origin.lat !== null && props.origin.lng !== null) {
@@ -1243,7 +1310,14 @@ function fitRoutePreview(result: google.maps.DirectionsResult, target: NearbySea
         : null
     }
 
-    if (followMobileRouteCamera(target)) {
+    if (fitRouteStartViewport()) {
+      const targetId = target.id
+
+      window.google.maps.event.addListenerOnce(map, "idle", () => {
+        if (props.routeNavigationActive && props.routeTargetItem?.id === targetId) {
+          followMobileRouteCamera(target, true)
+        }
+      })
       return
     }
   }
@@ -1399,13 +1473,13 @@ async function initializeMap() {
   markerConstructor.value = constructors.Marker
   directionsServiceConstructor.value = constructors.DirectionsService
   directionsRendererConstructor.value = constructors.DirectionsRenderer
-  const mobileVectorOptions = isMobileViewport() && googleMapsMapId.value
-    ? {
-        mapId: googleMapsMapId.value,
-        renderingType: window.google.maps.RenderingType?.VECTOR,
-        tilt: 0,
-      }
-    : {}
+  const vectorRenderingType = window.google.maps.RenderingType?.VECTOR
+  const vectorMapOptions = {
+    ...(googleMapsMapId.value ? { mapId: googleMapsMapId.value } : {}),
+    ...(vectorRenderingType ? { renderingType: vectorRenderingType } : {}),
+    heading: 0,
+    tilt: 0,
+  }
   mapInstance.value = new constructors.Map(targetElement, {
     center: currentCenter.value,
     zoom: isMobileViewport() ? 15 : 13,
@@ -1413,10 +1487,12 @@ async function initializeMap() {
     draggable: true,
     fullscreenControl: false,
     gestureHandling: "greedy",
+    headingInteractionEnabled: true,
     mapTypeControl: false,
-    ...mobileVectorOptions,
+    ...vectorMapOptions,
     scrollwheel: true,
     streetViewControl: false,
+    tiltInteractionEnabled: true,
     zoomControl: false,
   })
   placesService.value = window.google?.maps?.places?.PlacesService
@@ -1447,7 +1523,7 @@ watch(
     if (!hasFittedOriginRadiusViewport) {
       fitOriginRadiusViewport(true)
     }
-    if (props.routeNavigationActive && props.routeTargetItem && isMobileViewport()) {
+    if (props.routeNavigationActive && props.routeTargetItem) {
       followMobileRouteCamera(props.routeTargetItem)
     }
   },

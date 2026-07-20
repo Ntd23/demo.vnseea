@@ -37,6 +37,7 @@
             type="search"
             :placeholder="searchPlaceholder"
             autocomplete="off"
+            @input="handleSearchInput"
             @focus="handleSearchFocus"
             @blur="handleSearchBlur"
             @keydown.enter.prevent="handleSearchEnter"
@@ -623,7 +624,11 @@ function createGoogleMapsHref(placeId: string, address: string) {
   return `https://www.google.com/maps/search/?api=1&query_place_id=${encodeURIComponent(placeId)}&query=${encodeURIComponent(address)}`
 }
 
-function googlePlaceToNearbyItem(place: google.maps.places.PlaceResult, index: number): NearbySearchItem | null {
+function googlePlaceToNearbyItem(
+  place: google.maps.places.PlaceResult,
+  index: number,
+  restrictToSearchRadius = true,
+): NearbySearchItem | null {
   const location = place.geometry?.location
 
   if (!location) {
@@ -634,7 +639,7 @@ function googlePlaceToNearbyItem(place: google.maps.places.PlaceResult, index: n
   const lng = location.lng()
   const distanceMeters = calculateDistanceMeters(lat, lng)
 
-  if (distanceMeters !== null && distanceMeters > googleNearbyRadiusMeters) {
+  if (restrictToSearchRadius && distanceMeters !== null && distanceMeters > googleNearbyRadiusMeters) {
     return null
   }
 
@@ -1123,6 +1128,10 @@ function handleSearchFocus() {
   }
 }
 
+function handleSearchInput() {
+  isSuggestionPanelOpen.value = true
+}
+
 function handleSearchBlur() {
   searchBlurTimer = setTimeout(() => {
     isSuggestionPanelOpen.value = false
@@ -1431,6 +1440,35 @@ function runGoogleTextSearch(query: string) {
   })
 }
 
+function getGooglePlaceDetails(placeId: string) {
+  return new Promise<google.maps.places.PlaceResult | null>((resolve) => {
+    if (!placesService.value) {
+      resolve(null)
+      return
+    }
+
+    placesService.value.getDetails(
+      {
+        placeId,
+        fields: [
+          "place_id",
+          "name",
+          "formatted_address",
+          "vicinity",
+          "geometry",
+          "icon",
+          "icon_mask_base_uri",
+          "icon_background_color",
+        ],
+      },
+      (place, status) => {
+        const okStatus = window.google?.maps?.places?.PlacesServiceStatus?.OK
+        resolve(status === okStatus && place ? place : null)
+      },
+    )
+  })
+}
+
 async function searchGoogleNearbyPlaces(rawQuery: string) {
   const query = rawQuery.trim()
   const requestId = googleNearbyRequestId.value + 1
@@ -1511,7 +1549,65 @@ async function selectGooglePlace(option: NearbySuggestionOption) {
     return
   }
 
-  await searchGoogleNearbyPlaces(option.label || searchText.value)
+  const selectedLabel = option.label || searchText.value
+  searchText.value = selectedLabel
+  const placeId = option.placeId?.trim()
+
+  if (!placeId) {
+    await searchGoogleNearbyPlaces(selectedLabel)
+    const fallbackItem = googleNearbyResults.value[0]
+    if (fallbackItem) {
+      selectSuggestion(fallbackItem)
+    }
+    return
+  }
+
+  const requestId = googleNearbyRequestId.value + 1
+  googleNearbyRequestId.value = requestId
+  googleNearbyLoading.value = true
+  googlePlaceSuggestions.value = []
+  googleNearbyResults.value = []
+  googleNearbyQuery.value = ""
+  isSuggestionPanelOpen.value = false
+  clearRoute()
+  selectedItemId.value = ""
+
+  let selectedPlaceItem: NearbySearchItem | null = null
+
+  try {
+    const ready = await ensureGooglePlacesServices()
+    if (ready && placesService.value) {
+      const place = await getGooglePlaceDetails(placeId)
+      if (place) {
+        selectedPlaceItem = googlePlaceToNearbyItem(place, 0, false)
+      }
+    }
+  }
+  catch {
+    selectedPlaceItem = null
+  }
+  finally {
+    if (requestId === googleNearbyRequestId.value) {
+      googleNearbyLoading.value = false
+    }
+  }
+
+  if (requestId !== googleNearbyRequestId.value) {
+    return
+  }
+
+  if (!selectedPlaceItem) {
+    await searchGoogleNearbyPlaces(selectedLabel)
+    const fallbackItem = googleNearbyResults.value[0]
+    if (fallbackItem) {
+      selectSuggestion(fallbackItem)
+    }
+    return
+  }
+
+  googleNearbyQuery.value = selectedLabel
+  googleNearbyResults.value = [selectedPlaceItem]
+  selectSuggestion(selectedPlaceItem)
 }
 
 watch(

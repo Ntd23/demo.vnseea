@@ -41,6 +41,7 @@ const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL");
 const realtimeInternalUrl = process.env.REALTIME_INTERNAL_URL?.trim() || "";
 const realtimeSecret = process.env.REALTIME_SECRET?.trim() || "";
 const publicRealtimeUrl = process.env.NUXT_PUBLIC_REALTIME_URL?.trim() || "";
+const sourceMapsEnabled = process.env.NUXT_SOURCE_MAPS === "true";
 const nativeAppStoryDeepLink = process.env.NUXT_PUBLIC_NATIVE_APP_STORY_DEEP_LINK?.trim() || "";
 const nativeAppIosStoreUrl = process.env.NUXT_PUBLIC_NATIVE_APP_IOS_STORE_URL?.trim() || "";
 const nativeAppAndroidStoreUrl = process.env.NUXT_PUBLIC_NATIVE_APP_ANDROID_STORE_URL?.trim() || "";
@@ -238,8 +239,8 @@ export default defineNuxtConfig({
     ],
     strategy: "no_prefix",
   },
-	 sourcemap: {
-    server: true,
-    client: true
-  }
+  sourcemap: {
+    server: sourceMapsEnabled,
+    client: sourceMapsEnabled,
+  },
 });
