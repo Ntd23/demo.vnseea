@@ -68,10 +68,14 @@
 </template>
 
 <script setup lang="ts">
-import type { NearbySearchItem } from "../../domain/types/search-nearby.types"
+import type {
+  NearbySearchItem,
+  NearbySearchOrigin,
+} from "../../domain/types/search-nearby.types"
 
 const props = defineProps<{
   item: NearbySearchItem
+  origin?: NearbySearchOrigin
   active?: boolean
 }>()
 
@@ -92,8 +96,36 @@ const initials = computed(() =>
     .join("") || "?",
 )
 
+function calculateLiveDistanceMeters() {
+  const currentOrigin = props.origin
+  const itemLatitude = props.item.lat
+  const itemLongitude = props.item.lng
+
+  if (
+    !currentOrigin
+    || currentOrigin.lat === null
+    || currentOrigin.lng === null
+    || itemLatitude === null
+    || itemLongitude === null
+  ) {
+    return props.item.distanceMeters
+  }
+
+  const earthRadiusMeters = 6371000
+  const toRadians = (degrees: number) => degrees * Math.PI / 180
+  const latitudeDelta = toRadians(itemLatitude - currentOrigin.lat)
+  const longitudeDelta = toRadians(itemLongitude - currentOrigin.lng)
+  const originLatitude = toRadians(currentOrigin.lat)
+  const targetLatitude = toRadians(itemLatitude)
+  const haversine = Math.sin(latitudeDelta / 2) ** 2
+    + Math.cos(originLatitude) * Math.cos(targetLatitude) * Math.sin(longitudeDelta / 2) ** 2
+  const normalizedHaversine = Math.min(1, Math.max(0, haversine))
+
+  return Math.round(2 * earthRadiusMeters * Math.asin(Math.sqrt(normalizedHaversine)))
+}
+
 const distanceLabel = computed(() => {
-  const meters = props.item.distanceMeters
+  const meters = calculateLiveDistanceMeters()
 
   if (meters === null) return "-- km"
   if (meters < 1000) return `${meters} m`

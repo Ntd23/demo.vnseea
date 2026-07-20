@@ -160,6 +160,7 @@
             class="nearby-map-page__card"
             :data-result-card-id="item.id"
             :item="item"
+            :origin="origin"
             :active="selectedItemId === item.id || (!selectedItemId && item.id === displayCardItems[0]?.id)"
             @select="selectItem"
             @focus-origin="focusOrigin"
@@ -372,6 +373,7 @@ const liveHeadingMinDegrees = 1.5
 const deviceHeadingMinIntervalMs = 80
 const deviceHeadingSmoothingAlpha = 0.32
 const deviceCompassMaxAccuracyDegrees = 55
+const deviceHeadingFreshnessMs = 1500
 const routeRefreshMinDistanceMeters = 15
 const routeRefreshMinIntervalMs = 10000
 const searchOriginRefreshMinDistanceMeters = 100
@@ -863,7 +865,11 @@ function resolveDeviceOrientationHeading(event: DeviceOrientationEventWithCompas
       : normalizeHeading(absoluteHeading - getScreenOrientationAngle())
   }
 
-  return null
+  const relativeHeading = calculateAbsoluteCompassHeading(event)
+
+  return relativeHeading === null
+    ? null
+    : normalizeHeading(relativeHeading - getScreenOrientationAngle())
 }
 
 function shouldRefreshFromLocation(
@@ -887,6 +893,13 @@ function resolvePositionHeading(
   position: GeolocationPosition,
   nextLocation: { lat: number, lng: number },
 ) {
+  if (
+    smoothedDeviceHeading !== null
+    && performance.now() - lastDeviceHeadingUpdateAt <= deviceHeadingFreshnessMs
+  ) {
+    return smoothedDeviceHeading
+  }
+
   const nativeHeading = normalizeHeading(position.coords.heading)
   const speed = typeof position.coords.speed === "number" && Number.isFinite(position.coords.speed)
     ? Math.max(0, position.coords.speed)
@@ -925,12 +938,6 @@ function updateLiveHeading(nextHeading: number | null) {
 }
 
 function handleDeviceOrientation(event: DeviceOrientationEvent) {
-  if (routeNavigationActive.value) {
-    lastDeviceHeadingUpdateAt = 0
-    smoothedDeviceHeading = null
-    return
-  }
-
   const nextHeading = resolveDeviceOrientationHeading(event)
 
   if (nextHeading === null) {
@@ -1266,6 +1273,7 @@ function scrollSelectedResultCardIntoView() {
 }
 
 function handleDirectionsRequest(item: NearbySearchItem) {
+  void startDeviceOrientationTracking(true)
   requestDirections(item)
 
   if (!import.meta.client || !window.matchMedia("(max-width: 760px)").matches) {

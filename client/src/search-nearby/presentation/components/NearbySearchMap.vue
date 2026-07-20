@@ -76,6 +76,8 @@ let displayedMobileCameraCenter: { lat: number, lng: number } | null = null
 let displayedMobileCameraHeading: number | null = null
 let isMobileRouteCameraFollowPaused = false
 let lastMobileRouteCameraRequestKey = ""
+let routeDeviationSampleCount = 0
+let lastAutomaticRerouteAt = 0
 
 const originRadiusMinMoveMeters = 25
 const defaultSearchRadiusKm = 3
@@ -89,6 +91,9 @@ const mobileRouteCameraMinIntervalMs = 450
 const mobileRouteCameraMinMoveMeters = 2.5
 const mobileRouteHeadingMinDelta = 3
 const mobileRouteHeadingMaxStep = 18
+const routeDeviationThresholdMeters = 10
+const routeDeviationRequiredSamples = 2
+const automaticRerouteCooldownMs = 4000
 const originMarkerAnimationMs = 520
 const mobileRouteCameraAnimationMs = 560
 
@@ -219,6 +224,8 @@ function clearRoute() {
   displayedMobileCameraHeading = null
   isMobileRouteCameraFollowPaused = false
   lastMobileRouteCameraRequestKey = ""
+  routeDeviationSampleCount = 0
+  lastAutomaticRerouteAt = 0
   if (mobileRouteCameraAnimationFrame) {
     cancelAnimationFrame(mobileRouteCameraAnimationFrame)
     mobileRouteCameraAnimationFrame = 0
@@ -520,6 +527,44 @@ function findClosestRouteProjection(origin: { lat: number, lng: number }) {
   }
 
   return closest
+}
+
+function shouldAutomaticallyReroute() {
+  if (
+    !props.routeNavigationActive
+    || !props.routeTargetItem
+    || props.origin.lat === null
+    || props.origin.lng === null
+    || lastMobileRoutePath.length < 2
+  ) {
+    routeDeviationSampleCount = 0
+    return false
+  }
+
+  const projection = findClosestRouteProjection({
+    lat: props.origin.lat,
+    lng: props.origin.lng,
+  })
+
+  if (!projection || projection.distanceMeters <= routeDeviationThresholdMeters) {
+    routeDeviationSampleCount = 0
+    return false
+  }
+
+  routeDeviationSampleCount += 1
+
+  const now = Date.now()
+
+  if (
+    routeDeviationSampleCount < routeDeviationRequiredSamples
+    || now - lastAutomaticRerouteAt < automaticRerouteCooldownMs
+  ) {
+    return false
+  }
+
+  routeDeviationSampleCount = 0
+  lastAutomaticRerouteAt = now
+  return true
 }
 
 function resolveDisplayOrigin(useRouteSnap = props.routeNavigationActive) {
@@ -1146,9 +1191,8 @@ function renderOriginMarker() {
   }
 
   const center = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
-  const markerHeading = props.routeNavigationActive
-    ? 0
-    : props.originHeading ?? null
+  const markerHeading = props.originHeading
+    ?? (props.routeNavigationActive ? resolveMobileRouteHeading(props.routeTargetItem) : null)
   const icon = createOriginIcon(!props.selectedItemId, markerHeading)
 
   if (originMarker.value) {
@@ -1396,16 +1440,6 @@ function fitRoutePreview(result: google.maps.DirectionsResult, target: NearbySea
   }
 
   if (props.routeNavigationActive) {
-    lastMobileRoutePath = getRoutePathPoints(result, target)
-
-    if (props.origin.lat !== null && props.origin.lng !== null) {
-      const origin = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
-      const routeForwardPoint = getRoutePathLookAheadPoint(origin) ?? getRouteForwardPoint(result, target)
-      lastMobileRouteHeading = routeForwardPoint
-        ? calculateBearingDegrees(origin, routeForwardPoint)
-        : null
-    }
-
     if (isMobileRouteCameraFollowPaused) {
       return
     }
@@ -1433,6 +1467,26 @@ function fitRoutePreview(result: google.maps.DirectionsResult, target: NearbySea
   window.google.maps.event.addListenerOnce(map, "idle", () => {
     map.setZoom(Math.max(map.getZoom() ?? minZoom, minZoom))
   })
+}
+
+function syncActiveRoutePath(result: google.maps.DirectionsResult, target: NearbySearchItem) {
+  if (!props.routeNavigationActive) {
+    return
+  }
+
+  lastMobileRoutePath = getRoutePathPoints(result, target)
+  routeDeviationSampleCount = 0
+
+  if (props.origin.lat === null || props.origin.lng === null) {
+    lastMobileRouteHeading = null
+    return
+  }
+
+  const origin = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
+  const routeForwardPoint = getRoutePathLookAheadPoint(origin) ?? getRouteForwardPoint(result, target)
+  lastMobileRouteHeading = routeForwardPoint
+    ? calculateBearingDegrees(origin, routeForwardPoint)
+    : null
 }
 
 function renderRoute() {
@@ -1512,6 +1566,7 @@ function renderRoute() {
         const shortestRouteResult = selectShortestRoute(result)
 
         lastRenderedRouteTargetId = target.id
+        syncActiveRoutePath(shortestRouteResult, target)
         renderer.setDirections(shortestRouteResult)
         if (shouldFitRouteViewport) {
           lastRouteFitKey = props.routeFitKey
@@ -1644,6 +1699,10 @@ watch(
       fitOriginRadiusViewport(true)
     }
     if (props.routeNavigationActive && props.routeTargetItem) {
+      if (shouldAutomaticallyReroute()) {
+        renderRoute()
+        return
+      }
       followMobileRouteCamera(props.routeTargetItem)
     }
   },
