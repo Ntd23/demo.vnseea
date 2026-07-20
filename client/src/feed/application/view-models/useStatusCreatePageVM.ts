@@ -1,21 +1,22 @@
-// English description: Manages the upload-first story creation flow, preview state, and backend submission for the status create page.
+// English description: Manages media selection, responsive preview metadata, and story submission for the create-story page.
 
 import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import {
+  feedStoryAcceptedImageMimeTypes,
   feedStoryAcceptedMimeTypes,
   feedStoryAcceptedVideoExtensions,
-  feedStoryCaptionMaxLength,
+  feedStoryAcceptedVideoMimeTypes,
   feedStoryCreateRedirectDelay,
   feedStoryImageMimePrefix,
-  feedStoryPreviewProgressWidths,
   feedStoryVideoMimePrefix,
 } from "../constants/story-carousel"
 import type { FeedStoryRecord } from "../../domain/types/feed.types"
 import { createApiFeedRepository } from "../../infrastructure/repositories/ApiFeedRepository"
-import { type ContentAudience } from "../../../shared-kernel/domain/content-audience"
+import type { ContentAudience } from "../../../shared-kernel/domain/content-audience"
 
 type MediaType = "image" | "video" | null
+type MediaOrientation = "portrait" | "landscape" | "square" | null
 
 export function useStatusCreatePageVM(
   repository = createApiFeedRepository(),
@@ -29,54 +30,26 @@ export function useStatusCreatePageVM(
   const selectedFile = ref<File | null>(null)
   const previewUrl = ref("")
   const mediaType = ref<MediaType>(null)
+  const mediaOrientation = ref<MediaOrientation>(null)
+  const pickerAccept = ref(feedStoryAcceptedMimeTypes)
+  const title = ref("")
   const caption = ref("")
   const privacy = ref<ContentAudience>("followers")
-
-  const captionRef = ref<HTMLInputElement | null>(null)
-  const phoneScreenRef = ref<HTMLElement | null>(null)
-  const showCaptionEditor = ref(false)
-  const isDraggingCaption = ref(false)
-  const captionPosition = reactive({
-    x: 50,
-    y: 78,
-  })
-  const captionDragOffset = reactive({
-    x: 0,
-    y: 0,
-  })
-
   const submitting = ref(false)
-  const submitStatus = ref<"idle" | "submitting" | "success" | "error">("idle")
+  const submitStatus = ref<"idle" | "submitting" | "error">("idle")
   const statusDescription = ref("")
 
-  const currentUserName = computed(() => currentAuthUserStore.user?.name || "")
-  const currentUserAvatar = computed(() => currentAuthUserStore.user?.avatarUrl || "")
-  const currentUserInitials = computed(() =>
-    currentUserName.value
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map(part => part[0]?.toUpperCase() || "")
-      .join("") || t("pages.statusCreatePage.previewInitialsFallback"),
-  )
-
-  const previewBarWidth = computed(() =>
-    selectedFile.value
-      ? feedStoryPreviewProgressWidths.ready
-      : feedStoryPreviewProgressWidths.empty,
-  )
-
   const revokePreview = () => {
-    if (previewUrl.value) {
-      URL.revokeObjectURL(previewUrl.value)
-      previewUrl.value = ""
+    if (!previewUrl.value) {
+      return
     }
+
+    URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = ""
   }
 
-  const getFileExtension = (file: File) => {
-    const extension = file.name.match(/\.[^.]+$/)?.[0]?.toLowerCase() ?? ""
-    return extension
-  }
+  const getFileExtension = (file: File) =>
+    file.name.match(/\.[^.]+$/)?.[0]?.toLowerCase() ?? ""
 
   const isImageFile = (file: File) =>
     file.type.startsWith(feedStoryImageMimePrefix)
@@ -85,18 +58,29 @@ export function useStatusCreatePageVM(
     file.type.startsWith(feedStoryVideoMimePrefix)
     || feedStoryAcceptedVideoExtensions.includes(getFileExtension(file) as typeof feedStoryAcceptedVideoExtensions[number])
 
-  const clampCaptionPosition = (value: number, min: number, max: number) =>
-    Math.min(Math.max(value, min), max)
-
-  const updateCaptionPosition = (event: PointerEvent) => {
-    const bounds = phoneScreenRef.value?.getBoundingClientRect()
-
-    if (!bounds) {
+  const updateMediaOrientation = (width: number, height: number) => {
+    if (!width || !height) {
+      mediaOrientation.value = null
       return
     }
 
-    captionPosition.x = clampCaptionPosition(((event.clientX - captionDragOffset.x - bounds.left) / bounds.width) * 100, 10, 90)
-    captionPosition.y = clampCaptionPosition(((event.clientY - captionDragOffset.y - bounds.top) / bounds.height) * 100, 14, 88)
+    const aspectRatio = width / height
+
+    mediaOrientation.value = aspectRatio > 1.08
+      ? "landscape"
+      : aspectRatio < 0.92
+        ? "portrait"
+        : "square"
+  }
+
+  const handleImageLoad = (event: Event) => {
+    const image = event.currentTarget as HTMLImageElement
+    updateMediaOrientation(image.naturalWidth, image.naturalHeight)
+  }
+
+  const handleVideoMetadata = (event: Event) => {
+    const video = event.currentTarget as HTMLVideoElement
+    updateMediaOrientation(video.videoWidth, video.videoHeight)
   }
 
   const applyFile = (file: File | null) => {
@@ -104,7 +88,7 @@ export function useStatusCreatePageVM(
       revokePreview()
       selectedFile.value = null
       mediaType.value = null
-      showCaptionEditor.value = false
+      mediaOrientation.value = null
       return
     }
 
@@ -115,79 +99,38 @@ export function useStatusCreatePageVM(
     revokePreview()
     selectedFile.value = file
     mediaType.value = isVideoFile(file) ? "video" : "image"
+    mediaOrientation.value = null
     previewUrl.value = URL.createObjectURL(file)
-    showCaptionEditor.value = false
   }
 
-  const openPicker = () => fileInputRef.value?.click()
+  const openPicker = async (requestedType?: Exclude<MediaType, null>) => {
+    pickerAccept.value = requestedType === "image"
+      ? feedStoryAcceptedImageMimeTypes
+      : requestedType === "video"
+        ? feedStoryAcceptedVideoMimeTypes
+        : feedStoryAcceptedMimeTypes
 
-  const handleFileSelection = (event: Event) =>
-    applyFile((event.target as HTMLInputElement).files?.[0] ?? null)
+    await nextTick()
+    fileInputRef.value?.click()
+  }
+
+  const handleFileSelection = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    applyFile(input.files?.[0] ?? null)
+    input.value = ""
+  }
 
   const removeFile = () => {
     applyFile(null)
-    caption.value = ""
-    captionPosition.x = 50
-    captionPosition.y = 78
-
-    if (fileInputRef.value) {
-      fileInputRef.value.value = ""
-    }
-  }
-
-  const openCaptionEditor = async () => {
-    if (!selectedFile.value) {
-      return
-    }
-
-    showCaptionEditor.value = true
-    await nextTick()
-    captionRef.value?.focus()
-  }
-
-  const startCaptionDrag = (event: PointerEvent) => {
-    if (!selectedFile.value) {
-      return
-    }
-
-    const target = event.currentTarget as HTMLElement
-    const bounds = target.getBoundingClientRect()
-
-    captionDragOffset.x = event.clientX - (bounds.left + bounds.width / 2)
-    captionDragOffset.y = event.clientY - (bounds.top + bounds.height / 2)
-    isDraggingCaption.value = true
-    target.setPointerCapture(event.pointerId)
-  }
-
-  const dragCaption = (event: PointerEvent) => {
-    if (!isDraggingCaption.value) {
-      return
-    }
-
-    updateCaptionPosition(event)
-  }
-
-  const stopCaptionDrag = (event?: PointerEvent) => {
-    isDraggingCaption.value = false
-
-    if (event?.currentTarget instanceof HTMLElement && event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    }
-  }
-
-  const closeCaptionEditor = () => {
-    if (!caption.value.trim()) {
-      showCaptionEditor.value = false
-    }
+    submitStatus.value = "idle"
+    statusDescription.value = ""
   }
 
   onMounted(async () => {
     await currentAuthUserStore.hydrate()
   })
 
-  onUnmounted(() => {
-    revokePreview()
-  })
+  onUnmounted(revokePreview)
 
   async function submitStory() {
     if (!selectedFile.value || !mediaType.value || submitting.value) {
@@ -199,12 +142,12 @@ export function useStatusCreatePageVM(
     statusDescription.value = t("pages.statusCreatePage.submittingStatus")
 
     try {
-      const normalizedCaption = caption.value.trim()
       const response = await repository.createStory({
         file: selectedFile.value,
         fileType: mediaType.value,
-        description: normalizedCaption || undefined,
         privacy: privacy.value,
+        title: title.value.trim() || undefined,
+        description: caption.value.trim() || undefined,
       })
 
       pendingCreatedStory.value = response.story
@@ -231,30 +174,20 @@ export function useStatusCreatePageVM(
     selectedFile,
     previewUrl,
     mediaType,
+    mediaOrientation,
+    pickerAccept,
+    title,
     caption,
     privacy,
-    captionRef,
-    phoneScreenRef,
-    showCaptionEditor,
-    captionPosition,
     submitting,
     submitStatus,
     statusDescription,
-    currentUserName,
-    currentUserAvatar,
-    currentUserInitials,
-    previewBarWidth,
     openPicker,
     handleFileSelection,
+    handleImageLoad,
+    handleVideoMetadata,
     removeFile,
-    openCaptionEditor,
-    startCaptionDrag,
-    dragCaption,
-    stopCaptionDrag,
-    closeCaptionEditor,
     submitStory,
     appRoutes,
-    feedStoryAcceptedMimeTypes,
-    feedStoryCaptionMaxLength,
   }
 }

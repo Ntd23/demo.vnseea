@@ -1,4 +1,5 @@
 <?php
+// Canonical privacy and audience checks for posts, stories, comments, and notifications.
 
 function VNSEEA_PrivacyArray($value)
 {

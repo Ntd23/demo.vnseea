@@ -10,6 +10,13 @@ export const feedStoryCreateRedirectDelay = 500
 
 export const feedStoryAcceptedVideoExtensions = [".mp4", ".mov", ".mkv", ".avi", ".wmv", ".webm"] as const
 
+export const feedStoryAcceptedImageMimeTypes = "image/*"
+
+export const feedStoryAcceptedVideoMimeTypes = [
+  "video/*",
+  ...feedStoryAcceptedVideoExtensions,
+].join(",")
+
 export const feedStoryAcceptedMimeTypes = [
   "image/*",
   "video/*",
@@ -20,7 +27,9 @@ export const feedStoryImageMimePrefix = "image/"
 
 export const feedStoryVideoMimePrefix = "video/"
 
-export const feedStoryCaptionMaxLength = 200
+export const feedStoryTitleMaxLength = 100
+
+export const feedStoryCaptionMaxLength = 300
 
 export const feedStoryCaptionWarningLength = 180
 

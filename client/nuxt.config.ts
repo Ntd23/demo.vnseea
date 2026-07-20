@@ -41,6 +41,9 @@ const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL");
 const realtimeInternalUrl = process.env.REALTIME_INTERNAL_URL?.trim() || "";
 const realtimeSecret = process.env.REALTIME_SECRET?.trim() || "";
 const publicRealtimeUrl = process.env.NUXT_PUBLIC_REALTIME_URL?.trim() || "";
+const nativeAppStoryDeepLink = process.env.NUXT_PUBLIC_NATIVE_APP_STORY_DEEP_LINK?.trim() || "";
+const nativeAppIosStoreUrl = process.env.NUXT_PUBLIC_NATIVE_APP_IOS_STORE_URL?.trim() || "";
+const nativeAppAndroidStoreUrl = process.env.NUXT_PUBLIC_NATIVE_APP_ANDROID_STORE_URL?.trim() || "";
 const backendWebBase = normalizeBackendWebBase(
   process.env.NUXT_PUBLIC_BACKEND_WEB_BASE?.trim() || backendApiBase,
 );
@@ -117,6 +120,11 @@ export default defineNuxtConfig({
       backendWebBase,
       siteUrl: publicSiteUrl,
       realtimeUrl: publicRealtimeUrl,
+      nativeApp: {
+        storyDeepLink: nativeAppStoryDeepLink,
+        iosStoreUrl: nativeAppIosStoreUrl,
+        androidStoreUrl: nativeAppAndroidStoreUrl,
+      },
       scripts: {
         googleMaps: {
           apiKey: process.env.NUXT_PUBLIC_SCRIPTS_GOOGLE_MAPS_API_KEY || "",
