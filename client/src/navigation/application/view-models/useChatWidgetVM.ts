@@ -6,6 +6,7 @@ import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessageContact, MessageItem, MessageProductCard, MessageRecordDraft, MessageSendDraft, MessageTagsPayload, MessageThread, MessageUserTag } from "../../../messages/domain/types/messages.types"
 import type { MessagesRepository } from "../../../messages/domain/repositories/MessagesRepository"
+import { getMessageLocationMeta } from "../../../messages/application/utils/message-location"
 import { createApiMessagesRepository } from "../../../messages/infrastructure/repositories/ApiMessagesRepository"
 import { useChatWidgetLauncher, type ProductChatLaunchRequest } from "../composables/useChatWidgetLauncher"
 
@@ -1084,7 +1085,9 @@ export function useChatWidgetVM(
 
         const contactInInbox = inbox.value.find(c => c.id === contact.id)
         if (contactInInbox) {
-          contactInInbox.preview = realMsg.text || (realMsg.mediaType ? `[${realMsg.mediaType}]` : "")
+          contactInInbox.preview = getMessageLocationMeta(realMsg)
+            ? t("pages.messagesPage.locationSharedPreview")
+            : realMsg.text || (realMsg.mediaType ? `[${realMsg.mediaType}]` : "")
           contactInInbox.time = realMsg.time || t("navigation.chatWidget.justNow") || "Vừa xong"
         }
       } else {
@@ -1165,7 +1168,9 @@ export function useChatWidgetVM(
 
     const contactInInbox = inbox.value.find(c => c.id === contact.id)
     if (contactInInbox) {
-      contactInInbox.preview = text || (mediaType ? `[${mediaType}]` : "")
+      contactInInbox.preview = getMessageLocationMeta({ text })
+        ? t("pages.messagesPage.locationSharedPreview")
+        : text || (mediaType ? `[${mediaType}]` : "")
       contactInInbox.time = t("navigation.chatWidget.sendingStatus") || "Đang gửi..."
     }
 

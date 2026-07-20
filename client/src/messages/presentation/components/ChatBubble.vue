@@ -37,7 +37,10 @@
 
       <div
         class="group relative w-fit max-w-[84%] sm:max-w-[74%] lg:max-w-[42rem] chat-bubble__wrapper"
-        :class="{ 'chat-bubble__wrapper--product': productCard }"
+        :class="{
+          'chat-bubble__wrapper--product': productCard,
+          'chat-bubble__wrapper--location': location && !isDeleted,
+        }"
         :title="timelineTitle"
       >
         <div
@@ -95,6 +98,12 @@
             {{ callButtonLabel }}
           </UButton>
         </div>
+
+        <MessageLocationCard
+          v-else-if="location && !isDeleted"
+          :location="location"
+          :avatar-url="locationAvatarUrl"
+        />
 
         <div
           v-else
@@ -157,10 +166,10 @@
               :href="mediaUrl"
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center gap-2 rounded-[8px] bg-black/5 px-3 py-2 text-sm font-medium"
+              class="chat-bubble__file inline-flex items-center gap-2 rounded-[8px] bg-black/5 px-3 py-2 text-sm font-medium"
             >
               <Icon name="i-ph-paperclip-duotone" class="h-4 w-4" />
-              <span>{{ mediaName || mediaUrl }}</span>
+              <span class="chat-bubble__file-name">{{ mediaName || mediaUrl }}</span>
             </a>
           </div>
         </div>
@@ -224,9 +233,12 @@
 </template>
 
 <script setup lang="ts">
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import type { MessageCallLogAction } from "../../domain/types/calls.types"
 import type { MessageProductCard } from "../../domain/types/messages.types"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
+import type { MessageLocationMeta } from "../../application/utils/message-location"
+import MessageLocationCard from "./MessageLocationCard.vue"
 
 type ChatBubbleReactionOption = {
   value: FeedStoryReactionType
@@ -262,6 +274,7 @@ const props = defineProps<{
   mediaName?: string
   mediaType?: "image" | "video" | "audio" | "gif" | "file" | "record"
   productCard?: MessageProductCard
+  location?: MessageLocationMeta | null
   callLog?: {
     type: "audio" | "video"
     status: string
@@ -284,7 +297,13 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const currentAuthUserStore = useCurrentAuthUserStore()
 const productImageFailed = ref(false)
+const locationAvatarUrl = computed(() =>
+  props.location?.avatarUrl
+  || (props.isMine ? currentAuthUserStore.user?.avatarUrl : props.avatar)
+  || "",
+)
 
 watch(() => props.productCard?.imageUrl, () => {
   productImageFailed.value = false
@@ -409,8 +428,16 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 <style scoped>
 .chat-bubble {
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   font-family: var(--font-primary), sans-serif;
   font-weight: 400;
+}
+
+.chat-bubble__container {
+  min-width: 0;
 }
 
 .chat-bubble__author {
@@ -458,6 +485,14 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__wrapper--product {
   width: min(310px, 100%);
+}
+
+.chat-bubble__wrapper--location {
+  width: min(300px, 78vw);
+}
+
+.chat-bubble__wrapper--location :deep(.message-location-card) {
+  width: 100%;
 }
 
 .chat-bubble__product-media img {
@@ -607,12 +642,41 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__wrapper {
   display: flex;
+  min-width: 0;
+  max-width: min(78%, 34rem) !important;
   flex-direction: column;
   align-items: flex-start;
 }
 
+.chat-bubble__text {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.chat-bubble__file {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.chat-bubble__file-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .chat-bubble__container--mine .chat-bubble__wrapper {
   align-items: flex-end;
+}
+
+@media (min-width: 640px) {
+  .chat-bubble__wrapper {
+    max-width: min(70%, 34rem) !important;
+  }
+
+  .chat-bubble__wrapper--location {
+    width: 300px;
+  }
 }
 
 .chat-bubble__reply {

@@ -12,6 +12,11 @@ import type {
 const readString = (value: unknown) =>
   Array.isArray(value) ? String(value[0] || "") : String(value || "")
 
+const readCoordinate = (value: unknown, min: number, max: number) => {
+  const parsed = Number(readString(value))
+  return Number.isFinite(parsed) && parsed >= min && parsed <= max ? parsed : null
+}
+
 const suggestionDebounceMs = 300
 const minSearchKeywordLength = 3
 const defaultNearbyDistanceKm = 3
@@ -42,11 +47,19 @@ export function useSearchNearbyPageVM() {
   const route = useRoute()
   const repository = createApiNearbySearchRepository()
 
+  const initialSharedLatitude = readCoordinate(route.query.lat, -90, 90)
+  const initialSharedLongitude = readCoordinate(route.query.lng, -180, 180)
+  const initialSharedOrigin = initialSharedLatitude !== null && initialSharedLongitude !== null
+    ? { lat: initialSharedLatitude, lng: initialSharedLongitude }
+    : null
+  const sharedOriginTitle = ref(readString(route.query.title).trim())
+  const hasSharedOrigin = ref(Boolean(initialSharedOrigin))
+
   const searchText = ref(readString(route.query.q))
   const selectedType = ref<NearbySearchType>("all")
   const distanceKm = ref(defaultNearbyDistanceKm)
-  const currentDeviceOrigin = ref<{ lat: number, lng: number } | null>(null)
-  const deviceOrigin = ref<{ lat: number, lng: number } | null>(null)
+  const currentDeviceOrigin = ref<{ lat: number, lng: number } | null>(initialSharedOrigin)
+  const deviceOrigin = ref<{ lat: number, lng: number } | null>(initialSharedOrigin)
   const selectedItemId = ref("")
   const originFocusKey = ref(0)
   const originUpdateKey = ref(0)
@@ -112,7 +125,9 @@ export function useSearchNearbyPageVM() {
   const origin = computed(() => {
     if (currentDeviceOrigin.value) {
       return {
-        address: "Vá»‹ trÃ­ hiá»‡n táº¡i",
+        address: hasSharedOrigin.value && sharedOriginTitle.value
+          ? sharedOriginTitle.value
+          : "Vị trí hiện tại",
         lat: currentDeviceOrigin.value.lat,
         lng: currentDeviceOrigin.value.lng,
       }
@@ -334,6 +349,7 @@ export function useSearchNearbyPageVM() {
   }
 
   function focusDeviceLocation(lat: number, lng: number) {
+    hasSharedOrigin.value = false
     setCurrentDeviceLocation(lat, lng, {
       focus: true,
       updateSearchOrigin: true,
@@ -377,6 +393,23 @@ export function useSearchNearbyPageVM() {
     },
   )
 
+  watch(
+    () => [route.query.lat, route.query.lng, route.query.title],
+    () => {
+      const latitude = readCoordinate(route.query.lat, -90, 90)
+      const longitude = readCoordinate(route.query.lng, -180, 180)
+
+      if (latitude === null || longitude === null) return
+
+      sharedOriginTitle.value = readString(route.query.title).trim()
+      hasSharedOrigin.value = true
+      setCurrentDeviceLocation(latitude, longitude, {
+        focus: true,
+        updateSearchOrigin: true,
+      })
+    },
+  )
+
   watch(searchText, () => {
     if (isApplyingSuggestion) {
       return
@@ -398,6 +431,7 @@ export function useSearchNearbyPageVM() {
     searchText,
     selectedType,
     distanceKm,
+    hasSharedOrigin,
     selectedItemId,
     originFocusKey,
     originUpdateKey,

@@ -1,6 +1,7 @@
 // Description: Normalizes message text, inline reply metadata, and display snippets for shared chat bubble surfaces.
 
 import type { MessageItem, MessageProductCard } from "../../domain/types/messages.types"
+import { getMessageLocationMeta } from "./message-location"
 
 export const MESSAGE_REPLY_PREFIX = "__VNSEEA_MINI_REPLY__:"
 export const MESSAGE_PRODUCT_PREFIX = "__VNSEEA_PRODUCT__:"
@@ -136,6 +137,10 @@ export function getMessageDisplayText(
 
   if (productMeta) {
     return productMeta.body
+  }
+
+  if (getMessageLocationMeta(message)) {
+    return ""
   }
 
   return normalizeMessageText(message.text)

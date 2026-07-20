@@ -127,9 +127,32 @@
             :description="permissionDenied ? $t('pages.messagesPage.recordPermissionDenied') : errorMessage"
             class="rounded-[18px]"
           />
+
+          <UAlert
+            v-if="locationErrorMessage"
+            color="warning"
+            variant="subtle"
+            icon="i-ph-map-pin-line-duotone"
+            :title="$t('pages.messagesPage.locationErrorTitle')"
+            :description="locationErrorMessage"
+            class="rounded-[18px]"
+          />
         </div>
 
         <div class="chat-input-actions-right">
+          <UTooltip :text="$t('pages.messagesPage.shareLocation')">
+            <UButton
+              type="button"
+              color="neutral"
+              variant="soft"
+              icon="i-ph-map-pin-line-duotone"
+              class="chat-input-icon-button"
+              :loading="isLocating"
+              :disabled="disabled || isLocating || isRecording"
+              @click="shareCurrentLocation"
+            />
+          </UTooltip>
+
           <UTooltip :text="$t('pages.messagesPage.attachmentLabel')">
             <UButton
               type="button"
@@ -161,6 +184,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue"
+import { useCurrentLocationShare } from "../../application/composables/useCurrentLocationShare"
 import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
 import type { MessageComposerDraft } from "../../domain/types/messages.types"
 
@@ -179,6 +203,13 @@ const emit = defineEmits<{
 
 const attachmentPanelOpen = ref(false)
 const attachmentFile = ref<File | null>(null)
+const { t } = useI18n()
+const {
+  isLocating,
+  locationError,
+  createCurrentLocationMessage,
+  clearLocationError,
+} = useCurrentLocationShare()
 const {
   isSupported,
   isRecording,
@@ -200,6 +231,23 @@ const formattedRecordDuration = computed(() => {
   const minutes = Math.floor(totalSeconds / 60)
   const seconds = totalSeconds % 60
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+})
+
+const locationErrorMessage = computed(() => {
+  if (!locationError.value) {
+    return ""
+  }
+
+  const keyByError = {
+    unsupported: "pages.messagesPage.locationUnsupported",
+    "insecure-context": "pages.messagesPage.locationInsecureContext",
+    "permission-denied": "pages.messagesPage.locationPermissionDenied",
+    unavailable: "pages.messagesPage.locationUnavailable",
+    timeout: "pages.messagesPage.locationTimeout",
+    unknown: "pages.messagesPage.locationUnknownError",
+  } as const
+
+  return t(keyByError[locationError.value])
 })
 
 watch(attachmentFile, (file) => {
@@ -251,6 +299,21 @@ function toggleAttachmentPanel() {
 
 function clearFile() {
   attachmentFile.value = null
+}
+
+async function shareCurrentLocation() {
+  emit("typing-stop")
+  clearLocationError()
+
+  const messageUrl = await createCurrentLocationMessage(
+    t("pages.messagesPage.locationOwnTitle"),
+  )
+
+  if (!messageUrl) {
+    return
+  }
+
+  emit("send", { text: messageUrl })
 }
 
 async function handleRecordButton() {

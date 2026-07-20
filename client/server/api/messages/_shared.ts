@@ -487,6 +487,31 @@ const parseProductMessagePreview = (value: string) => {
   }
 }
 
+const isLocationMessage = (value: string) => {
+  const normalized = normalizeInlineMessageText(value).replace(/&amp;/gi, "&")
+
+  if (!/^(?:https?:\/\/[^\s/]+)?\/map\?[^\s]+$/i.test(normalized)) {
+    return false
+  }
+
+  try {
+    const url = new URL(normalized, "https://vnseea.invalid")
+    const latitude = Number(url.searchParams.get("lat"))
+    const longitude = Number(url.searchParams.get("lng"))
+
+    return url.pathname.replace(/\/+$/, "") === "/map"
+      && Number.isFinite(latitude)
+      && latitude >= -90
+      && latitude <= 90
+      && Number.isFinite(longitude)
+      && longitude >= -180
+      && longitude <= 180
+  }
+  catch {
+    return false
+  }
+}
+
 const buildContactPreviewSender = (
   message: BackendEntity,
   currentUserId: number,
@@ -540,6 +565,10 @@ const buildContactPreview = (
   const mediaPreview = buildMediaPreviewLabel(senderName, inferMediaType(message))
   const replyMeta = parseReplyMessagePreview(normalizedText)
   const productMeta = parseProductMessagePreview(normalizedText)
+
+  if (isLocationMessage(normalizedText)) {
+    return `${senderName} đã chia sẻ một vị trí`
+  }
 
   if (productMeta) {
     return productMeta.body || productMeta.title
