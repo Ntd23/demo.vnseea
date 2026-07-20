@@ -19,7 +19,6 @@
         :zoom-in-key="mapZoomInKey"
         :zoom-out-key="mapZoomOutKey"
         @select="selectItem"
-        @directions="handleDirectionsRequest"
         @route-error="handleRouteError"
       />
       <template #fallback>
@@ -145,9 +144,9 @@
             <h2>{{ emptyTitle }}</h2>
             <p>{{ emptyDescription }}</p>
           </div>
-          <NuxtLink v-if="needsLocation" :to="appRoutes.settingsPage('profile')" class="nearby-map-page__empty-action">
-            {{ t("pages.searchNearby.updateAddress") }}
-          </NuxtLink>
+          <button v-if="needsLocation" type="button" class="nearby-map-page__empty-action" @click="handleMyLocationClick">
+            {{ t("pages.searchNearby.enableLocation") }}
+          </button>
           <button v-else type="button" class="nearby-map-page__empty-action" @click="handleClearSearch">
             {{ t("pages.searchNearby.clearFilter") }}
           </button>
@@ -393,7 +392,6 @@ const geolocationOptions: PositionOptions = {
 }
 
 const {
-  appRoutes,
   searchText,
   selectedItemId,
   routeTargetItem,
@@ -404,7 +402,6 @@ const {
   routeOriginUpdateKey,
   routeFitKey,
   distanceKm,
-  hasSharedOrigin,
   origin,
   mapItems,
   cardItems,
@@ -1754,10 +1751,8 @@ watch(googlePlacesEnabled, (enabled) => {
 
 onMounted(() => {
   void loadSearchNearbyConfig()
-  if (!hasSharedOrigin.value) {
-    void startDeviceOrientationTracking()
-    void requestLocationPermission()
-  }
+  void startDeviceOrientationTracking()
+  void requestLocationPermission()
 })
 
 onBeforeUnmount(() => {

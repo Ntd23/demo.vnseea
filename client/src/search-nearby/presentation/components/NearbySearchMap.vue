@@ -34,7 +34,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [item: NearbySearchItem]
-  directions: [item: NearbySearchItem]
   routeError: [message: string]
 }>()
 
@@ -82,7 +81,6 @@ const mobileRouteFollowTilt = 60
 const mobileRouteFollowZoom = 19
 const mobileRouteHeadingLookAheadMeters = 110
 const mobileRouteCameraLookAheadMeters = 55
-const mobileRouteCameraHeadingOffsetDegrees = 180
 const mobileRouteSnapMaxDistanceMeters = 45
 const mobileRouteCameraMinIntervalMs = 450
 const mobileRouteCameraMinMoveMeters = 2.5
@@ -733,7 +731,7 @@ function followMobileRouteCamera(target: NearbySearchItem | null, preserveCurren
   const origin = resolveDisplayOrigin(true) ?? { lat: props.origin.lat, lng: props.origin.lng }
   const cameraCenter = resolveMobileRouteCameraCenter(origin)
   const routeHeading = resolveMobileRouteHeading(target)
-  const cameraHeading = normalizeHeading(routeHeading + mobileRouteCameraHeadingOffsetDegrees)
+  const cameraHeading = routeHeading
   const movedMeters = lastMobileRouteCameraCenter
     ? calculatePointDistanceMeters(lastMobileRouteCameraCenter, cameraCenter)
     : Number.POSITIVE_INFINITY
@@ -819,7 +817,7 @@ function handleGooglePoiClick(event: google.maps.MapMouseEvent & { placeId?: str
         distanceMeters: calculateDistanceMeters(lat, lng),
       }
 
-      emit("directions", item)
+      emit("select", item)
     },
   )
 }
