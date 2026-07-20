@@ -5,7 +5,6 @@ import type {
   NearbySearchItem,
   NearbySearchQuery,
   NearbySearchResponse,
-  NearbySearchType,
 } from "../../domain/types/search-nearby.types"
 
 const readString = (value: unknown) =>
@@ -61,7 +60,6 @@ export function useSearchNearbyPageVM() {
   const hasSharedOrigin = ref(Boolean(initialSharedOrigin))
 
   const searchText = ref(readString(route.query.q))
-  const selectedType = ref<NearbySearchType>("all")
   const distanceKm = ref(defaultNearbyDistanceKm)
   const currentDeviceOrigin = ref<{ lat: number, lng: number } | null>(initialSharedOrigin)
   const deviceOrigin = ref<{ lat: number, lng: number } | null>(initialSharedOrigin)
@@ -85,15 +83,9 @@ export function useSearchNearbyPageVM() {
   let suggestionRequestSequence = 0
   let isApplyingSuggestion = false
 
-  const tabs = computed(() => [
-    { label: "Tất cả", value: "all" as const, icon: "i-ph-squares-four-fill" },
-    { label: "Người dùng", value: "user" as const, icon: "i-ph-user-circle-fill" },
-    { label: "Trang", value: "page" as const, icon: "i-ph-flag-fill" },
-  ])
-
   const nearbyQuery = computed<NearbySearchQuery>(() => ({
     q: "",
-    type: selectedType.value,
+    type: "page",
     distanceKm: distanceKm.value,
     limit: 40,
     originLat: deviceOrigin.value?.lat ?? null,
@@ -189,9 +181,14 @@ export function useSearchNearbyPageVM() {
         return
       }
 
+      const pageOnlyResponse = {
+        ...nextResponse,
+        items: nextResponse.items.filter(item => item.type === "page"),
+      }
+
       response.value = currentDeviceOrigin.value
         ? {
-            ...nextResponse,
+            ...pageOnlyResponse,
             status: "ready",
             origin: {
               address: "Vị trí hiện tại",
@@ -199,7 +196,7 @@ export function useSearchNearbyPageVM() {
               lng: currentDeviceOrigin.value.lng,
             },
           }
-        : nextResponse
+        : pageOnlyResponse
 
       if (selectedItemId.value && !response.value.items.some(item => item.id === selectedItemId.value)) {
         selectedItemId.value = ""
@@ -252,7 +249,9 @@ export function useSearchNearbyPageVM() {
         }
       }
 
-      suggestions.value = sortByDistance(nextResponse.items)
+      suggestions.value = sortByDistance(
+        nextResponse.items.filter(item => item.type === "page"),
+      )
     }
     catch {
       if (requestId === suggestionRequestSequence) {
@@ -271,10 +270,6 @@ export function useSearchNearbyPageVM() {
     routeTargetItem.value = null
     routeNavigationActive.value = false
     routeErrorMessage.value = ""
-  }
-
-  function selectType(type: NearbySearchType) {
-    selectedType.value = type
   }
 
   function selectItem(item: NearbySearchItem) {
@@ -329,8 +324,10 @@ export function useSearchNearbyPageVM() {
   }
 
   function focusOrigin() {
-    selectedItemId.value = ""
-    clearRoute()
+    if (!routeNavigationActive.value) {
+      selectedItemId.value = ""
+      clearRoute()
+    }
     originFocusKey.value += 1
   }
 
@@ -396,7 +393,6 @@ export function useSearchNearbyPageVM() {
 
   function clearSearch() {
     searchText.value = ""
-    selectedType.value = "all"
     distanceKm.value = defaultNearbyDistanceKm
     suggestions.value = []
     clearPinnedResult()
@@ -447,7 +443,6 @@ export function useSearchNearbyPageVM() {
 
   return {
     searchText,
-    selectedType,
     distanceKm,
     selectedItemId,
     originFocusKey,
@@ -459,7 +454,6 @@ export function useSearchNearbyPageVM() {
     routeTargetItem,
     routeNavigationActive,
     routeErrorMessage,
-    tabs,
     origin,
     items,
     mapItems,
@@ -478,7 +472,6 @@ export function useSearchNearbyPageVM() {
     resultCountLabel,
     refresh,
     refreshSuggestions,
-    selectType,
     selectItem,
     selectSuggestion,
     requestDirections,

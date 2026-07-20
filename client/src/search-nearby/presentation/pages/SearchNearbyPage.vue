@@ -1,4 +1,4 @@
-<!-- English description: Full-screen map-first nearby search page for users and pages. -->
+<!-- English description: Full-screen map-first nearby search page for users, pages, and Google places. -->
 
 <template>
   <section ref="pageRoot" class="nearby-map-page">
@@ -19,6 +19,7 @@
         :zoom-in-key="mapZoomInKey"
         :zoom-out-key="mapZoomOutKey"
         @select="selectItem"
+        @clear-route="clearRoute"
         @route-error="handleRouteError"
       />
       <template #fallback>
@@ -440,7 +441,7 @@ const googleNearbyResults = ref<NearbySearchItem[]>([])
 const googleNearbyLoading = ref(false)
 const googleNearbyQuery = ref("")
 const googlePlacesEnabled = ref(true)
-const googleNearbyRadiusMeters = 3000
+const googleNearbyRadiusMeters = 1000
 const googleNearbyLimit = 20
 const autocompleteService = shallowRef<google.maps.places.AutocompleteService | null>(null)
 const placesService = shallowRef<google.maps.places.PlacesService | null>(null)
@@ -513,36 +514,14 @@ const shouldShowGoogleNearbyResults = computed(() =>
   googleNearbyLoading.value || googleNearbyQuery.value.length > 0,
 )
 
-function mergeNearbyDisplayItems(primaryItems: NearbySearchItem[], googleItems: NearbySearchItem[]) {
-  const merged = new Map<string, NearbySearchItem>()
-
-  primaryItems.forEach((item) => {
-    merged.set(item.id, item)
-  })
-  googleItems.forEach((item) => {
-    merged.set(item.id, item)
-  })
-
-  return Array.from(merged.values()).sort((left, right) => {
-    const leftDistance = left.distanceMeters ?? Number.POSITIVE_INFINITY
-    const rightDistance = right.distanceMeters ?? Number.POSITIVE_INFINITY
-
-    if (leftDistance !== rightDistance) {
-      return leftDistance - rightDistance
-    }
-
-    return left.title.localeCompare(right.title)
-  })
-}
-
 const displayMapItems = computed(() =>
   shouldShowGoogleNearbyResults.value
-    ? mergeNearbyDisplayItems(mapItems.value, googleNearbyResults.value)
+    ? googleNearbyResults.value
     : mapItems.value,
 )
 const displayCardItems = computed(() =>
   shouldShowGoogleNearbyResults.value
-    ? mergeNearbyDisplayItems(cardItems.value, googleNearbyResults.value)
+    ? googleNearbyResults.value
     : cardItems.value,
 )
 const displayHasResults = computed(() => displayCardItems.value.length > 0)
@@ -556,7 +535,7 @@ const showNearbySkeleton = computed(() =>
   ),
 )
 const displaySearchRadiusKm = computed(() =>
-  shouldShowGoogleNearbyResults.value ? 3 : distanceKm.value,
+  shouldShowGoogleNearbyResults.value ? googleNearbyRadiusMeters / 1000 : distanceKm.value,
 )
 const locationPermissionTitle = computed(() => {
   if (locationPermissionState.value === "checking") return t("pages.searchNearby.permissionTitleChecking")
@@ -592,11 +571,7 @@ function getSuggestionMeta(item: NearbySuggestionOption) {
     return item.distanceLabel
   }
 
-  const typeLabel = item.raw?.type === "page"
-    ? t("pages.searchNearby.suggestionPage")
-    : t("pages.searchNearby.suggestionUser")
-
-  return `${typeLabel} · ${item.distanceLabel}`
+  return `${t("pages.searchNearby.suggestionPage")} · ${item.distanceLabel}`
 }
 
 function formatDistance(meters: number | null) {

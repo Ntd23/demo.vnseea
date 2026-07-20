@@ -34,6 +34,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [item: NearbySearchItem]
+  clearRoute: []
   routeError: [message: string]
 }>()
 
@@ -73,6 +74,8 @@ let originMarkerAnimationFrame = 0
 let mobileRouteCameraAnimationFrame = 0
 let displayedMobileCameraCenter: { lat: number, lng: number } | null = null
 let displayedMobileCameraHeading: number | null = null
+let isMobileRouteCameraFollowPaused = false
+let lastMobileRouteCameraRequestKey = ""
 
 const originRadiusMinMoveMeters = 25
 const defaultSearchRadiusKm = 3
@@ -214,6 +217,8 @@ function clearRoute() {
   lastMobileRoutePath = []
   displayedMobileCameraCenter = null
   displayedMobileCameraHeading = null
+  isMobileRouteCameraFollowPaused = false
+  lastMobileRouteCameraRequestKey = ""
   if (mobileRouteCameraAnimationFrame) {
     cancelAnimationFrame(mobileRouteCameraAnimationFrame)
     mobileRouteCameraAnimationFrame = 0
@@ -720,10 +725,43 @@ function animateMobileRouteCamera(cameraOptions: google.maps.CameraOptions) {
   mobileRouteCameraAnimationFrame = requestAnimationFrame(tick)
 }
 
+function pauseMobileRouteCameraFollow() {
+  if (!props.routeNavigationActive || !props.routeTargetItem) {
+    return
+  }
+
+  isMobileRouteCameraFollowPaused = true
+  displayedMobileCameraCenter = null
+  displayedMobileCameraHeading = null
+
+  if (mobileRouteCameraAnimationFrame) {
+    cancelAnimationFrame(mobileRouteCameraAnimationFrame)
+    mobileRouteCameraAnimationFrame = 0
+  }
+}
+
+function beginResultSelection() {
+  clearRoute()
+  emit("clearRoute")
+}
+
+function selectResult(item: NearbySearchItem) {
+  beginResultSelection()
+  emit("select", item)
+}
+
+function resumeMobileRouteCameraFollow() {
+  isMobileRouteCameraFollowPaused = false
+  displayedMobileCameraCenter = null
+  displayedMobileCameraHeading = null
+  lastMobileRouteCameraCenter = null
+  lastMobileRouteCameraAt = 0
+}
+
 function followMobileRouteCamera(target: NearbySearchItem | null, preserveCurrentZoom = false) {
   const map = mapInstance.value
 
-  if (!map || props.origin.lat === null || props.origin.lng === null) {
+  if (isMobileRouteCameraFollowPaused || !map || props.origin.lat === null || props.origin.lng === null) {
     return false
   }
 
@@ -785,6 +823,7 @@ function handleGooglePoiClick(event: google.maps.MapMouseEvent & { placeId?: str
   }
 
   event.stop?.()
+  beginResultSelection()
   placesService.value.getDetails(
     {
       placeId,
@@ -1158,7 +1197,7 @@ function renderMarkers() {
 
     if (item.type === "place" && (item.mapIconUrl || item.avatarUrl)) {
       markers.push(createPlaceOverlayMarker(map, item, selected, () => {
-        emit("select", item)
+        selectResult(item)
       }))
       return
     }
@@ -1181,7 +1220,7 @@ function renderMarkers() {
     })
 
     marker.addListener("click", () => {
-      emit("select", item)
+      selectResult(item)
     })
     markers.push(marker)
   })
@@ -1367,6 +1406,10 @@ function fitRoutePreview(result: google.maps.DirectionsResult, target: NearbySea
         : null
     }
 
+    if (isMobileRouteCameraFollowPaused) {
+      return
+    }
+
     if (fitRouteStartViewport()) {
       const targetId = target.id
 
@@ -1398,7 +1441,7 @@ function renderRoute() {
   const DirectionsService = directionsServiceConstructor.value
   const DirectionsRenderer = directionsRendererConstructor.value
 
-  if (!target) {
+  if (!props.routeNavigationActive || !target) {
     clearRoute()
     return
   }
@@ -1420,6 +1463,18 @@ function renderRoute() {
 
   const requestId = ++routeRequestSequence
   const service = new DirectionsService()
+  const mobileRouteCameraRequestKey = props.routeNavigationActive
+    ? `${target.id}:${props.routeFitKey}`
+    : ""
+
+  if (
+    mobileRouteCameraRequestKey
+    && mobileRouteCameraRequestKey !== lastMobileRouteCameraRequestKey
+  ) {
+    lastMobileRouteCameraRequestKey = mobileRouteCameraRequestKey
+    resumeMobileRouteCameraFollow()
+  }
+
   const shouldFitRouteViewport = props.routeFitKey !== lastRouteFitKey
     || lastRenderedRouteTargetId !== target.id
     || !directionsRenderer.value
@@ -1445,7 +1500,11 @@ function renderRoute() {
       travelMode: window.google.maps.TravelMode.DRIVING,
     },
     (result, status) => {
-      if (requestId !== routeRequestSequence || props.routeTargetItem?.id !== target.id) {
+      if (
+        requestId !== routeRequestSequence
+        || !props.routeNavigationActive
+        || props.routeTargetItem?.id !== target.id
+      ) {
         return
       }
 
@@ -1559,6 +1618,7 @@ async function initializeMap() {
     ? new window.google.maps.places.PlacesService(mapInstance.value)
     : null
   mapInstance.value.addListener("click", handleGooglePoiClick)
+  mapInstance.value.addListener("dragstart", pauseMobileRouteCameraFollow)
 
   renderMarkers()
   renderRoute()
@@ -1608,6 +1668,10 @@ watch(
     renderOriginMarker()
     syncOriginRadiusCircle(true)
     if (props.routeTargetItem) {
+      if (props.routeNavigationActive) {
+        resumeMobileRouteCameraFollow()
+        followMobileRouteCamera(props.routeTargetItem, true)
+      }
       return
     }
     focusOrigin()
