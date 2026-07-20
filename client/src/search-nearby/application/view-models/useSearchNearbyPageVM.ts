@@ -1,6 +1,5 @@
 // English description: View model for the nearby map search page.
 import { refDebounced } from "@vueuse/core"
-import { appRoutes } from "#shared-kernel/application/constants/route-registry"
 import { createApiNearbySearchRepository } from "../../infrastructure/repositories/ApiNearbySearchRepository"
 import type {
   NearbySearchItem,
@@ -13,7 +12,13 @@ const readString = (value: unknown) =>
   Array.isArray(value) ? String(value[0] || "") : String(value || "")
 
 const readCoordinate = (value: unknown, min: number, max: number) => {
-  const parsed = Number(readString(value))
+  const rawValue = readString(value).trim()
+
+  if (!rawValue) {
+    return null
+  }
+
+  const parsed = Number(rawValue)
   return Number.isFinite(parsed) && parsed >= min && parsed <= max ? parsed : null
 }
 
@@ -96,7 +101,8 @@ export function useSearchNearbyPageVM() {
   }))
   const suggestionKeyword = computed(() => debouncedSuggestionText.value.trim())
   const shouldFetchSuggestions = computed(() =>
-    suggestionKeyword.value.length >= minSearchKeywordLength
+    deviceOrigin.value !== null
+    && suggestionKeyword.value.length >= minSearchKeywordLength
     && selectedSuggestionItem.value?.title !== suggestionKeyword.value,
   )
   const suggestionQuery = computed<NearbySearchQuery>(() => ({
@@ -133,10 +139,14 @@ export function useSearchNearbyPageVM() {
       }
     }
 
-    return response.value.origin
+    return {
+      address: "",
+      lat: null,
+      lng: null,
+    }
   })
-  const needsLocation = computed(() => response.value.status === "needs_location")
   const hasOrigin = computed(() => origin.value.lat !== null && origin.value.lng !== null)
+  const needsLocation = computed(() => !hasOrigin.value)
   const hasResults = computed(() => cardItems.value.length > 0)
   const isSearchInputSettling = computed(() => false)
   const displayLoading = computed(() =>
@@ -149,7 +159,7 @@ export function useSearchNearbyPageVM() {
   )
   const emptyDescription = computed(() =>
     needsLocation.value
-      ? "Hãy chọn địa chỉ Google trong hồ sơ để VNSEEA có tọa độ làm tâm tìm kiếm."
+      ? "Hãy bật quyền vị trí để VNSEEA dùng tọa độ realtime của thiết bị làm tâm tìm kiếm."
       : "Thử tăng bán kính hoặc đổi từ khóa tìm kiếm.",
   )
   const resultCountLabel = computed(() => `${items.value.length} kết quả`)
@@ -165,6 +175,13 @@ export function useSearchNearbyPageVM() {
     loading.value = true
     errorMessage.value = ""
 
+    if (requestQuery.originLat === null || requestQuery.originLng === null) {
+      response.value = emptyResponse()
+      hasLoadedOnce.value = false
+      loading.value = false
+      return
+    }
+
     try {
       const nextResponse = await repository.searchNearby(requestQuery)
 
@@ -175,8 +192,9 @@ export function useSearchNearbyPageVM() {
       response.value = currentDeviceOrigin.value
         ? {
             ...nextResponse,
+            status: "ready",
             origin: {
-              address: "Vá»‹ trÃ­ hiá»‡n táº¡i",
+              address: "Vị trí hiện tại",
               lat: currentDeviceOrigin.value.lat,
               lng: currentDeviceOrigin.value.lng,
             },
@@ -260,31 +278,20 @@ export function useSearchNearbyPageVM() {
   }
 
   function selectItem(item: NearbySearchItem) {
-    const shouldKeepRoute = routeTargetItem.value !== null
-
     selectedSuggestionItem.value = item
     selectedItemId.value = item.id
-    routeErrorMessage.value = ""
-
-    if (shouldKeepRoute) {
-      routeTargetItem.value = item
-      routeFitKey.value += 1
-      routeOriginUpdateKey.value += 1
-      return
-    }
-
     routeTargetItem.value = null
     routeNavigationActive.value = false
+    routeErrorMessage.value = ""
   }
 
   function selectSuggestion(item: NearbySearchItem) {
     isApplyingSuggestion = true
     selectedSuggestionItem.value = item
     selectedItemId.value = item.id
-    routeTargetItem.value = item
+    routeTargetItem.value = null
     routeNavigationActive.value = false
     routeErrorMessage.value = ""
-    routeFitKey.value += 1
     searchText.value = item.title
     suggestions.value = []
     suggestionsLoading.value = false
@@ -442,7 +449,6 @@ export function useSearchNearbyPageVM() {
     searchText,
     selectedType,
     distanceKm,
-    hasSharedOrigin,
     selectedItemId,
     originFocusKey,
     originUpdateKey,
