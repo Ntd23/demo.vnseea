@@ -878,49 +878,112 @@ function goToLive() {
 
 @media (max-width: 639px) {
   .publisher__compact {
-    display: grid;
-    grid-template-columns: 40px minmax(0, 1fr);
-    align-items: center;
-    gap: 10px;
-    padding: 12px;
-    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    border-radius: 16px;
   }
 
   .publisher__compact-avatar {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 255, 0.12);
   }
 
   .publisher__compact-input {
-    min-height: 58px;
+    flex: 1;
+    min-width: 0;
+    min-height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 13.5px;
+    line-height: 1.3;
+    color: #94a3b8;
+  }
+
+  /* Wrap avatar + input into an inline row via the compact's flex-direction override */
+  .publisher__compact {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* The first visual row (avatar + input) gets created by the existing DOM order
+     but we need to override flex-direction for the top portion.
+     Since we can't wrap in pure CSS, use a different approach:
+     Keep column, but make avatar + input appear as a row using the natural flow. */
+  .publisher__compact {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    grid-template-rows: auto auto;
     align-items: center;
-    padding: 10px 14px;
-    border-radius: 999px;
-    font-size: 13px;
-    line-height: 1.25;
+    gap: 0;
+    padding: 10px 12px 0 12px;
+    border-radius: 16px;
+  }
+
+  .publisher__compact-avatar {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .publisher__compact-input {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 8px 10px;
+    min-height: 36px;
   }
 
   .publisher__compact-actions {
-    display: none !important;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex !important;
+    justify-content: space-around;
+    align-items: center;
+    width: calc(100% + 24px);
+    margin: 10px -12px 0;
+    padding: 6px 12px;
+    background: #fafbfe;
+    border-top: 1px solid #f0f2f5;
+    gap: 0;
+  }
+
+  .publisher__compact-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: #475569;
+    border-radius: 10px;
+  }
+
+  .publisher__compact-btn:hover {
+    background: rgba(0, 0, 255, 0.06);
+    color: #0000ff;
+    border: none;
   }
 }
 
 @media (max-width: 380px) {
-  .publisher__compact {
-    grid-template-columns: 38px minmax(0, 1fr);
-    gap: 8px;
-    padding: 10px;
-  }
-
   .publisher__compact-avatar {
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
+    left: 10px;
+    top: 11px;
   }
 
   .publisher__compact-input {
-    min-height: 54px;
-    padding: 9px 12px;
-    font-size: 12.5px;
+    padding: 11px 12px 11px 50px;
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .publisher__compact-btn {
+    width: 34px;
+    height: 34px;
   }
 }
 

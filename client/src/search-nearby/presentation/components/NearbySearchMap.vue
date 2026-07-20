@@ -69,6 +69,7 @@ let lastMobileRouteCameraAt = 0
 let lastMobileRoutePath: { lat: number, lng: number }[] = []
 let displayedOriginPosition: { lat: number, lng: number } | null = null
 let displayedOriginHeading: number | null = null
+let originMarkerTargetPosition: { lat: number, lng: number } | null = null
 let originMarkerAnimationFrame = 0
 let mobileRouteCameraAnimationFrame = 0
 let displayedMobileCameraCenter: { lat: number, lng: number } | null = null
@@ -197,6 +198,7 @@ function clearOriginMarker() {
   originMarker.value = null
   displayedOriginPosition = null
   displayedOriginHeading = null
+  originMarkerTargetPosition = null
 }
 
 function clearOriginRadiusCircle() {
@@ -817,7 +819,7 @@ function handleGooglePoiClick(event: google.maps.MapMouseEvent & { placeId?: str
         distanceMeters: calculateDistanceMeters(lat, lng),
       }
 
-      emit("select", item)
+      emit("directions", item)
     },
   )
 }
@@ -1021,27 +1023,50 @@ function animateOriginMarkerTo(
 ) {
   const nextHeading = heading ?? displayedOriginHeading ?? 0
 
+  displayedOriginHeading = nextHeading
+  marker.setIcon(createOriginIcon(selected, nextHeading))
+
   if (!displayedOriginPosition) {
     displayedOriginPosition = center
-    displayedOriginHeading = nextHeading
+    originMarkerTargetPosition = center
     marker.setPosition(center)
-    marker.setIcon(createOriginIcon(selected, nextHeading))
+    return
+  }
+
+  if (
+    originMarkerAnimationFrame
+    && originMarkerTargetPosition
+    && calculatePointDistanceMeters(originMarkerTargetPosition, center) < 0.5
+  ) {
     return
   }
 
   const movedMeters = calculatePointDistanceMeters(displayedOriginPosition, center)
 
   if (movedMeters > 120) {
+    if (originMarkerAnimationFrame) {
+      cancelAnimationFrame(originMarkerAnimationFrame)
+      originMarkerAnimationFrame = 0
+    }
     displayedOriginPosition = center
-    displayedOriginHeading = nextHeading
+    originMarkerTargetPosition = center
     marker.setPosition(center)
-    marker.setIcon(createOriginIcon(selected, nextHeading))
+    return
+  }
+
+  if (movedMeters < 0.5) {
+    if (originMarkerAnimationFrame) {
+      cancelAnimationFrame(originMarkerAnimationFrame)
+      originMarkerAnimationFrame = 0
+    }
+    originMarkerTargetPosition = center
+    marker.setPosition(center)
     return
   }
 
   const startPosition = displayedOriginPosition
-  const startHeading = displayedOriginHeading ?? nextHeading
   const startedAt = performance.now()
+  originMarkerTargetPosition = center
 
   if (originMarkerAnimationFrame) {
     cancelAnimationFrame(originMarkerAnimationFrame)
@@ -1051,12 +1076,9 @@ function animateOriginMarkerTo(
     const progress = Math.min(1, (now - startedAt) / originMarkerAnimationMs)
     const easedProgress = easeOutCubic(progress)
     const position = interpolatePoint(startPosition, center, easedProgress)
-    const nextAnimatedHeading = interpolateHeading(startHeading, nextHeading, easedProgress)
 
     marker.setPosition(position)
-    marker.setIcon(createOriginIcon(selected, nextAnimatedHeading))
     displayedOriginPosition = position
-    displayedOriginHeading = nextAnimatedHeading
 
     if (progress < 1) {
       originMarkerAnimationFrame = requestAnimationFrame(tick)
@@ -1065,7 +1087,7 @@ function animateOriginMarkerTo(
 
     originMarkerAnimationFrame = 0
     displayedOriginPosition = center
-    displayedOriginHeading = nextHeading
+    originMarkerTargetPosition = center
   }
 
   originMarkerAnimationFrame = requestAnimationFrame(tick)
@@ -1231,6 +1253,43 @@ function fitRouteResult(result: google.maps.DirectionsResult, target: NearbySear
   map.fitBounds(bounds, padding)
 }
 
+function getRouteDistanceMeters(route: google.maps.DirectionsRoute) {
+  if (!route.legs.length) {
+    return Number.POSITIVE_INFINITY
+  }
+
+  return route.legs.reduce((total, leg) => {
+    const distanceMeters = leg.distance?.value
+
+    if (typeof distanceMeters !== "number" || !Number.isFinite(distanceMeters)) {
+      return Number.POSITIVE_INFINITY
+    }
+
+    return total + distanceMeters
+  }, 0)
+}
+
+function selectShortestRoute(result: google.maps.DirectionsResult): google.maps.DirectionsResult {
+  const shortestRoute = result.routes.reduce<google.maps.DirectionsRoute | null>((currentShortest, route) => {
+    if (!currentShortest) {
+      return route
+    }
+
+    return getRouteDistanceMeters(route) < getRouteDistanceMeters(currentShortest)
+      ? route
+      : currentShortest
+  }, null)
+
+  if (!shortestRoute) {
+    return result
+  }
+
+  return {
+    ...result,
+    routes: [shortestRoute],
+  }
+}
+
 function fitRouteStartViewport() {
   const map = mapInstance.value
   const origin = resolveDisplayOrigin(false)
@@ -1384,6 +1443,7 @@ function renderRoute() {
     {
       origin: { lat: props.origin.lat, lng: props.origin.lng },
       destination: { lat: target.lat, lng: target.lng },
+      provideRouteAlternatives: true,
       travelMode: window.google.maps.TravelMode.DRIVING,
     },
     (result, status) => {
@@ -1392,11 +1452,13 @@ function renderRoute() {
       }
 
       if (status === window.google.maps.DirectionsStatus.OK && result) {
+        const shortestRouteResult = selectShortestRoute(result)
+
         lastRenderedRouteTargetId = target.id
-        renderer.setDirections(result)
+        renderer.setDirections(shortestRouteResult)
         if (shouldFitRouteViewport) {
           lastRouteFitKey = props.routeFitKey
-          fitRoutePreview(result, target)
+          fitRoutePreview(shortestRouteResult, target)
         }
         return
       }

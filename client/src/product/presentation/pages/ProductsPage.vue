@@ -33,11 +33,6 @@
             :placeholder="$t('pages.productsPage.searchPlaceholder')"
             :ui="{ base: 'h-12 rounded-xl border-slate-200 bg-slate-50 text-[14px] font-medium' }" />
         </div>
-
-        <NuxtLink :to="appRoutes.searchNearby" class="products-filter__nearby">
-          <Icon name="i-ph-map-pin-area-fill" class="h-5 w-5 shrink-0" />
-          <span>{{ $t("pages.productsPage.nearbyStoresButton") }}</span>
-        </NuxtLink>
       </div>
 
       <div class="products-filter__panel" :class="{ 'products-filter__panel--with-subcategory': hasSubCategories }">
@@ -62,17 +57,14 @@
           <input v-model.number="distanceRange" type="range" min="0" max="300"
             class="products-filter__range mt-2 w-full" @change="applyDistance">
         </div>
+
+        <NuxtLink :to="appRoutes.searchNearby" class="products-filter__nearby">
+          <Icon name="i-ph-map-pin-area-fill" class="h-5 w-5 shrink-0" />
+          <span>{{ $t("pages.productsPage.nearbyStoresButton") }}</span>
+        </NuxtLink>
       </div>
     </section>
 
-    <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      <h2 class="text-[18px] font-semibold text-slate-900">
-        {{ resultHeading }}
-      </h2>
-      <p class="text-[13px] font-medium text-slate-500">
-        {{ $t("pages.productsPage.matchingProducts", { count: visibleProducts.length }) }} · {{ currentSortLabel }}
-      </p>
-    </div>
 
     <div v-if="status === 'pending'"
       class="mt-4 grid grid-cols-1 gap-4 min-[520px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
@@ -329,8 +321,7 @@ const {
 }
 
 .products-filter__top {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
   gap: 12px;
 }
@@ -384,7 +375,7 @@ const {
 
 .products-filter__panel {
   display: grid;
-  grid-template-columns: minmax(150px, 1fr) minmax(150px, 1fr) minmax(280px, 2fr);
+  grid-template-columns: minmax(140px, 1fr) minmax(140px, 1fr) minmax(240px, 1.6fr) auto;
   align-items: center;
   gap: 12px;
   margin-top: 12px;
@@ -393,7 +384,7 @@ const {
 }
 
 .products-filter__panel--with-subcategory {
-  grid-template-columns: minmax(130px, 0.8fr) minmax(130px, 0.8fr) minmax(130px, 0.8fr) minmax(240px, 1.4fr);
+  grid-template-columns: minmax(120px, 0.7fr) minmax(120px, 0.7fr) minmax(120px, 0.7fr) minmax(200px, 1.2fr) auto;
 }
 
 .products-filter__distance {
@@ -415,7 +406,11 @@ const {
   }
 
   .products-filter__distance {
-    grid-column: 1 / -1;
+    grid-column: auto;
+  }
+
+  .products-filter__nearby {
+    min-height: 48px;
   }
 }
 
@@ -434,19 +429,16 @@ const {
 
   .products-filter__panel,
   .products-filter__panel--with-subcategory {
-    grid-template-columns: 1fr;
-  }
-
-  .products-filter__top {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .products-filter__search {
-    grid-column: 1 / -1;
+    width: 100%;
   }
 
   .products-filter__nearby {
     width: 100%;
+    min-height: 48px;
   }
 
   .products-filter__distance {

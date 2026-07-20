@@ -361,17 +361,22 @@ type LocationPermissionState = "checking" | "granted" | "denied" | "unsupported"
 type LiveLocationSnapshot = { lat: number, lng: number, heading: number | null, updatedAt: number }
 type DeviceOrientationEventWithCompass = DeviceOrientationEvent & {
   webkitCompassHeading?: number
+  webkitCompassAccuracy?: number
 }
 type DeviceOrientationEventConstructorWithPermission = typeof DeviceOrientationEvent & {
-  requestPermission?: () => Promise<PermissionState>
+  requestPermission?: (absolute?: boolean) => Promise<PermissionState>
 }
 
 const liveMarkerMinDistanceMeters = 1.5
-const liveHeadingMinDegrees = 3
+const liveHeadingMinDegrees = 1.5
+const deviceHeadingMinIntervalMs = 80
+const deviceHeadingSmoothingAlpha = 0.32
+const deviceCompassMaxAccuracyDegrees = 55
 const routeRefreshMinDistanceMeters = 15
 const routeRefreshMinIntervalMs = 10000
 const searchOriginRefreshMinDistanceMeters = 100
 const locationPollIntervalMs = 2000
+const locationWatchStaleMs = 6000
 const gpsMaxUsableAccuracyMeters = 120
 const gpsJitterMinDistanceMeters = 2.5
 const gpsJitterAccuracyRatio = 0.38
@@ -457,8 +462,12 @@ const guideTab = ref<"ios" | "android" | "desktop">("ios")
 let searchBlurTimer: ReturnType<typeof setTimeout> | null = null
 let locationWatchId: number | null = null
 let locationPollTimer: ReturnType<typeof setInterval> | null = null
+let locationPollInFlight = false
+let lastLocationCallbackAt = 0
 let deviceOrientationListener: ((event: DeviceOrientationEvent) => void) | null = null
 let deviceOrientationPermissionRequested = false
+let lastDeviceHeadingUpdateAt = 0
+let smoothedDeviceHeading: number | null = null
 let shouldFocusNextLocationUpdate = false
 let lastLiveLocation: LiveLocationSnapshot | null = null
 let lastRouteLocation: LiveLocationSnapshot | null = null
@@ -704,6 +713,15 @@ function calculateHeadingDelta(left: number, right: number) {
   return Math.min(delta, 360 - delta)
 }
 
+function interpolateHeading(from: number, to: number, alpha: number) {
+  const start = normalizeHeading(from) ?? 0
+  const end = normalizeHeading(to) ?? start
+  const clockwiseDelta = (end - start + 360) % 360
+  const signedDelta = clockwiseDelta > 180 ? clockwiseDelta - 360 : clockwiseDelta
+
+  return normalizeHeading(start + signedDelta * Math.max(0, Math.min(1, alpha))) ?? end
+}
+
 function calculateBearingDegrees(from: { lat: number, lng: number }, to: { lat: number, lng: number }) {
   const toRad = (value: number) => value * Math.PI / 180
   const toDeg = (value: number) => value * 180 / Math.PI
@@ -817,15 +835,60 @@ function getScreenOrientationAngle() {
   return Number(screen.orientation?.angle ?? legacyWindow.orientation ?? 0)
 }
 
+function calculateAbsoluteCompassHeading(event: DeviceOrientationEventWithCompass) {
+  if (
+    typeof event.alpha !== "number"
+    || !Number.isFinite(event.alpha)
+  ) {
+    return null
+  }
+
+  if (
+    typeof event.beta !== "number"
+    || !Number.isFinite(event.beta)
+    || typeof event.gamma !== "number"
+    || !Number.isFinite(event.gamma)
+  ) {
+    return normalizeHeading(360 - event.alpha)
+  }
+
+  const degreesToRadians = Math.PI / 180
+  const alpha = event.alpha * degreesToRadians
+  const beta = event.beta * degreesToRadians
+  const gamma = event.gamma * degreesToRadians
+  const compassX = -Math.cos(alpha) * Math.sin(gamma)
+    - Math.sin(alpha) * Math.sin(beta) * Math.cos(gamma)
+  const compassY = -Math.sin(alpha) * Math.sin(gamma)
+    + Math.cos(alpha) * Math.sin(beta) * Math.cos(gamma)
+
+  if (Math.hypot(compassX, compassY) < 0.0001) {
+    return normalizeHeading(360 - event.alpha)
+  }
+
+  return normalizeHeading(Math.atan2(compassX, compassY) * 180 / Math.PI)
+}
+
 function resolveDeviceOrientationHeading(event: DeviceOrientationEventWithCompass) {
   const compassHeading = normalizeHeading(event.webkitCompassHeading ?? null)
 
   if (compassHeading !== null) {
-    return compassHeading
+    const compassAccuracy = Number(event.webkitCompassAccuracy)
+
+    if (Number.isFinite(compassAccuracy) && Math.abs(compassAccuracy) > deviceCompassMaxAccuracyDegrees) {
+      return null
+    }
+
+    return normalizeHeading(compassHeading - getScreenOrientationAngle())
   }
 
-  if (typeof event.alpha === "number" && Number.isFinite(event.alpha)) {
-    return normalizeHeading(360 - event.alpha + getScreenOrientationAngle())
+  const hasAbsoluteReference = event.type === "deviceorientationabsolute" || event.absolute === true
+
+  if (hasAbsoluteReference) {
+    const absoluteHeading = calculateAbsoluteCompassHeading(event)
+
+    return absoluteHeading === null
+      ? null
+      : normalizeHeading(absoluteHeading - getScreenOrientationAngle())
   }
 
   return null
@@ -853,8 +916,11 @@ function resolvePositionHeading(
   nextLocation: { lat: number, lng: number },
 ) {
   const nativeHeading = normalizeHeading(position.coords.heading)
+  const speed = typeof position.coords.speed === "number" && Number.isFinite(position.coords.speed)
+    ? Math.max(0, position.coords.speed)
+    : 0
 
-  if (nativeHeading !== null) {
+  if (nativeHeading !== null && speed >= 0.8) {
     return nativeHeading
   }
 
@@ -888,10 +954,28 @@ function updateLiveHeading(nextHeading: number | null) {
 
 function handleDeviceOrientation(event: DeviceOrientationEvent) {
   if (routeNavigationActive.value) {
+    lastDeviceHeadingUpdateAt = 0
+    smoothedDeviceHeading = null
     return
   }
 
-  updateLiveHeading(resolveDeviceOrientationHeading(event))
+  const nextHeading = resolveDeviceOrientationHeading(event)
+
+  if (nextHeading === null) {
+    return
+  }
+
+  const now = performance.now()
+
+  if (now - lastDeviceHeadingUpdateAt < deviceHeadingMinIntervalMs) {
+    return
+  }
+
+  smoothedDeviceHeading = smoothedDeviceHeading === null
+    ? nextHeading
+    : interpolateHeading(smoothedDeviceHeading, nextHeading, deviceHeadingSmoothingAlpha)
+  lastDeviceHeadingUpdateAt = now
+  updateLiveHeading(smoothedDeviceHeading)
 }
 
 async function startDeviceOrientationTracking(requestPermission = false) {
@@ -907,7 +991,7 @@ async function startDeviceOrientationTracking(requestPermission = false) {
     }
 
     try {
-      const permission = await OrientationEvent.requestPermission()
+      const permission = await OrientationEvent.requestPermission(true)
       deviceOrientationPermissionRequested = true
 
       if (permission !== "granted") {
@@ -936,6 +1020,8 @@ function stopDeviceOrientationTracking() {
   window.removeEventListener("deviceorientationabsolute", deviceOrientationListener as EventListener, true)
   window.removeEventListener("deviceorientation", deviceOrientationListener, true)
   deviceOrientationListener = null
+  lastDeviceHeadingUpdateAt = 0
+  smoothedDeviceHeading = null
 }
 
 function rememberLocation(
@@ -950,6 +1036,7 @@ function rememberLocation(
 }
 
 function handleLocationPosition(position: GeolocationPosition) {
+  lastLocationCallbackAt = Date.now()
   const rawLocation = {
     lat: position.coords.latitude,
     lng: position.coords.longitude,
@@ -1076,6 +1163,7 @@ function stopLocationPolling() {
     clearInterval(locationPollTimer)
     locationPollTimer = null
   }
+  locationPollInFlight = false
 }
 
 function pollCurrentLocation() {
@@ -1083,9 +1171,27 @@ function pollCurrentLocation() {
     return
   }
 
+  if (
+    locationPollInFlight
+    || (
+      locationWatchId !== null
+      && lastLocationCallbackAt > 0
+      && Date.now() - lastLocationCallbackAt < locationWatchStaleMs
+    )
+  ) {
+    return
+  }
+
+  locationPollInFlight = true
   navigator.geolocation.getCurrentPosition(
-    handleLocationPosition,
-    handleLocationError,
+    (position) => {
+      locationPollInFlight = false
+      handleLocationPosition(position)
+    },
+    (error) => {
+      locationPollInFlight = false
+      handleLocationError(error)
+    },
     geolocationOptions,
   )
 }
