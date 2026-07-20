@@ -1,4 +1,4 @@
-<!-- English description: Floating result card for a nearby user or page. -->
+<!-- English description: Floating result card for a nearby page or Google place. -->
 
 <template>
   <article
@@ -17,7 +17,17 @@
         </div>
 
         <div class="nearby-result-card__identity">
-          <h2 class="nearby-result-card__title">{{ item.title }}</h2>
+          <h2 class="nearby-result-card__title">
+            <a
+              v-if="item.type === 'page' && item.href"
+              class="nearby-result-card__title-link"
+              :href="item.href"
+              target="_blank"
+              rel="noopener noreferrer"
+              @click.stop
+            >{{ item.title }}</a>
+            <span v-else>{{ item.title }}</span>
+          </h2>
           <p class="nearby-result-card__subtitle">{{ item.subtitle }}</p>
         </div>
 
@@ -218,6 +228,17 @@ async function shareResult() {
   line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.nearby-result-card__title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nearby-result-card__title-link:hover,
+.nearby-result-card__title-link:focus-visible {
+  color: var(--text-link);
+  text-decoration: underline;
 }
 
 .nearby-result-card__subtitle,
