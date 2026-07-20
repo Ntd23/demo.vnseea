@@ -25,6 +25,16 @@ function privacy_source_count($root, $path, $needle)
     return is_string($contents) ? substr_count($contents, $needle) : 0;
 }
 
+function privacy_source_after($root, $path, $needle)
+{
+    $contents = @file_get_contents($root . '/' . $path);
+    if (!is_string($contents)) {
+        return '';
+    }
+    $offset = strpos($contents, $needle);
+    return $offset === false ? '' : substr($contents, $offset);
+}
+
 $helper = $root . '/assets/includes/vnseea_privacy.php';
 privacy_assert(file_exists($helper), 'central privacy helper is missing');
 
@@ -236,9 +246,15 @@ privacy_assert(
     privacy_source_count($root, 'assets/includes/functions_two.php', 'VNSEEA_CanMutatePost') >= 5,
     'comment/reply mutations must use the central authorization guard'
 );
+$mutation_guard_source = privacy_source_after(
+    $root,
+    'assets/includes/vnseea_privacy.php',
+    'function VNSEEA_CanMutatePost('
+);
 privacy_assert(
-    !privacy_source_contains($root, 'assets/includes/vnseea_privacy.php', 'Wo_PostData(') &&
-    privacy_source_contains($root, 'assets/includes/vnseea_privacy.php', 'VNSEEA_CanViewPost($post, $viewer_id)'),
+    $mutation_guard_source !== '' &&
+    strpos($mutation_guard_source, 'Wo_PostData(') === false &&
+    strpos($mutation_guard_source, 'VNSEEA_CanViewPost($post, $viewer_id)') !== false,
     'post mutation authorization must use a direct row lookup and never recurse through Wo_PostData'
 );
 privacy_assert(

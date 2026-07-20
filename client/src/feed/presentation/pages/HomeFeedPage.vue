@@ -57,28 +57,6 @@
       </div>
     </section>
 
-    <section
-      v-if="greeting"
-      class="home-feed__section surface-card home-feed__greeting-card"
-      :style="{ '--home-feed-greeting-accent': greeting.accent }"
-    >
-      <div class="home-feed__greeting">
-        <div class="home-feed__greeting-copy">
-          <p class="home-feed__eyebrow">{{ copy.greetingEyebrow }}</p>
-          <h2 class="home-feed__title">{{ greeting.title }}</h2>
-        </div>
-        <p class="home-feed__body">{{ greeting.message }}</p>
-        <NuxtImg
-          v-if="greeting.imageUrl"
-          :src="greeting.imageUrl"
-          :alt="greeting.title"
-          class="home-feed__greeting-image"
-          sizes="42px"
-          loading="lazy"
-        />
-      </div>
-    </section>
-
     <Transition
       enter-active-class="transition duration-300 ease-out"
       enter-from-class="opacity-0 -translate-y-2"
