@@ -397,6 +397,90 @@ function VNSEEA_RedactAnonymousPost($post, $viewer_id = 0, $anonymous_label = 'A
     return $post;
 }
 
+if (!defined('VNSEEA_MAX_SHARED_POST_DEPTH')) {
+    define('VNSEEA_MAX_SHARED_POST_DEPTH', 8);
+}
+
+function VNSEEA_SanitizeSharedPostInfo($post, $non_allowed = array())
+{
+    $post = VNSEEA_PrivacyArray($post);
+    $non_allowed = is_array($non_allowed) ? $non_allowed : array();
+
+    unset($post['get_post_comments']);
+    $post['shared_info'] = null;
+
+    foreach (array('publisher', 'user_data') as $identity_key) {
+        if (empty($post[$identity_key]) || !is_array($post[$identity_key])) {
+            $post[$identity_key] = null;
+            continue;
+        }
+        foreach ($non_allowed as $field) {
+            unset($post[$identity_key][$field]);
+        }
+    }
+
+    return $post;
+}
+
+/**
+ * Adds a privacy-checked, flattened source post to an API post payload.
+ * Wo_PostData remains the authorization boundary for every hop.
+ */
+function VNSEEA_AttachSharedPostInfo($post, $non_allowed = array())
+{
+    $post = VNSEEA_PrivacyArray($post);
+    $post['shared_info'] = null;
+    $parent_id = !empty($post['parent_id']) ? (int) $post['parent_id'] : 0;
+    if ($parent_id < 1 || !function_exists('Wo_PostData')) {
+        return $post;
+    }
+
+    $visited = array();
+    $current_id = !empty($post['id']) ? (int) $post['id'] : 0;
+    if ($current_id > 0) {
+        $visited[$current_id] = true;
+    }
+
+    $source = array();
+    for ($depth = 0; $depth < VNSEEA_MAX_SHARED_POST_DEPTH; $depth++) {
+        if ($parent_id < 1 || isset($visited[$parent_id])) {
+            return $post;
+        }
+        $visited[$parent_id] = true;
+
+        $source = VNSEEA_PrivacyArray(Wo_PostData($parent_id));
+        if (empty($source)) {
+            return $post;
+        }
+
+        $next_parent_id = !empty($source['parent_id']) ? (int) $source['parent_id'] : 0;
+        if ($next_parent_id < 1) {
+            $post['shared_info'] = VNSEEA_SanitizeSharedPostInfo($source, $non_allowed);
+            return $post;
+        }
+        $parent_id = $next_parent_id;
+    }
+
+    return $post;
+}
+
+function VNSEEA_AttachSharedPostInfoToResponseData($data, $non_allowed = array())
+{
+    if (!is_array($data)) {
+        return $data;
+    }
+    if (isset($data['id']) || isset($data['post_id'])) {
+        return VNSEEA_AttachSharedPostInfo($data, $non_allowed);
+    }
+
+    foreach ($data as $key => $item) {
+        if (is_array($item) && (isset($item['id']) || isset($item['post_id']))) {
+            $data[$key] = VNSEEA_AttachSharedPostInfo($item, $non_allowed);
+        }
+    }
+    return $data;
+}
+
 function VNSEEA_CanMutatePost($post_id, $viewer_id = 0)
 {
     global $sqlConnect;
