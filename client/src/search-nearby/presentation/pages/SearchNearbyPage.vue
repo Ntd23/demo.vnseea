@@ -399,6 +399,7 @@ const {
   routeOriginUpdateKey,
   routeFitKey,
   distanceKm,
+  hasSharedOrigin,
   origin,
   mapItems,
   cardItems,
@@ -1647,8 +1648,10 @@ watch(googlePlacesEnabled, (enabled) => {
 
 onMounted(() => {
   void loadSearchNearbyConfig()
-  void startDeviceOrientationTracking()
-  void requestLocationPermission()
+  if (!hasSharedOrigin.value) {
+    void startDeviceOrientationTracking()
+    void requestLocationPermission()
+  }
 })
 
 onBeforeUnmount(() => {

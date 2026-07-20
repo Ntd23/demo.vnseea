@@ -559,6 +559,7 @@
               :class="{
                 'chat-widget__mini-message--mine': message.isMine,
                 'chat-widget__mini-message--product': Boolean(getMiniProductMeta(message)),
+                'chat-widget__mini-message--location': Boolean(getMessageLocationMeta(message)),
               }"
             >
               <ChatBubble
@@ -585,6 +586,7 @@
                 :media-name="message.isDeleted ? undefined : message.mediaName"
                 :media-type="message.isDeleted ? undefined : message.mediaType"
                 :product-card="message.isDeleted ? undefined : getMiniProductMeta(message)?.card"
+                :location="message.isDeleted ? undefined : getMessageLocationMeta(message)"
                 :call-log="message.isDeleted ? undefined : message.callLog"
                 class="chat-widget__mini-chat-bubble"
                 :class="{ 'chat-widget__mini-chat-bubble--deleted': message.isDeleted }"
@@ -707,6 +709,20 @@
           <button
             type="button"
             class="chat-widget__mini-tool-btn"
+            :class="{ 'chat-widget__mini-tool-btn--active': miniLocationContactId === miniSession.contactId }"
+            :title="$t('pages.messagesPage.shareLocation')"
+            :disabled="isLocating || miniSession.isSending"
+            @click="shareMiniLocation(miniSession)"
+          >
+            <Icon
+              :name="miniLocationContactId === miniSession.contactId ? 'i-ph-circle-notch-bold' : 'i-ph-map-pin-line-bold'"
+              class="h-4 w-4"
+              :class="{ 'animate-spin': miniLocationContactId === miniSession.contactId }"
+            />
+          </button>
+          <button
+            type="button"
+            class="chat-widget__mini-tool-btn"
             :class="{ 'chat-widget__mini-tool-btn--active': isMiniRecording }"
             :title="$t('pages.messagesPage.startRecording')"
             :disabled="!isMiniRecordSupported"
@@ -797,11 +813,13 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { defaultFeedReactionAsset, feedReactionAssetByValue, feedReactionAssets, type FeedReactionAsset } from "../../../feed/application/constants/reaction-assets"
 import { useMessageCalls } from "../../../messages/application/composables/useMessageCalls"
+import { useCurrentLocationShare } from "../../../messages/application/composables/useCurrentLocationShare"
 import { useMessageRecorder } from "../../../messages/application/composables/useMessageRecorder"
 import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
 import type { MessageCallType } from "../../../messages/domain/types/calls.types"
 import type { MessageContact, MessageItem } from "../../../messages/domain/types/messages.types"
 import { buildProductMessageText, getMessageProductMeta } from "../../../messages/application/utils/message-bubble-content"
+import { getMessageLocationMeta } from "../../../messages/application/utils/message-location"
 import { useChatWidgetVM } from "../../application/view-models/useChatWidgetVM"
 
 const collapsed = ref(false)
@@ -829,6 +847,7 @@ const tabs = [
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const { t } = useI18n()
+const toast = useToast()
 const miniMessagesViewports = new Map<string, HTMLElement>()
 const miniHeaderMenuRef = ref<HTMLElement | null>(null)
 const messageAvatarMenuRef = ref<HTMLElement | null>(null)
@@ -958,6 +977,13 @@ const miniBubbleReactionOptions = computed(() =>
   })),
 )
 const miniSubmittingMap = ref<Record<string, boolean>>({})
+const miniLocationContactId = ref("")
+const {
+  isLocating,
+  locationError,
+  createCurrentLocationMessage,
+  clearLocationError,
+} = useCurrentLocationShare()
 
 function canSubmitMiniMessage(session: MiniChatSessionView) {
   if (miniSubmittingMap.value[session.contactId]) {
@@ -1425,6 +1451,10 @@ function getMiniBubbleText(message: MessageItem) {
     return productMeta.body
   }
 
+  if (getMessageLocationMeta(message)) {
+    return ""
+  }
+
   return normalizeMiniMessageText(message.text)
 }
 
@@ -1487,6 +1517,53 @@ function handleMiniEnterKey(event: KeyboardEvent, session: MiniChatSessionView) 
     return
   }
   submitMiniMessage(session)
+}
+
+function getLocationErrorMessage() {
+  const keyByError = {
+    unsupported: "pages.messagesPage.locationUnsupported",
+    "insecure-context": "pages.messagesPage.locationInsecureContext",
+    "permission-denied": "pages.messagesPage.locationPermissionDenied",
+    unavailable: "pages.messagesPage.locationUnavailable",
+    timeout: "pages.messagesPage.locationTimeout",
+    unknown: "pages.messagesPage.locationUnknownError",
+  } as const
+
+  return locationError.value ? t(keyByError[locationError.value]) : ""
+}
+
+async function shareMiniLocation(session: MiniChatSessionView) {
+  if (isLocating.value || session.isSending) {
+    return
+  }
+
+  miniLocationContactId.value = session.contactId
+  clearLocationError()
+
+  try {
+    const messageUrl = await createCurrentLocationMessage(
+      t("pages.messagesPage.locationOwnTitle"),
+    )
+
+    if (!messageUrl) {
+      toast.add({
+        title: t("pages.messagesPage.locationErrorTitle"),
+        description: getLocationErrorMessage(),
+        color: "warning",
+      })
+      return
+    }
+
+    miniReplyTarget.value = null
+    clearMiniProductDraft(session.contactId)
+    await sendMiniMessage({
+      contactId: session.contactId,
+      textOverride: messageUrl,
+    })
+  }
+  finally {
+    miniLocationContactId.value = ""
+  }
 }
 
 async function submitMiniMessage(session: MiniChatSessionView) {
@@ -2477,6 +2554,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__mini-messages {
+  width: 100%;
   min-height: 0;
   flex: 1;
   max-height: none;
@@ -2489,6 +2567,8 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__mini-thread {
   display: flex;
+  width: 100%;
+  min-width: 0;
   flex-direction: column;
   gap: 16px;
 }
@@ -2497,6 +2577,7 @@ watch(miniChatAutoOpenVersion, (version) => {
   position: relative;
   display: flex;
   width: 100%;
+  min-width: 0;
   flex-direction: column;
   align-items: flex-start;
   padding-inline-end: 38px;
@@ -2515,6 +2596,11 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding-inline: 20px 0;
 }
 
+.chat-widget__mini-message--location,
+.chat-widget__mini-message--mine.chat-widget__mini-message--location {
+  padding-inline: 0;
+}
+
 .chat-widget__mini-chat-bubble--deleted :deep(.chat-bubble) {
   background: #f1f5f9 !important;
   color: #64748b !important;
@@ -2526,7 +2612,35 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper) {
+  width: fit-content;
+  max-width: min(96%, 310px) !important;
+  min-width: 0;
+}
+
+.chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--location) {
+  width: min(300px, 100%);
+}
+
+.chat-widget__mini-chat-bubble :deep(.message-location-card) {
+  width: min(300px, 100%);
   max-width: 100%;
+}
+
+.chat-widget__mini-chat-bubble :deep(.message-location-card__map) {
+  height: 126px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.message-location-card__footer) {
+  min-height: 62px;
+  padding: 10px 12px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.message-location-card__copy strong) {
+  font-size: 14px;
+}
+
+.chat-widget__mini-chat-bubble :deep(.message-location-card__copy small) {
+  font-size: 11px;
 }
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--product) {
@@ -2534,6 +2648,9 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble) {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   padding: 10px 12px;
   font-size: 12px;
   line-height: 1.5;

@@ -35,6 +35,7 @@
         :media-name="msg.isDeleted ? undefined : msg.mediaName"
         :media-type="msg.isDeleted ? undefined : msg.mediaType"
         :product-card="msg.isDeleted ? undefined : getProductMeta(msg)?.card"
+        :location="msg.isDeleted ? undefined : getMessageLocationMeta(msg)"
         :is-deleted="msg.isDeleted"
         @retry-call="emit('retry-call', $event)"
         @toggle-reaction-picker="emit('toggle-reaction-picker', msg.id)"
@@ -122,6 +123,7 @@ import {
   getMessageProductMeta,
   getMessageReplyMeta,
 } from "../../application/utils/message-bubble-content"
+import { getMessageLocationMeta } from "../../application/utils/message-location"
 import MessagesChatBubble from "./ChatBubble.vue"
 
 const props = withDefaults(defineProps<{

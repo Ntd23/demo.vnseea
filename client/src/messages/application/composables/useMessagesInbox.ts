@@ -17,6 +17,7 @@ import {
   buildReplyMessageText,
   getMessageDisplayText,
 } from "../utils/message-bubble-content"
+import { getMessageLocationMeta } from "../utils/message-location"
 
 type MessageFeedbackTone = "neutral" | "success" | "warning" | "error"
 type QueuedMessageDraft = {
@@ -768,12 +769,14 @@ export function useMessagesInbox(
       return
     }
 
-    const text = buildReplyMessageText({
-      text: input.text,
-      target: replyTarget.value,
-      author: replyAuthor.value,
-      fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
-    })
+    const text = getMessageLocationMeta({ text: input.text })
+      ? input.text.trim()
+      : buildReplyMessageText({
+          text: input.text,
+          target: replyTarget.value,
+          author: replyAuthor.value,
+          fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
+        })
 
     sendQueue.value.push({
       contact,
