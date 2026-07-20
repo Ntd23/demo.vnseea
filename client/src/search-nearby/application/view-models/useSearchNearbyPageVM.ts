@@ -245,10 +245,21 @@ export function useSearchNearbyPageVM() {
   }
 
   function selectItem(item: NearbySearchItem) {
+    const shouldKeepRoute = routeTargetItem.value !== null
+
+    selectedSuggestionItem.value = item
     selectedItemId.value = item.id
+    routeErrorMessage.value = ""
+
+    if (shouldKeepRoute) {
+      routeTargetItem.value = item
+      routeFitKey.value += 1
+      routeOriginUpdateKey.value += 1
+      return
+    }
+
     routeTargetItem.value = null
     routeNavigationActive.value = false
-    routeErrorMessage.value = ""
   }
 
   function selectSuggestion(item: NearbySearchItem) {

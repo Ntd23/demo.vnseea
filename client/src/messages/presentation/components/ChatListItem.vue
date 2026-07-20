@@ -69,21 +69,21 @@
       </div>
 
       <!-- Tags + tag action -->
-      <div v-if="tags.length > 0 || showTagAction" class="cli-tags-row">
+      <div v-if="tags.length > 0 || showTagAction" class="cli-tags-row" :class="{ 'cli-tags-row--has-tags': tags.length > 0 }">
         <div v-if="tags.length > 0" class="cli-tags">
           <span
             v-for="tag in tags"
             :key="tag.id"
             class="cli-tag-dot"
             :title="tag.name"
-            :style="{ backgroundColor: tag.color }"
+            :style="{ backgroundColor: tag.color || '#3b82f6' }"
           />
         </div>
         <button
           v-if="showTagAction"
           type="button"
           class="cli-tag-btn"
-          :title="$t('pages.messagesPage.tagActionLabel')"
+          :title="$t('pages.messagesPage.tagActionLabel') || 'Gắn thẻ'"
           @click.stop="$emit('manage-tags')"
         >
           <Icon name="i-ph-tag-bold" class="h-3 w-3" />
@@ -348,40 +348,44 @@ const previewClass = computed(() => ({
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 5px;
+  margin-top: 4px;
 }
+
+
 
 .cli-tags {
   display: flex;
-  gap: 3px;
+  align-items: center;
+  gap: 4px;
 }
 
 .cli-tag-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.06);
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  border: 1.5px solid rgba(0, 0, 0, 0.12);
   flex-shrink: 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 .cli-tag-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
+  width: 20px;
   height: 18px;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  background: var(--bg-surface);
-  color: var(--text-tertiary);
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #f9fafb;
+  color: #6b7280;
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-default);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
 }
 
 .cli-tag-btn:hover {
-  border-color: var(--color-primary-500);
-  color: var(--color-primary-500);
-  background: var(--color-primary-50);
+  border-color: var(--color-primary-500, #3b82f6);
+  color: var(--color-primary-500, #3b82f6);
+  background: #eff6ff;
 }
 
 /* Responsive: tighter on small screens */
