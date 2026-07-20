@@ -41,6 +41,7 @@ const publicSiteUrl = requireEnv("NUXT_PUBLIC_SITE_URL");
 const realtimeInternalUrl = process.env.REALTIME_INTERNAL_URL?.trim() || "";
 const realtimeSecret = process.env.REALTIME_SECRET?.trim() || "";
 const publicRealtimeUrl = process.env.NUXT_PUBLIC_REALTIME_URL?.trim() || "";
+const sourceMapsEnabled = process.env.NUXT_SOURCE_MAPS === "true";
 const backendWebBase = normalizeBackendWebBase(
   process.env.NUXT_PUBLIC_BACKEND_WEB_BASE?.trim() || backendApiBase,
 );
@@ -230,8 +231,8 @@ export default defineNuxtConfig({
     ],
     strategy: "no_prefix",
   },
-	 sourcemap: {
-    server: true,
-    client: true
-  }
+  sourcemap: {
+    server: sourceMapsEnabled,
+    client: sourceMapsEnabled,
+  },
 });

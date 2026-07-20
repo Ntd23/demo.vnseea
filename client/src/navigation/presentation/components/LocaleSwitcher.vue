@@ -22,7 +22,7 @@
         :disabled="Boolean(pendingLocale)"
         @click.prevent.stop="changeLocale(item.code)"
       >
-        {{ item.short }}
+        {{ item.name }}
       </button>
     </div>
   </div>
@@ -122,9 +122,9 @@ async function changeLocale(code: string) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
+  min-width: unset;
   min-height: 28px;
-  padding: 0 8px;
+  padding: 0 12px;
   border: none;
   border-radius: 7px;
   background: transparent;
