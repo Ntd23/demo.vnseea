@@ -74,6 +74,37 @@ test("only the directions action starts routing with forward camera heading", ()
   assert.doesNotMatch(mapSource, /mobileRouteCameraHeadingOffsetDegrees/)
 })
 
+test("device heading keeps rotating the user marker during navigation", () => {
+  const orientationHandlerSource = pageSource.match(/function handleDeviceOrientation[\s\S]*?async function startDeviceOrientationTracking/)?.[0] || ""
+  const directionsHandlerSource = pageSource.match(/function handleDirectionsRequest[\s\S]*?function zoomMapIn/)?.[0] || ""
+  const markerSource = mapSource.match(/function renderOriginMarker[\s\S]*?function renderMarkers/)?.[0] || ""
+
+  assert.doesNotMatch(orientationHandlerSource, /routeNavigationActive\.value[\s\S]*return/)
+  assert.match(pageSource, /const relativeHeading = calculateAbsoluteCompassHeading\(event\)/)
+  assert.match(directionsHandlerSource, /startDeviceOrientationTracking\(true\)/)
+  assert.match(markerSource, /const markerHeading = props\.originHeading/)
+  assert.doesNotMatch(markerSource, /props\.routeNavigationActive\s*\?\s*0/)
+})
+
+test("active directions reroute automatically after confirmed route deviation", () => {
+  const automaticRerouteSource = mapSource.match(/function shouldAutomaticallyReroute[\s\S]*?function resolveDisplayOrigin/)?.[0] || ""
+  const originWatcherSource = mapSource.match(/\(\) => \[props\.origin\.lat, props\.origin\.lng, props\.originUpdateKey\][\s\S]*?\n\)/)?.[0] || ""
+  const routeSuccessSource = mapSource.match(/if \(status === window\.google\.maps\.DirectionsStatus\.OK[\s\S]*?return/)?.[0] || ""
+
+  assert.match(automaticRerouteSource, /projection\.distanceMeters <= routeDeviationThresholdMeters/)
+  assert.match(automaticRerouteSource, /routeDeviationSampleCount < routeDeviationRequiredSamples/)
+  assert.match(automaticRerouteSource, /automaticRerouteCooldownMs/)
+  assert.match(originWatcherSource, /shouldAutomaticallyReroute\(\)[\s\S]*renderRoute\(\)/)
+  assert.match(routeSuccessSource, /syncActiveRoutePath\(shortestRouteResult, target\)/)
+})
+
+test("bottom-sheet distance is recalculated from the realtime origin", () => {
+  assert.match(pageSource, /:origin="origin"/)
+  assert.match(resultCardSource, /origin\?: NearbySearchOrigin/)
+  assert.match(resultCardSource, /function calculateLiveDistanceMeters\(\)/)
+  assert.match(resultCardSource, /const meters = calculateLiveDistanceMeters\(\)/)
+})
+
 test("manual map dragging pauses route camera follow until recenter", () => {
   const followCameraSource = mapSource.match(/function followMobileRouteCamera[\s\S]*?function resetMobileRouteCamera/)?.[0] || ""
   const originFocusSource = mapSource.match(/\(\) => props\.originFocusKey[\s\S]*?\{ flush: "post" \}/)?.[0] || ""
