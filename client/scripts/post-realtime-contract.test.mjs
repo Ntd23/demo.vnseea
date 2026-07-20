@@ -68,3 +68,10 @@ test("Nuxt realtime token endpoint accepts App bearer auth and verifies it with 
     /backendRoutes\.session\.currentUser\(backendUserSession\)/,
   )
 })
+
+test("realtime server starts when PM2 exposes the entrypoint through pm_exec_path", () => {
+  const server = read("client/realtime/notification-server.mjs")
+
+  assert.match(server, /process\.env\.pm_exec_path/)
+  assert.match(server, /entryModulePaths\.some/)
+})

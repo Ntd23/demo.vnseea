@@ -1,5 +1,5 @@
 <?php
-// English description: Provides canonical privacy and audience checks for posts, stories, comments, and notifications.
+// Canonical privacy and audience checks for posts, stories, comments, and notifications.
 
 function VNSEEA_PrivacyArray($value)
 {
@@ -398,24 +398,128 @@ function VNSEEA_RedactAnonymousPost($post, $viewer_id = 0, $anonymous_label = 'A
     return $post;
 }
 
-function VNSEEA_CanMutatePost($post_id)
+if (!defined('VNSEEA_MAX_SHARED_POST_DEPTH')) {
+    define('VNSEEA_MAX_SHARED_POST_DEPTH', 8);
+}
+
+function VNSEEA_SanitizeSharedPostInfo($post, $non_allowed = array())
+{
+    $post = VNSEEA_PrivacyArray($post);
+    $non_allowed = is_array($non_allowed) ? $non_allowed : array();
+
+    unset($post['get_post_comments']);
+    $post['shared_info'] = null;
+
+    foreach (array('publisher', 'user_data') as $identity_key) {
+        if (empty($post[$identity_key]) || !is_array($post[$identity_key])) {
+            $post[$identity_key] = null;
+            continue;
+        }
+        foreach ($non_allowed as $field) {
+            unset($post[$identity_key][$field]);
+        }
+    }
+
+    return $post;
+}
+
+/**
+ * Adds a privacy-checked, flattened source post to an API post payload.
+ * Wo_PostData remains the authorization boundary for every hop.
+ */
+function VNSEEA_AttachSharedPostInfo($post, $non_allowed = array())
+{
+    $post = VNSEEA_PrivacyArray($post);
+    $post['shared_info'] = null;
+    $parent_id = !empty($post['parent_id']) ? (int) $post['parent_id'] : 0;
+    if ($parent_id < 1 || !function_exists('Wo_PostData')) {
+        return $post;
+    }
+
+    $visited = array();
+    $current_id = !empty($post['id']) ? (int) $post['id'] : 0;
+    if ($current_id > 0) {
+        $visited[$current_id] = true;
+    }
+
+    $source = array();
+    for ($depth = 0; $depth < VNSEEA_MAX_SHARED_POST_DEPTH; $depth++) {
+        if ($parent_id < 1 || isset($visited[$parent_id])) {
+            return $post;
+        }
+        $visited[$parent_id] = true;
+
+        $source = VNSEEA_PrivacyArray(Wo_PostData($parent_id));
+        if (empty($source)) {
+            return $post;
+        }
+
+        $next_parent_id = !empty($source['parent_id']) ? (int) $source['parent_id'] : 0;
+        if ($next_parent_id < 1) {
+            $post['shared_info'] = VNSEEA_SanitizeSharedPostInfo($source, $non_allowed);
+            return $post;
+        }
+        $parent_id = $next_parent_id;
+    }
+
+    return $post;
+}
+
+function VNSEEA_AttachSharedPostInfoToResponseData($data, $non_allowed = array())
+{
+    if (!is_array($data)) {
+        return $data;
+    }
+    if (isset($data['id']) || isset($data['post_id'])) {
+        return VNSEEA_AttachSharedPostInfo($data, $non_allowed);
+    }
+
+    foreach ($data as $key => $item) {
+        if (is_array($item) && (isset($item['id']) || isset($item['post_id']))) {
+            $data[$key] = VNSEEA_AttachSharedPostInfo($item, $non_allowed);
+        }
+    }
+    return $data;
+}
+
+function VNSEEA_CanMutatePost($post_id, $viewer_id = 0)
 {
     global $sqlConnect;
+    static $permission_cache = array();
+
     $post_id = (int) $post_id;
+    $viewer_id = VNSEEA_CurrentViewerId($viewer_id);
     if ($post_id < 1 || empty($sqlConnect)) {
         return false;
     }
 
-    $query = mysqli_query(
-        $sqlConnect,
-        'SELECT `id`, `user_id`, `recipient_id`, `page_id`, `group_id`, `event_id`, `page_event_id`, `parent_id`, `postPrivacy`, `is_anonymous` FROM ' . T_POSTS . " WHERE `id` = {$post_id} LIMIT 1"
-    );
-    $post = ($query && mysqli_num_rows($query)) ? mysqli_fetch_assoc($query) : array();
-    $viewer_id = VNSEEA_CurrentViewerId();
+    $cache_key = $viewer_id . ':' . $post_id;
+    if (array_key_exists($cache_key, $permission_cache)) {
+        return $permission_cache[$cache_key];
+    }
 
-    if (empty($post) || !VNSEEA_CanViewPost($post, $viewer_id)) {
+    $columns = '`id`, `post_id`, `parent_id`, `user_id`, `page_id`, `group_id`, `event_id`, `page_event_id`, `postPrivacy`, `is_anonymous`';
+    $query = mysqli_query($sqlConnect, 'SELECT ' . $columns . ' FROM ' . T_POSTS . " WHERE `id` = {$post_id} LIMIT 1");
+    if (!$query || !mysqli_num_rows($query)) {
+        $permission_cache[$cache_key] = false;
         return false;
     }
 
-    return empty($post['parent_id']) || VNSEEA_CanSharePostTree($post, $viewer_id);
+    $post = mysqli_fetch_assoc($query);
+    $canonical_post_id = !empty($post['post_id']) ? (int) $post['post_id'] : 0;
+    if ($canonical_post_id > 0 && $canonical_post_id !== (int) $post['id']) {
+        $canonical_query = mysqli_query($sqlConnect, 'SELECT ' . $columns . ' FROM ' . T_POSTS . " WHERE `id` = {$canonical_post_id} LIMIT 1");
+        if (!$canonical_query || !mysqli_num_rows($canonical_query)) {
+            $permission_cache[$cache_key] = false;
+            return false;
+        }
+        $post = mysqli_fetch_assoc($canonical_query);
+    }
+
+    $can_mutate = VNSEEA_CanViewPost($post, $viewer_id);
+    if ($can_mutate && !empty($post['parent_id'])) {
+        $can_mutate = VNSEEA_CanSharePostTree($post, $viewer_id);
+    }
+    $permission_cache[$cache_key] = $can_mutate;
+    return $can_mutate;
 }

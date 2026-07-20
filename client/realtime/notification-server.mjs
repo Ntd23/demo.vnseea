@@ -246,9 +246,11 @@ export function createRealtimeRelay({
   }
 }
 
-const isMainModule =
-  Boolean(process.argv[1])
-  && fileURLToPath(import.meta.url) === resolve(process.argv[1])
+const currentModulePath = fileURLToPath(import.meta.url)
+const entryModulePaths = [process.argv[1], process.env.pm_exec_path]
+  .filter(Boolean)
+  .map(entryPath => resolve(entryPath))
+const isMainModule = entryModulePaths.some(entryPath => entryPath === currentModulePath)
 
 if (isMainModule) {
   const port = Number(process.env.REALTIME_PORT || 3015)
