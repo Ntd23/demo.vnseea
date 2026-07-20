@@ -276,6 +276,55 @@ function VNSEEA_CanSharePostTree($post, $viewer_id = 0, $loader = null)
     return false;
 }
 
+function VNSEEA_ResolveShareableSourcePostId($post_id, $viewer_id = 0, $loader = null)
+{
+    $post_id = (int) $post_id;
+    if ($post_id < 1) {
+        return 0;
+    }
+    if (!is_callable($loader)) {
+        $loader = function ($source_post_id) {
+            global $sqlConnect;
+            $source_post_id = (int) $source_post_id;
+            if ($source_post_id < 1 || empty($sqlConnect)) {
+                return array();
+            }
+            $query = mysqli_query($sqlConnect, 'SELECT * FROM ' . T_POSTS . " WHERE `id` = {$source_post_id} LIMIT 1");
+            return ($query && mysqli_num_rows($query)) ? mysqli_fetch_assoc($query) : array();
+        };
+    }
+
+    $viewer_id = VNSEEA_CurrentViewerId($viewer_id);
+    $seen = array();
+    for ($depth = 0; $depth < VNSEEA_MAX_SHARED_POST_DEPTH; $depth++) {
+        if (isset($seen[$post_id])) {
+            return 0;
+        }
+        $seen[$post_id] = true;
+        $post = VNSEEA_PrivacyArray($loader($post_id));
+        if (empty($post) || !VNSEEA_CanSharePost($post, $viewer_id)) {
+            return 0;
+        }
+        $parent_id = !empty($post['parent_id']) ? (int) $post['parent_id'] : 0;
+        if ($parent_id < 1) {
+            return !empty($post['id']) ? (int) $post['id'] : $post_id;
+        }
+        $post_id = $parent_id;
+    }
+    return 0;
+}
+
+function VNSEEA_CanViewSharedPostStory($story, $viewer_id = 0)
+{
+    $story = VNSEEA_PrivacyArray($story);
+    $story_type = !empty($story['story_type']) ? (string) $story['story_type'] : 'media';
+    if ($story_type !== 'shared_post') {
+        return true;
+    }
+    $source_post_id = !empty($story['source_post_id']) ? (int) $story['source_post_id'] : 0;
+    return $source_post_id > 0 && VNSEEA_ResolveShareableSourcePostId($source_post_id, $viewer_id) > 0;
+}
+
 function VNSEEA_CanViewStory($story, $viewer_id = 0)
 {
     $story = VNSEEA_PrivacyArray($story);
