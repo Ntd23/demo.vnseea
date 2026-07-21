@@ -3005,6 +3005,7 @@
       "shareLocation": "Share current location",
       "locationOwnTitle": "Your location",
       "locationDefaultTitle": "Shared location",
+      "locationSenderTitle": "{name}'s location",
       "locationSharedPreview": "Shared a location",
       "locationOpenMap": "Open in maps",
       "locationErrorTitle": "Unable to get location",
@@ -5454,7 +5455,7 @@
     "storyCarousel": {
       "createStory": "Create story",
       "appPromptTitle": "Create a story in the VNSEEA app",
-      "appPromptDescription": "Use the app to create stories faster, share photos or videos, and connect with your community.",
+      "appPromptDescription": "Create stories faster in the app. If it is not installed, you will be redirected to the right app store.",
       "openApp": "Open app",
       "continueOnWeb": "Continue on web",
       "appPromptNotConfigured": "The app link is not configured in this preview. Add the deep link and store URLs to enable Open app.",

@@ -73,7 +73,7 @@
         :disabled="field.readOnly"
         @click="setVerified(true)"
       >
-        <Icon :name="isVerified ? 'i-ph-check-circle-fill' : 'i-ph-circle-duotone'" class="h-4 w-4" />
+        <Icon :name="isVerified ? 'i-ph-check-circle-bold' : 'i-ph-circle-bold'" class="h-4 w-4" />
         {{ verifiedLabel }}
       </button>
       <button
@@ -83,7 +83,7 @@
         :disabled="field.readOnly"
         @click="setVerified(false)"
       >
-        <Icon :name="!isVerified ? 'i-ph-x-circle-fill' : 'i-ph-circle-duotone'" class="h-4 w-4" />
+        <Icon :name="!isVerified ? 'i-ph-x-circle-bold' : 'i-ph-circle-bold'" class="h-4 w-4" />
         {{ unverifiedLabel }}
       </button>
     </div>
@@ -137,7 +137,7 @@
       
     >
       <template #leading>
-        <Icon :name="fieldIcon" class="h-4 w-4 text-[#94a3b8]" />
+        <Icon :name="fieldIcon" class="h-4 w-4 text-black" />
       </template>
     </UInput>
   </UFormField>
@@ -169,15 +169,15 @@ watch(value, (v) => {
 
 const fieldIcon = computed(() => {
   const k = props.field.key.toLowerCase()
-  if (k.includes("wallet"))   return "i-ph-wallet-duotone"
-  if (k.includes("password")) return "i-ph-lock-duotone"
-  if (k.includes("email"))    return "i-ph-envelope-duotone"
-  if (k.includes("phone"))    return "i-ph-phone-duotone"
+  if (k.includes("wallet"))   return "i-ph-wallet-bold"
+  if (k.includes("password")) return "i-ph-lock-bold"
+  if (k.includes("email"))    return "i-ph-envelope-bold"
+  if (k.includes("phone"))    return "i-ph-phone-bold"
   if (["website", "facebook", "twitter", "linkedin", "instagram", "youtube"].some(s => k.includes(s)))
-    return "i-ph-link-simple-duotone"
-  if (k.includes("birthday")) return "i-ph-calendar-duotone"
-  if (k.includes("name"))     return "i-ph-user-duotone"
-  return "i-ph-pencil-duotone"
+    return "i-ph-link-simple-bold"
+  if (k.includes("birthday")) return "i-ph-calendar-bold"
+  if (k.includes("name"))     return "i-ph-user-bold"
+  return "i-ph-pencil-bold"
 })
 
 const isVerified = computed(() => value.value === true || value.value === 1 || value.value === "1")

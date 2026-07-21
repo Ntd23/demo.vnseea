@@ -7,6 +7,7 @@ import FeedPresentationStatusCreatePage from "../../../src/feed/presentation/pag
 
 definePageMeta({
   layout: "default",
+  middleware: "story-app-handoff",
 })
 
 useHead({

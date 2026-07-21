@@ -2,8 +2,8 @@
   <section class="settings-points" aria-labelledby="settings-points-title">
     <div class="settings-points__hero">
       <div class="settings-points__hero-main">
-        <span class="settings-points__hero-icon" aria-hidden="true">
-          <Icon name="i-ph-star-fill" class="h-6 w-6" />
+        <span class="settings-points__hero-icon text-black" aria-hidden="true">
+          <Icon name="i-ph-star-bold" class="h-6 w-6" />
         </span>
         <div>
           <p class="settings-points__eyebrow">{{ t("settings.data.pointsPanel.eyebrow") }}</p>
@@ -23,7 +23,7 @@
         :disabled="maxExchangePoints < exchangeStepPoints"
         @click="openExchangeModal"
       >
-        <Icon name="i-ph-swap-fill" class="h-4 w-4" />
+        <Icon name="i-ph-swap-bold" class="h-4 w-4" />
         <span>{{ t("settings.data.pointsPanel.exchangeButton") }}</span>
       </button> -->
       <div class="settings-points__hero-actions">
@@ -32,7 +32,7 @@
           type="button"
           @click="openTransferPanel"
         >
-          <Icon name="i-ph-paper-plane-tilt-fill" class="h-4 w-4" />
+          <Icon name="i-ph-paper-plane-tilt-bold" class="h-4 w-4" />
           <span>{{ t("settings.data.pointsPanel.transferButton") }}</span>
         </button>
         <button
@@ -40,7 +40,7 @@
           type="button"
           @click="openReceiveQrPanel(receiveQrPoints)"
         >
-          <Icon name="i-ph-qr-code-fill" class="h-4 w-4" />
+          <Icon name="i-ph-qr-code-bold" class="h-4 w-4" />
           <span>{{ t("settings.data.pointsPanel.receiveQrButton") }}</span>
         </button>
       </div>
@@ -50,7 +50,7 @@
     <!-- <div class="settings-points__stats">
       <article class="settings-points__stat">
         <span class="settings-points__stat-icon settings-points__stat-icon--blue" aria-hidden="true">
-          <Icon name="i-ph-star-duotone" class="h-5 w-5" />
+          <Icon name="i-ph-star-bold" class="h-5 w-5" />
         </span>
         <div>
           <p class="settings-points__stat-label">{{ t("settings.data.pointsPanel.availablePoints") }}</p>
@@ -60,7 +60,7 @@
 
       <article class="settings-points__stat">
         <span class="settings-points__stat-icon settings-points__stat-icon--green" aria-hidden="true">
-          <Icon name="i-ph-wallet-duotone" class="h-5 w-5" />
+          <Icon name="i-ph-wallet-bold" class="h-5 w-5" />
         </span>
         <div>
           <p class="settings-points__stat-label">{{ t("settings.data.pointsPanel.walletBalance") }}</p>
@@ -70,7 +70,7 @@
 
       <article class="settings-points__stat">
         <span class="settings-points__stat-icon settings-points__stat-icon--amber" aria-hidden="true">
-          <Icon name="i-ph-arrows-left-right-duotone" class="h-5 w-5" />
+          <Icon name="i-ph-arrows-left-right-bold" class="h-5 w-5" />
         </span>
         <div>
           <p class="settings-points__stat-label">{{ t("settings.data.pointsPanel.exchangeRate") }}</p>
@@ -86,7 +86,7 @@
           <p class="settings-points__section-description">{{ t("settings.data.pointsPanel.transferDescription") }}</p>
         </div>
         <button class="settings-points__refresh-button" type="button" @click="closeTransferPanel">
-          <Icon name="i-ph-x-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-x-bold" class="h-4 w-4" />
         </button>
       </div>
 
@@ -138,7 +138,7 @@
 
         <div class="settings-points__scan-actions">
           <button class="settings-points__secondary-button" type="button" @click="transferScanning ? stopTransferQrScan() : startTransferQrScan()">
-            <Icon :name="transferScanning ? 'i-ph-x-duotone' : 'i-ph-camera-duotone'" class="h-4 w-4" />
+            <Icon :name="transferScanning ? 'i-ph-x-bold' : 'i-ph-camera-bold'" class="h-4 w-4" />
             <span>{{ transferScanning ? t("settings.data.pointsPanel.stopScanQr") : t("settings.data.pointsPanel.scanQr") }}</span>
           </button>
         </div>
@@ -172,7 +172,7 @@
         <span v-else>{{ selectedTransferRecipientName.slice(0, 1).toUpperCase() }}</span>
         <p>{{ selectedTransferRecipientName }}</p>
         <button type="button" @click="clearTransferRecipient">
-          <Icon name="i-ph-x-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-x-bold" class="h-4 w-4" />
         </button>
       </div>
 
@@ -184,7 +184,7 @@
         :disabled="!canSubmitTransfer || transferSubmitting"
         @click="openTransferConfirm"
       >
-        <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
+        <Icon name="i-ph-check-circle-bold" class="h-4 w-4" />
         <span>{{ transferSubmitting ? t("settings.data.pointsPanel.submitting") : t("settings.data.pointsPanel.transferSubmit") }}</span>
       </button>
     </section>
@@ -196,7 +196,7 @@
           <p class="settings-points__section-description">{{ t("settings.data.pointsPanel.receiveQrDescription") }}</p>
         </div>
         <button class="settings-points__refresh-button" type="button" @click="closeReceiveQrPanel">
-          <Icon name="i-ph-x-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-x-bold" class="h-4 w-4" />
         </button>
       </div>
 
@@ -218,7 +218,7 @@
           :title="t('settings.data.pointsPanel.updateQr')"
           @click="openReceiveQrPanel(receiveQrPoints)"
         >
-          <Icon name="i-ph-arrows-clockwise-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-arrows-clockwise-bold" class="h-4 w-4" />
           <span>{{ t("settings.data.pointsPanel.updateQr") }}</span>
         </button>
       </div>
@@ -239,7 +239,7 @@
             <p class="settings-points__section-description">{{ t("settings.data.pointsPanel.historyDescription") }}</p>
           </div>
           <button class="settings-points__refresh-button" type="button" @click="loadWalletHistory">
-            <Icon name="i-ph-arrow-clockwise-duotone" class="h-4 w-4" />
+            <Icon name="i-ph-arrow-clockwise-bold" class="h-4 w-4" />
           </button>
         </div>
 
@@ -251,7 +251,7 @@
             role="listitem"
           >
             <span class="settings-points__history-icon" aria-hidden="true">
-              <Icon name="i-ph-coins-duotone" class="h-4 w-4" />
+              <Icon name="i-ph-coins-bold" class="h-4 w-4" />
             </span>
             <div class="settings-points__history-copy">
               <p class="settings-points__history-title">{{ item.title }}</p>
@@ -267,7 +267,7 @@
         </div>
 
         <div v-else class="settings-points__empty">
-          <Icon name="i-ph-clock-counter-clockwise-duotone" class="h-6 w-6" />
+          <Icon name="i-ph-clock-counter-clockwise-bold" class="h-6 w-6" />
           <p>{{ t("settings.data.pointsPanel.emptyHistory") }}</p>
         </div>
       </div>
@@ -347,7 +347,7 @@
               type="submit"
               :disabled="!canSubmitExchange || isSubmitting"
             >
-              <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
+              <Icon name="i-ph-check-circle-bold" class="h-4 w-4" />
               <span>{{ isSubmitting ? t("settings.data.pointsPanel.submitting") : t("settings.data.pointsPanel.confirm") }}</span>
             </button>
           </div>
@@ -388,7 +388,7 @@
               {{ t("settings.data.pointsPanel.cancel") }}
             </button>
             <button class="settings-points-modal__primary" type="button" :disabled="transferSubmitting" @click="confirmTransferPoints">
-              <Icon name="i-ph-check-circle-fill" class="h-4 w-4" />
+              <Icon name="i-ph-check-circle-bold" class="h-4 w-4" />
               <span>{{ transferSubmitting ? t("settings.data.pointsPanel.submitting") : t("settings.data.pointsPanel.transferConfirmSubmit") }}</span>
             </button>
           </div>

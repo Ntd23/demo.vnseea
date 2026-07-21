@@ -3027,6 +3027,7 @@
       "shareLocation": "Chia sẻ vị trí hiện tại",
       "locationOwnTitle": "Vị trí của bạn",
       "locationDefaultTitle": "Vị trí được chia sẻ",
+      "locationSenderTitle": "Vị trí của {name}",
       "locationSharedPreview": "Đã chia sẻ một vị trí",
       "locationOpenMap": "Mở trong bản đồ",
       "locationErrorTitle": "Không thể lấy vị trí",
@@ -5457,7 +5458,7 @@
     "storyCarousel": {
       "createStory": "Tạo tin",
       "appPromptTitle": "Tạo tin trên ứng dụng VNSEEA",
-      "appPromptDescription": "Dùng ứng dụng để tạo tin nhanh hơn, đăng ảnh hoặc video và chia sẻ khoảnh khắc với mọi người.",
+      "appPromptDescription": "Dùng ứng dụng để tạo tin nhanh hơn. Nếu chưa cài đặt, bạn sẽ được chuyển đến cửa hàng ứng dụng phù hợp.",
       "openApp": "Mở ứng dụng",
       "continueOnWeb": "Tiếp tục trên web",
       "appPromptNotConfigured": "Bản thử chưa có liên kết ứng dụng. Hãy cấu hình deep link và link cửa hàng để bật nút Mở ứng dụng.",

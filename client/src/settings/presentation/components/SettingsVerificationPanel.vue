@@ -7,7 +7,7 @@
       v-else-if="loadError"
       color="error"
       variant="soft"
-      icon="i-ph-warning-circle-fill"
+      icon="i-ph-warning-circle-bold"
       :title="t('settings.verification.errors.load')"
       :description="String(loadError.message || loadError)"
       class="rounded-[18px]"
@@ -26,7 +26,7 @@
             {{ verification.user.name.slice(0, 2).toUpperCase() }}
           </span>
           <span class="verification-panel__seal" aria-hidden="true">
-            <Icon name="i-ph-seal-check-fill" class="h-5 w-5" />
+            <Icon name="i-ph-seal-check-bold" class="h-5 w-5" />
           </span>
         </NuxtLink>
         <div class="verification-panel__hero-copy">
@@ -53,7 +53,7 @@
         v-if="isPending"
         color="primary"
         variant="soft"
-        icon="i-ph-user-check-duotone"
+        icon="i-ph-user-check-bold"
         :title="t('settings.verification.pendingTitle')"
         :description="t('settings.verification.pendingDescription')"
         class="rounded-[18px]"
@@ -62,7 +62,7 @@
         v-else-if="isVerified"
         color="success"
         variant="soft"
-        icon="i-ph-seal-check-fill"
+        icon="i-ph-seal-check-bold"
         :title="t('settings.verification.verifiedTitle')"
         :description="t('settings.verification.verifiedDescription')"
         class="rounded-[18px]"
@@ -73,7 +73,7 @@
           v-if="errorMessage"
           color="error"
           variant="soft"
-          icon="i-ph-warning-circle-fill"
+          icon="i-ph-warning-circle-bold"
           :title="t('settings.verification.errors.title')"
           :description="errorMessage"
           class="rounded-[16px]"
@@ -82,14 +82,14 @@
           v-if="successMessage"
           color="success"
           variant="soft"
-          icon="i-ph-check-circle-fill"
+          icon="i-ph-check-circle-bold"
           :title="successMessage"
           class="rounded-[16px]"
         />
         <UAlert
           color="warning"
           variant="soft"
-          icon="i-ph-clock-countdown-duotone"
+          icon="i-ph-clock-countdown-bold"
           :title="t('settings.verification.deadlineTitle')"
           :description="t('settings.verification.deadlineDescription')"
           class="rounded-[16px]"
@@ -222,13 +222,13 @@ const uploadTiles = computed<Array<{ key: FileKey; label: string; icon: string; 
     {
       key: "passport" as const,
       label: isShop.value ? t("settings.verification.passportId") : t("settings.verification.identityDocument"),
-      icon: "i-ph-identification-card-duotone",
+      icon: "i-ph-identification-card-bold",
       accept: imageAccept,
     },
     {
       key: "photo" as const,
       label: isShop.value ? t("settings.verification.personalPic") : t("settings.verification.portrait"),
-      icon: "i-ph-camera-duotone",
+      icon: "i-ph-camera-bold",
       accept: imageAccept,
     },
   ]
@@ -240,13 +240,13 @@ const uploadTiles = computed<Array<{ key: FileKey; label: string; icon: string; 
     {
       key: "shop_image" as const,
       label: t("settings.verification.shopImage"),
-      icon: "i-ph-storefront-duotone",
+      icon: "i-ph-storefront-bold",
       accept: imageAccept,
     },
     {
       key: "license" as const,
       label: t("settings.verification.license"),
-      icon: "i-ph-file-text-duotone",
+      icon: "i-ph-file-text-bold",
       accept: `${imageAccept},.pdf,application/pdf`,
     },
   ]

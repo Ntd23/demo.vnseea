@@ -103,6 +103,8 @@
           v-else-if="location && !isDeleted"
           :location="location"
           :avatar-url="locationAvatarUrl"
+          :is-mine="isMine"
+          :sender-name="authorName"
         />
 
         <div
@@ -300,8 +302,7 @@ const { t } = useI18n()
 const currentAuthUserStore = useCurrentAuthUserStore()
 const productImageFailed = ref(false)
 const locationAvatarUrl = computed(() =>
-  props.location?.avatarUrl
-  || (props.isMine ? currentAuthUserStore.user?.avatarUrl : props.avatar)
+  (props.isMine ? currentAuthUserStore.user?.avatarUrl : props.avatar)
   || "",
 )
 

@@ -358,6 +358,102 @@ function createPlaceOverlayMarker(
   return overlay
 }
 
+function createAvatarOverlayMarker(
+  map: google.maps.Map,
+  item: NearbySearchItem,
+  selected: boolean,
+  onSelect: () => void,
+) {
+  const size = selected ? 54 : 46
+  const position = new window.google.maps.LatLng(item.lat as number, item.lng as number)
+  const overlay = new window.google.maps.OverlayView()
+  let element: HTMLButtonElement | null = null
+
+  overlay.onAdd = () => {
+    const button = document.createElement("button")
+    const fallback = document.createElement("span")
+    const image = document.createElement("img")
+
+    button.type = "button"
+    button.title = item.title
+    button.setAttribute("aria-label", item.title)
+    Object.assign(button.style, {
+      alignItems: "center",
+      background: "#2563eb",
+      border: "4px solid #ffffff",
+      borderRadius: "999px",
+      boxShadow: selected
+        ? "0 8px 22px rgba(15, 23, 42, 0.38)"
+        : "0 5px 14px rgba(15, 23, 42, 0.3)",
+      cursor: "pointer",
+      display: "flex",
+      height: `${size}px`,
+      justifyContent: "center",
+      overflow: "hidden",
+      padding: "0",
+      position: "absolute",
+      transform: "translate(-50%, -50%)",
+      width: `${size}px`,
+    })
+    fallback.innerHTML = `
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path fill="#fff" d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5Z"/>
+      </svg>
+    `.trim()
+    Object.assign(fallback.style, {
+      alignItems: "center",
+      display: "flex",
+      inset: "0",
+      justifyContent: "center",
+      position: "absolute",
+    })
+    Object.assign(image.style, {
+      height: "100%",
+      inset: "0",
+      objectFit: "cover",
+      position: "absolute",
+      width: "100%",
+      zIndex: "1",
+    })
+    image.alt = ""
+    image.src = item.avatarUrl
+    image.addEventListener("error", () => image.remove())
+    button.addEventListener("click", (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      onSelect()
+    })
+    button.appendChild(fallback)
+    button.appendChild(image)
+    overlay.getPanes()?.overlayMouseTarget.appendChild(button)
+    element = button
+  }
+
+  overlay.draw = () => {
+    if (!element) {
+      return
+    }
+
+    const point = overlay.getProjection()?.fromLatLngToDivPixel(position)
+    if (!point) {
+      return
+    }
+
+    element.style.left = `${point.x}px`
+    element.style.top = `${point.y}px`
+    element.style.zIndex = selected ? "40" : "20"
+  }
+
+  overlay.onRemove = () => {
+    element?.remove()
+    element = null
+  }
+
+  overlay.setMap(map)
+
+  return overlay
+}
+
 function createOriginIcon(selected = false, heading: number | null = null): google.maps.Symbol {
   return {
     path: "M 0 -18 L 11 15 L 0 9 L -11 15 Z",
@@ -1238,6 +1334,13 @@ function renderMarkers() {
 
     const pinnedPage = item.type === "page" && item.pinned === true
     const selected = item.id === props.selectedItemId
+
+    if (item.markerKind === "avatar" && item.avatarUrl) {
+      markers.push(createAvatarOverlayMarker(map, item, selected, () => {
+        selectResult(item)
+      }))
+      return
+    }
 
     if (item.type === "place" && (item.mapIconUrl || item.avatarUrl)) {
       markers.push(createPlaceOverlayMarker(map, item, selected, () => {

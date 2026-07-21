@@ -188,7 +188,7 @@ export function useSettingsVerificationVM() {
       successMessage.value = result.message
       toast.add({
         color: "success",
-        icon: "i-ph-check-circle-fill",
+        icon: "i-ph-check-circle-bold",
         title: result.message,
       })
       await refresh()

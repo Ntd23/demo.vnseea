@@ -2,25 +2,16 @@
 
 import type { MessageItem } from "../../domain/types/messages.types"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { parseMessageLocationText } from "./message-location-parser"
 
 export type MessageLocationMeta = {
   latitude: number
   longitude: number
   title: string
+  address: string
   avatarUrl: string
   messageUrl: string
   webMapUrl: string
-}
-
-const locationMessagePattern = /^(?:https?:\/\/[^\s/]+)?\/map\?[^\s]+$/i
-
-function normalizeLocationTitle(value: string) {
-  return value.replace(/\+/g, " ").trim()
-}
-
-function normalizeAvatarUrl(value: string) {
-  const normalized = value.trim()
-  return normalized.startsWith("/") || /^https?:\/\//i.test(normalized) ? normalized : ""
 }
 
 export function buildLocationMessageUrl(input: {
@@ -50,54 +41,22 @@ export function buildLocationMessageUrl(input: {
 }
 
 export function getMessageLocationMeta(message: Pick<MessageItem, "text">): MessageLocationMeta | null {
-  const value = message.text
-    .replace(/<br\s*\/?>/gi, "")
-    .replace(/&amp;/gi, "&")
-    .trim()
+  const parsed = parseMessageLocationText(message.text)
 
-  if (!locationMessagePattern.test(value)) {
+  if (!parsed) {
     return null
   }
 
-  try {
-    const parsed = new URL(value, "https://vnseea.invalid")
+  const webMapUrl = new URL(appRoutes.searchNearby, "https://vnseea.invalid")
+  webMapUrl.searchParams.set("lat", String(parsed.latitude))
+  webMapUrl.searchParams.set("lng", String(parsed.longitude))
+  if (parsed.title) webMapUrl.searchParams.set("title", parsed.title)
+  if (parsed.address) webMapUrl.searchParams.set("address", parsed.address)
+  if (parsed.avatarUrl) webMapUrl.searchParams.set("avatar", parsed.avatarUrl)
+  webMapUrl.searchParams.set("source", "message")
 
-    if (parsed.pathname.replace(/\/+$/, "") !== "/map") {
-      return null
-    }
-
-    const latitude = Number(parsed.searchParams.get("lat"))
-    const longitude = Number(parsed.searchParams.get("lng"))
-
-    if (
-      !Number.isFinite(latitude)
-      || !Number.isFinite(longitude)
-      || latitude < -90
-      || latitude > 90
-      || longitude < -180
-      || longitude > 180
-    ) {
-      return null
-    }
-
-    const title = normalizeLocationTitle(parsed.searchParams.get("title") || "")
-    const avatarUrl = normalizeAvatarUrl(parsed.searchParams.get("avatar") || "")
-    const webMapUrl = new URL(appRoutes.searchNearby, "https://vnseea.invalid")
-    webMapUrl.searchParams.set("lat", String(latitude))
-    webMapUrl.searchParams.set("lng", String(longitude))
-    if (title) webMapUrl.searchParams.set("title", title)
-    webMapUrl.searchParams.set("source", "message")
-
-    return {
-      latitude,
-      longitude,
-      title,
-      avatarUrl,
-      messageUrl: value,
-      webMapUrl: `${webMapUrl.pathname}${webMapUrl.search}`,
-    }
-  }
-  catch {
-    return null
+  return {
+    ...parsed,
+    webMapUrl: `${webMapUrl.pathname}${webMapUrl.search}`,
   }
 }

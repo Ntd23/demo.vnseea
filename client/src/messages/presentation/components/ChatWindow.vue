@@ -125,6 +125,7 @@
 
       <MessagesChatMessageList
         :contact-avatar="typingAvatarUrl"
+        :contact-name="contact.name"
         :contact-type="contact.type"
         :is-pending="isPending"
         :is-typing="isTyping"

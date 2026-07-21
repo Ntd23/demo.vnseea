@@ -58,24 +58,24 @@ const messageText = (
 ) => settingsText(t, `messages.${key}`, params)
 
 const pageIcons: Record<string, string> = {
-  general: "i-ph-user-fill",
-  profile: "i-ph-identification-card-fill",
-  privacy: "i-ph-lock-key-fill",
-  avatar: "i-ph-image-fill",
-  password: "i-ph-key-fill",
-  twoFactor: "i-ph-shield-check-fill",
-  notifications: "i-ph-bell-fill",
-  emailNotifications: "i-ph-envelope-fill",
-  socialLinks: "i-ph-link-fill",
-  verification: "i-ph-seal-check-fill",
-  deleteAccount: "i-ph-warning-octagon-fill",
-  myPoints: "i-ph-star-fill",
-  manageSessions: "i-ph-devices-fill",
-  blockedUsers: "i-ph-user-minus-fill",
-  myInfo: "i-ph-info-fill",
-  addresses: "i-ph-map-pin-fill",
-  monetization: "i-ph-currency-circle-dollar-fill",
-  affiliates: "i-ph-gift-fill",
+  general: "i-ph-user-bold",
+  profile: "i-ph-identification-card-bold",
+  privacy: "i-ph-lock-key-bold",
+  avatar: "i-ph-image-bold",
+  password: "i-ph-key-bold",
+  twoFactor: "i-ph-shield-check-bold",
+  notifications: "i-ph-bell-bold",
+  emailNotifications: "i-ph-envelope-bold",
+  socialLinks: "i-ph-link-bold",
+  verification: "i-ph-seal-check-bold",
+  deleteAccount: "i-ph-warning-octagon-bold",
+  myPoints: "i-ph-star-bold",
+  manageSessions: "i-ph-devices-bold",
+  blockedUsers: "i-ph-user-minus-bold",
+  myInfo: "i-ph-info-bold",
+  addresses: "i-ph-map-pin-bold",
+  monetization: "i-ph-currency-circle-dollar-bold",
+  affiliates: "i-ph-gift-bold",
 }
 
 const supportedUpdateSections = new Set<SettingsSectionSlug>([
@@ -481,7 +481,7 @@ const deleteAccountPage = (t: SettingTranslate): SettingPage => ({
     fields: [
       field("password", fieldText(t, "passwordConfirm"), "password", ""),
     ],
-    actions: [{ label: pageText(t, "deleteAccount", "sections.deleteAccount.action"), icon: "i-ph-trash-duotone", tone: "danger" }],
+    actions: [{ label: pageText(t, "deleteAccount", "sections.deleteAccount.action"), icon: "i-ph-trash-bold", tone: "danger" }],
   }],
 })
 
@@ -555,7 +555,7 @@ const myInfoPage = (t: SettingTranslate): SettingPage => ({
       { key: "following", label: pageText(t, "my-info", "sections.download.fields.following"), description: "", enabled: true },
       { key: "followers", label: pageText(t, "my-info", "sections.download.fields.followers"), description: "", enabled: true },
     ],
-    actions: [{ label: pageText(t, "my-info", "sections.download.action"), icon: "i-ph-download-simple-duotone" }],
+    actions: [{ label: pageText(t, "my-info", "sections.download.action"), icon: "i-ph-download-simple-bold" }],
   }],
 })
 
@@ -568,7 +568,7 @@ const addressesPage = (t: SettingTranslate, user: SettingsUser | null): SettingP
     title: pageText(t, "addresses", "sections.list.title"),
     description: pageText(t, "addresses", "sections.list.description"),
     kind: "list",
-    actions: [{ label: pageText(t, "addresses", "sections.list.action"), icon: "i-ph-plus-duotone" }],
+    actions: [{ label: pageText(t, "addresses", "sections.list.action"), icon: "i-ph-plus-bold" }],
   }],
 })
 

@@ -4,7 +4,7 @@
     <div class="settings-sidebar__profile">
       <div class="settings-sidebar__avatar" aria-hidden="true">
         <span v-if="userInitials">{{ userInitials }}</span>
-        <Icon v-else name="i-ph-user-circle-duotone" class="h-5 w-5" />
+        <Icon v-else name="i-ph-user-circle-bold" class="h-5 w-5" />
       </div>
       <div class="settings-sidebar__profile-info">
         <p class="settings-sidebar__profile-name">{{ t("settings.sidebar.title") }}</p>
@@ -30,7 +30,7 @@
           :class="{ 'settings-sidebar__icon--active': page.slug === activeSlug }"
         >
           <Icon
-            :name="page.slug === activeSlug ? page.icon : page.icon.replace('-fill', '-duotone')"
+            :name="page.slug === activeSlug ? page.icon : page.icon"
             class="h-4 w-4"
           />
         </span>
@@ -58,7 +58,7 @@
           :class="{ 'settings-sidebar__icon--active': page.slug === activeSlug }"
         >
           <Icon
-            :name="page.slug === activeSlug ? page.icon : page.icon.replace('-fill', '-duotone')"
+            :name="page.slug === activeSlug ? page.icon : page.icon"
             class="h-5 w-5"
           />
         </span>
@@ -95,7 +95,7 @@
               @click="isMenuOpen = false"
             >
               <Icon
-                :name="page.slug === activeSlug ? page.icon : page.icon.replace('-fill', '-duotone')"
+                :name="page.slug === activeSlug ? page.icon : page.icon"
                 class="h-4 w-4"
               />
               <span>{{ page.label }}</span>
@@ -241,21 +241,24 @@ onClickOutside(dropdownRef, () => {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: #f1f5f9;
-  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #000000;
   flex-shrink: 0;
   transition: all 0.15s ease;
 }
 
 .settings-sidebar__item:hover .settings-sidebar__icon {
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: #f8fafc;
+  border-color: #000000;
+  color: #000000;
 }
 
 .settings-sidebar__icon--active {
-  background: #0000ff !important;
+  background: #000000 !important;
   color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 255, 0.2);
+  border-color: #000000 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* ─── Label ───────────────────────────── */
@@ -276,8 +279,8 @@ onClickOutside(dropdownRef, () => {
 .settings-sidebar__caret {
   width: 11px;
   height: 11px;
-  color: #0000ff;
-  opacity: 0.5;
+  color: #000000;
+  opacity: 0.7;
   flex-shrink: 0;
 }
 
