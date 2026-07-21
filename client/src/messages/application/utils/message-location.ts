@@ -29,12 +29,17 @@ export function buildLocationMessageUrl(input: {
   url.searchParams.set("title", input.title.trim())
 
   if (input.avatarUrl?.trim()) {
+    let avatarUrl = input.avatarUrl.trim()
+
     try {
-      url.searchParams.set("avatar", new URL(input.avatarUrl.trim(), url.origin).toString())
+      avatarUrl = new URL(avatarUrl, url.origin).toString()
     }
-    catch {
-      url.searchParams.set("avatar", input.avatarUrl.trim())
-    }
+    catch {}
+
+    // Native clients read `image`, while the Nuxt card reads `avatar`.
+    // Send both aliases so a web-shared location renders identically in app.
+    url.searchParams.set("image", avatarUrl)
+    url.searchParams.set("avatar", avatarUrl)
   }
 
   return url.toString()

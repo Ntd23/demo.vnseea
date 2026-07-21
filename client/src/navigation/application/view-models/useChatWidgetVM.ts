@@ -3,6 +3,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue"
 import type { Socket } from "socket.io-client"
 import { appRoutes } from "#shared-kernel/application/constants/route-registry"
+import { useCurrentAuthUserStore } from "../../../auth/application/stores/useCurrentAuthUserStore"
 import type { FeedStoryReactionType } from "../../../feed/domain/constants/story-reactions"
 import type { MessageContact, MessageItem, MessageProductCard, MessageRecordDraft, MessageSendDraft, MessageTagsPayload, MessageThread, MessageUserTag } from "../../../messages/domain/types/messages.types"
 import type { MessagesRepository } from "../../../messages/domain/repositories/MessagesRepository"
@@ -200,17 +201,21 @@ function buildMessagesRouteQuery(contact?: MessageContact | null) {
   return {}
 }
 
-const cachedInbox = ref<MessageContact[]>([])
-const cachedTags = ref<MessageTagsPayload>({ labels: [], contacts: [] })
-const cachedThreads = new Map<string, MessageThread>()
-
 export function useChatWidgetVM(
   repository: MessagesRepository = createApiMessagesRepository(),
 ) {
   const { t } = useI18n()
   const router = useRouter()
   const toast = useToast()
-  const nuxtApp = useNuxtApp()
+  const currentAuthUserStore = useCurrentAuthUserStore()
+  const currentOwnerId = computed(() => currentAuthUserStore.user?.id ?? 0)
+  const currentOwnerKey = computed(() => currentOwnerId.value > 0 ? `user:${currentOwnerId.value}` : "anonymous")
+  const inboxAsyncDataKey = computed(() => `navigation:chat-widget:inbox:${currentOwnerKey.value}`)
+  const tagsAsyncDataKey = computed(() => `navigation:chat-widget:tags:${currentOwnerKey.value}`)
+
+  function storageKey(segment: string) {
+    return `cache:chat-widget:${currentOwnerKey.value}:${segment}`
+  }
 
   const activeTab = ref<ChatWidgetTab>("contacts")
   const search = ref("")
@@ -235,13 +240,16 @@ export function useChatWidgetVM(
   const launchedContacts = ref<MessageContact[]>([])
   const isSendingQuick = ref(false)
   const socket = shallowRef<Socket | null>(null)
+  const connectingRealtime = ref(false)
+  const socketOwnerId = ref(0)
   const refreshTimer = shallowRef<number | null>(null)
   const unreadSnapshot = shallowRef<Map<string, { unreadCount: number, preview: string }>>(new Map())
   const hasUnreadSnapshot = ref(false)
   const pendingMiniThreadRequests = new Map<string, Promise<MessageThread>>()
+  const cachedThreads = new Map<string, MessageThread>()
 
   function miniThreadRequestKey(contactId: string, includeReactions: boolean) {
-    return `${contactId}:${includeReactions ? "with-reactions" : "fast"}`
+    return `${currentOwnerKey.value}:${contactId}:${includeReactions ? "with-reactions" : "fast"}`
   }
 
   function fetchMiniThread(contact: MessageContact, includeReactions = false) {
@@ -268,7 +276,7 @@ export function useChatWidgetVM(
     }
 
     try {
-      sessionStorage.setItem(`cache:chat-widget:thread:${contactId}`, JSON.stringify(thread))
+      sessionStorage.setItem(storageKey(`thread:${contactId}`), JSON.stringify(thread))
     }
     catch {}
   }
@@ -281,8 +289,13 @@ export function useChatWidgetVM(
       return
     }
 
+    const requestOwnerKey = currentOwnerKey.value
+
     try {
-      cacheMiniThread(contact.id, await fetchMiniThread(contact))
+      const thread = await fetchMiniThread(contact)
+      if (requestOwnerKey === currentOwnerKey.value) {
+        cacheMiniThread(contact.id, thread)
+      }
     }
     catch {
       // Prefetch is best-effort; opening the chat will retry normally.
@@ -299,14 +312,15 @@ export function useChatWidgetVM(
     data: inbox,
     status: inboxStatus,
     refresh: refreshInboxData,
+    clear: clearInboxData,
   } = useAsyncData(
-    "navigation:chat-widget:inbox",
+    inboxAsyncDataKey,
     async () => {
+      const requestOwnerKey = currentOwnerKey.value
       const data = await repository.getInbox()
-      if (import.meta.client) {
-        cachedInbox.value = data
+      if (import.meta.client && requestOwnerKey === currentOwnerKey.value) {
         try {
-          sessionStorage.setItem("cache:chat-widget:inbox", JSON.stringify(data))
+          sessionStorage.setItem(storageKey("inbox"), JSON.stringify(data))
         }
         catch {}
       }
@@ -315,26 +329,15 @@ export function useChatWidgetVM(
     {
       default: () => {
         if (import.meta.client) {
-          if (cachedInbox.value.length > 0) {
-            return cachedInbox.value
-          }
           try {
-            const saved = sessionStorage.getItem("cache:chat-widget:inbox")
+            const saved = sessionStorage.getItem(storageKey("inbox"))
             if (saved) {
-              const parsed = JSON.parse(saved)
-              cachedInbox.value = parsed
-              return parsed
+              return JSON.parse(saved)
             }
           }
           catch {}
         }
         return []
-      },
-      getCachedData() {
-        if (cachedInbox.value.length > 0) {
-          return cachedInbox.value
-        }
-        return undefined
       },
     },
   )
@@ -342,14 +345,16 @@ export function useChatWidgetVM(
 
   const {
     data: messageTags,
+    refresh: refreshTagsData,
+    clear: clearTagsData,
   } = useAsyncData<MessageTagsPayload>(
-    "navigation:chat-widget:tags",
+    tagsAsyncDataKey,
     async () => {
+      const requestOwnerKey = currentOwnerKey.value
       const data = await repository.getTags()
-      if (import.meta.client) {
-        cachedTags.value = data
+      if (import.meta.client && requestOwnerKey === currentOwnerKey.value) {
         try {
-          sessionStorage.setItem("cache:chat-widget:tags", JSON.stringify(data))
+          sessionStorage.setItem(storageKey("tags"), JSON.stringify(data))
         }
         catch {}
       }
@@ -358,26 +363,15 @@ export function useChatWidgetVM(
     {
       default: () => {
         if (import.meta.client) {
-          if (cachedTags.value.labels.length > 0 || cachedTags.value.contacts.length > 0) {
-            return cachedTags.value
-          }
           try {
-            const saved = sessionStorage.getItem("cache:chat-widget:tags")
+            const saved = sessionStorage.getItem(storageKey("tags"))
             if (saved) {
-              const parsed = JSON.parse(saved)
-              cachedTags.value = parsed
-              return parsed
+              return JSON.parse(saved)
             }
           }
           catch {}
         }
         return { labels: [], contacts: [] }
-      },
-      getCachedData() {
-        if (cachedTags.value.labels.length > 0 || cachedTags.value.contacts.length > 0) {
-          return cachedTags.value
-        }
-        return undefined
       },
     },
   )
@@ -730,20 +724,29 @@ export function useChatWidgetVM(
     }
 
     try {
+      const requestOwnerKey = currentOwnerKey.value
       const incomingThread = await fetchMiniThread(
         contact,
-        session.thread.messages.length > 0,
+        true,
       )
+      if (requestOwnerKey !== currentOwnerKey.value) {
+        return
+      }
       if (session.thread.messages.length === 0) {
         session.thread = incomingThread
       }
       else {
         const incomingTexts = new Set(incomingThread.messages.filter(m => m.isMine).map(m => m.text))
+        const incomingMessageIds = new Set(incomingThread.messages.map(message => message.id))
         const currentMessages = session.thread.messages.filter(msg => {
           if (msg.id < 0 && incomingTexts.has(msg.text)) {
             return false
           }
-          return true
+
+          // The server is authoritative for persisted messages, including
+          // reactions received from another tab or device. Keep only local
+          // optimistic messages that have not reached the server yet.
+          return !incomingMessageIds.has(msg.id)
         })
 
         const merged = [...currentMessages, ...incomingThread.messages]
@@ -805,7 +808,7 @@ export function useChatWidgetVM(
     try {
       const olderThread = await repository.getThread(contact, {
         beforeId: firstMessageId,
-        includeReactions: false,
+        includeReactions: true,
       })
 
       if (olderThread.messages.length > 0) {
@@ -860,7 +863,7 @@ export function useChatWidgetVM(
     let cachedThread = cachedThreads.get(contact.id)
     if (!cachedThread && import.meta.client) {
       try {
-        const saved = sessionStorage.getItem(`cache:chat-widget:thread:${contact.id}`)
+        const saved = sessionStorage.getItem(storageKey(`thread:${contact.id}`))
         if (saved) {
           cachedThread = JSON.parse(saved)
           if (cachedThread) {
@@ -1111,7 +1114,7 @@ export function useChatWidgetVM(
       if (import.meta.client) {
         cachedThreads.set(contact.id, session.thread)
         try {
-          sessionStorage.setItem(`cache:chat-widget:thread:${contact.id}`, JSON.stringify(session.thread))
+          sessionStorage.setItem(storageKey(`thread:${contact.id}`), JSON.stringify(session.thread))
         }
         catch {}
       }
@@ -1225,6 +1228,12 @@ export function useChatWidgetVM(
       },
     }))
 
+    for (const session of miniChatSessions.value) {
+      if (session.thread.messages.some(message => message.id === messageId)) {
+        cacheMiniThread(session.contactId, session.thread)
+      }
+    }
+
     return result
   }
 
@@ -1330,6 +1339,9 @@ export function useChatWidgetVM(
 
     refreshTimer.value = window.setInterval(() => {
       void refreshFromIncomingMessage()
+      if (!socket.value) {
+        void connectRealtime()
+      }
     }, INBOX_REFRESH_INTERVAL_MS)
   }
 
@@ -1342,15 +1354,38 @@ export function useChatWidgetVM(
     refreshTimer.value = null
   }
 
+  function disconnectRealtime() {
+    const realtimeSocket = socket.value
+    socket.value = null
+    socketOwnerId.value = 0
+
+    if (realtimeSocket) {
+      realtimeSocket.removeAllListeners()
+      realtimeSocket.disconnect()
+    }
+  }
+
   async function connectRealtime() {
-    if (!import.meta.client || socket.value) {
+    const ownerId = currentOwnerId.value
+
+    if (!import.meta.client || ownerId <= 0 || connectingRealtime.value) {
       return
     }
+
+    if (socket.value && socketOwnerId.value === ownerId) {
+      return
+    }
+
+    if (socket.value) {
+      disconnectRealtime()
+    }
+
+    connectingRealtime.value = true
 
     try {
       const auth = await repository.getRealtimeToken()
 
-      if (!auth.enabled || !auth.token || !auth.url) {
+      if (ownerId !== currentOwnerId.value || !auth.enabled || !auth.token || !auth.url) {
         return
       }
 
@@ -1361,10 +1396,18 @@ export function useChatWidgetVM(
         },
         transports: ["websocket"],
         timeout: 5000,
-        reconnection: false,
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 10000,
       })
 
       realtimeSocket.on("connect", () => {
+        if (ownerId !== currentOwnerId.value) {
+          realtimeSocket.disconnect()
+          return
+        }
+
         const sessionHash = useCookie("user_id").value
         if (sessionHash) {
           realtimeSocket.emit("join", { user_id: sessionHash })
@@ -1372,24 +1415,77 @@ export function useChatWidgetVM(
       })
 
       realtimeSocket.on("messages:count", () => {
-        void refreshFromIncomingMessage()
+        if (ownerId === currentOwnerId.value) {
+          void refreshFromIncomingMessage()
+        }
       })
 
-      realtimeSocket.on("disconnect", () => {
-        socket.value = null
+      realtimeSocket.on("disconnect", (reason) => {
+        if (reason === "io client disconnect" && socket.value === realtimeSocket) {
+          socket.value = null
+          socketOwnerId.value = 0
+        }
+        else if (reason === "io server disconnect" && ownerId === currentOwnerId.value) {
+          realtimeSocket.connect()
+        }
       })
 
       realtimeSocket.on("connect_error", () => {
-        realtimeSocket.disconnect()
-        socket.value = null
+        // Socket.IO keeps retrying; the refresh timer remains the data fallback.
       })
 
       socket.value = realtimeSocket
+      socketOwnerId.value = ownerId
     }
     catch {
       socket.value = null
+      socketOwnerId.value = 0
+    }
+    finally {
+      connectingRealtime.value = false
     }
   }
+
+  async function resetForOwnerChange(ownerId: number) {
+    disconnectRealtime()
+    pendingMiniThreadRequests.clear()
+    cachedThreads.clear()
+    launchedContacts.value = []
+    miniChatSessions.value.forEach((session) => {
+      if (import.meta.client && session.attachFilePreviewUrl) {
+        URL.revokeObjectURL(session.attachFilePreviewUrl)
+      }
+    })
+    miniChatSessions.value = []
+    clearQuickSendForm()
+    unreadSnapshot.value = new Map()
+    hasUnreadSnapshot.value = false
+    clearInboxData()
+    clearTagsData()
+
+    if (ownerId <= 0) {
+      return
+    }
+
+    await Promise.allSettled([
+      refreshInboxData(),
+      refreshTagsData(),
+    ])
+
+    if (ownerId !== currentOwnerId.value) {
+      return
+    }
+
+    updateUnreadSnapshot(allContacts.value)
+    prefetchRecentMiniThreads()
+    await connectRealtime()
+  }
+
+  watch(currentOwnerId, (ownerId, previousOwnerId) => {
+    if (ownerId !== previousOwnerId) {
+      void resetForOwnerChange(ownerId)
+    }
+  }, { flush: "sync" })
 
   watch([allContacts, messageTags], ([contacts, tagsPayload]) => {
     miniChatSessions.value = miniChatSessions.value.filter(session =>
@@ -1444,10 +1540,7 @@ export function useChatWidgetVM(
     setChatWidgetReady(false)
     stopRefreshTimer()
 
-    if (socket.value) {
-      socket.value.disconnect()
-      socket.value = null
-    }
+    disconnectRealtime()
 
     if (attachFilePreviewUrl.value) {
       URL.revokeObjectURL(attachFilePreviewUrl.value)

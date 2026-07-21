@@ -69,10 +69,14 @@ type BackendChatCreateGroupResponse = {
 }
 
 type BackendMessageReactionResponse = {
-  status?: number | string
-  reactions?: string
-  like_lang?: string
-  can_send?: number | string
+  api_status?: number | string
+  action?: "set" | "remove"
+  reaction?: {
+    my_reaction?: string | null
+  }
+  errors?: {
+    error_text?: string
+  }
 }
 
 type BackendMessageRecallResponse = {
@@ -414,6 +418,23 @@ const buildDisplayName = (entity: BackendEntity) => {
   }
 
   return firstString(entity, ["username"])
+}
+
+const parseMessageReaction = (value: unknown): FeedStoryReactionType | null => {
+  const reaction = asRecord(value)
+  const backendId = asNumber(reaction.my_reaction) || asNumber(reaction.type)
+  const ownReaction = feedStoryReactionByBackendId[backendId] ?? parseMessageReactionHtml(value)
+
+  if (ownReaction) {
+    return ownReaction
+  }
+
+  const topReaction = Array.isArray(reaction.top_reactions)
+    ? asString(reaction.top_reactions[0])
+    : ""
+  return isFeedStoryReaction(topReaction)
+    ? topReaction
+    : messageReactionNameMap[topReaction.toLowerCase()] ?? null
 }
 
 const mapMessagePinSystemEvent = (entity: BackendEntity) => {
@@ -880,6 +901,7 @@ const mapThreadMessage = (
       ? buildUserOnlineState(senderProfile, buildLastSeenAt(senderProfile))
       : false,
     timestamp,
+    selectedReaction: parseMessageReaction(entity.reaction),
     senderId,
     authorName: buildDisplayName(userData) || buildDisplayName(messageUser),
     threadType,
@@ -1026,79 +1048,17 @@ export const decorateThreadMessages = (messages: MessageItem[]) =>
     }
   })
 
-async function fetchThreadMessageReactions(
-  event: H3Event,
-  input: MessageThreadQuery,
-): Promise<Map<number, FeedStoryReactionType>> {
-  const currentUser = await getBackendCurrentUser(event)
-  const sessionHash = asString(currentUser.session_hash)
-
-  if (!sessionHash) {
-    return new Map()
-  }
-
-  const query: Record<string, unknown> = {
-    s: "get_new_messages",
-    hash: sessionHash,
-    hash_id: sessionHash,
-    message_id: 0,
-  }
-
-  if (input.type === "user" && input.userId) {
-    query.user_id = input.userId
-  }
-  else if (input.type === "group" && input.groupId) {
-    query.group_id = input.groupId
-  }
-  else if (input.type === "page" && input.pageId && input.recipientId) {
-    query.page_id = input.pageId
-    query.from_id = input.recipientId
-  }
-  else {
-    return new Map()
-  }
-
-  try {
-    const response = await createBackendWebClient(event).postForm<{
-      reactions?: Array<{ id?: number | string, reactions?: string }>
-    }>("messages", undefined, query)
-
-    return new Map(
-      (response.reactions ?? [])
-        .map((item) => {
-          const messageId = asNumber(item.id)
-          const reaction = parseMessageReactionHtml(item.reactions)
-          return [messageId, reaction] as const
-        })
-        .filter(([messageId, reaction]) => messageId > 0 && Boolean(reaction)) as Array<[number, FeedStoryReactionType]>,
-    )
-  }
-  catch {
-    return new Map()
-  }
-}
-
-async function decorateThreadMessagesWithReactions(
-  event: H3Event,
+function decorateThreadMessagesWithReactions(
   input: MessageThreadQuery,
   messages: MessageItem[],
 ) {
   const decoratedMessages = decorateThreadMessages(messages)
 
   if (input.includeReactions === false) {
-    return decoratedMessages
+    return decoratedMessages.map(message => ({ ...message, selectedReaction: null }))
   }
 
-  const reactions = await fetchThreadMessageReactions(event, input)
-
-  if (reactions.size === 0) {
-    return decoratedMessages
-  }
-
-  return decoratedMessages.map(message => ({
-    ...message,
-    selectedReaction: reactions.get(message.id) ?? message.selectedReaction ?? null,
-  }))
+  return decoratedMessages
 }
 
 export async function fetchInboxContacts(event: H3Event) {
@@ -1181,8 +1141,7 @@ export async function fetchMessageThread(
     )
 
     return {
-      messages: await decorateThreadMessagesWithReactions(
-        event,
+      messages: decorateThreadMessagesWithReactions(
         input,
         (response.messages ?? []).map(message =>
           mapThreadMessage(message, currentUserId, resolveMediaUrl, "user"),
@@ -1217,8 +1176,7 @@ export async function fetchMessageThread(
     const activeGroupCall = asRecord(responseData.active_call)
 
     return {
-      messages: await decorateThreadMessagesWithReactions(
-        event,
+      messages: decorateThreadMessagesWithReactions(
         input,
         extractCollectionMessages(response).map(message =>
           mapThreadMessage(message, currentUserId, resolveMediaUrl, "group", activeGroupCall),
@@ -1250,8 +1208,7 @@ export async function fetchMessageThread(
   )
 
   return {
-    messages: await decorateThreadMessagesWithReactions(
-      event,
+    messages: decorateThreadMessagesWithReactions(
       input,
       extractCollectionMessages(response).map(message =>
         mapThreadMessage(message, currentUserId, resolveMediaUrl, "page"),
@@ -1472,27 +1429,22 @@ export async function registerMessageReaction(
     })
   }
 
-  const response = await createBackendWebClient(event).postForm<BackendMessageReactionResponse>(
-    "messages",
-    undefined,
-    {
-      s: "register_reaction",
-      message_id: messageId,
-      reaction: feedStoryReactionBackendIds[input.reaction],
-    },
+  const response = assertBackendApiSuccess(
+    await createBackendApiClient(event).post<BackendMessageReactionResponse>(
+      "react_message",
+      {
+        id: messageId,
+        action: "set",
+        reaction: feedStoryReactionBackendIds[input.reaction],
+      },
+    ),
+    "Unable to react to the message.",
   )
-
-  if (asNumber(response.status) !== 200) {
-    throw createError({
-      statusCode: 502,
-      statusMessage: "Unable to react to the message.",
-    })
-  }
 
   return {
     ok: true,
     messageId,
-    reaction: parseMessageReactionHtml(response.reactions) ?? input.reaction,
+    reaction: feedStoryReactionByBackendId[asNumber(response.reaction?.my_reaction)] ?? input.reaction,
   }
 }
 
