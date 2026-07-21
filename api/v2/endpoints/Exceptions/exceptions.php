@@ -81,6 +81,32 @@ function VNSEEA_IsMessageInAuthorizedChat($type, $chat_id, $message_id)
     return $is_member && (int)$message->group_id === $group_id;
 }
 
+function VNSEEA_GetSharedMessagePin($message_id)
+{
+    global $db;
+    if (empty($message_id) || !is_numeric($message_id)) {
+        return false;
+    }
+    return $db->where('message_id', Wo_Secure($message_id))->getOne(T_MESSAGE_PINS);
+}
+
+function VNSEEA_CanUnpinSharedMessage($pin, $type, $chat_id)
+{
+    global $wo, $db;
+    if (empty($pin) || empty($wo['user']['user_id'])) {
+        return false;
+    }
+    $current_user_id = (int)$wo['user']['user_id'];
+    if ((int)$pin->pinned_by === $current_user_id) {
+        return true;
+    }
+    if ($type !== 'group') {
+        return false;
+    }
+    $group = $db->where('group_id', Wo_Secure($chat_id))->getOne(T_GROUP_CHAT);
+    return (!empty($group) && (int)$group->user_id === $current_user_id) || Wo_IsAdmin();
+}
+
 function VNSEEA_CanReactToMessage($message_id)
 {
     global $wo, $db;

@@ -5931,6 +5931,8 @@
       "replyMessage": "Trả lời tin nhắn",
       "deleteMessage": "Xóa tin nhắn",
       "youDeletedMessage": "Bạn đã xóa một tin nhắn",
+      "youPinnedMessage": "Bạn đã ghim một tin nhắn",
+      "userPinnedMessage": "{name} đã ghim một tin nhắn",
       "userDeletedMessage": "{name} đã thu hồi 1 tin nhắn",
       "messageSentAt": "Gửi lúc {time}",
       "messageDeletedAt": "Xóa lúc {time}",
