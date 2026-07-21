@@ -52,7 +52,13 @@
           </div>
 
           <section v-if="activeTab === 'basics'" id="basics">
-            <CommunityPageSettingsBasicsCard v-model="draft" :page-path="pagePath">
+            <CommunityPageSettingsBasicsCard
+              v-model="draft"
+              :page-path="pagePath"
+              :category-options="categoryOptions"
+              :category-creating="isCreatingCategory"
+              @create-category="handleCreateCategory"
+            >
               <template #trailing>
                 <button
                   type="button"
@@ -144,6 +150,7 @@ import CommunityPageSettingsMediaCard from "../components/PageSettingsMediaCard.
 import CommunityPageSettingsAnalyticCard from "../components/PageSettingsAnalyticCard.vue"
 import CommunityPageSettingsDeleteCard from "../components/PageSettingsDeleteCard.vue"
 import { useCommunityPageSettingPageVM } from "../../application/view-models/useCommunityPageSettingPageVM"
+import { useCommunityPageCategories } from "../../application/composables/useCommunityPageCategories"
 
 const {
   page,
@@ -163,6 +170,32 @@ const {
   handleDeletePage,
   setAnalyticsPeriod,
 } = useCommunityPageSettingPageVM()
+
+const toast = useToast()
+const {
+  categoryOptions,
+  isCreatingCategory,
+  loadCategories,
+  createCategory,
+} = useCommunityPageCategories()
+
+onMounted(() => {
+  void loadCategories()
+})
+
+async function handleCreateCategory(name: string) {
+  try {
+    const category = await createCategory(name)
+    draft.value.category = category.value
+  }
+  catch (error) {
+    toast.add({
+      title: "Không thể tạo danh mục",
+      description: error instanceof Error ? error.message : "Vui lòng thử lại.",
+      color: "error",
+    })
+  }
+}
 
 function onDeletePage(pageId: number, password: string) {
   handleDeletePage(pageId, password)

@@ -1,3 +1,5 @@
+// English description: Loads page categories from PHP settings while preserving their database identifiers.
+
 import { createBackendApiClient } from "../../utils/backend-api-client"
 import { assertBackendApiSuccess } from "../../utils/backend-api-response"
 import { backendRoutes } from "../../../src/shared-kernel/application/constants/route-registry"

@@ -182,13 +182,7 @@ const normalizeGroupCategory = (value: unknown): CommunityGroupRecord["category"
 const normalizePageCategory = (value: unknown): CommunityPageRecord["category"] => {
   const normalized = asString(value).toLowerCase()
 
-  // Map backend IDs to frontend technical strings
-  if (normalized === "2") return "local-business"
-  if (normalized === "5") return "creator"
-  if (normalized === "4") return "brand"
-  if (normalized === "13") return "education"
-  if (normalized === "3") return "organization"
-  if (normalized === "12") return "service"
+  if (/^\d+$/.test(normalized)) return normalized
 
   if (["local-business", "creator", "brand", "education", "organization", "service"].includes(normalized)) {
     return normalized as CommunityPageRecord["category"]
@@ -319,6 +313,7 @@ export const mapCommunityPageRecord = (
     slug,
     summary: firstString(entity, ["page_description", "about", "description"]),
     category: normalizePageCategory(entity.page_category || entity.category),
+    categoryLabel: firstString(entity, ["category_name", "category"]),
     banner: createBannerBackground(normalizeImagePath(cover, options.baseUrl || ""), id),
     avatarUrl: normalizeImagePath(avatar, options.baseUrl || ""),
     accent: createAccent(id),

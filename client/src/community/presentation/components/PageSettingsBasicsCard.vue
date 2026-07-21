@@ -91,15 +91,20 @@
           size="xl"
           class="space-y-2"
         >
-          <USelect
+          <USelectMenu
             v-model="model.category"
             :items="categoryItems"
             value-key="value"
             label-key="label"
+            :search-input="{ placeholder: $t('community.pageSettings.basics.fields.category') }"
+            create-item
+            :loading="categoryCreating"
+            :disabled="categoryCreating"
             color="primary"
             size="xl"
             class="w-full"
             :ui="selectUi"
+            @create="emit('create-category', $event)"
           />
         </UFormField>
 
@@ -225,18 +230,24 @@ import { normalizeLocationSelection } from "../../../location/domain/types/locat
 import {
   createCommunitySlug,
 } from "../../domain/services/community-helpers.service"
-import {
-  communityPageCategoryOptions,
-  communityPageUrlPrefix,
-} from "../../domain/constants/community-options"
 import { useBackendWebBase } from "#shared-kernel/application/utils/backend-web-url"
-import type { CommunityPageSettingsDraft } from "../../domain/types/community.types"
+import type { CommunityOption, CommunityPageSettingsDraft } from "../../domain/types/community.types"
 
 const model = defineModel<CommunityPageSettingsDraft>({ required: true })
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
-defineProps<{
+const props = withDefaults(defineProps<{
   pagePath: string
+  categoryOptions?: CommunityOption[]
+  categoryCreating?: boolean
+}>(), {
+  categoryOptions: () => [],
+  categoryCreating: false,
+})
+
+const emit = defineEmits<{
+  "create-category": [name: string]
 }>()
 
 const inputUi = {
@@ -261,9 +272,9 @@ const urlPrefix = computed(() => {
 })
 
 const categoryItems = computed(() =>
-  communityPageCategoryOptions.map(option => ({
+  props.categoryOptions.map(option => ({
     value: option.value,
-    label: t(option.label),
+    label: translateText(option.label, option.label),
   })),
 )
 

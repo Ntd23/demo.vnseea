@@ -41,10 +41,9 @@
           @click="emit('update:activeTab', tab.id)"
         >
           <div class="relative">
-            <Icon :name="tab.icon" class="h-4 w-4" />
             <span
               v-if="tab.id === 'multi' && selectedRecipients.length > 0"
-              class="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white"
+              class="absolute -right-2 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white"
             >
               {{ selectedRecipients.length }}
             </span>
@@ -90,11 +89,28 @@
           </div>
         </section>
 
+        <div class="cl-multi-actions">
+          <div class="flex items-center gap-2">
+            <UButton
+              type="button"
+              icon="i-ph-paper-plane-tilt-bold"
+              class="rounded-full px-4 btn-primary"
+              size="sm"
+              :loading="multiPending"
+              :disabled="multiPending || !canSendMulti"
+              @click="emit('send-multi')"
+            >
+              {{ multiPending ? $t("pages.messagesPage.multiSendingButton") : $t("pages.messagesPage.sendMessage") }}
+            </UButton>
+          </div>
+        </div>
+
         <section>
           <div class="cl-recipient-heading">
             <div class="cl-field-heading cl-field-heading--inline">
               <Icon name="i-ph-users-three-duotone" class="h-3.5 w-3.5" />
-              <span>
+              <span class="text-black">
+                {{ selectedCountLabel }}
                 {{ $t("pages.messagesPage.sendTo") }}
               </span>
             </div>
@@ -102,7 +118,7 @@
               <input
                 type="checkbox"
                 :checked="allVisibleRecipientsSelected"
-                class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+                class="h-4 w-4 rounded border-slate-300 text-black focus:ring-primary-500"
                 @change="emit('toggle-all-recipients')"
               >
               <span>{{ $t("pages.messagesPage.selectAll") }}</span>
@@ -118,7 +134,7 @@
               selected-icon="i-ph-x-bold"
               class="cl-recipient-listbox"
             />
-            <span v-else class="cl-recipient-empty">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
+            <span v-else class="cl-recipient-empty text-black">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
           </div>
         </section>
 
@@ -138,8 +154,7 @@
             layout="list"
             highlight
             :label="$t('pages.messagesPage.chooseFile')"
-            :description="$t('pages.messagesPage.attachmentOptional')"
-            class="w-full"
+            class="w-full h-25"
           />
         </div>
 
@@ -161,26 +176,11 @@
           class="rounded-[var(--radius-md)]"
         />
 
-        <div class="cl-multi-actions">
-          <div class="flex items-center gap-2">
-            <UButton
-              type="button"
-              icon="i-ph-paper-plane-tilt-bold"
-              class="rounded-full px-4 btn-primary"
-              size="sm"
-              :loading="multiPending"
-              :disabled="multiPending || !canSendMulti"
-              @click="emit('send-multi')"
-            >
-              {{ multiPending ? $t("pages.messagesPage.multiSendingButton") : $t("pages.messagesPage.sendMessage") }}
-            </UButton>
-          </div>
-        </div>
       </div>
     </div>
 
     <!-- ── Contact list ──────────────────────────── -->
-    <div class="cl-scroll-list min-h-0 flex-1 px-3 pb-3">
+    <div v-if="activeTab !== 'multi'" class="cl-scroll-list min-h-0 flex-1 px-3 pb-3">
       <div class="space-y-0.5">
         <MessagesChatListItem
           v-for="contact in contacts"

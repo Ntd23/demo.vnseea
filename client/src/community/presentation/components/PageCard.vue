@@ -80,6 +80,8 @@ const pageSummary = computed(() => props.page.summary)
 const avatarLabel = computed(() => pageName.value.slice(0, 2).toUpperCase())
 
 const categoryLabel = computed(() => {
+  if (props.page.categoryLabel) return props.page.categoryLabel
+
   const label = getCommunityOptionLabel(
     communityPageCategoryOptions,
     props.page.category,

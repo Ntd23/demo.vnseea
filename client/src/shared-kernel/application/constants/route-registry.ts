@@ -327,6 +327,7 @@ export const backendRoutes = {
     search: "search",
     generalData: "get-general-data",
     siteSettings: "get-site-settings",
+    pageCategories: "page-categories",
     cmsPages: "cms-pages",
     publicContent: "public-content",
     userData: "get-user-data",

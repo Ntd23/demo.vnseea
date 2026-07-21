@@ -79,6 +79,20 @@
             />
           </div>
 
+          <div class="chat-widget__send-actions chat-widget__send-actions--inline">
+            <UButton
+              type="button"
+              variant="solid"
+              icon="i-ph-paper-plane-right-bold"
+              class="chat-widget__send-btn btn-primary"
+              :loading="isSendingQuick"
+              :disabled="!canSendQuickMessage"
+              @click="sendQuickMessage"
+            >
+              {{ $t("navigation.chatWidget.sendMessage") }}
+            </UButton>
+          </div>
+
           <div class="chat-widget__recipient-heading">
             <div class="chat-widget__field-label chat-widget__field-label--inline">
               <Icon name="i-ph-users-three-bold" class="h-3.5 w-3.5" />
@@ -208,19 +222,6 @@
         </div>
       </div>
 
-      <div class="chat-widget__send-actions">
-        <UButton
-          type="button"
-          variant="solid"
-          icon="i-ph-paper-plane-right-bold"
-          class="chat-widget__send-btn btn-primary"
-          :loading="isSendingQuick"
-          :disabled="!canSendQuickMessage"
-          @click="sendQuickMessage"
-        >
-          {{ $t("navigation.chatWidget.sendMessage") }}
-        </UButton>
-      </div>
     </div>
 
     <div v-else class="chat-widget__content">
@@ -2194,6 +2195,12 @@ watch(miniChatAutoOpenVersion, (version) => {
   border-top: 1px solid #e2e8f0;
   background: #ffffff;
   padding: 10px 12px 12px;
+}
+
+.chat-widget__send-actions--inline {
+  border-top: 0;
+  background: transparent;
+  padding: 0 0 12px;
 }
 
 :deep(.chat-widget__textarea) {
