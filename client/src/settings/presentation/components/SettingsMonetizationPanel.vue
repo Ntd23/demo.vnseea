@@ -2,8 +2,8 @@
   <section class="settings-money" aria-labelledby="settings-money-title">
     <div class="settings-money__summary">
       <div class="settings-money__summary-main">
-        <span class="settings-money__icon" aria-hidden="true">
-          <Icon name="i-ph-currency-circle-dollar-fill" class="h-6 w-6" />
+        <span class="settings-money__icon text-black" aria-hidden="true">
+          <Icon name="i-ph-currency-circle-dollar-bold" class="h-6 w-6" />
         </span>
         <div>
           <p class="settings-money__eyebrow">{{ t("settings.data.monetizationPanel.eyebrow") }}</p>
@@ -39,7 +39,7 @@
             class="settings-money__requirement"
           >
             <span class="settings-money__requirement-icon" :class="{ 'settings-money__requirement-icon--done': requirement.complete }">
-              <Icon :name="requirement.complete ? 'i-ph-check-circle-fill' : 'i-ph-clock-fill'" class="h-4 w-4" />
+              <Icon :name="requirement.complete ? 'i-ph-check-circle-bold' : 'i-ph-clock-bold'" class="h-4 w-4" />
             </span>
             <span>{{ requirementLabel(requirement.key) }}</span>
           </div>
@@ -70,7 +70,7 @@
         </div>
 
         <div v-else class="settings-money__empty">
-          <Icon name="i-ph-package-duotone" class="h-6 w-6" />
+          <Icon name="i-ph-package-bold" class="h-6 w-6" />
           <p>{{ t("settings.data.monetizationPanel.emptyPlans") }}</p>
         </div>
       </article>

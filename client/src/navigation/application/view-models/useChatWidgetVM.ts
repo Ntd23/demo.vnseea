@@ -639,6 +639,18 @@ export function useChatWidgetVM(
     selectedSendRecipientIds.value = [...nextIds]
   }
 
+  function setSelectedSendRecipientIds(userIds: number[]) {
+    const availableIds = new Set(
+      sendRecipientSource.value
+        .map(contact => contact.userId ?? 0)
+        .filter(id => id > 0),
+    )
+
+    selectedSendRecipientIds.value = [...new Set(
+      userIds.filter(id => Number.isInteger(id) && availableIds.has(id)),
+    )]
+  }
+
   function toggleAllVisibleSendRecipients() {
     const visibleIds = visibleSendRecipientIds.value
 
@@ -1479,6 +1491,7 @@ export function useChatWidgetVM(
     buildPreviewLabel,
     messageTagLabels,
     clearSendRecipients,
+    setSelectedSendRecipientIds,
     toggleAllVisibleSendRecipients,
     toggleSendRecipient,
     openMiniChat,

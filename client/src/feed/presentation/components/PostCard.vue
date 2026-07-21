@@ -126,7 +126,7 @@
           :author-avatar-url="post.authorAvatarUrl"
           :can-share="post.permissions.canShare"
           @react="reactToPost"
-          @comment="openComments"
+          @comment="handleCommentIntent"
           @share="post.permissions.canShare && (showShare = true)"
         />
       </ClientOnly>
@@ -159,7 +159,9 @@
           <span class="post-card__stat-count">{{ likesCount }}</span>
         </button>
         <div class="post-card__stats-right">
-          <span>{{ t("feed.postCard.commentsCount", { count: commentsCount }) }}</span>
+          <button type="button" class="post-card__comments-link" @click="handleCommentIntent">
+            {{ t("feed.postCard.commentsCount", { count: commentsCount }) }}
+          </button>
           <span>{{ t("feed.postCard.sharesCount", { count: sharesCount }) }}</span>
         </div>
       </div>
@@ -233,10 +235,10 @@
         </div>
         <button
           class="post-card__action-btn"
-          :class="{ 'post-card__action-btn--active': showComments }"
+          :class="{ 'post-card__action-btn--active': enableComments && showComments }"
           type="button"
-          :aria-pressed="showComments"
-          @click="toggleComments"
+          :aria-pressed="enableComments && showComments"
+          @click="handleCommentIntent"
         >
           <Icon name="i-ph-chat-circle-bold" class="post-card__action-icon" />
           <span>{{ t("feed.postCard.comment") }}</span>
@@ -262,7 +264,7 @@
         :description="actionMessage"
       />
 
-      <div v-if="localComments.length && !showComments" class="post-card__comment-peek">
+      <div v-if="localComments.length && !enableComments" class="post-card__comment-peek">
         <div class="post-card__comment-peek-row">
           <div class="post-card__comment-avatar">
             <img
@@ -278,13 +280,13 @@
             <p class="post-card__comment-text">{{ previewComment?.text }}</p>
           </div>
         </div>
-        <button v-if="localComments.length > 1" class="post-card__comment-more" type="button" @click.stop="openComments">
+        <button v-if="localComments.length > 1" class="post-card__comment-more" type="button" @click.stop="handleCommentIntent">
           <span>{{ t("feed.postCard.viewMoreComments", { count: localComments.length - 1 }) }}</span>
         </button>
       </div>
 
       <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0" leave-to-class="opacity-0 -translate-y-2">
-        <div v-if="showComments" class="post-card__comments-full">
+        <div v-if="enableComments" id="comments" class="post-card__comments-full">
           <FeedCommentList
             :comments="localComments"
             enable-reply
@@ -335,6 +337,7 @@
         :current-user-name="currentAuthUserStore.user?.name"
         :current-user-avatar-url="currentAuthUserStore.user?.avatarUrl"
         :submitting-comment="commenting"
+        :show-composer="enableComments"
         :selected-reaction="selectedPostReaction"
         @close="lightboxOpen = false"
         @change="currentMediaIndex = $event"
@@ -342,7 +345,7 @@
         @download="downloadMedia"
         @like="toggleLike"
         @react="reactToPost"
-        @comment="openComments"
+        @comment="handleCommentIntent"
         @submit-comment="submitComment"
       />
       <Teleport to="body">
@@ -450,6 +453,7 @@ import { createPostTextMentionSegments } from "../../application/utils/feed-ment
 import { useFeedPostCardVM } from "../../application/view-models/useFeedPostCardVM"
 import { usePostRealtimeStore } from "../../application/stores/usePostRealtimeStore"
 import type { FeedPostRecord } from "../../domain/types/feed.types"
+import { appRoutes } from "../../../shared-kernel/application/constants/route-registry"
 import FeedCommentComposer from "./CommentComposer.vue"
 import FeedCommentList from "./CommentList.vue"
 import FeedLightboxViewer from "./LightboxViewer.vue"
@@ -460,12 +464,16 @@ import FeedShareModal from "./ShareModal.vue"
 import FeedSharedPostCard from "./SharedPostCard.vue"
 
 const { t } = useI18n()
+const route = useRoute()
 const { defaultPostColor, postColorById } = useFeedPostColors()
 
 const props = defineProps<{
   post: FeedPostRecord
   preventLightbox?: boolean
+  enableComments?: boolean
 }>()
+
+const enableComments = computed(() => props.enableComments === true)
 
 const emit = defineEmits<{
   open: [index: number]
@@ -569,8 +577,6 @@ const {
   handleMenuAction,
   downloadMedia,
   isOwner,
-  openComments,
-  toggleComments,
   openReactionModal,
   closeReactionModal,
   refreshComments,
@@ -579,9 +585,21 @@ const {
 watch(
   () => postRealtimeStore.commentVersionFor(props.post.id),
   (version, previousVersion) => {
-    if (version > previousVersion && showComments.value) void refreshComments()
+    if (version > previousVersion && enableComments.value) void refreshComments()
   },
 )
+
+onMounted(async () => {
+  if (enableComments.value) {
+    showComments.value = true
+    void refreshComments()
+
+    if (route.hash === "#comments") {
+      await nextTick()
+      document.getElementById("comments")?.scrollIntoView({ block: "start" })
+    }
+  }
+})
 
 const postTextSegments = computed(() =>
   createPostTextMentionSegments(post.value.text, post.value.mentions ?? []),
@@ -637,9 +655,26 @@ const attachmentActionLabel = computed(() =>
 )
 
 async function openCommentTagging() {
+  if (!enableComments.value) {
+    await handleCommentIntent()
+    return
+  }
+
   showComments.value = true
   await nextTick()
   commentComposerRef.value?.insertMentionTrigger()
+}
+
+async function handleCommentIntent() {
+  if (!enableComments.value) {
+    await navigateTo(`${appRoutes.postDetail(post.value.id)}#comments`)
+    return
+  }
+
+  showComments.value = true
+  void refreshComments()
+  await nextTick()
+  commentComposerRef.value?.focus()
 }
 
 function handleMediaOpen(index: number) {
@@ -1006,6 +1041,21 @@ function handleMediaOpen(index: number) {
   gap: 12px;
   font-size: 12.5px;
   color: #94a3b8;
+}
+
+.post-card__comments-link {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.post-card__comments-link:hover,
+.post-card__comments-link:focus-visible {
+  color: #475569;
+  text-decoration: underline;
 }
 
 .post-card__reaction-modal-backdrop {
@@ -1545,6 +1595,7 @@ function handleMediaOpen(index: number) {
 }
 
 .post-card__comments-full {
+  scroll-margin-top: 88px;
   border-top: 1px solid rgba(0, 0, 255, 0.05);
   display: flex;
   flex-direction: column;

@@ -12,11 +12,11 @@
       @keydown.space.prevent="openCoverSelector"
     >
       <div v-if="!coverPreview" class="profile-images__cover-placeholder">
-        <Icon name="i-ph-image-duotone" class="h-8 w-8 text-[#94a3b8]" />
+        <Icon name="i-ph-image-bold" class="h-8 w-8 text-black" />
         <span>{{ coverField?.label }}</span>
       </div>
       <div class="profile-images__edit-btn profile-images__edit-btn--cover">
-        <Icon name="i-ph-camera-fill" class="h-4 w-4" />
+        <Icon name="i-ph-camera-bold" class="h-4 w-4" />
         <span class="sr-only">Edit Cover</span>
       </div>
       <input
@@ -41,10 +41,10 @@
         @keydown.space.prevent="openAvatarSelector"
       >
         <div v-if="!avatarPreview" class="profile-images__avatar-placeholder">
-          <Icon name="i-ph-user-duotone" class="h-10 w-10 text-[#94a3b8]" />
+          <Icon name="i-ph-user-bold" class="h-10 w-10 text-black" />
         </div>
         <div class="profile-images__edit-btn profile-images__edit-btn--avatar">
-          <Icon name="i-ph-camera-fill" class="h-4 w-4" />
+          <Icon name="i-ph-camera-bold" class="h-4 w-4" />
           <span class="sr-only">Edit Avatar</span>
         </div>
         <input

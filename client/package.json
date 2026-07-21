@@ -23,7 +23,7 @@
     "@nuxt/icon": "2.2.1",
     "@nuxt/image": "2.0.0",
     "@nuxt/scripts": "^1.1.1",
-    "@nuxt/ui": "4.6.1",
+    "@nuxt/ui": "4.7.1",
     "@nuxtjs/i18n": "^10.2.4",
     "@nuxtjs/mdc": "^0.22.0",
     "@nuxtjs/seo": "5.1.3",

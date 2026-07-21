@@ -146,8 +146,9 @@ const isVerificationPage = computed(() =>
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background: rgba(0, 0, 255, 0.06);
-  color: #0000ff;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #000000;
   flex-shrink: 0;
 }
 

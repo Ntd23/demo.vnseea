@@ -2,8 +2,8 @@
   <section class="settings-affiliates" aria-labelledby="settings-affiliates-title">
     <div class="settings-affiliates__summary">
       <div class="settings-affiliates__summary-main">
-        <span class="settings-affiliates__icon" aria-hidden="true">
-          <Icon name="i-ph-gift-fill" class="h-6 w-6" />
+        <span class="settings-affiliates__icon text-black" aria-hidden="true">
+          <Icon name="i-ph-gift-bold" class="h-6 w-6" />
         </span>
         <div>
           <p class="settings-affiliates__eyebrow">{{ t("settings.data.affiliatesPanel.eyebrow") }}</p>
@@ -18,7 +18,7 @@
     <div class="settings-affiliates__stats">
       <article class="settings-affiliates__stat">
         <span class="settings-affiliates__stat-icon settings-affiliates__stat-icon--green" aria-hidden="true">
-          <Icon name="i-ph-hand-coins-duotone" class="h-5 w-5" />
+          <Icon name="i-ph-hand-coins-bold" class="h-5 w-5" />
         </span>
         <div>
           <p class="settings-affiliates__stat-label">{{ t("settings.data.affiliatesPanel.rewardPerReferral") }}</p>
@@ -27,7 +27,7 @@
       </article>
       <article class="settings-affiliates__stat">
         <span class="settings-affiliates__stat-icon settings-affiliates__stat-icon--blue" aria-hidden="true">
-          <Icon name="i-ph-check-circle-duotone" class="h-5 w-5" />
+          <Icon name="i-ph-check-circle-bold" class="h-5 w-5" />
         </span>
         <div>
           <p class="settings-affiliates__stat-label">{{ t("settings.data.affiliatesPanel.qualifiedReferrals") }}</p>
@@ -36,7 +36,7 @@
       </article>
       <article class="settings-affiliates__stat">
         <span class="settings-affiliates__stat-icon settings-affiliates__stat-icon--amber" aria-hidden="true">
-          <Icon name="i-ph-wallet-duotone" class="h-5 w-5" />
+          <Icon name="i-ph-wallet-bold" class="h-5 w-5" />
         </span>
         <div>
           <p class="settings-affiliates__stat-label">{{ t("settings.data.affiliatesPanel.availableReward") }}</p>
@@ -57,7 +57,7 @@
           readonly
         >
         <button class="settings-affiliates__copy" type="button" @click="copyReferralLink">
-          <Icon name="i-ph-copy-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-copy-bold" class="h-4 w-4" />
           <span>{{ copied ? t("settings.data.affiliatesPanel.copied") : t("settings.data.affiliatesPanel.copy") }}</span>
         </button>
       </div>
@@ -78,7 +78,7 @@
           :key="requirement.key"
           class="settings-affiliates__requirement"
         >
-          <Icon :name="requirement.complete ? 'i-ph-check-circle-fill' : 'i-ph-clock-fill'" class="h-4 w-4" />
+          <Icon :name="requirement.complete ? 'i-ph-check-circle-bold' : 'i-ph-clock-bold'" class="h-4 w-4" />
           <span>{{ requirementLabel(requirement.key) }}</span>
         </div>
       </div>
@@ -96,7 +96,7 @@
           :aria-label="t('settings.data.affiliatesPanel.progressHelpOpen')"
           @click="openProgressHelp"
         >
-          <Icon name="i-ph-warning-circle-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-warning-circle-bold" class="h-4 w-4" />
         </button>
       </div>
 
@@ -131,11 +131,11 @@
               </div>
               <div class="settings-affiliates__person-steps">
                 <span :class="{ 'settings-affiliates__person-step--done': referral.profileComplete }">
-                  <Icon :name="referral.profileComplete ? 'i-ph-check-circle-fill' : 'i-ph-circle-dashed'" class="h-3.5 w-3.5" />
+                  <Icon :name="referral.profileComplete ? 'i-ph-check-circle-bold' : 'i-ph-circle-dashed'" class="h-3.5 w-3.5" />
                   {{ t("settings.data.affiliatesPanel.personProfileComplete") }}
                 </span>
                 <span :class="{ 'settings-affiliates__person-step--done': referral.verified }">
-                  <Icon :name="referral.verified ? 'i-ph-check-circle-fill' : 'i-ph-circle-dashed'" class="h-3.5 w-3.5" />
+                  <Icon :name="referral.verified ? 'i-ph-check-circle-bold' : 'i-ph-circle-dashed'" class="h-3.5 w-3.5" />
                   {{ t("settings.data.affiliatesPanel.personVerified") }}
                 </span>
               </div>
@@ -151,7 +151,7 @@
       </div>
 
       <div v-else class="settings-affiliates__empty">
-        <Icon name="i-ph-users-three-duotone" class="h-6 w-6" />
+        <Icon name="i-ph-users-three-bold" class="h-6 w-6" />
         <p>{{ t("settings.data.affiliatesPanel.emptyReferrals") }}</p>
       </div>
     </article>
@@ -195,7 +195,7 @@
           <div class="settings-affiliates-modal__steps">
             <div class="settings-affiliates-modal__step">
               <span class="settings-affiliates-modal__step-icon">
-                <Icon name="i-ph-number-circle-one-duotone" class="h-4 w-4" />
+                <Icon name="i-ph-number-circle-one-bold" class="h-4 w-4" />
               </span>
               <div>
                 <strong>{{ t("settings.data.affiliatesPanel.personProfileComplete") }}</strong>
@@ -204,7 +204,7 @@
             </div>
             <div class="settings-affiliates-modal__step">
               <span class="settings-affiliates-modal__step-icon">
-                <Icon name="i-ph-number-circle-two-duotone" class="h-4 w-4" />
+                <Icon name="i-ph-number-circle-two-bold" class="h-4 w-4" />
               </span>
               <div>
                 <strong>{{ t("settings.data.affiliatesPanel.personVerified") }}</strong>

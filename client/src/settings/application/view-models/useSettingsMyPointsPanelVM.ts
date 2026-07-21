@@ -433,7 +433,7 @@ export function useSettingsMyPointsPanelVM(
         title: t("settings.data.pointsPanel.exchangeSuccess"),
         description: statusMessage.value,
         color: "success",
-        icon: "i-ph-check-circle-fill",
+        icon: "i-ph-check-circle-bold",
       })
       void loadWalletHistory()
     }
@@ -497,7 +497,7 @@ export function useSettingsMyPointsPanelVM(
           ? formatVnseeaMessage(result.message)
           : t("settings.data.pointsPanel.transferSuccess"),
         color: "success",
-        icon: "i-ph-check-circle-fill",
+        icon: "i-ph-check-circle-bold",
       })
       closeTransferPanel()
       void loadWalletHistory()
@@ -733,7 +733,7 @@ export function useSettingsMyPointsPanelVM(
       if (!applied) return
       toast.add({
         color: "success",
-        icon: "i-ph-check-circle-fill",
+        icon: "i-ph-check-circle-bold",
         title: t("settings.data.pointsPanel.transferQrScanned"),
       })
     }

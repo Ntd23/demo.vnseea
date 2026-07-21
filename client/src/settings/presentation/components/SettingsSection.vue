@@ -24,7 +24,7 @@
         @click="handleSave"
       >
         <template #leading>
-          <Icon name="i-ph-floppy-disk-duotone" class="h-4 w-4" />
+          <Icon name="i-ph-floppy-disk-bold" class="h-4 w-4" />
         </template>
         {{ t("settings.section.saveChanges") }}
       </UButton>
@@ -113,7 +113,7 @@
         <div class="settings-section__danger-copy">
           <div class="settings-section__danger-icon-row">
             <div class="settings-section__danger-icon" aria-hidden="true">
-              <Icon name="i-ph-warning-octagon-fill" class="h-4 w-4" />
+              <Icon name="i-ph-warning-octagon-bold" class="h-4 w-4" />
             </div>
             <p class="settings-section__danger-label">{{ t("settings.section.kind.danger") }}</p>
           </div>
@@ -131,7 +131,7 @@
           @click="handleSave"
         >
           <template #leading>
-            <Icon name="i-ph-trash-duotone" class="h-4 w-4" />
+            <Icon name="i-ph-trash-bold" class="h-4 w-4" />
           </template>
           {{ section.actions?.[0]?.label }}
         </UButton>
@@ -142,7 +142,7 @@
     <Transition name="fade-up">
       <UAlert
         v-if="savedMessage"
-        icon="i-ph-check-circle-fill"
+        icon="i-ph-check-circle-bold"
         :title="savedMessage"
         class="rounded-[10px] border border-[rgba(0,0,255,0.12)] bg-[rgba(0,0,255,0.05)]"
       />
@@ -152,7 +152,7 @@
       <UAlert
         v-if="errorMessage"
         color="error"
-        icon="i-ph-warning-circle-fill"
+        icon="i-ph-warning-circle-bold"
         :title="errorMessage"
         class="rounded-[10px] border border-[rgba(220,38,38,0.12)] bg-[#fef2f2]"
       />
@@ -253,7 +253,7 @@ async function handleSave() {
     savedMessage.value = message
     toast.add({
       color: "success",
-      icon: "i-ph-check-circle-fill",
+      icon: "i-ph-check-circle-bold",
       title: t("settings.section.savedState"),
       description: savedMessage.value,
     })
@@ -264,7 +264,7 @@ async function handleSave() {
     errorMessage.value = fetchError.data?.statusMessage || fetchError.data?.message || (error instanceof Error ? error.message : t("settings.section.saveError"))
     toast.add({
       color: "error",
-      icon: "i-ph-warning-circle-fill",
+      icon: "i-ph-warning-circle-bold",
       title: t("settings.section.saveError"),
       description: errorMessage.value,
     })
@@ -288,13 +288,13 @@ const kindLabel = computed(() => {
 
 const sectionIcon = computed(() => {
   switch (props.section.kind) {
-    case "form":    return "i-ph-pencil-simple-duotone"
-    case "toggles": return "i-ph-sliders-horizontal-duotone"
-    case "list":    return "i-ph-list-bullets-duotone"
-    case "danger":  return "i-ph-warning-octagon-duotone"
-    case "summary": return "i-ph-chart-bar-duotone"
-    case "profile-images": return "i-ph-image-duotone"
-    default:        return "i-ph-gear-duotone"
+    case "form":    return "i-ph-pencil-simple-bold"
+    case "toggles": return "i-ph-sliders-horizontal-bold"
+    case "list":    return "i-ph-list-bullets-bold"
+    case "danger":  return "i-ph-warning-octagon-bold"
+    case "summary": return "i-ph-chart-bar-bold"
+    case "profile-images": return "i-ph-image-bold"
+    default:        return "i-ph-gear-bold"
   }
 })
 </script>
@@ -351,8 +351,8 @@ const sectionIcon = computed(() => {
   justify-content: center;
   background: #ffffff;
   border-radius: 6px;
-  color: #0000ff;
-  box-shadow: 0 2px 4px rgba(0, 0, 255, 0.05);
+  color: #000000;
+  border: 1px solid #e2e8f0;
 }
 
 .settings-section__badge-text {

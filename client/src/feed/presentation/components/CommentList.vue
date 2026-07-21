@@ -2,7 +2,6 @@
 <template>
   <section class="comment-list">
     <div class="comment-list__header">
-      <p class="comment-list__title">{{ t("feed.commentList.title") }}</p>
       <div v-if="comments.length > 1" class="comment-list__sort">
         <button
           type="button"
@@ -25,16 +24,7 @@
       </div>
     </div>
 
-    <UAlert
-      v-if="visibleComments.length === 0"
-      class="comment-list__empty"
-      color="neutral"
-      variant="soft"
-      icon="i-ph-chat-centered-dots"
-      :description="t('feed.commentList.emptyDescription')"
-    />
-
-    <div v-else class="comment-list__items">
+    <div class="comment-list__items">
       <FeedCommentItem
         v-for="comment in visibleComments"
         :key="comment.id"

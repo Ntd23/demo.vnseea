@@ -33,6 +33,7 @@
           @toggle-all-recipients="toggleAllVisibleRecipients"
           @send-multi="sendMultiMessage"
           @manage-tags="openTagModal"
+          @update:selected-recipient-ids="setSelectedRecipientIds"
           @update:active-tag-filter="setActiveTagFilter"
           @open-chat="handleOpenChatFromMulti"
         />
@@ -377,6 +378,7 @@ const {
   isUpdatingTags,
   selectContact,
   setActiveTagFilter,
+  setSelectedRecipientIds,
   setCreateGroupAvatar,
   replyToThreadMessage,
   sendMessage,

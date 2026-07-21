@@ -19,7 +19,7 @@
       :post-time="post.time"
     />
 
-    <FeedPostCard v-else :post="post" @deleted="markDeleted" />
+    <FeedPostCard v-else :post="post" enable-comments @deleted="markDeleted" />
   </section>
 </template>
 

@@ -15,7 +15,7 @@
       </div>
 
       <div class="settings-hero__badge">
-        <Icon name="i-ph-shield-check-fill" class="h-3.5 w-3.5 shrink-0" />
+        <Icon name="i-ph-shield-check-bold" class="h-3.5 w-3.5 shrink-0" />
         <span>{{ $t("settings.hero.stats.api.value") }}</span>
       </div>
     </div>
@@ -106,8 +106,9 @@ defineProps<{
   gap: 6px;
   padding: 7px 14px;
   border-radius: 999px;
-  background: rgba(0, 0, 255, 0.07);
-  color: #0000ff;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #000000;
   font-size: 12px;
   font-weight: 600;
   flex-shrink: 0;
