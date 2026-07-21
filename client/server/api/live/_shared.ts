@@ -157,10 +157,17 @@ const assertLiveWebSuccess = <T extends Record<string, unknown>>(
     return normalized as T
   }
 
+  const errorStatus = status >= 400 && status < 600 ? status : 400
+
   throw createError({
-    statusCode: 400,
+    statusCode: errorStatus,
     statusMessage: asString(normalized.error || normalized.message) || fallbackMessage,
-    data: normalized,
+    data: {
+      ...normalized,
+      error_code: normalized.error_code,
+      blocked_reason: normalized.blocked_reason,
+      retryable: normalized.retryable,
+    },
   })
 }
 

@@ -32,6 +32,32 @@ const toErrorMessage = (error: unknown, fallback: string) =>
     ? error.message
     : fallback
 
+const asErrorRecord = (value: unknown): Record<string, unknown> =>
+  typeof value === "object" && value !== null
+    ? value as Record<string, unknown>
+    : {}
+
+const getLiveCreateErrorCode = (error: unknown) => {
+  const root = asErrorRecord(error)
+  const data = asErrorRecord(root.data)
+  const response = asErrorRecord(root.response)
+  const responseData = asErrorRecord(response._data)
+  const candidates = [
+    root,
+    data,
+    asErrorRecord(data.data),
+    responseData,
+    asErrorRecord(responseData.data),
+  ]
+
+  for (const candidate of candidates) {
+    if (typeof candidate.error_code === "string") {
+      return candidate.error_code
+    }
+  }
+  return ""
+}
+
 const isAuthError = (error: unknown) =>
   typeof error === "object"
   && error !== null
@@ -48,6 +74,24 @@ export function useLiveStudioPageVM(
 ) {
   const router = useRouter()
   const { t } = useI18n()
+
+  const getLiveStartErrorMessage = (error: unknown, fallback: string) => {
+    switch (getLiveCreateErrorCode(error)) {
+      case "live_video_disabled":
+        return t("pages.livePage.studio.vmLiveVideoDisabled")
+      case "live_permission_disabled":
+        return t("pages.livePage.studio.vmLivePermissionDisabled")
+      case "livekit_not_ready":
+        return t("pages.livePage.studio.vmLiveKitNotReady")
+      case "live_already_running":
+        return t("pages.livePage.studio.vmLiveAlreadyRunning")
+      case "live_post_insert_failed":
+      case "live_post_finalize_failed":
+        return fallback
+      default:
+        return toErrorMessage(error, fallback)
+    }
+  }
 
   const title = ref("")
   const description = ref("")
@@ -327,7 +371,7 @@ export function useLiveStudioPageVM(
         return null
       }
 
-      errorMessage.value = toErrorMessage(
+      errorMessage.value = getLiveStartErrorMessage(
         startError,
         t("pages.livePage.studio.vmStartError"),
       )
