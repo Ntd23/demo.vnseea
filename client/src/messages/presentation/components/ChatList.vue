@@ -59,21 +59,18 @@
 
       <div class="cl-multi-stack">
         <section class="cl-filter-card">
-          <select
-            class="cl-select"
-            :value="activeTagFilter"
-            @change="emit('update:activeTagFilter', ($event.target as HTMLSelectElement).value)"
-          >
-            <option value="">{{ chooseTagLabel }}</option>
-            <option value="0">{{ allTaggedUsersLabel }}</option>
-            <option
-              v-for="tag in messageTagLabels ?? []"
-              :key="tag.id"
-              :value="String(tag.id)"
-            >
-              {{ tag.name }}
-            </option>
-          </select>
+          <USelectMenu
+            v-model="activeTagFilterModel"
+            :items="tagFilterItems"
+            value-key="value"
+            :placeholder="chooseTagLabel"
+            :search-input="{ placeholder: chooseTagLabel }"
+            clear
+            class="w-full"
+            :ui="{
+              base: 'w-full rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] shadow-none',
+            }"
+          />
 
           <div v-if="activeTagFilter" class="cl-tag-filter-status">
             <div class="cl-avatar-stack" aria-hidden="true">
@@ -317,6 +314,22 @@ const skeletonRowCount = computed(() => props.activeTab === "group" ? 5 : 7)
 const tagFilterLabel = computed(() => t("pages.messagesPage.label"))
 const chooseTagLabel = computed(() => t("pages.messagesPage.chooseTag"))
 const allTaggedUsersLabel = computed(() => t("pages.messagesPage.allTaggedUsers"))
+const tagFilterItems = computed(() => [
+  {
+    label: allTaggedUsersLabel.value,
+    value: "0",
+    icon: "i-ph-users-three-duotone",
+  },
+  ...(props.messageTagLabels ?? []).map(tag => ({
+    label: tag.name,
+    value: String(tag.id),
+    icon: "i-ph-tag-duotone",
+  })),
+])
+const activeTagFilterModel = computed<string | null>({
+  get: () => props.activeTagFilter || null,
+  set: tagId => emit("update:activeTagFilter", tagId ?? ""),
+})
 const activeRecordDraft = computed(() => multiRecordModel.value || recordDraft.value)
 const resultLabel = computed(() =>
   props.activeTab === "multi"
@@ -684,23 +697,6 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   background: #f8fafc;
   padding: 12px 0 14px;
 }
-
-/* Select */
-.cl-select {
-  width: 100%;
-  height: 38px;
-  padding: 0 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
-  background: #fafbfe;
-  color: var(--text-primary);
-  font-size: var(--text-body);
-  font-family: var(--font-primary);
-  outline: none;
-  cursor: pointer;
-  transition: border-color var(--duration-fast);
-}
-.cl-select:focus { border-color: var(--border-strong); }
 
 .cl-scroll-list {
   overflow-y: auto;

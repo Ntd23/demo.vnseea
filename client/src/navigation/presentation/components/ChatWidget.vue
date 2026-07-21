@@ -65,17 +65,18 @@
                 <span>{{ $t("pages.messagesPage.label") }}</span>
               </span>
             </label>
-            <select v-model="activeSendTagFilter" class="chat-widget__select">
-              <option value="">{{ $t("pages.messagesPage.chooseTag") }}</option>
-              <option value="0">{{ $t("pages.messagesPage.allTaggedUsers") }}</option>
-              <option
-                v-for="tag in messageTagLabels"
-                :key="tag.id"
-                :value="String(tag.id)"
-              >
-                {{ tag.name }}
-              </option>
-            </select>
+            <USelectMenu
+              v-model="activeSendTagFilterModel"
+              :items="sendTagFilterItems"
+              value-key="value"
+              :placeholder="$t('pages.messagesPage.chooseTag')"
+              :search-input="{ placeholder: $t('pages.messagesPage.chooseTag') }"
+              clear
+              class="w-full"
+              :ui="{
+                base: 'w-full rounded-xl border border-[var(--border-light)] bg-[var(--bg-muted)] shadow-none',
+              }"
+            />
           </div>
 
           <div class="chat-widget__recipient-heading">
@@ -107,29 +108,15 @@
           </div>
 
           <div class="chat-widget__recipient-box" :class="{ 'chat-widget__recipient-box--empty': selectedSendRecipients.length === 0 }">
-            <div v-if="selectedSendRecipients.length > 0" class="chat-widget__recipient-chips">
-              <div
-                v-for="recipient in selectedSendRecipients"
-                :key="recipient.id"
-                class="chat-widget__recipient-chip"
-              >
-                <UAvatar
-                  :src="recipient.avatarUrl"
-                  :alt="recipient.name"
-                  size="xs"
-                  class="rounded-full"
-                />
-                <span>{{ recipient.name }}</span>
-                <button
-                  class="chat-widget__recipient-remove"
-                  type="button"
-                  :title="$t('navigation.chatWidget.clearSelectedRecipient')"
-                  @click="toggleSendRecipient(recipient)"
-                >
-                  <Icon name="i-ph-x-bold" class="h-2.5 w-2.5" />
-                </button>
-              </div>
-            </div>
+            <UListbox
+              v-if="selectedSendRecipients.length > 0"
+              v-model="selectedSendRecipientIdModel"
+              :items="selectedSendRecipientListboxItems"
+              value-key="value"
+              multiple
+              selected-icon="i-ph-x-bold"
+              class="chat-widget__recipient-listbox"
+            />
             <span v-else class="chat-widget__recipient-empty">{{ $t("navigation.chatWidget.noRecipientSelected") }}</span>
           </div>
 
@@ -810,6 +797,7 @@
 </template>
 
 <script setup lang="ts">
+import UListbox from "@nuxt/ui/components/Listbox.vue"
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { defaultFeedReactionAsset, feedReactionAssetByValue, feedReactionAssets, type FeedReactionAsset } from "../../../feed/application/constants/reaction-assets"
 import { useMessageCalls } from "../../../messages/application/composables/useMessageCalls"
@@ -904,6 +892,7 @@ const {
   buildPresenceLabel,
   buildPreviewLabel,
   messageTagLabels,
+  setSelectedSendRecipientIds,
   toggleAllVisibleSendRecipients,
   toggleSendRecipient,
   openMiniChat: openMiniChatVm,
@@ -924,6 +913,36 @@ const {
   openMessagesTab,
   loadOlderMiniMessages,
 } = useChatWidgetVM()
+
+const sendTagFilterItems = computed(() => [
+  {
+    label: t("pages.messagesPage.allTaggedUsers"),
+    value: "0",
+    icon: "i-ph-users-three-duotone",
+  },
+  ...messageTagLabels.value.map(tag => ({
+    label: tag.name,
+    value: String(tag.id),
+    icon: "i-ph-tag-duotone",
+  })),
+])
+const activeSendTagFilterModel = computed<string | null>({
+  get: () => activeSendTagFilter.value || null,
+  set: tagId => { activeSendTagFilter.value = tagId ?? "" },
+})
+const selectedSendRecipientListboxItems = computed(() => selectedSendRecipients.value.map(recipient => ({
+  label: recipient.name,
+  description: buildPresenceLabel(recipient),
+  value: recipient.userId ?? 0,
+  avatar: {
+    src: recipient.avatarUrl,
+    alt: recipient.name,
+  },
+})))
+const selectedSendRecipientIdModel = computed<number[]>({
+  get: () => selectedSendRecipientIds.value,
+  set: userIds => setSelectedSendRecipientIds(userIds),
+})
 
 type MiniChatSessionView = (typeof miniChatSessions)["value"][number]
 
@@ -1963,72 +1982,16 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding: 10px 12px;
 }
 
-.chat-widget__recipient-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.chat-widget__recipient-chip {
-  display: inline-flex;
-  max-width: 100%;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid rgba(0, 0, 255, 0.08);
-  border-radius: 999px;
-  background: rgba(0, 0, 255, 0.04);
-  padding: 3px 4px 3px 3px;
-  color: #000000;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.chat-widget__recipient-chip span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.chat-widget__recipient-remove {
-  display: inline-flex;
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.08);
-  color: #64748b;
-  transition: all 0.15s ease;
-}
-
-.chat-widget__recipient-remove:hover {
-  background: #fee2e2;
-  color: #dc2626;
+.chat-widget__recipient-listbox {
+  width: 100%;
+  max-height: 108px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 
 .chat-widget__recipient-empty {
   color: #94a3b8;
   font-size: 12px;
-}
-
-.chat-widget__select {
-  width: 100%;
-  height: 38px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #fafbfe;
-  padding: 0 12px;
-  color: #0f172a;
-  font-size: 13px;
-  outline: none;
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.chat-widget__select:focus {
-  border-color: rgba(0, 0, 255, 0.25);
-  background: #ffffff;
 }
 
 .chat-widget__selected-target {
