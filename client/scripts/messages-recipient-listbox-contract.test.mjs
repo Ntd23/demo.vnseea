@@ -18,6 +18,11 @@ test("tagged recipients render as a removable UListbox", async () => {
   assert.match(source, /import UListbox from "@nuxt\/ui\/components\/Listbox\.vue"/)
   assert.match(source, /\.cl-recipient-listbox\s*\{[\s\S]*?max-height:\s*108px;/)
   assert.doesNotMatch(source, /cl-recipient-chip/)
+  assert.match(source, /<div v-if="activeTab !== 'multi'" class="cl-scroll-list/)
+  assert.ok(
+    source.indexOf('class="cl-multi-actions"') < source.indexOf('class="cl-recipient-heading"'),
+    "the send action should render above the recipient list",
+  )
 })
 
 test("selecting a tag defaults to all visible recipients", async () => {
@@ -56,6 +61,11 @@ test("chat widget recipients use the same removable two-row listbox", async () =
   assert.match(chatWidget, /selected-icon="i-ph-x-bold"/)
   assert.match(chatWidget, /\.chat-widget__recipient-listbox\s*\{[\s\S]*?max-height:\s*108px;/)
   assert.doesNotMatch(chatWidget, /chat-widget__recipient-chip/)
+  assert.ok(
+    chatWidget.indexOf('class="chat-widget__send-actions chat-widget__send-actions--inline"')
+      < chatWidget.indexOf('class="chat-widget__recipient-heading"'),
+    "the chat widget send action should render above the recipient list",
+  )
   assert.match(viewModel, /function setSelectedSendRecipientIds\(userIds: number\[\]\)/)
   assert.match(viewModel, /selectedSendRecipientIds\.value = visibleSendRecipientIds\.value/)
 })

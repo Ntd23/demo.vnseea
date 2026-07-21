@@ -8,6 +8,7 @@
       hide-description
       entity-label="community.creation.common.entityLabelPage"
       :category-options="categoryOptions"
+      :category-creating="isCreatingCategory"
       :show-privacy="false"
       show-location
       show-map-pin-request
@@ -41,6 +42,7 @@
       :submit-disabled="isSubmitDisabled"
       :draft-restored="draftRestored"
       @submit="handleCreatePage"
+      @create-category="handleCreateCategory"
     />
   </div>
 </template>
@@ -48,10 +50,7 @@
 <script setup lang="ts">
 import CommunityCreationForm from "../components/CreationForm.vue"
 import { useCommunityCreatePagePageVM } from "../../application/view-models/useCommunityCreatePagePageVM"
-import {
-  communityPageCategoryOptions,
-  communityPageUrlPrefix,
-} from "../../domain/constants/community-options"
+import { useCommunityPageCategories } from "../../application/composables/useCommunityPageCategories"
 import { useBackendWebBase } from "#shared-kernel/application/utils/backend-web-url"
 
 const {
@@ -70,24 +69,32 @@ const urlPrefix = computed(() => {
   return `${backendWebBase}/p/`
 })
 
-const { t } = useI18n()
-const categoryOptions = ref<Array<{ label: string; value: string }>>([])
+const toast = useToast()
+const {
+  categoryOptions,
+  isCreatingCategory,
+  loadCategories,
+  createCategory,
+} = useCommunityPageCategories()
 
 onMounted(async () => {
-  try {
-    const data = await $fetch<Array<{ label: string; value: string }>>("/_api/community/page-categories")
-    if (Array.isArray(data) && data.length > 0) {
-      categoryOptions.value = data
-      if (!draft.value.category || !data.some(opt => opt.value === draft.value.category)) {
-        draft.value.category = data[0].value
-      }
-    }
-  } catch (error) {
-    console.error("Failed to load page categories from DB", error)
-    categoryOptions.value = communityPageCategoryOptions.map(option => ({
-      value: option.value,
-      label: t(option.label),
-    }))
+  const categories = await loadCategories()
+  if (!draft.value.category || !categories.some(option => option.value === draft.value.category)) {
+    draft.value.category = categories[0]?.value || ""
   }
 })
+
+async function handleCreateCategory(name: string) {
+  try {
+    const category = await createCategory(name)
+    draft.value.category = category.value
+  }
+  catch (error) {
+    toast.add({
+      title: "Không thể tạo danh mục",
+      description: error instanceof Error ? error.message : "Vui lòng thử lại.",
+      color: "error",
+    })
+  }
+}
 </script>

@@ -113,7 +113,23 @@
             name="category"
             required
           >
+            <USelectMenu
+              v-if="isPage"
+              v-model="model.category"
+              :items="categoryItems"
+              value-key="value"
+              label-key="label"
+              :search-input="{ placeholder: categoryLabelText }"
+              create-item
+              :loading="categoryCreating"
+              :disabled="categoryCreating"
+              size="xl"
+              class="w-full"
+              :ui="{ base: 'h-12 rounded-xl' }"
+              @create="emit('create-category', $event)"
+            />
             <USelect
+              v-else
               v-model="model.category"
               :items="categoryItems"
               value-key="value"
@@ -206,9 +222,11 @@ type CreationFormError = {
 }
 
 const { t } = useI18n()
+const translateText = useMaybeTranslatedText()
 
 const emit = defineEmits<{
   submit: []
+  "create-category": [name: string]
 }>()
 
 const model = defineModel<CommunityDraft>({ required: true })
@@ -239,6 +257,7 @@ const props = withDefaults(defineProps<{
   hideDescription?: boolean
   isPage?: boolean
   isGroup?: boolean
+  categoryCreating?: boolean
 }>(), {
   privacyOptions: () => [],
   showPrivacy: true,
@@ -263,6 +282,7 @@ const props = withDefaults(defineProps<{
   hideDescription: false,
   isPage: false,
   isGroup: false,
+  categoryCreating: false,
 })
 
 const entityText = computed(() => t(props.entityLabel))
@@ -288,7 +308,7 @@ const privacyItems = computed(() =>
 const categoryItems = computed(() =>
   props.categoryOptions.map(option => ({
     value: option.value,
-    label: t(option.label),
+    label: translateText(option.label, option.label),
   })),
 )
 

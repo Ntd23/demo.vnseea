@@ -40,9 +40,12 @@ export function useCommunityPageDetail(
     },
   )
 
-  const categoryLabel = computed(() =>
-    t(`pages.pageDetailPage.categories.${page.value?.category || "local-business"}`),
-  )
+  const categoryLabel = computed(() => {
+    const backendLabel = String(page.value?.categoryLabel || "").trim()
+    if (backendLabel) return backendLabel
+
+    return t(`pages.pageDetailPage.categories.${page.value?.category || "local-business"}`)
+  })
 
   const followerCountLabel = computed(() =>
     t("pages.pageDetailPage.followerCount", {

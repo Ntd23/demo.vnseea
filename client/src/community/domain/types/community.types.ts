@@ -32,6 +32,7 @@ export interface CommunityPageRecord {
   slug: string
   summary: string
   category: string
+  categoryLabel?: string
   banner: string
   avatarUrl?: string
   accent: string
