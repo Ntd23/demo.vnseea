@@ -34,6 +34,7 @@ export interface NearbySearchItem {
   distanceMeters: number | null
   mapIconUrl?: string
   mapIconBackgroundColor?: string
+  markerKind?: "default" | "avatar"
   pinned?: boolean
 }
 

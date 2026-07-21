@@ -1,7 +1,7 @@
 <!-- Description: Renders native-compatible /map chat messages as an accessible location preview card. -->
 <template>
   <NuxtLink
-    :to="location.webMapUrl"
+    :to="resolvedWebMapUrl"
     class="message-location-card"
     :aria-label="`${resolvedTitle}. ${t('pages.messagesPage.locationOpenMap')}`"
   >
@@ -12,13 +12,14 @@
       </span>
       <span class="message-location-card__shade" />
       <span class="message-location-card__marker">
+        <Icon name="i-ph-map-pin-fill" />
         <img
-          v-if="resolvedAvatarUrl && !avatarFailed"
+          v-if="resolvedAvatarUrl"
+          :key="resolvedAvatarUrl"
           :src="resolvedAvatarUrl"
           alt=""
-          @error="avatarFailed = true"
+          @error="useNextAvatarSource"
         >
-        <Icon v-else name="i-ph-map-pin-fill" />
       </span>
     </span>
 
@@ -38,16 +39,43 @@ import type { MessageLocationMeta } from "../../application/utils/message-locati
 const props = defineProps<{
   location: MessageLocationMeta
   avatarUrl?: string
+  isMine?: boolean
+  senderName?: string
 }>()
 
 const { t } = useI18n()
 const runtimeConfig = useRuntimeConfig()
-const avatarFailed = ref(false)
+const avatarSourceIndex = ref(0)
 const mapElement = ref<HTMLElement | null>(null)
 const mapFailed = ref(false)
 const mapInstance = shallowRef<google.maps.Map | null>(null)
-const resolvedTitle = computed(() => props.location.title || t("pages.messagesPage.locationDefaultTitle"))
-const resolvedAvatarUrl = computed(() => props.location.avatarUrl || props.avatarUrl || "")
+const resolvedTitle = computed(() => {
+  if (props.isMine) {
+    return props.location.title.trim() || t("pages.messagesPage.locationOwnTitle")
+  }
+
+  const senderName = props.senderName?.trim()
+
+  return senderName
+    ? t("pages.messagesPage.locationSenderTitle", { name: senderName })
+    : t("pages.messagesPage.locationDefaultTitle")
+})
+const avatarSources = computed(() => [...new Set([
+  props.avatarUrl?.trim(),
+  props.location.avatarUrl.trim(),
+].filter((value): value is string => Boolean(value)))])
+const resolvedAvatarUrl = computed(() => avatarSources.value[avatarSourceIndex.value] || "")
+const resolvedWebMapUrl = computed(() => {
+  const url = new URL(props.location.webMapUrl, "https://vnseea.invalid")
+  url.searchParams.set("title", String(resolvedTitle.value))
+
+  const avatarUrl = props.avatarUrl?.trim() || props.location.avatarUrl.trim()
+  if (avatarUrl) {
+    url.searchParams.set("avatar", avatarUrl)
+  }
+
+  return `${url.pathname}${url.search}`
+})
 const googleMapsMapId = computed(() => String(runtimeConfig.public.scripts?.googleMaps?.mapId || "").trim())
 const { load } = useScriptGoogleMaps({ trigger: "manual" })
 let visibilityObserver: IntersectionObserver | null = null
@@ -91,9 +119,16 @@ async function initializeMap() {
   }
 }
 
-watch(resolvedAvatarUrl, () => {
-  avatarFailed.value = false
-})
+function useNextAvatarSource() {
+  avatarSourceIndex.value += 1
+}
+
+watch(
+  () => [props.avatarUrl, props.location.avatarUrl],
+  () => {
+    avatarSourceIndex.value = 0
+  },
+)
 
 watch(
   () => [props.location.latitude, props.location.longitude],
@@ -208,6 +243,9 @@ onBeforeUnmount(() => {
 }
 
 .message-location-card__marker img {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: cover;

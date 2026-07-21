@@ -47,6 +47,35 @@ const sortByDistance = (items: NearbySearchItem[]) =>
     return left.title.localeCompare(right.title)
   })
 
+const createSharedLocationItem = (input: {
+  latitude: number
+  longitude: number
+  title: string
+  address: string
+  avatarUrl: string
+}): NearbySearchItem => {
+  const coordinateLabel = `${input.latitude}, ${input.longitude}`
+  const title = input.title || input.address || coordinateLabel
+  const address = input.address || coordinateLabel
+
+  return {
+    id: `shared-location-${input.latitude}-${input.longitude}`,
+    backendId: 0,
+    type: "place",
+    title,
+    subtitle: "Google Maps",
+    description: "",
+    locationLabel: address,
+    avatarUrl: input.avatarUrl,
+    href: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(coordinateLabel)}`,
+    lat: input.latitude,
+    lng: input.longitude,
+    distanceMeters: 0,
+    markerKind: "avatar",
+    pinned: true,
+  }
+}
+
 export function useSearchNearbyPageVM() {
   const route = useRoute()
   const repository = createApiNearbySearchRepository()
@@ -56,14 +85,23 @@ export function useSearchNearbyPageVM() {
   const initialSharedOrigin = initialSharedLatitude !== null && initialSharedLongitude !== null
     ? { lat: initialSharedLatitude, lng: initialSharedLongitude }
     : null
+  const initialSharedLocationItem = initialSharedOrigin && readString(route.query.source) === "message"
+    ? createSharedLocationItem({
+        latitude: initialSharedOrigin.lat,
+        longitude: initialSharedOrigin.lng,
+        title: readString(route.query.title).trim(),
+        address: readString(route.query.address).trim(),
+        avatarUrl: readString(route.query.avatar).trim(),
+      })
+    : null
   const sharedOriginTitle = ref(readString(route.query.title).trim())
   const hasSharedOrigin = ref(Boolean(initialSharedOrigin))
 
-  const searchText = ref(readString(route.query.q))
+  const searchText = ref(initialSharedLocationItem?.title || readString(route.query.q))
   const distanceKm = ref(defaultNearbyDistanceKm)
   const currentDeviceOrigin = ref<{ lat: number, lng: number } | null>(initialSharedOrigin)
   const deviceOrigin = ref<{ lat: number, lng: number } | null>(initialSharedOrigin)
-  const selectedItemId = ref("")
+  const selectedItemId = ref(initialSharedLocationItem?.id || "")
   const originFocusKey = ref(0)
   const originUpdateKey = ref(0)
   const routeOriginUpdateKey = ref(0)
@@ -75,7 +113,7 @@ export function useSearchNearbyPageVM() {
   const debouncedSuggestionText = refDebounced(searchText, suggestionDebounceMs)
   const suggestions = ref<NearbySearchItem[]>([])
   const suggestionsLoading = ref(false)
-  const selectedSuggestionItem = shallowRef<NearbySearchItem | null>(null)
+  const selectedSuggestionItem = shallowRef<NearbySearchItem | null>(initialSharedLocationItem)
   const routeTargetItem = shallowRef<NearbySearchItem | null>(null)
   const routeNavigationActive = ref(false)
   const routeErrorMessage = ref("")
@@ -365,8 +403,9 @@ export function useSearchNearbyPageVM() {
 
   function focusDeviceLocation(lat: number, lng: number) {
     hasSharedOrigin.value = false
+    const preserveSelectedItem = Boolean(selectedSuggestionItem.value)
     setCurrentDeviceLocation(lat, lng, {
-      focus: true,
+      focus: !preserveSelectedItem,
       updateSearchOrigin: true,
     })
   }
@@ -408,7 +447,14 @@ export function useSearchNearbyPageVM() {
   )
 
   watch(
-    () => [route.query.lat, route.query.lng, route.query.title],
+    () => [
+      route.query.lat,
+      route.query.lng,
+      route.query.title,
+      route.query.address,
+      route.query.avatar,
+      route.query.source,
+    ],
     () => {
       const latitude = readCoordinate(route.query.lat, -90, 90)
       const longitude = readCoordinate(route.query.lng, -180, 180)
@@ -418,9 +464,31 @@ export function useSearchNearbyPageVM() {
       sharedOriginTitle.value = readString(route.query.title).trim()
       hasSharedOrigin.value = true
       setCurrentDeviceLocation(latitude, longitude, {
-        focus: true,
+        focus: readString(route.query.source) !== "message",
         updateSearchOrigin: true,
       })
+
+      if (readString(route.query.source) === "message") {
+        const item = createSharedLocationItem({
+          latitude,
+          longitude,
+          title: sharedOriginTitle.value,
+          address: readString(route.query.address).trim(),
+          avatarUrl: readString(route.query.avatar).trim(),
+        })
+        isApplyingSuggestion = true
+        selectedSuggestionItem.value = item
+        selectedItemId.value = item.id
+        routeTargetItem.value = null
+        routeNavigationActive.value = false
+        routeErrorMessage.value = ""
+        searchText.value = item.title
+        suggestions.value = []
+
+        nextTick(() => {
+          isApplyingSuggestion = false
+        })
+      }
     },
   )
 
