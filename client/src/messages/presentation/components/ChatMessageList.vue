@@ -16,33 +16,42 @@
         </UButton>
       </div>
 
-      <MessagesChatBubble
-        v-for="msg in messages"
-        :key="msg.id"
-        v-bind="msg"
-        :text="getBubbleText(msg)"
-        :timeline-title="getMessageTimelineTitle(msg)"
-        :reply-title="getReplyMeta(msg) && !msg.isDeleted ? getReplyTitle(msg) : undefined"
-        :reply-quote="getReplyMeta(msg) && !msg.isDeleted && !getReplyMeta(msg)?.mediaUrl && !isImageFileQuote(getReplyMeta(msg)?.quote) ? getReplyMeta(msg)?.quote : undefined"
-        :reply-media-url="getReplyMeta(msg) && !msg.isDeleted ? getReplyMeta(msg)?.mediaUrl : undefined"
-        :reaction-src="!msg.isDeleted ? getMessageReaction(msg)?.src : undefined"
-        :reaction-alt="!msg.isDeleted && getMessageReaction(msg) ? t(getMessageReaction(msg)!.labelKey) : undefined"
-        :show-tools="!msg.isDeleted"
-        :reaction-picker-open="activeReactionPickerId === msg.id"
-        :reaction-options="bubbleReactionOptions"
-        :can-delete="msg.isMine"
-        :media-url="msg.isDeleted ? undefined : msg.mediaUrl"
-        :media-name="msg.isDeleted ? undefined : msg.mediaName"
-        :media-type="msg.isDeleted ? undefined : msg.mediaType"
-        :product-card="msg.isDeleted ? undefined : getProductMeta(msg)?.card"
-        :location="msg.isDeleted ? undefined : getMessageLocationMeta(msg)"
-        :is-deleted="msg.isDeleted"
-        @retry-call="emit('retry-call', $event)"
-        @toggle-reaction-picker="emit('toggle-reaction-picker', msg.id)"
-        @select-reaction="emit('select-reaction', msg.id, $event.value)"
-        @reply="emit('reply-message', msg)"
-        @delete="emit('delete-message', msg)"
-      />
+      <template v-for="msg in messages" :key="msg.id">
+        <div
+          v-if="msg.systemEvent?.type === 'message_pinned'"
+          class="mx-auto inline-flex max-w-full items-center gap-1.5 rounded-full px-3 py-1.5 text-center text-xs font-medium text-[var(--text-secondary)]"
+        >
+          <UIcon name="i-lucide-pin" class="h-3.5 w-3.5 shrink-0" />
+          <span class="truncate">{{ getPinnedEventLabel(msg) }}</span>
+        </div>
+
+        <MessagesChatBubble
+          v-else
+          v-bind="msg"
+          :text="getBubbleText(msg)"
+          :timeline-title="getMessageTimelineTitle(msg)"
+          :reply-title="getReplyMeta(msg) && !msg.isDeleted ? getReplyTitle(msg) : undefined"
+          :reply-quote="getReplyMeta(msg) && !msg.isDeleted && !getReplyMeta(msg)?.mediaUrl && !isImageFileQuote(getReplyMeta(msg)?.quote) ? getReplyMeta(msg)?.quote : undefined"
+          :reply-media-url="getReplyMeta(msg) && !msg.isDeleted ? getReplyMeta(msg)?.mediaUrl : undefined"
+          :reaction-src="!msg.isDeleted ? getMessageReaction(msg)?.src : undefined"
+          :reaction-alt="!msg.isDeleted && getMessageReaction(msg) ? t(getMessageReaction(msg)!.labelKey) : undefined"
+          :show-tools="!msg.isDeleted"
+          :reaction-picker-open="activeReactionPickerId === msg.id"
+          :reaction-options="bubbleReactionOptions"
+          :can-delete="msg.isMine"
+          :media-url="msg.isDeleted ? undefined : msg.mediaUrl"
+          :media-name="msg.isDeleted ? undefined : msg.mediaName"
+          :media-type="msg.isDeleted ? undefined : msg.mediaType"
+          :product-card="msg.isDeleted ? undefined : getProductMeta(msg)?.card"
+          :location="msg.isDeleted ? undefined : getMessageLocationMeta(msg)"
+          :is-deleted="msg.isDeleted"
+          @retry-call="emit('retry-call', $event)"
+          @toggle-reaction-picker="emit('toggle-reaction-picker', msg.id)"
+          @select-reaction="emit('select-reaction', msg.id, $event.value)"
+          @reply="emit('reply-message', msg)"
+          @delete="emit('delete-message', msg)"
+        />
+      </template>
 
       <div v-if="isPending && messages.length === 0" class="messages-thread-skeleton" aria-hidden="true">
         <div class="messages-thread-skeleton__time">
@@ -245,6 +254,15 @@ function scrollToBottom(behavior: ScrollBehavior = "smooth") {
     top: listContainer.value.scrollHeight,
     behavior,
   })
+}
+
+function getPinnedEventLabel(message: MessageItem) {
+  if (!message.systemEvent) return ""
+  return message.systemEvent.actorId === message.senderId && message.isMine
+    ? t("navigation.chatWidget.youPinnedMessage")
+    : t("navigation.chatWidget.userPinnedMessage", {
+        name: message.systemEvent.actorName,
+      })
 }
 
 function scheduleScrollToBottom(behavior: ScrollBehavior = "smooth") {

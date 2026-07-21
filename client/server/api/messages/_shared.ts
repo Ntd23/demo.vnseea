@@ -416,6 +416,32 @@ const buildDisplayName = (entity: BackendEntity) => {
   return firstString(entity, ["username"])
 }
 
+const mapMessagePinSystemEvent = (entity: BackendEntity) => {
+  const rawSystemEvent = asRecord(entity.system_event)
+  const systemEventType = firstString(rawSystemEvent, ["type", "event_type"])
+    || firstString(entity, ["type_two"])
+  const targetMessageId = asNumber(rawSystemEvent.target_message_id)
+    || asNumber(entity.reply_id)
+  const isPinnedMessageEvent = systemEventType === "message_pinned"
+    || systemEventType === "message_pin_event"
+
+  if (!isPinnedMessageEvent || targetMessageId <= 0) {
+    return undefined
+  }
+
+  const userData = asRecord(entity.user_data)
+  const messageUser = asRecord(entity.messageUser)
+  return {
+    type: "message_pinned" as const,
+    actorId: asNumber(rawSystemEvent.actor_id) || asNumber(entity.from_id),
+    actorName: firstString(rawSystemEvent, ["actor_name"])
+      || buildDisplayName(userData)
+      || buildDisplayName(messageUser)
+      || "Người dùng",
+    targetMessageId,
+  }
+}
+
 const MESSAGE_REPLY_PREFIX = "__VNSEEA_MINI_REPLY__:"
 const MESSAGE_PRODUCT_PREFIX = "__VNSEEA_PRODUCT__:"
 
@@ -555,6 +581,14 @@ const buildContactPreview = (
   fallbackName = "",
 ) => {
   const text = decryptMessageText(message.text, message.time)
+  const systemEvent = mapMessagePinSystemEvent(message)
+
+  if (systemEvent) {
+    const actorName = systemEvent.actorId === currentUserId
+      ? "Bạn"
+      : systemEvent.actorName
+    return `${actorName} đã ghim một tin nhắn`
+  }
 
   if (parseRecalledMessagePayload(text)) {
     return "Tin nhắn đã được thu hồi"
@@ -830,11 +864,14 @@ const mapThreadMessage = (
   const senderId = asNumber(entity.from_id)
   const senderProfile = { user_id: senderId, ...messageUser, ...userData }
   const activeGroupCallId = asNumber(activeGroupCall?.id)
-  const activeGroupCallParticipantCount = asNumber(activeGroupCall?.participant_count)
+  const activeGroupCallParticipantCount = asNumber(
+    activeGroupCall?.participant_count,
+  )
+  const systemEvent = mapMessagePinSystemEvent(entity)
 
   return {
     id: asNumber(entity.id),
-    text: recalledPayload ? "" : normalizeMessageText(rawText, entity),
+    text: recalledPayload || systemEvent ? "" : normalizeMessageText(rawText, entity),
     isMine: senderId === currentUserId || asString(entity.position).startsWith("right"),
     time: firstString(entity, ["time_text"]),
     avatar: resolveMediaUrl(firstString(userData, ["avatar", "avatar_full"])
@@ -853,6 +890,7 @@ const mapThreadMessage = (
     deletedAt: recalledPayload?.deletedAt || undefined,
     deletedTime: recalledPayload?.deletedAt ? formatMessageTime(recalledPayload.deletedAt) : undefined,
     deletedByName: recalledPayload?.deletedByName || undefined,
+    systemEvent,
     callLog: callLog
       ? {
           type: callLog.call_type,

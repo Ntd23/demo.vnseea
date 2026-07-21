@@ -85,6 +85,13 @@ export type MessageProductLaunchContext = {
   suggestions: string[]
 }
 
+export type MessageSystemEvent = {
+  type: "message_pinned"
+  actorId: number
+  actorName: string
+  targetMessageId: number
+}
+
 export type MessageGroupUpdateDraft = {
   groupId: number
   name?: string
@@ -123,6 +130,7 @@ export type MessageItem = {
   deletedAt?: number
   deletedTime?: string
   deletedByName?: string
+  systemEvent?: MessageSystemEvent
   callLog?: {
     type: "audio" | "video"
     status: string
