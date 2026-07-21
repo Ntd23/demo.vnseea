@@ -1,6 +1,6 @@
 <?php
 if (!empty($_POST['chat_id']) && is_numeric($_POST['chat_id']) && $_POST['chat_id'] > 0 && !empty($_POST['type']) && in_array($_POST['type'], array('user','page','group'))) {
-    $chats = $db->where('user_id',$wo['user']['id'])->where('chat_id',Wo_Secure($_POST['chat_id']))->where('type',Wo_Secure($_POST['type']))->where('pin','yes')->where('message_id',0,'>')->get(T_MUTE);
+    $chats = $db->where('user_id',$wo['user']['id'])->where('chat_id',Wo_Secure($_POST['chat_id']))->where('type',Wo_Secure($_POST['type']))->where('pin','yes')->where('message_id',0,'>')->orderBy('time', 'DESC')->get(T_MUTE);
     $array = array();
     if (!empty($chats)) {
         foreach ($chats as $key => $value) {
@@ -9,6 +9,7 @@ if (!empty($_POST['chat_id']) && is_numeric($_POST['chat_id']) && $_POST['chat_i
             }
             $message = GetMessageById($value->message_id);
             if (!empty($message)) {
+                $message['pinned_at'] = (int)$value->time;
                 foreach ($non_allowed as $key5 => $value5) {
                     if (!empty($message['messageUser'])) {
                         unset($message['messageUser'][$value5]);
