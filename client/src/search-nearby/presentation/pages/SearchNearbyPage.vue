@@ -397,6 +397,7 @@ const geolocationOptions: PositionOptions = {
 const {
   searchText,
   selectedItemId,
+  selectedSuggestionItem,
   routeTargetItem,
   routeNavigationActive,
   routeErrorMessage,
@@ -430,6 +431,7 @@ const {
 } = useSearchNearbyPageVM()
 
 const { t } = useI18n()
+const route = useRoute()
 
 const searchPlaceholder = computed(() =>
   googlePlacesEnabled.value
@@ -515,19 +517,30 @@ const canUseNearbyMap = computed(() =>
 const shouldShowGoogleNearbyResults = computed(() =>
   googleNearbyLoading.value || googleNearbyQuery.value.length > 0,
 )
+const sharedLocationSelection = computed(() => {
+  const source = Array.isArray(route.query.source) ? route.query.source[0] : route.query.source
+
+  return source === "message" ? selectedSuggestionItem.value : null
+})
 
 const displayMapItems = computed(() =>
-  shouldShowGoogleNearbyResults.value
-    ? googleNearbyResults.value
-    : mapItems.value,
+  sharedLocationSelection.value
+    ? [sharedLocationSelection.value]
+    : shouldShowGoogleNearbyResults.value
+      ? googleNearbyResults.value
+      : mapItems.value,
 )
 const displayCardItems = computed(() =>
-  shouldShowGoogleNearbyResults.value
-    ? googleNearbyResults.value
-    : cardItems.value,
+  sharedLocationSelection.value
+    ? [sharedLocationSelection.value]
+    : shouldShowGoogleNearbyResults.value
+      ? googleNearbyResults.value
+      : cardItems.value,
 )
 const displayHasResults = computed(() => displayCardItems.value.length > 0)
-const displayLoadingState = computed(() => displayLoading.value || googleNearbyLoading.value)
+const displayLoadingState = computed(() =>
+  (!sharedLocationSelection.value && displayLoading.value) || googleNearbyLoading.value,
+)
 const showNearbySkeleton = computed(() =>
   displayLoadingState.value
   || (
@@ -1556,6 +1569,65 @@ function getGooglePlaceDetails(placeId: string) {
   })
 }
 
+async function hydrateSharedLocationCard() {
+  const source = Array.isArray(route.query.source) ? route.query.source[0] : route.query.source
+  const latitude = Number(Array.isArray(route.query.lat) ? route.query.lat[0] : route.query.lat)
+  const longitude = Number(Array.isArray(route.query.lng) ? route.query.lng[0] : route.query.lng)
+
+  if (
+    source !== "message"
+    || !Number.isFinite(latitude)
+    || !Number.isFinite(longitude)
+    || latitude < -90
+    || latitude > 90
+    || longitude < -180
+    || longitude > 180
+  ) {
+    return
+  }
+
+  await nextTick()
+  const selected = selectedSuggestionItem.value
+  if (!selected || selected.lat !== latitude || selected.lng !== longitude) {
+    return
+  }
+
+  try {
+    await loadGoogleMaps()
+    if (!window.google?.maps?.Geocoder) {
+      return
+    }
+
+    const geocoder = new window.google.maps.Geocoder()
+    const result = await new Promise<google.maps.GeocoderResult | null>((resolve) => {
+      geocoder.geocode(
+        { location: { lat: latitude, lng: longitude } },
+        (results, status) => {
+          const okStatus = window.google?.maps?.GeocoderStatus?.OK
+          resolve(status === okStatus ? results?.[0] ?? null : null)
+        },
+      )
+    })
+
+    if (!result || selectedSuggestionItem.value?.id !== selected.id) {
+      return
+    }
+
+    const address = String(result.formatted_address || selected.locationLabel).trim()
+    const placeId = String(result.place_id || "").trim()
+    selectSuggestion({
+      ...selected,
+      locationLabel: address,
+      href: placeId
+        ? createGoogleMapsHref(placeId, address)
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${latitude}, ${longitude}`)}`,
+    })
+  }
+  catch {
+    // The route-provided card remains usable when reverse geocoding is unavailable.
+  }
+}
+
 async function searchGoogleNearbyPlaces(rawQuery: string) {
   const query = rawQuery.trim()
   const requestId = googleNearbyRequestId.value + 1
@@ -1732,10 +1804,18 @@ watch(googlePlacesEnabled, (enabled) => {
   clearGoogleNearbyResults()
 })
 
+watch(
+  () => [route.query.source, route.query.lat, route.query.lng],
+  () => {
+    void hydrateSharedLocationCard()
+  },
+)
+
 onMounted(() => {
   void loadSearchNearbyConfig()
   void startDeviceOrientationTracking()
   void requestLocationPermission()
+  void hydrateSharedLocationCard()
 })
 
 onBeforeUnmount(() => {

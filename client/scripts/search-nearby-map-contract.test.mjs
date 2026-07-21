@@ -35,6 +35,25 @@ test("missing route coordinates cannot be interpreted as zero coordinates", () =
   assert.match(viewModelSource, /if \(!rawValue\) \{\s*return null\s*\}/)
 })
 
+test("shared chat locations open as one focused address result", () => {
+  assert.match(viewModelSource, /const createSharedLocationItem/)
+  assert.match(viewModelSource, /readString\(route\.query\.source\) === "message"/)
+  assert.match(viewModelSource, /const selectedSuggestionItem = shallowRef<NearbySearchItem \| null>\(initialSharedLocationItem\)/)
+  assert.match(viewModelSource, /const selectedItemId = ref\(initialSharedLocationItem\?\.id \|\| ""\)/)
+  assert.match(viewModelSource, /const preserveSelectedItem = Boolean\(selectedSuggestionItem\.value\)/)
+  assert.match(viewModelSource, /markerKind: "avatar"/)
+  assert.match(pageSource, /async function hydrateSharedLocationCard\(\)/)
+  assert.match(pageSource, /new window\.google\.maps\.Geocoder\(\)/)
+  assert.match(pageSource, /selectSuggestion\(\{[\s\S]*locationLabel: address/)
+  assert.match(pageSource, /const sharedLocationSelection = computed/)
+  assert.match(pageSource, /sharedLocationSelection\.value[\s\S]*\[sharedLocationSelection\.value\]/)
+  assert.match(pageSource, /!sharedLocationSelection\.value && displayLoading\.value/)
+  assert.match(pageSource, /void hydrateSharedLocationCard\(\)/)
+  assert.match(mapSource, /function createAvatarOverlayMarker\(/)
+  assert.match(mapSource, /item\.markerKind === "avatar" && item\.avatarUrl/)
+  assert.match(mapSource, /image\.src = item\.avatarUrl/)
+})
+
 test("nearby search always starts realtime device geolocation", () => {
   assert.match(
     pageSource,

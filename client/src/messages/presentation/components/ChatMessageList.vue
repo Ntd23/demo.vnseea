@@ -21,6 +21,8 @@
         :key="msg.id"
         v-bind="msg"
         :text="getBubbleText(msg)"
+        :avatar="msg.avatar || (!msg.isMine ? contactAvatar : undefined)"
+        :author-name="getMessageAuthorName(msg)"
         :timeline-title="getMessageTimelineTitle(msg)"
         :reply-title="getReplyMeta(msg) && !msg.isDeleted ? getReplyTitle(msg) : undefined"
         :reply-quote="getReplyMeta(msg) && !msg.isDeleted && !getReplyMeta(msg)?.mediaUrl && !isImageFileQuote(getReplyMeta(msg)?.quote) ? getReplyMeta(msg)?.quote : undefined"
@@ -129,6 +131,7 @@ import MessagesChatBubble from "./ChatBubble.vue"
 const props = withDefaults(defineProps<{
   activeReactionPickerId?: number | null
   contactAvatar?: string
+  contactName?: string
   contactType?: MessageThreadType
   emptyLabel?: string
   isPending?: boolean
@@ -245,6 +248,16 @@ function scrollToBottom(behavior: ScrollBehavior = "smooth") {
     top: listContainer.value.scrollHeight,
     behavior,
   })
+}
+
+function getMessageAuthorName(message: MessageItem) {
+  if (message.authorName?.trim()) {
+    return message.authorName.trim()
+  }
+
+  return !message.isMine && props.contactType !== "group"
+    ? props.contactName?.trim() || ""
+    : ""
 }
 
 function scheduleScrollToBottom(behavior: ScrollBehavior = "smooth") {

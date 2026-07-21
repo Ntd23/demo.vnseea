@@ -14,21 +14,12 @@
 
    <div class="auth-form__row-2">
  <UFormField name="birthDay" :label="$t('pages.registerPage.birthday')" class="min-w-0">
-  <UPopover>
-    <UButton
-      color="neutral"
-      variant="outline"
-      size="xl"
-      block
-      class="justify-start font-normal"
-    >
-      {{ birthDateLabel || 'DD/MM/YYYY' }}
-    </UButton>
-
-    <template #content>
-      <UCalendar v-model="birthDate" />
-    </template>
-  </UPopover>
+  <UInputDate
+    v-model="birthDate"
+    :max-value="birthDateMax"
+    size="xl"
+    class="w-full"
+  />
 </UFormField>
 
   <UFormField name="gender" :label="$t('pages.registerPage.gender')" class="min-w-0">
@@ -133,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { CalendarDate } from '@internationalized/date'
+import { CalendarDate, getLocalTimeZone, today } from '@internationalized/date'
 import { appRoutes } from '#shared-kernel/application/constants/route-registry'
 import { useRegisterPageVM } from '../../application/view-models/useRegisterPageVM'
 
@@ -149,24 +140,16 @@ const birthDate = shallowRef<CalendarDate | undefined>(
     ? new CalendarDate(
         Number(state.birthYear),
         Number(state.birthMonth),
-        Number(state.birthDay)
+        Number(state.birthDay),
       )
-    : undefined
+    : undefined,
 )
+const birthDateMax = today(getLocalTimeZone())
 
 watch(birthDate, (value) => {
-  state.birthDay = value ? value.day : null
-  state.birthMonth = value ? value.month : null
-  state.birthYear = value ? value.year : null
-})
-const birthDateLabel = computed(() => {
-  if (!birthDate.value) return ''
-
-  const day = String(birthDate.value.day).padStart(2, '0')
-  const month = String(birthDate.value.month).padStart(2, '0')
-  const year = birthDate.value.year
-
-  return `${day}/${month}/${year}`
+  state.birthDay = value?.day ?? null
+  state.birthMonth = value?.month ?? null
+  state.birthYear = value?.year ?? null
 })
 const genderOptions = [
   { value: 'female', labelKey: 'pages.registerPage.female' },

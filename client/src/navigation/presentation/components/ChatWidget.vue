@@ -571,7 +571,7 @@
                 :show-time="message.showTime"
                 :avatar="message.avatar || miniSession.contact.avatarUrl"
                 :sender-is-online="getMiniMessageSenderOnline(miniSession, message)"
-                :author-name="message.authorName"
+                :author-name="getMiniMessageAuthorName(miniSession, message)"
                 :timeline-title="getMiniMessageTimelineTitle(message)"
                 :reply-title="!message.isDeleted && getMiniReplyMeta(message) ? getMiniReplyTitle(message) : undefined"
                 :reply-quote="!message.isDeleted && !getMiniReplyMeta(message)?.mediaUrl && !isMiniImageFileQuote(getMiniReplyMeta(message)?.quote) ? getMiniReplyMeta(message)?.quote : undefined"
@@ -849,6 +849,8 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const { t } = useI18n()
 const toast = useToast()
 const miniMessagesViewports = new Map<string, HTMLElement>()
+const miniMessagesPinnedToBottom = new Map<string, boolean>()
+const MINI_MESSAGES_BOTTOM_THRESHOLD = 64
 const miniHeaderMenuRef = ref<HTMLElement | null>(null)
 const messageAvatarMenuRef = ref<HTMLElement | null>(null)
 const activeMiniHeaderContactId = ref<string | null>(null)
@@ -1032,6 +1034,8 @@ function closeMiniSession(session: MiniChatSessionView) {
   miniReplyTarget.value = null
   activeMiniReactionPickerId.value = null
   clearMiniRecording()
+  miniMessagesViewports.delete(session.contactId)
+  miniMessagesPinnedToBottom.delete(session.contactId)
   closeMiniChatVm(session.contactId)
 }
 
@@ -1277,6 +1281,16 @@ function getMiniMessageSenderOnline(session: MiniChatSessionView, message: { isM
   }
 
   return message.senderIsOnline ?? session.contact.isOnline ?? false
+}
+
+function getMiniMessageAuthorName(session: MiniChatSessionView, message: MessageItem) {
+  if (message.authorName?.trim()) {
+    return message.authorName.trim()
+  }
+
+  return !message.isMine && session.contact.type !== "group"
+    ? session.contact.name.trim()
+    : ""
 }
 
 function toggleMiniReactionPicker(messageId: number) {
@@ -1660,6 +1674,9 @@ function discardMiniRecording() {
 function setMiniMessagesViewport(contactId: string, element: unknown) {
   if (element instanceof HTMLElement) {
     miniMessagesViewports.set(contactId, element)
+    if (!miniMessagesPinnedToBottom.has(contactId)) {
+      miniMessagesPinnedToBottom.set(contactId, true)
+    }
     return
   }
 
@@ -1668,11 +1685,18 @@ function setMiniMessagesViewport(contactId: string, element: unknown) {
 
 async function handleMiniScroll(event: Event, session: MiniChatSessionView) {
   const target = event.target as HTMLElement
+  const distanceFromBottom = target.scrollHeight - target.scrollTop - target.clientHeight
+  miniMessagesPinnedToBottom.set(
+    session.contactId,
+    distanceFromBottom <= MINI_MESSAGES_BOTTOM_THRESHOLD,
+  )
+
   if (target.scrollTop === 0 && !session.isLoadingMore) {
     const previousScrollHeight = target.scrollHeight
     await loadOlderMiniMessages(session.contactId)
     await nextTick()
     target.scrollTop = target.scrollHeight - previousScrollHeight
+    miniMessagesPinnedToBottom.set(session.contactId, false)
   }
 }
 
@@ -1686,17 +1710,58 @@ function scrollMiniMessagesToBottom(contactId?: string) {
   for (const viewport of viewports) {
     viewport.scrollTop = viewport.scrollHeight
   }
+
+  if (contactId) {
+    miniMessagesPinnedToBottom.set(contactId, true)
+  }
+  else {
+    for (const sessionContactId of miniMessagesViewports.keys()) {
+      miniMessagesPinnedToBottom.set(sessionContactId, true)
+    }
+  }
 }
 
 watch(
-  () => [miniChatOpen.value, miniChatSessions.value.map(session => session.messages.length).join(",")] as const,
-  async ([open]) => {
-    if (!open) {
+  () => ({
+    open: miniChatOpen.value,
+    sessions: miniChatSessions.value.map((session) => {
+      const lastMessage = session.messages[session.messages.length - 1]
+
+      return {
+        contactId: session.contactId,
+        lastMessageId: lastMessage?.id ?? null,
+        lastMessageIsMine: Boolean(lastMessage?.isMine),
+      }
+    }),
+  }),
+  async (current, previous) => {
+    if (!current.open) {
       return
     }
 
     await nextTick()
-    scrollMiniMessagesToBottom()
+
+    if (!previous?.open) {
+      scrollMiniMessagesToBottom()
+      return
+    }
+
+    for (const session of current.sessions) {
+      const previousSession = previous.sessions.find(item => item.contactId === session.contactId)
+      const receivedInitialThread = previousSession?.lastMessageId == null && session.lastMessageId != null
+      const receivedNewLastMessage = previousSession?.lastMessageId != null
+        && previousSession.lastMessageId !== session.lastMessageId
+
+      if (
+        receivedInitialThread
+        || (receivedNewLastMessage && (
+          session.lastMessageIsMine
+          || miniMessagesPinnedToBottom.get(session.contactId) !== false
+        ))
+      ) {
+        scrollMiniMessagesToBottom(session.contactId)
+      }
+    }
   },
   { flush: "post" },
 )
@@ -1707,7 +1772,12 @@ watch(miniChatAutoOpenVersion, (version) => {
     miniReplyTarget.value = null
     activeMiniReactionPickerId.value = null
     clearMiniRecording()
-    nextTick(() => scrollMiniMessagesToBottom())
+    nextTick(() => {
+      const openedSession = miniChatSessions.value[0]
+      if (openedSession) {
+        scrollMiniMessagesToBottom(openedSession.contactId)
+      }
+    })
   }
 })
 </script>
@@ -2618,11 +2688,13 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper--location) {
-  width: min(300px, 100%);
+  width: 300px !important;
+  max-width: calc(100% - 44px) !important;
+  flex: 0 1 300px;
 }
 
 .chat-widget__mini-chat-bubble :deep(.message-location-card) {
-  width: min(300px, 100%);
+  width: 100% !important;
   max-width: 100%;
 }
 

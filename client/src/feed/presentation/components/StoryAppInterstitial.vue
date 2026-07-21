@@ -47,17 +47,6 @@
           >
             {{ t("feed.storyCarousel.openApp") }}
           </UButton>
-          <UButton
-            type="button"
-            size="lg"
-            block
-            color="neutral"
-            variant="ghost"
-            class="story-app-prompt__secondary"
-            @click="continueOnWeb"
-          >
-            {{ t("feed.storyCarousel.continueOnWeb") }}
-          </UButton>
         </div>
       </div>
     </template>
@@ -66,13 +55,11 @@
 
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { feedStoryCreatePath } from "../../application/constants/story-carousel"
 import { useSiteBrandingStore } from "../../../site-branding/application/stores/useSiteBrandingStore"
 
 const open = defineModel<boolean>({ default: false })
 
 const { t } = useI18n()
-const router = useRouter()
 const runtimeConfig = useRuntimeConfig()
 const siteBrandingStore = useSiteBrandingStore()
 const { branding } = storeToRefs(siteBrandingStore)
@@ -110,16 +97,25 @@ const storyDeepLink = computed(() => String(nativeAppConfig.value?.storyDeepLink
 const iosStoreUrl = computed(() => String(nativeAppConfig.value?.iosStoreUrl || "").trim())
 const androidStoreUrl = computed(() => String(nativeAppConfig.value?.androidStoreUrl || "").trim())
 
-const platformStoreUrl = computed(() => {
+type MobileStorePlatform = "ios" | "android"
+
+const mobilePlatform = computed<MobileStorePlatform>(() => {
   if (!import.meta.client) {
-    return ""
+    return "android"
   }
 
-  const userAgent = navigator.userAgent
-  return /iPad|iPhone|iPod/i.test(userAgent) ? iosStoreUrl.value : androidStoreUrl.value
+  const isIos = /iPad|iPhone|iPod/i.test(navigator.userAgent)
+    || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+
+  return isIos ? "ios" : "android"
 })
 
-const canOpenApp = computed(() => Boolean(storyDeepLink.value || platformStoreUrl.value))
+const platformStoreUrl = computed(() => {
+  return mobilePlatform.value === "ios" ? iosStoreUrl.value : androidStoreUrl.value
+})
+
+// A store URL is mandatory because it is the safe fallback when the OS cannot open the app.
+const canOpenApp = computed(() => Boolean(platformStoreUrl.value))
 const configurationMissing = computed(() => !canOpenApp.value)
 
 watch(displayLogoUrl, () => {
@@ -141,6 +137,21 @@ function handleVisibilityChange() {
   }
 }
 
+function buildAppHandoffUrl(url: string) {
+  if (!/^https?:\/\//i.test(url)) {
+    return url
+  }
+
+  try {
+    const handoffUrl = new URL(url, window.location.origin)
+    handoffUrl.searchParams.set("native_app_fallback", mobilePlatform.value)
+    return handoffUrl.toString()
+  }
+  catch {
+    return url
+  }
+}
+
 function openNativeApp() {
   if (!import.meta.client || !canOpenApp.value) {
     return
@@ -154,7 +165,14 @@ function openNativeApp() {
     return
   }
 
-  window.location.assign(storyDeepLink.value)
+  const appUrl = buildAppHandoffUrl(storyDeepLink.value)
+  window.location.assign(appUrl)
+
+  // HTTP(S) universal links fall back to the web route when the app is absent.
+  // That route handles the store redirect from the native_app_fallback query.
+  if (/^https?:\/\//i.test(appUrl)) {
+    return
+  }
 
   if (platformStoreUrl.value) {
     document.addEventListener("visibilitychange", handleVisibilityChange, { once: true })
@@ -165,11 +183,6 @@ function openNativeApp() {
       }
     }, 1600)
   }
-}
-
-async function continueOnWeb() {
-  open.value = false
-  await router.push(feedStoryCreatePath)
 }
 
 onBeforeUnmount(() => {
@@ -255,8 +268,7 @@ onBeforeUnmount(() => {
   margin-top: 20px;
 }
 
-.story-app-prompt__primary,
-.story-app-prompt__secondary {
+.story-app-prompt__primary {
   min-height: 46px;
   justify-content: center;
   border-radius: 12px;
