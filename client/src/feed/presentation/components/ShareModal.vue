@@ -38,7 +38,6 @@
                 </span>
                 <span class="share-modal__title-copy">
                   <strong>{{ t("feed.shareModal.title") }}</strong>
-                  <small>{{ t("feed.shareModal.subtitle") }}</small>
                 </span>
               </div>
               <button
@@ -135,14 +134,6 @@
                 </div>
 
                 <div class="share-modal__target-panel">
-                  <div class="share-modal__target-head">
-                    <div>
-                      <p>{{ destinationPanelTitle }}</p>
-                      <small>{{ destinationPanelDescription }}</small>
-                    </div>
-                    <Icon :name="destinationPanelIcon" class="w-7 h-7"/>
-                  </div>
-
                   <div v-if="selectedDestination === 'timeline'" class="share-modal__target-card share-modal__target-card--selected">
                     <TargetAvatar :target="currentProfileTarget" />
                     <span class="share-modal__target-copy">
@@ -218,29 +209,6 @@
                 </div>
               </section>
 
-              <section v-if="post" class="share-modal__preview">
-                <div class="share-modal__section-head">
-                  <p>{{ t("feed.shareModal.previewLabel") }}</p>
-                </div>
-                <div class="share-modal__preview-card">
-                  <img
-                    v-if="post.authorAvatar"
-                    :src="post.authorAvatar"
-                    class="share-modal__preview-avatar"
-                    :alt="post.author"
-                  >
-                  <span v-else class="share-modal__preview-avatar share-modal__preview-avatar--fallback">
-                    {{ postAuthorInitials }}
-                  </span>
-                  <span class="share-modal__preview-copy">
-                    <span>
-                      <strong>{{ post.author }}</strong>
-                      <Icon v-if="post.authorVerified" name="i-ph-seal-check-fill" />
-                    </span>
-                    <small>{{ post.text || t("feed.shareModal.previewLabel") }}</small>
-                  </span>
-                </div>
-              </section>
             </div>
 
             <footer class="share-modal__footer">

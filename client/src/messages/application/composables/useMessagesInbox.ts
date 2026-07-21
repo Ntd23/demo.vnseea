@@ -549,6 +549,18 @@ export function useMessagesInbox(
     selectedRecipientIds.value = [...nextIds]
   }
 
+  function setSelectedRecipientIds(userIds: number[]) {
+    const availableIds = new Set(
+      multiRecipientSource.value
+        .map(contact => contact.userId ?? 0)
+        .filter(id => id > 0),
+    )
+
+    selectedRecipientIds.value = [...new Set(
+      userIds.filter(id => Number.isInteger(id) && availableIds.has(id)),
+    )]
+  }
+
   function toggleAllVisibleRecipients() {
     const visibleIds = visibleRecipientIds.value
 
@@ -1180,6 +1192,7 @@ export function useMessagesInbox(
     selectedRecipients,
     selectContact,
     setActiveTagFilter,
+    setSelectedRecipientIds,
     replyToThreadMessage,
     sendMessage,
     sendMultiMessage,

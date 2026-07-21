@@ -112,27 +112,15 @@
             </label>
           </div>
           <div class="cl-recipient-box" :class="{ 'cl-recipient-box--empty': selectedRecipients.length === 0 }">
-            <div v-if="selectedRecipients.length > 0" class="cl-recipient-chips">
-              <div
-                v-for="recipient in selectedPreviewRecipients"
-                :key="recipient.id"
-                class="cl-recipient-chip"
-              >
-                <UAvatar :src="recipient.avatarUrl" :alt="recipient.name" size="xs" />
-                <span>{{ recipient.name }}</span>
-                <button
-                  type="button"
-                  class="cl-recipient-remove"
-                  :title="$t('pages.messagesPage.remove')"
-                  @click.stop="emit('select-user', recipient)"
-                >
-                  <Icon name="i-ph-x-bold" class="h-2.5 w-2.5" />
-                </button>
-              </div>
-              <span v-if="selectedChipOverflowCount > 0" class="cl-recipient-chip cl-recipient-chip--more">
-                +{{ selectedChipOverflowCount }}
-              </span>
-            </div>
+            <UListbox
+              v-if="selectedRecipients.length > 0"
+              v-model="selectedRecipientIdModel"
+              :items="selectedRecipientListboxItems"
+              value-key="value"
+              multiple
+              selected-icon="i-ph-x-bold"
+              class="cl-recipient-listbox"
+            />
             <span v-else class="cl-recipient-empty">{{ $t("pages.messagesPage.noRecipientsSelected") }}</span>
           </div>
         </section>
@@ -259,6 +247,7 @@
 </template>
 
 <script setup lang="ts">
+import UListbox from "@nuxt/ui/components/Listbox.vue"
 import { computed, watch } from "vue"
 import { useMessageRecorder } from "../../application/composables/useMessageRecorder"
 import type { MessageContact, MessageRecordDraft, MessageTab, MessageTabKey, MessageUserTag } from "../../domain/types/messages.types"
@@ -295,6 +284,7 @@ const emit = defineEmits<{
   "mark-all-read": []
   "manage-tags": [user: MessageContact]
   "toggle-all-recipients": []
+  "update:selectedRecipientIds": [userIds: number[]]
   "update:activeTab": [tab: MessageTabKey]
   "update:activeTagFilter": [tagId: string]
   "update:query": [value: string]
@@ -343,8 +333,19 @@ const selectedCountLabel = computed(() =>
 )
 const selectedAvatarRecipients = computed(() => props.selectedRecipients.slice(0, 5))
 const selectedOverflowCount = computed(() => Math.max(props.selectedRecipients.length - selectedAvatarRecipients.value.length, 0))
-const selectedPreviewRecipients = computed(() => props.selectedRecipients.slice(0, 10))
-const selectedChipOverflowCount = computed(() => Math.max(props.selectedRecipients.length - selectedPreviewRecipients.value.length, 0))
+const selectedRecipientListboxItems = computed(() => props.selectedRecipients.map(recipient => ({
+  label: recipient.name,
+  description: getContactStatus(recipient),
+  value: recipient.userId ?? 0,
+  avatar: {
+    src: recipient.avatarUrl,
+    alt: recipient.name,
+  },
+})))
+const selectedRecipientIdModel = computed<number[]>({
+  get: () => props.selectedRecipientIds ?? [],
+  set: userIds => emit("update:selectedRecipientIds", userIds),
+})
 const tagFilterStatus = computed(() => {
   if (!props.activeTagFilter) return ""
   const label = props.activeTagFilter === "0"
@@ -658,67 +659,16 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   padding: 11px 12px;
 }
 
-.cl-recipient-chips {
-  display: flex;
-  max-height: 88px;
-  flex-wrap: wrap;
-  gap: 6px;
+.cl-recipient-listbox {
+  width: 100%;
+  max-height: 108px;
   overflow-y: auto;
-  padding-right: 2px;
-}
-
-.cl-recipient-chip {
-  display: inline-flex;
-  max-width: 100%;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid rgba(0, 0, 255, 0.08);
-  border-radius: 999px;
-  background: rgba(0, 0, 255, 0.04);
-  padding: 3px 8px 3px 3px;
-  color: var(--text-secondary);
-  font-size: 12px;
-  font-weight: 650;
-}
-
-.cl-recipient-chip span:not(.cl-recipient-chip--more) {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.cl-recipient-remove {
-  display: inline-flex;
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.08);
-  color: var(--text-tertiary);
-  transition: all 0.15s ease;
-}
-
-.cl-recipient-remove:hover {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.cl-recipient-chip--more {
-  padding: 5px 9px;
-  background: #f1f5f9;
-  color: var(--text-tertiary);
+  scrollbar-gutter: stable;
 }
 
 .cl-recipient-empty {
   color: var(--text-tertiary);
   font-size: 13px;
-}
-
-.cl-upload-box {
-  padding: 11px;
 }
 
 .cl-multi-actions {
