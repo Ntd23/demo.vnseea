@@ -154,6 +154,7 @@ const supportedSections: Record<string, SectionConfig> = {
       "e_followed",
       "e_liked_page",
       "e_visited",
+      "profile_visit_notify",
       "e_mentioned",
       "e_joined_group",
       "e_accepted",

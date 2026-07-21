@@ -1,4 +1,81 @@
 <?php
+// English description: Handles marketplace cart, checkout, purchases, and order APIs.
+
+if (!function_exists('VNSEEA_MarketOrderMessageText')) {
+    function VNSEEA_MarketOrderMessageText($value)
+    {
+        $value = html_entity_decode((string) $value, ENT_QUOTES, 'UTF-8');
+        $value = preg_replace('/<br\s*\/?>/i', ', ', $value);
+        $value = strip_tags($value);
+        $value = preg_replace('/\s+/u', ' ', $value);
+
+        return trim($value, " \t\n\r\0\x0B,");
+    }
+}
+
+if (!function_exists('VNSEEA_FormatMarketOrderMessageMoney')) {
+    function VNSEEA_FormatMarketOrderMessageMoney($amount)
+    {
+        global $wo;
+
+        $currency = !empty($wo['config']['currency']) ? $wo['config']['currency'] : 'USD';
+        $rule = Wo_GetCurrencyRule($currency);
+
+        return $rule['code'] . Wo_FormatPriceByCurrency($amount, $currency);
+    }
+}
+
+if (!function_exists('VNSEEA_SendMarketOrderMessage')) {
+    function VNSEEA_SendMarketOrderMessage($seller_id, $hash_id, $items, $total, $address)
+    {
+        global $wo;
+
+        $seller_id = (int) $seller_id;
+        $buyer_id = (int) $wo['user']['user_id'];
+        if ($seller_id < 1 || $buyer_id < 1 || $seller_id === $buyer_id || empty($items)) {
+            return false;
+        }
+
+        $buyer_name = VNSEEA_MarketOrderMessageText(!empty($wo['user']['name']) ? $wo['user']['name'] : $wo['user']['username']);
+        $phone = VNSEEA_MarketOrderMessageText(!empty($address->phone) ? $address->phone : '');
+        $address_parts = array(
+            !empty($address->address) ? $address->address : '',
+            !empty($address->city) ? $address->city : '',
+            !empty($address->zip) ? $address->zip : '',
+            !empty($address->country) ? $address->country : '',
+        );
+        $address_parts = array_values(array_filter(array_map('VNSEEA_MarketOrderMessageText', $address_parts)));
+
+        $lines = array(
+            '📦 ĐƠN HÀNG MỚI # ' . VNSEEA_MarketOrderMessageText($hash_id),
+            '',
+            '👤 Người đặt: ' . $buyer_name,
+            '📞 SĐT: ' . $phone,
+            '📍 Địa chỉ: ' . implode(', ', $address_parts),
+            '',
+            '🧾 Sản phẩm:',
+        );
+
+        foreach ($items as $item) {
+            $product = Wo_GetProduct($item['product_id']);
+            $product_name = !empty($product['name'])
+                ? VNSEEA_MarketOrderMessageText($product['name'])
+                : 'Sản phẩm #' . (int) $item['product_id'];
+            $line_total = (float) $item['price'] * (int) $item['units'];
+            $lines[] = '- ' . $product_name . ' x' . (int) $item['units'] . ' = ' . VNSEEA_FormatMarketOrderMessageMoney($line_total);
+        }
+
+        $lines[] = '';
+        $lines[] = '💰 Tổng: ' . VNSEEA_FormatMarketOrderMessageMoney($total);
+
+        return Wo_RegisterMessage(array(
+            'from_id' => $buyer_id,
+            'to_id' => $seller_id,
+            'time' => time(),
+            'text' => Wo_Secure(implode("\n", $lines)),
+        ));
+    }
+}
 
 if ($_POST['type'] == 'add_cart') {
 
@@ -134,6 +211,7 @@ elseif ($_POST['type'] == 'buy') {
             if (!empty($notification_id)) {
                 Wo_PublishRealtimeNotification($key, $notification_id, 'notification');
             }
+            VNSEEA_SendMarketOrderMessage($key, $hash_id, $value, $total, $wo['address']);
         }
 
         $db->where('user_id',$wo['user']['user_id'])->delete(T_USERCARD);
@@ -152,14 +230,26 @@ elseif ($_POST['type'] == 'checkout') {
 	$wo['items'] = $db->where('user_id', $wo['user']['id'])->get(T_USERCARD);
 	$wo['total'] = 0;
 	$data = [];
+	$checkout_currency_rule = Wo_GetCurrencyRule($wo['config']['currency']);
 	if (!empty($wo['items'])) {
 	    foreach ($wo['items'] as $key => $wo['item']) {
 	        $wo['product'] = Wo_GetProduct($wo['item']->product_id);
+	        $stock_units = (int) $wo['product']['units'];
+	        $product_currency_rule = Wo_GetCurrencyRule($wo['product']['currency']);
+	        $wo['product']['currency_code'] = $product_currency_rule['code'];
+	        $wo['product']['currency_symbol'] = $product_currency_rule['symbol'];
+	        $wo['product']['currency_rule'] = array(
+	            'decimals' => $product_currency_rule['decimals'],
+	            'decimal_sep' => $product_currency_rule['decimal_sep'],
+	            'thousand_sep' => $product_currency_rule['thousand_sep']
+	        );
+	        $checkout_unit_price = $wo['product']['price'];
 	        if (!empty($wo['currencies']) && !empty($wo['currencies'][$wo['product']['currency']]) && $wo['currencies'][$wo['product']['currency']]['text'] != $wo['config']['currency'] && !empty($wo['config']['exchange']) && !empty($wo['config']['exchange'][$wo['currencies'][$wo['product']['currency']]['text']])) {
-	            $wo['total'] += (($wo['product']['price'] / $wo['config']['exchange'][$wo['currencies'][$wo['product']['currency']]['text']]) * $wo['item']->units);
-	        } else {
-	            $wo['total'] += ($wo['product']['price'] * $wo['item']->units);
+	            $checkout_unit_price = ($wo['product']['price'] / $wo['config']['exchange'][$wo['currencies'][$wo['product']['currency']]['text']]);
 	        }
+	        $wo['total'] += ($checkout_unit_price * $wo['item']->units);
+	        $wo['product']['checkout_price'] = $checkout_unit_price;
+	        $wo['product']['stock_units'] = $stock_units;
 	        $wo['product']['units'] = $wo['item']->units;
 	        $data[] = $wo['product'];
 	    }
@@ -167,7 +257,14 @@ elseif ($_POST['type'] == 'checkout') {
 	$response_data = array(
         'api_status' => 200,
         'data' => $data,
-        'total' => $wo['total']
+	    'total' => $wo['total'],
+	    'currency_code' => $checkout_currency_rule['code'],
+	    'currency_symbol' => $checkout_currency_rule['symbol'],
+	    'currency_rule' => array(
+	        'decimals' => $checkout_currency_rule['decimals'],
+	        'decimal_sep' => $checkout_currency_rule['decimal_sep'],
+	        'thousand_sep' => $checkout_currency_rule['thousand_sep']
+	    )
     );
 }
 elseif ($_POST['type'] == 'purchased') {

@@ -5,9 +5,19 @@ export interface CheckoutLineItem {
   name: string
   price: number
   quantity: number
+  maxQuantity?: number
   imageStyle?: string
   imageUrl?: string
   currency?: string
+  currencySymbol?: string
+  currencyRule?: CheckoutCurrencyRule
+  checkoutPrice?: number
+}
+
+export interface CheckoutCurrencyRule {
+  decimals?: number | string
+  decimal_sep?: string
+  thousand_sep?: string
 }
 
 export interface ShippingAddress {
@@ -16,7 +26,6 @@ export interface ShippingAddress {
   phone: string
   country: string
   city: string
-  postalCode: string
   streetAddress: string
 }
 
@@ -29,4 +38,7 @@ export interface CheckoutSnapshot {
   shippingAddress: ShippingAddress | null
   walletBalance: number
   shippingFee: number
+  currency: string
+  currencySymbol?: string
+  currencyRule?: CheckoutCurrencyRule
 }

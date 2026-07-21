@@ -394,6 +394,7 @@ const notificationKeys = [
   ["e_followed", "followed"],
   ["e_liked_page", "likedPage"],
   ["e_visited", "visited"],
+  ["profile_visit_notify", "visitSharing"],
   ["e_mentioned", "mentioned"],
   ["e_joined_group", "joinedGroup"],
   ["e_accepted", "accepted"],
@@ -420,7 +421,7 @@ const notificationsPage = (t: SettingTranslate, user: SettingsUser | null): Sett
 })
 
 const emailNotificationKeys = notificationKeys
-  .filter(([key]) => key !== "e_memory")
+  .filter(([key]) => key !== "e_memory" && key !== "profile_visit_notify")
   .concat([["e_sentme_msg", "sentMeMessage"] as const])
 
 const emailNotificationsPage = (t: SettingTranslate, user: SettingsUser | null): SettingPage => ({

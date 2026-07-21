@@ -81,7 +81,9 @@
         "ios": {
           "step1": "Open Settings on your iPhone or iPad home screen.",
           "step2": "Scroll down and choose Safari or Chrome (the browser you are using).",
-          "step3": "Find Location -> switch it to Ask or Allow."
+          "step3": "Find Location -> switch it to Ask or Allow.",
+          "step4":"Return to Settings. Scroll down and tap on Privacy & Security.",
+          "step5":"Select Location Services and toggle the switch to the on position."
         },
         "android": {
           "step1": "Open Settings on your phone -> choose Apps / App management.",
@@ -6373,6 +6375,10 @@
           "label": "Profile visits",
           "description": "Receive profile visit notifications."
         },
+        "visitSharing": {
+          "label": "Visits",
+          "description": "Let people know when you visit their profile."
+        },
         "mentioned": {
           "label": "Mentions",
           "description": "Receive mention notifications."
@@ -6943,7 +6949,7 @@
       "walletBalance": "Wallet has {balance}. You need to top up {amount} more to continue the purchase.",
       "walletHint": "Current wallet balance is {balance}.",
       "addFunds": "Top up wallet",
-      "buy": "Pay Now",
+      "buy": "Place order",
       "saveAddressFirst": "Save address first",
       "processing": "Processing",
       "orderPlaced": "Order placed",
@@ -6998,6 +7004,11 @@
       "allFieldsReady": "All details ready",
       "formTitle": "Delivery Form",
       "addAddressTitle": "Shipping Information",
+      "changeAddress": "Change address",
+      "selectAddress": "Select a shipping address",
+      "noAddresses": "No saved addresses",
+      "loadingAddresses": "Loading addresses...",
+      "addNewAddress": "Add new address",
       "formDesc": "The form has been grouped by info clusters for faster desktop operation while remaining compact on mobile.",
       "fieldsCount": "{filled}/{total} fields filled",
       "recipientInfo": "Recipient Information",
@@ -7044,6 +7055,12 @@
       "deleteSuccessDescription": "The address has been successfully deleted.",
       "deleteErrorTitle": "Delete failed",
       "deleteErrorDescription": "Could not delete this address. Please try again later."
+    },
+    "confirmModal": {
+      "title": "Confirm order",
+      "description": "You are about to purchase these items. Do you want to continue?",
+      "cancel": "Cancel",
+      "confirm": "Place order"
     }
   },
   "orders": {

@@ -1,3 +1,4 @@
+<!-- English description: Thin Nuxt route wrapper for the authenticated marketplace checkout page. -->
 <template>
   <PagesCheckoutPage />
 </template>

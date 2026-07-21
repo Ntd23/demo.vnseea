@@ -1,6 +1,6 @@
 // English description: Product currency presentation formatter shared by product view models.
 
-import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
+import { formatCurrencyWithUnit } from "#shared-kernel/application/utils/formatCurrency"
 
 type ProductCurrencyRule = {
   decimals?: number | string
@@ -22,13 +22,17 @@ export const formatProductPrice = (
 ) => {
   const currencyCode = product.currency?.trim().toUpperCase() || "VND"
   const currencySymbol = product.currencySymbol?.trim()
-  const currencyUnit = currencyCode === "VND"
-    ? "VND"
-    : currencySymbol || currencyCode
-  const formattedAmount = product.priceFormat || formatCurrency(product.price, {
-    currencyRule: product.currencyRule,
-    locale,
-  })
 
-  return `${formattedAmount}${currencyUnit}`
+  if (!product.priceFormat) {
+    return formatCurrencyWithUnit(product.price, {
+      currency: currencyCode,
+      currencySymbol,
+      currencyRule: product.currencyRule,
+      locale,
+    })
+  }
+
+  const currencyUnit = currencyCode === "VND" ? "VND" : currencySymbol || currencyCode
+
+  return `${product.priceFormat}${currencyUnit}`
 }

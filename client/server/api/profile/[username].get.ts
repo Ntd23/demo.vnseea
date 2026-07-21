@@ -363,13 +363,14 @@ export default defineEventHandler(async (event): Promise<ProfileApiResponse | nu
   }
 
   const response = assertBackendApiSuccess(
-    await client.post<BackendProfileResponse, Record<string, unknown>>(
-      "get-user-data-username",
-      {
-        username,
-        fetch: "user_data,followers,following,liked_pages,joined_groups",
-      },
-    ),
+      await client.post<BackendProfileResponse, Record<string, unknown>>(
+        "get-user-data-username",
+        {
+          username,
+          fetch: "user_data,followers,following,liked_pages,joined_groups",
+          send_notify: 1,
+        },
+      ),
     "Unable to load profile.",
   )
 

@@ -79,9 +79,11 @@
       "googleMapsNotReady": "Google Maps chưa sẵn sàng.",
       "permissionGuide": {
         "ios": {
-          "step1": "Mở ứng dụng Cài đặt (Settings) trên màn hình chính iPhone/iPad.",
+          "step1": "Mở Cài đặt (Settings) trên màn hình chính iPhone/iPad.",
           "step2": "Cuộn xuống dưới tìm và nhấp chọn Safari hoặc Chrome (trình duyệt bạn đang dùng).",
-          "step3": "Tìm đến mục Vị trí (Location) -> chuyển sang chọn Hỏi hoặc Cho phép (Allow)."
+          "step3": "Tìm đến mục Vị trí (Location) -> chuyển sang chọn Hỏi hoặc Cho phép (Allow).",
+          "step4":"Quay lại Cài đặt . Cuộn xuống và nhấn vào mục Quyền riêng tư & Bảo mật",
+          "step5":"Chọn Dịch vụ định vị và gạt nút màu xanh"
         },
         "android": {
           "step1": "Vào Cài đặt (Settings) trên điện thoại -> chọn mục Ứng dụng / Quản lý ứng dụng (Apps).",
@@ -4988,13 +4990,13 @@
     "myProductsPage": {
       "seoTitle": "Sản phẩm của tôi | VNSEEA",
       "seoDescription": "Quản lý các sản phẩm bạn đã đăng trên VNSEEA.",
-      "eyebrow": "Marketplace",
+      "eyebrow": "Thị trường",
       "title": "Sản phẩm của tôi",
       "create": "Đăng bán",
       "myProducts": "Sản phẩm của tôi",
       "purchased": "Đã mua",
       "orders": "Đơn hàng",
-      "marketplace": "Mua bán",
+      "marketplace": "Thị trường",
       "searchPlaceholder": "Tìm sản phẩm của tôi",
       "sortBy": "Sắp xếp theo",
       "sortLatest": "Mới đăng",
@@ -6376,6 +6378,10 @@
           "label": "Lượt xem hồ sơ",
           "description": "Nhận thông báo lượt xem hồ sơ."
         },
+        "visitSharing": {
+          "label": "Ghé thăm",
+          "description": "Mọi người biết bạn ghé thăm"
+        },
         "mentioned": {
           "label": "Nhắc đến",
           "description": "Nhận thông báo nhắc đến."
@@ -6946,7 +6952,7 @@
       "walletBalance": "Ví hiện có {balance}. Bạn cần nạp thêm {amount} để tiếp tục mua hàng.",
       "walletHint": "Số dư ví hiện tại là {balance}.",
       "addFunds": "Nạp thêm vào ví",
-      "buy": "Thanh toán ngay",
+      "buy": "Đặt hàng",
       "saveAddressFirst": "Lưu địa chỉ trước",
       "processing": "Đang xử lý",
       "orderPlaced": "Đã đặt hàng",
@@ -7054,6 +7060,12 @@
       "deleteSuccessDescription": "Địa chỉ đã được xóa thành công khỏi danh sách.",
       "deleteErrorTitle": "Lỗi xóa địa chỉ",
       "deleteErrorDescription": "Không thể xóa địa chỉ. Vui lòng thử lại sau."
+    },
+    "confirmModal": {
+      "title": "Xác nhận đặt hàng",
+      "description": "Bạn sắp mua các mặt hàng này, bạn có muốn tiếp tục không?",
+      "cancel": "Hủy bỏ",
+      "confirm": "Đặt hàng"
     },
     "stepper": {
       "cart": "Giỏ hàng",

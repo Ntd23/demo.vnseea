@@ -1,4 +1,5 @@
 <?php
+// English description: Returns profile data by user ID and optionally publishes an enabled profile visit notification.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -27,30 +28,31 @@ if (empty($error_code)) {
         $error_code    = 6;
         $error_message = 'Recipient user not found';
     } else {
-    	$can_ = 0;
-		$wo['nodejs_send_notification'] = false;
-		if ($wo['loggedin'] == true && $wo['config']['profileVisit'] == 1 && !empty($_POST['send_notify']) && $_POST['send_notify'] == 1) {
-		    if ($recipient_data['user_id'] != $wo['user']['user_id'] && $wo['user']['visit_privacy'] == 0) {
-		        if ($wo['config']['pro'] == 1) {
-		            if ($recipient_data['is_pro'] == 1 && in_array($recipient_data['pro_type'], array_keys($wo['pro_packages'])) && $wo['pro_packages'][$recipient_data['pro_type']]['profile_visitors'] == 1) {
-		                $can_ = 1;
-		            }
-		        } else {
-		            $can_ = 1;
-		        }
-		        if ($recipient_data['visit_privacy'] == 0 && $can_ == 1) {
-		            $notification_data_array = array(
-		                'recipient_id' => $recipient_data['user_id'],
-		                'type' => 'visited_profile',
-		                'url' => 'index.php?link1=timeline&u=' . $wo['user']['username']
-		            );
-		            $wo['nodejs_send_notification'] = true;
-		            Wo_RegisterNotification($notification_data_array);
-		        }
-		    }
-		}
+        $can_ = 0;
+        $wo['nodejs_send_notification'] = false;
+        $profile_visit_notify = !empty($wo['user']['API_notification_settings']['profile_visit_notify']) && (int) $wo['user']['API_notification_settings']['profile_visit_notify'] === 1;
+        if ($wo['loggedin'] == true && $wo['config']['profileVisit'] == 1 && !empty($_POST['send_notify']) && $_POST['send_notify'] == 1 && $profile_visit_notify) {
+            if ($recipient_data['user_id'] != $wo['user']['user_id']) {
+                if ($wo['config']['pro'] == 1) {
+                    if ($recipient_data['is_pro'] == 1 && in_array($recipient_data['pro_type'], array_keys($wo['pro_packages'])) && $wo['pro_packages'][$recipient_data['pro_type']]['profile_visitors'] == 1) {
+                        $can_ = 1;
+                    }
+                } else {
+                    $can_ = 1;
+                }
+                if ($can_ == 1) {
+                    $notification_data_array = array(
+                        'recipient_id' => $recipient_data['user_id'],
+                        'type' => 'visited_profile',
+                        'url' => 'index.php?link1=timeline&u=' . $wo['user']['username']
+                    );
+                    $wo['nodejs_send_notification'] = true;
+                    Wo_RegisterNotification($notification_data_array);
+                }
+            }
+        }
 
-    	$response_data = array('api_status' => 200);
+        $response_data = array('api_status' => 200);
 		$recipient_data_ = Wo_UpdateUserDetails($recipient_data, true, true, true);
         if (is_array($recipient_data_)) {
             $recipient_data = $recipient_data_;
