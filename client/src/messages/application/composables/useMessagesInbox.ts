@@ -15,7 +15,7 @@ import type { FeedStoryReactionType } from "../../../feed/domain/constants/story
 import { createApiMessagesRepository } from "../../infrastructure/repositories/ApiMessagesRepository"
 import {
   buildReplyMessageText,
-  getMessageDisplayText,
+  getMessageReplyPreviewText,
 } from "../utils/message-bubble-content"
 import { getMessageLocationMeta } from "../utils/message-location"
 
@@ -412,9 +412,25 @@ export function useMessagesInbox(
       ? t("navigation.chatWidget.replyingTo", { name: replyAuthor.value })
       : t("navigation.chatWidget.replyingToMessage"),
   )
+  const replyLocationTitle = computed(() => {
+    if (!replyTarget.value) {
+      return ""
+    }
+
+    if (replyTarget.value.isMine) {
+      return t("pages.messagesPage.locationOwnTitle")
+    }
+
+    return replyAuthor.value
+      ? t("pages.messagesPage.locationSenderTitle", { name: replyAuthor.value })
+      : t("pages.messagesPage.locationDefaultTitle")
+  })
   const replyPreviewText = computed(() =>
     replyTarget.value
-      ? getMessageDisplayText(replyTarget.value) || replyTarget.value.mediaName || t("navigation.chatWidget.replyingToMessage")
+      ? getMessageReplyPreviewText(replyTarget.value, {
+          fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
+          locationTitle: replyLocationTitle.value,
+        })
       : t("navigation.chatWidget.replyingToMessage"),
   )
   const replyPreviewMediaUrl = computed(() =>
@@ -788,6 +804,7 @@ export function useMessagesInbox(
           target: replyTarget.value,
           author: replyAuthor.value,
           fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
+          locationTitle: replyLocationTitle.value,
         })
 
     sendQueue.value.push({

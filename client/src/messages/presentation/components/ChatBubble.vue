@@ -36,17 +36,23 @@
       </div>
 
       <div
-        class="group relative w-fit max-w-[84%] sm:max-w-[74%] lg:max-w-[42rem] chat-bubble__wrapper"
+        class="group relative w-fit max-w-[80%] lg:max-w-[42rem] chat-bubble__wrapper"
         :class="{
           'chat-bubble__wrapper--product': productCard,
           'chat-bubble__wrapper--location': location && !isDeleted,
         }"
         :title="timelineTitle"
       >
-        <div
+        <button
           v-if="replyTitle || replyQuote"
+          type="button"
           class="chat-bubble__reply"
-          :class="{ 'chat-bubble__reply--mine': isMine }"
+          :class="{
+            'chat-bubble__reply--mine': isMine,
+            'chat-bubble__reply--clickable': replyTargetMessageId,
+          }"
+          :disabled="!replyTargetMessageId"
+          @click.stop="replyTargetMessageId && emit('open-reply-target', replyTargetMessageId)"
         >
           <div v-if="replyTitle" class="chat-bubble__reply-title">
             <Icon name="i-ph-arrow-bend-up-left-fill" class="h-3.5 w-3.5" />
@@ -61,7 +67,7 @@
           <div v-else-if="replyQuote" class="chat-bubble__reply-quote">
             {{ replyQuote }}
           </div>
-        </div>
+        </button>
 
         <div
           v-if="callLog"
@@ -185,7 +191,7 @@
         </span>
 
         <div v-if="showTools" class="chat-bubble__message-tools">
-          <span class="chat-bubble__message-tool-wrap">
+          <span v-if="!location" ref="reactionToolRef" class="chat-bubble__message-tool-wrap">
             <button
               type="button"
               class="chat-bubble__message-tool"
@@ -194,24 +200,31 @@
             >
               <Icon name="i-ph-smiley-duotone" class="h-3.5 w-3.5" />
             </button>
-            <div
-              v-if="reactionPickerOpen"
-              class="chat-bubble__reaction-picker"
-              :class="{ 'chat-bubble__reaction-picker--mine': isMine }"
-            >
-              <button
-                v-for="reaction in reactionOptions"
-                :key="reaction.value"
-                type="button"
-                class="chat-bubble__reaction-option"
-                :title="reaction.label"
-                @click="emit('select-reaction', reaction)"
+            <Teleport to="body" :disabled="!teleportReactionPicker">
+              <div
+                v-if="reactionPickerOpen"
+                class="chat-bubble__reaction-picker"
+                :class="{
+                  'chat-bubble__reaction-picker--mine': isMine,
+                  'chat-bubble__reaction-picker--teleported': teleportReactionPicker,
+                }"
+                :style="teleportReactionPicker ? reactionPickerPosition : undefined"
               >
-                <img :src="reaction.src" :alt="reaction.label" draggable="false">
-              </button>
-            </div>
+                <button
+                  v-for="reaction in reactionOptions"
+                  :key="reaction.value"
+                  type="button"
+                  class="chat-bubble__reaction-option"
+                  :title="reaction.label"
+                  @click="emit('select-reaction', reaction)"
+                >
+                  <img :src="reaction.src" :alt="reaction.label" draggable="false">
+                </button>
+              </div>
+            </Teleport>
           </span>
           <button
+            v-if="!location"
             type="button"
             class="chat-bubble__message-tool"
             :title="replyTitleLabel"
@@ -262,10 +275,12 @@ const props = defineProps<{
   replyTitle?: string
   replyQuote?: string
   replyMediaUrl?: string
+  replyTargetMessageId?: number | null
   reactionSrc?: string
   reactionAlt?: string
   showTools?: boolean
   reactionPickerOpen?: boolean
+  teleportReactionPicker?: boolean
   reactionOptions?: ChatBubbleReactionOption[]
   reactTitle?: string
   replyTitleLabel?: string
@@ -295,6 +310,7 @@ const emit = defineEmits<{
   "toggle-reaction-picker": []
   "select-reaction": [reaction: ChatBubbleReactionOption]
   "reply": []
+  "open-reply-target": [messageId: number]
   "delete": []
 }>()
 
@@ -422,6 +438,44 @@ const callButtonLabel = computed(() =>
 )
 
 const reactionOptions = computed(() => props.reactionOptions ?? [])
+const reactionToolRef = ref<HTMLElement | null>(null)
+const reactionPickerPosition = ref<Record<string, string>>({})
+
+function updateReactionPickerPosition() {
+  if (!import.meta.client || !props.teleportReactionPicker || !reactionToolRef.value) {
+    return
+  }
+
+  const triggerRect = reactionToolRef.value.getBoundingClientRect()
+  const pickerWidth = 190
+  const pickerHeight = 48
+  const gutter = 8
+  const viewportWidth = window.innerWidth
+  const viewportHeight = window.innerHeight
+  const preferredLeft = props.isMine
+    ? triggerRect.left
+    : triggerRect.right - pickerWidth
+  const left = Math.min(Math.max(gutter, preferredLeft), Math.max(gutter, viewportWidth - pickerWidth - gutter))
+  const aboveTop = triggerRect.top - pickerHeight - 7
+  const top = aboveTop >= gutter
+    ? aboveTop
+    : Math.min(viewportHeight - pickerHeight - gutter, triggerRect.bottom + 7)
+
+  reactionPickerPosition.value = {
+    left: `${left}px`,
+    top: `${Math.max(gutter, top)}px`,
+  }
+}
+
+watch(() => props.reactionPickerOpen, (isOpen) => {
+  if (isOpen) {
+    void nextTick(updateReactionPickerPosition)
+  }
+}, { flush: "post" })
+
+onMounted(() => window.addEventListener("resize", updateReactionPickerPosition))
+onBeforeUnmount(() => window.removeEventListener("resize", updateReactionPickerPosition))
+
 const reactTitle = computed(() => props.reactTitle || t("navigation.chatWidget.reactToMessage"))
 const replyTitleLabel = computed(() => props.replyTitleLabel || t("navigation.chatWidget.replyMessage"))
 const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget.deleteMessage"))
@@ -644,7 +698,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 .chat-bubble__wrapper {
   display: flex;
   min-width: 0;
-  max-width: min(78%, 34rem) !important;
+  max-width: min(80%, 34rem) !important;
   flex-direction: column;
   align-items: flex-start;
 }
@@ -672,7 +726,7 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 @media (min-width: 640px) {
   .chat-bubble__wrapper {
-    max-width: min(70%, 34rem) !important;
+    max-width: min(80%, 34rem) !important;
   }
 
   .chat-bubble__wrapper--location {
@@ -688,6 +742,21 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   gap: 3px;
   margin: 0 0 2px;
   color: #65676b;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+}
+
+.chat-bubble__reply--clickable {
+  cursor: pointer;
+}
+
+.chat-bubble__reply--clickable:hover .chat-bubble__reply-quote,
+.chat-bubble__reply--clickable:focus-visible .chat-bubble__reply-quote {
+  outline: 2px solid color-mix(in srgb, var(--bg-brand, #0000ff) 28%, transparent);
+  outline-offset: 1px;
 }
 
 .chat-bubble__reply--mine {
@@ -768,23 +837,19 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   display: inline-flex;
   position: absolute;
   top: 50%;
-  right: -106px;
+  right: -60px;
   z-index: 50;
   align-items: center;
   gap: 3px;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.96);
   padding: 3px;
   opacity: 0;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
   transform: translateY(-50%) scale(0.96);
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
 .chat-bubble__container--mine .chat-bubble__message-tools {
   right: auto;
-  left: -106px;
+  left: -90px;
 }
 
 .chat-bubble__wrapper:hover .chat-bubble__message-tools,
@@ -823,7 +888,8 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
 
 .chat-bubble__reaction-picker {
   position: absolute;
-  left: 50%;
+  right: 0;
+  left: auto;
   bottom: calc(100% + 7px);
   z-index: 70;
   display: flex;
@@ -834,7 +900,21 @@ const deleteTitle = computed(() => props.deleteTitle || t("navigation.chatWidget
   background: #ffffff;
   padding: 5px 7px;
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.16);
-  transform: translateX(-50%);
+  transform: none;
+}
+
+/* Keep the picker inside the scrolling chat viewport instead of letting it
+ * extend past the left edge for messages sent by the current user. */
+.chat-bubble__reaction-picker--mine {
+  right: auto;
+  left: 0;
+}
+
+.chat-bubble__reaction-picker--teleported {
+  position: fixed;
+  right: auto;
+  bottom: auto;
+  z-index: 10000;
 }
 
 .chat-bubble__reaction-option {

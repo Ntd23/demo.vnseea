@@ -38,6 +38,13 @@ test("extracts the native map URL after its app-generated intro text", () => {
   assert.ok(location?.messageUrl.startsWith("https://v2.vnseea.vn/map?"))
 })
 
+test("web location messages include the native image alias for the sender avatar", () => {
+  const source = readClient("src/messages/application/utils/message-location.ts")
+
+  assert.match(source, /url\.searchParams\.set\("image", avatarUrl\)/)
+  assert.match(source, /url\.searchParams\.set\("avatar", avatarUrl\)/)
+})
+
 test("rejects map links with missing or out-of-range coordinates", () => {
   assert.equal(parseMessageLocationText("https://v2.vnseea.vn/map?title=Missing"), null)
   assert.equal(parseMessageLocationText("https://v2.vnseea.vn/map?lat=91&lng=105"), null)
@@ -80,6 +87,24 @@ test("location chat templates compile after sender-aware title handling", () => 
   assert.match(locationCard, /const avatarSources = computed/)
   assert.match(locationCard, /props\.avatarUrl\?\.trim\(\)[\s\S]*props\.location\.avatarUrl\.trim\(\)/)
   assert.match(locationCard, /@error="useNextAvatarSource"/)
+
+  const bubbleContent = readClient("src/messages/application/utils/message-bubble-content.ts")
+  const inbox = readClient("src/messages/application/composables/useMessagesInbox.ts")
+  const chatWidget = readClient("src/navigation/presentation/components/ChatWidget.vue")
+  assert.match(bubbleContent, /function getMessageReplyPreviewText/)
+  assert.match(bubbleContent, /const location = getMessageLocationMeta\(message\)/)
+  assert.match(bubbleContent, /return locationPreview \? `📍 \$\{locationPreview\}` : fallbackLabel/)
+  assert.match(inbox, /locationTitle: replyLocationTitle\.value/)
+  assert.match(chatWidget, /locationTitle: miniReplyLocationTitle\.value/)
+  assert.doesNotMatch(chatWidget, /getMiniBubbleText\(miniReplyTarget\.value\) \|\| miniReplyTarget\.value\.mediaName/)
+  assert.match(bubbleContent, /targetMessageId: input\.target\.id/)
+  assert.match(chatWidget, /@open-reply-target="scrollToMiniReplyTarget/)
+  assert.match(chatWidget, /loadOlderMiniMessages\(contactId\)/)
+
+  const chatBubble = readClient("src/messages/presentation/components/ChatBubble.vue")
+  assert.match(chatBubble, /emit\('open-reply-target', replyTargetMessageId\)/)
+  assert.match(messageList, /scrollIntoView\(\{ behavior: "smooth", block: "center" \}\)/)
+  assert.match(messageList, /emit\("load-more"\)/)
 })
 
 test("mini chat location cards stay balanced and history loading does not force bottom scroll", () => {

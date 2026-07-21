@@ -543,11 +543,13 @@
             <div
               v-for="message in miniSession.messages"
               :key="message.id"
+              :data-message-id="message.id"
               class="chat-widget__mini-message"
               :class="{
                 'chat-widget__mini-message--mine': message.isMine,
                 'chat-widget__mini-message--product': Boolean(getMiniProductMeta(message)),
                 'chat-widget__mini-message--location': Boolean(getMessageLocationMeta(message)),
+                'chat-widget__mini-message--highlighted': highlightedMiniMessageKey === `${miniSession.contactId}:${message.id}`,
               }"
             >
               <ChatBubble
@@ -564,10 +566,12 @@
                 :reply-title="!message.isDeleted && getMiniReplyMeta(message) ? getMiniReplyTitle(message) : undefined"
                 :reply-quote="!message.isDeleted && !getMiniReplyMeta(message)?.mediaUrl && !isMiniImageFileQuote(getMiniReplyMeta(message)?.quote) ? getMiniReplyMeta(message)?.quote : undefined"
                 :reply-media-url="!message.isDeleted ? getMiniReplyMeta(message)?.mediaUrl : undefined"
+                :reply-target-message-id="!message.isDeleted ? getMiniReplyMeta(message)?.targetMessageId : undefined"
                 :reaction-src="!message.isDeleted ? getMiniMessageReaction(message)?.src : undefined"
                 :reaction-alt="!message.isDeleted ? $t(getMiniMessageReaction(message)?.labelKey ?? defaultMiniReaction.labelKey) : undefined"
                 :show-tools="!message.isDeleted"
                 :reaction-picker-open="activeMiniReactionPickerId === message.id"
+                teleport-reaction-picker
                 :reaction-options="miniBubbleReactionOptions"
                 :can-delete="message.isMine"
                 :media-url="message.isDeleted ? undefined : message.mediaUrl"
@@ -582,14 +586,15 @@
                 @retry-call="openFullMessages(miniSession.contact)"
                 @toggle-reaction-picker="toggleMiniReactionPicker(message.id)"
                 @select-reaction="setMiniReactionByValue(message.id, $event.value)"
-                @reply="replyToMiniMessage(message)"
+                @reply="replyToMiniMessage(miniSession.contactId, message)"
+                @open-reply-target="scrollToMiniReplyTarget(miniSession.contactId, $event)"
                 @delete="deleteMiniMessageAction(message)"
               />
             </div>
           </div>
         </div>
 
-        <div v-if="miniSession.productDraft || miniReplyTarget || miniSession.attachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
+        <div v-if="miniSession.productDraft || hasMiniReplyFor(miniSession.contactId) || miniSession.attachFile || activeMiniRecordDraft || isMiniRecording" class="chat-widget__mini-draft">
           <div v-if="miniSession.productDraft" class="chat-widget__mini-product-draft">
             <span class="chat-widget__mini-product-image">
               <img
@@ -628,7 +633,7 @@
               <Icon name="i-ph-paper-plane-tilt-bold" class="h-3.5 w-3.5 shrink-0" />
             </button>
           </div>
-          <div v-if="miniReplyTarget" class="chat-widget__mini-reply-preview">
+          <div v-if="hasMiniReplyFor(miniSession.contactId)" class="chat-widget__mini-reply-preview">
             <div class="chat-widget__mini-reply-copy">
               <strong>{{ miniReplyTitle }}</strong>
               <NuxtImg
@@ -639,7 +644,7 @@
               />
               <span v-if="!miniReplyPreviewMediaUrl">{{ miniReplyPreviewText }}</span>
             </div>
-            <button type="button" class="chat-widget__mini-preview-clear" @click="miniReplyTarget = null">
+            <button type="button" class="chat-widget__mini-preview-clear" @click="clearMiniReply(miniSession.contactId)">
               <Icon name="i-ph-x-bold" class="h-3 w-3" />
             </button>
           </div>
@@ -807,7 +812,11 @@ import { useMessageRecorder } from "../../../messages/application/composables/us
 import ChatBubble from "../../../messages/presentation/components/ChatBubble.vue"
 import type { MessageCallType } from "../../../messages/domain/types/calls.types"
 import type { MessageContact, MessageItem } from "../../../messages/domain/types/messages.types"
-import { buildProductMessageText, getMessageProductMeta } from "../../../messages/application/utils/message-bubble-content"
+import {
+  buildProductMessageText,
+  getMessageProductMeta,
+  getMessageReplyPreviewText,
+} from "../../../messages/application/utils/message-bubble-content"
 import { getMessageLocationMeta } from "../../../messages/application/utils/message-location"
 import { useChatWidgetVM } from "../../application/view-models/useChatWidgetVM"
 
@@ -839,6 +848,8 @@ const { t } = useI18n()
 const toast = useToast()
 const miniMessagesViewports = new Map<string, HTMLElement>()
 const miniMessagesPinnedToBottom = new Map<string, boolean>()
+const highlightedMiniMessageKey = ref("")
+let miniHighlightTimer: ReturnType<typeof setTimeout> | undefined
 const MINI_MESSAGES_BOTTOM_THRESHOLD = 64
 const miniHeaderMenuRef = ref<HTMLElement | null>(null)
 const messageAvatarMenuRef = ref<HTMLElement | null>(null)
@@ -856,6 +867,7 @@ const messageAvatarMenuMessageId = ref<number | null>(null)
 const activeMiniReactionPickerId = ref<number | null>(null)
 const miniMessageReactions = ref<Record<number, FeedReactionAsset | undefined>>({})
 const miniReplyTarget = ref<MessageItem | null>(null)
+const miniReplyContactId = ref("")
 const MINI_REPLY_PREFIX = "__VNSEEA_MINI_REPLY__:"
 const {
   isCallActionPending,
@@ -979,9 +991,25 @@ const miniReplyTitle = computed(() =>
     ? t("navigation.chatWidget.replyingTo", { name: miniReplyAuthor.value })
     : t("navigation.chatWidget.replyingToMessage"),
 )
+const miniReplyLocationTitle = computed(() => {
+  if (!miniReplyTarget.value) {
+    return ""
+  }
+
+  if (miniReplyTarget.value.isMine) {
+    return t("pages.messagesPage.locationOwnTitle")
+  }
+
+  return miniReplyAuthor.value
+    ? t("pages.messagesPage.locationSenderTitle", { name: miniReplyAuthor.value })
+    : t("pages.messagesPage.locationDefaultTitle")
+})
 const miniReplyPreviewText = computed(() =>
   miniReplyTarget.value
-    ? getMiniBubbleText(miniReplyTarget.value) || miniReplyTarget.value.mediaName || t("navigation.chatWidget.replyingToMessage")
+    ? getMessageReplyPreviewText(miniReplyTarget.value, {
+        fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
+        locationTitle: miniReplyLocationTitle.value,
+      })
     : t("navigation.chatWidget.replyingToMessage"),
 )
 const miniReplyPreviewMediaUrl = computed(() =>
@@ -1015,14 +1043,13 @@ function canSubmitMiniMessage(session: MiniChatSessionView) {
     && (
       session.canSend
       || Boolean(activeMiniRecordDraft.value)
-      || Boolean(miniReplyTarget.value && session.message.trim())
+      || Boolean(hasMiniReplyFor(session.contactId) && session.message.trim())
     )
 }
 
 async function openMiniChat(contact: Parameters<typeof openMiniChatVm>[0]) {
   activeMiniHeaderContactId.value = null
   closeMessageAvatarMenu()
-  miniReplyTarget.value = null
   activeMiniReactionPickerId.value = null
   clearMiniRecording()
   await openMiniChatVm(contact)
@@ -1042,7 +1069,7 @@ function triggerMiniFileInput(type: 'image' | 'file', contactId: string) {
 function closeMiniChat() {
   activeMiniHeaderContactId.value = null
   closeMessageAvatarMenu()
-  miniReplyTarget.value = null
+  clearMiniReply()
   activeMiniReactionPickerId.value = null
   clearMiniRecording()
   closeMiniChatVm()
@@ -1051,7 +1078,7 @@ function closeMiniChat() {
 function closeMiniSession(session: MiniChatSessionView) {
   activeMiniHeaderContactId.value = null
   closeMessageAvatarMenu()
-  miniReplyTarget.value = null
+  clearMiniReply(session.contactId)
   activeMiniReactionPickerId.value = null
   clearMiniRecording()
   miniMessagesViewports.delete(session.contactId)
@@ -1221,6 +1248,14 @@ function closeFloatingMenusOnOutsideClick(event: MouseEvent) {
   if (messageAvatarMenuContact.value && !messageAvatarMenuRef.value?.contains(target)) {
     closeMessageAvatarMenu()
   }
+
+  const targetElement = target instanceof Element ? target : null
+  if (
+    activeMiniReactionPickerId.value !== null
+    && !targetElement?.closest(".chat-bubble__message-tool-wrap, .chat-bubble__reaction-picker")
+  ) {
+    activeMiniReactionPickerId.value = null
+  }
 }
 
 onMounted(() => {
@@ -1229,6 +1264,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", closeFloatingMenusOnOutsideClick)
+  if (miniHighlightTimer) {
+    clearTimeout(miniHighlightTimer)
+  }
 })
 
 async function goToMessageAvatarProfile() {
@@ -1372,7 +1410,7 @@ async function deleteMiniMessageAction(message: MessageItem) {
   try {
     await deleteMiniMessage(message.id)
     if (miniReplyTarget.value?.id === message.id) {
-      miniReplyTarget.value = null
+      clearMiniReply()
     }
   }
   catch {
@@ -1383,17 +1421,29 @@ async function deleteMiniMessageAction(message: MessageItem) {
   }
 }
 
-function replyToMiniMessage(message: MessageItem) {
+function hasMiniReplyFor(contactId: string) {
+  return Boolean(miniReplyTarget.value && miniReplyContactId.value === contactId)
+}
+
+function clearMiniReply(contactId = miniReplyContactId.value) {
+  if (!contactId || miniReplyContactId.value === contactId) {
+    miniReplyTarget.value = null
+    miniReplyContactId.value = ""
+  }
+}
+
+function replyToMiniMessage(contactId: string, message: MessageItem) {
   if (message.isDeleted) {
     return
   }
 
   miniReplyTarget.value = message
+  miniReplyContactId.value = contactId
   activeMiniReactionPickerId.value = null
 }
 
-function buildMiniReplyText(text: string) {
-  if (!miniReplyTarget.value) {
+function buildMiniReplyText(text: string, contactId: string) {
+  if (!hasMiniReplyFor(contactId) || !miniReplyTarget.value) {
     return normalizeMiniMessageText(text)
   }
 
@@ -1404,7 +1454,10 @@ function buildMiniReplyText(text: string) {
   const source = normalizeMiniMessageText(
     isImageReply
       ? "Tin nhan"
-      : getMiniBubbleText(miniReplyTarget.value) || miniReplyTarget.value.mediaName || "Tin nhan",
+      : getMessageReplyPreviewText(miniReplyTarget.value, {
+          fallbackLabel: t("navigation.chatWidget.replyingToMessage"),
+          locationTitle: miniReplyLocationTitle.value,
+        }),
   )
   const snippet = source.length > 72 ? `${source.slice(0, 72)}...` : source
   const author = miniReplyAuthor.value || "Tin nhan"
@@ -1413,6 +1466,7 @@ function buildMiniReplyText(text: string) {
     quote: snippet,
     mediaUrl: isImageReply ? miniReplyTarget.value.mediaUrl : "",
     mediaType: isImageReply ? miniReplyTarget.value.mediaType : "",
+    targetMessageId: miniReplyTarget.value.id,
   }))
 
   return `${MINI_REPLY_PREFIX}${payload}\n${normalizeMiniMessageText(text)}`
@@ -1429,13 +1483,16 @@ function getMiniReplyMeta(message: MessageItem) {
         quote?: string
         mediaUrl?: string
         mediaType?: MessageItem["mediaType"]
+        targetMessageId?: number
       }
+      const targetMessageId = Number(payload.targetMessageId)
 
       return {
         author: normalizeMiniMessageText(payload.author || ""),
         quote: normalizeMiniMessageText(payload.quote || ""),
         mediaUrl: payload.mediaUrl || "",
         mediaType: payload.mediaType || "",
+        targetMessageId: Number.isInteger(targetMessageId) && targetMessageId > 0 ? targetMessageId : null,
         body: normalizeMiniMessageText(bodyLines.join("\n")),
       }
     }
@@ -1458,6 +1515,7 @@ function getMiniReplyMeta(message: MessageItem) {
     quote: normalizeMiniMessageText(quote),
     mediaUrl: "",
     mediaType: "",
+    targetMessageId: null,
     body: normalizeMiniMessageText(bodyLines.join("\n")),
   }
 }
@@ -1588,7 +1646,7 @@ async function shareMiniLocation(session: MiniChatSessionView) {
       return
     }
 
-    miniReplyTarget.value = null
+    clearMiniReply(session.contactId)
     clearMiniProductDraft(session.contactId)
     await sendMiniMessage({
       contactId: session.contactId,
@@ -1618,7 +1676,7 @@ async function submitMiniMessage(session: MiniChatSessionView) {
         text: trimmed,
         product: session.productDraft,
       })
-    : buildMiniReplyText(trimmed)
+    : buildMiniReplyText(trimmed, contactId)
   session.message = ""
 
   await sendMiniMessage({
@@ -1627,7 +1685,7 @@ async function submitMiniMessage(session: MiniChatSessionView) {
     record: activeMiniRecordDraft.value,
   })
   clearMiniProductDraft(contactId)
-  miniReplyTarget.value = null
+  clearMiniReply(contactId)
   clearMiniRecording()
 
   setTimeout(() => {
@@ -1741,6 +1799,50 @@ function scrollMiniMessagesToBottom(contactId?: string) {
   }
 }
 
+async function scrollToMiniReplyTarget(contactId: string, messageId: number) {
+  const viewport = miniMessagesViewports.get(contactId)
+
+  if (!viewport) {
+    return
+  }
+
+  let target = viewport.querySelector<HTMLElement>(`[data-message-id="${messageId}"]`)
+
+  for (let attempt = 0; !target && attempt < 8; attempt += 1) {
+    const session = miniChatSessions.value.find(item => item.contactId === contactId)
+    const previousFirstId = session?.messages[0]?.id
+    const previousCount = session?.messages.length ?? 0
+
+    await loadOlderMiniMessages(contactId)
+    await nextTick()
+    target = viewport.querySelector<HTMLElement>(`[data-message-id="${messageId}"]`)
+
+    const updatedSession = miniChatSessions.value.find(item => item.contactId === contactId)
+    if (
+      !target
+      && updatedSession?.messages[0]?.id === previousFirstId
+      && updatedSession?.messages.length === previousCount
+    ) {
+      break
+    }
+  }
+
+  if (!target) {
+    return
+  }
+
+  target.scrollIntoView({ behavior: "smooth", block: "center" })
+  highlightedMiniMessageKey.value = `${contactId}:${messageId}`
+
+  if (miniHighlightTimer) {
+    clearTimeout(miniHighlightTimer)
+  }
+  miniHighlightTimer = setTimeout(() => {
+    highlightedMiniMessageKey.value = ""
+    miniHighlightTimer = undefined
+  }, 1800)
+}
+
 watch(
   () => ({
     open: miniChatOpen.value,
@@ -1789,7 +1891,7 @@ watch(
 watch(miniChatAutoOpenVersion, (version) => {
   if (version > 0) {
     activeMiniHeaderContactId.value = null
-    miniReplyTarget.value = null
+    clearMiniReply()
     activeMiniReactionPickerId.value = null
     clearMiniRecording()
     nextTick(() => {
@@ -1830,8 +1932,9 @@ watch(miniChatAutoOpenVersion, (version) => {
 }
 
 .chat-widget__toggle-btn {
+  box-sizing: border-box;
   margin-left: 2px;
-  padding-left: 8px;
+  padding: 0;
   border-left: 1px solid #f1f5f9;
 }
 
@@ -2653,7 +2756,7 @@ watch(miniChatAutoOpenVersion, (version) => {
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble__wrapper) {
   width: fit-content;
-  max-width: min(96%, 310px) !important;
+  max-width: min(80%, 310px) !important;
   min-width: 0;
 }
 
@@ -2696,6 +2799,19 @@ watch(miniChatAutoOpenVersion, (version) => {
   padding: 10px 12px;
   font-size: 12px;
   line-height: 1.5;
+}
+
+.chat-widget__mini-message--highlighted :deep(.chat-bubble__wrapper) {
+  animation: mini-reply-target-pulse 1.8s ease-out;
+}
+
+@keyframes mini-reply-target-pulse {
+  0%, 100% {
+    filter: none;
+  }
+  18%, 55% {
+    filter: drop-shadow(0 0 7px rgba(0, 0, 255, 0.38));
+  }
 }
 
 .chat-widget__mini-chat-bubble :deep(.chat-bubble__call-card) {

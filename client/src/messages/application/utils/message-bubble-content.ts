@@ -11,6 +11,7 @@ export type MessageReplyMeta = {
   quote: string
   mediaUrl: string
   mediaType: MessageItem["mediaType"] | ""
+  targetMessageId: number | null
   body: string
 }
 
@@ -49,13 +50,16 @@ export function getMessageReplyMeta(message: Pick<MessageItem, "text">): Message
         quote?: string
         mediaUrl?: string
         mediaType?: MessageItem["mediaType"]
+        targetMessageId?: number
       }
+      const targetMessageId = Number(payload.targetMessageId)
 
       return {
         author: normalizeMessageText(payload.author || ""),
         quote: normalizeMessageText(payload.quote || ""),
         mediaUrl: payload.mediaUrl || "",
         mediaType: payload.mediaType || "",
+        targetMessageId: Number.isInteger(targetMessageId) && targetMessageId > 0 ? targetMessageId : null,
         body: normalizeMessageText(bodyLines.join("\n")),
       }
     }
@@ -78,6 +82,7 @@ export function getMessageReplyMeta(message: Pick<MessageItem, "text">): Message
     quote: normalizeMessageText(quote),
     mediaUrl: "",
     mediaType: "",
+    targetMessageId: null,
     body: normalizeMessageText(bodyLines.join("\n")),
   }
 }
@@ -146,6 +151,34 @@ export function getMessageDisplayText(
   return normalizeMessageText(message.text)
 }
 
+export function getMessageReplyPreviewText(
+  message: MessageItem,
+  options?: {
+    fallbackLabel?: string
+    locationTitle?: string
+  },
+) {
+  const fallbackLabel = normalizeMessageText(options?.fallbackLabel || "")
+  const location = getMessageLocationMeta(message)
+
+  if (location) {
+    const title = normalizeMessageText(options?.locationTitle || location.title)
+    const address = normalizeMessageText(location.address)
+    const locationPreview = title && address && title.localeCompare(address, undefined, { sensitivity: "accent" }) !== 0
+      ? `${title} · ${address}`
+      : title || address
+
+    return locationPreview ? `📍 ${locationPreview}` : fallbackLabel
+  }
+
+  const product = getMessageProductMeta(message)
+
+  return getMessageDisplayText(message)
+    || product?.card.title
+    || normalizeMessageText(message.mediaName || "")
+    || fallbackLabel
+}
+
 export function buildProductMessageText(input: {
   text: string
   product: MessageProductCard
@@ -166,6 +199,7 @@ export function buildReplyMessageText(input: {
   target?: MessageItem | null
   author: string
   fallbackLabel: string
+  locationTitle?: string
 }) {
   if (!input.target) {
     return normalizeMessageText(input.text)
@@ -178,7 +212,10 @@ export function buildReplyMessageText(input: {
   const source = normalizeMessageText(
     isImageReply
       ? input.fallbackLabel
-      : getMessageDisplayText(input.target) || input.target.mediaName || input.fallbackLabel,
+      : getMessageReplyPreviewText(input.target, {
+          fallbackLabel: input.fallbackLabel,
+          locationTitle: input.locationTitle,
+        }),
   )
   const snippet = source.length > 72 ? `${source.slice(0, 72)}...` : source
   const payload = encodeURIComponent(JSON.stringify({
@@ -186,6 +223,7 @@ export function buildReplyMessageText(input: {
     quote: snippet,
     mediaUrl: isImageReply ? input.target.mediaUrl : "",
     mediaType: isImageReply ? input.target.mediaType : "",
+    targetMessageId: input.target.id,
   }))
 
   return `${MESSAGE_REPLY_PREFIX}${payload}\n${normalizeMessageText(input.text)}`

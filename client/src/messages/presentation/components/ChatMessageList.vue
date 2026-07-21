@@ -27,6 +27,8 @@
 
         <MessagesChatBubble
           v-else
+          :data-message-id="msg.id"
+          :class="{ 'messages-reply-target--highlighted': highlightedMessageId === msg.id }"
           v-bind="msg"
           :text="getBubbleText(msg)"
           :avatar="msg.avatar || (!msg.isMine ? contactAvatar : undefined)"
@@ -35,6 +37,7 @@
           :reply-title="getReplyMeta(msg) && !msg.isDeleted ? getReplyTitle(msg) : undefined"
           :reply-quote="getReplyMeta(msg) && !msg.isDeleted && !getReplyMeta(msg)?.mediaUrl && !isImageFileQuote(getReplyMeta(msg)?.quote) ? getReplyMeta(msg)?.quote : undefined"
           :reply-media-url="getReplyMeta(msg) && !msg.isDeleted ? getReplyMeta(msg)?.mediaUrl : undefined"
+          :reply-target-message-id="getReplyMeta(msg) && !msg.isDeleted ? getReplyMeta(msg)?.targetMessageId : undefined"
           :reaction-src="!msg.isDeleted ? getMessageReaction(msg)?.src : undefined"
           :reaction-alt="!msg.isDeleted && getMessageReaction(msg) ? t(getMessageReaction(msg)!.labelKey) : undefined"
           :show-tools="!msg.isDeleted"
@@ -51,6 +54,7 @@
           @toggle-reaction-picker="emit('toggle-reaction-picker', msg.id)"
           @select-reaction="emit('select-reaction', msg.id, $event.value)"
           @reply="emit('reply-message', msg)"
+          @open-reply-target="scrollToReplyTarget"
           @delete="emit('delete-message', msg)"
         />
       </template>
@@ -163,6 +167,10 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const listContainer = ref<HTMLElement | null>(null)
+const highlightedMessageId = ref<number | null>(null)
+const pendingReplyTargetId = ref<number | null>(null)
+let replyTargetLoadAttempts = 0
+let highlightTimer: ReturnType<typeof setTimeout> | undefined
 const threadWidthClass = computed(() =>
   props.contactType === "user" ? "max-w-[760px]" : "max-w-[920px]",
 )
@@ -259,6 +267,36 @@ function scrollToBottom(behavior: ScrollBehavior = "smooth") {
   })
 }
 
+function scrollToReplyTarget(messageId: number) {
+  const target = listContainer.value?.querySelector<HTMLElement>(`[data-message-id="${messageId}"]`)
+
+  if (!target) {
+    if (pendingReplyTargetId.value !== messageId) {
+      pendingReplyTargetId.value = messageId
+      replyTargetLoadAttempts = 0
+    }
+
+    if (replyTargetLoadAttempts < 8) {
+      replyTargetLoadAttempts += 1
+      emit("load-more")
+    }
+    return
+  }
+
+  pendingReplyTargetId.value = null
+  replyTargetLoadAttempts = 0
+  target.scrollIntoView({ behavior: "smooth", block: "center" })
+  highlightedMessageId.value = messageId
+
+  if (highlightTimer) {
+    clearTimeout(highlightTimer)
+  }
+  highlightTimer = setTimeout(() => {
+    highlightedMessageId.value = null
+    highlightTimer = undefined
+  }, 1800)
+}
+
 function getPinnedEventLabel(message: MessageItem) {
   if (!message.systemEvent) return ""
   return message.systemEvent.actorId === message.senderId && message.isMine
@@ -293,6 +331,15 @@ watch(lastMessageKey, () => {
 })
 
 watch(
+  () => props.messages.length,
+  () => {
+    if (pendingReplyTargetId.value) {
+      nextTick(() => scrollToReplyTarget(pendingReplyTargetId.value as number))
+    }
+  },
+)
+
+watch(
   () => props.threadKey,
   () => {
     scheduleScrollToBottom("auto")
@@ -302,7 +349,7 @@ watch(
 watch(
   () => props.isPending,
   (isPending) => {
-    if (!isPending) {
+    if (!isPending && !pendingReplyTargetId.value && !highlightedMessageId.value) {
       scheduleScrollToBottom("auto")
     }
   },
@@ -314,6 +361,12 @@ watch(() => props.isTyping, () => {
 
 onMounted(() => {
   scheduleScrollToBottom("auto")
+})
+
+onBeforeUnmount(() => {
+  if (highlightTimer) {
+    clearTimeout(highlightTimer)
+  }
 })
 
 defineExpose({ scrollToBottom })
@@ -329,6 +382,19 @@ defineExpose({ scrollToBottom })
   background: #f1f0f0;
   padding: 12px 16px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+:deep(.messages-reply-target--highlighted .chat-bubble__wrapper) {
+  animation: messages-reply-target-pulse 1.8s ease-out;
+}
+
+@keyframes messages-reply-target-pulse {
+  0%, 100% {
+    filter: none;
+  }
+  18%, 55% {
+    filter: drop-shadow(0 0 7px rgba(0, 0, 255, 0.38));
+  }
 }
 
 .messages-typing-avatar,
