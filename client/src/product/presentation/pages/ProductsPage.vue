@@ -67,7 +67,7 @@
 
 
     <div v-if="status === 'pending'"
-      class="mt-4 grid grid-cols-1 gap-4 min-[520px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      class="mt-4 grid grid-cols-2 gap-4 min-[520px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
       <div v-for="index in 8" :key="index" class="rounded-2xl border border-slate-200 bg-white p-3">
         <USkeleton class="aspect-square rounded-xl" />
         <USkeleton class="mt-3 h-4 w-4/5 rounded-full" />
@@ -79,7 +79,7 @@
       :title="$t('pages.productsPage.loadErrorTitle')" :description="String(error)" />
 
     <div v-else-if="visibleProducts.length > 0"
-      class="mt-4 grid grid-cols-1 gap-4 min-[520px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+      class="mt-4 grid grid-cols-2 gap-4 min-[520px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
       <article v-for="product in visibleProducts" :key="product.id"
         class="market-product-card group overflow-hidden rounded-[10px] border border-slate-200 bg-white shadow-sm">
         <div class="market-product-image relative aspect-square overflow-visible bg-slate-100">

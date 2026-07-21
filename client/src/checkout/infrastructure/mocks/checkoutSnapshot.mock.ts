@@ -1,3 +1,5 @@
+// English description: Provides a typed checkout snapshot for isolated repository development.
+
 import type { CheckoutSnapshot } from "../../domain/types/checkout.types"
 
 export const checkoutSnapshotMock: CheckoutSnapshot = {
@@ -7,6 +9,8 @@ export const checkoutSnapshotMock: CheckoutSnapshot = {
       name: "John Larry",
       price: 50000,
       quantity: 2,
+      currency: "VND",
+      checkoutPrice: 50000,
       imageStyle: [
         "radial-gradient(circle at 72% 10%, rgba(255,216,188,0.52), transparent 20%)",
         "radial-gradient(circle at 20% 22%, rgba(255,255,255,0.3), transparent 23%)",
@@ -17,4 +21,5 @@ export const checkoutSnapshotMock: CheckoutSnapshot = {
   shippingAddress: null,
   walletBalance: 40000,
   shippingFee: 0,
+  currency: "VND",
 }

@@ -50,6 +50,23 @@ export function formatCurrency(
   return symbol ? `${formattedAmount} ${symbol}` : formattedAmount
 }
 
+export function formatCurrencyWithUnit(
+  amount: number | string | null | undefined,
+  options: FormatCurrencyOptions = {},
+) {
+  const currency = normalizeCurrencyCode(options.currency)
+  const symbol = normalizeCurrencySymbol(options.currencySymbol)
+  const unit = currency === "VND" ? "VND" : symbol || currency
+  const formattedAmount = formatCurrency(amount, {
+    locale: options.locale,
+    currencyRule: options.currencyRule,
+    minimumFractionDigits: options.minimumFractionDigits,
+    maximumFractionDigits: options.maximumFractionDigits,
+  })
+
+  return unit ? `${formattedAmount}${unit}` : formattedAmount
+}
+
 export function parseCurrencyInput(
   value: string | number | null | undefined,
   currencyRule: CurrencyFormatRule | null = null,

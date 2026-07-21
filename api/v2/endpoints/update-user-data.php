@@ -1,4 +1,5 @@
 <?php
+// English description: Updates user profile data while preserving all notification preferences.
 // +------------------------------------------------------------------------+
 // | @author Deen Doughouz (DoughouzForest)
 // | @author_url 1: http://www.hisotechgroup.com
@@ -325,6 +326,7 @@ if (empty($error_code)) {
     $e_followed          = $wo['user']['API_notification_settings']['e_followed'];
     $e_liked_page        = $wo['user']['API_notification_settings']['e_liked_page'];
     $e_visited           = $wo['user']['API_notification_settings']['e_visited'];
+    $profile_visit_notify = !empty($wo['user']['API_notification_settings']['profile_visit_notify']) ? 1 : 0;
     $e_mentioned         = $wo['user']['API_notification_settings']['e_mentioned'];
     $e_joined_group      = $wo['user']['API_notification_settings']['e_joined_group'];
     $e_accepted          = $wo['user']['API_notification_settings']['e_accepted'];
@@ -369,6 +371,11 @@ if (empty($error_code)) {
             $e_visited = $_POST['e_visited'];
         }
     }
+    if (isset($_POST['profile_visit_notify'])) {
+        if (in_array($_POST['profile_visit_notify'], $array)) {
+            $profile_visit_notify = $_POST['profile_visit_notify'];
+        }
+    }
     if (isset($_POST['e_mentioned'])) {
         if (in_array($_POST['e_mentioned'], $array)) {
             $e_mentioned = $_POST['e_mentioned'];
@@ -405,6 +412,7 @@ if (empty($error_code)) {
         'e_joined_group' => $e_joined_group,
         'e_liked_page' => $e_liked_page,
         'e_visited' => $e_visited,
+        'profile_visit_notify' => $profile_visit_notify,
         'e_profile_wall_post' => $e_profile_wall_post,
         'e_memory' => $e_memory
     );

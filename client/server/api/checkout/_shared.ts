@@ -10,6 +10,9 @@ type BackendMarketCheckoutResponse = {
   api_status?: number | string
   data?: BackendProduct[]
   total?: number | string
+  currency_code?: string
+  currency_symbol?: string
+  currency_rule?: CheckoutSnapshot["currencyRule"]
 }
 
 type BackendAddressResponse = {
@@ -39,7 +42,12 @@ type BackendProduct = {
   name?: string
   price?: number | string
   units?: number | string
+  stock_units?: number | string
   currency?: string | number
+  currency_code?: string
+  currency_symbol?: string
+  currency_rule?: CheckoutLineItem["currencyRule"]
+  checkout_price?: number | string
   images?: Array<string | { image?: string; image_org?: string }>
 }
 
@@ -60,6 +68,14 @@ const asString = (value: unknown, fallback = "") => {
   return fallback
 }
 
+const asPlainAddressText = (value: unknown) => asString(value)
+  .replace(/<br\s*\/?>/gi, ", ")
+  .replace(/<[^>]+>/g, " ")
+  .replace(/&nbsp;/gi, " ")
+  .replace(/\s+/g, " ")
+  .replace(/\s+,/g, ",")
+  .trim()
+
 const getProductImage = (product: BackendProduct, resolveMediaUrl: ReturnType<typeof createBackendMediaUrlResolver>) => {
   const firstImage = Array.isArray(product.images) ? product.images[0] : undefined
   const image = typeof firstImage === "string"
@@ -70,8 +86,8 @@ const getProductImage = (product: BackendProduct, resolveMediaUrl: ReturnType<ty
 }
 
 const normalizeCurrency = (value: unknown) => {
-  const currency = asString(value, "VND").toUpperCase()
-  return /^[A-Z]{3}$/.test(currency) ? currency : "VND"
+  const currency = asString(value).toUpperCase()
+  return /^[A-Z]{3}$/.test(currency) ? currency : ""
 }
 
 export const normalizeAddress = (address: BackendAddress | null | undefined): ShippingAddress | null => {
@@ -85,8 +101,7 @@ export const normalizeAddress = (address: BackendAddress | null | undefined): Sh
     phone: asString(address.phone),
     country: asString(address.country),
     city: asString(address.city),
-    postalCode: asString(address.zip),
-    streetAddress: asString(address.address),
+    streetAddress: asPlainAddressText(address.address),
   }
 }
 
@@ -104,15 +119,42 @@ export const normalizeCheckoutSnapshot = (
     name: asString(product.name),
     price: asNumber(product.price),
     quantity: Math.max(1, asNumber(product.units, 1)),
+    maxQuantity: Math.max(0, asNumber(product.stock_units)),
     imageUrl: getProductImage(product, resolveMediaUrl),
-    currency: normalizeCurrency(product.currency),
+    currency: normalizeCurrency(product.currency_code || product.currency),
+    currencySymbol: asString(product.currency_symbol),
+    currencyRule: product.currency_rule,
+    checkoutPrice: asNumber(product.checkout_price, asNumber(product.price)),
   })).filter(item => item.id && item.name)
+
+  const productCurrencies = Array.from(new Set(
+    items
+      .map(item => item.currency)
+      .filter((currency): currency is string => Boolean(currency)),
+  ))
+  const singleProductCurrency = productCurrencies.length === 1
+    ? productCurrencies[0]
+    : null
+  const firstItem = items[0]
+
+  if (singleProductCurrency) {
+    for (const item of items) {
+      item.checkoutPrice = item.price
+    }
+  }
 
   return {
     items,
     shippingAddress: normalizeAddress(Array.isArray(addresses.data) ? addresses.data[0] : null),
     walletBalance,
     shippingFee: 0,
+    currency: singleProductCurrency || normalizeCurrency(checkout.currency_code),
+    currencySymbol: singleProductCurrency
+      ? firstItem?.currencySymbol
+      : asString(checkout.currency_symbol),
+    currencyRule: singleProductCurrency
+      ? firstItem?.currencyRule
+      : checkout.currency_rule,
   }
 }
 

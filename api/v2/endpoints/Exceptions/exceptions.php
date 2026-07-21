@@ -1,4 +1,5 @@
 <?php
+// English description: Defines validation helpers used by version 2 API endpoints.
 
 function VNSEEA_GetOwnedUserChat($chat_id)
 {
@@ -1013,8 +1014,8 @@ function addressAddValidation()
 {
     global $sqlConnect, $wo,$db;
 
-    if (empty($_POST['name']) || empty($_POST['phone']) || empty($_POST['country']) || empty($_POST['city']) || empty($_POST['zip']) || empty($_POST['address'])) {
-        throw new Exception("name , phone , country , city , zip , address can not be empty");
+    if (empty($_POST['name']) || empty($_POST['phone']) || empty($_POST['country']) || empty($_POST['city']) || empty($_POST['address'])) {
+        throw new Exception("name , phone , country , city , address can not be empty");
     }
 }
 
@@ -1120,7 +1121,6 @@ function marketBuyValidation()
         throw new Exception("no items found");
     }
 
-    $total = 0;
     $wo['insert'] = array();
     foreach ($wo['items'] as $key => $item) {
         $product = $wo['main_product'] = Wo_GetProduct($item->product_id);
@@ -1128,12 +1128,6 @@ function marketBuyValidation()
             throw new Exception("product not found");
         }
         if ($item->units <= $product['units']) {
-            if (!empty($wo['currencies']) && !empty($wo['currencies'][$product['currency']]) && $wo['currencies'][$product['currency']]['text'] != $wo['config']['currency'] && !empty($wo['config']['exchange']) && !empty($wo['config']['exchange'][$wo['currencies'][$product['currency']]['text']])) {
-                $total += (($product['price'] / $wo['config']['exchange'][$wo['currencies'][$product['currency']]['text']]) * $item->units);
-            }
-            else{
-                $total += ($product['price'] * $item->units);
-            }
             if (!in_array($product['user_id'], array_keys($wo['insert']))) {
                 $f_price = $product['price'];
                 if (!empty($wo['config']['exchange']) && !empty($wo['config']['exchange'][$wo['currencies'][$product['currency']]['text']])) {
@@ -1157,10 +1151,6 @@ function marketBuyValidation()
         else{
             throw new Exception("max qty is " . $product['units']);
         }
-    }
-
-    if ($wo['user']['wallet'] < $total) {
-        throw new Exception("please top up your wallet");
     }
 
     if (empty($wo['insert'])) {

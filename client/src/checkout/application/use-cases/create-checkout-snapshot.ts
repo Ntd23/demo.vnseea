@@ -7,4 +7,7 @@ export const createCheckoutSnapshot = (): CheckoutSnapshot => ({
   shippingAddress: null,
   walletBalance: 0,
   shippingFee: 0,
+  currency: "",
+  currencySymbol: "",
+  currencyRule: undefined,
 })

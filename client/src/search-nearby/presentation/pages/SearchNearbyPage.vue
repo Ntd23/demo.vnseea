@@ -254,6 +254,14 @@
                 <div class="nearby-map-page__step-badge nearby-map-page__step-badge--ios">3</div>
                 <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.ios.step3") }}</div>
               </div>
+              <div class="nearby-map-page__step">
+                <div class="nearby-map-page__step-badge nearby-map-page__step-badge--ios">4</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.ios.step4") }}</div>
+              </div>
+              <div class="nearby-map-page__step">
+                <div class="nearby-map-page__step-badge nearby-map-page__step-badge--ios">5</div>
+                <div class="nearby-map-page__step-text">{{ t("pages.searchNearby.permissionGuide.ios.step5") }}</div>
+              </div>
             </div>
 
             <!-- Android Guide -->
@@ -308,9 +316,6 @@
           <UIcon name="i-ph-crosshair-fill" />
           <span>{{ t("pages.searchNearby.enableLocation") }}</span>
         </button>
-        <p v-if="locationPermissionState !== 'unsupported'" class="nearby-map-page__permission-note">
-          {{ t("pages.searchNearby.permissionNote") }}
-        </p>
       </div>
     </div>
   </section>

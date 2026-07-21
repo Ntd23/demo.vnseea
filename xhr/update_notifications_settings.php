@@ -1,4 +1,5 @@
-<?php 
+<?php
+// English description: Updates in-app notification preferences, including outgoing profile visit sharing.
 if ($f == "update_notifications_settings") {
     if (isset($_POST['user_id']) && is_numeric($_POST['user_id']) && $_POST['user_id'] > 0 && Wo_CheckSession($hash_id) === true) {
         $e_liked             = 0;
@@ -8,6 +9,7 @@ if ($f == "update_notifications_settings") {
         $e_followed          = 0;
         $e_liked_page        = 0;
         $e_visited           = 0;
+        $profile_visit_notify = 0;
         $e_mentioned         = 0;
         $e_joined_group      = 0;
         $e_accepted          = 0;
@@ -52,6 +54,11 @@ if ($f == "update_notifications_settings") {
                 $e_visited = 1;
             }
         }
+        if (!empty($_POST['profile_visit_notify'])) {
+            if (in_array($_POST['profile_visit_notify'], $array)) {
+                $profile_visit_notify = 1;
+            }
+        }
         if (!empty($_POST['e_mentioned'])) {
             if (in_array($_POST['e_mentioned'], $array)) {
                 $e_mentioned = 1;
@@ -88,6 +95,7 @@ if ($f == "update_notifications_settings") {
             'e_joined_group' => $e_joined_group,
             'e_liked_page' => $e_liked_page,
             'e_visited' => $e_visited,
+            'profile_visit_notify' => $profile_visit_notify,
             'e_profile_wall_post' => $e_profile_wall_post,
             'e_memory' => $e_memory
         );

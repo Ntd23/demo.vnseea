@@ -255,10 +255,8 @@ onClickOutside(dropdownRef, () => {
 }
 
 .settings-sidebar__icon--active {
-  background: #000000 !important;
+  background: #0000ff !important;
   color: #ffffff !important;
-  border-color: #000000 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* ─── Label ───────────────────────────── */

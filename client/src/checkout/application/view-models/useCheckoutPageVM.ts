@@ -1,8 +1,8 @@
-// English description: Checkout page view model that coordinates cart, address, wallet balance, and submit actions.
+// English description: Checkout page view model that coordinates cart, address, quantity, and submit actions.
 
-import { formatCurrency } from "#shared-kernel/application/utils/formatCurrency"
 import type { SavedShippingAddress } from "../../domain/types/checkout.types"
 import { createCheckoutSnapshot } from "../use-cases/create-checkout-snapshot"
+import { resolveCheckoutCurrency } from "../utils/resolve-checkout-currency"
 import { createApiCheckoutRepository } from "../../infrastructure/repositories/ApiCheckoutRepository"
 
 const cloneSnapshot = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
@@ -10,7 +10,7 @@ const cloneSnapshot = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T
 export function useCheckoutPageVM(
   repository = createApiCheckoutRepository(),
 ) {
-  const { t, locale } = useI18n()
+  const { t } = useI18n()
   const toast = useToast()
 
   const { data: initialSnapshot, pending: isLoading } = useAsyncData(
@@ -23,6 +23,9 @@ export function useCheckoutPageVM(
   )
 
   const snapshot = ref(cloneSnapshot(createCheckoutSnapshot()))
+  const savedAddresses = ref<SavedShippingAddress[]>([])
+  const isLoadingAddresses = ref(true)
+  const isDeletingAddress = ref(false)
   const checkoutState = ref<"idle" | "loading" | "success" | "error">("idle")
 
   watch(
@@ -52,48 +55,129 @@ export function useCheckoutPageVM(
   const savedAddress = computed<SavedShippingAddress | null>(() =>
     snapshot.value.shippingAddress ? { ...snapshot.value.shippingAddress } : null,
   )
-  const walletBalance = computed(() => snapshot.value.walletBalance)
   const shippingFee = computed(() => snapshot.value.shippingFee)
+  const checkoutCurrencyContext = computed(() => resolveCheckoutCurrency(
+    snapshot.value.items,
+    {
+      currency: snapshot.value.currency,
+      currencySymbol: snapshot.value.currencySymbol,
+      currencyRule: snapshot.value.currencyRule,
+    },
+  ))
+  const checkoutCurrency = computed(() => checkoutCurrencyContext.value.currency)
+  const checkoutCurrencySymbol = computed(() => checkoutCurrencyContext.value.currencySymbol)
+  const checkoutCurrencyRule = computed(() => checkoutCurrencyContext.value.currencyRule)
 
-  const subtotal = computed(() =>
-    snapshot.value.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-  )
+  function selectAddress(address: SavedShippingAddress) {
+    snapshot.value.shippingAddress = { ...address }
 
-  const total = computed(() => subtotal.value + snapshot.value.shippingFee)
-  const walletShortage = computed(() => Math.max(total.value - snapshot.value.walletBalance, 0))
-  const hasSavedAddress = computed(() => Boolean(snapshot.value.shippingAddress))
-  const hasItems = computed(() => snapshot.value.items.length > 0)
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.setItem("checkout:active-address", JSON.stringify(address))
+    }
 
-  const checkoutStepCount = 3
-  const readyStepCount = computed(() =>
-    [
-      hasSavedAddress.value,
-      snapshot.value.items.length > 0,
-      walletShortage.value === 0,
-    ].filter(Boolean).length,
-  )
+    resetCheckoutState()
+  }
 
-  const progressValue = computed(() => (readyStepCount.value / checkoutStepCount) * 100)
-  const progressText = computed(() =>
-    t("checkout.page.progressStatus", {
-      ready: readyStepCount.value,
-      total: checkoutStepCount,
-    }),
-  )
+  async function loadSavedAddresses() {
+    isLoadingAddresses.value = true
+
+    try {
+      const addresses = await repository.getAddresses()
+      savedAddresses.value = addresses
+        .filter((address): address is SavedShippingAddress => Boolean(address?.id))
+        .map(address => ({ ...address }))
+
+      const activeId = snapshot.value.shippingAddress?.id
+      const activeAddress = savedAddresses.value.find(address => address.id === activeId)
+
+      if (activeAddress) {
+        selectAddress(activeAddress)
+      }
+      else if (savedAddresses.value[0]) {
+        selectAddress(savedAddresses.value[0])
+      }
+    }
+    finally {
+      isLoadingAddresses.value = false
+    }
+  }
+
+  onMounted(() => {
+    void loadSavedAddresses()
+  })
 
   async function handleAddressSubmit(address: SavedShippingAddress) {
     const saved = await repository.saveShippingAddress(address)
-    snapshot.value.shippingAddress = { ...saved }
-    if (typeof window !== "undefined" && window.localStorage) {
-      window.localStorage.setItem("checkout:active-address", JSON.stringify(saved))
+
+    if (!saved.id) {
+      throw new Error("The backend did not return a saved address ID.")
     }
-    resetCheckoutState()
+
+    const savedIndex = savedAddresses.value.findIndex(entry => entry.id === saved.id)
+
+    if (savedIndex >= 0) {
+      savedAddresses.value.splice(savedIndex, 1, { ...saved })
+    }
+    else {
+      savedAddresses.value.unshift({ ...saved })
+    }
+
+    selectAddress(saved)
+    return saved
+  }
+
+  async function deleteSavedAddress(addressId: string) {
+    isDeletingAddress.value = true
+
+    try {
+      await repository.deleteAddress(addressId)
+      savedAddresses.value = savedAddresses.value.filter(address => address.id !== addressId)
+
+      if (snapshot.value.shippingAddress?.id === addressId) {
+        const nextAddress = savedAddresses.value[0]
+
+        if (nextAddress) {
+          selectAddress(nextAddress)
+        }
+        else {
+          snapshot.value.shippingAddress = null
+          if (typeof window !== "undefined" && window.localStorage) {
+            window.localStorage.removeItem("checkout:active-address")
+          }
+          resetCheckoutState()
+        }
+      }
+
+      toast.add({
+        title: t("checkout.shippingForm.deleteSuccessTitle"),
+        description: t("checkout.shippingForm.deleteSuccessDescription"),
+        color: "success",
+      })
+    }
+    catch {
+      toast.add({
+        title: t("checkout.shippingForm.deleteErrorTitle"),
+        description: t("checkout.shippingForm.deleteErrorDescription"),
+        color: "error",
+      })
+      throw new Error("Unable to delete the selected shipping address.")
+    }
+    finally {
+      isDeletingAddress.value = false
+    }
   }
 
   async function increaseQuantity(itemId: string) {
     const item = snapshot.value.items.find(entry => entry.id === itemId)
 
-    if (!item) {
+    if (
+      !item
+      || (
+        item.maxQuantity !== undefined
+        && item.maxQuantity > 0
+        && item.quantity >= item.maxQuantity
+      )
+    ) {
       return
     }
 
@@ -110,7 +194,7 @@ export function useCheckoutPageVM(
       toast.add({
         title: t("checkout.summary.purchaseErrorTitle"),
         description: t("checkout.summary.purchaseErrorDescription"),
-        color: "red",
+        color: "error",
       })
     }
   }
@@ -125,24 +209,24 @@ export function useCheckoutPageVM(
     const originalQty = item.quantity
 
     if (item.quantity <= 1) {
-      await removeItem(itemId)
-    } else {
-      // Optimistic UI update
-      item.quantity -= 1
-      resetCheckoutState()
+      return
+    }
 
-      try {
-        await repository.updateCartItemQuantity(itemId, item.quantity)
-      } catch (err) {
-        // Revert if error occurs
-        item.quantity = originalQty
-        resetCheckoutState()
-        toast.add({
-          title: t("checkout.summary.purchaseErrorTitle"),
-          description: t("checkout.summary.purchaseErrorDescription"),
-          color: "red",
-        })
-      }
+    // Optimistic UI update
+    item.quantity -= 1
+    resetCheckoutState()
+
+    try {
+      await repository.updateCartItemQuantity(itemId, item.quantity)
+    } catch (err) {
+      // Revert if error occurs
+      item.quantity = originalQty
+      resetCheckoutState()
+      toast.add({
+        title: t("checkout.summary.purchaseErrorTitle"),
+        description: t("checkout.summary.purchaseErrorDescription"),
+        color: "error",
+      })
     }
   }
 
@@ -162,7 +246,7 @@ export function useCheckoutPageVM(
       toast.add({
         title: t("checkout.summary.purchaseErrorTitle"),
         description: t("checkout.summary.purchaseErrorDescription"),
-        color: "red",
+        color: "error",
       })
     }
   }
@@ -181,19 +265,6 @@ export function useCheckoutPageVM(
         color: "warning",
       })
 
-      return
-    }
-
-    if (walletShortage.value > 0) {
-      toast.add({
-        title: t("checkout.summary.walletShortageTitle"),
-        description: t("checkout.summary.walletShortageDescription", {
-          amount: formatVnd(walletShortage.value),
-        }),
-        color: "warning",
-      })
-
-      checkoutState.value = "error"
       return
     }
 
@@ -233,7 +304,7 @@ export function useCheckoutPageVM(
       toast.add({
         title: t("checkout.summary.purchaseErrorTitle"),
         description: t("checkout.summary.purchaseErrorDescription"),
-        color: "red",
+        color: "error",
       })
     }
   }
@@ -244,53 +315,24 @@ export function useCheckoutPageVM(
     }
   }
 
-  function formatVnd(value: number) {
-    return formatCurrency(value, {
-      currency: "VND",
-      locale: locale.value,
-    })
-  }
-
-  function selectAddress(address: SavedShippingAddress) {
-    snapshot.value.shippingAddress = { ...address }
-    if (typeof window !== "undefined" && window.localStorage) {
-      window.localStorage.setItem("checkout:active-address", JSON.stringify(address))
-    }
-  }
-
-  async function deleteAddress(addressId: string) {
-    await repository.deleteAddress(addressId)
-    if (snapshot.value.shippingAddress && String(snapshot.value.shippingAddress.id) === String(addressId)) {
-      snapshot.value.shippingAddress = null
-      if (typeof window !== "undefined" && window.localStorage) {
-        window.localStorage.removeItem("checkout:active-address")
-      }
-    }
-    resetCheckoutState()
-  }
-
-  async function fetchSavedAddresses() {
-    return await repository.getAddresses()
-  }
-
   return {
     isLoading,
+    isLoadingAddresses,
+    isDeletingAddress,
     cartItems,
     savedAddress,
-    walletBalance,
+    savedAddresses,
     shippingFee,
+    checkoutCurrency,
+    checkoutCurrencySymbol,
+    checkoutCurrencyRule,
     checkoutState,
-    progressText,
-    progressValue,
-    hasSavedAddress,
-    hasItems,
     handleAddressSubmit,
+    deleteSavedAddress,
+    selectAddress,
     increaseQuantity,
     decreaseQuantity,
     removeItem,
     handleCheckoutAction,
-    selectAddress,
-    deleteAddress,
-    fetchSavedAddresses,
   }
 }

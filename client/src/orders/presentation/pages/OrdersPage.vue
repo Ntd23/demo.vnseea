@@ -1,7 +1,7 @@
 <!-- English description: Wowonder-aligned marketplace order list for purchased and store orders. -->
 
 <template>
-  <div class="market-orders-page mx-auto w-full max-w-[1520px] px-3 pb-12 pt-4 sm:px-4">
+  <div class="market-orders-page w-full">
 
     <section class="market-orders-nav">
       <nav class="market-orders-tabs" aria-label="Marketplace sections">
@@ -220,7 +220,7 @@ const storeTabs = computed(() => [
     active: props.activeSection === "orders",
   },
   {
-    label: t("pages.myProductsPage.marketplace"),
+    label: t("pages.productsPage.nearbyStoresButton"),
     to: appRoutes.searchNearby,
     icon: "i-ph-planet",
     active: false,

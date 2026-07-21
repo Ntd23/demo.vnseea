@@ -1,10 +1,10 @@
 <!-- English description: Thin Nuxt wrapper for normalized public profile routes. -->
 <template>
-  <PagesProfilePage />
+  <ProfilePage />
 </template>
 
 <script setup lang="ts">
-import PagesProfilePage from "../../src/profile/presentation/pages/ProfilePage.vue"
+import ProfilePage from "../../src/profile/presentation/pages/ProfilePage.vue"
 import { usePublicSeoMeta } from "../../src/seo/application/composables/usePublicSeoMeta"
 import { createApiPublicSeoRepository } from "../../src/seo/infrastructure/repositories/ApiPublicSeoRepository"
 

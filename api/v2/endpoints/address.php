@@ -1,4 +1,5 @@
 <?php
+// English description: Manages saved user shipping addresses through the v2 API.
 if ($_POST['type'] == 'add')
 {
     try
@@ -10,7 +11,7 @@ if ($_POST['type'] == 'add')
             'name' => Wo_Secure($_POST['name']) ,
             'phone' => Wo_Secure($_POST['phone']) ,
             'city' => Wo_Secure($_POST['city']) ,
-            'zip' => Wo_Secure($_POST['zip']) ,
+            'zip' => !empty($_POST['zip']) ? Wo_Secure($_POST['zip']) : '',
             'address' => Wo_Secure($_POST['address']) ,
             'user_id' => $wo['user']['user_id'],
             'time' => time() ,
