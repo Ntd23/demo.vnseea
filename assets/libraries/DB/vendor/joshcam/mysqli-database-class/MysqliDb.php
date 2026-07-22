@@ -180,6 +180,13 @@ class MysqliDb
     protected $_lockInShareMode = false;
 
     /**
+     * Whether the current connection has an active transaction.
+     *
+     * @var bool
+     */
+    protected $_transaction_in_progress = false;
+
+    /**
      * Key field for Map()'ed result array
      * @var string
      */
