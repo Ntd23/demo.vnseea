@@ -199,6 +199,9 @@
       "backToSignIn": "Quay lại đăng nhập"
     },
     "confirmAccountPage": {
+      "resendLoading": "Đang gửi...",
+      "resendCountdown": "Gửi lại mã sau {seconds}s",
+      "resendAction": "Gửi lại mã xác nhận",
       "eyebrow": "Xác minh",
       "title": "Xác nhận tài khoản",
       "subtitle": "Nhập mã kích hoạt VNSEEA đã gửi tới email hoặc số điện thoại để backend kích hoạt tài khoản.",
@@ -3638,8 +3641,11 @@
         "disableCamera": "Tắt cam",
         "enableMicrophone": "Bật mic",
         "disableMicrophone": "Tắt mic",
+        "rotateCamera": "Xoay camera",
+        "back": "Quay lại",
         "startBroadcast": "Phát trực tiếp",
         "endBroadcast": "Kết thúc livestream",
+        "endBroadcastShort": "Kết thúc",
         "broadcastingUpper": "ĐANG PHÁT",
         "previewUpper": "XEM TRƯỚC",
         "noNewComments": "Chưa có bình luận mới.",

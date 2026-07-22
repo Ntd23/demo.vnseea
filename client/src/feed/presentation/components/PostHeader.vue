@@ -296,6 +296,7 @@ function handleMenuAction(item: { key: string }) {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  margin: 0 10px;
 }
 
 .post-header__left {
@@ -496,6 +497,7 @@ function handleMenuAction(item: { key: string }) {
   .post-header__feeling-text,
   .post-header__feeling-emoji,
   .post-header__feeling-label,
+  .post-header__context-icon,
   .post-header__event-link {
     display: inline;
   }
