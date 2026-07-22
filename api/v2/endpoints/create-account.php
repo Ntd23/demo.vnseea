@@ -151,7 +151,9 @@ if (empty($error_code)) {
             $account_data['last_name'] = Wo_Secure($_POST['last_name']);
         }
 
-        $register     = Wo_RegisterUser($account_data);
+        $register = Wo_RegisterUser($account_data, false, array(
+            'signup_points_bonus' => 500000,
+        ));
         if ($register === true) {
             if (!empty($account_data['referrer']) && is_numeric($wo['config']['affiliate_level']) && $wo['config']['affiliate_level'] > 1) {
                 $user_id = Wo_UserIdFromUsername($username);

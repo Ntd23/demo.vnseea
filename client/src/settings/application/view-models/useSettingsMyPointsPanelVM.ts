@@ -367,6 +367,11 @@ export function useSettingsMyPointsPanelVM(
   }
 
   function pointHistoryTitle(transaction: WalletTransaction, points: number) {
+    const pointType = (transaction.pointType || transaction.notes || "").toLowerCase()
+    if (transaction.kind === "POINTS_EARNED" && pointType === "signup_bonus") {
+      return t("settings.data.pointsPanel.signupBonusHistoryTitle")
+    }
+
     if (transaction.kind === "POINTS_EXCHANGE") {
       return t("settings.data.pointsPanel.exchangeHistoryTitle", { points: formatNumber(points) })
     }
