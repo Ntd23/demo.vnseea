@@ -198,36 +198,40 @@
             class="chat-widget__users-listbox"
             :ui="{
               root: 'gap-2',
-              item: 'min-h-16 rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--color-primary-300)] data-[state=checked]:bg-[var(--bg-surface-active)]',
-              itemWrapper: 'min-w-0',
-              itemLabel: 'truncate text-sm font-semibold text-[var(--text-primary)]',
-              itemTrailing: 'ml-auto gap-2',
-              itemTrailingIcon: 'hidden',
+              item: 'rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--color-primary-300)] data-[state=checked]:bg-[var(--bg-surface-active)]',
             }"
           >
-            <template #item-leading="{ item }">
-              <span class="chat-widget__user-avatar">
-                <UAvatar :src="item.avatarUrl" :alt="item.label" size="sm" />
-                <span v-if="item.online" class="chat-widget__user-online" />
-              </span>
-            </template>
-
-            <template #item-trailing="{ item }">
-              <span class="chat-widget__select-state" aria-hidden="true">
-                <span class="chat-widget__checkbox" :class="{ 'chat-widget__checkbox--checked': isSendRecipientSelected(item.value) }">
-                  <Icon v-if="isSendRecipientSelected(item.value)" name="i-ph-check-bold" class="h-3 w-3" />
-                </span>
-                <span>{{ $t("pages.messagesPage.selectRecipient") }}</span>
-              </span>
-              <UButton
-                type="button"
-                size="xs"
-                class="chat-widget__open-chat btn-primary"
-                @pointerdown.stop
-                @click.stop="openMiniChat(item.contact)"
-              >
-                {{ $t("pages.messagesPage.openChat") }}
-              </UButton>
+            <template #item="{ item }">
+              <div class="chat-widget__candidate-row">
+                <UUser
+                  :name="item.label"
+                  :avatar="{ src: item.avatarUrl, alt: item.label }"
+                  :chip="item.online ? { color: 'success', position: 'bottom-right' } : false"
+                  size="sm"
+                  class="min-w-0 w-full"
+                  :ui="{
+                    wrapper: 'min-w-0',
+                    name: 'truncate text-sm font-semibold text-[var(--text-primary)]',
+                  }"
+                />
+                <div class="chat-widget__candidate-actions">
+                  <span class="chat-widget__select-state" aria-hidden="true">
+                    <span class="chat-widget__checkbox" :class="{ 'chat-widget__checkbox--checked': isSendRecipientSelected(item.value) }">
+                      <Icon v-if="isSendRecipientSelected(item.value)" name="i-ph-check-bold" class="h-3 w-3" />
+                    </span>
+                    <span>{{ $t("pages.messagesPage.selectRecipient") }}</span>
+                  </span>
+                  <UButton
+                    type="button"
+                    size="xs"
+                    class="chat-widget__open-chat btn-primary"
+                    @pointerdown.stop
+                    @click.stop="openMiniChat(item.contact)"
+                  >
+                    {{ $t("pages.messagesPage.openChat") }}
+                  </UButton>
+                </div>
+              </div>
             </template>
           </UListbox>
 
@@ -2443,21 +2447,18 @@ watch(miniChatAutoOpenVersion, (version) => {
   background: #cbd5e1;
 }
 
-.chat-widget__user-avatar {
-  position: relative;
-  display: inline-flex;
-  flex: 0 0 auto;
+.chat-widget__candidate-row {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 8px;
 }
 
-.chat-widget__user-online {
-  position: absolute;
-  right: -1px;
-  bottom: 1px;
-  width: 9px;
-  height: 9px;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-  background: var(--color-success-500, #22c55e);
+.chat-widget__candidate-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .chat-widget__select-state {

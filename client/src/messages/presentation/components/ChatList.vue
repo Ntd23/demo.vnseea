@@ -190,36 +190,40 @@
               class="cl-multi-user-listbox"
               :ui="{
                 root: 'gap-2',
-                item: 'min-h-16 rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--color-primary-300)] data-[state=checked]:bg-[var(--bg-surface-active)]',
-                itemWrapper: 'min-w-0',
-                itemLabel: 'truncate text-sm font-semibold text-[var(--text-primary)]',
-                itemTrailing: 'ml-auto gap-2',
-                itemTrailingIcon: 'hidden',
+                item: 'rounded-[var(--radius-md)] border border-[var(--border-light)] bg-[var(--bg-muted)] px-3 py-2 data-[state=checked]:border-[var(--color-primary-300)] data-[state=checked]:bg-[var(--bg-surface-active)]',
               }"
             >
-              <template #item-leading="{ item }">
-                <span class="cl-multi-user-avatar">
-                  <UAvatar :src="item.avatarUrl" :alt="item.label" size="sm" />
-                  <span v-if="item.online" class="cl-multi-user-online" />
-                </span>
-              </template>
-
-              <template #item-trailing="{ item }">
-                <span class="cl-multi-select-state" aria-hidden="true">
-                  <span class="cl-multi-checkbox" :class="{ 'cl-multi-checkbox--checked': isRecipientSelected(item.value) }">
-                    <Icon v-if="isRecipientSelected(item.value)" name="i-ph-check-bold" class="h-3 w-3" />
-                  </span>
-                  <span>{{ $t("pages.messagesPage.selectRecipient") }}</span>
-                </span>
-                <UButton
-                  type="button"
-                  size="xs"
-                  class="cl-multi-open-chat btn-primary"
-                  @pointerdown.stop
-                  @click.stop="emit('open-chat', item.contact)"
-                >
-                  {{ $t("pages.messagesPage.openChat") }}
-                </UButton>
+              <template #item="{ item }">
+                <div class="cl-multi-user-row">
+                  <UUser
+                    :name="item.label"
+                    :avatar="{ src: item.avatarUrl, alt: item.label }"
+                    :chip="item.online ? { color: 'success', position: 'bottom-right' } : false"
+                    size="sm"
+                    class="min-w-0 w-full"
+                    :ui="{
+                      wrapper: 'min-w-0',
+                      name: 'truncate text-sm font-semibold text-[var(--text-primary)]',
+                    }"
+                  />
+                  <div class="cl-multi-user-actions">
+                    <span class="cl-multi-select-state" aria-hidden="true">
+                      <span class="cl-multi-checkbox" :class="{ 'cl-multi-checkbox--checked': isRecipientSelected(item.value) }">
+                        <Icon v-if="isRecipientSelected(item.value)" name="i-ph-check-bold" class="h-3 w-3" />
+                      </span>
+                      <span>{{ $t("pages.messagesPage.selectRecipient") }}</span>
+                    </span>
+                    <UButton
+                      type="button"
+                      size="xs"
+                      class="cl-multi-open-chat btn-primary"
+                      @pointerdown.stop
+                      @click.stop="emit('open-chat', item.contact)"
+                    >
+                      {{ $t("pages.messagesPage.openChat") }}
+                    </UButton>
+                  </div>
+                </div>
               </template>
             </UListbox>
 
@@ -315,6 +319,7 @@ const multiRecordModel = defineModel<MessageRecordDraft | null>("multiRecord", {
 const tabListRef = ref<HTMLElement | null>(null)
 const multiStackRef = ref<HTMLElement | null>(null)
 let multiPanelResetFrame: number | null = null
+let multiPanelSettleFrame: number | null = null
 
 const props = defineProps<{
   activeTab: MessageTabKey
@@ -370,30 +375,56 @@ watch(() => props.multiFile, (file) => { if (file && recordDraft.value) clearRec
 watch(() => multiRecordModel.value, (draft) => {
   if (!draft && recordDraft.value && !isRecording.value) clearRecording()
 })
-watch(() => props.activeTab, async (activeTab) => {
-  if (activeTab !== "multi" || !import.meta.client) return
+async function restoreMultiPanelStart() {
+  if (!import.meta.client) return
 
-  // Reka Listbox highlights its first/selected item on mount with scrollIntoView().
-  // Restore the tab focus and panel position after both listboxes finish mounting.
   await nextTick()
   await nextTick()
 
   if (multiPanelResetFrame !== null) {
     window.cancelAnimationFrame(multiPanelResetFrame)
   }
+  if (multiPanelSettleFrame !== null) {
+    window.cancelAnimationFrame(multiPanelSettleFrame)
+  }
 
   multiPanelResetFrame = window.requestAnimationFrame(() => {
-    multiStackRef.value?.scrollTo({ top: 0, left: 0, behavior: "auto" })
-    tabListRef.value
-      ?.querySelector<HTMLElement>('[data-message-tab="multi"]')
-      ?.focus({ preventScroll: true })
+    multiPanelSettleFrame = window.requestAnimationFrame(() => {
+      multiStackRef.value?.scrollTo({ top: 0, left: 0, behavior: "auto" })
+      tabListRef.value
+        ?.querySelector<HTMLElement>('[data-message-tab="multi"]')
+        ?.focus({ preventScroll: true })
+      multiPanelSettleFrame = null
+    })
     multiPanelResetFrame = null
   })
-})
+}
+
+watch(
+  [() => props.activeTab, () => props.contacts.length],
+  ([activeTab, contactCount], previousValues) => {
+    if (activeTab !== "multi" || !import.meta.client) return
+
+    const previousTab = previousValues?.[0]
+    const previousContactCount = previousValues?.[1] ?? 0
+    const enteredMultiTab = previousTab !== "multi"
+    const recipientListMounted = previousContactCount === 0 && contactCount > 0
+
+    // Reka Listbox scrolls its highlighted item into view when an async item list mounts.
+    // Restore the multi-send form only for tab entry and the initial recipient-list mount.
+    if (enteredMultiTab || recipientListMounted) {
+      void restoreMultiPanelStart()
+    }
+  },
+  { immediate: true, flush: "post" },
+)
 
 onBeforeUnmount(() => {
   if (multiPanelResetFrame !== null) {
     window.cancelAnimationFrame(multiPanelResetFrame)
+  }
+  if (multiPanelSettleFrame !== null) {
+    window.cancelAnimationFrame(multiPanelSettleFrame)
   }
 })
 
@@ -802,21 +833,18 @@ function discardRecording() { clearRecording(); multiRecordModel.value = null }
   width: 100%;
 }
 
-.cl-multi-user-avatar {
-  position: relative;
-  display: inline-flex;
-  flex: 0 0 auto;
+.cl-multi-user-row {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 8px;
 }
 
-.cl-multi-user-online {
-  position: absolute;
-  right: -1px;
-  bottom: 1px;
-  width: 9px;
-  height: 9px;
-  border: 2px solid #ffffff;
-  border-radius: 50%;
-  background: var(--color-success-500, #22c55e);
+.cl-multi-user-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
 .cl-multi-select-state {
