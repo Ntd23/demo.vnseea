@@ -398,6 +398,7 @@ const isClientReady = ref(false)
 const faviconFailed = ref(false)
 const route = useRoute()
 const router = useRouter()
+const homeLoadingIndicator = useLoadingIndicator()
 const createActions = [
   {
     id: "ads",
@@ -465,6 +466,8 @@ const isHeaderHidden = ref(false)
 const lastScrollY = ref(0)
 
 function handleHomeClick(event: MouseEvent) {
+  homeLoadingIndicator.start({ force: true })
+
   if (route.path !== appRoutes.feed) {
     return
   }
