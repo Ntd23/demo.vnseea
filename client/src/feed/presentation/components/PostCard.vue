@@ -7,7 +7,7 @@
     class="post-card"
     :class="{ 'post-card--colored': Boolean(postColorStyles) }"
   >
-    <div class="post-card__body px-3 py-2">
+    <div class="post-card__body py-2">
       <FeedPostHeader
         :author="post.author"
         :author-id="post.authorId"
@@ -845,7 +845,6 @@ function handleMediaOpen(index: number) {
 .post-card__attachment-media {
   position: relative;
   min-height: 160px;
-  aspect-ratio: 16 / 9;
   overflow: hidden;
   background: #eef2ff;
 }

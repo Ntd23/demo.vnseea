@@ -158,7 +158,11 @@
       @submit="submitCreateGroup"
     />
 
-    <UModal v-model:open="tagModalOpen" :title="$t('pages.messagesPage.tagModalTitle')" :ui="{ content: 'sm:max-w-[640px]' }">
+    <UModal
+      v-model:open="tagModalOpen"
+      :title="$t('pages.messagesPage.tagModalTitle')"
+      :ui="{ content: 'sm:max-w-[640px]', body: 'overflow-hidden' }"
+    >
       <template #body>
         <div class="messages-tag-modal">
           <div class="messages-tag-modal__tabs">
@@ -182,92 +186,119 @@
 
           <section v-if="tagModalTab === 'assign'" class="messages-tag-modal__panel">
             <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagListTitle") }}</h3>
-            <div class="messages-tag-modal__list">
-              <div
-                v-for="tag in messageTagLabels"
-                :key="tag.id"
-                class="messages-tag-modal__row"
-              >
-                <span class="messages-tag-modal__name">
-                  <span class="messages-tag-modal__dot" :style="{ backgroundColor: tag.color }" />
-                  {{ tag.name }}
-                </span>
-                <button
-                  type="button"
-                  class="messages-tag-modal__action"
-                  :class="contactHasTag(tag.id) ? 'messages-tag-modal__action--danger' : 'messages-tag-modal__action--primary'"
-                  :disabled="isUpdatingTags"
-                  @click="toggleContactTag(tag.id)"
-                >
-                  {{ contactHasTag(tag.id) ? $t("pages.messagesPage.remove") : $t("pages.messagesPage.attach") }}
-                </button>
-              </div>
-              <p v-if="messageTagLabels.length === 0" class="messages-tag-modal__empty">
-                {{ $t("pages.messagesPage.tagEmpty") }}
-              </p>
-            </div>
+            <UListbox
+              :model-value="tagModalSelectedIds"
+              :items="messageTagLabels"
+              value-key="id"
+              label-key="name"
+              multiple
+              size="lg"
+              :disabled="isUpdatingTags"
+              :ui="assignTagListboxUi"
+              @update:model-value="updateContactTagSelection"
+            >
+              <template #item-leading="{ item }">
+                <span class="messages-tag-modal__dot" :style="{ backgroundColor: item.color }" />
+              </template>
+              <template #empty>
+                <p class="messages-tag-modal__empty">
+                  {{ $t("pages.messagesPage.tagEmpty") }}
+                </p>
+              </template>
+            </UListbox>
             <p class="messages-tag-modal__hint">
               {{ $t("pages.messagesPage.tagApplyHint") }}
             </p>
           </section>
 
           <section v-else class="messages-tag-modal__panel">
-            <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagManageListTitle") }}</h3>
-            <div class="messages-tag-modal__create">
-              <UInput v-model="newTagName" :placeholder="$t('pages.messagesPage.tagCreatePlaceholder')" size="lg" />
-              <UPopover>
+            <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagListTitle") }}</h3>
+            <UListbox
+              :model-value="null"
+              :items="messageTagLabels"
+              value-key="id"
+              label-key="name"
+              size="lg"
+              :ui="manageTagListboxUi"
+            >
+              <template #item-leading="{ item }">
+                <span class="messages-tag-modal__dot" :style="{ backgroundColor: item.color }" />
+              </template>
+              <template #item-trailing="{ item }">
                 <UButton
-                  color="neutral"
-                  variant="outline"
-                  size="lg"
-                  class="messages-tag-modal__color-trigger"
-                  :aria-label="$t('pages.messagesPage.tagColorLabel')"
-                  :title="$t('pages.messagesPage.tagColorLabel')"
-                >
-                  <span
-                    class="messages-tag-modal__color-swatch"
-                    :style="{ backgroundColor: newTagColor || defaultTagColor }"
-                  />
-                </UButton>
-
-                <template #content>
-                  <div class="messages-tag-modal__color-picker">
-                    <UColorPicker v-model="newTagColor" format="hex" size="sm" />
-                    <output class="messages-tag-modal__color-value">{{ newTagColor || defaultTagColor }}</output>
-                  </div>
-                </template>
-              </UPopover>
-              <UButton
-                size="lg"
-                :loading="isUpdatingTags"
-                :disabled="newTagName.trim().length === 0"
-                @click="submitCreateTag"
-              >
-                {{ $t("pages.messagesPage.create") }}
-              </UButton>
-            </div>
-
-            <div class="messages-tag-modal__list">
-              <div
-                v-for="tag in messageTagLabels"
-                :key="tag.id"
-                class="messages-tag-modal__row"
-              >
-                <span class="messages-tag-modal__name">
-                  <span class="messages-tag-modal__dot" :style="{ backgroundColor: tag.color }" />
-                  {{ tag.name }}
-                </span>
-                <button
-                  type="button"
-                  class="messages-tag-modal__action messages-tag-modal__action--danger"
+                  color="error"
+                  variant="soft"
+                  size="sm"
+                  class="messages-tag-modal__delete"
                   :disabled="isUpdatingTags"
-                  @click="deleteTagLabel(tag.id)"
+                  @pointerdown.stop
+                  @click.stop="deleteTagLabel(item.id)"
                 >
                   {{ $t("pages.messagesPage.delete") }}
-                </button>
+                </UButton>
+              </template>
+              <template #empty>
+                <p class="messages-tag-modal__empty">
+                  {{ $t("pages.messagesPage.tagEmpty") }}
+                </p>
+              </template>
+            </UListbox>
+
+            <div class="messages-tag-modal__create-section">
+              <h3 class="messages-tag-modal__title">{{ $t("pages.messagesPage.tagCreateTitle") }}</h3>
+              <UInput
+                v-model="newTagName"
+                class="w-full"
+                :placeholder="$t('pages.messagesPage.tagCreatePlaceholder')"
+                size="lg"
+                :ui="{ base: 'rounded-lg' }"
+                @keyup.enter="submitCreateTag"
+              />
+              <div class="messages-tag-modal__create-actions">
+                <UPopover>
+                  <UButton
+                    color="neutral"
+                    variant="outline"
+                    size="lg"
+                    class="messages-tag-modal__color-trigger"
+                    :aria-label="$t('pages.messagesPage.tagColorLabel')"
+                    :title="$t('pages.messagesPage.tagColorLabel')"
+                  >
+                    <span
+                      class="messages-tag-modal__color-swatch"
+                      :style="{ backgroundColor: newTagColor || defaultTagColor }"
+                    />
+                  </UButton>
+
+                  <template #content>
+                    <div class="messages-tag-modal__color-picker">
+                      <UColorPicker
+                        v-model="newTagColor"
+                        format="hex"
+                        size="xl"
+                        :ui="{
+                          picker: 'gap-5',
+                          selector: 'h-52 w-52',
+                          selectorThumb: 'size-7 ring-[3px] shadow-md',
+                          track: 'h-52 w-4',
+                          trackThumb: 'size-7 -translate-x-[6px] ring-[3px] shadow-md',
+                        }"
+                      />
+                      <output class="messages-tag-modal__color-value">{{ newTagColor || defaultTagColor }}</output>
+                    </div>
+                  </template>
+                </UPopover>
+                <UButton
+                  size="lg"
+                  :loading="isUpdatingTags"
+                  :disabled="newTagName.trim().length === 0"
+                  @click="submitCreateTag"
+                >
+                  {{ $t("pages.messagesPage.create") }}
+                </UButton>
               </div>
-              <p v-if="messageTagLabels.length === 0" class="messages-tag-modal__empty">
-                {{ $t("pages.messagesPage.tagEmpty") }}
+              <p class="messages-tag-modal__hint">
+                {{ $t("pages.messagesPage.tagManageHint") }}
               </p>
             </div>
           </section>
@@ -305,6 +336,18 @@ const tagModalContact = ref<MessageContact | null>(null)
 const newTagName = ref("")
 const defaultTagColor = "#3b82f6"
 const newTagColor = ref<string | undefined>(defaultTagColor)
+const assignTagListboxUi = {
+  root: "rounded-xl border border-slate-200 ring-0 shadow-sm",
+  content: "max-h-[min(20rem,45dvh)]",
+  item: "min-h-12 px-3 py-2.5",
+  itemLabel: "overflow-visible text-clip whitespace-normal break-words font-semibold",
+  itemTrailingIcon: "size-5 text-primary",
+  empty: "p-0",
+}
+const manageTagListboxUi = {
+  ...assignTagListboxUi,
+  content: "max-h-[min(13rem,28dvh)]",
+}
 const mobileListOpen = ref(true)
 const {
   isCallActionPending,
@@ -465,6 +508,10 @@ const tagModalLiveContact = computed(() => {
     ?? tagModalContact.value
 })
 
+const tagModalSelectedIds = computed(() =>
+  tagModalLiveContact.value?.tags?.map(tag => tag.id) ?? [],
+)
+
 const selectedThreadKey = computed(() =>
   selectedContact.value
     ? `${selectedContact.value.type}:${selectedContact.value.userId ?? selectedContact.value.groupId ?? selectedContact.value.id}`
@@ -594,6 +641,20 @@ async function toggleContactTag(tagId: number) {
   }
 }
 
+async function updateContactTagSelection(nextValue: number[] | undefined) {
+  if (isUpdatingTags.value) {
+    return
+  }
+
+  const currentIds = new Set(tagModalSelectedIds.value)
+  const nextIds = new Set(Array.isArray(nextValue) ? nextValue : [])
+  const changedTag = messageTagLabels.value.find(tag => currentIds.has(tag.id) !== nextIds.has(tag.id))
+
+  if (changedTag) {
+    await toggleContactTag(changedTag.id)
+  }
+}
+
 async function submitCreateTag() {
   const name = newTagName.value.trim()
 
@@ -632,9 +693,10 @@ async function submitCreateTag() {
 }
 
 .messages-tag-modal {
-  max-height: min(68vh, 560px);
-  overflow-y: auto;
-  padding: 4px 0 0;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .messages-tag-modal__tabs {
@@ -671,36 +733,6 @@ async function submitCreateTag() {
   font-weight: 800;
 }
 
-.messages-tag-modal__list {
-  overflow: hidden;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  box-shadow: 0 1px 5px rgba(15, 23, 42, 0.12);
-}
-
-.messages-tag-modal__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 58px;
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.messages-tag-modal__row:last-child {
-  border-bottom: 0;
-}
-
-.messages-tag-modal__name {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  color: #374151;
-  font-size: 15px;
-  font-weight: 600;
-}
-
 .messages-tag-modal__dot {
   width: 14px;
   height: 14px;
@@ -708,25 +740,9 @@ async function submitCreateTag() {
   flex: 0 0 auto;
 }
 
-.messages-tag-modal__action {
+.messages-tag-modal__delete {
   min-width: 82px;
-  height: 36px;
-  border-radius: 8px;
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.messages-tag-modal__action:disabled {
-  opacity: 0.65;
-}
-
-.messages-tag-modal__action--primary {
-  background: #3b82f6;
-}
-
-.messages-tag-modal__action--danger {
-  background: #ef4444;
+  justify-content: center;
 }
 
 .messages-tag-modal__hint,
@@ -737,21 +753,28 @@ async function submitCreateTag() {
 }
 
 .messages-tag-modal__empty {
-  padding: 18px 12px;
+  padding: 8px 12px;
 }
 
-.messages-tag-modal__create {
-  display: grid;
-  grid-template-columns: 1fr 46px auto;
-  gap: 8px;
+.messages-tag-modal__create-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.messages-tag-modal__create-actions {
+  display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .messages-tag-modal__color-trigger {
-  width: 46px;
+  width: 58px;
   height: 40px;
   justify-content: center;
-  padding: 6px;
 }
 
 .messages-tag-modal__color-swatch {
@@ -767,13 +790,12 @@ async function submitCreateTag() {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding: 12px;
+  padding: 10px;
 }
 
 .messages-tag-modal__color-value {
   width: 100%;
   color: var(--text-secondary);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: var(--text-caption);
   text-align: center;
 }
@@ -799,6 +821,10 @@ async function submitCreateTag() {
 }
 
 @media (max-width: 767.98px) {
+  .messages-tag-modal__tab {
+    font-size: 13px;
+  }
+
   .messages-page__left--mobile-hidden,
   .messages-page__main--mobile-hidden {
     display: none;
