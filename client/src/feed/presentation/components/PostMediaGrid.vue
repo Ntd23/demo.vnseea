@@ -32,20 +32,17 @@
           :aria-label="item.alt || t('feed.postMediaGrid.label', { index: index + 1 })"
           class="media-grid__img media-grid__video"
           autoplay
-          controls
           loop
           playsinline
           preload="auto"
           @loadedmetadata="playVideoWithSound"
-          @fullscreenchange="handleVideoFullscreenChange"
-          @webkitbeginfullscreen="handleWebkitBeginFullscreen"
         >
           <source :src="item.src" :type="item.mime || 'video/mp4'">
         </video>
         <button
-          class="media-grid__fullscreen-interceptor"
+          class="media-grid__video-opener"
           type="button"
-          :aria-label="t('pages.livePage.viewer.openFullscreen')"
+          :aria-label="t('pages.reelsPage.playing')"
           @click.stop.prevent="openVideoInReels"
         />
         <button
@@ -133,23 +130,6 @@ function openVideoInReels() {
   }
 
   openReelsViewer(props.post)
-}
-
-function handleWebkitBeginFullscreen(event: Event) {
-  const video = event.currentTarget as HTMLVideoElement & {
-    webkitExitFullscreen?: () => void
-  }
-
-  video.webkitExitFullscreen?.()
-  openVideoInReels()
-}
-
-function handleVideoFullscreenChange(event: Event) {
-  if (!import.meta.client || document.fullscreenElement !== event.currentTarget) {
-    return
-  }
-
-  void document.exitFullscreen().finally(openVideoInReels)
 }
 
 onMounted(() => {
@@ -328,8 +308,16 @@ onMounted(() => {
   cursor: default;
 }
 
-.media-grid__fullscreen-interceptor {
-  display: none;
+.media-grid__video-opener {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 .media-grid__more {
@@ -345,6 +333,7 @@ onMounted(() => {
   font-weight: 800;
   letter-spacing: 0;
   line-height: 1;
+  z-index: 8;
 }
 
 .media-grid__more--button {
@@ -369,19 +358,4 @@ onMounted(() => {
   }
 }
 
-@media (hover: none) and (pointer: coarse) {
-  .media-grid__fullscreen-interceptor {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    z-index: 8;
-    display: block;
-    width: 58px;
-    height: 52px;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-}
 </style>

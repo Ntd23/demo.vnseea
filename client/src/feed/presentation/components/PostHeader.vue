@@ -296,6 +296,7 @@ function handleMenuAction(item: { key: string }) {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  margin: 0 10px;
 }
 
 .post-header__left {

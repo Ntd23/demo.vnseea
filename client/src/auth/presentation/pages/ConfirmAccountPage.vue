@@ -4,9 +4,6 @@
   <div class="auth-form">
     <div class="auth-form__head">
       <h1 class="auth-form__title">{{ $t('pages.confirmAccountPage.title') }}</h1>
-      <p class="auth-form__subtitle">
-        {{ $t('pages.confirmAccountPage.subtitle') }}
-      </p>
     </div>
 
     <UAlert
@@ -40,9 +37,15 @@
       </UFormField>
 
       <button type="button" class="auth-resend" :disabled="!canResend" @click="resendCode">
-        <span v-if="resendState === 'loading'">Đang gửi...</span>
-        <span v-else-if="resendRemaining > 0">Gửi lại mã sau {{ resendRemaining }}s</span>
-        <span v-else>Gửi lại mã xác nhận</span>
+        <span v-if="resendState === 'loading'">
+          {{ $t('pages.confirmAccountPage.resendLoading') }}
+        </span>
+        <span v-else-if="resendRemaining > 0">
+          {{ $t('pages.confirmAccountPage.resendCountdown', { seconds: resendRemaining }) }}
+        </span>
+        <span v-else>
+          {{ $t('pages.confirmAccountPage.resendAction') }}
+        </span>
       </button>
       <p v-if="resendMessage" class="auth-resend__message" :class="`auth-resend__message--${resendState}`">{{ resendMessage }}</p>
 
@@ -129,18 +132,33 @@ function updateOtpDigits(digits: number[]) {
 
 .otp-inputs {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(6, minmax(46px, 1fr));
+  width: 100%;
+  gap: 10px;
 }
 
 .otp-inputs :deep(input) {
-  height: 54px;
+  width: 100%;
+  min-width: 0;
+  height: 58px;
   padding: 0;
   border-color: #e2e8f0;
   background: #fafbfe;
   text-align: center;
-  font-size: 24px;
+  font-size: 25px;
   font-weight: 800;
+}
+
+@media (max-width: 380px) {
+  .otp-inputs {
+    grid-template-columns: repeat(6, minmax(40px, 1fr));
+    gap: 6px;
+  }
+
+  .otp-inputs :deep(input) {
+    height: 54px;
+    font-size: 23px;
+  }
 }
 
 .auth-resend {

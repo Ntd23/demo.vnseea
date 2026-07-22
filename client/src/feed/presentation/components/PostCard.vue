@@ -712,6 +712,7 @@ function handleMediaOpen(index: number) {
   font-size: 14.5px;
   line-height: 1.75;
   color: #000000;
+  margin: 0 10px;
 }
 
 .post-card__mention {
@@ -983,7 +984,7 @@ function handleMediaOpen(index: number) {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-top: 14px;
+  margin: 10px;
   font-size: 13px;
   color: #64748b;
 }
@@ -1524,6 +1525,7 @@ function handleMediaOpen(index: number) {
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  margin: 0 10px;
 }
 
 .post-card__comment-avatar {
