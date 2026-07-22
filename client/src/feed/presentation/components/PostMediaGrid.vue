@@ -38,10 +38,16 @@
           preload="auto"
           @loadedmetadata="playVideoWithSound"
           @fullscreenchange="handleVideoFullscreenChange"
-          @webkitbeginfullscreen="openVideoInReels"
+          @webkitbeginfullscreen="handleWebkitBeginFullscreen"
         >
           <source :src="item.src" :type="item.mime || 'video/mp4'">
         </video>
+        <button
+          class="media-grid__fullscreen-interceptor"
+          type="button"
+          :aria-label="t('pages.livePage.viewer.openFullscreen')"
+          @click.stop.prevent="openVideoInReels"
+        />
         <button
           v-if="isMoreSlot(index)"
           class="media-grid__more media-grid__more--button"
@@ -122,7 +128,20 @@ function playVisibleVideo(video: HTMLVideoElement) {
 }
 
 function openVideoInReels() {
+  for (const video of videoRefs.value) {
+    video.pause()
+  }
+
   openReelsViewer(props.post)
+}
+
+function handleWebkitBeginFullscreen(event: Event) {
+  const video = event.currentTarget as HTMLVideoElement & {
+    webkitExitFullscreen?: () => void
+  }
+
+  video.webkitExitFullscreen?.()
+  openVideoInReels()
 }
 
 function handleVideoFullscreenChange(event: Event) {
@@ -309,6 +328,10 @@ onMounted(() => {
   cursor: default;
 }
 
+.media-grid__fullscreen-interceptor {
+  display: none;
+}
+
 .media-grid__more {
   position: absolute;
   inset: 0;
@@ -343,6 +366,22 @@ onMounted(() => {
 
   .media-grid--count-5 {
     aspect-ratio: 1 / 0.86;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .media-grid__fullscreen-interceptor {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 8;
+    display: block;
+    width: 58px;
+    height: 52px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    touch-action: manipulation;
   }
 }
 </style>

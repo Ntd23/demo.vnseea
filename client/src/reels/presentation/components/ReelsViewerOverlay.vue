@@ -9,7 +9,14 @@
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="viewer" class="reels-viewer-overlay" role="dialog" aria-modal="true">
+      <div
+        v-if="viewer"
+        class="reels-viewer-overlay"
+        role="dialog"
+        aria-modal="true"
+        @touchstart.passive="handleEdgeTouchStart"
+        @touchend.passive="handleEdgeTouchEnd"
+      >
         <ReelsPresentationReelsPage :post-id="viewer.post.id" :initial-post="viewer.post" embedded @close="close" />
       </div>
     </Transition>
@@ -21,6 +28,40 @@ import { useReelsViewerOverlay } from "../../application/composables/useReelsVie
 import ReelsPresentationReelsPage from "../pages/ReelsPage.vue"
 
 const { viewer, close } = useReelsViewerOverlay()
+
+const modalTouchStart = ref<{ x: number, y: number } | null>(null)
+
+function handleEdgeTouchStart(event: TouchEvent) {
+  const touch = event.changedTouches[0]
+  const target = event.target instanceof Element ? event.target : null
+
+  if (target?.closest("button, a, input, textarea, .reels-page__bottom-sheet")) {
+    modalTouchStart.value = null
+    return
+  }
+
+  modalTouchStart.value = touch
+    ? { x: touch.clientX, y: touch.clientY }
+    : null
+}
+
+function handleEdgeTouchEnd(event: TouchEvent) {
+  const start = modalTouchStart.value
+  const touch = event.changedTouches[0]
+  modalTouchStart.value = null
+
+  if (!start || !touch) return
+
+  const deltaX = touch.clientX - start.x
+  const deltaY = touch.clientY - start.y
+  const isHorizontalGesture = Math.abs(deltaX) > Math.abs(deltaY)
+  const isLeftEdgeBackGesture = start.x <= 40 && deltaX > 72
+  const isContentSwipeLeft = deltaX < -72
+
+  if (isHorizontalGesture && (isLeftEdgeBackGesture || isContentSwipeLeft)) {
+    close()
+  }
+}
 </script>
 
 <style scoped>
@@ -31,5 +72,6 @@ const { viewer, close } = useReelsViewerOverlay()
   height: 100dvh;
   width: 100vw;
   background: #020617;
+  overscroll-behavior-x: contain;
 }
 </style>
