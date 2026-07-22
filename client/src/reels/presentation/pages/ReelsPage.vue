@@ -26,7 +26,7 @@
               <Icon name="i-ph-arrow-left-bold" class="h-5 w-5" />
             </button>
             <template v-if="activeMedia?.type === 'video'">
-              <video ref="videoRef" :key="activeReel.id" :src="activeMedia.src" class="reels-page__video" autoplay
+              <video ref="videoRef" :src="activeMedia.src" class="reels-page__video" autoplay
                 controls playsinline @play="isPlaying = true" @pause="isPlaying = false" @timeupdate="updateProgress"
                 @loadedmetadata="onMetadataLoaded" @ended="handleVideoEnded" />
 
