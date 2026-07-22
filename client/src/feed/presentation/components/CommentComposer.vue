@@ -811,6 +811,7 @@ defineExpose({
   width: 100%;
   align-items: flex-start;
   gap: 10px;
+  padding-left: 10px;
 }
 
 .comment-composer__avatar {

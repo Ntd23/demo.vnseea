@@ -346,6 +346,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: flex-start;
   gap: 10px;
+  margin: 0 10px;
 }
 
 .comment-item__avatar {

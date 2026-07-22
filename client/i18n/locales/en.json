@@ -199,6 +199,9 @@
       "backToSignIn": "Back to sign in"
     },
     "confirmAccountPage": {
+      "resendLoading": "Sending...",
+      "resendCountdown": "Resend code in {seconds}s",
+      "resendAction": "Resend confirmation code",
       "eyebrow": "Verify",
       "title": "Confirm your account",
       "subtitle": "Enter the activation code that VNSEEA sent to your email or phone so the backend can activate the account.",

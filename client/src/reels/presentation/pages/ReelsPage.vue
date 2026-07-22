@@ -444,11 +444,11 @@ useSeoMeta({
 /* Floating Actions on the Right */
 .reels-page__actions {
   position: absolute;
-  right: 20px;
+  right: 0;
   bottom: 80px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
   z-index: 20;
 }
 

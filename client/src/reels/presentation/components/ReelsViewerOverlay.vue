@@ -30,6 +30,37 @@ import ReelsPresentationReelsPage from "../pages/ReelsPage.vue"
 const { viewer, close } = useReelsViewerOverlay()
 
 const modalTouchStart = ref<{ x: number, y: number } | null>(null)
+let overlayHistoryEntryActive = false
+
+function handleOverlayPopState() {
+  if (!overlayHistoryEntryActive) return
+
+  overlayHistoryEntryActive = false
+  close()
+}
+
+watch(viewer, (currentViewer, previousViewer) => {
+  if (!import.meta.client) return
+
+  if (currentViewer && !previousViewer && !overlayHistoryEntryActive) {
+    window.history.pushState({ ...window.history.state, reelsViewerOverlay: true }, "", window.location.href)
+    overlayHistoryEntryActive = true
+    return
+  }
+
+  if (!currentViewer && previousViewer && overlayHistoryEntryActive) {
+    overlayHistoryEntryActive = false
+    window.history.back()
+  }
+}, { flush: "sync" })
+
+onMounted(() => {
+  window.addEventListener("popstate", handleOverlayPopState)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("popstate", handleOverlayPopState)
+})
 
 function handleEdgeTouchStart(event: TouchEvent) {
   const touch = event.changedTouches[0]
@@ -73,5 +104,6 @@ function handleEdgeTouchEnd(event: TouchEvent) {
   width: 100vw;
   background: #020617;
   overscroll-behavior-x: contain;
+  touch-action: pan-y;
 }
 </style>
